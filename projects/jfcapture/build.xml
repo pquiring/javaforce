@@ -1,0 +1,57 @@
+<project name="jfcapture" default="jar" basedir=".">
+  <description>jfcapture</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfcapture"/>
+  <property name="home" location="../.."/>
+  <property name="src" location="."/>
+  <property name="build" location="classes"/>
+  <property name="classpath" location="javaforce.jar"/>
+  <property name="version" value="0.4"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars">
+    <jar destfile="javaforce.jar">
+      <zipfileset src="../../jars/javaforce.jar"/>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jfcapture.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" debug="true" includeantruntime="false">
+      <classpath path="${classpath}"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="jfcapture.jar" includes="*.class" basedir="${build}">
+      <manifest>
+        <attribute name="Main-Class" value="CapScreenApp"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <elf/>
+    <copy file="jfcapture.jar" todir="/usr/share/java"/>
+    <copy file="jfcapture-screen" todir="/usr/bin"/>
+    <chmod file="/usr/bin/jfcapture-screen" perm="+x"/>
+    <copy file="jfcapture-window" todir="/usr/bin"/>
+    <chmod file="/usr/bin/jfcapture-window" perm="+x"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.jar"/>
+    </delete>
+  </target>
+</project>

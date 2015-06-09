@@ -1,0 +1,56 @@
+<project name="jphonelite-android-signed" default="all" basedir=".">
+  <description>jphonelite-android-signed</description>
+  <!-- set global properties for this build -->
+  <property name="src" location="."/>
+  <property name="build" location="."/>
+  <property name="JPHONELITEVERSION" value="1.0.1.ar11"/>
+
+  <available property="keyexists" file="keystore.key"/>
+
+  <target name="genkeys" unless="keyexists" description="generate SSL keys">
+    <genkey alias="jphonelite" storepass="password" keystore="keystore.key"
+      keyalg="RSA" validity="10000">
+      <dname>
+        <param name="CN" value="Peter Quiring"/>
+        <param name="OU" value="ITM"/>
+        <param name="O"  value="jphonelite.sourceforge.net"/>
+        <param name="C"  value="CA"/>
+      </dname>
+    </genkey>
+  </target>
+
+  <target name="sign-apk" depends="genkeys" description="sign apk file">
+    <signjar jar="bin/jphonelite-release-unsigned.apk" alias="jphonelite" storepass="password" keystore="keystore.key"
+      sigalg="MD5withRSA" digestalg="SHA1"
+      signedjar="bin/jphonelite-release-signed.apk"/>
+    <delete file="bin/jphonelite-android-${JPHONELITEVERSION}.apk"/>
+    <exec executable="zipalign">
+      <arg value="4"/>
+      <arg value="bin/jphonelite-release-signed.apk"/>
+      <arg value="bin/jphonelite-android-${JPHONELITEVERSION}.apk"/>
+    </exec>
+    <move file="bin/jphonelite-android-${JPHONELITEVERSION}.apk" todir="/home/pquiring/zips"/>
+  </target>
+
+  <target name="all" depends="sign-apk"/>
+
+  <target name="release-src" depends="" description="create release zip file">
+    <zip destfile="jphonelite-android-src-${JPHONELITEVERSION}.zip">
+      <fileset dir="..">
+        <include name="jphonelite-android/**/*"/>
+
+        <exclude name="jphonelite-android/**/*.zip"/>
+        <exclude name="jphonelite-android/**/*.bat"/>
+        <exclude name="jphonelite-android/**/*.key"/>
+        <exclude name="jphonelite-android/bin/**/*"/>
+        <exclude name="jphonelite-android/gen/**/*"/>
+      </fileset>
+    </zip>
+    <move file="jphonelite-android-src-${JPHONELITEVERSION}.zip" todir="/home/pquiring/zips"/>
+    <copy file="whatsnew.txt" tofile="../jphonelite/android-whatsnew.txt"/>
+  </target>
+
+  <target name="javadoc" description="generate java documentation">
+    <javadoc sourcefiles="*.java" destdir="javadoc"/>
+  </target>
+</project>

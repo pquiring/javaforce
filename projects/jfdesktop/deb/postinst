@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+  configure)
+    update-alternatives --install /usr/bin/x-session-manager x-session-manager /usr/bin/jfdesktop 90
+    ;;
+esac

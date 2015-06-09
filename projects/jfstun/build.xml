@@ -1,0 +1,36 @@
+<project name="jfstun" default="jar" basedir=".">
+  <description>paint</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfstun"/>
+  <property name="home" location="../.."/>
+  <property name="version" value="0.1"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars" description="depjars">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+  </target>
+
+  <target name="jar" description="jar">
+  </target>
+
+  <target name="release-bin" depends="" description="create release zip file">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+    <zip destfile="jfstun-${version}.zip">
+      <fileset dir=".">
+        <include name="*.jar"/>
+        <include name="*.txt"/>
+        <include name="run.bat"/>
+      </fileset>
+      <fileset dir="../.." includes="license.txt"/>
+    </zip>
+    <move file="jfstun-${version}.zip" todir="${home}/release"/>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <elf/>
+    <mkdir dir="/etc/jinit"/>
+    <copy file="jfstun.conf" todir="/etc/jinit"/>
+  </target>
+</project>

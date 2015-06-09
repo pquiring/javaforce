@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Remote Desktop
+Comment=Remote Desktop
+
+Icon=jfremote
+
+Type=Application
+Categories=System
+
+Exec=jfremote
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfRemote

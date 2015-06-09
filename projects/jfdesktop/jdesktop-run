@@ -1,0 +1,2 @@
+#!/bin/bash
+jbus-call org.jflinux.jfdesktop.$JID.run\(\)

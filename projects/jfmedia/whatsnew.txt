@@ -1,0 +1,12 @@
+ChangeLog
+---------
+
+Sept 20, 2014 : v0.10 released!
+  - new : video frame was changed into a video panel and integrated into main frame
+    - added a full screen button
+
+Aug 8, 2014 : v0.9 released!
+  - fix : audio resampling (no more audio ticks if input/output sample rates differ)
+
+Aug 1, 2014 : v0.8 released!
+  - new : first version released on sourceforge.net independent of JavaForce.

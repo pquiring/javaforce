@@ -1,0 +1,95 @@
+<project name="jf3d" default="jar" basedir=".">
+  <description>jf3d</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jf3d"/>
+  <property name="home" location="../.."/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property name="classpath" location="javaforce.jar"/>
+  <property name="version" value="0.1"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars" depends="depnatives">
+    <jar destfile="javaforce.jar">
+      <zipfileset src="../../jars/javaforce.jar"/>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jf3d.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" target="1.6" source="1.6" debug="true" includeantruntime="false">
+      <classpath path="${classpath}"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="j3d.jar" includes="*.class" basedir="${build}">
+      <fileset dir="." includes="*.png"/>
+      <fileset dir="src" includes="*.png"/>
+      <manifest>
+        <attribute name="Main-Class" value="ThreeDeeApp"/>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jf3d.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <elf/>
+    <copy file="j3d.jar" todir="/usr/share/java"/>
+    <copy file="j3d.desktop" todir="/usr/share/applications"/>
+    <copy file="j3d.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+    <copy file="j3d.html" todir="/usr/share/jhelp"/>
+  </target>
+
+  <target name="release-bin" description="create release zip file">
+    <zip destfile="jf3d-${version}.zip">
+      <fileset dir=".">
+        <include name="*.jar"/>
+        <include name="*.txt"/>
+        <include name="run.bat"/>
+      </fileset>
+      <fileset dir="../.." includes="license.txt"/>
+    </zip>
+    <move file="jf3d-${version}-bin.zip" todir="${home}/release"/>
+  </target>
+
+  <target name="release-src" depends="" description="create release zip file">
+    <zip destfile="jf3d-${version}-src.zip">
+      <fileset dir="../../..">
+        <include name="jf/base.xml"/>
+        <include name="jf/license.txt"/>
+        <include name="jf/projects/j3d/src/*.java"/>
+        <include name="jf/projects/j3d/src/*.form"/>
+        <include name="jf/projects/j3d/*.cfg"/>
+        <include name="jf/projects/j3d/*.txt"/>
+        <include name="jf/projects/j3d/*.xml"/>
+        <include name="jf/projects/j3d/*.png"/>
+        <include name="jf/projects/j3d/src/*.png"/>
+        <include name="jf/projects/j3d/*.ico"/>
+        <include name="jf/projects/j3d/run.bat"/>
+        <include name="jf/projects/j3d/nbproject/*.xml"/>
+        <include name="jf/jars/javaforce.jar"/>
+        <include name="jf/stubs/*"/>
+      </fileset>
+    </zip>
+    <move file="jf3d-${version}-src.zip" todir="${home}/release"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.jar"/>
+    </delete>
+  </target>
+</project>

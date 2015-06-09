@@ -1,0 +1,61 @@
+<project name="jfrepo" default="jar" basedir=".">
+  <description>jfrepo</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfrepo"/>
+  <property name="home" location="../.."/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property name="classpath" location="javaforce.jar"/>
+  <property name="version" value="0.2"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars">
+    <jar destfile="javaforce.jar">
+      <zipfileset src="../../jars/javaforce.jar"/>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jfaudio.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}"  target="1.6" source="1.6" debug="true" includeantruntime="false">
+      <classpath path="${classpath}"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="jfrepo.jar" includes="**/*.class" basedir="${build}">
+      <fileset dir="." includes="*.png"/>
+      <fileset dir="." includes="sources.list"/>
+      <fileset dir="." includes="*.repo"/>
+      <manifest>
+        <attribute name="Main-Class" value="RepoApp"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- sudo -E ant install -->
+  <target name="install" depends="jar" description="install files">
+    <elf/>
+    <copy file="jfrepo.jar" todir="/usr/share/java"/>
+    <copy file="jfrepo-ubuntu.list" todir="/etc"/>
+    <copy file="jfrepo-fedora.list" todir="/etc"/>
+    <copy file="jfrepo.desktop" todir="/usr/share/applications"/>
+    <copy file="jfrepo.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+    <copy file="jfrepo.html" todir="/usr/share/jhelp"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.jar"/>
+    </delete>
+  </target>
+</project>

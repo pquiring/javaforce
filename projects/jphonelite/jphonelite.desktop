@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=jPhoneLite
+Comment=VoIP/SIP SoftPhone
+
+Icon=jphonelite
+
+Type=Application
+Categories=Network
+
+Exec=jphonelite
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jPhoneLite

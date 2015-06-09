@@ -1,0 +1,22 @@
+<project name="native" default="linux" basedir=".">
+  <description>native</description>
+  <property environment="env"/>
+
+  <target name="javah">
+    <javah destdir="." classpath="../../classes">
+      <class name="javaforce.gl.GL"/>
+      <class name="javaforce.media.Camera"/>
+      <class name="javaforce.media.MediaCoder"/>
+      <class name="javaforce.media.MediaDecoder"/>
+      <class name="javaforce.media.MediaEncoder"/>
+      <class name="javaforce.media.MediaVideoDecoder"/>
+      <class name="javaforce.jni.LnxNative"/>
+    </javah>
+  </target>
+
+  <target name="linux" depends="javah"  description="create linux native so">
+    <exec command="gcc -D_FILE_OFFSET_BITS=64 -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux linux.cpp -c -o linux.o -fPIC"/>
+    <exec command="gcc -shared linux.o -lX11 -lpam -o ../jfnative64.so"/>
+    <delete file="linux.o"/>
+  </target>
+</project>

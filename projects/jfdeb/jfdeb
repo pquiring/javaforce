@@ -1,0 +1,47 @@
+#!/bin/bash
+
+function usage() {
+  echo usage : jfdeb outputfile-version-release.deb [deb-control-folder [files-list]]
+  echo - output : outputfile-version-release.deb
+  echo - deb-control-folder : holds deb control files \(default = deb\)
+  echo - files-list : lists data files \(one per line\) \(default = files.lst\)
+  exit
+}
+
+function error() {
+  echo Error : $1
+  exit
+}
+
+if [ "$1" = "" ]; then usage; fi
+if [ "$1" = "--help" ]; then usage; fi
+if [ "$1" = "-h" ]; then usage; fi
+
+DEB=deb
+FILES=files.lst
+if [ ! "$2" = "" ]; then DEB=$2; fi
+if [ ! "$3" = "" ]; then FILES=$3; fi
+
+if [ ! -f $DEB/control ]; then error "deb/control not found"; fi
+
+#build control.tar.gz (gz only)
+rm -f control.tar.gz 2>/dev/null
+cd $DEB
+tar czf ../control.tar.gz *
+cd ..
+
+#build data.tar.bz2 (gz,bz2,lzma,others?)
+rm -f data.tar.bz2 2>/dev/null
+tar cjf data.tar.bz2 -T $FILES
+
+#build $1
+echo 2.0 > debian-binary
+rm -f $1 2>/dev/null
+#NOTE:debian-binary MUST be 1st file listed
+ar mc $1 debian-binary control.tar.gz data.tar.bz2
+
+rm -f debian-binary 2>/dev/null
+rm -f control.tar.gz 2>/dev/null
+rm -f data.tar.bz2 2>/dev/null
+
+echo Complete!

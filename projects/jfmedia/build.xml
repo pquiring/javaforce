@@ -1,0 +1,93 @@
+<project name="jfmedia" default="jar" basedir=".">
+  <description>jfmedia</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfmedia"/>
+  <property name="home" location="../.."/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property name="classpath" location="javaforce.jar"/>
+  <property name="version" value="0.10"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars" depends="depnatives">
+    <jar destfile="javaforce.jar">
+      <zipfileset src="../../jars/javaforce.jar"/>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jfmedia.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" target="1.6" source="1.6" debug="true" includeantruntime="false">
+      <classpath path="${classpath}"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile,depjars" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="jfmedia.jar" includes="*.class" basedir="${build}">
+      <fileset dir="." includes="*.png"/>
+      <fileset dir="src" includes="*.png"/>
+      <manifest>
+        <attribute name="Main-Class" value="jfmedia"/>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jfmedia.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <elf/>
+    <copy file="jfmedia.jar" todir="/usr/share/java"/>
+    <copy file="jfmedia.desktop" todir="/usr/share/applications"/>
+    <copy file="jfmedia.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+    <copy file="jfmedia.html" todir="/usr/share/jhelp"/>
+  </target>
+
+  <target name="release-bin" depends="jar" description="create release zip file">
+    <zip destfile="jfmedia-${version}.zip">
+      <fileset dir=".">
+        <include name="*.jar"/>
+        <include name="*.txt"/>
+        <include name="run.bat"/>
+      </fileset>
+      <fileset dir="../.." includes="license.txt"/>
+    </zip>
+    <move file="jfmedia-${version}.zip" todir="${home}/release"/>
+  </target>
+
+  <target name="release-src" depends="" description="create release zip file">
+    <zip destfile="jfmedia-src-${version}.zip">
+      <fileset dir="../../..">
+        <include name="jf/license.txt"/>
+        <include name="jf/base.xml"/>
+        <include name="jf/projects/jfmedia/src/*.java"/>
+        <include name="jf/projects/jfmedia/src/*.form"/>
+        <include name="jf/projects/jfmedia/*.txt"/>
+        <include name="jf/projects/jfmedia/*.xml"/>
+        <include name="jf/projects/jfmedia/*.png"/>
+        <include name="jf/projects/jfmedia/*.ico"/>
+        <include name="jf/projects/jfmedia/run.bat"/>
+        <include name="jf/projects/jfmedia/nbproject/*.xml"/>
+        <include name="jf/jars/javaforce.jar"/>
+        <include name="jf/stubs/*"/>
+      </fileset>
+    </zip>
+    <move file="jfmedia-src-${version}.zip" todir="${home}/release"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.jar"/>
+    </delete>
+  </target>
+</project>

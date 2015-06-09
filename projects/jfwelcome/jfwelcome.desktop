@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Welcome Center
+Comment=Welcome Center
+
+Icon=jfwelcome
+
+Type=Application
+Categories=System
+
+Exec=jfwelcome
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfwelcome

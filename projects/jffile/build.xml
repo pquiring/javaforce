@@ -1,0 +1,72 @@
+<project name="jffile" default="jar" basedir=".">
+  <description>jffile</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jffile"/>
+  <property name="app2" value="jffileprops"/>
+  <property name="app3" value="jfmapshare"/>
+  <property name="app4" value="jfunmapshare"/>
+  <property name="home" location="../.."/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property name="classpath" location="javaforce.jar"/>
+  <property name="version" value="0.12"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars">
+    <jar destfile="javaforce.jar">
+      <zipfileset src="../../jars/javaforce.jar"/>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jffile.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" deprecation="true" debug="true" includeantruntime="false">
+      <classpath path="${classpath}"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile,depjars" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="jffile.jar" includes="**/*.class" basedir="${build}">
+      <fileset dir="." includes="*.png"/>
+      <fileset dir="src" includes="**/*.png"/>
+      <fileset dir="." includes="*.crt"/>
+      <manifest>
+        <attribute name="Main-Class" value="FileApp"/>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jffile.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <elf/>
+
+    <elf app="${app2}"/>
+
+    <elf app="${app3}"/>
+
+    <elf app="${app4}"/>
+
+    <copy file="jffile.jar" todir="/usr/share/java"/>
+    <copy file="jffile.desktop" todir="/usr/share/applications"/>
+    <copy file="jffile.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+    <copy file="jffile.html" todir="/usr/share/jhelp"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.jar"/>
+    </delete>
+  </target>
+</project>

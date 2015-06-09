@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+
+<LinearLayout
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical">
+
+  <TextView
+    android:id="@+id/settings_line_x_label"
+    android:text="Line x:"
+    android:visibility="visible"
+    android:layout_width="fill_parent"
+    android:layout_height="40dp"
+    android:layout_centerInParent="true"
+    android:gravity="left"
+    android:textColor="#ff8888ff"
+    android:textSize="18sp"/>
+
+  <TextView
+    android:id="@+id/settings_line_label"
+    android:text="Configure line to:"
+    android:visibility="visible"
+    android:layout_width="wrap_content"
+    android:layout_height="40dp"
+    android:layout_centerInParent="true"
+    android:gravity="left"
+    android:textColor="#ff8888ff"
+    android:textSize="18sp"/>
+  <Spinner
+    android:id="@+id/settings_line_x"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:prompt="@string/settings_line_x_prompt"/>
+
+  <LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <TextView
+      android:id="@+id/settings_user_label"
+      android:text="User:"
+      android:visibility="visible"
+      android:layout_width="50dp"
+      android:layout_height="40dp"
+      android:layout_centerInParent="true"
+      android:gravity="left"
+      android:textColor="#ff8888ff"
+      android:textSize="18sp"/>
+    <EditText
+      android:id="@+id/settings_user"
+      android:text=""
+      android:gravity="left"
+      android:visibility="visible"
+      android:layout_width="270dp"
+      android:layout_height="40dp"
+      android:layout_centerInParent="true"
+      android:textColor="#ff8888ff"
+      android:textSize="18sp"/>
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <TextView
+      android:id="@+id/settings_auth_label"
+      android:text="Auth:"
+      android:visibility="visible"
+      android:layout_width="50dp"
+      android:layout_height="40dp"
+      android:layout_centerInParent="true"
+      android:gravity="left"
+      android:textColor="#ff8888ff"
+      android:textSize="18sp"/>
+    <EditText
+      android:id="@+id/settings_auth"
+      android:text=""
+      android:gravity="left"
+      android:visibility="visible"
+      android:layout_width="270dp"
+      android:layout_height="40dp"
+      android:layout_centerInParent="true"
+      android:textColor="#ff8888ff"
+      android:textSize="18sp"/>
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <TextView
+      android:id="@+id/settings_pass_label"
+      android:text="Pass:"
+      android:visibility="visible"
+      android:layout_width="50dp"
+      android:layout_height="40dp"
+      android:layout_centerInParent="true"
+      android:gravity="left"
+      android:textColor="#ff8888ff"
+      android:textSize="18sp"/>
+    <EditText
+      android:id="@+id/settings_pass"
+      android:text=""
+      android:gravity="left"
+      android:password="true"
+      android:visibility="visible"
+      android:layout_width="270dp"
+      android:layout_height="40dp"
+      android:layout_centerInParent="true"
+      android:textColor="#ff8888ff"
+      android:textSize="18sp"/>
+  </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <TextView
+      android:id="@+id/settings_host_label"
+      android:text="Host:"
+      android:visibility="visible"
+      android:layout_width="50dp"
+      android:layout_height="40dp"
+      android:layout_centerInParent="true"
+      android:gravity="left"
+      android:textColor="#ff8888ff"
+      android:textSize="18sp"/>
+    <EditText
+      android:id="@+id/settings_host"
+      android:text=""
+      android:gravity="left"
+      android:visibility="visible"
+      android:layout_width="270dp"
+      android:layout_height="40dp"
+      android:layout_centerInParent="true"
+      android:textColor="#ff8888ff"
+      android:textSize="18sp"/>
+  </LinearLayout>
+
+</LinearLayout>
+</ScrollView>

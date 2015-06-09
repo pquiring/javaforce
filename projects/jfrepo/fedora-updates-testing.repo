@@ -1,0 +1,26 @@
+[updates-testing]
+name=Fedora $releasever - $basearch - Test Updates
+failovermethod=priority
+baseurl=$URL$/updates/testing/$releasever/$basearch/
+#mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=updates-testing-f$releasever&arch=$basearch
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$basearch
+
+[updates-testing-debuginfo]
+name=Fedora $releasever - $basearch - Test Updates Debug
+failovermethod=priority
+baseurl=$URL$/updates/testing/$releasever/$basearch/debug/
+#mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=updates-testing-debug-f$releasever&arch=$basearch
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$basearch
+
+[updates-testing-source]
+name=Fedora $releasever - Test Updates Source
+failovermethod=priority
+baseurl=$URL$/updates/testing/$releasever/SRPMS/
+#mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=updates-testing-source-f$releasever&arch=$basearch
+enabled=0
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-$basearch

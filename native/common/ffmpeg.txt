@@ -1,0 +1,13 @@
+AVFormatContext = main context
+  - holds streams
+AVInputFormat = container
+  - read header/trailer
+  - demux
+AVOutputFormat = container
+  - write header/trailer
+  - mux
+AVStream = holds Codec info
+AVCodec = read/write codec data
+
+AVFrame = raw uncompressed data
+AVPacket = raw compressed data

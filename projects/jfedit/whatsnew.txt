@@ -1,0 +1,18 @@
+ChangeLog
+=========
+
+6-9-2015 : v0.9
+  - added F9/F10 functions
+  - fixed F7/F8 shift right functions that were adding unwanted spacing
+
+2-9-2015 : v0.8
+  - msi now registers txt file as a new file type (in explorer -> new -> Text Document) [ShellNew]
+
+7-5-2014 : jfEdit/0.7
+  - assigned hot keys to edit settings dialog
+
+3-23-2014 : jfEdit/0.6
+  - fix : needed to place quotes around argument to open files with spaces (added &quot; to wix.xml)
+
+3-22-2014 : jfEdit/0.5
+  - now includes MSI package that will register with text/plain files (*.txt *.ini *.properties).

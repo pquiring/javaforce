@@ -1,0 +1,41 @@
+jfLinux
+=======
+
+ubuntu
+------
+To create the jfLinux image follow these steps:
+  - build/install JavaForce
+    - cd ./
+    - ant jar
+    - sudo ant install
+  - install/package jfdeb (packager)
+    - cd ./projects/jfdeb
+    - sudo ant install
+    - ant deb
+  - package JavaForce
+    - cd ./
+    - ant deb
+  - build all projects
+    - cd ./projects
+    - ./buildAllUbuntu.sh
+  - see /repo/ubuntu/readme.txt for uploading packages
+  - run /iso/ubuntu/jfLinux.sh to build image
+This creates the Ubuntu based image.
+
+fedora
+------
+The process is general the same as ubuntu except:
+Build /projects/jfrpm instead of jdeb
+Use 'sudo ant rpm' to package /projects/jflogon
+Use buildAllFedora.sh to build all projects for Fedora.
+To use sudo you may need to add yourself to the 'wheel' group
+  usermod -a -G wheel my_user_name
+
+Required packages to compile JavaForce on Linux
+===============================================
+
+Ubuntu: default-jdk ant gnupg gcc dpkg-dev
+
+Fedora: java ant gnupg gcc rpm-sign createrepo livecd-tools
+
+Enjoy!

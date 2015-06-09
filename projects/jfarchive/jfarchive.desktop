@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Archive Manager
+Comment=Archive Manager
+
+Icon=jfarchive
+
+Type=Application
+Categories=Utility
+
+Exec=jfarchive
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfArchive

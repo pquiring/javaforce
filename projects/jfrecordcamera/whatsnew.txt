@@ -1,0 +1,4 @@
+What's new ??
+
+Dec 26/2013 : version 0.2 released
+  - added stop motion option to advance each frame manually.  Great for making lego animations or what ever you can think of.

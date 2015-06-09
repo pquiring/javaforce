@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+mkdir -p /etc/jfdesktop
+
+if [ "$1" = upgrade ]; then
+    update-alternatives --remove x-window-manager /usr/bin/jfdesktop
+fi
+
+exit 0

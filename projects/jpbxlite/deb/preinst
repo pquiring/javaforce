@@ -1,0 +1,7 @@
+mkdir -p /var/log/jpbx
+mkdir -p /usr/share/java/jpbx
+mkdir -p /var/log/jpbx
+mkdir -p /usr/share/java/jpbx/plugins
+mkdir -p /usr/share/java/jpbx/lib
+mkdir -p /usr/share/sounds/jpbx/en
+mkdir -p /var/lib/jpbx/voicemail

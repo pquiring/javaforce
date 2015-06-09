@@ -1,0 +1,1681 @@
+What's new...
+
+Jun 9/2015 : JF 9.0.0 released!
+  - after spending years working with JNA I've decided to switch back to JNI.
+    - JNA uses libffi which is too complex and VERY slow.
+  - Native sound has been removed - don't notice a latency difference with Java sound anymore and it's just redundant
+  - All Windows native code has been converted and tested
+    - mingw headers have greatly improved since last time I used JNI (only 2 minor GUIDs missing)
+    - jawt is used to get window handles for OpenGL support
+    - removed jfRDP for now (I have a different plan)
+  - All Linux native code has been converted and mostly tested (except the jfLinux related APIs)
+    - OpenGL seems stable
+    - jawt is used to get window handles for OpenGL support
+    - WebCamera uses libv4l2 which will convert colorspaces to RGB
+      - so all cameras should be supported now
+    - deb packages now specify Architecture set to amd64 since the packages do include some native code
+      - since Linux is free I'm not going to bother with i386 packages (objections?)
+  - Mac native code only supports WebCamera and ffmpeg
+    - OpenGL is not supported because Java 7's new AWT only allows for a CALayer
+      - the NSOpenGLCALayer doesn't give full control over the OpenGLContext (when to swap, etc).
+        - you can only use OpenGL in the drawInOpenGLContext callback
+      - hence JOGL uses a GLAutoDrawable (it's automatic)
+        - I'ved used JOGL before but found the API too complex (and too many jars/dlls)
+      - some JavaForce OpenGL projects require full OpenGL control
+      - only option is to use another toolkit such as SWT or LWJGL with TWL to support Macs
+      - even Oracle is dumping AWT and creating JavaFX (which doesn't expose OpenGL yet)
+    - WebCamera is not stable yet
+  - with the new JNI library I'm already seeing better performance in many of the multi-media apps
+  - fixed Javaforce's OpenGL GLSL code to work with Mesa3D (which doesn't support flat varying)
+    - used a uniform shared between the vertex and fragment shaders instead
+  - thanks to who ever is putting JavaForce on github.com - it's been real useful ;)
+  - all generated MSI files will now show minial dialogs (licence agreement, installation completion, repair, etc.)
+    - the common public license used seems acceptable
+  - JFImage now supports saving *.icns files (Mac Icons)
+    - see javaforce.utils.jimgconvert
+  - jfdmg/1.0 released!
+    - a new utility to generate Mac .dmg files
+    - supports hciutil (mac only) or genisoimage (cygwin?/linux) to generate .dmg files
+    - genisoimage creates 'uncompressed' .dmg files (jars are compressed anyways)
+    - untested
+  - jfEdit/0.9 released!
+    - F9/F10 to change selection to lower/upper case and minor fixes
+
+May 23/2015 : JF 8.1.0 released!
+  - Linux : .cfg files are now added to ELF executable
+  - jfRDP/0.3 released!
+    - bug fixes (actually works reliable now) and new button to enable scaled viewing
+
+May 18/2015 : JF 8.0.0 released!
+  - all native executable launchers are now built in /stubs and copied+patched as needed
+    - the CLASSPATH/MAINCLASS properties (*.cfg) is stored in the EXE file for Windows
+    - argument expanding is now implemented (globbing)
+    - javaforce.jna.WinPE is used to patch the EXE for Windows
+    - TODO : find a reliable way to attach properties to Linux executables
+    - TODO : MacOSX (anyone want to donate a MacMini with Intel Core2 or better ;)
+  - all MSI files are now split into 32bit and 64bit files for Windows
+  - added some JNI functions in /native to complement JNA (see javaforce.jni.JFNative)
+    - these functions are used just to call functions within OpenGL for greater performance
+      - libffi (used by JNA) is a HUGE performance bottleneck
+      - these new functions have DOUBLED the frame rate in jfCraft
+    - if the JNI library fails to load it will fall back to JNA
+    - overtime I plan to merge JNA into JF but using non-generic invoke...() functions
+  - jfHex & jfHexBig
+    - minor fixes
+  - jfCraft/0.12 released!
+    - x2 FPS and added some new entities
+
+May 7/2015 : JF 7.50.0 released!
+  - javaforce.gl.GL
+    - more optz to reduce creating short lived Object[] arrays
+  - Updated /jars/jna.jar to custom build
+    - a modified version of JNA that reduces short lived Object[] arrays
+    - see https://github.com/twall/jna/pull/438
+    - full source available @ github.com/pquiring/jna
+    - greatly reduces GC churn and burn which translates to better FPS
+  - jfCraft/0.11 released!
+    - new blocks, dynamic IDs and many fixes
+
+Apr 30/2015 : JF 7.49.0 released!
+  - GLMatrix
+    - just some optz needed for jfCraft
+  - jfCraft/0.10 released!
+    - lots of under the hood changes for performance
+
+Apr 24/2015 : JF 7.48.0 released!
+  - SIPServer
+    - fix : issues when client is 127.0.0.1
+  - jPBXLite/0.22 released!
+    - fix : reinvites would drop calls with 404
+  - jfCraft/0.9 released!
+    - added in-game comms system similar to TeamSpeak (a VoIP Conference - code borrowed from jPhoneLite and jPBXlite)
+
+Apr 20/2015 : JF 7.47.0 released!
+  - jfPaint/0.18 released!
+    - fill tool now uses threshold
+    - fixed undo/redo
+  - jfRDP/0.2 released!
+    - improved client connection
+    - added amin password
+    - encoded passwords in cfg file
+  - jfBroadcast/0.30 released!
+    - fixed minor gui bug
+  - jfCraft/0.7 released!
+    - more complex blocks are now blender files
+    - added skeleton, fence and gate
+    - more bugs fixed
+
+Apr 7/2015 : JF 7.46.0 released!
+  - GL framework improvements
+    - new : added support for multiple UV maps per object (GLUVMap)
+    - new : added support for sharing an OpenGL context between many GLCanvas/GLJPanel
+    - new : GLRender now renders a GLScene and there can be many GLRender each
+            with there own camera view.
+    - fix : 3DS loader
+      - some issues resolved
+    - new : Blender loader
+      - can now load .blend files
+    - new : JF3D file format
+      - a new 3D file format designed for JavaForce
+    - new : ModelConverter to convert 3ds/blend files to jf3d
+    - removed : GLWindow and GLFrame (unreliable)
+  - new app : jf3D
+    - started to build a 3D modeler since Blender didn't seem to suit my needs,
+      but after some persistent work on Blender I figured it out.
+      This app is incomplete but can be used to view 3D files for now.
+  - jfCraft/0.6 released!
+    - entities are now Blender models instead of hand coding them
+      - hundred to thousands of lines of code removed
+  - VoIP framework improvements
+    - started to fix the CallDetails memory leak
+      - freeing the CallDetails was never done before since I was not sure when to do it
+        - ex: freeing them after bye() will not work since a 200 is expected (or ACK in other cases)...
+      - they are small and was never a concern until someone said the autodialer was using a lot of memory
+      - this is not complete yet but should fix most leaks for now
+  - jPhoneLite/1.9.4
+    - some memory leaks fixed
+  - jfBroadcast/0.29
+    - some memory leaks fixed
+  - javaforce.jar is now > 1MB ;)
+
+Mar 26/2015 : JF 7.45.0 released!
+  - jfBroadcast/0.28
+    - new : added voicemail detection
+    - fix : increased default silence duration to 2000ms
+    - fix : some options were not saved to disk
+  - jPhoneLite/1.9.3
+    - new : added Online Help button
+  - jfFTP/0.6
+    - fix : improved ftp support
+
+Mar 19/2015 : JF 7.44.0 released!
+  - javaforce.jna.WinWebBrowser
+    - new class to embed ActiveX Browser into a java.awt.Canvas
+    - see javaforce.jna.TestBrowser for an example
+  - javaforce.jna.WinRDPServer and WinRDPClient
+    - new classes to use Windows Desktop Sharing API (ActiveX)
+  - jfRDP/0.1 released!
+    - new app : Remote Desktop Server/Client for Windows Vista or higher
+    - uses the Windows Desktop Sharing API (based on RDP)
+  - jLogon/0.18
+    - fixed booting in Ubuntu/15.04
+    - Ubuntu ISO boots now, but once installed X11 fails to start, so close...
+
+Mar 10/2015 : JF 7.43.0 released!
+  - jfNetTools/0.1 released!
+    - new app with some basic networking tools (LAN benchmark, ping, dns, etc.)
+  - jfDNS/0.2 released!
+    - fix : getName() had some bugs with pointers
+    - fix : default config was missing a TTL
+    - fix : sends bogus info for reverse dns queries (nslookup likes to know who the dns server is)
+
+Feb 9/2015 : JF 7.42.0 released!
+  - javaforce.voip.SIPClientInterface now includes onAck()
+  - jPhoneLite/1.9.3 beta 1
+    - now supports INVITE without SDP and ACK with SDP instead (see RFC 3665 sec 3.6)
+    - not released yet (still testing)
+  - jfPaint/0.17
+    - support for image layers (saves to new file *.jfpaint)
+  - jfFTP/0.5
+    - fixed progress bar
+  - jfEdit/0.8
+    - msi package now registers .txt as a new file type (in Explorer -> New -> Text Document)
+       - the one from Notepad disappears?
+  - jLogon/0.17
+    - now uses systemd on Ubuntu (15.04)
+
+Jan 17/2015 : JF 7.41.0 released!
+  - jfBroadcast/0.27
+    - improved -allowdups performance
+  - jfAudio/0.14
+    - fixed endian difference between Java and Native sound
+    - fixed paint() issue
+    - added volume levels
+
+Nov 27/2014 : JF 7.40.0 released!
+  - javaforce.GL
+    - added Stencil functions (untested)
+  - jfTerm/0.18
+    - fixed some ANSI codes
+  - jfLinux : Ubuntu ISO : fixed Wine installation
+    - Wine on amd64 requires 'dpkg --add-architecture i386' since it requires both i386 and amd64 packages to
+      run 32/64bit Windows apps.
+
+Nov 7/2014 : JF 7.39.0 released!
+  - all linux apps now use a native c loader just like the msi packages for windows
+    - before bash scripts were used which made the process list look confusing
+  - finally fixed signed repository (do not gzip the files)
+  - added support to read xpm images (old linux format still rarely used)
+  - jfusesmb
+    - improved performance
+  - jFile/0.12
+    - can use CTRL to multi select files
+    - fix resource leak
+  - jDesktop/0.27
+    - many improvements (new layout, many bug fixes)
+  - jConfig/0.12
+    - integrated japps, jrepo and jparted
+  - jfPaint/0.16
+    - added xpm support and some bug fixes
+  - grub2 has a bug that is causing the generated iso to have difficulties booting after installed
+    - see https://bugs.launchpad.net/ubuntu/+source/grub2/+bug/1311247
+
+Nov 1/2014 : JF 7.38.0 released!
+  - javaforce.utils.monitordir (Linux:inotify service)
+    - added MOVED_TO & MOVED_FROM events
+  - jFile/0.11
+    - cut/copy/paste now implemented using a global clipboard now
+    - added some common keyboard shortcuts
+  - jDesktop/0.26
+    - stores cut/copy/paste in a special clipboard (since Java Clipboard does not support cut to clipboard)
+  - jConfig/0.11
+    - fix : Interface dialog still tries to save config on cancel
+  - jLogon/0.16
+    - fix : network issues
+  - jfFTP/0.4
+    - added some common keyboard shortcuts
+  - jfTorrent/0.4
+    - added MSI package
+
+Oct 25/2014 : JF 7.37.0 released!
+  - jPhoneLite/1.9.2
+    - some minor fixes
+  - jDesktop/0.25
+    - fix : config was not saved in some cases
+
+Oct 24/2014 : JF 7.36.0 released!
+  - GLMatrix
+    - added addRotate3() and addRotate4() to add rotation that is not affected by previous rotations.
+    - needed for JFCraft/0.2
+  - jLogin/0.15
+    - fixed X11 termination (shutdown and reboot works again)
+    - fixed repaint issue after logoff
+  - jDesktop/0.24
+    - can now drag apps to the dock (*.desktop files)
+    - AddAppDialog window now uses JFileBrowser which you can drag icons to the dock
+  - jFile/0.10
+    - added setFilter(String regex) to show only certain files
+  - jConfig/0.10
+    - added TimeZone to date/time panel
+  - jParted/0.4
+    - added timezone info (for jInstall)
+  - jInstall/0.5
+    - added timezone selection during install
+  - jRepo/0.2
+    - new smaller map
+  - jfLinux : still one bug remains : sometimes network interfaces fail to init (jnetworkmgr)
+    - I see why Mint stays with older version of Ubuntu, updates seem to brake everything
+
+Oct 13/2014 : JF 7.35.0 released!
+  - jfLinux
+    - fix more Ubuntu 14.10 issues (boots now)
+  - jfTerm/0.17
+    - opening a local bash tab works 100% of the time now
+  - jDesktop/0.23
+    - minor changes
+  - jLogon/0.14
+    - added some required packages
+
+Oct 8/2014 : JF 7.34.0 released!
+  - jfBroadcast/0.26
+    - fix -allowdups option
+  - jfLinux
+    - fix some Ubuntu 14.10 issues
+
+Oct 7/2014 : JF 7.33.0 released!
+  - jfBroadcast/0.25
+    - added -allowdups option (user requested feature)
+
+Oct 6/2014 : JF 7.32.0 released!
+  - jfBroadcast/0.24
+    - added -dbpath and -cfgsuffix and sip port ranges to allow multiple copies to run (user requested feature)
+  - jfFTP/0.3
+    - added SSH Identity Key support
+  - updated Ubuntu ISO build scripts for Ubuntu 14.10 (still not working yet)
+    - amd64 should be used for 64bit targets, not x86_64
+    - some build files are in different packages (syslinux -> isolinux)
+
+Sept 20/2014 : JF 7.31.0 released!
+  - jfPaint/0.15
+    - added new fill mode (fill edges)
+  - jfMedia/0.10
+    - changed video frame into a video panel and integrated into main frame
+  - Linux : all apps now have correct categories set in their .desktop files for those using other desktop environments
+    - so now the apps will appear in correct menus for Mate and similar desktops.
+
+Sept 15/2014 : JF 7.30.0 released!
+  - cosmetic fixes only
+  - jfPasswords/0.12 & jPBXLite/0.21 & jPhoneLite/1.9.1 & jfBroadcast/0.23
+    - tray icon is now scaled to correct size (must call SystemTray.getTrayIconSize() to get OS specific size)
+    - new tray icons that matches Windows 7 theme
+
+Aug 8/2014 : JF 7.29.0 released!
+  - ffmpeg
+    - fixed audio resampling (no more audio ticks if input/output sample rates differ)
+  - jfVideo/0.17
+    - cleaned up some element properties
+    - added mute to audio props
+    - added some higher quality bit rates and sample rates
+  - jfMedia/0.9
+    - ffmpeg fixes
+
+Aug 1/2014 : JF 7.28.0 released!
+  - ffmpeg codecpack
+    - fixed method to determine FPS which now works on WMV type files.
+  - jfVideo/0.16
+    - fixed bugs
+  - jfMedia/0.8
+    - fixed bugs, and released on sourceforge.net
+
+July 29/2014 : JF 7.27.0 released!
+  - jfPassword/0.11
+    - added DnD support
+    - remembers window position (user requested feature)
+  - jfVideo/0.15
+    - added context menus
+
+July 26/2014 : JF 7.26.0 released!
+  - jfBroadcast/0.22
+    - new : goto user input will now timeout and added max timeouts after which the call is dropped (user requested feature)
+  - jfVideo/0.14
+    - new : added text overlay
+
+July 12/2014 : JF 7.25.0 released!
+  - jfBroadcast/0.21
+    - new : added calling times (user requested feature)
+
+July 10/2014 : JF 7.24.0 released!
+  - jfAudio/0.13
+    - fixed paste function
+    - added generate tone and silence
+
+July 8/2014 : JF 7.23.0 released!
+  - new codec : g722
+  - jPhoneLite/1.9.0
+    - supports new g722
+    - everything is now interpolated to 44.1khz internally
+  - jfBroadcast/0.20
+    - Goto message by user input is now logged in survey data (user requested feature)
+  - jPBXLite/0.20
+    - added support for g722
+
+July 5/2014 : JF 7.22.0 released!
+  - fix : javaforce.jna.WinSound : Input class only supported mono
+  - fix : voip : RTCP packets were not being dispatched (still ignored though)
+  - jfAudio/0.12
+    - added support for recording in stereo and many new options that are now saved
+  - jPhoneLite/1.8.1
+    - fixed video codec selection (works better with Asterisk now)
+  - jfEdit/0.7
+    - assigned hot keys to edit settings dialog
+
+July 4/2014 : JF 7.21.0 released!
+  - jPBXLite/0.19
+    - added Queues (ACD) [experimental]
+    - added tray icon
+  - jfBroadcast/0.19
+    - added tray icon
+
+July 2/2014 : fixes
+  - jfAudio/0.11
+    - do not allow negative selections
+
+Jun 26/2014 : JF 7.20.0 released!
+  - jfBroadcast/0.18
+    - added MSI package and new icon
+    - database now stored in new location
+  - jPBXLite/0.18
+    - added MSI package and new icon
+    - database now stored in new location
+
+Jun 23/2014 : JF 7.19.0 released!
+  - jfPasswords/0.10
+    - fix : now shows Window regardless of if it's minimized, not in front or closed.
+
+Jun 12/2014 : JF 7.18.0 released!
+  - fix : javaforce.media.Sound will not use Linux API on Mac OSX
+  - fix : Mac Camera will accept -1 for desired width/height
+  - fix : Mac Camera - reverse RGB values (can't use proper order for some reason : Mac causes seg fault)
+
+Jun 11/2014 : JF 7.17.0 released!
+  - javaforce.media.Camera works on Mac OSX now (uses QTKit for now, will try to add AVFoundation later)
+    - unable to find a complete ffmpeg dylib's for Mac though, so most apps that use Camera need this too
+
+Jun 7/2014 : JF 7.16.0 released!
+  - OpenGL support on Mac OSX has been completed using pure JNA (not an easy task)
+  - JavaForce is becoming more of a game development platform.
+  - Check out /projects/jtest3d
+  - GLJPanel has not been tested on Mac OSX (requires OpenGL3.0 which my test system doesn't have)
+  - GLCanvas is your best bet, it works on ALL platforms.
+
+May 30/2014 : JF 7.15.0 released!
+  - javaforce.jna.objc.*
+    - new classes to work with ObjectiveC framework
+  - started to support OpenGL in MacOSX (not working yet - keep getting an 'invalid drawable' error)
+    - see /projects/jtest3d
+  - fix : jtest3d
+    - fixed some changes needed for changes made to GLMatrix
+
+May 23/2014 : JF 7.14.0 released!
+  - embedded Web Server (javaforce.service.Web)
+    - added gzip compression support
+  - jfEdit/0.6
+    - fix : needed to place quotes around argument to open files with spaces (added &quot; to wix.xml)
+
+May 22/2014 : JF 7.13.0 released!
+  - jfEdit/0.5
+    - now includes MSI package that will register with text/plain files (*.txt *.ini *.properties).
+  - jfPasswords/0.9
+    - now checks if safe file has changed when main window is shown and asks to reload if so
+  - the Windows launcher now supports passing command line options to the java main() method and can also run from a different folder.
+
+May 12/2014 : JF 7.12.0 released!
+  - jfMusic/0.3
+    - added export to audio file function
+  - OpenGL - added more constant values
+
+Apr 25/2014 : JF 7.11.0 released!
+  - jfAudio/0.10
+    - added resample feature
+  - updated many wix config files to include the app icon (msi packages)
+  - fixed many javadoc functions
+
+Apr 22/2014 : JF 7.10.0 released!
+  - fix : javaforce.voip.Wav was not loading the entire wav file
+  - jPhoneLite/1.8.0
+    - can now assign different ringtones for in/out bound calls (user requested feature)
+  - jfVideo/0.13
+    - fixed 3D camera edit button
+  - jfMusic/0.2
+    - fixed play button on samples tab
+  - jfPaint/0.14
+    - moved some tools from mouseClicked() to mousePressed() for better response
+
+Apr 15/2014 : JF 7.9.0 released!
+  - new : bringing jfFTP back to JavaForce.
+    - this little project was converted to jFile for jfLinux but the original was more platform independent
+  - new : OpenGL : added some missing functions (glUniform i1,i2,i3, f1,f2,f3)
+  - new : added some helper functions : JF.join(String delimit, String strings[]), JF.centerWindow(Window)
+
+Mar 27/2014 : JF 7.8.0 released!
+  - jfTerm/0.16
+    - fix : timer was never cancelled which caused memory leak
+  - misc improvements
+    - added : GL.getIntegerv() , GL.MAX_TEXTURE_SIZE
+
+Mar 20/2014 : JF 7.7.0 released!
+  - jfMusic/0.1 released!
+    - finally got everything done that I wanted.
+    - regions work now
+    - output is linear interpolated for smooth sounding samples
+    - many more features I want to add but basic music tracking works
+    - includes a nice stand alone midi keyboard for just playing music
+
+Mar 19/2014 : JF 7.6.0 released!
+  - jfMusic
+    - more stuff actually works now
+    - still need to work on regions, which means changing the mproj format
+  - jfPaint/0.13
+    - fix : fill with alpha mode could potentially freeze app
+
+Mar 18/2014 : JF 7.5.0 released!
+  - new JF.getMaximumBounds()
+    - same as java.awt.GraphicsEnvironment.getMaximumWindowBounds() except the JVM version fails to update after a screen size change.
+      It returns the same size before the screen size change.  Somewhere a stale configuration object is being used.
+      I've filed a bug report at bugs.java.com (pending approval)
+  - jDesktop/0.22
+    - adjust system tray position when screen size changes
+  - there still remains another bug : after changing screen size resolution JPopupMenu.show() places menus based on old screen size (dah!!!)
+    - I don't think I can compensate for this one
+  - jfMusic progress
+    - more work on the music creator (not 100% complete)
+    - DLS files (sound banks) can be loaded for better samples
+
+Mar 12/2014 : JF 7.4.0 released!
+  - fixed Java 8 compile errors
+    - Java now includes it's own Base64 implementation in java.util which is same name as mine so fixed a few ambiguous references
+    - keytool class is no longer accessible so execute binary directly instead
+    - upgraded all minimum Java versions to 1.6 in all ant build.xml files (Java 5 is no longer supported)
+  - plymouth-theme now works in Fedora LiveCD (must be installed in different folder than ubuntu) but fails after installation
+  - jPhoneLite/1.7.1
+    - fix for Java8
+    - added SRTP checkAuth() and checkForReplay()
+  - jPBXlite/0.17
+    - fix for Java8
+
+Feb 26/2014 : JF 7.3.0 released!
+  - jfTerm/0.15
+    - fixed a NPE
+
+Feb 25/2014 : JF 7.2.0 released!
+  - jconfig/0.9
+    - DesktopPanel now uses xrandr to set size instead of trying (failing) to create a new Xorg.conf file.  No longer need to reboot either.
+  - jdesktop/0.21
+    - runs xrandr --auto when a new monitor becomes available
+    - finished implementing a very simple battery dialog
+  - jlogon/0.13
+    - changes to support xrandr
+
+Feb 20/2014 : JF 7.1.0 released!
+  - many features in R6 that I assumed still worked didn't anymore and had to be fixed (mostly due to changes in Linux)
+    - need some testers
+  - jLogon/0.12
+    - fix : wireless networking is working again
+      - consolidated BT/VPN/wireless code into the jnetworkmgr
+    - fix : migrated bluez support 4 -> 5
+    - fix : auto mounter is working again
+  - jDesktop/0.20
+    - fix : dock appears when first login again
+    - fix : fuse smb actual works now (kinda slow though)
+  - jFile/0.9
+    - fix : umount works
+    - fix : mapping drives works again
+  - new : jfMusic now includes a midi keyboard (note:this app is still under development and is not ready)
+  - released R7u1 ISO (see jflinux.org)
+
+Feb 14/2014 : JF 7.0.1 released!
+  - running jfLinux on real hardware revealed some bugs
+  - jDesktop/0.19
+    - fix : the Dock had a rare deadlock (never use java.awt.event.EventQueue.invokeAndWait() in a synchronized block of code or ctor)
+  - jfTerm/0.14
+    - fix : LnxPty is now more stable
+    - fix : all threads close properly now when a tab is closed (avoiding OutOfMemory exception)
+
+Feb 12/2014 : JF 7.0.0 released!
+  - The next major release is here!
+    JavaForce is the heart of the Java Infused Linux operating system.
+    Please goto jflinux.org to download the latest ISO.
+
+Feb 10/2014 : JF 6.59.0 released!
+  - new : jfuse-cdfs is added to the list of fuse utils (mount audio cd and rip as wav files)
+  - fix : many fixes related to jfLinux (jfile, jdesktop, jmedia)
+    - next iso release is imminent.
+
+Feb 8/2014 : JF 6.58.0 released!
+  - jfTerm/0.13 released
+    - fix : UTF8 char sequences decoded properly now
+  - fix : Fuse is working again - needed to ensure readdir() does not return names with '/' path seperators
+  - new : added a .zip Fuse handler (read only) - need to add support in jfile
+  - new : Linux.x11_get_window_list() uses _NET_CLIENT_LIST instead of XQueryTree (much easier and accurate)
+          and even updates if a window title changes
+          Thanks to libnwck source (https://git.gnome.org/browse/libwnck/tree/libwnck)
+  - new : jDesktop.Dock now tracks window groups (even more like Windows 7, err, I mean DockBarX)
+
+Feb 7/2014 : JF 6.57.0 released!
+  - fix : jfTerm/0.12 released!
+    - local term app is now called with full environment (LnxPty.makeEnvironment())
+  - new : jDesktop : now shows active windows in the taskbar (Windows 7 style)
+
+Feb 5/2014 : JF 6.56.0 released!
+  - new : jfBroadcast/0.17 released
+    - added -start command line option
+  - fix : jlogon : instead of using a pty to make sudo work, I disabled requiretty in /etc/sudoers
+  - other various fixes
+
+Feb 2/2014 : JF 6.55.0 released!
+  - new : jfTerm/0.11 released
+    - fixed some ANSI codes
+  - fix : a few apps were still using openpty - switched them to use LnxPty instead
+  - fix : jLogon : bluetooth was using hidd which is deprecated (and unavailable on fedora now) - switched to hcitool
+  - fix : update jfAudio source (change in FFMPEG required changes in logic - no release needed)
+
+Feb 1/2014 : JF 6.54.0 released!
+  - new : VoIP stack now supports DTLS server and client sides
+  - jPhoneLite/1.7.0
+    - enabled DTLS support (tested with jPBXlite/0.16 only)
+  - jPBXlite/0.16
+    - improved DTLS support
+
+Jan 31/2014 : JF 6.53.0 released!
+  - new : VoIP SIP code now supports new transports : TCP and TLS
+  - jPhoneLite/1.6.0
+    - enable new SIP transports
+
+Jan 30/2014 : JF 6.52.0 released!
+  - jPhoneLite/1.5.0 released!
+    - new : added SRTP support (tested with Asterisk 1.8 (11.7.0))
+    - key exchange is thru plaintext SIP for now, plan to add TLS support later.
+    - also plan to add DTLS (does Asterisk support that?)
+  - fix : javaforce.Base64.decode() never worked (missing some brackets to do proper order of ops)
+
+Jan 29/2014 : JF 6.51.0 released!
+  - new : bouncy castle jar added for DTLS support
+  - new : javaforce.voip.RTPSecureChannel starting to implement SRTP with DTLS (server side only)
+  - new : jPBXlite/0.15
+    - now supports calls between WebRTC and jPhoneLite (only audio works so far)
+    - this has taken me nearly 2 months to get this working
+  - note : over time I will add SRTP support to jPhoneLite as well
+  - new : FFMPEG now supports libav.org fork (ubuntu still doesn't work since they do not include libavresample)
+  - new : javaforce.media.Music - a music player (kinda like a MOD player but proprietary format)
+  - new : jfMusic/0.1
+    - music composer (see /projects/jmusic)
+
+Jan 26/2014 : update
+  - jfPaint/0.12
+    - new : added fill alpha toggle button (functionality was lost a while ago after some changes)
+  - jfTerm/0.10
+    - fix : monospace font selection now varies by OS
+      - "monospaced" font is not always the best choice due to JVM bugs, sometimes "Lucida Console" works better
+
+Jan 18/2014 : update
+  - new : jfTerm/0.9
+    - now supports com ports (windows/linux only) (8bit data, 1bit stop, no parity assumed) (see javaforce.jna.WinCom,LnxCom)
+    - now supports 8bit ASCII chars (128-255 range) (they needed to be mapped to Unicode chars which Java doesn't support so a lookup table is used)
+    - now uses javaforce.jna.LnxPty instead of openpty to use bash on linux
+    - jna.jar is now required for com and pty support
+  - new : javaforce.jna.LnxPty - to replace openpty
+    - now javaforce is 100% Java (no binary packages in the linux repos)
+  - fix : javaforce.xml - prevented some race conditions
+
+Dec 31/2013 : JF 6.50.0 released!
+  - new : STUN/TURN server created
+    - see projects/jstun
+  - fix : WinSound would cause NPE in stop() if it failed to start()
+  - jPhoneLite/1.4.3
+    - fix : NPE if Turn failed during call setup which left line unusable
+
+Dec 26/2013 : update
+  - jfRecordCamera/0.2
+    - added stop motion option (lego mania)
+
+Dec 24/2013 : JF 6.49.0 released!
+  - added WebSocket support to javaforce.service.Web
+  - added jhlibs filter library (/jars/filters.jar) - from jhlabs.com
+  - jfVideo/0.12
+    - added Gaussian Blur Filter special fx (using jhlabs filter library)
+    - will add more filters in the future
+    - added DnD support
+  - jfPaint/0.11
+    - added Gaussian Blur paint mode
+  - jPBXlite/0.14
+    - started to add support for WebRTC - currently only conference rooms which allow only two guests per room
+    - eventually I want to create a full phone that can work with other softphones thru the PBX
+
+Dec 19/2013 : update
+  - jfVideo/0.11
+    - fixed some bugs, added a menu bar
+
+Dec 17/2013 : JF 6.48.0 released!
+  - VoIP : fix : when a call is placed on hold the RTPChannel thinks the stream is inactive and generates an rtpInactive event which ends the call (this logic was recently added)
+    - if the streams mode doesn't include recv then the inactive event is not triggered
+  - VoIP : new : added Wav class for loading VoIP specific wav files (was part of many projects before, just moved here for central access)
+           new : added MusicOnHold class for playing music/beep when party member is on hold
+  - jPhoneLite/1.4.2
+    - fix : properly send back the SDP mode (sendrecv, inactive, etc.) for each stream as requested in invite
+    - new : when the audio stream is on hold (no recv) an intermittent beep is generated
+  - jPBXlite/0.13
+    - new : relay options : relayAudio/relayVideo to specify if PBX will relay audio/video streams (default = enabled)
+    - new : option : MusicOnHold can now load a wav file which is played to anyone on hold (if relayAudio is enabled)
+
+Dec 12/2013 : JF 6.47.0 released!
+  - VoIP : removed requestPublicIP in javaforce.voip.RTP - a quick add in v1.4.0 which is not needed and I didn't wait for reply which caused harmless stun exceptions
+  - jPhoneLite/1.4.1
+    - new : now support using the LocalCamera on multiple lines at the same time (as long as they all use the same codec)
+
+Dec 9/2013 : JF 6.46.0 released!
+  - VoIP : major changes
+    - SDP details are now stored in their own class : javaforce.voip.SDP
+    - RTP now really supports multiple RTPChannels
+    - many improvements
+  - jPhoneLite/1.4.0
+    - added support for multiple video channels.  Video conferencing with jPBXlite/0.12 is now possible.
+      - see jpbxlite.sf.net/VideoConference.txt for more details
+    - video with XLite 4.x (H.263-1998) now works. (although Xlite's video decoder seems to have problems and even crashed a few times).
+      - not sure if they use ffmpeg, but they should consider it
+    - many bug fixes
+  - jPBXLite/0.12
+    - support for Video Conferencing (with jPhoneLite/1.4.0 only)
+    - many improvements
+    - MusicOnHold (beeps for now)
+    - many bug fixes
+  - jfProxy/0.2 + jfDNS/0.1 + jfDHCP/0.1
+    - now released as independant projects on sourceforge.net
+
+Nov 30/2013 : JF 6.45.0 released!
+  - VoIP
+    - added VP8 video codec support (RFC Draft : http://tools.ietf.org/html/draft-ietf-payload-vp8-10)
+  - jPhoneLite/1.3.0
+    - added VP8 video
+  - jPBXlite/0.11
+    - added support for new video codecs (VP8, H.263+)
+  - jfPasswords/0.8
+    - now re-asks for password to show window (more secure)
+
+Nov 28/2013 : JF 6.44.0 released!
+  - VoIP
+    - add support for rport/received to server code
+  - jpbxlite/0.10
+    - rport/received support, cleaned up docs and jars
+
+Nov 27/2013 : JF 6.43.0 released!
+  - VoIP
+    - add support for STUN/TURN/ICE added
+    - add support for rport/received (RFC 3581)
+  - jPhoneLite/1.2.0
+    - STUN support
+    - many new options
+
+Nov 22/2013 : JF 6.42.0 released!
+  - jPhoneLite/1.1.9 released!
+    - fixed minor bugs
+
+Nov 21/2013 : JF 6.41.0 released!
+  - added Proxy, DHCP and DNS services
+  - jconfig/0.7
+    - configure new Java services
+  - removed all Flash related code (never worked reliable anyways) and other incomplete packages from the javaforce source
+  - jfPasswords/0.7
+    - app now includes a tray icon for easy access
+  - voip : onNotify : added callid parameter (needed to process refer events)
+  - jPhoneLite/1.1.8
+    - now handles refer (transfer) better
+
+Nov 14/2013 : JF 6.40.0 released!
+  - finished all Linux JNI to JNA conversion
+    - Linux based authorization (PAM) fixed (JNA Callback must use only primative types, Pointers or Structures.  No arrays or *ByReference types)
+    - Linux system tray works again!
+    - more X11 Hints fixed (x11_set_strut)
+  - implemented Fuse file systems using JNA
+    - created jfuse-smb, jfuse-ftp, jfuse-ftps, and jfuse-sftp (ssh)
+    - some have limitations
+    - todo : create fuse for cdfs, iso, zip, nfs4, tmp
+  - Fedora based image now works!
+    - many fixes required in installer and other components
+    - media player works using ffmpeg/2.0 (thanks to atrpms.net)
+    - almost everything is working except for the new fuse tools so I will postpone releasing the iso until I get this fixed
+      - the fuse tools work fine in an official Fedora system but don't in the custom livecd image created
+    - you can run iso/fedora/jfLinux.sh to build yourself if you like (32bit only)
+  - voip : fixed qop=auth (no quotes on qop or nc)
+    - fixes support for DC-SIP/2.0
+    - I found a bug report for Asterisk where they had this same issue
+  - jPhoneLite/1.1.7
+    - fixed some exceptions
+  - jfTerm/0.8 released!
+    - fixed painting (again)
+    - increasing scrolling speed using mouse wheel
+  - jfPasswords/0.6 released!
+    - added CTRL+Z to copy username and other minor bugs
+  - jfBroadcast/0.16 released!
+    - for voip fixes
+  - added JF.assignHotKey(JDialog, JButton, int vk) which can add single key hotkeys to dialog boxes (ie: Escape to cancel, Enter to accept)
+
+Oct 26/2013 : JF 6.39.0 released!
+  - jfTerm/0.7 released!
+    - fixed jfTerm using 100% CPU on Linux
+    - used a JFImage to draw the screen and then one call to drawImage() on the Graphics object to draw on the real screen
+    - never had this problem on Windows - looks like X11 is a slow piece of junk - hopefully Mir and Wayland will be better
+  - more fixes to the jfLinux build process (ffmpeg loaded - but is still not compatible and crashes)
+
+Oct 25/2013 : JF 6.38.0 released!
+  - fixed x11 hints so jfLinux/13.10 runs like it did in 12.04
+    - jfTerm still has problem where it uses 100% CPU - not sure why
+      - problem doesn't exist in Windows
+      - problem is not related to openpty since it still happens when connecting to the ssh port
+    - FFMPEG/2.0 is still not available for Linux so creating a completely functional iso is still not possible (unless I compile it myself ???)
+  - jfTerm/0.6 released
+    - fixed NPE when creating a site when user has no folder selected to add it to
+  - jfMedia Player/0.7 released
+    - fixed audio only playback
+    - fixed many other issues
+
+Oct 24/2013 : JF 6.37.0 released!
+  - fixed jfLinux building/running (but x11 hints are still not working yet - can't see why - so the desktop doesn't work properly yet)
+  - ffmpeg
+    - made some performance improvements
+    - return proper fps for h264 streams (/ticks_per_frame)
+  - javaforce.media.AudioBuffer = SamplesBuffer class (renamed)
+  - javaforce.media.VideoBuffer = new class to buffer video images (without locks or reallocation for high performance)
+  - jfMedia Player
+    - playback is seperated into 2 threads (media reading and playback)
+    - fixed many performance issues so fullscreen video works now
+
+Oct 19/2013 : JF 6.36.0 released!
+  - fixed building jfLinux with Ubuntu 13.10 (still not tested)
+  - removed flash-phone project
+
+Oct 14/2013 : JF 6.35.0 released!
+  - jPhoneLite/1.1.6 released!
+    - undo bug #14 but add a break;
+
+Oct 13/2013 : JF 6.34.0 released!
+  - jfTerm/0.5
+    - added connecting to ssh with private key
+
+Oct 12/2013 : JF 6.33.0 released!
+  - jfPaint/0.10
+    - added menus
+    - added color layers
+    - fixed some tools
+
+Oct 11/2013 : JF 6.32.0 released!
+  - jfPaint/0.9
+    - fixed fill in tool (a change to JFImage broke it)
+  - jfTerm/0.4
+    - re-structure applet code (menu code shared between App and Applet)
+    - released applet on Chrome WebStore
+  - jfAudio/0.9
+    - implement Applet (menu code shared between App and Applet)
+    - released Applet on Chrome WebStore
+  - That should conclude all the applets I wanted in the Chrome WebStore
+
+Oct 10/2013 : JF 6.31.0 released!
+  - jfPaint/0.8
+    - now uses the system clipboard (see /src/javaforce/JFClipboard)
+  - jfVideo/0.10
+    - editing 3d position coords directly is reflected in the preview properly now
+
+Oct 9/2013 : JF 6.30.0 released!
+  - JavaForce Applets are now signed by a root cert in ./keys (see ./keys/readme.txt for more info)
+    - many Applets are now available in the Chrome WebStore
+      - jPhoneLite, jfPasswords, jfVideo, jfTorrent, jfPaint, jfRecordCamera, jfRecordDesktop
+    - TODO : jfAudio, jfTelnet (menus)
+    - the root cert allows you to run the applets without a security prompt
+    - the Applets now automatically add their cert to the system when run so the user should only have to grant access the first time run
+  - jfVideo/0.9 released
+    - added 3D effects
+  - fixed several bugs
+
+Oct 3/2013 : JF 6.29.0 released!
+  - jfVideo/0.8
+    - fixed cut tool so it cuts everything (was ignoring tracks below)
+    - fixed preview of images if length was modified
+    - added version check on startup
+
+Oct 2/2013 : JF 6.28.0 released!
+  - JFTask now includes a HashMap so you can pass variables to the work() methed with set/getProperty()
+  - CodecPack
+    - fixed audio decoding if channels > 1 (was assuming planar but it is interlaced)
+    - jfAudio/0.8
+  - jfVideo/0.7
+    - now includes preview images of media files in the project so you can see what you're creating
+    - added cut tool
+
+Oct 1/2013 : JF 6.27.0 released!
+  - jPhoneLite/1.1.5
+    - fix ACK sometimes missing Tag field (see bug #13 at jphonelite.sf.net)
+    - fix NOTIFY sometimes unable to decode msg (see bug #14 at jphonelite.sf.net)
+
+Sept 29/2013 : JF 6.26.0 released!
+  - jfRecordCamera/0.1
+    - completed this app by adding the preview options
+
+Sept 28/2013 : JF 6.25.0 released!
+  - jfRecordDesktop/0.3
+    - no longer uses linux tool recordmydesktop but now uses java.awt.Robot and javaforce.media.Sound.Input
+    - so it's now fully platform independant
+  - JFImage now uses BufferedImage backing array directly instead of set/getRGB() (10x faster)
+
+Sept 27/2013 : JF 6.24.0 released!
+  - fix : win loader needed to load msvcr100[71].dll which is included with Java
+    - this was causing msvcr100.dll not found error on systems that were missing the dll in the system32 folder
+    - re-release all msi packages : jPhoneLite/1.1.4 jfAudio/0.7 jfVideo/0.6 jpassword/0.4
+
+Sept 26/2013 : JF 6.23.0 released!
+  - jPhoneLite/1.1.3
+    - fixed new sipexpires config option not used in reregister()
+  - new app : jfRecordCamera
+    - record camera/audio to files
+    - includes timelapse option
+  - FFMPEG
+    - fixed stop()ing encoder without audio
+
+Sept 25/2013 : JF 6.22.0 released!
+  - javaforce.XML is now UTF-8 compatible
+  - jpasswords/0.3
+    - added MSI package
+  - jPhoneLite/1.1.2
+    - XML fix, sipexpires option, download CodecPack button
+
+Sept 24/2013 : JF 6.21.0 released!
+  - Linux API conversion to JNA complete
+    - it should be possible to create jfLinux again but I'll wait till next month before trying when Ubuntu 13.10 is released
+  - FFMPEG (CodecPack) now offers a download() function to download/install the CodecPack if needed (Windows only)
+    - re-release jfVideo and jfAudio for this
+  - FFMPEG.Decoder.seek(seconds) to seek thru file
+    - jfMedia Player supports seeking again
+
+Sept 23/2013 : JF 6.20.0 released!
+  - FFMPEG
+    - fixed more encoding bugs
+  - jfAudio/0.5
+    - finaly ported to Windows
+  - jfVideo/0.4
+    - fixes in FFMPEG
+
+Sept 20/2013 : JF 6.19.0 released!
+  - FFMPEG
+    - finally fixed encoding audio (each frame MUST be the frame size the codec asks for)
+    - jfvideo works now
+  - jfTerm/0.3
+    - added local echo option (requested)
+  - jfVideo/0.3
+    - first windows release
+  - now I need to convert jfAudio to the new CodecPack and everything should be working again
+
+Sept 19/2013 : JF 6.18.0 released!
+  - OpenGL - brought back my OpenGL code (again!)
+    - this time it's based on JNA (JOGL was just too big)
+    - source: javaforce.gl.*
+    - see /projects/jtest3d for a good test (requires OpenGL 2.0+)
+    - I've included GLCanvas, GLJPanel, GLWindow and GLFrame (the later two are not recommended)
+    - supports Windows and Linux
+  - WinSound
+    - fixed device names including random chars after NULL terminator
+    - possibly fixed bad recording on older systems
+  - jPhoneLite/1.1.1
+    - WinSound fixes
+  - jfBroadcast/0.15 - use derby instead of mysql
+    - that's the last dependancy on mysql (gone)
+
+Sept 16/2013 : JF 6.17.0 released!
+  - jPhoneLite/1.1.0 *final*
+    - everything works except H.263 (RFC2190) is still disabled.
+  - jPBXLite/0.9
+    - embedded database/web server (no more external dependancies)
+  - jvideo works in mono mode (stereo crashes)
+
+Sept 13/2013 : JF 6.16.0 released!
+  - jPhoneLite/1.1.0 BETA #3
+
+Sept 12/2013 : JF 6.15.0 released!
+  - finished Linux APIs for Sound and Camera
+    - LnxSound uses Alsa - latency seems about the same as Java
+    - LnxCamera uses V4L2 - only a few pixel formats are supported (MJPEG, RGB32 and YUYV)
+    - FFMPEG.Camera uses V4L2 via libavdevice but is NOT working yet.
+      - I'm finding it hard just to get a working version of FFMPEG for linux.
+  - fix : JFImage.saveJPG() now works in Linux without using native code.  OpenJDK does have an encoder but only supports BufferedImages
+          of type TYPE_3BYTE_BGR, not TYPE_INT_*.  In fact the Windows JVM creates bad JPG images when using TYPE_INT_* images.
+          So I create a BufferedImage of TYPE_3BYTE_BGR and copy the pixels over before saving the image.
+          Now it works on Windows and Linux properly using the JVM.
+          See http://stackoverflow.com/questions/3432388/imageio-not-able-to-write-a-jpeg-file
+  - jPhoneLite/1.1.0 BETA #2
+
+Sept 7/2013 : JF 6.14.0 released!
+  - jPhoneLite/1.1.0 BETA #1
+    - implemented non-blind transfer and ringback tones support
+    - implemented H.263-1998/H.263-2000/H.264 video codecs
+      - H.263 RFC2190 is not ready yet - I need help with the RTP packetization (see src/javaforce/voip/RTPH263.java)
+  - ported all jni code to jna
+    - no more ugly C code
+    - no more looking for lost header files in Windows SDK
+    - switched from GStreamer to ffmpeg which is more portable and smaller
+    - using Windows Camera (DirectShow) by directly using COM interfaces via JNA (ported videoInput.cpp to Java basically)
+  - many new features/fixes
+  - still need to implement Linux JNA code and do a lot of testing
+  - jvideo doesn't work yet
+  - jfLinux will need some tweaking to get working again
+
+Dec 29/2012 : JF 6.13.0 released!
+  - NEW : jPhoneLite/1.0 released!
+  - NEW : jfLinux now builds on Ubuntu 12.10 but GStreamer/1.0 is not working :(
+
+Dec 5/2012 : JF 6.12.0 released!
+  - NEW : jPhoneLite/0.99.1 - improved video and audio support on Windows
+          and improved VoIP performance
+  - NEW : JNI code for Linux now supports GStreamer/1.0
+          but currently the jfLinux build fails in Ubuntu 12.10 due to dependancy errors
+
+Nov 28/2012 : JF 6.11.0 released!
+  - NEW : jPhoneLite/0.90 - new video support in Windows
+  - NEW : jconfig/0.? - added certificates panel, new icons
+  - NEW : jrecorddesktop/0.? - new icon
+  - NEW : jdesktop/0.14 - now sets desktop area when auto hide is not enabled
+  - NEW : jfjni/0.14 - added panelHeight option to x11_set_strut()
+
+Sept 6/2012 : JF 6.10.0 released!
+  - NEW : jlogon/0.8
+    - jnetworkmgr - now detects and handles network link state changes ("ip monitor")
+      - so if you move your laptop from one network to another it will auto-magically redo the dhcp request
+    - now also runs "numlockx on" during boot up to make sure numlock is on
+  - NEW : jdesktop/0.13 - now sets strut for dock so no longer need openbox margin set (fixes dock sometimes not visible)
+  - NEW : jfjni/0.13 - new function to set X11 strut & workarea
+  - NEW : added back my JOGL code (OpenGL) (javaforce now depends on libjogl2-java)
+  - NEW : jtest3d/0.1 - small app to test JOGL
+  - NEW : jcapture/0.4 - added Edit button to load saved file in jpaint
+  - FIX : jpaint/0.6 - minor fixes
+  - FIX : jupgrade/0.4 - implemented package desc
+  - FIX : various bug fixes
+
+Sept 3/2012 : JF 6.9.1 released!
+  - NEW : jvideo/0.2 - new image option to make certain colours transparent (ie: green)
+  - NEW : jlogon/0.7 - can now connect to wireless networks/vpn from logon screen
+    - FIX : disconnecting from a VPN now restores /etc/resolv.conf properly
+            (another delay was needed - something writes to it that shouldn't)
+  - FIX : jdesktop/0.12 - now waits up to 5 seconds for openbox to set working area
+    - NOTE : I've had this wait upto 10 seconds, somestimes openbox just fails
+             A dialog will now popup if openbox fails.  It's best to just
+             logoff and logon again.
+  - FIX : jfile/0.8 - added method to change JFileBrowser wallpaper
+  - NEW : jconfig/0.5 - VPN config is now global (/etc/jconfig.d/vpn.xml)
+      - Copy from ~/.vpn.xml if you want to move your settings over
+  - FIX : various bug fixes
+
+Aug 26/2012 : minor fixes
+  - FIX : jconfig/0.3 - fixed some Java 7 incompatibilities
+  - FIX : jdesktop/0.11 - packaging error : missed some png files which are now stored in the icons folder
+  - FIX : jfile/0.7 - fixed some DND operations
+
+Aug 22/2012 : JF 6.9.0 released!
+  - NEW : jfile/0.6 - overhauled to use my own file browser instead of a simple JTable
+    - now supports three view modes (icons, list, details) and full DND support
+    - new option under tools to view drives and mount them (if auto mounter fails)
+  - NEW : jdesktop/0.10 - desktop now uses jfile's new browser for full DND support
+  - FIX : jterm/0.2 - settings file was continually growing
+  - FIX : jview/0.4 - new icon
+  - NEW : jmedia/0.6 - new option to view drives and mount music (if auto mounter fails)
+  - NEW : jphonelite/0.82 - added "String getStatus(int line)" function so external code can query status.
+  - FIX : various bug fixes
+
+Aug 9/2012 : JF 6.8.0 released!
+  - NEW : jdesktop/0.9 - added a system tray (aka notification area) thanks to stalonetray.sf.net source
+        - the battery icon is now placed in the system tray if available
+  - NEW : jfjni/0.12 - new code for system tray
+  - FIX : jcapture/0.3 - should depend on scrot package to capture screen
+
+Aug 6/2012 : JF 6.7.0 released!
+  - NEW : jdesktop/0.8 - added an on-screen keyboard for when jfLinux is put on a tablet someday to take over the world...
+  - NEW : jfjni/0.11 - new code for on-screen keyboard
+  - FIX : jpasswords/0.2 - fixed column name
+  - NEW : jupgrade/0.3 - force reboot if jfjni is upgraded
+
+Jul 27/2012 : JF 6.6.1 released!
+  - NEW : javaforce package now depends on Java7 directly instead of default-jre (which depends on Java6).
+        - this fixes some bugs (mostly the blank popup menus)
+  - FIX : jfjni/0.10 - fixed leaks in X11 code
+
+Jul 26/2012 : quick-fix ][
+  - FIX : jfjni/0.9 - fixed GStreamer element leaks
+
+Jul 25/2012 : quick-fix
+  - FIX : jfjni/0.8 - fixed GStreamer uninit
+
+Jul 25/2012 : JF 6.6.0 released!
+  - NEW : jvideo/0.1 - new video editing suite similar to PiTiVi (*.vproj)
+  - NEW : jfjni/0.7 - new GStreamer functions
+  - NEW : japps/0.6 - listed new app
+  - FIX : jaudio/0.4 - change project filename ext to .aproj
+
+Jul 19/2012 : another quick-fix
+  - FIX : jdesktop/0.7 - calling X11 sometimes crashes, I think I fixed by calling from java.awt.EventQueue.invokeLater()
+
+Jul 17/2012 : quick-fix
+  - FIX : jdesktop/0.6 - last minute addition in 0.5 caused a bug - used a lock to fix it
+
+Jul 16/2012 : JF 6.5.0 released!
+  - NEW : jdesktop/0.5 - now supports desktop icons and paints the wallpaper itself
+        - hsetroot is no longer needed
+  - NEW : jfjni/0.6 - new X11 related methods to let the window manager know which windows
+          are the desktop or dock
+  - NEW : many apps have a new icon - findicons.com ;)
+  - FIX : any app that includes mime types now updates the .desktop cache on install/remove
+          (I thought apt-get did this automatically - not sure how???)
+
+Jul 11/2012 : JF 6.4.1 released!
+  - FIX : jpbxlite/0.7.1 - fixed some folder locations
+  - NEW : jfjni/0.5 - new native interfaces to encode jpeg (OpenJDK is missing this)
+  - FIX : jpaint/0.4 - save jpeg now uses native interface on Linux platform if available
+
+Jul 10/2012 : JF 6.4.0 released!
+  - NEW : jpbxlite/0.7 is now a linux package - find it in japps
+  - NEW : jphonelite/0.81 - now supports video using GStreamer (JPEG codec)
+        - works with jpbxlite - not asterisk
+        - I tried to use H.264 codec but x264 crashes (omen?)
+  - NEW : jqemu/0.2 - new options to create TAP (virtual NICs bridged to real NICs) devices and use them in VMs
+  - NEW : jservice - a new tool to admin JF Service (currently there are two services : jqemu and jpbxlite)
+  - NEW : jlogon/0.5 - jservice interfaces
+  - NEW : javaforce.XML readClass() and writeClass() now supports all primative types and arrays in any combination
+  - NEW : japps/0.5 - includes new apps
+  - NEW : jfjni/0.4 - new native interfaces
+  - FIX : many
+        - IMPORTANT : javaforce now fixes a missing directory on Alpha1 image (/etc/jconfig.d was not created properly)
+
+Jul 4/2012 : JF 6.3.3 released!
+  - NEW : started to implement video in jphonelite using GStreamer backend (not working yet)
+  - FIX : many fixes
+        - jlogon/0.4 - ensure user is member of 'video' group to use video4linux
+        - jaudio/0.2 - many fixes and progress dialogs
+  - Happy Independance Day USA!
+
+Jul 1/2012 : JF 6.3.2 released!
+  - FIX : fixes
+        - jphonelite/0.71 - fixes with Native Linux sound
+        - jview/0.2 - missed a repaint() when flipping thru images
+  - Happy Canada Day!
+
+Jun 30/2012 : JF 6.3.1 released!
+  - NEW : jphonelite now supports Native Linux Sound (low latency)
+  - FIX : many fixes
+        - jrecorddesktop/0.2 - missed window recording option
+        - jdesktop/0.4 - fixed layout manager (everything disappeared when you removed an icon)
+        - jlogon/0.3 - fixed reboot/shutdown (problems with plymouth)
+
+Jun 29/2012 : JF 6.3.0 released!
+  - NEW : jaudio/0.1 - Audio file Editor similar to Audacity (uses GStreamer backend)
+        - only has a few effects for now but sure to add more in the future
+  - NEW : jrecorddesktop/0.1 - Records your Desktop to a video file
+        - GUI front end to recordmydesktop
+  - FIX : many fixes
+        - jedit/0.2 - fixed mime association with text/plain (*.txt) files
+        - jfile/0.5 - fixed rename device
+        - jmedia/0.4 - fixed GStreamer event() handler from crashing (can only access static fields)
+        - jtaskmgr/0.2 - implemented Terminate/Kill buttons (unfinished) and added delay slider
+        - jdesktop/0.3 - fixed clock display (12 o'clock was zero)
+        - jcalc/0.3 - implemented back space
+        - japps/0.4 - new apps listed
+
+Jun 10/2012 : JF 6.2.0 released!
+  - NEW : jpasswords/0.1
+        - password manager
+        - imports KeePass2 XML files
+  - FIX : many fixes
+        - jtorrent/0.3 - Maker didn't work on single files
+        - jfile/0.4 - copy/move files progress dialog incomplete
+
+Jun 7/2012 : JF 6.1.1 released!
+  - FIX : jtorrent/0.2 - some last minute small bug fixes
+
+Jun 7/2012 : JF 6.1.0 released!
+  - NEW : jconfig
+        - sound : now controls PulseAudio ports and profiles
+        - display : now detects video cards and options for drivers and positioning.
+  - NEW : jdesktop
+        - stores new sound options in config so preferences are retained
+        - new controls layout (see Desktop Settings to use old 'compact' setting)
+        - lots of visual gestures (dock slides, flashing buttons, etc.)
+        - fixed other apps from overlaying dock by calling toFront()
+  - NEW : jlogon
+        - detects hardware changes with udevadm:
+            such as video plugin (HDMI, VGA) and power cord changes
+  - NEW : jtorrent : new Torrent client/tracker/maker all-in-one app
+  - FIX : numerous bug fixes
+        - jsmbget works now (use openpty to get stdout properly)
+
+May 26/2012 : JF 6.0.1 released!
+  - FIX : JFontChooser dialog centers itself on screen
+  - FIX : jCalc & jPaint
+
+May 26/2012 : jCalc 0.2 released!
+  - FIX : Many little fixes
+
+May 22/2012 : jPaint 0.3 released!
+  - FIX : Font selection was ignored in jPaint (regression from overhaul done in 0.2)
+
+May 21/2012 : JF 6.0.0 released!
+  - NEW : JavaForce is now the core library in the new Linux Operating System : jfLinux.org
+  - NEW : JavaForce is now available as Ubuntu/Fedora packages in new repositories.
+          See readme.txt for full details.
+  - NEW : Many new apps to use JavaForce on Linux : jinstall, jconfig, japps, etc. with
+          more planned.
+  - FIX : Too much to list here.
+
+Feb 17/2012 : JF 5.3.0 released!
+  - NEW : /project/jpaint - Paint Program to edit your PNG/JPG/BMP files.
+          Originally wanted to clone mspaint but found how much Graphics2D can do so kept going.
+  - FIX : jedit now supports loading MAC files (\r only) and defaults to save in unix format.
+
+Nov 19/2011 : JF 5.2.3 released!
+  - FIX : RTMPClient : Number (aka double) decoder was not working correctly (sign extension problems)
+          and was not always calling onDisconnect() when connection was dropped
+
+Oct 23/2011 : JF 5.2.2 released!
+  - NEW : added Mini/Micro editions to jPhoneLite (v0.54)
+
+Aug 3/2011 : JF 5.2.1 released!
+  - FIX : fixed Asterisk 1.6/1.8 compatibility again ;)  (jPhoneLite/0.53)
+  - NEW : added two new options to jfBroadcast as requested (max RingTime/max Attempts)  (jfBroadcast/0.9)
+
+Aug 3/2011 : JF 5.2.0 released!
+  - FIX : SIP code now supports Asterisk 1.8 (jPhoneLite 0.52)
+  - FIX : many other fixes in jPhoneLite
+
+May 2/2011 : JF 5.1.0 released!
+  - OLD : removed all dependancies on JOGL and media related projects (JOGL is so hard to download and use) - I'll start to switch to Flash once v11 is released.
+  - OLD : removed MySQL driver (doesn't support latest MySQL server) - use JDBC instead
+  - NEW : include all dependancies in /jars (no longer need to get 3rd party libraries).
+  - NEW : broadcast uses JDBC now
+  - FIX : Wav loader used in broadcast and jpbxlite now supports Microsoft WAV format (ignore 'fact' header)
+  - NEW : created some FLV Reader/Writer classes (javaforce.flash.FLVReader , FLVWriter)
+
+Apr 18/2011 : JF 5.0.0 released!
+  - MAJOR CHANGES RELEASE
+  - OLD : removed all Windows specific code (junk)
+  - OLD : removed all JMF usage (junk)
+  - NEW : added Flash Media Server (see javaforce.flash.RTMPServer)
+    - After months of work it's finally done! When I close my eyes all I see is WireShark...
+    - Thanks to red5, rtmplite and Adobe
+  - NEW : added an RTMP to SIP Server (javaforce.flash.sip.RTMP2SIPServer)
+  - NEW : a pure Flash phone which is compatible with RTMP2SIPServer (H.264) (/projects/flash-phone)
+        - need to fix latency issues
+  - NEW : jPhoneLite applet now uses Flash for audio/video (H.264)
+        - version 0.50 released
+  - NEW : jPBXlite now supports a pure Flash phone using the RTMP to SIP converter and the new Flash Phone
+        - also fixed many issues
+        - version 0.6.0 released
+  - NOTE : hmm...what else can we make with a simple embeddable Flash Media Server now?
+
+Apr 1/2011 : JF 4.7.1 released!
+  - FIX : put SIP MD5 auth back the way it was
+
+Mar 30/2011 : JF 4.7.0 released!
+  - NEW : major changes to CallDetails to help track bugs
+  - NEW : changed names of VoIP Interface members for clarity
+  - NEW : jPBXlite/0.5.2 - added 407 handler
+
+Mar 17/2011 : JF 4.6.0 released!
+  - NEW : FTP client - added setBinary() and setAscii() functions
+  - NEW : jfFTP - version 0.2.1 released
+  - NEW : jPBXlite - version 0.5 released
+  - NEW : jPhoneLite - version 0.23 released
+
+Mar 7/2011 : JF 4.5.2 released!
+  - FIX : MySQL driver - packet number was not wrapping on 8bit boundry which was limiting selects to 256 rows.
+
+Feb 20/2011 : JF 4.5.1 released!
+  - NEW : jfftp - v0.2 - added SMB support (jcifs.samba.org)
+
+Jan 23/2011 : JF 4.5.0 released!
+  - NEW : jpbxlite - v0.4
+  - NEW : jfftp (FTP Client) - v0.1 [first public release]
+  - NEW : jfbroadcast - v0.7
+
+Nov 12/2010 : JF 4.4.1. released!
+  - NEW : jfbroadcast - v0.6
+
+Nov 9/2010 : JF 4.4.0 released!
+  - NEW : jphonelite - v0.22 - many new features
+  - NEW : jpbxlite - v0.3 - added IVR (script based)
+  - NEW : jfbroadcast - v0.4 - new auto dialer system (broadcast a message)
+  - FIX : jhex - missing default font config
+
+Jul 14/2010 : JF 4.3.0 released!
+  - NEW : jphonelite - v0.16 - many new features
+  - NEW : jpbxlite - v0.2 - added voicemail
+
+Jun 10/2010 : JF 4.2.0 released!
+  - NEW : jvnclite - a VNC server/client which is primarily used by jphonelite to support Desktop Sharing.
+  - NEW : jphonelite - now supports Desktop Sharing using jvnclite.
+
+Apr 19/2010 : JF 4.1.1 released!
+  - NEW : JFLog - simple file/screen logging
+  - NEW : javaforce.voip.* - upgraded to support callcentric.com (jphonelite/0.6 BETA)
+
+Apr 8/2010 : JF 4.1.0 released!
+  - NEW : jPhoneLite - 100% Java SIP VoIP Phone (http://jphonelite.sf.net)
+  - FIX : JFTerm - now uses KeyboardFocusManager.addKeyEventDispatcher() to disable TAB instead of using deprecated isManagingFocus()
+                 - also added ALT+# to select tab
+  - FIX : other minor fixes
+
+Sept 16/2009 : JF 4.0.1 released!
+  - NEW : JFTerm now supports SSL.
+  - FIX : JFTerm was not line wrapping with TABs and could crash.
+
+July 12/2009 : JF 4.0 released!
+  - NEW : /projects/MySQLConnectionPool
+    - a simple class that uses c3p0 connection pool library (http://c3p0.sourceforge.net).
+    - great for JSP/Servlets
+  - NEW : /src/javaforce/GlobalProperties
+    - a simple class that stores Objects in a global table.  Great for sharing data between JSP pages.
+  - NEW : jedit has been split into two projects
+    - jedit (multi-tabbed text editor)
+    - jhex (multi-tabbed hex editor)
+    - this makes things more managable and allows jedit to delete \r on load which are annoying characters
+  - NEW : Bitmap has been merged into JFImage and now uses just BufferedImage
+    - much faster than using int pixels[] and a MemoryImageSource (10x faster)
+    - one note though, print() now prints on the baseline instead of the upper corner so you should add the baseline
+      to the y coordinate.  baseline = int[1] from getFontMetrics()
+  - NEW : 3D Completed
+    - all 3D code (using OpenGL) is now completed
+    - a new 3d map editor (/projects/mapeditor3d)
+    - a new 3d game (/projects/game3d)
+    - fixed many bugs in 3DS file loading and rendering (texture coordinates, animations, object parents, etc.)
+    - NOTE : blender.org 3DS export doesn't work to good.  Use 3DSMax instead.
+
+Apr 3/2009 : JF 3.8.3 released!
+  - FIX : /projects/jfr was not handling \x## properly.
+
+Feb 23/2009 : JF 3.8.2 released!
+  - FIX : /javaforce/ParseArgs.java didn't handle zero-length arguments (ie: "")
+    - fixes some minor tools (jfr)
+
+Jan 5/2009 : JF 3.8.1 released!
+  - NEW : updated /projects/crm, net2ftp, net2sftp:
+    - used Content-Disposition to force filename of downloaded file (instead of always being named download.jsp).
+    - used JavaScript to confirm delete action
+    - used lots of JavaScript (aync loading) to cleanup the pages
+  - FIX : crm was not converting web % codes when creating a new user's path
+
+Oct 14/2008 : JF 3.8.0 released!
+  - NEW : /examples/ex21 - java launcher
+      This is just the simple C code to create a JVM and run a JAR/class.
+  - NEW : /examples/ex22 - WinNT Service Java launcher
+      This is a modified java launcher that includes code to make it a WinNT Service.
+  - NEW : /projects/proxyservice
+      This is a simple Proxy server that support GET/POST/CONNECT(443).
+      It's a WinNT Service, is somewhat slow (some debugging is required), but works.
+  - NOTE: These new examples/projects require cygwin/gcc installed.
+  - FIX : /projects/jfterm - properly setup the sites tree when it's null
+
+July 21/2008 : JF 3.7.0 released!
+  - NEW : OpenGL implementation now supports glColor4() so that
+    textures can have their RGBA values modified on the fly.
+    This can allow objects to become transparent or alter their
+    red/green/blue colors (like a filter) without having to modify
+    the textures themselves.
+    Each GLObject includes:
+      float color[4];
+    that represents RGBA, which by default is { 1.0f, 1.0f, 1.0f, 1.0f }
+    Values can range from 0.0f to 1.0f.
+    I had to enable GL_COLOR_MATERIAL which has also caused lighting
+    factors to increase by 10x for some reason.
+    Also renamed GLObjectGroup to GLModel and moved the 3DS loading
+    functions to it.  May add other formats in the future.
+  - NEW : /examples/ex20 - a native test
+  - NEW : /projects/defrag - a Win32 native defrag app in Java
+  - NEW : /projects/jedit
+    - now includes a Hex edit mode (F5)
+    - cleared undo history after loading a file, otherwise undo
+      was emptying the TextArea as it was before the text was loaded.
+  - FIX : numerous bug fixes
+
+Mar 5/2008 : JF 3.6.0 released!
+  - NEW : /projects/net2sftp - a web-based interface to sftp sites.
+    Just like net2ftp.com except for sftp.
+    Upload the WAR file to tomcat apache and you're good to go.
+  - NEW : /projects/net2ftp - a web-based interface to ftp sites.
+    Just like net2ftp.com.
+    After completing net2sftp I figure this would be a good idea too.
+  - NEW : /projects/cms (Content Management System)
+    a web-based interface to manage your files on your webserver (tomcat).
+    Now you can upload individual files instead of having to upload
+    a whole WAR file for minor updates.
+  - NOTE : net2sftp, net2ftp & cms include a Java upload feature that allows
+    files to be uploaded in packets and is even proxy friendly.
+    I've been able to upload 100+ MB files, that would otherwise
+    not be possible.
+  - NEW : GLScene.initFog() - added fog support to my OpenGL support.
+    Used in glmaze2d/3d.
+    Also fixed the texture coords in glmaze2d.
+  - NEW : implemented jedit execute function (CTRL-E)
+  - FIX : JFImage was fixed.
+    Example#18 now mixes OpenGL with a semi-transparent Bitmap on top.
+  - NOTE : I removed the bin2is util, since it's easier to just
+    use ClassLoader.getResourceAsStream().
+
+Jan 29/2008 : JF 3.5.0 released!
+  - NEW : OpenGL support (JOGL) http://jogl.dev.java.net
+    /examples/ex18 - OpenGL example (rotating transparent box)
+    /examples/ex19 - OpenGL example (load 3DS file and run its animation)
+    /projects/glmaze2d - OpenGL maze game (2D maps)
+    /projects/glmaze3d - OpenGL maze game (3D maps)
+    /projects/pngalpha - Tool to modify alpha level of PNG files.
+    /docs/jogl.txt - Info on getting JOGL installed.  It's now
+      required since many source files depend on it.
+    The javaforce package has many new classes for OpenGL
+    objects.  The Bitmap class also has some new functions
+    and some renamed.
+  - NEW : JFTextArea - a new class that extends JTextArea
+    and adds overwrite mode and undo/redo (used in jedit)
+
+Nov 19/2007 : JF 3.4.5 released!
+  - NEW : jedit now includes undo/redo (CTRL-Z/CTRL-Y)
+  - NEW : /projects/tts now uses Apache Derby instead of MySQL.
+  - FIX : jfarc now extracts folders properly.
+      I don't use this anymore since ant came along.
+  - NOTE : I've placed all 3rd party source on the web server.
+      see : http://javaforce.sourceforge.net/packages
+      It may be outdated but is available.
+
+Nov 7/2007 : JF 3.4.0 released!
+  - DEL : Removed javaforce.MemoryInputStream since
+    there already is java.io.ByteArrayInputStream
+    - Updated bin2mis (renamed to bin2is)
+    - little things I didn't know...
+  - NEW : /projects/joggplayer
+      - requires Fluendo Cortado, jCraft jOgg, jCraft jOrbis(Vorbis)
+      - To make Cortado resizable after calling init() you need to
+      remove getSize() function in com/fluendo/player/Cortado.java
+      and any code that references appletDimension.
+  - NEW : jedit now supports line wrap (see options F2)
+  - FIX : another jfterm ANSI bug fixed (improved eol handling)
+
+Nov 1/2007 : JF 3.3.2 released!
+  - FIX : /projects/tts build.xml was not placing required class
+      files in the right place.
+  - FIX : cleaned up jfterm
+    - before I was piping input data to the EDT (event
+      dispatching thread) but that's not needed now that
+      it's done in another thread.
+
+Oct 30/2007 : JF 3.3.1 released!
+  - FIX : jfterm latency issues have finally been fixed.
+    - needed to call OutputStream.flush() after calling write()
+    - also created another thread to handle rendering which has a lower
+      priority.  Helps when displaying large content.
+    - also fixed closing the tab properly when connection is lost
+
+Oct 24/2007 : JF 3.3.0 released!
+  - NEW : UnixCrypt - encrypt uni-direction passwords
+    - see /src/javaforce/UnixCrypt.java
+  - NEW : tts (Trouble Ticket System) servlet
+    - a simple web-based interface to a generic ticketing system
+    - requires MySQL
+    - distributed administration
+    - see /projects/tts
+  - FIX : my release ant job was excluding /projects/jtaskmgr/execjar.sh
+      in previous release
+
+Oct 18/2007 : JF 3.2.0 released!
+  - NEW : jfterm now supports scripting
+    - see /projects/jfterm/readme.txt
+  - NEW : JProcess and JProcessManager
+    - allows multiple-processes in one JVM.
+    - code based on echidna (old code)
+    - problem : not too useful because you
+      can't change the current path in the JVM
+  - NEW : /projects/jtaskmgr
+    - uses new JProcess* classes and a simple tray icon that
+      can launch executable JAR files (requires Java SE 6)
+      all within the same JVM (saves memory).
+    - you can also launch apps via HTTP query
+  - NEW : implemented save() in Bitmap class (using javax.imageio)
+
+Sept 29/2007 : JF 3.1.1 released!
+  - FIX : lots of jfterm fixes
+      - sets termType (including term size) for SSH properly now.
+        Finally 'vi' seems to work properly now and uses the whole window.
+      - added some more ANSI codes (save/restore cursor pos)
+      - fixed an array bounds error when scrolling regions
+      - Connect will also Save a site in the site mgr
+  - FIX : jedit was not setting title on tab when loading with CTRL-O
+  - NEW : renamed some projects
+      jwebserver -> jwebappserver
+      jsimplewebserver -> jwebserver
+
+Sept 26/2007 : JF 3.1.0 released!
+  - NEW : XML class now supports reading/writing to POJOs.
+      XML.readClass(XMLTag parent, Object pojo);
+        This will read the contents of the pojo and store
+        it as children tags to the parent tag (creating
+        children tags if needed).
+      XML.writeClass(XMLTag parent, Object pojo);
+        This will write the children of parent and store
+        them in the pojo.
+      Currently only supports : boolean, int, String and Color.
+      This is being used by jedit and jfterm.
+      Some field names have changed so you may want to delete your
+      old setting files.
+
+Sept 25/2007 : JF 3.0.2 released!
+  - DEL : Removed the Random class from JavaForce.  Just use
+    the one in java.util.  The only function I liked in there
+    was randomize() which I moved into JF class, which
+    works with the standard Random class now.
+    This resolves all name conflicts.
+  - NEW : jedit now supports auto indent feature (Press F2 to configure).
+  - FIX : jedit was not dealing with newline chars properly.
+
+Sept 23/2007 : JF 3.0.1 released!
+  - NEW : jfterm now supports X11 forwarding.
+  - NEW : jedit now includes an EditSettings dialog.
+  - NEW : finished implementing case sensitive and whole word
+      searching in jedit.
+  - FIX : lots of little adjustments on dialogs
+
+Sept 19/2007 : JF 3.0.0 released!
+  - NEW : all makefile's have been converted to build.xml (ANT) format.
+      After getting frustrated with make I decided to learn ANT and I like it.
+  - NEW : added /projects/mapeditor and /projects/game.
+      It's a simple RPG I'm working on but not much works yet.
+      It does show how Serialization can make working with data easy.
+  - NEW : lots of additions to the JavaForce package.
+      The Bitmap class now supports some alpha blend operations.
+
+Aug 26/2007 : JF 2.3.3 released!
+  - FIX : I tried to increase buffer sizes in jfterm in the
+      last release but it caused a regression where telnet
+      connections would stall.
+
+Aug 24/2007 : JF 2.3.2 released!
+  - FIX : lots of ANSI fixes in jfterm.
+      vi works now.
+      If backspace doesn't work use delete instead.
+
+Aug 22/2007 : JF 2.3.1 released!
+  - NEW : jfterm now supports per site cols/rows size.
+  - FIX : some new ANSI codes in jfterm (mostly ignored).
+
+Aug 14/2007 : JF 2.3.0 released!
+  - NEW : /projects/jfterm - a great telnet/ssh terminal client.
+      Uses JSch for SSH (http://www.jcraft.com).
+      Supports:
+        - Telnet and ANSI codes (color)
+        - multi-tabbed connections
+        - scroll back view
+        - copy/paste
+        - logging (per connection)
+        - easy to use & configure
+      I've use the cool new XML class to save options and sites
+      which is then easily viewed with JTree since the XML class
+      includes a TreeModel.
+  - FIX : numerous fixes thru out everything.
+  - NFO : I watched the movie "the Number 23" while making this
+    version.  Freaky...
+
+Aug 3/2007 : JF 2.2.2 released!
+  - NEW : /projects/jweb - a simple WebBrowser using JEditorPane.
+
+Aug 2/2007 : JF 2.2.1 released!
+  - NEW : Bitmap class now implements Icon.
+      So it can be used with JLabel.
+  - NEW : XML class now provides support for TreeModel.
+      So it can be used with JTree.  See XML.getDefaultTreeModel()
+      Also provides an Event callback which will be used in
+      future projects.
+
+July 30/2007 : JF 2.2.0 released!
+  - NEW : GUI class is now obsolete.  Use NetBeans GUI Builder instead.
+      All examples have been redone using NetBeans.
+      I'll keep the GUI class there as a reference.
+      JFTimer class now uses TimerEvent interface.
+      FindDialog and ReplaceDialog use *Event interfaces, and
+      one simple call to show*Dialog() to pop the dialog box.
+  - NEW : SystemCode has been renamed to just JF.  Use the members
+    directly.
+
+July 26/2007 : JF 2.1.4 released!
+  - NEW : GUI now supports LayoutManagers.  Some examples use it now,
+    thereby minimizing code length.
+  - NEW : /projects/jodbc uses some code generated from NetBeans to use
+    GroupLayout Manager for a complex layout.
+
+July 11/2007 : JF 2.1.3 released!
+  - FIX : MsgClient was not decoded packet lengths correctly.
+  - NEW : some new functions in GUI for creating JTree, JList, etc.
+
+July 6/2007 : JF 2.1.2 released!
+  - FIX : JFTimer - start() can be called multiple times now.
+  - FIX : tetris gameover works now
+
+July 6/2007 : JF 2.1.1 released!
+  - NEW : JFImage - allows you to place a Bitmap in a Swing panel.
+    JFFrame is now obsolete - use JFrame instead with a JFImage.
+
+July 4/2007 : JF 2.1.0 released!
+  - NEW : /projects/tetris - a tetris java applet game (entertain yourself!)
+  - NEW : /projects/bin2mis - convert a binary file to a MemoryInputStream
+          to embed binary files into classes
+
+June 29/2007 : JF 2.0.9 released!
+  - FIX : Bitmap.print(Font,int x,int y,String) works now. (example#6 uses it)
+  - FIX : jfarc converts '\\' to '/' so JARs will extract properly on *nix systems.
+
+June 24/2007 : JF 2.0.8 released!
+  - FIX : jfarc processes recursively properly now.
+  - NEW : /projects/jfodbc - simple GUI ODBC query tool (supports multiple result sets)
+
+June 17/2007 : JF 2.0.7 released!
+  - NEW : jfarc is complete
+  - NEW : ParseArgs - new class to process command line arguments
+  - NEW : SystemCode - many new helper functions
+
+June 15/2007 : jfarc
+  - NEW : added new project jfarc - it's a simple archive tool for creating JARs with
+    some nice features.
+
+June 13/2007 : JF 2.0.6 released!
+  - NEW : completed FindDialog and ReplaceDialog classes that and now used
+    in jedit to perform find/replace functionality.
+  - FIX : numerous
+
+June 2/2007 : JF 2.0.5 released!
+  - NEW : lots of changes to conform to standard java programming practices.
+  - NEW : /projects/jedit - the beginning of a multi-document text editor.
+    I still need to implement the replace() function - I'll have to write some
+    custom dialog boxes for that.
+
+May 29/2007 : JF 2.0.4 released!
+  - NEW : the javaforce package now includes JFApplet and JFApp, to start
+      building better java applets and apps.
+    They include some classes for easy GUI control, and misc functions.
+    Check out examples #11 that uses it.
+    The Window class was renamed to JFFrame and works with the GUI class.
+    Just call gui.createJFFrame(...) (see example #6)
+
+May 11/2007 : JF 2.0.3 released!
+  - NEW : Added example # 15 - a servlet example (requires apache tomcat).
+  - NEW : Added example # 16 - sound examples (includes MP3 support)
+  - NEW : Added example # 17 - JDBC example (MySQL, TDS(MS-SQL, Sybase), Oracle)
+  - NEW : projects/jwebserver - now supports SSL(443)
+
+Apr 14/2007 : JF 2.0.2 released!
+  - MySQL support and some bug fixes.
+  - Enjoy!
+
+Apr 6/2007 : MySQL
+  - NEW : added MySQL class to javaforce package
+  - NEW : added MySQL example #14
+
+Mar 5/2007 : JF 2.0.1 released!
+  - FIX : MsgClient doesn't use SwingUtilities.invokeLater() anymore and calls the callback
+    directly.  You can now use invokeLater() yourself or do non-swing processing in your
+    callback function.
+  - NEW : Example #11 - a swing applet.
+  - NOTE : I've successfully created a swing applet that connects to an C++ database server,
+    pulls up data and makes changes.  Because the applet runs thru a webbrowser, there is no
+    need to redistribute updates to the clients.
+    My C++ client required a network share connection but WinXP Home Edition has a limit
+    on the # of network connections (which is where they are running the server) - so using
+    an applet to interface databases is a great alternative.
+    My Server is written in C++ using DigiForce's MsgServer class, and the applet uses the
+    MsgClient to send/receive messages.
+
+Mar 1/2007 : JF 2.0 released!
+  - NEW : Added some new examples
+    - ex9 - a swing application
+    - ex10 - a messaging example that is compatible with Example #15 of DigiForce SDK.
+
+Feb 24/2007 : JF revived!
+  - NEW : Started to implement a web server and the old telnet server in 100% Java code.
+    This will eliminate all C++ code.  I'm also switching to traditional makefile's
+    so the DigiForce(C++) SDK will no longer be needed.
+    The makefile's use javac command line tool (from Sun's JDK) to compile.
+
+Apr 19/2006 : JF 1.0.1 released!
+  - FIX : hide cursor function was ignored
+  - FIX : version is now reported properly (was still 092).  Now reports 101 (100 was skipped ;).
+  - FIX : updatescreen function was ignored
+  - NEW : Added jWindow sample (uses new jWindow class from DigiForce SDK/3.0.4)
+
+Mar 21/2006 : JF 1.0.0 released!
+  - Minor changes to DigiForce (DF) caused minor changes needed in JF.
+  - No new features or fixes from 0.9.2
+  - Don't plan on adding anything more so I'm releasing this as
+    the final version.
+  - Switched license to LGPL which can be retroactive to older versions since nothing has changed.
+
+Dec 25/2005 : fixes - JF 0.9.2 released!
+  - gotoxy() now uses proper coords
+  - added DrawOval() / DrawOvalFilled() to extensions
+  - removed debug msgs
+  - monitors connection state and requires user to press ENTER to reconnect (but java doesn't
+    seem to detect lost of connections from server)
+
+Dec 18/2005 : fixed kbd issues - JF 0.9.1 released!
+  - jView 'k' code is now only generated when the key would not generate a normal ASCII code.
+  - DOWN/UP keys were inverted.
+
+Dec 17/2005 : Mouse / kbd support - JF 0.9.0 released!
+  - Finished mouse/kbd support.  See /docs/jview.txt for info on the codes used.
+  - todo : misc clean up, testing, more primative grafix, etc.
+
+Dec 16/2005 : Graphics support added - JF 0.5.0 released!
+  - jView now support graphics.  JPEG/GIF can be loaded and drawn,
+    including primative functions (line, box, etc.).
+    - sample now shows off new capabilities.
+  - todo : improve mouse / kbd support.
+
+Nov 26/2005 : init release - JF 0.0.1 released!
+  - jView Telnet Client (Java Applet) only support ANSI/Telnet functionality.
+  - TelnetServer(C++) created (requires DigiForce SDK)
+  - sample module just echos back input
+  - mysql module to interface with server side MySQL server.

@@ -1,0 +1,15 @@
+<project name="stubs" default="linux" basedir=".">
+  <description>stubs</description>
+  <property environment="env"/>
+
+  <target name="linux" description="create linux stubs">
+    <exec command="gcc -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux linux.c -ldl -lpthread -o ../linux64.bin"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.bin"/>
+      <fileset dir="." includes="**/*.jar"/>
+    </delete>
+  </target>
+</project>

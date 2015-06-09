@@ -1,0 +1,9 @@
+#!/bin/bash
+#sudo is used to call the session, a side effect is some SUDO_... variables that MUST be cleared.
+unset SUDO_UID
+unset SUDO_GID
+unset SUDO_USER
+unset SUDO_COMMAND
+
+$1
+

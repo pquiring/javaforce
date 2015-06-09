@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Repository Selector
+Comment=Select your repository geo-graphically.
+
+Icon=jfrepo
+
+Type=Application
+Categories=Settings
+
+Exec=jfrepo
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfrepo

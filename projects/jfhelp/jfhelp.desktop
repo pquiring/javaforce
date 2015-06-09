@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Help System
+Comment=Help System
+
+Icon=jfhelp
+
+Type=Application
+Categories=Utility
+
+Exec=jfhelp
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jHelp

@@ -1,0 +1,395 @@
+Argentina|Cooperativa Telef?nica de Villa Gobernador G?lvez Ltda.|1 Gbps|mirrors.coopvgg.com.ar|http://mirrors.coopvgg.com.ar/ubuntu/|ftp://mirrors.coopvgg.com.ar/ubuntu/|rsync://mirrors.coopvgg.com.ar/ubuntu/|-60.6333|-33.0333
+Argentina|Xfree.com.ar|1 Gbps|ubuntuarchive.xfree.com.ar|http://ubuntuarchive.xfree.com.ar/ubuntu/|null|null|-64.0|-34.0
+Argentina|FCAG-UNLP|100 Mbps|mirror.fcaglp.unlp.edu.ar|http://mirror.fcaglp.unlp.edu.ar/ubuntu/|ftp://mirror.fcaglp.unlp.edu.ar/ubuntu/|rsync://mirror.fcaglp.unlp.edu.ar/ubuntu/|-57.9489|-34.9314
+Argentina|CCC - UBA|45 Mbps|ftp.ccc.uba.ar|http://ftp.ccc.uba.ar/pub/linux/ubuntu/|ftp://ftp.ccc.uba.ar/pub/linux/ubuntu/|null|-58.6725|-34.5875
+Argentina|Universidad Nacional de C?rdoba|10 Mbps|ubuntu.unc.edu.ar|http://ubuntu.unc.edu.ar/ubuntu/|null|null|-64.1833|-31.4
+Australia|AARNet Pty Ltd|10 Gbps|mirror.aarnet.edu.au|http://mirror.aarnet.edu.au/pub/ubuntu/archive/|ftp://mirror.aarnet.edu.au/pub/ubuntu/archive/|rsync://mirror.aarnet.edu.au/ubuntu/archive/|138.6|-34.9333
+Australia|iiNet|1 Gbps|ftp.iinet.net.au|http://ftp.iinet.net.au/pub/ubuntu/|ftp://ftp.iinet.net.au/pub/ubuntu|rsync://ftp.iinet.net.au/ubuntu/|133.0|-27.0
+Australia|Internode|1 Gbps|mirror.internode.on.net|http://mirror.internode.on.net/pub/ubuntu/ubuntu/|ftp://mirror.internode.on.net/pub/ubuntu/ubuntu/|rsync://mirror.internode.on.net/ubuntu/|144.9667|-37.8167
+Australia|Netspace Online Systems|1 Gbps|mirror.netspace.net.au|http://mirror.netspace.net.au/pub/ubuntu/|ftp://mirror.netspace.net.au/pub/ubuntu/|null|133.0|-27.0
+Australia|Hostcentral|100 Mbps|mirror.as24220.net|http://mirror.as24220.net/pub/ubuntu/archive/|ftp://mirror.as24220.net/pub/ubuntu/archive/|rsync://mirror.as24220.net/ubuntu/archive/|144.9667|-37.8167
+Australia|Linux Australia|100 Mbps|mirror.linux.org.au|http://mirror.linux.org.au/ubuntu/|ftp://mirror.linux.org.au/ubuntu/|rsync://mirror.linux.org.au/ubuntu/|149.2167|-35.2833
+Australia|Optus.net|10 Mbps|mirror.optus.net|http://mirror.optus.net/ubuntu/|null|null|115.8333|-31.9333
+Australia|WAIA|10 Mbps|mirror.waia.asn.au|http://mirror.waia.asn.au/ubuntu/|ftp://mirror.waia.asn.au/ubuntu/|null|115.8333|-31.9333
+Austria|UPC Telekabel Wien GmbH|1 Gbps|ubuntu.inode.at|http://ubuntu.inode.at/ubuntu/|ftp://ubuntu.inode.at/ubuntu/|rsync://ubuntu.inode.at/ubuntu/ubuntu/|15.45|47.0667
+Austria|lagis Internet Serviceprovider GmbH|100 Mbps|ubuntu.lagis.at|http://ubuntu.lagis.at/ubuntu/|ftp://ubuntu.lagis.at/ubuntu/|rsync://ubuntu.lagis.at/ubuntu/|14.3|48.3
+Austria|University of Klagenfurt|100 Mbps|ubuntu.uni-klu.ac.at|http://ubuntu.uni-klu.ac.at/ubuntu/|ftp://ubuntu.uni-klu.ac.at/linux/ubuntu/|null|14.3053|46.6247
+Austria|Vienna University of Technology|10 Mbps|gd.tuwien.ac.at|http://gd.tuwien.ac.at/opsys/linux/ubuntu/archive/|null|null|16.3667|48.2
+Bangladesh|IS Pros Limited|100 Mbps|mirrors.ispros.com.bd|http://mirrors.ispros.com.bd/ubuntu/|ftp://mirrors.ispros.com.bd/ubuntu/|rsync://mirrors.ispros.com.bd/ubuntu/|90.4086|23.7231
+Belarus|RUE Beltelecom, MGTS|2 Gbps|ftp.byfly.by|http://ftp.byfly.by/ubuntu/|ftp://ftp.byfly.by/ubuntu/|rsync://ftp.byfly.by/ubuntu/|28.0|53.0
+Belarus|Rue Beltelecom, Datacenter|2 Gbps|mirror.datacenter.by|http://mirror.datacenter.by/ubuntu/|ftp://mirror.datacenter.by/ubuntu/|null|27.5667|53.9
+Belgium|BELNET|1 Gbps|ftp.belnet.be|http://ftp.belnet.be/mirror/ubuntu.com/ubuntu/|ftp://ftp.belnet.be/mirror/ubuntu.com/ubuntu/|null|4.0|50.8333
+Belgium|Unix-Solutions BVBA|1 Gbps|mirror.unix-solutions.be|http://mirror.unix-solutions.be/ubuntu/|null|null|4.0|50.8333
+Belgium|Infogroep|100 Mbps|gaosu.rave.org|http://gaosu.rave.org/ubuntu/|null|null|4.3333|50.8333
+Belgium|BELGACOM SA|100 Mbps|ubuntu.mirrors.skynet.be|http://ubuntu.mirrors.skynet.be/ubuntu/|ftp://ubuntu.mirrors.skynet.be/ubuntu/|null|4.0|50.8333
+Belgium|Skynet Belgacom|10 Mbps|ubuntu.mirrors.skynet.be|http://ubuntu.mirrors.skynet.be/pub/ubuntu.com/ubuntu/|null|null|4.0|50.8333
+Bosnia and Herzegovina|BiHnet ISP, BH Telecom|1 Gbps|archive.ubuntu.com.ba|http://archive.ubuntu.com.ba/ubuntu/|ftp://archive.ubuntu.com.ba/ubuntu/ubuntu/|rsync://archive.ubuntu.com.ba/ubuntu/|18.3833|43.85
+Brazil|Globo.com|10 Gbps|mirror.globo.com|http://mirror.globo.com/ubuntu/archive/|null|null|-55.0|-10.0
+Brazil|C3SL/UFPR|10 Gbps|ubuntu.c3sl.ufpr.br|http://ubuntu.c3sl.ufpr.br/ubuntu/|ftp://ubuntu.c3sl.ufpr.br/ubuntu/|rsync://ubuntu.c3sl.ufpr.br/ubuntu/|-55.0|-10.0
+Brazil|PoP-SC/RNP|2 Gbps|ubuntu.mirror.pop-sc.rnp.br|http://ubuntu.mirror.pop-sc.rnp.br/ubuntu/|null|null|-55.0|-10.0
+Brazil|Universidade Federal da Bahia|2 Gbps|ubuntu.ufba.br|http://ubuntu.ufba.br/ubuntu/|ftp://ubuntu.ufba.br/ubuntu/|null|-55.0|-10.0
+Brazil|Edugraf - INE - CTC - UFSC|1 Gbps|espelhos.edugraf.ufsc.br|http://espelhos.edugraf.ufsc.br/ubuntu/|null|null|-48.5667|-27.5833
+Brazil|UNESP|1 Gbps|mirror.unesp.br|http://mirror.unesp.br/ubuntu/|null|null|-46.6167|-23.5333
+Brazil|University of Sao Paulo|1 Gbps|sft.if.usp.br|http://sft.if.usp.br/ubuntu/|ftp://sft.if.usp.br/ubuntu/|rsync://sft.if.usp.br:/ubuntu/|-46.6167|-23.5333
+Brazil|Locaweb|1 Gbps|ubuntu-archive.locaweb.com.br|http://ubuntu-archive.locaweb.com.br/ubuntu/|null|null|-55.0|-10.0
+Brazil|LaPS/UFPA|1 Gbps|ubuntu.laps.ufpa.br|http://ubuntu.laps.ufpa.br/ubuntu/|null|null|-55.0|-10.0
+Bulgaria|IPACCT|2 Gbps|ubuntu.ipacct.com|http://ubuntu.ipacct.com/ubuntu/|ftp://ubuntu.ipacct.com/ubuntu/|rsync://ubuntu.ipacct.com/ubuntu/|25.0|43.0
+Bulgaria|Linux-BG.org|2 Gbps|ubuntu.linux-bg.org|http://ubuntu.linux-bg.org/ubuntu/|ftp://ubuntu.linux-bg.org/ubuntu/|rsync://ubuntu.linux-bg.org/ubuntu/|23.3167|42.6833
+Bulgaria|Telepoint|1 Gbps|mirror.telepoint.bg|http://mirror.telepoint.bg/ubuntu/|ftp://mirror.telepoint.bg/ubuntu/|null|25.0|43.0
+Bulgaria|alex-vichev|100 Mbps|ubuntu.alex-vichev.info|http://ubuntu.alex-vichev.info/|ftp://ubuntu.alex-vichev.info/ubuntu/|null|-122.1873|47.6727
+Canada|Nexicom Inc.|20 Gbps|ubuntu-archives.mirror.nexicom.net|http://ubuntu-archives.mirror.nexicom.net/|null|null|-78.45|44.15
+Canada|Universit? du Qu?bec ? Montr?al - clibre|1 Gbps|mirror.clibre.uqam.ca|http://mirror.clibre.uqam.ca/ubuntu/|null|rsync://mirror.clibre.uqam.ca/ubuntu/|-73.5833|45.5
+Canada|University of Waterloo Computer Science Club|1 Gbps|mirror.csclub.uwaterloo.ca|http://mirror.csclub.uwaterloo.ca/ubuntu/|ftp://mirror.csclub.uwaterloo.ca/ubuntu/|rsync://mirror.csclub.uwaterloo.ca/ubuntu/|-80.5333|43.4667
+Canada|Simon Fraser University - Research Computing Group|1 Gbps|mirror.its.sfu.ca|http://mirror.its.sfu.ca/mirror/ubuntu/|null|null|-122.95|49.25
+Canada|Peer 1 Hosting|1 Gbps|mirror.peer1.net|http://mirror.peer1.net/ubuntu/|null|null|-123.1333|49.25
+Canada|Shaw Cable|1 Gbps|ubuntu.arcticnetwork.ca|http://ubuntu.arcticnetwork.ca/|ftp://ubuntu.arcticnetwork.ca/pub/ubuntu/ubuntu/|rsync://ubuntu.arcticnetwork.ca/ubuntu-packages/|-95.0|60.0
+Canada|iWeb Technologies Inc.|1 Gbps|ubuntu.mirror.iweb.ca|http://ubuntu.mirror.iweb.ca/|ftp://ubuntu.mirror.iweb.ca/|rsync://ubuntu.mirror.iweb.ca/ubuntu/|-73.5833|45.5
+Canada|Savoir-faire Linux|100 Mbps|gpl.savoirfairelinux.net|http://gpl.savoirfairelinux.net/pub/mirrors/ubuntu/|ftp://gpl.savoirfairelinux.net/pub/mirrors/ubuntu/|null|-73.5833|45.5
+Canada|Dalhousie University|100 Mbps|mirror.its.dal.ca|http://mirror.its.dal.ca/ubuntu/|ftp://mirror.its.dal.ca/ubuntu/|rsync://mirror.its.dal.ca/ubuntu/|-63.6|44.65
+Canada|Netelligent|100 Mbps|ubuntu.mirror.netelligent.ca|http://ubuntu.mirror.netelligent.ca/ubuntu/|ftp://ubuntu.mirror.netelligent.ca/ubuntu/|rsync://ubuntu.mirror.netelligent.ca/ubuntu/|-73.7333|45.6
+Canada|Department of Computer Science, University of Calgary|10 Mbps|mirror.cpsc.ucalgary.ca|http://mirror.cpsc.ucalgary.ca/mirror/ubuntu.com/packages/|ftp://mirror.cpsc.ucalgary.ca/mirror/ubuntu.com/packages/|rsync://mirror.cpsc.ucalgary.ca/mirror/ubuntu.com/packages/|-114.0833|51.0833
+Canada|Memorial University of Newfoundland|10 Mbps|ftp.cs.mun.ca|null|ftp://ftp.cs.mun.ca/pub/mirror/ubuntu/|null|-52.6667|47.55
+Canada|Ubuntu-mirror-rafal-ca|10 Mbps|ubuntu.mirror.rafal.ca|http://ubuntu.mirror.rafal.ca/ubuntu/|null|null|-79.8333|43.25
+Chile|Netlinux|1 Gbps|mirror.netlinux.cl|http://mirror.netlinux.cl/ubuntu/|ftp://mirror.netlinux.cl/ubuntu/|rsync://mirror.netlinux.cl/ubuntu/|-70.6667|-33.45
+Chile|TECNOERA|1 Gbps|mirrors.tecnoera.com|http://mirrors.tecnoera.com/ubuntu/|null|null|-71.5197|-33.0081
+Chile|Universidad de la Serena|45 Mbps|ubuntu.cic.userena.cl|http://ubuntu.cic.userena.cl/ubuntu/|ftp://ubuntu.cic.userena.cl/ubuntu/|null|-70.6667|-33.45
+China|Qingdao University|4 Gbps|mirror.qdu.edu.cn|http://mirror.qdu.edu.cn/ubuntu/|null|null|120.3719|36.0986
+China|Lanzhou University OSS Team|2 Gbps|mirror.lzu.edu.cn|http://mirror.lzu.edu.cn/ubuntu/|ftp://mirror.lzu.edu.cn/ubuntu/|null|103.7922|36.0564
+China|Northeastern University|1 Gbps|mirror.neu.edu.cn|http://mirror.neu.edu.cn/ubuntu/|null|null|123.4328|41.7922
+China|NetEase|1 Gbps|mirrors.163.com|http://mirrors.163.com/ubuntu/|null|null|113.25|23.1167
+China|Sohu|1 Gbps|mirrors.sohu.com|http://mirrors.sohu.com/ubuntu/|ftp://mirrors.sohu.com/ubuntu/|rsync://mirrors.sohu.com/ubuntu/|116.9972|36.6683
+China|USTC Linux User Group|1 Gbps|mirrors.ustc.edu.cn|http://mirrors.ustc.edu.cn/ubuntu/|ftp://mirrors.ustc.edu.cn/ubuntu/|rsync://mirrors.ustc.edu.cn/ubuntu/|117.2808|31.8639
+China|cn99|100 Mbps|ubuntu.cn99.com|http://ubuntu.cn99.com/ubuntu/|null|null|113.25|23.1167
+China|Shanghai Jiao Tong University|100 Mbps|ftp.sjtu.edu.cn|http://ftp.sjtu.edu.cn/ubuntu/|ftp://ftp.sjtu.edu.cn/ubuntu/|null|116.3883|39.9289
+China|LUPA|100 Mbps|mirror.lupaworld.com|http://mirror.lupaworld.com/ubuntu/|ftp://mirror.lupaworld.com/ubuntu/|rsync://mirror.lupaworld.com/ubuntu/|116.3883|39.9289
+China|Cohesion Network Security Studio|100 Mbps|ubuntu.cnssuestc.org|http://ubuntu.cnssuestc.org/ubuntu/|null|null|104.0667|30.6667
+China|Ubuntu@UESTC|100 Mbps|ubuntu.dormforce.net|http://ubuntu.dormforce.net/ubuntu/|null|rsync://ubuntu.dormforce.net/ubuntu/|104.0667|30.6667
+China|SRT|100 Mbps|ubuntu.srt.cn|http://ubuntu.srt.cn/ubuntu/|ftp://ubuntu.srt.cn/ubuntu/|rsync://ubuntu.srt.cn/ubuntu/|120.1689|30.2553
+China|University of Electronic Science and Technology|100 Mbps|ubuntu.uestc.edu.cn|http://ubuntu.uestc.edu.cn/ubuntu/|null|null|104.0667|30.6667
+Colombia|EDATEL ISP|1 Gbps|mirror.edatel.net.co|http://mirror.edatel.net.co/ubuntu/|ftp://mirror.edatel.net.co/ubuntu/|null|-75.5361|6.2914
+Colombia|Universidad Nacional De Colombia|100 Mbps|ubuntu.unal.edu.co|http://ubuntu.unal.edu.co/ubuntu/|ftp://ubuntu.unal.edu.co/ubuntu/|rsync://ubuntu.unal.edu.co/ubuntu/|-74.0833|4.6
+Costa Rica|Universidad de Costa Rica|100 Mbps|mirrors.ucr.ac.cr|http://mirrors.ucr.ac.cr/ubuntu/|ftp://mirrors.ucr.ac.cr/ubuntu/|rsync://mirrors.ucr.ac.cr/ubuntu/|-84.0833|9.9333
+Croatia|Faculty of civil engineering, Zagreb|1 Gbps|hr.archive.ubuntu.com|http://hr.archive.ubuntu.com/ubuntu/|ftp://hr.archive.ubuntu.com/ubuntu/|rsync://hr.archive.ubuntu.com/ubuntu/|16.0|45.8
+Czech Republic|CZ.NIC, z.s.p.o.|2 Gbps|cz.archive.ubuntu.com|http://cz.archive.ubuntu.com/ubuntu/|ftp://cz.archive.ubuntu.com/ubuntu/|rsync://cz.archive.ubuntu.com/ubuntu/|15.5|49.75
+Czech Republic|Silicon Hill|2 Gbps|ftp.sh.cvut.cz|http://ftp.sh.cvut.cz/MIRRORS/ubuntu/|ftp://ftp.sh.cvut.cz/MIRRORS/ubuntu/|rsync://ftp.sh.cvut.cz/ubuntu/|14.4667|50.0833
+Czech Republic|UPC ?esk? republika, a.s.|2 Gbps|archive.ubuntu.mirror.dkm.cz|http://archive.ubuntu.mirror.dkm.cz/|ftp://archive.ubuntu.mirror.dkm.cz/|rsync://ubuntu.mirror.dkm.cz/ubuntu/|16.5667|49.2833
+Czech Republic|Czech Technical University Prague|1 Gbps|ftp.cvut.cz|http://ftp.cvut.cz/ubuntu/|ftp://ftp.cvut.cz/ubuntu/|null|14.4667|50.0833
+Czech Republic|Czech Technical University Prague|1 Gbps|ubuntu.sh.cvut.cz|http://ubuntu.sh.cvut.cz/|null|null|14.4667|50.0833
+Czech Republic|Ignum, s.r.o.|1 Gbps|ucho.ignum.cz|http://ucho.ignum.cz/ubuntu/|ftp://ucho.ignum.cz/ubuntu/|rsync://ucho.ignum.cz/ubuntu/|14.4667|50.0833
+Denmark|KLID|1 Gbps|ftp.klid.dk|http://ftp.klid.dk/ftp/ubuntu/|ftp://ftp.klid.dk/ubuntu/|null|12.5167|55.7667
+Denmark|dotsrc.org|1 Gbps|mirrors.dotsrc.org|http://mirrors.dotsrc.org/ubuntu/|ftp://mirrors.dotsrc.org/ubuntu/|null|10.05|56.1667
+Denmark|Telia Denmark|1 Gbps|mirrors.telianet.dk|http://mirrors.telianet.dk/ubuntu/|ftp://mirrors.telianet.dk/ubuntu/|rsync://mirrors.telianet.dk/ubuntu/|15.0|62.0
+Denmark|Skarta|100 Mbps|ubuntu.skarta.net|http://ubuntu.skarta.net/ubuntu/|null|rsync://ubuntu.skarta.net/ubuntu/|8.8333|55.55
+Estonia|Elion Enterprises Ltd|1 Gbps|ftp.estpak.ee|http://ftp.estpak.ee/ubuntu/|ftp://ftp.estpak.ee/ubuntu/|rsync://ftp.estpak.ee/ubuntu/|24.7281|59.4339
+Finland|CSC / Funet|1 Gbps|mirrors.nic.funet.fi|http://mirrors.nic.funet.fi/ubuntu/|ftp://mirrors.nic.funet.fi/ubuntu/|rsync://mirrors.nic.funet.fi/ubuntu/|26.0|64.0
+Finland|CSC / Funet|1 Gbps|www.nic.funet.fi|http://www.nic.funet.fi/pub/mirrors/archive.ubuntu.com/|ftp://ftp.funet.fi/pub/mirrors/archive.ubuntu.com/|rsync://rsync.nic.funet.fi/ftp/pub/mirrors/archive.ubuntu.com/|26.0|64.0
+Finland|Tampere University of Technology / Department of Communications Engineering|1 Gbps|ubuntu.trumpetti.atm.tut.fi|http://ubuntu.trumpetti.atm.tut.fi/ubuntu/|ftp://ubuntu.trumpetti.atm.tut.fi/ubuntu/|rsync://ubuntu.trumpetti.atm.tut.fi/ubuntu/|23.75|61.5
+France|Bouygues Telecom|2 Gbps|bouyguestelecom.ubuntu.lafibre.info|http://bouyguestelecom.ubuntu.lafibre.info/ubuntu/|null|rsync://bouyguestelecom.ubuntu.lafibre.info/ubuntu/|1.35|44.0167
+France|Free|2 Gbps|ubuntu-archive.mirrors.proxad.net|http://ubuntu-archive.mirrors.proxad.net/ubuntu/|ftp://ubuntu-archive.mirrors.proxad.net/mirrors/ftp.ubuntu.com/ubuntu/|null|13.3333|47.3333
+France|Fondation d'entreprise Free|2 Gbps|ftp.free.org|http://ftp.free.org/mirrors/archive.ubuntu.com/ubuntu/|ftp://ftp.free.org/mirrors/archive.ubuntu.com/ubuntu/|rsync://ftp.free.org/ubuntu/|13.3333|47.3333
+France|OVH|2 Gbps|mirror.ovh.net|http://mirror.ovh.net/ubuntu/|ftp://mirror.ovh.net/ubuntu/|rsync://mirror.ovh.net/ubuntu/|2.0|46.0
+France|CRIHAN|1 Gbps|ftp.crihan.fr|http://ftp.crihan.fr/ubuntu/|ftp://ftp.crihan.fr/ubuntu/|rsync://ftp.crihan.fr/ubuntu/|2.0|46.0
+France|Orange Business Services|1 Gbps|ftp.oleane.net|http://ftp.oleane.net/ubuntu/|ftp://ftp.oleane.net/ubuntu/|null|2.3333|48.8667
+France|Ircam|1 Gbps|mirrors.ircam.fr|http://mirrors.ircam.fr/pub/ubuntu/archive/|ftp://mirrors.ircam.fr/pub/ubuntu/archive/|rsync://mirrors.ircam.fr/pub/ubuntu/archive/|2.3333|48.8667
+France|Universit? de Nantes|1 Gbps|ubuntu.univ-nantes.fr|http://ubuntu.univ-nantes.fr/ubuntu/|ftp://ubuntu.univ-nantes.fr/ubuntu/|rsync://ubuntu.univ-nantes.fr/ubuntu/|-1.55|47.2167
+France|LIP6/UPMC|1 Gbps|www-ftp.lip6.fr|http://www-ftp.lip6.fr/pub/linux/distributions/Ubuntu/archive/|ftp://ftp.lip6.fr/pub/linux/distributions/Ubuntu/archive/|rsync://ftp.lip6.fr/Ubuntu/archive/|2.3333|48.8667
+France|CIRIL|1 Gbps|wwwftp.ciril.fr|http://wwwftp.ciril.fr/pub/linux/ubuntu/archives/|ftp://ftp.ciril.fr/pub/linux/ubuntu/archives/|rsync://ftp.ciril.fr/pub/linux/ubuntu/archives/|2.0|46.0
+France|Rezopole A.D.|100 Mbps|ftp.rezopole.net|null|ftp://ftp.rezopole.net/ubuntu/|null|2.0|46.0
+France|Universit? de Picardie|100 Mbps|ftp.u-picardie.fr|http://ftp.u-picardie.fr/mirror/ubuntu/ubuntu/|ftp://ftp.u-picardie.fr/mirror/ubuntu/ubuntu/|null|2.3|49.9
+France|IPSL|45 Mbps|distrib-coffee.ipsl.jussieu.fr|http://distrib-coffee.ipsl.jussieu.fr/ubuntu/|ftp://distrib-coffee.ipsl.jussieu.fr/ubuntu/|rsync://distrib-coffee.ipsl.jussieu.fr/ubuntu/|2.3333|48.8667
+France|CNRS/IPSL|45 Mbps|distrib-coffee.ipsl.jussieu.fr|http://distrib-coffee.ipsl.jussieu.fr/pub/linux/ubuntu/|ftp://distrib-coffee.ipsl.jussieu.fr/pub/linux/ubuntu/|rsync://distrib-coffee.ipsl.jussieu.fr/pub/linux/ubuntu/|2.3333|48.8667
+France|Universite Reims Champagne-Ardenne|10 Mbps|ubuntu.univ-reims.fr|http://ubuntu.univ-reims.fr/ubuntu/|ftp://ubuntu.univ-reims.fr/ubuntu/|null|4.0333|49.25
+French Polynesia|LoLiTa|100 Mbps|pf.archive.ubuntu.com|http://pf.archive.ubuntu.com/ubuntu/|ftp://pf.archive.ubuntu.com/ubuntu/|rsync://pf.archive.ubuntu.com/ubuntu/|-149.5667|-17.5333
+Georgia|GRENA|10 Mbps|ubuntu.grena.ge|http://ubuntu.grena.ge/ubuntu/|ftp://ubuntu.grena.ge/ubuntu/|null|43.5|42.0
+Georgia|Ge.archive.ubuntu.com-archive|128 Kbps|ge.archive.ubuntu.com|http://ge.archive.ubuntu.com/ubuntu/|null|null|43.5|42.0
+Germany|RWTH Aachen University|10 Gbps|ftp.halifax.rwth-aachen.de|http://ftp.halifax.rwth-aachen.de/ubuntu/|ftp://ftp.halifax.rwth-aachen.de/ubuntu/|rsync://ftp.halifax.rwth-aachen.de/ubuntu/|6.1053|50.7708
+Germany|Technische Universit?t Dresden|10 Gbps|ubuntu.mirror.tudos.de|http://ubuntu.mirror.tudos.de/ubuntu/|null|rsync://ubuntu.mirror.tudos.de/ubuntu/|13.75|51.05
+Germany|Esslingen University of Applied Sciences|2 Gbps|ftp-stud.hs-esslingen.de|http://ftp-stud.hs-esslingen.de/ubuntu/|ftp://ftp-stud.hs-esslingen.de/ubuntu/|rsync://ftp-stud.hs-esslingen.de/ubuntu/|9.1833|48.7667
+Germany|University of Kaiserslautern|2 Gbps|ftp.uni-kl.de|http://ftp.uni-kl.de/pub/linux/ubuntu/|ftp://ftp.uni-kl.de/pub/linux/ubuntu/|rsync://ftp.uni-kl.de/pub/linux/ubuntu/|7.75|49.45
+Germany|LeaseWeb Germany GmbH|2 Gbps|mirror.de.leaseweb.net|http://mirror.de.leaseweb.net/ubuntu/|ftp://mirror.de.leaseweb.net/ubuntu/|null|9.0|51.0
+Germany|University of Mannheim|2 Gbps|mirror.informatik.uni-mannheim.de|http://mirror.informatik.uni-mannheim.de/pub/linux/distributions/ubuntu/|ftp://mirror.informatik.uni-mannheim.de/pub/linux/distributions/ubuntu/|null|8.4647|49.4883
+Germany|NetCologne|2 Gbps|mirror.netcologne.de|http://mirror.netcologne.de/ubuntu/|ftp://mirror.netcologne.de/ubuntu/|rsync://mirror.netcologne.de/ubuntu/|6.95|50.9333
+Germany|PlusServer - serverloft - SERVER4YOU|2 Gbps|mirror.serverloft.eu|http://mirror.serverloft.eu/ubuntu/ubuntu/|null|rsync://mirror.serverloft.eu/ubuntu-linux/ubuntu/|9.0|51.0
+Germany|Artfiles New Media GmbH|1 Gbps|artfiles.org|http://artfiles.org/ubuntu.com/|ftp://artfiles.org/ubuntu.com/|null|10.0|53.55
+Germany|Charite Berlin|1 Gbps|debian.charite.de|http://debian.charite.de/ubuntu/|null|null|13.4|52.5167
+Germany|FAU Erlangen, CS Dept.|1 Gbps|debian.informatik.uni-erlangen.de|http://debian.informatik.uni-erlangen.de/ubuntu/|ftp://debian.informatik.uni-erlangen.de/ubuntu/|null|11.0039|49.5897
+Germany|Freie Universit?t Berlin|1 Gbps|ftp.fu-berlin.de|null|ftp://ftp.fu-berlin.de/linux/ubuntu/|null|13.4|52.5167
+Germany|RRZN, Leibniz Universit?t Hannover|1 Gbps|ftp.rrzn.uni-hannover.de|null|ftp://ftp.rrzn.uni-hannover.de/pub/mirror/linux/ubuntu|null|9.7167|52.3667
+Germany|RRZN|1 Gbps|ftp.rrzn.uni-hannover.de|http://ftp.rrzn.uni-hannover.de/pub/mirror/linux/ubuntu/|null|null|9.7167|52.3667
+Germany|Technical University of Braunschweig|1 Gbps|ftp.rz.tu-bs.de|http://ftp.rz.tu-bs.de/pub/mirror/ubuntu-packages/|ftp://ftp.rz.tu-bs.de/pub/mirror/ubuntu-packages/|rsync://ftp.rz.tu-bs.de/pub/mirror/ubuntu-packages/|10.5333|52.2667
+Germany|StudNet Bonn|1 Gbps|ftp.stw-bonn.de|http://ftp.stw-bonn.de/ubuntu/|ftp://ftp.stw-bonn.de/ubuntu/|rsync://ftp.stw-bonn.de/ubuntu/|7.1|50.7333
+Germany|TU Chemnitz|1 Gbps|ftp.tu-chemnitz.de|http://ftp.tu-chemnitz.de/pub/linux/ubuntu-ports/|ftp://ftp.tu-chemnitz.de/pub/linux/ubuntu-ports/|null|12.9167|50.8333
+Germany|TU-Ilmenau|1 Gbps|ftp.tu-ilmenau.de|http://ftp.tu-ilmenau.de/mirror/ubuntu/|ftp://ftp.tu-ilmenau.de/mirror/ubuntu/|null|10.9|50.6833
+Germany|Universit?t Bayreuth|1 Gbps|ftp.uni-bayreuth.de|http://ftp.uni-bayreuth.de/linux/ubuntu/ubuntu/|ftp://ftp.uni-bayreuth.de/pub/linux/ubuntu/ubuntu/|rsync://rsync.uni-bayreuth.de/ubuntu-archive/|11.5783|49.9481
+Germany|Universit?t Erlangen-N?rnberg|1 Gbps|ftp.uni-erlangen.de|http://ftp.uni-erlangen.de/mirrors/ubuntu/|ftp://ftp.uni-erlangen.de/mirrors/ubuntu/|null|11.0039|49.5897
+Germany|Universit?t M?nster|1 Gbps|ftp.uni-muenster.de|http://ftp.uni-muenster.de/pub/mirrors/ftp.ubuntu.com/ubuntu/|ftp://ftp.uni-muenster.de/pub/mirrors/ftp.ubuntu.com/ubuntu/|rsync://ftp.uni-muenster.de/ubuntu/ubuntu/|7.6333|51.9667
+Germany|GWDG|1 Gbps|ftp5.gwdg.de|http://ftp5.gwdg.de/pub/linux/debian/ubuntu/|ftp://ftp5.gwdg.de/pub/linux/debian/ubuntu/|rsync://ftp5.gwdg.de/pub/linux/debian/ubuntu/|9.9333|51.5333
+Germany|FH-Aachen|1 Gbps|mirror.bauhuette.fh-aachen.de|http://mirror.bauhuette.fh-aachen.de/ubuntu/|ftp://mirror.bauhuette.fh-aachen.de/ubuntu/|null|6.1053|50.7708
+Germany|RWTH Aachen|1 Gbps|vesta.informatik.rwth-aachen.de|http://vesta.informatik.rwth-aachen.de/ftp/pub/Linux/ubuntu/ubuntu/|ftp://vesta.informatik.rwth-aachen.de/pub/Linux/ubuntu/ubuntu/|null|6.1053|50.7708
+Germany|University of Leipzig|1 Gbps|suse.uni-leipzig.de|http://suse.uni-leipzig.de/pub/releases.ubuntu.com/ubuntu/|ftp://suse.uni-leipzig.de/pub/releases.ubuntu.com/ubuntu/|rsync://suse.uni-leipzig.de/ubuntu/|12.3333|51.3
+Germany|UNITED COLO GmbH|1 Gbps|ubuntu.unitedcolo.de|http://ubuntu.unitedcolo.de/ubuntu/|ftp://ubuntu.unitedcolo.de/ubuntu/|rsync://ubuntu.unitedcolo.de/ubuntu/|9.0|51.0
+Germany|University of Applied Sciences Wolfenbuettel|100 Mbps|archive.ubuntu.uasw.edu|http://archive.ubuntu.uasw.edu/|ftp://ftp.uasw.edu/linux/ubuntu/archive/|rsync://ftp.uasw.edu/ftp/linux/ubuntu/archive/|10.55|52.1667
+Germany|Host Europe|100 Mbps|ftp.hosteurope.de|http://ftp.hosteurope.de/mirror/archive.ubuntu.com/|ftp://ftp.hosteurope.de/mirror/archive.ubuntu.com/|null|6.1833|51.65
+Germany|Technische Universit?t Chemnitz|10 Mbps|ftp.tu-chemnitz.de|http://ftp.tu-chemnitz.de/pub/linux/ubuntu/|null|null|12.9167|50.8333
+Germany|De.archive.ubuntu.com-archive|128 Kbps|de.archive.ubuntu.com|http://de.archive.ubuntu.com/ubuntu/|null|null|13.75|51.05
+Germany|De2.archive.ubuntu.com-archive|128 Kbps|de2.archive.ubuntu.com|http://de2.archive.ubuntu.com/ubuntu/|null|null|-2.0|54.0
+Greece|University of Crete|1 Gbps|ftp.cc.uoc.gr|http://ftp.cc.uoc.gr/mirrors/linux/ubuntu/packages/|ftp://ftp.cc.uoc.gr/mirrors/linux/ubuntu/packages/|null|25.1306|35.325
+Greece|National Technical University of Athens|1 Gbps|ftp.ntua.gr|http://ftp.ntua.gr/pub/linux/ubuntu/|ftp://ftp.ntua.gr/pub/linux/ubuntu/|null|23.7333|37.9833
+Greece|OTENET|1 Gbps|ubuntu.otenet.gr|http://ubuntu.otenet.gr/|ftp://ftp.otenet.gr/ubuntu/|null|22.0|39.0
+Greece|Transformation Services Laboratory|1 Gbps|ubuntu.tsl.gr|http://ubuntu.tsl.gr/|null|null|25.1306|35.325
+Greenland|Tele Greenland A/S|45 Mbps|mirror.greennet.gl|http://mirror.greennet.gl/ubuntu/|null|rsync://mirror.greennet.gl/ubuntu/|-51.75|64.1833
+Hungary|KFKI|1 Gbps|ftp.kfki.hu|http://ftp.kfki.hu/linux/ubuntu/|ftp://ftp.kfki.hu/pub/linux/ubuntu/|rsync://ftp.kfki.hu/ftp/linux/ubuntu/|19.0833|47.5
+Hungary|Budapest University of Technology and Economics CrySyS Lab|1 Gbps|ubuntu.mirrors.crysys.hu|http://ubuntu.mirrors.crysys.hu/|ftp://mirrors.crysys.hu/ubuntu/|null|19.0833|47.5
+Hungary|Szechenyi Istvan University|100 Mbps|ubuntu.sth.sze.hu|http://ubuntu.sth.sze.hu/ubuntu/|ftp://ubuntu.sth.sze.hu/ubuntu/|null|20.0|47.0
+Iceland|Siminn hf|1 Gbps|speglar.simnet.is|http://speglar.simnet.is/ubuntu/|ftp://speglar.simnet.is/pub/ubuntu/|null|-18.0|65.0
+Iceland|Iceland Academy of the Arts|10 Mbps|ubuntu.lhi.is|http://ubuntu.lhi.is/ubuntu/|null|null|-18.0|65.0
+India|Indian Institute of Technology, Kanpur|1 Gbps|mirror.cse.iitk.ac.in|http://mirror.cse.iitk.ac.in/ubuntu/|ftp://mirror.cse.iitk.ac.in/ubuntu/|null|80.35|26.4667
+India|Indian Institute of Technology, Bombay|100 Mbps|ftp.iitb.ac.in|null|ftp://ftp.iitb.ac.in/distributions/ubuntu/archives/|null|72.8258|18.975
+India|National Institute of Technology Hamirpur|100 Mbps|glug.nith.ac.in|http://glug.nith.ac.in/ubuntu/archives/|ftp://glug.nith.ac.in/ubuntu/archives/|null|77.2|28.6
+India|Indian Institute of Technology Madras|45 Mbps|ftp.iitm.ac.in|http://ftp.iitm.ac.in/ubuntu/|ftp://ftp.iitm.ac.in/ubuntu|rsync://ftp.iitm.ac.in/ubuntu/|80.2833|13.0833
+Indonesia|idREPO|10 Gbps|ubuntu.idrepo.or.id|http://ubuntu.idrepo.or.id/ubuntu/|null|null|106.8294|-6.1744
+Indonesia|University of Indonesia|1 Gbps|kambing.ui.ac.id|http://kambing.ui.ac.id/ubuntu/|ftp://kambing.ui.ac.id/ubuntu/|rsync://kambing.ui.ac.id/ubuntu/|106.8294|-6.1744
+Indonesia|EEPIS-ITS|1 Gbps|kebo.vlsm.org|http://kebo.vlsm.org/ubuntu/|ftp://kebo.vlsm.org/ubuntu/|rsync://kebo.vlsm.org/ubuntu/|120.0|-5.0
+Indonesia|kavalinux|1 Gbps|mirror.kavalinux.com|http://mirror.kavalinux.com/ubuntu/|ftp://mirror.kavalinux.com/ubuntu/|rsync://mirror.kavalinux.com/ubuntu/|106.8294|-6.1744
+Indonesia|PT Telekomunikasi Indonesia|1 Gbps|dl2.foss-id.web.id|http://dl2.foss-id.web.id/ubuntu/|null|null|106.8294|-6.1744
+Indonesia|IndikaNet|1 Gbps|ubuntu.indika.net.id|http://ubuntu.indika.net.id/ubuntu/|ftp://ubuntu.indika.net.id/ubuntu/|rsync://ubuntu.indika.net.id/ubuntu/|106.8294|-6.1744
+Indonesia|PT Pasifik Satelit Nusantara|1 Gbps|ubuntu.pesat.net.id|http://ubuntu.pesat.net.id/archive/|null|null|106.9896|-6.2349
+Indonesia|Bogor Agricultural University|100 Mbps|pandawa.ipb.ac.id|http://pandawa.ipb.ac.id/ubuntu/|ftp://pandawa.ipb.ac.id/ubuntu/|null|120.0|-5.0
+Indonesia|Universitas Brawijaya|100 Mbps|singo.ub.ac.id|http://singo.ub.ac.id/ubuntu/|ftp://singo.ub.ac.id/ubuntu/|null|120.0|-5.0
+Indonesia|Universitas Sebelas Maret|45 Mbps|bos.fkip.uns.ac.id|http://bos.fkip.uns.ac.id/ubuntu/|null|rsync://bos.fkip.uns.ac.id/ubuntu/|120.0|-5.0
+Indonesia|Datautama-Net-ID|45 Mbps|kartolo.sby.datautama.net.id|http://kartolo.sby.datautama.net.id/ubuntu/|null|null|120.0|-5.0
+Indonesia|Kelompok Linux Arek Suroboyo|10 Mbps|buaya.klas.or.id|http://buaya.klas.or.id/ubuntu/|ftp://buaya.klas.or.id/mirror/ubuntu/|null|112.7508|-7.2492
+Ireland|HEAnet|10 Gbps|ftp.heanet.ie|http://ftp.heanet.ie/pub/ubuntu/|ftp://ftp.heanet.ie/pub/ubuntu/|rsync://ftp.heanet.ie/ubuntu/|-8.0|53.0
+Ireland|Esat Net|1 Gbps|ftp.esat.net|http://ftp.esat.net/mirrors/archive.ubuntu.com/|ftp://ftp.esat.net/mirrors/archive.ubuntu.com/|rsync://ftp.esat.net/mirrors/archive.ubuntu.com/|-6.2489|53.3331
+Israel|Israel Internet Association|100 Mbps|mirror.isoc.org.il|http://mirror.isoc.org.il/pub/ubuntu/|ftp://mirror.isoc.org.il/ubuntu/|null|34.75|31.5
+Italy|Fastbull|1 Gbps|ubuntu.fastbull.org|http://ubuntu.fastbull.org/ubuntu/|ftp://ubuntu.fastbull.org/ubuntu/|rsync://ubuntu.fastbull.org/ubuntu/|7.6667|45.05
+Italy|Crazy Network|100 Mbps|mirror.crazynetwork.it|http://mirror.crazynetwork.it/ubuntu/archive/|null|rsync://mirror.crazynetwork.it/ubuntu-archive/|12.8333|42.8333
+Italy|GARR/CILEA mirror service|100 Mbps|ubuntu.mirror.garr.it|http://ubuntu.mirror.garr.it/mirrors/ubuntu-archive/|ftp://ubuntu.mirror.garr.it/mirrors/ubuntu-archive/|rsync://ubuntu.mirror.garr.it/ubuntu-archive/|12.8333|42.8333
+Italy|ICT Valle Umbra s.r.l.|100 Mbps|ubuntu.ictvalleumbra.it|http://ubuntu.ictvalleumbra.it/ubuntu/|null|null|13.45|42.3
+Italy|University of Genoa|10 Mbps|giano.com.dist.unige.it|http://giano.com.dist.unige.it/ubuntu/|ftp://giano.com.dist.unige.it/ubuntu/|null|8.95|44.4167
+Japan|JAIST|4 Gbps|ftp.jaist.ac.jp|http://ftp.jaist.ac.jp/pub/Linux/ubuntu/|ftp://ftp.jaist.ac.jp/pub/Linux/ubuntu/|rsync://ftp.jaist.ac.jp/pub/Linux/ubuntu/|138.0|36.0
+Japan|RIKEN|1 Gbps|ftp.riken.jp|http://ftp.riken.jp/Linux/ubuntu/|ftp://ftp.riken.jp/Linux/ubuntu/|null|139.6233|35.7894
+Japan|Tsukuba WIDE|1 Gbps|ftp.tsukuba.wide.ad.jp|http://ftp.tsukuba.wide.ad.jp/Linux/ubuntu/|null|rsync://ftp.tsukuba.wide.ad.jp/ubuntu/|140.1167|36.0833
+Japan|Yamagata University|1 Gbps|ftp.yz.yamagata-u.ac.jp|http://ftp.yz.yamagata-u.ac.jp/pub/linux/ubuntu/archives/|ftp://ftp.yz.yamagata-u.ac.jp/pub/linux/ubuntu/archives/|rsync://ftp.yz.yamagata-u.ac.jp/pub/linux/ubuntu/archives/|138.0|36.0
+Japan|UNIVERSITY OF TOYAMA with Ubuntu Japanese LoCo|1 Gbps|ubuntutym.u-toyama.ac.jp|http://ubuntutym.u-toyama.ac.jp/ubuntu/|null|null|137.2167|36.6833
+Japan|K.K. Ashisuto with Ubuntu Japanese LoCo|100 Mbps|ubuntu-ashisuto.ubuntulinux.jp|http://ubuntu-ashisuto.ubuntulinux.jp/ubuntu/|null|null|137.2167|36.6833
+Japan|mithril-linux.org (offered by Debian-JP Project member)|100 Mbps|ubuntu.mithril-linux.org|http://ubuntu.mithril-linux.org/archives/|null|null|138.0|36.0
+Japan|S.A Studio|100 Mbps|ubuntu.sastudio.jp|http://ubuntu.sastudio.jp/ubuntu/|null|null|134.5667|34.0667
+Japan|KDDI R&D Laboratories Inc.|100 Mbps|www.ftp.ne.jp|http://www.ftp.ne.jp/Linux/packages/ubuntu/archive/|ftp://ftp.kddilabs.jp/Linux/packages/ubuntu/archive/|rsync://rsync.kddilabs.jp/ubuntu/archive/|138.0|36.0
+Kazakhstan|Neolabs LLP|100 Mbps|mirror.neolabs.kz|http://mirror.neolabs.kz/ubuntu/|ftp://mirror.neolabs.kz/ubuntu/|rsync://mirror.neolabs.kz/ubuntu/|76.95|43.25
+Kazakhstan|SPACE.KZ LLP|100 Mbps|mirror.space.kz|null|ftp://mirror.space.kz/ubuntu/|null|68.0|48.0
+Korea, Republic of|Daum Communications Corp.|1 Gbps|ftp.daum.net|http://ftp.daum.net/ubuntu/|ftp://ftp.daum.net/ubuntu/|null|126.9997|37.5664
+Korea, Republic of|KAIST|1 Gbps|kr.archive.ubuntu.com|http://kr.archive.ubuntu.com/ubuntu/|ftp://kr.archive.ubuntu.com/ubuntu/|rsync://kr.archive.ubuntu.com/ubuntu/|127.4197|36.3214
+Kuwait|Qualitynet|100 Mbps|ubuntu.qualitynet.net|http://ubuntu.qualitynet.net/ubuntu/|ftp://ubuntu.qualitynet.net/ubuntu/|rsync://ubuntu.qualitynet.net/ubuntu/|47.6581|29.3375
+Latvia|University of Latvia|1 Gbps|ubuntu-arch.linux.edu.lv|http://ubuntu-arch.linux.edu.lv/ubuntu/|ftp://ubuntu-arch.linux.edu.lv/lv.archive.ubuntu.com/ubuntu/|rsync://ubuntu-arch.linux.edu.lv/ubuntu-archive/|24.1|56.95
+Latvia|koyanet.lv|1 Gbps|ubuntu.koyanet.lv|http://ubuntu.koyanet.lv/ubuntu/|null|null|24.1|56.95
+Latvia|Ubuntu.load.lv-archive|1 Gbps|ubuntu.load.lv|http://ubuntu.load.lv/ubuntu/|ftp://ubuntu.load.lv/ubuntu/|null|25.0|57.0
+Lithuania|mirror.soften.ktu.lt|1 Gbps|mirror.soften.ktu.lt|http://mirror.soften.ktu.lt/ubuntu/|ftp://mirror.soften.ktu.lt/ubuntu/|null|23.9|54.9
+Lithuania|Vilnius University|1 Gbps|ubuntu.mirror.vu.lt|http://ubuntu.mirror.vu.lt/ubuntu/|ftp://ubuntu.mirror.vu.lt/ubuntu/|rsync://ubuntu.mirror.vu.lt/ubuntu/|25.3167|54.6833
+Lithuania|LitNET|100 Mbps|ftp.litnet.lt|http://ftp.litnet.lt/ubuntu/|ftp://ftp.litnet.lt/ubuntu/|rsync://ftp.litnet.lt/ubuntu/|23.9|54.9
+Luxembourg|root S.A.|1 Gbps|ubuntu.mirror.root.lu|http://ubuntu.mirror.root.lu/ubuntu/|ftp://mirror.root.lu/ubuntu/ubuntu/|rsync://mirror.root.lu/Ubuntu/ubuntu/|6.1667|49.75
+Malaysia|UPM|100 Mbps|biruni.upm.my|http://biruni.upm.my/mirror/ubuntu/|null|null|101.25|3.35
+Malaysia|Universiti Putra Malaysia (UPM)|100 Mbps|www.mirror.upm.edu.my|http://www.mirror.upm.edu.my/ubuntu/|null|null|101.25|3.35
+Malaysia|Multimedia University (MMU)|10 Mbps|archive.mmu.edu.my|http://archive.mmu.edu.my/ubuntu/|null|null|101.25|3.35
+Malaysia|Tuxuri|10 Mbps|ubuntu.tuxuri.com|http://ubuntu.tuxuri.com/ubuntu/|null|null|101.7|3.1667
+Malta|Malta Linux User Group|2 Mbps|mirror.linux.org.mt|http://mirror.linux.org.mt/ubuntu/|ftp://mirror.linux.org.mt/ubuntu/|rsync://mirror.linux.org.mt/ubuntu/|14.4425|35.8897
+Mexico|Universidad Autonoma de Chihuahua|1 Gbps|ubuntu.uach.mx|http://ubuntu.uach.mx/|null|null|-106.0833|28.6333
+Mexico|Facultad de Ciencias, UNAM|45 Mbps|tezcatl.fciencias.unam.mx|http://tezcatl.fciencias.unam.mx/ubuntu/|ftp://tezcatl.fciencias.unam.mx/ubuntu/|rsync://tezcatl.fciencias.unam.mx/ubuntu/|-99.1386|19.4342
+Mongolia|Mongolian Open Source Initiative NGO|100 Mbps|ubuntu-archive.adsolux.com|http://ubuntu-archive.adsolux.com/ubuntu/|null|null|106.9167|47.9167
+Namibia|Polytechnic of Namibia|1 Mbps|ubuntu-archive.polytechnic.edu.na|http://ubuntu-archive.polytechnic.edu.na/ubuntu/|ftp://ftp.polytechnic.edu.na/pub/ubuntu/ubuntu/|null|17.0836|-22.57
+Nepal|Np.archive.ubuntu.com-archive|128 Kbps|np.archive.ubuntu.com|http://np.archive.ubuntu.com/ubuntu/|null|null|-2.0|54.0
+Netherlands|BIT B.V.|10 Gbps|nl.archive.ubuntu.com|http://nl.archive.ubuntu.com/ubuntu/|null|rsync://nl.archive.ubuntu.com/ubuntu/|5.75|52.5
+Netherlands|University of Twente, The Netherlands|10 Gbps|ftp.snt.utwente.nl|http://ftp.snt.utwente.nl/pub/os/linux/ubuntu/|ftp://ftp.snt.utwente.nl/pub/os/linux/ubuntu/|null|6.9|52.2167
+Netherlands|INTERACTIVE 3D (i3D.net)|10 Gbps|mirror.i3d.net|http://mirror.i3d.net/pub/ubuntu/|ftp://mirror.i3d.net/ubuntu/|rsync://mirror.i3d.net/ubuntu/|5.75|52.5
+Netherlands|Cambrium BV.|10 Gbps|ubuntu.mirror.cambrium.nl|http://ubuntu.mirror.cambrium.nl/ubuntu/|null|null|5.4667|51.45
+Netherlands|LeaseWeb B.V.|4 Gbps|mirror.nl.leaseweb.net|http://mirror.nl.leaseweb.net/ubuntu/|null|rsync://mirror.nl.leaseweb.net/ubuntu/|4.9167|52.35
+Netherlands|PCextreme B.V.|2 Gbps|nl3.archive.ubuntu.com|http://nl3.archive.ubuntu.com/ubuntu/|null|null|5.75|52.5
+Netherlands|KPN - Telfort|1 Gbps|ftp.telfort.nl|http://ftp.telfort.nl/pub/mirror/ubuntu/|ftp://ftp.telfort.nl/pub/mirror/ubuntu/|null|5.75|52.5
+Netherlands|Technische Universiteit Delft|1 Gbps|ftp.tudelft.nl|http://ftp.tudelft.nl/archive.ubuntu.com/|ftp://ftp.tudelft.nl/pub/Linux/archive.ubuntu.com/|null|4.3667|52.0
+Netherlands|Kernel.org|1 Gbps|mirrors.nl.eu.kernel.org|http://mirrors.nl.eu.kernel.org/ubuntu/|ftp://mirrors.nl.eu.kernel.org/ubuntu/|rsync://mirrors.nl.eu.kernel.org/ubuntu/|-122.211|37.4914
+Netherlands|Rijksuniversiteit Groningen|1 Gbps|osmirror.rug.nl|http://osmirror.rug.nl/ubuntu/|ftp://osmirror.rug.nl/ubuntu/|rsync://osmirror.rug.nl/Ubuntu/|6.55|53.2167
+Netherlands|Atrato IP Networks|1 Gbps|ubuntu.mirror.atratoip.net|http://ubuntu.mirror.atratoip.net/ubuntu/|null|null|5.75|52.5
+Netherlands|ftp.tiscali.nl-archive|1 Gbps|ubuntu.tiscali.nl|http://ubuntu.tiscali.nl/|ftp://ubuntu.tiscali.nl/|rsync://ubuntu.tiscali.nl/|5.75|52.5
+Netherlands|Ftpserv-tudelft-nl|10 Mbps|ftpserv.tudelft.nl|null|ftp://ftpserv.tudelft.nl/pub/Linux/archive.ubuntu.com/|null|4.3667|52.0
+New Caledonia|Nautile|100 Mbps|archive.ubuntu.nautile.nc|http://archive.ubuntu.nautile.nc/ubuntu/|ftp://archive.ubuntu.nautile.nc/ubuntu/|rsync://archive.ubuntu.nautile.nc/ubuntu/|166.45|-22.2667
+New Zealand|Citylink|1 Gbps|ftp.citylink.co.nz|http://ftp.citylink.co.nz/ubuntu/|ftp://ftp.citylink.co.nz/ubuntu/|rsync://ftp.citylink.co.nz/ubuntu/|174.7833|-41.3
+New Zealand|ihug|1 Gbps|mirror.ihug.co.nz|http://mirror.ihug.co.nz/ubuntu/|ftp://mirror.ihug.co.nz/ubuntu/|rsync://mirror.ihug.co.nz/ubuntu/|174.0|-41.0
+New Zealand|WorldxChange Communications Ltd|1 Gbps|mirror.xnet.co.nz|http://mirror.xnet.co.nz/pub/ubuntu/|ftp://mirror.xnet.co.nz/pub/ubuntu/|null|174.7667|-36.8667
+New Zealand|University of Canterbury|1 Gbps|ucmirror.canterbury.ac.nz|http://ucmirror.canterbury.ac.nz/ubuntu/|ftp://ucmirror.canterbury.ac.nz/ubuntu/|null|172.6333|-43.5333
+New Zealand|Nz.archive.ubuntu.com-archive|128 Kbps|nz.archive.ubuntu.com|http://nz.archive.ubuntu.com/ubuntu/|null|null|174.7833|-41.3
+Norway|Blix Solutions AS|1 Gbps|archive.mirror.blix.eu|http://archive.mirror.blix.eu/ubuntu/|ftp://ftp.blix.eu/ubuntu/archive/|null|10.0|62.0
+Norway|UNINETT/University of Oslo|1 Gbps|ftp.uninett.no|http://ftp.uninett.no/ubuntu/|ftp://ftp.uninett.no/ubuntu/|rsync://ftp.uninett.no/ubuntu/|11.0333|59.9833
+Norway|The Student Society in Trondhjem, Norway|1 Gbps|no.archive.ubuntu.com|http://no.archive.ubuntu.com/ubuntu/|null|rsync://no.archive.ubuntu.com/ubuntu/|20.25|63.8333
+Norway|University of Bergen|1 Gbps|ubuntu.uib.no|http://ubuntu.uib.no/archive/|ftp://ubuntu.uib.no/pub/Linux/Distributions/ubuntu/archive/|rsync://ubuntu.uib.no/ubuntu-archive/|5.3247|60.3911
+Oman|Sultan Qaboos University|100 Mbps|mirror.squ.edu.om|http://mirror.squ.edu.om/ubuntuarchive/|ftp://mirror.squ.edu.om/ubuntuarchive/|null|58.5933|23.6133
+Pakistan|CYBER Internet Services / Lahore University of Management Sciences|100 Mbps|mirror-cybernet.lums.edu.pk|http://mirror-cybernet.lums.edu.pk/pub/ubuntu/|ftp://mirror-cybernet.lums.edu.pk/pub/ubuntu/|rsync://mirror-cybernet.lums.edu.pk/pub/ubuntu/|67.05|24.8667
+Philippines|DOST-ASTI|45 Mbps|mirror.pregi.net|http://mirror.pregi.net/ubuntu/|ftp://mirror.pregi.net/ubuntu/|null|121.2481|14.0628
+Poland|ICM - Interdisciplinary Centre for Mathematical and Computational Modelling|1 Gbps|ftp.icm.edu.pl|http://ftp.icm.edu.pl/pub/Linux/ubuntu/|ftp://ftp.icm.edu.pl/pub/Linux/ubuntu/|rsync://rsync.icm.edu.pl/pub/Linux/ubuntu/|21.0|52.25
+Poland|Wroclaw Centre for Networking and Supercomputing|1 Gbps|ftp.wcss.pl|http://ftp.wcss.pl/ubuntu/|ftp://ftp.wcss.pl/ubuntu/|rsync://ftp.wcss.pl/ubuntu/|17.0333|51.1
+Poland|Politechnika Gdanska  / CI TASK|1 Gbps|ubuntu.task.gda.pl|http://ubuntu.task.gda.pl/ubuntu/|ftp://ubuntu.task.gda.pl/ubuntu/|rsync://ubuntu.task.gda.pl/ubuntu/|18.6667|54.35
+Poland|Vectra|1 Gbps|ftp.vectranet.pl|http://ftp.vectranet.pl/ubuntu/|ftp://ftp.vectranet.pl/ubuntu/|rsync://ftp.vectranet.pl/ubuntu/|21.15|51.4167
+Poland|Ftp-man-szczecin-pl|10 Mbps|ftp.man.szczecin.pl|null|ftp://ftp.man.szczecin.pl/pub/Linux/ubuntu/|null|14.5833|53.4167
+Portugal|CeSIUM|1 Gbps|cesium.di.uminho.pt|http://cesium.di.uminho.pt/pub/ubuntu-archive/|ftp://cesium.di.uminho.pt/pub/ubuntu-archive/|rsync://cesium.di.uminho.pt/ubuntu-archive/|-8.4333|41.55
+Portugal|Dep. de Ci?ncia de Computadores - FCUP|1 Gbps|ubuntu.dcc.fc.up.pt|http://ubuntu.dcc.fc.up.pt/|null|null|-8.6167|41.15
+Portugal|University of Coimbra, Dep. Informatics Engineering|1 Gbps|archive.ubuntumirror.dei.uc.pt|http://archive.ubuntumirror.dei.uc.pt/ubuntu/|ftp://archive.ubuntumirror.dei.uc.pt/ubuntu/|null|-8.4167|40.2
+Portugal|Rede das Novas Licenciaturas - Instituto Superior T?cnico|1 Gbps|ftp.rnl.ist.utl.pt|http://ftp.rnl.ist.utl.pt/pub/ubuntu/archive/|ftp://ftp.rnl.ist.utl.pt/pub/ubuntu/archive/|rsync://ftp.rnl.ist.utl.pt/pub/ubuntu/archive/|-9.1333|38.7167
+Portugal|Universidade do Porto - Faculdade de Engenharia|1 Gbps|mirrors.fe.up.pt|http://mirrors.fe.up.pt/ubuntu/|ftp://mirrors.fe.up.pt/pub/ubuntu/|rsync://mirrors.fe.up.pt/pub/ubuntu/|-8.6167|41.15
+Portugal|nfsi telecom|1 Gbps|mirrors.nfsi.pt|http://mirrors.nfsi.pt/ubuntu/|ftp://mirrors.nfsi.pt/pub/ubuntu/|null|-8.0|39.5
+Portugal|sdAEIST|100 Mbps|darkstar.ist.utl.pt|http://darkstar.ist.utl.pt/ubuntu/archive/|ftp://darkstar.ist.utl.pt/pub/ubuntu/archive|rsync://darkstar.ist.utl.pt/pub/ubuntu/archive/|-9.1333|38.7167
+Portugal|DEIS-ISEC|100 Mbps|deis-mirrors.isec.pt|http://deis-mirrors.isec.pt/ubuntu/|null|null|-8.4167|40.2
+Portugal|Mosel ESTG-IPleiria|100 Mbps|mosel.estg.ipleiria.pt|http://mosel.estg.ipleiria.pt/mirror/distros/ubuntu/archive/|null|rsync://http://mosel.estg.ipleiria.pt/mirror/distros/ubuntu/archive/|-8.8|39.75
+Romania|UPC Romania|1 Gbps|ftp.astral.ro|http://ftp.astral.ro/mirrors/ubuntu.com/ubuntu/|ftp://ftp.astral.ro/mirrors/ubuntu.com/ubuntu/|null|25.0|46.0
+Romania|West University of Timisoara|1 Gbps|ftp.info.uvt.ro|http://ftp.info.uvt.ro/ubuntu/|ftp://ftp.info.uvt.ro/ubuntu/|null|21.2272|45.7494
+Romania|Agency ARNIEC/RoEduNet|1 Gbps|ftp.roedu.net|http://ftp.roedu.net/mirrors/ubuntulinux.org/ubuntu/|ftp://ftp.roedu.net/mirrors/ubuntulinux.org/ubuntu/|rsync://ftp.roedu.net/ubuntu/|26.1|44.4333
+Romania|ArLUG (Arad Linux Users Group)|100 Mbps|mirror.arlug.ro|http://mirror.arlug.ro/pub/ubuntu/ubuntu/|ftp://mirror.arlug.ro/pub/ubuntu/ubuntu/|null|21.3167|46.1833
+Romania|ServerHost|100 Mbps|mirrors.serverhost.ro|http://mirrors.serverhost.ro/ubuntu/archive/|null|null|26.1|44.4333
+Russian Federation|COMSTAR-Direct|1 Gbps|ftp.mtu.ru|http://ftp.mtu.ru/pub/ubuntu/archive/|ftp://ftp.mtu.ru/pub/ubuntu/archive/|rsync://ftp.mtu.ru/pub/ubuntu/archive/|37.6156|55.7522
+Russian Federation|Beeline|1 Gbps|mirror.corbina.net|http://mirror.corbina.net/ubuntu/|ftp://mirror.corbina.net/ubuntu/|rsync://ftp.corbina.net/ubuntu/|100.0|60.0
+Russian Federation|Golden Telecom Inc|1 Gbps|mirror.rol.ru|http://mirror.rol.ru/ubuntu/|null|null|37.6156|55.7522
+Russian Federation|TIMEWEB|1 Gbps|mirror.timeweb.ru|http://mirror.timeweb.ru/ubuntu/|ftp://mirror.timeweb.ru/ubuntu/|rsync://mirror.timeweb.ru/ubuntu/|100.0|60.0
+Russian Federation|Yandex|1 Gbps|mirror.yandex.ru|http://mirror.yandex.ru/ubuntu/|ftp://mirror.yandex.ru/ubuntu/|rsync://mirror.yandex.ru/ubuntu/|100.0|60.0
+Russian Federation|Corbina|1 Gbps|mirror2.corbina.ru|http://mirror2.corbina.ru/ubuntu/|ftp://mirror2.corbina.ru/ubuntu/|rsync://mirror2.corbina.ru/ubuntu/|37.6156|55.7522
+Russian Federation|Novosibirsk State University|100 Mbps|linux.nsu.ru|http://linux.nsu.ru/ubuntu/|ftp://linux.nsu.ru/ubuntu/|rsync://linux.nsu.ru/ubuntu/|82.9344|55.0411
+Russian Federation|Perm State University|100 Mbps|linux.psu.ru|http://linux.psu.ru/ubuntu/|ftp://ftp.psu.ru/pub/soft/os/ubuntu/|null|56.25|58.0
+Russian Federation|LTD BeGet|100 Mbps|mirror.beget.ru|http://mirror.beget.ru/ubuntu/|ftp://mirror.beget.ru/ubuntu/|rsync://mirror.beget.ru/ubuntu/|100.0|60.0
+Russian Federation|Eurotelecom JSC|1 Mbps|linux.vlz.su|http://linux.vlz.su/ubuntu/|ftp://linux.vlz.su/pub/Ubuntu/|rsync://linux.vlz.su/ubuntu/|100.0|60.0
+Saudi Arabia|KACST/ISU|1 Gbps|ubuntu.mirrors.isu.net.sa|http://ubuntu.mirrors.isu.net.sa/ubuntu/|ftp://ubuntu.mirrors.isu.net.sa/ubuntu/|null|45.0|25.0
+Serbia|Institute of Physics Belgrade|1 Gbps|rpm.scl.rs|http://rpm.scl.rs/linux/ubuntu/archive/|null|null|20.4681|44.8186
+Serbia|RC ETF|1 Gbps|ubuntu.etf.bg.ac.rs|http://ubuntu.etf.bg.ac.rs/ubuntu/|ftp://ubuntu.etf.bg.ac.rs/ubuntu/|null|20.4681|44.8186
+Singapore|National University of Singapore|1 Gbps|download.nus.edu.sg|http://download.nus.edu.sg/mirror/ubuntu/|null|null|103.8558|1.2931
+Singapore|National University of Singapore (School of Computing - Siglabs)|1 Gbps|mirror.nus.edu.sg|http://mirror.nus.edu.sg/ubuntu/|null|null|103.8558|1.2931
+Singapore|ezNetworking Solutions Pte. Ltd.|1 Gbps|ubuntu.oss.eznetsols.org|http://ubuntu.oss.eznetsols.org/ubuntu/|ftp://ftp.oss.eznetsols.org/linux/ubuntu/|rsync://rsync.oss.eznetsols.org/ftp/linux/ubuntu/|103.8|1.3667
+Singapore|Nanyang Technological University Open Source Society|100 Mbps|linux.ntuoss.org|http://linux.ntuoss.org/ubuntu/|null|null|103.8558|1.2931
+Slovakia|Antik computers & communications s.r.o.|1 Gbps|ftp.antik.sk|http://ftp.antik.sk/ubuntu/|ftp://ftp.antik.sk/ubuntu/|rsync://ftp.antik.sk/ubuntu/|19.5|48.6667
+Slovakia|Energotel, a.s.|1 Gbps|ftp.energotel.sk|http://ftp.energotel.sk/pub/linux/ubuntu/|ftp://ftp.energotel.sk/pub/linux/ubuntu/|rsync://rsync.energotel.sk/ubuntu/|19.5|48.6667
+Slovakia|Rainside|1 Gbps|tux.rainside.sk|http://tux.rainside.sk/ubuntu/|ftp://tux.rainside.sk/ubuntu/|null|19.5|48.6667
+Slovenia|Arnes|100 Mbps|ftp.arnes.si|http://ftp.arnes.si/pub/mirrors/ubuntu/|ftp://ftp.arnes.si/mirrors/ubuntu/|null|14.5144|46.0553
+Slovenia|lihnidos.org|45 Mbps|mirror.lihnidos.org|http://mirror.lihnidos.org/ubuntu/ubuntu/|null|null|14.5144|46.0553
+South Africa|Telkom SAIX|1 Gbps|ubuntu.saix.net|http://ubuntu.saix.net/ubuntu-archive/|ftp://ftp.saix.net/pub/linux/distributions/Ubuntu/ubuntu-archive/|null|28.2294|-25.7069
+South Africa|TENET|1 Gbps|ubuntu.mirror.ac.za|http://ubuntu.mirror.ac.za/ubuntu-archive/|ftp://ubuntu.mirror.ac.za/ubuntu-archive/|rsync://ubuntu.mirror.ac.za/ubuntu-archive/|18.4|-33.9833
+South Africa|University of Stellenbosch|100 Mbps|ftp.sun.ac.za|http://ftp.sun.ac.za/ftp/ubuntu/|ftp://ftp.sun.ac.za/ubuntu/|null|18.85|-33.9333
+South Africa|UCT LEG|10 Mbps|ftp.leg.uct.ac.za|http://ftp.leg.uct.ac.za/ubuntu/|ftp://ftp.leg.uct.ac.za/ubuntu/|rsync://ftp.leg.uct.ac.za/pub/linux/ubuntu/|18.4167|-33.9167
+Spain|CICA|2 Gbps|ubuntu.cica.es|http://ubuntu.cica.es/ubuntu/|ftp://ubuntu.cica.es/ubuntu/|rsync://ubuntu.cica.es/ubuntu/|-5.9869|37.3772
+Spain|Universidad de Zaragoza|1 Gbps|softlibre.unizar.es|http://softlibre.unizar.es/ubuntu/archive/|ftp://softlibre.unizar.es/ubuntu/archive/|null|-0.8833|41.6333
+Spain|RedIRIS|1 Gbps|sunsite.rediris.es|http://sunsite.rediris.es/mirror/ubuntu-archive/|ftp://ftp.rediris.es/mirror/ubuntu-archive/|null|-3.6833|40.4
+Spain|Universidad Carlos III de Madrid - Oficina de Software Libre|1 Gbps|ubuntu.uc3m.es|http://ubuntu.uc3m.es/ubuntu/|ftp://ubuntu.uc3m.es/ubuntu/|rsync://ubuntu.uc3m.es/ubuntu/|-3.6833|40.4
+Spain|Caliu|100 Mbps|ftp.caliu.cat|http://ftp.caliu.cat/pub/distribucions/ubuntu/archive/|null|null|2.1833|41.3833
+Spain|Delegaci?n de Alumnos de Teleco - ETSIT - UPM|100 Mbps|ftp.dat.etsit.upm.es|http://ftp.dat.etsit.upm.es/ubuntu/|ftp://ftp.dat.etsit.upm.es/ubuntu/|null|-3.6833|40.4
+Spain|GRN Serveis telem?tics|100 Mbps|ubuntu.grn.cat|http://ubuntu.grn.cat/ubuntu/|ftp://ubuntu.grn.cat/ubuntu/|null|-3.6833|40.4
+Sri Lanka|Lanka Education and Research Network (LEARN)|100 Mbps|mirror.learn.ac.lk|http://mirror.learn.ac.lk/ubuntu/|ftp://mirror.learn.ac.lk/pub/ubuntu/|rsync://mirror.learn.ac.lk/ubuntu/|80.6028|7.2631
+Sri Lanka|SchoolNet - Sri Lanka (under Ministry of Education)|45 Mbps|archive.ubuntu.schoolnet.lk|http://archive.ubuntu.schoolnet.lk/ubuntu/|ftp://archive.ubuntu.schoolnet.lk/ubuntu/|rsync://archive.ubuntu.schoolnet.lk/ubuntu-archive/|79.8908|6.8728
+Sweden|Academic Computer Club, Ume? University|10 Gbps|ftp.acc.umu.se|http://ftp.acc.umu.se/ubuntu/|ftp://ftp.acc.umu.se/ubuntu/|rsync://ftp.acc.umu.se/ubuntu/|20.25|63.8333
+Sweden|SUNET|2 Gbps|ftp.sunet.se|http://ftp.sunet.se/pub/os/Linux/distributions/ubuntu/ubuntu/|ftp://ftp.sunet.se/pub/os/Linux/distributions/ubuntu/ubuntu/|null|15.0|62.0
+Sweden|Availo|1 Gbps|ftp.availo.se|http://ftp.availo.se/ubuntu/|ftp://ftp.availo.se/ubuntu/|rsync://rsync.availo.se/ubuntu/|15.0|62.0
+Sweden|DF - The Computer Society at the Lund Institute of Technology.|1 Gbps|ftp.df.lth.se|http://ftp.df.lth.se/ubuntu/|ftp://ftp.df.lth.se/ubuntu/|rsync://ftp.df.lth.se/ubuntu/|13.1833|55.7
+Sweden|DatorSektionen H?gskolan J?nk?ping|1 Gbps|ftp.ds.karen.hj.se|http://ftp.ds.karen.hj.se/ubuntu/|ftp://ftp.ds.karen.hj.se/ubuntu/|null|14.1833|57.7833
+Sweden|Lysator|1 Gbps|ftp.lysator.liu.se|http://ftp.lysator.liu.se/ubuntu/|ftp://ftp.lysator.liu.se/ubuntu/|rsync://ftp.lysator.liu.se/ubuntu/|15.6167|58.4167
+Sweden|Portlane|1 Gbps|ftp.portlane.com|http://ftp.portlane.com/ubuntu/|ftp://ftp.portlane.com/ubuntu/|null|12.0167|58.4167
+Sweden|Kernel.org|1 Gbps|mirrors.se.eu.kernel.org|http://mirrors.se.eu.kernel.org/ubuntu/|ftp://mirrors.se.eu.kernel.org/ubuntu/|rsync://mirrors.se.eu.kernel.org/ubuntu/|-122.211|37.4914
+Sweden|Cybercom Hosting|1 Gbps|ubuntu.cybercomhosting.com|http://ubuntu.cybercomhosting.com/ubuntu/|null|rsync://ubuntu.cybercomhosting.com/ubuntu/|15.0|62.0
+Sweden|Stockholm University|1 Gbps|ubuntu.mirror.su.se|http://ubuntu.mirror.su.se/ubuntu/|ftp://ubuntu.mirror.su.se/ubuntu/|rsync://ubuntu.mirror.su.se/ubuntu/|18.05|59.3333
+Switzerland|SWITCH|10 Gbps|mirror.switch.ch|http://mirror.switch.ch/ftp/mirror/ubuntu/|ftp://mirror.switch.ch/mirror/ubuntu/|null|8.55|47.3667
+Taiwan|NCHC, Taiwan|20 Gbps|free.nchc.org.tw|http://free.nchc.org.tw/ubuntu/|ftp://free.nchc.org.tw/ubuntu|null|120.9714|24.8047
+Taiwan|Providence University , CCI|1 Gbps|ftp.cs.pu.edu.tw|http://ftp.cs.pu.edu.tw/Linux/Ubuntu/ubuntu/|ftp://ftp.cs.pu.edu.tw/Linux/Ubuntu/ubuntu/|rsync://ftp.cs.pu.edu.tw/Linux/Ubuntu/ubuntu/|121.525|25.0392
+Taiwan|Chung Hua University CSIE|1 Gbps|ftp.csie.chu.edu.tw|null|ftp://ftp.csie.chu.edu.tw/Ubuntu/archive/|null|121.525|25.0392
+Taiwan|National Sun Yat-sen University|1 Gbps|ftp.nsysu.edu.tw|http://ftp.nsysu.edu.tw/Ubuntu/ubuntu/|ftp://ftp.nsysu.edu.tw/Unix-like/Ubuntu/ubuntu/|null|121.525|25.0392
+Taiwan|TaiChung County Education Network Center|1 Gbps|ftp.tcc.edu.tw|http://ftp.tcc.edu.tw/Linux/ubuntu/|ftp://ftp.tcc.edu.tw/Linux/ubuntu/|null|121.525|25.0392
+Taiwan|TKU-TamKangUniversity|1 Gbps|ftp.tku.edu.tw|http://ftp.tku.edu.tw/ubuntu/|ftp://ftp.tku.edu.tw/ubuntu/|null|121.525|25.0392
+Taiwan|National Center for High-Performance Computing(NCHC)|1 Gbps|ftp.twaren.net|http://ftp.twaren.net/Linux/Ubuntu/ubuntu/|ftp://ftp.twaren.net/Linux/Ubuntu/ubuntu/|null|120.9714|24.8047
+Taiwan|National Taitung University|1 Gbps|mirror.nttu.edu.tw|http://mirror.nttu.edu.tw/ubuntu/|ftp://mirror.nttu.edu.tw/ubuntu/|null|121.15|22.75
+Taiwan|Institute of Network Development, National Taiwan Ocean University|1 Gbps|shadow.ind.ntou.edu.tw|http://shadow.ind.ntou.edu.tw/ubuntu/|ftp://shadow.ind.ntou.edu.tw/ubuntu/|rsync://shadow.ind.ntou.edu.tw/ubuntu/|121.525|25.0392
+Taiwan|National Taiwan University|1 Gbps|tw.archive.ubuntu.com|http://tw.archive.ubuntu.com/ubuntu/|ftp://tw.archive.ubuntu.com/ubuntu/|rsync://tw.archive.ubuntu.com/ubuntu/|121.525|25.0392
+Taiwan|NCTUCSCC|1 Gbps|ubuntu.cs.nctu.edu.tw|http://ubuntu.cs.nctu.edu.tw/ubuntu/|ftp://ubuntu.cs.nctu.edu.tw/ubuntu/|rsync://ubuntu.cs.nctu.edu.tw/ubuntu/|120.9714|24.8047
+Taiwan|Shu-Te University|1 Gbps|ubuntu.stu.edu.tw|http://ubuntu.stu.edu.tw/ubuntu/|ftp://ubuntu.stu.edu.tw/ubuntu/|null|121.525|25.0392
+Taiwan|National Chi Nan University|100 Mbps|ftp.ncnu.edu.tw|http://ftp.ncnu.edu.tw/Linux/ubuntu/ubuntu/|ftp://ftp.ncnu.edu.tw/Linux/ubuntu/ubuntu/|rsync://ftp.ncnu.edu.tw/ubuntu/ubuntu/|121.525|25.0392
+Thailand|Computer Center, Khon Kaen University|1 Gbps|mirror.kku.ac.th|http://mirror.kku.ac.th/ubuntu/|ftp://mirror.kku.ac.th/ubuntu/|rsync://mirror.kku.ac.th/ubuntu/|102.8333|16.4333
+Thailand|Office of Computer Services, Kasetsart University|1 Gbps|mirror1.ku.ac.th|http://mirror1.ku.ac.th/ubuntu/|null|null|100.5167|13.75
+Thailand|Prince of Songkla University|1 Gbps|mirrors.psu.ac.th|http://mirrors.psu.ac.th/pub/ubuntu/|ftp://mirrors.psu.ac.th/pub/ubuntu/|rsync://mirrors.psu.ac.th/ubuntu/|100.5167|13.75
+Thailand|School of Information Technology, KMUTT|1 Gbps|ubuntu-archive.sit.kmutt.ac.th|http://ubuntu-archive.sit.kmutt.ac.th/|null|null|100.5167|13.75
+Tunisia|Agence Tunisienne d'Internet|1 Gbps|ubuntu.mirror.tn|http://ubuntu.mirror.tn/|ftp://ubuntu.mirror.tn/|rsync://ubuntu.mirror.tn/|9.0|34.0
+Turkey|Linux Kullanicilari Dernegi|1 Gbps|ftp.linux.org.tr|http://ftp.linux.org.tr/ubuntu/|ftp://ftp.linux.org.tr/ubuntu/|rsync://ftp.linux.org.tr/ubuntu/|32.8644|39.9272
+Turkey|Bilgi University|100 Mbps|russell.cs.bilgi.edu.tr|http://russell.cs.bilgi.edu.tr/ubuntu/|ftp://russell.cs.bilgi.edu.tr/ubuntu/|null|28.9647|41.0186
+Turkey|Turkey GNU Organization|100 Mbps|ubuntu.gnu.gen.tr|http://ubuntu.gnu.gen.tr/ubuntu/|ftp://ubuntu.gnu.gen.tr/ubuntu/|rsync://ubuntu.gnu.gen.tr/ubuntu/|32.8644|39.9272
+Ukraine|www.abn-ad.com|1 Gbps|mirrors.uaip.org|http://mirrors.uaip.org/ubuntu/|ftp://mirrors.uaip.org/ubuntu/|rsync://mirrors.uaip.org/ubuntu/|32.0|49.0
+Ukraine|Telesys|1 Gbps|ubuntu-mirror.telesys.org.ua|http://ubuntu-mirror.telesys.org.ua/ubuntu/|ftp://ubuntu-mirror.telesys.org.ua/ubuntu/|rsync://ubuntu-mirror.telesys.org.ua/ubuntu/|32.0|49.0
+Ukraine|Mirohost.net|100 Mbps|mirror.mirohost.net|http://mirror.mirohost.net/ubuntu/|ftp://mirror.mirohost.net/ubuntu/|rsync://mirror.mirohost.net/ubuntu/|30.5167|50.4333
+Ukraine|XCP + HELL|10 Mbps|ubuntu.org.ua|http://ubuntu.org.ua/ubuntu/|ftp://ubuntu.org.ua/ubuntu/|rsync://ubuntu.org.ua/ubuntu/|30.5167|50.4333
+United Kingdom|University Of Kent UK Mirror Service|10 Gbps|www.mirrorservice.org|http://www.mirrorservice.org/sites/archive.ubuntu.com/ubuntu/|ftp://ftp.mirrorservice.org/sites/archive.ubuntu.com/ubuntu/|rsync://rsync.mirrorservice.org/archive.ubuntu.com/ubuntu/|-2.5833|51.45
+United Kingdom|Ticklers.org|1 Gbps|ftp.ticklers.org|http://ftp.ticklers.org/archive.ubuntu.org/ubuntu/|ftp://ftp.ticklers.org/archive.ubuntu.org/ubuntu/|rsync://ftp.ticklers.org/archive.ubuntu.org/ubuntu/|-2.0|54.0
+United Kingdom|XILO Communications Ltd.|1 Gbps|mirror.as29550.net|http://mirror.as29550.net/archive.ubuntu.com/|ftp://mirror.as29550.net/archive.ubuntu.com/|null|-2.0|54.0
+United Kingdom|Bytemark Hosting|1 Gbps|mirror.bytemark.co.uk|http://mirror.bytemark.co.uk/ubuntu/|ftp://mirror.bytemark.co.uk/ubuntu/|rsync://mirror.bytemark.co.uk/ubuntu/|-2.0|54.0
+United Kingdom|Krystal Hosting|1 Gbps|mirror.krystal.co.uk|http://mirror.krystal.co.uk/ubuntu/|ftp://mirror.krystal.co.uk/ubuntu/|rsync://mirror.krystal.co.uk/ubuntu/|-2.0|54.0
+United Kingdom|Oxford University Computing Services|1 Gbps|mirror.ox.ac.uk|http://mirror.ox.ac.uk/sites/archive.ubuntu.com/ubuntu/|ftp://mirror.ox.ac.uk/sites/archive.ubuntu.com/ubuntu/|rsync://mirror.ox.ac.uk/sites/archive.ubuntu.com/|-1.25|51.75
+United Kingdom|Goscomb Technologies Limited|1 Gbps|mirror.sov.uk.goscomb.net|http://mirror.sov.uk.goscomb.net/ubuntu/|ftp://mirror.sov.uk.goscomb.net/ubuntu/|null|-2.0|54.0
+United Kingdom|RM Education|1 Gbps|mirror01.th.ifl.net|http://mirror01.th.ifl.net/ubuntu/|ftp://mirror01.th.ifl.net/ubuntu/|rsync://mirror01.th.ifl.net/ubuntu/|-2.0|54.0
+United Kingdom|Coreix LTD|1 Gbps|mirrors.coreix.net|http://mirrors.coreix.net/ubuntu/|null|null|-2.0|54.0
+United Kingdom|Melbourne Server Hosting Ltd.|1 Gbps|mirrors.melbourne.co.uk|http://mirrors.melbourne.co.uk/ubuntu/|ftp://mirrors.melbourne.co.uk/ubuntu/|rsync://mirrors.melbourne.co.uk/ubuntu/|-1.4333|52.8167
+United Kingdom|Datahop Ltd.|1 Gbps|ubuntu.datahop.net|http://ubuntu.datahop.net/ubuntu/|ftp://ubuntu.datahop.net/ubuntu/|rsync://ubuntu.datahop.net/ubuntu/|-2.0|54.0
+United Kingdom|UK2|1 Gbps|ubuntu.mirrors.uk2.net|http://ubuntu.mirrors.uk2.net/ubuntu/|ftp://ubuntu.mirrors.uk2.net/ubuntu/|rsync://ubuntu.mirrors.uk2.net/ubuntu/|-2.0|54.0
+United Kingdom|Canonical Ltd.|100 Mbps|archive.ubuntu.com|http://archive.ubuntu.com/ubuntu/|ftp://archive.ubuntu.com/ubuntu/|rsync://archive.ubuntu.com/ubuntu/|-2.0|54.0
+United Kingdom|The Positive Internet Company|100 Mbps|ubuntu.positive-internet.com|http://ubuntu.positive-internet.com/ubuntu/|null|null|-2.0|54.0
+United Kingdom|Retrosnub Internet Services|100 Mbps|ubuntu.retrosnub.co.uk|http://ubuntu.retrosnub.co.uk/ubuntu/|ftp://ubuntu.retrosnub.co.uk/ubuntu/|rsync://ubuntu.retrosnub.co.uk/ubuntu/|-2.0|54.0
+United Kingdom|Virgin Media|100 Mbps|ubuntu.virginmedia.com|http://ubuntu.virginmedia.com/archive/|ftp://mirrors.virginmedia.com/mirrors/ubuntu/archive|null|-2.0|54.0
+United States|Argonne National Laboratory|10 Gbps|mirror.anl.gov|http://mirror.anl.gov/pub/ubuntu/|ftp://mirror.anl.gov/pub/ubuntu/|rsync://mirror.anl.gov/ubuntu/|-87.9706|41.6815
+United States|Pacific NorthWest National Lab|10 Gbps|mirror.pnl.gov|http://mirror.pnl.gov/ubuntu/|null|null|-119.3222|46.3282
+United States|LeaseWeb USA, Inc|4 Gbps|mirror.us.leaseweb.net|http://mirror.us.leaseweb.net/ubuntu/|ftp://mirror.us.leaseweb.net/ubuntu/|null|-75.5281|39.7157
+United States|Columbia University|2 Gbps|mirror.cc.columbia.edu|http://mirror.cc.columbia.edu/pub/linux/ubuntu/archive/|ftp://mirror.cc.columbia.edu/pub/linux/ubuntu/archive/|null|-73.9653|40.8006
+United States|Limestone Networks|2 Gbps|mirror.lstn.net|http://mirror.lstn.net/ubuntu/|ftp://mirror.lstn.net/ubuntu/|rsync://mirror.lstn.net/ubuntu/|-96.8028|32.7791
+United States|Kernel.org|2 Gbps|mirrors.us.kernel.org|http://mirrors.us.kernel.org/ubuntu/|ftp://mirrors.us.kernel.org/ubuntu/|rsync://mirrors.us.kernel.org/ubuntu/|-122.211|37.4914
+United States|University of Utah|2 Gbps|ubuntu.cs.utah.edu|http://ubuntu.cs.utah.edu/ubuntu/|ftp://ubuntu.cs.utah.edu/ubuntu/ubuntu/|rsync://ubuntu.cs.utah.edu/ubuntu/|-111.7367|40.7855
+United States|OSU Open Source Lab|2 Gbps|ubuntu.osuosl.org|http://ubuntu.osuosl.org/ubuntu/|ftp://ubuntu.osuosl.org/pub/ubuntu/|rsync://ubuntu.osuosl.org/ubuntu/|-122.5298|42.1563
+United States|FDCServers.net LLC|1 Gbps|76.73.4.58|http://76.73.4.58/ubuntu/|null|rsync://76.73.4.58/ubuntu/|-87.6272|41.8776
+United States|Michigan State University College of Engineering|1 Gbps|ftp.egr.msu.edu|http://ftp.egr.msu.edu/pub/ubuntu/archive/|ftp://ftp.egr.msu.edu/pub/ubuntu/archive/|null|-84.4882|42.7283
+United States|University of South Florida|1 Gbps|ftp.usf.edu|http://ftp.usf.edu/pub/ubuntu/|ftp://ftp.usf.edu/pub/ubuntu/|null|-82.4128|28.0631
+United States|Datto Inc.|1 Gbps|mirror.dattobackup.com|http://mirror.dattobackup.com/ubuntu/|null|rsync://mirror.dattobackup.com/ubuntu/|-97.0|38.0
+United States|MetroCast Cablevision|1 Gbps|mirror.metrocast.net|http://mirror.metrocast.net/ubuntu/|null|null|-71.5146|43.6322
+United States|Steadfast Networks|1 Gbps|mirror.steadfast.net|http://mirror.steadfast.net/ubuntu/|ftp://mirror.steadfast.net/ubuntu/|null|-87.6248|41.8471
+United States|SymNDS|1 Gbps|mirror.symnds.com|http://mirror.symnds.com/ubuntu/|ftp://mirror.symnds.com/ubuntu/|rsync://mirror.symnds.com/ubuntu/|-97.0|38.0
+United States|Team Cymru, Inc.|1 Gbps|mirror.team-cymru.org|http://mirror.team-cymru.org/ubuntu/|ftp://mirror.team-cymru.org/ubuntu/|rsync://mirror.team-cymru.org/ubuntu/|-77.0763|38.9144
+United States|University of Maryland|1 Gbps|mirror.umd.edu|http://mirror.umd.edu/ubuntu/|null|rsync://mirror.umd.edu/ubuntu/|-76.8777|38.8336
+United States|University of Oregon|1 Gbps|mirror.uoregon.edu|http://mirror.uoregon.edu/ubuntu/|ftp://mirror.uoregon.edu/ubuntu/|null|-123.0547|44.0364
+United States|Accretive Networks|1 Gbps|mirrors.accretive-networks.net|http://mirrors.accretive-networks.net/ubuntu/|null|null|-122.348|47.6145
+United States|Portland State University|1 Gbps|mirrors.cat.pdx.edu|http://mirrors.cat.pdx.edu/ubuntu/|null|rsync://mirrors.cat.pdx.edu/ubuntu/|-122.6932|45.5073
+United States|Northeastern University College of Computer Science|1 Gbps|mirrors.ccs.neu.edu|http://mirrors.ccs.neu.edu/ubuntu/|ftp://ftp.ccs.neu.edu/net/mirrors/archive.ubuntu.com/|null|-71.0878|42.3424
+United States|Easynews|1 Gbps|mirrors.easynews.com|http://mirrors.easynews.com/linux/ubuntu/|ftp://mirrors.easynews.com/linux/ubuntu|null|-118.4925|34.016
+United States|EcVps Technology|1 Gbps|mirrors.ecvps.com|http://mirrors.ecvps.com/ubuntu/|ftp://mirrors.ecvps.com/ubuntu/|null|-111.8147|41.6929
+United States|GigeNet|1 Gbps|mirrors.gigenet.com|http://mirrors.gigenet.com/ubuntuarchive/|ftp://mirrors.gigenet.com/ubuntuarchive/|rsync://mirrors.gigenet.com/ubuntuarchive/|-87.9921|42.0643
+United States|MIT SIPB|1 Gbps|mirrors.mit.edu|http://mirrors.mit.edu/ubuntu/|null|rsync://mirrors.mit.edu/ubuntu/|-71.1028|42.3646
+United States|Rochester Institute of Technology|1 Gbps|mirrors.rit.edu|http://mirrors.rit.edu/ubuntu/|ftp://mirrors.rit.edu/ubuntu/|rsync://mirrors.rit.edu/ubuntu/|-77.6189|43.1693
+United States|Syringa Networks|1 Gbps|mirrors.syringanetworks.net|http://mirrors.syringanetworks.net/ubuntu-archive/|ftp://mirrors.syringanetworks.net/ubuntu-archive/|rsync://mirrors.syringanetworks.net/ubuntu-archive/|-116.4234|43.5992
+United States|Xmission|1 Gbps|mirrors.xmission.com|http://mirrors.xmission.com/ubuntu/|ftp://mirrors.xmission.com/ubuntu/|null|-111.8837|40.7561
+United States|TDS Internet Services|1 Gbps|ubuntu.mirrors.tds.net|http://ubuntu.mirrors.tds.net/pub/ubuntu/|ftp://ubuntu.mirrors.tds.net/pub/ubuntu/|rsync://ubuntu.mirrors.tds.net/ubuntu/|-89.5274|43.0737
+United States|Frontier Communications|1 Gbps|ubuntu.mirror.frontiernet.net|http://ubuntu.mirror.frontiernet.net/ubuntu/|ftp://ubuntu.mirror.frontiernet.net/ubuntu/|rsync://ubuntu.mirror.frontiernet.net/ubuntu/|-97.0|38.0
+United States|pair Networks|1 Gbps|ubuntu.mirrors.pair.com|http://ubuntu.mirrors.pair.com/archive/|ftp://ubuntu.mirrors.pair.com/archive/|null|-79.9294|40.4531
+United States|Walla Walla University|1 Gbps|ubuntu.wallawalla.edu|http://ubuntu.wallawalla.edu/ubuntu/|ftp://ftp.wallawalla.edu/pub/mirrors/ubuntu/|rsync://ftp.wallawalla.edu/ubuntu/|-118.4088|46.0447
+United States|Wikimedia Foundation|1 Gbps|ubuntu.wikimedia.org|http://ubuntu.wikimedia.org/ubuntu/|null|null|-122.3942|37.7898
+United States|University of Minnesota Ubuntu Archive|1 Gbps|mirror.cs.umn.edu|http://mirror.cs.umn.edu/ubuntu/|null|rsync://mirror.cs.umn.edu/ubuntu/|-93.2323|44.9733
+United States|Carnegie Mellon Computer Club|1 Gbps|www.club.cc.cmu.edu|http://www.club.cc.cmu.edu/pub/ubuntu/|ftp://www.club.cc.cmu.edu/pub/ubuntu/|rsync://www.club.cc.cmu.edu/ubuntu/|-79.9561|40.4439
+United States|Georgia Tech. Software Library|1 Gbps|www.gtlib.gatech.edu|http://www.gtlib.gatech.edu/pub/ubuntu/|ftp://ftp.gtlib.gatech.edu/pub/ubuntu|rsync://rsync.gtlib.gatech.edu/ubuntu/|-84.398|33.7763
+United States|Duke University|100 Mbps|archive.linux.duke.edu|http://archive.linux.duke.edu/ubuntu/|null|null|-78.9019|35.9954
+United States|University of Illinois|100 Mbps|cosmos.cites.illinois.edu|http://cosmos.cites.illinois.edu/pub/ubuntu/|ftp://cosmos.cites.illinois.edu/pub/ubuntu/|null|-88.2123|40.1095
+United States|Michigan Tech Linux Users' Group|100 Mbps|lug.mtu.edu|http://lug.mtu.edu/ubuntu/|ftp://lug.mtu.edu/ubuntu/|rsync://lug.mtu.edu/ubuntu/|-88.6471|47.1544
+United States|Alfred State College|100 Mbps|mirror.alfredstate.edu|http://mirror.alfredstate.edu/ubuntu/|null|null|-77.7907|42.2541
+United States|Clarkson University|100 Mbps|mirror.clarkson.edu|http://mirror.clarkson.edu/ubuntu/|null|rsync://mirror.clarkson.edu/ubuntu/|-74.9258|44.6609
+United States|Harvey Mudd College|100 Mbps|mirror.hmc.edu|http://mirror.hmc.edu/ubuntu/|null|null|-117.7143|34.1223
+United States|HOSEF|100 Mbps|mirror.hosef.org|http://mirror.hosef.org/ubuntu/|ftp://mirror.hosef.org/ubuntu/|rsync://mirror.hosef.org/ubuntu/|-157.752|21.4003
+United States|University of California at Davis|100 Mbps|mirror.math.ucdavis.edu|http://mirror.math.ucdavis.edu/ubuntu/|null|null|-121.6398|38.4829
+United States|Picosecond Software|100 Mbps|mirror.picosecond.org|http://mirror.picosecond.org/ubuntu/|ftp://mirror.picosecond.org/ubuntu/|rsync://mirror.picosecond.org/ubuntu/|-121.8962|37.5155
+United States|Bloomsburg University of Pennsylvania|100 Mbps|mirrors.bloomu.edu|http://mirrors.bloomu.edu/ubuntu/|ftp://mirrors.bloomu.edu/ubuntu/|rsync://mirrors.bloomu.edu/ubuntu/|-76.4701|41.053
+United States|Washington State University|100 Mbps|ubuntu.eecs.wsu.edu|http://ubuntu.eecs.wsu.edu/|ftp://ubuntu.eecs.wsu.edu/|null|-117.6443|46.8387
+United States|Secured Servers LLC|100 Mbps|ubuntu.securedservers.com|http://ubuntu.securedservers.com/|null|null|-111.9171|33.4357
+United States|Us.archive.ubuntu.com-archive|100 Mbps|us.archive.ubuntu.com|http://us.archive.ubuntu.com/ubuntu/|null|null|-2.0|54.0
+United States|Boston University Linux Users Group|100 Mbps|www.lug.bu.edu|http://www.lug.bu.edu/mirror/ubuntu/|ftp://ftp.lug.bu.edu/mirror/ubuntu/|null|-71.0993|42.3451
+United States|WVU LCSEE|45 Mbps|mirror.lcsee.wvu.edu|http://mirror.lcsee.wvu.edu/ubuntu/|null|null|-79.9433|39.6456
+United States|Einstein College of Medicine|45 Mbps|mirrors.einstein.yu.edu|http://mirrors.einstein.yu.edu/ubuntu/archive/|null|null|-73.8434|40.8449
+United States|Ftp-unina-it|10 Mbps|ftp.unina.it|http://ftp.unina.it/pub/linux/distributions/ubuntu/|null|null|13.0667|45.6833
+United States|Indiana University|10 Mbps|ftp.ussg.iu.edu|http://ftp.ussg.iu.edu/linux/ubuntu/|null|null|-86.4555|39.2499
+United States|The University of Texas at Austin|10 Mbps|ftp.utexas.edu|http://ftp.utexas.edu/ubuntu/|ftp://ftp.utexas.edu/pub/ubuntu/|rsync://ftp.utexas.edu/ubuntu/|-97.7369|30.2961
+United States|Virginia Commonwealth University|10 Mbps|mirror.vcu.edu|http://mirror.vcu.edu/pub/gnu+linux/ubuntu/|ftp://mirror.vcu.edu/pub/gnu+linux/ubuntu/|null|-77.4801|37.5409
+United States|University of Washington|10 Mbps|mirror1.cs.washington.edu|null|ftp://mirror1.cs.washington.edu/ubuntu/|null|-122.3326|47.5951
+United States|Computer Science at WMU|10 Mbps|mirrors.cs.wmich.edu|http://mirrors.cs.wmich.edu/ubuntu/|null|null|-85.6167|42.2683
+United States|Oakland University|10 Mbps|ubuntu.secs.oakland.edu|http://ubuntu.secs.oakland.edu/|null|null|-83.1843|42.658
+Uzbekistan|Sarkor-Telecom|45 Mbps|ubuntu.snet.uz|http://ubuntu.snet.uz/ubuntu/|ftp://ubuntu.snet.uz/ubuntu/|null|64.0|41.0
+Uzbekistan|Sharq Telekom|45 Mbps|ubuntu.uz|http://ubuntu.uz/ubuntu/|ftp://ubuntu.uz/ubuntu/|null|64.0|41.0
+Viet Nam|FPT Telecom|100 Mbps|mirror-fpt-telecom.fpt.net|http://mirror-fpt-telecom.fpt.net/ubuntu/|ftp://mirror-fpt-telecom.fpt.net/ubuntu/|null|106.6667|10.75
+Viet Nam|Cantho University|128 Kbps|ubuntu.ctu.edu.vn|http://ubuntu.ctu.edu.vn/archive/|null|null|105.7833|10.0333

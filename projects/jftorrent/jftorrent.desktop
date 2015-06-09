@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Torrent
+Comment=Torrent
+
+Icon=jftorrent
+
+Type=Application
+Categories=Network
+
+Exec=jftorrent
+StartupNotify=false
+Terminal=false
+MimeType=application/x-bittorrent
+
+Title=jfTorrent

@@ -1,0 +1,327 @@
+CHANGELOG:
+4-7-2015 : v1.9.4 released
+  - fixed some memory leaks
+3-26-2015 : v1.9.3 released
+  - added Online Help button to configure window (see ticket #25)
+2-9-2015 : v1.9.3 beta 1 (not released)
+  - added support for inbound calls where SDP is not in INVITE but in ACK instead (see RFC 3665 sec 3.6)
+    see ticket #24
+10-25-2014 : v1.9.2 released
+  - removed 'Keep Audio Open' option
+    audio is now start()ed only when needed (both output and input)
+    this should keep audio synced better (see bug #22)
+  - the audio recording has been moved to a seperate thread
+9-15-2014 : v1.9.1 released
+  - new option : exit when closed
+  - new tray icon (Windows 7 theme)
+7-8-2014 : v1.9.0 released
+  - new codec : G.722 wideband : 16Khz sampling rate @ 14bits/sample (64Kbps)
+    - with a different sampling rate I had to rewrite a lot of code to support different sampling rates.
+    - everything is now interpolated up to 44.1KHz internally (requires a bit more cpu power)
+    - JPL is now ready for more HD codecs
+      - although I've looked at some like G.711.1 and doing so would be very difficult
+        - do you remember your FFTs from university?
+7-5-2014 : v1.8.1 released
+  - fixed video codec selection (works better with Asterisk now)
+    - I was using the offered codecs instead of the accepted ones
+      and by default VP8 is used which Asterisk doesn't support yet
+4-22-2014 : v1.8.0 released
+  - new : a different ringtone can be assigned for inbound and outbound(ringback) tones. (user requested feature)
+3-12-2014 : v1.7.1 released
+  - fix : Java8 compatible
+  - new : added checkAuth() and checkForReplay() for SRTP (added security)
+2-1-2014 : v1.7.0 released
+  - new : SRTP key exchange thru DTLS (tested with jPBXlite/0.16 only)
+  - this should finish everything I have planned lately and jPhoneLite should quiet down for a while unless bugs are found
+1-31-2014 : v1.6.0 released
+  - new : SIP signaling now supports TCP and TLS transports
+    - with TLS you must configure Asterisk to not verify certificate: sip.conf add : tlsdontverifyserver=yes
+1-30-2014 : v1.5.0 released
+  - new : added SRTP media encryption, tested with Asterisk 1.8 (11.7.0)
+  - up next : secure signaling and DTLS
+12-31-2013 : v1.4.3 released
+  - fix : WinSound would cause NPE in stop() if start() failed
+  - fix : if TURN failed the line was unusable
+12-17-2013 : v1.4.2 released
+  - fix : when a call is placed on hold the RTPChannel thinks the stream is inactive and generates an rtpInactive event which ends the call (this logic was recently added)
+    - if the streams mode doesn't include recv then the inactive event is not triggered
+  - fix : properly send back the SDP mode (sendrecv, inactive, etc.) for each stream as requested in invite
+  - new : when the audio stream is on hold (no recv) an intermittent beep is generated locally
+12-12-2013 : v1.4.1 released
+  - fix : removed requestPublicIP in javaforce.voip.RTP - a quick add in v1.4.0 which is not needed and I didn't wait for reply which caused harmless stun exceptions
+  - new : now support using the LocalCamera on multiple lines at the same time (as long as they all use the same codec)
+12-9-2013 : v1.4.0 released
+  - added support for multiple video channels.  Video conferencing with jPBXlite/0.12 is now possible.
+    - see jpbxlite.sf.net/VideoConference.txt for more details
+  - video with XLite 4.x (H.263-1998) now works. (although Xlite's video decoder seems to have problems and even crashed a few times).
+  - many bug fixes
+11-30-2013 : v1.3.0 released
+  - added VP8 video codec support (RFC Draft : http://tools.ietf.org/html/draft-ietf-payload-vp8-10)
+11-27-2013 : v1.2.0 released
+  - added STUN,TURN,ICE support
+    - STUN is used to detect public IP/port
+    - TURN is used to relay RTP data when direct connecting is not possible
+      - some PBXes do NOT proxy the RTP data so TURN can be useful in these cases
+    - tested with resiprocate reTurn server (http://resiprocate.org/ReTurn_Overview)
+  - added SIP Expires to EditSettings dialog box (default = 3600 seconds) (was previously undocumented setting)
+  - added SIP/RTP Port Ranges
+  - added check for "received" & "rport" tag in "Via" field returned from server (RFC 3581)
+    - this is just as good as STUN (if the server supports it)
+  - removed dyndns support to detect public IP (lagged really bad sometimes with no proper timeout)
+11-22-2013 : v1.1.9 released
+  - update status when transfer is requested incase PBX doesn't respond
+  - perform sip registration in a new thread after config is done
+    - makes gui more responsive since registration can sometimes take several seconds
+  - other minor fixes
+11-21-2013 : v1.1.8 released
+  - calls are no longer cut off after a transfer, the PBX will issue a BYE when the transfer is complete (blind or non-blind)
+    - this avoids failed transfers leaving a call leg dangeling (which would eventually get dropped)
+  - during xfer process you can double-click a contact or recent call log to enter as target
+11-14-2013 : v1.1.7 released
+  - fixed sound uninit order
+  - fixed SIP registration using qop,nc (no quotes)
+  - fixed some other minor SIP handling issues
+  - added ESC/ENTER hotkeys to dialog boxes
+10-14-2013 : v1.1.6 released
+  - undo bug #14 but add a break;
+10-01-2013 : v1.1.5 released
+  - fixed ACK missing Tag sometimes (see bug #13)
+  - fixed NOTIFY not decoding messages sometimes (see bug #14)
+9-27-2013 : v1.1.4 released
+  - fixed msvcr100.dll not found on msi package
+9-26-2013 : v1.1.3 released
+  - fixed sipexpires option not being used in reregister()
+  - fixed possible crash in codecpack
+9-25-2013 : v1.1.2 released
+  - JPL is now UTF-8 compatible
+  - Settings includes a 'sipexpires' entry if you want to change it manually
+      Default = 3600 seconds (1 hr)
+      min=300 (5 mins) max = 3600 (1hr)
+  - added option to download CodecPack from EditSettings
+9-19-2013 : v1.1.1 released
+  - fixed WinSound issues
+9-16-2013 : v1.1.0 released
+  - H.263 RFC2190 still incomplete - maybe fix later
+  - tested with jPBXlite/0.9 including video
+9-13-2013 : v1.1.0 BETA #3 released
+  - new - all three audio systems provide selecting the output/input hardware (java/win/lnx)
+  - new - the Win32/64 loader is now 32/64bit universal (32bit loader will launch 64bit if needed)
+        - makes for just one MSI package (less confusion)
+  - if there are no more bug fixes this will become the next stable release
+9-12-2013 : v1.1.0 BETA #2 released
+  - new - finished Linux native API using JNA for Sound/Camera
+        - camera may not support all pixelformats until I get ffmpeg/libavdevice working
+9-7-2013 : v1.1.0 BETA #1 released
+  - new - all JNI code has been ported to JNA
+    - linux api has not been coded yet (so no camera yet in linux)
+  - new - H.263/264 is now supported with FFMPEG
+    - H.263 requires 1998/2000 versions.
+    - The original H.263 using RFC2190 is not supported yet (see src/javaforce/voip/RTPH263.java)
+  - new - JPL is now packaged in MSI files for Windows users
+7-28-2013 : v1.0.7 released
+  - fix - auto hold feature will not place a line on hold that is in a conference
+  - fix - an inbound reINVITE while still ringing would send a 200 back in error
+7-25-2013 : v1.0.6 released
+  - fix - was sending an ACK for a 183 (ringback).  ACK should only be sent for 200 once call is complete.
+  - hopefully this fixes all bugs related to new upgrades
+7-24-2013 : v1.0.5 released
+  - fix - onCancel() now fully ends a call which can happen in a ringback phase of a call
+7-23-2013 : v1.0.4 released
+  - fix - fix inbound call again - a reINVITE while line is still ringing could cause a second line to start ringing for the same call
+  - fix - hold function now works more than once (cseq was not incremented - which I had a comment not to do so - not sure why??? - oh well, works now).
+  - new - option:Auto Hold/Unhold - this will automatically hold/unhold lines as you switch between them
+  - new - ringback tones are now supported (SIP code 183).  If you call certain phones (mostly mobiles) they may have custom ring tones for you to hear.
+  - new - vol settings are now saved in config
+7-22-2013 : v1.0.3 released
+  - fix : if a line is ringing from inbound call and another inbound call comes in on the same SIP account while the first call is still rining,
+            the new call will overtake the same line and the first call was lost
+5-8-2013 : v1.0.2 released
+  - fix : SUBSCRIBE was not working (extra headers were removed before 401 was processed)
+  - new : can now perform non-blind transfers.
+    - when you want to transfer someone pick another line first
+    - call the transfer target on the other line and let them know you are going to transfer a call to them
+    - go back to the first line and press XFR and then the other line
+    - if all goes well the original line will be transfered to the other line
+3-1-2013 : v1.0.1 released
+  - fix : timestamp on g729a should be 160 like all the other codecs
+12-29-2012 : v1.0 released !!!
+  - no code change (a few renamed classes)
+  - Thanks to all over the world for sending in bug reports, network traps, etc. to help make jPhoneLite successful!!!
+12-5-2012 : v0.99.1 released
+  - fix : RTP buffering issue (now uses cyclical buffer)
+12-4-2012 : v0.99 released
+  - new : added a recording button (to WAV file)
+  - new : optimized codec encoding/decoding by avoiding memory reallocation (now assumes 20ms blocks)
+  - fix : g711a codec : encoding algo was wrong (copied incorrectly from asterisk)
+  - note : the next version will be 1.00 if I don't fix any bug in the next week or two
+12-3-2012 : v0.92 released
+  - fix : I think I really fixed the windows audio this time.  Tested on systems that were having problems before.
+          Increased number of buffers used and cleaned up the code by avoiding any memory re-allocation in the timers.
+11-30-2012 : v0.91 released
+  - new : added disable video option per line configuration.
+          I've noticed some SIP providers get confused when they see both audio and video codecs.
+  - fix : properly end a call when codec negotation fails
+  - new : can now config video FPS and resolution (keep it low or audio gets choppy)
+  - removed : Windows VFW support - was just crashing - and unable to scale window properly (obsolete api)
+  - fix : use proper RGB order when using videoInput library
+11-28-2012 : v0.90 released
+  - removed : flash support - audio had unacceptable latency, video was non-standard codec
+  - new : added Windows Camera support using VFW and DirectShow (using videoInput library)
+  - fix : codec negotation when receiving a call
+11-16-2012 : v0.85 released
+  - new : added g711a codec (European format)
+  - fix : improved windows output quality (keep buffers full)
+11-7-2012 : v0.84 released
+  - new : added windows native API for audio support
+  - fix : the timestamp in the SDP packet is incremented by the # of bytes in the packet, not the ms of duration.
+          This effected g711u, which should be 160, not 20.
+          g729a just happened to be 20ms and 20bytes per packet so not effected.
+          This fixes callcentric.com support, when using g711u
+          I think Asterisk ignores the timestamp so this was never an issue before.
+11-5-2012 : v0.83 released
+  - added full javascript support.  see jphonelite-javascript.html and jphonelite-javascript.php for example usage.
+  - added disable g729a option
+?-?-2012 : v0.82 released
+  - ??? fixed something ???
+7-10-2012 : v0.81 released
+  - video under linux is now possible with GStreamer [requires jfLinux.org]
+6-30-2012 : v0.70 released
+  - now supports native Linux sound
+4-15-2012 : v0.60 released
+  - no code change, just restructured for JavaForce/6.0
+10-23-2011 : v0.54 released
+  - new : mini/micro editions for webpages
+  - note : everything seems to work fine with Java 7u1 SDK (although there are 30 warnings)
+8-3-2011 : v0.53 released [just a few hours later]
+  - fix : fix for Asterisk 1.8 broke 1.6/1.4 - fixed it again.
+  - note : JPL doesn't not seem to be compatible with Java 7 SDK (although compiled with JDK 6 seems to run fine in JRE 7) - I'll try and fix that later
+8-3-2011 : v0.52 released
+  - fix : Asterisk 1.8 compatible (improved 401/407 processing)
+  - fix : Flash video works again
+    - using javascript from Java applet to start flash was not working anymore, so I forced Flash to keep reconnecting until Java RTMP server starts
+5-2-2011 : v0.51 released
+  - fix : Wav loader supports Microsoft WAV format (ignore 'fact' header)
+  - fix : use different icons for Windows/Linux
+4-18-2011 : v0.50 released
+  - new : now uses Flash for video (H.264) (Applet only)
+    - removed old JMF video (crud)
+    - removed old enhanced windows-specific features (crud)
+3-17-2011 : v0.23 released
+  - fix : timing issue when a line registered before same lines were not ready yet
+11-9-2010 : v0.22 released
+  - new : keys F1-F6 will select lines 1-6
+  - note : dropped "BETA" designation
+9-27-2010 : v0.21 BETA released
+  - new : support for non-REGISTERed mode (just leave password blank)
+  - fix : pressing digits generates DTMF tones locally again (java:KeyMaps were not working - used dispatchKeyEvent() instead - it's a lot less coding)
+9-19-2010 : v0.20 BETA released
+  - new : video now support H.263 codec and is compatible with Asterisk PBX  (requires JMF)
+  - new : enhanced features (Instant messaging, Share Desktop, File transfer) are compatible with Asterisk PBX
+    - enhanded features are not compatible with older versions of JPL
+  - fix : many bugs
+8-9-2010 : v0.19 BETA released
+  - new : added speaker phone button (toggles mic on/off when other person is talking to avoid echo)
+8-4-2010 : v0.18 BETA released
+  - new : added ringtone option to settings (used on inbound calls)
+8-2-2010 : v0.17 BETA released
+  - fix : MD5 qop=auth is now properly supported (qop=auth-int is not supported)
+7-14-2010 : v0.16 BETA released
+  - new : contacts can now be monitored (SIP:SUBSCRIBE)
+  - new : presence publish available in general options (SIP:PUBLISH) (Note : not supported by Asterisk)
+  - fix : process SIP:403 properly for INVITEs (was assuming for REGISTER only before)
+  - fix : unREGISTERs properly now
+7-7-2010 : v0.15 BETA released
+  - new : passwords are now encrypted in XML config and are not visible in settings editor.
+        - old unencrypted passwords in XML config are still loaded, and encrypted on next save
+  - new : in software volume control mode the volume can be amplified (up to +10dB)
+  - fix : sound meters now show highest level instead of an average (which didn't make much sense for an audio signal)
+  - fix : SIP:CANCEL handled properly  (487, 200)
+  - fix : zero playback meter when audio is stop()ed.
+6-22-2010 : v0.14 BETA released
+  - new : (user requested) added ability to load XML config in Applet from website before jPhoneLite starts (see php files)
+  - fix : VNC was not closing files while loading icons so they could only be loaded once
+  - fix : placed sip.register()/unregister() in try {} catch {} block
+  - fix : only enable ShareDesktop/Video buttons if DLL was successfully loaded
+6-21-2010 : v0.13.1 BETA released
+  - fix : opps - make sure Windows API is only called on Windows.  Was unable to open config screen on non-windows systems.
+6-21-2010 : v0.13 BETA released
+  - new : LET THERE BE VIDEO (windows only)
+          I started to try out JMF for video but not liking it too much.  Since JMF just uses VFW I decided to write my own native code.
+          Video code is much like VNC code and uses same JPEG/PNG codec.  I'll try to add better compression later.
+          Just like other advanced features it uses custom RTP packets which Asterisk blocks.
+          I've tested it with callcentric.com and jPBXlite.
+          What? Never heard of jPBXlite !?!  Well that's because I haven't released it YET.
+          Available soon at http://jpbxlite.sourceforge.net
+  - fix : everything is compiled in Java 1.5 so it should work with Java 5 systems.
+  - fix : VNC code improved a little, works best with WinXP (still has issues with Vista and multi-monitor systems)
+6-18-2010 : v0.12.1 BETA released
+  - new : just added NetBeans projects files for those who want to compile from the IDE.
+6-16-2010 : v0.12 BETA released
+  - new : added Applet as requested
+  - new : added key binding ENTER to click Call
+6-11-2010 : v0.11 BETA released
+  - new : added message waiting (voicemail) indicator (flashing orange light)
+  - fix : keepAudioOpen option was preventing ringing sound from being played (introduced in v0.9.1)
+  - new : added option 'Use smaller font' for JVMs with different font sizes (in case text in buttons is missing)
+6-10-2010 : v0.10 BETA released
+  - new : send file feature (just like ShareDesktop and Instant Messaging it requires custom RTP packets)
+  - new : the handling of custom RTP packets has changed and is *NOT* compatible with previous versions.
+          RTP packets are now properly seperated into channels using the ssrc id.
+          So Instant Messaging and ShareDesktop will not work with older versions.
+  - fix : properly flush output to close a ShareDesktop session.
+  - fix : ShareDesktop client can now close the session.
+6-1-2010 : v0.9.1 BETA released
+  - new : improved share desktop (VNC) code (viewer also includes a toolbar for some basic functions)
+  - new (user requested feature) : new option 'Keep Audio Open' - you can disable it so output audio is only start()ed
+    when actually needed (default is to keep it always running to avoid popping sounds when audio is started and stopped).
+5-26-2010 : v0.9 BETA released
+  - new : share desktop - allow other side to see and control your desktop. (works only on Windows systems)
+5-10-2010 : v0.8.3 BETA released
+  - new : added a system tray icon that shows incoming calls if jPhoneLite is not active window
+  - new : new options : 'hide on minimize' and 'always on top'
+  - new : can now ignore an incoming call (just press End)
+5-6-2010 : v0.8.2 BETA released
+  - fix : check available() before read()ing from mic to avoid blocking in timer - improves audio quality
+  - fix : another bug in local ip detection
+4-30-2010 : v0.8.1 BETA released
+  - fix : log rollover didn't work
+  - new : added new option 'Disable Logging'
+4-28-2010 : v0.8 BETA released
+  - new : added new feature : Instant Messaging (IM)
+    if server allows any RTP data thru then the IM button is enabled which popups a simple
+    instant messaging window.
+    Doesn't seem to work with Asterisk but callcentric.com works.
+4-26-2010 : v0.7 BETA released
+  - new : finished writing audio input/output selection in the settings
+  - note : most source now includes lots of javadoc comments.
+    Try running 'ant javadoc' in the root folder and in /projects/jphonelite
+    This will generate 'javadoc' folders, in there open index.html for the javadocs.
+  - fix : jnlp now installs start menu and desktop shortcuts.
+  - fix : other minor fixes (tries to register a line 5 times before giving up)
+4-19-2010 : v0.6 BETA released
+  - new : now supports callcentric.com (wasn't easy) (hold doesn't work - use mute instead)
+    callcentric is VERY strict on their sip syntax
+  - new : added authorization username (if different from normal username)
+  - fix : improved local IP detection
+  - new : checks for update on startup
+4-13-2010 : v0.5 BETA released
+  - fixed : time critical timers must use scheduleAtFixedRate() or else choppy sound was occuring on some (most?) systems
+  - new : retry register if reregister failed during expired reregisters
+  - fixed : other minor improvements
+4-9-2010 : v0.4 BETA released
+  - fixed : codec negotiation
+    if both codecs are accepted by remote then reINVITE with just g729a to make sure correct codec is used (outbound)
+    only send back one codec for inbound calls
+  - new : reregister after connection expires (3600 seconds)
+  - new : reregister if not registered in 1 sec (happens a lot actually)
+  - new : hosts can include port spec (example.com:5060)
+  - new : hungup shows error code (503, etc.)
+4-8-2010 : v0.3 BETA released
+  - handle reINVITEs now (was just hanging up before)
+  - generate DTMF tones locally (those generated locally and remotely) (only generated while in a call)
+  - fixed bug : was issuing 180 AFTER 200 for an INVITE if AA was enabled (harmless?)
+4-7-2010 : v0.2 BETA released
+  - added g729a codec
+  - other minor fixes
+4-6-2010 : v0.1 BETA released
+  - first public release

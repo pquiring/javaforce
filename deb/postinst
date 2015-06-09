@@ -1,0 +1,21 @@
+#!/bin/sh
+
+set -e
+
+case "$1" in
+  configure)
+    update-alternatives --install /usr/bin/update-desktop-database update-desktop-database /usr/bin/jf-update-desktop-database 100
+    ;;
+esac
+
+update-desktop-database
+
+#ensure Java7 is selected
+if [ -f /usr/lib/jvm/java-7-openjdk-i386/bin/java ]; then
+  echo Selecting Java7 i386
+  update-java-alternatives -s java-1.7.0-openjdk-i386
+fi
+if [ -f /usr/lib/jvm/java-7-openjdk-amd64/bin/java ]; then
+  echo Selecting Java7 amd64
+  update-java-alternatives -s java-1.7.0-openjdk-amd64
+fi

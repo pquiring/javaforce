@@ -1,0 +1,120 @@
+<project name="javaforce" default="jar" basedir=".">
+  <description>JavaForce SDK</description>
+  <!-- set global properties for this build -->
+  <property name="app" location="javaforce"/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property name="home" value="."/>
+  <property name="version" value="9.0.0"/>
+
+  <import file="base.xml"/>
+
+  <target name="depjars">
+    <copy todir=".">
+      <fileset dir="${home}/native" includes="*"/>
+    </copy>
+  </target>
+
+  <target name="compile" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <mkdir dir="jars"/>
+    <javac srcdir="${src}" destdir="${build}" target="1.6" source="1.6" debug="true" includeantruntime="false">
+      <compilerarg value="-Xlint:unchecked"/>
+      <classpath>
+        <fileset dir="jars" includes="*.jar"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="javadoc" description="generate java documentation">
+    <javadoc sourcepath="src" destdir="javadoc">
+      <classpath>
+        <fileset dir="jars" includes="*.jar"/>
+      </classpath>
+    </javadoc>
+  </target>
+
+  <target name="jar" depends="depjars,compile" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="jars/javaforce.jar" includes="**/*.class" basedir="${build}">
+    </jar>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <copy file="jars/javaforce.jar" todir="/usr/share/java"/>
+    <copy file="jars/bouncycastle.jar" todir="/usr/share/java"/>
+    <copy file="jars/filters.jar" todir="/usr/share/java"/>
+
+    <copy file="native/jfnative64.so" todir="/usr/lib"/>
+
+    <copy file="lnxbin/jbus-call" todir="/usr/bin"/>
+    <chmod file="/usr/bin/jbus-call" perm="+x"/>
+    <copy file="lnxbin/jbus-client" todir="/usr/bin"/>
+    <chmod file="/usr/bin/jbus-client" perm="+x"/>
+
+    <elf app="jsudo" cfgdir="lnxcfg/"/>
+    <elf app="jsudo-ask" cfgdir="lnxcfg/"/>
+    <elf app="jopen" cfgdir="lnxcfg/"/>
+    <elf app="jfs" cfgdir="lnxcfg/"/>
+    <elf app="jimgconvert" cfgdir="lnxcfg/"/>
+    <elf app="jfr" cfgdir="lnxcfg/"/>
+    <elf app="pngalpha" cfgdir="lnxcfg/"/>
+    <elf app="jf-update-desktop-database" cfgdir="lnxcfg/"/>
+    <elf app="jsmbget" cfgdir="lnxcfg/"/>
+    <elf app="jservice" cfgdir="lnxcfg/"/>
+    <elf app="jf-monitor-dir" cfgdir="lnxcfg/"/>
+    <elf app="jfuse-smb" cfgdir="lnxcfg/"/>
+    <elf app="jfuse-ftp" cfgdir="lnxcfg/"/>
+    <elf app="jfuse-ftps" cfgdir="lnxcfg/"/>
+    <elf app="jfuse-sftp" cfgdir="lnxcfg/"/>
+    <elf app="jfuse-zip" cfgdir="lnxcfg/"/>
+    <elf app="jfuse-iso" cfgdir="lnxcfg/"/>
+    <elf app="jfuse-cdfs" cfgdir="lnxcfg/"/>
+    <elf app="jfshare" cfgdir="lnxcfg/"/>
+    <elf app="jcp" cfgdir="lnxcfg/"/>
+    <elf app="jmv" cfgdir="lnxcfg/"/>
+    <elf app="jrm" cfgdir="lnxcfg/"/>
+    <elf app="jver" cfgdir="lnxcfg/"/>
+    <elf app="jresmgr" cfgdir="lnxcfg/"/>
+  </target>
+
+  <macrodef name="utilsmacro">
+    <attribute name="app"/>
+    <attribute name="bits"/>
+    <sequential>
+      <copy file="${home}/stubs/win@{bits}c.exe" tofile="@{app}.exe" overwrite="true"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
+        <arg value="@{app}.exe"/>
+        <arg value="wincfg/@{app}.cfg"/>
+      </java>
+    </sequential>
+  </macrodef>
+
+  <target name="utils32" depends="jar" description="build exe for utils 32bit">
+    <utilsmacro app="jfr" bits="32"/>
+    <utilsmacro app="jfs" bits="32"/>
+    <utilsmacro app="jimgconvert" bits="32"/>
+    <utilsmacro app="pngalpha" bits="32"/>
+    <utilsmacro app="jfshare" bits="32"/>
+    <utilsmacro app="WinPE" bits="32"/>
+  </target>
+
+  <target name="utils64" depends="jar" description="build exe for utils 64bit">
+    <utilsmacro app="jfr" bits="64"/>
+    <utilsmacro app="jfs" bits="64"/>
+    <utilsmacro app="jimgconvert" bits="64"/>
+    <utilsmacro app="pngalpha" bits="64"/>
+    <utilsmacro app="jfshare" bits="64"/>
+    <utilsmacro app="WinPE" bits="64"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="classes/javaforce" includes="**/*.class"/>
+      <fileset dir="jars" includes="javaforce.jar"/>
+    </delete>
+  </target>
+
+</project>

@@ -1,0 +1,17 @@
+[Desktop Entry]
+Name=Music Composer
+Comment=Create Music
+
+Icon=jfmusic
+
+Type=Application
+Categories=AudioVideo
+
+Exec=jfmusic
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Action=edit
+
+Title=jfMusic

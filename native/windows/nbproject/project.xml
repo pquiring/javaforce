@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://www.netbeans.org/ns/project/1">
+    <type>org.netbeans.modules.ant.freeform</type>
+    <configuration>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>windows</name>
+        </general-data>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
+            <!-- Do not use Project Properties customizer when editing this file manually. 
+ To prevent the customizer from showing, create nbproject/project.properties file and enter 
+auxiliary.show.customizer=false 
+property there. Adding 
+auxiliary.show.customizer.message=<message>
+ will show your customized message when someone attempts to open the customizer.  -->
+            <name>windows</name>
+            <properties/>
+            <folders>
+                <source-folder>
+                    <label>Source Packages</label>
+                    <type>java</type>
+                    <location>.</location>
+                    <encoding>windows-1252</encoding>
+                </source-folder>
+                <source-folder>
+                    <label>Source Packages</label>
+                    <location>.</location>
+                </source-folder>
+            </folders>
+            <ide-actions>
+                <action name="build">
+                    <target>windows</target>
+                </action>
+            </ide-actions>
+            <view>
+                <items>
+                    <source-folder style="packages">
+                        <label>Source Packages</label>
+                        <location>.</location>
+                    </source-folder>
+                    <source-file>
+                        <location>build.xml</location>
+                    </source-file>
+                </items>
+                <context-menu>
+                    <ide-action name="build"/>
+                </context-menu>
+            </view>
+        </general-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
+            <compilation-unit>
+                <package-root>.</package-root>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+        </java-data>
+    </configuration>
+</project>

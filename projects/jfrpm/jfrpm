@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Note : Make sure you place NOPASSWD in your /etc/sudoers or this script will annoy you (see jconfig -> fix stuff)
+
+function usage() {
+  echo usage : jfrpm file.spec [files.lst]
+  echo desc : creates RPM files from file.spec
+  echo note : files.lst is appended to file.spec during process
+  exit
+}
+
+function error() {
+  echo Error : $1
+  exit
+}
+
+if [ "$1" = "" ]; then usage; fi
+if [ "$1" = "--help" ]; then usage; fi
+if [ "$1" = "-h" ]; then usage; fi
+
+if [ ! -f $1 ]; then error "$1 not found"; fi
+
+FILES=files.lst
+if [ ! "$2" = "" ]; then FILES=$2; fi
+
+TMPDIR=jfrpm.$RANDOM
+
+WORKDIR=`pwd`
+mkdir $TMPDIR
+
+#build data.tar.bz2 (gz,bz2,lzma,others?)
+rm -f data.tar.bz2 2>/dev/null
+tar cjf data.tar.bz2 -T $FILES
+
+cp $1 $TMPDIR
+cat $FILES >> $TMPDIR/$1
+cd $TMPDIR
+
+if [ ! `pwd` = $WORKDIR/$TMPDIR ]; then error "failed to use temp folder $TMPDIR"; fi
+
+sudo tar xjf ../data.tar.bz2
+#NOTE:rpmbuild nukes the buildroot once complete, which is the current folder - be careful!!!
+sudo rpmbuild -bb $1 --buildroot `pwd`
+cd ..
+sudo rm -rf $TMPDIR
+rm -f data.tar.bz2
+sudo chown $USER:$USER *.rpm
+
+echo Complete!

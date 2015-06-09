@@ -1,0 +1,30 @@
+jfFTP
+=====
+
+Mar 26, 2015 - version 0.6
+  - fix : ftp support improved (fault tolerance)
+
+Feb 9, 2015 - version 0.5
+  - fix : progress bar works now with all protocols
+  - fix : download filenames were reversed
+
+Nov 1, 2014 - version 0.4
+  - new : added some common keyboard shortcuts
+
+Oct 6, 2014 - version 0.3.0
+  - new : added support for SSH Identity keys (*.pem)
+  - fix : smb option was removed from SiteMgr ???
+
+Apr 15, 2014 - version 0.2.2
+  - new : bringing back this project to life
+    - jfFTP became jFile which was designed for jfLinux only while jfFTP was more platform indepedent.
+    - added MSI packages and cleaned it up a bit
+
+Mar 15, 2011 - version 0.2.1
+  - fix : set 'binary' mode (type i) after logging into [s]ftp sites.
+
+Feb 19, 2011 - version 0.2
+  - new : added smb support with jcifs.samba.org
+
+Jan 11, 2011 - version 0.1
+  - new : init public release

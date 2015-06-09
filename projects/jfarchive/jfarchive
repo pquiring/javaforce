@@ -1,0 +1,2 @@
+#!/bin/bash
+java -cp /usr/share/java/javaforce.jar:/usr/share/java/jfarchive.jar ArchiveApp "$1"

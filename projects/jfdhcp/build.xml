@@ -1,0 +1,35 @@
+<project name="jfdhcp" default="jar" basedir=".">
+  <description>DHCP Server</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfdhcp"/>
+  <property name="home" location="../.."/>
+  <property name="version" value="0.1"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars" description="jar">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+  </target>
+
+  <target name="jar" description="jar">
+  </target>
+
+  <target name="release-bin" depends="" description="create release zip file">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+    <zip destfile="${app}-${version}.zip">
+      <fileset dir=".">
+        <include name="*.jar"/>
+        <include name="*.txt"/>
+        <include name="run.bat"/>
+      </fileset>
+      <fileset dir="../.." includes="license.txt"/>
+    </zip>
+    <move file="${app}-${version}.zip" todir="${home}/release"/>
+  </target>
+
+  <target name="install" description="install files for linux">
+    <elf/>
+    <mkdir dir="/etc/jinit"/>
+    <copy file="${app}.conf" todir="/etc/jinit"/>
+  </target>
+</project>

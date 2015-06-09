@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -e
+
+update-desktop-database
+rm /usr/bin/jfedit.bin

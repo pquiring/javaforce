@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Media Player
+Comment=Media Player
+
+Icon=jfmedia
+
+Type=Application
+Categories=AudioVideo
+
+Exec=jfmedia %f
+StartupNotify=false
+Terminal=false
+MimeType=application/x-ogg;application/ogg;audio/x-vorbis+ogg;audio/x-scpls;audio/x-mp3;audio/x-mpeg;audio/mpeg;audio/x-mpegurl;audio/x-flac;audio/ogg;video/quicktime;video/x-ms-wmv
+
+Title=jfMedia

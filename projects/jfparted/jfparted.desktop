@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Partition Editor
+Comment=Partition Editor
+
+Icon=jfparted
+
+Type=Application
+Categories=System
+
+Exec=jfparted
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfParted

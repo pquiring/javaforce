@@ -1,0 +1,36 @@
+<project name="jfdns" default="jar" basedir=".">
+  <description>dns</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfdns"/>
+  <property name="home" location="../.."/>
+  <property name="version" value="0.2"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars" description="jar">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+  </target>
+
+  <target name="jar" depends="depjars" description="jar">
+  </target>
+
+  <target name="release-bin" depends="jar" description="create release zip file">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+    <zip destfile="jfdns-${version}.zip">
+      <fileset dir=".">
+        <include name="*.jar"/>
+        <include name="*.txt"/>
+        <include name="run.bat"/>
+      </fileset>
+      <fileset dir="../.." includes="license.txt"/>
+    </zip>
+    <move file="jfdns-${version}.zip" todir="${home}/release"/>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <elf/>
+    <mkdir dir="/etc/jinit"/>
+    <copy file="jfdns.conf" todir="/etc/jinit"/>
+  </target>
+</project>

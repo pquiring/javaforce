@@ -1,0 +1,28 @@
+<a href="index.html">Home</a> - <a href="contents.html">Contents</a> - jConfig : Samba<br>
+<br>
+<h1>jConfig : Samba</h1>
+<br>
+<p>Configure File Sharing / Active Directory</p>
+
+<p>To join a domain:
+<ul>
+<li>Enter in your Workgroup/Domain and Realm/FQDN
+<li>Change security to ADS
+<li>Click Apply
+<li>Restart the Samba servers
+<li>Enter in the PDC name/IP address in the Server field
+<li>Enter in your admin username/password
+<li>Click Join
+</ul>
+</p>
+
+<p>Logon Script:<br>
+A logon script can be stored on the server at \\$SERVER\sysvol\logon.sh<br>
+Some commands available are:<br>
+<ul>
+<li><b>jsmbget smb://$SERVER/SHARE/PATH/FILE</b> - retrieve a file from server
+<li><b>jmapshare $SERVER $SHARE [x:]</b> - Map a network share and optionally map to a Wine Drive
+<li><b>junmapshare $SERVER $SHARE</b> - Disconnect a network share
+</ul>
+Commands will use the logged on users password and domain username.
+</p>

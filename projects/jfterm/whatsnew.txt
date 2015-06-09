@@ -1,0 +1,73 @@
+What's new...
+
+Nov 27/2014 - jfTerm/0.18 released!
+  - ANSI codes added and fixed
+  - ASCII8bit to Unicode improved
+  - default term type switched to 'xterm' (was vt220)
+    - now bash is more colorfull
+  - aptitude in Ubuntu works better now
+
+Oct 13/2014 - jfTerm/0.17 released!
+  - fix : the Linux pty function works 100% of the time.  So opening a new bash tab locally is reliable now.
+
+Mar 27/2014 - jfTerm/0.16 released!
+  - fix : timer in Buffer was never cancelled causing Buffer to never get freed.
+
+Feb 26/2014 - jfTerm/0.15 released!
+  - fix : rare NPE avoided in Buffer.init() (pointed out by user)
+
+Feb 14/2014 - jfTerm/0.14 released!
+  - fix : LnxPty is now more stable
+  - fix : all threads close properly now when a tab is closed (avoiding OutOfMemory exception)
+
+Feb 8/2014 - jfTerm/0.13 released!
+  - fix : UTF8 char sequences properly decoded
+  - new : You can now use UTF8 or ASCII8bit mode since the two conflict
+  - fix : localEcho was not properly saved
+
+Feb 7/2014 - jfTerm/0.12 released!
+  - fix : local term app is now opened with full environment (see LnxPty.makeEnvironment())
+
+Feb 2/2014 - jfTerm/0.11 released!
+  - new : added ANSI codes ESC[s and ESC[u (alternate forms of ESC7 ESC8)
+          Used to save/restore cursor position which I found is in use at pharcyde.org
+
+Jan 26/2014 - jfTerm/0.10 released!
+  - fixed finding a proper monospaced font (which varies per OS)
+    - see javaforce.JF.getMonospacedFont()
+    - still need to adjust font metrics though (not sure why) but the defaults should be more accurate
+
+Jan 18/2014 - jfTerm/0.9 released!
+  - added support for Com Ports (uses JNA : Windows/Linux only)
+  - added support for ASCII 8bit chars (use a lookup table to convert to Unicode chars)
+    - can view sites with cool ASCII art
+    - note:sometimes the font metrics calc is not perfect so I added some font size adjustments in the settings.
+  - use JNA to use pty on linux (binary program openpty is no longer needed)
+
+Nov 8/2013 - jfTerm/0.8 released!
+  - fixed painting parts of screen (offset was missing)
+  - speed up scrolling when using mouse wheel
+  - undo a change in 0.7 that caused top line to be slightly offscreen
+    - it's properly fixed now so top and bottom lines fit on screen
+
+Oct 26/2013 - jfTerm/0.7 released!
+  - fixed 100% CPU usage on linux
+    - paintComponent() in Buffer.java draws each char to the Graphics object which is very slow on Linux
+      so I draw to an image and then drawImage() on the Graphics object.
+      Before the paintComponent() was taking 200-400ms, now it's 20ms
+  - fixed a few other minor bugs
+
+Oct 25/2013 - jfTerm/0.6 released!
+  - fixed NPE when creating a site with no folder is selected to save it under
+
+Oct 13/2013 - jfTerm/0.5 released!
+  - can now connect to SSH sites with private key files (*.pem) (leave password blank)
+
+Oct 11/2013 - jfTerm/0.4 released!
+  - re-structed build process
+
+Sept 19/2013 - jfTerm/0.3 released!
+  - added local echo option
+
+Jan 2/2011 - JFTerm ?.?.0 released!
+  - first release independant of JavaForce SDK.

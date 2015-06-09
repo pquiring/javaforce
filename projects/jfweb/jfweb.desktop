@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Java WebBrowser
+Comment=Java WebBrowser (no plugins, javascript) (HTML 3.4 only)
+
+Icon=jfweb
+
+Type=Application
+Categories=Network
+
+Exec=jfweb
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfWeb

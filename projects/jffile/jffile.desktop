@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=File Manager
+Comment=Manage your files.
+
+Icon=jfile
+
+Type=Application
+Categories=Utility
+
+Exec=jfile
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jFile

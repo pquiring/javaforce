@@ -1,0 +1,11 @@
+Package: jfile
+Version: 0.12
+Architecture: amd64
+Maintainer: Peter Quiring <pquiring@jflinux.org>
+Installed-Size: 20
+Depends: javaforce (>= 6.0.0), samba
+Components: main
+Provides:
+Section: java
+Priority: optional
+Description: File manager.

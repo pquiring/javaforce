@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.7">
+  <Properties>
+    <Property name="alwaysOnTop" type="boolean" value="true"/>
+    <Property name="name" type="java.lang.String" value="keyboard" noResource="true"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,-70,0,0,4,-13"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+    <Property name="columns" type="int" value="1"/>
+    <Property name="rows" type="int" value="4"/>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="jPanel1">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="0"/>
+        <Property name="rows" type="int" value="1"/>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JButton" name="q">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="q"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="w">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="w"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="e">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="e"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="r">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="r"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="t">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="t"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="y">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="y"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="u">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="u"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="i">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="i"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="o">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="o"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="p">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="p"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="jPanel2">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="0"/>
+        <Property name="rows" type="int" value="1"/>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JButton" name="a">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="a"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="s">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="s"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="d">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="d"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="f">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="f"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="g">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="g"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="h">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="h"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="j">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="j"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="k">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="k"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="l">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="l"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="backspace">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="&lt;"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="backspaceActionPerformed"/>
+          </Events>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="jPanel3">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="0"/>
+        <Property name="rows" type="int" value="1"/>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JToggleButton" name="shift">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Shift"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="z">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="z"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="x">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="x"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="c">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="c"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="v">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="v"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="b">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="b"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="n">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="n"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="m">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="m"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="enter">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Enter"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="enterActionPerformed"/>
+          </Events>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="jPanel4">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="0"/>
+        <Property name="rows" type="int" value="1"/>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JButton" name="mode">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="?123"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="modeActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="comma">
+          <Properties>
+            <Property name="text" type="java.lang.String" value=","/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="space">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Space"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="spaceActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JButton" name="period">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="."/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="hide">
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="hideActionPerformed"/>
+          </Events>
+        </Component>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

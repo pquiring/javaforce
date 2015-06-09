@@ -1,0 +1,6 @@
+Place jfLinux Service files here.
+
+sample.conf:
+
+CLASSPATH=/usr/share/java/mypackage.jar
+CLASS=org.example.Server

@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ "$1" = "" ]; then
+  echo usage : jbus-call "package.func(args)"
+  echo args : \"string\", 123, ...
+  exit 0
+fi
+
+# Open socket.
+exec 3<>/dev/tcp/127.0.0.1/777
+
+# Send msg.
+echo "$1" >&3

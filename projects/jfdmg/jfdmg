@@ -1,0 +1,58 @@
+#!/bin/bash
+
+function usage() {
+  echo usage : jfdmg app outputfile-version-release.dmg [-geniso]
+  echo - app : app name \(.app prefix will be added\)
+  echo - output : outputfile-version-release.dmg
+  echo - -geniso : use genisoimage instead of hdiutil
+  echo Files :
+  echo - app.icns : app icon \(mac format\)
+  echo - info.plist : info.plist file \(xml\)
+  echo - macfiles.lst : lists data files \(one per line\)
+  exit
+}
+
+function error() {
+  echo Error : $1
+  exit
+}
+
+if [ "$1" = "" ]; then usage; fi
+if [ "$2" = "" ]; then usage; fi
+if [ "$1" = "--help" ]; then usage; fi
+if [ "$1" = "-h" ]; then usage; fi
+
+APP=$1
+DMG=$2
+PLIST=Info.plist
+ICNS=$1.icns
+FILES=macfiles.lst
+GENISO=false
+
+if [ "$3" = "-geniso" ]; then GENISO=true; fi
+
+if [ ! -f $PLIST ]; then error "$PLIST not found"; fi
+if [ ! -f $ICNS ]; then error "$ICNS not found"; fi
+if [ ! -f $FILES ]; then error "$FILES not found"; fi
+
+#build folder layout
+tar cjf data.tar.bz2 -T $FILES
+mkdir -p /tmp/dmg.tmp/$1.app/Contents/Resources
+mkdir -p /tmp/dmg.tmp/$1.app/Contents/MacOS
+tar xjf data.tar.bz2 -C /tmp/dmg.tmp/$1.app/Contents/MacOS
+
+cp $PLIST /tmp/dmg.tmp/$1.app/Contents
+cp $ICNS /tmp/dmg.tmp/$1.app/Resources
+
+#build $1
+if [ "$GENISO" = "false" ]; then
+  hdiutil create -srcfolder /tmp/dmg.tmp $1
+  hdiutil internet-enable -yes $1
+else
+  genisoimage -apple -o $1 /tmp/dmg.tmp
+fi
+
+#cleanup
+rm -rf /tmp/dmg.tmp 2>/dev/null
+
+echo Complete!

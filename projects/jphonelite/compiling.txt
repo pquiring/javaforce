@@ -1,0 +1,27 @@
+jPhoneLite consists of a few JAR files.
+
+It is best to compile from the command prompt using ANT.
+
+javaforce.jar - download from javaforce.sourceforge.net to get the full source to compile it.
+
+jphonelite.jar - run ant in /jf/projects/jphonelite
+
+The process to build the applet has recently changed.
+A self-signed key is no longer used, but a CA is used instead.
+To start you must first generate the JavaForce root CA key:
+  cd /keys
+  ant genca
+And then come here and build the applet key:
+  cd /projects/jphonelite
+  ant genkey
+This will build the KEY and CSR, then sign it with the CA key:
+  cd /keys
+  ant -Dname=jphonelite signkey
+And then return here and import it:
+  cd /projects/jphonelite
+  ant importkey
+And then you can build the applet:
+  cd /projects/jphonelite
+  ant sign-jar
+
+Good luck!

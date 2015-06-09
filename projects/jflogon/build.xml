@@ -1,0 +1,108 @@
+<project name="jflogon" default="jar" basedir=".">
+  <description>jflogon</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jflogon"/>
+  <property name="home" location="../.."/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property name="classpath" location="javaforce.jar"/>
+  <property name="version" value="0.18"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars">
+    <jar destfile="javaforce.jar">
+      <zipfileset src="../../jars/javaforce.jar"/>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jflogon.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" debug="true" includeantruntime="false">
+      <classpath path="${classpath}"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="jflogon.jar" includes="**/*.class" basedir="${build}">
+      <fileset dir="." includes="*.png"/>
+      <manifest>
+        <attribute name="Main-Class" value="Startup"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install-ubuntu" description="install files">
+    <elf/>
+    <copy file="jflogon.jar" todir="/usr/share/java"/>
+    <copy file="jflogon.sh" todir="/usr/sbin"/>
+    <chmod file="/usr/sbin/jflogon.sh" perm="+x"/>
+    <copy file="jflogon-runsession" todir="/usr/sbin"/>
+    <chmod file="/usr/sbin/jflogon-runsession" perm="+x"/>
+    <copy file="jflogon-rundomain" todir="/usr/sbin"/>
+    <chmod file="/usr/sbin/jflogon-rundomain" perm="+x"/>
+    <copy file="jflogon" todir="/usr/sbin"/>
+    <chmod file="/usr/sbin/jflogon" perm="+x"/>
+    <copy file="dhclient-script" todir="/etc/dhcp"/>
+    <chmod file="/etc/dhcp/dhclient-script" perm="+x"/>
+    <!-- JFL services folder -->
+    <mkdir dir="/etc/jinit"/>
+    <copy file="jinit.txt" todir="/etc/jinit"/>
+    <!-- systemd in /lib -->
+    <mkdir dir="/lib/systemd/system-preset/"/>
+    <copy file="82-jflogon.preset" todir="/lib/systemd/system-preset"/>
+    <mkdir dir="/lib/systemd/system/"/>
+    <copy file="jflogon.service" todir="/lib/systemd/system"/>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install-fedora" description="install files">
+    <elf/>
+    <copy file="jflogon.jar" todir="/usr/share/java"/>
+    <copy file="jflogon.sh" todir="/usr/sbin"/>
+    <chmod file="/usr/sbin/jflogon.sh" perm="+x"/>
+    <copy file="jflogon-runsession" todir="/usr/sbin"/>
+    <chmod file="/usr/sbin/jflogon-runsession" perm="+x"/>
+    <copy file="jflogon-rundomain" todir="/usr/sbin"/>
+    <chmod file="/usr/sbin/jflogon-rundomain" perm="+x"/>
+    <copy file="jflogon" todir="/usr/sbin"/>
+    <chmod file="/usr/sbin/jflogon" perm="+x"/>
+    <copy file="dhclient-script" todir="/etc/dhcp"/>
+    <chmod file="/etc/dhcp/dhclient-script" perm="+x"/>
+    <!-- JFL services folder -->
+    <mkdir dir="/etc/jinit"/>
+    <copy file="jinit.txt" todir="/etc/jinit"/>
+    <!-- systemd in /usr/lib -->
+    <mkdir dir="/usr/lib/systemd/system-preset/"/>
+    <copy file="82-jflogon.preset" todir="/usr/lib/systemd/system-preset"/>
+    <mkdir dir="/usr/lib/systemd/system/"/>
+    <copy file="jflogon.service" todir="/usr/lib/systemd/system"/>
+  </target>
+
+  <target name="uninstall">
+    <delete file="/usr/share/java/jflogon.jar"/>
+    <delete file="/usr/sbin/jflogon-runsession"/>
+    <delete file="/usr/sbin/jflogon-rundomain"/>
+    <delete file="/usr/sbin/jflogon"/>
+    <delete file="/etc/dhcp/dhclient-script"/>
+    <delete file="/usr/lib/systemd/system-preset/82-jflogon.preset"/>
+    <delete file="/usr/lib/systemd/system/jflogon.service"/>
+    <delete file="/lib/systemd/system-preset/82-jflogon.preset"/>
+    <delete file="/lib/systemd/system/jflogon.service"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.jar"/>
+    </delete>
+  </target>
+</project>

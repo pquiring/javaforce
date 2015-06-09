@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" UpgradeCode="{486E9A18-21FA-4AEB-B809-A5627F991F93}" Version="0.8" Language="1033" Name="jfHexBig" Manufacturer="Peter Quiring">
+    <Package InstallerVersion="300" Compressed="yes"/>
+    <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
+    <UIRef Id="WixUI_Minimal" />
+
+    <Icon Id="icon.ico" SourceFile="jfhexbig.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
+
+    <!-- Step 1: Define the directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfHexBig"/>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+<!-- Use the following if you want Shortcut in its own folder -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfHexBig"/> -->
+      </Directory>
+    </Directory>
+
+    <!-- Step 2: Add files to your installer package -->
+    <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+      <Component Id="appfiles" Guid="{BDB52CD8-DAE9-4CCD-8D03-7B611A992621}">
+        <File Id="jfhexbig.jar" Source="jfhexbig.jar"/>
+        <File Id="javaforce.jar" Source="javaforce.jar"/>
+        <File Id="jfhexbig.exe" Source="jfhexbig.exe" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 2b: Add the shortcut to your installer package -->
+<!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
+    <DirectoryRef Id="ProgramMenuFolder">
+      <Component Id="ApplicationShortcut" Guid="{E9E938EC-4D7B-4F50-BD0E-3C6B949C5BE6}">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfHexBig" Description="Java HexBig Editor" Target="[APPLICATIONROOTDIRECTORY]jfhexbig.exe"
+          WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+<!-- Use the following if you want Shortcut in its own folder -->
+<!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfHexBig" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 3: Tell WiX to install the files -->
+    <Feature Id="MainApplication" Title="Main Application" Level="1">
+      <ComponentRef Id="appfiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+  </Product>
+</Wix>

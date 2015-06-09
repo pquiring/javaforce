@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Record Desktop
+Comment=Record Desktop
+
+Icon=jfrecorddesktop
+
+Type=Application
+Categories=AudioVideo
+
+Exec=jfrecorddesktop
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfRecordDesktop

@@ -1,0 +1,41 @@
+Whatsnew ...
+
+Apr 20, 2015 - v0.18 released!
+  - new : fill tool now uses threshold
+  - fix : undo/redo issues
+
+Feb 9, 2015 - v0.17 released!
+  - new : support for image layers added (layered images are saved to *.jfpaint files)
+
+Nov 7, 2014 - v0.16 released!
+  - new : added xpm support (read only)
+  - fix : bmp support added in Linux
+
+Sept 20, 2014 - v0.15 released!
+  - new : added fill at edge modifier for the fill tool
+  - fix : alpha channel was striped on load
+  - new : added alternate checkered pattern button
+
+Apr 22, 2014 - v0.14 released!
+  - new : moved fill and color picker to mousePressed() event
+
+Mar 19, 2014 - v0.13 released!
+  - fix : fill with alpha mode enabled would inf loop if target color == fill color if alpha values differed
+
+Jan 26, 2014 - v0.12 released!
+  - added "fill with alpha" toggle button to alter fill tool to "replace" the alpha channel (available in normal paint mode only).
+
+Dec 24, 2013 - v0.11 released!
+  - added Gaussian Blur paint mode
+
+Oct 12, 2013 - v0.10 released!
+  - added a menu
+  - added new Color Layer selection (not all tools are available in sub-layers)
+  - fixed the fill tool while in transparent paint mode
+  - fixed the substitution tool
+
+Oct 11, 2013 - v0.9 released!
+  - fixed fill in
+
+Oct 10, 2013 - v0.8 released!
+  - now uses system clipboard

@@ -1,0 +1,62 @@
+Video Conferencing
+==================
+
+How to
+------
+
+To create a video conference, goto the IVR's page and load the "Video Conference" preset.  The only difference is the "enable video" command within the script.
+When users dial into the conference they can enable their video screen and start seeing other members.
+
+Video Conferencing has only been tested with jPhoneLite/1.4.0
+
+Tech Overview
+-------------
+
+I don't know of any "standard" RFC to implement SIP based video conferencing so I created my own method.
+To start the video conferencing a reINVITE is sent back to each member that joins with multiple streams in the SDP packet (after user enters in correct PIN).
+Each stream has its own content (name).
+There will also be one "inactive" stream that points to the user himself (just to satisfy jphonelite).
+When ever a member joins/leaves any members still present are sent a new reINVITE with all current members.
+Each stream in the SDP points to the video RTP of the other members, so members send video data directly to each other (the PBX doesn't touch video data).
+Some users may need to use STUN/TURN if they are behind a symmetric firewall.
+The audio stream is mixed in the PBX as usual.
+
+Sample SDP content:
+
+PBX = 10.0.0.1
+UAC1 = 10.0.0.2
+UAC2 = 10.0.0.3
+UAC2 = 10.0.0.4
+etc.
+
+Here is a sample sent to UAC1:
+v=0
+o=- 123 123 IN IP4 10.0.0.1
+c=IN IP4 10.0.0.1
+t=0 0
+m=audio 10000 RTP/AVP 0 100
+...
+m=video 20000 RTP/AVP 96
+a=inactive
+c=IN IP4 10.0.0.2
+a=content:UAC1
+...
+m=video 30000 RTP/AVP 96
+a=sendrecv
+c=IN IP4 10.0.0.3
+a=content:UAC2
+...
+m=video 40000 RTP/AVP 96
+a=sendrecv
+c=IN IP4 10.0.0.4
+a=content:UAC3
+...
+
+Notes:
+  - the a=content: would be the agent's username (extension), which helps the UAC keep track of streams.
+  - each stream has its own "c=" connection (ip and port)
+  - the inactive stream is just needed incase the user is the only member of the conference.
+
+Dec. 6, 2013
+Peter Quiring
+

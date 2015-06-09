@@ -1,0 +1,18 @@
+[Desktop Entry]
+Name=Configure System
+Comment=Configure System
+
+Icon=jconfig
+
+Type=Application
+Categories=Settings
+
+Exec=jconfig
+StartupNotify=false
+Terminal=false
+MimeType=
+
+MainClass=ConfigApp
+Title=Config
+
+Title=jfConfig

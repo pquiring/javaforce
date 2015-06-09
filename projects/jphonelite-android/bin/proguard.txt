@@ -1,0 +1,12 @@
+# view AndroidManifest.xml #generated:16
+-keep class com.jphonelite.Main { <init>(...); }
+
+# view AndroidManifest.xml #generated:32
+-keep class com.jphonelite.ViewGlobal { <init>(...); }
+
+# view AndroidManifest.xml #generated:40
+-keep class com.jphonelite.ViewLine { <init>(...); }
+
+# view AndroidManifest.xml #generated:24
+-keep class com.jphonelite.ViewSettings { <init>(...); }
+

@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Hex Editor (big files)
+Comment=Hex Editor (big files)
+
+Icon=jfhexbig
+
+Type=Application
+Categories=Utility
+
+Exec=jfhexbig
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfhexbig

@@ -1,0 +1,6 @@
+To use sata controller with qemu:
+
+qemu-system-x86_64 \
+    -drive file=...,if=none,id=mydisk \
+    -device ich9-ahci,id=ahci \
+    -device ide-drive,drive=mydisk,bus=ahci.0

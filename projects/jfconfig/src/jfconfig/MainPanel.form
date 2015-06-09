@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="printers" min="-2" pref="103" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="certs" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Component id="users" min="-2" pref="102" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="groups" min="-2" pref="101" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="display" min="-2" pref="103" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="sound" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="network" max="32767" attributes="0"/>
+                  <Component id="sound1" max="32767" attributes="0"/>
+                  <Component id="apps" alignment="0" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="servers" pref="100" max="32767" attributes="0"/>
+                  <Component id="global" max="32767" attributes="0"/>
+                  <Component id="repo" alignment="0" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                  <Component id="fixStuff" pref="100" max="32767" attributes="0"/>
+                  <Component id="backup" max="32767" attributes="0"/>
+                  <Component id="parted" alignment="0" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace pref="74" max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="users" alignment="0" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="groups" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="fixStuff" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="servers" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="network" min="-2" pref="102" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="display" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="sound" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="sound1" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="global" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="backup" min="-2" pref="102" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="printers" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="certs" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="apps" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="repo" min="-2" pref="102" max="-2" attributes="0"/>
+                  <Component id="parted" min="-2" pref="102" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JButton" name="users">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="15" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-users.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Users"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="usersActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="servers">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="15" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-servers.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Servers"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="serversActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="groups">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="15" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-users.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Groups"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="groupsActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="network">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="15" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-network.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Network"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="networkActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="fixStuff">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="15" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-fix.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Fix Stuff"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fixStuffActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="display">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="15" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-display.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Display"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="displayActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="sound">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="15" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-sound.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Sound"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="soundActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="sound1">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="15" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-datetime.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Date/Time"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sound1ActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="global">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="15" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-global.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Global"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="globalActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="backup">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="15" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-backup.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Backup"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="backupActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="printers">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="15" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-printers.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Printers"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="printersActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="certs">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="14" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-certificates.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Certificates"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+          <Insets value="[2, 0, 2, 0]"/>
+        </Property>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="certsActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="apps">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="14" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-apps.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Apps"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+          <Insets value="[2, 0, 2, 0]"/>
+        </Property>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="appsActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="repo">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="14" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-repo.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Repository"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+          <Insets value="[2, 0, 2, 0]"/>
+        </Property>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="repoActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="parted">
+      <Properties>
+        <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+          <Font name="Ubuntu" size="14" style="0"/>
+        </Property>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/jfconfig/jconfig-parted.png"/>
+        </Property>
+        <Property name="text" type="java.lang.String" value="Disk Manager"/>
+        <Property name="horizontalTextPosition" type="int" value="0"/>
+        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+          <Insets value="[2, 0, 2, 0]"/>
+        </Property>
+        <Property name="verticalTextPosition" type="int" value="3"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="partedActionPerformed"/>
+      </Events>
+    </Component>
+  </SubComponents>
+</Form>

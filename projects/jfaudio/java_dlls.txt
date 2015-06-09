@@ -1,0 +1,78 @@
+
+ListDLLs v3.1 - List loaded DLLs
+Copyright (C) 1997-2011 Mark Russinovich
+Sysinternals - www.sysinternals.com
+
+------------------------------------------------------------------------------
+jfaudio64.exe pid: 8020
+Command line: jfaudio64
+
+Base                Size      Path
+0x0000000000400000  0x29000   c:\Users\pquiring\files\workspace\jf\projects\jfaudio\jfaudio64.exe
+0x00000000738d0000  0xd2000   c:\Users\pquiring\files\workspace\jf\projects\jfaudio\java\bin\msvcr100.dll
+0x0000000071350000  0x883000  c:\Users\pquiring\files\workspace\jf\projects\jfaudio\java\bin\server\jvm.dll
+0x0000000074990000  0xf000    c:\Users\pquiring\files\workspace\jf\projects\jfaudio\java\bin\verify.dll
+0x0000000073c40000  0x29000   c:\Users\pquiring\files\workspace\jf\projects\jfaudio\java\bin\java.dll
+0x0000000074870000  0x16000   c:\Users\pquiring\files\workspace\jf\projects\jfaudio\java\bin\zip.dll
+0x00000000735f0000  0x198000  C:\Users\pquiring\files\workspace\jf\projects\jfaudio\java\bin\awt.dll
+0x0000000074770000  0x1a000   C:\Users\pquiring\files\workspace\jf\projects\jfaudio\java\bin\net.dll
+0x0000000073c20000  0x11000   C:\Users\pquiring\files\workspace\jf\projects\jfaudio\java\bin\nio.dll
+0x0000000072aa0000  0x47000   C:\Users\pquiring\files\workspace\jf\projects\jfaudio\java\bin\fontmanager.dll
+0x0000000072a50000  0x41000   C:\Users\pquiring\files\workspace\jf\projects\jfaudio\java\bin\t2k.dll
+
+0x0000000077000000  0x1a9000  C:\Windows\SYSTEM32\ntdll.dll
+0x0000000076ee0000  0x11f000  C:\Windows\system32\kernel32.dll
+0x00000000fd0d0000  0x6c000   C:\Windows\system32\KERNELBASE.dll
+0x00000000fed70000  0xdb000   C:\Windows\system32\ADVAPI32.dll
+0x00000000ff270000  0x9f000   C:\Windows\system32\msvcrt.dll
+0x00000000fecd0000  0x1f000   C:\Windows\SYSTEM32\sechost.dll
+0x00000000fe300000  0x12d000  C:\Windows\system32\RPCRT4.dll
+0x0000000076de0000  0xfa000   C:\Windows\system32\USER32.dll
+0x00000000fd1b0000  0x67000   C:\Windows\system32\GDI32.dll
+0x00000000ff260000  0xe000    C:\Windows\system32\LPK.dll
+0x00000000fe430000  0xc9000   C:\Windows\system32\USP10.dll
+0x00000000fd220000  0x2e000   C:\Windows\system32\IMM32.DLL
+0x00000000fdfe0000  0x109000  C:\Windows\system32\MSCTF.dll
+0x00000000f7f20000  0x9000    C:\Windows\system32\WSOCK32.dll
+0x00000000ff170000  0x4d000   C:\Windows\system32\WS2_32.dll
+0x00000000fd1a0000  0x8000    C:\Windows\system32\NSI.dll
+0x00000000faab0000  0x3b000   C:\Windows\system32\WINMM.dll
+0x00000000fbe90000  0xc000    C:\Windows\system32\VERSION.dll
+0x00000000771c0000  0x7000    C:\Windows\system32\PSAPI.DLL
+0x00000000fd250000  0xd88000  C:\Windows\system32\SHELL32.dll
+0x00000000fe870000  0x71000   C:\Windows\system32\SHLWAPI.dll
+0x00000000fe0f0000  0x203000  C:\Windows\system32\ole32.dll
+0x00000000fcdc0000  0xf000    C:\Windows\system32\profapi.dll
+0x00000000ff090000  0xd7000   C:\Windows\system32\OLEAUT32.dll
+0x00000000fc720000  0x17000   C:\Windows\system32\CRYPTSP.dll
+0x00000000fc290000  0x47000   C:\Windows\system32\rsaenh.dll
+0x00000000fd030000  0x1e000   C:\Windows\system32\USERENV.dll
+0x00000000fcc60000  0xf000    C:\Windows\system32\CRYPTBASE.dll
+0x00000000fc4e0000  0x55000   C:\Windows\system32\mswsock.dll
+0x00000000fc6a0000  0x7000    C:\Windows\System32\wship6.dll
+0x00000000f9bb0000  0x27000   C:\Windows\system32\IPHLPAPI.DLL
+0x00000000f9ba0000  0xb000    C:\Windows\system32\WINNSI.DLL
+0x00000000f9a40000  0x11000   C:\Windows\system32\dhcpcsvc6.DLL
+0x00000000f99c0000  0x18000   C:\Windows\system32\dhcpcsvc.DLL
+0x0000000080000000  0x38000   C:\Users\pquiring\AppData\Local\Temp\jna--1714956283\jna1926816705831895235.dll
+0x0000000069a80000  0x173f000  C:\Windows\system32\avcodec-55.dll
+0x0000000073860000  0x70000   C:\Windows\system32\avutil-52.dll
+0x00000000734a0000  0x149000  C:\Windows\system32\avdevice-55.dll
+0x00000000f1470000  0x17000   C:\Windows\system32\AVICAP32.dll
+0x00000000f1390000  0x29000   C:\Windows\system32\MSVFW32.dll
+0x00000000fa330000  0xa0000   C:\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_5.82.7601.18201_none_a4d3b9377117c3df\COMCTL32.dll
+0x0000000072af0000  0x202000  C:\Windows\system32\avfilter-3.dll
+0x000000006fa30000  0x573000  C:\Windows\system32\avformat-55.dll
+0x00000000fcde0000  0x16d000  C:\Windows\system32\CRYPT32.dll
+0x00000000fcdd0000  0xf000    C:\Windows\system32\MSASN1.dll
+0x0000000073820000  0x3d000   C:\Windows\system32\postproc-52.dll
+0x00000000737c0000  0x60000   C:\Windows\system32\swresample-0.dll
+0x0000000073420000  0x77000   C:\Windows\system32\swscale-2.dll
+0x00000000fb370000  0x56000   C:\Windows\system32\uxtheme.dll
+0x00000000fafa0000  0x18000   C:\Windows\system32\dwmapi.dll
+0x00000000f3620000  0x1ff000  C:\Windows\system32\d3d9.dll
+0x00000000f8ea0000  0x7000    C:\Windows\system32\d3d8thk.dll
+0x000000006d040000  0xe7000   C:\Windows\system32\aticfx64.dll
+0x00000000f8e90000  0xe000    C:\Windows\system32\atiu9p64.dll
+0x000000006c910000  0x723000  C:\Windows\system32\atiumd64.dll
+0x000000006c520000  0x3ec000  C:\Windows\system32\atiumd6a.dll

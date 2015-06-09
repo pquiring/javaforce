@@ -1,0 +1,11 @@
+Package: jftorrent
+Version: 0.4
+Architecture: amd64
+Maintainer: Peter Quiring <pquiring@jflinux.org>
+Installed-Size: 1
+Depends: javaforce (>= 6.2.0)
+Components: main
+Provides:
+Section: java
+Priority: optional
+Description: Torrent Client, Tracker, Maker all-in-one

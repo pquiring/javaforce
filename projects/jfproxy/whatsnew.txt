@@ -1,0 +1,13 @@
+what's new?
+===========
+
+Dec 9, 2013 : version 0.2
+  - added support for HTTP/1.1 "chunked" encoding
+  - fixed many bugs
+  - actually works now
+
+Nov 22, 2013 : version 0.1
+  - first public release
+  - supports basic http, and https
+  - supports IP filters (who can use it)
+  - supports domain blocking

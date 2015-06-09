@@ -1,0 +1,4 @@
+<network>
+  <hostname>livebox</hostname>
+  <domain>localdomain</domain>
+</network>

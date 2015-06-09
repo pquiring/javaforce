@@ -1,0 +1,3 @@
+#!/bin/bash
+
+jbus-call "org.jflinux.jnetworkmgr.notifyDown(\"$1\")"

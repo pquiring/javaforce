@@ -1,0 +1,100 @@
+CHANGELOG
+=========
+4-24-2015 : v0.22 released
+ - fix : support localhost phone better
+ - fix : reinvites would drop calls with 404
+9-15-2014 : v0.21 released
+ - new : tray icon (Windows 7 theme)
+7-8-2014 : v0.20 released
+ - new : added support for G722 codec
+7-4-2014 : v0.19 released
+ - new : added Queues (ACD : Automatic Call Distributor)
+6-26-2014 : v0.18 released
+ - new : created MSI package for Windows
+ - new : the database is now stored in %ProgramData%\jpbxDB (for windows) or /var/lib/jpbxDB (unix)
+ - new : the database is now auto created on first run
+3-12-2014 : v0.17 released
+ - fix : Java8 compatible
+2-1-2014 : v0.16 released
+ - new : now supports DTLS between two VoIP phones
+1-29-2014 : v0.15 released
+ - new : WebRTC Phone can now call a standard VoIP Phone (such as jPhoneLite) [*experimental*]
+   - the VoIP stack can now do DTLS handshaking (server side only) and process SRTP data
+12-24-2013 : v0.14 released
+ - new : added WebRTC conferencing (basically just copied apprtc.appspot.com - swapped out AppEngine Channel for WebSockets)
+   - simple conferencing rooms for two guests each
+   - the built in web service just transfers the SDP offers between guests using WebSockets, the PBX doesn't do any real "sip" work yet
+   - hope to expand on support to have Web based phones that register and make calls, etc.
+     - this would require implementing STUN/TURN service, DTLS channels, etc. (not an easy task)
+   - only Firefox seems to work ('experimental') - the WebRTC standard is still not finalized yet
+12-17-2013 : v0.13 released
+ - new : relay options : relayAudio/relayVideo to specify if PBX will relay audio/video streams (default = enabled)
+ - new : option : MusicOnHold can now load a wav file which is played to anyone on hold (if relayAudio is enabled)
+   - to select a wav file goto Message page, upload a wav file and then select it from General Settings.
+   - wav file must be 8000Hz, 16bit, mono PCM format as usual.
+ - fixed/implemented Messages delete and rename functions
+ - fixed blind transfer (non-blind still not implemented yet)
+12-9-2013 : v0.12 released
+ - new : Video Conferencing support (only tested with jPhoneLite/1.4.0)
+   - see VideoConference.txt for more info
+ - new : javaforce.voip.SDP class now contains all SDP related data
+ - new : support for reinvites in both directions
+ - new : support for call holding and playing MOH (an intermittent beep for now) to party on hold
+ - fix : web-config no longer confuses Chrome (needed to specify some pages should not be cached)
+11-30-2013 : v0.11 released
+ - new : added support for new video codecs (VP8, H.263+)
+11-28-2013 : v0.10 released
+ - new : added support for "received" and "rport" in the via field (RFC 3581)
+   - this helps clients get around NATing firewalls
+ - fix : docs and mis-packaging jars
+9-17-2013 : v0.9 released
+ - new : use embedded Derby database server instead of MySQL
+ - new : use embedded web-server that listens on port 8001 to configure server instead of JavaEE (tomcat)
+   - with both database and web-server built-in there are no external dependancies anymore (and it's 100% Java).
+12-5-2012 : v0.8 released
+ - new : added a windows installer (bat files)
+7-11-2012 : v0.7.1 released
+ - fix : some folder locations
+7-10-2012 : v0.7 released
+ - fix : converted to a linux package for jflinux.org
+8-22-2011 : v0.6.2 released
+ - fix : PluginsClassLoader unloadPlugins() was not enumerating the plugins properly
+5-2-2011 : v0.6.1 released
+ - fix : support Microsoft WAV format (ignore 'fact' header)
+4-18-2011 : v0.6 released
+ - new : added an integrated flash phone on the main webpage.
+   - from the main webpage enter in your extension and click on 'Use My Phone'
+   - when the flash phone starts you have to enter in your password
+   - the password is never transmitted on the wire, the MD5 auth is calc right inside flash
+ - fix : RTP dynamic payload types are now properly processed instead of assuming some values
+ - fix : various fixes to support other soft-phones (tested with X-Lite)
+ - fix : add Via: to SIP.reply() (thanks to Nick in the UK)
+ - note : the admin page is now a link on the top/right corner of the main page
+3-31-2011 : v0.5.3 released
+ - fix : changed device auth back to explicitly identify as MD5
+ - fix : don't make PBX change codecs passed thru it
+3-30-2011 : v0.5.2 released
+ - new : added 407 handler for trunk auth
+ - new : added an Ubuntu installer
+3-19-2011 : v0.5.1 released
+ - fix : sql connection leak
+3-17-2011 : v0.5 released
+ - new : register trunks now supported
+ - new : inbound routing added (DIDs)
+ - new : settings : anonymous inbound calls
+ - new : extensions cloning now implemented
+ - fix : many bugs
+1-23-2011 : v0.4 released
+ - new : added conferences (a special IVR)
+ - new : shutdown from linux is properly implemented now (instead of using 'killproc java' which was also killing tomcat)
+   - a special SIP command is sent to the server to shut it down
+11-9-2010 : v0.3 released
+ - new : video RTPRelay (H.263)
+ - new : added IVR functionality
+ - new : added messages to upload new messages for IVR (requires apache commons-io and commons-fileupload (commons.apache.org))
+ - fix : RTPRelay NATing will work if both ends are from the same IP
+ - new : created linux/winNT sevices (see install.sh and install.bat)
+7-8-2010 : v0.2 ALPHA released
+ - added voicemail
+6-21-2010 : v0.1 TECH PREVIEW released
+ - init release

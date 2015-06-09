@@ -1,0 +1,13 @@
+$adminpass = 6789
+$userpass = 1234
+label loop
+playmsg vm-enter-password
+getstring $x
+if $x == $userpass
+  conf user
+endif
+if $x == $adminpass
+  conf admin
+endif
+playmsg vm-incorrect
+goto loop

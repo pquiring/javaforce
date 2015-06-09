@@ -1,0 +1,15 @@
+jfile
+=====
+
+Mar 22, 2012 - version 0.3
+  - new : project renamed to jfile
+  - new : aimed to replace system file explorer
+
+Mar 15, 2011 - version 0.2.1
+  - fix : set 'binary' mode (type i) after logging into ftp[s] sites.
+
+Feb 19, 2011 - version 0.2
+  - new : added smb support with jcifs.samba.org
+
+Jan 11, 2011 - version 0.1
+  - new : init public release

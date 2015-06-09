@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Terminal Emulator
+Comment=Terminal Emulator
+
+Icon=jfterm
+
+Type=Application
+Categories=System
+
+Exec=jfterm
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfTerm

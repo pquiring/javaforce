@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <NonVisualComponents>
+    <Component class="javax.swing.ButtonGroup" name="buttonGroup1">
+    </Component>
+  </NonVisualComponents>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="output" pref="386" max="32767" attributes="0"/>
+                  <Component id="jPanel1" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                          <Component id="n10" alignment="0" max="32767" attributes="0"/>
+                          <Component id="n0" alignment="0" max="32767" attributes="0"/>
+                          <Component id="n1" alignment="0" max="32767" attributes="0"/>
+                          <Component id="n4" alignment="0" max="32767" attributes="0"/>
+                          <Component id="n7" alignment="0" pref="50" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="n8" min="-2" pref="50" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="n9" min="-2" pref="50" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="divide" min="-2" pref="50" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="allClear" max="32767" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="dec1" min="-2" pref="50" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="62" max="-2" attributes="0"/>
+                                      <Component id="plus" min="-2" pref="50" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="eq" min="-2" pref="50" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="1" attributes="0">
+                                      <Component id="n2" min="-2" pref="50" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="n3" min="-2" pref="50" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="minus" min="-2" pref="50" max="-2" attributes="0"/>
+                                      <EmptySpace min="-2" pref="56" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="n5" min="-2" pref="50" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="n6" min="-2" pref="50" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="multiple" min="-2" pref="50" max="-2" attributes="0"/>
+                                      <EmptySpace max="32767" attributes="0"/>
+                                      <Component id="open" min="-2" pref="50" max="-2" attributes="0"/>
+                                  </Group>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="1" attributes="0">
+                                  <Component id="close" min="-2" pref="50" max="-2" attributes="0"/>
+                                  <Component id="allClear1" min="-2" pref="50" max="-2" attributes="0"/>
+                                  <Component id="open4" min="-2" pref="50" max="-2" attributes="0"/>
+                              </Group>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Group type="103" groupAlignment="0" attributes="0">
+                                  <Component id="open5" min="-2" pref="50" max="-2" attributes="0"/>
+                                  <Component id="open1" min="-2" pref="50" max="-2" attributes="0"/>
+                                  <Component id="open2" min="-2" pref="50" max="-2" attributes="0"/>
+                                  <Component id="open3" min="-2" pref="50" max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="n11" min="-2" pref="50" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="n12" min="-2" pref="50" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="n13" min="-2" pref="50" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="n14" min="-2" pref="50" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="n15" min="-2" pref="50" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="output" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="n7" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="n8" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="n9" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="divide" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="allClear" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="open2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="allClear1" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="n4" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="n5" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="n6" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="multiple" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="close" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="open5" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="open" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="n1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="n2" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="n3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="minus" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="open1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="open4" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="n0" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="plus" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="dec1" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="open3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="eq" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="n10" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="n11" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="n12" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="n13" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="n14" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="n15" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JTextField" name="output">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="horizontalAlignment" type="int" value="4"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n7">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="7"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n8">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="8"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n9">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="9"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n4">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="4"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n5">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="5"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n6">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="6"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="1"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="2"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n3">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="3"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n0">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="0"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="divide">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="/"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="multiple">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="x"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="minus">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="-"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="plus">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="+"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="allClear">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="AC"/>
+        <Property name="toolTipText" type="java.lang.String" value="All Clear"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="open">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="("/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="close">
+      <Properties>
+        <Property name="text" type="java.lang.String" value=")"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="eq">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="="/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="open1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="XOR"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="open2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="AND"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="open3">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="NOT"/>
+      </Properties>
+    </Component>
+    <Container class="javax.swing.JPanel" name="jPanel1">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="hex" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="decimal" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="oct" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="bin" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="hex" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="decimal" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="oct" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="bin" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JRadioButton" name="hex">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup1"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Hex"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="hexActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="decimal">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup1"/>
+            </Property>
+            <Property name="selected" type="boolean" value="true"/>
+            <Property name="text" type="java.lang.String" value="Dec"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="decimalActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="oct">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup1"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Oct"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="octActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JRadioButton" name="bin">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="buttonGroup1"/>
+            </Property>
+            <Property name="text" type="java.lang.String" value="Bin"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="binActionPerformed"/>
+          </Events>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JButton" name="n10">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="A"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n11">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="B"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n12">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="C"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n13">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="D"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n14">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="E"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="n15">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="F"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="open4">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="MOD"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="open5">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="OR"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="dec1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="+/-"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="allClear1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="&lt;"/>
+        <Property name="toolTipText" type="java.lang.String" value="All Clear"/>
+      </Properties>
+    </Component>
+  </SubComponents>
+</Form>

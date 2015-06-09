@@ -1,0 +1,26 @@
+#!/bin/bash
+#sudo is used to call the session, a side effect is some SUDO_... variables that MUST be cleared.
+unset SUDO_UID
+unset SUDO_GID
+unset SUDO_USER
+unset SUDO_COMMAND
+
+#run logon script from server
+
+cd $HOME
+if [ -f logon.sh ]; then rm -f logon.sh; fi
+
+jsmbget smb://$SERVER/sysvol/logon.sh
+
+#alternate method to get logon.sh
+#jmapshare $SERVER sysvol
+#cp ".local/mounts/sysvol@$SERVER/logon.sh" ~
+#junmapshare $SERVER sysvol
+
+if [ -f logon.sh ]; then
+  chmod +x logon.sh
+  ./logon.sh
+  rm logon.sh
+fi
+
+$1

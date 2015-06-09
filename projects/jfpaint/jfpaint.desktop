@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=Paint
+Comment=Edit graphics images.
+
+Icon=jfpaint
+
+Type=Application
+Categories=Graphics
+
+Exec=jfpaint %f
+StartupNotify=false
+Terminal=false
+MimeType=image/jpeg;image/png;image/x-ms-bmp
+Action=edit
+
+Title=jfPaint

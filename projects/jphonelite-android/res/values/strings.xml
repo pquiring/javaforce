@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+  <string name="main_text1_text">init</string>
+  <string name="main_text2_text">init</string>
+  <string name="main_about_text">
+
+jPhoneLite/1.0.1 for ANDROID RELEASE #11<br/>
+Generic VoIP SIP Phone.<br/>
+http://jphonelite.sourceforge.net<br/>
+License : LGPL.<br/>
+Supports : g711, RFC 2833, 6 lines w/ conference, hold, and transfer.
+Conference Mode : Set for each line (up to all 6 lines).
+Ringtone : /sdcard/ringtone.wav (must be 8000Hz, 16bit, mono, PCM)
+Please goto the website for support.<br/>
+By : Peter Quiring (pquiring at gmail dot com).
+
+  </string>
+  <string name="settings_line_x_prompt">Select Line Config</string>
+  <string-array name="line_2">
+    <item>Use Settings Below</item>
+    <item>Duplicate of Line 1</item>
+    <item>Duplicate of Line 3</item>
+    <item>Duplicate of Line 4</item>
+    <item>Duplicate of Line 5</item>
+    <item>Duplicate of Line 6</item>
+  </string-array>
+  <string-array name="line_3">
+    <item>Use Settings Below</item>
+    <item>Duplicate of Line 1</item>
+    <item>Duplicate of Line 2</item>
+    <item>Duplicate of Line 4</item>
+    <item>Duplicate of Line 5</item>
+    <item>Duplicate of Line 6</item>
+  </string-array>
+  <string-array name="line_4">
+    <item>Use Settings Below</item>
+    <item>Duplicate of Line 1</item>
+    <item>Duplicate of Line 2</item>
+    <item>Duplicate of Line 3</item>
+    <item>Duplicate of Line 5</item>
+    <item>Duplicate of Line 6</item>
+  </string-array>
+  <string-array name="line_5">
+    <item>Use Settings Below</item>
+    <item>Duplicate of Line 1</item>
+    <item>Duplicate of Line 2</item>
+    <item>Duplicate of Line 3</item>
+    <item>Duplicate of Line 4</item>
+    <item>Duplicate of Line 6</item>
+  </string-array>
+  <string-array name="line_6">
+    <item>Use Settings Below</item>
+    <item>Duplicate of Line 1</item>
+    <item>Duplicate of Line 2</item>
+    <item>Duplicate of Line 3</item>
+    <item>Duplicate of Line 4</item>
+    <item>Duplicate of Line 5</item>
+  </string-array>
+</resources>

@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="title" type="java.lang.String" value="Edit Note"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" attributes="0">
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+              <Component id="cancel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="ok" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="tabs" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="tabs" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="ok" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cancel" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JButton" name="ok">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="OK"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="okActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="cancel">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Cancel"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelActionPerformed"/>
+      </Events>
+    </Component>
+    <Container class="javax.swing.JTabbedPane" name="tabs">
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="noteTab">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Note">
+                <Property name="tabTitle" type="java.lang.String" value="Note"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="_note" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace pref="370" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="_note" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace pref="127" max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="jLabel1">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Note"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="_note">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="122">
+                    <StringItem index="0" value="No Note"/>
+                    <StringItem index="1" value="C-0"/>
+                    <StringItem index="2" value="C#0"/>
+                    <StringItem index="3" value="D-0"/>
+                    <StringItem index="4" value="D#0"/>
+                    <StringItem index="5" value="E-0"/>
+                    <StringItem index="6" value="F-0"/>
+                    <StringItem index="7" value="F#0"/>
+                    <StringItem index="8" value="G-0"/>
+                    <StringItem index="9" value="G#0"/>
+                    <StringItem index="10" value="A-0"/>
+                    <StringItem index="11" value="A#0"/>
+                    <StringItem index="12" value="B-0"/>
+                    <StringItem index="13" value="C-1"/>
+                    <StringItem index="14" value="C#1"/>
+                    <StringItem index="15" value="D-1"/>
+                    <StringItem index="16" value="D#1"/>
+                    <StringItem index="17" value="E-1"/>
+                    <StringItem index="18" value="F-1"/>
+                    <StringItem index="19" value="F#1"/>
+                    <StringItem index="20" value="G-1"/>
+                    <StringItem index="21" value="G#1"/>
+                    <StringItem index="22" value="A-1"/>
+                    <StringItem index="23" value="A#1"/>
+                    <StringItem index="24" value="B-1"/>
+                    <StringItem index="25" value="C-2"/>
+                    <StringItem index="26" value="C#2"/>
+                    <StringItem index="27" value="D-2"/>
+                    <StringItem index="28" value="D#2"/>
+                    <StringItem index="29" value="E-2"/>
+                    <StringItem index="30" value="F-2"/>
+                    <StringItem index="31" value="F#2"/>
+                    <StringItem index="32" value="G-2"/>
+                    <StringItem index="33" value="G#2"/>
+                    <StringItem index="34" value="A-2"/>
+                    <StringItem index="35" value="A#2"/>
+                    <StringItem index="36" value="B-2"/>
+                    <StringItem index="37" value="C-3"/>
+                    <StringItem index="38" value="C#3"/>
+                    <StringItem index="39" value="D-3"/>
+                    <StringItem index="40" value="D#3"/>
+                    <StringItem index="41" value="E-3"/>
+                    <StringItem index="42" value="F-3"/>
+                    <StringItem index="43" value="F#3"/>
+                    <StringItem index="44" value="G-3"/>
+                    <StringItem index="45" value="G#3"/>
+                    <StringItem index="46" value="A-3"/>
+                    <StringItem index="47" value="A#3"/>
+                    <StringItem index="48" value="B-3"/>
+                    <StringItem index="49" value="C-4"/>
+                    <StringItem index="50" value="C#4"/>
+                    <StringItem index="51" value="D-4"/>
+                    <StringItem index="52" value="D#4"/>
+                    <StringItem index="53" value="E-4"/>
+                    <StringItem index="54" value="F-4"/>
+                    <StringItem index="55" value="F#4"/>
+                    <StringItem index="56" value="G-4"/>
+                    <StringItem index="57" value="G#4"/>
+                    <StringItem index="58" value="A-4"/>
+                    <StringItem index="59" value="A#4"/>
+                    <StringItem index="60" value="B-4"/>
+                    <StringItem index="61" value="C-5"/>
+                    <StringItem index="62" value="C#5"/>
+                    <StringItem index="63" value="D-5"/>
+                    <StringItem index="64" value="D#5"/>
+                    <StringItem index="65" value="E-5"/>
+                    <StringItem index="66" value="F-5"/>
+                    <StringItem index="67" value="F#5"/>
+                    <StringItem index="68" value="G-5"/>
+                    <StringItem index="69" value="G#5"/>
+                    <StringItem index="70" value="A-5"/>
+                    <StringItem index="71" value="A#5"/>
+                    <StringItem index="72" value="B-5"/>
+                    <StringItem index="73" value="C-6"/>
+                    <StringItem index="74" value="C#6"/>
+                    <StringItem index="75" value="D-6"/>
+                    <StringItem index="76" value="D#6"/>
+                    <StringItem index="77" value="E-6"/>
+                    <StringItem index="78" value="F-6"/>
+                    <StringItem index="79" value="F#6"/>
+                    <StringItem index="80" value="G-6"/>
+                    <StringItem index="81" value="G#6"/>
+                    <StringItem index="82" value="A-6"/>
+                    <StringItem index="83" value="A#6"/>
+                    <StringItem index="84" value="B-6"/>
+                    <StringItem index="85" value="C-7"/>
+                    <StringItem index="86" value="C#7"/>
+                    <StringItem index="87" value="D-7"/>
+                    <StringItem index="88" value="D#7"/>
+                    <StringItem index="89" value="E-7"/>
+                    <StringItem index="90" value="F-7"/>
+                    <StringItem index="91" value="F#7"/>
+                    <StringItem index="92" value="G-7"/>
+                    <StringItem index="93" value="G#7"/>
+                    <StringItem index="94" value="A-7"/>
+                    <StringItem index="95" value="A#7"/>
+                    <StringItem index="96" value="B-7"/>
+                    <StringItem index="97" value="C-8"/>
+                    <StringItem index="98" value="C#8"/>
+                    <StringItem index="99" value="D-8"/>
+                    <StringItem index="100" value="D#8"/>
+                    <StringItem index="101" value="E-8"/>
+                    <StringItem index="102" value="F-8"/>
+                    <StringItem index="103" value="F#8"/>
+                    <StringItem index="104" value="G-8"/>
+                    <StringItem index="105" value="G#8"/>
+                    <StringItem index="106" value="A-8"/>
+                    <StringItem index="107" value="A#8"/>
+                    <StringItem index="108" value="B-8"/>
+                    <StringItem index="109" value="C-9"/>
+                    <StringItem index="110" value="C#9"/>
+                    <StringItem index="111" value="D-9"/>
+                    <StringItem index="112" value="D#9"/>
+                    <StringItem index="113" value="E-9"/>
+                    <StringItem index="114" value="F-9"/>
+                    <StringItem index="115" value="F#9"/>
+                    <StringItem index="116" value="G-9"/>
+                    <StringItem index="117" value="G#9"/>
+                    <StringItem index="118" value="A-9"/>
+                    <StringItem index="119" value="A#9"/>
+                    <StringItem index="120" value="B-9"/>
+                    <StringItem index="121" value=" "/>
+                  </StringArray>
+                </Property>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="volumeTab">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Volume">
+                <Property name="tabTitle" type="java.lang.String" value="Volume"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="vol_param" max="32767" attributes="0"/>
+                          <Group type="102" attributes="0">
+                              <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="vol_cmd" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="volText" pref="211" max="32767" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="global" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="vol_cmd" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="volText" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="global" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="-2" pref="11" max="-2" attributes="0"/>
+                      <Component id="vol_param" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JSlider" name="vol_param">
+              <Properties>
+                <Property name="maximum" type="int" value="255"/>
+                <Property name="toolTipText" type="java.lang.String" value=""/>
+                <Property name="value" type="int" value="128"/>
+                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[50, 23]"/>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="vol_paramStateChanged"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="vol_cmd">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="12">
+                    <StringItem index="0" value="None"/>
+                    <StringItem index="1" value="SET_VOLUME"/>
+                    <StringItem index="2" value="SET_PANNING"/>
+                    <StringItem index="3" value="SLIDE_UP"/>
+                    <StringItem index="4" value="SLIDE_DOWN"/>
+                    <StringItem index="5" value="PAN_SLIDE_LEFT"/>
+                    <StringItem index="6" value="PAN_SLIDE_RIGHT"/>
+                    <StringItem index="7" value="SET_VOL_VIBRATE_SPEED"/>
+                    <StringItem index="8" value="SET_PAN_VIBRATE_SPEED"/>
+                    <StringItem index="9" value="TREMOLO"/>
+                    <StringItem index="10" value="PANBRELLO"/>
+                    <StringItem index="11" value=" "/>
+                  </StringArray>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="vol_cmdItemStateChanged"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="jLabel5">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="cmd:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JLabel" name="volText">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Value : ???"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JCheckBox" name="global">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Global"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="effectTab">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Effect">
+                <Property name="tabTitle" type="java.lang.String" value="Effect"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="fx_cmd" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="fxText" max="32767" attributes="0"/>
+                              <EmptySpace min="-2" pref="17" max="-2" attributes="0"/>
+                              <Component id="cont" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="fxParamPanel" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" attributes="0">
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="fx_cmd" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="fxText" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cont" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="fxParamPanel" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JLabel" name="jLabel3">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="cmd:"/>
+              </Properties>
+            </Component>
+            <Component class="javax.swing.JComboBox" name="fx_cmd">
+              <Properties>
+                <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                  <StringArray count="14">
+                    <StringItem index="0" value="None"/>
+                    <StringItem index="1" value="PORTAMENTO"/>
+                    <StringItem index="2" value="PORTAMENTO_TO_NOTE"/>
+                    <StringItem index="3" value="SET_VIBRATE_SPEED"/>
+                    <StringItem index="4" value="VIBRATO"/>
+                    <StringItem index="5" value="TREMOR"/>
+                    <StringItem index="6" value="PATTERN_BREAK"/>
+                    <StringItem index="7" value="KEY_OFF"/>
+                    <StringItem index="8" value="CUT_OFF"/>
+                    <StringItem index="9" value="SET_INSTRUMENT"/>
+                    <StringItem index="10" value="DELAY_START"/>
+                    <StringItem index="11" value="SAMPLE_OFFSET"/>
+                    <StringItem index="12" value="SET_BPM"/>
+                    <StringItem index="13" value=" "/>
+                  </StringArray>
+                </Property>
+              </Properties>
+              <Events>
+                <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="fx_cmdItemStateChanged"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JLabel" name="fxText">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Value : ???"/>
+              </Properties>
+            </Component>
+            <Container class="javax.swing.JPanel" name="fxParamPanel">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JTabbedPane" name="fxParamTab">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="_1">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="1Slider">
+                            <Property name="tabTitle" type="java.lang.String" value="1Slider"/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="fx_param" pref="426" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace min="-2" pref="19" max="-2" attributes="0"/>
+                                  <Component id="fx_param" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JSlider" name="fx_param">
+                          <Properties>
+                            <Property name="maximum" type="int" value="255"/>
+                            <Property name="value" type="int" value="128"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="fx_paramStateChanged"/>
+                          </Events>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="_2">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="2Slider">
+                            <Property name="tabTitle" type="java.lang.String" value="2Slider"/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="fx_param2" pref="446" max="32767" attributes="0"/>
+                              <Component id="fx_param1" alignment="0" max="32767" attributes="0"/>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="fx_param1" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="fx_param2" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JSlider" name="fx_param2">
+                          <Properties>
+                            <Property name="maximum" type="int" value="255"/>
+                            <Property name="value" type="int" value="128"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="fx_param2StateChanged"/>
+                          </Events>
+                        </Component>
+                        <Component class="javax.swing.JSlider" name="fx_param1">
+                          <Properties>
+                            <Property name="maximum" type="int" value="255"/>
+                            <Property name="value" type="int" value="128"/>
+                          </Properties>
+                          <Events>
+                            <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="fx_param1StateChanged"/>
+                          </Events>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="_instr">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="setInstr">
+                            <Property name="tabTitle" type="java.lang.String" value="setInstr"/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="fx_instr" pref="365" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="fx_instr" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace pref="43" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="jLabel4">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Instrument:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JComboBox" name="fx_instr">
+                          <Properties>
+                            <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+                              <StringArray count="1">
+                                <StringItem index="0" value="TODO"/>
+                              </StringArray>
+                            </Property>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="_int">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="intValue">
+                            <Property name="tabTitle" type="java.lang.String" value="intValue"/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout>
+                        <DimensionLayout dim="0">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="fx_int" pref="412" max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                        <DimensionLayout dim="1">
+                          <Group type="103" groupAlignment="0" attributes="0">
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="3" attributes="0">
+                                      <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
+                                      <Component id="fx_int" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <EmptySpace max="32767" attributes="0"/>
+                              </Group>
+                          </Group>
+                        </DimensionLayout>
+                      </Layout>
+                      <SubComponents>
+                        <Component class="javax.swing.JLabel" name="jLabel2">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" value="Value:"/>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JTextField" name="fx_int">
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Component class="javax.swing.JButton" name="cont">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="continue"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="contActionPerformed"/>
+              </Events>
+            </Component>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

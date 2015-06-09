@@ -1,0 +1,59 @@
+<project name="jfupgrade" default="jar" basedir=".">
+  <description>jfupgrade</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfupgrade"/>
+  <property name="home" location="../.."/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property name="classpath" location="javaforce.jar"/>
+  <property name="version" value="0.6"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars">
+    <jar destfile="javaforce.jar">
+      <zipfileset src="../../jars/javaforce.jar"/>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jfupgrade.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" debug="true" includeantruntime="false">
+      <classpath path="${classpath}"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="jfupgrade.jar" includes="*.class" basedir="${build}">
+      <fileset dir="." includes="*.png"/>
+      <manifest>
+        <attribute name="Main-Class" value="UpgradeApp"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <elf/>
+    <copy file="jfupgrade.jar" todir="/usr/share/java"/>
+    <copy file="jfupgrade-cron.sh" todir="/etc/cron.weekly"/>
+    <chmod file="/etc/cron.weekly/jfupgrade-cron.sh" perm="+x"/>
+    <copy file="jfupgrade.desktop" todir="/usr/share/applications"/>
+    <copy file="jfupgrade.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+    <copy file="jfupgrade.html" todir="/usr/share/jhelp"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.jar"/>
+    </delete>
+  </target>
+</project>

@@ -1,0 +1,12 @@
+Package: jfrpm
+Version: 1.0
+Architecture: amd64
+Maintainer: Peter Quiring <pquiring@jflinux.org>
+Installed-Size: 1
+Depends:
+Recommends:
+Replaces:
+Section: net
+Priority: optional
+Homepage: http://javaforce.sourceforge.net
+Description: Builds RPM packages

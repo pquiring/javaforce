@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Record Camera
+Comment=Record Camera
+
+Icon=jfrecordcamera
+
+Type=Application
+Categories=AudioVideo
+
+Exec=jfrecordcamera
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfRecordCamera

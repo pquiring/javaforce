@@ -1,0 +1,22 @@
+<project name="native" default="mac" basedir=".">
+  <description>native</description>
+  <property name="JAVA_HOME" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home"/>
+
+  <target name="javah">
+    <javah destdir="." classpath="../../classes">
+      <class name="javaforce.gl.GL"/>
+      <class name="javaforce.media.Camera"/>
+      <class name="javaforce.media.MediaCoder"/>
+      <class name="javaforce.media.MediaDecoder"/>
+      <class name="javaforce.media.MediaEncoder"/>
+      <class name="javaforce.media.MediaVideoDecoder"/>
+      <class name="javaforce.jni.MacNative"/>
+    </javah>
+  </target>
+
+  <target name="mac" depends="javah"  description="create mac native so">
+    <exec command="gcc -I ${JAVA_HOME}/include -I ${JAVA_HOME}/include/darwin mac.mm -c -o mac.o -fPIC"/>
+    <exec command="gcc -l objc -framework AVFoundation -framework CoreMedia -framework CoreVideo -framework Foundation -shared mac.o -o ../jfnative64.dylib"/>
+    <delete file="mac.o"/>
+  </target>
+</project>

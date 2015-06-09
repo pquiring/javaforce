@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" UpgradeCode="{4A0F1642-9982-47FA-96C8-E5058B62CA7D}" Version="0.2" Language="1033" Name="jfDNS" Manufacturer="Peter Quiring">
+    <Package InstallerVersion="300" Compressed="yes" Platform="x64"/>
+    <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
+    <UIRef Id="WixUI_Minimal" />
+
+    <!-- Step 1: Define the directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdns"/>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+<!-- Use the following if you want Shortcut in its own folder -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfDNS"/> -->
+      </Directory>
+    </Directory>
+
+    <!-- Step 2: Add files to your installer package -->
+    <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+      <Component Id="appfiles" Guid="{B5CB89AD-03DD-4853-BCDD-189F7E352AA2}" Win64="yes">
+        <File Id="javaforce.jar" Source="javaforce.jar" KeyPath="yes"/>
+        <File Id="jfdns.exe" Source="jfdns.exe"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 2b: Add the shortcut to your installer package -->
+<!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
+    <DirectoryRef Id="ProgramMenuFolder">
+      <Component Id="ApplicationShortcut" Guid="{36C58739-955F-4894-AED9-C4B90FD3F275}">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfDNS" Description="Java DNS Server" Target="[APPLICATIONROOTDIRECTORY]jfdns.exe"
+          WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+<!-- Use the following if you want Shortcut in its own folder -->
+<!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfDNS" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 3: Tell WiX to install the files -->
+    <Feature Id="MainApplication" Title="Main Application" Level="1">
+      <ComponentRef Id="appfiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+  </Product>
+</Wix>

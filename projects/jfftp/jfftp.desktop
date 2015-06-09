@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=FTP Manager
+Comment=Manage your ftp files.
+
+Icon=jfftp
+
+Type=Application
+Categories=Utility
+
+Exec=jfftp
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfFTP

@@ -1,0 +1,125 @@
+ChangeLog
+=========
+
+4-20-2015 : version 0.30
+  - fix : if SIP init failed all gui elements were left disabled
+
+4-7-2015 : version 0.29
+  - fixed some memory leaks
+
+3-26-2015 : version 0.28
+ - new : added voicemail detection
+ - fix : some options where not saved to disk
+
+1-17-2015 : version 0.27
+ - fix : greatly improved -allowdups performance
+
+10-8-2014 : version 0.26
+ - fix : -allowdups now uses a suffix added to each number to make them unique in the list.
+     The suffix (comma and a number) are removed just before dialing the number.
+     If you used v0.25 you should delete the database created with it.
+     This option no longer alters how the database is created and should be used anytime you need to add duplicates.
+ - new : SIP response code 480 is now treated as 'busy' which will allow the number to be retried.
+
+10-7-2014 : version 0.25
+ - new : added -allowdups command line option to allow duplicate numbers in lists (user requested feature)
+   - this option MUST be used when the database is created or it will not work and will be in effect anytime after that
+     even if not specified again (the option modifies how the database tables are created)
+     If your database already exists you must delete it and then use this option
+ - fix : how options are parsed
+
+10-6-2014 : version 0.24
+ - new : added -dbpath and -cfgsuffix command line options
+ - new : added sip port range
+ - these new features allow more than once instance to run on the same computer at once (user requested feature)
+ - fix : after calling is complete sip port is now released
+
+9-15-2014 : version 0.23
+ - new : tray icon (Windows 7 theme)
+
+7-25-2014 : version 0.22
+ - new : goto message from user input will now timeout after 5 seconds and repeat (user requested feature)
+ - new : if user does not respond to 5 inputs the call is terminated.
+
+7-12-2014 : version 0.21
+ - new : added calling times (user requested feature)
+
+7-8-2014 : version 0.20
+ - new : the Goto message based on user input will now record the user input digit into the survey data (user requested feature)
+
+7-4-2014 : version 0.19
+ - new : added tray icon (must exit thru it now)
+
+6-26-2014 : version 0.18
+ - new : added MSI package and new icon
+ - new : the database is now stored in a new location:
+   Windows : stored in %ProgramData%\jfBroadcast (or %AllUsersProfile%\jfBroadcast for Win2000/XP/2003)
+   Unix : stored in /var/lib/jfBroadcast
+   If you are upgrading the old location was ./database which you can manually move and rename.
+ - config files (broadcast.cfg and broadcast-msgs.cfg) are now stored in the user profile folder (%UserProfile% for Windows)
+
+2-5-2014 : version 0.17
+ - new : added -start command line option (user requested feature)
+ - new : added human/machine detection thresholds/duration options
+ - new : added check for update option
+
+11-14-2013 : version 0.16
+ - fix : voip fixes for some PBXes that use qop registration
+
+9-19-2013 : version 0.15
+ - new : use embedded database server (derby) instead of MySQL
+
+3-6-2012 : version 0.14
+ - fix : g729a timestamp correction
+
+12-5-2012 : version 0.13
+ - new : added g711a codec and lots of voip improvements
+
+3-3-2012 : version 0.12
+ - new : added "Disable human/machine detection" - messages will start as soon as connection is made
+ - new : you can click "Stop" a second time to force all connections to be dropped instead of waiting gracefully
+
+1-29-2012 : version 0.11
+ - new : added "transfer call" option to messages selections (user requested feature)
+   - this will transfer call at end of the current message
+   - use this to automatically transfer a call
+
+8-4-2011 : version 0.10
+ - fix : make sure options have optimal default values when no configuration exists
+
+8-3-2011 : version 0.9
+ - new : added two new options (max RingTime & max Attempts) which were previously hard-coded are now configurable (user requested feature)
+
+5-2-2011 : version 0.8
+ - fix : used JDBC for database connection instead of my own driver.
+ - new : database keys were changed so that a phone number can exist in multiple lists but still only once per list.
+ - fix : Wav loader supports Microsoft WAV format (ignore 'fact' header)
+
+7-3-2011 : version 0.7.1
+ - fix : bad SQL code was unable to query lists with more than 256 rows.
+
+12-29-2010 : version 0.7
+ - new : added new survey options (major update) - database design was overhauled
+
+11-11-2010 : version 0.6
+ - fix : moved sql query out of 20ms timer by using a list that is processed in main thread.  Should improve audio quality.
+
+11-10-2010 : version 0.5
+ - fix : opps - forget to save delay to the config file
+
+11-9-2010 : version 0.4
+ - new : added delay option
+ - fix : placed synchronized locking around persistant sql code
+
+10-20-2010 : version 0.3
+ - new : added answering machine detection (it just waits for 1 second of silence after it hears something)
+ - new : added 1 min timeout if line keeps ringing
+
+10-16-2010 : version 0.2
+ - fix : g711 was not initialized
+ - new : sql connection is now kept open and other optimizations.
+ - new : g729a can be disabled (g729a requires lots of CPU power compared to g711)
+ - new : status is updated when audio timer is skipped due to slow system performance (either disable g729a or reduce # of lines)
+
+10-15-2010 : init release version 0.1
+

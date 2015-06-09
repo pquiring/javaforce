@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Calculator
+Comment=Perform calculations
+
+Icon=jfcalc
+
+Type=Application
+Categories=Utility
+
+Exec=jfcalc
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfCalc

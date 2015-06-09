@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Upgrade Manager
+Comment=Upgrade Manager
+
+Icon=jfupgrade
+
+Type=Application
+Categories=Settings
+
+Exec=jfupgrade
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfupgrade

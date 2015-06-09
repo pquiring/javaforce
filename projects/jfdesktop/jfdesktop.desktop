@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=jfdesktop
+Comment=Log in using jfdesktop
+Exec=/usr/bin/jfdesktop
+TryExec=/usr/bin/jfdesktop
+Icon=jfdesktop
+Type=XSession

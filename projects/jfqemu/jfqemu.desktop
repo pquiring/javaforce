@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Virtual Machine Manager (QEMU)
+Comment=Virtual Machine Manager (QEMU)
+
+Icon=jfqemu
+
+Type=Application
+Categories=System
+
+Exec=jfqemu
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfqemu

@@ -1,0 +1,28 @@
+<project name="native" default="windows" basedir=".">
+  <description>native</description>
+  <property environment="env"/>
+
+  <target name="javah">
+    <javah destdir="." classpath="../../classes">
+      <class name="javaforce.gl.GL"/>
+      <class name="javaforce.media.Camera"/>
+      <class name="javaforce.media.MediaCoder"/>
+      <class name="javaforce.media.MediaDecoder"/>
+      <class name="javaforce.media.MediaEncoder"/>
+      <class name="javaforce.media.MediaVideoDecoder"/>
+      <class name="javaforce.jni.WinNative"/>
+    </javah>
+  </target>
+
+  <!-- Requires cygwin/mingw in PATH -->
+  <target name="windows" depends="javah" description="create windows native dll">
+<!--
+    <exec command="i686-w64-mingw32-gcc -g -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -I '${env.FFMPEG_HOME}/include' windows.cpp -c -Wl,-subsystem,windows -o win32.obj"/>
+    <exec command="i686-w64-mingw32-gcc -shared win32.obj -lgdi32 -lole32 -loleaut32 -lstrmiids -lopengl32 -o ../jfnative32.dll"/>
+    <delete file="win32.obj"/>
+-->
+    <exec command="x86_64-w64-mingw32-gcc -g -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -I '${env.FFMPEG_HOME}/include' windows.cpp -c -Wl,-subsystem,windows -o win64.obj"/>
+    <exec command="x86_64-w64-mingw32-gcc -shared win64.obj -lgdi32 -lole32 -loleaut32 -lstrmiids -lopengl32 -o ../jfnative64.dll"/>
+    <delete file="win64.obj"/>
+  </target>
+</project>

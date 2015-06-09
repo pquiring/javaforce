@@ -1,0 +1,18 @@
+What's new...
+=============
+
+May 12, 2014 : 0.3 released!
+  - added Tools > Export to Audio (export to WAV/MP3 file)
+    - now requires FFMPEG
+
+Apr 22, 2014 : 0.2 released!
+  - fix : play button in samples tab was playing the current instrument, not sample
+
+Mar 20, 2014 : 0.1 released!
+  - finalized everything
+
+Mar 19, 2014 : Almost there
+  - Basic example : FurElise works quite well
+
+Mar 14, 2014 : Progress
+  - Can now open DLS files

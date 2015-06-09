@@ -1,0 +1,28 @@
+#!/bin/bash
+
+all="reason=$reason"
+all="$all,interface=$interface"
+all="$all,medium=$medium"
+all="$all,new_ip_address=$new_ip_address"
+all="$all,new_subnet_mask=$new_subnet_mask"
+all="$all,new_domain_name=$new_domain_name"
+all="$all,new_domain_name_servers=$new_domain_name_servers"
+all="$all,new_routers=$new_routers"
+all="$all,new_static_routes=$new_static_routes"
+
+all="$all,old_ip_address=$old_ip_address"
+all="$all,old_subnet_mask=$old_subnet_mask"
+all="$all,old_domain_name=$old_domain_name"
+all="$all,old_domain_name_servers=$old_domain_name_servers"
+all="$all,old_routers=$old_routers"
+all="$all,old_static_routes=$old_static_routes"
+
+#all="$all,=$"
+
+jbus-call "org.jflinux.jnetworkmgr.script(\"$all\")"
+
+#TODO : support TIMEOUT
+if [ $reason = "TIMEOUT" ]; then
+  exit 1
+fi
+exit 0

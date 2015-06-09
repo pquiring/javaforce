@@ -1,0 +1,17 @@
+<project name="jfrpm" default="help" basedir=".">
+  <description>rpm</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfrpm"/>
+  <property name="home" location="../.."/>
+  <property name="version" value="1.0"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="jar"/>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <copy file="jfrpm" todir="/usr/bin"/>
+    <chmod file="/usr/bin/jfrpm" perm="+x"/>
+  </target>
+</project>

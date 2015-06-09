@@ -1,0 +1,156 @@
+<project name="jpbx" default="jar" basedir=".">
+  <description>jpbx</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jpbxlite"/>
+  <property name="home" location="../.."/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property name="classpath" location="javaforce.jar"/>
+  <property name="version" value="0.22"/>
+
+  <property name="candle_extra" value=""/>
+  <property name="light_extra" value="-b plugins -b sounds\\en"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars">
+    <jar destfile="javaforce.jar">
+      <zipfileset src="../../jars/javaforce.jar"/>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jpbxlite.sourceforge.net"/>
+      </manifest>
+    </jar>
+    <jar destfile="derby.jar">
+      <zipfileset src="../../jars/derby.jar"/>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jpbxlite.sourceforge.net"/>
+      </manifest>
+    </jar>
+    <jar destfile="bouncycastle.jar">
+      <zipfileset src="../../jars/bouncycastle.jar">
+        <exclude name="META-INF/*"/>
+      </zipfileset>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jpbxlite.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" target="1.6" source="1.6" debug="true" includeantruntime="false">
+      <classpath path="${classpath}"/>
+    </javac>
+  </target>
+
+  <target name="core" depends="compile" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="jpbxcore.jar" includes="jpbx/core/*.class" basedir="${build}">
+      <fileset dir="static" includes="*"/>
+      <fileset dir="." includes="*.png"/>
+      <fileset dir="." includes="*.ico"/>
+      <manifest>
+        <attribute name="Main-Class" value="jpbx.core.Main"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="plugins" depends="compile" description="build jar file">
+    <!-- Build plugins jar files from class files -->
+    <jar destfile="plugins/extensions.jar" includes="jpbx/plugins/core/Extensions*.class" basedir="${build}"/>
+    <jar destfile="plugins/trunks.jar" includes="jpbx/plugins/core/Trunks*.class" basedir="${build}"/>
+    <jar destfile="plugins/voicemail.jar" includes="jpbx/plugins/core/VoiceMail*.class" basedir="${build}"/>
+    <jar destfile="plugins/ivrs.jar">
+      <fileset dir="${build}" includes="jpbx/plugins/core/IVR*.class"/>
+      <fileset dir="${build}" includes="jpbx/plugins/core/Conference*.class"/>
+    </jar>
+    <jar destfile="plugins/queues.jar" includes="jpbx/plugins/core/Queues*.class" basedir="${build}"/>
+  </target>
+
+  <target name="jar" depends="core,plugins" description="build everything"/>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <mkdir dir="/usr/share/java/jpbx"/>
+    <mkdir dir="/var/log/jpbx"/>
+    <mkdir dir="/var/lib/jpbx/voicemail"/>
+    <mkdir dir="/usr/share/java/jpbx/plugins"/>
+    <mkdir dir="/usr/share/sounds/jpbx/en"/>
+
+    <copy file="jpbxlite.html" todir="/usr/share/jhelp"/>
+    <copy file="jpbxlite.conf" todir="/etc/jinit"/>
+    <copy todir="/usr/share/java/jpbx">
+      <fileset file="*.jar"/>
+    </copy>
+    <copy todir="/usr/share/java/jpbx/plugins">
+      <fileset file="plugins/*.jar"/>
+    </copy>
+    <copy todir="/usr/share/sounds/jpbx/en">
+      <fileset file="sounds/en/*.wav"/>
+    </copy>
+  </target>
+
+  <target name="release-bin" depends="jar" description="create release zip file">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+    <copy file="../../jars/bouncycastle.jar" todir="."/>
+    <copy file="../../jars/derby.jar" todir="."/>
+    <zip destfile="jpbxlite-${version}.zip">
+      <fileset dir="..">
+        <include name="jpbxlite/**/*.jar"/>
+        <include name="jpbxlite/**/*.wav"/>
+        <exclude name="jpbxlite/**/moh-*.wav"/>
+        <include name="jpbxlite/readme.txt"/>
+        <include name="jpbxlite/whatsnew.txt"/>
+        <include name="jpbxlite/run.bat"/>
+        <include name="jpbxlite/install.bat"/>
+        <include name="jpbxlite/run.sh"/>
+        <include name="jpbxlite/install.sh"/>
+        <include name="jpbxlite/jpbx.key"/>
+      </fileset>
+      <fileset dir="../.." includes="license.txt"/>
+    </zip>
+    <move file="jpbxlite-${version}.zip" todir="${home}/release"/>
+  </target>
+
+  <target name="release-src" depends="" description="create release zip file">
+    <zip destfile="jpbxlite-src-${version}.zip">
+      <fileset dir="../../..">
+        <include name="jf/license.txt"/>
+        <include name="jf/base.xml"/>
+
+        <include name="jf/jars/derby.jar"/>
+        <include name="jf/jars/bouncycastle.jar"/>
+        <include name="jf/jars/javaforce.jar"/>
+
+        <include name="jf/stubs/*"/>
+
+        <include name="jf/projects/jpbxlite/**/*.java"/>
+        <include name="jf/projects/jpbxlite/*.txt"/>
+        <include name="jf/projects/jpbxlite/*.png"/>
+        <include name="jf/projects/jpbxlite/*.ico"/>
+        <include name="jf/projects/jpbxlite/**/*.xml"/>
+        <exclude name="jf/projects/jpbxlite/nbproject/private/*.xml"/>
+        <include name="jf/projects/jpbxlite/**/*.wav"/>
+        <exclude name="jf/projects/jpbxlite/**/moh-*.wav"/>
+        <include name="jf/projects/jpbxlite/run.*"/>
+        <include name="jf/projects/jpbxlite/install.*"/>
+        <include name="jf/projects/jpbxlite/static/*"/>
+      </fileset>
+    </zip>
+    <move file="jpbxlite-src-${version}.zip" todir="${home}/release"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.jar"/>
+    </delete>
+  </target>
+</project>

@@ -1,0 +1,11 @@
+Package: jfapps
+Version: 0.7
+Architecture: amd64
+Maintainer: Peter Quiring <pquiring@jflinux.org>
+Installed-Size: 1
+Depends: javaforce (>= 6.1.0)
+Components: main
+Provides:
+Section: java
+Priority: optional
+Description: Apps Center

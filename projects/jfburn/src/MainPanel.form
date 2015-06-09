@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="1" attributes="0">
+                  <Component id="loadProject" max="32767" attributes="0"/>
+                  <Component id="audioProject" alignment="0" pref="361" max="32767" attributes="0"/>
+                  <Component id="videoProject" alignment="1" max="32767" attributes="0"/>
+                  <Component id="dataProject" alignment="0" pref="361" max="32767" attributes="0"/>
+                  <Component id="extractImage" alignment="0" pref="361" max="32767" attributes="0"/>
+                  <Component id="burnImage" alignment="0" pref="361" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="audioProject" min="-2" pref="93" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="dataProject" min="-2" pref="93" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="videoProject" min="-2" pref="93" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="extractImage" min="-2" pref="93" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="burnImage" min="-2" pref="93" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="loadProject" min="-2" pref="97" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JButton" name="videoProject">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Video Project"/>
+        <Property name="enabled" type="boolean" value="false"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="videoProjectActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="audioProject">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Audio Project"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="audioProjectActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="dataProject">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Data Project"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dataProjectActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="extractImage">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Extract ISO Image"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="extractImageActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="burnImage">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Burn Image"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="burnImageActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="loadProject">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Load Project"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="loadProjectActionPerformed"/>
+      </Events>
+    </Component>
+  </SubComponents>
+</Form>

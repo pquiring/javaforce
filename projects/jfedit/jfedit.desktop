@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=Text Editor
+Comment=Text Editor
+
+Icon=jfedit
+
+Type=Application
+Categories=Utility
+
+Exec=jfedit %f
+StartupNotify=false
+Terminal=false
+MimeType=text/plain
+
+Title=jEdit
+

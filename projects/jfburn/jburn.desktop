@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=CD/DVD Burner
+Comment=CD/DVD Burner
+
+Icon=jfburn
+
+Type=Application
+Categories=AudioVideo
+
+Exec=jfburn
+StartupNotify=false
+Terminal=false
+MimeType=application/x-iso9660-image
+
+Title=jfBurn

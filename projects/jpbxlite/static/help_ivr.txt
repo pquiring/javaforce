@@ -1,0 +1,55 @@
+<b>IVR Script Language Help:</b><br>
+<br>
+<b>Overview</b>:<br>
+The scripting language is VERY simple that runs from top to bottom.
+When the script runs to the bottom of the script the call will be terminated.
+There is no support for comments.
+The scripting engine ignores line breaks.
+Variable names must be alpha-numberic and do not need to be declared.
+Any value or function argument may be numbers, strings or variables.
+Do not use quotes for values, numbers or strings.<br>
+<br>
+<b>Variables</b>:<br>
+$<i>var</i><br>
+<br>
+<b>Assignment</b>:<br>
+$<i>var</i> = <i>value</i><br>
+$<i>var</i> = <i>value1</i> + <i>value2</i> (string concat only)<br>
+<br>
+<b>Logic</b>:<br>
+<pre>
+IF value1 <i>operator</i> value2
+	<i>statements</i>
+ENDIF
+
+  -or-
+
+IF value1 <i>operator</i> value2 <i>statements</i> ENDIF
+</pre>
+<br>
+<b>Operators</b>: <br>
+<pre>
+== : equal
+>= : greater than or equal
+<= : less than or equal
+!= : not equal
+</pre>
+<br>
+<b>Functions</b>:<br>
+<table border=1>
+  <tr><td><b>name [args]</b></td><td><b>description</b></td></tr>
+  <tr><td>playmsg <i>name</i></td><td>Plays a message (interruptible)</td></tr>
+  <tr><td>playmsgnoint <i>name</i></td><td>Plays a message (non-interruptible)</td></tr>
+  <tr><td>getchar $<i>var</i></td><td>Returns one digit entered by guest (returns ' ' after timeout expires)</td></tr>
+  <tr><td>getstring $<i>var</i></td><td>Returns a string entered by guest (returns when user enters '#' or when timeout expires)</td></tr>
+  <tr><td>flush</td><td>Discards all digits entered that are holding in the queue</td></tr>
+  <tr><td>transfer <i>number</i></td><td>Attempts to transfer guest to another extension or IVR</td></tr>
+  <tr><td>label <i>label</i></td><td>Defines a Label for goto function</td></tr>
+  <tr><td>goto <i>label</i></td><td>Starts script after specified Label</td></tr>
+  <tr><td>hangup</td><td>Terminates the script and hangs up guest</td></tr>
+  <tr><td>conf &lt;user | admin&gt;</td><td>Enters guest into conference as a user or admin (chairman).</td></tr>
+  <tr><td>enable <i>feature</i></td><td>Enables a feature (feature = {video}).</td></tr>
+  <tr><td>disable <i>feature</i></td><td>Disables a feature (feature = {video}).</td></tr>
+</table>
+<br>
+

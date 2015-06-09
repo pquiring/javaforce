@@ -1,0 +1,60 @@
+Whatsnew...
+
+Aug 8, 2014 : v0.17 released!
+  - cleaned up some element properties
+  - added mute to audio props
+  - added some higher quality bit rates and sample rates
+  - fixed audio resampling bug (no more audio ticks if input/output sample rates differ)
+
+Aug 1, 2014 : v0.16 released
+  - fix : WMV and other media type files work now
+
+July 29, 2014 : v0.15 released
+  - new : added popup menus to the camera and track panels
+
+July 26, 2014 : v0.14 released
+  - new : added Text feature to render any text/color
+
+Apr 22, 2014 : v0.13 released
+  - fix : when Blur feature was added it interfered with 3d Camera edit button.
+    - all that was really needed was a clean and rebuild
+
+Dec 24, 2013 : v0.12 released
+  - new : added Gaussian Blur special fx (using jhlabs filter library)
+          Hope to add more filters in the future.
+  - new : added drag & drag support to the library and the tracks
+
+Dec 19, 2013 : v0.11 released
+  - fix : filenames in uppercase where causing crashes
+  - fix : cut tool was crashing
+  - new : added a few new media types (.mov)
+  - new : added a menu
+
+Oct 9, 2013 : v0.9 released
+  - added 3D effects
+    - images/videos can be placed anywhere in 3d space
+    - a camera can be moved thru space during the video by adding key points
+      - the camera will smoothly move between these key points (linear interpolation)
+    - requires OpenGL 3.0+
+
+Oct 3, 2013 : v0.8 released
+  - fixed cut tool so it cuts everything (was ignoring tracks below)
+  - fixed preview of images if length was modified
+  - added version check on startup
+
+Oct 2, 2013 : v0.7 released
+  - added previews of media files
+  - fixed stereo+ sound
+  - added new special feature that can "cut" frames from the output
+
+Sept 27, 2013 : v0.6 released
+  - fixed msvcr100.dll not found on msi package
+
+Sept 24, 2013 : v0.5 released
+  - codecpack can now be downloaded if needed
+
+Sept 23, 2013 : v0.4 released
+  - some FFMPEG fixes
+
+Sept 20, 2013 : v0.3 released
+  - JF switched from GStreamer to FFMPEG so jfVideo works on Windows now
