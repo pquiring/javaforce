@@ -202,7 +202,7 @@ int loadProperties() {
   strcpy(app, g_argv[0]);
   strcat(app, ".cfg");
 
-  printf("cfg=%s\n", app);
+//  printf("cfg=%s\n", app);
 
   int file = open(app, O_RDONLY);
   if (file == -1) {
@@ -268,7 +268,7 @@ int main(int argc, char **argv) {
   strcpy(dll, javahome);
   strcat(dll, "/server/libjvm.dylib");
 
-  printf("dll=%s\n", dll);
+//  printf("dll=%s\n", dll);
 
   jvm_dll = dlopen(dll, RTLD_NOW);
   if (jvm_dll == NULL) {
