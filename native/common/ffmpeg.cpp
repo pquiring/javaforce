@@ -1263,6 +1263,12 @@ static jboolean add_stream(FFContext *ctx, int codec_id) {
       ctx->video_codec = codec;
       ctx->video_codec_ctx = codec_ctx;
       break;
+    case AVMEDIA_TYPE_UNKNOWN:
+    case AVMEDIA_TYPE_DATA:
+    case AVMEDIA_TYPE_SUBTITLE:
+    case AVMEDIA_TYPE_ATTACHMENT:
+    case AVMEDIA_TYPE_NB:
+      break;
   }
 
   if ((ctx->out_fmt->flags & AVFMT_GLOBALHEADER) != 0) {
