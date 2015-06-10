@@ -16,11 +16,10 @@
 
   <!-- Requires cygwin/mingw in PATH -->
   <target name="windows" depends="javah" description="create windows native dll">
-<!--
     <exec command="i686-w64-mingw32-gcc -g -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -I '${env.FFMPEG_HOME}/include' windows.cpp -c -Wl,-subsystem,windows -o win32.obj"/>
     <exec command="i686-w64-mingw32-gcc -shared win32.obj -lgdi32 -lole32 -loleaut32 -lstrmiids -lopengl32 -o ../jfnative32.dll"/>
     <delete file="win32.obj"/>
--->
+
     <exec command="x86_64-w64-mingw32-gcc -g -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -I '${env.FFMPEG_HOME}/include' windows.cpp -c -Wl,-subsystem,windows -o win64.obj"/>
     <exec command="x86_64-w64-mingw32-gcc -shared win64.obj -lgdi32 -lole32 -loleaut32 -lstrmiids -lopengl32 -o ../jfnative64.dll"/>
     <delete file="win64.obj"/>
