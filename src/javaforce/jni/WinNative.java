@@ -8,12 +8,12 @@ package javaforce.jni;
 public class WinNative {
   static {
     JFNative.load();  //ensure native library is loaded
-    winInit();
+    winInit(System.getProperty("java.home") + "\\bin\\jawt.dll");
   }
 
   public static void load() {}  //ensure native library is loaded
 
-  private static native boolean winInit();
+  private static native boolean winInit(String jawt);
 
   //com port
   public static native long comOpen(String name, int baud);  //assumes 8 data bits, 1 stop bit, no parity, etc.

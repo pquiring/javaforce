@@ -50,6 +50,7 @@ enum GLNAMES {
   GLSTENCILMASK,
   GLSTENCILOP,
   GLTEXIMAGE2D,
+  GLTEXSUBIMAGE2D,
   GLTEXPARAMETERI,
   GLUSEPROGRAM,
   GLUNIFORMMATRIX4FV,
@@ -120,6 +121,7 @@ GLFunc funcs[] = {
   {"glStencilMask", NULL},
   {"glStencilOp", NULL},
   {"glTexImage2D", NULL},
+  {"glTexSubImage2D", NULL},
   {"glTexParameteri", NULL},
   {"glUseProgram", NULL},
   {"glUniformMatrix4fv", NULL},
@@ -503,6 +505,14 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glTexImage2D
 {
   jint *i9ptr = e->GetIntArrayElements(i9,NULL);
   (*(void (*)(int,int,int,int,int,int,int,int,jint *))funcs[GLTEXIMAGE2D].func)(i1, i2, i3, i4, i5, i6, i7, i8, i9ptr);
+  e->ReleaseIntArrayElements(i9, i9ptr, JNI_ABORT);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_gl_GL_glTexSubImage2D
+  (JNIEnv *e, jclass c, jint i1, jint i2, jint i3, jint i4, jint i5, jint i6, jint i7, jint i8, jintArray i9)
+{
+  jint *i9ptr = e->GetIntArrayElements(i9,NULL);
+  (*(void (*)(int,int,int,int,int,int,int,int,jint *))funcs[GLTEXSUBIMAGE2D].func)(i1, i2, i3, i4, i5, i6, i7, i8, i9ptr);
   e->ReleaseIntArrayElements(i9, i9ptr, JNI_ABORT);
 }
 

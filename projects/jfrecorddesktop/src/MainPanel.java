@@ -55,6 +55,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     jLabel7 = new javax.swing.JLabel();
     delay3seconds = new javax.swing.JCheckBox();
     jLabel8 = new javax.swing.JLabel();
+    jLabel1 = new javax.swing.JLabel();
+    jLabel2 = new javax.swing.JLabel();
 
     buttonGroup1.add(audio);
     audio.setSelected(true);
@@ -71,6 +73,11 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     });
 
     freq.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "44100", "22050", "11025", "8000" }));
+    freq.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        freqActionPerformed(evt);
+      }
+    });
 
     buttonGroup2.add(mono);
     mono.setSelected(true);
@@ -90,13 +97,18 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
 
     jLabel5.setText("Video Quality");
 
-    vBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1600000", "1200000", "800000", "400000", "200000" }));
-    vBitRate.setSelectedIndex(3);
+    vBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8M", "6M", "4M", "2M", "1M", "800k", "400k", "200k" }));
+    vBitRate.setSelectedIndex(4);
     vBitRate.setToolTipText("");
+    vBitRate.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        vBitRateActionPerformed(evt);
+      }
+    });
 
     jLabel6.setText("Audio Quality");
 
-    aBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "256000", "192000", "128000", "64000", "32000" }));
+    aBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "256k", "192k", "128k", "64k", "32k" }));
     aBitRate.setSelectedIndex(2);
     aBitRate.setToolTipText("");
 
@@ -106,6 +118,10 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     delay3seconds.setToolTipText("Delay so you can minimize this window (Applet)");
 
     jLabel8.setText("When you start a tray icon you be added to pause/stop recording.");
+
+    jLabel1.setText("bits/sec");
+
+    jLabel2.setText("bits/sec");
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
@@ -149,12 +165,16 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
               .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1))
               .addComponent(showMouseCursor)
               .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2))
               .addComponent(jLabel8))
             .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
@@ -184,11 +204,13 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel5)
-          .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel1))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel6)
-          .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel2))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jLabel8)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -203,6 +225,14 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     start();
   }//GEN-LAST:event_startActionPerformed
 
+  private void freqActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_freqActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_freqActionPerformed
+
+  private void vBitRateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_vBitRateActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_vBitRateActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JComboBox aBitRate;
   private javax.swing.JRadioButton audio;
@@ -212,6 +242,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private javax.swing.JCheckBox delay3seconds;
   private javax.swing.JSpinner fps;
   private javax.swing.JComboBox freq;
+  private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
@@ -338,8 +370,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
       JFImage img = JFImage.createScreenCapture();
 
       MediaEncoder encoder = new MediaEncoder();
-      encoder.setAudioBitRate(JF.atoi((String)aBitRate.getSelectedItem()));
-      encoder.setVideoBitRate(JF.atoi((String)vBitRate.getSelectedItem()));
+      encoder.setAudioBitRate(getAudioBitRate());
+      encoder.setVideoBitRate(getVideoBitRate());
       int width = img.getWidth();
       int height = img.getHeight();
       JFLog.log("size=" + width + "," + height);
@@ -515,5 +547,28 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
         pause.setLabel("Pause");
       }
     }
+  }
+
+  private int getRate(String rate) {
+    int scale = 1;
+    if (rate.endsWith("M")) {
+      rate = rate.substring(0, rate.length()-1);
+      scale = 1024 * 1024;
+    }
+    else if (rate.endsWith("k")) {
+      rate = rate.substring(0, rate.length()-1);
+      scale = 1024;
+    }
+    int value = JF.atoi(rate) * scale;
+    System.out.println("rate=" + value);
+    return value;
+  }
+
+  private int getAudioBitRate() {
+    return getRate((String)aBitRate.getSelectedItem());
+  }
+
+  private int getVideoBitRate() {
+    return getRate((String)vBitRate.getSelectedItem());
   }
 }

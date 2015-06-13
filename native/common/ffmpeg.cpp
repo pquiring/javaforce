@@ -952,7 +952,15 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaDecoder_getDuration
   FFContext *ctx = getFFContext(e,c);
   if (ctx->fmt_ctx == NULL) return 0;
   if (ctx->fmt_ctx->duration << 1 == 0) return 0;  //0x8000000000000000
+#ifdef __WINDOWS_32BIT__
+  // 64bit divide requires libgcc_s_sjlj-1.dll::__divdi3
+  // soln:convert to 32bit (this is only accurate up to 71 mins)
+  unsigned int duration = (unsigned int)(ctx->fmt_ctx->duration);
+  unsigned int av_time_base = (unsigned int)AV_TIME_BASE;
+  return duration / av_time_base;
+#else
   return ctx->fmt_ctx->duration / AV_TIME_BASE;  //return in seconds
+#endif
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_getSampleRate

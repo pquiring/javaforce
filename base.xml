@@ -58,10 +58,10 @@
       <exemacro appx="@{app4}" bits="@{bits}" ico="@{ico}" unless:blank="@{app4}"/>
       <exemacro appx="@{app5}" bits="@{bits}" ico="@{ico}" unless:blank="@{app5}"/>
       <exec command="candle ${candle_extra} -o wix.obj @{xml}.xml"/>
-      <exec command="light ${light_extra} -ext WixUIExtension -cultures:en-us -o @{msi}-${version}-x@{bits}.msi wix.obj"/>
+      <exec command="light ${light_extra} -ext WixUIExtension -cultures:en-us -o @{msi}-${version}-win@{bits}.msi wix.obj"/>
       <delete file="wix.obj"/>
       <delete file="@{msi}-${version}-x@{bits}.wixpdb"/>
-      <move unless:set="nomove" file="@{msi}-${version}-x@{bits}.msi" todir="${home}/release"/>
+      <move unless:set="nomove" file="@{msi}-${version}-win@{bits}.msi" todir="${home}/release"/>
     </sequential>
   </macrodef>
 

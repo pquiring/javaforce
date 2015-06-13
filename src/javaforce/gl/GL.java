@@ -54,10 +54,21 @@ public class GL {
    */
   public native void glInit();
 
+  private static final boolean debug = false;
+
   /** Creates an OpenGL context in a Canvas.
    */
   public boolean createComponent(Canvas c, GL shared) {
-    return glCreate(c, shared == null ? 0 : shared.ctx);
+    boolean ok = glCreate(c, shared == null ? 0 : shared.ctx);
+    if (!ok) return false;
+    if (debug) {
+      int v[] = new int[1];
+      glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, v);
+      System.out.println("GL_MAX_VERTEX_ATTRIBS=" + v[0]);
+      glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, v);
+      System.out.println("GL_MAX_VERTEX_UNIFORM_COMPONENTS=" + v[0]);
+    }
+    return true;
   }
 
   //offscreen data
@@ -193,6 +204,8 @@ public class GL {
   //GL constants
   public static final int GL_VERSION = 0x1F02;
   public static final int GL_MAX_TEXTURE_SIZE = 0x0D33;
+  public static final int GL_MAX_VERTEX_ATTRIBS = 0x8869;
+  public static final int GL_MAX_VERTEX_UNIFORM_COMPONENTS = 0x8B4A;
   public static final int GL_CW = 0x900;
   public static final int GL_CCW = 0x0901;
   public static final int GL_CULL_FACE = 0x0b44;
@@ -373,6 +386,7 @@ public class GL {
   public static native int glStencilMask(int mask);
   public static native int glStencilOp(int sfail, int dpfail, int dppass);
   public static native void glTexImage2D(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int i8, int px[]);
+  public static native void glTexSubImage2D(int i1, int i2, int i3, int i4, int i5, int i6, int i7, int i8, int px[]);
   public static native void glTexParameteri(int i1, int i2, int i3);
   public static native void glUseProgram(int id);
   public static native void glUniformMatrix4fv(int i1, int i2, int i3, float m[]);

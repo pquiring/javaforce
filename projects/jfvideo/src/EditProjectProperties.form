@@ -82,7 +82,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="videoBitRate" max="32767" attributes="0"/>
+                              <Component id="vBitRate" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                       <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
@@ -90,7 +90,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel7" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="audioBitRate" max="32767" attributes="0"/>
+                      <Component id="aBitRate" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -126,12 +126,12 @@
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="videoBitRate" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="vBitRate" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="audioBitRate" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="aBitRate" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="32767" attributes="0"/>
               <Component id="preview" min="-2" max="-2" attributes="0"/>
@@ -241,23 +241,21 @@
         <Property name="text" type="java.lang.String" value="Video BitRate:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JComboBox" name="videoBitRate">
+    <Component class="javax.swing.JComboBox" name="vBitRate">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="10">
-            <StringItem index="0" value="8000000"/>
-            <StringItem index="1" value="6400000"/>
-            <StringItem index="2" value="4000000"/>
-            <StringItem index="3" value="3200000"/>
-            <StringItem index="4" value="2000000"/>
-            <StringItem index="5" value="1600000"/>
-            <StringItem index="6" value="1200000"/>
-            <StringItem index="7" value="800000"/>
-            <StringItem index="8" value="400000"/>
-            <StringItem index="9" value="200000"/>
+          <StringArray count="8">
+            <StringItem index="0" value="8M"/>
+            <StringItem index="1" value="6M"/>
+            <StringItem index="2" value="4M"/>
+            <StringItem index="3" value="2M"/>
+            <StringItem index="4" value="1M"/>
+            <StringItem index="5" value="800k"/>
+            <StringItem index="6" value="400k"/>
+            <StringItem index="7" value="200k"/>
           </StringArray>
         </Property>
-        <Property name="selectedIndex" type="int" value="5"/>
+        <Property name="selectedIndex" type="int" value="4"/>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
     </Component>
@@ -266,15 +264,15 @@
         <Property name="text" type="java.lang.String" value="Audio BitRate:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JComboBox" name="audioBitRate">
+    <Component class="javax.swing.JComboBox" name="aBitRate">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="5">
-            <StringItem index="0" value="256000"/>
-            <StringItem index="1" value="192000"/>
-            <StringItem index="2" value="128000"/>
-            <StringItem index="3" value="64000"/>
-            <StringItem index="4" value="32000"/>
+            <StringItem index="0" value="256k"/>
+            <StringItem index="1" value="192k"/>
+            <StringItem index="2" value="128k"/>
+            <StringItem index="3" value="64k"/>
+            <StringItem index="4" value="32k"/>
           </StringArray>
         </Property>
         <Property name="selectedIndex" type="int" value="2"/>

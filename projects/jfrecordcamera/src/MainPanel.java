@@ -59,6 +59,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     jLabel7 = new javax.swing.JLabel();
     stopMotion = new javax.swing.JRadioButton();
     next = new javax.swing.JButton();
+    jLabel8 = new javax.swing.JLabel();
+    jLabel9 = new javax.swing.JLabel();
 
     jLabel1.setText("Camera Device");
 
@@ -110,13 +112,13 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
 
     jLabel5.setText("Video Quality");
 
-    vBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1600000", "1200000", "800000", "400000", "200000" }));
-    vBitRate.setSelectedIndex(3);
+    vBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8M", "6M", "4M", "2M", "1M", "800k", "400k", "200k" }));
+    vBitRate.setSelectedIndex(4);
     vBitRate.setToolTipText("");
 
     jLabel6.setText("Audio Quality");
 
-    aBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "256000", "192000", "128000", "64000", "32000" }));
+    aBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "256k", "192k", "128k", "64k", "32k" }));
     aBitRate.setSelectedIndex(2);
     aBitRate.setToolTipText("");
 
@@ -133,6 +135,10 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
       }
     });
 
+    jLabel8.setText("bits/sec");
+
+    jLabel9.setText("bits/sec");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -141,15 +147,11 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-              .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addComponent(jLabel6)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel9)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(start))
           .addGroup(layout.createSequentialGroup()
@@ -186,7 +188,13 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(seconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel2)))
+            .addComponent(jLabel2))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel5)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel8)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(preview)
@@ -234,12 +242,14 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(jLabel5)
-              .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(jLabel8))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(jLabel6)
               .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(start))
+              .addComponent(start)
+              .addComponent(jLabel9))
             .addGap(5, 5, 5))
           .addGroup(layout.createSequentialGroup()
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -276,6 +286,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
   private javax.swing.JLabel jLabel5;
   private javax.swing.JLabel jLabel6;
   private javax.swing.JLabel jLabel7;
+  private javax.swing.JLabel jLabel8;
+  private javax.swing.JLabel jLabel9;
   private javax.swing.JRadioButton mono;
   private javax.swing.JButton next;
   private javax.swing.JRadioButton noaudio;
@@ -439,8 +451,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
       }
 
       MediaEncoder encoder = new MediaEncoder();
-      encoder.setAudioBitRate(JF.atoi((String)aBitRate.getSelectedItem()));
-      encoder.setVideoBitRate(JF.atoi((String)vBitRate.getSelectedItem()));
+      encoder.setAudioBitRate(getAudioBitRate());
+      encoder.setVideoBitRate(getVideoBitRate());
       int width = camera.getWidth();
       int height = camera.getHeight();
       JFLog.log("size=" + width + "," + height);
@@ -585,5 +597,28 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
       JFLog.log(e);
     }
     return 0;
+  }
+
+  private int getRate(String rate) {
+    int scale = 1;
+    if (rate.endsWith("M")) {
+      rate = rate.substring(0, rate.length()-1);
+      scale = 1024 * 1024;
+    }
+    else if (rate.endsWith("k")) {
+      rate = rate.substring(0, rate.length()-1);
+      scale = 1024;
+    }
+    int value = JF.atoi(rate) * scale;
+    System.out.println("rate=" + value);
+    return value;
+  }
+
+  private int getAudioBitRate() {
+    return getRate((String)aBitRate.getSelectedItem());
+  }
+
+  private int getVideoBitRate() {
+    return getRate((String)vBitRate.getSelectedItem());
   }
 }

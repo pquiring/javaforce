@@ -28,19 +28,19 @@ public class EditProjectProperties extends javax.swing.JDialog {
     preview.setSelected(project.config.preview);
     for(int a=0;a<videoBitRates.length;a++) {
       if (project.config.videoBitRate == videoBitRates[a]) {
-        videoBitRate.setSelectedIndex(a);
+        vBitRate.setSelectedIndex(a);
         break;
       }
     }
     for(int a=0;a<audioBitRates.length;a++) {
       if (project.config.audioBitRate == audioBitRates[a]) {
-        audioBitRate.setSelectedIndex(a);
+        aBitRate.setSelectedIndex(a);
         break;
       }
     }
  }
 
-  int videoBitRates[] = {8000000, 6400000, 4000000, 3200000, 2000000, 1600000, 1200000, 800000, 400000, 200000};
+  int videoBitRates[] = {8000000, 6000000, 4000000, 2000000, 1000000, 800000, 400000, 200000};
   int audioBitRates[] = {256000, 192000, 128000, 64000, 32000};
 
   /**
@@ -66,9 +66,9 @@ public class EditProjectProperties extends javax.swing.JDialog {
     height = new javax.swing.JTextField();
     preview = new javax.swing.JCheckBox();
     jLabel6 = new javax.swing.JLabel();
-    videoBitRate = new javax.swing.JComboBox();
+    vBitRate = new javax.swing.JComboBox();
     jLabel7 = new javax.swing.JLabel();
-    audioBitRate = new javax.swing.JComboBox();
+    aBitRate = new javax.swing.JComboBox();
     v1001 = new javax.swing.JCheckBox();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -115,15 +115,15 @@ public class EditProjectProperties extends javax.swing.JDialog {
 
     jLabel6.setText("Video BitRate:");
 
-    videoBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8000000", "6400000", "4000000", "3200000", "2000000", "1600000", "1200000", "800000", "400000", "200000" }));
-    videoBitRate.setSelectedIndex(5);
-    videoBitRate.setToolTipText("");
+    vBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8M", "6M", "4M", "2M", "1M", "800k", "400k", "200k" }));
+    vBitRate.setSelectedIndex(4);
+    vBitRate.setToolTipText("");
 
     jLabel7.setText("Audio BitRate:");
 
-    audioBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "256000", "192000", "128000", "64000", "32000" }));
-    audioBitRate.setSelectedIndex(2);
-    audioBitRate.setToolTipText("");
+    aBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "256k", "192k", "128k", "64k", "32k" }));
+    aBitRate.setSelectedIndex(2);
+    aBitRate.setToolTipText("");
 
     v1001.setText("X 1000 / 1001");
 
@@ -176,12 +176,12 @@ public class EditProjectProperties extends javax.swing.JDialog {
               .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(videoBitRate, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(vBitRate, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
             .addGap(10, 10, 10))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel7)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(audioBitRate, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(aBitRate, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addContainerGap())))
     );
     layout.setVerticalGroup(
@@ -209,11 +209,11 @@ public class EditProjectProperties extends javax.swing.JDialog {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel6)
-          .addComponent(videoBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel7)
-          .addComponent(audioBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addComponent(preview)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -239,8 +239,8 @@ public class EditProjectProperties extends javax.swing.JDialog {
       project.config.width = Integer.valueOf(width.getText());
       project.config.height = Integer.valueOf(height.getText());
       project.config.preview = preview.isSelected();
-      project.config.videoBitRate = videoBitRates[videoBitRate.getSelectedIndex()];
-      project.config.audioBitRate = audioBitRates[audioBitRate.getSelectedIndex()];
+      project.config.videoBitRate = videoBitRates[vBitRate.getSelectedIndex()];
+      project.config.audioBitRate = audioBitRates[aBitRate.getSelectedIndex()];
     } catch (Exception e) {
       JF.showError("Error", "Exception:" + e);
       return;
@@ -249,8 +249,8 @@ public class EditProjectProperties extends javax.swing.JDialog {
   }//GEN-LAST:event_acceptActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JComboBox aBitRate;
   private javax.swing.JButton accept;
-  private javax.swing.JComboBox audioBitRate;
   private javax.swing.JSpinner audioChannels;
   private javax.swing.JComboBox audioRate;
   private javax.swing.JButton cancel;
@@ -264,7 +264,7 @@ public class EditProjectProperties extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel7;
   private javax.swing.JCheckBox preview;
   private javax.swing.JCheckBox v1001;
-  private javax.swing.JComboBox videoBitRate;
+  private javax.swing.JComboBox vBitRate;
   private javax.swing.JSpinner videoRate;
   private javax.swing.JTextField width;
   // End of variables declaration//GEN-END:variables

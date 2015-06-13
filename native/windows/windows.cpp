@@ -28,10 +28,12 @@ HMODULE wgl = NULL;
 //open DLLs
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_winInit
-  (JNIEnv *e, jclass c)
+  (JNIEnv *e, jclass c, jstring jawtPath)
 {
   if (jawt == NULL) {
-    jawt = LoadLibrary("jawt.dll");
+    const char *cjawtPath = e->GetStringUTFChars(jawtPath, NULL);
+    jawt = LoadLibrary(cjawtPath);
+    e->ReleaseStringUTFChars(jawtPath, cjawtPath);
     if (jawt == NULL) {
       printf("LoadLibrary(jawt.dll) failed\n");
       return JNI_FALSE;

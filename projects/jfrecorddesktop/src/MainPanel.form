@@ -71,12 +71,16 @@
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="vBitRate" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="showMouseCursor" min="-2" max="-2" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="aBitRate" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Component id="jLabel8" alignment="0" min="-2" max="-2" attributes="0"/>
                       </Group>
@@ -116,11 +120,13 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="vBitRate" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel1" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="aBitRate" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
@@ -171,6 +177,9 @@
           </StringArray>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="freqActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JRadioButton" name="mono">
       <Properties>
@@ -227,17 +236,23 @@
     <Component class="javax.swing.JComboBox" name="vBitRate">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="5">
-            <StringItem index="0" value="1600000"/>
-            <StringItem index="1" value="1200000"/>
-            <StringItem index="2" value="800000"/>
-            <StringItem index="3" value="400000"/>
-            <StringItem index="4" value="200000"/>
+          <StringArray count="8">
+            <StringItem index="0" value="8M"/>
+            <StringItem index="1" value="6M"/>
+            <StringItem index="2" value="4M"/>
+            <StringItem index="3" value="2M"/>
+            <StringItem index="4" value="1M"/>
+            <StringItem index="5" value="800k"/>
+            <StringItem index="6" value="400k"/>
+            <StringItem index="7" value="200k"/>
           </StringArray>
         </Property>
-        <Property name="selectedIndex" type="int" value="3"/>
+        <Property name="selectedIndex" type="int" value="4"/>
         <Property name="toolTipText" type="java.lang.String" value=""/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="vBitRateActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel6">
       <Properties>
@@ -248,11 +263,11 @@
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="5">
-            <StringItem index="0" value="256000"/>
-            <StringItem index="1" value="192000"/>
-            <StringItem index="2" value="128000"/>
-            <StringItem index="3" value="64000"/>
-            <StringItem index="4" value="32000"/>
+            <StringItem index="0" value="256k"/>
+            <StringItem index="1" value="192k"/>
+            <StringItem index="2" value="128k"/>
+            <StringItem index="3" value="64k"/>
+            <StringItem index="4" value="32k"/>
           </StringArray>
         </Property>
         <Property name="selectedIndex" type="int" value="2"/>
@@ -273,6 +288,16 @@
     <Component class="javax.swing.JLabel" name="jLabel8">
       <Properties>
         <Property name="text" type="java.lang.String" value="When you start a tray icon you be added to pause/stop recording."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel1">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="bits/sec"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel2">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="bits/sec"/>
       </Properties>
     </Component>
   </SubComponents>
