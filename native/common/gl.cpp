@@ -23,6 +23,7 @@ enum GLNAMES {
   GLDRAWELEMENTS,
   GLDEPTHFUNC,
   GLDISABLE,
+  GLDISABLEVERTEXATTRIBARRAY,
   GLDEPTHMASK,
   GLENABLE,
   GLENABLEVERTEXATTRIBARRAY,
@@ -94,6 +95,7 @@ GLFunc funcs[] = {
   {"glDrawElements", NULL},
   {"glDepthFunc", NULL},
   {"glDisable", NULL},
+  {"glDisableVertexAttribArray", NULL},
   {"glDepthMask", NULL},
   {"glEnable", NULL},
   {"glEnableVertexAttribArray", NULL},
@@ -299,6 +301,12 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDisable
   (JNIEnv *e, jclass c, jint i1)
 {
   (*(void (*)(int))funcs[GLDISABLE].func)(i1);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDisableVertexAttribArray
+  (JNIEnv *e, jclass c, jint i1)
+{
+  (*(void (*)(int))funcs[GLDISABLEVERTEXATTRIBARRAY].func)(i1);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDepthMask

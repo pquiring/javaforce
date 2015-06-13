@@ -175,6 +175,12 @@ public class GLObject implements Cloneable {
     if (vpl.size() == 0 || vil.size() == 0) return;  //crashes if empty ???
     int uvcnt = maps.size();
     gl.glUniform1i(scene.uUVMaps, uvcnt);
+    GL.glEnableVertexAttribArray(scene.tca[0]);
+    if (uvcnt > 1) {
+      GL.glEnableVertexAttribArray(scene.tca[1]);
+    } else {
+      GL.glDisableVertexAttribArray(scene.tca[1]);
+    }
     gl.glDrawElements(type, vil.size(), GL.GL_UNSIGNED_INT, 0);
   }
   public GLUVMap createUVMap() {

@@ -359,6 +359,7 @@ public class GL {
   public static native void glDrawElements(int i1, int i2, int i3, int i4);
   public static native void glDepthFunc(int i1);
   public static native void glDisable(int id);
+  public static native void glDisableVertexAttribArray(int id);
   public static native void glDepthMask(boolean state);
   public static native void glEnable(int id);
   public static native void glEnableVertexAttribArray(int id);

@@ -50,7 +50,14 @@ public class TestApp extends Frame {
     setSize(640, 480);
     doLayout();
     setPosition();
-    ((GLCanvas)canvas).init(common);
+  }
+
+  private boolean inited = false;
+  public void paint(Graphics g) {
+    if (!inited) {
+      ((GLCanvas)canvas).init(common);
+      inited = true;
+    }
   }
 
   private void setPosition() {

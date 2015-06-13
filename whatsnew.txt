@@ -1,5 +1,11 @@
 What's new...
 
+Jun ?/2015 : JF 9.1.0 released!
+  - fixed win32 native issues
+  - fixed javaforce.gl.GLObject needs to disable attrib UVMap2 if not in use (some cards crash)
+  - added GL.glTexSubImage2D() function
+  - added GL.glDisableVertexAttrib() function
+
 Jun 9/2015 : JF 9.0.0 released!
   - after spending years working with JNA I've decided to switch back to JNI.
     - JNA uses libffi which is too complex and VERY slow.

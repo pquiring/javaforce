@@ -148,7 +148,11 @@ public class GLCode implements ActionListener, WindowListener, KeyListener, Mous
     box.m.addRotate(3.0f, 1.0f, 0.0f, 0.0f);
     box.m.addRotate(2.0f, 0.0f, 1.0f, 0.0f);
     box.m.addRotate(1.0f, 0.0f, 0.0f, 1.0f);
-    comp.repaint();
+    java.awt.EventQueue.invokeLater(new Runnable() {
+      public void run() {
+        comp.repaint();
+      }
+    });
   }
 
   public void createWorld(GL gl, Component comp) {
