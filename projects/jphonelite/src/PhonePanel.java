@@ -912,6 +912,19 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     JFLog.log("jphonelite/" + version);
     loadIcons();
     Settings.loadSettings();
+    if (Settings.current.welcome) {
+      new Thread() {
+        public void run() {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+            JF.showMessage("Welcome", "Welcome to jPhoneLite!\nPlease press CFG button to configure your options.");
+          }
+        });
+        }
+      }.start();
+      Settings.current.welcome = false;
+      Settings.saveSettings();
+    }
 
     contactJList.setCellRenderer(new ListCellRenderer() {
       public Component getListCellRendererComponent(
@@ -1231,7 +1244,9 @@ Line Colors:
     public boolean odd = false;
     public void run() {
       int clr = PIC_BLACK;
+      int cnt = 0;
       for(int a=0;a<6;a++) {
+        if (Settings.current.lines[a].user.length() > 0) cnt++;
         PhoneLine pl = lines[a];
         if ((pl.sip != null) && (pl.auth)) {
           clr = PIC_GREY;
@@ -1252,7 +1267,12 @@ Line Colors:
           pl.clr = clr;
         }
       }
-      if (doConfig) {
+      if (cnt == 0) {
+        //let noob know to press the config button to get started
+        if (odd) clr = PIC_RED; else clr = PIC_GREY;
+        cfg.setIcon(ii[clr]);
+      }
+      else if (doConfig) {
         //let impatient user know the config screen will come up in a second
         if (odd) clr = PIC_GREEN; else clr = PIC_GREY;
         cfg.setIcon(ii[clr]);

@@ -1,4 +1,6 @@
 CHANGELOG:
+6-15-2015 : v1.9.5 released
+  - fixed handling auth string with spaces in quotes (created custom String.split())
 4-7-2015 : v1.9.4 released
   - fixed some memory leaks
 3-26-2015 : v1.9.3 released

@@ -243,36 +243,57 @@ public class RTPChannel {
       coder_g722 = new g722(rtp);
       coder_g729a = new g729a(rtp);
       if (stream.type == SDP.Type.audio) {
-        if (stream.hasCodec(RTP.CODEC_G711u)) {
-          coder = coder_g711u;
-          JFLog.log("codec = g711u");
-        } else if (stream.hasCodec(RTP.CODEC_G711a)) {
-          coder = coder_g711a;
-          JFLog.log("codec = g711a");
-        } else if (stream.hasCodec(RTP.CODEC_G722)) {
-          coder = coder_g722;
-          JFLog.log("codec = g722");
-        } else if (stream.hasCodec(RTP.CODEC_G729a)) {
-          JFLog.log("codec = g729a");
-          coder = coder_g729a;
-        } else {
+        //must use first available codec
+        coder = null;
+        for(int a=0;a<stream.codecs.length;a++) {
+          Codec codec = stream.codecs[a];
+          if (codec.equals(RTP.CODEC_G711u)) {
+            coder = coder_g711u;
+            JFLog.log("codec = g711u");
+            break;
+          } else if (codec.equals(RTP.CODEC_G711a)) {
+            coder = coder_g711a;
+            JFLog.log("codec = g711a");
+            break;
+          } else if (codec.equals(RTP.CODEC_G722)) {
+            coder = coder_g722;
+            JFLog.log("codec = g722");
+            break;
+          } else if (codec.equals(RTP.CODEC_G729a)) {
+            coder = coder_g729a;
+            JFLog.log("codec = g729a");
+            break;
+          }
+        }
+        if (coder == null) {
           JFLog.log("RTP.start() : Warning : no compatible audio codec selected");
         }
         dtmf = new DTMF(coder.getSampleRate());
       } else {
-        if (stream.hasCodec(RTP.CODEC_H263)) {
-          JFLog.log("codec = H.263");
-        } else if (stream.hasCodec(RTP.CODEC_H263_1998)) {
-          JFLog.log("codec = H.263-1998");
-        } else if (stream.hasCodec(RTP.CODEC_H263_2000)) {
-          JFLog.log("codec = H.263-2000");
-        } else if (stream.hasCodec(RTP.CODEC_JPEG)) {
-          JFLog.log("codec = JPEG");
-        } else if (stream.hasCodec(RTP.CODEC_H264)) {
-          JFLog.log("codec = H.264");
-        } else if (stream.hasCodec(RTP.CODEC_VP8)) {
-          JFLog.log("codec = VP8");
-        } else {
+        boolean haveVcodec = false;
+        for(int a=0;a<stream.codecs.length;a++) {
+          Codec codec = stream.codecs[a];
+          if (codec.equals(RTP.CODEC_H263)) {
+            JFLog.log("codec = H.263");
+            break;
+          } else if (codec.equals(RTP.CODEC_H263_1998)) {
+            JFLog.log("codec = H.263-1998");
+            break;
+          } else if (codec.equals(RTP.CODEC_H263_2000)) {
+            JFLog.log("codec = H.263-2000");
+            break;
+          } else if (codec.equals(RTP.CODEC_JPEG)) {
+            JFLog.log("codec = JPEG");
+            break;
+          } else if (codec.equals(RTP.CODEC_H264)) {
+            JFLog.log("codec = H.264");
+            break;
+          } else if (codec.equals(RTP.CODEC_VP8)) {
+            JFLog.log("codec = VP8");
+            break;
+          }
+        }
+        if (!haveVcodec) {
           JFLog.log("RTP.start() : Warning : no compatible video codec selected");
         }
       }

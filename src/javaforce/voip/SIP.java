@@ -819,6 +819,36 @@ public abstract class SIP {
     return new String(md5.byte2char(md5.done()));
   }
 
+  /** Split an Authenticate line into parts. */
+  private String[] split(String in, char delimit) {
+    ArrayList<String> strs = new ArrayList<String>();
+    boolean inquote = false;
+    char ca[] = in.toCharArray();
+    int p1 = 0, p2 = 0;
+    for(int a=0;a<ca.length;a++) {
+      char ch = ca[a];
+      if (ch == delimit && !inquote) {
+        strs.add(in.substring(p1,p2).trim());
+        p2++;
+        p1 = p2;
+        continue;
+      } else if (ch == '\"') {
+        inquote = !inquote;
+      }
+      p2++;
+    }
+    if (p2 > p1) {
+      strs.add(in.substring(p1, p2).trim());
+    }
+/*
+    System.out.println("auth=" + in);
+    for(int a=0;a<strs.size();a++) {
+      System.out.println("str[]=" + strs.get(a));
+    }
+*/
+    return strs.toArray(new String[strs.size()]);
+  }
+
   /**
    * Generates a complete header response to a SIP authorization challenge.
    */
@@ -828,7 +858,7 @@ public abstract class SIP {
       JFLog.log("err:no digest");
       return null;
     }
-    String tags[] = request.substring(7).replaceAll(" ", "").split(",");  //NOTE:if qop="auth-int,auth" this split will fail (qop="auth,auth-int" will be okay)
+    String tags[] = split(request.substring(7), ',');
     String auth, nonce = null, qop = null, nc = null, cnonce = null, stale = null;
     String realm = null;
     auth = getHeader("algorithm=", tags);

@@ -23,7 +23,7 @@ import javaforce.media.*;
 
 public abstract class BasePhone extends javax.swing.JPanel implements SIPClientInterface, RTPInterface, ActionListener, KeyEventDispatcher {
 
-  public static String version = "1.9.4";
+  public static String version = "1.9.5";
 
   public void initBasePhone(GUI gui, WindowController wc) {
     JFLog.init(JF.getUserPath() + "/.jphone.log", true);
@@ -1049,13 +1049,14 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(
         new URL("http://jphonelite.sourceforge.net/version" + (version.indexOf("beta") == -1 ? "" : "beta") + ".php").openStream()));
-      String line = reader.readLine();
+      final String line = reader.readLine();
       if (line.equals(version)) {JFLog.log("version is up-to-date"); return;}
       JFLog.log("newer version is available : " + line);
-      JOptionPane.showMessageDialog(this,
-        "A newer version of jphonelite is available! (v" + line + ")\r\nPlease goto http://jphonelite.sourceforge.net to download it",
-        "Info",
-        JOptionPane.INFORMATION_MESSAGE);
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          JF.showMessage("Upgrade available", "A newer version of jphonelite is available! (v" + line + ")\r\nPlease goto http://jphonelite.sourceforge.net to download it");
+        }
+      });
     } catch (Exception e) {
       JFLog.log("err:unable to check for version update");
       JFLog.log(e);

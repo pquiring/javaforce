@@ -78,6 +78,7 @@ public class Settings {
   public boolean rport = true;
   public boolean received = true;
   public String inRingtone = "*RING", outRingtone = "*NA";
+  public boolean welcome = true;
 
   //static = do not save these settings
   public static boolean aa;
@@ -125,6 +126,14 @@ public class Settings {
       if (current.sipexpires < 300) current.sipexpires = 300;
       if (current.sipexpires > 3600) current.sipexpires = 3600;
       if (current.nat == 1) current.nat = 0;  //beta value (dyndns dropped)
+
+      if (current.welcome) {
+        int cnt = 0;
+        for(int a=0;a<6;a++) {
+          if (current.lines[a].user.length() > 0) cnt++;
+        }
+        if (cnt > 0) current.welcome = false;
+      }
 
       JFLog.log("loadSettings ok");
     } catch (FileNotFoundException e) {
