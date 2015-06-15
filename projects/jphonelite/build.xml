@@ -76,6 +76,7 @@
         <include name="jphonelite/readme.txt"/>
         <include name="jphonelite/jphonelite"/>
         <include name="jphonelite/run.*"/>
+        <include name="jphonelite/jfnative*"/>
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>

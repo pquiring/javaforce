@@ -11,6 +11,10 @@ Jun 15/2015 : JF 9.1.0 released!
     - created a String.split() replacement that can handle "quotes" and trim()s each substring
   - fixed VoIP codec selection (see javaforce.voip.RTPChannel.start())
   - jPhoneLite/1.9.5 released!
+    - fixes for bug #27
+  - jfrecordcamera/0.3 and jfrecorddesktop/0.4 and jfvideo/0.18 released!
+    - added new higher video bit rates
+  - javaforce is now available on github.com/pquiring/javaforce
 
 Jun 9/2015 : JF 9.0.0 released!
   - after spending years working with JNA I've decided to switch back to JNI.

@@ -6,7 +6,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
-  <property name="version" value="0.3"/>
+  <property name="version" value="0.4"/>
 
   <import file="../../base.xml"/>
 
@@ -56,10 +56,11 @@
   <target name="release-bin" description="create release zip file">
     <copy file="../../jars/javaforce.jar" todir="."/>
     <zip destfile="jfrecorddesktop-${version}.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-        <include name="run.bat"/>
+      <fileset dir="..">
+        <include name="jfrecorddesktop/*.jar"/>
+        <include name="jfrecorddesktop/*.txt"/>
+        <include name="jfrecorddesktop/run.bat"/>
+        <include name="jfrecorddesktop/jfnative*"/>
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>
@@ -82,6 +83,7 @@
         <include name="jf/projects/jfrecorddesktop/nbproject/*.xml"/>
         <include name="jf/jars/javaforce.jar"/>
         <include name="jf/stubs/*"/>
+        <include name="jf/native/*"/>
       </fileset>
     </zip>
     <move file="jfrecorddesktop-src-${version}.zip" todir="${home}/release"/>

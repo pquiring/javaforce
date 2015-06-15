@@ -88,6 +88,7 @@
         <exclude name="**/*.res"/>
         <exclude name="**/*.msi"/>
         <exclude name="**/*.exe"/>
+        <exclude name="**/*.stackdump"/>
         <exclude name="**/*.apk"/>
         <exclude name="**/*.ap_"/>
         <exclude name="**/*.dex"/>

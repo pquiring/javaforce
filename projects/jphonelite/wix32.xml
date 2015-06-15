@@ -26,6 +26,7 @@
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="bouncycastle.jar" Source="bouncycastle.jar"/>
         <File Id="jphonelite.exe" Source="jphonelite.exe"/>
+        <File Id="run.bat" Source="run.bat"/>
         <File Id="jfnative32.dll" Source="jfnative32.dll"/>
       </Component>
     </DirectoryRef>

@@ -6,7 +6,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
-  <property name="version" value="0.17"/>
+  <property name="version" value="0.18"/>
 
   <import file="../../base.xml"/>
 
@@ -64,10 +64,11 @@
   <target name="release-bin" description="create release zip file">
     <copy file="../../jars/javaforce.jar" todir="."/>
     <zip destfile="${app}-${version}.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-        <include name="run.bat"/>
+      <fileset dir="..">
+        <include name="jfvideo/*.jar"/>
+        <include name="jfvideo/*.txt"/>
+        <include name="jfvideo/run.*"/>
+        <include name="jfvideo/jfnative*"/>
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>
@@ -86,11 +87,12 @@
         <include name="jf/projects/${app}/*.png"/>
         <include name="jf/projects/${app}/*.ico"/>
         <include name="jf/projects/${app}/*.cfg"/>
-        <include name="jf/projects/${app}/run.bat"/>
+        <include name="jf/projects/${app}/run.*"/>
         <include name="jf/projects/${app}/nbproject/*.xml"/>
         <include name="jf/jars/javaforce.jar"/>
         <include name="jf/jars/filters.jar"/>
         <include name="jf/stubs/*"/>
+        <include name="jf/native/*"/>
       </fileset>
     </zip>
     <move file="${app}-src-${version}.zip" todir="${home}/release"/>
