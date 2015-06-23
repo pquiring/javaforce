@@ -17,10 +17,11 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.gl.*;
 
 public class MainPanel extends javax.swing.JPanel implements MouseListener, MouseMotionListener, KeyListener, KeyEventDispatcher, ActionListener {
 
-  public static String version = "0.18";
+  public static String version = "0.19";
 
   /**
    * Creates new form PaintPanel
@@ -28,7 +29,6 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   public MainPanel(JFrame frame, JApplet applet) {
     try {
       this.frame = frame;
-      this.applet = applet;
       PaintCanvas.mainPanel = this;
       Border.panel = this;
       initComponents();
@@ -44,6 +44,9 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       currentPath = JF.getUserPath() + "/Pictures";
       thresholdSliderStateChanged(null);
       alphaSliderStateChanged(null);
+      paintMode.setMaximumRowCount(paintMode.getItemCount());  //default is 8
+      rotateImg = new JFImage();
+      rotateImg.load(this.getClass().getResourceAsStream("rotate.png"));
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -90,7 +93,6 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     foreColor = new javax.swing.JButton();
     swap = new javax.swing.JButton();
     backColor = new javax.swing.JButton();
-    zoom = new javax.swing.JComboBox();
     width = new javax.swing.JComboBox();
     paintMode = new javax.swing.JComboBox();
     colorLayer = new javax.swing.JComboBox();
@@ -102,6 +104,9 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     jLabel2 = new javax.swing.JLabel();
     alpha = new javax.swing.JLabel();
     alphaSlider = new javax.swing.JSlider();
+    jLabel6 = new javax.swing.JLabel();
+    zoom = new javax.swing.JSlider();
+    zoomText = new javax.swing.JLabel();
     tabs = new javax.swing.JTabbedPane();
     status = new javax.swing.JTextField();
 
@@ -316,6 +321,11 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     fillAlpha.setFocusable(false);
     fillAlpha.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     fillAlpha.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    fillAlpha.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        fillAlphaActionPerformed(evt);
+      }
+    });
     toolbar1.add(fillAlpha);
 
     fillEdge.setIcon(new javax.swing.ImageIcon(getClass().getResource("/fillEdge.png"))); // NOI18N
@@ -422,27 +432,17 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     });
     toolbar2.add(backColor);
 
-    zoom.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "25%", "50%", "100%", "200%", "400%", "800%" }));
-    zoom.setSelectedIndex(2);
-    zoom.setToolTipText("Zoom Level");
-    zoom.setMaximumSize(new java.awt.Dimension(75, 28));
-    zoom.addItemListener(new java.awt.event.ItemListener() {
-      public void itemStateChanged(java.awt.event.ItemEvent evt) {
-        zoomItemStateChanged(evt);
-      }
-    });
-    toolbar2.add(zoom);
-
     width.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1px", "2px", "3px", "4px" }));
     width.setToolTipText("Line Width");
     width.setMaximumSize(new java.awt.Dimension(50, 28));
     toolbar2.add(width);
 
-    paintMode.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Normal", "Transparent", "Gradient (cyclic)", "Gradient (acyclic)", "Gradient (radial - no cycle)", "Gradient (radial - reflect)", "Gradient (radial - repeat)", "Gaussian Blur" }));
+    paintMode.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Normal", "Transparent", "Gradient (cyclic)", "Gradient (acyclic)", "Gradient (radial - no cycle)", "Gradient (radial - reflect)", "Gradient (radial - repeat)", "Gaussian Blur", "Pixelate", "Chrome" }));
     paintMode.setToolTipText("Paint Mode");
     paintMode.setMaximumSize(new java.awt.Dimension(180, 28));
     paintMode.setMinimumSize(new java.awt.Dimension(1, 1));
     paintMode.setName(""); // NOI18N
+    paintMode.setPreferredSize(new java.awt.Dimension(180, 20));
     paintMode.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         paintModeActionPerformed(evt);
@@ -490,6 +490,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     thresholdSlider.setMaximum(255);
     thresholdSlider.setToolTipText("0=match exact : 100=match all");
     thresholdSlider.setValue(0);
+    thresholdSlider.setEnabled(false);
     thresholdSlider.setMaximumSize(new java.awt.Dimension(120, 23));
     thresholdSlider.setMinimumSize(new java.awt.Dimension(100, 23));
     thresholdSlider.setPreferredSize(new java.awt.Dimension(100, 23));
@@ -514,6 +515,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     alphaSlider.setMaximum(255);
     alphaSlider.setToolTipText("0=transparent : 100=opaque");
     alphaSlider.setValue(0);
+    alphaSlider.setEnabled(false);
     alphaSlider.setMaximumSize(new java.awt.Dimension(120, 23));
     alphaSlider.setMinimumSize(new java.awt.Dimension(100, 23));
     alphaSlider.setPreferredSize(new java.awt.Dimension(100, 23));
@@ -523,6 +525,25 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       }
     });
     toolbar3.add(alphaSlider);
+
+    jLabel6.setText("Zoom:");
+    toolbar3.add(jLabel6);
+
+    zoom.setMaximum(5);
+    zoom.setPaintLabels(true);
+    zoom.setValue(2);
+    zoom.setMaximumSize(new java.awt.Dimension(120, 23));
+    zoom.setMinimumSize(new java.awt.Dimension(100, 23));
+    zoom.setPreferredSize(new java.awt.Dimension(100, 23));
+    zoom.addChangeListener(new javax.swing.event.ChangeListener() {
+      public void stateChanged(javax.swing.event.ChangeEvent evt) {
+        zoomStateChanged(evt);
+      }
+    });
+    toolbar3.add(zoom);
+
+    zoomText.setText("100%");
+    toolbar3.add(zoomText);
 
     tabs.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
     tabs.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -538,7 +559,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addComponent(toolbar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-      .addComponent(toolbar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+      .addComponent(toolbar1, javax.swing.GroupLayout.DEFAULT_SIZE, 639, Short.MAX_VALUE)
       .addComponent(status)
       .addComponent(tabs)
       .addComponent(toolbar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -559,19 +580,22 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }// </editor-fold>//GEN-END:initComponents
 
   private void tabsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tabsStateChanged
-    unselectTool(curIdx);
-    updateStatus();
+    if (curIdx != -1) {
+      unselectTool(curIdx);
+      updateStatus();
+    }
     int idx = getidx();
     curIdx = idx;
     if (idx == -1) return;
     PaintCanvas pc = imageTabs.get(idx).pc;
-    switch ((int)pc.scale) {
-      case 25: zoom.setSelectedIndex(0); break;
-      case 50: zoom.setSelectedIndex(1); break;
-      case 100: zoom.setSelectedIndex(2); break;
-      case 200: zoom.setSelectedIndex(3); break;
-      case 400: zoom.setSelectedIndex(4); break;
-      case 800: zoom.setSelectedIndex(5); break;
+    int scale = (int)pc.scale;
+    switch (scale) {
+      case 25: zoom.setValue(0); break;
+      case 50: zoom.setValue(1); break;
+      case 100: zoom.setValue(2); break;
+      case 200: zoom.setValue(3); break;
+      case 400: zoom.setValue(4); break;
+      case 800: zoom.setValue(5); break;
     }
     colorLayer.setSelectedIndex(pc.getColorLayer());
     if (layers != null) {
@@ -581,47 +605,47 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   private void selBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selBoxActionPerformed
     unselectTool(getidx());
-    selectedTool = tools.selBox;
+    selectTool(tools.selBox);
   }//GEN-LAST:event_selBoxActionPerformed
 
   private void fillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fillActionPerformed
     unselectTool(getidx());
-    selectedTool = tools.fill;
+    selectTool(tools.fill);
   }//GEN-LAST:event_fillActionPerformed
 
   private void pickColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pickColorActionPerformed
     unselectTool(getidx());
-    selectedTool = tools.pickColor;
+    selectTool(tools.pickColor);
   }//GEN-LAST:event_pickColorActionPerformed
 
   private void pencilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pencilActionPerformed
     unselectTool(getidx());
-    selectedTool = tools.pencil;
+    selectTool(tools.pencil);
   }//GEN-LAST:event_pencilActionPerformed
 
   private void textActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textActionPerformed
     unselectTool(getidx());
-    selectedTool = tools.text;
+    selectTool(tools.text);
   }//GEN-LAST:event_textActionPerformed
 
   private void curveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_curveActionPerformed
     unselectTool(getidx());
-    selectedTool = tools.curve;
+    selectTool(tools.curve);
   }//GEN-LAST:event_curveActionPerformed
 
   private void lineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lineActionPerformed
     unselectTool(getidx());
-    selectedTool = tools.line;
+    selectTool(tools.line);
   }//GEN-LAST:event_lineActionPerformed
 
   private void boxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boxActionPerformed
     unselectTool(getidx());
-    selectedTool = tools.box;
+    selectTool(tools.box);
   }//GEN-LAST:event_boxActionPerformed
 
   private void circleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_circleActionPerformed
     unselectTool(getidx());
-    selectedTool = tools.circle;
+    selectTool(tools.circle);
   }//GEN-LAST:event_circleActionPerformed
 
   private void foreColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_foreColorActionPerformed
@@ -636,16 +660,12 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   private void subActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_subActionPerformed
     unselectTool(getidx());
-    selectedTool = tools.sub;
+    selectTool(tools.sub);
   }//GEN-LAST:event_subActionPerformed
 
   private void swapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_swapActionPerformed
     swapColors();
   }//GEN-LAST:event_swapActionPerformed
-
-  private void zoomItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_zoomItemStateChanged
-    changeScale();
-  }//GEN-LAST:event_zoomItemStateChanged
 
   private void rotateCWActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rotateCWActionPerformed
     PaintCanvas pc = imageTabs.get(getidx()).pc;
@@ -767,6 +787,16 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     alpha.setText("" + getAlphaPercent() + "%");
   }//GEN-LAST:event_alphaSliderStateChanged
 
+  private void zoomStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_zoomStateChanged
+    changeScale();
+  }//GEN-LAST:event_zoomStateChanged
+
+  private void fillAlphaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fillAlphaActionPerformed
+    if (selectedTool == tools.fill) {
+      alphaSlider.setEnabled(fillAlpha.isSelected());
+    }
+  }//GEN-LAST:event_fillAlphaActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JLabel alpha;
   private javax.swing.JSlider alphaSlider;
@@ -790,6 +820,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
   private javax.swing.JButton layersButton;
   private javax.swing.JToggleButton line;
   private javax.swing.JComboBox paintMode;
@@ -813,12 +844,12 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   private javax.swing.JToolBar toolbar2;
   private javax.swing.JToolBar toolbar3;
   private javax.swing.JComboBox width;
-  private javax.swing.JComboBox zoom;
+  private javax.swing.JSlider zoom;
+  private javax.swing.JLabel zoomText;
   // End of variables declaration//GEN-END:variables
 
   //global data
   private JFrame frame;
-  private JApplet applet;
   public boolean active = true;
   public enum tools { selBox, fill, pickColor, pencil, text, curve, line, box, circle, sub };
 /*  public enum modes {
@@ -830,6 +861,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   public int backClr = 0xffffff;
   public int selClr = 0x000000;
   public int init_x = 256, init_y = 256;
+  public boolean haveSel;
   public int selX1, selY1, selX2, selY2;
   public int clipBoard[], cbX, cbY;
   public int cx[] = new int[4], cy[] = new int[4];  //curve points
@@ -844,11 +876,16 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   public int arcX = 25, arcY = 25;
   public Config config;
   public LayersWindow layers;
+  public JFImage rotateImg;
 
   private String configFolder = JF.getUserPath();
   private String configFile = "/.jfpaint.xml";
   private String currentPath;
-  private int radius;
+  private int filter_radius;
+  private int filter_pixelSize;  //pixelation
+  private float filter_amount, filter_exposure;
+  private float rotate;
+  private int scretchDir;
 
   public static class Config {
     public String code;
@@ -1176,8 +1213,9 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
           break;
       }
     }
-    tabs.remove(idx);
+    curIdx = -1;
     imageTabs.remove(idx);
+    tabs.remove(idx);
     if (exiting) return true;
     if (tabs.getTabCount() == 0) addTab("untitled");
     return true;
@@ -1279,11 +1317,12 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     int idx = getidx();
     unselectTool(idx);
     selBox.setSelected(true);
-    selectedTool = tools.selBox;
+    selectTool(tools.selBox);
     PaintCanvas pc = imageTabs.get(idx).pc;
     selX1 = selY1 = 0;
     selX2 = pc.img[pc.getImageLayer()].getWidth()-1;
     selY2 = pc.img[pc.getImageLayer()].getHeight()-1;
+    haveSel = true;
     cutSel();
     pasteSel(selX1, selY1);
     pc.drag = true;
@@ -1302,6 +1341,24 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     if (format.equals("xpm")) return "xpm";
     System.out.println("Unsupported format:" + format);
     return null;
+  }
+
+  private void selectTool(tools tool) {
+    selectedTool = tool;
+    switch (tool) {
+      case fill:
+        thresholdSlider.setEnabled(true);
+        alphaSlider.setEnabled(fillAlpha.isSelected());
+        break;
+      case sub:
+        thresholdSlider.setEnabled(true);
+        alphaSlider.setEnabled(paintMode.getSelectedIndex() == 1);
+        break;
+      default:
+        thresholdSlider.setEnabled(false);
+        alphaSlider.setEnabled(paintMode.getSelectedIndex() == 1);
+        break;
+    }
   }
 
   private void unselectTool(int idx) {
@@ -1330,7 +1387,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   public void delSel() {
     if (selectedTool != tools.selBox) return;
-    if (selX1 == -1) return;
+    if (!haveSel) return;
     int tmp;
     if (selX1 > selX2) {tmp=selX1; selX1=selX2; selX2=tmp;}
     if (selY1 > selY2) {tmp=selY1; selY1=selY2; selY2=tmp;}
@@ -1345,7 +1402,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   public void cutSel() {
     if (selectedTool != tools.selBox) return;
-    if (selX1 == -1) return;
+    if (!haveSel) return;
     int tmp;
     if (selX1 > selX2) {tmp=selX1; selX1=selX2; selX2=tmp;}
     if (selY1 > selY2) {tmp=selY1; selY1=selY2; selY2=tmp;}
@@ -1364,7 +1421,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   public void copySel() {
     if (selectedTool != tools.selBox) return;
-    if (selX1 == -1) return;
+    if (!haveSel) return;
     int tmp;
     if (selX1 > selX2) {tmp=selX1; selX1=selX2; selX2=tmp;}
     if (selY1 > selY2) {tmp=selY1; selY1=selY2; selY2=tmp;}
@@ -1380,6 +1437,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   public void pasteSel(int x, int y) {
     if (colorLayer.getSelectedIndex() != 0) return;
+    rotate = 0f;
     java.awt.Image img = JFClipboard.readImage();
     if (img == null) return;
     JFImage image = JFClipboard.convertImage(img);
@@ -1394,46 +1452,62 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     selY1 = y;
     selX2 = x+cbX;
     selY2 = y+cbY;
-    pc.forePutPixels(clipBoard, x, y, cbX, cbY, 0);
-    pc.foreDrawSelBox(x,y,x+cbX-1,y+cbY-1);
+    haveSel = true;
+    foreDrawSel(pc);
     pc.drag = true;
     pc.disableScale = false;
   }
 
   private void clearSel(PaintCanvas pc) {
     pc.foreClear();
-    selX1 = -1;
+    haveSel = false;
   }
 
   private void drawSel(PaintCanvas pc) {
     if (cbX == 0 || cbY == 0) return;  //shouldn't happen ???
-    if (selkeyclr.isSelected())
-      pc.img[pc.getImageLayer()].putPixelsBlendKeyClr(clipBoard, selX1, selY1, cbX, cbY, 0, false, backClr);
-    else
-      pc.img[pc.getImageLayer()].putPixelsBlend(clipBoard, selX1, selY1, cbX, cbY, 0, false);
+    int px[];
+    if (selkeyclr.isSelected()) {
+      int cnt = cbX * cbY;
+      px = new int[cnt];
+      System.arraycopy(clipBoard, 0, px, 0, cnt);
+      for(int a=0;a<cnt;a++) {
+        if ((px[a] & JFImage.RGB_MASK) == backClr) {
+          px[a] = 0;
+        }
+      }
+    } else {
+      px = clipBoard;
+    }
+    pc.putPixels(px, selX1, selY1, selX2 - selX1, selY2 - selY1, cbX, cbY, rotate);
     pc.img[pc.getImageLayer()].repaint();
   }
 
   private void foreDrawSel(PaintCanvas pc) {
-    if (selkeyclr.isSelected())
-      pc.forePutPixelsKeyClr(clipBoard, selX1, selY1, cbX, cbY, 0, backClr);
-    else
-      pc.forePutPixels(clipBoard, selX1, selY1, cbX, cbY, 0);
-    pc.foreDrawSelBox(selX1,selY1,selX1+cbX-1,selY1+cbY-1);
+    int px[];
+    if (selkeyclr.isSelected()) {
+      int cnt = cbX * cbY;
+      px = new int[cnt];
+      System.arraycopy(clipBoard, 0, px, 0, cnt);
+      for(int a=0;a<cnt;a++) {
+        if ((px[a] & JFImage.RGB_MASK) == backClr) {
+          px[a] = 0;
+        }
+      }
+    } else {
+      px = clipBoard;
+    }
+    pc.forePutPixels(px, selX1, selY1, selX2 - selX1, selY2 - selY1, cbX, cbY, rotate);
+    pc.foreDrawSelBox(selX1,selY1,selX2,selY2,rotate);
   }
 
   private void drawText(PaintCanvas pc) {
     assignPaint(pc.cimg, true);
     pc.setFont(textFont);
-    String lns[] = textText.split("\n");
     int x=selX1;
     int y=selY1;
     Rectangle2D rect = textFont.getMaxCharBounds(pc.img[pc.getImageLayer()].getGraphics2D().getFontRenderContext());
     int fy = (int)rect.getHeight();
-    for(int a=0;a<lns.length;a++) {
-      y += fy;
-      pc.drawText(lns[a], x, y);
-    }
+    pc.drawText(textText.split("\n"), x, y, fy, 1, 1, rotate);
     textText = "";
   }
 
@@ -1447,25 +1521,25 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     int lx = 0;
     assignPaint(pc.fimg, true);
     pc.foreClear();
-    pc.foreDrawSelBox(selX1, selY1, selX2, selY2);
+    pc.foreDrawSelBox(selX1, selY1, selX2, selY2, rotate);
     pc.foreSetFont(textFont);
-    String lns[] = textText.split("\n", -1);
+    String text;
+    if (pc.textCursor) {
+      pc.textCursor = false;
+      text = textText + "\u2588";
+    } else {
+      pc.textCursor = true;
+      text = textText;
+    }
+    String lns[] = text.split("\n", -1);
     my = lns.length * fy;
     int x=selX1;
     int y=selY1;
     for(int a=0;a<lns.length;a++) {
       lx = (int)textFont.getStringBounds(lns[a], frc).getWidth() + 6;
       if (lx > mx) mx = lx;
-      y += fy;
-      pc.foreDrawText(lns[a], x, y);
     }
-    if (pc.textCursor) {
-      y -= fy;
-      pc.foreFillBox(x + lx - 6, y, x + lx - 2, y + fy - 1);
-      pc.textCursor = false;
-    } else {
-      pc.textCursor = true;
-    }
+    pc.foreDrawText(lns, x, y, fy, 1, 1, rotate);
     if ((selX2 - selX1) < mx) selX2 = selX1 + mx;
     if ((selY2 - selY1) < my) selY2 = selY1 + my;
   }
@@ -1579,16 +1653,24 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     getGradPoints = false;
     getGradFocus = false;
     updateStatus();
-    int idx = paintMode.getSelectedIndex();
-    if (idx == 0) {
+    int mode = paintMode.getSelectedIndex();
+    if (mode == 0) {
       fillAlpha.setEnabled(true);
+      fillEdge.setEnabled(true);
     } else {
       fillAlpha.setEnabled(false);
       fillAlpha.setSelected(false);
+      fillEdge.setEnabled(false);
+      fillEdge.setSelected(false);
     }
-    switch (idx) {
+    alphaSlider.setEnabled(false);
+    GetValue dialog;
+    GetValue2 dialog2;
+    switch (mode) {
       case 0:  //normal
+        break;
       case 1:  //transparent
+        alphaSlider.setEnabled(true);
         break;
       case 2:
       case 3:
@@ -1599,13 +1681,32 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         updateStatus();
         break;
       case 7:
-        GetValue getRadius = new GetValue(null, true, "Enter radius", "radius", 2, 64, 5);
-        getRadius.setVisible(true);
-        radius = getRadius.value;
-        if (radius == -1) radius = 2;
+        dialog = new GetValue(null, true, "Enter Gaussian Blur parameters", "radius", 2, 64, 5);
+        dialog.setVisible(true);
+        filter_radius = dialog.value;
+        if (filter_radius == -1) filter_radius = 2;
+        break;
+      case 8:
+        dialog = new GetValue(null, true, "Enter Pixelate parameters", "pixel size", 2, 64, 5);
+        dialog.setVisible(true);
+        filter_pixelSize = dialog.value;
+        if (filter_pixelSize == -1) filter_pixelSize = 2;
+        break;
+      case 9:
+        dialog2 = new GetValue2(null, true, "Enter Chrome parameters"
+          , "amount", 0, 100, 50
+          , "exposure", 0, 100, 100
+        );
+        dialog2.setVisible(true);
+        filter_amount = dialog2.value1;
+        if (filter_amount == -1) filter_pixelSize = 50;
+        filter_amount /= 100f;
+        filter_exposure = dialog2.value2;
+        if (filter_exposure == -1) filter_exposure = 100;
+        filter_exposure /= 100f;
         break;
     }
-    if (idx >= 7 ) {
+    if (mode >= 7 ) {
       switch (selectedTool) {
         case box:
           break;
@@ -1744,7 +1845,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   public void changeScale() {
     PaintCanvas pc = imageTabs.get(getidx()).pc;
     int newScale = -1;
-    switch (zoom.getSelectedIndex()) {
+    switch (zoom.getValue()) {
       case 0: newScale = 25; break;
       case 1: newScale = 50; break;
       case 2: newScale = 100; break;
@@ -1752,6 +1853,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       case 4: newScale = 400; break;
       case 5: newScale = 800; break;
     }
+    zoomText.setText(Integer.toString(newScale) + "%");
     pc.setScale(newScale);
     pc.parentPanel.revalidate();
     pc.resizeBorder();
@@ -1779,12 +1881,72 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     return false;  //pass on as normal
   }
 
+  public static final int NONE = 0;
+  public static final int N = 1;
+  public static final int E = 2;
+  public static final int S = 3;
+  public static final int W = 4;
+  public static final int NE = 5;
+  public static final int NW = 6;
+  public static final int SE = 7;
+  public static final int SW = 8;
+  public static final int R = 9;
+  public static final int INSIDE = 10;
+  public static final int OUTSIDE = 11;
+
+  public float rad2deg(float rad) {
+    return rad * 180f / (float)Math.PI;
+  }
+
+  /** Get selection box point.
+   * Adjusts for rotation.
+   */
+  public int getSelBoxPt(int x,int y) {
+    if (!haveSel) return OUTSIDE;
+//JFLog.log("pre=" + x + "," + y + ",rotate=" + rotate);
+    if (rotate != 0f) {
+      GLMatrix mat = new GLMatrix();
+      mat.addRotate(rad2deg(rotate), 0, 0, 1);
+      GLVector3 vec = new GLVector3();
+      vec.v[0] = x - selX1;
+      vec.v[1] = y - selY1;
+      vec.v[2] = 0;  //z
+      mat.mult(vec);
+      x = (int)vec.v[0] + selX1;
+      y = (int)vec.v[1] + selY1;
+    }
+//JFLog.log("pst=" + x + "," + y);
+    int ox = x - selX1;
+    int oy = y - selY1;
+    int width = selX2 - selX1 + 1;
+    int height = selY2 - selY1 + 1;
+    if (x >= selX1 && x <= selX2 && y >= selY1 && y <= selY2) {
+      return INSIDE;
+    } else {
+      if (ox >= width+5 && ox <= width+15 && oy >= height+5 && oy <= height+15) return R;
+      if (ox < -5 || ox > width+5) return OUTSIDE;
+      if (oy < -5 || oy > height+5) return OUTSIDE;
+      int x1 = 0;
+      int y1 = 0;
+      int x2 = width;
+      int y2 = height;
+      if (ox >= x2 && oy >= y2) return SE;
+      if (ox <= x1 && oy >= y2) return SW;
+      if (ox >= x2 && oy <= y1) return NE;
+      if (ox <= x1 && oy <= y1) return NW;
+      if (oy <= y1) return N;
+      if (oy >= y2) return S;
+      if (ox <= x1) return W;
+      if (ox >= x2) return E;
+      return INSIDE;  //should not happen
+    }
+  }
+
   public void keyPressed(KeyEvent evt) {
     //Key Pressed
     int f1 = evt.getKeyCode();
     int f2 = evt.getModifiers();
-    int idx;
-    JFTextArea txt;
+    int idx = getidx();
     if ((f1 == KeyEvent.VK_F1) && (f2 == 0)) {
       JOptionPane.showMessageDialog(this,
         "jfpaint/" + version + "\n\n" +
@@ -1815,10 +1977,15 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     if ((f1 == KeyEvent.VK_X) && (f2 == KeyEvent.CTRL_MASK)) { delSel(); return; }
 //    if ((f1 == KeyEvent.VK_C) && (f2 == KeyEvent.CTRL_MASK)) { copySel(); return; }  //automatic
     if ((f1 == KeyEvent.VK_V) && (f2 == KeyEvent.CTRL_MASK)) {
-      unselectTool(getidx());
+      if (idx == -1) return;
+      unselectTool(idx);
       selBox.setSelected(true);
-      selectedTool = tools.selBox;
-      Point pt = imageTabs.get(getidx()).scroll.getViewport().getViewPosition();
+      selectTool(tools.selBox);
+      Point pt = imageTabs.get(idx).scroll.getViewport().getViewPosition();
+      //scale point
+      float scale = imageTabs.get(idx).pc.scale / 100f;
+      pt.x = (int)(pt.x / scale);
+      pt.y = (int)(pt.y / scale);
       pasteSel(pt.x, pt.y);
       return;
     }
@@ -1916,19 +2083,33 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         return;
       case selBox:
       case text:
-        if ((selX1 != -1) && (x >= selX1) && (x <= selX2) && (y >= selY1) && (y <= selY2)) {
-          pc.drag = true;
-          pc.sx = x;
-          pc.sy = y;
-        } else {
-          if (pc.drag) {
-            if (selectedTool == tools.selBox) drawSel(pc); else drawText(pc);
-            pc.drag = false;
-            clearSel(pc);
-          }
-          selX1 = x;
-          selY1 = y;
-          if (selectedTool == tools.text) textText = "";
+        int pt = getSelBoxPt(x,y);
+//JFLog.log("pt=" + pt);
+        switch (pt) {
+          default:
+            scretchDir = pt;
+            pc.sx = x;
+            pc.sy = y;
+            break;
+          case INSIDE:
+            scretchDir = NONE;
+            pc.drag = true;
+            pc.sx = x;
+            pc.sy = y;
+            break;
+          case OUTSIDE:
+            scretchDir = NONE;
+            if (pc.drag) {
+              if (selectedTool == tools.selBox) drawSel(pc); else drawText(pc);
+              pc.drag = false;
+              clearSel(pc);
+            }
+            rotate = 0f;
+            selX1 = x;
+            selY1 = y;
+            haveSel = true;
+            if (selectedTool == tools.text) textText = "";
+            break;
         }
         //no break
       case line:
@@ -2037,18 +2218,29 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         pc.foreClear();
         break;
       case box:
-        if (paintMode.getSelectedIndex() == 7) {
-          pc.blur(pc.sx, pc.sy, x, y, radius);
-        } else if (fillMode.isSelected()) {
-          if (round.isSelected())
-            pc.fillRoundBox(pc.sx, pc.sy, x, y, arcX, arcY);
-          else
-            pc.fillBox(pc.sx, pc.sy, x, y);
-        } else {
-          if (round.isSelected())
-            pc.drawRoundBox(pc.sx, pc.sy, x, y, arcX, arcY);
-          else
-            pc.drawBox(pc.sx, pc.sy, x, y);
+        switch (paintMode.getSelectedIndex()) {
+          default:
+            if (fillMode.isSelected()) {
+              if (round.isSelected())
+                pc.fillRoundBox(pc.sx, pc.sy, x, y, arcX, arcY);
+              else
+                pc.fillBox(pc.sx, pc.sy, x, y);
+            } else {
+              if (round.isSelected())
+                pc.drawRoundBox(pc.sx, pc.sy, x, y, arcX, arcY);
+              else
+                pc.drawBox(pc.sx, pc.sy, x, y);
+            }
+            break;
+          case 7:
+            pc.blur(pc.sx, pc.sy, x, y, filter_radius);
+            break;
+          case 8:
+            pc.pixelate(pc.sx, pc.sy, x, y, filter_pixelSize);
+            break;
+          case 9:
+            pc.chrome(pc.sx, pc.sy, x, y, filter_amount, filter_exposure);
+            break;
         }
         pc.foreClear();
         break;
@@ -2067,13 +2259,14 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         }
         selX2 = x;
         selY2 = y;
-        if ((selX1 == selX2) && (selY1 == selY2)) {selX1 = -1; pc.foreClear(); pc.repaint(); return;}
+        if ((selX1 == selX2) && (selY1 == selY2)) {haveSel = false; pc.foreClear(); pc.repaint(); return;}
         if (selX1 > selX2) {tmp=selX1; selX1=selX2; selX2=tmp;}
         if (selY1 > selY2) {tmp=selY1; selY1=selY2; selY2=tmp;}
         //copySel();
         cutSel();
         pasteSel(selX1, selY1);
         pc.drag = true;
+        scretchDir = NONE;
         break;
       case curve:
         cx[cpt] = x;
@@ -2101,7 +2294,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         if (pc.drag) return;
         selX2 = x;
         selY2 = y;
-        if ((selX1 == selX2) && (selY1 == selY2)) {selX1 = -1; pc.foreClear(); pc.repaint(); return;}
+        if ((selX1 == selX2) && (selY1 == selY2)) {haveSel = false; pc.foreClear(); pc.repaint(); return;}
         if (selX1 > selX2) {tmp=selX1; selX1=selX2; selX2=tmp;}
         if (selY1 > selY2) {tmp=selY1; selY1=selY2; selY2=tmp;}
         pc.drag = true;
@@ -2134,6 +2327,44 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     PaintCanvas pc = (PaintCanvas)c;
     int x = (int)(e.getX() / (pc.scale / 100f));
     int y = (int)(e.getY() / (pc.scale / 100f));
+    if (scretchDir != NONE) {
+      float width = selX2 - selX1;
+      float height = selY2 - selY1;
+      switch(scretchDir) {
+        case NW:
+          selX1 = x;
+          selY1 = y;
+          break;
+        case N:
+          selY1 = y;
+          break;
+        case NE:
+          selY1 = y;
+          selX2 = x;
+          break;
+        case E:
+          selX2 = x;
+          break;
+        case SE:
+          selX2 = x;
+          selY2 = y;
+          break;
+        case S:
+          selY2 = y;
+          break;
+        case SW:
+          selX1 = x;
+          selY2 = y;
+          break;
+        case W:
+          selX1 = x;
+          break;
+        case R:
+          rotate = (y - selY2) / height;
+          break;
+      }
+      return;
+    }
     pc.disableScale = true;
     if (getGradPoints) {
       pc.foreClear();
@@ -2182,7 +2413,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         }
         break;
       case selBox:
-        if (selX1 == -1) break;
+        if (!haveSel) break;
         if (pc.drag) {
           pc.foreClear();
           int dx = (x - pc.sx);
@@ -2198,7 +2429,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
           selX2 = x;
           selY2 = y;
           pc.foreClear();
-          pc.foreDrawSelBox(selX1, selY1, selX2, selY2);
+          pc.foreDrawSelBox(selX1, selY1, selX2, selY2, rotate);
         }
         break;
       case curve:
@@ -2223,7 +2454,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         pc.foreDrawBox(pc.sx, pc.sy, x, y);
         break;
       case text:
-        if (selX1 == -1) break;
+        if (!haveSel) break;
         if (pc.drag) {
           pc.foreClear();
           int dx = (x - pc.sx);
@@ -2288,7 +2519,10 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       selkeyclr.setEnabled(false);
       fillAlpha.setSelected(false);
       fillAlpha.setEnabled(false);
+      fillEdge.setSelected(false);
+      fillEdge.setEnabled(false);
     } else {
+      int mode = paintMode.getSelectedIndex();
       paintMode.setEnabled(true);
       selBox.setEnabled(true);
       sub.setEnabled(true);
@@ -2298,7 +2532,8 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       flipVert.setEnabled(true);
       flipHorz.setEnabled(true);
       selkeyclr.setEnabled(true);
-      fillAlpha.setEnabled(true);
+      fillAlpha.setEnabled(mode == 0);
+      fillEdge.setEnabled(mode == 0);
     }
     repaint();
     pc.repaint();

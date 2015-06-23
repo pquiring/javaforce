@@ -5,8 +5,6 @@ import java.awt.event.*;
 public class Border extends JComponent implements MouseListener, MouseMotionListener, KeyListener {
 
   public static MainPanel panel;
-  public int mx=0, my=0;  //current mouse pos
-  public int sx=0, sy=0;  //starting draw pos
   public enum Types {east, south, corner};
   public Types borderType;
   public PaintCanvas pc;
@@ -71,8 +69,8 @@ public class Border extends JComponent implements MouseListener, MouseMotionList
   public void mousePressed(MouseEvent e) { panel.mousePressed(e); }
   public void mouseReleased(MouseEvent e) { panel.mouseReleased(e); }
 
-  public void mouseDragged(MouseEvent e) { mx = e.getX(); my = e.getY(); panel.mouseDragged(e); }
-  public void mouseMoved(MouseEvent e) { mx = e.getX(); my = e.getY(); panel.mouseMoved(e); }
+  public void mouseDragged(MouseEvent e) { panel.mouseDragged(e); }
+  public void mouseMoved(MouseEvent e) { panel.mouseMoved(e); }
 
   public void keyPressed(KeyEvent e) {}
   public void keyReleased(KeyEvent e) {}

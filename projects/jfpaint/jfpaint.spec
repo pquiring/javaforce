@@ -1,6 +1,6 @@
 Buildroot: /.
 Name: jfpaint
-Version: 0.18
+Version: 0.19
 Release: 1
 Summary: Java Paint image editor
 License: LGPL

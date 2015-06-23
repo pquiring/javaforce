@@ -1,5 +1,12 @@
 Whatsnew ...
 
+Jun 22, 2015 - v0.19 released!
+  - new : selection box can now be scaled and rotated
+  - new : text box can now be rotated
+  - new : pixelate and chrome filter paint modes
+  - fix : paste while zoomed in was placing selection off screen
+  - new : zoom is now a slider
+
 Apr 20, 2015 - v0.18 released!
   - new : fill tool now uses threshold
   - fix : undo/redo issues

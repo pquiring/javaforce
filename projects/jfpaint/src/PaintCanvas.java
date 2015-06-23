@@ -558,8 +558,21 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
   public void setFont(Font font) {
     cimg.setFont(font);
   }
-  public void drawText(String txt, int x, int y) {
-    cimg.getGraphics().drawString(txt, x, y);
+  public void drawText(String txt[], int x, int y, int dy, float sx, float sy, float rotate) {
+    Graphics2D g = cimg.getGraphics2D();
+    AffineTransform org = g.getTransform();
+    g.scale(sx, sy);
+    g.translate(x,y);
+    x = 0;
+    y = dy;
+    if (rotate != 0) {
+      g.rotate(rotate);
+    }
+    for(int a=0;a<txt.length;a++) {
+      g.drawString(txt[a], x, y);
+      y += dy;
+    }
+    g.setTransform(org);
   }
   public static boolean swap;
   public void backClear() {
@@ -608,19 +621,64 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
     if (y1 > y2) {tmp=y1; y1=y2; y2=tmp;}
     fimg.getGraphics().drawOval(x1,y1,x2-x1+1,y2-y1+1);
   }
-  public void foreDrawSelBox(int x1,int y1,int x2,int y2) {
+  public void foreDrawSelBox(int x1,int y1,int x2,int y2, float rotate) {
     int tmp;
     Graphics2D fg = fimg.getGraphics2D();
     if (x1 > x2) {tmp=x1; x1=x2; x2=tmp;}
     if (y1 > y2) {tmp=y1; y1=y2; y2=tmp;}
     fg.setColor(new Color(0x00));
+    AffineTransform org = fg.getTransform();
+    fg.translate(x1, y1);
+    if (rotate != 0) {
+      fg.rotate(rotate);
+    }
+    int width = x2-x1;
+    int height = y2-y1;
+    x2 -= x1;
+    y2 -= y1;
+    x1 = 0;
+    y1 = 0;
     fg.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL,0, new float[]{9}, selBoxIdx++));
     if (selBoxIdx == 9) selBoxIdx = 0;
-    fg.drawRect(x1,y1,x2-x1,y2-y1);  //NOTE : left=x1 right=x1+width (strange)
+    //NOTE : left=x1 right=x1+width (strange)
+    int width2 = width / 2 - 2;
+    int height2 = height / 2 - 2;
+    fg.drawRect(x1, y1, width, height);
     fg.setStroke(new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
+    fg.fillRect(x1-5,y1-5,6,6);  //NW box
+    fg.fillRect(x1+width2,y1-5,6,6);  //N box
+    fg.fillRect(x1+width,y1-5,6,6);  //NE box
+    fg.fillRect(x1+width,y1+height2,6,6);  //E box
+    fg.fillRect(x1+width,y1+height,6,6);  //SE box
+    fg.fillRect(x1+width2,y1+height,6,6);  //S  box
+    fg.fillRect(x1-5,y1+height,6,6);  //SW box
+    fg.fillRect(x1-5,y1+height2,6,6);  //W box
+    fg.drawImage(mainPanel.rotateImg.getImage(),x1+width+5,y1+height+5,null);  //R box
+    fg.setTransform(org);
   }
-  public void forePutPixels(int px[], int x, int y, int w, int h, int offset) {
-    fimg.putPixels(px, x, y, w, h, offset);
+  public void forePutPixels(int px[], int x, int y, int w, int h, int iw, int ih, float rotate) {
+    Graphics2D fg = fimg.getGraphics2D();
+    BufferedImage bi = new BufferedImage(iw,ih,BufferedImage.TYPE_INT_ARGB);
+    bi.setRGB(0, 0, iw, ih, px, 0, iw);
+    AffineTransform transform = new AffineTransform();
+    transform.translate(x, y);
+    if (rotate != 0) {
+      transform.rotate(rotate);
+    }
+    transform.scale((float)w / (float)iw, (float)h / (float)ih);
+    fg.drawImage(bi, transform, null);
+  }
+  public void putPixels(int px[], int x, int y, int w, int h, int iw, int ih, float rotate) {
+    Graphics2D fg = img[getImageLayer()].getGraphics2D();
+    BufferedImage bi = new BufferedImage(iw,ih,BufferedImage.TYPE_INT_ARGB);
+    bi.setRGB(0, 0, iw, ih, px, 0, iw);
+    AffineTransform transform = new AffineTransform();
+    transform.translate(x, y);
+    if (rotate != 0) {
+      transform.rotate(rotate);
+    }
+    transform.scale((float)w / (float)iw, (float)h / (float)ih);
+    fg.drawImage(bi, transform, null);
   }
   public void forePutPixelsKeyClr(int px[], int x, int y, int w, int h, int offset, int keyclr) {
     fimg.putPixelsKeyClr(px, x, y, w, h, offset, keyclr);
@@ -655,8 +713,21 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
   public void foreSetFont(Font font) {
     fimg.setFont(font);
   }
-  public void foreDrawText(String txt, int x, int y) {
-    fimg.getGraphics().drawString(txt, x, y);
+  public void foreDrawText(String txt[], int x, int y, int dy, float sx, float sy, float rotate) {
+    Graphics2D g = fimg.getGraphics2D();
+    AffineTransform org = g.getTransform();
+    g.scale(sx, sy);
+    g.translate(x,y);
+    x = 0;
+    y = dy;
+    if (rotate != 0) {
+      g.rotate(rotate);
+    }
+    for(int a=0;a<txt.length;a++) {
+      g.drawString(txt[a], x, y);
+      y += dy;
+    }
+    g.setTransform(org);
   }
   public void rotateCW() {
     int w = getUnscaledWidth();
@@ -931,6 +1002,74 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
       GaussianFilter.convolveAndTranspose(kernel, outPixels, inPixels, height, width, alpha, false, alpha && premultiplyAlpha, GaussianFilter.CLAMP_EDGES);
     }
     img[imageLayer].putPixels(inPixels, x1, y1, width, height, 0);
+  }
+
+  public void pixelate(int x1,int y1,int x2,int y2,int pixelSize) {
+    int tmp;
+    int width = img[imageLayer].getWidth(), height = img[imageLayer].getHeight();
+    if (x1 < 0) x1 = 0;
+    if (x2 < 0) x2 = 0;
+    if (y1 < 0) y1 = 0;
+    if (y2 < 0) y2 = 0;
+    if (x1 >= width) x1 = width-1;
+    if (x2 >= width) x2 = width-1;
+    if (y1 >= height) y1 = height-1;
+    if (y2 >= height) y2 = height-1;
+    if (x1 > x2) {
+      tmp = x1;
+      x1 = x2;
+      x2 = tmp;
+    }
+    if (y1 > y2) {
+      tmp = y1;
+      y1 = y2;
+      y2 = tmp;
+    }
+    width = x2-x1+1;
+    height = y2-y1+1;
+    int px[] = img[imageLayer].getPixels(x1,y1,width,height);
+    BlockFilter filter = new BlockFilter(pixelSize);
+    BufferedImage src = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    src.setRGB(0, 0, width, height, px, 0, width);
+    BufferedImage dst = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    filter.filter(src, dst);
+    dst.getRGB(0, 0, width, height, px, 0, width);
+    img[imageLayer].putPixels(px, x1, y1, width, height, 0);
+  }
+
+  public void chrome(int x1,int y1,int x2,int y2,float amount, float exposure) {
+    int tmp;
+    int width = img[imageLayer].getWidth(), height = img[imageLayer].getHeight();
+    if (x1 < 0) x1 = 0;
+    if (x2 < 0) x2 = 0;
+    if (y1 < 0) y1 = 0;
+    if (y2 < 0) y2 = 0;
+    if (x1 >= width) x1 = width-1;
+    if (x2 >= width) x2 = width-1;
+    if (y1 >= height) y1 = height-1;
+    if (y2 >= height) y2 = height-1;
+    if (x1 > x2) {
+      tmp = x1;
+      x1 = x2;
+      x2 = tmp;
+    }
+    if (y1 > y2) {
+      tmp = y1;
+      y1 = y2;
+      y2 = tmp;
+    }
+    width = x2-x1+1;
+    height = y2-y1+1;
+    int px[] = img[imageLayer].getPixels(x1,y1,width,height);
+    ChromeFilter filter = new ChromeFilter();
+    filter.setAmount(amount);
+    filter.setExposure(exposure);
+    BufferedImage src = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    src.setRGB(0, 0, width, height, px, 0, width);
+    BufferedImage dst = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+    filter.filter(src, dst);
+    dst.getRGB(0, 0, width, height, px, 0, width);
+    img[imageLayer].putPixels(px, x1, y1, width, height, 0);
   }
 
   public int getImageLayers() {
