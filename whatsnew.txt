@@ -1,11 +1,15 @@
 What's new...
 
-Jun ?/2015 : JF 9.2.0 released!
+Jun 25/2015 : JF 9.2.0 released!
   - jPhoneLite Android/1.9.5 AR #12 released!
     - should fix bug #28
     - finally upgraded the android edition to most desktop standards
     - includes g722 support
     - android does not support all desktop features yet
+  - jfPaint/0.19 released!
+    - added scale/rotate
+    - new filters
+    - bug fixes
 
 Jun 15/2015 : JF 9.1.0 released!
   - fixed win32 native issues

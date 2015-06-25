@@ -1326,7 +1326,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     selY2 = pc.img[pc.getImageLayer()].getHeight()-1;
     haveSel = true;
     cutSel();
-    pasteSel(selX1, selY1);
+    pasteSel(selX1, selY1, false);
     pc.drag = true;
   }
 
@@ -1418,9 +1418,10 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     clip.putPixels(clipBoard,0,0,cbX,cbY,0);
     JFClipboard.writeImage(clip.getImage());
     int layer = pc.getImageLayer();
-    pc.img[layer].fill(selX1,selY1,cbX,cbY,backClr);
-    if (layer > 0) {
-      pc.img[layer].fillAlpha(selX1,selY1,cbX,cbY,0);
+    if (layer == 0) {
+      pc.img[layer].fill(selX1,selY1,cbX,cbY,backClr);
+    } else {
+      pc.img[layer].fill(selX1,selY1,cbX,cbY,backClr,true);  //alpha = transparent
     }
     pc.disableScale = false;
   }
@@ -1441,15 +1442,17 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     JFClipboard.writeImage(clip.getImage());
   }
 
-  public void pasteSel(int x, int y) {
+  public void pasteSel(int x, int y, boolean sysClipBoard) {
     if (colorLayer.getSelectedIndex() != 0) return;
     rotate = 0f;
-    java.awt.Image img = JFClipboard.readImage();
-    if (img == null) return;
-    JFImage image = JFClipboard.convertImage(img);
-    cbX = image.getWidth();
-    cbY = image.getHeight();
-    clipBoard = image.getPixels();
+    if (clipBoard == null || sysClipBoard) {
+      java.awt.Image img = JFClipboard.readImage();
+      if (img == null) return;
+      JFImage image = JFClipboard.convertImage(img);
+      cbX = image.getWidth();
+      cbY = image.getHeight();
+      clipBoard = image.getPixels();
+    }
     int idx = getidx();
     PaintCanvas pc = imageTabs.get(idx).pc;
     pc.disableScale = true;
@@ -1992,7 +1995,20 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       float scale = imageTabs.get(idx).pc.scale / 100f;
       pt.x = (int)(pt.x / scale);
       pt.y = (int)(pt.y / scale);
-      pasteSel(pt.x, pt.y);
+      pasteSel(pt.x, pt.y, false);
+      return;
+    }
+    if ((f1 == KeyEvent.VK_B) && (f2 == KeyEvent.CTRL_MASK)) {
+      if (idx == -1) return;
+      unselectTool(idx);
+      selBox.setSelected(true);
+      selectTool(tools.selBox);
+      Point pt = imageTabs.get(idx).scroll.getViewport().getViewPosition();
+      //scale point
+      float scale = imageTabs.get(idx).pc.scale / 100f;
+      pt.x = (int)(pt.x / scale);
+      pt.y = (int)(pt.y / scale);
+      pasteSel(pt.x, pt.y, true);
       return;
     }
     if ((f1 == KeyEvent.VK_Z) && (f2 == KeyEvent.CTRL_MASK)) { undo(); return; }
@@ -2270,7 +2286,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         if (selY1 > selY2) {tmp=selY1; selY1=selY2; selY2=tmp;}
         //copySel();
         cutSel();
-        pasteSel(selX1, selY1);
+        pasteSel(selX1, selY1, false);
         pc.drag = true;
         scretchDir = NONE;
         break;

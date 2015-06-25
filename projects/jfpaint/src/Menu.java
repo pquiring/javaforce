@@ -6,6 +6,8 @@
  */
 
 import javaforce.JF;
+
+import java.awt.event.*;
 import javax.swing.*;
 
 public class Menu {
@@ -97,6 +99,7 @@ public class Menu {
 
     item = new JMenuItem("Cut");
     item.setMnemonic('t');
+    item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_DOWN_MASK, false));
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         panel.delSel();
@@ -106,6 +109,7 @@ public class Menu {
 
     item = new JMenuItem("Copy");
     item.setMnemonic('y');
+    item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK, false));
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         //copy is automatic when drawing a selection box
@@ -115,9 +119,20 @@ public class Menu {
 
     item = new JMenuItem("Paste");
     item.setMnemonic('p');
+    item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK, false));
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        panel.pasteSel(0, 0);
+        panel.pasteSel(0, 0, false);
+      }
+    });
+    menu.add(item);
+
+    item = new JMenuItem("Paste (System)");
+    item.setMnemonic('p');
+    item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK, false));
+    item.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        panel.pasteSel(0, 0, false);
       }
     });
     menu.add(item);

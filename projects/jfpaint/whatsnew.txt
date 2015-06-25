@@ -1,10 +1,13 @@
 Whatsnew ...
 
-Jun 22, 2015 - v0.19 released!
+Jun 25, 2015 - v0.19 released!
   - new : selection box can now be scaled and rotated
   - new : text box can now be rotated
   - new : pixelate and chrome filter paint modes
   - fix : paste while zoomed in was placing selection off screen
+  - fix : cut/paste works with the alpha channel
+    - important for sub-layers which by default are all transparent
+    - Paste (System) (Ctrl+B) always uses the system clipboard (no transparency though)
   - new : zoom is now a slider
 
 Apr 20, 2015 - v0.18 released!
