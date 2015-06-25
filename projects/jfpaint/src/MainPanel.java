@@ -47,6 +47,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       paintMode.setMaximumRowCount(paintMode.getItemCount());  //default is 8
       rotateImg = new JFImage();
       rotateImg.load(this.getClass().getResourceAsStream("rotate.png"));
+      pixel = new JFImage(1,1);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -877,6 +878,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   public Config config;
   public LayersWindow layers;
   public JFImage rotateImg;
+  public JFImage pixel;
 
   private String configFolder = JF.getUserPath();
   private String configFile = "/.jfpaint.xml";
@@ -1415,7 +1417,11 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     clipBoard = pc.img[pc.getImageLayer()].getPixels(selX1,selY1,cbX,cbY);
     clip.putPixels(clipBoard,0,0,cbX,cbY,0);
     JFClipboard.writeImage(clip.getImage());
-    pc.img[pc.getImageLayer()].fill(selX1,selY1,cbX,cbY,backClr);
+    int layer = pc.getImageLayer();
+    pc.img[layer].fill(selX1,selY1,cbX,cbY,backClr);
+    if (layer > 0) {
+      pc.img[layer].fillAlpha(selX1,selY1,cbX,cbY,0);
+    }
     pc.disableScale = false;
   }
 

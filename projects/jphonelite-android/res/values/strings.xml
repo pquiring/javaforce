@@ -3,19 +3,7 @@
 <resources>
   <string name="main_text1_text">init</string>
   <string name="main_text2_text">init</string>
-  <string name="main_about_text">
-
-jPhoneLite/1.0.1 for ANDROID RELEASE #11<br/>
-Generic VoIP SIP Phone.<br/>
-http://jphonelite.sourceforge.net<br/>
-License : LGPL.<br/>
-Supports : g711, RFC 2833, 6 lines w/ conference, hold, and transfer.
-Conference Mode : Set for each line (up to all 6 lines).
-Ringtone : /sdcard/ringtone.wav (must be 8000Hz, 16bit, mono, PCM)
-Please goto the website for support.<br/>
-By : Peter Quiring (pquiring at gmail dot com).
-
-  </string>
+  <string name="main_about_text">jPhoneLite/1.9.5</string>
   <string name="settings_line_x_prompt">Select Line Config</string>
   <string-array name="line_2">
     <item>Use Settings Below</item>

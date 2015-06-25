@@ -1234,7 +1234,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
           pl.ringback = false;
           pl.ringing = false;
           pl.sdp = sdp;
-          if (reinvite(pl)) return;
+          if (reinvite(pl)) return;  //??? could this cause inf loop ???
         }
       }
       //update RTP data in case reINVITE changes them (or when making progress from 183 to 200)

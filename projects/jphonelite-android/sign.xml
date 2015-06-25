@@ -4,7 +4,7 @@
   <property name="src" location="."/>
   <property name="build" location="."/>
   <property name="home" location="../.."/>
-  <property name="version" value="1.9.5.ar12"/>
+  <property name="version" value="1.9.5-ar12"/>
 
   <target name="depjars">
     <copy file="${home}/jars/bouncycastle.jar" todir="libs"/>
@@ -39,20 +39,25 @@
 
   <target name="all" depends="sign-apk"/>
 
+  <target name="release-bin" depends="" description="create release zip file">
+    <copy file="bin/jphonelite-release.apk" todir="${home}/release" overwrite="true"/>
+  </target>
+
   <target name="release-src" depends="" description="create release zip file">
     <zip destfile="jphonelite-android-src-${version}.zip">
-      <fileset dir="..">
-        <include name="jphonelite-android/**/*"/>
+      <fileset dir="../../..">
+        <include name="jf/projects/jphonelite-android/**/*"/>
+        <include name="jf/jars/bouncycastle.jar"/>
 
-        <exclude name="jphonelite-android/**/*.zip"/>
-        <exclude name="jphonelite-android/**/*.bat"/>
-        <exclude name="jphonelite-android/**/*.key"/>
-        <exclude name="jphonelite-android/bin/**/*"/>
-        <exclude name="jphonelite-android/gen/**/*"/>
+        <exclude name="jf/projects/jphonelite-android/**/*.zip"/>
+        <exclude name="jf/projects/jphonelite-android/libs/*.jar"/>
+        <exclude name="jf/projects/jphonelite-android/**/*.bat"/>
+        <exclude name="jf/projects/jphonelite-android/**/*.key"/>
+        <exclude name="jf/projects/jphonelite-android/bin/**/*"/>
+        <exclude name="jf/projects/jphonelite-android/gen/**/*"/>
       </fileset>
     </zip>
-    <move file="jphonelite-android-src-${version}.zip" todir="/home/pquiring/zips"/>
-    <copy file="whatsnew.txt" tofile="../jphonelite/android-whatsnew.txt"/>
+    <move file="jphonelite-android-src-${version}.zip" todir="${home}/release"/>
   </target>
 
   <target name="javadoc" description="generate java documentation">

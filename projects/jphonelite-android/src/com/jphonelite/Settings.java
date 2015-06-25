@@ -50,6 +50,7 @@ public class Settings implements Cloneable {
   public boolean speakerMode = false;
   public int speakerThreshold = 1000;  //0-32k
   public int speakerDelay = 1250;  //ms (1.25sec = ouch)
+  public boolean reinvite = true;
 
   //for some reason implementing Cloneable didn't work
   public Settings clone() {

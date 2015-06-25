@@ -20,8 +20,7 @@ Run 'ant compile' or 'ant install' or 'ant release'.
 
 Debugging
 ---------
-Run 'adb logcat JPL:I *:S' to view just log output from JPL.
-Other channels : JPLMAIN, JPLSOUND, JPLENGINE
+Run 'adb logcat JAVAFORCE:I *:S' to view just log output from JPL.
 
 http://jphonelite.sourceforge.net
 Peter Quiring (pquiring at gmail dot com)

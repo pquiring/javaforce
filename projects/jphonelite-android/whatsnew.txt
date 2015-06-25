@@ -1,10 +1,13 @@
 ChangeLog
 ---------
-6-24-2015 : jphonelite/1.9.5 - Android Release #12
+6-25-2015 : jphonelite/1.9.5 - Android Release #12
   - major upgrade to JavaForce/9.0
   - min API bumped up to API 10 (Android 2.3.3+)
   - many bugs fixed
   - new codecs added (g711a & g722)
+  - you may notice the APK is now over 1MB (8MB once installed)
+    - that because bouncycastle.jar is required for SRTP but that feature
+      is currently disabled for the Android edition.
 3-1-2013 : jphonelite/1.0.1 - Android Release #11
   - fix : g729a timestamp was incorrect
 11-12-2012 : jphonelite/0.84 - Android Release #10

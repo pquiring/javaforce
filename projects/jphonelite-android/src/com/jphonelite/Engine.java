@@ -962,6 +962,37 @@ public class Engine implements SIPClientInterface, RTPInterface {
     }
   }
 
+  /** Send a reINVITE when the callee returns multiple codecs to select only most prefered codec (if reinvite is enabled). */
+
+  public boolean reinvite(PhoneLine pl) {
+    SDP.Stream astream = pl.sdp.getFirstAudioStream();
+    SDP.Stream vstream = pl.sdp.getFirstVideoStream();
+    int acnt = 0;
+    int vcnt = 0;
+    if (SIP.hasCodec(astream.codecs, RTP.CODEC_G729a)) acnt++;
+    if (SIP.hasCodec(astream.codecs, RTP.CODEC_G711u)) acnt++;
+    if (SIP.hasCodec(astream.codecs, RTP.CODEC_G711a)) acnt++;
+    if (SIP.hasCodec(astream.codecs, RTP.CODEC_G722)) acnt++;
+
+    if (vstream != null) {
+      if (SIP.hasCodec(vstream.codecs, RTP.CODEC_JPEG)) vcnt++;
+      if (SIP.hasCodec(vstream.codecs, RTP.CODEC_H263)) vcnt++;
+      if (SIP.hasCodec(vstream.codecs, RTP.CODEC_H263_1998)) vcnt++;
+      if (SIP.hasCodec(vstream.codecs, RTP.CODEC_H263_2000)) vcnt++;
+      if (SIP.hasCodec(vstream.codecs, RTP.CODEC_H264)) vcnt++;
+      if (SIP.hasCodec(vstream.codecs, RTP.CODEC_VP8)) vcnt++;
+    }
+
+    if ((acnt > 1 || vcnt > 1) && (Settings.current.reinvite)) {
+      //returned more than one audio codec, reinvite with only one codec
+      //do NOT reINVITE from a 183 - server will respond with 491 (request pending) and abort the call
+      pl.localsdp = getLocalSDPAccept(pl);
+      pl.sip.reinvite(pl.callid, pl.localsdp);
+      return true;
+    }
+    return false;
+  }
+
 //SIPClientInterface interface
 
   /** SIPClientInterface : onRegister() : triggered when a SIPClient has successfully or failed to register with server. */
@@ -1003,29 +1034,33 @@ public class Engine implements SIPClientInterface, RTPInterface {
   /** SIPClientInterface : onSuccess() : triggered when an INVITE returns status code 200 (OK). */
 
   public void onSuccess(SIPClient sip, String callid, SDP sdp, boolean complete) {
-    if (!complete) return;
+    if (!complete) {
+      //183 - could start RTP and listen to ringback tone
+      onRinging(sip,callid);
+      return;
+    }
     //is a line trying to do an invite or hold
     for(int a=0;a<6;a++) {
       if (!lines[a].incall) continue;
       if (!lines[a].callid.equals(callid)) continue;
       if (!lines[a].talking) {
-        Codec codecs[] = sdp.getFirstAudioStream().codecs;
-        if (SIP.hasCodec(codecs, RTP.CODEC_G711u) && SIP.hasCodec(codecs, RTP.CODEC_G729a)) {
-          //try to reinvite with one codec
-          lines[a].sip.reinvite(callid, lines[a].localsdp);
+        lines[a].sdp = sdp;
+        if (reinvite(lines[a])) {
+          JFLog.log("reINVITE");
           return;
         }
         lines[a].status = "Connected";
         if (line == a) if (main != null) main._updateScreen();
-        lines[a].sdp = sdp;
         callInviteSuccess(a, sdp);
         lines[a].talking = true;
         lines[a].ringing = false;
         return;
+      } else {
+        //reINVITE accepted (200)
+        lines[a].sdp = sdp;
+        change(a, sdp);
+        return;
       }
-      lines[a].sdp = sdp;
-      change(a, sdp);
-      return;
     }
   }
 
