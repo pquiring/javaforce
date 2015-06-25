@@ -28,7 +28,7 @@ public class RTPJPEG {
     for(int a=0;a<cnt;a++) {
       if (len > mtu) packetLength = mtu; else packetLength = len;
       packets[a] = new byte[packetLength + 12 + 8];  //12=RTP.length 8=rtp_jpeg_header.length
-      RTPChannel.buildHeader(packets[a], RTP.CODEC_JPEG.id, seqnum, timestamp, ssrc);
+      RTPChannel.buildHeader(packets[a], RTP.CODEC_JPEG.id, seqnum, timestamp, ssrc, a == cnt-1);
       buildHeader(packets[a], x, y, offset);
       System.arraycopy(jpeg, offset, packets[a], 12 + 8, packetLength);
       offset += packetLength;
@@ -77,7 +77,7 @@ public class RTPJPEG {
     data[19] = (byte)(y/8);  //height
   }
 
-  //mtu = 1500 - 20(ip) - 8(udp) - 12(rtp) - 8(rtp_jpeg_header) - 14(???) = 1438 bytes payload per packet
+  //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 8(rtp_jpeg_header) = 1438 bytes payload per packet
   private static final int mtu = 1438;
   private int seqnum;
   private int timestamp;

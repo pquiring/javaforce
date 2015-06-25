@@ -12,8 +12,11 @@ Enjoy!
 Compiling
 ---------
 Edit local.properties and make sure sdk.dir matches your Android SDK path.
+Run 'ant -f sign.xml genkeys'
+Run 'ant -f sign.xml depjars'
 Run 'ant compile' or 'ant install' or 'ant release'.
-Then run 'ant -f sign.xml' to sign the release file.
+
+'ant -f sign.xml sign-apk' is no longer needed.
 
 Debugging
 ---------

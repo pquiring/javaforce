@@ -9,7 +9,7 @@ package javaforce.voip;
  int syncsrcid;
  };
  */
-import java.util.*;
+
 import javaforce.*;
 import javaforce.codec.g729a.*;
 
@@ -31,26 +31,18 @@ public class g729a implements Coder {
   //samples must be 160 samples
   public byte[] encode(short samples[]) {
     RTPChannel rtpChannel = rtp.getDefaultChannel();
-    rtpChannel.buildHeader(encoded, 18, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc());
+    rtpChannel.buildHeader(encoded, 18, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
     encoder.encode(encoded, 12, samples, 0, 160 / 80);  //output, outputOffset, input, inputOffset, # 80 samples packets (2)
     return encoded;
   }
 
-  private int getuint32(byte[] data, int offset) {
-    int ret;
-    ret = (int) data[offset + 3] & 0xff;
-    ret += ((int) data[offset + 2] & 0xff) << 8;
-    ret += ((int) data[offset + 1] & 0xff) << 16;
-    ret += ((int) data[offset + 0] & 0xff) << 24;
-    return ret;
-  }
   private int decode_timestamp;
 
   private short decoded[] = new short[160];
 
   //encoded must be 20+12 bytes at least
-  public short[] decode(byte encoded[]) {
-    int decode_timestamp = getuint32(encoded, 4);
+  public short[] decode(byte encoded[], int off) {
+    int decode_timestamp = BE.getuint32(encoded, off + 4);
     if (this.decode_timestamp == 0) {
       this.decode_timestamp = decode_timestamp;
     } else {
@@ -59,7 +51,9 @@ public class g729a implements Coder {
       }
       this.decode_timestamp = decode_timestamp;
     }
-    decoder.decode(decoded, 0, encoded, 12, 20 / 10);
+    decoder.decode(decoded, 0, encoded, off + 12, 20 / 10);
     return decoded;
   }
+
+  public int getSampleRate() {return 8000;}
 }

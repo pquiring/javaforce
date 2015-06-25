@@ -43,11 +43,13 @@ public class Settings implements Cloneable {
   public String dndCodeOff;
   public boolean usePublish = false;
   public static boolean aa, ac;  //not saved
+  public boolean use_g711u = true;  //G.711u (North America)
+  public boolean use_g711a = false;  //G.711a (Europe)
   public boolean use_g729a = false;  //requires super FAST cpu (samsung moment 800Mhz too slow - it uses 20ms just to encode one frame)
+  public boolean use_g722 = false;  //G.722 (16k) HD
   public boolean speakerMode = false;
   public int speakerThreshold = 1000;  //0-32k
   public int speakerDelay = 1250;  //ms (1.25sec = ouch)
-  public static final String TAG = "JPLSETTINGS";
 
   //for some reason implementing Cloneable didn't work
   public Settings clone() {
@@ -64,7 +66,10 @@ public class Settings implements Cloneable {
     c.dndCodeOn = "" + dndCodeOn;
     c.dndCodeOff = "" + dndCodeOff;
     c.usePublish = usePublish;
+    c.use_g711u = use_g711u;
+    c.use_g711a = use_g711a;
     c.use_g729a = use_g729a;
+    c.use_g722 = use_g722;
     c.speakerMode = speakerMode;
     c.speakerThreshold = speakerThreshold;
     c.speakerDelay = speakerDelay;
@@ -88,9 +93,9 @@ public class Settings implements Cloneable {
       SettingsSAX sax = new SettingsSAX();
       Xml.parse(r, sax);
       r.close();
-      Log.i(TAG, "loadSettings successful!");
+      JFLog.log("loadSettings successful!");
     } catch (Exception e) {
-      Log.i(TAG, "loadSettings Exception:", e);
+      JFLog.log("loadSettings Exception:", e);
       current = new Settings();
     }
     //validate config
@@ -99,7 +104,7 @@ public class Settings implements Cloneable {
     }
   }
 
-  private static void write(OutputStream os, String str) throws Exception {
+ private static void write(OutputStream os, String str) throws Exception {
     os.write(str.getBytes());
   }
 
@@ -121,13 +126,16 @@ public class Settings implements Cloneable {
       write(fos, "<dndCodeOn>" + current.dndCodeOn + "</dndCodeOn>");
       write(fos, "<dndCodeOff>" + current.dndCodeOff + "</dndCodeOff>");
       write(fos, "<use_g729a>" + current.use_g729a + "</use_g729a>");
+      write(fos, "<use_g711u>" + current.use_g711u + "</use_g711u>");
+      write(fos, "<use_g711a>" + current.use_g711a + "</use_g711a>");
+      write(fos, "<use_g722>" + current.use_g722 + "</use_g722>");
       write(fos, "<speakerMode>" + current.speakerMode + "</speakerMode>");
       write(fos, "<speakerThreshold>" + current.speakerThreshold + "</speakerThreshold>");
       write(fos, "<speakerDelay>" + current.speakerDelay + "</speakerDelay>");
       write(fos, "</settings>");
       fos.close();
     } catch (Exception e) {
-      Log.i(TAG, "saveSettings:", e);
+      JFLog.log("saveSettings:", e);
     }
   }
 
@@ -225,11 +233,31 @@ public class Settings implements Cloneable {
     }
     return "";
   }
-  //DefaultHandler members
+
+  public String[] getAudioCodecs() {
+    ArrayList<String> list = new ArrayList<String>();
+    if (use_g729a) list.add(RTP.CODEC_G729a.name);
+    if (use_g711u) list.add(RTP.CODEC_G711u.name);
+    if (use_g711a) list.add(RTP.CODEC_G711a.name);
+    if (use_g722) list.add(RTP.CODEC_G722.name);
+    return list.toArray(new String[list.size()]);
+  }
+
+  public boolean hasAudioCodec(Codec codec) {
+    String codecs[] = getAudioCodecs();
+    if (codecs == null) return false;
+    for(int a=0;a<codecs.length;a++) {
+      if (codecs[a].equals(codec.name)) return true;
+    }
+    return false;
+  }
+
+//DefaultHandler members
   private static class SettingsSAX extends DefaultHandler {
     private int line;
     private enum Tag {
-      none, line, dndon, dndoff, same, user, auth, pass, host, g729a, speakerMode, speakerThreshold, speakerDelay
+      none, line, dndon, dndoff, same, user, auth, pass, host, speakerMode, speakerThreshold, speakerDelay,
+      g729a, g711u, g711a, g722
     }
     private Tag tag;
     public void startDocument () {
@@ -247,6 +275,9 @@ public class Settings implements Cloneable {
       if (name.equals("dndCodeOn")) {tag = Tag.dndon; return;}
       if (name.equals("dndCodeOff")) {tag = Tag.dndoff; return;}
       if (name.equals("use_g729a")) {tag = Tag.g729a; return;}
+      if (name.equals("use_g711a")) {tag = Tag.g711a; return;}
+      if (name.equals("use_g711u")) {tag = Tag.g711u; return;}
+      if (name.equals("use_g722")) {tag = Tag.g722; return;}
       if (name.equals("speakerMode")) {tag = Tag.speakerMode; return;}
       if (name.equals("speakerThreshold")) {tag = Tag.speakerThreshold; return;}
       if (name.equals("speakerDelay")) {tag = Tag.speakerDelay; return;}
@@ -280,6 +311,15 @@ public class Settings implements Cloneable {
           break;
         case g729a:
           current.use_g729a = str.equals("true");
+          break;
+        case g711a:
+          current.use_g711a = str.equals("true");
+          break;
+        case g711u:
+          current.use_g711u = str.equals("true");
+          break;
+        case g722:
+          current.use_g722 = str.equals("true");
           break;
         case speakerMode:
           current.speakerMode = str.equals("true");

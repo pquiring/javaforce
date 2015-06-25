@@ -13,6 +13,12 @@ public class PhoneLine {
 
   public boolean incoming; //INVITE (inbound)
 
+  public boolean disableVideo;
+  public boolean srtp;
+  public SIP.Transport transport;
+  public boolean dtls;
+  public boolean rtpStarted;
+
   public String dial = "", status = "";
   public String callid;  //Call-ID in SIP header (not callerid)
   public String orgdial;  //connected dial string
@@ -21,17 +27,20 @@ public class PhoneLine {
 
   public SIPClient sip;
 
-  public RTP rtp;
+  public RTP audioRTP;
+//  public RTP videoRTP;
+  public SDP sdp, localsdp;
+
   public String remotertphost;
   public int remotertpport;
-
-  public Codec codecs[];  //codecs for incoming INVITE
 
   public int clr = -1;
 
   public boolean xfr,hld,dnd,cnf;
 
-  public short samples[] = new short[160];  //used in conference mode only
+  public short samples[];
+  public short samples8[] = new short[160];
+  public short samples16[] = new short[320];
 
   //RFC 2833 - DTMF
   public char dtmf = 'x';

@@ -5,17 +5,17 @@ import java.io.*;
 import java.util.*;
 import java.lang.reflect.Array;
 
-//NOTE : Must contain no data (sizeof(JF) == 0)
 /**
  * A collection of static methods. Many methods help reduce try/catch clutter by
  * returning error codes.
  *
  * @author Peter Quiring
  */
+
 public class JF {
 
   public static String getVersion() {
-    return "6.10.0";
+    return "9.0.0";
   }
 
   public static void sleep(int milli) {

@@ -33,59 +33,71 @@ public class ViewSettings extends Activity {
   }
 
   public void setText(TextView tv, String str) {
-    tv.setText(str.toCharArray(),0,str.length());
+    try {
+      tv.setText(str.toCharArray(),0,str.length());
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public void showView() {
-    setContentView(R.layout.settings);
+    try {
+      setContentView(R.layout.settings);
 
-    global = (Button) findViewById(R.id.settings_global);
-    l1 = (Button) findViewById(R.id.settings_l1);
-    l2 = (Button) findViewById(R.id.settings_l2);
-    l3 = (Button) findViewById(R.id.settings_l3);
-    l4 = (Button) findViewById(R.id.settings_l4);
-    l5 = (Button) findViewById(R.id.settings_l5);
-    l6 = (Button) findViewById(R.id.settings_l6);
+      global = (Button) findViewById(R.id.settings_global);
+      l1 = (Button) findViewById(R.id.settings_l1);
+      l2 = (Button) findViewById(R.id.settings_l2);
+      l3 = (Button) findViewById(R.id.settings_l3);
+      l4 = (Button) findViewById(R.id.settings_l4);
+      l5 = (Button) findViewById(R.id.settings_l5);
+      l6 = (Button) findViewById(R.id.settings_l6);
 
-    global.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        startActivity(new Intent(ViewSettings.this, ViewGlobal.class));
-      }
-    });
-    l1.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        selectLine(0);
-      }
-    });
-    l2.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        selectLine(1);
-      }
-    });
-    l3.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        selectLine(2);
-      }
-    });
-    l4.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        selectLine(3);
-      }
-    });
-    l5.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        selectLine(4);
-      }
-    });
-    l6.setOnClickListener(new View.OnClickListener() {
-      public void onClick(View v) {
-        selectLine(5);
-      }
-    });
+      global.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+          startActivity(new Intent(ViewSettings.this, ViewGlobal.class));
+        }
+      });
+      l1.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+          selectLine(0);
+        }
+      });
+      l2.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+          selectLine(1);
+        }
+      });
+      l3.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+          selectLine(2);
+        }
+      });
+      l4.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+          selectLine(3);
+        }
+      });
+      l5.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+          selectLine(4);
+        }
+      });
+      l6.setOnClickListener(new View.OnClickListener() {
+        public void onClick(View v) {
+          selectLine(5);
+        }
+      });
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public void selectLine(int newline) {
-    line = newline;
-    startActivity(new Intent(this, ViewLine.class));
+    try {
+      line = newline;
+      startActivity(new Intent(this, ViewLine.class));
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 }

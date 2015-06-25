@@ -5,5 +5,6 @@ package javaforce.voip;
  */
 public interface Coder {
   public byte[] encode(short src16[]);
-  public short[] decode(byte src8[]);
+  public short[] decode(byte src8[], int off);
+  public int getSampleRate();
 }

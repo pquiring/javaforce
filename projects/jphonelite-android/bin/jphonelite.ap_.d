@@ -1,75 +1,75 @@
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\jphonelite.ap_ \
- : c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\black.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\green.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\grey.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\ic_main.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\ic_menu_close_clear_cancel.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\ic_menu_info_details.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\ic_menu_preferences.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\orange.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_0.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_1.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_2.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_3.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_4.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_5.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_6.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_7.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_8.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_9.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_contacts.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_del.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_green.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_pound.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_red.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\phone_star.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\red.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\sel_black.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\sel_green.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\sel_grey.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\sel_orange.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\sel_red.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\spk_green.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\spk_grey.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\drawable\spk_red.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\layout\global.xml \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\layout\line1.xml \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\layout\linex.xml \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\layout\main.xml \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\layout\settings.xml \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\menu\main.xml \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\res\values\strings.xml \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\black.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\green.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\grey.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\ic_main.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\ic_menu_close_clear_cancel.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\ic_menu_info_details.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\ic_menu_preferences.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\orange.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_0.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_1.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_2.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_3.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_4.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_5.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_6.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_7.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_8.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_9.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_contacts.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_del.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_green.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_pound.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_red.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_star.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\red.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\sel_black.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\sel_green.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\sel_grey.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\sel_orange.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\sel_red.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\spk_green.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\spk_grey.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\res\drawable\spk_red.png \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\AndroidManifest.xml \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\jphonelite.ap_ \
+ : C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\black.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\green.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\grey.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\ic_main.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\ic_menu_close_clear_cancel.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\ic_menu_info_details.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\ic_menu_preferences.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\orange.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_0.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_1.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_2.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_3.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_4.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_5.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_6.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_7.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_8.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_9.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_contacts.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_del.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_green.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_pound.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_red.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\phone_star.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\red.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\sel_black.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\sel_green.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\sel_grey.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\sel_orange.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\sel_red.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\spk_green.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\spk_grey.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\drawable\spk_red.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\layout\global.xml \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\layout\line1.xml \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\layout\linex.xml \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\layout\main.xml \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\layout\settings.xml \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\menu\main.xml \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\res\values\strings.xml \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\black.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\green.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\grey.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\ic_main.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\ic_menu_close_clear_cancel.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\ic_menu_info_details.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\ic_menu_preferences.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\orange.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_0.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_1.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_2.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_3.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_4.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_5.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_6.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_7.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_8.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_9.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_contacts.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_del.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_green.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_pound.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_red.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\phone_star.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\red.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\sel_black.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\sel_green.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\sel_grey.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\sel_orange.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\sel_red.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\spk_green.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\spk_grey.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\res\drawable\spk_red.png \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\AndroidManifest.xml \

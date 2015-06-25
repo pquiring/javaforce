@@ -14,4 +14,8 @@ public class Codec {
     this.name = name;
     this.id = id;
   }
+
+  public boolean equals(Codec other) {
+    return name.equals(other.name);
+  }
 }

@@ -2,63 +2,70 @@ package javaforce.voip;
 
 import java.net.*;
 import java.util.*;
+
 import javaforce.*;
 
 /**
  * Handles sending/receiving RTP packets.
  */
 
-public class RTP {
-
+public class RTP implements STUN.Listener {
   private static int nextlocalrtpport = 32768;
   private static int rtpmin = 32768;
   private static int rtpmax = 65536;
   protected DatagramSocket sock1, sock2;
   private Worker worker1, worker2;  //inbound Workers
   private int localrtpport;
-  protected volatile boolean active = false;
-  private boolean used;
-  protected String remoteip;
-  protected int remoteport;
-  private volatile boolean hold = false;
-  private final int bufcnt = 12;
-  private SamplesBuffer buffer = new SamplesBuffer(8000);
-  private DTMF dtmf = new DTMF();
-  private Object lockBuffers = new Object();
-  protected Object lockHostPort = new Object();
-  private short silence[] = new short[160];
-  private RTPInterface iface;
+  public volatile boolean active = false;
+  protected RTPInterface iface;
   private int mtu = 1500;  //max size of packet
-  private RTPChannel rtpChannel;
-  private boolean rawMode;
-//  private Codec codecs[];
-  //dynnamic codec payload ids
-  private int rfc2833_id = -1;
-  private int h264_id = -1;
-  public Object rtmp;  //used by RTMP2SIPServer
+  protected boolean rawMode;
+  public Vector<RTPChannel> channels = new Vector<RTPChannel>();
+  public static long now = 0;  //this is copied into each RTPChannel as it receives packets
+  private static boolean hasBouncyCastle;
+
+  //TURN related data
+  protected static boolean useTURN = false;
+  protected static String turnHost, turnIP, turnUser, turnPass;
+  protected STUN stun1, stun2;
+  protected byte turnToken[];
+  protected long turnAllocExpires;
+
   public Object userobj;  //free to use
   public static boolean debug = false;  //set to true and recompile to get a lot of output
   public final static Codec CODEC_UNKNOWN = new Codec("?", -1);
-  public final static Codec CODEC_G711u = new Codec("PCMU", 0);
-  public final static Codec CODEC_G711a   = new Codec("PCMA", 8);
-  public final static Codec CODEC_G729a = new Codec("G729", 18);
-  public final static Codec CODEC_JPEG = new Codec("JPEG", 26);
-  public final static Codec CODEC_H263 = new Codec("H263", 34);  //patent encumbered
-  public final static Codec CODEC_RFC2833 = new Codec("telephone-event", 101);  //dynamic : usually 100 or 101
-  public final static Codec CODEC_H264 = new Codec("H264", 96);  //patent encumbered
-  public final static Codec CODEC_FLV = new Codec("FLV", 97);  //obsolete  //patent encumbered
-  public Coder coder_g711u, coder_g711a, coder_g729a;
-  public Coder coder;  //selected audio encoder
+  public final static Codec CODEC_G711u = new Codec("PCMU", 0);  //patent expired
+  public final static Codec CODEC_G711a = new Codec("PCMA", 8);  //patent expired
+  public final static Codec CODEC_G722 = new Codec("G722", 9);  //patent expired
+  public final static Codec CODEC_G729a = new Codec("G729", 18);  //patent encumbered
+  public final static Codec CODEC_JPEG = new Codec("JPEG", 26);  //public domain
+  public final static Codec CODEC_H263 = new Codec("H263", 34);  //patent expired
+  //dynamic ids (96-127)
+  public final static Codec CODEC_VP8 = new Codec("VP8", 96);  //open source (Google!)
+  public final static Codec CODEC_H264 = new Codec("H264", 97);  //patent encumbered
+  public final static Codec CODEC_H263_1998 = new Codec("H263-1998", 98);  //patent expired
+  public final static Codec CODEC_H263_2000 = new Codec("H263-2000", 99);  //patent expired
+  public final static Codec CODEC_RFC2833 = new Codec("telephone-event", 100);
 
-  /**
-   * Returns a packet of decoded samples.
-   */
-  public boolean getSamples(short data[]) {
-    return buffer.get(data, 0, 160);
+  static {
+    try {
+      Class.forName("org.bouncycastle.crypto.tls.TlsServer");
+      hasBouncyCastle = true;
+    } catch (Exception e) {
+//      JFLog.log(e);
+      JFLog.log("Warning:BouncyCastle not found, SRTP/DTLS not available");
+    }
   }
 
-  private void addSamples(short data[]) {
-    buffer.add(data, 0, 160);
+  public static void enableTURN(String host, String user, String pass) {
+    useTURN = true;
+    turnHost = host;
+    turnUser = user;
+    turnPass = pass;
+  }
+
+  public static void disableTURN() {
+    useTURN = false;
   }
 
   public static synchronized int getnextlocalrtpport() {
@@ -71,37 +78,130 @@ public class RTP {
   }
 
   public int getlocalrtpport() {
-    return localrtpport;
+    if (useTURN) {
+      return stun1.getPort();
+    } else {
+      return localrtpport;
+    }
   }
 
-  public String getremoteip() {
-    return remoteip;
+  private boolean turnSuccess;
+  private boolean turnFailed;
+  protected volatile RTPChannel bindingChannel;
+  protected final Object bindLock = new Object();
+
+  //public interface STUN.Listener
+  public void stunPublicIP(STUN stun, String ip, int port) {}
+  public void turnAlloc(STUN stun, String ip, int port, byte token[], int lifetime) {
+    turnToken = token;
+    turnSuccess = true;
+    turnIP = ip;  //static - should be the same for all allocations
+    //lifetime = 600 (typically)
+    turnAllocExpires = System.currentTimeMillis() + (lifetime * 1000);
+  }
+  public void turnBind(STUN stun) {
+    turnSuccess = true;
+    //not sure why Xlite does rebind early (RFC says 10mins)
+    bindingChannel.turnBindExpires = System.currentTimeMillis() + (300 * 1000);
+  }
+  public void turnRefresh(STUN stun, int lifetime) {
+    turnAllocExpires = System.currentTimeMillis() + (lifetime * 1000);
+  }
+  public void turnFailed(STUN stun) {
+    turnFailed = true;
+  }
+  public void turnData(STUN stun, byte data[], int offset, int length, short turnChannel) {
+    RTPChannel channel = findChannel(turnChannel);
+    if (channel == null) return;
+    if (stun == stun1) {
+      channel.processRTP(data, offset, length);
+    } else if (stun == stun2) {
+      channel.processRTCP(data, offset, length);
+    }
   }
 
-  public int getremoteport() {
-    return remoteport;
+  protected void wait4reset() {
+    turnSuccess = false;
+    turnFailed = false;
+  }
+
+  protected void wait4reply() throws Exception {
+    for(int a=0;a<100;a++) {
+      JF.sleep(10);
+      if (turnFailed) throw new Exception("Turn failed");
+      if (turnSuccess) return;
+    }
+    throw new Exception("Turn timeout");
+  }
+
+  /** For testing only */
+  public boolean init(RTPInterface iface, int port) {
+    this.iface = iface;
+    try {
+      localrtpport = port;
+      if (useTURN) {
+        //alloc TURN relay
+        wait4reset();
+        stun1 = new STUN();
+        if (!stun1.start(localrtpport, turnHost, turnUser, turnPass, this)) throw new Exception("STUN init failed");
+        stun1.requestAlloc(true, null);
+        wait4reply();
+        if (turnToken == null) throw new Exception("Turn token missing");
+        JFLog.log("RTP:TURN:host=" + stun1.getIP());
+        JFLog.log("RTP:TURN:port=" + stun1.getPort());
+        wait4reset();
+        stun2 = new STUN();
+        if (!stun2.start(localrtpport + 1, turnHost, turnUser, turnPass, this)) throw new Exception("STUN init failed");
+        stun2.requestAlloc(false, turnToken);
+        wait4reply();
+        JFLog.log("RTP:TURN:host=" + stun2.getIP());
+        JFLog.log("RTP:TURN:port=" + stun2.getPort());
+      } else {
+        sock1 = new DatagramSocket(localrtpport);
+        sock2 = new DatagramSocket(localrtpport + 1);
+      }
+      JFLog.log("RTP:localport=" + localrtpport);
+    } catch (Exception e2) {
+      JFLog.log(e2);
+      return false;
+    }
+    return true;
   }
 
   public boolean init(RTPInterface iface) {
     this.iface = iface;
-    do {
+    for(int a=0;a<5;a++) {
       try {
         localrtpport = getnextlocalrtpport();
-        sock1 = new DatagramSocket(localrtpport);
-        sock2 = new DatagramSocket(localrtpport + 1);
+        if (useTURN) {
+          //alloc TURN relay
+          wait4reset();
+          stun1 = new STUN();
+          if (!stun1.start(localrtpport, turnHost, turnUser, turnPass, this)) throw new Exception("STUN init failed");
+          stun1.requestAlloc(true, null);
+          wait4reply();
+          if (turnToken == null) throw new Exception("Turn token missing");
+          JFLog.log("RTP:TURN:host=" + stun1.getIP());
+          JFLog.log("RTP:TURN:port=" + stun1.getPort());
+          wait4reset();
+          stun2 = new STUN();
+          if (!stun2.start(localrtpport + 1, turnHost, turnUser, turnPass, this)) throw new Exception("STUN init failed");
+          stun2.requestAlloc(false, turnToken);
+          wait4reply();
+          JFLog.log("RTP:TURN:host=" + stun2.getIP());
+          JFLog.log("RTP:TURN:port=" + stun2.getPort());
+        } else {
+          sock1 = new DatagramSocket(localrtpport);
+          sock2 = new DatagramSocket(localrtpport + 1);
+        }
+        JFLog.log("RTP:localport=" + localrtpport);
       } catch (Exception e2) {
+        JFLog.log(e2);
         continue;
       }
-      break;
-    } while (true);
-    return true;
-  }
-
-  public boolean init(RTPInterface iface, DatagramSocket sock1, DatagramSocket sock2) {
-    this.iface = iface;
-    this.sock1 = sock1;
-    this.sock2 = sock2;
-    return true;
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -114,123 +214,25 @@ public class RTP {
     this.mtu = mtu;
   }
 
+  Random r = new Random();
+  protected short getNextTURNChannel() {
+    return (short)(r.nextInt(0x7ffe - 0x4000) + 0x4000);
+  }
+
   /**
    * Starts RTP session.
    */
-  public synchronized boolean start(String remote, int remoteport, Codec codecs[], boolean video) {
-//    this.codecs = codecs;
-    coder = null;
-    JFLog.log("RTP.start() : localhost:" + localrtpport + " remote=" + remote + ":" + remoteport);
-    if ((codecs != null) && (codecs.length > 0)) {
-      Codec codec_rfc2833 = SIP.getCodec(codecs, CODEC_RFC2833);
-      if (codec_rfc2833 != null) {
-        rfc2833_id = codec_rfc2833.id;
-      }
-      Codec codec_h264 = SIP.getCodec(codecs, CODEC_H264);
-      if (codec_h264 != null) {
-        h264_id = codec_h264.id;
-      }
-      coder_g711u = new g711u(this);
-      coder_g711a = new g711a(this);
-      coder_g729a = new g729a(this);
-      if (!video) {
-        if (SIP.hasCodec(codecs, CODEC_G711u)) {
-          coder = coder_g711u;
-          JFLog.log("codec = g711u");
-          try {
-            sock1.setSendBufferSize(12 + 160);
-          } catch (Exception e) {
-          }
-        } else if (SIP.hasCodec(codecs, CODEC_G711a)) {
-          coder = coder_g711a;
-          JFLog.log("codec = g711a");
-          try {
-            sock1.setSendBufferSize(12 + 160);
-          } catch (Exception e) {
-          }
-        } else if (SIP.hasCodec(codecs, CODEC_G729a)) {
-          JFLog.log("codec = g729a");
-          coder = coder_g729a;
-          try {
-            sock1.setSendBufferSize(12 + 20);
-          } catch (Exception e) {
-          }
-        } else {
-          JFLog.log("RTP.start() : Warning : no compatible audio codec selected");
-        }
-      } else {
-        if (SIP.hasCodec(codecs, CODEC_H263)) {
-          JFLog.log("codec = H.263");
-        } else if (SIP.hasCodec(codecs, CODEC_JPEG)) {
-          JFLog.log("codec = JPEG");
-        } else if (SIP.hasCodec(codecs, CODEC_H264)) {
-          JFLog.log("codec = H.264");
-        } else {
-          JFLog.log("RTP.start() : Warning : no compatible video codec selected");
-        }
-      }
-    } else {
-      JFLog.log("RTP:Error:No codecs provided");
-    }
-    //TODO : send something on localrtpport+1 (RTCP)
-    remoteip = SIP.resolve(remote);
-    this.remoteport = remoteport;
+  public boolean start() {
+    now = System.currentTimeMillis();
     if (active) {
       return true;
     }
     active = true;
-    worker1 = new Worker(sock1, false);
-    worker1.start();
-    worker2 = new Worker(sock2, true);
-    worker2.start();
-    return true;
-  }
-
-  /**
-   * Sets raw mode<br> Packets are not decoded, they are passed directly thru
-   * RTPInterface.rtpPacket()<br> This is used by PBX to relay RTP packets
-   * between call originator and terminator.<br>
-   */
-  public void setRawMode(boolean state) {
-    this.rawMode = state;
-  }
-
-  /**
-   * Returns current raw mode
-   */
-  public boolean getRawMode() {
-    return rawMode;
-  }
-
-  /**
-   * Changes the remotehost/port for this RTP session. Could occur in a SIP
-   * reINVITE.
-   */
-  public boolean change(String remote, int remoteport) {
-    synchronized (lockHostPort) {
-      try {
-        remoteip = SIP.resolve(remote);
-      } catch (Exception e) {
-        return false;
-      }
-      this.remoteport = remoteport;
-    }
-    return true;
-  }
-
-  /**
-   * Changes codecs. Could occur in a SIP reINVITE.
-   */
-  public boolean change(Codec codecs[]) {
-    if (SIP.hasCodec(codecs, CODEC_G711u)) {
-//      try { sock1.setSendBufferSize(12 + 160); } catch (Exception e) {}  //crashes on reINVITE?
-      coder = coder_g711u;
-    } else if (SIP.hasCodec(codecs, CODEC_G711a)) {
-//      try { sock1.setSendBufferSize(12 + 160); } catch (Exception e) {}  //crashes on reINVITE?
-      coder = coder_g711a;
-    } else if (SIP.hasCodec(codecs, CODEC_G729a)) {
-//      try { sock1.setSendBufferSize(12 + 20); } catch (Exception e) {}  //crashes on reINVITE?
-      coder = coder_g729a;
+    if (!useTURN) {
+      worker1 = new Worker(sock1, false);
+      worker1.start();
+      worker2 = new Worker(sock2, true);
+      worker2.start();
     }
     return true;
   }
@@ -245,6 +247,18 @@ public class RTP {
     active = false;
     closeSockets();
     freeWorkers();
+    if (useTURN) {
+      if (stun1 != null) {
+        stun1.requestRefresh(0);
+        stun1.close();
+        stun1 = null;
+      }
+      if (stun2 != null) {
+        stun2.requestRefresh(0);
+        stun2.close();
+        stun2 = null;
+      }
+    }
   }
 
   private void freeWorkers() {
@@ -291,45 +305,75 @@ public class RTP {
   }
 
   /**
-   * Places RTP session in hold state.
-   */
-  public void hold(boolean state) {
-    hold = state;
-  }
-
-  /**
-   * Returns if RTP session is on hold.
-   */
-  public boolean getHold() {
-    return hold;
-  }
-
-  /**
    * Create a new RTP channel with a random ssrc id.
    */
-  public RTPChannel createChannel() {
-    return new RTPChannel(this, -1);
+  public RTPChannel createChannel(SDP.Stream stream) {
+    return createChannel(-1, stream);
   }
 
   /**
    * Create a new RTP channel with a specified ssrc id.
    */
-  public RTPChannel createChannel(int ssrc) {
-    return new RTPChannel(this, ssrc);
+  public RTPChannel createChannel(int ssrc, SDP.Stream stream) {
+    JFLog.log("RTP.createChannel()" + stream.getIP() + ":" + stream.port);
+    RTPChannel channel = null;
+    switch (stream.profile) {
+      case AVP:
+      case AVPF:
+        channel = new RTPChannel(this, ssrc, stream);
+        break;
+      case SAVP:
+      case SAVPF:
+        if (!hasBouncyCastle) {
+          JFLog.log("RTP:Couldn't create SRTPChannel");
+          return null;
+        }
+        channel = new SRTPChannel(this, ssrc, stream);
+        break;
+      case UNKNOWN:
+        JFLog.log("RTP:Can not create unknown profile");
+        return null;
+    }
+    channels.add(channel);
+    return channel;
+  }
+
+  /** Remote RTPChannel */
+  public void removeChannel(RTPChannel channel) {
+    channels.remove(channel);
   }
 
   /**
    * Returns default RTP channel.
    */
-  public synchronized RTPChannel getDefaultChannel() {
-    if (rtpChannel == null) {
-      rtpChannel = createChannel();
+  public RTPChannel getDefaultChannel() {
+    if (channels.size() == 0) return null;
+    return channels.get(0);
+  }
+
+  public RTPChannel findChannel(short turnChannel) {
+    for(int a=0;a<channels.size();a++) {
+      RTPChannel channel = channels.get(a);
+      if (!channel.active) continue;
+      if (channel.turn1ch == turnChannel) return channel;
+      if (channel.turn2ch == turnChannel) return channel;
     }
-    return rtpChannel;
+    return null;
+  }
+
+  public RTPChannel findChannel(String ip, int port) {
+    for(int a=0;a<channels.size();a++) {
+      RTPChannel channel = channels.get(a);
+      if (!channel.active) continue;
+      if (channel.stream.getIP().equals(ip) && (channel.stream.port == -1 || channel.stream.port == port)) {
+        return channel;
+      }
+    }
+    return null;
   }
 
   /**
-   * Sets global RTP port range to use (should be set before during init).
+   * Sets global RTP port range to use (should be set before calling init()).
    */
   public static void setPortRange(int min, int max) {
     rtpmin = min;
@@ -344,8 +388,6 @@ public class RTP {
 
     private DatagramSocket sock;
     private boolean rtcp;
-    private char dtmfChar;
-    private boolean dtmfSent = false;
 
     public Worker(DatagramSocket sock, boolean rtcp) {
       this.sock = sock;
@@ -362,89 +404,27 @@ public class RTP {
           if (len < 12) {
             continue;
           }
-          String remote = pack.getAddress().getHostAddress();
-          if (!rtcp) {
-            if (remoteport == -1) {
-              remoteport = pack.getPort();  //NATing
-              JFLog.log("RTP : NAT port = " + remoteport);
-            }
-            //TODO : validate remote.substring(idx+1), pack.getPort() are from trusted source
-            if (rawMode) {
-              iface.rtpPacket(RTP.this, false, data, 0, len);
+          String remoteip = pack.getAddress().getHostAddress();
+          int remoteport = pack.getPort();
+//          JFLog.log("RTP:receive:" + remoteip + ":" + remoteport);  //test
+          if (rtcp) {
+            RTPChannel channel = findChannel(remoteip, remoteport-1);
+            if (channel == null) {
+              JFLog.log("RTP:No channel found:" + remoteip + ":" + remoteport);
               continue;
             }
-            int id = data[1] & 0x7f;  //payload id
-            if (id < 96) {
-              switch (id) {
-                case 0:
-                  dtmfSent = false;  //just in case end of dtmf was not received
-                  if (len != 160 + 12) {
-                    JFLog.log("RTP:Bad g711u length");
-                    break;
-                  }
-                  addSamples(coder_g711u.decode(data));
-                  iface.rtpSamples(RTP.this);
-                  break;
-                case 8:
-                  dtmfSent = false;  //just in case end of dtmf was not received
-                  if (len != 160 + 12) {
-                    JFLog.log("RTP:Bad g711a length");
-                    break;
-                  }
-                  addSamples(coder_g711a.decode(data));
-                  iface.rtpSamples(RTP.this);
-                  break;
-                case 18:
-                  dtmfSent = false;  //just in case end of dtmf was not received
-                  if (len != 20 + 12) {
-                    JFLog.log("RTP:Bad g729a length");
-                    break;
-                  }
-                  addSamples(coder_g729a.decode(data));
-                  iface.rtpSamples(RTP.this);
-                  break;
-                case 26:
-                  iface.rtpJPEG(RTP.this, data, 0, len);
-                  break;
-                case 34:
-                  iface.rtpH263(RTP.this, data, 0, len);
-                  break;
-              }
-            } else {
-              if (id == rfc2833_id) {
-                dtmfChar = ' ';
-                if ((data[12] >= 0) && (data[12] <= 9)) {
-                  dtmfChar = (char) ('0' + data[12]);
-                }
-                if (data[12] == 10) {
-                  dtmfChar = '*';
-                }
-                if (data[12] == 11) {
-                  dtmfChar = '#';
-                }
-                if (data[13] < 0) {   //0x80 == end of dtmf
-                  dtmfSent = false;
-                  dtmfChar = ' ';
-                }
-                if (dtmfChar == ' ') {
-                  addSamples(silence);
-                } else {
-                  addSamples(dtmf.getSamples(dtmfChar));
-                  if (!dtmfSent) {
-                    iface.rtpDigit(RTP.this, dtmfChar);
-                    dtmfSent = true;
-                  }
-                }
-              } else if (id == h264_id) {
-                iface.rtpH264(RTP.this, data, 0, len);
-              }
-            }
+            channel.processRTCP(data, 0, len);
           } else {
-            if (rawMode) {
-              iface.rtpPacket(RTP.this, true, data, 0, len);
+            RTPChannel channel = findChannel(remoteip, remoteport);
+            if (channel == null) {
+              JFLog.log("RTP:No channel found:" + remoteip + ":" + remoteport);
+              continue;
             }
-            //TODO : RTCP ???
-            break;
+            if (channel.stream.port == -1) {
+              channel.stream.port = remoteport;  //NATing
+              JFLog.log("RTP : NAT port = " + channel.stream.getPort());
+            }
+            channel.processRTP(data, 0, len);
           }
         } catch (SocketException e) {
           if (active) {
@@ -457,5 +437,71 @@ public class RTP {
         }
       }
     }
+  }
+
+  /** Keep Alive - call every 30 seconds to keep active. */
+  public void keepalive() {
+    if (!active) return;
+    now = System.currentTimeMillis();
+    //do refreshes a little sooner (75 seconds) (in case nonce changes)
+    if (useTURN && (now + 75 * 1000) > turnAllocExpires) {
+      //request another 10 mins
+      stun1.requestRefresh(600);
+      stun2.requestRefresh(600);
+    }
+    for(int a=0;a<channels.size();a++) {
+      RTPChannel channel = channels.get(a);
+      channel.keepalive(now);
+    }
+  }
+  /**
+   * Sets raw mode<br> Packets are not decoded, they are passed directly thru
+   * RTPInterface.rtpPacket()<br> This is used by PBX to relay RTP packets
+   * between call originator and terminator.<br>
+   */
+  public void setRawMode(boolean state) {
+    this.rawMode = state;
+  }
+
+  /**
+   * Returns current raw mode
+   */
+  public boolean getRawMode() {
+    return rawMode;
+  }
+
+  public static String getTurnIP() {
+    return turnIP;
+  }
+
+  public static String genIceufrag() {
+    StringBuilder sb = new StringBuilder();
+    Random r = new Random();
+    for(int a=0;a<16;a++) {
+      sb.append((char)('a' + r.nextInt(26)));
+    }
+    return sb.toString();
+  }
+
+  public static String genIcepwd() {
+    StringBuilder sb = new StringBuilder();
+    Random r = new Random();
+    for(int a=0;a<16;a++) {
+      sb.append((char)('a' + r.nextInt(26)));
+    }
+    return sb.toString();
+  }
+
+  public void setInterface(RTPInterface iface) {
+    this.iface = iface;
+  }
+
+  public String toString() {
+    int remoteport = -1;
+    RTPChannel channel = getDefaultChannel();
+    if (channel != null) {
+      remoteport = channel.getremoteport();
+    }
+    return "RTP:{localport=" + localrtpport + ",remoteport=" + remoteport + ",mode=" + rawMode + "}";
   }
 }

@@ -6,11 +6,24 @@ import javaforce.*;
 
 /**
  * Base class for SIP communications. Opens the UDP port and passes any received
- * packets thru the SIPInterface.<br> Known derivates : SIPClient, SIPServer.
+ * packets thru the SIPInterface.
+ * Direct Known subclasses : SIPClient, SIPServer.
+ * RFC 3261 (2543) - SIP
+ * See also:
+ * http://www.iana.org/assignments/sip-parameters/sip-parameters.xhtml#sip-parameters-2
  */
+
 public abstract class SIP {
 
-  private DatagramSocket sock;
+  public static class Packet {
+    public byte data[];
+    public int length;
+    public int port;
+    public String host;
+  }
+
+  public enum Transport {UDP, TCP, TLS};
+
   private Worker worker;
   private SIPInterface iface;
   private boolean active = true;
@@ -18,49 +31,62 @@ public abstract class SIP {
   private String tupleid;
   private Random r = new Random();
   private boolean server;
+  protected SIPTransport transport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
 
   /**
-   * Opens the UDP port and sets the SIPInterface callback.
+   * Opens the transport and sets the SIPInterface callback.
    */
-  protected boolean init(int port, SIPInterface iface, boolean server) throws Exception {
+  protected boolean init(int port, SIPInterface iface, boolean server, Transport type) throws Exception {
     rinstance = null;
     this.iface = iface;
     this.server = server;
-    sock = new DatagramSocket(port);
+    switch (type) {
+      case UDP:
+        transport = new SIPUDPTransport();
+        break;
+      case TCP:
+        if (server)
+          transport = new SIPTCPTransportServer();
+        else
+          transport = new SIPTCPTransportClient();
+        break;
+      case TLS:
+        if (server)
+          transport = new SIPTLSTransportServer();
+        else
+          transport = new SIPTLSTransportClient();
+        break;
+    }
+    if (!transport.open(port)) return false;
     worker = new Worker();
     worker.start();
     return true;
   }
 
   /**
-   * Closes the UDP port and frees and resources.
+   * Closes the UDP port and frees resources.
    */
   protected void uninit() {
-    if (sock == null) {
+    if (transport == null) {
       return;
     }
     active = false;
-    sock.close();
+    transport.close();
     try {
       worker.join();
     } catch (Exception e) {
     }
-    sock = null;
+    transport = null;
     worker = null;
   }
 
   /**
    * Sends a packet out on the UDP port.
    */
-  protected boolean send(String remote, int remoteport, String datastr) {
+  protected boolean send(InetAddress remote, int remoteport, String datastr) {
     byte data[] = datastr.getBytes();
-    try {
-      sock.send(new DatagramPacket(data, data.length, InetAddress.getByName(remote), remoteport));
-      return true;
-    } catch (Exception e) {
-    }
-    return false;
+    return transport.send(data, 0, data.length, remote, remoteport);
   }
 
   /**
@@ -69,6 +95,9 @@ public abstract class SIP {
   public static String[] split(String x) {
     //x = "display name" <sip:user@host ;...   >  ;...
     //return:    [0]          [1]  [2] [flgs1][:][flgs2]
+    if (x == null) {
+      return new String[] {"null", "null", "null"};
+    }
     ArrayList<String> parts = new ArrayList<String>();
     int i1, i2;
     String x1, x2;
@@ -147,6 +176,9 @@ public abstract class SIP {
   public static String join(String x[]) {
     //x = "display name" <sip:user@host ;...  > ;...
     //return:    [0]          [1]  [2]  [...][:][...]
+    if (x == null) {
+      return "\"null\"<sip:null@null>";
+    }
     StringBuffer buf = new StringBuffer();
     buf.append('\"');
     buf.append(x[0]);
@@ -184,7 +216,7 @@ public abstract class SIP {
       return "";
     }
     i++;
-    for (i = 0; i < fields.length; i++) {
+    for (; i < fields.length; i++) {
       if (fields[i].startsWith(flg)) {
         return fields[i].substring(flg.length());
       }
@@ -221,9 +253,24 @@ public abstract class SIP {
 
   /**
    * Returns a random SIP branch id.
+   * TODO : Implement RFC 3261 section 8.1.1.7 (z9hG4bK)
    */
-  protected String getbranch() {
+  public String getbranch() {
     return String.format("z123456-y12345-%x%x-1--d12345-", r.nextInt(), r.nextInt());
+  }
+
+  /** Returns branch in first Via line */
+  protected String getbranch(String msg[]) {
+    String vias[] = getvialist(msg);
+    if (vias == null || vias.length == 0) return null;
+    //Via: SDP/2.0/UDP host:port;branch=...;rport;...
+    String f[] = vias[0].split(";");
+    for(int a=0;a<f.length;a++) {
+      if (f[a].startsWith("branch=")) {
+        return f[a].substring(7);
+      }
+    }
+    return null;
   }
 
   /**
@@ -245,12 +292,13 @@ public abstract class SIP {
   protected String[] getvialist(String msg[]) {
     ArrayList<String> vialist = new ArrayList<String>();
     for (int a = 0; a < msg.length; a++) {
-      if (msg[a].regionMatches(true, 0, "Via:", 0, 4)) {
-        vialist.add(msg[a]);
+      String ln = msg[a];
+      if (ln.regionMatches(true, 0, "Via:", 0, 4)) {
+        vialist.add(ln);
         continue;
       }
-      if (msg[a].regionMatches(true, 0, "v:", 0, 2)) {
-        vialist.add(msg[a]);
+      if (ln.regionMatches(true, 0, "v:", 0, 2)) {
+        vialist.add(ln);
         continue;
       }
     }
@@ -383,10 +431,29 @@ public abstract class SIP {
   }
 
   /**
+   * Returns the 'tag' field from 'fields'.
+   */
+  public static String gettag(String fields[]) {
+    boolean seperator = false;
+    for (int i = 3; i < fields.length; i++) {
+      if (!seperator) {
+        if (fields[i].equals(":")) {
+          seperator = true;
+        }
+        continue;
+      }
+      if (fields[i].startsWith("tag=")) {
+        return fields[i].substring(4);
+      }
+    }
+    return null;  //no tag found
+  }
+
+  /**
    * Returns a random callid for a SIP message (a unique id for each call, not
    * to be confused with caller id).
    */
-  protected String getcallid() {
+  public String getcallid() {
     return String.format("%x%x", r.nextInt(), System.currentTimeMillis());
   }
 
@@ -405,15 +472,16 @@ public abstract class SIP {
   }
 
   /**
-   * Returns string name of codec based on payload id (except dynamic ids
-   * 96-127).
+   * Returns string name of codec based on payload id (except dynamic ids 96-127).
    */
-  private String getCodecName(int id) {
+  private static String getCodecName(int id) {
     switch (id) {
       case 0:
         return "PCMU";
       case 8:
         return "PCMA";
+      case 9:
+        return "G722";
       case 26:
         return "JPEG";
       case 18:
@@ -425,71 +493,170 @@ public abstract class SIP {
   }
 
   /**
-   * Returns an array of codecs in a SIP/SDP packet.
+   * Parses the SDP content.
    */
-  protected Codec[] getCodecs(String msg[]) {
-    //id 96-127 = dynamic
-    int id;
-    ArrayList<Codec> lst = new ArrayList<Codec>();
-    //m=audio port RTP/AVP 18 0 101
-    String ma = getHeader("m=audio ", msg);
-    if (ma != null) {
-      String tags[] = ma.split(" ");
-      int cnt = tags.length - 2;
-      if (cnt > 0) {
-        for (int a = 2; a < tags.length; a++) {
-          if (tags[a].length() == 0) {
-            continue;
-          }
-          id = Integer.valueOf(tags[a]);
-          if (id < 96) {
-            lst.add(new Codec(getCodecName(id), id));
+  public static SDP getSDP(String msg[]) {
+    String type = getHeader("Content-Type:", msg);
+    if (type == null) type = getHeader("c:", msg);  //short form
+    if (type == null || type.indexOf("application/sdp") == -1) return null;
+    SDP sdp = new SDP();
+    SDP.Stream stream = null;
+    int idx;
+    int start = -1;
+    for(int a=0;a<msg.length;a++) {
+      if (msg[a].length() == 0) {start = a+1; break;}
+    }
+    if (start == -1) {
+      JFLog.log("SIP.getSDP() : No SDP found");
+      return null;
+    }
+    int acnt = 1;
+    int vcnt = 1;
+    for(int a=start;a<msg.length;a++) {
+      String ln = msg[a];
+      if (ln.startsWith("c=")) {
+        //c=IN IP4 1.2.3.4
+        idx = ln.indexOf("IP4 ");
+        if (idx == -1) {JFLog.log("SIP.getSDP() : Unsupported c field:" + ln); continue;}
+        String ip = ln.substring(idx+4);
+        if (stream == null) {
+          sdp.ip = ip;
+        } else {
+          stream.ip = ip;
+        }
+      } else if (ln.startsWith("m=")) {
+        //m=audio <port> RTP/<profile> <codecs>
+        if (stream != null) {
+          if (stream.content == null) {
+            switch (stream.type) {
+              case audio: stream.content = "audio" + (acnt++); break;
+              case video: stream.content = "video" + (vcnt++); break;
+            }
           }
         }
-      }
-    }
-    //m=video port RTP/AVP 26 34 ...
-    String mv = getHeader("m=video ", msg);
-    if (mv != null) {
-      String tags[] = mv.split(" ");
-      int cnt = tags.length - 2;
-      if (cnt > 0) {
-        for (int a = 2; a < tags.length; a++) {
-          if (tags[a].length() == 0) {
-            continue;
-          }
-          id = Integer.valueOf(tags[a]);
-          if (id < 96) {
-            lst.add(new Codec(getCodecName(id), id));
-          }
-        }
-      }
-    }
-    //process dynamic ids (a=rtpmap:## name/bitrate)
-    String dyn[] = getHeaders("a=", msg);
-    for (int a = 0; a < dyn.length; a++) {
-      if (dyn[a].startsWith("rtpmap:")) {
-        int idx = dyn[a].indexOf(" ");
-        if (idx == -1) {
+        if (ln.startsWith("m=audio")) {
+          stream = sdp.addStream(SDP.Type.audio);
+        } else if (ln.startsWith("m=video")) {
+          stream = sdp.addStream(SDP.Type.video);
+        } else {
+          JFLog.log("SIP.getSDP() : Unsupported m field:" + ln);
+          stream = sdp.addStream(SDP.Type.other);
           continue;
         }
-        id = Integer.valueOf(dyn[a].substring(7, idx));
-        if (id < 96) {
-          continue;  //already done static ids
+        //parse static codecs
+        String f[] = ln.split(" ");
+        String p[] = f[2].split("/");
+        if (p[1].equals("AVP")) {
+          stream.profile = SDP.Profile.AVP;
+        } else if (p[1].equals("AVPF")) {
+          stream.profile = SDP.Profile.AVPF;
+        } else if (p[1].equals("SAVP")) {
+          stream.profile = SDP.Profile.SAVP;
+        } else if (p[1].equals("SAVPF")) {
+          stream.profile = SDP.Profile.SAVPF;
+        } else {
+          stream.profile = SDP.Profile.UNKNOWN;
+          JFLog.log("SIP.getSDP() : Unsupported profile:" + p[1]);
         }
-        if (dyn[a].indexOf("H264") != -1) {
-          lst.add(new Codec("H264", id));
+        stream.port = JF.atoi(f[1]);
+        for(int b=3;b<f.length;b++) {
+          int id = JF.atoi(f[b]);
+          if (id < 96) {
+            stream.addCodec(new Codec(getCodecName(id), id));
+          }
         }
-        if (dyn[a].indexOf("telephone-event") != -1) {
-          lst.add(new Codec("telephone-event", id));
+      } else if (ln.startsWith("a=")) {
+        if (ln.startsWith("a=rtpmap:")) {
+          //a=rtpmap:<id> <name>/<bitrate>
+          String f[] = ln.substring(9).split(" ");
+          int id = JF.atoi(f[0]);
+          String n[] = f[1].split("/");
+          if (id >= 96) {
+            stream.addCodec(new Codec(n[0], id));
+          }
+        }
+        else if (ln.startsWith("a=sendrecv")) {
+          if (stream != null) {
+            stream.mode = SDP.Mode.sendrecv;
+          }
+        }
+        else if (ln.startsWith("a=sendonly")) {
+          if (stream != null) {
+            stream.mode = SDP.Mode.sendonly;
+          }
+        }
+        else if (ln.startsWith("a=recvonly")) {
+          if (stream != null) {
+            stream.mode = SDP.Mode.sendonly;
+          }
+        }
+        else if (ln.startsWith("a=inactive")) {
+          if (stream != null) {
+            stream.mode = SDP.Mode.inactive;
+          }
+        }
+        else if (ln.startsWith("a=content:")) {
+          stream.content = ln.substring(10);
+        }
+        else if (ln.startsWith("a=candidate:")) {
+          //            0 1 2   3          4          5     6   7     8     9          10    11
+          //a=candidate:0 1 UDP 2128609535 10.1.1.100 60225 typ host
+          //a=candidate:1 1 UDP 1692467199 x.x.x.x    60225 typ srflx raddr 10.1.1.100 rport 60225
+          //a=candidate:0 2 UDP 2128609534 10.1.1.100 60226 typ host
+          //a=candidate:1 2 UDP 1692467198 x.x.x.x    60226 typ srflx raddr 10.1.1.100 rport 60226
+          String f[] = ln.substring(12).split(" ");
+          if (stream != null && f.length >= 8 && f[0].equals("0") && f[1].equals("1")) {
+            //override ip
+            stream.ip = f[4];
+          }
+        }
+        else if (ln.startsWith("a=ice-ufrag:")) {
+          sdp.iceufrag = ln.substring(12);
+        }
+        else if (ln.startsWith("a=ice-pwd:")) {
+          sdp.icepwd = ln.substring(10);
+        }
+        else if (ln.startsWith("a=fingerprint:sha-256 ")) {
+          sdp.fingerprint = ln.substring(22);
+        }
+        else if (ln.startsWith("a=crypto:")) {
+          //SRTP Keys (replaced by DTLS method)
+          //a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR|2^20|1:32
+          //         # crypto                         base64_key_salt                          life mki
+          stream.keyExchange = SDP.KeyExchange.SDP;
+          String f[] = ln.split(" ");
+          if (!f[2].startsWith("inline:")) {
+            JFLog.log("a=crypto:bad keys(1)");
+            continue;
+          }
+          String base64 = f[2].substring(7);
+          int pipe = base64.indexOf("|");
+          if (pipe != -1) {
+            base64 = base64.substring(0, pipe);
+          }
+          byte keys[] = javaforce.Base64.decode(base64.getBytes());
+          if (keys == null || keys.length != 30) {
+            JFLog.log("a=crypto:bad keys(2)");
+            continue;
+          }
+          byte key[] = Arrays.copyOfRange(keys, 0, 16);
+          byte salt[] = Arrays.copyOfRange(keys, 16, 16 + 14);
+          stream.addKey(f[1], key, salt);
         }
       }
     }
-    return lst.toArray(new Codec[0]);
+    if ((stream != null) && (stream.content == null)) {
+      switch (stream.type) {
+        case audio: stream.content = "audio" + (acnt++); break;
+        case video: stream.content = "video" + (vcnt++); break;
+      }
+    }
+    return sdp;
   }
 
   /**
    * Determines if codecs[] contains codec.
+   * NOTE:This checks the name field, not the id which could by dynamic.
    */
   public static boolean hasCodec(Codec codecs[], Codec codec) {
     for (int a = 0; a < codecs.length; a++) {
@@ -573,11 +740,12 @@ public abstract class SIP {
   public static String getHeader(String header, String msg[]) {
     int sl = header.length();
     for (int a = 0; a < msg.length; a++) {
-      if (msg[a].length() < sl) {
+      String ln = msg[a];
+      if (ln.length() < sl) {
         continue;
       }
-      if (msg[a].substring(0, sl).equalsIgnoreCase(header)) {
-        return msg[a].substring(sl).trim().replaceAll("\"", "");
+      if (ln.substring(0, sl).equalsIgnoreCase(header)) {
+        return ln.substring(sl).trim().replaceAll("\"", "");
       }
     }
     return null;
@@ -590,11 +758,12 @@ public abstract class SIP {
     ArrayList<String> lst = new ArrayList<String>();
     int sl = header.length();
     for (int a = 0; a < msg.length; a++) {
-      if (msg[a].length() < sl) {
+      String ln = msg[a];
+      if (ln.length() < sl) {
         continue;
       }
-      if (msg[a].substring(0, sl).equalsIgnoreCase(header)) {
-        lst.add(msg[a].substring(sl).trim().replaceAll("\"", ""));
+      if (ln.substring(0, sl).equalsIgnoreCase(header)) {
+        lst.add(ln.substring(sl).trim().replaceAll("\"", ""));
       }
     }
     return lst.toArray(new String[0]);
@@ -631,9 +800,6 @@ public abstract class SIP {
    * Generates a response to a SIP authorization challenge.
    */
   protected String getResponse(String user, String pass, String realm, String cmd, String uri, String nonce, String qop, String nc, String cnonce) {
-    if (pass.equals(".")) {
-      return iface.getResponse(realm, cmd, uri, nonce, qop, nc, cnonce);
-    }
     MD5 md5 = new MD5();
     String H1 = user + ":" + realm + ":" + pass;
     md5.init();
@@ -650,8 +816,37 @@ public abstract class SIP {
     H3 += H2;
     md5.init();
     md5.add(H3.getBytes(), 0, H3.length());
-    H3 = new String(md5.byte2char(md5.done()));
-    return H3;
+    return new String(md5.byte2char(md5.done()));
+  }
+
+  /** Split an Authenticate line into parts. */
+  private String[] split(String in, char delimit) {
+    ArrayList<String> strs = new ArrayList<String>();
+    boolean inquote = false;
+    char ca[] = in.toCharArray();
+    int p1 = 0, p2 = 0;
+    for(int a=0;a<ca.length;a++) {
+      char ch = ca[a];
+      if (ch == delimit && !inquote) {
+        strs.add(in.substring(p1,p2).trim());
+        p2++;
+        p1 = p2;
+        continue;
+      } else if (ch == '\"') {
+        inquote = !inquote;
+      }
+      p2++;
+    }
+    if (p2 > p1) {
+      strs.add(in.substring(p1, p2).trim());
+    }
+/*
+    System.out.println("auth=" + in);
+    for(int a=0;a<strs.size();a++) {
+      System.out.println("str[]=" + strs.get(a));
+    }
+*/
+    return strs.toArray(new String[strs.size()]);
   }
 
   /**
@@ -663,7 +858,7 @@ public abstract class SIP {
       JFLog.log("err:no digest");
       return null;
     }
-    String tags[] = request.substring(7).replaceAll(" ", "").split(",");  //NOTE:if qop="auth-int,auth" this split will fail (qop="auth,auth-int" will be okay)
+    String tags[] = split(request.substring(7), ',');
     String auth, nonce = null, qop = null, nc = null, cnonce = null, stale = null;
     String realm = null;
     auth = getHeader("algorithm=", tags);
@@ -705,14 +900,15 @@ public abstract class SIP {
     ret.append(header);
     ret.append(" Digest username=\"" + user + "\", realm=\"" + realm + "\", uri=\"sip:" + remote + "\", nonce=\"" + nonce + "\"");
     ret.append(", response=\"" + response + "\"");
-    if (qop != null) {
-      ret.append(", qop=\"" + qop + "\"");
-    }
-    if (nc != null) {
-      ret.append(", nc=\"" + nc + "\"");
-    }
     if (cnonce != null) {
       ret.append(", cnonce=\"" + cnonce + "\"");
+    }
+    //NOTE:Do NOT quote qop or nc
+    if (nc != null) {
+      ret.append(", nc=" + nc);
+    }
+    if (qop != null) {
+      ret.append(", qop=" + qop);
     }
     ret.append(", algorithm=MD5\r\n");
     return ret.toString();
@@ -803,90 +999,102 @@ public abstract class SIP {
     return JF.atoi(expires);
   }
 
-  public abstract String getlocalhost(String host);
+  public abstract String getlocalhost(String host);  //SIP host
+  public abstract String getlocalRTPhost(String host);
 
   /**
-   * Builds SDP packet.
+   * Builds SDP packet. (RFC 2327)
    */
   public void buildsdp(CallDetails cd, CallDetails.SideDetails cdsd) {
     //build SDP content
-    StringBuffer content = new StringBuffer();
-    Codec h264, rfc2833;  //dyn codecs
-    h264 = getCodec(cdsd.codecs, RTP.CODEC_H264);
-    rfc2833 = getCodec(cdsd.codecs, RTP.CODEC_RFC2833);
-    if (rfc2833 == null) {
-      rfc2833 = RTP.CODEC_RFC2833;  //always send RFC2833
+    SDP sdp = cdsd.sdp;
+    String ip = sdp.ip;
+    if (ip == null) {
+      ip = getlocalRTPhost(cdsd.host);
     }
-    boolean g711u = hasCodec(cdsd.codecs, RTP.CODEC_G711u);
-    boolean g711a = hasCodec(cdsd.codecs, RTP.CODEC_G711a);
-    boolean g729a = hasCodec(cdsd.codecs, RTP.CODEC_G729a);
-    boolean h263 = hasCodec(cdsd.codecs, RTP.CODEC_H263);
-    boolean jpeg = hasCodec(cdsd.codecs, RTP.CODEC_JPEG);
+    StringBuffer content = new StringBuffer();
     content.append("v=0\r\n");
     content.append("o=- " + cdsd.o1 + " " + cdsd.o2 + " IN IP4 " + getlocalhost(cdsd.host) + "\r\n");
     content.append("s=" + useragent + "\r\n");
-    content.append("c=IN IP4 " + (cd.holding ? "0.0.0.0" : getlocalhost(cdsd.host)) + "\r\n");
+    content.append("c=IN IP4 " + ip + "\r\n");
     content.append("t=0 0\r\n");
-    content.append("m=audio " + cdsd.rtp_port_audio + " RTP/AVP");
-    if (g711u) {
-      content.append(" 0");
-    }
-    if (g711a) {
-      content.append(" 8");
-    }
-    if (g729a) {
-      content.append(" 18");
-    }
-    if (rfc2833 != null) {
-      content.append(" " + rfc2833.id);
-    }
-    content.append("\r\n");
-    if (g711u) {
-      content.append("a=rtpmap:0 PCMU/8000\r\n");
-    }
-    if (g711a) {
-      content.append("a=rtpmap:8 PCMA/8000\r\n");
-    }
-    if (g729a) {
-      content.append("a=rtpmap:18 G729/8000\r\n");
-      content.append("a=fmtp:18 annexb=no\r\n");
-      content.append("a=silenceSupp:off - - - -\r\n");
-    }
-    if (rfc2833 != null) {
-      content.append("a=rtpmap:" + rfc2833.id + " telephone-event/8000\r\n");
-      content.append("a=fmtp:" + rfc2833.id + " 0-15\r\n");
-    }
-    content.append("a=ptime:20\r\n");
-    if (cd.holding) {
-      content.append("a=sendonly\r\n");
-    } else if (cd.onhold) {
-      content.append("a=recvonly\r\n");
-    } else {
-      content.append("a=sendrecv\r\n");
-    }
-    //BUG : What if holding && onhold?
-    if (h263 || (h264 != null) || jpeg) {
-      content.append("m=video " + cdsd.rtp_port_video + " RTP/AVP");
-      if (jpeg) {
-        content.append(" 26");
+    if (sdp.iceufrag != null) content.append("a=ice-ufrag:" + sdp.iceufrag + "\r\n");
+    if (sdp.icepwd != null) content.append("a=ice-pwd:" + sdp.icepwd + "\r\n");
+    if (sdp.fingerprint != null) content.append("a=fingerprint:sha-256 " + sdp.fingerprint + "\r\n");
+    for(int a=0;a<sdp.streams.length;a++) {
+      SDP.Stream stream = sdp.streams[a];
+      if (stream.codecs.length == 0) continue;
+      Codec rfc2833 = getCodec(stream.codecs, RTP.CODEC_RFC2833);
+      content.append("m=" + stream.getType() + " " + stream.port + " RTP/" + stream.profile);
+      for(int b=0;b<stream.codecs.length;b++) {
+        content.append(" " + stream.codecs[b].id);
       }
-      if (h263) {
-        content.append(" 34");
-      }
-      if (h264 != null) {
-        content.append(" " + h264.id);
+      if (stream.type == SDP.Type.audio && rfc2833 == null) {
+        rfc2833 = RTP.CODEC_RFC2833;
+        content.append(" " + rfc2833.id);
       }
       content.append("\r\n");
-      if (jpeg) {
+      if (stream.keyExchange == SDP.KeyExchange.SDP && stream.keys != null) {
+        for(int c=0;c<stream.keys.length;c++) {
+          SDP.Key keys = stream.keys[c];
+          byte key_salt[] = new byte[16 + 14];
+          System.arraycopy(keys.key, 0, key_salt, 0, 16);
+          System.arraycopy(keys.salt, 0, key_salt, 16, 14);
+          String keystr = new String(javaforce.Base64.encode(key_salt));
+                                               //keys          | lifetime     | mki:length
+          String ln = keys.crypto + " inline:" + keystr; // + "|2^20";  // + "|1:32";
+          content.append("a=crypto:" + (c+1) + " ");
+          content.append(ln);
+          content.append("\r\n");
+        }
+      }
+      if (stream.content != null) {
+        content.append("a=content:" + stream.content + "\r\n");
+      }
+      content.append("a=" + stream.getMode() + "\r\n");
+      if (stream.ip != null) {
+        content.append("c=IN IP4 " + stream.ip + "\r\n");
+      }
+      content.append("a=ptime:20\r\n");
+      if (hasCodec(stream.codecs, RTP.CODEC_G711u)) {
+        content.append("a=rtpmap:0 PCMU/8000\r\n");
+      }
+      if (hasCodec(stream.codecs, RTP.CODEC_G711a)) {
+        content.append("a=rtpmap:8 PCMA/8000\r\n");
+      }
+      if (hasCodec(stream.codecs, RTP.CODEC_G722)) {
+        content.append("a=rtpmap:9 G722/8000\r\n");  //NOTE:It's really 16000 but an error in RFC claims it as 8000
+      }
+      if (hasCodec(stream.codecs, RTP.CODEC_G729a)) {
+        content.append("a=rtpmap:18 G729/8000\r\n");
+        content.append("a=fmtp:18 annexb=no\r\n");
+        content.append("a=silenceSupp:off - - - -\r\n");
+      }
+      if (stream.type == SDP.Type.audio) {
+        content.append("a=rtpmap:" + rfc2833.id + " telephone-event/8000\r\n");
+        content.append("a=fmtp:" + rfc2833.id + " 0-15\r\n");
+      }
+      if (hasCodec(stream.codecs, RTP.CODEC_JPEG)) {
         content.append("a=rtpmap:26 JPEG/90000\r\n");
       }
-      if (h263) {
+      if (hasCodec(stream.codecs, RTP.CODEC_H263)) {
         content.append("a=rtpmap:34 H263/90000\r\n");
       }
-      if (h264 != null) {
-        content.append("a=rtpmap:" + h264.id + " H264/90000\r\n");
+      if (hasCodec(stream.codecs, RTP.CODEC_H263_1998)) {
+        content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_H263_1998).id + " H263-1998/90000\r\n");
       }
-      content.append("a=sendrecv\r\n");
+      if (hasCodec(stream.codecs, RTP.CODEC_H263_2000)) {
+        content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_H263_2000).id + " H263-2000/90000\r\n");
+      }
+      if (hasCodec(stream.codecs, RTP.CODEC_H264)) {
+        content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_H264).id + " H264/90000\r\n");
+      }
+      if (hasCodec(stream.codecs, RTP.CODEC_VP8)) {
+        content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_VP8).id + " VP8/90000\r\n");
+      }
+      if (stream.keyExchange == SDP.KeyExchange.DTLS) {
+        content.append("a=rtcp-mux");  //http://tools.ietf.org/html/rfc5761
+      }
     }
     cd.sdp = content.toString();
   }
@@ -924,23 +1132,18 @@ public abstract class SIP {
       while (active) {
         try {
           byte data[] = new byte[mtu];
-          DatagramPacket pack = new DatagramPacket(data, mtu);
-          sock.receive(pack);
-          int len = pack.getLength();
-          if (len <= 4) {
+          Packet pack = new Packet();
+          pack.data = data;
+          if (!transport.receive(pack)) continue;
+          if (pack.length <= 4) {
             continue;  //keep alive
           }
-          String msg[] = new String(data, 0, len).replaceAll("\r", "").split("\n", -1);
-          String remote = pack.getAddress().getHostAddress();
+          String msg[] = new String(data, 0, pack.length).replaceAll("\r", "").split("\n", -1);
           if (server) {
-            WorkerPacket wp = new WorkerPacket(msg, remote, pack.getPort());
+            WorkerPacket wp = new WorkerPacket(msg, pack.host, pack.port);
             wp.start();
           } else {
-            iface.packet(msg, remote, pack.getPort());
-          }
-        } catch (SocketException e) {
-          if (active) {
-            JFLog.log(e);
+            iface.packet(msg, pack.host, pack.port);
           }
         } catch (Exception e) {
           JFLog.log(e);
@@ -950,7 +1153,7 @@ public abstract class SIP {
   }
 
   /**
-   * This thread dispatches SIP packets in a seperate thread for server mode.
+   * This thread dispatches SIP packets in a separate thread for server mode.
    */
   private class WorkerPacket extends Thread {
 

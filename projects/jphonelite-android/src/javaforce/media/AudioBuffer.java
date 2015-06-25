@@ -1,20 +1,20 @@
-package javaforce.voip;
+package javaforce.media;
 
 /**
- * FIFO buffer for audio samples.
- * Uses a 2 seconds cyclical buffer to avoid using locks or reallocation.
+ * FIFO buffer for audio samples (16bit only).
+ * Uses a cyclical buffer to avoid using locks or reallocation.
  */
 
 import javaforce.*;
 
-public class SamplesBuffer {
+public class AudioBuffer {
 
   private int bufsiz;
   private short buf[];
   private int head = 0, tail = 0;
 
-  public SamplesBuffer(int freq) {
-    bufsiz = freq * 2;
+  public AudioBuffer(int freq, int chs, int seconds) {
+    bufsiz = freq * chs * seconds;
     buf = new short[bufsiz];
     clear();
   }
@@ -66,6 +66,7 @@ public class SamplesBuffer {
     return true;
   }
 
+  /** Returns # samples in buffer */
   public int size() {
     int t = tail;
     int h = head;

@@ -1,2 +1,2 @@
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\bin\AndroidManifest.xml : \
-c:\Users\pquiring\Google Drive\workspace\jf\projects\jphonelite-android\AndroidManifest.xml \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\bin\AndroidManifest.xml : \
+C:\Users\pquiring\files\workspace\jf\projects\jphonelite-android\AndroidManifest.xml \

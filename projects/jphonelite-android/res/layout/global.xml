@@ -121,5 +121,27 @@
     android:layout_width="fill_parent"
     android:layout_height="32dp"
     android:id="@+id/settings_g729a"/>
+
+  <CheckBox
+    android:text="Use G711u (North America)"
+    android:textSize="16sp"
+    android:layout_width="fill_parent"
+    android:layout_height="32dp"
+    android:id="@+id/settings_g711u"/>
+
+  <CheckBox
+    android:text="Use G711a (Europe)"
+    android:textSize="16sp"
+    android:layout_width="fill_parent"
+    android:layout_height="32dp"
+    android:id="@+id/settings_g711a"/>
+
+  <CheckBox
+    android:text="Use G722 (16kHz HD)"
+    android:textSize="16sp"
+    android:layout_width="fill_parent"
+    android:layout_height="32dp"
+    android:id="@+id/settings_g722"/>
+
 </LinearLayout>
 </ScrollView>

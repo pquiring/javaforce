@@ -4,13 +4,16 @@ package javaforce.voip;
  * Keeps track of Call Details based on the 'callid' field of SIP messages.
  * Extends CallDetails for Server side details.
  */
+
+import java.util.*;
+
 public class CallDetailsServer extends CallDetails {
   /*
    SideDetails Layout:
-    
+
    caller -------------> pbx -------------> callee
-   src     pbxsrc     pbxdst     dst
-  
+   src            pbxsrc     pbxdst         dst
+
    */
 
   /**
@@ -32,5 +35,6 @@ public class CallDetailsServer extends CallDetails {
   public String fromname;
   public String fromnumber;
   public boolean authorized;
-  public boolean xfer, refer;
+  public boolean xfer_src, xfer_dst;
+  public long lastPacket;
 }
