@@ -527,6 +527,11 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   public boolean refer(String callid, String to) {
     String headers = "Refer-To: <sip:" + to + "@" + remotehost + ">\r\nReferred-By: <sip:" + user + "@" + remotehost + ":" + getlocalport() + ">\r\n";
     CallDetails cd = getCallDetails(callid);
+    if (cd.authstr != null) {
+      cd.src.epass = getAuthResponse(cd, auth, pass, remotehost, "REFER", "Proxy-Authorization:");
+    } else {
+      cd.src.epass = null;
+    }
     cd.src.cseq++;
     cd.authsent = false;
     cd.src.extra = headers;
@@ -582,7 +587,11 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.cseq++;
     cd.authsent = false;
     cd.src.extra = null;
-    cd.src.epass = null;
+    if (cd.authstr != null) {
+      cd.src.epass = getAuthResponse(cd, auth, pass, remotehost, "INVITE", "Proxy-Authorization:");
+    } else {
+      cd.src.epass = null;
+    }
     if (!issue(cd, "INVITE", true, true)) {
       return false;
     }
@@ -604,17 +613,15 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    */
   public boolean cancel(String callid) {
     CallDetails cd = getCallDetails(callid);
-    String epass;
     if (cd.authstr != null) {
-      epass = getAuthResponse(cd, auth, pass, remotehost, "BYE", "Proxy-Authorization:");
+      cd.src.epass = getAuthResponse(cd, auth, pass, remotehost, "BYE", "Proxy-Authorization:");
     } else {
-      epass = null;
+      cd.src.epass = null;
     }
     cd.authsent = false;
     if (cd.dst.to != null) cd.src.to = cd.dst.to;  //update tag if avail
     if (cd.dst.from != null) cd.src.from = cd.dst.from;  //is this line even needed???
     cd.src.extra = null;
-    cd.src.epass = epass;
     boolean ret = issue(cd, "CANCEL", false, true);
     return ret;
   }
@@ -624,16 +631,14 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    */
   public boolean bye(String callid) {
     CallDetails cd = getCallDetails(callid);
-    String epass;
     if (cd.authstr != null) {
-      epass = getAuthResponse(cd, auth, pass, remotehost, "BYE", "Proxy-Authorization:");
+      cd.src.epass = getAuthResponse(cd, auth, pass, remotehost, "BYE", "Proxy-Authorization:");
     } else {
-      epass = null;
+      cd.src.epass = null;
     }
     cd.src.cseq++;
     cd.authsent = false;
     cd.src.extra = null;
-    cd.src.epass = epass;
     boolean ret = issue(cd, "BYE", false, true);
     return ret;
   }
@@ -695,7 +700,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         JFLog.log("Ignoring packet from unknown host:" + remoteip + ":" + remoteport);
         return;
       }
-      String tmp, req = null, epass;
+      String tmp, req = null;
       String callid = getHeader("Call-ID:", msg);
       if (callid == null) callid = getHeader("i:", msg);
       if (callid == null) {
@@ -861,6 +866,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         case 180:
           iface.onRinging(this, callid);
           break;
+        case 181:
+          //call if being forwarded
+          //ignore for now
+          break;
         case 183:
         case 200:
           if (cmd.equals("REGISTER")) {
@@ -916,13 +925,12 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
               JFLog.log("err:401/407 without Authenticate tag");
               break;
             }
-            epass = getAuthResponse(cd, auth, pass, remotehost, cmd, (type == 401 ? "Authorization:" : "Proxy-Authorization:"));
-            if (epass == null) {
+            cd.src.epass = getAuthResponse(cd, auth, pass, remotehost, cmd, (type == 401 ? "Authorization:" : "Proxy-Authorization:"));
+            if (cd.src.epass == null) {
               JFLog.log("err:gen auth failed");
               break;
             }
             cd.src.cseq++;
-            cd.src.epass = epass;
             issue(cd, cmd, cmd.equals("INVITE"), true);
             cd.authsent = true;
           }
