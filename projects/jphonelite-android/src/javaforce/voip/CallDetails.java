@@ -21,6 +21,7 @@ public class CallDetails implements Cloneable {
     public String uri;
     public String contact;
     public String vialist[];
+    public String routelist[];
     public String branch;
     public String extra;   //extra headers
     public String epass;   //response to an 403/407 MD5
@@ -51,6 +52,12 @@ public class CallDetails implements Cloneable {
   public boolean authsent;
   /** last set of full headers received. */
   public String headers[];
+  /** Last nonce value from server. */
+  public String nonce;
+  /** Counter for nonce value (if qop=auth is used).
+   * Client must increment each time nonce value is used.
+   * Client must reset to 1 if nonce changes. */
+  public int nonceCount;
   public Object clone() {
     try {
       return super.clone();

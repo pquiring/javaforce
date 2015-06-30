@@ -7,7 +7,7 @@ What is it?
 ===========
 JavaForce is a Java library extending the capabilities of Java.
 
-The main library includes a VoIP stack and JNA bindings for FFMPEG, OpenGL, etc.
+The main library includes a VoIP stack and bindings for FFMPEG, OpenGL, etc.
 
 Includes many apps built around the library such as jPhoneLite, jfVideo Createor, jfAudio, jfMusic, etc.
 
@@ -101,5 +101,5 @@ http://javaforce.sourceforge.net
 
 Version 9.2.0
 
-Released : June 25 2015
+Released : June 26 2015
 

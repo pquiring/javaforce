@@ -103,20 +103,23 @@ public abstract class SIP {
     String x1, x2;
     i1 = x.indexOf('<');
     if (i1 == -1) {
-      return null;
-    }
-    if (i1 == 0) {
-      parts.add("Unknown Name");
+      parts.add("");
+      x1 = x;
+      x2 = "";
     } else {
-      parts.add(x.substring(0, i1).trim().replaceAll("\"", ""));
+      if (i1 == 0) {
+        parts.add("Unknown Name");
+      } else {
+        parts.add(x.substring(0, i1).trim().replaceAll("\"", ""));
+      }
+      i1++;
+      i2 = x.substring(i1).indexOf('>');
+      if (i2 == -1) {
+        return null;
+      }
+      x1 = x.substring(i1, i1 + i2);
+      x2 = x.substring(i1 + i2 + 1).trim();
     }
-    i1++;
-    i2 = x.substring(i1).indexOf('>');
-    if (i2 == -1) {
-      return null;
-    }
-    x1 = x.substring(i1, i1 + i2);
-    x2 = x.substring(i1 + i2 + 1).trim();
     i1 = x1.indexOf(':');
     if (i1 == -1) {
       return null;
@@ -180,12 +183,17 @@ public abstract class SIP {
       return "\"null\"<sip:null@null>";
     }
     StringBuffer buf = new StringBuffer();
-    buf.append('\"');
-    buf.append(x[0]);
-    buf.append('\"');
-    buf.append("<sip:");
-    buf.append(x[1]);
-    buf.append('@');
+    if (x[0].length() > 0) {
+      buf.append('\"');
+      buf.append(x[0]);
+      buf.append('\"');
+      buf.append('<');
+    }
+    buf.append("sip:");
+    if (x[1].length() > 0) {
+      buf.append(x[1]);
+      buf.append('@');
+    }
     buf.append(x[2]);
     int i = 3;
     for (; (i < x.length) && (!x[i].equals(":")); i++) {
@@ -193,7 +201,7 @@ public abstract class SIP {
       buf.append(x[i]);
     }
     i++;  //skip ':' seperator
-    buf.append('>');
+    if (x[0].length() > 0) buf.append('>');
     for (; i < x.length; i++) {
       buf.append(';');
       buf.append(x[i]);
@@ -303,6 +311,21 @@ public abstract class SIP {
       }
     }
     return vialist.toArray(new String[0]);
+  }
+
+  /**
+   * Returns the Record-Route: list in a SIP message as an array.
+   */
+  protected String[] getroutelist(String msg[]) {
+    ArrayList<String> routelist = new ArrayList<String>();
+    for (int a = 0; a < msg.length; a++) {
+      String ln = msg[a];
+      if (ln.regionMatches(true, 0, "Record-Route:", 0, 13)) {
+        routelist.add("Route:" + ln.substring(13));
+        continue;
+      }
+    }
+    return routelist.toArray(new String[0]);
   }
 
   /**
@@ -852,14 +875,15 @@ public abstract class SIP {
   /**
    * Generates a complete header response to a SIP authorization challenge.
    */
-  protected String getAuthResponse(String request, String user, String pass, String remote, String cmd, String header) {
+  protected String getAuthResponse(CallDetails cd, String user, String pass, String remote, String cmd, String header) {
     //request = ' Digest algorithm=MD5, realm="asterisk", nonce="value", etc.'
+    String request = cd.authstr;
     if (!request.regionMatches(true, 0, "Digest ", 0, 7)) {
       JFLog.log("err:no digest");
       return null;
     }
     String tags[] = split(request.substring(7), ',');
-    String auth, nonce = null, qop = null, nc = null, cnonce = null, stale = null;
+    String auth, nonce = null, qop = null, cnonce = null, stale = null;
     String realm = null;
     auth = getHeader("algorithm=", tags);
     if (auth != null) {
@@ -891,11 +915,16 @@ public abstract class SIP {
       }
       if (qop != null) {
         //generate cnonce and nc
-        nc = "00000001";  //never use a nonce twice
         cnonce = getnonce();
+        if (cd.nonce != null && cd.nonce.equals(nonce)) {
+          cd.nonceCount++;
+        } else {
+          cd.nonceCount = 1;
+        }
       }
     }
-    String response = getResponse(user, pass, realm, cmd, "sip:" + remote, nonce, qop, nc, cnonce);
+    cd.nonce = nonce;
+    String response = getResponse(user, pass, realm, cmd, "sip:" + remote, nonce, qop, Integer.toString(cd.nonceCount, 16), cnonce);
     StringBuffer ret = new StringBuffer();
     ret.append(header);
     ret.append(" Digest username=\"" + user + "\", realm=\"" + realm + "\", uri=\"sip:" + remote + "\", nonce=\"" + nonce + "\"");
@@ -904,10 +933,8 @@ public abstract class SIP {
       ret.append(", cnonce=\"" + cnonce + "\"");
     }
     //NOTE:Do NOT quote qop or nc
-    if (nc != null) {
-      ret.append(", nc=" + nc);
-    }
     if (qop != null) {
+      ret.append(", nc=" + Integer.toString(cd.nonceCount, 16));
       ret.append(", qop=" + qop);
     }
     ret.append(", algorithm=MD5\r\n");

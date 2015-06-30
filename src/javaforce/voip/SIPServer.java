@@ -506,7 +506,7 @@ public class SIPServer extends SIP implements SIPInterface {
                 break;
               }
               cd.authstr = getHeader("WWW-Authenticate:", msg);
-              epass = getAuthResponse(cd.authstr, cd.user, cd.pass, cdpbx.host, cd.cmd, "Authorization:");
+              epass = getAuthResponse(cd, cd.user, cd.pass, cdpbx.host, cd.cmd, "Authorization:");
               if (epass == null) {
                 JFLog.log("err:gen auth failed");
                 setCallDetailsServer(callid, null);
@@ -545,7 +545,7 @@ public class SIPServer extends SIP implements SIPInterface {
               String trunk_user = reg.substring(0, idx1);
               String trunk_pass = reg.substring(idx1 + 1, idx2);
               cd.authstr = getHeader("Proxy-Authenticate:", msg);
-              epass = getAuthResponse(cd.authstr, trunk_user, trunk_pass, cdpbx.host, cd.cmd, "Proxy-Authorization:");
+              epass = getAuthResponse(cd, trunk_user, trunk_pass, cdpbx.host, cd.cmd, "Proxy-Authorization:");
               if (epass == null) {
                 JFLog.log("err:gen auth failed");
                 setCallDetailsServer(callid, null);

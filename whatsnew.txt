@@ -1,5 +1,15 @@
 What's new...
 
+Jun 30/2015 : JF 9.3.0 released!
+  - VoIP fixes:
+    - handle QOP auth better
+    - echo back Record-Route fields (RFC 2543 6.29)
+    - reply 405 "Method Not Allowed" to "OPTIONS" request
+  - jPhoneLite/1.9.6 released!
+  - jPhoneLite/1.9.6 AR#13 released!
+  - jfBroadcast/0.31 released!
+  - jPBXLite/0.23 released!
+
 Jun 25/2015 : JF 9.2.0 released!
   - jPhoneLite Android/1.9.5 AR #12 released!
     - should fix bug #28

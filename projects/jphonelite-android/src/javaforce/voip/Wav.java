@@ -18,9 +18,6 @@ public class Wav {
     try {
       wav = new FileInputStream(fn);
       return load(wav);
-    } catch (FileNotFoundException e) {
-      JFLog.log("file not found:" + fn);
-      return false;
     } catch (Exception e) {
       JFLog.log(e);
       return false;

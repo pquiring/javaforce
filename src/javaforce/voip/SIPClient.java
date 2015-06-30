@@ -411,6 +411,12 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     req.append(cmd + " " + cdsd.uri + " SIP/2.0\r\n");
     req.append("Via: SIP/2.0/" + transport.getName() + " " + getlocalhost(null) + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
     req.append("Max-Forwards: 70\r\n");
+    if (cdsd.routelist != null) {
+      for (int a = cdsd.routelist.length-1; a >=0; a--) {
+        req.append(cdsd.routelist[a]);
+        req.append("\r\n");
+      }
+    }
     req.append("Contact: " + cdsd.contact + "\r\n");
     req.append("To: " + join(cdsd.to) + "\r\n");
     req.append("From: " + join(cdsd.from) + "\r\n");
@@ -459,6 +465,12 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     }
     if ((cdsd.vialist == null) || (cdsd.vialist.length == 0)) {
       req.append("Via: SIP/2.0/" + transport.getName() + " " + getlocalhost(null) + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
+    }
+    if (cdsd.routelist != null) {
+      for (int a = cdsd.routelist.length-1; a >=0; a--) {
+        req.append(cdsd.routelist[a]);
+        req.append("\r\n");
+      }
     }
     req.append("Contact: " + cdsd.contact + "\r\n");
     req.append("To: " + join(cdsd.to) + "\r\n");
@@ -594,7 +606,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     CallDetails cd = getCallDetails(callid);
     String epass;
     if (cd.authstr != null) {
-      epass = getAuthResponse(cd.authstr, auth, pass, remotehost, "BYE", "Proxy-Authorization:");
+      epass = getAuthResponse(cd, auth, pass, remotehost, "BYE", "Proxy-Authorization:");
     } else {
       epass = null;
     }
@@ -614,7 +626,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     CallDetails cd = getCallDetails(callid);
     String epass;
     if (cd.authstr != null) {
-      epass = getAuthResponse(cd.authstr, auth, pass, remotehost, "BYE", "Proxy-Authorization:");
+      epass = getAuthResponse(cd, auth, pass, remotehost, "BYE", "Proxy-Authorization:");
     } else {
       epass = null;
     }
@@ -707,6 +719,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       if (tmp == null) {
         tmp = getHeader("f:", msg);
       }
+      cd.dst.from = split(tmp);
 
       //RFC 3581 - rport
       String via = getHeader("Via:", msg);
@@ -738,9 +751,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         }
       }
 
-      cd.dst.from = split(tmp);
       //get via list
       cd.dst.vialist = getvialist(msg);
+      //get route list (RFC 2543 6.29)
+      cd.dst.routelist = getroutelist(msg);
       //set contact
       cd.dst.contact = "<sip:" + user + "@" + getlocalhost(null) + ":" + getlocalport() + ">";
       //get uri (it must equal the Contact field)
@@ -807,7 +821,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             break;
           }
           if (req.equals("OPTIONS")) {
-            reply(cd, cmd, 200, "OK", false, false);
+            reply(cd, cmd, 405, "Method Not Allowed", false, false);
             break;
           }
           if (req.equals("NOTIFY")) {
@@ -864,6 +878,11 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             //update cd.src.to tag value
             cd.src.to = cd.dst.to;
 
+            cd.src.epass = null;
+            if (cd.dst.uri != null) {
+              cd.src.uri = cd.dst.uri;
+            }
+            cd.src.routelist = cd.dst.routelist;  //RFC 2543 6.29
             if (type == 200) issue(cd, "ACK", false, true);
             iface.onSuccess(this, callid, cd.dst.sdp, type == 200);
           } else if (cmd.equals("BYE")) {
@@ -882,7 +901,13 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           if (cd.authsent) {
             JFLog.log("Server Error : Double " + type);
           } else {
+            String src_to[] = cd.src.to;
+            cd.src.to = cd.dst.to;  //update to (tag may have been added)
+            if (cd.dst.uri != null) {
+              cd.src.uri = cd.dst.uri;
+            }
             issue(cd, "ACK", false, true);
+            cd.src.to = src_to;
             cd.authstr = getHeader("WWW-Authenticate:", msg);
             if (cd.authstr == null) {
               cd.authstr = getHeader("Proxy-Authenticate:", msg);
@@ -891,7 +916,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
               JFLog.log("err:401/407 without Authenticate tag");
               break;
             }
-            epass = getAuthResponse(cd.authstr, auth, pass, remotehost, cmd, (type == 401 ? "Authorization:" : "Proxy-Authorization:"));
+            epass = getAuthResponse(cd, auth, pass, remotehost, cmd, (type == 401 ? "Authorization:" : "Proxy-Authorization:"));
             if (epass == null) {
               JFLog.log("err:gen auth failed");
               break;
@@ -903,6 +928,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           }
           break;
         case 403:
+          cd.src.epass = null;
+          if (cd.dst.uri != null) {
+            cd.src.uri = cd.dst.uri;
+          }
           issue(cd, "ACK", false, true);
           if (cmd.equals("REGISTER")) {
             //bad password
@@ -914,6 +943,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         case 404:  //no one there
         case 486:  //busy
           if (cd.dst.to != null) cd.src.to = cd.dst.to;
+          cd.src.epass = null;
+          if (cd.dst.uri != null) {
+            cd.src.uri = cd.dst.uri;
+          }
           issue(cd, "ACK", false, true);
           iface.onCancel(this, callid, type);
           setCallDetails(callid, null);
@@ -921,6 +954,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         default:
           //treat all other codes as a cancel
           if (cd.dst.to != null) cd.src.to = cd.dst.to;
+          cd.src.epass = null;
+          if (cd.dst.uri != null) {
+            cd.src.uri = cd.dst.uri;
+          }
           issue(cd, "ACK", false, true);
           iface.onCancel(this, callid, type);
 //          setCallDetails(callid, null);  //might not be done
