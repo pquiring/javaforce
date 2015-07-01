@@ -1,5 +1,7 @@
 CHANGELOG
 =========
+6-30-2015 : v0.23 released
+ - fix : improved QOP auth
 4-24-2015 : v0.22 released
  - fix : support localhost phone better
  - fix : reinvites would drop calls with 404

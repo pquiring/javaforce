@@ -5,8 +5,10 @@ Jun 30/2015 : JF 9.3.0 released!
     - handle QOP auth better
     - echo back Record-Route fields (RFC 2543 6.29)
     - reply 405 "Method Not Allowed" to "OPTIONS" request
+    - ignore sip code 181 (call forwarded)
+    - now supports flowroute.com
   - jPhoneLite/1.9.6 released!
-  - jPhoneLite/1.9.6 AR#13 released!
+    - desktop and android
   - jfBroadcast/0.31 released!
   - jPBXLite/0.23 released!
 

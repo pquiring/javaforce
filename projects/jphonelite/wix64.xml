@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{34b7ff5a-0b9d-4f4c-934c-a9ac08640c05}" Version="1.9.5" Language="1033" Name="jPhoneLite" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{34b7ff5a-0b9d-4f4c-934c-a9ac08640c05}" Version="1.9.6" Language="1033" Name="jPhoneLite" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />

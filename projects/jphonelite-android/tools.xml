@@ -1,10 +1,10 @@
-<project name="jphonelite-android-signed" default="all" basedir=".">
-  <description>jphonelite-android-signed</description>
+<project name="jphonelite-android-tools" default="depjars" basedir=".">
+  <description>jphonelite-android-tools</description>
   <!-- set global properties for this build -->
   <property name="src" location="."/>
   <property name="build" location="."/>
   <property name="home" location="../.."/>
-  <property name="version" value="1.9.5-ar12"/>
+  <property name="version" value="1.9.6"/>
 
   <target name="depjars">
     <copy file="${home}/jars/bouncycastle.jar" todir="libs"/>
@@ -24,23 +24,8 @@
     </genkey>
   </target>
 
-  <target name="sign-apk" depends="genkeys" description="sign apk file">
-    <signjar jar="bin/jphonelite-release-unsigned.apk" alias="jphonelite" storepass="password" keystore="keystore.key"
-      sigalg="MD5withRSA" digestalg="SHA1"
-      signedjar="bin/jphonelite-release-signed.apk"/>
-    <delete file="bin/jphonelite-android-${version}.apk"/>
-    <exec executable="zipalign">
-      <arg value="4"/>
-      <arg value="bin/jphonelite-release-signed.apk"/>
-      <arg value="bin/jphonelite-android-${version}.apk"/>
-    </exec>
-    <move file="bin/jphonelite-android-${version}.apk" todir="/home/pquiring/zips"/>
-  </target>
-
-  <target name="all" depends="sign-apk"/>
-
   <target name="release-bin" depends="" description="create release zip file">
-    <copy file="bin/jphonelite-release.apk" todir="${home}/release" overwrite="true"/>
+    <copy file="bin/jphonelite-release.apk" tofile="${home}/release/jphonelite-${version}.apk" overwrite="true"/>
   </target>
 
   <target name="release-src" depends="" description="create release zip file">
