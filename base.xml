@@ -58,9 +58,10 @@
       <exemacro appx="@{app4}" bits="@{bits}" ico="@{ico}" unless:blank="@{app4}"/>
       <exemacro appx="@{app5}" bits="@{bits}" ico="@{ico}" unless:blank="@{app5}"/>
       <exec command="candle ${candle_extra} -o wix.obj @{xml}.xml"/>
-      <exec command="light ${light_extra} -ext WixUIExtension -cultures:en-us -o @{msi}-${version}-win@{bits}.msi wix.obj"/>
+      <exec command="candle -o jre.obj ${home}/nojre.xml"/>
+      <exec command="light ${light_extra} -ext WixUIExtension -cultures:en-us -o @{msi}-${version}-win@{bits}.msi jre.obj wix.obj"/>
       <delete file="wix.obj"/>
-      <delete file="@{msi}-${version}-x@{bits}.wixpdb"/>
+      <delete file="@{msi}-${version}-win@{bits}.wixpdb"/>
       <move unless:set="nomove" file="@{msi}-${version}-win@{bits}.msi" todir="${home}/release"/>
     </sequential>
   </macrodef>
@@ -71,6 +72,46 @@
 
   <target name="msi64" depends="jar,depjars"  description="create msi installer file 64bit">
     <msimacro xml="wix64" bits="64"/>
+  </target>
+
+  <macrodef name="jremsimacro">
+    <attribute name="xml"/>
+    <attribute name="bits"/>
+    <attribute name="ico" default="${ico}"/>
+    <attribute name="msi" default="${msi}"/>
+    <attribute name="app" default="${app}"/>
+    <attribute name="app2" default="${app2}"/>
+    <attribute name="app3" default="${app3}"/>
+    <attribute name="app4" default="${app4}"/>
+    <attribute name="app5" default="${app5}"/>
+    <sequential>
+      <exemacro appx="@{app}" bits="@{bits}" ico="@{ico}"/>
+      <exemacro appx="@{app2}" bits="@{bits}" ico="@{ico}" unless:blank="@{app2}"/>
+      <exemacro appx="@{app3}" bits="@{bits}" ico="@{ico}" unless:blank="@{app3}"/>
+      <exemacro appx="@{app4}" bits="@{bits}" ico="@{ico}" unless:blank="@{app4}"/>
+      <exemacro appx="@{app5}" bits="@{bits}" ico="@{ico}" unless:blank="@{app5}"/>
+      <exec command="candle ${candle_extra} -o wix.obj @{xml}.xml"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.jheat" fork="true">
+        <arg value="/apps/java/jre"/>
+        <arg value="win@{bits}"/>
+      </java>
+      <exec command="candle -o jre.obj jre.xml"/>
+      <exec command="light ${light_extra} -ext WixUIExtension -cultures:en-us -o @{msi}-${version}-win@{bits}.msi wix.obj jre.obj"/>
+      <delete file="wix.obj"/>
+      <delete file="jre.obj"/>
+      <delete file="jre.xml"/>
+      <delete file="rt.jar"/>
+      <delete file="@{msi}-${version}-win@{bits}.wixpdb"/>
+      <move unless:set="nomove" file="@{msi}-${version}-win@{bits}.msi" todir="${home}/release"/>
+    </sequential>
+  </macrodef>
+
+  <target name="jremsi32" depends="jar,depjars" description="create msi installer file 32bit">
+    <jremsimacro xml="wix32" bits="32"/>
+  </target>
+
+  <target name="jremsi64" depends="jar,depjars"  description="create msi installer file 64bit">
+    <jremsimacro xml="wix64" bits="64"/>
   </target>
 
   <!-- Linux targets -->

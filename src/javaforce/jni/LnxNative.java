@@ -14,16 +14,18 @@ import javaforce.linux.*;
 public class LnxNative {
   static {
     JFNative.load();  //ensure native library is loaded
-    Library libs[] = {new Library("libGL"), new Library("libv4l2"), new Library("libcdio")};
-    if (!JFNative.findLibraries(new File("/usr/lib"), libs, ".so", libs.length)) {
-      for(int a=0;a<libs.length;a++) {
-        if (libs[a].path == null) {
-          System.out.println("Error:Unable to load library:" + libs[a].name + ".so");
+    if (JFNative.loaded) {
+      Library libs[] = {new Library("libGL"), new Library("libv4l2"), new Library("libcdio")};
+      if (!JFNative.findLibraries(new File("/usr/lib"), libs, ".so", libs.length)) {
+        for(int a=0;a<libs.length;a++) {
+          if (libs[a].path == null) {
+            System.out.println("Error:Unable to load library:" + libs[a].name + ".so");
+          }
         }
+        System.exit(0);
       }
-      System.exit(0);
+      lnxInit(libs[0].path, libs[1].path, libs[2].path);
     }
-    lnxInit(libs[0].path, libs[1].path, libs[2].path);
   }
 
   public static void load() {}  //ensure native library is loaded

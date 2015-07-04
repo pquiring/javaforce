@@ -8,7 +8,9 @@ package javaforce.jni;
 public class WinNative {
   static {
     JFNative.load();  //ensure native library is loaded
-    winInit(System.getProperty("java.home") + "\\bin\\jawt.dll");
+    if (JFNative.loaded) {
+      winInit(System.getProperty("java.home") + "\\bin\\jawt.dll");
+    }
   }
 
   public static void load() {}  //ensure native library is loaded

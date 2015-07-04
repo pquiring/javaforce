@@ -146,19 +146,19 @@ int JavaThread(void *ignore) {
 
   if ((*CreateJavaVM)(&jvm, &env, &args) == -1) {
     error("Unable to create Java VM");
-    return -1;
+    return 0;
   }
 
   jclass cls = (*env)->FindClass(env, mainclass);
   if (cls == 0) {
     printException(env);
     error("Unable to find main class");
-    return -1;
+    return 0;
   }
   jmethodID mid = (*env)->GetStaticMethodID(env, cls, method, "([Ljava/lang/String;)V");
   if (mid == 0) {
     error("Unable to find main method");
-    return -1;
+    return 0;
   }
   char **argv = g_argv;
   int argc = g_argc;
@@ -168,6 +168,7 @@ int JavaThread(void *ignore) {
   (*env)->CallStaticVoidMethod(env, cls, mid, ExpandStringArray(env, ConvertStringArray(env, argv, argc)));
   (*jvm)->DestroyJavaVM(jvm);  //waits till all threads are complete
   //NOTE : Swing creates the EDT to keep Java alive until all windows are disposed
+  return 1;
 }
 
 int loadProperties() {
@@ -181,12 +182,12 @@ int loadProperties() {
   javahome[0] = 0;  //detect later
 
   res = FindResource(NULL, MAKEINTRESOURCE(1), RT_RCDATA);
-  if (res == NULL) {error("Unable to FindResource"); return -1;}
+  if (res == NULL) {error("Unable to FindResource"); return 0;}
   size = SizeofResource(NULL, res);
   global = LoadResource(NULL, res);
-  if (global == NULL) {error("Unable to LoadResource"); return -1;}
+  if (global == NULL) {error("Unable to LoadResource"); return 0;}
   data = LockResource(global);
-  if (data == NULL) {error("Unable to LockResource"); return -1;}
+  if (data == NULL) {error("Unable to LockResource"); return 0;}
   str = malloc(size+1);
   memcpy(str, data, size);
   str[size] = 0;  //NULL terminate
@@ -224,46 +225,62 @@ int loadProperties() {
     ln1 = ln2;
   }
   free(str);
-  return 0;
+  return 1;
+}
+
+int exists(char *file) {
+  if (GetFileAttributes(file) == INVALID_FILE_ATTRIBUTES) return 0;
+  return 1;
 }
 
 int findJavaHome() {
+  //try to find JRE in Apps folder
+  strcpy(javahome, exepath);
+  strcat(javahome, "bin\\server\\jvm.dll");
+  if (exists(javahome) == 1) {
+    strcpy(javahome, exepath);
+    char *LastPath = strrchr(javahome, '\\');
+    *LastPath = 0;
+    return 1;
+  }
+
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Runtime Environment", 0, KEY_READ, &key) != 0) {
     error("Unable to open Java Registry");
-    return -1;
+    return 0;
   }
 
   size = 0;
   if (RegQueryValueEx(key, "CurrentVersion", 0, (LPDWORD)&type, 0, (LPDWORD)&size) != 0 || (type != REG_SZ) || (size > MAX_PATH)) {
     error("Unable to open Java Registry");
-    return -1;
+    return 0;
   }
 
   size = MAX_PATH;
   if (RegQueryValueEx(key, "CurrentVersion", 0, 0, version, (LPDWORD)&size) != 0) {
     error("Unable to open Java Registry");
-    return -1;
+    return 0;
   }
 
   if (RegOpenKeyEx(key, version, 0, KEY_READ, &subkey) != 0) {
     error("Unable to open Java Registry");
-    return -1;
+    return 0;
   }
 
   size = 0;
   if (RegQueryValueEx(subkey, "JavaHome", 0, (LPDWORD)&type, 0, (LPDWORD)&size) != 0 || (type != REG_SZ) || (size > MAX_PATH)) {
     error("Unable to open Java Registry");
-    return -1;
+    return 0;
   }
 
   size = MAX_PATH;
   if (RegQueryValueEx(subkey, "JavaHome", 0, 0, javahome, (LPDWORD)&size) != 0) {
     error("Unable to open Java Registry");
-    return -1;
+    return 0;
   }
 
   RegCloseKey(key);
   RegCloseKey(subkey);
+  return 1;
 }
 
 /** Main entry point. */
@@ -278,14 +295,14 @@ int main(int argc, char **argv) {
   LastPath++;
   *LastPath = 0;
 
-  if (loadProperties() == -1) {
+  if (loadProperties() == 0) {
     error("Unable to load properties");
-    return -1;
+    return 2;
   }
 
   if (javahome[0] == 0) {
-    if (findJavaHome() == -1) {
-      return -1;
+    if (findJavaHome() == 0) {
+      return 2;
     }
   }
 
@@ -308,14 +325,14 @@ int main(int argc, char **argv) {
     strcat(dll, "\\bin\\client\\jvm.dll");
     if ((jvm_dll = LoadLibrary(dll)) == 0) {
       error("Unable to open jvm.dll");
-      return -1;
+      return 2;
     }
   }
 
   CreateJavaVM = (int (*)(void*,void*,void*)) GetProcAddress(jvm_dll, "JNI_CreateJavaVM");
-  if (CreateJavaVM == 0) {
+  if (CreateJavaVM == NULL) {
     error("Unable to find Java interfaces in jvm.dll");
-    return -1;
+    return 2;
   }
 
   //now continue in new thread (not really necessary but avoids some Java bugs)

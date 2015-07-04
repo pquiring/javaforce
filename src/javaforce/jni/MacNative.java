@@ -8,7 +8,9 @@ package javaforce.jni;
 public class MacNative {
   static {
     JFNative.load();  //ensure native library is loaded
-    macInit();
+    if (JFNative.loaded) {
+      macInit();
+    }
   }
 
   public static void load() {}  //ensure native library is loaded

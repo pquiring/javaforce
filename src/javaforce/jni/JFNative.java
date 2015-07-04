@@ -37,13 +37,13 @@ public class JFNative {
         }
       }
       System.load(lib.path);
+      loaded = true;
     } catch (Throwable t) {
-      t.printStackTrace();
-      JF.showError("Error", "Unable to load native code");
-      System.exit(0);
+      JFLog.log("Error:" + t);
     }
   }
   public static void load() {}  //ensure native library is loaded
+  public static boolean loaded;
 
   /** Find native libraries in folder (recursive). */
   public static boolean findLibraries(File folder, Library libs[], String ext, int needed) {

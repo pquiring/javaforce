@@ -33,6 +33,7 @@
         <include name="jf/base.xml"/>
         <include name="jf/jopen.html"/>
         <include name="jf/files.lst"/>
+        <include name="jf/nojre.xml"/>
         <include name="jf/deb/*"/>
         <include name="jf/javaforce.spec"/>
         <include name="jf/lnxbin/*"/>

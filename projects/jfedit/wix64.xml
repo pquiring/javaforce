@@ -73,6 +73,7 @@
     <Feature Id="MainApplication" Title="Main Application" Level="1">
       <ComponentRef Id="appfiles" />
       <ComponentRef Id="ApplicationShortcut" />
+      <ComponentGroupRef Id="JRE" />
     </Feature>
   </Product>
 </Wix>

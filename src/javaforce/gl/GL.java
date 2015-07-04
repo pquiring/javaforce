@@ -206,6 +206,7 @@ public class GL {
   public static final int GL_MAX_TEXTURE_SIZE = 0x0D33;
   public static final int GL_MAX_VERTEX_ATTRIBS = 0x8869;
   public static final int GL_MAX_VERTEX_UNIFORM_COMPONENTS = 0x8B4A;
+  public static final int GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS = 0x8B4D;
   public static final int GL_CW = 0x900;
   public static final int GL_CCW = 0x0901;
   public static final int GL_CULL_FACE = 0x0b44;

@@ -1,5 +1,16 @@
 What's new...
 
+Jun ?/2015 : JF 9.4.0 released!
+  - MSI packages can now include a stripped down JRE
+    - new ant tasks: jremsi32 and jremsi64
+    - only required files are included (see javaforce.utils.jheat)
+    - even the rt.jar is cut down in size
+    - the MSI files are only 20MBs larger with the JRE bundled
+      - javapackager makes the MSI files 50+MBs larger (too big)
+    - no more problems with missing JRE or wrong JRE installed (32/64bit)
+    - consider jvm.dll as just another toolkit like qt.dll or gtk.dll
+    - only supports Java8 for now, Java9 will require an overhaul (jimage)
+
 Jun 30/2015 : JF 9.3.0 released!
   - VoIP fixes:
     - handle QOP auth better

@@ -39,6 +39,7 @@ public class Camera {
   private native int cameraGetHeight();
 
   public boolean init() {
+    if (!JFNative.loaded) return false;
     return cameraInit();
   }
 
