@@ -234,7 +234,7 @@ public class jheat {
     }
     try {
       File test = new File(java_home + "/release");
-      if (!test.exists()) throw new Exception("JAVA_HOME not valid");
+      if (!test.exists()) throw new Exception("JAVA_HOME not valid:" + java_home);
 
       outHeader();
 

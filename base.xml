@@ -1,5 +1,7 @@
 <!-- Note : Requires ANT 1.9.1+ -->
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
+  <property file="${home}/base.properties"/>
+
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcepath="src" sourcefiles="src/*.java" destdir="javadoc">
       <classpath>
@@ -77,6 +79,7 @@
   <macrodef name="jremsimacro">
     <attribute name="xml"/>
     <attribute name="bits"/>
+    <attribute name="jre"/>
     <attribute name="ico" default="${ico}"/>
     <attribute name="msi" default="${msi}"/>
     <attribute name="app" default="${app}"/>
@@ -92,7 +95,7 @@
       <exemacro appx="@{app5}" bits="@{bits}" ico="@{ico}" unless:blank="@{app5}"/>
       <exec command="candle ${candle_extra} -o wix.obj @{xml}.xml"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.jheat" fork="true">
-        <arg value="/apps/java/jre"/>
+        <arg value="@{jre}"/>
         <arg value="win@{bits}"/>
       </java>
       <exec command="candle -o jre.obj jre.xml"/>
@@ -107,11 +110,11 @@
   </macrodef>
 
   <target name="jremsi32" depends="jar,depjars" description="create msi installer file 32bit">
-    <jremsimacro xml="wix32" bits="32"/>
+    <jremsimacro xml="wix32" bits="32" jre="${jre32}"/>
   </target>
 
   <target name="jremsi64" depends="jar,depjars"  description="create msi installer file 64bit">
-    <jremsimacro xml="wix64" bits="64"/>
+    <jremsimacro xml="wix64" bits="64" jre="${jre64}"/>
   </target>
 
   <!-- Linux targets -->
