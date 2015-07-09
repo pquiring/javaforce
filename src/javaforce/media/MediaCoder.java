@@ -20,8 +20,10 @@ public class MediaCoder {
   static {
     if (!inited) {
       JFNative.load();
-      init();
-      inited = true;
+      if (JFNative.loaded) {
+        init();
+        inited = true;
+      }
     }
   }
   /** Loads the media framework native libraries. */
@@ -51,7 +53,7 @@ public class MediaCoder {
       , new Library("swresample", true)  //(ffmpeg)
       , new Library("avresample", true)  //(libav_org)
     };
-    JFNative.findLibraries(sysFolder, libs, ext, libs.length-1);
+    JFNative.findLibraries(sysFolder, libs, ext, libs.length-1, true);
     if (libs[6].path != null) {
       libav_org = false;
     } else if (libs[7].path != null) {

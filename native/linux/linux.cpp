@@ -1065,7 +1065,7 @@ static int _chmod(const char *path, mode_t mode) {
   return ret;
 }
 
-static int _truncate(const char *path, long size) {
+static int _truncate(const char *path, off_t size) {
   JNIEnv *e = fuseGetEnv();
   jstring jpath = e->NewStringUTF(path);
   int ret = e->CallIntMethod(fuseObj, mid_truncate, jpath, size);

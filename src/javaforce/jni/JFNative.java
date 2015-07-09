@@ -30,14 +30,15 @@ public class JFNative {
         path = "/usr/lib";
       }
       Library lib = new Library("jfnative" + bits);
-      if (!findLibraries(new File("."), new Library[] {lib}, ext, 1)) {
-        if (!findLibraries(new File(path), new Library[] {lib}, ext, 1)) {
-          JF.showError("Error", "Unable to find jfnative library");
-          System.exit(1);
+      if (!findLibraries(new File("."), new Library[] {lib}, ext, 1, false)) {
+        if (!findLibraries(new File(path), new Library[] {lib}, ext, 1, false)) {
+          JFLog.log("Warning:Unable to find jfnative library");
         }
       }
-      System.load(lib.path);
-      loaded = true;
+      if (lib.path != null) {
+        System.load(lib.path);
+        loaded = true;
+      }
     } catch (Throwable t) {
       JFLog.log("Error:" + t);
     }
@@ -46,7 +47,7 @@ public class JFNative {
   public static boolean loaded;
 
   /** Find native libraries in folder (recursive). */
-  public static boolean findLibraries(File folder, Library libs[], String ext, int needed) {
+  public static boolean findLibraries(File folder, Library libs[], String ext, int needed, boolean recursive) {
     File[] files = folder.listFiles();
     if (files == null) {
       return false;
@@ -66,6 +67,7 @@ public class JFNative {
       File file = files[a];
       String fileName = files[a].getName();
       if (file.isDirectory()) {
+        if (!recursive) continue;
         if (JF.isUnix()) {
           //Ubuntu has i386 folders on 64bit systems
           String path = file.getName();
@@ -74,9 +76,11 @@ public class JFNative {
             if (path.contains("i486")) continue;
             if (path.contains("i586")) continue;
             if (path.contains("i686")) continue;
+          } else {
+            if (path.contains("x86_64")) continue;
           }
         }
-        if (findLibraries(file, libs, ext, needed)) return true;
+        if (findLibraries(file, libs, ext, needed, recursive)) return true;
       } else if (fileName.contains(ext)) {
         int cnt = 0;
         boolean once = false;

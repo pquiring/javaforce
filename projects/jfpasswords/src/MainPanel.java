@@ -1269,7 +1269,7 @@ public class MainPanel extends javax.swing.JPanel {
           int rows[] = entries.getSelectedRows();
           t.data.entries = new XML.XMLTag[rows.length];
           for(int row=0;row<rows.length;row++) {
-            String title = (String)entries.getValueAt(row, 0);
+            String title = (String)entries.getValueAt(rows[row], 0);
             int cnt = group.getChildCount();
             boolean ok = false;
             XML.XMLTag child = null;

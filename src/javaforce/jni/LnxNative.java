@@ -16,7 +16,7 @@ public class LnxNative {
     JFNative.load();  //ensure native library is loaded
     if (JFNative.loaded) {
       Library libs[] = {new Library("libGL"), new Library("libv4l2"), new Library("libcdio")};
-      if (!JFNative.findLibraries(new File("/usr/lib"), libs, ".so", libs.length)) {
+      if (!JFNative.findLibraries(new File("/usr/lib"), libs, ".so", libs.length, true)) {
         for(int a=0;a<libs.length;a++) {
           if (libs[a].path == null) {
             System.out.println("Error:Unable to load library:" + libs[a].name + ".so");

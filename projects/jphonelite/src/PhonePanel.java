@@ -13,6 +13,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.jni.JFNative;
 import javaforce.voip.*;
 
 /** jphonelite Panel */
@@ -1393,6 +1394,7 @@ Line Colors:
   }
 
   public void toggleVideoPanel(int xline) {
+    if (!JFNative.loaded) return;
     if (!Settings.current.nativeVideo) return;
     PhoneLine pl = lines[xline];
     if (pl.videoWindow == null) {

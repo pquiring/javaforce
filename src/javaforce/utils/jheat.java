@@ -43,30 +43,32 @@ public class jheat {
     if (file.startsWith("com/sun/jmx")) return true;
     if (file.startsWith("com/sun/jndi")) return true;
     if (file.startsWith("com/sun/org/")) return true;
-//    if (file.startsWith("com/sun/org/glassfish")) return true;
-//    if (file.startsWith("com/sun/org/omg")) return true;
-    if (file.startsWith("com/sun/xml")) return true;
-    if (file.startsWith("com/sun/security")) return true;
-    if (file.startsWith("org/omg")) return true;
-    if (file.startsWith("org/jcp")) return true;
-    if (file.startsWith("org/w3c")) return true;
-    if (file.startsWith("org/xml")) return true;
-    if (file.startsWith("sun/applet")) return true;
-    if (file.startsWith("sun/corba")) return true;
-    if (file.startsWith("sun/rmi")) return true;
-    if (file.startsWith("sun/launcher")) return true;
-    if (file.startsWith("java/rmi")) return true;
-    if (file.startsWith("javax/xml")) return true;
+    if (file.startsWith("com/sun/xml/")) return true;
+    if (file.startsWith("com/sun/security/")) return true;
+    if (file.startsWith("org/omg/")) return true;
+    if (file.startsWith("org/jcp/")) return true;
+    if (file.startsWith("org/w3c/")) return true;
+    if (file.startsWith("org/xml/")) return true;
+    if (file.startsWith("sun/applet/")) return true;
+    if (file.startsWith("sun/corba/")) return true;
+    if (file.startsWith("sun/rmi/")) return true;
+    if (file.startsWith("sun/launcher/")) return true;
+    if (file.startsWith("java/rmi/")) return true;
+    if (file.startsWith("javax/xml/")) return true;
 //    if (file.startsWith("jdk/")) return true;
     if (!awt) {
-      if (file.startsWith("java/awt")) return true;
+      if (file.startsWith("java/awt/")) return true;
     }
     if (!swing) {
-      if (file.startsWith("javax/swing")) return true;
+      if (file.startsWith("javax/swing/")) return true;
     }
     if (!sql) {
-      if (file.startsWith("java/sql")) return true;
-      if (file.startsWith("javax/sql")) return true;
+      if (file.startsWith("java/sql/")) return true;
+      if (file.startsWith("javax/sql/")) return true;
+    }
+    if (!ssl) {
+      if (file.startsWith("com/sun/net/ssl/")) return true;
+      if (file.startsWith("javax/net/ssl/")) return true;
     }
     return false;
   }
@@ -117,6 +119,10 @@ public class jheat {
     "javafx_font.dll",  //75K
     "javafx_font_t2k.dll",  //539K
     "splashscreen.dll",  //210K
+    "javaws.jar",  //920K
+    "javafx.properties",  //30B
+    "jfxswt.jar",  //33K
+    "jfr.jar",  //555K
   };
 
   private static boolean omitFile(String file) {
@@ -127,6 +133,10 @@ public class jheat {
       if (file.equals("awt.dll")) return true;
       if (file.equals("jawt.dll")) return true;
       if (file.equals("resources.jar")) return true;
+    }
+    if (!ssl) {
+//      if (file.equals("jsse.jar")) return true;  //needed
+      if (file.equals("jce.jar")) return true;
     }
     return false;
   }
@@ -201,6 +211,7 @@ public class jheat {
 
   private static boolean awt = false;
   private static boolean swing = false;
+  private static boolean ssl = false;  //and crypto stuff
   private static boolean sql = false;
 
   private static void loadProperties() {
@@ -214,6 +225,7 @@ public class jheat {
         if (modules[a].equals("awt")) awt = true;
         else if (modules[a].equals("swing")) swing = true;
         else if (modules[a].equals("sql")) sql = true;
+        else if (modules[a].equals("ssl")) ssl = true;
       }
     } catch (Exception e) {
       e.printStackTrace();

@@ -15,8 +15,14 @@
   </target>
 
   <target name="linux" depends="javah"  description="create linux native so">
-    <exec command="gcc -D_FILE_OFFSET_BITS=64 -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux linux.cpp -c -o linux.o -fPIC"/>
-    <exec command="gcc -shared linux.o -lX11 -lpam -o ../jfnative64.so"/>
-    <delete file="linux.o"/>
+
+    <exec command="gcc -D_FILE_OFFSET_BITS=64 -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux linux.cpp -c -o linux64.o -fPIC"/>
+    <exec command="gcc -shared linux64.o -lX11 -lpam -o ../jfnative64.so"/>
+    <delete file="linux64.o"/>
+
+    <exec command="gcc -m32 -D_FILE_OFFSET_BITS=64 -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux linux.cpp -c -o linux32.o -fPIC"/>
+    <exec command="gcc -m32 -shared linux32.o -lX11 -lpam -o ../jfnative32.so"/>
+    <delete file="linux32.o"/>
+
   </target>
 </project>
