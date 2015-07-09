@@ -68,7 +68,7 @@
   <target name="release-src" depends="" description="create release zip file">
     <zip destfile="${app}-${version}-src.zip">
       <fileset dir="../../..">
-        <include name="jf/base.xml"/>
+        <include name="jf/base.*"/>
         <include name="jf/license.txt"/>
         <include name="jf/projects/{$app}/src/*.java"/>
         <include name="jf/projects/{$app}/src/*.form"/>

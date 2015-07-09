@@ -71,7 +71,7 @@
     <zip destfile="jfrecorddesktop-src-${version}.zip">
       <fileset dir="../../..">
         <include name="jf/license.txt"/>
-        <include name="jf/base.xml"/>
+        <include name="jf/base.*"/>
         <include name="jf/projects/jfrecorddesktop/*.java"/>
         <include name="jf/projects/jfrecorddesktop/*.form"/>
         <include name="jf/projects/jfrecorddesktop/*.txt"/>

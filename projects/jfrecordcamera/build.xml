@@ -70,7 +70,7 @@
     <zip destfile="${app}-src-${version}.zip">
       <fileset dir="../../..">
         <include name="jf/license.txt"/>
-        <include name="jf/base.xml"/>
+        <include name="jf/base.*"/>
         <include name="jf/projects/${app}/src/*.java"/>
         <include name="jf/projects/${app}/src/*.form"/>
         <include name="jf/projects/${app}/*.txt"/>

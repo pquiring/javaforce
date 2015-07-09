@@ -123,7 +123,7 @@
     <zip destfile="jpbxlite-src-${version}.zip">
       <fileset dir="../../..">
         <include name="jf/license.txt"/>
-        <include name="jf/base.xml"/>
+        <include name="jf/base.*"/>
 
         <include name="jf/jars/derby.jar"/>
         <include name="jf/jars/bouncycastle.jar"/>

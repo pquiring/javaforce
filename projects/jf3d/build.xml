@@ -67,7 +67,7 @@
   <target name="release-src" depends="" description="create release zip file">
     <zip destfile="jf3d-${version}-src.zip">
       <fileset dir="../../..">
-        <include name="jf/base.xml"/>
+        <include name="jf/base.*"/>
         <include name="jf/license.txt"/>
         <include name="jf/projects/j3d/src/*.java"/>
         <include name="jf/projects/j3d/src/*.form"/>

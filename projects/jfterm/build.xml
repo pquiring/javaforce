@@ -90,7 +90,7 @@
     <zip destfile="jfterm-src-${version}.zip">
       <fileset dir="../../..">
         <include name="jf/license.txt"/>
-        <include name="jf/base.xml"/>
+        <include name="jf/base.*"/>
         <include name="jf/projects/jfterm/src/*.java"/>
         <include name="jf/projects/jfterm/src/*.form"/>
         <include name="jf/projects/jfterm/*.png"/>

@@ -31,6 +31,7 @@
         <include name="jf/license.txt"/>
         <include name="jf/build.xml"/>
         <include name="jf/base.xml"/>
+        <include name="jf/base.properties"/>
         <include name="jf/jopen.html"/>
         <include name="jf/files.lst"/>
         <include name="jf/nojre.xml"/>
