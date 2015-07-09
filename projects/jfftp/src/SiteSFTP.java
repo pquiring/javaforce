@@ -130,6 +130,7 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
 
   @Override
   public void download_file(File remote, File local) {
+    total = 0;
     try {
       FileOutputStream fos = new FileOutputStream(local);
       //BUG : no progress!
@@ -143,6 +144,7 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
 
   @Override
   public void upload_file(File local, File remote) {
+    total = 0;
     try {
       FileInputStream fis = new FileInputStream(local);
       //BUG : no progress!
@@ -230,10 +232,12 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
 
   //SftpProgressMonitor
   public void init(int op, String src, String dest, long max) {
+//    JFLog.log("sftp:init");
     total = 0;
   }
 
   public boolean count(long l) {
+//    JFLog.log("sftp:count:" + l);
     total += l;
     setProgress(total);
     return true;  //continue operation

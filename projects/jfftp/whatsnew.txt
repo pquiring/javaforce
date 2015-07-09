@@ -1,6 +1,9 @@
 jfFTP
 =====
 
+Jul 9, 2015 - version 0.7
+  - fix : progress bar was not reset for each download/upload via sftp
+
 Mar 26, 2015 - version 0.6
   - fix : ftp support improved (fault tolerance)
 

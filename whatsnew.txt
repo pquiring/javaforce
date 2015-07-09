@@ -16,6 +16,9 @@ Jul 9/2015 : JF 9.4.0 released!
     - improve support for Linux
   - jfPasswords/0.14 released!
     - fixed drag and drop entries between groups
+  - jfFTP/0.7 released!
+    - fixed progress bar with sftp transfers
+  - larger jars are now downloaded with ant get tasks
 
 Jun 30/2015 : JF 9.3.0 released!
   - VoIP fixes:

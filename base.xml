@@ -17,6 +17,15 @@
     </copy>
   </target>
 
+  <!-- need this to download ONLY if file doesn't exist -->
+  <macrodef name="download">
+    <attribute name="url"/>
+    <attribute name="dest"/>
+    <sequential>
+      <get src="@{url}" dest="@{dest}" usetimestamp="true"/>
+    </sequential>
+  </macrodef>
+
   <!-- Windows targets -->
 
   <macrodef name="exemacro">

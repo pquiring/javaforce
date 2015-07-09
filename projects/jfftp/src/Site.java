@@ -1123,12 +1123,12 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
   private int progressPercent = 0;
 
   public void setProgress(int value) {
-//    System.out.println("setProgress:" + value);
     float x = value;
     float y = totalFileSize;
     int newPercent = (int) (x / y * 100.0f);
     if (newPercent == progressPercent) return;
     progressPercent = newPercent;
+//    System.out.println("setProgress:" + newPercent);
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
         progress.setValue(progressPercent);

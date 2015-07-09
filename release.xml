@@ -151,6 +151,9 @@
         <include name="jf/native/*.so"/>
 
         <include name="jf/jars/*.jar"/>
+        <exclude name="jf/jars/bouncycastle.jar"/>
+        <exclude name="jf/jars/derby.jar"/>
+        <exclude name="jf/jars/android.jar"/>
         <include name="jf/jars/*.txt"/>
       </fileset>
     </zip>
