@@ -4,8 +4,9 @@ Jul 9/2015 : JF 9.4.0 released!
   - JFNative no longer exits if the jfnative libraries are not found
   - now includes 32bit linux native libraries
   - MSI packages can now include a stripped down JRE
+    - see javaforce.utils.jheat
     - new ant tasks: jremsi32 and jremsi64
-    - only required files are included (see javaforce.utils.jheat)
+    - only required files are included
     - even the rt.jar is cut down in size
     - the MSI files are only 20MBs larger with the JRE bundled
       - javapackager makes the MSI files 50+MBs larger (too big)
@@ -18,6 +19,9 @@ Jul 9/2015 : JF 9.4.0 released!
     - fixed drag and drop entries between groups
   - jfFTP/0.7 released!
     - fixed progress bar with sftp transfers
+  - jfWebProxy/1.5.0 released!
+    - a proxy server that uses jsp or php webservers hosted else where
+    - formerly jGAEProxy (released separately)
   - some larger jars in /jars are now downloaded with ant get tasks
 
 Jun 30/2015 : JF 9.3.0 released!
