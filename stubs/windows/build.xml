@@ -4,10 +4,10 @@
 
   <!-- Requires cygwin/mingw in PATH -->
   <target name="windows" description="create windows stubs">
-    <exec command="i686-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' windows.c -Wl,-subsystem,windows -o ../win32.exe"/>
-    <exec command="x86_64-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' windows.c -Wl,-subsystem,windows -o ../win64.exe"/>
-    <exec command="i686-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' windows.c -Wl,-subsystem,console -o ../win32c.exe"/>
-    <exec command="x86_64-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' windows.c -Wl,-subsystem,console -o ../win64c.exe"/>
+    <exec command="i686-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ windows.c download.cpp -Wl,-subsystem,windows -lurlmon -lstdc++ -o ../win32.exe"/>
+    <exec command="x86_64-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ windows.c download.cpp -Wl,-subsystem,windows -lurlmon -lstdc++ -o ../win64.exe"/>
+    <exec command="i686-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ windows.c download.cpp -Wl,-subsystem,console -lurlmon -lstdc++ -o ../win32c.exe"/>
+    <exec command="x86_64-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ windows.c download.cpp -Wl,-subsystem,console -lurlmon -lstdc++ -o ../win64c.exe"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

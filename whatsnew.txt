@@ -1,5 +1,8 @@
 What's new...
 
+Jul ?/2015 : JF 9.5.0 released!
+  - Window native launcher can now download Java if not found
+
 Jul 9/2015 : JF 9.4.0 released!
   - JFNative no longer exits if the jfnative libraries are not found
   - now includes 32bit linux native libraries

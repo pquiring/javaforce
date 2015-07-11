@@ -19,6 +19,8 @@
 
 #include <jni.h>
 
+extern int DownloadJRE();
+
 /* Global variables */
 HKEY key, subkey;
 int type;
@@ -233,48 +235,80 @@ int exists(char *file) {
   return 1;
 }
 
-int findJavaHome() {
+int findJavaHomeAppFolder() {
   //try to find JRE in Apps folder
   strcpy(javahome, exepath);
+  int sl = strlen(javahome);
   strcat(javahome, "bin\\server\\jvm.dll");
   if (exists(javahome) == 1) {
-    strcpy(javahome, exepath);
-    char *LastPath = strrchr(javahome, '\\');
-    *LastPath = 0;
+    javahome[sl] = 0;
     return 1;
   }
+  javahome[sl] = 0;
+  strcat(javahome, "bin\\client\\jvm.dll");
+  if (exists(javahome) == 1) {
+    javahome[sl] = 0;
+    return 1;
+  }
+  return 0;
+}
 
+int findJavaHomeAppDataFolder() {
+  //try to find JRE in %AppData% folder
+  GetEnvironmentVariable("APPDATA", javahome, MAX_PATH);
+  strcat(javahome, "\\java\\jre");
+  if (sizeof(void*) == 4)
+    strcat(javahome, "32");
+  else
+    strcat(javahome, "64");
+  int sl = strlen(javahome);
+  strcat(javahome, "\\bin\\server\\jvm.dll");
+  if (exists(javahome) == 1) {
+    javahome[sl] = 0;
+    return 1;
+  }
+  javahome[sl] = 0;
+  strcat(javahome, "\\bin\\client\\jvm.dll");
+  if (exists(javahome) == 1) {
+    javahome[sl] = 0;
+    return 1;
+  }
+  return 0;
+}
+
+int findJavaHomeRegistry(int showError) {
+  //try to find JRE in Registry
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Runtime Environment", 0, KEY_READ, &key) != 0) {
-    error("Unable to open Java Registry");
+    if (showError) error("Unable to open Java Registry");
     return 0;
   }
 
   size = 0;
   if (RegQueryValueEx(key, "CurrentVersion", 0, (LPDWORD)&type, 0, (LPDWORD)&size) != 0 || (type != REG_SZ) || (size > MAX_PATH)) {
-    error("Unable to open Java Registry");
+    if (showError) error("Unable to open Java Registry");
     return 0;
   }
 
   size = MAX_PATH;
   if (RegQueryValueEx(key, "CurrentVersion", 0, 0, version, (LPDWORD)&size) != 0) {
-    error("Unable to open Java Registry");
+    if (showError) error("Unable to open Java Registry");
     return 0;
   }
 
   if (RegOpenKeyEx(key, version, 0, KEY_READ, &subkey) != 0) {
-    error("Unable to open Java Registry");
+    if (showError) error("Unable to open Java Registry");
     return 0;
   }
 
   size = 0;
   if (RegQueryValueEx(subkey, "JavaHome", 0, (LPDWORD)&type, 0, (LPDWORD)&size) != 0 || (type != REG_SZ) || (size > MAX_PATH)) {
-    error("Unable to open Java Registry");
+    if (showError) error("Unable to open Java Registry");
     return 0;
   }
 
   size = MAX_PATH;
   if (RegQueryValueEx(subkey, "JavaHome", 0, 0, javahome, (LPDWORD)&size) != 0) {
-    error("Unable to open Java Registry");
+    if (showError) error("Unable to open Java Registry");
     return 0;
   }
 
@@ -301,8 +335,24 @@ int main(int argc, char **argv) {
   }
 
   if (javahome[0] == 0) {
-    if (findJavaHome() == 0) {
-      return 2;
+    if (findJavaHomeAppFolder() == 0) {
+      if (findJavaHomeRegistry(FALSE) == 0) {
+        if (findJavaHomeAppDataFolder() == 0) {
+          int result = MessageBox(NULL, "This application requires Java which was not detected.\nWould like to download now?", "Java Virtual Machine Launcher", (MB_OKCANCEL | MB_ICONQUESTION | MB_APPLMODAL));
+          if (result != IDOK) {
+            return 2;
+          }
+          //try to download java
+          if (DownloadJRE() == 0) {
+            error("Failed to download Java (error 1)");
+            return 2;
+          }
+          if (findJavaHomeAppDataFolder() == 0) {
+            error("Failed to download Java (error 2)");
+            return 2;
+          }
+        }
+      }
     }
   }
 
