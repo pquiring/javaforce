@@ -1,6 +1,7 @@
 <project name="rdp" default="jar" basedir=".">
   <description>rdp</description>
   <!-- set global properties for this build -->
+  <property name="msi" value="jfrdp"/>
   <property name="app" value="jfrdpclient"/>
   <property name="app2" value="jfrdpserver"/>
   <property name="home" location="../.."/>

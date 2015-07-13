@@ -275,6 +275,7 @@ struct RDP {
   MyClass *cls;
   char *cs;
   volatile int active;
+  volatile int done;
   int threadId;
 };
 
@@ -322,7 +323,7 @@ JNIEXPORT jlong JNICALL Java_server_WDS_startServer
     , NULL, CLSCTX_ALL
     , IID_IUnknown, (void**)&rdp->rdpUnknown);
   if (res != 0) {
-    printf("CoCreateInstance failed\n");
+    printf("CoCreateInstance failed:%08x\n", res);
     return 0;
   }
 
@@ -511,7 +512,9 @@ JNIEXPORT void JNICALL Java_server_WDS_runServer
     rdp->rdpCP->Release();
     rdp->rdpCP = NULL;
   }
+  rdp->done = TRUE;
 
+  printf("CoUninit\n");
   CoUninitialize();
 }
 
@@ -521,6 +524,12 @@ JNIEXPORT void JNICALL Java_server_WDS_stopServer
   RDP *rdp = (RDP*)id;
   rdp->active = FALSE;
   PostThreadMessage(rdp->threadId,WM_USER,0,0);
+  //wait for service to finish
+  while (!rdp->done) {
+    Sleep(10);
+  };
+
+  delete rdp;
 }
 
 JNIEXPORT jstring JNICALL Java_server_WDS_getConnectionString

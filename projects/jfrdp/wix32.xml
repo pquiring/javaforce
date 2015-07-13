@@ -3,6 +3,7 @@
   <Product Id="*" UpgradeCode="{FBDD3492-042E-4FA7-8066-95E8A6FE12DA}" Version="0.4" Language="1033" Name="jfRDP" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
+    <UIRef Id="WixUI_Minimal" />
 
     <Icon Id="icon.ico" SourceFile="jfrdp.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
@@ -46,7 +47,7 @@
         <RegistryValue Root="HKCU" Key="Software\Microsoft\jfRDPClient" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
       <Component Id="ServerShortcut" Guid="{00ABCFED-A755-4C57-A285-26405D8F44D1}">
-        <Shortcut Id="ApplicationStartMenuShortcutServer" Name="jfRDP Client" Description="Java RDP Server" Target="[APPLICATIONROOTDIRECTORY]jfrdpserver.exe"
+        <Shortcut Id="ApplicationStartMenuShortcutServer" Name="jfRDP Server" Description="Java RDP Server" Target="[APPLICATIONROOTDIRECTORY]jfrdpserver.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
