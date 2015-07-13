@@ -7,7 +7,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
-  <property name="version" value="0.3"/>
+  <property name="version" value="0.4"/>
   <property environment="env"/>
 
   <import file="../../base.xml"/>
@@ -68,7 +68,7 @@
         <include name="jfrdp/run*.bat"/>
       </fileset>
     </zip>
-    <move file="jfrdp-${version}.zip" todir="${user.home}/zips"/>
+    <move file="jfrdp-${version}.zip" todir="${home}/release"/>
   </target>
 
   <target name="release-src" depends="" description="create release zip file">
@@ -89,7 +89,7 @@
         <include name="jf/stubs/*"/>
       </fileset>
     </zip>
-    <move file="jfrdp-src-${version}.zip" todir="${user.home}/zips"/>
+    <move file="jfrdp-src-${version}.zip" todir="${home}/release"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

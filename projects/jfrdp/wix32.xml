@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{FBDD3492-042E-4FA7-8066-95E8A6FE12DA}" Version="0.3" Language="1033" Name="jfRDP" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{FBDD3492-042E-4FA7-8066-95E8A6FE12DA}" Version="0.4" Language="1033" Name="jfRDP" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
 
@@ -24,12 +24,12 @@
         <File Id="javaforce.jar" Source="javaforce.jar" KeyPath="yes"/>
       </Component>
       <Component Id="clientfiles" Guid="{39D920DA-DA07-48E4-8330-11B936A57BEA}">
-        <File Id="jfrdp-client.jar" Source="jfrdp-client.jar" KeyPath="yes"/>
+        <File Id="jfrdpclient.jar" Source="jfrdp-client.jar" KeyPath="yes"/>
         <File Id="jfrdpclient.exe" Source="jfrdpclient.exe"/>
         <File Id="client32.dll" Source="client32.dll"/>
       </Component>
       <Component Id="serverfiles" Guid="{39D920DA-DA07-48E4-8330-11B936A57BEB}">
-        <File Id="jfrdp-server.jar" Source="jfrdp-server.jar" KeyPath="yes"/>
+        <File Id="jfrdpserver.jar" Source="jfrdp-server.jar" KeyPath="yes"/>
         <File Id="jfrdpserver.exe" Source="jfrdpserver.exe"/>
         <File Id="server32.dll" Source="server32.dll"/>
       </Component>
@@ -39,14 +39,14 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ClientShortcut" Guid="{00ABCFED-A755-4C57-A285-26405D8F44D0}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfRDP Client" Description="Java RDP Client" Target="[APPLICATIONROOTDIRECTORY]jfrdpclient.exe"
+        <Shortcut Id="ApplicationStartMenuShortcutClient" Name="jfRDP Client" Description="Java RDP Client" Target="[APPLICATIONROOTDIRECTORY]jfrdpclient.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
         <RegistryValue Root="HKCU" Key="Software\Microsoft\jfRDPClient" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
       <Component Id="ServerShortcut" Guid="{00ABCFED-A755-4C57-A285-26405D8F44D1}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfRDP Client" Description="Java RDP Server" Target="[APPLICATIONROOTDIRECTORY]jfrdpserver.exe"
+        <Shortcut Id="ApplicationStartMenuShortcutServer" Name="jfRDP Client" Description="Java RDP Server" Target="[APPLICATIONROOTDIRECTORY]jfrdpserver.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
@@ -55,14 +55,14 @@
     </DirectoryRef>
 
     <!-- Step 3: Tell WiX to install the files -->
-    <Feature Id="Common Files" Title="Common Files" Level="1">
+    <Feature Id="CommonFiles" Title="Common Files" Level="1">
       <ComponentRef Id="commonfiles" />
     </Feature>
-    <Feature Id="Client Files" Title="Main Application" Level="1">
+    <Feature Id="ClientFiles" Title="Main Application" Level="1">
       <ComponentRef Id="clientfiles" />
       <ComponentRef Id="ClientShortcut" />
     </Feature>
-    <Feature Id="Server Files" Title="Main Application" Level="1">
+    <Feature Id="ServerFiles" Title="Main Application" Level="1">
       <ComponentRef Id="serverfiles" />
       <ComponentRef Id="ServerShortcut" />
     </Feature>
