@@ -14,7 +14,7 @@ public class GLMatrix implements Cloneable {
     vec = new GLVector3();
     r = new float[16];
   }
-  //this ctor does not create tmp,vec,r
+  //this ctor does not create mat,vec,r
   private GLMatrix(boolean dummy) {
     setIdentity();
   }
