@@ -11,10 +11,9 @@ A RDP password that allows the client to connect to the RDP session.
 The server needs to generate an SSL certificate for the embedded webserver.
 Click on the "Generate SSL Certificate" button once to create it.
 Then set your passwords and your server is ready.
+You can also allow multiple users to connect in viewonly mode (broadcasting).
 
-jfRDP is written in Java.
-
-To have the server start when you login place the shortcut in your Startup folder.
+To have the server start when you login place the server shortcut in your Startup folder.
 
 WebSite: http://jfrdp.sourceforge.net
 

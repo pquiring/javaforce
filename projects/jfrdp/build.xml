@@ -76,7 +76,7 @@
     <zip destfile="jfrdp-src-${version}.zip">
       <fileset dir="../../..">
         <include name="jf/license.txt"/>
-        <include name="jf/base.xml"/>
+        <include name="jf/base.*"/>
         <include name="jf/projects/jfrdp/src/**/*.java"/>
         <include name="jf/projects/jfrdp/src/**/*.form"/>
         <include name="jf/projects/jfrdp/*.txt"/>
@@ -84,6 +84,8 @@
         <include name="jf/projects/jfrdp/*.png"/>
         <include name="jf/projects/jfrdp/*.ico"/>
         <include name="jf/projects/jfrdp/*.cfg"/>
+        <include name="jf/projects/jfrdp/*.cpp"/>
+        <include name="jf/projects/jfrdp/*.h"/>
         <include name="jf/projects/jfrdp/run*.bat"/>
         <include name="jf/projects/jfrdp/nbproject/*.xml"/>
         <include name="jf/jars/javaforce.jar"/>

@@ -1,7 +1,7 @@
 <project name="javaforce-release" default="zip" basedir=".">
   <description>JavaForce release script</description>
 
-  <property name="VERSION" value="9.4.0"/>
+  <property name="VERSION" value="9.5.0"/>
   <property name="URL" value="http://javaforce.sourceforge.net"/>
   <property name="EMAIL" value="pquiring@gmail.com"/>
 
@@ -76,7 +76,6 @@
 
         <exclude name="jf/src/javaforce/installer/**/*"/>  <!-- testing -->
 
-        <exclude name="**/*.h"/>
         <exclude name="**/sf/*"/>
         <exclude name="**/crx/*"/>
         <exclude name="jf/projects/jpbxlite/jpbxDB/**/*"/>

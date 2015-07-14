@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 9.4.0
+Version 9.5.0
 
 What is it?
 ===========
@@ -99,7 +99,7 @@ pquiring@gmail.com
 
 http://javaforce.sourceforge.net
 
-Version 9.4.0
+Version 9.5.0
 
-Released : July 9 2015
+Released : July 14 2015
 
