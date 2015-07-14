@@ -17,16 +17,20 @@ public class Service implements WebHandler {
   private String rdpPass;
   private volatile long rdp;
   private String cs;
+  private int maxUsers;
+  private boolean viewOnly;
 
   private ServerSocket ss;
 
-  public void start(String webPass, String rdpPass) {
+  public void start(String webPass, String rdpPass, int maxUsers, boolean viewOnly) {
     if (webPass == null || rdpPass.length() == 0) {
       return;
     }
     this.rdpPass = rdpPass;
     String u_p = ":" + webPass;
     base64_password = new String(Base64.encode(u_p.getBytes()));
+    this.maxUsers = maxUsers;
+    this.viewOnly = viewOnly;
     web = new Web();
     if (!web.start(this, 33001, true)) {
       JF.showError("Error", "Failed to start Web Server");
@@ -47,7 +51,6 @@ public class Service implements WebHandler {
   }
 
   public void disconnect() {
-    System.out.println("RDP.disconnect()");
     if (rdp != 0) {
       WDS.stopServer(rdp);
       rdp = 0;
@@ -86,23 +89,24 @@ public class Service implements WebHandler {
       try {res.write("Server setup incomplete".getBytes());} catch (Exception e) {e.printStackTrace();}
       return;
     }
-    if (rdp != 0) {
+    if (maxUsers == 1 && rdp != 0) {
       WDS.stopServer(rdp);
       rdp = 0;
     }
-    cs = null;
-    new Thread() {
-      public void run() {
-        rdp = WDS.startServer("Viewer", "Group", rdpPass, 1, 33002);
-        cs = WDS.getConnectionString(rdp);
-        WDS.runServer(rdp);
+    if (rdp == 0) {
+      cs = null;
+      new Thread() {
+        public void run() {
+          rdp = WDS.startServer("Viewer", "Group", rdpPass, maxUsers, viewOnly, 33002);
+          cs = WDS.getConnectionString(rdp);
+          WDS.runServer(rdp);
+        }
+      }.start();
+      while (cs == null) {
+        JF.sleep(10);
       }
-    }.start();
-    while (cs == null) {
-      JF.sleep(10);
+      cs = fixIP(cs, req.getHost());
     }
-    cs = fixIP(cs, req.getHost());
-    System.out.println("Modified ConnectionString=" + cs);
     noCache(res);
     res.setContentType("text/plain");
     try {res.write(cs.getBytes());} catch (Exception e) {e.printStackTrace();}
@@ -143,12 +147,5 @@ public class Service implements WebHandler {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     xml.write(baos);
     return new String(baos.toByteArray());
-  }
-
-  public void onAttendeeConnect() {
-  }
-
-  public void onAttendeeDisconnect() {
-    disconnect();
   }
 }

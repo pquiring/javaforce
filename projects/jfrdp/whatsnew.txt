@@ -3,6 +3,7 @@
   - Windows Desktop Sharing is now configured to listen on port 33002
     - the port redir is no longer required (which makes it faster)
   - server/client combined into one MSI package
+  - added max # concurrent users and view only mode for broadcasting screen to many users
 
 5-23-2015 : v0.3
   - client : added smart sizing button

@@ -10,10 +10,10 @@ extern "C" {
 /*
  * Class:     server_WDS
  * Method:    startServer
- * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;II)J
+ * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;IZI)J
  */
 JNIEXPORT jlong JNICALL Java_server_WDS_startServer
-  (JNIEnv *, jclass, jstring, jstring, jstring, jint, jint);
+  (JNIEnv *, jclass, jstring, jstring, jstring, jint, jboolean, jint);
 
 /*
  * Class:     server_WDS

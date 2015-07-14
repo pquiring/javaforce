@@ -44,7 +44,7 @@ public class Server extends javax.swing.JFrame implements ActionListener {
     JF.centerWindow(this);
     if (sslValid()) {
       service = new Service();
-      service.start(webPassword.getText(), rdpPassword.getText());
+      service.start(webPassword.getText(), rdpPassword.getText(), (Integer)maxUsers.getValue(), viewOnly.isSelected());
     }
   }
 
@@ -96,6 +96,14 @@ public class Server extends javax.swing.JFrame implements ActionListener {
         }
       }
       rdpPassword.setText(rpass);
+      String users = p.getProperty("maxusers");
+      if (users != null) {
+        maxUsers.setValue(JF.atoi(users));
+      }
+      String view = p.getProperty("viewonly");
+      if (view != null && view.equals("true")) {
+        viewOnly.setSelected(true);
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -107,6 +115,8 @@ public class Server extends javax.swing.JFrame implements ActionListener {
       p.setProperty("adminEncodedPassword", encodePassword(adminPassword.getText()));
       p.setProperty("webEncodedPassword", encodePassword(webPassword.getText()));
       p.setProperty("rdpEncodedPassword", encodePassword(rdpPassword.getText()));
+      p.setProperty("maxusers", ((Integer)maxUsers.getValue()).toString());
+      p.setProperty("viewonly", viewOnly.isSelected() ? "true" : "false");
       FileOutputStream fos = new FileOutputStream(JF.getUserPath() + "/.jfrdp-server.cfg");
       p.store(fos, "#jfRDP-server");
       fos.close();
@@ -123,7 +133,7 @@ public class Server extends javax.swing.JFrame implements ActionListener {
     }
     if (sslValid()) {
       service = new Service();
-      service.start(webPassword.getText(), rdpPassword.getText());
+      service.start(webPassword.getText(), rdpPassword.getText(), (Integer)maxUsers.getValue(), viewOnly.isSelected());
     }
   }
 
@@ -174,6 +184,9 @@ public class Server extends javax.swing.JFrame implements ActionListener {
     donate = new javax.swing.JButton();
     jLabel4 = new javax.swing.JLabel();
     adminPassword = new javax.swing.JTextField();
+    jLabel5 = new javax.swing.JLabel();
+    maxUsers = new javax.swing.JSpinner();
+    viewOnly = new javax.swing.JCheckBox();
 
     setTitle("jfRDP Server");
 
@@ -215,6 +228,12 @@ public class Server extends javax.swing.JFrame implements ActionListener {
 
     jLabel4.setText("Admin Password");
 
+    jLabel5.setText("Max Concurrent Users :");
+
+    maxUsers.setModel(new javax.swing.SpinnerNumberModel(1, 1, 20, 1));
+
+    viewOnly.setText("View Only");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -240,12 +259,18 @@ public class Server extends javax.swing.JFrame implements ActionListener {
               .addComponent(webPassword)))
           .addComponent(status, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel1)
-            .addGap(0, 0, Short.MAX_VALUE))
-          .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel4)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(adminPassword)))
+            .addComponent(adminPassword))
+          .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel1)
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel5)
+                .addGap(18, 18, 18)
+                .addComponent(maxUsers, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addComponent(viewOnly))
+            .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -265,14 +290,23 @@ public class Server extends javax.swing.JFrame implements ActionListener {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
           .addComponent(rdpPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addComponent(status)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(save)
-          .addComponent(Cancel)
-          .addComponent(generateSSL)
-          .addComponent(donate))
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel5)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(viewOnly)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(status)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(save)
+              .addComponent(Cancel)
+              .addComponent(generateSSL)
+              .addComponent(donate)))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(maxUsers, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
     );
 
@@ -319,9 +353,12 @@ public class Server extends javax.swing.JFrame implements ActionListener {
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
+  private javax.swing.JSpinner maxUsers;
   private javax.swing.JTextField rdpPassword;
   private javax.swing.JButton save;
   private javax.swing.JLabel status;
+  private javax.swing.JCheckBox viewOnly;
   private javax.swing.JTextField webPassword;
   // End of variables declaration//GEN-END:variables
 

@@ -15,9 +15,31 @@ DEFINE_GUID_(IID_IRDPSRAPISessionProperties,0x339b24f2,0x9bc0,0x4f16,0x9a,0xac,0
 DEFINE_GUID_(CLSID_RDPSRAPIApplicationFilter,0xe35ace89,0xc7e8,0x427e,0xa4,0xf9,0xb9,0xda,0x07,0x28,0x26,0xbd);
 DEFINE_GUID_(CLSID_RDPSRAPIInvitationManager,0x53d9c9db,0x75ab,0x4271,0x94,0x8a,0x4c,0x4e,0xb3,0x6a,0x8f,0x2b);
 
-struct RDP;  //forward decl
+class MyClass;  //forward decl
 
-void CloseRDP(RDP *rdp);  //forward decl
+struct RDP {
+  IUnknown *rdpUnknown;
+  IRDPSRAPISharingSession *rdpSession;
+  IRDPSRAPISessionProperties *rdpProps;
+  IRDPSRAPIInvitationManager *rdpIM;
+  IRDPSRAPIInvitation *rdpI;
+  IConnectionPointContainer *rdpCPC;
+  IConnectionPoint *rdpCP;
+  int token, left, top, right, bottom, depth;
+  MyClass *cls;
+  char *cs;
+  volatile int active;
+  volatile int done;
+  int threadId;
+  int maxUsers;
+  int viewOnly;
+  void Close() {
+    if (active) {
+      active = FALSE;
+      PostThreadMessage(threadId,WM_USER,0,0);
+    }
+  };
+};
 
 class MyClass : public IDispatch {
   public:
@@ -116,8 +138,10 @@ class MyClass : public IDispatch {
               return res;
             }
 
-            //level = CTRL_LEVEL_VIEW;
-            level = CTRL_LEVEL_INTERACTIVE;
+            if (rdp->viewOnly)
+              level = CTRL_LEVEL_VIEW;
+            else
+              level = CTRL_LEVEL_INTERACTIVE;
 
             res = pAttendee->put_ControlLevel(level);
 
@@ -135,7 +159,9 @@ class MyClass : public IDispatch {
 
         case DISPID_RDPSRAPI_EVENT_ON_ATTENDEE_DISCONNECTED:
           printf("onAttendeeDisconnect\n");
-          CloseRDP(rdp);
+          if (rdp->maxUsers == 1) {
+            rdp->Close();
+          }
 //          if (listener != NULL) {listener.onAttendeeDisconnect();}
           break;
 
@@ -159,6 +185,8 @@ class MyClass : public IDispatch {
 
         case DISPID_RDPSRAPI_EVENT_ON_CTRLLEVEL_CHANGE_REQUEST:
           {
+/*
+            //TODO : popup window?
             CTRL_LEVEL level;
             IDispatch *pDispatch;
             IRDPSRAPIAttendee *pAttendee;
@@ -208,6 +236,7 @@ class MyClass : public IDispatch {
             }
 
             pAttendee->Release();
+*/
           }
           break;
 
@@ -268,22 +297,6 @@ class MyClass : public IDispatch {
 ////
 };
 
-struct RDP {
-  IUnknown *rdpUnknown;
-  IRDPSRAPISharingSession *rdpSession;
-  IRDPSRAPISessionProperties *rdpProps;
-  IRDPSRAPIInvitationManager *rdpIM;
-  IRDPSRAPIInvitation *rdpI;
-  IConnectionPointContainer *rdpCPC;
-  IConnectionPoint *rdpCP;
-  int token, left, top, right, bottom, depth;
-  MyClass *cls;
-  char *cs;
-  volatile int active;
-  volatile int done;
-  int threadId;
-};
-
 BSTR bstr_alloc(const char *s8) {
   int sl = strlen(s8) + 1;
   OLECHAR *s16 = (OLECHAR*)malloc(sl * 2);
@@ -316,10 +329,12 @@ void wstrcpy(char *dest, OLECHAR *src) {
 }
 
 JNIEXPORT jlong JNICALL Java_server_WDS_startServer
-  (JNIEnv *e, jclass cls, jstring user, jstring group, jstring pass, jint numAttend, jint port)
+  (JNIEnv *e, jclass cls, jstring user, jstring group, jstring pass, jint maxUsers, jboolean viewOnly, jint port)
 {
   RDP *rdp = new RDP();
   memset(rdp, 0, sizeof(RDP));
+  rdp->maxUsers = maxUsers;
+  rdp->viewOnly = viewOnly;
 
   int res = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
   if (res != S_OK) return 0;
@@ -448,7 +463,7 @@ JNIEXPORT jlong JNICALL Java_server_WDS_startServer
   const char *cpass = e->GetStringUTFChars(pass, NULL);
   BSTR bstr_pass = bstr_alloc(cpass);
   e->ReleaseStringUTFChars(pass, cpass);
-  res = rdp->rdpIM->CreateInvitation(bstr_user, bstr_group, bstr_pass, numAttend, &rdp->rdpI);
+  res = rdp->rdpIM->CreateInvitation(bstr_user, bstr_group, bstr_pass, maxUsers, &rdp->rdpI);
   if (res != 0) {
     printf("CreateInvitation() Failed\n");
     return 0;
@@ -524,18 +539,11 @@ JNIEXPORT void JNICALL Java_server_WDS_runServer
   CoUninitialize();
 }
 
-void CloseRDP(RDP *rdp) {
-  if (rdp->active) {
-    rdp->active = FALSE;
-    PostThreadMessage(rdp->threadId,WM_USER,0,0);
-  }
-}
-
 JNIEXPORT void JNICALL Java_server_WDS_stopServer
   (JNIEnv *e, jclass cls, jlong id)
 {
   RDP *rdp = (RDP*)id;
-  CloseRDP(rdp);
+  rdp->Close();
   //wait for service to finish
   while (!rdp->done) {
     Sleep(10);
