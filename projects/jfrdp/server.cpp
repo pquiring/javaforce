@@ -15,8 +15,13 @@ DEFINE_GUID_(IID_IRDPSRAPISessionProperties,0x339b24f2,0x9bc0,0x4f16,0x9a,0xac,0
 DEFINE_GUID_(CLSID_RDPSRAPIApplicationFilter,0xe35ace89,0xc7e8,0x427e,0xa4,0xf9,0xb9,0xda,0x07,0x28,0x26,0xbd);
 DEFINE_GUID_(CLSID_RDPSRAPIInvitationManager,0x53d9c9db,0x75ab,0x4271,0x94,0x8a,0x4c,0x4e,0xb3,0x6a,0x8f,0x2b);
 
+struct RDP;  //forward decl
+
+void CloseRDP(RDP *rdp);  //forward decl
+
 class MyClass : public IDispatch {
   public:
+    RDP *rdp;
   //IUnknown
     STDMETHOD(QueryInterface)(
       REFIID riid,
@@ -130,7 +135,7 @@ class MyClass : public IDispatch {
 
         case DISPID_RDPSRAPI_EVENT_ON_ATTENDEE_DISCONNECTED:
           printf("onAttendeeDisconnect\n");
-          //TODO : stop rdp
+          CloseRDP(rdp);
 //          if (listener != NULL) {listener.onAttendeeDisconnect();}
           break;
 
@@ -346,6 +351,7 @@ JNIEXPORT jlong JNICALL Java_server_WDS_startServer
   }
 
   rdp->cls = new MyClass();
+  rdp->cls->rdp = rdp;
 
   res = rdp->rdpCP->Advise(rdp->cls, (DWORD*)&rdp->token);
   if (res != 0) {
@@ -518,16 +524,22 @@ JNIEXPORT void JNICALL Java_server_WDS_runServer
   CoUninitialize();
 }
 
+void CloseRDP(RDP *rdp) {
+  if (rdp->active) {
+    rdp->active = FALSE;
+    PostThreadMessage(rdp->threadId,WM_USER,0,0);
+  }
+}
+
 JNIEXPORT void JNICALL Java_server_WDS_stopServer
   (JNIEnv *e, jclass cls, jlong id)
 {
   RDP *rdp = (RDP*)id;
-  rdp->active = FALSE;
-  PostThreadMessage(rdp->threadId,WM_USER,0,0);
+  CloseRDP(rdp);
   //wait for service to finish
   while (!rdp->done) {
     Sleep(10);
-  };
+  }
 
   delete rdp;
 }

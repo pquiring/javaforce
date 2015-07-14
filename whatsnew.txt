@@ -5,6 +5,7 @@ Jul ?/2015 : JF 9.5.0 released!
   - jfRDP/0.4 released!
     - jfRDP is back
     - now uses more native code, the RDP server port is no longer redirected and the client window is pure native.
+    - the view is always scaled (maybe add a toolbar later with more options)
 
 Jul 9/2015 : JF 9.4.0 released!
   - JFNative no longer exits if the jfnative libraries are not found
