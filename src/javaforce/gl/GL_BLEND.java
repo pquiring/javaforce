@@ -17,6 +17,7 @@ import javaforce.*;
  * Blender Source : https://git.blender.org/gitweb/gitweb.cgi/blender.git/tree/HEAD:/source/blender
  *   - look in blenloader and makesdna folders
  *   - most important to understand DNA : makesdna/intern/dna_genfile.c:init_structDNA()
+ *   - also see doc/blender_file_format/mystery_of_the_blend.html
  *
  * @author pquiring
  */
@@ -35,9 +36,59 @@ public class GL_BLEND {
 
   private HashMap<Long, Chunk> chunks = new HashMap<Long, Chunk>();
 
-  private static final int ID_ME = 0x454d;
-  private static final int ID_OB = 0x424f;
-  private static final int ID_DNA1 = 0x31414e44;
+  private static final int ID_ME = 0x454d;  //ME (mesh)
+  private static final int ID_OB = 0x424f;  //OB (object)
+  private static final int ID_DNA1 = 0x31414e44;  //DNA1
+
+// typedef enum CustomDataType {...}
+	private static final int CD_MVERT            = 0;
+	private static final int CD_MSTICKY          = 1;  /* DEPRECATED */
+	private static final int CD_MDEFORMVERT      = 2;
+	private static final int CD_MEDGE            = 3;
+	private static final int CD_MFACE            = 4;
+	private static final int CD_MTFACE           = 5;
+	private static final int CD_MCOL             = 6;
+	private static final int CD_ORIGINDEX        = 7;
+	private static final int CD_NORMAL           = 8;
+/*	private static final int CD_POLYINDEX        = 9; */
+	private static final int CD_PROP_FLT         = 10;
+	private static final int CD_PROP_INT         = 11;
+	private static final int CD_PROP_STR         = 12;
+	private static final int CD_ORIGSPACE        = 13;  /* for modifier stack face location mapping */
+	private static final int CD_ORCO             = 14;
+	private static final int CD_MTEXPOLY         = 15;
+	private static final int CD_MLOOPUV          = 16;
+	private static final int CD_MLOOPCOL         = 17;
+	private static final int CD_TANGENT          = 18;
+	private static final int CD_MDISPS           = 19;
+	private static final int CD_PREVIEW_MCOL     = 20;  /* for displaying weightpaint colors */
+	private static final int CD_ID_MCOL          = 21;
+	private static final int CD_TEXTURE_MCOL     = 22;
+	private static final int CD_CLOTH_ORCO       = 23;
+	private static final int CD_RECAST           = 24;
+
+/* BMESH ONLY START */
+	private static final int CD_MPOLY            = 25;
+	private static final int CD_MLOOP            = 26;
+	private static final int CD_SHAPE_KEYINDEX   = 27;
+	private static final int CD_SHAPEKEY         = 28;
+	private static final int CD_BWEIGHT          = 29;
+	private static final int CD_CREASE           = 30;
+	private static final int CD_ORIGSPACE_MLOOP  = 31;
+	private static final int CD_PREVIEW_MLOOPCOL = 32;
+	private static final int CD_BM_ELEM_PYPTR    = 33;
+/* BMESH ONLY END */
+
+	private static final int CD_PAINT_MASK       = 34;
+	private static final int CD_GRID_PAINT_MASK  = 35;
+	private static final int CD_MVERT_SKIN       = 36;
+	private static final int CD_FREESTYLE_EDGE   = 37;
+	private static final int CD_FREESTYLE_FACE   = 38;
+	private static final int CD_MLOOPTANGENT     = 39;
+	private static final int CD_TESSLOOPNORMAL   = 40;
+	private static final int CD_CUSTOMLOOPNORMAL = 41;
+
+	private static final int CD_NUMTYPES         = 42;
 
   //DNA stuff
   private ArrayList<String> names = new ArrayList<String>();  //member names
@@ -234,13 +285,13 @@ public class GL_BLEND {
       Chunk chunk = new Chunk();
       chunk.read();
       if (chunks.get(chunk.ptr) != null) {
-        throw new Exception("GL_BLEND:Found two chunks with same pointer!");
+        JFLog.log("Warning:GL_BLEND:Found two chunks with same pointer! Ignoring old chunk:ptr=" + Long.toString(chunk.ptr, 16) + ",id=" + Integer.toString(chunk.id, 16) + ",len=" + chunk.len);
       }
       chunks.put(chunk.ptr, chunk);
     }
 
     int chunkCnt = chunks.size();
-    Chunk chunkArray[] = chunks.values().toArray(new Chunk[0]);
+    Chunk chunkArray[] = chunks.values().toArray(new Chunk[chunkCnt]);
     Chunk raw;
 
     //2nd phase - parse DNA chunk
@@ -429,8 +480,8 @@ public class GL_BLEND {
     return model;
   }
   private void readLayer(long layers, String name) throws Exception {
-//    JFLog.log(name + ".layers=" + Long.toString(layers, 16));
     if (layers == 0) return;
+//    JFLog.log(name + ".layers=" + Long.toString(layers, 16));
     Chunk raw = findChunkByPtr(layers);
     if (raw == null) {
       throw new Exception("GL_BLEND:Unable to find " + name + ".layers for Mesh");
@@ -447,8 +498,9 @@ public class GL_BLEND {
       }
       Context ctx = pushData();
       setData(layer_data.raw);
+//      JFLog.log("layer.type==" + layer.type + ",a=" + a);
       switch (layer.type) {
-        case 15:  //CD_MTEXPOLY
+        case CD_MTEXPOLY: {  //15
           //NOTE:There is a MTexPoly per face, I only read the first
           MTexPoly tex = new MTexPoly();
           tex.read();
@@ -459,7 +511,11 @@ public class GL_BLEND {
           setData(imageChunk.raw);
           Image image = new Image();
           image.read();
-          GLUVMap map = obj.createUVMap();
+          GLUVMap map;
+          if (a < obj.getUVMaps())
+            map = obj.getUVMap(a);
+          else
+            map = obj.createUVMap();
           String tn = image.name;
           //string texture path for now
           int tnidx = tn.lastIndexOf("/");
@@ -473,9 +529,15 @@ public class GL_BLEND {
           int tidx = model.addTexture(tn);
           map.textureIndex = tidx;
           map.name = layer_name;
+//          JFLog.log("texpoly=" + map.name);
           break;
-        case 16:  //CD_MLOOPUV
+        }
+        case CD_MLOOPUV: { //16
           //There is a UV per face per vertex
+          if (a >= obj.getUVMaps()) {
+            obj.createUVMap();
+          }
+//          JFLog.log("loopuv.nr=" + layer_data.nr);
           for(int b=0;b<layer_data.nr;b++) {
             MLoopUV uv = new MLoopUV();
             uv.read();
@@ -483,6 +545,7 @@ public class GL_BLEND {
             obj.addText(uv.uv, a);
           }
           break;
+        }
       }
       popData(ctx);
     }

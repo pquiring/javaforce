@@ -198,6 +198,9 @@ public class GLObject implements Cloneable {
     }
     return null;
   }
+  public int getUVMaps() {
+    return maps.size();
+  }
   public void print(GLModel model) {
     System.out.println("Object:" + name);
     //print vertex data
