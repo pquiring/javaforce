@@ -10,8 +10,6 @@ package javaforce;
  *  Created : Dec 5, 2013
  */
 
-import java.nio.*;
-
 public class BE {
 
   public static int getuint8(byte[] data, int offset) {

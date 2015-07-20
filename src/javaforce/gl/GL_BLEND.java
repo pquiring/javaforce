@@ -11,6 +11,8 @@ import javaforce.*;
  *   Supports Blender v2.63+
  *   Supports objects with multiple UVMaps
  *   Rotation/Scale on objects are ignored, please rotate/scale in edit mode (the vertex data)
+ *   BHead chunks can have duplicate old pointer addresses in which case they must be used in order.
+ *     See : https://developer.blender.org/T45471
  * TODO:
  *   Animation data
  *
@@ -38,6 +40,7 @@ public class GL_BLEND {
 
   private static final int ID_ME = 0x454d;  //ME (mesh)
   private static final int ID_OB = 0x424f;  //OB (object)
+  private static final int ID_SC = 0x4353;  //SCE (scene)
   private static final int ID_DNA1 = 0x31414e44;  //DNA1
 
 // typedef enum CustomDataType {...}
@@ -239,7 +242,17 @@ public class GL_BLEND {
   }
   private Chunk findChunkByPtr(long ptr) {
     if (ptr == 0) return null;
-    return chunks.get(ptr);
+    Chunk chunk = chunks.get(ptr);
+    if (chunk == null) return null;
+    if (chunk.dup) {
+//      JFLog.log("Duplicate:" + Long.toString(ptr, 16) + ",idx=" + chunk.dupidx);
+      int cnt = chunk.dupidx;
+      chunk.dupidx++;
+      for(int a=0;a<cnt;a++) {
+        chunk = chunk.nextdup;
+      }
+    }
+    return chunk;
   }
   private class Vertex {
     float xyz[];
@@ -277,17 +290,27 @@ public class GL_BLEND {
     if (ver < 263) {
       throw new Exception("Error:Blender file too old, can not read.");
     }
+    if (ver == 275) {
+//      throw new Exception("Error:v2.75 has a known bug, do not use this version");
+    }
 
     datapos = 12;  //skip main header
 
     //first phase - read raw chunks
     while (!eof()) {
       Chunk chunk = new Chunk();
+      chunk.filepos = datapos;
       chunk.read();
-      if (chunks.get(chunk.ptr) != null) {
-        JFLog.log("Warning:GL_BLEND:Found two chunks with same pointer! Ignoring old chunk:ptr=" + Long.toString(chunk.ptr, 16) + ",id=" + Integer.toString(chunk.id, 16) + ",len=" + chunk.len);
+      Chunk ochunk = chunks.get(chunk.ptr);
+      if (ochunk != null) {
+        ochunk.dup = true;
+        while (ochunk.nextdup != null) {
+          ochunk = ochunk.nextdup;
+        }
+        ochunk.nextdup = chunk;
+      } else {
+        chunks.put(chunk.ptr, chunk);
       }
-      chunks.put(chunk.ptr, chunk);
     }
 
     int chunkCnt = chunks.size();
@@ -344,7 +367,7 @@ public class GL_BLEND {
           s.typeidx = readuint16();
           s.nr = readuint16();
           s.name = types.get(s.typeidx);
-//          JFLog.log("struct:" + s.name);
+//          JFLog.log("struct:" + s.name + "==" + a);
           for(int b=0;b<s.nr;b++) {
             member m = new member();
             m.typelenidx = readuint16();
@@ -363,121 +386,139 @@ public class GL_BLEND {
 
     //3nd phase - now look for objects and piece together chunks
     for(int i=0;i<chunkCnt;i++) {
-      if (chunkArray[i].id == ID_OB) {
-        ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
-        ArrayList<Integer> loopList = new ArrayList<Integer>();
-        raw = chunkArray[i];
-        setData(raw.raw);
-        bObject bObj = new bObject();
-        bObj.read();
-//        JFLog.log("object.type=" + bObj.type);
-        if (bObj.type != 1) continue;  //not a mesh object (could be camera, light, etc.)
-        obj = new GLObject();
-        model.addObject(obj);
-        obj.name = bObj.id.name.substring(2);
-//        JFLog.log("object=" + obj.name);
-        raw = findChunkByPtr(bObj.data);
-        if (raw == null) {
-          throw new Exception("GL_BLEND:Unable to find Mesh for Object");
-        }
-        Mesh mesh = new Mesh();
-        setData(raw.raw);
-//        JFLog.log("Mesh@" + Integer.toString(raw.fileOffset, 16));
-        mesh.read();
-        obj.org.x = bObj.loc[0];
-        org[0] = bObj.loc[0];
-        obj.org.y = bObj.loc[1];
-        org[1] = bObj.loc[1];
-        obj.org.z = bObj.loc[2];
-        org[2] = bObj.loc[2];
-        //find mvert
-        raw = findChunkByPtr(mesh.mvert);
-        if (raw == null) {
-          throw new Exception("GL_BLEND:Unable to find MVert for Mesh");
-        }
-        setData(raw.raw);
-        for(int a=0;a<raw.nr;a++) {
-          MVert mvert = new MVert();
-          mvert.read();
-//          obj.addVertex(mvert.co);
-          Vertex v = new Vertex();
-          v.xyz = mvert.v;
-          vertexList.add(v);
-        }
-        //find mloop
-        raw = findChunkByPtr(mesh.mloop);
-        if (raw == null) {
-          throw new Exception("GL_BLEND:Unable to find MLoop for Mesh");
-        }
-        setData(raw.raw);
-        for(int a=0;a<raw.nr;a++) {
-          MLoop mloop = new MLoop();
-          mloop.read();
-          loopList.add(mloop.v);
-        }
-        //find mloopuv
-/*  //use the UVMaps in the CustomData instead - this is only the active one
-        raw = findChunkByPtr(mesh.mloopuv);
-        if (raw == null) {
-          throw new Exception("GL_BLEND:Unable to find MLoopUV for Mesh");
-        }
-        setData(raw.raw);
-        JFLog.log("MLoopUV:nr=" + raw.nr);
-        for(int a=0;a<raw.nr;a++) {
-          MLoopUV mloopuv = new MLoopUV();
-          mloopuv.read();
-        }
-*/
-        //find mpoly
-        raw = findChunkByPtr(mesh.mpoly);
-        if (raw == null) {
-          throw new Exception("GL_BLEND:Unable to find MPoly for Mesh");
-        }
-        setData(raw.raw);
-//TODO : calc which vertex needed to be dup'ed for each unique uv value (Blender does this in their 3ds export script)
-        int type = -1;
-        int pcnt = -1;
-        int vidx = 0;
-        //MPoly = faces
-        for(int a=0;a<raw.nr;a++) {
-          MPoly mpoly = new MPoly();
-          mpoly.read();
-          switch (mpoly.totloop) {
-            case 3:
-              if (type == GL.GL_QUADS) {
-                throw new Exception("GL_BLEND:Mixed QUADS/TRIANGLES not supported");
-              }
-              type = GL.GL_TRIANGLES;
-              pcnt = 3;
-              break;
-            case 4:
-              if (type == GL.GL_TRIANGLES) {
-                throw new Exception("GL_BLEND:Mixed QUADS/TRIANGLES not supported");
-              }
-              type = GL.GL_QUADS;
-              pcnt = 4;
-              break;
-            default:
-              throw new Exception("GL_BLEND:Polygon not supported:nr=" + mpoly.totloop);
+      if (chunkArray[i].id == ID_SC) {
+        setData(chunkArray[i].raw);
+        Scene scene = new Scene();
+        scene.read();
+        long ptr = scene.last;
+        while (ptr != 0) {
+          Chunk chunk = findChunkByPtr(ptr);
+          if (chunk == null) break;
+          setData(chunk.raw);
+          Base base = new Base();
+          base.read();
+          chunk = findChunkByPtr(base.object);
+          if (chunk.id == ID_OB) {
+            readObject(chunk);
           }
-          int loopidx = mpoly.loopstart;
-          for(int p=0;p<pcnt;p++) {
-            int idx = loopList.get(loopidx++);
-            obj.addVertex(vertexList.get(idx).xyz);
-            obj.addPoly(new int[] {vidx++});
-          }
+          ptr = base.prev;
         }
-        obj.type = type;
-        //find customdata types
-        readLayer(mesh.vdata.layers, "vdata");
-        readLayer(mesh.edata.layers, "edata");
-        readLayer(mesh.fdata.layers, "fdata");
-        readLayer(mesh.pdata.layers, "pdata");
-        readLayer(mesh.ldata.layers, "ldata");
       }
     }
 
     return model;
+  }
+
+  private void readObject(Chunk chunk) throws Exception {
+    ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
+    ArrayList<Integer> loopList = new ArrayList<Integer>();
+    setData(chunk.raw);
+    bObject bObj = new bObject();
+    bObj.read();
+//        JFLog.log("object.type=" + bObj.type);
+    if (bObj.type != 1) return;  //not a mesh object (could be camera, light, etc.)
+    obj = new GLObject();
+    model.addObject(obj);
+    obj.name = bObj.id.name.substring(2);
+//    JFLog.log("object=" + obj.name);
+    chunk = findChunkByPtr(bObj.data);
+    if (chunk == null) {
+      throw new Exception("GL_BLEND:Unable to find Mesh for Object");
+    }
+    Mesh mesh = new Mesh();
+    setData(chunk.raw);
+//        JFLog.log("Mesh@" + Integer.toString(raw.fileOffset, 16));
+    mesh.read();
+    obj.org.x = bObj.loc[0];
+    org[0] = bObj.loc[0];
+    obj.org.y = bObj.loc[1];
+    org[1] = bObj.loc[1];
+    obj.org.z = bObj.loc[2];
+    org[2] = bObj.loc[2];
+    //find mvert
+    chunk = findChunkByPtr(mesh.mvert);
+    if (chunk == null) {
+      throw new Exception("GL_BLEND:Unable to find MVert for Mesh");
+    }
+    setData(chunk.raw);
+    for(int a=0;a<chunk.nr;a++) {
+      MVert mvert = new MVert();
+      mvert.read();
+//          obj.addVertex(mvert.co);
+      Vertex v = new Vertex();
+      v.xyz = mvert.v;
+      vertexList.add(v);
+    }
+    //find mloop
+    chunk = findChunkByPtr(mesh.mloop);
+    if (chunk == null) {
+      throw new Exception("GL_BLEND:Unable to find MLoop for Mesh");
+    }
+    setData(chunk.raw);
+    for(int a=0;a<chunk.nr;a++) {
+      MLoop mloop = new MLoop();
+      mloop.read();
+      loopList.add(mloop.v);
+    }
+    //find mloopuv
+/*  //use the UVMaps in the CustomData instead - this is only the active one
+    raw = findChunkByPtr(mesh.mloopuv);
+    if (raw == null) {
+      throw new Exception("GL_BLEND:Unable to find MLoopUV for Mesh");
+    }
+    setData(raw.raw);
+    JFLog.log("MLoopUV:nr=" + raw.nr);
+    for(int a=0;a<raw.nr;a++) {
+      MLoopUV mloopuv = new MLoopUV();
+      mloopuv.read();
+    }
+*/
+    //find mpoly
+    chunk = findChunkByPtr(mesh.mpoly);
+    if (chunk == null) {
+      throw new Exception("GL_BLEND:Unable to find MPoly for Mesh");
+    }
+    setData(chunk.raw);
+//TODO : calc which vertex needed to be dup'ed for each unique uv value (Blender does this in their 3ds export script)
+    int type = -1;
+    int pcnt = -1;
+    int vidx = 0;
+    //MPoly = faces
+    for(int a=0;a<chunk.nr;a++) {
+      MPoly mpoly = new MPoly();
+      mpoly.read();
+      switch (mpoly.totloop) {
+        case 3:
+          if (type == GL.GL_QUADS) {
+            throw new Exception("GL_BLEND:Mixed QUADS/TRIANGLES not supported");
+          }
+          type = GL.GL_TRIANGLES;
+          pcnt = 3;
+          break;
+        case 4:
+          if (type == GL.GL_TRIANGLES) {
+            throw new Exception("GL_BLEND:Mixed QUADS/TRIANGLES not supported");
+          }
+          type = GL.GL_QUADS;
+          pcnt = 4;
+          break;
+        default:
+          throw new Exception("GL_BLEND:Polygon not supported:nr=" + mpoly.totloop);
+      }
+      int loopidx = mpoly.loopstart;
+      for(int p=0;p<pcnt;p++) {
+        int idx = loopList.get(loopidx++);
+        obj.addVertex(vertexList.get(idx).xyz);
+        obj.addPoly(new int[] {vidx++});
+      }
+    }
+    obj.type = type;
+    //find customdata types
+    readLayer(mesh.vdata.layers, "vdata");
+    readLayer(mesh.edata.layers, "edata");
+    readLayer(mesh.fdata.layers, "fdata");
+    readLayer(mesh.pdata.layers, "pdata");
+    readLayer(mesh.ldata.layers, "ldata");
   }
   private void readLayer(long layers, String name) throws Exception {
     if (layers == 0) return;
@@ -487,18 +528,22 @@ public class GL_BLEND {
       throw new Exception("GL_BLEND:Unable to find " + name + ".layers for Mesh");
     }
     setData(raw.raw);
+//    JFLog.log("#layers=" + raw.nr);
     for(int a=0;a<raw.nr;a++) {
       CustomDataLayer layer = new CustomDataLayer();
       layer.read();
       String layer_name = layer.name;
-      if (layer.data == 0) continue;
+      if (layer.data == 0) {
+//        JFLog.log("layer.data == null");
+        continue;
+      }
       Chunk layer_data = findChunkByPtr(layer.data);
       if (layer_data == null) {
         throw new Exception("GL_BLEND:Unable to find " + name + ".layers.data for Mesh");
       }
       Context ctx = pushData();
       setData(layer_data.raw);
-//      JFLog.log("layer.type==" + layer.type + ",a=" + a);
+//      JFLog.log("layer.data=" + Long.toString(layer.data, 16) + ",type==" + layer.type + ",a=" + a);
       switch (layer.type) {
         case CD_MTEXPOLY: {  //15
           //NOTE:There is a MTexPoly per face, I only read the first
@@ -551,12 +596,20 @@ public class GL_BLEND {
     }
   }
   private class Chunk {
+    //BHead
     int id;
     int len;
     long ptr;  //the actual memory address of this chunk when it was saved to disk !!!
     int SDNAnr;
     int nr;  //array count of struct
+
     byte raw[];
+
+    int filepos;  //for debugging
+
+    boolean dup;
+    int dupidx;
+    Chunk nextdup;
 
     int fileOffset;
     void read() {
@@ -579,6 +632,46 @@ public class GL_BLEND {
         member m = s.members.get(a);
         if (m.name.equals("name[66]")) {
           name = readString(m.size);
+        }
+        else {
+          datapos += m.size;
+        }
+      }
+    }
+  }
+  private class Scene {
+    long first;  //first Base
+    long last;
+    void read() throws Exception {
+      struct s = getStruct("Scene");
+      for(int a=0;a<s.nr;a++) {
+        member m = s.members.get(a);
+        if (m.name.equals("base")) {
+          first = readptr();
+          last = readptr();
+        }
+        else {
+          datapos += m.size;
+        }
+      }
+    }
+  }
+  private class Base {
+    long next;
+    long prev;
+    long object;
+    void read() throws Exception {
+      struct s = getStruct("Base");
+      for(int a=0;a<s.nr;a++) {
+        member m = s.members.get(a);
+        if (m.name.equals("*next")) {
+          next = readptr();
+        }
+        else if (m.name.equals("*prev")) {
+          prev = readptr();
+        }
+        else if (m.name.equals("*object")) {
+          object = readptr();
         }
         else {
           datapos += m.size;
