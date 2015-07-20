@@ -44,54 +44,54 @@ public class GL_BLEND {
   private static final int ID_DNA1 = 0x31414e44;  //DNA1
 
 // typedef enum CustomDataType {...}
-	private static final int CD_MVERT            = 0;
-	private static final int CD_MSTICKY          = 1;  /* DEPRECATED */
-	private static final int CD_MDEFORMVERT      = 2;
-	private static final int CD_MEDGE            = 3;
-	private static final int CD_MFACE            = 4;
-	private static final int CD_MTFACE           = 5;
-	private static final int CD_MCOL             = 6;
-	private static final int CD_ORIGINDEX        = 7;
-	private static final int CD_NORMAL           = 8;
-/*	private static final int CD_POLYINDEX        = 9; */
-	private static final int CD_PROP_FLT         = 10;
-	private static final int CD_PROP_INT         = 11;
-	private static final int CD_PROP_STR         = 12;
-	private static final int CD_ORIGSPACE        = 13;  /* for modifier stack face location mapping */
-	private static final int CD_ORCO             = 14;
-	private static final int CD_MTEXPOLY         = 15;
-	private static final int CD_MLOOPUV          = 16;
-	private static final int CD_MLOOPCOL         = 17;
-	private static final int CD_TANGENT          = 18;
-	private static final int CD_MDISPS           = 19;
-	private static final int CD_PREVIEW_MCOL     = 20;  /* for displaying weightpaint colors */
-	private static final int CD_ID_MCOL          = 21;
-	private static final int CD_TEXTURE_MCOL     = 22;
-	private static final int CD_CLOTH_ORCO       = 23;
-	private static final int CD_RECAST           = 24;
+  private static final int CD_MVERT            = 0;
+  private static final int CD_MSTICKY          = 1;  /* DEPRECATED */
+  private static final int CD_MDEFORMVERT      = 2;
+  private static final int CD_MEDGE            = 3;
+  private static final int CD_MFACE            = 4;
+  private static final int CD_MTFACE           = 5;
+  private static final int CD_MCOL             = 6;
+  private static final int CD_ORIGINDEX        = 7;
+  private static final int CD_NORMAL           = 8;
+/*  private static final int CD_POLYINDEX        = 9; */
+  private static final int CD_PROP_FLT         = 10;
+  private static final int CD_PROP_INT         = 11;
+  private static final int CD_PROP_STR         = 12;
+  private static final int CD_ORIGSPACE        = 13;  /* for modifier stack face location mapping */
+  private static final int CD_ORCO             = 14;
+  private static final int CD_MTEXPOLY         = 15;
+  private static final int CD_MLOOPUV          = 16;
+  private static final int CD_MLOOPCOL         = 17;
+  private static final int CD_TANGENT          = 18;
+  private static final int CD_MDISPS           = 19;
+  private static final int CD_PREVIEW_MCOL     = 20;  /* for displaying weightpaint colors */
+  private static final int CD_ID_MCOL          = 21;
+  private static final int CD_TEXTURE_MCOL     = 22;
+  private static final int CD_CLOTH_ORCO       = 23;
+  private static final int CD_RECAST           = 24;
 
 /* BMESH ONLY START */
-	private static final int CD_MPOLY            = 25;
-	private static final int CD_MLOOP            = 26;
-	private static final int CD_SHAPE_KEYINDEX   = 27;
-	private static final int CD_SHAPEKEY         = 28;
-	private static final int CD_BWEIGHT          = 29;
-	private static final int CD_CREASE           = 30;
-	private static final int CD_ORIGSPACE_MLOOP  = 31;
-	private static final int CD_PREVIEW_MLOOPCOL = 32;
-	private static final int CD_BM_ELEM_PYPTR    = 33;
+  private static final int CD_MPOLY            = 25;
+  private static final int CD_MLOOP            = 26;
+  private static final int CD_SHAPE_KEYINDEX   = 27;
+  private static final int CD_SHAPEKEY         = 28;
+  private static final int CD_BWEIGHT          = 29;
+  private static final int CD_CREASE           = 30;
+  private static final int CD_ORIGSPACE_MLOOP  = 31;
+  private static final int CD_PREVIEW_MLOOPCOL = 32;
+  private static final int CD_BM_ELEM_PYPTR    = 33;
 /* BMESH ONLY END */
 
-	private static final int CD_PAINT_MASK       = 34;
-	private static final int CD_GRID_PAINT_MASK  = 35;
-	private static final int CD_MVERT_SKIN       = 36;
-	private static final int CD_FREESTYLE_EDGE   = 37;
-	private static final int CD_FREESTYLE_FACE   = 38;
-	private static final int CD_MLOOPTANGENT     = 39;
-	private static final int CD_TESSLOOPNORMAL   = 40;
-	private static final int CD_CUSTOMLOOPNORMAL = 41;
+  private static final int CD_PAINT_MASK       = 34;
+  private static final int CD_GRID_PAINT_MASK  = 35;
+  private static final int CD_MVERT_SKIN       = 36;
+  private static final int CD_FREESTYLE_EDGE   = 37;
+  private static final int CD_FREESTYLE_FACE   = 38;
+  private static final int CD_MLOOPTANGENT     = 39;
+  private static final int CD_TESSLOOPNORMAL   = 40;
+  private static final int CD_CUSTOMLOOPNORMAL = 41;
 
-	private static final int CD_NUMTYPES         = 42;
+  private static final int CD_NUMTYPES         = 42;
 
   //DNA stuff
   private ArrayList<String> names = new ArrayList<String>();  //member names
@@ -289,9 +289,6 @@ public class GL_BLEND {
     int ver = Integer.valueOf(version);
     if (ver < 263) {
       throw new Exception("Error:Blender file too old, can not read.");
-    }
-    if (ver == 275) {
-//      throw new Exception("Error:v2.75 has a known bug, do not use this version");
     }
 
     datapos = 12;  //skip main header
