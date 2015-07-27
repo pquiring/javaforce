@@ -1150,7 +1150,7 @@ public class WebConfig implements WebHandler {
   }
 
   private String doSettingsPage(SQL sql, String args[], WebRequest req) {
-    String verb = "", port = "", localip = "", publicip = "", msg = "", anon = "", route = "", rtpmin = "", rtpmax = "", videoCodecs = "";
+    String verb = "", port = "", msg = "", anon = "", route = "", rtpmin = "", rtpmax = "", videoCodecs = "";
     String relayAudio = "", relayVideo = "", moh = "";
     String http = "", https = "", hideAdmin = "", disableWebRTC = "";
     String valid = "", dname = "";
@@ -1158,8 +1158,6 @@ public class WebConfig implements WebHandler {
       int x = args[a].indexOf("=") + 1;
       if (args[a].startsWith("verb=")) verb = args[a].substring(x);
       if (args[a].startsWith("port=")) port = args[a].substring(x);
-      if (args[a].startsWith("localip=")) localip = args[a].substring(x);
-      if (args[a].startsWith("publicip=")) publicip = args[a].substring(x);
       if (args[a].startsWith("anon=")) anon = args[a].substring(x);
       if (args[a].startsWith("route=")) route = args[a].substring(x);
       if (args[a].startsWith("rtpmin=")) rtpmin = args[a].substring(x);
@@ -1207,8 +1205,6 @@ public class WebConfig implements WebHandler {
         irtpmax = 65535;
       }
       sql.execute("UPDATE config SET value=" + sql.quote(port) + " WHERE id='port'");
-      sql.execute("UPDATE config SET value=" + sql.quote(localip) + " WHERE id='localip'");
-      sql.execute("UPDATE config SET value=" + sql.quote(publicip) + " WHERE id='publicip'");
       sql.execute("UPDATE config SET value=" + sql.quote(anon) + " WHERE id='anon'");
       sql.execute("UPDATE config SET value=" + sql.quote(route) + " WHERE id='route'");
       sql.execute("UPDATE config SET value=" + sql.quote("" + irtpmin) + " WHERE id='rtpmin'");
@@ -1244,8 +1240,6 @@ public class WebConfig implements WebHandler {
 
     html.append("<input type=hidden name='verb' value='save'>");
     html.append("SIP Port : <input name=port value=" + getCfg(cfg, "port") + "><br>");
-    html.append("Local IP : <input name=localip value=" + getCfg(cfg, "localip") + "> (leave blank to auto detect - not recommended)<br>");
-    html.append("Public IP : <input name=publicip value=" + getCfg(cfg, "publicip") + "> (leave blank to auto detect)<br>");
     html.append("RTP Port Min : <input name=rtpmin value=" + getCfg(cfg, "rtpmin") + "> (1024-64534) (default:32768)<br>");
     html.append("RTP Port Max : <input name=rtpmax value=" + getCfg(cfg, "rtpmax") + "> (2023-65535) (default:65535)<br>");
     html.append("RTP Port Range must include at least 1000 ports and start on an even port number.<br>");
@@ -1345,8 +1339,6 @@ public class WebConfig implements WebHandler {
       sql.execute("DELETE FROM config WHERE id='version'");
       sql.execute("INSERT INTO config (id, value) VALUES ('version', '" + dbVersion + "')");
       sql.execute("INSERT INTO config (id, value) VALUES ('port', '5060')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('localip', '')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('publicip', '')");
       sql.execute("INSERT INTO config (id, value) VALUES ('rtpmin', '32768')");
       sql.execute("INSERT INTO config (id, value) VALUES ('rtpmax', '65535')");
       sql.execute("INSERT INTO config (id, value) VALUES ('anon', 'false')");
