@@ -1,5 +1,7 @@
 CHANGELOG
 =========
+7-28-2015 : v0.24 released
+ - improved localhost detection
 6-30-2015 : v0.23 released
  - fix : improved QOP auth
 4-24-2015 : v0.22 released

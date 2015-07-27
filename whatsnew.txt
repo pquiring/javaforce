@@ -1,5 +1,11 @@
 What's new...
 
+Jul ?/2015 : JF 9.6.0 released!
+  - .blend loader supports Blender 2.75
+    - blender sometimes creates duplicate BHead chunks which need to be loaded in a special order
+  - improved SIP Server localhost detection
+  - jPBXLite/0.24 released!
+
 Jul 14/2015 : JF 9.5.0 released!
   - Windows native launcher can now download Java if not found
   - jfRDP/0.4 released!

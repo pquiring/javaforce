@@ -10,8 +10,8 @@ import javaforce.*;
  */
 public class SIPServer extends SIP implements SIPInterface {
 
-  private String localip, publicip;
   private int localport;
+  private String localhost;
   private Hashtable<String, CallDetailsServer> cdlist;
   private SIPServerInterface iface;
   private boolean use_qop = false;
@@ -44,6 +44,7 @@ public class SIPServer extends SIP implements SIPInterface {
       cd = iface.createCallDetailsServer();
       cd.sip = this;
       cd.callid = callid;
+      cd.localhost = localhost;
       setCallDetailsServer(callid, cd);
     }
     return cd;
@@ -62,7 +63,7 @@ public class SIPServer extends SIP implements SIPInterface {
     JFLog.log("callid:" + cd.callid + "\r\nissue command : " + cd.cmd + " from : " + cd.user + " to : " + cdsd.host + ":" + cdsd.port);
     StringBuffer req = new StringBuffer();
     req.append(cd.cmd + " " + cdsd.uri + " SIP/2.0\r\n");
-    req.append("Via: SIP/2.0/UDP " + getlocalhost(null) + ":" + localport + ";branch=" + cdsd.branch + "\r\n");
+    req.append("Via: SIP/2.0/UDP " + cd.localhost + ":" + localport + ";branch=" + cdsd.branch + "\r\n");
     req.append("Max-Forwards: 70\r\n");
     req.append("Contact: " + cdsd.contact + "\r\n");
     req.append("To: " + join(cdsd.to) + "\r\n");
@@ -150,71 +151,8 @@ public class SIPServer extends SIP implements SIPInterface {
     return send(cdsd.addr, cdsd.port, req.toString());
   }
 
-  private boolean isLocalHost(String host) {
-    if (host == null) {
-      return false;
-    }
-    if (host.equals("0:0:0:0:0:0:0:1")) {
-      return true;  //IP6?
-    }
-    if (host.equals("127.0.0.1")) {
-      return true;
-    }
-    if (host.startsWith("192.168.")) {
-      return true;
-    }
-    if (host.startsWith("10.")) {
-      return true;
-    }
-    if (host.startsWith("172.")) {
-      for(int a=16;a<=31;a++) {
-        if (host.startsWith("172." + a + ".")) return true;
-      }
-    }
-    return false;
-  }
-
-  public String getlocalhost(String host) {
-    //if host is local network use local ip instead of detected publicip
-    if (isLocalHost(host)) {
-      //detect and use localhost
-      if (localip == null) {
-        try {
-          InetAddress local = InetAddress.getLocalHost();
-          localip = local.getHostAddress();
-          JFLog.log("Detected Local IP=" + localip);
-        } catch (Exception e) {
-          JFLog.log(e);
-          return null;
-        }
-      }
-      return localip;
-    }
-    //detect and use publicip
-    if (publicip != null) {
-      return publicip;
-    }
-    try {
-      Socket s = new Socket();
-      s.connect(new InetSocketAddress("google.com", 80), 3000);
-      publicip = s.getInetAddress().getHostAddress();
-      s.close();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-    return publicip;
-  }
-
-  public String getlocalRTPhost(String host) {
-    return getlocalhost(host);
-  }
-
-  public void setlocalip(String ip) {
-    this.localip = ip;
-  }
-
-  public void setpublicip(String ip) {
-    this.publicip = ip;
+  public String getlocalRTPhost(CallDetails cd) {
+    return cd.localhost;
   }
 
   public boolean register(String user, String pass, String remotehost, int remoteport, int expires, String did, String regcallid) {
@@ -226,7 +164,7 @@ public class SIPServer extends SIP implements SIPInterface {
     cd.pbxsrc.to = new String[]{user, user, remotehost + ":" + remoteport, ":"};
     cd.pbxsrc.from = new String[]{user, user, remotehost + ":" + remoteport, ":"};
     cd.pbxsrc.from = replacetag(cd.pbxsrc.from, generatetag());
-    cd.pbxsrc.contact = "<sip:" + did + "@" + getlocalhost(null) + ":" + localport + ">";
+    cd.pbxsrc.contact = "<sip:" + did + "@" + cd.localhost + ":" + localport + ">";
     cd.pbxsrc.uri = "sip:" + remotehost;  // + ";rinstance=" + getrinstance();
     cd.callid = regcallid;
     cd.pbxsrc.branch = getbranch();
@@ -254,9 +192,6 @@ public class SIPServer extends SIP implements SIPInterface {
 
   public void packet(String msg[], String remoteip, int remoteport) {
     try {
-      if (remoteip.equals("127.0.0.1")) {
-        remoteip = getlocalhost(remoteip);
-      }
       String tmp, req = null, epass;
       String callid = getHeader("Call-ID:", msg);
       if (callid == null) callid = getHeader("i:", msg);
@@ -265,6 +200,26 @@ public class SIPServer extends SIP implements SIPInterface {
         return;
       }
       CallDetailsServer cd = getCallDetailsServer(callid);
+      if (cd.localhost == null && !msg[0].startsWith("SIP/")) {
+        String f[] = msg[0].split(" ");  //REQUEST sip:[ext@]HOST[:port] SIP/2.0
+        String sip = f[1];
+        if (sip.startsWith("sip:")) {
+          sip = sip.substring(4);
+        }
+        int idx1 = sip.indexOf("@");
+        if (idx1 == -1) {
+          idx1 = 0;
+        } else {
+          idx1++;
+        }
+        int idx2 = sip.indexOf(":");
+        if (idx2 == -1) {
+          cd.localhost = sip.substring(idx1);
+        } else {
+          cd.localhost = sip.substring(idx1, idx2);
+        }
+        localhost = cd.localhost;
+      }
       cd.lastPacket = System.currentTimeMillis();
       boolean src = false;
       CallDetails.SideDetails cdsd = null;
@@ -311,7 +266,7 @@ public class SIPServer extends SIP implements SIPInterface {
         //get via list
         cdsd.vialist = getvialist(msg);
         //set contact
-        cdsd.contact = "<sip:" + cd.user + "@" + getlocalhost(null) + ":" + localport + ">";
+        cdsd.contact = "<sip:" + cd.user + "@" + cd.localhost + ":" + localport + ">";
         //get uri (it must equal the Contact field)
         cdsd.uri = getHeader("Contact:", msg);
         if (cdsd.uri == null) {

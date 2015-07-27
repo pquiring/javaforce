@@ -1027,8 +1027,7 @@ public abstract class SIP {
     return JF.atoi(expires);
   }
 
-  public abstract String getlocalhost(String host);  //SIP host
-  public abstract String getlocalRTPhost(String host);
+  public abstract String getlocalRTPhost(CallDetails cd);
 
   /**
    * Builds SDP packet. (RFC 2327)
@@ -1038,11 +1037,11 @@ public abstract class SIP {
     SDP sdp = cdsd.sdp;
     String ip = sdp.ip;
     if (ip == null) {
-      ip = getlocalRTPhost(cdsd.host);
+      ip = getlocalRTPhost(cd);
     }
     StringBuffer content = new StringBuffer();
     content.append("v=0\r\n");
-    content.append("o=- " + cdsd.o1 + " " + cdsd.o2 + " IN IP4 " + getlocalhost(cdsd.host) + "\r\n");
+    content.append("o=- " + cdsd.o1 + " " + cdsd.o2 + " IN IP4 " + cd.localhost + "\r\n");
     content.append("s=" + useragent + "\r\n");
     content.append("c=IN IP4 " + ip + "\r\n");
     content.append("t=0 0\r\n");

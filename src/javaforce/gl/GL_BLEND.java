@@ -35,6 +35,7 @@ public class GL_BLEND {
   private GLObject obj;
 
   private float org[] = new float[3];
+  private boolean haveDups;
 
   private HashMap<Long, Chunk> chunks = new HashMap<Long, Chunk>();
 
@@ -300,6 +301,10 @@ public class GL_BLEND {
       chunk.read();
       Chunk ochunk = chunks.get(chunk.ptr);
       if (ochunk != null) {
+        if (!haveDups) {
+          JFLog.log("Warning:This file contains duplicate BHeads.");
+          haveDups = true;
+        }
         ochunk.dup = true;
         while (ochunk.nextdup != null) {
           ochunk = ochunk.nextdup;

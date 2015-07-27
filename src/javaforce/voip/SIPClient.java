@@ -168,7 +168,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.to = new String[]{user, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = new String[]{user, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = replacetag(cd.src.from, generatetag());
-    cd.src.contact = "<sip:" + user + "@" + getlocalhost(null) + ":" + getlocalport() + ">";
+    cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.uri = "sip:" + remotehost;  // + ";rinstance=" + getrinstance();
     cd.src.branch = getbranch();
     cd.src.cseq++;
@@ -206,7 +206,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.to = new String[]{user, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = new String[]{user, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = replacetag(cd.src.from, generatetag());
-    cd.src.contact = "<sip:" + user + "@" + getlocalhost(null) + ":" + getlocalport() + ">";
+    cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.uri = "sip:" + user + "@" + remotehost;
     cd.src.branch = getbranch();
     cd.src.cseq++;
@@ -227,7 +227,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.to = new String[]{subuser, subuser, remotehost + ":" + remoteport, ":"};
     cd.src.from = new String[]{user, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = replacetag(cd.src.from, generatetag());
-    cd.src.contact = "<sip:" + user + "@" + getlocalhost(null) + ":" + getlocalport() + ">";
+    cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.uri = "sip:" + subuser + "@" + remotehost;
     cd.src.branch = getbranch();
     cd.src.cseq++;
@@ -268,20 +268,13 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   }
 
   /**
-   * Returns local SIP IP address.
-   */
-  public String getlocalhost(String host) {
-    return localhost;
-  }
-
-  /**
    * Returns local RTP IP address.
    */
-  public String getlocalRTPhost(String host) {
+  public String getlocalRTPhost(CallDetails cd) {
     if (RTP.useTURN)
       return RTP.getTurnIP();
     else
-      return getlocalhost(host);
+      return cd.localhost;
   }
 
   private boolean findlocalhost_webserver(String host) {
@@ -319,7 +312,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   public void stunPublicIP(STUN stun, String ip, int port) {
     synchronized(stunLock) {
       if (stunWaiting) {
-        localhost = ip;
+//        localhost = ip;
         rport = port;  //NOTE : this port may be wrong if router is symmetrical
         stunResponse = true;
         stunLock.notify();
@@ -385,6 +378,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       cd = new CallDetails();
       JFLog.log("Create CallDetails:" + callid);
       cd.callid = callid;
+      cd.localhost = localhost;
       setCallDetails(callid, cd);
     }
     return cd;
@@ -409,7 +403,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.dst.port = remoteport;
     StringBuilder req = new StringBuilder();
     req.append(cmd + " " + cdsd.uri + " SIP/2.0\r\n");
-    req.append("Via: SIP/2.0/" + transport.getName() + " " + getlocalhost(null) + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
+    req.append("Via: SIP/2.0/" + transport.getName() + " " + cd.localhost + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
     req.append("Max-Forwards: 70\r\n");
     if (cdsd.routelist != null) {
       for (int a = cdsd.routelist.length-1; a >=0; a--) {
@@ -464,7 +458,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       }
     }
     if ((cdsd.vialist == null) || (cdsd.vialist.length == 0)) {
-      req.append("Via: SIP/2.0/" + transport.getName() + " " + getlocalhost(null) + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
+      req.append("Via: SIP/2.0/" + transport.getName() + " " + cd.localhost + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
     }
     if (cdsd.routelist != null) {
       for (int a = cdsd.routelist.length-1; a >=0; a--) {
@@ -503,7 +497,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     CallDetails cd = getCallDetails(callid);  //new CallDetails
     cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
     cd.src.from = new String[]{user, user, remotehost + ":" + remoteport, ":"};
-    cd.src.contact = "<sip:" + user + "@" + getlocalhost(null) + ":" + getlocalport() + ">";
+    cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.branch = getbranch();
@@ -657,7 +651,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.from = cd.dst.to.clone();
     //copy all other needed fields
     cd.src.uri = cd.dst.uri;
-    cd.src.contact = "<sip:" + user + "@" + getlocalhost(null) + ":" + getlocalport() + ">";
+    cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.branch = cd.dst.branch;
     return true;
   }
@@ -674,7 +668,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     //do NOT swap to/from in this case
     //copy all other needed fields
     cd.src.uri = cd.dst.uri;
-    cd.src.contact = "<sip:" + user + "@" + getlocalhost(null) + ":" + getlocalport() + ">";
+    cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.branch = cd.dst.branch;
     return true;
   }
@@ -693,9 +687,6 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    */
   public void packet(String msg[], String remoteip, int remoteport) {
     try {
-      if (remoteip.equals("127.0.0.1")) {
-        remoteip = localhost;
-      }
       if (!remoteip.equals(this.remoteip) || remoteport != this.remoteport) {
         JFLog.log("Ignoring packet from unknown host:" + remoteip + ":" + remoteport);
         return;
@@ -708,6 +699,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         return;
       }
       CallDetails cd = getCallDetails(callid);
+      if (remoteip.equals("127.0.0.1")) {
+        remoteip = cd.localhost;
+      }
       cd.dst.host = remoteip;
       cd.dst.port = remoteport;
       cd.dst.cseq = getcseq(msg);
@@ -737,8 +731,8 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           //check for received in via header which equals my IP as seen by server
           String received = getHeader("received=", f);
           if (received != null) {
-            if (!localhost.equals(received)) {
-              localhost = received;
+            if (!cd.localhost.equals(received)) {
+              cd.localhost = received;
               JFLog.log("received ip=" + received + " for remotehost = " + remotehost);
             }
           }
@@ -761,7 +755,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       //get route list (RFC 2543 6.29)
       cd.dst.routelist = getroutelist(msg);
       //set contact
-      cd.dst.contact = "<sip:" + user + "@" + getlocalhost(null) + ":" + getlocalport() + ">";
+      cd.dst.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
       //get uri (it must equal the Contact field)
       cd.dst.uri = getHeader("Contact:", msg);
       if (cd.dst.uri == null) {
