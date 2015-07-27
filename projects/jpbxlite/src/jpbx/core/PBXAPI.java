@@ -15,7 +15,7 @@ public interface PBXAPI {
   public boolean transfer_src(CallDetailsPBX cd, String number);
   public boolean transfer_dst(CallDetailsPBX cd, String number);
   public Extension getExtension(String ext);
-  public String getlocalhost(String host);
+  public String getlocalhost(CallDetailsPBX cd);
   public int getlocalport();
   public String[] getTrunks(String dialed, String ext, SQL sql);
   public String resolve(String host);  //resolve host to ip address

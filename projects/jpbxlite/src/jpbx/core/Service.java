@@ -22,7 +22,6 @@ public class Service implements SIPServerInterface, PBXAPI {
   private JBusClient jbusClient;
   private boolean relayAudio, relayVideo;
 
-  public static String publicip, localip;
   public static int sip_port;
 
   public boolean init() {
@@ -45,14 +44,6 @@ public class Service implements SIPServerInterface, PBXAPI {
     int rtpmin, rtpmax;
     try {
       sip_port = Integer.valueOf(getCfg("port"));
-      localip = getCfg("localip");
-      if ((localip != null) && (localip.length() > 0)) {
-        ss.setlocalip(localip);
-      }
-      publicip = getCfg("publicip");
-      if ((publicip != null) && (publicip.length() > 0)) {
-        ss.setpublicip(publicip);
-      }
       rtpmin = Integer.valueOf(getCfg("rtpmin"));
       rtpmax = Integer.valueOf(getCfg("rtpmax"));
       if ((rtpmin < 1024) || (rtpmin > 65535-1000)) rtpmin = 32768;
@@ -455,8 +446,8 @@ public class Service implements SIPServerInterface, PBXAPI {
     }
     return extList.get(ext);
   }
-  public String getlocalhost(String host) {
-    return ss.getlocalhost(host);
+  public String getlocalhost(CallDetailsPBX cd) {
+    return cd.localhost;
   }
   public int getlocalport() {
     return sip_port;
@@ -751,7 +742,7 @@ JFLog.log("connect:" + relayAudio +","+ relayVideo);
       cd.pbxdst.sdp.icepwd = cd.src.sdp.icepwd;
       other_astream = cd.src.sdp.getFirstAudioStream();
       if (relayAudio) {
-        cd.pbxdst.sdp.ip = getlocalhost(cd.dst.host);
+        cd.pbxdst.sdp.ip = getlocalhost(cd);
         pbx_astream = cd.pbxdst.sdp.addStream(SDP.Type.audio);
         pbx_astream.codecs = other_astream.codecs;
         pbx_astream.port = cd.audioRelay.getPort_dst();
@@ -772,7 +763,7 @@ JFLog.log("connect:" + relayAudio +","+ relayVideo);
         if (relayVideo) {
           pbx_vstream = cd.pbxdst.sdp.addStream(SDP.Type.video);
           if (!relayAudio) {
-            pbx_vstream.ip = getlocalhost(cd.dst.host);
+            pbx_vstream.ip = getlocalhost(cd);
           }
           pbx_vstream.codecs = other_vstream.codecs;
           pbx_vstream.port = cd.videoRelay.getPort_dst();
@@ -798,7 +789,7 @@ JFLog.log("connect:" + relayAudio +","+ relayVideo);
       cd.pbxsrc.sdp.icepwd = cd.dst.sdp.icepwd;
       other_astream = cd.dst.sdp.getFirstAudioStream();
       if (relayAudio) {
-        cd.pbxsrc.sdp.ip = getlocalhost(cd.src.host);
+        cd.pbxsrc.sdp.ip = getlocalhost(cd);
         pbx_astream = cd.pbxsrc.sdp.addStream(SDP.Type.audio);
         pbx_astream.codecs = other_astream.codecs;
         pbx_astream.port = cd.audioRelay.getPort_src();
@@ -819,7 +810,7 @@ JFLog.log("connect:" + relayAudio +","+ relayVideo);
         if (relayVideo) {
           pbx_vstream = cd.pbxsrc.sdp.addStream(SDP.Type.video);
           if (!relayAudio) {
-            pbx_vstream.ip = getlocalhost(cd.src.host);
+            pbx_vstream.ip = getlocalhost(cd);
           }
           pbx_vstream.codecs = other_vstream.codecs;
           pbx_vstream.port = cd.videoRelay.getPort_src();

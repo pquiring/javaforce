@@ -85,7 +85,7 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
     cd.audioRelay.init(cd, this, api);
     cd.pbxsrc.host = cd.src.host;
     cd.pbxsrc.sdp = new SDP();
-    cd.pbxsrc.sdp.ip = api.getlocalhost(cd.pbxsrc.host);
+    cd.pbxsrc.sdp.ip = api.getlocalhost(cd);
     SDP.Stream astream = cd.pbxsrc.sdp.addStream(SDP.Type.audio);
     astream.port = cd.audioRelay.getPort_src();
     astream.codecs = cd.src.sdp.getFirstAudioStream().codecs;

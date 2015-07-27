@@ -75,7 +75,7 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
     cd.audioRelay.init(cd, this, api);
     cd.pbxsrc.host = cd.src.host;
     cd.pbxsrc.sdp = new SDP();
-    cd.pbxsrc.sdp.ip = api.getlocalhost(cd.src.host);
+    cd.pbxsrc.sdp.ip = api.getlocalhost(cd);
     SDP.Stream astream = cd.pbxsrc.sdp.addStream(SDP.Type.audio);
     astream.codecs = cd.src.sdp.getFirstAudioStream().codecs;
     astream.port = cd.audioRelay.getPort_src();
