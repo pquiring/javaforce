@@ -85,12 +85,12 @@ License
 JavaForce itself is licensed under the LGPL license which can be read in license.txt.
 The MSI installers show the Common Public License 1.0 which is acceptable as well.
 The other jars in /jars may each have their own licensing.
-  filters.jar - Apache License 2.0 (jhlabs.com)
-  bouncycastle.jar - MIT license? (www.bouncycastle.org)
-  derby.jar - Apache License 2.0 (db.apache.com/derby)
-  jcifs.jar - LGPL (jcifs.samba.org)
-  jsp-api.jar & servlet-api.jar - Apache License 2.0 (tomcat.apache.com)
-  jsch.jar & jzlib.jar - BSD license (www.jcraft.com)
+  filters.jar - Apache License 2.0 (http://www.jhlabs.com)
+  bouncycastle.jar - MIT license? (http://www.bouncycastle.org)
+  derby.jar - Apache License 2.0 (http://db.apache.com/derby)
+  jcifs.jar - LGPL (http://jcifs.samba.org)
+  jsp-api.jar & servlet-api.jar - Apache License 2.0 (http://tomcat.apache.com)
+  jsch.jar & jzlib.jar - BSD license (http://www.jcraft.com)
 
 Enjoy!
 
@@ -101,5 +101,5 @@ http://javaforce.sourceforge.net
 
 Version 9.6.0
 
-Released : July 27 2015
+Released : July 28 2015
 
