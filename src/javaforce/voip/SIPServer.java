@@ -213,11 +213,14 @@ public class SIPServer extends SIP implements SIPInterface {
           idx1++;
         }
         int idx2 = sip.indexOf(":");
+        String host;
         if (idx2 == -1) {
-          cd.localhost = sip.substring(idx1);
+          host = sip.substring(idx1);
         } else {
-          cd.localhost = sip.substring(idx1, idx2);
+          host = sip.substring(idx1, idx2);
         }
+        cd.localhost = InetAddress.getByName(host).getHostAddress();
+        JFLog.log("server address=" + cd.localhost);
         localhost = cd.localhost;
       }
       cd.lastPacket = System.currentTimeMillis();
