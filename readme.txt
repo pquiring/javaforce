@@ -7,7 +7,7 @@ What is it?
 ===========
 JavaForce is a Java library extending the capabilities of Java.
 
-The main library includes a VoIP stack and bindings for FFMPEG, OpenGL, etc.
+The main library includes a VoIP stack and bindings for FFMPEG, OpenGL and Camera.
 
 Includes many apps built around the library such as jPhoneLite, jfVideo Createor, jfAudio, jfMusic, etc.
 
@@ -17,29 +17,21 @@ JF is also used to create jfCraft, a Minecraft clone : http://jfcraft.sourceforg
 
 Projects
 ========
-jPhoneLite - Java VoIP/SIP soft phone
-  6 lines, g711, g729a, Xfer, Hold, Conference, contact list, recent list, RFC 2833, etc.
+jPhoneLite - Java VoIP soft phone
 
 jfVideo Creator - video production
 
-jfPaint - a multi-tabbed image editor
+jfPaint - multi-tabbed image editor
 
-jPBXlite - Java VoIP/SIP PBX
-  - extensions, trunks, voicemail, IVRs, conferences
+jPBXlite - Java VoIP PBX
 
-jfBroadcast - VoIP/SIP Auto Dialer System
+jfBroadcast - VoIP Auto Dialer System
 
-jfTerm - a great Telnet client application that includes support for:
-  Telnet/ANSI (full color).
-  SSH (X11) (using JCraft JSch)
-  SSL
-  Multi-tabbed.
-  Copy/Paste.
-  Logging.
+jfTerm - Telnet client application that includes support for:
 
-jfEdit - a multi-tabbed text editor.
+jfEdit - multi-tabbed text editor.
 
-jfHex - a multi-tabbed hex editor.
+jfHex - multi-tabbed hex editor.
 
 and many more...
 
@@ -48,18 +40,16 @@ Folders
  /          - main folder (run ant here to build /src)
  /src       - the javaforce source files
  /jars      - 3rd party files
+ /stubs     - native launcher stubs
+ /native    - native JNI bindings for FFMPEG, OpenGL, Camera
  /classes   - javaforce compiled files
  /projects  - source for all sub-projects
 
-Classpath
-=========
-No special CLASSPATH is required except maybe "." to run applications of course.
-
 Building
 ========
-All projects are built with Apache Ant (available at http://ant.apache.org).
+All projects are built with Apache Ant (http://ant.apache.org).
 Make sure to run ant in the main folder to build the /src folder and then in any of the apps in /projects.
-If building on Windows make sure to copy /native/*.dll to /windwos/system32 since some of the
+If building on Windows make sure to copy /native/*.dll to /windows/system32 since some of the
 build tools require them.
 
 Common Ant tasks:
@@ -67,7 +57,7 @@ Common Ant tasks:
 compile : compile projects java files
 jar : build the projects main jar file
 depjars : copy dependant jar files into project folder
-install : install files into proper folders (Linux only : "sudo ant install")
+install : install files into proper folders (Linux only) (requires root access : "sudo ant install")
 deb : build Ubuntu deb file (after install)
 rpm : build Fedora rpm file (after install)
 msi32 : build Windows msi file (32bit)
@@ -76,15 +66,11 @@ dmg : build Mac dmg file (mac only)
 genisodmg : build Mac dmg file (cygwin/linux/mac) (uncompressed)
 javadoc : create javadoc api help files (open ./javadoc/index.html)
 
-3rd party
-=========
-All third party dependancies are in /jars
-
 License
 =======
 JavaForce itself is licensed under the LGPL license which can be read in license.txt.
 The MSI installers show the Common Public License 1.0 which is acceptable as well.
-The other jars in /jars may each have their own licensing.
+The other jars in /jars each have their own licensing.
   filters.jar - Apache License 2.0 (http://www.jhlabs.com)
   bouncycastle.jar - MIT license? (http://www.bouncycastle.org)
   derby.jar - Apache License 2.0 (http://db.apache.com/derby)
@@ -97,9 +83,10 @@ Enjoy!
 Peter Quiring
 pquiring@gmail.com
 
-http://javaforce.sourceforge.net
+Web : http://javaforce.sourceforge.net
+
+Git : github.com/pquiring/javaforce
 
 Version 9.6.0
 
-Released : July 28 2015
-
+Released : July 31 2015
