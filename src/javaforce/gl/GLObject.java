@@ -130,6 +130,9 @@ public class GLObject implements Cloneable {
     map.uvl.append(v.u);
     map.uvl.append(v.v);
   }
+  public int getVertexCount() {
+    return vpl.size() / 3;
+  }
   public void addText(float uv[]) {
     maps.get(0).addText(uv);
   }

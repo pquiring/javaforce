@@ -392,9 +392,11 @@ public class GL {
   public static native void glTexParameteri(int i1, int i2, int i3);
   public static native void glUseProgram(int id);
   public static native void glUniformMatrix4fv(int i1, int i2, int i3, float m[]);
+  public static native void glUniform4fv(int i1, int i2, float f[]);
   public static native void glUniform3fv(int i1, int i2, float f[]);
   public static native void glUniform2fv(int i1, int i2, float f[]);
   public static native void glUniform1f(int i1, float f);
+  public static native void glUniform4iv(int i1, int i2, int v[]);
   public static native void glUniform3iv(int i1, int i2, int v[]);
   public static native void glUniform2iv(int i1, int i2, int v[]);
   public static native void glUniform1i(int i1, int i2);

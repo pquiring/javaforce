@@ -55,9 +55,11 @@ enum GLNAMES {
   GLTEXPARAMETERI,
   GLUSEPROGRAM,
   GLUNIFORMMATRIX4FV,
+  GLUNIFORM4FV,
   GLUNIFORM3FV,
   GLUNIFORM2FV,
   GLUNIFORM1F,
+  GLUNIFORM4IV,
   GLUNIFORM3IV,
   GLUNIFORM2IV,
   GLUNIFORM1I,
@@ -127,9 +129,11 @@ GLFunc funcs[] = {
   {"glTexParameteri", NULL},
   {"glUseProgram", NULL},
   {"glUniformMatrix4fv", NULL},
+  {"glUniform4fv", NULL},
   {"glUniform3fv", NULL},
   {"glUniform2fv", NULL},
   {"glUniform1f", NULL},
+  {"glUniform4iv", NULL},
   {"glUniform3iv", NULL},
   {"glUniform2iv", NULL},
   {"glUniform1i", NULL},
@@ -544,6 +548,14 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniformMatrix4fv
   e->ReleaseFloatArrayElements(f4, f4ptr, JNI_ABORT);
 }
 
+JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform4fv
+  (JNIEnv *e, jclass c, jint i1, jint i2, jfloatArray f3)
+{
+  float *f3ptr = e->GetFloatArrayElements(f3,NULL);
+  (*(void (*)(int,int,float *))funcs[GLUNIFORM4FV].func)(i1, i2, f3ptr);
+  e->ReleaseFloatArrayElements(f3, f3ptr, JNI_ABORT);
+}
+
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform3fv
   (JNIEnv *e, jclass c, jint i1, jint i2, jfloatArray f3)
 {
@@ -564,6 +576,14 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform1f
   (JNIEnv *e, jclass c, jint i1, jfloat f2)
 {
   (*(void (*)(int, float))funcs[GLUNIFORM1F].func)(i1, f2);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform4iv
+  (JNIEnv *e, jclass c, jint i1, jint i2, jintArray i3)
+{
+  jint *i3ptr = e->GetIntArrayElements(i3,NULL);
+  (*(void (*)(int,int,jint *))funcs[GLUNIFORM4IV].func)(i1, i2, i3ptr);
+  e->ReleaseIntArrayElements(i3, i3ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform3iv

@@ -35,6 +35,9 @@ public class GLTexture {
     JFLog.log("Loading Texture:" + filename.toString());
     try {
       return load(new FileInputStream(filename));
+    } catch (FileNotFoundException e) {
+      JFLog.log("File not found:" + filename);
+      return false;
     } catch (Exception e) {
       e.printStackTrace();
       return false;

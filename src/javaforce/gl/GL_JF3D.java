@@ -114,7 +114,9 @@ public class GL_JF3D {
           model = new GLModel();
           int fcnt = readuint32();
           for(int a=0;a<fcnt;a++) {
-            model.textures.add(readString());
+            String txt = readString();
+            model.textures.add(txt);
+//            JFLog.log("Texture=" + txt);
           }
           if (head_ver > 0) {
             //future reserved
@@ -146,9 +148,12 @@ public class GL_JF3D {
             default:
               JFLog.log("GL_JF3D:Error Unknown GL Type:" + obj.type);
               return null;
-           }
+          }
           for(int p=0;p<pcnt;p++) {
             int pt = readuint32();
+            if (pt >= vcnt) {
+              JFLog.log("Error:Poly includes invalid vertex !!!");
+            }
             obj.addPoly(new int[] {pt});
           }
           break;
@@ -157,6 +162,9 @@ public class GL_JF3D {
           map.name = readString();
           map.textureIndex = readuint32();
           int uvcnt = readuint32();
+          if (uvcnt != obj.getVertexCount()) {
+            JFLog.log("Warning:UVMAP size != vertex count");
+          }
           for(int i=0;i<uvcnt;i++) {
             float u = readfloat();
             float v = readfloat();
