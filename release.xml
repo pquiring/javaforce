@@ -82,6 +82,9 @@
         <exclude name="jf/projects/jbroadcast/database/**/*"/>
         <exclude name="**/*.crt"/>
         <exclude name="**/*.csr"/>
+        <exclude name="**/*.bz2"/>
+        <exclude name="**/*.gz"/>
+        <exclude name="**/*.dmg"/>
         <exclude name="**/cp.sh"/>
         <exclude name="**/sync.sh"/>
         <exclude name="**/*.ogv"/>

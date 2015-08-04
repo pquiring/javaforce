@@ -106,6 +106,7 @@ struct GLContext {
   HWND hwnd;
   HDC hdc;
   HGLRC ctx;
+  int shared;
   //to avoid using libstdc++ new/delete must be coded by hand
   static GLContext* New() {
     GLContext *ctx = (GLContext*)malloc(sizeof(GLContext));
@@ -169,6 +170,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glCreate
     ctx->ctx = wglCreateContext(ctx->hdc);
   } else {
     ctx->ctx = ctx_shared->ctx;
+    ctx->shared = 1;
   }
   wglMakeCurrent(ctx->hdc, ctx->ctx);
 
@@ -196,7 +198,9 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDelete
 {
   GLContext *ctx = getGLContext(e,c);
   wglMakeCurrent(NULL, NULL);
-  wglDeleteContext(ctx->ctx);
+  if (ctx->shared == 0) {
+    wglDeleteContext(ctx->ctx);
+  }
   ctx->Delete();
 }
 

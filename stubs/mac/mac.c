@@ -46,6 +46,7 @@ char classpath[1024];
 char mainclass[MAX_PATH];
 char method[MAX_PATH];
 char cfgargs[1024];
+int appleJava = 0;  //use Oracle instead
 
 /* Prototypes */
 void error(char *msg);
@@ -244,6 +245,9 @@ int loadProperties() {
     else if (strncmp(ln1, "ARGS=", 5) == 0) {
       strcpy(cfgargs, ln1 + 5);
     }
+    else if (strncmp(ln1, "APPLEJAVA=TRUE", 14) == 0) {
+      appleJava = 1;
+    }
     ln1 = ln2;
   }
   free(data);
@@ -260,22 +264,25 @@ int main(int argc, char **argv) {
 
   //get java home
   //strcpy(javahome, resolvelink("/usr/bin/java"));
-  strcpy(javahome, "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home");
-
-  strcat(javahome, "/lib");
+  if (appleJava)
+    strcpy(javahome, "/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Libraries");  //Apple Java 6
+  else
+    strcpy(javahome, "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/lib");  //Oracle Java 7+
 
   //open libjvm.dylib
   strcpy(dll, javahome);
-  strcat(dll, "/server/libjvm.dylib");
-
-//  printf("dll=%s\n", dll);
+  if (!appleJava) {
+    strcat(dll, "/server/libjvm.dylib");
+  } else {
+    strcat(dll, "/libserver.dylib");
+  }
 
   jvm_dll = dlopen(dll, RTLD_NOW);
   if (jvm_dll == NULL) {
     error("Unable to open libjvm.dylib");
   }
 
-  //open libjawt.so (otherwise Linux can't find it later)
+  //open libjawt.so (otherwise Mac can't find it later)
   strcpy(dll, javahome);
   strcat(dll, "/libjawt.dylib");
 
@@ -286,7 +293,7 @@ int main(int argc, char **argv) {
 
   CreateJavaVM = (int (*)(void*,void*,void*)) dlsym(jvm_dll, "JNI_CreateJavaVM");
   if (CreateJavaVM == NULL) {
-    error("Unable to find Java interfaces in libjvm.so");
+    error("Unable to find Java interfaces in libjvm.dylib");
   }
 
   //now continue in new thread (not really necessary but avoids some Java bugs)

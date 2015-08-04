@@ -44,12 +44,14 @@ tar xjf data.tar.bz2 -C /tmp/dmg.tmp/$1.app/Contents/MacOS
 cp $PLIST /tmp/dmg.tmp/$1.app/Contents
 cp $ICNS /tmp/dmg.tmp/$1.app/Resources
 
+echo OUTPUT=%1
+
 #build $1
 if [ "$GENISO" = "false" ]; then
-  hdiutil create -srcfolder /tmp/dmg.tmp $1
-  hdiutil internet-enable -yes $1
+  hdiutil create -srcfolder /tmp/dmg.tmp $DMG
+  hdiutil internet-enable -yes $DMG
 else
-  genisoimage -apple -o $1 /tmp/dmg.tmp
+  genisoimage -apple -r -o $DMG /tmp/dmg.tmp
 fi
 
 #cleanup

@@ -14,6 +14,7 @@
     <copy todir=".">
       <fileset dir="${home}/native" includes="*.dll"/>
       <fileset dir="${home}/native" includes="*.so"/>
+      <fileset dir="${home}/native" includes="*.dylib"/>
     </copy>
   </target>
 
@@ -177,7 +178,8 @@
 
   <target name="genisodmg" depends="jar"  description="create dmg package (using genisoimage)">
     <mac/>
-    <exec executable="jfdmg">
+    <exec executable="bash">
+      <arg value="/usr/bin/jfdmg"/>
       <arg value="${app}"/>
       <arg value="${app}-${version}.dmg"/>
       <arg value="-geniso"/>

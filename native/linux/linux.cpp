@@ -39,7 +39,7 @@ void (*_XCloseDisplay)(void*);
 
 void* xgl = NULL;
 void* (*_glXCreateContext)(void *x11, void *vi, void *shareList, int directRender);
-int (*_glXDestroyContext)(void *ctx);
+int (*_glXDestroyContext)(void *x11, void *ctx);
 int (*_glXMakeCurrent)(void *x11, int win, void *ctx);
 void* (*_glXGetProcAddress)(const char *name);
 void (*_glXSwapBuffers)(void *x11, int win);
@@ -97,7 +97,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
       return JNI_FALSE;
     }
     _glXCreateContext = (void* (*)(void*,void*,void*,int))dlsym(xgl, "glXCreateContext");
-    _glXDestroyContext = (int (*)(void*))dlsym(xgl, "glXDestroyContext");
+    _glXDestroyContext = (int (*)(void*, void*))dlsym(xgl, "glXDestroyContext");
     _glXMakeCurrent = (int (*)(void*,int,void*))dlsym(xgl, "glXMakeCurrent");
     _glXGetProcAddress = (void* (*)(const char *))dlsym(xgl, "glXGetProcAddress");
     _glXSwapBuffers = (void (*)(void*,int))dlsym(xgl, "glXSwapBuffers");
@@ -191,6 +191,7 @@ struct GLContext {
   void *xvi;  //visual
   long xid;
   void *ctx;
+  int shared;
   //to avoid using libstdc++ new/delete must be coded by hand
   static GLContext* New() {
     GLContext *ctx = (GLContext*)malloc(sizeof(GLContext));
@@ -250,6 +251,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glCreate
     ctx->ctx = (*_glXCreateContext)(ctx->x11, ctx->xvi, NULL, 1);  //1 = GL_TRUE
   } else {
     ctx->ctx = ctx_shared->ctx;
+    ctx->shared = 1;
   }
   (*_glXMakeCurrent)(ctx->x11, ctx->xid, ctx->ctx);
 
@@ -277,6 +279,9 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDelete
 {
   GLContext *ctx = getGLContext(e,c);
   (*_glXMakeCurrent)(ctx->x11, 0, NULL);
+  if (ctx->shared == 0) {
+    (*_glXDestroyContext)(ctx->x11, ctx->ctx);
+  }
   (*_XCloseDisplay)(ctx->x11);
   ctx->Delete();
 }
