@@ -205,7 +205,7 @@ public class GL {
   public static native void glDeleteBuffers(int i1, int i2[]);
   public static native void glDeleteFramebuffers(int i1, int i2[]);
   public static native void glDeleteRenderbuffers(int i1, int i2[]);
-  public static native void glDeleteTextures(int i1, int i2[], int i3);
+  public static native void glDeleteTextures(int i1, int i2[]);
   public static native void glDrawElements(int i1, int i2, int i3, int i4);
   public static native void glDepthFunc(int i1);
   public static native void glDisable(int id);

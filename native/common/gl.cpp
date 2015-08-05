@@ -282,10 +282,10 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDeleteRenderbuffers
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDeleteTextures
-  (JNIEnv *e, jclass c, jint i1, jintArray i2, jint i3)
+  (JNIEnv *e, jclass c, jint i1, jintArray i2)
 {
   jint *i2ptr = e->GetIntArrayElements(i2,NULL);
-  (*(void (*)(int,jint *,int))funcs[GLDELETETEXTURES].func)(i1, i2ptr, i3);
+  (*(void (*)(int,jint *))funcs[GLDELETETEXTURES].func)(i1, i2ptr);
   e->ReleaseIntArrayElements(i2, i2ptr, JNI_ABORT);
 }
 

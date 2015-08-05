@@ -208,7 +208,7 @@ public class GLScene {
   private boolean uninitTexture(GL gl, int glid) {
     int id[] = new int[1];
     id[0] = glid;
-    gl.glDeleteTextures(1, id, 0);
+    gl.glDeleteTextures(1, id);
     return true;
   }
   public void releaseUnusedTextures() {
