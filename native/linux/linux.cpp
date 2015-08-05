@@ -15,8 +15,6 @@
 #include <security/pam_appl.h>
 
 #include <jni.h>
-#include <jawt.h>
-#include <jawt_md.h>
 
 #include "javaforce_jni_LnxNative.h"
 #include "javaforce_gl_GL.h"
@@ -29,9 +27,6 @@
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
 #endif
-
-void* jawt = NULL;
-jboolean (JNICALL *_JAWT_GetAWT)(JNIEnv *e, JAWT *c) = NULL;
 
 void* x11 = NULL;
 void* (*_XOpenDisplay)(void*);
@@ -71,14 +66,6 @@ int (*cdio_read_audio_sectors)(void *ptr, void *buf, int lsn, int blocks);  //23
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
   (JNIEnv *e, jclass c, jstring libgl_so, jstring libv4l2_so, jstring libcdio_so)
 {
-  if (jawt == NULL) {
-    jawt = dlopen("libjawt.so", RTLD_LAZY | RTLD_GLOBAL);
-    if (jawt == NULL) {
-      printf("dlopen(libjawt.so) failed\n");
-      return JNI_FALSE;
-    }
-    _JAWT_GetAWT = (jboolean (JNICALL *)(JNIEnv *e, JAWT *c))dlsym(jawt, "JAWT_GetAWT");
-  }
   if (x11 == NULL) {
     x11 = dlopen("libX11.so", RTLD_LAZY | RTLD_GLOBAL);
     if (x11 == NULL) {
@@ -142,155 +129,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
   return JNI_TRUE;
 }
 
-static long getX11ID(JNIEnv *e, jobject c) {
-  JAWT_DrawingSurface* ds;
-  JAWT_DrawingSurfaceInfo* dsi;
-  jint lock;
-  JAWT awt;
-
-  if (jawt == NULL) return 0;
-  if (_JAWT_GetAWT == NULL) return 0;
-
-  awt.version = JAWT_VERSION_1_4;
-  if (!(*_JAWT_GetAWT)(e, &awt)) {
-    printf("JAWT_GetAWT() failed\n");
-    return 0;
-  }
-
-  ds = awt.GetDrawingSurface(e, c);
-  if (ds == NULL) {
-    printf("JAWT.GetDrawingSurface() failed\n");
-    return 0;
-  }
-  lock = ds->Lock(ds);
-  if ((lock & JAWT_LOCK_ERROR) != 0) {
-    awt.FreeDrawingSurface(ds);
-    printf("JAWT.Lock() failed\n");
-    return 0;
-  }
-  dsi = ds->GetDrawingSurfaceInfo(ds);
-  if (dsi == NULL) {
-    printf("JAWT.GetDrawingSurfaceInfo() failed\n");
-    return 0;
-  }
-  JAWT_X11DrawingSurfaceInfo* xdsi = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
-  if (xdsi == NULL) {
-    printf("JAWT.platformInfo == NULL\n");
-    return 0;
-  }
-  long handle = xdsi->drawable;
-  ds->FreeDrawingSurfaceInfo(dsi);
-  ds->Unlock(ds);
-  awt.FreeDrawingSurface(ds);
-
-  return handle;
-}
-
-struct GLContext {
-  void *x11;
-  void *xvi;  //visual
-  long xid;
-  void *ctx;
-  int shared;
-  //to avoid using libstdc++ new/delete must be coded by hand
-  static GLContext* New() {
-    GLContext *ctx = (GLContext*)malloc(sizeof(GLContext));
-    memset(ctx, 0, sizeof(GLContext));
-    return ctx;
-  }
-  void Delete() {
-    free(this);
-  }
-};
-
-GLContext* createGLContext(JNIEnv *e, jobject c) {
-  GLContext *ctx;
-  jclass cls_gl = e->FindClass("javaforce/gl/GL");
-  jfieldID fid_gl_ctx = e->GetFieldID(cls_gl, "ctx", "J");
-  ctx = (GLContext*)e->GetLongField(c, fid_gl_ctx);
-  if (ctx != NULL) {
-    printf("OpenGL ctx used twice\n");
-    return NULL;
-  }
-  ctx = GLContext::New();
-  e->SetLongField(c,fid_gl_ctx,(jlong)ctx);
-  return ctx;
-}
-
-GLContext* getGLContext(JNIEnv *e, jobject c) {
-  GLContext *ctx;
-  jclass cls_gl = e->FindClass("javaforce/gl/GL");
-  jfieldID fid_gl_ctx = e->GetFieldID(cls_gl, "ctx", "J");
-  ctx = (GLContext*)e->GetLongField(c, fid_gl_ctx);
-  return ctx;
-}
-
-static int GLX_RGBA = 4;
-static int GLX_DEPTH_SIZE = 12;
-static int GLX_DOUBLEBUFFER = 5;
-//static int None = 0;
-static int attrs[5] = {GLX_RGBA, GLX_DEPTH_SIZE, 16, GLX_DOUBLEBUFFER, None};
-
-JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glCreate
-  (JNIEnv *e, jobject c, jobject canvas, jlong sharedCtx)
-{
-  sharedCtx = 0;  //BUG : this is somehow not Zero when it should be
-  GLContext *ctx = createGLContext(e,c);
-  GLContext *ctx_shared = (GLContext*)sharedCtx;
-  ctx->xid = getX11ID(e,canvas);
-  if (ctx->xid == 0) {
-    printf("glCreate:xid == 0\n");
-    ctx->Delete();
-    return -1;
-  }
-
-  //now create gl context for handle
-  ctx->x11 = (*_XOpenDisplay)(NULL);
-  if (ctx_shared == NULL) {
-    ctx->xvi = (*_glXChooseVisual)(ctx->x11, 0, attrs);
-    ctx->ctx = (*_glXCreateContext)(ctx->x11, ctx->xvi, NULL, 1);  //1 = GL_TRUE
-  } else {
-    ctx->ctx = ctx_shared->ctx;
-    ctx->shared = 1;
-  }
-  (*_glXMakeCurrent)(ctx->x11, ctx->xid, ctx->ctx);
-
-  Java_javaforce_gl_GL_glInit(e,c);
-
-  return (jlong)ctx;
-}
-
-JNIEXPORT void JNICALL Java_javaforce_gl_GL_glSetContext
-  (JNIEnv *e, jobject c)
-{
-  GLContext *ctx = getGLContext(e,c);
-  (*_glXMakeCurrent)(ctx->x11, ctx->xid, ctx->ctx);
-}
-
-JNIEXPORT void JNICALL Java_javaforce_gl_GL_glSwap
-  (JNIEnv *e, jobject c)
-{
-  GLContext *ctx = getGLContext(e,c);
-  (*_glXSwapBuffers)(ctx->x11, ctx->xid);
-}
-
-JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDelete
-  (JNIEnv *e, jobject c)
-{
-  GLContext *ctx = getGLContext(e,c);
-  (*_glXMakeCurrent)(ctx->x11, 0, NULL);
-  if (ctx->shared == 0) {
-    (*_glXDestroyContext)(ctx->x11, ctx->ctx);
-  }
-  (*_XCloseDisplay)(ctx->x11);
-  ctx->Delete();
-}
-
 #include "../common/gl.cpp"
 
 //this func must be called only when a valid OpenGL context is set
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glInit
-  (JNIEnv *e, jobject c)
+  (JNIEnv *e, jclass c)
 {
   if (funcs[0].func != NULL) return;  //already done
   void *func;
