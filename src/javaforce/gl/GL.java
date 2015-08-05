@@ -22,7 +22,6 @@ import javaforce.*;
 import javaforce.jni.*;
 
 public class GL {
-  private long ctx = 0;
   static {
     JFNative.load();
     if (JF.isWindows()) {
@@ -36,14 +35,6 @@ public class GL {
       LnxNative.load();
     }
   }
-  public GL(GLInterface iface) {
-    this.iface = iface;
-  }
-
-  private native boolean glCreate(Canvas c, long sharedCtx);
-  private native void glDelete();
-  private native void glSetContext();
-  private native void glSwap();
 
   /** Loads OpenGL functions.
    *
@@ -55,21 +46,6 @@ public class GL {
   public native void glInit();
 
   private static final boolean debug = false;
-
-  /** Creates an OpenGL context in a Canvas.
-   */
-  public boolean createComponent(Canvas c, GL shared) {
-    boolean ok = glCreate(c, shared == null ? 0 : shared.ctx);
-    if (!ok) return false;
-    if (debug) {
-      int v[] = new int[1];
-      glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, v);
-      System.out.println("GL_MAX_VERTEX_ATTRIBS=" + v[0]);
-      glGetIntegerv(GL_MAX_VERTEX_UNIFORM_COMPONENTS, v);
-      System.out.println("GL_MAX_VERTEX_UNIFORM_COMPONENTS=" + v[0]);
-    }
-    return true;
-  }
 
   //offscreen data
   private int os_fb, os_clr_rb, os_depth_rb;
@@ -172,32 +148,7 @@ public class GL {
     glBindFramebuffer(GL_FRAMEBUFFER, state ? os_fb : 0);
   }
 
-  /** Delete the OpenGL Context. */
-  public void destroy() {
-    glDelete();
-  }
-
-  /** Makes all calls to gl apply to this window. */
-  public void makeCurrent() {
-    glSetContext();
-  }
-
-  /** Makes your rendering visible. */
-  public void swap() {
-    glSwap();
-  }
-
-  public void render_mac() {
-    iface.render(this);
-  }
-
-  /*package*/ void render() {
-    makeCurrent();
-    iface.render(this);
-  }
-
   //common data
-  protected GLInterface iface;
   private enum OS {WINDOWS, LINUX, MAC};
   private static OS os;
 
@@ -332,7 +283,6 @@ public class GL {
     glViewport(0, 0, width, height);
     glClearColor(r, g, b, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    swap();
   }
 
   public static native void glActiveTexture(int i1);
