@@ -3,6 +3,7 @@ package javaforce.gl;
 import java.io.*;
 
 import javaforce.*;
+import static javaforce.gl.GL.*;
 
 /** Stores a texture (image).
  * Textures are usually loaded after a new model is loaded.
@@ -58,13 +59,13 @@ public class GLTexture {
     return true;
   }
 
-  public boolean load(GL gl) {
+  public boolean load() {
     if (glid == -1) {
       int id[] = new int[1];
       id[0] = -1;
-      gl.glGenTextures(1, id);
+      glGenTextures(1, id);
       if (id[0] == -1) {
-        JFLog.log("glGenTextures failed:Error=0x" + Integer.toString(gl.glGetError(), 16));
+        JFLog.log("glGenTextures failed:Error=0x" + Integer.toString(glGetError(), 16));
         return false;
       }
       glid = id[0];
@@ -72,26 +73,26 @@ public class GLTexture {
     if (loaded) {
       return true;
     }
-    gl.glActiveTexture(GL.GL_TEXTURE0 + idx);
-    gl.glBindTexture(GL.GL_TEXTURE_2D, glid);
-    gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
-    gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+    glActiveTexture(GL.GL_TEXTURE0 + idx);
+    glBindTexture(GL.GL_TEXTURE_2D, glid);
+    glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
+    glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
     if (mipmaps) {
-      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST_MIPMAP_NEAREST);
-      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST_MIPMAP_NEAREST);
+      glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST_MIPMAP_NEAREST);
+      glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST_MIPMAP_NEAREST);
     } else {
-      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-      gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+      glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
+      glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
     }
-    gl.glTexImage2D(GL.GL_TEXTURE_2D, 0, 4, bitmap.getWidth(), bitmap.getHeight(), 0, GL.GL_BGRA
+    glTexImage2D(GL.GL_TEXTURE_2D, 0, 4, bitmap.getWidth(), bitmap.getHeight(), 0, GL.GL_BGRA
       , GL.GL_UNSIGNED_BYTE, bitmap.getPixels());
     loaded = true;
     return true;
   }
 
-  public void bind(GL gl) {
-    gl.glActiveTexture(GL.GL_TEXTURE0 + idx);
-    gl.glBindTexture(GL.GL_TEXTURE_2D, glid);
+  public void bind() {
+    glActiveTexture(GL.GL_TEXTURE0 + idx);
+    glBindTexture(GL.GL_TEXTURE_2D, glid);
   }
 }
 

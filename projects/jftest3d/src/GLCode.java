@@ -5,6 +5,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.gl.*;
+import static javaforce.gl.GL.*;
 
 /**
  *
@@ -13,12 +14,10 @@ import javaforce.gl.*;
  * Created Sept 18, 2013
  */
 
-public class GLCode implements ActionListener, WindowListener, KeyListener, MouseListener, FocusListener, GLInterface {
+public class GLCode {
   java.util.Timer glTimer, fpsTimer;
   final Object fpsLock = new Object();
   int fpsCounter;
-
-  Component comp, focus;
 
   final int FPS = 65;
 
@@ -34,8 +33,6 @@ public class GLCode implements ActionListener, WindowListener, KeyListener, Mous
 
   float alpha = 0.5f, alphadir = -0.01f;
 
-  boolean ready = false;
-
   boolean doSwap = false;
 
   public GLCode(boolean doSwap) {
@@ -43,35 +40,17 @@ public class GLCode implements ActionListener, WindowListener, KeyListener, Mous
   }
 
 //interface GLInterface
-  public void init(GL gl, Component comp) {
-    this.comp = comp;
+  public void init() {
     scene.texturePath = "./";
 
-    Window w;
-
-    if (comp instanceof Window) {
-      w = (Window)comp;
-    } else {
-      w = SwingUtilities.getWindowAncestor(comp);
-    }
-
-    w.addWindowListener(this);
-    comp.addMouseListener(this);
-    comp.addKeyListener(this);
-    comp.addFocusListener(this);
-
-    System.out.println("GL Version=" + gl.glGetString(GL.GL_VERSION));
-    int glver[] = gl.getVersion();
+    System.out.println("GL Version=" + glGetString(GL.GL_VERSION));
+    int glver[] = getVersion();
     if (glver[0] < 2) {
-      w.setVisible(false);
-      w.dispose();
       JF.showError("Error", "OpenGL Version < 2.0");
       System.exit(0);
     }
 
-    createWorld(gl, comp);
-
-    ready = true;
+    createWorld();
 
     //setup timers
     glTimer = new java.util.Timer();
@@ -96,71 +75,30 @@ public class GLCode implements ActionListener, WindowListener, KeyListener, Mous
     }, 1000, 1000);
 
   }
-  public void render(GL gl) {
-    if (!ready) return;
+  public void render() {
     synchronized(fpsLock) {
       fpsCounter++;
     }
     processMovement();
-    render.render(gl);
-    if (doSwap) gl.swap();  //only swap with GLCanvas, not GLJPanel
+    render.render();
+    if (doSwap) Main.swap();  //only swap with GLCanvas, not GLJPanel
   }
-  public void resize(GL gl, int width, int height) {
+  public void resize(int width, int height) {
     render.resize(width, height);
-  }
-//interface ActionListener
-  public void actionPerformed(ActionEvent e) { }
-//interface WindowListener
-  public void windowOpened(WindowEvent e) { }
-  public void windowClosing(WindowEvent e) {
-    System.exit(0);
-  }
-  public void windowClosed(WindowEvent e) { }
-  public void windowIconified(WindowEvent e) { }
-  public void windowDeiconified(WindowEvent e) { }
-  public void windowActivated(WindowEvent e) { }
-  public void windowDeactivated(WindowEvent e) { }
-//interface KeyListener
-  public void keyPressed(KeyEvent e) {
-    if (e.getModifiers() != 0) return;
-    keys[e.getKeyCode()] = true;
-  }
-  public void keyReleased(KeyEvent e) {
-    if (e.getModifiers() != 0) return;
-    keys[e.getKeyCode()] = false;
-  }
-  public void keyTyped(KeyEvent e) { }
-//interface MouseListener
-  public void mouseClicked(MouseEvent e) { }
-  public void mousePressed(MouseEvent e) { }
-  public void mouseReleased(MouseEvent e) { }
-  public void mouseEntered(MouseEvent e) { }
-  public void mouseExited(MouseEvent e) { }
-//interface FocusListener
-  public void focusGained(FocusEvent e) {
-    focus = e.getComponent();
-  }
-  public void focusLost(FocusEvent e) {
-    focus = null;
   }
 
   public void frame() {
     box.m.addRotate(3.0f, 1.0f, 0.0f, 0.0f);
     box.m.addRotate(2.0f, 0.0f, 1.0f, 0.0f);
     box.m.addRotate(1.0f, 0.0f, 0.0f, 1.0f);
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      public void run() {
-        comp.repaint();
-      }
-    });
   }
 
-  public void createWorld(GL gl, Component comp) {
+  public void createWorld() {
     float x, y, z;
-    int width = comp.getWidth();
-    int height = comp.getHeight();
+    int width = 512;
+    int height = 512;
     System.out.println("size=" + width + "," + height);
-    scene.init(gl, GLVertexShader.source, GLFragmentShader.source);
+    scene.init(GLVertexShader.source, GLFragmentShader.source);
     render.init(scene, width, height);
     resetPosition();
 
@@ -187,7 +125,7 @@ public class GLCode implements ActionListener, WindowListener, KeyListener, Mous
       JFLog.log("Failed to load all textures");
       System.exit(0);
     }
-    box.copyBuffers(gl);
+    box.copyBuffers();
   }
 
   public GLObject makeWall(float x,float y,float z,int side,GLObject obj) {

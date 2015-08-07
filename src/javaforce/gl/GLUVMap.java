@@ -7,6 +7,7 @@ package javaforce.gl;
  */
 
 import javaforce.JFArrayFloat;
+import static javaforce.gl.GL.*;
 
 public class GLUVMap {
   public JFArrayFloat uvl;  //texture coords list (UV)
@@ -28,18 +29,18 @@ public class GLUVMap {
     uvl.append(uv);
   }
 
-  public void copyBuffers(GL gl) {
+  public void copyBuffers() {
     int ids[] = new int[1];
     if (uvb == -1) {
-      gl.glGenBuffers(1, ids);
+      glGenBuffers(1, ids);
       uvb = ids[0];
     }
-    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, uvb);
-    gl.glBufferData(GL.GL_ARRAY_BUFFER, uvl.size() * 4, uvl.toArray(), GL.GL_STATIC_DRAW);
+    glBindBuffer(GL.GL_ARRAY_BUFFER, uvb);
+    glBufferData(GL.GL_ARRAY_BUFFER, uvl.size() * 4, uvl.toArray(), GL.GL_STATIC_DRAW);
   }
 
-  public void bindBuffers(GLScene scene, GL gl) {
-    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, uvb);
-    gl.glVertexAttribPointer(scene.tca[idx], 2, GL.GL_FLOAT, GL.GL_FALSE, 0, 0);
+  public void bindBuffers(GLScene scene) {
+    glBindBuffer(GL.GL_ARRAY_BUFFER, uvb);
+    glVertexAttribPointer(scene.tca[idx], 2, GL.GL_FLOAT, GL.GL_FALSE, 0, 0);
   }
 }

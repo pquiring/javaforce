@@ -3,6 +3,7 @@ package javaforce.gl;
 import java.util.*;
 
 import javaforce.*;
+import static javaforce.gl.GL.*;
 
 /** <code>GLObject</code> consists of vertex points, and polygons (usually triangles).
  * All polygons share the same orientation (rotation, translation, scale).
@@ -142,49 +143,49 @@ public class GLObject implements Cloneable {
   public void addPoly(int pts[]) {
     vil.append(pts);
   }
-  public void copyBuffers(GL gl) {
+  public void copyBuffers() {
     int ids[] = new int[1];
 
     if (vpb == -1) {
-      gl.glGenBuffers(1, ids);
+      glGenBuffers(1, ids);
       vpb = ids[0];
     }
-    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vpb);
-    gl.glBufferData(GL.GL_ARRAY_BUFFER, vpl.size() * 4, vpl.toArray(), GL.GL_STATIC_DRAW);
+    glBindBuffer(GL.GL_ARRAY_BUFFER, vpb);
+    glBufferData(GL.GL_ARRAY_BUFFER, vpl.size() * 4, vpl.toArray(), GL.GL_STATIC_DRAW);
 
     for(int a=0;a<maps.size();a++) {
-      maps.get(a).copyBuffers(gl);
+      maps.get(a).copyBuffers();
     }
 
     if (vib == -1) {
-      gl.glGenBuffers(1, ids);
+      glGenBuffers(1, ids);
       vib = ids[0];
     }
-    gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, vib);
-    gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, vil.size() * 4, vil.toArray(), GL.GL_STREAM_DRAW);
+    glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, vib);
+    glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, vil.size() * 4, vil.toArray(), GL.GL_STREAM_DRAW);
     needCopyBuffers = false;
   }
-  public void bindBuffers(GLScene scene, GL gl) {
-    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vpb);
-    gl.glVertexAttribPointer(scene.vpa, 3, GL.GL_FLOAT, GL.GL_FALSE, 0, 0);
+  public void bindBuffers(GLScene scene) {
+    glBindBuffer(GL.GL_ARRAY_BUFFER, vpb);
+    glVertexAttribPointer(scene.vpa, 3, GL.GL_FLOAT, GL.GL_FALSE, 0, 0);
 
     for(int m=0;m<maps.size();m++) {
-      maps.get(m).bindBuffers(scene, gl);
+      maps.get(m).bindBuffers(scene);
     }
 
-    gl.glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, vib);
+    glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, vib);
   }
-  public void render(GLScene scene, GL gl) {
+  public void render(GLScene scene) {
     if (vpl.size() == 0 || vil.size() == 0) return;  //crashes if empty ???
     int uvcnt = maps.size();
-    gl.glUniform1i(scene.uUVMaps, uvcnt);
+    glUniform1i(scene.uUVMaps, uvcnt);
     GL.glEnableVertexAttribArray(scene.tca[0]);
     if (uvcnt > 1) {
       GL.glEnableVertexAttribArray(scene.tca[1]);
     } else {
       GL.glDisableVertexAttribArray(scene.tca[1]);
     }
-    gl.glDrawElements(type, vil.size(), GL.GL_UNSIGNED_INT, 0);
+    glDrawElements(type, vil.size(), GL.GL_UNSIGNED_INT, 0);
   }
   public GLUVMap createUVMap() {
     GLUVMap map = new GLUVMap(maps.size());

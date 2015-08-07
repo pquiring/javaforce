@@ -3,6 +3,7 @@ package javaforce.gl;
 import java.util.*;
 
 import javaforce.*;
+import static javaforce.gl.GL.*;
 
 /** GLScene is a primitive 3D framework.
  * Holds all loaded 3D meshes and related resources.
@@ -40,56 +41,56 @@ public class GLScene {
   public int mpu, mmu, mvu;  //uniform matrix'es (perspective, model, view)
 
 //code
-  public void init(GL gl, String vertex, String fragment) {  //must give size of render window
-    gl.glFrontFace(GL.GL_CCW);  //3DS uses GL_CCW
-    gl.glEnable(GL.GL_CULL_FACE);  //don't draw back sides
-    gl.glEnable(GL.GL_DEPTH_TEST);
-    gl.glDepthFunc(GL.GL_LEQUAL);
-    gl.glEnable(GL.GL_BLEND);
-    gl.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-    gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-    gl.glEnable(GL.GL_TEXTURE_2D);
-    gl.glActiveTexture(GL.GL_TEXTURE0);
+  public void init(String vertex, String fragment) {  //must give size of render window
+    glFrontFace(GL.GL_CCW);  //3DS uses GL_CCW
+    glEnable(GL.GL_CULL_FACE);  //don't draw back sides
+    glEnable(GL.GL_DEPTH_TEST);
+    glDepthFunc(GL.GL_LEQUAL);
+    glEnable(GL.GL_BLEND);
+    glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+    glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
+    glEnable(GL.GL_TEXTURE_2D);
+    glActiveTexture(GL.GL_TEXTURE0);
 
-    vertexShader = gl.glCreateShader(GL.GL_VERTEX_SHADER);
-    gl.glShaderSource(vertexShader, 1, new String[] {vertex}, null);
-    gl.glCompileShader(vertexShader);
-    JFLog.log("vertex log=" + gl.glGetShaderInfoLog(vertexShader));
+    vertexShader = glCreateShader(GL.GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, new String[] {vertex}, null);
+    glCompileShader(vertexShader);
+    JFLog.log("vertex log=" + glGetShaderInfoLog(vertexShader));
 
-    fragShader = gl.glCreateShader(GL.GL_FRAGMENT_SHADER);
-    gl.glShaderSource(fragShader, 1, new String[] {fragment}, null);
-    gl.glCompileShader(fragShader);
-    JFLog.log("fragment log=" + gl.glGetShaderInfoLog(fragShader));
+    fragShader = glCreateShader(GL.GL_FRAGMENT_SHADER);
+    glShaderSource(fragShader, 1, new String[] {fragment}, null);
+    glCompileShader(fragShader);
+    JFLog.log("fragment log=" + glGetShaderInfoLog(fragShader));
 
-    program = gl.glCreateProgram();
-    gl.glAttachShader(program, vertexShader);
-    gl.glAttachShader(program, fragShader);
-    gl.glLinkProgram(program);
-    JFLog.log("program log=" + gl.glGetProgramInfoLog(program));
-    gl.glUseProgram(program);
+    program = glCreateProgram();
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragShader);
+    glLinkProgram(program);
+    JFLog.log("program log=" + glGetProgramInfoLog(program));
+    glUseProgram(program);
 
-    vpa = gl.glGetAttribLocation(program, "aVertexPosition");
-    gl.glEnableVertexAttribArray(vpa);
+    vpa = glGetAttribLocation(program, "aVertexPosition");
+    glEnableVertexAttribArray(vpa);
 
-    tca[0] = gl.glGetAttribLocation(program, "aTextureCoord1");
-    gl.glEnableVertexAttribArray(tca[0]);
-    int uSampler1 = gl.glGetUniformLocation(program, "uSampler1");
-    gl.glUniform1i(uSampler1, 0);
+    tca[0] = glGetAttribLocation(program, "aTextureCoord1");
+    glEnableVertexAttribArray(tca[0]);
+    int uSampler1 = glGetUniformLocation(program, "uSampler1");
+    glUniform1i(uSampler1, 0);
 
-    tca[1] = gl.glGetAttribLocation(program, "aTextureCoord2");
-    gl.glEnableVertexAttribArray(tca[1]);
-    int uSampler2 = gl.glGetUniformLocation(program, "uSampler2");
-    gl.glUniform1i(uSampler2, 1);
+    tca[1] = glGetAttribLocation(program, "aTextureCoord2");
+    glEnableVertexAttribArray(tca[1]);
+    int uSampler2 = glGetUniformLocation(program, "uSampler2");
+    glUniform1i(uSampler2, 1);
 
-    mpu = gl.glGetUniformLocation(program, "uPMatrix");
-    mmu = gl.glGetUniformLocation(program, "uMMatrix");
-    mvu = gl.glGetUniformLocation(program, "uVMatrix");
-    uUVMaps = gl.glGetUniformLocation(program, "uUVMaps");
+    mpu = glGetUniformLocation(program, "uPMatrix");
+    mmu = glGetUniformLocation(program, "uMMatrix");
+    mvu = glGetUniformLocation(program, "uVMatrix");
+    uUVMaps = glGetUniformLocation(program, "uUVMaps");
 
 //    JFLog.log("attribs=" + vpa + "," + tca[0] + "," + tca[1]);
 //    JFLog.log("uniforms=" + mpu + "," + mmu + "," + mvu + "," + uUVMaps + "," + uSampler1 + "," /*+ uSampler2*/);
 
-    initTextures(gl);
+    initTextures();
 
     inited = true;
   }
@@ -176,39 +177,39 @@ public class GLScene {
     return false;
   }
 //load textures into video memory (texture objects)
-  boolean initTextures(GL gl) {
+  boolean initTextures() {
     if (!needinittex) {
       return true;
     }
     //setup blankTexture
-    if (blankTexture.glid == -1) initTexture(gl, blankTexture);
+    if (blankTexture.glid == -1) initTexture(blankTexture);
     //first uninit any that have been deleted
-    if (freeglidlist.size() > 0) uninitTextures(gl);
+    if (freeglidlist.size() > 0) uninitTextures();
     //scan thru object list and load them all
     Set keyset = tl.keySet();
     Iterator iter = keyset.iterator();
     String texidx;
     while (iter.hasNext()) {
       texidx = (String)iter.next();
-      if (!initTexture(gl, tl.get(texidx))) return false;
+      if (!initTexture(tl.get(texidx))) return false;
     }
     needinittex = false;
     return true;
   }
-  private boolean initTexture(GL gl, GLTexture tex) {
-    return tex.load(gl);
+  private boolean initTexture(GLTexture tex) {
+    return tex.load();
   }
-  private boolean uninitTextures(GL gl) {
+  private boolean uninitTextures() {
     while (freeglidlist.size() > 0) {
-      uninitTexture(gl, freeglidlist.get(0));
+      uninitTexture(freeglidlist.get(0));
       freeglidlist.remove(0);
     }
     return true;
   }
-  private boolean uninitTexture(GL gl, int glid) {
+  private boolean uninitTexture(int glid) {
     int id[] = new int[1];
     id[0] = glid;
-    gl.glDeleteTextures(1, id);
+    glDeleteTextures(1, id);
     return true;
   }
   public void releaseUnusedTextures() {

@@ -6,6 +6,8 @@ package javaforce.gl;
  * @author pquiring
  */
 
+import static javaforce.gl.GL.*;
+
 public class GLRender {
   private int iwx, iwy; //window size (int)
   private float dwx, dwy; //window size (float)
@@ -46,64 +48,64 @@ public class GLRender {
     zFar = far;
   }
 
-  public void render(GL gl) {
-    scene.initTextures(gl);
+  public void render() {
+    scene.initTextures();
     GLModel mod;
     GLObject obj;
     GLMatrix mat = new GLMatrix();
     //setup camera view
-    gl.glViewport(0, 0, iwx, iwy);
+    glViewport(0, 0, iwx, iwy);
     //setup model view
     //setup background clr
-    gl.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
     //render models
     int size_ml = scene.ml.size();
     mat.setIdentity();
     mat.perspective(fovy, ratio, zNear, zFar);
-    gl.glUniformMatrix4fv(scene.mpu, 1, GL.GL_FALSE, mat.m);  //perspective matrix
+    glUniformMatrix4fv(scene.mpu, 1, GL.GL_FALSE, mat.m);  //perspective matrix
     for(int a=0;a<size_ml;a++) {
       mod = scene.ml.get(a);
       if (!mod.visible) continue;
       mat.setIdentity();
       mat.mult4x4(m_camera);
-      gl.glUniformMatrix4fv(scene.mvu, 1, GL.GL_FALSE, mat.m);  //view matrix
+      glUniformMatrix4fv(scene.mvu, 1, GL.GL_FALSE, mat.m);  //view matrix
       int size_ol = mod.ol.size();
       for(int b=0;b<size_ol;b++) {
         obj = mod.ol.get(b);
         if (!obj.visible) continue;
         if (obj.needCopyBuffers) {
-          obj.copyBuffers(gl);
+          obj.copyBuffers();
         }
         //need to optz this
         mat.setIdentity();
         mat.mult4x4(m_model);
         mat.mult4x4(mod.m);
         mat.mult4x4(obj.m);
-        gl.glUniformMatrix4fv(scene.mmu, 1, GL.GL_FALSE, mat.m);  //model matrix
+        glUniformMatrix4fv(scene.mmu, 1, GL.GL_FALSE, mat.m);  //model matrix
 
         for(int m=0;m<obj.maps.size();m++) {
           GLUVMap map = obj.maps.get(m);
-          map.bindBuffers(scene, gl);
+          map.bindBuffers(scene);
           GLTexture tex = null;
           if ((map.textureIndex != -1) && (map.texloaded)) {
             tex = scene.tl.get(mod.getTexture(map.textureIndex));
             if (tex != null && tex.loaded) {
-              tex.bind(gl);
+              tex.bind();
             } else {
               tex = null;
             }
           }
           if (tex == null) {
             System.out.println("GLRender:Warning:using blank texture, missing texture?");
-            scene.blankTexture.bind(gl);
+            scene.blankTexture.bind();
           }
         }
-        obj.bindBuffers(scene, gl);
-        obj.render(scene, gl);
+        obj.bindBuffers(scene);
+        obj.render(scene);
       }
     }
-    gl.glFlush();
+    glFlush();
   }
   public void cameraReset() {
     m_camera.setIdentity();
