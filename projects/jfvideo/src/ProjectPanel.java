@@ -1008,24 +1008,24 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
   private RandomAccessFile raf;
 
   public class GLData {
-    public GL gl;
     public GLScene scene;
     public GLRender render;
     public GLModel model;
     public GLObject object;
     public JFImage image3d;
+    public GLOffscreen off;
   }
 
   private GLData gldata;
 
   private boolean init3d() {
     gldata = new GLData();
-    gldata.gl = MainPanel.getGL();
     MainPanel.runGL(new Runnable() {
       public void run() {
         gldata.scene = new GLScene();
-        gldata.gl.createOffscreen(config.width, config.height);
-        gldata.scene.init(gldata.gl, GLVertexShader.source, GLFragmentShader.source);
+        gldata.off = new GLOffscreen();
+        gldata.off.createOffscreen(config.width, config.height);
+        gldata.scene.init(GLVertexShader.source, GLFragmentShader.source);
         gldata.render = new GLRender();
         gldata.render.init(null, config.width, config.height);
         gldata.image3d = new JFImage(config.width, config.height);
@@ -1042,7 +1042,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
         gldata.object.addVertex(new float[] {+x,+y,-z}, new float[] {1,0});
         gldata.object.addPoly(new int[] {0,3,2});
         gldata.object.addPoly(new int[] {0,1,3});
-        gldata.object.copyBuffers(gldata.gl);
+        gldata.object.copyBuffers();
         gldata.model.addObject(gldata.object);
         gldata.scene.addModel(gldata.model);
       }

@@ -20,6 +20,9 @@ public class MainPanel extends javax.swing.JPanel {
     initComponents();
     Element.init();
     newProject();
+    gl = new GLWindow();
+    gl.init();
+    gl.create();
   }
 
   /**
@@ -75,6 +78,8 @@ public class MainPanel extends javax.swing.JPanel {
   private javax.swing.JLabel status;
   private javax.swing.JTabbedPane tabs;
   // End of variables declaration//GEN-END:variables
+
+  public static GLWindow gl;
 
   public void newProject() {
     tabs.add("New Project", new ProjectPanel(null));
@@ -147,33 +152,6 @@ public class MainPanel extends javax.swing.JPanel {
     }
   }
 
-  public static GL gl;
-
-  public void paint(Graphics g) {
-    super.paint(g);
-    if (gl == null) {
-      init3d();
-    }
-  }
-
-  private boolean init3d() {
-    gl = new GL(new GLInterface() {
-      public void init(GL gl, Component c) {
-        int ver[] = gl.getVersion();
-        if (ver[0] < 3) {
-          JF.showError("Error", "This app requires OpenGL 3.0+ (detected:" + gl.glGetString(GL.GL_VERSION) + ")");
-          System.exit(0);
-        }
-      }
-      public void render(GL gl) {
-      }
-      public void resize(GL gl, int x, int y) {
-      }
-    });
-    gl.createComponent(canvas, null);
-    return true;
-  }
-
   public void render() {
     ProjectPanel project = (ProjectPanel)tabs.getSelectedComponent();
     project.render();
@@ -196,10 +174,6 @@ public class MainPanel extends javax.swing.JPanel {
 
   public void setStatus(String msg) {
     status.setText(msg);
-  }
-
-  public static GL getGL() {
-    return gl;
   }
 
   /** Runs a runnable for OpenGL on the EDT  */

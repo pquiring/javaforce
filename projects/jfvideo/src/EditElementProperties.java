@@ -70,6 +70,11 @@ public class EditElementProperties extends javax.swing.JDialog {
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Edit Properties");
     setResizable(false);
+    addWindowListener(new java.awt.event.WindowAdapter() {
+      public void windowClosing(java.awt.event.WindowEvent evt) {
+        formWindowClosing(evt);
+      }
+    });
 
     tabs.addChangeListener(new javax.swing.event.ChangeListener() {
       public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -127,15 +132,13 @@ public class EditElementProperties extends javax.swing.JDialog {
   }//GEN-LAST:event_saveActionPerformed
 
   private void tabsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tabsStateChanged
-    if (gl == null) return;
-    Component c = tabs.getSelectedComponent();
-    if (c == gl) {
-      gl.init();
-      gl.visible = true;
-    } else {
-      gl.visible = false;
-    }
   }//GEN-LAST:event_tabsStateChanged
+
+  private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+    if (gl != null) {
+      gl.uninit();
+    }
+  }//GEN-LAST:event_formWindowClosing
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton cancel;

@@ -13,7 +13,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.gl.*;
 
-public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListener {
+public class GLProps extends javax.swing.JPanel implements KeyListener {
 
   /**
    * Creates new form GLProps
@@ -29,9 +29,8 @@ public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListe
     rz.setText(String.format("%.4f", e.rz));
     image = new JFImage();
     image.load(getClass().getResourceAsStream("img200.png"));
-    canvas = new GLCanvas();
-    canvas.addKeyListener(this);
-    preview.add(canvas);
+    previewImage.addKeyListener(this);
+    previewImage.setFocusable(true);
     if (e.type == Element.TYPE_CAMERA) {
       use3d.setVisible(false);
       fov.setText(String.format("%.4f", _fov));
@@ -40,10 +39,17 @@ public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListe
       fov.setVisible(false);
       fovLabel.setVisible(false);
     }
+    width = 288; //previewImage.getWidth();
+    height = 177;  //previewImage.getHeight();
+    off = new GLOffscreen();
+    off.createOffscreen(width, height);
+    offimage = new JFImage();
+    offimage.setSize(width, height);
+    initGL();
     timer = new Timer();
     timer.schedule(new TimerTask() {
       public void run() {
-        canvas.repaint();
+        updateImage();
       }
     },100,100);
   }
@@ -56,8 +62,10 @@ public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListe
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
+    jLabel12 = new javax.swing.JLabel();
     use3d = new javax.swing.JCheckBox();
     preview = new javax.swing.JPanel();
+    previewImage = new java.awt.Canvas();
     jPanel2 = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
@@ -81,11 +89,23 @@ public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListe
     fov = new javax.swing.JTextField();
     reset = new javax.swing.JButton();
 
+    jLabel12.setText("jLabel12");
+
     use3d.setText("Enable 3D position");
 
     preview.setBorder(javax.swing.BorderFactory.createTitledBorder("Preview"));
     preview.setPreferredSize(new java.awt.Dimension(300, 200));
-    preview.setLayout(new javax.swing.BoxLayout(preview, javax.swing.BoxLayout.LINE_AXIS));
+
+    javax.swing.GroupLayout previewLayout = new javax.swing.GroupLayout(preview);
+    preview.setLayout(previewLayout);
+    previewLayout.setHorizontalGroup(
+      previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addComponent(previewImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+    );
+    previewLayout.setVerticalGroup(
+      previewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addComponent(previewImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+    );
 
     jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Position"));
 
@@ -265,6 +285,7 @@ public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListe
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel11;
+  private javax.swing.JLabel jLabel12;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
@@ -276,6 +297,7 @@ public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListe
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel preview;
+  private java.awt.Canvas previewImage;
   private javax.swing.JButton reset;
   private javax.swing.JTextField rx;
   private javax.swing.JTextField ry;
@@ -286,15 +308,15 @@ public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListe
   private javax.swing.JCheckBox use3d;
   // End of variables declaration//GEN-END:variables
 
-  GLCanvas canvas;
   GLScene scene;
   GLModel model;
   GLObject object;
   GLRender render;
   JFImage image;
   java.util.Timer timer;
-
-  public boolean visible;
+  GLOffscreen off;
+  JFImage offimage;
+  int width,height;
 
   public void save(Element e) {
     if (tx.getText().length() == 0) tx.setText("0");
@@ -317,23 +339,13 @@ public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListe
     return Float.valueOf(fov.getText());
   }
 
-  private boolean inited = false;
-
-//NOTE:This canvas should be physically visible to init() or opengl crashes
-  public void init() {
-    if (!inited) {
-      canvas.init(this);
-      inited = true;
-    }
-  }
-
-//NOTE:This canvas should be physically visible to init() or opengl crashes
-  public void init(GL gl, Component cmp) {
+  private void initGL() {
     JFLog.log("GLProps.init()");
+    MainPanel.gl.pool();
     scene = new GLScene();
-    scene.init(gl, GLVertexShader.source, GLFragmentShader.source);
+    scene.init(GLVertexShader.source, GLFragmentShader.source);
     render = new GLRender();
-    render.init(scene, canvas.getWidth(), canvas.getHeight());
+    render.init(scene, 512, 512);
     model = new GLModel();
     scene.addModel(model);
     object = new GLObject();
@@ -352,7 +364,7 @@ public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListe
     object.addVertex(new float[] {+x,+y,-z}, new float[] {1,0});
     object.addPoly(new int[] {0,3,2});
     object.addPoly(new int[] {0,1,3});
-    object.copyBuffers(gl);
+    object.copyBuffers();
     scene.setTexture("0", image.getPixels(), image.getWidth(), image.getHeight(), 0);
     x = Float.valueOf(tx.getText());
     y = Float.valueOf(ty.getText());
@@ -366,25 +378,37 @@ public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListe
     model.rotate(z, 0, 0, 1.0f);
   }
 
-//NOTE:This canvas should be physically visible to render() or opengl crashes
-  public void render(GL gl) {
-    if (!visible) return;
-    float x,y,z;
-    model.setIdentity();
-    x = Float.valueOf(rx.getText());
-    y = Float.valueOf(ry.getText());
-    z = Float.valueOf(rz.getText());
-    model.rotate(x, 1.0f, 0.0f, 0.0f);
-    model.rotate(y, 0.0f, 1.0f, 0.0f);
-    model.rotate(z, 0.0f, 0.0f, 1.0f);
-    x = Float.valueOf(tx.getText());
-    y = Float.valueOf(ty.getText());
-    z = Float.valueOf(tz.getText());
-    model.translate(x,y,z);
-    x = Float.valueOf(fov.getText());
-    render.fovy = x;
-    render.render(gl);
-    gl.swap();
+  public void render() {
+    try {
+      java.awt.EventQueue.invokeAndWait(new Runnable() {
+        public void run() {
+          MainPanel.gl.pool();
+          float x,y,z;
+          model.setIdentity();
+          x = Float.valueOf(rx.getText());
+          y = Float.valueOf(ry.getText());
+          z = Float.valueOf(rz.getText());
+          model.rotate(x, 1.0f, 0.0f, 0.0f);
+          model.rotate(y, 0.0f, 1.0f, 0.0f);
+          model.rotate(z, 0.0f, 0.0f, 1.0f);
+          x = Float.valueOf(tx.getText());
+          y = Float.valueOf(ty.getText());
+          z = Float.valueOf(tz.getText());
+          model.translate(x,y,z);
+          x = Float.valueOf(fov.getText());
+          render.fovy = x;
+          render.render();
+          offimage.putPixels(off.getOffscreenPixels(), 0,0,width,height,0);
+          previewImage.getGraphics().drawImage(offimage.getImage(), 0, 0, null);
+        }
+      });
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void uninit() {
+    timer.cancel();
   }
 
   public void resize(GL gl, int width, int height) {
@@ -470,8 +494,7 @@ public class GLProps extends javax.swing.JPanel implements GLInterface, KeyListe
   public void keyReleased(KeyEvent e) {
   }
 
-  public void finalize() {
-    canvas.destroy();
-    timer.cancel();
+  public void updateImage() {
+    render();
   }
 }

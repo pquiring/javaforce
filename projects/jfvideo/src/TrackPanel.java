@@ -355,9 +355,9 @@ public class TrackPanel extends javax.swing.JPanel {
               gldata.model.rotate(e.rx, 1.0f, 0, 0);
               gldata.model.rotate(e.ry, 0, 1.0f, 0);
               gldata.model.rotate(e.rz, 0, 0, 1.0f);
-              gldata.gl.makeCurrent();
-              gldata.render.render(gldata.gl);
-              gldata.image3d.putPixels(gldata.gl.getOffscreenPixels(), 0, 0
+              MainPanel.gl.setCurrent();
+              gldata.render.render();
+              gldata.image3d.putPixels(gldata.off.getOffscreenPixels(), 0, 0
                 , project.config.width, project.config.height, 0);
               e.applyAlpha(gldata.image3d);
               image.putPixelsBlend(gldata.image3d.getBuffer(), 0, 0
