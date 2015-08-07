@@ -15,11 +15,34 @@ public class GLVector3 {
     this.v[1] = y;
     this.v[2] = z;
   }
+  public void set(GLVector3 in) {
+    this.v[0] = in.v[0];
+    this.v[1] = in.v[1];
+    this.v[2] = in.v[2];
+  }
+  /** this = a + b */
+  public void add(GLVector3 a, GLVector3 b) {
+    v[0] = a.v[0] + b.v[0];
+    v[1] = a.v[1] + b.v[1];
+    v[2] = a.v[2] + b.v[2];
+  }
+  /** this += a */
+  public void add(GLVector3 a) {
+    v[0] += a.v[0];
+    v[1] += a.v[1];
+    v[2] += a.v[2];
+  }
   /** this = a - b */
   public void sub(GLVector3 a, GLVector3 b) {
     v[0] = a.v[0] - b.v[0];
     v[1] = a.v[1] - b.v[1];
     v[2] = a.v[2] - b.v[2];
+  }
+  /** this -= a */
+  public void sub(GLVector3 a) {
+    v[0] -= a.v[0];
+    v[1] -= a.v[1];
+    v[2] -= a.v[2];
   }
   /** this = a X b */
   public void cross(GLVector3 a, GLVector3 b) {
