@@ -16,8 +16,6 @@ package javaforce.gl;
  *     - open a bug report and I will add it
  */
 
-import java.awt.*;
-
 import javaforce.*;
 import javaforce.jni.*;
 
@@ -35,6 +33,9 @@ public class GL {
       LnxNative.load();
     }
   }
+
+  /** Loads native code. */
+  public static void load() {}
 
   /** Loads OpenGL functions.
    *

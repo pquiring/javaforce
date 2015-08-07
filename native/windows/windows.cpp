@@ -8,6 +8,7 @@
 
 #include "javaforce_jni_WinNative.h"
 #include "javaforce_gl_GL.h"
+#include "javaforce_gl_GLWindow.h"
 #include "javaforce_media_Camera.h"
 #include "javaforce_media_MediaCoder.h"
 #include "javaforce_media_MediaDecoder.h"
@@ -23,7 +24,7 @@ HMODULE wgl = NULL;
 //open DLLs
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_winInit
-  (JNIEnv *e, jclass c, jstring jawtPath)
+  (JNIEnv *e, jclass c)
 {
   if (wgl == NULL) {
     wgl = LoadLibrary("opengl32.dll");

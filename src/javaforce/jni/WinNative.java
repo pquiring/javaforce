@@ -9,13 +9,13 @@ public class WinNative {
   static {
     JFNative.load();  //ensure native library is loaded
     if (JFNative.loaded) {
-      winInit(System.getProperty("java.home") + "\\bin\\jawt.dll");
+      winInit();
     }
   }
 
   public static void load() {}  //ensure native library is loaded
 
-  private static native boolean winInit(String jawt);
+  private static native boolean winInit();
 
   //com port
   public static native long comOpen(String name, int baud);  //assumes 8 data bits, 1 stop bit, no parity, etc.
