@@ -1,4 +1,4 @@
-package jfcraft.client;
+package javaforce.gl;
 
 /** GLFW/LWJGL Virtual KeyCodes
  *
@@ -24,7 +24,7 @@ public class GLVK {
   public static final int VK_BACKSPACE = 259;
 
   public static final int VK_ESCAPE = 256;
-  public static final int VK_ENTER = 13;
+  public static final int VK_ENTER = 257;
   public static final int VK_SPACE = 32;
 
   public static final int VK_0 = 48;
