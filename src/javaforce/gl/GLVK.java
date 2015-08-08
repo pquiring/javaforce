@@ -19,7 +19,7 @@ public class GLVK {
   public static final int VK_SHIFT_R = 344;
 
   public static final int VK_HOME = 268;
-  public static final int VK_DELETE = 259;
+  public static final int VK_DELETE = 261;
   public static final int VK_END = 269;
   public static final int VK_BACKSPACE = 259;
 
