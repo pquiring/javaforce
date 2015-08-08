@@ -11,7 +11,6 @@ public class GLPlane {
   private GLVector3 aux2 = new GLVector3();
 
   public GLVector3 normal = new GLVector3();
-  public GLVector3 point = new GLVector3();
   public float d;
 
   public void set3Points(GLVector3 v1, GLVector3 v2, GLVector3 v3) {
@@ -20,14 +19,12 @@ public class GLPlane {
 
     normal.cross(aux2, aux1);
     normal.normalize();
-    point.set(v2);
-    d = -normal.dot(point);
+    d = -normal.dot(v2);
   }
 
   public void setNormalAndPoint(GLVector3 normal, GLVector3 point) {
     this.normal.set(normal);
     this.normal.normalize();
-    this.point.set(point);  //this was missing in sample source
     d = -(this.normal.dot(point));
   }
 
@@ -44,5 +41,9 @@ public class GLPlane {
 
   public float distance(GLVector3 p) {
     return (d + normal.dot(p));
+  }
+
+  public void print() {
+    System.out.println(String.format("GLPlane:%7.3f,%7.3f,%7.3f : %7.3f", normal.v[0], normal.v[1], normal.v[2], d));
   }
 }

@@ -21,6 +21,7 @@ public class GLVector4 {
     this.v[0] = x;
     this.v[1] = y;
     this.v[2] = z;
+    this.v[3] = 1.0f;
   }
   public void set(float x, float y, float z,float w) {
     this.v[0] = x;
@@ -56,6 +57,12 @@ public class GLVector4 {
     v[0] *= s;
     v[1] *= s;
     v[2] *= s;
+  }
+  public void divide(float d) {
+    if (d == 0f) return;
+    v[0] /= d;
+    v[1] /= d;
+    v[2] /= d;
   }
   public float dot(GLVector4 in) {
     return v[0] * in.v[0] + v[1] * in.v[1] + v[2] * in.v[2];

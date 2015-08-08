@@ -8,11 +8,13 @@ package javaforce.gl;
 
 public class GLFrustum {
   private GLVector3 ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr;
-  private float nearD, farD, ratio, angle, tang;
+  private float nearD, farD;
   private float nw, nh, fw, fh;
   private GLPlane pl[];
   private GLVector3 nc, fc, X, Y, Z;
-  private GLVector3 XX, YY;
+  private GLVector3 XX, YY, ZZ;
+
+  private GLVector3 _p, _l, _u;  //pointers
 
   public GLFrustum() {
     ntl = new GLVector3();
@@ -30,6 +32,7 @@ public class GLFrustum {
     Z = new GLVector3();
     XX = new GLVector3();
     YY = new GLVector3();
+    ZZ = new GLVector3();
     pl = new GLPlane[6];
     for (int a = 0; a < 6; a++) {
       pl[a] = new GLPlane();
@@ -39,15 +42,13 @@ public class GLFrustum {
   private static final float ANG2RAD = (float) Math.PI / 180f;
 
   public void setPerspecive(float angle, float ratio, float near, float far) {
-    this.ratio = ratio;
-    this.angle = angle;
-    this.nearD = nearD;
-    this.farD = farD;
+    nearD = near;
+    farD = far;
 
-    tang = (float) Math.tan(angle * ANG2RAD * 0.5);
-    nh = nearD * tang;
+    float tan = (float) Math.tan(angle * ANG2RAD * 0.5);
+    nh = nearD * tan;
     nw = nh * ratio;
-    fh = farD * tang;
+    fh = farD * tan;
     fw = fh * ratio;
   }
 
@@ -59,6 +60,9 @@ public class GLFrustum {
   private static final int FARP = 5;
 
   public void setPosition(GLVector3 p, GLVector3 l, GLVector3 u) {
+    _p = p;
+    _l = l;
+    _u = u;
     Z.sub(p, l);
     Z.normalize();
 
@@ -67,10 +71,12 @@ public class GLFrustum {
 
     Y.cross(Z, X);
 
-    nc.sub(p, Z);
-    nc.scale(nearD);
-    fc.sub(p, Z);
-    fc.scale(farD);
+    ZZ.set(Z);
+    ZZ.scale(nearD);
+    nc.sub(p, ZZ);
+    ZZ.set(Z);
+    ZZ.scale(farD);
+    fc.sub(p, ZZ);
 
 //    ntl = nc + Y * nh - X * nw;
 //    ntr = nc + Y * nh + X * nw;
@@ -133,16 +139,16 @@ public class GLFrustum {
 
   /** Tests if sphere is within frustum.
    * @param p = center if sphere
-   * @param radius = radius of sphere ???
+   * @param size = size of sphere (radius or diameter?)
    */
-  public int sphereInside(GLVector3 p, float radius) {
+  public int sphereInside(GLVector3 p, float size) {
     float distance;
     int result = INSIDE;
 
     for(int i=0; i < 6; i++) {
       distance = pl[i].distance(p);
-      if (distance < -radius) return OUTSIDE;
-      if (distance < radius) result = INTERSECT;
+      if (distance < -size) return OUTSIDE;
+      if (distance < size) result = INTERSECT;
     }
     return result;
   }
@@ -161,9 +167,9 @@ public class GLFrustum {
       for (int k = 0; k < 8 && (in==0 || out==0); k++) {
         // is the corner outside or inside
         if (pl[i].distance(pts[k]) < 0)
-        out++;
+          out++;
         else
-        in++;
+          in++;
       }
       //if all corners are out
       if (in == 0) return (OUTSIDE);
@@ -171,5 +177,15 @@ public class GLFrustum {
       if (out > 0) result = INTERSECT;
     }
     return result;
+  }
+
+  public void print() {
+    System.out.println(String.format("GLFrustum:%7.3f,%7.3f,%7.3f,%7.3f", nw, nh, fw, fh));
+    System.out.println(String.format("GLFrustum:p:%7.3f,%7.3f,%7.3f", _p.v[0], _p.v[1], _p.v[2]));
+    System.out.println(String.format("GLFrustum:l:%7.3f,%7.3f,%7.3f", _l.v[0], _l.v[1], _l.v[2]));
+    System.out.println(String.format("GLFrustum:u:%7.3f,%7.3f,%7.3f", _u.v[0], _u.v[1], _u.v[2]));
+    for(int a=0;a<6;a++) {
+      pl[a].print();
+    }
   }
 }

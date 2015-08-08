@@ -20,6 +20,11 @@ public class GLVector3 {
     this.v[1] = in.v[1];
     this.v[2] = in.v[2];
   }
+  public void set(GLVector4 in) {
+    this.v[0] = in.v[0];
+    this.v[1] = in.v[1];
+    this.v[2] = in.v[2];
+  }
   /** this = a + b */
   public void add(GLVector3 a, GLVector3 b) {
     v[0] = a.v[0] + b.v[0];
@@ -66,6 +71,12 @@ public class GLVector3 {
     v[0] *= s;
     v[1] *= s;
     v[2] *= s;
+  }
+  public void divide(float d) {
+    if (d == 0f) return;
+    v[0] /= d;
+    v[1] /= d;
+    v[2] /= d;
   }
   public float dot(GLVector3 in) {
     return v[0] * in.v[0] + v[1] * in.v[1] + v[2] * in.v[2];
