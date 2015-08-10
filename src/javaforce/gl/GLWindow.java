@@ -12,6 +12,10 @@ public class GLWindow {
     GL.load();
   }
 
+  public static final int MOUSE_BUTTON_LEFT = 1;
+  public static final int MOUSE_BUTTON_RIGHT = 2;
+  public static final int MOUSE_BUTTON_MIDDLE = 3;
+
   public static interface KeyEvents {
     public void keyTyped(char ch);
     public void keyPressed(int key);

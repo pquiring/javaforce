@@ -39,13 +39,13 @@ static void mouse_button_callback(GLFWwindow* window, int button, int action, in
     type = javaforce_gl_GLWindow_MOUSE_DOWN;
   else
     type = javaforce_gl_GLWindow_MOUSE_UP;
-  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, type, button, 0);
+  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, type, ++button, 0);
 }
 
 static void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
   GLFWContext *ctx = (GLFWContext*)glfwGetWindowUserPointer(window);
-  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_gl_GLWindow_MOUSE_SCROLL, (int)xoffset, (int)yoffset);
+  ge->CallVoidMethod(ctx->obj, ctx->mid_dispatch, javaforce_gl_GLWindow_MOUSE_SCROLL, (int)-xoffset, (int)-yoffset);
 }
 
 static void window_close_callback(GLFWwindow* window)
