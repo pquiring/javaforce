@@ -341,7 +341,7 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
 
   private void initGL() {
     JFLog.log("GLProps.init()");
-    MainPanel.gl.pool();
+    MainPanel.gl.pollEvents();
     scene = new GLScene();
     scene.init(GLVertexShader.source, GLFragmentShader.source);
     render = new GLRender();
@@ -382,7 +382,7 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
     try {
       java.awt.EventQueue.invokeAndWait(new Runnable() {
         public void run() {
-          MainPanel.gl.pool();
+          MainPanel.gl.pollEvents();
           float x,y,z;
           model.setIdentity();
           x = Float.valueOf(rx.getText());

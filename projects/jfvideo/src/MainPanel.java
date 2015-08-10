@@ -5,7 +5,6 @@
  */
 
 import java.io.*;
-import java.awt.*;
 import javax.swing.*;
 
 import javaforce.*;
@@ -22,7 +21,8 @@ public class MainPanel extends javax.swing.JPanel {
     newProject();
     gl = new GLWindow();
     gl.init();
-    gl.create();
+    gl.create(0,"jfVideo",1,1,null);  //invisible window
+    GL.glInit();
   }
 
   /**
