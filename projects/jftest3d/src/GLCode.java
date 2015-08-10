@@ -46,7 +46,7 @@ public class GLCode {
     System.out.println("GL Version=" + glGetString(GL.GL_VERSION));
     int glver[] = getVersion();
     if (glver[0] < 2) {
-      JF.showError("Error", "OpenGL Version < 2.0");
+      JF.showError("Error", "OpenGL Version < 2.0 : Detected : " + glver[0] + "." + glver[1]);
       System.exit(0);
     }
 

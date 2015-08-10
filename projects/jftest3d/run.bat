@@ -1,3 +1,3 @@
 @echo off
-java -cp javaforce.jar;lwjgl.jar;jftest3d.jar Main %*
+java -cp javaforce.jar;jftest3d.jar Main %*
 

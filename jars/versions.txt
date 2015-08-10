@@ -1,3 +1,2 @@
 derby = 10.11.1.1
 bouncycastle = bcprov-jdk15on-150
-lwjgl = 3.0.0a build 1

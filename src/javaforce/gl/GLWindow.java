@@ -2,7 +2,7 @@ package javaforce.gl;
 
 import javaforce.jni.JFNative;
 
-/**
+/** OpenGL Window.
  *
  * @author pquiring
  */
@@ -74,7 +74,7 @@ public class GLWindow {
 
   private static native long ncreate(int style, String title, int width, int height, GLWindow eventMgr, long shared);
   public boolean create(int style, String title, int width, int height, GLWindow shared) {
-    id = ncreate(style, title, width, height, this, shared.id);
+    id = ncreate(style, title, width, height, this, shared == null ? 0 : shared.id);
     return id != 0;
   }
 
@@ -84,6 +84,12 @@ public class GLWindow {
     if (id == 0) return;
     ndestroy(id);
     id = 0;
+  }
+
+  private static native void nsetcurrent(long id);
+  /** Set the OpenGL Context current for this window. */
+  public void setCurrent() {
+    nsetcurrent(id);
   }
 
   public void setKeyListener(KeyEvents keys) {
@@ -112,4 +118,31 @@ public class GLWindow {
   public void hide() {
     nhide(id);
   }
+
+  private static native void nswap(long id);
+  /** Swaps the OpenGL Buffers. */
+  public void swap() {
+    nswap(id);
+  }
+
+  private static native void nhidecursor(long id);
+  /** Hide the cursor. */
+  public void hideCursor() {
+    nhidecursor(id);
+  }
+
+  private static native void nshowcursor(long id);
+  /** Show the cursor (default). */
+  public void showCursor() {
+    nshowcursor(id);
+  }
+
+  private static native void nlockcursor(long id);
+  /** Hide the cursor and lock to this window.
+   * Use showCursor() to unlock.
+   */
+  public void lockCursor() {
+    nlockcursor(id);
+  }
+
 }
