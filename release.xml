@@ -46,6 +46,7 @@
         <include name="jf/stubs/**/*"/>
 
         <include name="jf/native/**/*"/>
+        <exclude name="jf/native/glfw/**/*"/>
 
         <include name="jf/release/readme.txt"/>
 

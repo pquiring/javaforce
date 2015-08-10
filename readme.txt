@@ -89,4 +89,4 @@ Git : github.com/pquiring/javaforce
 
 Version 9.6.0
 
-Released : August 4 2015
+Released : August 10 2015

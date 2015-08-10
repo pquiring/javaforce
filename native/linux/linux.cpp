@@ -8,6 +8,7 @@
 #include <sys/mman.h>  //mmap
 #include <signal.h>
 #include <errno.h>
+#include <string.h>  //memcpy
 #define FUSE_USE_VERSION 26
 #include <fuse.h>
 #include <X11/Xlib.h>
@@ -15,6 +16,8 @@
 #include <security/pam_appl.h>
 
 #include <jni.h>
+#include <jawt.h>
+#include <jawt_md.h>
 
 #include "javaforce_jni_LnxNative.h"
 #include "javaforce_gl_GL.h"
@@ -28,6 +31,9 @@
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
 #endif
+
+void* jawt = NULL;
+jboolean (JNICALL *_JAWT_GetAWT)(JNIEnv *e, JAWT *c) = NULL;
 
 void* x11 = NULL;
 void* (*_XOpenDisplay)(void*);
@@ -67,6 +73,14 @@ int (*cdio_read_audio_sectors)(void *ptr, void *buf, int lsn, int blocks);  //23
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
   (JNIEnv *e, jclass c, jstring libgl_so, jstring libv4l2_so, jstring libcdio_so)
 {
+  if (jawt == NULL) {
+    jawt = dlopen("libjawt.so", RTLD_LAZY | RTLD_GLOBAL);
+    if (jawt == NULL) {
+      printf("dlopen(libjawt.so) failed\n");
+      return JNI_FALSE;
+    }
+    _JAWT_GetAWT = (jboolean (JNICALL *)(JNIEnv *e, JAWT *c))dlsym(jawt, "JAWT_GetAWT");
+  }
   if (x11 == NULL) {
     x11 = dlopen("libX11.so", RTLD_LAZY | RTLD_GLOBAL);
     if (x11 == NULL) {
@@ -128,6 +142,50 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
   }
 
   return JNI_TRUE;
+}
+
+static long getX11ID(JNIEnv *e, jobject c) {
+  JAWT_DrawingSurface* ds;
+  JAWT_DrawingSurfaceInfo* dsi;
+  jint lock;
+  JAWT awt;
+
+  if (jawt == NULL) return 0;
+  if (_JAWT_GetAWT == NULL) return 0;
+
+  awt.version = JAWT_VERSION_1_4;
+  if (!(*_JAWT_GetAWT)(e, &awt)) {
+    printf("JAWT_GetAWT() failed\n");
+    return 0;
+  }
+
+  ds = awt.GetDrawingSurface(e, c);
+  if (ds == NULL) {
+    printf("JAWT.GetDrawingSurface() failed\n");
+    return 0;
+  }
+  lock = ds->Lock(ds);
+  if ((lock & JAWT_LOCK_ERROR) != 0) {
+    awt.FreeDrawingSurface(ds);
+    printf("JAWT.Lock() failed\n");
+    return 0;
+  }
+  dsi = ds->GetDrawingSurfaceInfo(ds);
+  if (dsi == NULL) {
+    printf("JAWT.GetDrawingSurfaceInfo() failed\n");
+    return 0;
+  }
+  JAWT_X11DrawingSurfaceInfo* xdsi = (JAWT_X11DrawingSurfaceInfo*)dsi->platformInfo;
+  if (xdsi == NULL) {
+    printf("JAWT.platformInfo == NULL\n");
+    return 0;
+  }
+  long handle = xdsi->drawable;
+  ds->FreeDrawingSurfaceInfo(dsi);
+  ds->Unlock(ds);
+  awt.FreeDrawingSurface(ds);
+
+  return handle;
 }
 
 #include "../common/glfw.cpp"
