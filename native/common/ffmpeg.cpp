@@ -483,15 +483,6 @@ struct FFContext {
    */
   int config_audio_bit_rate;
 
-  static FFContext *New() {
-    FFContext *ctx = (FFContext*)malloc(sizeof(FFContext));
-    memset(ctx, 0, sizeof(FFContext));
-    return ctx;
-  }
-  void Delete() {
-    free(this);
-  }
-
   void GetMediaIO() {
     cls_mio = e->GetObjectClass(mio);
     mid_ff_read = e->GetMethodID(cls_mio, "read", "(Ljavaforce/media/MediaCoder;[B)I");
@@ -511,7 +502,8 @@ FFContext* createFFContext(JNIEnv *e, jobject c) {
     printf("MediaCoder used twice\n");
     return NULL;
   }
-  ctx = FFContext::New();
+  ctx = new FFContext();
+  memset(ctx, 0, sizeof(FFContext));
   e->SetLongField(c,fid_ff_ctx,(jlong)ctx);
   ctx->e = e;
   ctx->c = c;
@@ -530,7 +522,7 @@ FFContext* getFFContext(JNIEnv *e, jobject c) {
 
 void deleteFFContext(JNIEnv *e, jobject c, FFContext *ctx) {
   if (ctx == NULL) return;
-  ctx->Delete();
+  delete ctx;
   jclass cls_coder = e->FindClass("javaforce/media/MediaCoder");
   jfieldID fid_ff_ctx = e->GetFieldID(cls_coder, "ctx", "J");
   e->SetLongField(c,fid_ff_ctx,0);

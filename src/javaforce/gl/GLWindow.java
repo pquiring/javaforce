@@ -1,0 +1,115 @@
+package javaforce.gl;
+
+import javaforce.jni.JFNative;
+
+/**
+ *
+ * @author pquiring
+ */
+
+public class GLWindow {
+  static {
+    GL.load();
+  }
+
+  public static interface KeyEvents {
+    public void keyTyped(char ch);
+    public void keyPressed(int key);
+    public void keyReleased(int key);
+  }
+
+  public static interface MouseEvents {
+    public void mouseMove(int x,int y);
+    public void mouseDown(int button);
+    public void mouseUp(int button);
+    public void mouseScroll(int x,int y);
+  }
+
+  public static interface WindowEvents {
+    public void windowResize(int x,int y);
+    public void windowClosing();
+  }
+
+  private static native boolean ninit();
+  public static boolean init() {
+    if (!JFNative.loaded) return false;
+    return ninit();
+  }
+
+  private long id;
+
+  private KeyEvents keys;
+  private MouseEvents mouse;
+  private WindowEvents window;
+
+  private static final int KEY_TYPED = 1;
+  private static final int KEY_PRESS = 2;
+  private static final int KEY_RELEASE = 3;
+  private static final int MOUSE_MOVE = 4;
+  private static final int MOUSE_DOWN = 5;
+  private static final int MOUSE_UP = 6;
+  private static final int MOUSE_SCROLL = 7;
+  private static final int WIN_RESIZE = 8;
+  private static final int WIN_CLOSING = 9;
+
+  /** This is called from native code to dispatch events. */
+  private void dispatchEvent(int type, int v1, int v2) {
+    switch (type) {
+      case KEY_TYPED: if (keys != null) keys.keyTyped((char)v1); break;
+      case KEY_PRESS: if (keys != null) keys.keyTyped((char)v1); break;
+      case KEY_RELEASE: if (keys != null) keys.keyTyped((char)v1); break;
+      case MOUSE_MOVE: if (mouse != null) mouse.mouseMove(v1, v2); break;
+      case MOUSE_DOWN: if (mouse != null) mouse.mouseDown(v1); break;
+      case MOUSE_UP: if (mouse != null) mouse.mouseUp(v1); break;
+      case MOUSE_SCROLL: if (mouse != null) mouse.mouseScroll(v1, v2); break;
+      case WIN_RESIZE: if (window != null) window.windowResize(v1, v2); break;
+      case WIN_CLOSING: if (window != null) window.windowClosing(); break;
+    }
+  }
+
+  public static final int STYLE_VISIBLE = 1;
+  public static final int STYLE_RESIZABLE = 2;
+  public static final int STYLE_TITLEBAR = 4;
+  public static final int STYLE_FULLSCREEN = 8;
+
+  private static native long ncreate(int style, String title, int width, int height, GLWindow eventMgr, long shared);
+  public boolean create(int style, String title, int width, int height, GLWindow shared) {
+    id = ncreate(style, title, width, height, this, shared.id);
+    return id != 0;
+  }
+
+  private static native void ndestroy(long id);
+  /** Show the window. */
+  public void destroy() {
+    if (id == 0) return;
+    ndestroy(id);
+    id = 0;
+  }
+
+  public void setKeyListener(KeyEvents keys) {
+    this.keys = keys;
+  }
+
+  public void setMouseListener(MouseEvents mouse) {
+    this.mouse = mouse;
+  }
+
+  public void setWindowListener(WindowEvents window) {
+    this.window = window;
+  }
+
+  /** Polls for events. */
+  public static native void pollEvents();
+
+  private static native void nshow(long id);
+  /** Show the window. */
+  public void show() {
+    nshow(id);
+  }
+
+  private static native void nhide(long id);
+  /** Hide the window. */
+  public void hide() {
+    nhide(id);
+  }
+}

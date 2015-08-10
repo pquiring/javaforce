@@ -25,7 +25,12 @@
     <get src="http://javaforce.sourceforge.net/jars/android.jar" dest="jars"/>
   </target>
 
-  <target name="depjars" depends="depnatives,bouncycastle,derby">
+  <available property="have_glfw" file="native/glfw/src/window.c"/>
+  <target name="glfw" unless="have_glfw" description="download glfw">
+    <exec command="git clone https://github.com/glfw/glfw.git native/glfw"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,bouncycastle,derby,glfw">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

@@ -129,13 +129,16 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
   return JNI_TRUE;
 }
 
+#include "../common/glfw.cpp"
+
 #include "../common/gl.cpp"
 
 //this func must be called only when a valid OpenGL context is set
-JNIEXPORT void JNICALL Java_javaforce_gl_GL_glInit
+JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
   (JNIEnv *e, jclass c)
 {
-  if (funcs[0].func != NULL) return;  //already done
+  if (funcs[0].func != NULL) return JNI_TRUE;  //already done
+  if (xgl == NULL) return JNI_FALSE;
   void *func;
   for(int a=0;a<GL_NO_FUNCS;a++) {
     func = (void*)(*_glXGetProcAddress)(funcs[a].name);  //get OpenGL 1.x function
@@ -148,6 +151,7 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glInit
     }
     funcs[a].func = func;
   }
+  return JNI_TRUE;
 }
 
 //camera API
@@ -169,15 +173,6 @@ struct CamContext {
   int width, height, bytesperline, imagesize, mmapbuffers_type;
   void *read_buffer;
   struct mmapbuffer mmapbuffers[2];
-  //to avoid using libstdc++ new/delete must be coded by hand
-  static CamContext* New() {
-    CamContext *ctx = (CamContext*)malloc(sizeof(CamContext));
-    memset(ctx, 0, sizeof(CamContext));
-    return ctx;
-  }
-  void Delete() {
-    free(this);
-  }
 };
 
 CamContext* createCamContext(JNIEnv *e, jobject c) {
@@ -189,7 +184,8 @@ CamContext* createCamContext(JNIEnv *e, jobject c) {
     printf("Camera ctx used twice\n");
     return NULL;
   }
-  ctx = CamContext::New();
+  ctx = new CamContext();
+  memset(ctx, 0, sizeof(CamContext));
   e->SetLongField(c,fid_cam_ctx,(jlong)ctx);
   return ctx;
 }
@@ -204,7 +200,7 @@ CamContext* getCamContext(JNIEnv *e, jobject c) {
 
 void deleteCamContext(JNIEnv *e, jobject c, CamContext *ctx) {
   if (ctx == NULL) return;
-  ctx->Delete();
+  delete ctx;
   jclass cls_camera = e->FindClass("javaforce/media/Camera");
   jfieldID fid_cam_ctx = e->GetFieldID(cls_camera, "ctx", "J");
   e->SetLongField(c,fid_cam_ctx,0);

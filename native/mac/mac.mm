@@ -32,14 +32,17 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MacNative_macInit
 
 //OpenGL
 
+#include "../common/glfw.cpp"
+
 #include "../common/gl.cpp"
 
-JNIEXPORT void JNICALL Java_javaforce_gl_GL_glInit
+JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
   (JNIEnv *e, jclass c)
 {
   if (funcs[0].func != NULL) return;  //already done
   void *func;
-  void *gl = dlopen("OpenGL.dylib", RTLD_LAZY | RTLD_GLOBAL);
+  void *gl = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/OpenGL.dylib", RTLD_LAZY | RTLD_GLOBAL);
+  if (gl == NULL) return JNI_FALSE;
   for(int a=0;a<GL_NO_FUNCS;a++) {
     func = (void*)dlsym(gl, funcs[a].name);
     if (func == NULL) {
@@ -48,6 +51,7 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glInit
     }
     funcs[a].func = func;
   }
+  return JNI_TRUE;
 }
 
 //camera API

@@ -44,7 +44,7 @@ public class GL {
    * Mac : Call anytime.
    *
    */
-  public static native void glInit();
+  public static native boolean glInit();
 
   private static final boolean debug = false;
 
