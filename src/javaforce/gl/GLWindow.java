@@ -56,8 +56,8 @@ public class GLWindow {
   private void dispatchEvent(int type, int v1, int v2) {
     switch (type) {
       case KEY_TYPED: if (keys != null) keys.keyTyped((char)v1); break;
-      case KEY_PRESS: if (keys != null) keys.keyTyped((char)v1); break;
-      case KEY_RELEASE: if (keys != null) keys.keyTyped((char)v1); break;
+      case KEY_PRESS: if (keys != null) keys.keyPressed((char)v1); break;
+      case KEY_RELEASE: if (keys != null) keys.keyReleased((char)v1); break;
       case MOUSE_MOVE: if (mouse != null) mouse.mouseMove(v1, v2); break;
       case MOUSE_DOWN: if (mouse != null) mouse.mouseDown(v1); break;
       case MOUSE_UP: if (mouse != null) mouse.mouseUp(v1); break;
@@ -144,5 +144,4 @@ public class GLWindow {
   public void lockCursor() {
     nlockcursor(id);
   }
-
 }
