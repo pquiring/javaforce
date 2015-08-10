@@ -86,9 +86,21 @@ JNIEXPORT jlong JNICALL Java_javaforce_gl_GLWindow_ncreate
     sharedWin = sharedCtx->window;
   }
 
+  int px, py;
+  const GLFWvidmode *vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+  if (!(style & javaforce_gl_GLWindow_STYLE_FULLSCREEN)) {
+    px = (vidmode->width - x) / 2;
+    py = (vidmode->height - y) / 2;
+  }
+
   const char *ctitle = e->GetStringUTFChars(title,NULL);
   ctx->window = glfwCreateWindow(x,y,ctitle, monitor, sharedWin);
   e->ReleaseStringUTFChars(title, ctitle);
+
+  if (!(style & javaforce_gl_GLWindow_STYLE_FULLSCREEN)) {
+    glfwSetWindowPos(ctx->window, px, py);
+  }
 
   glfwSetWindowUserPointer(ctx->window, (void*)ctx);
 
@@ -175,4 +187,20 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GLWindow_nlockcursor
 {
   GLFWContext *ctx = (GLFWContext*)id;
   glfwSetInputMode(ctx->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_gl_GLWindow_ngetpos
+  (JNIEnv *e, jclass c, jlong id, jintArray ia)
+{
+  GLFWContext *ctx = (GLFWContext*)id;
+  int pos[2];
+  glfwGetWindowPos(ctx->window, &pos[0], &pos[1]);
+  e->SetIntArrayRegion(ia, 0, 2, (const jint*)&pos);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_gl_GLWindow_nsetpos
+  (JNIEnv *e, jclass c, jlong id, jint x, jint y)
+{
+  GLFWContext *ctx = (GLFWContext*)id;
+  glfwSetWindowPos(ctx->window, x, y);
 }

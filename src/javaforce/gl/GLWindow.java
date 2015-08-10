@@ -148,4 +148,22 @@ public class GLWindow {
   public void lockCursor() {
     nlockcursor(id);
   }
+
+  private static native void ngetpos(long id, int pos[]);
+  /** Get window position.
+   * @return int[0] = x, int[1] = y
+   */
+  public int[] getPosition() {
+    int ret[] = new int[2];
+    ngetpos(id, ret);
+    return ret;
+  }
+
+  private static native void nsetpos(long id, int x, int y);
+  /** set window position.
+   * @return int[0] = x, int[1] = y
+   */
+  public void setPosition(int x,int y) {
+    nsetpos(id, x, y);
+  }
 }
