@@ -522,6 +522,10 @@ FFContext* getFFContext(JNIEnv *e, jobject c) {
 
 void deleteFFContext(JNIEnv *e, jobject c, FFContext *ctx) {
   if (ctx == NULL) return;
+  if (ctx->mio != NULL) {
+    e->DeleteGlobalRef(ctx->mio);
+    ctx->mio = NULL;
+  }
   delete ctx;
   jclass cls_coder = e->FindClass("javaforce/media/MediaCoder");
   jfieldID fid_ff_ctx = e->GetFieldID(cls_coder, "ctx", "J");
