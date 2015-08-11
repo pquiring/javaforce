@@ -96,6 +96,16 @@ public class GLWindow {
     nsetcurrent(id);
   }
 
+  private static native void nseticon(long id, String icon, int x, int y);
+  /** Set an icon to the window.
+   * This function is somewhat platform dependant.
+   * Only windows is supported currently.
+   * @param filename = file (.ico for windows)
+   */
+  public void setIcon(String filename, int x, int y) {
+    nseticon(id, filename, x, y);
+  }
+
   public void setKeyListener(KeyEvents keys) {
     this.keys = keys;
   }

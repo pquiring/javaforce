@@ -41,6 +41,23 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_winInit
 
 #include "../common/glfw.cpp"
 
+#define GLFW_EXPOSE_NATIVE_WIN32
+#define GLFW_EXPOSE_NATIVE_WGL
+
+#include "../glfw/include/GLFW/glfw3native.h"
+
+JNIEXPORT void JNICALL Java_javaforce_gl_GLWindow_nseticon
+  (JNIEnv *e, jclass c, jlong id, jstring filename, jint x, jint y)
+{
+  GLFWContext *ctx = (GLFWContext*)id;
+  const char *cstr = e->GetStringUTFChars(filename,NULL);
+  HANDLE icon = LoadImage(NULL, cstr, IMAGE_ICON, x, y, LR_LOADFROMFILE);
+  e->ReleaseStringUTFChars(filename, cstr);
+  HWND hwnd = glfwGetWin32Window(ctx->window);
+  SendMessage(hwnd, WM_SETICON, ICON_BIG, (LPARAM)icon);
+  SendMessage(hwnd, WM_SETICON, ICON_SMALL, (LPARAM)icon);
+}
+
 #include "../common/gl.cpp"
 
 //this func must be called only when a valid OpenGL context is set
