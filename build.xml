@@ -45,18 +45,38 @@
     </javac>
   </target>
 
+  <target name="jar" depends="depjars,compile" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="jars/javaforce.jar" includes="**/*.class" basedir="${build}">
+    </jar>
+  </target>
+
+  <target name="release-bin" depends="jar" description="create release zip file">
+    <zip destfile="javaforce-bin-${version}.zip">
+      <fileset dir="..">
+        <include name="jf/jars/javaforce.jar"/>
+        <include name="jf/native/*.dll"/>
+        <include name="jf/native/*.so"/>
+        <include name="jf/native/*.dylib"/>
+        <include name="jf/stubs/*.exe"/>
+        <include name="jf/stubs/*.bin"/>
+      </fileset>
+      <fileset dir="jf" includes="license.txt"/>
+    </zip>
+    <move file="javaforce-bin-${version}.zip" todir="${home}/release"/>
+  </target>
+
+  <target name="get-bin" description="download bin zip file">
+    <get src="http://github.com/pquiring/javaforce/releases/download/${version}/javaforce-bin-${version}.zip" dest="."/>
+    <unzip src="javaforce-bin-${version}.zip" dest="."/>
+  </target>
+
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcepath="src" destdir="javadoc">
       <classpath>
         <fileset dir="jars" includes="*.jar"/>
       </classpath>
     </javadoc>
-  </target>
-
-  <target name="jar" depends="depjars,compile" description="build jar file">
-    <!-- Build jar file from class files -->
-    <jar destfile="jars/javaforce.jar" includes="**/*.class" basedir="${build}">
-    </jar>
   </target>
 
   <!-- sudo ant install -->
