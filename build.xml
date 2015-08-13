@@ -11,18 +11,18 @@
 
   <available property="have_bouncycastle" file="jars/bouncycastle.jar"/>
   <target name="bouncycastle" unless="have_bouncycastle" description="download bouncycastle">
-    <get src="http://javaforce.sourceforge.net/jars/bouncycastle.jar" dest="jars"/>
+    <get src="http://pquiring.github.io/javaforce/jars/bouncycastle.jar" dest="jars"/>
   </target>
 
   <available property="have_derby" file="jars/derby.jar"/>
   <target name="derby" unless="have_derby" description="download derby">
-    <get src="http://javaforce.sourceforge.net/jars/derby.jar" dest="jars"/>
+    <get src="http://pquiring.github.io/javaforce/jars/derby.jar" dest="jars"/>
   </target>
 
   <!-- not in use yet -->
   <available property="have_android" file="jars/android.jar"/>
   <target name="android" unless="have_android" description="download android">
-    <get src="http://javaforce.sourceforge.net/jars/android.jar" dest="jars"/>
+    <get src="http://pquiring.github.io/javaforce/jars/android.jar" dest="jars"/>
   </target>
 
   <available property="have_glfw" file="native/glfw/src/window.c"/>
