@@ -1,6 +1,6 @@
 Package: jtxtedit
 Version: 0.9
-Architecture: amd64
+Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 20
 Depends: javaforce (>= 6.0.0)

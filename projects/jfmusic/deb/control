@@ -1,6 +1,6 @@
 Package: jfmusic
 Version: 0.3
-Architecture: amd64
+Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 1
 Depends: javaforce (>= 6.14.0)

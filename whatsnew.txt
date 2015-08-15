@@ -1,5 +1,11 @@
 What's new...
 
+Aug ?/2015 : JF ? released!
+  - ant install task now requires "bits" property defined on the command line
+      ex : ant install -Dbits=64
+  - GLFW is now part of JavaForce to create OpenGL windows which should allow it to run on more platforms.
+      See : github.com/glfw/glfw
+
 Jul 31/2015 : JF 9.6.0 released!
   - .blend loader supports Blender 2.75
     - blender sometimes creates duplicate BHead chunks which need to be loaded in a special order

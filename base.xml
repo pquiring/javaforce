@@ -133,7 +133,7 @@
     <attribute name="app" default="${app}"/>
     <attribute name="cfgdir" default=""/>
     <sequential>
-      <copy file="${home}/stubs/linux64.bin" tofile="/usr/bin/@{app}"/>
+      <copy file="${home}/stubs/linux${bits}.bin" tofile="/usr/bin/@{app}"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.jresmgr">
         <arg value="/usr/bin/@{app}"/>
         <arg value="@{cfgdir}@{app}.cfg"/>
@@ -142,16 +142,34 @@
     </sequential>
   </macrodef>
 
-  <target name="deb" depends="jar"  description="create deb package">
+  <target name="deb32" depends="jar"  description="create deb package">
+    <exec executable="jfdeb">
+      <arg value="${app}-${version}_i386.deb"/>
+      <arg value="32"/>
+    </exec>
+    <copy file="${app}-${version}_i386.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
+  </target>
+
+  <target name="deb64" depends="jar"  description="create deb package">
     <exec executable="jfdeb">
       <arg value="${app}-${version}_amd64.deb"/>
+      <arg value="64"/>
     </exec>
     <copy file="${app}-${version}_amd64.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
   </target>
 
-  <target name="rpm" depends="jar"  description="create rpm package">
+  <target name="rpm32" depends="jar"  description="create rpm package">
     <exec executable="jfrpm">
       <arg value="${app}.spec"/>
+      <arg value="32"/>
+    </exec>
+    <copy file="${app}-${version}-1.i686.rpm" todir="${home}/repo/fedora" overwrite="true"/>
+  </target>
+
+  <target name="rpm64" depends="jar"  description="create rpm package">
+    <exec executable="jfrpm">
+      <arg value="${app}.spec"/>
+      <arg value="64"/>
     </exec>
     <copy file="${app}-${version}-1.x86_64.rpm" todir="${home}/repo/fedora" overwrite="true"/>
   </target>

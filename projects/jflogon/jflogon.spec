@@ -7,10 +7,10 @@ License: LGPL
 Distribution: Fedora
 Group: Applications/System
 Requires: javaforce, xorg-x11-server-Xorg, plymouth, bluez, pm-utils, samba-winbind-clients, samba-client, wpa_supplicant, numlockx, dosfstools, ntfsprogs
-BuildArch: noarch
+BuildArch: @ARCH@
 
 %define _rpmdir ../
-%define _rpmfilename %%{NAME}-%%{VERSION}-%%{RELEASE}.noarch.rpm
+%define _rpmfilename %%{NAME}-%%{VERSION}-%%{RELEASE}.@ARCH@.rpm
 %define _unpackaged_files_terminate_build 0
 
 %description

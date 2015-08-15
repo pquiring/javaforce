@@ -1,6 +1,6 @@
 Package: jfpasswords
 Version: 0.14
-Architecture: amd64
+Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 1
 Depends: javaforce (>= 6.2.0)

@@ -6,10 +6,10 @@ Summary: DNS Server
 License: LGPL
 Distribution: Fedora
 Group: Applications/System
-BuildArch: noarch
+BuildArch: @ARCH@
 
 %define _rpmdir ../
-%define _rpmfilename %%{NAME}-%%{VERSION}-%%{RELEASE}.noarch.rpm
+%define _rpmfilename %%{NAME}-%%{VERSION}-%%{RELEASE}.@ARCH@.rpm
 %define _unpackaged_files_terminate_build 0
 %description
 DNS Server

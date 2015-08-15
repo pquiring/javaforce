@@ -57,7 +57,10 @@ Common Ant tasks:
 compile : compile projects java files
 jar : build the projects main jar file
 depjars : copy dependant jar files into project folder
-install : install files into proper folders (Linux only) (requires root access : "sudo ant install")
+install : install files into proper folders (Linux only)
+ - you MUST specify -Dbits=32|64
+ - requires root access
+ - example : "sudo ant install -Dbits=32"
 deb : build Ubuntu deb file (after install)
 rpm : build Fedora rpm file (after install)
 msi32 : build Windows msi file (32bit)
@@ -83,7 +86,7 @@ Enjoy!
 Peter Quiring
 pquiring@gmail.com
 
-Web : http://javaforce.sourceforge.net
+Web : pquiring.github.io/javaforce
 
 Git : github.com/pquiring/javaforce
 

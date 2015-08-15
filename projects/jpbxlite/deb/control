@@ -1,6 +1,6 @@
 Package: jpbxlite
 Version: 0.24
-Architecture: amd64
+Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 1
 Depends: javaforce (>= 6.4.0)

@@ -1,6 +1,6 @@
 Package: jfhexbig
 Version: 0.3
-Architecture: amd64
+Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 20
 Depends: javaforce (>= 6.0.0)

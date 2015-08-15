@@ -1,8 +1,9 @@
 #!/bin/bash
 
 function usage() {
-  echo usage : jfdeb outputfile-version-release.deb [deb-control-folder [files-list]]
+  echo usage : jfdeb outputfile-version-release.deb bits [deb-control-folder [files-list]]
   echo - output : outputfile-version-release.deb
+  echo - bits : 32 or 64
   echo - deb-control-folder : holds deb control files \(default = deb\)
   echo - files-list : lists data files \(one per line\) \(default = files.lst\)
   exit
@@ -14,21 +15,33 @@ function error() {
 }
 
 if [ "$1" = "" ]; then usage; fi
+if [ "$2" = "" ]; then usage; fi
 if [ "$1" = "--help" ]; then usage; fi
 if [ "$1" = "-h" ]; then usage; fi
 
 DEB=deb
 FILES=files.lst
-if [ ! "$2" = "" ]; then DEB=$2; fi
-if [ ! "$3" = "" ]; then FILES=$3; fi
+BITS=$2
+TMPDIR=jfdeb.$RANDOM
+if [ ! "$3" = "" ]; then DEB=$3; fi
+if [ ! "$4" = "" ]; then FILES=$4; fi
 
 if [ ! -f $DEB/control ]; then error "deb/control not found"; fi
 
 #build control.tar.gz (gz only)
 rm -f control.tar.gz 2>/dev/null
-cd $DEB
+mkdir $TMPDIR
+cp $DEB/* $TMPDIR
+cd $TMPDIR
+if [ $BITS = "32" ]; then
+  java -jar /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "i386" control
+else
+  java -jar /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "amd64" control
+fi
 tar czf ../control.tar.gz *
 cd ..
+rm $TMPDIR/*
+rmdir $TMPDIR
 
 #build data.tar.bz2 (gz,bz2,lzma,others?)
 rm -f data.tar.bz2 2>/dev/null

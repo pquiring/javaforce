@@ -1,6 +1,6 @@
 Package: jfburn
 Version: 0.2
-Architecture: amd64
+Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 1
 Depends: javaforce (>= 6.0.0), wodim

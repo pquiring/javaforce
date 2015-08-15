@@ -1,6 +1,6 @@
 Package: jfdhcp
 Version: 0.1
-Architecture: amd64
+Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 1
 Depends: javaforce
