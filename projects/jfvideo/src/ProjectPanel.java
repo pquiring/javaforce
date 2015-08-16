@@ -1022,6 +1022,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
     gldata = new GLData();
     MainPanel.runGL(new Runnable() {
       public void run() {
+        MainPanel.gl.pollEvents();
         gldata.scene = new GLScene();
         gldata.off = new GLOffscreen();
         gldata.off.createOffscreen(config.width, config.height);

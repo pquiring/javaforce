@@ -39,8 +39,8 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
       fov.setVisible(false);
       fovLabel.setVisible(false);
     }
-    width = 288; //previewImage.getWidth();
-    height = 177;  //previewImage.getHeight();
+    width = 588; //previewImage.getWidth();
+    height = 377;  //previewImage.getHeight();
     off = new GLOffscreen();
     off.createOffscreen(width, height);
     offimage = new JFImage();
@@ -199,7 +199,7 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
     use3d.setText("Enable 3D position");
 
     preview.setBorder(javax.swing.BorderFactory.createTitledBorder("Preview"));
-    preview.setPreferredSize(new java.awt.Dimension(300, 200));
+    preview.setPreferredSize(new java.awt.Dimension(600, 400));
 
     javax.swing.GroupLayout previewLayout = new javax.swing.GroupLayout(preview);
     preview.setLayout(previewLayout);
@@ -213,6 +213,7 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
     );
 
     jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Position"));
+    jPanel2.setPreferredSize(new java.awt.Dimension(150, 95));
 
     jLabel1.setText("X");
 
@@ -227,7 +228,7 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
       .addGroup(jPanel2Layout.createSequentialGroup()
         .addComponent(jLabel3)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(tz))
+        .addComponent(tz, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE))
       .addGroup(jPanel2Layout.createSequentialGroup()
         .addComponent(jLabel1)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -268,7 +269,7 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
       .addGroup(jPanel3Layout.createSequentialGroup()
         .addComponent(jLabel4)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(rz, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE))
+        .addComponent(rz, javax.swing.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE))
       .addGroup(jPanel3Layout.createSequentialGroup()
         .addComponent(jLabel6)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -419,25 +420,21 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(preview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                  .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addComponent(preview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addGroup(layout.createSequentialGroup()
-                .addComponent(use3d)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fovLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(fov, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(reset)))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addComponent(use3d)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(fovLabel)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(fov, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(reset))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
@@ -550,7 +547,7 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
     scene = new GLScene();
     scene.init(GLVertexShader.source, GLFragmentShader.source);
     render = new GLRender();
-    render.init(scene, 512, 512);
+    render.init(scene, width, height);
     model = new GLModel();
     scene.addModel(model);
     object = new GLObject();
@@ -604,6 +601,7 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
           render.fovy = x;
           render.render();
           offimage.putPixels(off.getOffscreenPixels(), 0,0,width,height,0);
+          offimage.fillAlpha(0, 0, width, height, 0xff);
           previewImage.getGraphics().drawImage(offimage.getImage(), 0, 0, null);
         }
       });

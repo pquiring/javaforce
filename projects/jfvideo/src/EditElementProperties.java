@@ -123,12 +123,12 @@ public class EditElementProperties extends javax.swing.JDialog {
   }// </editor-fold>//GEN-END:initComponents
 
   private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
-    dispose();
+    close();
   }//GEN-LAST:event_cancelActionPerformed
 
   private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
     save();
-    dispose();
+    close();
   }//GEN-LAST:event_saveActionPerformed
 
   private void tabsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_tabsStateChanged
@@ -137,6 +137,7 @@ public class EditElementProperties extends javax.swing.JDialog {
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
     if (gl != null) {
       gl.uninit();
+      gl = null;
     }
   }//GEN-LAST:event_formWindowClosing
 
@@ -213,5 +214,13 @@ public class EditElementProperties extends javax.swing.JDialog {
     if (text != null) text.save(element);
     if (clr != null) clr.save(element);
     saved = true;
+  }
+
+  private void close() {
+    if (gl != null) {
+      gl.uninit();
+      gl = null;
+    }
+    dispose();
   }
 }

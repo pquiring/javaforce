@@ -344,6 +344,7 @@ public class TrackPanel extends javax.swing.JPanel {
         if (e.use3d) {
           MainPanel.runGL(new Runnable() {
             public void run() {
+              MainPanel.gl.pollEvents();
               gldata.image3d.clear();
               e.preRenderVideo();
               e.renderVideo(gldata.image3d, second, frame);
