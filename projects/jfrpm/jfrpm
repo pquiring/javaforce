@@ -22,7 +22,11 @@ if [ "$1" = "-h" ]; then usage; fi
 if [ ! -f $1 ]; then error "$1 not found"; fi
 
 FILES=files.lst
-if [ ! "$2" = "" ]; then FILES=$2; fi
+if [ -f files-fedora.lst]; then FILES=files-fedora.lst; fi
+BITS=$2
+if [ -f files-$BITS.lst]; then FILES=files-$BITS.lst; fi
+
+if [ ! "$3" = "" ]; then FILES=$3; fi
 
 TMPDIR=jfrpm.$RANDOM
 SPEC=$1
@@ -48,7 +52,7 @@ if [ ! `pwd` = $WORKDIR/$TMPDIR ]; then error "failed to use temp folder $TMPDIR
 
 sudo tar xjf ../data.tar.bz2
 #NOTE:rpmbuild nukes the buildroot once complete, which is the current folder - be careful!!!
-sudo rpmbuild -bb $1 --buildroot `pwd`
+sudo rpmbuild -bb $SPEC --buildroot `pwd`
 cd ..
 sudo rm -rf $TMPDIR
 rm -f data.tar.bz2
