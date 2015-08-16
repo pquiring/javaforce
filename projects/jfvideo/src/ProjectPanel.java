@@ -1028,7 +1028,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
         gldata.off.createOffscreen(config.width, config.height);
         gldata.scene.init(GLVertexShader.source, GLFragmentShader.source);
         gldata.render = new GLRender();
-        gldata.render.init(null, config.width, config.height);
+        gldata.render.init(gldata.scene, config.width, config.height);
         gldata.image3d = new JFImage(config.width, config.height);
         gldata.model = new GLModel();
         gldata.object = new GLObject();
@@ -1037,6 +1037,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
         float y = 2.0f;
         GLUVMap map = gldata.object.createUVMap();
         map.textureIndex = 0;
+        map.texloaded = true;  //direct loaded
         gldata.object.addVertex(new float[] {-x,-y,-z}, new float[] {0,1});
         gldata.object.addVertex(new float[] {+x,-y,-z}, new float[] {1,1});
         gldata.object.addVertex(new float[] {-x,+y,-z}, new float[] {0,0});
@@ -1045,6 +1046,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
         gldata.object.addPoly(new int[] {0,1,3});
         gldata.object.copyBuffers();
         gldata.model.addObject(gldata.object);
+        gldata.model.addTexture("0");
         gldata.scene.addModel(gldata.model);
       }
     });
