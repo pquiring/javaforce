@@ -52,6 +52,102 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
         updateImage();
       }
     },100,100);
+    p_up.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.P_UP;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
+    p_down.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.P_DOWN;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
+    p_left.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.P_LEFT;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
+    p_right.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.P_RIGHT;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
+    z_up.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.P_IN;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
+    z_down.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.P_OUT;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
+    r_up.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.R_UP;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
+    r_down.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.R_DOWN;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
+    r_left.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.R_LEFT;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
+    r_right.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.R_RIGHT;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
+    rz_up.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.RZ_UP;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
+    rz_down.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        button = buttons.RZ_DOWN;
+      }
+      public void mouseReleased(java.awt.event.MouseEvent evt) {
+        button = buttons.NONE;
+      }
+    });
   }
 
   /**
@@ -80,14 +176,23 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
     ry = new javax.swing.JTextField();
     rx = new javax.swing.JTextField();
     jLabel6 = new javax.swing.JLabel();
-    jLabel7 = new javax.swing.JLabel();
-    jLabel8 = new javax.swing.JLabel();
-    jLabel9 = new javax.swing.JLabel();
-    jLabel10 = new javax.swing.JLabel();
-    jLabel11 = new javax.swing.JLabel();
     fovLabel = new javax.swing.JLabel();
     fov = new javax.swing.JTextField();
     reset = new javax.swing.JButton();
+    jPanel1 = new javax.swing.JPanel();
+    p_left = new javax.swing.JButton();
+    p_down = new javax.swing.JButton();
+    p_right = new javax.swing.JButton();
+    p_up = new javax.swing.JButton();
+    z_up = new javax.swing.JButton();
+    z_down = new javax.swing.JButton();
+    jPanel4 = new javax.swing.JPanel();
+    r_up = new javax.swing.JButton();
+    r_right = new javax.swing.JButton();
+    r_left = new javax.swing.JButton();
+    r_down = new javax.swing.JButton();
+    rz_up = new javax.swing.JButton();
+    rz_down = new javax.swing.JButton();
 
     jLabel12.setText("jLabel12");
 
@@ -189,16 +294,6 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
           .addComponent(rz, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
     );
 
-    jLabel7.setText("Click on Preview to adjust position/rotation with these keys:");
-
-    jLabel8.setText("A,D,W,S = adjust position left/right/up/down");
-
-    jLabel9.setText("Arrow Keys = adjust rotation");
-
-    jLabel10.setText("R,F = adjust position in/out");
-
-    jLabel11.setText("Z,X = spin image");
-
     fovLabel.setText("FOV");
 
     reset.setText("Reset");
@@ -209,6 +304,112 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
       }
     });
 
+    jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Position"));
+
+    p_left.setIcon(new javax.swing.ImageIcon(getClass().getResource("/left.png"))); // NOI18N
+    p_left.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    p_down.setIcon(new javax.swing.ImageIcon(getClass().getResource("/down.png"))); // NOI18N
+    p_down.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    p_right.setIcon(new javax.swing.ImageIcon(getClass().getResource("/right.png"))); // NOI18N
+    p_right.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    p_up.setIcon(new javax.swing.ImageIcon(getClass().getResource("/up.png"))); // NOI18N
+    p_up.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    z_up.setIcon(new javax.swing.ImageIcon(getClass().getResource("/up.png"))); // NOI18N
+    z_up.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    z_down.setIcon(new javax.swing.ImageIcon(getClass().getResource("/down.png"))); // NOI18N
+    z_down.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+    jPanel1.setLayout(jPanel1Layout);
+    jPanel1Layout.setHorizontalGroup(
+      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addComponent(p_left)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(p_up)
+          .addGroup(jPanel1Layout.createSequentialGroup()
+            .addComponent(p_down)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(p_right)))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(z_up)
+          .addComponent(z_down)))
+    );
+    jPanel1Layout.setVerticalGroup(
+      jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addComponent(p_up)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(p_right)
+          .addComponent(p_down)
+          .addComponent(p_left)))
+      .addGroup(jPanel1Layout.createSequentialGroup()
+        .addComponent(z_up)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(z_down))
+    );
+
+    jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Rotation"));
+
+    r_up.setIcon(new javax.swing.ImageIcon(getClass().getResource("/up.png"))); // NOI18N
+    r_up.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    r_right.setIcon(new javax.swing.ImageIcon(getClass().getResource("/right.png"))); // NOI18N
+    r_right.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    r_left.setIcon(new javax.swing.ImageIcon(getClass().getResource("/left.png"))); // NOI18N
+    r_left.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    r_down.setIcon(new javax.swing.ImageIcon(getClass().getResource("/down.png"))); // NOI18N
+    r_down.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    rz_up.setIcon(new javax.swing.ImageIcon(getClass().getResource("/up.png"))); // NOI18N
+    rz_up.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    rz_down.setIcon(new javax.swing.ImageIcon(getClass().getResource("/down.png"))); // NOI18N
+    rz_down.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
+    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+    jPanel4.setLayout(jPanel4Layout);
+    jPanel4Layout.setHorizontalGroup(
+      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel4Layout.createSequentialGroup()
+        .addComponent(r_left)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(r_up)
+          .addGroup(jPanel4Layout.createSequentialGroup()
+            .addComponent(r_down)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(r_right)))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(rz_up)
+          .addComponent(rz_down)))
+    );
+    jPanel4Layout.setVerticalGroup(
+      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+        .addComponent(rz_up)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(rz_down))
+      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+        .addComponent(r_up)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(r_right)
+          .addComponent(r_down)
+          .addComponent(r_left)))
+    );
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -216,29 +417,28 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-              .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(preview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addComponent(jLabel7)
           .addGroup(layout.createSequentialGroup()
-            .addGap(10, 10, 10)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel9)
-              .addComponent(jLabel8)
-              .addComponent(jLabel10)
-              .addComponent(jLabel11)))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(use3d)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(fovLabel)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(fov, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(reset)))
-        .addContainerGap(27, Short.MAX_VALUE))
+              .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                  .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(preview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(use3d)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fovLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fov, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(reset)))
+            .addGap(0, 0, Short.MAX_VALUE)))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -256,16 +456,10 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(preview, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jLabel7)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jLabel8)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jLabel9)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jLabel10)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jLabel11)
-        .addContainerGap(14, Short.MAX_VALUE))
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+          .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -283,29 +477,38 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
   private javax.swing.JTextField fov;
   private javax.swing.JLabel fovLabel;
   private javax.swing.JLabel jLabel1;
-  private javax.swing.JLabel jLabel10;
-  private javax.swing.JLabel jLabel11;
   private javax.swing.JLabel jLabel12;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
   private javax.swing.JLabel jLabel6;
-  private javax.swing.JLabel jLabel7;
-  private javax.swing.JLabel jLabel8;
-  private javax.swing.JLabel jLabel9;
+  private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
+  private javax.swing.JPanel jPanel4;
+  private javax.swing.JButton p_down;
+  private javax.swing.JButton p_left;
+  private javax.swing.JButton p_right;
+  private javax.swing.JButton p_up;
   private javax.swing.JPanel preview;
   private java.awt.Canvas previewImage;
+  private javax.swing.JButton r_down;
+  private javax.swing.JButton r_left;
+  private javax.swing.JButton r_right;
+  private javax.swing.JButton r_up;
   private javax.swing.JButton reset;
   private javax.swing.JTextField rx;
   private javax.swing.JTextField ry;
   private javax.swing.JTextField rz;
+  private javax.swing.JButton rz_down;
+  private javax.swing.JButton rz_up;
   private javax.swing.JTextField tx;
   private javax.swing.JTextField ty;
   private javax.swing.JTextField tz;
   private javax.swing.JCheckBox use3d;
+  private javax.swing.JButton z_down;
+  private javax.swing.JButton z_up;
   // End of variables declaration//GEN-END:variables
 
   GLScene scene;
@@ -317,6 +520,8 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
   GLOffscreen off;
   JFImage offimage;
   int width,height;
+  enum buttons {NONE, P_UP, P_DOWN, P_LEFT, P_RIGHT, P_IN, P_OUT, R_UP, R_DOWN, R_LEFT, R_RIGHT, RZ_UP, RZ_DOWN};
+  buttons button = buttons.NONE;
 
   public void save(Element e) {
     if (tx.getText().length() == 0) tx.setText("0");
@@ -427,74 +632,118 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
     float f;
     switch (ch) {
       case 'a':
-        f = Float.valueOf(tx.getText());
-        f -= delta;
-        tx.setText(String.format("%.4f", f));
+        button = buttons.P_LEFT;
         break;
       case 's':
-        f = Float.valueOf(ty.getText());
-        f -= delta;
-        ty.setText(String.format("%.4f", f));
+        button = buttons.P_DOWN;
         break;
       case 'd':
-        f = Float.valueOf(tx.getText());
-        f += delta;
-        tx.setText(String.format("%.4f", f));
+        button = buttons.P_RIGHT;
         break;
       case 'w':
-        f = Float.valueOf(ty.getText());
-        f += delta;
-        ty.setText(String.format("%.4f", f));
+        button = buttons.P_UP;
         break;
       case 'r':
-        f = Float.valueOf(tz.getText());
-        f += delta;
-        tz.setText(String.format("%.4f", f));
+        button = buttons.P_IN;
         break;
       case 'f':
-        f = Float.valueOf(tz.getText());
-        f -= delta;
-        tz.setText(String.format("%.4f", f));
+        button = buttons.P_OUT;
         break;
       case 'z':
-        f = Float.valueOf(rz.getText());
-        f += angle;
-        rz.setText(String.format("%.4f", f));
+        button = buttons.RZ_UP;
         break;
       case 'x':
-        f = Float.valueOf(rz.getText());
-        f -= angle;
-        rz.setText(String.format("%.4f", f));
+        button = buttons.RZ_DOWN;
         break;
     }
     switch (cc) {
       case KeyEvent.VK_UP:
-        f = Float.valueOf(rx.getText());
-        f += angle;
-        rx.setText(String.format("%.4f", f));
+        button = buttons.R_UP;
         break;
       case KeyEvent.VK_DOWN:
-        f = Float.valueOf(rx.getText());
-        f -= angle;
-        rx.setText(String.format("%.4f", f));
+        button = buttons.R_DOWN;
         break;
       case KeyEvent.VK_LEFT:
-        f = Float.valueOf(ry.getText());
-        f += angle;
-        ry.setText(String.format("%.4f", f));
+        button = buttons.R_LEFT;
         break;
       case KeyEvent.VK_RIGHT:
-        f = Float.valueOf(ry.getText());
-        f -= angle;
-        ry.setText(String.format("%.4f", f));
+        button = buttons.R_RIGHT;
         break;
     }
   }
 
   public void keyReleased(KeyEvent e) {
+    button = buttons.NONE;
+  }
+
+  private void adjustImage(buttons button) {
+    float f;
+    switch (button) {
+      case P_LEFT:
+        f = Float.valueOf(tx.getText());
+        f -= delta;
+        tx.setText(String.format("%.4f", f));
+        break;
+      case P_DOWN:
+        f = Float.valueOf(ty.getText());
+        f -= delta;
+        ty.setText(String.format("%.4f", f));
+        break;
+      case P_RIGHT:
+        f = Float.valueOf(tx.getText());
+        f += delta;
+        tx.setText(String.format("%.4f", f));
+        break;
+      case P_UP:
+        f = Float.valueOf(ty.getText());
+        f += delta;
+        ty.setText(String.format("%.4f", f));
+        break;
+      case P_IN:
+        f = Float.valueOf(tz.getText());
+        f += delta;
+        tz.setText(String.format("%.4f", f));
+        break;
+      case P_OUT:
+        f = Float.valueOf(tz.getText());
+        f -= delta;
+        tz.setText(String.format("%.4f", f));
+        break;
+      case RZ_UP:
+        f = Float.valueOf(rz.getText());
+        f += angle;
+        rz.setText(String.format("%.4f", f));
+        break;
+      case RZ_DOWN:
+        f = Float.valueOf(rz.getText());
+        f -= angle;
+        rz.setText(String.format("%.4f", f));
+        break;
+      case R_UP:
+        f = Float.valueOf(rx.getText());
+        f += angle;
+        rx.setText(String.format("%.4f", f));
+        break;
+      case R_DOWN:
+        f = Float.valueOf(rx.getText());
+        f -= angle;
+        rx.setText(String.format("%.4f", f));
+        break;
+      case R_LEFT:
+        f = Float.valueOf(ry.getText());
+        f += angle;
+        ry.setText(String.format("%.4f", f));
+        break;
+      case R_RIGHT:
+        f = Float.valueOf(ry.getText());
+        f -= angle;
+        ry.setText(String.format("%.4f", f));
+        break;
+    }
   }
 
   public void updateImage() {
+    adjustImage(button);
     render();
   }
 }
