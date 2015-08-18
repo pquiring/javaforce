@@ -6,6 +6,8 @@ Aug 18/2015 : JF 10.0.0 released!
   - ant install task now requires "bits" property defined on the command line (Linux only)
       ex : ant install -Dbits=64
   - GLFW is now part of JavaForce to create OpenGL windows which should allow it to run on more platforms.
+      GLFW is not well suited for Java apps.  It only uses icons from the .exe which in java can not be easily changed.
+      For now some JNI functions have been created to overcome this but only supports Windows.
       See : github.com/glfw/glfw
 
 Jul 31/2015 : JF 9.6.0 released!

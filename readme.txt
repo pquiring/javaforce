@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 9.6.0
+Version 10.0.0
 
 What is it?
 ===========
@@ -90,6 +90,6 @@ Web : pquiring.github.io/javaforce
 
 Git : github.com/pquiring/javaforce
 
-Version 9.6.0
+Version 10.0.0
 
 Released : August 10 2015

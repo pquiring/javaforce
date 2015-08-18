@@ -5,7 +5,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="home" value="."/>
-  <property name="version" value="9.6.0"/>
+  <property name="version" value="10.0.0"/>
 
   <import file="base.xml"/>
 
@@ -53,15 +53,14 @@
 
   <target name="release-bin" depends="jar" description="create release zip file">
     <zip destfile="javaforce-bin-${version}.zip">
-      <fileset dir="..">
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/native/*.dll"/>
-        <include name="jf/native/*.so"/>
-        <include name="jf/native/*.dylib"/>
-        <include name="jf/stubs/*.exe"/>
-        <include name="jf/stubs/*.bin"/>
+      <fileset dir=".">
+        <include name="jars/javaforce.jar"/>
+        <include name="native/*.dll"/>
+        <include name="native/*.so"/>
+        <include name="native/*.dylib"/>  <!-- not available yet -->
+        <include name="stubs/*.exe"/>
+        <include name="stubs/*.bin"/>
       </fileset>
-      <fileset dir="jf" includes="license.txt"/>
     </zip>
     <move file="javaforce-bin-${version}.zip" todir="${home}/release"/>
   </target>
