@@ -1,7 +1,9 @@
 What's new...
 
-Aug ?/2015 : JF ? released!
-  - ant install task now requires "bits" property defined on the command line
+Aug 18/2015 : JF 10.0.0 released!
+  - JavaForce is now hosted exclusively at github.com/pquiring/javaforce
+      see also : pquiring.github.io/javaforce
+  - ant install task now requires "bits" property defined on the command line (Linux only)
       ex : ant install -Dbits=64
   - GLFW is now part of JavaForce to create OpenGL windows which should allow it to run on more platforms.
       See : github.com/glfw/glfw

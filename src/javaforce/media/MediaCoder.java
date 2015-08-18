@@ -117,19 +117,19 @@ public class MediaCoder {
   public static boolean download() {
     if (!JF.isWindows()) {
       JF.showError("Notice", "This application requires the codecpack which was not detected.\n"
-        + "Please visit http://javaforce.sourceforge.net/codecpack.php for more info.\n"
+        + "Please visit http://pquiring.github.io/javaforce/codecpack.html for more info.\n"
         + "Press OK to visit this page now");
-      JF.openURL("http://javaforce.sourceforge.net/codecpack.php");
+      JF.openURL("http://pquiring.github.io/javaforce/codecpack.html");
       return false;
     }
     if (!JF.showConfirm("Notice", "This application requires the codecpack which was not detected.\n"
-      + "Please visit http://javaforce.sourceforge.net/codecpack.php for more info.\n"
+      + "Please visit http://pquiring.github.io/javaforce/codecpack.html for more info.\n"
       + "NOTE:To install the codecpack this app may require administrative rights.\n"
       + "To run with admin rights, right click this app and select 'Run as Administrator'.\n"
       + "Press OK to download and install now.\n"
       + "Press CANCEL to visit website now.\n"))
     {
-      JF.openURL("http://javaforce.sourceforge.net/codecpack.php");
+      JF.openURL("http://pquiring.github.io/javaforce/codecpack.html");
       return false;
     }
     JFTask task = new JFTask() {
@@ -151,8 +151,8 @@ public class MediaCoder {
         //first download latest URL from javaforce.sf.net
         try {
           BufferedReader reader = new BufferedReader(new InputStreamReader(
-            new URL("http://javaforce.sourceforge.net/codecpackwin"
-            + (JF.is64Bit() ? "64" : "32") + ".php").openStream()));
+            new URL("http://pquiring.github.io/javaforce/codecpackwin"
+            + (JF.is64Bit() ? "64" : "32") + ".html").openStream()));
           String url = reader.readLine();
           int zLength = JF.atoi(reader.readLine());
           byte buf[] = new byte[64 * 1024];
