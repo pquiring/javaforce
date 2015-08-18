@@ -8,6 +8,7 @@
   <target name="javah">
     <javah destdir="." classpath="../../classes">
       <class name="javaforce.gl.GL"/>
+      <class name="javaforce.gl.GLWindow"/>
       <class name="javaforce.media.Camera"/>
       <class name="javaforce.media.MediaCoder"/>
       <class name="javaforce.media.MediaDecoder"/>

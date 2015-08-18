@@ -22,9 +22,6 @@
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
 #endif
 
-void *jawt;
-jboolean (JNICALL *_JAWT_GetAWT)(JNIEnv *e, JAWT *c) = NULL;
-
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_MacNative_macInit
   (JNIEnv *e, jclass c)
 {

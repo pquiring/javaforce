@@ -10,10 +10,10 @@
 #include "../glfw/src/window.c"
 
 //mac
-#include "../glfw/src/cocoa_init.c"
-#include "../glfw/src/cocoa_monitor.c"
+#include "../glfw/src/cocoa_init.m"
+#include "../glfw/src/cocoa_monitor.m"
 #include "../glfw/src/mach_time.c"
 #include "../glfw/src/posix_tls.c"
-#include "../glfw/src/cocoa_window.c"
-#include "../glfw/src/iokit_joystick.c"
+#include "../glfw/src/cocoa_window.m"
+#include "../glfw/src/iokit_joystick.m"
 #include "../glfw/src/nsgl_context.m"
