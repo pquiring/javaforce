@@ -389,6 +389,46 @@ public class GLMatrix implements Cloneable {
     m[15] = 1;
   }
 
+  /**
+   * Sets the matrix to look at a point from a specified point.
+   * Note:input vectors are clobbered.
+   *
+   * @param eye = camera position
+   * @param at = point to look at
+   * @param up = camera up vector (usually 0,1,0)
+   */
+  public void lookAt(GLVector3 eye, GLVector3 at, GLVector3 up) {
+    //see https://www.opengl.org/archives/resources/faq/technical/lookat.cpp
+    at.v[0] -= eye.v[0];
+    at.v[1] -= eye.v[1];
+    at.v[2] -= eye.v[2];
+    at.normalize();
+    vec.cross(at, up);
+    vec.normalize();
+    up.cross(vec, at);
+    at.scale(-1f);
+    //right vector
+    m[0] = vec.v[0];
+    m[1] = vec.v[1];
+    m[2] = vec.v[2];
+    m[3] = 0;
+    //up vector
+    m[4] = up.v[0];
+    m[5] = up.v[1];
+    m[6] = up.v[2];
+    m[7] = 0;
+    //lookAt vector
+    m[8] = at.v[0];
+    m[9] = at.v[1];
+    m[10] = at.v[2];
+    m[11] = 0;
+    //camera translation
+    m[12] = eye.v[0];
+    m[13] = eye.v[1];
+    m[14] = eye.v[2];
+    m[15] = 1f;
+  }
+
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("\r\n");
@@ -418,9 +458,9 @@ x y z 1
 
 Rotation (c1 = cy+cz; c2 = cx+cz; c3 = cx+cy)
 
- c1  zs -ys  0
--zs  c2  xs  0
- ys -xs  c3  0
+ c1  zs -ys  0  =  right vector
+-zs  c2  xs  0  =  up vector
+ ys -xs  c3  0  =  -lookAt vector
  0   0   0   1
 
 Scaling
