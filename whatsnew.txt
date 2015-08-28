@@ -1,5 +1,8 @@
 What's new...
 
+Aug 27/2015 : JF 10.1.0 released!
+  - added GLMatrix.lookAt()
+
 Aug 18/2015 : JF 10.0.0 released!
   - JavaForce is now hosted exclusively at github.com/pquiring/javaforce
       see also : pquiring.github.io/javaforce
