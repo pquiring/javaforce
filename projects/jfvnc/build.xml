@@ -10,6 +10,8 @@
 
   <import file="../../base.xml"/>
 
+  <target name="depjars"/>
+
   <target name="compile" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
