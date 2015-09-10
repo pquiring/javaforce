@@ -1,6 +1,6 @@
 Buildroot: .
 Name: jfproxy
-Version: 0.2
+Version: 0.3
 Release: 1
 Summary: Proxy Server
 License: LGPL

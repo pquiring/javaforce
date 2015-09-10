@@ -1,5 +1,9 @@
 What's new...
 
+Sept 10/2015 : JF 10.2.0 released!
+  - jfProxy/0.3 released!
+    - fixed host:port parsing
+
 Aug 27/2015 : JF 10.1.0 released!
   - added GLMatrix.lookAt()
 
