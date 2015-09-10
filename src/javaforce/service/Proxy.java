@@ -302,15 +302,16 @@ public class Proxy extends Thread {
         replyError(505, "No host specified");
         return;
       }
+      String hostln = ln[hostidx].substring(6);
       String host;
       int port = 80;
-      int portidx = ln[hostidx].substring(6).indexOf(':');
+      int portidx = hostln.indexOf(':');
       try {
         if (portidx != -1) {
-          host = ln[hostidx].substring(6, portidx);
-          port = Integer.valueOf(ln[hostidx].substring(portidx+1));
+          host = hostln.substring(0, portidx);
+          port = Integer.valueOf(hostln.substring(portidx+1));
         } else {
-          host = ln[hostidx].substring(6);
+          host = hostln;
         }
         //check if host is blocked
         host = host.trim().toLowerCase();

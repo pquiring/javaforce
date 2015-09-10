@@ -8,14 +8,13 @@
   <import file="../../base.xml"/>
 
   <target name="depjars" description="jar">
-    <copy file="../../jars/javaforce.jar" todir="."/>
+    <copy file="${home}/jars/javaforce.jar" todir="."/>
   </target>
 
-  <target name="jar" description="jar">
+  <target name="jar" depends="depjars" description="jar">
   </target>
 
-  <target name="release-bin" depends="" description="create release zip file">
-    <copy file="../../jars/javaforce.jar" todir="."/>
+  <target name="release-bin" depends="depjars" description="create release zip file">
     <zip destfile="jfproxy-${version}.zip">
       <fileset dir=".">
         <include name="*.jar"/>
