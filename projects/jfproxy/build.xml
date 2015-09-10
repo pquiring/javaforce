@@ -3,7 +3,7 @@
   <!-- set global properties for this build -->
   <property name="app" value="jfproxy"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.2"/>
+  <property name="version" value="0.3"/>
 
   <import file="../../base.xml"/>
 
@@ -15,7 +15,7 @@
   </target>
 
   <target name="release-bin" depends="depjars" description="create release zip file">
-    <zip destfile="jfproxy-${version}.zip">
+    <zip destfile="jfproxy-bin-${version}.zip">
       <fileset dir=".">
         <include name="*.jar"/>
         <include name="*.txt"/>
@@ -23,7 +23,7 @@
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>
-    <move file="jfproxy-${version}.zip" todir="${home}/release"/>
+    <move file="jfproxy-bin-${version}.zip" todir="${home}/release"/>
   </target>
 
   <!-- sudo ant install -->

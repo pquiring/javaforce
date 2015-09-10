@@ -104,6 +104,7 @@ public class Proxy extends Thread {
     + "\r\n"
     + "[blockdomain]\r\n"
     + ".*youtube[.]com\r\n"
+    + "\r\n"
     + "[urlchange]\r\n"
     + "#www.example.com/test = www.google.com\r\n";
 
