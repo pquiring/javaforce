@@ -722,6 +722,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
 
       //RFC 3581 - rport
       String via = getHeader("Via:", msg);
+      boolean localhost_changed = false;
       if (via == null) {
         via = getHeader("v:", msg);
       }
@@ -732,8 +733,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           String received = getHeader("received=", f);
           if (received != null) {
             if (!cd.localhost.equals(received)) {
+              localhost = received;
               cd.localhost = received;
               JFLog.log("received ip=" + received + " for remotehost = " + remotehost);
+              localhost_changed = true;
             }
           }
         }
@@ -745,6 +748,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             if (rport != newrport) {
               rport = newrport;
               JFLog.log("received port=" + rport + " for remotehost = " + remotehost);
+              localhost_changed = true;
             }
           }
         }
@@ -869,6 +873,11 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           if (cmd.equals("REGISTER")) {
             if (type == 183) break;  //not used in REGISTER command
             if (cd.src.expires > 0) {
+              if (localhost_changed) {
+                JFLog.log("localhost change detected, reregister()ing");
+                reregister();
+                break;
+              }
               registered = true;
               iface.onRegister(this, true);
             } else {
