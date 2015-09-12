@@ -13,7 +13,7 @@ Compiling
 Edit local.properties and make sure sdk.dir matches your Android SDK path.
 Run 'ant -f tools.xml genkeys'
 Run 'ant -f tools.xml depjars'
-Run 'ant compile' or 'ant install' or 'ant release'.
+Run 'ant compile' or 'ant installr' or 'ant release'.
 
 Debugging
 ---------

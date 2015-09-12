@@ -1,8 +1,6 @@
 <project name="jphonelite-android-tools" default="depjars" basedir=".">
   <description>jphonelite-android-tools</description>
   <!-- set global properties for this build -->
-  <property name="src" location="."/>
-  <property name="build" location="."/>
   <property name="home" location="../.."/>
   <property name="version" value="1.9.8"/>
 
