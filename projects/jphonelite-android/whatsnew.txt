@@ -1,5 +1,9 @@
 ChangeLog
 ---------
+9-12-2015 : jphonelite/1.9.8
+  - fixes to register()ing
+    - this should fix bug #31
+  - also re-enabled debug log to /sdcard/.jphone.log
 6-30-2015 : jphonelite/1.9.6
   - fixed support for QOP auth and Record-Route fields (RFC 2543 6.29).
     - flowroute.com is now supported

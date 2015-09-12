@@ -67,9 +67,8 @@ public class Engine implements SIPClientInterface, RTPInterface {
 
   private void init() {
     active = true;
-    JFLogAndroid.init(0, "JAVAFORCE");
+    JFLogAndroid.init(0, "JAVAFORCE", "/sdcard/.jphone.log");
 //    JFLog.log("Engine.init()");
-//    JFLog.init("/sdcard/.jphone.log", true);
     lines = new PhoneLine[6];
     for(int a=0;a<6;a++) lines[a] = new PhoneLine();
     Settings.loadSettings();

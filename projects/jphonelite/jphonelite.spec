@@ -1,6 +1,6 @@
 Buildroot: /.
 Name: jphonelite
-Version: 1.9.7
+Version: 1.9.8
 Release: 1
 Summary: Java VoIP/SIP Phone
 License: LGPL

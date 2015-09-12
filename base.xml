@@ -71,7 +71,7 @@
       <exemacro appx="@{app5}" bits="@{bits}" ico="@{ico}" unless:blank="@{app5}"/>
       <exec command="candle ${candle_extra} -o wix.obj @{xml}.xml"/>
       <exec command="candle -o jre.obj ${home}/nojre.xml"/>
-      <exec command="light ${light_extra} -ext WixUIExtension -cultures:en-us -o @{msi}-${version}-win@{bits}.msi jre.obj wix.obj"/>
+      <exec command="light ${light_extra} -ext WixUIExtension -cultures:en-us -b ${home} -dWixUILicenseRtf=${home}/license.rtf -o @{msi}-${version}-win@{bits}.msi jre.obj wix.obj"/>
       <delete file="wix.obj"/>
       <delete file="@{msi}-${version}-win@{bits}.wixpdb"/>
       <move unless:set="nomove" file="@{msi}-${version}-win@{bits}.msi" todir="${home}/release"/>
@@ -109,7 +109,7 @@
         <arg value="win@{bits}"/>
       </java>
       <exec command="candle -o jre.obj jre.xml"/>
-      <exec command="light ${light_extra} -ext WixUIExtension -cultures:en-us -o @{msi}-${version}-win@{bits}.msi wix.obj jre.obj"/>
+      <exec command="light ${light_extra} -ext WixUIExtension -cultures:en-us -b ${home} -dWixUILicenseRtf=${home}/license.rtf -o @{msi}-${version}-win@{bits}.msi wix.obj jre.obj"/>
       <delete file="wix.obj"/>
       <delete file="jre.obj"/>
       <delete file="jre.xml"/>

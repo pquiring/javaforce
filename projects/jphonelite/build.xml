@@ -5,7 +5,7 @@
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
-  <property name="version" value="1.9.7"/>
+  <property name="version" value="1.9.8"/>
 
   <import file="../../base.xml"/>
 
@@ -66,7 +66,7 @@
   </target>
 
   <target name="release-bin" description="create release zip file">
-    <zip destfile="jphonelite-${version}.zip">
+    <zip destfile="jphonelite-bin-${version}.zip">
       <fileset dir="..">
         <include name="jphonelite/*.jar"/>
         <include name="jphonelite/*.html"/>
@@ -80,7 +80,7 @@
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>
-    <move file="jphonelite-${version}.zip" todir="${home}/release"/>
+    <move file="jphonelite-bin-${version}.zip" todir="${home}/release"/>
   </target>
 
   <target name="release-src" depends="" description="create release zip file">
