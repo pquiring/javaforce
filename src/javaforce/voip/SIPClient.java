@@ -934,6 +934,8 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
               break;
             }
             cd.src.cseq++;
+            //update contact info
+            cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
             issue(cd, cmd, cmd.equals("INVITE"), true);
             cd.authsent = true;
           }
