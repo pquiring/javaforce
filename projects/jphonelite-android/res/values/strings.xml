@@ -3,7 +3,7 @@
 <resources>
   <string name="main_text1_text">init</string>
   <string name="main_text2_text">init</string>
-  <string name="main_about_text">jPhoneLite/1.9.6</string>
+  <string name="main_about_text">jPhoneLite/1.9.8</string>
   <string name="settings_line_x_prompt">Select Line Config</string>
   <string-array name="line_2">
     <item>Use Settings Below</item>
