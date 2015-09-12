@@ -10,7 +10,7 @@ import java.io.*;
 import android.util.*;
 
 public class JFLogAndroid {
-  public static void init(int id, final String tag) {
+  public static void init(int id, final String tag, String filename) {
     PrintStream ps = new PrintStream(new OutputStream() {
       private StringBuffer sb = new StringBuffer();
       private void add(byte b[]) {
@@ -30,6 +30,6 @@ public class JFLogAndroid {
         add(b);
       }
     });
-    JFLog.init(id, null, true, ps);
+    JFLog.init(id, filename, false, ps);
   }
 }
