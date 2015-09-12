@@ -2,10 +2,6 @@
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
   <property file="${home}/base.properties"/>
 
-  <pathconvert property="home.platform">
-    <path location="${home}"/>
-  </pathconvert>
-
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcepath="src" sourcefiles="src/*.java" destdir="javadoc">
       <classpath>
