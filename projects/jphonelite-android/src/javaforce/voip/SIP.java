@@ -883,7 +883,7 @@ public abstract class SIP {
       return null;
     }
     String tags[] = split(request.substring(7), ',');
-    String auth, nonce = null, qop = null, cnonce = null, stale = null;
+    String auth, nonce = null, qop = null, cnonce = null, nc = null,stale = null;
     String realm = null;
     auth = getHeader("algorithm=", tags);
     if (auth != null) {
@@ -921,22 +921,23 @@ public abstract class SIP {
         } else {
           cd.nonceCount = 1;
         }
+        nc = String.format("%08x", cd.nonceCount);
       }
     }
     cd.nonce = nonce;
-    String response = getResponse(user, pass, realm, cmd, "sip:" + remote, nonce, qop, Integer.toString(cd.nonceCount, 16), cnonce);
+    String response = getResponse(user, pass, realm, cmd, "sip:" + remote, nonce, qop, nc, cnonce);
     StringBuffer ret = new StringBuffer();
     ret.append(header);
     ret.append(" Digest username=\"" + user + "\", realm=\"" + realm + "\", uri=\"sip:" + remote + "\", nonce=\"" + nonce + "\"");
-    ret.append(", response=\"" + response + "\"");
     if (cnonce != null) {
       ret.append(", cnonce=\"" + cnonce + "\"");
     }
     //NOTE:Do NOT quote qop or nc
     if (qop != null) {
-      ret.append(", nc=" + Integer.toString(cd.nonceCount, 16));
+      ret.append(", nc=" + nc);
       ret.append(", qop=" + qop);
     }
+    ret.append(", response=\"" + response + "\"");
     ret.append(", algorithm=MD5\r\n");
     return ret.toString();
   }
@@ -1026,8 +1027,7 @@ public abstract class SIP {
     return JF.atoi(expires);
   }
 
-  public abstract String getlocalhost(String host);  //SIP host
-  public abstract String getlocalRTPhost(String host);
+  public abstract String getlocalRTPhost(CallDetails cd);
 
   /**
    * Builds SDP packet. (RFC 2327)
@@ -1037,11 +1037,11 @@ public abstract class SIP {
     SDP sdp = cdsd.sdp;
     String ip = sdp.ip;
     if (ip == null) {
-      ip = getlocalRTPhost(cdsd.host);
+      ip = getlocalRTPhost(cd);
     }
     StringBuffer content = new StringBuffer();
     content.append("v=0\r\n");
-    content.append("o=- " + cdsd.o1 + " " + cdsd.o2 + " IN IP4 " + getlocalhost(cdsd.host) + "\r\n");
+    content.append("o=- " + cdsd.o1 + " " + cdsd.o2 + " IN IP4 " + cd.localhost + "\r\n");
     content.append("s=" + useragent + "\r\n");
     content.append("c=IN IP4 " + ip + "\r\n");
     content.append("t=0 0\r\n");

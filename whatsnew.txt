@@ -1,5 +1,12 @@
 What's new...
 
+Sept 12/2015 : JF 10.3.0 released!
+  - SIPClient
+    - fix : contact field updated if received ip/port changes
+    - fix : reregister()s if received ip/port changes
+  - jPhoneLite/1.9.8 released!
+    - desktop and android
+
 Sept 10/2015 : JF 10.2.0 released!
   - jfProxy/0.3 released!
     - fixed host:port parsing

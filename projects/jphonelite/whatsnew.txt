@@ -1,4 +1,7 @@
 CHANGELOG:
+9-12-2015 : v1.9.8 released
+  - fixes to register()ing
+    - this should fix bug #31
 7-9-2015 : v1.9.7 released
   - just minor fixes for linux users
     - if native libraries aren't loaded the app will not exit but the video button will be disabled

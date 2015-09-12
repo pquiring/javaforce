@@ -58,6 +58,9 @@ public class CallDetails implements Cloneable {
    * Client must increment each time nonce value is used.
    * Client must reset to 1 if nonce changes. */
   public int nonceCount;
+  /** Host address on this side. */
+  public String localhost;
+  /** Clones CallDetails. */
   public Object clone() {
     try {
       return super.clone();
