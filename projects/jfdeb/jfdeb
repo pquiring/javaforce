@@ -38,9 +38,9 @@ mkdir $TMPDIR
 cp $CONTROL_FILES/* $TMPDIR
 cd $TMPDIR
 if [ $BITS = "32" ]; then
-  java -jar /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "i386" control
+  java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "i386" control
 else
-  java -jar /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "amd64" control
+  java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "amd64" control
 fi
 tar czf ../control.tar.gz *
 cd ..
