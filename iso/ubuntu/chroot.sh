@@ -102,7 +102,7 @@ update-initramfs -u
 
 apt-get install --yes man-db cups psmisc
 #gnome-keyring -- still needed???
-#libreoffice -- removed to save space -- can install later in japps
+#libreoffice -- removed to save space -- can install later in jfapps
 
 #create some special folders (is done in packages - but just in case)
 mkdir -p /etc/jinit
@@ -110,7 +110,7 @@ mkdir -p /usr/share/jhelp
 
 #install Java packages
 
-apt-get install --yes --no-install-recommends jlogon jdesktop jterm jtxtedit jpaint jinstall jrepo jwelcome jfile jmedia jarchive jparted jview jconfig plymouth-theme-jflinux jcapture japps jremote jupgrade jtaskmgr jcalc
+apt-get install --yes --no-install-recommends jflogon jfdesktop jfterm jftxtedit jfpaint jfinstall jfrepo jfwelcome jffile jfmedia jfarchive jfparted jfview jfconfig jfcapture jfapps jfremote jfupgrade jftaskmgr jfcalc
 
 #create /etc/.live
 #user is the live username
@@ -121,7 +121,7 @@ echo casper=true >> /etc/.live
 
 #create motd for terminals
 echo Welcome to jfLinux > /etc/motd
-echo Please visit http://jflinux.org >> /etc/motd
+echo Please visit http://jflinux.sf.net >> /etc/motd
 
 #run bash for inspection
 echo Running bash in chroot for final inspection, exit when done.

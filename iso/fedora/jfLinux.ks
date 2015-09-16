@@ -60,24 +60,23 @@ zip
 unzip
 
 # Add jfLinux stuff
-jlogon
-jdesktop
-jterm
-jtxtedit
-jpaint
-jinstall
-jwelcome
-jfile
-jmedia
-jarchive
-jparted
-jview
-jconfig
-jupgrade
-japps
-jcalc
-jtaskmgr
-plymouth-theme-jflinux
+jflogon
+jfdesktop
+jfterm
+jftxtedit
+jfpaint
+jfinstall
+jfwelcome
+jffile
+jfmedia
+jfarchive
+jfparted
+jfview
+jfconfig
+jfupgrade
+jfapps
+jfcalc
+jftaskmgr
 
 # save some space
 -mpage
