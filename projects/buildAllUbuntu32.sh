@@ -8,7 +8,7 @@ function build {
   else
     sudo ant install -Dbits=32
   fi
-  ant deb
+  ant deb32
   cd ..
 }
 
