@@ -91,30 +91,30 @@
     <copy file="lnxbin/jbus-client" todir="/usr/bin"/>
     <chmod file="/usr/bin/jbus-client" perm="+x"/>
 
-    <elf app="jsudo" cfgdir="lnxcfg/"/>
-    <elf app="jsudo-ask" cfgdir="lnxcfg/"/>
-    <elf app="jopen" cfgdir="lnxcfg/"/>
-    <elf app="jfs" cfgdir="lnxcfg/"/>
-    <elf app="jimgconvert" cfgdir="lnxcfg/"/>
-    <elf app="jfr" cfgdir="lnxcfg/"/>
-    <elf app="pngalpha" cfgdir="lnxcfg/"/>
-    <elf app="jf-update-desktop-database" cfgdir="lnxcfg/"/>
-    <elf app="jsmbget" cfgdir="lnxcfg/"/>
-    <elf app="jservice" cfgdir="lnxcfg/"/>
-    <elf app="jf-monitor-dir" cfgdir="lnxcfg/"/>
-    <elf app="jfuse-smb" cfgdir="lnxcfg/"/>
-    <elf app="jfuse-ftp" cfgdir="lnxcfg/"/>
-    <elf app="jfuse-ftps" cfgdir="lnxcfg/"/>
-    <elf app="jfuse-sftp" cfgdir="lnxcfg/"/>
-    <elf app="jfuse-zip" cfgdir="lnxcfg/"/>
-    <elf app="jfuse-iso" cfgdir="lnxcfg/"/>
-    <elf app="jfuse-cdfs" cfgdir="lnxcfg/"/>
-    <elf app="jfshare" cfgdir="lnxcfg/"/>
-    <elf app="jcp" cfgdir="lnxcfg/"/>
-    <elf app="jmv" cfgdir="lnxcfg/"/>
-    <elf app="jrm" cfgdir="lnxcfg/"/>
-    <elf app="jver" cfgdir="lnxcfg/"/>
-    <elf app="jresmgr" cfgdir="lnxcfg/"/>
+    <elf app="jsudo" cfgdir="cfg/"/>
+    <elf app="jsudo-ask" cfgdir="cfg/"/>
+    <elf app="jopen" cfgdir="cfg/"/>
+    <elf app="jfs" cfgdir="cfg/"/>
+    <elf app="jimgconvert" cfgdir="cfg/"/>
+    <elf app="jfr" cfgdir="cfg/"/>
+    <elf app="pngalpha" cfgdir="cfg/"/>
+    <elf app="jf-update-desktop-database" cfgdir="cfg/"/>
+    <elf app="jsmbget" cfgdir="cfg/"/>
+    <elf app="jservice" cfgdir="cfg/"/>
+    <elf app="jf-monitor-dir" cfgdir="cfg/"/>
+    <elf app="jfuse-smb" cfgdir="cfg/"/>
+    <elf app="jfuse-ftp" cfgdir="cfg/"/>
+    <elf app="jfuse-ftps" cfgdir="cfg/"/>
+    <elf app="jfuse-sftp" cfgdir="cfg/"/>
+    <elf app="jfuse-zip" cfgdir="cfg/"/>
+    <elf app="jfuse-iso" cfgdir="cfg/"/>
+    <elf app="jfuse-cdfs" cfgdir="cfg/"/>
+    <elf app="jfshare" cfgdir="cfg/"/>
+    <elf app="jcp" cfgdir="cfg/"/>
+    <elf app="jmv" cfgdir="cfg/"/>
+    <elf app="jrm" cfgdir="cfg/"/>
+    <elf app="jver" cfgdir="cfg/"/>
+    <elf app="jresmgr" cfgdir="cfg/"/>
   </target>
 
   <macrodef name="utilsmacro">
@@ -124,7 +124,7 @@
       <copy file="${home}/stubs/win@{bits}c.exe" tofile="@{app}.exe" overwrite="true"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
         <arg value="@{app}.exe"/>
-        <arg value="wincfg/@{app}.cfg"/>
+        <arg value="cfg/@{app}.cfg"/>
       </java>
     </sequential>
   </macrodef>
