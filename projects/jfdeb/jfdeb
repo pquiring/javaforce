@@ -22,9 +22,9 @@ if [ "$1" = "-h" ]; then usage; fi
 CONTROL_FILES=deb
 DEB=$1
 FILES=files.lst
-if [ -f files-ubuntu.lst]; then FILES=files-ubuntu.lst; fi
+if [ -f files-ubuntu.lst ]; then FILES=files-ubuntu.lst; fi
 BITS=$2
-if [ -f files-$BITS.lst]; then FILES=files-$BITS.lst; fi
+if [ -f files-$BITS.lst ]; then FILES=files-$BITS.lst; fi
 if [ ! "$3" = "" ]; then CONTROL_FILES=$3; fi
 if [ ! "$4" = "" ]; then FILES=$4; fi
 
