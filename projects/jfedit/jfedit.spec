@@ -1,5 +1,5 @@
 Buildroot: /.
-Name: jtxtedit
+Name: jfedit
 Version: 0.9
 Release: 1
 Summary: Multi-tabbed text editor

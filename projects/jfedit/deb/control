@@ -1,4 +1,4 @@
-Package: jtxtedit
+Package: jfedit
 Version: 0.9
 Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>

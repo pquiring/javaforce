@@ -68,8 +68,8 @@ wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-ke
 echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list
 
 #add darling repo
-add-apt-repository ppa:thopiekar/darling
-add-apt-repository ppa:thopiekar/gnustep
+#add-apt-repository ppa:thopiekar/darling
+#add-apt-repository ppa:thopiekar/gnustep
 
 #update repo
 apt-get --yes update
@@ -82,7 +82,7 @@ apt-get install --yes google-chrome-stable
 apt-get install --yes libav-tools
 
 #install wine
-apt-get install --yes wine1.7
+apt-get install --yes wine1.7-amd64 wine1.7-i386
 
 #install kernel
 apt-get install --yes linux-generic

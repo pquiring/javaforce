@@ -1,4 +1,4 @@
-Package: jfile
+Package: jffile
 Version: 0.12
 Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>

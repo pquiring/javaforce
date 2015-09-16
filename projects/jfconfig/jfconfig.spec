@@ -1,5 +1,5 @@
 Buildroot: /.
-Name: jconfig
+Name: jfconfig
 Version: 0.12
 Release: 1
 Summary: Control Center
