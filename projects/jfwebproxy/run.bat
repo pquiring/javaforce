@@ -1,1 +1,1 @@
-start "jfWebProxy" javaw -cp javaforce.jar;proxy.jar ProxyApp
+start "jfWebProxy" javaw -cp javaforce.jar;jfwebproxy.jar ProxyApp

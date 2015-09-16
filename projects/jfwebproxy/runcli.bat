@@ -1,1 +1,1 @@
-java -cp proxy.jar ProxyAppCLI %*
+java -cp jfwebproxy.jar ProxyAppCLI %*

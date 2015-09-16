@@ -29,6 +29,12 @@
     </javac>
   </target>
 
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <elf/>
+    <copy file="jfwebproxy.jar" todir="/usr/share/java"/>
+  </target>
+
   <available property="keyexists" file="localhost.key"/>
 
   <target name="genkeys" unless="keyexists" description="generate root ca">
@@ -55,7 +61,7 @@
 
   <target name="jar" depends="compile,genkeys" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="proxy.jar" includes="*.class" basedir="${build}">
+    <jar destfile="jfwebproxy.jar" includes="*.class" basedir="${build}">
       <fileset dir="." includes="*.key"/>
       <fileset dir="." includes="*.png"/>
       <manifest>
