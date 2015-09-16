@@ -9,7 +9,7 @@ function build {
   ant jar
   if [ "$1" == "plymouth-theme-jflinux" ]; then
     sudo ant install-ubuntu -Dbits=32
-  elif [ "$1" == "jlogon" ]; then
+  elif [ "$1" == "jflogon" ]; then
     sudo ant install-ubuntu -Dbits=32
   else
     sudo ant install -Dbits=32

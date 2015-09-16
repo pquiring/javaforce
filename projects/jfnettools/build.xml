@@ -1,5 +1,5 @@
-<project name="jnettools" default="jar" basedir=".">
-  <description>jnettools</description>
+<project name="jfnettools" default="jar" basedir=".">
+  <description>jfnettools</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfnettools"/>
   <property name="home" location="../.."/>
@@ -20,7 +20,7 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jnettools.jar" includes="*.class" basedir="${build}">
+    <jar destfile="jfnettools.jar" includes="*.class" basedir="${build}">
       <manifest>
         <attribute name="Main-Class" value="NetApp"/>
         <attribute name="Trusted-Library" value="true"/>
@@ -28,6 +28,12 @@
         <attribute name="Codebase" value="jfnettools.sourceforge.net"/>
       </manifest>
     </jar>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <elf/>
+    <copy file="jfnettools.jar" todir="/usr/share/java"/>
   </target>
 
   <target name="release-bin" depends="" description="create release zip file">
@@ -46,11 +52,11 @@
       <fileset dir="../../..">
         <include name="jf/license.txt"/>
         <include name="jf/base.*"/>
-        <include name="jf/projects/jnettools/src/*.java"/>
-        <include name="jf/projects/jnettools/src/*.form"/>
-        <include name="jf/projects/jnettools/*.txt"/>
-        <include name="jf/projects/jnettools/*.xml"/>
-        <include name="jf/projects/jnettools/nbproject/*.xml"/>
+        <include name="jf/projects/jfnettools/src/*.java"/>
+        <include name="jf/projects/jfnettools/src/*.form"/>
+        <include name="jf/projects/jfnettools/*.txt"/>
+        <include name="jf/projects/jfnettools/*.xml"/>
+        <include name="jf/projects/jfnettools/nbproject/*.xml"/>
       </fileset>
     </zip>
     <move file="jfnettools-${version}-src.zip" todir="${home}/release"/>

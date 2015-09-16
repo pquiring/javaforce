@@ -8,7 +8,7 @@ Network Tools
  - etc.
 
 To run server from command line use:
-  java -jar jnettools.jar -server [-port=PORT]
+  java -jar jfnettools.jar -server [-port=PORT]
 
 WebSite : jfnettools.sf.net
 

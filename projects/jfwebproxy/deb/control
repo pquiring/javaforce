@@ -1,0 +1,10 @@
+Package: jfwebproxy
+Version: 1.5
+Architecture: @ARCH@
+Maintainer: Peter Quiring <pquiring@jflinux.org>
+Installed-Size: 1
+Depends:
+Provides:
+Section: java
+Priority: optional
+Description: WebBase Proxy Server

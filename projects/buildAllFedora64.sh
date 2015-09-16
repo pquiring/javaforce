@@ -12,7 +12,7 @@ function build {
   ant jar
   if [ "$1" == "plymouth-theme-jflinux" ]; then
     sudo ant install-fedora -Dbits=64
-  elif [ "$1" == "jlogon" ]; then
+  elif [ "$1" == "jflogon" ]; then
     sudo ant install-fedora -Dbits=64
   else
     sudo ant install -Dbits=64

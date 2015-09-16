@@ -1,0 +1,10 @@
+Package: jfdmg
+Version: 1.0
+Architecture: @ARCH@
+Maintainer: Peter Quiring <pquiring@jflinux.org>
+Installed-Size: 1
+Depends:
+Provides:
+Section: java
+Priority: optional
+Description: Creates dmg files
