@@ -132,13 +132,14 @@
   <macrodef name="elf">
     <attribute name="app" default="${app}"/>
     <attribute name="cfgdir" default=""/>
+    <attribute name="bin" default="bin"/>
     <sequential>
-      <copy file="${home}/stubs/linux${bits}.bin" tofile="/usr/bin/@{app}"/>
+      <copy file="${home}/stubs/linux${bits}.bin" tofile="/usr/@{bin}/@{app}"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.jresmgr">
-        <arg value="/usr/bin/@{app}"/>
+        <arg value="/usr/@{bin}/@{app}"/>
         <arg value="@{cfgdir}@{app}.cfg"/>
       </java>
-      <chmod file="/usr/bin/@{app}" perm="+x"/>
+      <chmod file="/usr/@{bin}/@{app}" perm="+x"/>
     </sequential>
   </macrodef>
 
