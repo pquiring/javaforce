@@ -110,7 +110,7 @@ mkdir -p /usr/share/jhelp
 
 #install Java packages
 
-apt-get install --yes --no-install-recommends jflogon jfdesktop jfterm jftxtedit jfpaint jfinstall jfrepo jfwelcome jffile jfmedia jfarchive jfparted jfview jfconfig jfcapture jfapps jfremote jfupgrade jftaskmgr jfcalc
+apt-get install --yes --no-install-recommends jflogon jfdesktop jfterm jfedit jfpaint jfinstall jfrepo jfwelcome jffile jfmedia jfarchive jfparted jfview jfconfig jfcapture jfapps jfremote jfupgrade jftaskmgr jfcalc
 
 #create /etc/.live
 #user is the live username
