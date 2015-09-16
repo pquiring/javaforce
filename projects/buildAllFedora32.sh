@@ -2,6 +2,12 @@ function build {
   if [ "$1" == "jrepo" ]; then
     return
   fi
+  if [ "$1" == "jphonelite-android" ]; then
+    return
+  fi
+  if [ "$1" == "jfrdp" ]; then
+    return
+  fi
   cd $1
   ant jar
   if [ "$1" == "plymouth-theme-jflinux" ]; then

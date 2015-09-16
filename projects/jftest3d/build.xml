@@ -42,7 +42,7 @@
   <target name="install" description="install files">
     <elf/>
     <copy file="jftest3d.jar" todir="/usr/share/java"/>
-    <copy file="00000000.png" todir="/usr/bin"/>
+    <copy file="opengl.png" todir="/usr/bin"/>
   </target>
 
   <target name="clean" description="deletes compiled files">
