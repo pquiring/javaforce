@@ -6,7 +6,7 @@ Summary: Java Desktop Environment
 License: LGPL
 Distribution: Fedora
 Group: Applications/System
-Requires: javaforce, jfile, jhelp, openbox, acpi, pulseaudio, pulseaudio-utils, gnome-backgrounds
+Requires: javaforce, jffile, jfhelp, openbox, acpi, pulseaudio, pulseaudio-utils, gnome-backgrounds
 BuildArch: @ARCH@
 
 %define _rpmdir ../

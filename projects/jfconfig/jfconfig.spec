@@ -6,7 +6,7 @@ Summary: Control Center
 License: LGPL
 Distribution: Fedora
 Group: Applications/System
-Requires: javaforce, jparted, pciutils
+Requires: javaforce, jfparted, pciutils
 BuildArch: @ARCH@
 
 %define _rpmdir ../

@@ -6,7 +6,7 @@ Summary: Java Remote Desktop Manager
 License: LGPL
 Distribution: Fedora
 Group: Applications/System
-Requires: javaforce, rdesktop, jvnc
+Requires: javaforce, rdesktop, jfvnc
 BuildArch: @ARCH@
 
 %define _rpmdir ../

@@ -31,6 +31,8 @@ public class Server {
   public ArrayList<Interface> interfaceList = new ArrayList<Interface>();  //active interfaces
   public ArrayList<DHCPClient> dhcpClients = new ArrayList<DHCPClient>();  //for active interfaces
 
+  private static final boolean bluez3 = false;  //no longer available
+  
   public static void main(String args[]) {
     //this is currently not used : unless jnetworkmgr becomes a seperate package
     JFLog.init("/var/log/jnetworkmgr.log", true);
@@ -729,7 +731,7 @@ public class Server {
 //      ShellProcess.log = true;
 //      ShellProcess.logPrompt = true;
       String list = "";
-      if (true) {
+      if (bluez3) {
         sp.addRegexResponse(bluetoothctlPrompt, "show\n", false);
         sp.addRegexResponse(bluetoothctlPrompt, "exit\n", false);
         String output = sp.run(new String[] {"bluetoothctl"}, false);
@@ -773,7 +775,7 @@ public class Server {
     //enable bluetook controlling device
     public void enableBTdevice(String pack, String cmac) {
       final ShellProcess sp = new ShellProcess();
-      if (true) {
+      if (bluez3) {
         sp.addRegexResponse(bluetoothctlPrompt, "select " + cmac + "\n", false);
         sp.addRegexResponse(bluetoothctlPrompt, "power on\n", false);
         sp.addRegexResponse(bluetoothctlPrompt, "exit\n", false);
@@ -806,7 +808,7 @@ public class Server {
     //disable bluetook controlling device
     public void disableBTdevice(String pack, String cmac) {
       final ShellProcess sp = new ShellProcess();
-      if (true) {
+      if (bluez3) {
         sp.addRegexResponse(bluetoothctlPrompt, "select " + cmac + "\n", false);
         sp.addRegexResponse(bluetoothctlPrompt, "power off\n", false);
         sp.addRegexResponse(bluetoothctlPrompt, "exit\n", false);
@@ -838,7 +840,7 @@ public class Server {
     //connect to end device thru controller
     public synchronized void connectBT(String pack, String cmac, final String mmac) {
       final ShellProcess sp = new ShellProcess();
-      if (true) {
+      if (bluez3) {
         //use bluetoothctl
         sp.addListener(new ShellProcessListenerAdapter() {
           String output = "";

@@ -3,7 +3,7 @@ Version: 0.5
 Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 1
-Depends: javaforce (>= 6.0.0), jparted, jconfig, rsync
+Depends: javaforce (>= 6.0.0), jfparted, jfconfig, rsync
 Components: main
 Provides:
 Section: java
