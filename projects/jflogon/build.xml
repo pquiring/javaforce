@@ -71,8 +71,6 @@
     <chmod file="/usr/sbin/jflogon-runsession" perm="+x"/>
     <copy file="jflogon-rundomain" todir="/usr/sbin"/>
     <chmod file="/usr/sbin/jflogon-rundomain" perm="+x"/>
-    <copy file="jflogon" todir="/usr/sbin"/>
-    <chmod file="/usr/sbin/jflogon" perm="+x"/>
     <copy file="dhclient-script" todir="/etc/dhcp"/>
     <chmod file="/etc/dhcp/dhclient-script" perm="+x"/>
     <!-- JFL services folder -->
