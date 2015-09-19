@@ -22,9 +22,9 @@ if [ "$1" = "-h" ]; then usage; fi
 if [ ! -f $1 ]; then error "$1 not found"; fi
 
 FILES=files.lst
-if [ -f files-fedora.lst]; then FILES=files-fedora.lst; fi
+if [ -f files-fedora.lst ]; then FILES=files-fedora.lst; fi
 BITS=$2
-if [ -f files-$BITS.lst]; then FILES=files-$BITS.lst; fi
+if [ -f files-$BITS.lst ]; then FILES=files-$BITS.lst; fi
 
 if [ ! "$3" = "" ]; then FILES=$3; fi
 
@@ -42,13 +42,13 @@ cp $SPEC $TMPDIR
 cat $FILES >> $TMPDIR/$SPEC
 cd $TMPDIR
 
-if [ $BITS = "32" ]; then
-  java -jar /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "i686" $SPEC
-else
-  java -jar /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "x86_64" $SPEC
-fi
-
 if [ ! `pwd` = $WORKDIR/$TMPDIR ]; then error "failed to use temp folder $TMPDIR"; fi
+
+if [ $BITS = "32" ]; then
+  java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "i686" $SPEC
+else
+  java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "x86_64" $SPEC
+fi
 
 sudo tar xjf ../data.tar.bz2
 #NOTE:rpmbuild nukes the buildroot once complete, which is the current folder - be careful!!!
