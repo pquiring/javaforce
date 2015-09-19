@@ -17,14 +17,14 @@
 
   <target name="linux" depends="javah"  description="create linux native so">
 
-    <exec command="gcc -D_FILE_OFFSET_BITS=64 -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/x86_64-linux-gnu linux.cpp -c -o linux64.o -fPIC"/>
+    <exec command="gcc -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/x86_64-linux-gnu linux.cpp -c -o linux64.o -fPIC"/>
     <exec command="gcc -I../glfw/include glfw.c -c -o glfw64.o -fPIC"/>
     <exec command="gcc -shared linux64.o glfw64.o -L /usr/lib/x86_64-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -o ../jfnative64.so"/>
     <delete>
       <fileset dir="." includes="*.o"/>
     </delete>
 
-    <exec command="gcc -m32 -D_FILE_OFFSET_BITS=64 -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/x86_64-linux-gnu linux.cpp -c -o linux32.o -fPIC"/>
+    <exec command="gcc -m32 -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/x86_64-linux-gnu linux.cpp -c -o linux32.o -fPIC"/>
     <exec command="gcc -m32 -I../glfw/include glfw.c -c -o glfw32.o -fPIC"/>
     <exec command="gcc -m32 -shared linux32.o glfw32.o -L /usr/lib/i386-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -o ../jfnative32.so"/>
     <delete>
