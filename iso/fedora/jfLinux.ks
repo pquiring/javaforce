@@ -52,7 +52,7 @@ wget
 -NetworkManager
 
 # add java
-java-1.7.0-openjdk
+java-1.8.0-openjdk
 ant
 
 # add other required packages
@@ -63,7 +63,7 @@ unzip
 jflogon
 jfdesktop
 jfterm
-jftxtedit
+jfedit
 jfpaint
 jfinstall
 jfwelcome
