@@ -63,7 +63,7 @@
 
   <!-- sudo ant install -->
   <target name="install-fedora" description="install files">
-    <elf/>
+    <elf bin="sbin"/>
     <copy file="jflogon.jar" todir="/usr/share/java"/>
     <copy file="jflogon.sh" todir="/usr/sbin"/>
     <chmod file="/usr/sbin/jflogon.sh" perm="+x"/>
