@@ -9,7 +9,7 @@ Group: Applications/System
 Requires: java-1.7.0-openjdk, jsch, jzlib, jcifs, fuse, fuse-libs, fuseiso, libcdio
 
 %define _rpmdir ../
-%define _rpmfilename %%{NAME}-%%{VERSION}-%%{RELEASE}.noarch.rpm
+%define _rpmfilename %%{NAME}-%%{VERSION}-%%{RELEASE}.@ARCH@.rpm
 %define _unpackaged_files_terminate_build 0
 
 %description
