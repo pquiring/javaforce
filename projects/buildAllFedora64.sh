@@ -17,7 +17,7 @@ function build {
   else
     sudo ant install -Dbits=64
   fi
-  if [ "$1" == "jlogon" ]; then
+  if [ "$1" == "jflogon" ]; then
     sudo ant rpm64
   else
     ant rpm64
