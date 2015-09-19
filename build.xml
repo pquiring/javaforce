@@ -1,7 +1,7 @@
 <project name="javaforce" default="jar" basedir=".">
   <description>JavaForce SDK</description>
   <!-- set global properties for this build -->
-  <property name="app" location="javaforce"/>
+  <property name="app" value="javaforce"/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="home" value="."/>
