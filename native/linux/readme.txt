@@ -17,5 +17,8 @@ Fedora:
 Required packages :
 sudo yum install gcc-c++ java-1.8.0-openjdk-devel ant libX11-dev fuse-devel pam-devel ffmpeg-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel
 
+To build 32bit image:
+sudo yum install gcc-c++.i686 glibc-devel.i686 libX11-dev.i686 pam-devel.i686 libXcursor-devel.i686 libXrandr-devel.i686 libXinerama-devel.i686 libXi-devel.i686 libXt-devel.i686
+
 export JAVA_HOME=/usr/lib/jvm/java
 
