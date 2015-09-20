@@ -1912,7 +1912,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_LnxNative_inotify_1read
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_inotify_1close
   (JNIEnv *e, jclass c, jint fd)
 {
-  inotify_close(fd);
+  close(fd);
 }
 
 //misc
