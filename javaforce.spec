@@ -6,7 +6,7 @@ Summary: JavaForce Core Library
 License: LGPL
 Distribution: Fedora
 Group: Applications/System
-Requires: java-1.7.0-openjdk, jsch, jzlib, jcifs, fuse, fuse-libs, fuseiso, libcdio
+Requires: java-1.8.0-openjdk, jsch, jzlib, jcifs, fuse, fuse-libs, fuseiso, libcdio
 
 %define _rpmdir ../
 %define _rpmfilename %%{NAME}-%%{VERSION}-%%{RELEASE}.@ARCH@.rpm
