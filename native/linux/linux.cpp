@@ -105,7 +105,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     _glXSwapBuffers = (void (*)(void*,int))dlsym(xgl, "glXSwapBuffers");
     _glXChooseVisual = (void* (*)(void*,int,int*))dlsym(xgl, "glXChooseVisual");
   }
-  if (v4l2 == NULL) {
+  if (v4l2 == NULL && libv4l2_so != NULL) {
     const char *clibv4l2_so = e->GetStringUTFChars(libv4l2_so,NULL);
     v4l2 = dlopen(clibv4l2_so, RTLD_LAZY | RTLD_GLOBAL);
     e->ReleaseStringUTFChars(libv4l2_so, clibv4l2_so);

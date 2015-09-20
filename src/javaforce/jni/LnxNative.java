@@ -19,10 +19,18 @@ public class LnxNative {
       if (!JFNative.findLibraries(new File("/usr/lib"), libs, ".so", libs.length, true)) {
         for(int a=0;a<libs.length;a++) {
           if (libs[a].path == null) {
-            System.out.println("Error:Unable to load library:" + libs[a].name + ".so");
+            System.out.println("Warning:Unable to find library:" + libs[a].name + ".so");
+            if (libs[a].name.equals("libGL")) {
+              have_gl = false;
+            }
+            else if (libs[a].name.equals("libv4l2")) {
+              have_v4l2 = false;
+            }
+            else if (libs[a].name.equals("libcdio")) {
+              have_cdio = false;
+            }
           }
         }
-        System.exit(0);
       }
       lnxInit(libs[0].path, libs[1].path, libs[2].path);
     }
@@ -31,6 +39,10 @@ public class LnxNative {
   public static void load() {}  //ensure native library is loaded
 
   private static native boolean lnxInit(String libGL, String v4l2, String libCDIO);
+
+  public static boolean have_gl = true;
+  public static boolean have_v4l2 = true;
+  public static boolean have_cdio = true;
 
   //com port
   public static native int comOpen(String name, int baud);  //assumes 8 data bits, 1 stop bit, no parity, etc.

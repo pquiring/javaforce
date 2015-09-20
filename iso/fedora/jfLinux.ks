@@ -30,6 +30,9 @@ repo --name=google-chrome --baseurl=http://dl.google.com/linux/chrome/rpm/stable
 @fonts
 @printing
 
+# the kernel
+kernel
+
 # add google chrome
 google-chrome-stable
 
