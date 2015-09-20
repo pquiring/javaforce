@@ -71,7 +71,7 @@ int (*cdio_get_track_sec_count )(void *ptr, int track);
 int (*cdio_read_audio_sectors)(void *ptr, void *buf, int lsn, int blocks);  //2352 bytes each
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
-  (JNIEnv *e, jclass c, jstring libgl_so, jstring libv4l2_so, jstring libcdio_so)
+  (JNIEnv *e, jclass c, jstring libX11_so, jstring libgl_so, jstring libfuse_so, jstring libv4l2_so, jstring libcdio_so)
 {
   if (jawt == NULL) {
     jawt = dlopen("libjawt.so", RTLD_LAZY | RTLD_GLOBAL);
@@ -81,8 +81,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     }
     _JAWT_GetAWT = (jboolean (JNICALL *)(JNIEnv *e, JAWT *c))dlsym(jawt, "JAWT_GetAWT");
   }
-  if (x11 == NULL) {
-    x11 = dlopen("libX11.so", RTLD_LAZY | RTLD_GLOBAL);
+  if (x11 == NULL && libX11_so != NULL) {
+    const char *clibX11_so = e->GetStringUTFChars(libX11_so,NULL);
+    x11 = dlopen(clibX11_so, RTLD_LAZY | RTLD_GLOBAL);
+    e->ReleaseStringUTFChars(libX11_so, clibX11_so);
     if (x11 == NULL) {
       printf("dlopen(libX11.so) failed!\n");
       return JNI_FALSE;
@@ -121,8 +123,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxInit
     _v4l2_mmap = (void* (*)(void *, size_t, int, int, int, int64_t))dlsym(v4l2, "v4l2_mmap");
     _v4l2_munmap = (int (*)(void *, size_t))dlsym(v4l2, "v4l2_munmap");
   }
-  if (fuselib == NULL) {
-    fuselib = dlopen("libfuse.so", RTLD_LAZY | RTLD_GLOBAL);
+  if (fuselib == NULL && libfuse_so != NULL) {
+    const char *clibfuse_so = e->GetStringUTFChars(libfuse_so,NULL);
+    fuselib = dlopen(clibfuse_so, RTLD_LAZY | RTLD_GLOBAL);
+    e->ReleaseStringUTFChars(libfuse_so, clibfuse_so);
     if (fuselib != NULL) {
       _fuse_main_real = (void (*)(int argsLength, char **args, void*ops, int opsSize, void*unknown))dlsym(fuselib, "fuse_main_real");
     }

@@ -7,6 +7,7 @@ package javaforce.jni;
 
 import java.io.*;
 import java.awt.*;
+import javaforce.JF;
 
 import javaforce.jni.lnx.*;
 import javaforce.linux.*;
@@ -15,13 +16,21 @@ public class LnxNative {
   static {
     JFNative.load();  //ensure native library is loaded
     if (JFNative.loaded) {
-      Library libs[] = {new Library("libGL"), new Library("libv4l2"), new Library("libcdio")};
-      if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File("/usr/lib64")}, libs, ".so", libs.length, true)) {
+      String bits;
+      if (JF.is64Bit()) bits = "64"; else bits = "32";
+      Library libs[] = {new Library("libX11"), new Library("libGL"), new Library("libfuse"), new Library("libv4l2"), new Library("libcdio")};
+      if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File("/usr/lib" + bits)}, libs, ".so", libs.length, true)) {
         for(int a=0;a<libs.length;a++) {
           if (libs[a].path == null) {
             System.out.println("Warning:Unable to find library:" + libs[a].name + ".so");
-            if (libs[a].name.equals("libGL")) {
+            if (libs[a].name.equals("libX11")) {
+              have_x11 = false;
+            }
+            else if (libs[a].name.equals("libGL")) {
               have_gl = false;
+            }
+            else if (libs[a].name.equals("libfuse")) {
+              have_fuse = false;
             }
             else if (libs[a].name.equals("libv4l2")) {
               have_v4l2 = false;
@@ -32,15 +41,17 @@ public class LnxNative {
           }
         }
       }
-      lnxInit(libs[0].path, libs[1].path, libs[2].path);
+      lnxInit(libs[0].path, libs[1].path, libs[2].path, libs[3].path, libs[4].path);
     }
   }
 
   public static void load() {}  //ensure native library is loaded
 
-  private static native boolean lnxInit(String libGL, String v4l2, String libCDIO);
+  private static native boolean lnxInit(String libX11, String libGL, String libfuse, String libv4l2, String libcdio);
 
+  public static boolean have_x11 = true;
   public static boolean have_gl = true;
+  public static boolean have_fuse = true;
   public static boolean have_v4l2 = true;
   public static boolean have_cdio = true;
 
