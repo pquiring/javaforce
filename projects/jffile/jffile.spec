@@ -1,5 +1,5 @@
 Buildroot: /.
-Name: jfile
+Name: jffile
 Version: 0.12
 Release: 1
 Summary: File Manager
