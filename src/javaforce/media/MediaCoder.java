@@ -30,13 +30,13 @@ public class MediaCoder {
   public static boolean init() {
     if (loaded) return true;
     boolean libav_org = false;
-    File sysFolder;
+    File sysFolders[];
     String ext = "";
     if (JF.isWindows()) {
-      sysFolder = new File(".");
+      sysFolders = new File[] {new File(".")};
       ext = ".dll";
     } else {
-      sysFolder = new File("/usr/lib");
+      sysFolders = new File[] {new File("/usr/lib"), new File("/usr/lib64")};
       if (JF.isMac()) {
         ext = ".dylib";
       } else {
@@ -53,7 +53,7 @@ public class MediaCoder {
       , new Library("swresample", true)  //(ffmpeg)
       , new Library("avresample", true)  //(libav_org)
     };
-    JFNative.findLibraries(sysFolder, libs, ext, libs.length-1, true);
+    JFNative.findLibraries(sysFolders, libs, ext, libs.length-1, true);
     if (libs[6].path != null) {
       libav_org = false;
     } else if (libs[7].path != null) {
