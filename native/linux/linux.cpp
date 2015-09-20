@@ -6,6 +6,7 @@
 #include <linux/videodev2.h>  //V4L2
 #include <sys/ioctl.h>  //ioctl
 #include <sys/mman.h>  //mmap
+#include <sys/inotify.h>
 #include <signal.h>
 #include <errno.h>
 #include <string.h>  //memcpy
@@ -1872,6 +1873,46 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_authUser
   pam_pass = NULL;
 
   return res == 0;
+}
+
+//inotify
+
+JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_inotify_1init
+  (JNIEnv *e, jclass c)
+{
+  return inotify_init();
+}
+
+JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_inotify_1add_1watch
+  (JNIEnv *e, jclass c, jint fd, jstring path, jint mask)
+{
+  const char *cpath = e->GetStringUTFChars(path,NULL);
+  int wd = inotify_add_watch(fd, cpath, mask);
+  e->ReleaseStringUTFChars(path, cpath);
+  return wd;
+}
+
+JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_inotify_1rm_1watch
+  (JNIEnv *e, jclass c, jint fd, jint wd)
+{
+  return inotify_rm_watch(fd, wd);
+}
+
+JNIEXPORT jbyteArray JNICALL Java_javaforce_jni_LnxNative_inotify_1read
+  (JNIEnv *e, jclass c, jint fd)
+{
+  char inotify_buffer[512];
+  int size = read(fd, inotify_buffer, 512);
+  if (size == -1) return NULL;
+  jbyteArray ba = e->NewByteArray(size);
+  e->SetByteArrayRegion(ba, 0, size, (jbyte*)inotify_buffer);
+  return ba;
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_inotify_1close
+  (JNIEnv *e, jclass c, jint fd)
+{
+  inotify_close(fd);
 }
 
 //misc

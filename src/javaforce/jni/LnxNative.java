@@ -86,7 +86,7 @@ public class LnxNative {
   public static native int inotify_init();  //return fd
   public static native int inotify_add_watch(int fd, String path, int mask);  //return wd
   public static native int inotify_rm_watch(int fd, int wd);
-  public static native byte[] inotify_read(int wd);
+  public static native byte[] inotify_read(int fd);
   public static native void inotify_close(int fd);
 
   //X11
