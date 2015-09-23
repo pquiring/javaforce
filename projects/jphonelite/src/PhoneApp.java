@@ -17,6 +17,10 @@ public class PhoneApp extends JFrame implements WindowListener, WindowController
   private PhonePanel panel;
 
   private PhoneApp() {
+    if (!BasePhone.lockFile()) {
+      JF.showError("Error", "Another instance of jPhoneLite is already running!");
+      System.exit(0);
+    }
     panel = new PhonePanel(this, false);
     addWindowListener(this);
     setResizable(false);
@@ -32,7 +36,9 @@ public class PhoneApp extends JFrame implements WindowListener, WindowController
   public void windowOpened(WindowEvent e) { }
   public void windowClosing(WindowEvent e) {
     if (Settings.current.exitWhenClosed) {
-      panel.unRegisterAll(); Settings.saveSettings();
+      panel.unRegisterAll();
+      Settings.saveSettings();
+      BasePhone.unlockFile();
       System.exit(0);
     }
   }

@@ -1038,6 +1038,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         ii[a] = new ImageIcon(data);
       } catch (Exception e) {
         JFLog.log("err:loadIcons() Failed:" + e);
+        BasePhone.unlockFile();
         System.exit(0);
       }
     }
@@ -1554,6 +1555,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     Object o = e.getSource();
     if (o == exit) {
       unRegisterAll();
+      BasePhone.unlockFile();
       System.exit(0);
     }
     if (o == show) {
@@ -1852,5 +1854,15 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   //see ticket # 23
   public void releaseDigit(String digit) {
     releaseDigit(digit.charAt(0));
+  }
+
+  private static JFLockFile lockFile = new JFLockFile();
+
+  public static boolean lockFile() {
+    return lockFile.lock(JF.getUserPath() + "/.jphone.lck");
+  }
+
+  public static void unlockFile() {
+    lockFile.unlock();
   }
 }

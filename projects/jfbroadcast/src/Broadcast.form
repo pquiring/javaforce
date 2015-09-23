@@ -12,6 +12,9 @@
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
     <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
+  <Events>
+    <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowClosing"/>
+  </Events>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -138,7 +141,7 @@
                                   <Component id="sip_name" alignment="1" max="32767" attributes="0"/>
                                   <Component id="sip_user" alignment="1" max="32767" attributes="0"/>
                                   <Component id="sip_host" alignment="1" max="32767" attributes="0"/>
-                                  <Component id="sip_pass" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="sip_pass" alignment="0" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -181,7 +184,7 @@
                           <Component id="sip_end" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel34" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="210" max="32767" attributes="0"/>
+                      <EmptySpace pref="204" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -214,8 +217,6 @@
             </Component>
             <Component class="javax.swing.JTextField" name="sip_host">
             </Component>
-            <Component class="javax.swing.JTextField" name="sip_pass">
-            </Component>
             <Component class="javax.swing.JLabel" name="jLabel34">
               <Properties>
                 <Property name="text" type="java.lang.String" value="SIP Port Range:"/>
@@ -246,6 +247,8 @@
               </Properties>
             </Component>
             <Component class="javax.swing.JTextField" name="sip_name">
+            </Component>
+            <Component class="javax.swing.JPasswordField" name="sip_pass">
             </Component>
           </SubComponents>
         </Container>
@@ -324,7 +327,7 @@
                           <Component id="import_list" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="export_list" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="302" max="32767" attributes="0"/>
+                      <EmptySpace pref="296" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -428,7 +431,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="jScrollPane1" pref="384" max="32767" attributes="0"/>
+                      <Component id="jScrollPane1" pref="378" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -533,10 +536,10 @@
                       <Component id="jPanel8" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jPanel7" min="-2" max="-2" attributes="0"/>
                           <Component id="jPanel1" min="-2" max="-2" attributes="0"/>
+                          <Component id="jPanel7" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace pref="40" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -677,9 +680,10 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Group type="102" attributes="0">
+                      <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
+                              <Component id="exit_on_close_window" min="-2" max="-2" attributes="0"/>
                               <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
                                   <Group type="102" alignment="0" attributes="1">
                                       <Component id="jLabel24" min="-2" max="-2" attributes="0"/>
@@ -745,6 +749,8 @@
                           <Component id="enable_reinvites" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="check_update" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="exit_on_close_window" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -765,6 +771,7 @@
                 </Component>
                 <Component class="javax.swing.JCheckBox" name="enable_reinvites">
                   <Properties>
+                    <Property name="selected" type="boolean" value="true"/>
                     <Property name="text" type="java.lang.String" value="Enable reinvites"/>
                   </Properties>
                 </Component>
@@ -830,6 +837,11 @@
                   <Events>
                     <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="maxAttemptsStateChanged"/>
                   </Events>
+                </Component>
+                <Component class="javax.swing.JCheckBox" name="exit_on_close_window">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Close app when closing window"/>
+                  </Properties>
                 </Component>
               </SubComponents>
             </Container>
@@ -919,7 +931,7 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jPanel10" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="149" max="32767" attributes="0"/>
+                      <EmptySpace pref="143" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1398,7 +1410,7 @@
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="xfer" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="183" max="32767" attributes="0"/>
+                      <EmptySpace pref="177" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -1635,7 +1647,7 @@
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jScrollPane2" alignment="0" pref="406" max="32767" attributes="0"/>
+                  <Component id="jScrollPane2" alignment="0" pref="400" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
           </Layout>
