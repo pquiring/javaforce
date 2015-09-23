@@ -15,8 +15,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   private String remotehost, remoteip;
   private InetAddress remoteaddr;
   private int remoteport;
-  private String user, auth;
-  private String pass;
+  private String name;  //display name (usually same as user)
+  private String user;  //acct name (usually a phone number)
+  private String auth;  //auth name (usually same as user)
+  private String pass;  //password
   private SIPClientInterface iface;
   private String localhost;
   private int localport, rport = -1;
@@ -136,16 +138,17 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    * not block waiting for a reply. You should receive onRegister() thru the
    * SIPClientInterface when a reply is returned from server.<br>
    */
-  public boolean register(String user, String auth, String pass) {
-    return register(user, auth, pass, 3600);
+  public boolean register(String displayName, String userAccount, String authName, String password) {
+    return register(displayName, userAccount, authName, password, 3600);
   }
 
   /**
    * Registers this client with the SIP server/proxy. <br>
    *
-   * @param user : username<br>
-   * @param auth : authorization name (optional, default=user)<br>
-   * @param pass : password<br>
+   * @param displayName : display name (usually same as userAccount)<br>
+   * @param userAccount : username<br>
+   * @param authName : authorization name (optional, default=userAccount)<br>
+   * @param password : password<br>
    * @param expires : number seconds to register for (0=unregisters)<br>
    * @return : if message was sent to server<br> This function does not block
    * waiting for a reply. You should receive either registered() or
@@ -153,26 +156,32 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    * server.<br>
    *
    */
-  public boolean register(String user, String auth, String pass, int expires) {
+  public boolean register(String displayName, String userAccount, String authName, String password, int expires) {
     String regcallid = getcallid();
     CallDetails cd = getCallDetails(regcallid);  //new CallDetails
-    if ((auth == null) || (auth.length() == 0)) {
-      this.auth = user;
+    if ((authName == null) || (authName.length() == 0)) {
+      this.auth = userAccount;
     } else {
-      this.auth = auth;
+      this.auth = authName;
     }
-    this.user = user;
-    this.pass = pass;
+    if (displayName == null || displayName.length() == 0) {
+      this.name = userAccount;
+    } else {
+      this.name = displayName;
+    }
+    this.name = displayName;
+    this.user = userAccount;
+    this.pass = password;
     this.expires = expires;
     cd.src.expires = expires;
-    cd.src.to = new String[]{user, user, remotehost + ":" + remoteport, ":"};
-    cd.src.from = new String[]{user, user, remotehost + ":" + remoteport, ":"};
+    cd.src.to = new String[]{name, user, remotehost + ":" + remoteport, ":"};
+    cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = replacetag(cd.src.from, generatetag());
-    cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
+    cd.src.contact = "<sip:" + userAccount + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.uri = "sip:" + remotehost;  // + ";rinstance=" + getrinstance();
     cd.src.branch = getbranch();
     cd.src.cseq++;
-    if ((pass == null) || (pass.length() == 0)) {
+    if ((password == null) || (password.length() == 0)) {
       return true;  //non-register mode
     }
     cd.authsent = false;
@@ -186,7 +195,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    * Reregister with the server.
    */
   public boolean reregister() {
-    return register(user, auth, pass, expires);
+    return register(name, user, auth, pass, expires);
   }
 
   /**
@@ -194,7 +203,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    * unregisters.
    */
   public boolean unregister() {
-    return register(user, auth, pass, 0);
+    return register(name, user, auth, pass, 0);
   }
 
   /**
@@ -203,8 +212,8 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   public boolean publish(String state) {
     String pubcallid = getcallid();
     CallDetails cd = getCallDetails(pubcallid);  //new CallDetails
-    cd.src.to = new String[]{user, user, remotehost + ":" + remoteport, ":"};
-    cd.src.from = new String[]{user, user, remotehost + ":" + remoteport, ":"};
+    cd.src.to = new String[]{name, user, remotehost + ":" + remoteport, ":"};
+    cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.uri = "sip:" + user + "@" + remotehost;
@@ -225,7 +234,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     String subcallid = getcallid();
     CallDetails cd = getCallDetails(subcallid);  //new CallDetails
     cd.src.to = new String[]{subuser, subuser, remotehost + ":" + remoteport, ":"};
-    cd.src.from = new String[]{user, user, remotehost + ":" + remoteport, ":"};
+    cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.uri = "sip:" + subuser + "@" + remotehost;
@@ -496,7 +505,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     String callid = getcallid();
     CallDetails cd = getCallDetails(callid);  //new CallDetails
     cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
-    cd.src.from = new String[]{user, user, remotehost + ":" + remoteport, ":"};
+    cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
     cd.src.from = replacetag(cd.src.from, generatetag());

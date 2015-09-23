@@ -17,7 +17,7 @@ import javaforce.*;
 import javaforce.voip.*;
 
 public class ViewLine extends Activity {
-  private TextView user, auth, pass, host;
+  private TextView name, user, auth, pass, host;
   private int line, same;
 
   @Override
@@ -53,11 +53,13 @@ public class ViewLine extends Activity {
 
     same = Settings.current.lines[line].same;
 
+    name = (TextView) findViewById(R.id.settings_name);
     user = (TextView) findViewById(R.id.settings_user);
     auth = (TextView) findViewById(R.id.settings_auth);
     pass = (TextView) findViewById(R.id.settings_pass);
     host = (TextView) findViewById(R.id.settings_host);
 
+    setText(name, Settings.current.lines[line].name);
     setText(user, Settings.current.lines[line].user);
     setText(auth, Settings.current.lines[line].auth);
     setText(pass, Settings.getPassword(Settings.current.lines[line].pass));
@@ -91,6 +93,7 @@ public class ViewLine extends Activity {
   }
 
   public void saveSettings() {
+    Settings.current.lines[line].name = name.getText().toString();
     Settings.current.lines[line].user = user.getText().toString();
     Settings.current.lines[line].auth = auth.getText().toString();
     Settings.current.lines[line].pass = "crypto(1," + Settings.encodePassword(pass.getText().toString()) + ")";

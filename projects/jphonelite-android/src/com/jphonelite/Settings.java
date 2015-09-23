@@ -29,9 +29,10 @@ public class Settings implements Cloneable {
   public static Settings current;
   public static class Line implements Cloneable {
     public int same;  //0-5 (-1=disabled) (ignored for lines[0])
-    public String user, auth, pass, host;
+    public String name, user, auth, pass, host;
     public Line() {
       same = 0;
+      name = new String();
       user = new String();
       auth = new String();
       pass = new String();
@@ -59,6 +60,7 @@ public class Settings implements Cloneable {
     for(int a=0;a<6;a++) {
       c.lines[a] = new Line();
       c.lines[a].same = lines[a].same;
+      c.lines[a].name = "" + lines[a].name;
       c.lines[a].user = "" + lines[a].user;
       c.lines[a].auth = "" + lines[a].auth;
       c.lines[a].pass = "" + lines[a].pass;
@@ -118,6 +120,7 @@ public class Settings implements Cloneable {
       for(int a=0;a<6;a++) {
         write(fos, "<line>");
         write(fos, "<same>" + current.lines[a].same + "</same>");
+        write(fos, "<name>" + current.lines[a].name + "</name>");
         write(fos, "<user>" + current.lines[a].user + "</user>");
         write(fos, "<auth>" + current.lines[a].auth + "</auth>");
         write(fos, "<pass>" + current.lines[a].pass + "</pass>");
@@ -257,7 +260,7 @@ public class Settings implements Cloneable {
   private static class SettingsSAX extends DefaultHandler {
     private int line;
     private enum Tag {
-      none, line, dndon, dndoff, same, user, auth, pass, host, speakerMode, speakerThreshold, speakerDelay,
+      none, line, dndon, dndoff, same, name, user, auth, pass, host, speakerMode, speakerThreshold, speakerDelay,
       g729a, g711u, g711a, g722
     }
     private Tag tag;
@@ -269,6 +272,7 @@ public class Settings implements Cloneable {
     public void startElement (String uri, String name, String qName, Attributes atts) {
       if (name.equals("line")) {line++; tag = Tag.line; return;}
       if (name.equals("same")) {tag = Tag.same; return;}
+      if (name.equals("name")) {tag = Tag.name; return;}
       if (name.equals("user")) {tag = Tag.user; return;}
       if (name.equals("auth")) {tag = Tag.auth; return;}
       if (name.equals("host")) {tag = Tag.host; return;}
@@ -291,6 +295,9 @@ public class Settings implements Cloneable {
       switch (tag) {
         case same:
           current.lines[line].same = Integer.valueOf(str);
+          break;
+        case name:
+          current.lines[line].name = str;
           break;
         case user:
           current.lines[line].user = str;

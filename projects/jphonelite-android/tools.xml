@@ -2,7 +2,7 @@
   <description>jphonelite-android-tools</description>
   <!-- set global properties for this build -->
   <property name="home" location="../.."/>
-  <property name="version" value="1.9.8"/>
+  <property name="version" value="1.9.9"/>
 
   <target name="depjars">
     <copy file="${home}/jars/bouncycastle.jar" todir="libs"/>

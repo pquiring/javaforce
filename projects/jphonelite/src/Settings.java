@@ -19,11 +19,12 @@ public class Settings {
   public static Settings current;
   public static class Line {
     public int same;  //0-5 (-1=disabled) (ignored for lines[0])
-    public String user, auth, pass, host;
+    public String name, user, auth, pass, host;
     public boolean disableVideo, srtp, dtls;
     public int transport;
     public Line() {
       same = 0;
+      name = new String();
       user = new String();
       auth = new String();
       pass = new String();

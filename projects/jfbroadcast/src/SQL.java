@@ -13,19 +13,7 @@ public class SQL {
 
   public static boolean initOnce() {
     if (path == null) {
-      if (JF.isWindows()) {
-        path = System.getenv("ProgramData");  //Win Vista/7/8
-        if (path == null) {
-          path = System.getenv("AllUsersProfile");  //Win 2000/XP/2003
-          if (path == null) {
-            JFLog.log("Unable to find common data folder");
-            System.exit(1);
-          }
-        }
-      } else {
-        path = "/home/" + System.getenv("USER") + "/.local/lib/";
-        new File(path).mkdirs();
-      }
+      path = System.getProperty("user.home");
     }
     //setup derby.system.home
     System.setProperty("derby.system.home", path);

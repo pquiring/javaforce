@@ -23,7 +23,7 @@ import javaforce.media.*;
 
 public abstract class BasePhone extends javax.swing.JPanel implements SIPClientInterface, RTPInterface, ActionListener, KeyEventDispatcher {
 
-  public static String version = "1.9.8";
+  public static String version = "1.9.9";
 
   public void initBasePhone(GUI gui, WindowController wc) {
     JFLog.init(JF.getUserPath() + "/.jphone.log", true);
@@ -189,7 +189,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       PhoneLine pl = lines[a];
       if (pl.sip == null) continue;
       try {
-        pl.sip.register(Settings.current.lines[a].user, Settings.current.lines[a].auth
+        pl.sip.register(Settings.current.lines[a].name, Settings.current.lines[a].user, Settings.current.lines[a].auth
           , Settings.getPassword(Settings.current.lines[a].pass), Settings.current.sipexpires);
       } catch (Exception e) {
         JFLog.log(e);

@@ -1,6 +1,6 @@
 Buildroot: /.
 Name: jfbroadcast
-Version: 0.31
+Version: 0.32
 Release: 1
 Summary: Autodialer System
 License: LGPL

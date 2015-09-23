@@ -24,7 +24,7 @@ import javaforce.voip.*;
 
 public class Broadcast extends javax.swing.JFrame implements SIPClientInterface, RTPInterface, ActionListener {
 
-  public final String version = "0.31";
+  public final String version = "0.32 beta 1";
 
   public String startList = null;
   public String cfgSuffix = "";
@@ -142,6 +142,8 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     sip_start = new javax.swing.JTextField();
     jLabel36 = new javax.swing.JLabel();
     sip_end = new javax.swing.JTextField();
+    jLabel35 = new javax.swing.JLabel();
+    sip_name = new javax.swing.JTextField();
     jPanel3 = new javax.swing.JPanel();
     create_list = new javax.swing.JButton();
     list_name = new javax.swing.JTextField();
@@ -273,13 +275,14 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
 
     jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("SIP Details"));
 
-    jLabel9.setText("user");
+    jLabel9.setText("Username");
 
-    jLabel10.setText("auth");
+    jLabel10.setText("Authorization Username");
+    jLabel10.setToolTipText("optional");
 
-    jLabel11.setText("host");
+    jLabel11.setText("Domain");
 
-    jLabel12.setText("pass");
+    jLabel12.setText("Password");
 
     jLabel34.setText("SIP Port Range:");
     jLabel34.setToolTipText("Valid range : 1024 thru 65535");
@@ -292,6 +295,9 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     sip_end.setText("9000");
     sip_end.setToolTipText("1024 - 65535");
 
+    jLabel35.setText("Display Name");
+    jLabel35.setToolTipText("optional");
+
     javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
     jPanel2.setLayout(jPanel2Layout);
     jPanel2Layout.setHorizontalGroup(
@@ -300,22 +306,6 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
         .addContainerGap()
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(jPanel2Layout.createSequentialGroup()
-            .addComponent(jLabel9)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(sip_user, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE))
-          .addGroup(jPanel2Layout.createSequentialGroup()
-            .addComponent(jLabel10)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(sip_auth, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE))
-          .addGroup(jPanel2Layout.createSequentialGroup()
-            .addComponent(jLabel11)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(sip_host, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE))
-          .addGroup(jPanel2Layout.createSequentialGroup()
-            .addComponent(jLabel12)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(sip_pass, javax.swing.GroupLayout.DEFAULT_SIZE, 616, Short.MAX_VALUE))
-          .addGroup(jPanel2Layout.createSequentialGroup()
             .addComponent(jLabel34)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(sip_start, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -323,12 +313,31 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
             .addComponent(jLabel36)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(sip_end, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 433, Short.MAX_VALUE))
+          .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel10)
+              .addComponent(jLabel9)
+              .addComponent(jLabel35)
+              .addComponent(jLabel11)
+              .addComponent(jLabel12))
+            .addGap(25, 25, 25)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(sip_auth)
+              .addComponent(sip_name)
+              .addComponent(sip_user)
+              .addComponent(sip_host)
+              .addComponent(sip_pass))))
         .addContainerGap())
     );
     jPanel2Layout.setVerticalGroup(
       jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel2Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel35)
+          .addComponent(sip_name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel9)
           .addComponent(sip_user, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -350,7 +359,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
           .addComponent(jLabel36)
           .addComponent(sip_end, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jLabel34))
-        .addGap(247, 247, 247))
+        .addContainerGap(210, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("SIP", jPanel2);
@@ -1468,6 +1477,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   private javax.swing.JLabel jLabel32;
   private javax.swing.JLabel jLabel33;
   private javax.swing.JLabel jLabel34;
+  private javax.swing.JLabel jLabel35;
   private javax.swing.JLabel jLabel36;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
@@ -1508,6 +1518,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   private javax.swing.JTextField sip_auth;
   private javax.swing.JTextField sip_end;
   private javax.swing.JTextField sip_host;
+  private javax.swing.JTextField sip_name;
   private javax.swing.JTextField sip_pass;
   private javax.swing.JTextField sip_start;
   private javax.swing.JTextField sip_user;
@@ -1918,7 +1929,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   public static class Settings implements Serializable {
     static final long serialVersionUID = 1000L;
     String sql_host, sql_user, sql_pass;  //obsolete (do not delete or old cfg will not load)
-    String sip_user, sip_auth, sip_host, sip_pass;
+    String sip_name, sip_user, sip_auth, sip_host, sip_pass;
     String wav_filename;  //obsolete
     int numberLines = 8;
     String xfer;
@@ -1951,6 +1962,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       settings = (Settings)ois.readObject();
       fis.close();
 
+      sip_name.setText(settings.sip_name);
       sip_user.setText(settings.sip_user);
       sip_auth.setText(settings.sip_auth);
       sip_host.setText(settings.sip_host);
@@ -2141,6 +2153,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       FileOutputStream fos = new FileOutputStream(JF.getUserPath() + "/broadcast" + cfgSuffix + ".cfg");
       ObjectOutputStream oos = new ObjectOutputStream(fos);
       settings = new Settings();
+      settings.sip_name = sip_name.getText();
       settings.sip_user = sip_user.getText();
       settings.sip_auth = sip_auth.getText();
       settings.sip_host = sip_host.getText();
@@ -2320,7 +2333,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       }
     }
     if (sip_pass.getText().length() > 0) {
-      sip.register(sip_user.getText(), sip_auth.getText(), sip_pass.getText());
+      sip.register(sip_name.getText(), sip_user.getText(), sip_auth.getText(), sip_pass.getText());
       registered = false;
     } else {
       registered = true;
@@ -2433,6 +2446,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   public void setState(boolean state) {
     sip_host.setEnabled(state);
     sip_auth.setEnabled(state);
+    sip_name.setEnabled(state);
     sip_user.setEnabled(state);
     sip_pass.setEnabled(state);
     sip_start.setEnabled(state);

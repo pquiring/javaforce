@@ -1,5 +1,7 @@
 ChangeLog
 ---------
+9-23-2015 : jphonelite/1.9.9
+  - added display name to sip accounts
 9-12-2015 : jphonelite/1.9.8
   - fixes to register()ing
     - this should fix bug #31

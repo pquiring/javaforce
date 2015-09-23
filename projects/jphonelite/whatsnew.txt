@@ -1,4 +1,6 @@
 CHANGELOG:
+9-23-2015 : v1.9.9 released
+  - added display name to sip accounts
 9-12-2015 : v1.9.8 released
   - fixes to register()ing
     - this should fix bug #31

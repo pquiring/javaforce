@@ -207,7 +207,7 @@ public class Engine implements SIPClientInterface, RTPInterface {
       try {
         int b=0;
         while (!lines[a].sip.init(host, port, localport++, this, SIP.Transport.UDP)) {b++; if (b==10) throw new Exception("err");}
-        lines[a].sip.register(Settings.current.lines[a].user, Settings.current.lines[a].auth, Settings.getPassword(Settings.current.lines[a].pass));
+        lines[a].sip.register(Settings.current.lines[a].name, Settings.current.lines[a].user, Settings.current.lines[a].auth, Settings.getPassword(Settings.current.lines[a].pass));
       } catch (Exception e) {
         lines[a].status = "SIP init failed (Exception)";
         lines[a].sip = null;

@@ -165,6 +165,8 @@ public class EditSettings extends javax.swing.JDialog {
     l1sip = new javax.swing.JComboBox();
     jLabel56 = new javax.swing.JLabel();
     l1key = new javax.swing.JComboBox();
+    jLabel31 = new javax.swing.JLabel();
+    l1name = new javax.swing.JTextField();
     l2 = new javax.swing.JPanel();
     jLabel4 = new javax.swing.JLabel();
     l2user = new javax.swing.JTextField();
@@ -182,6 +184,8 @@ public class EditSettings extends javax.swing.JDialog {
     l2sip = new javax.swing.JComboBox();
     jLabel57 = new javax.swing.JLabel();
     l2key = new javax.swing.JComboBox();
+    jLabel44 = new javax.swing.JLabel();
+    l2name = new javax.swing.JTextField();
     l3 = new javax.swing.JPanel();
     l3same = new javax.swing.JCheckBox();
     l3sameidx = new javax.swing.JComboBox();
@@ -199,6 +203,8 @@ public class EditSettings extends javax.swing.JDialog {
     l3sip = new javax.swing.JComboBox();
     jLabel58 = new javax.swing.JLabel();
     l3key = new javax.swing.JComboBox();
+    jLabel45 = new javax.swing.JLabel();
+    l3name = new javax.swing.JTextField();
     l4 = new javax.swing.JPanel();
     l4same = new javax.swing.JCheckBox();
     l4sameidx = new javax.swing.JComboBox();
@@ -216,6 +222,8 @@ public class EditSettings extends javax.swing.JDialog {
     l4sip = new javax.swing.JComboBox();
     jLabel59 = new javax.swing.JLabel();
     l4key = new javax.swing.JComboBox();
+    jLabel66 = new javax.swing.JLabel();
+    l4name = new javax.swing.JTextField();
     l5 = new javax.swing.JPanel();
     l5same = new javax.swing.JCheckBox();
     l5sameidx = new javax.swing.JComboBox();
@@ -233,6 +241,8 @@ public class EditSettings extends javax.swing.JDialog {
     l5sip = new javax.swing.JComboBox();
     jLabel60 = new javax.swing.JLabel();
     l5key = new javax.swing.JComboBox();
+    jLabel67 = new javax.swing.JLabel();
+    l5name = new javax.swing.JTextField();
     l6 = new javax.swing.JPanel();
     l6same = new javax.swing.JCheckBox();
     l6sameidx = new javax.swing.JComboBox();
@@ -250,6 +260,8 @@ public class EditSettings extends javax.swing.JDialog {
     l6sip = new javax.swing.JComboBox();
     jLabel61 = new javax.swing.JLabel();
     l6key = new javax.swing.JComboBox();
+    jLabel68 = new javax.swing.JLabel();
+    l6name = new javax.swing.JTextField();
     topology = new javax.swing.JPanel();
     jPanel21 = new javax.swing.JPanel();
     natNone = new javax.swing.JRadioButton();
@@ -1013,7 +1025,7 @@ public class EditSettings extends javax.swing.JDialog {
     jLabel3.setToolTipText("Domain / Host / IP");
 
     jLabel23.setText("Auth name");
-    jLabel23.setToolTipText("Alternative Authorization Username (Optional)");
+    jLabel23.setToolTipText("Alternative Authorization Username (optional)");
 
     l1disableVideo.setText("Disable Video");
 
@@ -1028,6 +1040,9 @@ public class EditSettings extends javax.swing.JDialog {
 
     l1key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
 
+    jLabel31.setText("Display name");
+    jLabel31.setToolTipText("Display Name (optional)");
+
     javax.swing.GroupLayout l1Layout = new javax.swing.GroupLayout(l1);
     l1.setLayout(l1Layout);
     l1Layout.setHorizontalGroup(
@@ -1035,18 +1050,6 @@ public class EditSettings extends javax.swing.JDialog {
       .addGroup(l1Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(l1Layout.createSequentialGroup()
-            .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel23)
-              .addComponent(jLabel1)
-              .addComponent(jLabel2)
-              .addComponent(jLabel3))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l1host, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l1user, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l1auth, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l1pass, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)))
           .addGroup(l1Layout.createSequentialGroup()
             .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(l1secure)
@@ -1059,13 +1062,31 @@ public class EditSettings extends javax.swing.JDialog {
                 .addComponent(jLabel56)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(l1key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 356, Short.MAX_VALUE))
+          .addGroup(l1Layout.createSequentialGroup()
+            .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel23)
+              .addComponent(jLabel1)
+              .addComponent(jLabel2)
+              .addComponent(jLabel3)
+              .addComponent(jLabel31))
+            .addGap(32, 32, 32)
+            .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(l1name)
+              .addComponent(l1pass, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l1auth, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l1user)
+              .addComponent(l1host))))
         .addContainerGap())
     );
     l1Layout.setVerticalGroup(
       l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(l1Layout.createSequentialGroup()
         .addContainerGap()
+        .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel31)
+          .addComponent(l1name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel1)
           .addComponent(l1user, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1093,7 +1114,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel56)
           .addComponent(l1key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(215, Short.MAX_VALUE))
+        .addContainerGap(189, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line1", l1);
@@ -1128,6 +1149,8 @@ public class EditSettings extends javax.swing.JDialog {
 
     l2key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
 
+    jLabel44.setText("Display name");
+
     javax.swing.GroupLayout l2Layout = new javax.swing.GroupLayout(l2);
     l2.setLayout(l2Layout);
     l2Layout.setHorizontalGroup(
@@ -1135,18 +1158,6 @@ public class EditSettings extends javax.swing.JDialog {
       .addGroup(l2Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(l2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(l2Layout.createSequentialGroup()
-            .addGroup(l2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel24)
-              .addComponent(jLabel5)
-              .addComponent(jLabel6)
-              .addComponent(jLabel4))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addGroup(l2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l2user, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l2host, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l2auth, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l2pass, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)))
           .addGroup(l2Layout.createSequentialGroup()
             .addGroup(l2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(l2secure)
@@ -1163,7 +1174,21 @@ public class EditSettings extends javax.swing.JDialog {
                 .addComponent(jLabel57)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(l2key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 356, Short.MAX_VALUE))
+          .addGroup(l2Layout.createSequentialGroup()
+            .addGroup(l2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel24)
+              .addComponent(jLabel5)
+              .addComponent(jLabel6)
+              .addComponent(jLabel4)
+              .addComponent(jLabel44))
+            .addGap(18, 18, 18)
+            .addGroup(l2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(l2name)
+              .addComponent(l2pass, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l2auth, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l2user)
+              .addComponent(l2host))))
         .addContainerGap())
     );
     l2Layout.setVerticalGroup(
@@ -1173,6 +1198,10 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(l2same)
           .addComponent(l2sameidx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(l2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel44)
+          .addComponent(l2name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(l2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel4)
@@ -1201,7 +1230,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel57)
           .addComponent(l2key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(184, Short.MAX_VALUE))
+        .addContainerGap(158, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line2", l2);
@@ -1236,6 +1265,8 @@ public class EditSettings extends javax.swing.JDialog {
 
     l3key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
 
+    jLabel45.setText("Display name");
+
     javax.swing.GroupLayout l3Layout = new javax.swing.GroupLayout(l3);
     l3.setLayout(l3Layout);
     l3Layout.setHorizontalGroup(
@@ -1243,18 +1274,6 @@ public class EditSettings extends javax.swing.JDialog {
       .addGroup(l3Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(l3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(l3Layout.createSequentialGroup()
-            .addGroup(l3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel25)
-              .addComponent(jLabel7)
-              .addComponent(jLabel8)
-              .addComponent(jLabel9))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addGroup(l3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l3host, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l3user, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l3auth, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l3pass, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)))
           .addGroup(l3Layout.createSequentialGroup()
             .addGroup(l3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(l3secure)
@@ -1271,7 +1290,21 @@ public class EditSettings extends javax.swing.JDialog {
                 .addComponent(jLabel58)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(l3key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 356, Short.MAX_VALUE))
+          .addGroup(l3Layout.createSequentialGroup()
+            .addGroup(l3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel25)
+              .addComponent(jLabel7)
+              .addComponent(jLabel8)
+              .addComponent(jLabel9)
+              .addComponent(jLabel45))
+            .addGap(18, 18, 18)
+            .addGroup(l3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(l3name)
+              .addComponent(l3pass, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l3auth, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l3user)
+              .addComponent(l3host))))
         .addContainerGap())
     );
     l3Layout.setVerticalGroup(
@@ -1281,6 +1314,10 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(l3same)
           .addComponent(l3sameidx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(l3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel45)
+          .addComponent(l3name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(l3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel7)
@@ -1309,7 +1346,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel58)
           .addComponent(l3key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(184, Short.MAX_VALUE))
+        .addContainerGap(158, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line3", l3);
@@ -1344,6 +1381,8 @@ public class EditSettings extends javax.swing.JDialog {
 
     l4key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
 
+    jLabel66.setText("Display name");
+
     javax.swing.GroupLayout l4Layout = new javax.swing.GroupLayout(l4);
     l4.setLayout(l4Layout);
     l4Layout.setHorizontalGroup(
@@ -1351,18 +1390,6 @@ public class EditSettings extends javax.swing.JDialog {
       .addGroup(l4Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(l4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(l4Layout.createSequentialGroup()
-            .addGroup(l4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel26)
-              .addComponent(jLabel11)
-              .addComponent(jLabel12)
-              .addComponent(jLabel10))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addGroup(l4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l4user, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l4host, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l4auth, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l4pass, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)))
           .addGroup(l4Layout.createSequentialGroup()
             .addGroup(l4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(l4secure)
@@ -1379,7 +1406,21 @@ public class EditSettings extends javax.swing.JDialog {
                 .addComponent(jLabel59)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(l4key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 356, Short.MAX_VALUE))
+          .addGroup(l4Layout.createSequentialGroup()
+            .addGroup(l4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel26)
+              .addComponent(jLabel11)
+              .addComponent(jLabel12)
+              .addComponent(jLabel10)
+              .addComponent(jLabel66))
+            .addGap(18, 18, 18)
+            .addGroup(l4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(l4name)
+              .addComponent(l4pass, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l4auth, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l4user)
+              .addComponent(l4host))))
         .addContainerGap())
     );
     l4Layout.setVerticalGroup(
@@ -1389,6 +1430,10 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(l4same)
           .addComponent(l4sameidx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(l4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel66)
+          .addComponent(l4name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(l4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel10)
@@ -1417,7 +1462,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel59)
           .addComponent(l4key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(184, Short.MAX_VALUE))
+        .addContainerGap(158, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line4", l4);
@@ -1452,6 +1497,8 @@ public class EditSettings extends javax.swing.JDialog {
 
     l5key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
 
+    jLabel67.setText("Display name");
+
     javax.swing.GroupLayout l5Layout = new javax.swing.GroupLayout(l5);
     l5.setLayout(l5Layout);
     l5Layout.setHorizontalGroup(
@@ -1459,18 +1506,6 @@ public class EditSettings extends javax.swing.JDialog {
       .addGroup(l5Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(l5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(l5Layout.createSequentialGroup()
-            .addGroup(l5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel27)
-              .addComponent(jLabel14)
-              .addComponent(jLabel15)
-              .addComponent(jLabel13))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addGroup(l5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l5user, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l5host, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l5auth, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l5pass, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)))
           .addGroup(l5Layout.createSequentialGroup()
             .addGroup(l5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(l5secure)
@@ -1487,7 +1522,21 @@ public class EditSettings extends javax.swing.JDialog {
                 .addComponent(jLabel60)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(l5key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 356, Short.MAX_VALUE))
+          .addGroup(l5Layout.createSequentialGroup()
+            .addGroup(l5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel27)
+              .addComponent(jLabel14)
+              .addComponent(jLabel15)
+              .addComponent(jLabel13)
+              .addComponent(jLabel67))
+            .addGap(18, 18, 18)
+            .addGroup(l5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(l5name)
+              .addComponent(l5pass, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l5auth, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l5user)
+              .addComponent(l5host, javax.swing.GroupLayout.Alignment.TRAILING))))
         .addContainerGap())
     );
     l5Layout.setVerticalGroup(
@@ -1497,6 +1546,10 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(l5same)
           .addComponent(l5sameidx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(l5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel67)
+          .addComponent(l5name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(l5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel13)
@@ -1525,7 +1578,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel60)
           .addComponent(l5key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(184, Short.MAX_VALUE))
+        .addContainerGap(158, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line5", l5);
@@ -1560,6 +1613,8 @@ public class EditSettings extends javax.swing.JDialog {
 
     l6key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
 
+    jLabel68.setText("Display name");
+
     javax.swing.GroupLayout l6Layout = new javax.swing.GroupLayout(l6);
     l6.setLayout(l6Layout);
     l6Layout.setHorizontalGroup(
@@ -1567,18 +1622,6 @@ public class EditSettings extends javax.swing.JDialog {
       .addGroup(l6Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(l6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(l6Layout.createSequentialGroup()
-            .addGroup(l6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel28)
-              .addComponent(jLabel17)
-              .addComponent(jLabel18)
-              .addComponent(jLabel16))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addGroup(l6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(l6user, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l6host, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l6auth, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)
-              .addComponent(l6pass, javax.swing.GroupLayout.DEFAULT_SIZE, 469, Short.MAX_VALUE)))
           .addGroup(l6Layout.createSequentialGroup()
             .addGroup(l6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(l6secure)
@@ -1595,7 +1638,21 @@ public class EditSettings extends javax.swing.JDialog {
                 .addComponent(jLabel61)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(l6key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 356, Short.MAX_VALUE))
+          .addGroup(l6Layout.createSequentialGroup()
+            .addGroup(l6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel28)
+              .addComponent(jLabel17)
+              .addComponent(jLabel18)
+              .addComponent(jLabel16)
+              .addComponent(jLabel68))
+            .addGap(18, 18, 18)
+            .addGroup(l6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(l6name)
+              .addComponent(l6pass, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l6auth, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(l6user)
+              .addComponent(l6host))))
         .addContainerGap())
     );
     l6Layout.setVerticalGroup(
@@ -1605,6 +1662,10 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(l6same)
           .addComponent(l6sameidx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(l6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel68)
+          .addComponent(l6name, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(l6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel16)
@@ -1633,7 +1694,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel61)
           .addComponent(l6key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(184, Short.MAX_VALUE))
+        .addContainerGap(158, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line6", l6);
@@ -2081,6 +2142,7 @@ public class EditSettings extends javax.swing.JDialog {
 
   private void l2sameItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_l2sameItemStateChanged
     boolean state = !l2same.isSelected();
+    l2name.setEnabled(state);
     l2user.setEnabled(state);
     l2auth.setEnabled(state);
     l2pass.setEnabled(state);
@@ -2093,6 +2155,7 @@ public class EditSettings extends javax.swing.JDialog {
 
   private void l3sameItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_l3sameItemStateChanged
     boolean state = !l3same.isSelected();
+    l3name.setEnabled(state);
     l3user.setEnabled(state);
     l3auth.setEnabled(state);
     l3pass.setEnabled(state);
@@ -2105,6 +2168,7 @@ public class EditSettings extends javax.swing.JDialog {
 
   private void l4sameItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_l4sameItemStateChanged
     boolean state = !l4same.isSelected();
+    l4name.setEnabled(state);
     l4user.setEnabled(state);
     l4auth.setEnabled(state);
     l4pass.setEnabled(state);
@@ -2117,6 +2181,7 @@ public class EditSettings extends javax.swing.JDialog {
 
   private void l5sameItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_l5sameItemStateChanged
     boolean state = !l5same.isSelected();
+    l5name.setEnabled(state);
     l5user.setEnabled(state);
     l5auth.setEnabled(state);
     l5pass.setEnabled(state);
@@ -2129,6 +2194,7 @@ public class EditSettings extends javax.swing.JDialog {
 
   private void l6sameItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_l6sameItemStateChanged
     boolean state = !l6same.isSelected();
+    l6name.setEnabled(state);
     l6user.setEnabled(state);
     l6auth.setEnabled(state);
     l6pass.setEnabled(state);
@@ -2217,6 +2283,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel29;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel30;
+  private javax.swing.JLabel jLabel31;
   private javax.swing.JLabel jLabel32;
   private javax.swing.JLabel jLabel33;
   private javax.swing.JLabel jLabel34;
@@ -2230,6 +2297,8 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel41;
   private javax.swing.JLabel jLabel42;
   private javax.swing.JLabel jLabel43;
+  private javax.swing.JLabel jLabel44;
+  private javax.swing.JLabel jLabel45;
   private javax.swing.JLabel jLabel46;
   private javax.swing.JLabel jLabel47;
   private javax.swing.JLabel jLabel48;
@@ -2252,6 +2321,9 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel63;
   private javax.swing.JLabel jLabel64;
   private javax.swing.JLabel jLabel65;
+  private javax.swing.JLabel jLabel66;
+  private javax.swing.JLabel jLabel67;
+  private javax.swing.JLabel jLabel68;
   private javax.swing.JLabel jLabel7;
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
@@ -2279,6 +2351,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox l1disableVideo;
   private javax.swing.JTextField l1host;
   private javax.swing.JComboBox l1key;
+  private javax.swing.JTextField l1name;
   private javax.swing.JPasswordField l1pass;
   private javax.swing.JCheckBox l1secure;
   private javax.swing.JComboBox l1sip;
@@ -2288,6 +2361,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox l2disableVideo;
   private javax.swing.JTextField l2host;
   private javax.swing.JComboBox l2key;
+  private javax.swing.JTextField l2name;
   private javax.swing.JPasswordField l2pass;
   private javax.swing.JCheckBox l2same;
   private javax.swing.JComboBox l2sameidx;
@@ -2299,6 +2373,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox l3disableVideo;
   private javax.swing.JTextField l3host;
   private javax.swing.JComboBox l3key;
+  private javax.swing.JTextField l3name;
   private javax.swing.JPasswordField l3pass;
   private javax.swing.JCheckBox l3same;
   private javax.swing.JComboBox l3sameidx;
@@ -2310,6 +2385,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox l4disableVideo;
   private javax.swing.JTextField l4host;
   private javax.swing.JComboBox l4key;
+  private javax.swing.JTextField l4name;
   private javax.swing.JPasswordField l4pass;
   private javax.swing.JCheckBox l4same;
   private javax.swing.JComboBox l4sameidx;
@@ -2321,6 +2397,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox l5disableVideo;
   private javax.swing.JTextField l5host;
   private javax.swing.JComboBox l5key;
+  private javax.swing.JTextField l5name;
   private javax.swing.JPasswordField l5pass;
   private javax.swing.JCheckBox l5same;
   private javax.swing.JComboBox l5sameidx;
@@ -2332,6 +2409,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox l6disableVideo;
   private javax.swing.JTextField l6host;
   private javax.swing.JComboBox l6key;
+  private javax.swing.JTextField l6name;
   private javax.swing.JPasswordField l6pass;
   private javax.swing.JCheckBox l6same;
   private javax.swing.JComboBox l6sameidx;
@@ -2478,6 +2556,7 @@ public class EditSettings extends javax.swing.JDialog {
 
   private void loadSettings() {
     int idx;
+    l1name.setText(Settings.current.lines[0].name);
     l1user.setText(Settings.current.lines[0].user);
     l1auth.setText(Settings.current.lines[0].auth);
     l1pass.setText(Settings.getPassword(Settings.current.lines[0].pass));
@@ -2487,6 +2566,7 @@ public class EditSettings extends javax.swing.JDialog {
     l1sip.setSelectedIndex(Settings.current.lines[0].transport);
     l1key.setSelectedIndex(Settings.current.lines[0].dtls ? 1 : 0);
 
+    l2name.setText(Settings.current.lines[1].name);
     l2user.setText(Settings.current.lines[1].user);
     l2auth.setText(Settings.current.lines[1].auth);
     l2pass.setText(Settings.getPassword(Settings.current.lines[1].pass));
@@ -2499,6 +2579,7 @@ public class EditSettings extends javax.swing.JDialog {
     idx = Settings.current.lines[1].same;
     if (idx != -1) l2sameidx.setSelectedIndex((idx > 0 ? idx-1 : idx)); else l2sameidx.setSelectedIndex(0);
 
+    l3name.setText(Settings.current.lines[2].name);
     l3user.setText(Settings.current.lines[2].user);
     l3auth.setText(Settings.current.lines[2].auth);
     l3pass.setText(Settings.getPassword(Settings.current.lines[2].pass));
@@ -2511,6 +2592,7 @@ public class EditSettings extends javax.swing.JDialog {
     idx = Settings.current.lines[2].same;
     if (idx != -1) l3sameidx.setSelectedIndex((idx > 1 ? idx-1 : idx)); else l3sameidx.setSelectedIndex(0);
 
+    l4name.setText(Settings.current.lines[3].name);
     l4user.setText(Settings.current.lines[3].user);
     l4auth.setText(Settings.current.lines[3].auth);
     l4pass.setText(Settings.getPassword(Settings.current.lines[3].pass));
@@ -2523,6 +2605,7 @@ public class EditSettings extends javax.swing.JDialog {
     idx = Settings.current.lines[3].same;
     if (idx != -1) l4sameidx.setSelectedIndex((idx > 2 ? idx-1 : idx)); else l4sameidx.setSelectedIndex(0);
 
+    l5name.setText(Settings.current.lines[4].name);
     l5user.setText(Settings.current.lines[4].user);
     l5auth.setText(Settings.current.lines[4].auth);
     l5pass.setText(Settings.getPassword(Settings.current.lines[4].pass));
@@ -2535,6 +2618,7 @@ public class EditSettings extends javax.swing.JDialog {
     idx = Settings.current.lines[4].same;
     if (idx != -1) l5sameidx.setSelectedIndex((idx > 3 ? idx-1 : idx)); else l5sameidx.setSelectedIndex(0);
 
+    l6name.setText(Settings.current.lines[5].name);
     l6user.setText(Settings.current.lines[5].user);
     l6auth.setText(Settings.current.lines[5].auth);
     l6pass.setText(Settings.getPassword(Settings.current.lines[5].pass));
@@ -2692,6 +2776,7 @@ public class EditSettings extends javax.swing.JDialog {
   }
 
   private void saveSettings() {
+    Settings.current.lines[0].name = l1name.getText();
     Settings.current.lines[0].user = l1user.getText();
     Settings.current.lines[0].auth = l1auth.getText();
     Settings.current.lines[0].pass = "crypto(1," + Settings.encodePassword(l1pass.getPassword()) + ")";
@@ -2702,6 +2787,7 @@ public class EditSettings extends javax.swing.JDialog {
     Settings.current.lines[0].transport = l1sip.getSelectedIndex();
     Settings.current.lines[0].dtls = l1key.getSelectedIndex() == 1;
 
+    Settings.current.lines[1].name = l2name.getText();
     Settings.current.lines[1].user = l2user.getText();
     Settings.current.lines[1].auth = l2auth.getText();
     Settings.current.lines[1].pass = "crypto(1," + Settings.encodePassword(l2pass.getPassword()) + ")";
@@ -2713,6 +2799,7 @@ public class EditSettings extends javax.swing.JDialog {
     if (l2same.isSelected()) Settings.current.lines[1].same = l2sameidx.getSelectedIndex(); else Settings.current.lines[1].same = -1;
     if (Settings.current.lines[1].same > 0) Settings.current.lines[1].same++;
 
+    Settings.current.lines[2].name = l3name.getText();
     Settings.current.lines[2].user = l3user.getText();
     Settings.current.lines[2].auth = l3auth.getText();
     Settings.current.lines[2].pass = "crypto(1," + Settings.encodePassword(l3pass.getPassword()) + ")";
@@ -2724,6 +2811,7 @@ public class EditSettings extends javax.swing.JDialog {
     if (l3same.isSelected()) Settings.current.lines[2].same = l3sameidx.getSelectedIndex(); else Settings.current.lines[2].same = -1;
     if (Settings.current.lines[2].same > 1) Settings.current.lines[2].same++;
 
+    Settings.current.lines[3].name = l4name.getText();
     Settings.current.lines[3].user = l4user.getText();
     Settings.current.lines[3].auth = l4auth.getText();
     Settings.current.lines[3].pass = "crypto(1," + Settings.encodePassword(l4pass.getPassword()) + ")";
@@ -2735,6 +2823,7 @@ public class EditSettings extends javax.swing.JDialog {
     if (l4same.isSelected()) Settings.current.lines[3].same = l4sameidx.getSelectedIndex(); else Settings.current.lines[3].same = -1;
     if (Settings.current.lines[3].same > 2) Settings.current.lines[3].same++;
 
+    Settings.current.lines[4].name = l5name.getText();
     Settings.current.lines[4].user = l5user.getText();
     Settings.current.lines[4].auth = l5auth.getText();
     Settings.current.lines[4].pass = "crypto(1," + Settings.encodePassword(l5pass.getPassword()) + ")";
@@ -2746,6 +2835,7 @@ public class EditSettings extends javax.swing.JDialog {
     if (l5same.isSelected()) Settings.current.lines[4].same = l5sameidx.getSelectedIndex(); else Settings.current.lines[4].same = -1;
     if (Settings.current.lines[4].same > 3) Settings.current.lines[4].same++;
 
+    Settings.current.lines[5].name = l6name.getText();
     Settings.current.lines[5].user = l6user.getText();
     Settings.current.lines[5].auth = l6auth.getText();
     Settings.current.lines[5].pass = "crypto(1," + Settings.encodePassword(l6pass.getPassword()) + ")";
