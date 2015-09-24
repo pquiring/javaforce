@@ -9,6 +9,8 @@ import javaforce.*;
 public class SQL {
   private java.sql.Connection conn;
 
+  public static final String databaseName = "jfBroadcastSchema2";
+
   public static String path;
 
   public static boolean initOnce() {
@@ -31,7 +33,7 @@ public class SQL {
 
   public boolean init(String extra) {
     try {
-      conn = DriverManager.getConnection("jdbc:derby:jfBroadcast;" + extra);
+      conn = DriverManager.getConnection("jdbc:derby:" + databaseName + ";" + extra);
       if ( conn == null ) {
         JFLog.log("Error : SQL Connection failed!");
         return false;

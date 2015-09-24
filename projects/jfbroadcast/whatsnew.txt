@@ -1,12 +1,14 @@
 ChangeLog
 =========
 
-9-23-2015 : version 0.32
+9-24-2015 : version 0.32
   - added display name for sip account
   - moved database back to user home folder
     - many users were having problems with c:\programdata on windows
     - if you had an existing database you will need to move it to your home folder
       - ie: on windows you would move c:\programdata\jfbroadcast to %USERPROFILE%
+  - added lock file to prevent running multiple copies
+  - improved voicemail handling
 
 6-30-2015 : version 0.31
   - fixed support for QOP auth and Record-Route fields (RFC 2543 6.29).

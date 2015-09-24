@@ -1,5 +1,19 @@
 What's new...
 
+Sept 24/2015 : JF 10.4.0 released!
+  - SIPClient : added display name
+  - added javaforce.JFLockFile
+  - jPhoneLite/1.9.9 released!
+    - desktop and android released
+    - added display name support
+    - use JFLockFile to prevent multiple copies running
+  - jfBroadcast/0.32 released!
+    - added display name support
+    - use JFLockFile to prevent multiple copies running
+    - hide password
+    - added option to close app when closing window
+  - did some work on getting jfLinux built - neither ISO will boot though :(
+
 Sept 12/2015 : JF 10.3.0 released!
   - SIPClient
     - fix : contact field updated if received ip/port changes

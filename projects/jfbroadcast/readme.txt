@@ -29,6 +29,7 @@ If your WAV file(s) are too large you may get OutOfMemory exceptions,
 Anwsering machine detection is accomplished by starting after 1 second of silence after something is heard (thresholds and duration are now adjustable).
 You can adjust the delay(ms) that is used between each attempt to start a new call (to prevent flooding your SIP server).
 You can use "Fix List..." to change status from "calling" to "new" if you forced program to exit while calling.
+The "Reset List..." button will reset all numbers in current list to 'new' status.
 Messages should be at least 5 seconds long.
 The database was changed in v0.15 so you should export your lists in an older version and import with this version.
 The database location and config files location were changed in v0.18:

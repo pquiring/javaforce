@@ -452,8 +452,8 @@
                         <Column editable="false" title="Number" type="java.lang.String"/>
                         <Column editable="false" title="Status" type="java.lang.String"/>
                         <Column editable="false" title="Attempts" type="java.lang.Integer"/>
-                        <Column editable="false" title="Survey" type="java.lang.Object"/>
-                        <Column editable="false" title="Call Count" type="java.lang.Integer"/>
+                        <Column editable="false" title="Survey" type="java.lang.String"/>
+                        <Column editable="false" title="Timestamp" type="java.lang.String"/>
                       </Table>
                     </Property>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">

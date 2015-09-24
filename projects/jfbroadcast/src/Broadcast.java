@@ -24,7 +24,7 @@ import javaforce.voip.*;
 
 public class Broadcast extends javax.swing.JFrame implements SIPClientInterface, RTPInterface, ActionListener {
 
-  public final String version = "0.32 beta 1";
+  public final String version = "0.32";
 
   public String startList = null;
   public String cfgSuffix = "";
@@ -491,11 +491,11 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
 
       },
       new String [] {
-        "Number", "Status", "Attempts", "Survey", "Call Count"
+        "Number", "Status", "Attempts", "Survey", "Timestamp"
       }
     ) {
       Class[] types = new Class [] {
-        java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Object.class, java.lang.Integer.class
+        java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class
       };
       boolean[] canEdit = new boolean [] {
         false, false, false, false, false
@@ -1606,22 +1606,24 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   final static int A_XFER = 6;
 
   public void createDatabase() {
-    if (new File(SQL.path + "/jfBroadcast/service.properties").exists()) return;  //already exists
+    if (new File(SQL.path + "/" + SQL.databaseName + "/service.properties").exists()) return;  //already exists
     JFTask task = new JFTask() {
       public boolean work() {
         this.setTitle("Creating database...");
         this.setLabel("Creating database...");
-        this.setProgress(50);
+        this.setProgress(25);
         SQL sql = new SQL();
         if (!sql.init("create=true")) {
           this.setLabel("Database create failed : SQL connection failed");
           return false;
         }
+        this.setProgress(50);
         if (!sql.execute("create table lists (id int GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1) primary key, name varchar(37) not null unique)")) {
           this.setLabel("Database create failed : Create Table failed (already created?)");
           return false;
         }
-        if (!sql.execute("create table listdata (id int not null, number varchar(32) not null, status varchar(32) default 'new' not null, attempts int default 0 not null, survey varchar(64), unique(number, id))")) {
+        this.setProgress(75);
+        if (!sql.execute("create table listdata (id int not null, number varchar(32) not null, status varchar(32) default 'new' not null, attempts int default 0 not null, survey varchar(64), called timestamp, unique(number, id))")) {
           this.setLabel("Database create failed : Create Table failed (already created?)");
           return false;
         }
@@ -1694,6 +1696,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     }
     setStatus("OK:DeleteList:"+sel);
     updateAvailableLists();
+    updateList();
   }
 
   public void resetList() {
@@ -1705,7 +1708,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       setStatus("SQL connection failed");
       return;
     }
-    if (!sql.execute("update listdata set status='new', attempts = 0, survey = '' where id=(select id from lists where name='" + sel + "')")) {
+    if (!sql.execute("update listdata set status='new', attempts = 0, survey = '', called = null where id=(select id from lists where name='" + sel + "')")) {
       setStatus("update failed");
       return;
     }
@@ -1724,7 +1727,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       setStatus("SQL connection failed");
       return;
     }
-    if (!sql.execute("update listdata set status='new' where status='calling' and id=(select id from lists where name='" + sel + "')")) {
+    if (!sql.execute("update listdata set status='new', attempts = 0, survey = '', called = null where status='calling' and id=(select id from lists where name='" + sel + "')")) {
       setStatus("update failed");
       return;
     }
@@ -1852,7 +1855,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       setStatus("SQL connection failed");
       return;
     }
-    data = sql.select("select number,status,attempts,survey from listdata where id=(select id from lists where name='" + sel + "')");
+    data = sql.select("select number,status,attempts,survey,called from listdata where id=(select id from lists where name='" + sel + "')");
     if (data == null) {
       setStatus("select failed (1)");
       return;
@@ -1860,7 +1863,13 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     try {
       FileOutputStream fos = new FileOutputStream(chooser.getSelectedFile().toString());
       for(int a=0;a<data.length;a++) {
-        fos.write((data[a][0] + "," + data[a][1] + "," + data[a][2] + "," + data[a][3] + "\r\n").getBytes());
+        String timestamp = data[a][4];
+        String date = "null", time = "null";
+        if (timestamp != null && timestamp.length() > 10) {
+          date = timestamp.substring(0, 10);
+          time = timestamp.substring(11);
+        }
+        fos.write((data[a][0] + "," + data[a][1] + "," + data[a][2] + "," + data[a][3] + "," + date + "," + time + "\r\n").getBytes());
       }
       fos.close();
     } catch (Exception e) {
@@ -1870,21 +1879,25 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     setStatus("OK : List exported");
   }
 
+  private String cols[] = new String[] {"Number","Status","Attempts","Survey","Timestamp"};
+
   public void updateList() {
     String data[][];
     String sel = (String)selected_list.getSelectedItem();
-    if (sel == null || sel.length() == 0) return;
+    if (sel == null || sel.length() == 0) {
+      listView.setModel(new DefaultTableModel(new String[][] {}, cols));
+      return;
+    }
     SQL sql = new SQL();
     if (!sql.init()) {
 //      setStatus("SQL connection failed");
       return;
     }
-    data = sql.select("select number, status, attempts, survey from listdata where id=(select id from lists where name='" + sel + "')");
+    data = sql.select("select number, status, attempts, survey, called from listdata where id=(select id from lists where name='" + sel + "')");
     if (data == null) {
-//      setStatus("updateList:select failed(1) : " + sql.lasterror);
-      return;
+      data = new String[][] {};
     }
-    listView.setModel(new DefaultTableModel(data, new String[] {"Number","Status","Attempts","Survey"}));
+    listView.setModel(new DefaultTableModel(data, cols));
   }
 
   public boolean isConfigValid() {
@@ -2295,6 +2308,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     int postwait = 0;
     int quietcount = 0;  //wait till we hear quiet after hello (answering machine detection)
     int noresponse = 0;
+    boolean voicemail = false;
   }
 
   public void startCalling() {
@@ -2420,6 +2434,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
         lines[a].repeat = false;
         lines[a].number = number;
         lines[a].quietcount = 0;
+        lines[a].voicemail = false;
         lines[a].survey = "";
         lines[a].multi = "";
         lines[a].inuse = true;
@@ -2505,6 +2520,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     enable_g711a.setEnabled(state);
     enable_reinvites.setEnabled(state);
     check_update.setEnabled(state);
+    exit_on_close_window.setEnabled(state);
     human_vm_detect.setEnabled(state);
     greeting_threshold.setEnabled(state);
     silence_threshold.setEnabled(state);
@@ -2632,7 +2648,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   public void unmarkCalling() {
     String sel = (String)selected_list.getSelectedItem();
     if (sel == null || sel.length() == 0) return;
-    if (!psql.execute("update lists set status = 'aborted' where status = 'calling' and id=" + listid)) {
+    if (!psql.execute("update lists set status = 'aborted', called = current_timestamp where status = 'calling' and id=" + listid)) {
       setStatus("update failed");
       return;
     }
@@ -2670,16 +2686,18 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     update u;
     while (updateList.size() > 0) {
       u = updateList.remove(0);
-      if (!psql.execute("update listdata set status = '" + u.status + "', survey = '" + u.survey + "' where number = '" + u.number + "' and id=" + listid)) {
+      if (!psql.execute("update listdata set status = '" + u.status + "', survey = '" + u.survey + "', called = current_timestamp where number = '" + u.number + "' and id=" + listid)) {
         setStatus("endCall : update failed : " + u.number);
         return;
       }
+      String called = psql.select1value("select called from listdata where number = '" + u.number + "' and id=" + listid);
       //update local copy
       int rc = listView.getRowCount();
       for(int row=0;row<rc;row++) {
         if (((String)listView.getValueAt(row, 0)).equals(u.number)) {
           listView.setValueAt(u.status, row, 1);
           listView.setValueAt(u.survey, row, 3);
+          listView.setValueAt(called, row, 4);
           listView.repaint();
           break;
         }
@@ -2733,13 +2751,25 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
               avg /= 160;
               if (avg > settings.silenceThreshold) {
                 lines[a].quietcount = 0;
-                if (settings.voicemail_hangup && isVoiceMailBeep(tmp, peek)) {
-                  sip.bye(lines[a].callid);
-                  endCall(lines[a], "voicemail");
-                  continue;
+                if (lines[a].voicemail) continue;
+                if (isVoiceMailBeep(tmp, peek)) {
+                  if (settings.voicemail_hangup) {
+                    JFLog.log("voicemail detected (hangup) : " + lines[a].number);
+                    sip.bye(lines[a].callid);
+                    endCall(lines[a], "voicemail");
+                    continue;
+                  } else {
+                    lines[a].voicemail = true;
+                  }
                 }
               } else {
-                lines[a].quietcount++;
+                if (lines[a].voicemail) {
+                  //silence after voicemail beep detected
+                  JFLog.log("voicemail detected : " + lines[a].number);
+                  lines[a].quietcount = maxquietcount;
+                } else {
+                  lines[a].quietcount++;
+                }
               }
             } else {
               lines[a].quietcount++;    //g729a silence suppression (evil)

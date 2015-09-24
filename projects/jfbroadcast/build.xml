@@ -59,7 +59,7 @@
   </target>
 
   <target name="release-bin" depends="jar" description="create release zip file">
-    <zip destfile="jfbroadcast-${version}.zip">
+    <zip destfile="jfbroadcast-bin-${version}.zip">
       <fileset dir=".">
         <include name="*.jar"/>
         <include name="*.txt"/>
@@ -67,7 +67,7 @@
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>
-    <move file="jfbroadcast-${version}.zip" todir="${home}/release"/>
+    <move file="jfbroadcast-bin-${version}.zip" todir="${home}/release"/>
   </target>
 
   <target name="release-src" depends="" description="create release zip file">
