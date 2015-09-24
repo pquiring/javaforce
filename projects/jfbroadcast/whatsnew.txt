@@ -5,8 +5,7 @@ ChangeLog
   - added display name for sip account
   - moved database back to user home folder
     - many users were having problems with c:\programdata on windows
-    - if you had an existing database you will need to move it to your home folder
-      - ie: on windows you would move c:\programdata\jfbroadcast to %USERPROFILE%
+    - if you had an existing database you will need to export and import your lists
   - added lock file to prevent running multiple copies
   - improved voicemail handling
 
