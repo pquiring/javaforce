@@ -122,7 +122,7 @@ public class Menu {
     item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK, false));
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        panel.pasteSel(0, 0, false);
+        panel.doPaste(false);
       }
     });
     menu.add(item);
@@ -132,7 +132,7 @@ public class Menu {
     item.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_B, InputEvent.CTRL_DOWN_MASK, false));
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        panel.pasteSel(0, 0, false);
+        panel.doPaste(true);
       }
     });
     menu.add(item);
