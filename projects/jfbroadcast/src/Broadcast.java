@@ -24,7 +24,7 @@ import javaforce.voip.*;
 
 public class Broadcast extends javax.swing.JFrame implements SIPClientInterface, RTPInterface, ActionListener {
 
-  public final String version = "0.32";
+  public final String version = "0.33";
 
   public String startList = null;
   public String cfgSuffix = "";
@@ -1738,7 +1738,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   }
 
   public final void updateAvailableLists() {
-    File file = new File(SQL.path + "/jfBroadcast");
+    File file = new File(SQL.path + "/" + SQL.databaseName);
     if (!file.exists()) return;  //not ready
     String data[][];
     SQL sql = new SQL();

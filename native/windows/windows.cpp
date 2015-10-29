@@ -690,4 +690,27 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_comWrite
   return write;
 }
 
+//impersonate user
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_impersonateUser
+  (JNIEnv *e, jclass c, jstring domain, jstring user, jstring passwd)
+{
+  HANDLE token;
+  int ok;
+
+  const char *cdomain = e->GetStringUTFChars(domain,NULL);
+  const char *cuser = e->GetStringUTFChars(user,NULL);
+  const char *cpasswd = e->GetStringUTFChars(passwd,NULL);
+  ok = LogonUser(cuser, cdomain, cpasswd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &token);     
+  e->ReleaseStringUTFChars(domain, cdomain);
+  e->ReleaseStringUTFChars(user, cuser);
+  e->ReleaseStringUTFChars(passwd, cpasswd);
+  if (!ok) return JNI_FALSE;
+  ok = ImpersonateLoggedOnUser(token);    
+  if (!ok) {
+    CloseHandle(token);
+  }
+  return ok ? JNI_TRUE | JNI_FALSE;
+}
+
 #include "../common/ffmpeg.cpp"

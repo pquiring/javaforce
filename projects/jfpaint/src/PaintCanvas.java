@@ -837,7 +837,7 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
         undos.remove(0);
         undoPos--;
       }
-//      JFLog.log("undoSize=" + undos.size() + ",undoPos=" + undoPos);
+      JFLog.log("undoSize=" + undos.size() + ",undoPos=" + undoPos);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -870,7 +870,7 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
       resizeBorder();
       changeColorLayer(orgLayer);
       repaint();
-//      JFLog.log("undoSize=" + undos.size() + ",undoPos=" + undoPos);
+      JFLog.log("undoSize=" + undos.size() + ",undoPos=" + undoPos);
     } catch (Exception e) {
       JFLog.log(e);
     }

@@ -147,6 +147,24 @@
     <utilsmacro app="WinPE" bits="64"/>
   </target>
 
+  <macrodef name="appmacro">
+    <attribute name="app"/>
+    <attribute name="cfg"/>
+    <attribute name="bits"/>
+    <sequential>
+      <copy file="${home}/stubs/win@{bits}c.exe" tofile="@{app}.exe" overwrite="true"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
+        <arg value="@{app}.exe"/>
+        <arg value="cfg/@{cfg}.cfg"/>
+      </java>
+    </sequential>
+  </macrodef>
+
+  <target name="runas" depends="jar" description="build exe for RunAs 32/64bit">
+    <appmacro app="RunAs32" cfg="runas" bits="32"/>
+    <appmacro app="RunAs64" cfg="runas" bits="64"/>
+  </target>
+
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="classes/javaforce" includes="**/*.class"/>

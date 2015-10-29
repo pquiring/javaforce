@@ -1141,6 +1141,20 @@ public class JF {
     root.getActionMap().put(name, event);
   }
 
+  /** Assigns a single hot key to activate button.
+   * Use mnemonics for key combos.
+   */
+  public static void assignHotKey(JRootPane root, final JButton button, int vk) {
+    String name = "Action" + vk;
+    Action event = new AbstractAction() {
+      public void actionPerformed(ActionEvent event) {
+        button.doClick();
+      }
+    };
+    root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(vk, 0), name);
+    root.getActionMap().put(name, event);
+  }
+  
   /** Due to JVM bugs finding a monospaced font is not that easy...
    * See : Java Bug # 9009891 @ bugs.sun.com
    */
