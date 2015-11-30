@@ -376,7 +376,7 @@ public class DHCP extends Thread {
       replyBuffer = ByteBuffer.wrap(reply);
       replyBuffer.order(ByteOrder.BIG_ENDIAN);
       replyOffset = 0;
-      reply[replyOffset++] = 1;  //reply opcode
+      reply[replyOffset++] = 2;  //reply opcode
       reply[replyOffset++] = data[1];  //hwtype
       reply[replyOffset++] = data[2];  //hwlen
       reply[replyOffset++] = 0;  //hops
