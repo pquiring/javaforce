@@ -3,7 +3,7 @@
   <!-- set global properties for this build -->
   <property name="app" value="jfdhcp"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.1"/>
+  <property name="version" value="0.2"/>
 
   <import file="../../base.xml"/>
 
@@ -11,7 +11,7 @@
     <copy file="../../jars/javaforce.jar" todir="."/>
   </target>
 
-  <target name="jar" description="jar">
+  <target name="jar" depends="depjars" description="jar">
   </target>
 
   <target name="release-bin" depends="" description="create release zip file">

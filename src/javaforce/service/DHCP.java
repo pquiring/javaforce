@@ -190,6 +190,9 @@ public class DHCP extends Thread {
 
   private static final int cookie = 0x63825363;
 
+  private static final int DHCP_OPCODE_REQUEST = 1;
+  private static final int DHCP_OPCODE_REPLY = 2;
+
   private static final int DHCPDISCOVER = 1;
   private static final int DHCPOFFER = 2;
   private static final int DHCPREQUEST = 3;
@@ -228,7 +231,7 @@ public class DHCP extends Thread {
         ByteBuffer bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.BIG_ENDIAN);
         byte opcode = data[0];
-        if (opcode != 1) throw new Exception("not a request");
+        if (opcode != DHCP_OPCODE_REQUEST) throw new Exception("not a request");
         byte hwtype = data[1];
         byte hwlen = data[2];
         byte hop = data[3];
@@ -376,7 +379,7 @@ public class DHCP extends Thread {
       replyBuffer = ByteBuffer.wrap(reply);
       replyBuffer.order(ByteOrder.BIG_ENDIAN);
       replyOffset = 0;
-      reply[replyOffset++] = 2;  //reply opcode
+      reply[replyOffset++] = DHCP_OPCODE_REPLY;  //reply opcode
       reply[replyOffset++] = data[1];  //hwtype
       reply[replyOffset++] = data[2];  //hwlen
       reply[replyOffset++] = 0;  //hops
