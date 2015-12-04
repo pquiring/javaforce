@@ -96,11 +96,11 @@
     </sequential>
   </macrodef>
 
-  <target name="exe32" depends="jar,depjars" description="create msi installer file 32bit">
+  <target name="exe32" depends="jar,depjars,depnatives" description="create msi installer file 32bit">
     <exeallmacro bits="32"/>
   </target>
 
-  <target name="exe64" depends="jar,depjars"  description="create msi installer file 64bit">
+  <target name="exe64" depends="jar,depjars,depnatives"  description="create msi installer file 64bit">
     <exeallmacro bits="64"/>
   </target>
 
