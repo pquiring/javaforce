@@ -29,20 +29,6 @@
 
   <!-- Windows targets -->
 
-  <macrodef name="exemacro">
-    <attribute name="appx"/>
-    <attribute name="bits"/>
-    <attribute name="ico"/>
-    <sequential>
-      <copy file="${home}/stubs/win@{bits}.exe" tofile="@{appx}.exe" overwrite="true"/>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
-        <arg value="@{appx}.exe"/>
-        <arg value="@{ico}.ico"/>
-        <arg value="@{appx}.cfg"/>
-      </java>
-    </sequential>
-  </macrodef>
-
   <!--these should be set before importing this file to override default behavior-->
   <property name="ico" value="${app}"/>
   <property name="msi" value="${app}"/>
@@ -52,6 +38,43 @@
   <property name="app3" value=""/>
   <property name="app4" value=""/>
   <property name="app5" value=""/>
+  <property name="apptype" value=""/>
+  <property name="apptype2" value=""/>
+  <property name="apptype3" value=""/>
+  <property name="apptype4" value=""/>
+  <property name="apptype5" value=""/>
+
+  <macrodef name="exemacro">
+    <attribute name="appx"/>
+    <attribute name="apptype"/>
+    <attribute name="bits"/>
+    <attribute name="ico"/>
+    <sequential>
+      <copy file="${home}/stubs/win@{bits}@{apptype}.exe" tofile="@{appx}.exe" overwrite="true"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
+        <arg value="@{appx}.exe"/>
+        <arg value="@{ico}.ico"/>
+        <arg value="@{appx}.cfg"/>
+      </java>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="exeallmacro">
+    <attribute name="bits"/>
+    <attribute name="ico" default="${ico}"/>
+    <attribute name="app" default="${app}"/>
+    <attribute name="app2" default="${app2}"/>
+    <attribute name="app3" default="${app3}"/>
+    <attribute name="app4" default="${app4}"/>
+    <attribute name="app5" default="${app5}"/>
+    <sequential>
+      <exemacro appx="@{app}" apptype="${apptype}" bits="@{bits}" ico="@{ico}"/>
+      <exemacro appx="@{app2}" apptype="${apptype2}" bits="@{bits}" ico="@{ico}" unless:blank="@{app2}"/>
+      <exemacro appx="@{app3}" apptype="${apptype3}" bits="@{bits}" ico="@{ico}" unless:blank="@{app3}"/>
+      <exemacro appx="@{app4}" apptype="${apptype4}" bits="@{bits}" ico="@{ico}" unless:blank="@{app4}"/>
+      <exemacro appx="@{app5}" apptype="${apptype5}" bits="@{bits}" ico="@{ico}" unless:blank="@{app5}"/>
+    </sequential>
+  </macrodef>
 
   <macrodef name="msimacro">
     <attribute name="xml"/>
@@ -64,11 +87,6 @@
     <attribute name="app4" default="${app4}"/>
     <attribute name="app5" default="${app5}"/>
     <sequential>
-      <exemacro appx="@{app}" bits="@{bits}" ico="@{ico}"/>
-      <exemacro appx="@{app2}" bits="@{bits}" ico="@{ico}" unless:blank="@{app2}"/>
-      <exemacro appx="@{app3}" bits="@{bits}" ico="@{ico}" unless:blank="@{app3}"/>
-      <exemacro appx="@{app4}" bits="@{bits}" ico="@{ico}" unless:blank="@{app4}"/>
-      <exemacro appx="@{app5}" bits="@{bits}" ico="@{ico}" unless:blank="@{app5}"/>
       <exec command="candle ${candle_extra} -o wix.obj @{xml}.xml"/>
       <exec command="candle -o jre.obj ${home}/nojre.xml"/>
       <exec command="light ${light_extra} -ext WixUIExtension -cultures:en-us -b ${home} -dWixUILicenseRtf=${home}/license.rtf -o @{msi}-${version}-win@{bits}.msi jre.obj wix.obj"/>
@@ -78,11 +96,19 @@
     </sequential>
   </macrodef>
 
-  <target name="msi32" depends="jar,depjars" description="create msi installer file 32bit">
+  <target name="exe32" depends="jar,depjars" description="create msi installer file 32bit">
+    <exeallmacro bits="32"/>
+  </target>
+
+  <target name="exe64" depends="jar,depjars"  description="create msi installer file 64bit">
+    <exeallmacro bits="64"/>
+  </target>
+
+  <target name="msi32" depends="exe32,jar,depjars" description="create msi installer file 32bit">
     <msimacro xml="wix32" bits="32"/>
   </target>
 
-  <target name="msi64" depends="jar,depjars"  description="create msi installer file 64bit">
+  <target name="msi64" depends="exe64,jar,depjars"  description="create msi installer file 64bit">
     <msimacro xml="wix64" bits="64"/>
   </target>
 

@@ -1,6 +1,6 @@
 Buildroot: /.
 Name: jfpasswords
-Version: 0.14
+Version: 0.15
 Release: 1
 Summary: Password Manager
 License: LGPL

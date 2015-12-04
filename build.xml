@@ -152,7 +152,7 @@
     <attribute name="cfg"/>
     <attribute name="bits"/>
     <sequential>
-      <copy file="${home}/stubs/win@{bits}c.exe" tofile="@{app}.exe" overwrite="true"/>
+      <copy file="${home}/stubs/win@{bits}.exe" tofile="@{app}.exe" overwrite="true"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
         <arg value="@{app}.exe"/>
         <arg value="cfg/@{cfg}.cfg"/>

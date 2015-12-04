@@ -26,7 +26,6 @@ public class MainPanel extends javax.swing.JPanel {
     loadConfig();
     copyGroups();
     groups.setModel(safeGroups.getTreeModel());
-    if (config.safe.length() > 0) loadSafe(false);
     table = (DefaultTableModel)entries.getModel();
     initDND();
   }
@@ -501,6 +500,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   public boolean dirty = false;
   public long timestamp = -1;
+  public boolean loaded = false;
 
   public static class Config {
     public String safe = "";
@@ -546,7 +546,7 @@ public class MainPanel extends javax.swing.JPanel {
     return name.substring(idx, name.length() - 5);
   }
 
-  private boolean loadSafe(boolean reopen) {
+  public boolean loadSafe(boolean reopen) {
     if (!reopen) {
       password = GetPassword.getPassword(null);
       if (password == null) return false;
@@ -569,6 +569,7 @@ public class MainPanel extends javax.swing.JPanel {
       safe.setRoot("group", "name=\"" + getSafeName() + "\"", "");
       copyGroups();
       dirty = false;
+      loaded = true;
       return true;
     } catch (Exception e) {
       JF.showError("Error", "Wrong Password");
@@ -645,6 +646,7 @@ public class MainPanel extends javax.swing.JPanel {
       timestamp = file.lastModified();
       dirty = false;
       saveConfig();
+      loaded = true;
       return true;
     } catch (Exception e) {
       JF.showError("Error", "Failed to save safe!\nError:" + e.toString());
@@ -698,6 +700,7 @@ public class MainPanel extends javax.swing.JPanel {
     timestamp = -1;
     saveConfig();
     copyGroups();
+    loaded = false;
   }
 
   private void closeSafe() {

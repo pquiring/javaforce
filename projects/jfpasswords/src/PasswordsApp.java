@@ -11,7 +11,7 @@ import javaforce.*;
 
 public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
 
-  private String version = "0.14";
+  private String version = "0.15";
 
   /**
    * Creates new form PasswordsApp
@@ -64,6 +64,9 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
     icon = new TrayIcon(scaled.getImage(), "Passwords", popup);
     icon.addActionListener(this);
     try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
+    if (panel.config.safe.length() == 0) {
+      setVisible(true);
+    }
   }
 
   /**
@@ -131,7 +134,7 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
   public static void main(String args[]) {
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        new PasswordsApp().setVisible(true);
+        new PasswordsApp();
       }
     });
   }
@@ -173,7 +176,9 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
         requestFocus();
         return;
       }
-      if (MainPanel.config.reAuthOnShow && (MainPanel.password != null)) {
+      if (panel.config.safe.length() > 0 && !panel.loaded) {
+        if (!panel.loadSafe(false)) return;
+      } else if (panel.config.reAuthOnShow && panel.loaded) {
         String password = GetPassword.getPassword(this);
         if (password == null) return;
         if (!password.equals(MainPanel.password)) {
