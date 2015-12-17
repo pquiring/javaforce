@@ -1,12 +1,15 @@
 What's new...
 
-Nov ?/2015 : JF 10.5.0 released!
+Dec 17/2015 : JF 10.5.0 released!
   - jfPaint/0.20
     - misc fixes
   - jfBroadcast/0.33
     - minor fix
   - NEW: javaforce.utils.RunAs
     - gui to run psexec (runas) (windows)
+  - jfPasswords/0.15 - 0.16
+    - 0.15 : changed startup behaviour (do not show window on startup)
+    - 0.16 : added 'avoid ambiguous chars' option
 
 Sept 24/2015 : JF 10.4.0 released!
   - SIPClient : added display name

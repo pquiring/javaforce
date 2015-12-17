@@ -1,6 +1,6 @@
 Buildroot: /.
 Name: javaforce
-Version: 10.4.0
+Version: 10.5.0
 Release: 1
 Summary: JavaForce Core Library
 License: LGPL

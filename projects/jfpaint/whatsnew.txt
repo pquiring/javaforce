@@ -1,6 +1,6 @@
 Whatsnew ...
 
-Nov ?, 2015 - v0.20 released!
+Dec 17, 2015 - v0.20 released!
   - fix : selection box is placed in top/left view port when scrolled or zoomed (was placed at image top/left)
   - fix : selecting fill tool in transparent mode would disable transparency slider
 
