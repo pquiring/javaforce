@@ -37,7 +37,7 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="reAuthOnShow" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="59" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -77,6 +77,7 @@
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="ambigous" min="-2" max="-2" attributes="0"/>
                       <Component id="syms" min="-2" max="-2" attributes="0"/>
                       <Group type="102" attributes="0">
                           <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
@@ -84,7 +85,7 @@
                           <Component id="passLength" min="-2" pref="66" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace pref="152" max="32767" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -98,6 +99,8 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
                   <Component id="syms" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="ambigous" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
               </Group>
           </Group>
@@ -119,6 +122,11 @@
         <Component class="javax.swing.JCheckBox" name="syms">
           <Properties>
             <Property name="text" type="java.lang.String" value="Include Symbols"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="ambigous">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Exclude ambiguous chars (1,I,l,O,0)"/>
           </Properties>
         </Component>
       </SubComponents>

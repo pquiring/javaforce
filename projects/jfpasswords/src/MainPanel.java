@@ -506,6 +506,7 @@ public class MainPanel extends javax.swing.JPanel {
     public String safe = "";
     public int passwordGeneratorLength = 12;
     public boolean passwordGeneratorSymbols = true;
+    public boolean passwordGeneratorAmbiguous = true;
     public boolean reAuthOnShow = true;
     public boolean bWindowMax = false;
     public int WindowXSize = -1, WindowYSize = -1;

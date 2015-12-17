@@ -26,7 +26,7 @@ public class EditEntry extends javax.swing.JDialog {
     super(parent, modal);
     initComponents();
     JF.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
-//    JF.assignHotKey(this, ok, KeyEvent.VK_ENTER);  //need to type into 
+//    JF.assignHotKey(this, ok, KeyEvent.VK_ENTER);  //need to type into
     setPosition();
     orgEchoChar = password.getEchoChar();
     this.table = table;
@@ -317,16 +317,26 @@ public class EditEntry extends javax.swing.JDialog {
     chars[26+26+10+9] = ')';
   }
   private static char chars[];
+  private Random r;
+  private char genChar(boolean sym, boolean amb) {
+    char ch = chars[r.nextInt(26+26+10+(sym?10:0))];
+    if (amb) {
+      //avoid ambiguous chars
+      if (ch == 'I' || ch == '1' || ch == 'l' || ch == '0' || ch == 'O') return genChar(sym, amb);
+    }
+    return ch;
+  }
   private void genPassword() {
     if (chars == null) init();
-    Random r = new Random();
     int len = MainPanel.This.config.passwordGeneratorLength;
     if (len < 4) len = 4;
     if (len > 64) len = 64;
     boolean sym = MainPanel.This.config.passwordGeneratorSymbols;
+    boolean amb = MainPanel.This.config.passwordGeneratorAmbiguous;
     String newPass = "";
+    r = new Random();
     for(int a=0;a<len;a++) {
-      newPass += chars[r.nextInt(26+26+10+(sym?10:0))];
+      newPass += genChar(sym, amb);
     }
     password.setText(newPass);
     confirm.setText(newPass);

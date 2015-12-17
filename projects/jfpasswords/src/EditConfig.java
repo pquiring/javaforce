@@ -24,6 +24,7 @@ public class EditConfig extends javax.swing.JDialog {
     setPosition();
     passLength.setValue(MainPanel.config.passwordGeneratorLength);
     syms.setSelected(MainPanel.config.passwordGeneratorSymbols);
+    ambigous.setSelected(MainPanel.config.passwordGeneratorAmbiguous);
     reAuthOnShow.setSelected(MainPanel.config.reAuthOnShow);
   }
 
@@ -40,6 +41,7 @@ public class EditConfig extends javax.swing.JDialog {
     jLabel1 = new javax.swing.JLabel();
     passLength = new javax.swing.JSpinner();
     syms = new javax.swing.JCheckBox();
+    ambigous = new javax.swing.JCheckBox();
     ok = new javax.swing.JButton();
     cancel = new javax.swing.JButton();
     reAuthOnShow = new javax.swing.JCheckBox();
@@ -56,6 +58,8 @@ public class EditConfig extends javax.swing.JDialog {
 
     syms.setText("Include Symbols");
 
+    ambigous.setText("Exclude ambiguous chars (1,I,l,O,0)");
+
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
@@ -63,12 +67,13 @@ public class EditConfig extends javax.swing.JDialog {
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(ambigous)
           .addComponent(syms)
           .addGroup(jPanel1Layout.createSequentialGroup()
             .addComponent(jLabel1)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(passLength, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addContainerGap(152, Short.MAX_VALUE))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -79,6 +84,8 @@ public class EditConfig extends javax.swing.JDialog {
           .addComponent(passLength, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(syms)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(ambigous)
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
@@ -113,7 +120,7 @@ public class EditConfig extends javax.swing.JDialog {
             .addComponent(ok))
           .addGroup(layout.createSequentialGroup()
             .addComponent(reAuthOnShow)
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 59, Short.MAX_VALUE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -140,12 +147,14 @@ public class EditConfig extends javax.swing.JDialog {
   private void okActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okActionPerformed
     MainPanel.config.passwordGeneratorLength = (Integer)passLength.getValue();
     MainPanel.config.passwordGeneratorSymbols = syms.isSelected();
+    MainPanel.config.passwordGeneratorAmbiguous = ambigous.isSelected();
     MainPanel.config.reAuthOnShow = reAuthOnShow.isSelected();
     accepted = true;
     dispose();
   }//GEN-LAST:event_okActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JCheckBox ambigous;
   private javax.swing.JButton cancel;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JPanel jPanel1;
