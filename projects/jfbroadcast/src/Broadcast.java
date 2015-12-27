@@ -93,7 +93,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     Dimension size = tray.getTrayIconSize();
     JFImage scaled = new JFImage(size.width, size.height);
     scaled.fill(0, 0, size.width, size.height, 0x00000000, true);  //fill with alpha transparent
-    if (false) {
+    if (true) {
       //scaled image (looks bad sometimes)
       scaled.getGraphics().drawImage(appicon.getImage()
         , 0, 0, size.width, size.height
