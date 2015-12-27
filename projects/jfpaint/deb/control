@@ -1,5 +1,5 @@
 Package: jfpaint
-Version: 0.20
+Version: 0.21
 Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 1

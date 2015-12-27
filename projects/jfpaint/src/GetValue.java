@@ -1,11 +1,13 @@
-import java.awt.Dimension;
-import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-
 /**
  *
  * @author pquiring
  */
+
+import java.awt.*;
+import java.awt.event.*;
+
+import javaforce.JF;
+
 public class GetValue extends javax.swing.JDialog {
 
   /**
@@ -20,6 +22,8 @@ public class GetValue extends javax.swing.JDialog {
     slider.setMaximum(max);
     slider.setValue(value);
     setPosition();
+    JF.assignHotKey(this, ok, KeyEvent.VK_ENTER);
+    JF.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
   }
 
   /**

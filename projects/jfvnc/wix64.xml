@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{00AC92AF-2BC7-489D-B72E-5A2ABB1FA9E7}" Version="0.14" Language="1033" Name="jfVNC" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{00AC92AF-2BC7-489D-B72E-5A2ABB1FA9E7}" Version="0.1" Language="1033" Name="jfVNC" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
