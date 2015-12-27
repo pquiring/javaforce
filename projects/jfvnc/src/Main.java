@@ -1,12 +1,15 @@
 /** Convert main args.
  *
  * @author pquiring
- */
+*/
+
+import javaforce.*;
+
 public class Main {
   public static void main(String args[]) {
     //convert arg "host[:port]" into "HOST" host "PORT" port
     if (args.length != 1) {
-      System.out.println("Usage:jfvnc HOST[:port]");
+      JF.showError("Error", "Usage:jfvnc host[:port]");
     }
     int idx = args[0].indexOf(':');
     String host, port;
