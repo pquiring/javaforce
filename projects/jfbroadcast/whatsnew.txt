@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+12-27-2015 : version 0.34
+  - update tray icon
+
 10-26-2015 : version 0.33
   - displaying lists was using old database name and aborting on systems that didn't have old database
 
