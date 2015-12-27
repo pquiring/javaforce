@@ -48,6 +48,9 @@
   <target name="jar" depends="depjars,compile" description="build jar file">
     <!-- Build jar file from class files -->
     <jar destfile="jars/javaforce.jar" includes="**/*.class" basedir="${build}">
+      <fileset dir="${src}">
+        <include name="**/*.png"/>
+      </fileset>
     </jar>
   </target>
 

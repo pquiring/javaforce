@@ -22,9 +22,7 @@ public class DHCPApp extends javax.swing.JFrame implements ActionListener {
     initComponents();
     //create tray icon to open app
     JFImage img = new JFImage();
-    img.setSize(16, 16);
-    img.fill(0, 0, 16, 16, 0, true);
-    img.getGraphics().drawString("Dh", 0,16);  //TODO : need an icon
+    img.loadPNG(this.getClass().getResourceAsStream("/javaforce/icons/dhcp.png"));
     PopupMenu popup = new PopupMenu();
     show = new MenuItem("Show");
     show.addActionListener(this);
