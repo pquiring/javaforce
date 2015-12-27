@@ -98,9 +98,9 @@ public class VncViewer extends java.applet.Applet
     readParameters();
 
     if (inSeparateFrame) {
-      vncFrame = new Frame("jVNC");
+      vncFrame = new Frame("jfVNC");
       if (!inAnApplet) {
-	vncFrame.add("Center", this);
+        vncFrame.add("Center", this);
       }
       vncContainer = vncFrame;
     } else {
@@ -239,7 +239,7 @@ public class VncViewer extends java.applet.Applet
 	fatalError(e.toString(), e);
       }
     }
-    
+
   }
 
 
@@ -691,7 +691,7 @@ public class VncViewer extends java.applet.Applet
   }
 
   synchronized public void fatalError(String str, Exception e) {
- 
+
     if (rfb != null) {
       // Not necessary to show error message if the error was caused
       // by I/O problems after the rfb.close() method call.
