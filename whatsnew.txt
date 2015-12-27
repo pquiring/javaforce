@@ -1,5 +1,13 @@
 What's new...
 
+Dec 27/2015 : JF 10.6.0 released!
+  - jfBroadcast/0.34
+    - fix tray icon
+  - jfPaint/0.21
+    - add enter/escape hot keys to dialog boxes
+  - jfVNC/0.1
+    - first release as seperate project
+
 Dec 17/2015 : JF 10.5.0 released!
   - jfPaint/0.20
     - misc fixes

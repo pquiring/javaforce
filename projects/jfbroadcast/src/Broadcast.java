@@ -24,7 +24,7 @@ import javaforce.voip.*;
 
 public class Broadcast extends javax.swing.JFrame implements SIPClientInterface, RTPInterface, ActionListener {
 
-  public final String version = "0.33";
+  public final String version = "0.34";
 
   public String startList = null;
   public String cfgSuffix = "";

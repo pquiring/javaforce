@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 10.5.0
+Version 10.6.0
 
 What is it?
 ===========
@@ -9,7 +9,7 @@ JavaForce is a Java library extending the capabilities of Java.
 
 The main library includes a VoIP stack and bindings for FFMPEG, OpenGL and Camera.
 
-Includes many apps built around the library such as jPhoneLite, jfVideo Createor, jfAudio, jfMusic, etc.
+Includes many apps built around the library such as jPhoneLite, jfVideo Creator, jfAudio, jfMusic, etc.
 
 JF is also the core library in the Java infused Linux Operating system : http://jfLinux.sourceforge.net
 
@@ -27,7 +27,7 @@ jPBXlite - Java VoIP PBX
 
 jfBroadcast - VoIP Auto Dialer System
 
-jfTerm - Telnet client application that includes support for:
+jfTerm - Telnet client application that includes support scripting
 
 jfEdit - multi-tabbed text editor.
 
@@ -90,4 +90,4 @@ Web : pquiring.github.io/javaforce
 
 Git : github.com/pquiring/javaforce
 
-Released : Dec 17, 2015
+Released : Dec 27, 2015
