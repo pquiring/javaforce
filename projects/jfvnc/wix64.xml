@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" UpgradeCode="{00AC92AF-2BC7-489D-B72E-5A2ABB1FA9E7}" Version="0.14" Language="1033" Name="jfVNC" Manufacturer="Peter Quiring">
+    <Package InstallerVersion="300" Compressed="yes" Platform="x64"/>
+    <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
+    <UIRef Id="WixUI_Minimal" />
+
+    <Icon Id="icon.ico" SourceFile="jfvnc.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
+
+    <!-- Step 1: Define the directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfvnc"/>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+<!-- Use the following if you want Shortcut in its own folder -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfVNC"/> -->
+      </Directory>
+    </Directory>
+
+    <!-- Step 2: Add files to your installer package -->
+    <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+      <Component Id="appfiles" Guid="{D5197194-0C29-4ED0-B79D-BEC0951B545D}" Win64="yes">
+        <File Id="jfvnc.jar" Source="jfvnc.jar" KeyPath="yes"/>
+        <File Id="javaforce.jar" Source="javaforce.jar"/>
+        <File Id="jfvnc.exe" Source="jfvnc.exe"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 2b: Add the shortcut to your installer package -->
+<!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
+    <DirectoryRef Id="ProgramMenuFolder">
+      <Component Id="ApplicationShortcut" Guid="{BDB61D94-3F15-46AF-B0EF-CF14D2FAF462}">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfVNC" Description="Java VNC Client" Target="[APPLICATIONROOTDIRECTORY]jfvnc.exe"
+          WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+<!-- Use the following if you want Shortcut in its own folder -->
+<!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfVNC" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 3: Tell WiX to install the files -->
+    <Feature Id="MainApplication" Title="Main Application" Level="1">
+      <ComponentRef Id="appfiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+    </Feature>
+  </Product>
+</Wix>
