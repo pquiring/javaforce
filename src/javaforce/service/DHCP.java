@@ -1,9 +1,7 @@
 package javaforce.service;
 
 /**
- * Basic DHCP Server (IP4 only)
- *
- * Only supports subnet mask of 255.255.255.0 for now (max 255 clients)
+ * DHCP Server (support IP4 only)
  *
  * @author pquiring
  *
@@ -13,111 +11,163 @@ package javaforce.service;
 import java.io.*;
 import java.nio.*;
 import java.net.*;
+import java.util.*;
 
 import javaforce.*;
 
 public class DHCP extends Thread {
   public static boolean SystemService = false;
 
-  private final static String UserConfigFile = JF.getUserPath() + "/.jdhcp.cfg";
-  private final static String SystemConfigFile = "/etc/jdhcp.cfg";
+  private final static String UserConfigFile = JF.getUserPath() + "/.jfdhcp.cfg";
+  private final static String SystemConfigFile = "/etc/jfdhcp.cfg";
 
-  private DatagramSocket ds;
   private static int maxmtu = 1500 - 20 - 8;  //IP=20 UDP=8
-  private static String server_ip;  //dhcp server ip
-  private static String pool_ip;  //pool starting ip
-  private static int pool_ip_int;  //pool starting ip (as int)
-  private static String mask;
-  private static int count = 0;
-  private static long pool_time[];  //timestamp of issue (0=not in use)
-  private static int pool_hwlen[];  //hwaddr len of client
-  private static byte pool_hwaddr[][];  //hwaddr of client
-  private static int next = 0;  //offset
-  private static String router;
-  private static String dns = "8.8.8.8";
-  private static int leaseTime = 3600 * 24;  //in seconds
+  private static class Pool {
+    public Object lock = new Object();
+    public String name;
+    public String server_ip;  //dhcp server ip
+    public int server_ip_int;
+    public String bind_ip;  //bind ip (0.0.0.0 = all interfaces)
+    public int bind_ip_int;
+    public String pool_first;  //pool first ip
+    public int pool_first_int;  //pool first ip (as int)
+    public String pool_last;  //pool last ip
+    public int pool_last_int;  //pool last ip (as int)
+    public String mask;  //subnet mask
+    public int mask_int;  //subnet mask (as int)
+    public int count = 0;  //# of IPs in pool
+    public long pool_time[];  //timestamp of issue (0=not in use)
+    public int pool_hwlen[];  //hwaddr len of client
+    public byte pool_hwaddr[][];  //hwaddr of client
+    public int next = 0;  //offset
+    public String router;
+    public String dns = "8.8.8.8";
+    public int leaseTime = 3600 * 24;  //in seconds
+  }
+  private static ArrayList<Pool> pools = new ArrayList<Pool>();
+  private static Pool global = new Pool();
   private static InetAddress broadcastAddress;
+  private static class Host {
+    public String ip;
+    public int ip_int;
+    public DatagramSocket ds;
+  }
+  private static ArrayList<Host> hosts = new ArrayList<Host>();
+  private static Object close = new Object();
+
+  public static enum State {Loading, Running, Error, Stopped};
+  public static State state = State.Loading;
+  public static Object stateMonitor = new Object();
 
   public void run() {
     if (SystemService)
-      JFLog.init("/var/log/jdhcp.log", false);
+      JFLog.init("/var/log/jfdhcp.log", true);
     else
-      JFLog.init(JF.getUserPath() + "/.jdhcp.log", false);
+      JFLog.init(JF.getUserPath() + "/.jfdhcp.log", true);
     try {
       loadConfig();
-      if (server_ip == null || router == null || pool_ip == null || mask == null || count <= 0) {
+      if (!validConfig()) {
         throw new Exception("invalid config");
       }
-      if (!validIP(server_ip)) throw new Exception("invalid server_ip");
-      if (!validIP(pool_ip)) throw new Exception("invalid pool_ip");
-      if (!validIP(router)) throw new Exception("invalid router");
-      if (!validIP(mask)) throw new Exception("invalid mask");
-      if (!validIP(dns)) throw new Exception("invalid dns");
-      if (!mask.equals("255.255.255.0")) {
-        throw new Exception("mask not supported");
-      }
-      if (count > 255) {
-        throw new Exception("pool too large");
-      }
-      if (leaseTime < 3600 || leaseTime > 3600 * 24) {
-        JFLog.log("leaseTime invalid, using 24 hrs");
-        leaseTime = 3600 * 24;
-      }
-      String p[] = pool_ip.split("[.]");
-      int lastp = JF.atoi(p[3]) + count;
-      if (lastp > 255) {
-        throw new Exception("invalid pool");
-      }
-      pool_time = new long[count];
-      pool_hwlen = new int[count];
-      pool_hwaddr = new byte[count][16];
       broadcastAddress = InetAddress.getByName("255.255.255.255");
-      for(int a=0;a<5;a++) {
-        try {
-          ds = new DatagramSocket(67);
-        } catch (Exception e) {
-          if (a == 4) {
-            JFLog.log(e);
-            return;
-          }
-          JF.sleep(1000);
-          continue;
-        }
-        break;
+      for(int a=0;a<hosts.size();a++) {
+        new HostWorker(hosts.get(a)).start();
       }
-      while (true) {
-        byte data[] = new byte[maxmtu];
-        DatagramPacket packet = new DatagramPacket(data, maxmtu);
-        ds.receive(packet);
-        new Worker(packet).start();
+      setState(State.Running);
+      //wait for close request
+      synchronized(close) {
+        close.wait();
       }
+      setState(State.Stopped);
     } catch (Exception e) {
       JFLog.log(e);
+      setState(State.Error);
+    }
+  }
+
+  public void setState(State newState) {
+    synchronized(stateMonitor) {
+      state = newState;
+      stateMonitor.notify();
     }
   }
 
   public void close() {
-    try {
-      ds.close();
-    } catch (Exception e) {}
+    int cnt = hosts.size();
+    for(int a=0;a<cnt;a++) {
+      hosts.get(a).ds.close();
+    }
+    synchronized(close) {
+      close.notify();
+    }
   }
 
-  enum Section {None, Global, Records};
+  private static class HostWorker extends Thread {
+    private Host host;
+    public HostWorker(Host host) {
+      this.host = host;
+    }
+    public void run() {
+      try {
+        host.ds = new DatagramSocket(67, InetAddress.getByName(host.ip));
+        while (true) {
+          byte data[] = new byte[maxmtu];
+          DatagramPacket packet = new DatagramPacket(data, maxmtu);
+          host.ds.receive(packet);
+          new RequestWorker(packet, host).start();
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    public void close() {
+      try {
+        host.ds.close();
+        host.ds = null;
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+  }
+
+  enum Section {None, Global, Pool};
 
   private final static String defaultConfig
-    = "[global]\r\n"
-    + "#remove all comments below and change as desired.\r\n"
+    = "#comments start with a # symbol\r\n"
+    + "[global]\r\n"
+    + "#dns=8.8.8.8\r\n"
+    + "\r\n"
+    + "[pool_192_168_0_x]\r\n"
     + "#server_ip=192.168.0.2\r\n"
-    + "#pool_ip=192.168.0.100\r\n"
+    + "#bind_ip=192.168.0.2\r\n"
+    + "#pool_first=192.168.0.100\r\n"
+    + "#pool_last=192.168.0.199\r\n"
     + "#mask=255.255.255.0\r\n"
-    + "#count=100\r\n"
     + "#router=192.168.0.1\r\n"
     + "#dns=8.8.8.8\r\n"
-    + "#lease=86400\r\n"
+    + "#lease=86400  #24 hrs\r\n"
+    + "\r\n"
+    + "[pool_192_168_1_x]\r\n"
+    + "#server_ip=192.168.1.2\r\n"
+    + "#bind_ip=192.168.1.2\r\n"
+    + "#pool_first=192.168.1.100\r\n"
+    + "#pool_last=192.168.1.250\r\n"
+    + "#mask=255.255.255.0\r\n"
+    + "#router=192.168.1.1\r\n"
+    + "#dns=8.8.8.8\r\n"
+    + "#lease=7200  #2 hrs\r\n"
+    + "\r\n"
+    + "[pool_10_1_1_x_for_relay_agents_only]\r\n"
+    + "#server_ip=192.168.1.2\r\n"
+    + "#bind_ip=0.0.0.0  #bind to all interfaces\r\n"
+    + "#pool_first=10.1.1.100\r\n"
+    + "#pool_last=10.1.1.250\r\n"
+    + "#mask=255.255.255.0\r\n"
+    + "#router=10.1.1.1\r\n"
     ;
 
   private void loadConfig() {
-    Section section = Section.None;
+    Pool pool = null;
     try {
       BufferedReader br = new BufferedReader(new FileReader(SystemService ? SystemConfigFile : UserConfigFile));
       while (true) {
@@ -127,24 +177,27 @@ public class DHCP extends Thread {
         int idx = ln.indexOf('#');
         if (idx != -1) ln = ln.substring(0, idx).trim();
         if (ln.length() == 0) continue;
-        if (ln.equals("[global]")) {
-          section = Section.Global;
+        JFLog.log("ln=" + ln);
+        if (ln.startsWith("[") && ln.endsWith("]")) {
+          String sectionName = ln.substring(1,ln.length() - 1);
+          if (sectionName.equals("global")) {
+            pool = global;
+          } else {
+            pool = new Pool();
+            pool.name = sectionName;
+            pools.add(pool);
+          }
           continue;
         }
-        switch (section) {
-          case Global:
-            if (ln.startsWith("pool_ip=")) pool_ip = ln.substring(8);
-            else if (ln.startsWith("server_ip=")) server_ip = ln.substring(10);
-            else if (ln.startsWith("mask=")) mask = ln.substring(5);
-            else if (ln.startsWith("dns=")) dns = ln.substring(4);
-            else if (ln.startsWith("router=")) router = ln.substring(7);
-            else if (ln.startsWith("count=")) count = JF.atoi(ln.substring(6));
-            else if (ln.startsWith("lease=")) leaseTime = JF.atoi(ln.substring(6));
-            //...
-            break;
-        }
+             if (ln.startsWith("pool_first=")) pool.pool_first = ln.substring(11);
+        else if (ln.startsWith("pool_last=")) pool.pool_last = ln.substring(10);
+        else if (ln.startsWith("server_ip=")) pool.server_ip = ln.substring(10);
+        else if (ln.startsWith("bind_ip=")) pool.bind_ip = ln.substring(8);
+        else if (ln.startsWith("mask=")) pool.mask = ln.substring(5);
+        else if (ln.startsWith("dns=")) pool.dns = ln.substring(4);
+        else if (ln.startsWith("router=")) pool.router = ln.substring(7);
+        else if (ln.startsWith("lease=")) pool.leaseTime = JF.atoi(ln.substring(6));
       }
-      pool_ip_int = IP4toInt(pool_ip);
     } catch (FileNotFoundException e) {
       //create default config
       try {
@@ -159,8 +212,80 @@ public class DHCP extends Thread {
     }
   }
 
-  private boolean validIP(String ip) {
+  private boolean validConfig() {
+    try {
+      if (pools.size() == 0) throw new Exception("no pools defined");
+      if (global.server_ip != null) {
+        if (!validIP4(global.server_ip)) throw new Exception("global : invalid server_ip");
+        global.server_ip_int = IP4toInt(global.server_ip);
+      }
+      if (global.bind_ip == null) global.bind_ip = "0.0.0.0";
+      global.bind_ip_int = IP4toInt(global.bind_ip);
+      int cnt = pools.size();
+      for(int a=0;a<cnt;a++) {
+        Pool pool = pools.get(a);
+        if (pool.server_ip == null) pool.server_ip = global.server_ip;
+        if (pool.router == null) pool.router = global.router;
+        if (pool.dns == null) pool.dns = global.dns;
+        if (pool.bind_ip == null) pool.bind_ip = global.bind_ip;
+        if (!validIP4(pool.server_ip)) throw new Exception(pool.name + " : invalid server_ip");
+        if (!validIP4(pool.pool_first)) throw new Exception(pool.name + " : invalid pool_first");
+        if (!validIP4(pool.pool_last)) throw new Exception(pool.name + " : invalid pool_last");
+        if (!validIP4(pool.router)) throw new Exception(pool.name + " : invalid router");
+        if (!validIP4(pool.mask)) throw new Exception(pool.name + " : invalid mask");
+        if (!validIP4(pool.dns)) throw new Exception(pool.name + " : invalid dns");
+        if (pool.leaseTime < 3600 || pool.leaseTime > 3600 * 24) {
+          JFLog.log(pool.name + " : leaseTime invalid, using 24 hrs");
+          pool.leaseTime = 3600 * 24;
+        }
+        pool.server_ip_int = IP4toInt(pool.server_ip);
+        pool.bind_ip_int = IP4toInt(pool.bind_ip);
+        pool.pool_first_int = IP4toInt(pool.pool_first);
+        pool.pool_last_int = IP4toInt(pool.pool_last);
+        pool.mask_int = IP4toInt(pool.mask);
+        if ((pool.pool_first_int & pool.mask_int) != (pool.pool_last_int & pool.mask_int)) {
+          throw new Exception(pool.name + " : invalid pool range : " + pool.pool_first + "-" + pool.pool_last + ",mask=" + pool.mask);
+        }
+        pool.count = pool.pool_last_int & pool.mask_int - pool.pool_first_int & pool.mask_int + 1;
+        pool.pool_time = new long[pool.count];
+        pool.pool_hwlen = new int[pool.count];
+        pool.pool_hwaddr = new byte[pool.count][16];
+      }
+      for(int a=0;a<cnt;a++) {
+        Pool poola = pools.get(a);
+        for(int b=0;b<cnt;b++) {
+          if (b == a) continue;
+          Pool poolb = pools.get(b);
+          if ((poola.pool_first_int & poola.mask_int) == (poolb.pool_first_int & poolb.mask_int)) {
+            throw new Exception("multiple pools overlap");
+          }
+        }
+      }
+      for(int a=0;a<cnt;a++) {
+        Pool pool = pools.get(a);
+        boolean hasHost = false;
+        for(int b=0;b<hosts.size();b++) {
+          Host host = hosts.get(b);
+          if (host.ip == pool.bind_ip) {hasHost = true; break;}
+        }
+        if (!hasHost) {
+          Host host = new Host();
+          host.ip = pool.bind_ip;
+          host.ip_int = IP4toInt(host.ip);
+          hosts.add(host);
+        }
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+    return true;
+  }
+
+  private boolean validIP4(String ip) {
+    if (ip == null) return false;
     String o[] = ip.split("[.]");
+    if (o.length != 4) return false;
     for(int a=0;a<4;a++) {
       int v = Integer.valueOf(o[a]);
       if (v < 0) return false;
@@ -169,7 +294,7 @@ public class DHCP extends Thread {
     return true;
   }
 
-  private int IP4toInt(String ip) {
+  private static int IP4toInt(String ip) {
     String o[] = ip.split("[.]");
     int ret = 0;
     for(int a=0;a<4;a++) {
@@ -179,13 +304,17 @@ public class DHCP extends Thread {
     return ret;
   }
 
-  private byte[] IP4toByteArray(String ip) {
+  private static byte[] IP4toByteArray(String ip) {
     String o[] = ip.split("[.]");
     byte ret[] = new byte[4];
     for(int a=0;a<4;a++) {
       ret[a] = (byte)JF.atoi(o[a]);
     }
     return ret;
+  }
+
+  private static String IP4toString(int ip) {
+    return String.format("%d.%d.%d.%d", ip >> 24, (ip >> 16) & 0xff, (ip >> 8) & 0xff, ip & 0xff);
   }
 
   private static final int cookie = 0x63825363;
@@ -212,41 +341,70 @@ public class DHCP extends Thread {
   private static final byte OPT_DHCP_SERVER_IP = 54;
   private static final byte OPT_END = -1;  //255
 
-  private static final Object lock = new Object();
-
-  private class Worker extends Thread {
+  private static class RequestWorker extends Thread {
     private DatagramPacket packet;
-    private byte data[];
+    private Host host;
 
+    private byte req[];
     private byte reply[];
     private int replyOffset;  //offset while encoding name
     private ByteBuffer replyBuffer;
 
-    public Worker(DatagramPacket packet) {
+    private Pool pool;
+
+    public RequestWorker(DatagramPacket packet, Host host) {
       this.packet = packet;
+      this.host = host;
     }
     public void run() {
       try {
-        data = packet.getData();
-        ByteBuffer bb = ByteBuffer.wrap(data);
+        req = packet.getData();
+        ByteBuffer bb = ByteBuffer.wrap(req);
         bb.order(ByteOrder.BIG_ENDIAN);
-        byte opcode = data[0];
+        byte opcode = req[0];
         if (opcode != DHCP_OPCODE_REQUEST) throw new Exception("not a request");
-        byte hwtype = data[1];
-        byte hwlen = data[2];
-        byte hop = data[3];
+        byte hwtype = req[1];
+//        if (hwtype != 1) throw new Exception("not ethernet");
+        byte hwlen = req[2];
+//        if (hwlen != 6) throw new Exception("bad hardware length");
+        byte hop = req[3];
         int id = bb.getInt(4);
         short seconds = bb.getShort(8);
         short flags = bb.getShort(10);
-        int cip = bb.getInt(12);
-        int yip = bb.getInt(16);
-        int yipOffset = -1;
-        if ((yip & 0xffffff00) == (pool_ip_int & 0xffffff00)) {
-          yipOffset = yip - pool_ip_int;
-        }
-        int sip = bb.getInt(20);
-        int gip = bb.getInt(24);
+        int cip = bb.getInt(12);  //client ip
+        int yip = bb.getInt(16);  //your ip
+        int sip = bb.getInt(20);  //server ip
+        int rip = bb.getInt(24);  //relay ip
         int msgType = -1;
+        int yipOffset = -1;
+        //detect pool
+        int cnt = pools.size();
+        int from_ip = rip;
+        if (from_ip == 0) {
+          String src = packet.getAddress().getHostAddress();
+          from_ip = IP4toInt(src);
+        }
+        if (from_ip == 0) {
+          from_ip = host.ip_int;
+        }
+        if (from_ip == 0 && pools.size() == 1) {
+          from_ip = pools.get(0).server_ip_int;
+        }
+        if (from_ip == 0) {
+          throw new Exception("can not determine pool for request");
+        }
+//        JFLog.log("ip=" + IP4toString(from_ip));
+        for(int a=0;a<cnt;a++) {
+          pool = pools.get(a);
+          if ((pool.pool_first_int & pool.mask_int) == (from_ip & pool.mask_int)) {
+            break;
+          }
+          pool = null;
+        }
+        if (pool == null) throw new Exception("no pool for request");
+        if (yip !=0 && (yip & pool.mask_int) == (pool.pool_first_int & pool.mask_int)) {
+          yipOffset = yip - pool.pool_first_int;
+        }
         //28 = 16 bytes = client hardware address (ethernet : 6 bytes)
         //44 = 64 bytes = server host name (ignored)
         //108 = 128 bytes = boot filename (ignored)
@@ -254,19 +412,19 @@ public class DHCP extends Thread {
         //240 = options...
         int offset = 240;
         while (true) {
-          byte opt = data[offset++];
+          byte opt = req[offset++];
           if (opt == OPT_PAD) continue;
-          byte len = data[offset++];
+          byte len = req[offset++];
           switch (opt) {
             case OPT_DHCP_MSG_TYPE:
               if (len != 1) throw new Exception("bad dhcp msg type");
-              msgType = data[offset];
+              msgType = req[offset];
               break;
             case OPT_REQUEST_IP:
               if (len != 4) throw new Exception("bad request ip size");
               yip = bb.getInt(offset);
-              if ((yip & 0xffffff00) == (pool_ip_int & 0xffffff00)) {
-                yipOffset = yip - pool_ip_int;
+              if ((yip & pool.mask_int) == (pool.pool_first_int & pool.mask_int)) {
+                yipOffset = yip - pool.pool_first_int;
               }
               break;
           }
@@ -277,81 +435,80 @@ public class DHCP extends Thread {
         long now = System.currentTimeMillis();
         switch (msgType) {
           case DHCPDISCOVER:
-            synchronized(lock) {
-              int i = next++;
+            synchronized(pool.lock) {
+              int i = pool.next++;
               int c = 0;
-              while (c < count) {
-                if (pool_time[i] != 0) {
-                  if (pool_time[i] < now) pool_time[i] = 0;
+              while (c < pool.count) {
+                if (pool.pool_time[i] != 0) {
+                  if (pool.pool_time[i] < now) pool.pool_time[i] = 0;
                 }
-                if (pool_time[i] == 0) {
+                if (pool.pool_time[i] == 0) {
                   //check with ping (Java 5 required)
-                  byte addr[] = IP4toByteArray(pool_ip);
-                  addr[3] += i;
+                  byte addr[] = IP4toByteArray(pool.pool_first + i);
                   InetAddress inet = InetAddress.getByAddress(addr);
                   if (inet.isReachable(1000)) {
                     //IP still in use!
                     //this could happen if DHCP service is restarted since leases are only saved in memory
-                    pool_time[i] = now + (leaseTime * 1000);
+                    pool.pool_time[i] = now + (pool.leaseTime * 1000);
                   } else {
                     //offer this
-                    sendReply(addr, DHCPOFFER, id);
-                    next = i+1;
-                    if (next == count) next = 0;
+                    sendReply(addr, DHCPOFFER, id, pool, rip);
+                    pool.next = i+1;
+                    if (pool.next == pool.count) pool.next = 0;
                     break;
                   }
                 }
                 c++;
                 i++;
-                if (i == count) i = 0;
+                if (i == pool.count) i = 0;
               }
             }
             //nothing left in pool to send an offer (ignore request)
             break;
           case DHCPREQUEST:
             //mark ip as used and send ack or nak if already in use
-            if (yipOffset < 0 || yipOffset >= count) {
+            if (yipOffset < 0 || yipOffset >= pool.count) {
               JFLog.log("request out of range");
               break;
             }
-            synchronized(lock) {
-              byte addr[] = IP4toByteArray(pool_ip);
+            synchronized(pool.lock) {
+              byte addr[] = IP4toByteArray(pool.pool_first);
               addr[3] += yipOffset;
-              if (pool_time[yipOffset] != 0) {
+              if (pool.pool_time[yipOffset] != 0) {
                 //check if hwaddr is the same
                 boolean same = true;
-                for(int a=0;a<pool_hwlen[yipOffset];a++) {
-                  if (pool_hwaddr[yipOffset][a] != data[28 + a]) {same = false; break;}
+                for(int a=0;a<pool.pool_hwlen[yipOffset];a++) {
+                  if (pool.pool_hwaddr[yipOffset][a] != req[28 + a]) {same = false; break;}
                 }
-                if (same) pool_time[yipOffset] = 0;
+                if (same) pool.pool_time[yipOffset] = 0;
               }
-              if (pool_time[yipOffset] == 0) {
+              if (pool.pool_time[yipOffset] == 0) {
                 //send ACK
-                pool_time[yipOffset] = now + (leaseTime * 1000);
-                pool_hwlen[yipOffset] = hwlen;
-                System.arraycopy(data, 28, pool_hwaddr[yipOffset], 0, 16);
-                sendReply(addr, DHCPACK, id);
+                pool.pool_time[yipOffset] = now + (pool.leaseTime * 1000);
+                pool.pool_hwlen[yipOffset] = hwlen;
+                System.arraycopy(req, 28, pool.pool_hwaddr[yipOffset], 0, 16);
+                sendReply(addr, DHCPACK, id, pool, rip);
               } else {
                 //send NAK
-                sendReply(addr, DHCPNAK, id);
+                sendReply(addr, DHCPNAK, id, pool, rip);
               }
             }
             break;
           case DHCPRELEASE:
             //mark ip as unused
-            if (yipOffset < 0 || yipOffset >= count) {
+            if (yipOffset < 0 || yipOffset >= pool.count) {
               JFLog.log("release out of range");
               break;
             }
-            synchronized(lock) {
-              if (pool_time[yipOffset] != 0) {
+            synchronized(pool.lock) {
+              if (pool.pool_time[yipOffset] != 0) {
                 //check if hwaddr is the same
                 boolean same = true;
-                for(int a=0;a<pool_hwlen[yipOffset];a++) {
-                  if (pool_hwaddr[yipOffset][a] != data[28 + a]) {same = false; break;}
+                for(int a=0;a<pool.pool_hwlen[yipOffset];a++) {
+                  if (pool.pool_hwaddr[yipOffset][a] != req[28 + a]) {same = false; break;}
                 }
                 if (!same) break;
-                pool_time[yipOffset] = 0;
+                pool.pool_time[yipOffset] = 0;
               }
             }
             break;
@@ -363,34 +520,37 @@ public class DHCP extends Thread {
       }
     }
 
-    private void sendReply(byte outData[], int outDataLength) {
+    private void sendReply(byte outData[], int outDataLength, int rip) {
       try {
         DatagramPacket out = new DatagramPacket(outData, outDataLength);
-        out.setAddress(broadcastAddress);
+        if (rip == 0)
+          out.setAddress(broadcastAddress);
+        else
+          out.setAddress(InetAddress.getByAddress(new byte[] {(byte)(rip >> 24), (byte)((rip >> 16) & 0xff), (byte)((rip >> 8) & 0xff), (byte)(rip & 0xff)}));
         out.setPort(packet.getPort());
-        ds.send(out);
+        host.ds.send(out);
       } catch (Exception e) {
         JFLog.log(e);
       }
     }
 
-    private void sendReply(byte yip[], int msgType /*offer,ack,nak*/, int id) {
+    private void sendReply(byte yip[], int msgType /*offer,ack,nak*/, int id, Pool pool, int rip) {
       reply = new byte[maxmtu];
       replyBuffer = ByteBuffer.wrap(reply);
       replyBuffer.order(ByteOrder.BIG_ENDIAN);
       replyOffset = 0;
       reply[replyOffset++] = DHCP_OPCODE_REPLY;  //reply opcode
-      reply[replyOffset++] = data[1];  //hwtype
-      reply[replyOffset++] = data[2];  //hwlen
+      reply[replyOffset++] = req[1];  //hwtype
+      reply[replyOffset++] = req[2];  //hwlen
       reply[replyOffset++] = 0;  //hops
       putInt(id);
       putShort((short)0);  //seconds
       putShort((short)0);  //flags
       putInt(0);  //client IP
       putByteArray(yip);  //your IP
-      putIP4(server_ip);  //server ip
-      putIP4(router);  //router ip
-      System.arraycopy(data, replyOffset, reply, replyOffset, 16);  //client hwaddr
+      putIP4(pool.server_ip);  //server ip
+      putInt(rip);  //relay ip
+      System.arraycopy(req, replyOffset, reply, replyOffset, 16);  //client hwaddr
       replyOffset += 16;
       replyOffset += 64;  //server name
       replyOffset += 128;  //boot filename (legacy BOOTP)
@@ -403,27 +563,27 @@ public class DHCP extends Thread {
 
       reply[replyOffset++] = OPT_SUBNET_MASK;
       reply[replyOffset++] = 4;
-      putIP4(mask);
+      putIP4(pool.mask);
 
       reply[replyOffset++] = OPT_DNS;
       reply[replyOffset++] = 4;
-      putIP4(dns);
+      putIP4(pool.dns);
 
       reply[replyOffset++] = OPT_ROUTER;
       reply[replyOffset++] = 4;
-      putIP4(router);
+      putIP4(pool.router);
 
       reply[replyOffset++] = OPT_DHCP_SERVER_IP;
       reply[replyOffset++] = 4;
-      putIP4(server_ip);
+      putIP4(pool.server_ip);
 
       reply[replyOffset++] = OPT_LEASE_TIME;
       reply[replyOffset++] = 4;
-      putInt(leaseTime);
+      putInt(pool.leaseTime);
 
       reply[replyOffset++] = OPT_END;
 
-      sendReply(reply, replyOffset);
+      sendReply(reply, replyOffset, rip);
     }
 
     private void putByteArray(byte ba[]) {

@@ -1113,9 +1113,14 @@ public class JFImage extends JComponent implements Icon {
 
   /** Uses java.awt.Robot to capture and return a screen image. */
   public static JFImage createScreenCapture() {
+    return createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+  }
+
+  /** Uses java.awt.Robot to capture and return a screen image of specified rectangle. */
+  public static JFImage createScreenCapture(Rectangle rect) {
     try {
       JFImage img = new JFImage();
-      BufferedImage cap = new Robot().createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+      BufferedImage cap = new Robot().createScreenCapture(rect);
       int width = cap.getWidth();
       int height = cap.getHeight();
       if (cap.getType() == BufferedImage.TYPE_INT_ARGB) {
