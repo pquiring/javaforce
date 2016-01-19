@@ -95,7 +95,9 @@ public class DHCP extends Thread {
   public void close() {
     int cnt = hosts.size();
     for(int a=0;a<cnt;a++) {
-      hosts.get(a).ds.close();
+      DatagramSocket ds;
+      ds = hosts.get(a).ds;
+      if (ds != null) ds.close();
     }
     synchronized(close) {
       close.notify();
@@ -167,6 +169,8 @@ public class DHCP extends Thread {
     ;
 
   private void loadConfig() {
+    pools.clear();
+    hosts.clear();
     Pool pool = null;
     try {
       BufferedReader br = new BufferedReader(new FileReader(SystemService ? SystemConfigFile : UserConfigFile));

@@ -5,6 +5,9 @@
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
 
+    <Icon Id="icon.ico" SourceFile="jfstun.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
+
     <!-- Step 1: Define the directory structure -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">

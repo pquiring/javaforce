@@ -1,9 +1,9 @@
 DHCP Server
 ===========
 
-A simple DHCP Server:
- - supports IP4 only
- - does NOT support multi-homed systems (serves all NICs from one pool only)
+A DHCP Server, supporting:
+ - IP4 only
+ - multiple pools
 
 WebSite: http://jfdhcp.sourceforge.net
 

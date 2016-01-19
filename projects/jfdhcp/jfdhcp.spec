@@ -1,6 +1,6 @@
 Buildroot: .
 Name: jfdhcp
-Version: 0.2
+Version: 0.3
 Release: 1
 Summary: DHCP Server
 License: LGPL
