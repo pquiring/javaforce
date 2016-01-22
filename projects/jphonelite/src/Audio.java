@@ -26,6 +26,7 @@ public class Audio {
   private Player player;
   private Reader reader;
   private Thread restart;
+  private boolean primeOutput;
   private PhoneLine lines[];
   private int line = -1;
   private boolean inRinging = false, outRinging = false;
@@ -122,10 +123,10 @@ public class Audio {
       JFLog.log("Output.start() failed");
       return false;
     }
+    primeOutput = true;
     synchronized(activeLock) {
       active = true;
     }  
-    write(silence);  //prime output
     player = new Player();
     player.start();
     reader = new Reader();
@@ -244,7 +245,11 @@ public class Audio {
   private void write(short buf[]) {
     if (player == null || !active) return;
     scaleBufferVolume(buf, 882, volPlay);
-    player.buffer.add(buf, 0, 882);
+    if (primeOutput) {
+      player.add(silence);      
+      primeOutput = false;
+    }
+    player.add(buf);
     synchronized(player.lock) {
       player.lock.notify();
     }
@@ -762,7 +767,7 @@ public class Audio {
   private class Player extends Thread {
     private volatile boolean playerActive = true;
     private volatile boolean done = false;
-    public AudioBuffer buffer = new AudioBuffer(44100, 1, 2);  //freq, chs, seconds
+    private AudioBuffer buffer = new AudioBuffer(44100, 1, 2);  //freq, chs, seconds
     public final Object lock = new Object();
     public void run() {
       short buf[] = new short[882];
@@ -782,6 +787,9 @@ public class Audio {
       }
       done = true;
     }
+    public void add(short buf[]) {
+      buffer.add(buf, 0, 882);
+    }
     public void flush() {
       buffer.clear();
     }
@@ -798,7 +806,7 @@ public class Audio {
   private class Reader extends Thread {
     private volatile boolean readerActive = true;
     private volatile boolean done = false;
-    public AudioBuffer buffer = new AudioBuffer(44100, 1, 2);  //freq, chs, seconds
+    private AudioBuffer buffer = new AudioBuffer(44100, 1, 2);  //freq, chs, seconds
     public void run() {
       short buf[] = new short[882];
       while (readerActive) {
