@@ -123,6 +123,7 @@ public class EditSettings extends javax.swing.JDialog {
     jLabel30 = new javax.swing.JLabel();
     downloadPath = new javax.swing.JTextField();
     selectDownloadPath = new javax.swing.JButton();
+    keepAudioOpen = new javax.swing.JCheckBox();
     video = new javax.swing.JPanel();
     jPanel14 = new javax.swing.JPanel();
     useNativeVideo = new javax.swing.JRadioButton();
@@ -680,7 +681,7 @@ public class EditSettings extends javax.swing.JDialog {
             .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(move_audio_codec_down)
               .addComponent(move_audio_codec_up, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE))))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        .addContainerGap(18, Short.MAX_VALUE))
     );
     jPanel15Layout.setVerticalGroup(
       jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -718,17 +719,24 @@ public class EditSettings extends javax.swing.JDialog {
       }
     });
 
+    keepAudioOpen.setText("Keep Audio Open");
+
     javax.swing.GroupLayout jPanel17Layout = new javax.swing.GroupLayout(jPanel17);
     jPanel17.setLayout(jPanel17Layout);
     jPanel17Layout.setHorizontalGroup(
       jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel17Layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jLabel30)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(downloadPath)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(selectDownloadPath)
+        .addGroup(jPanel17Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jPanel17Layout.createSequentialGroup()
+            .addComponent(jLabel30)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(downloadPath, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(selectDownloadPath))
+          .addGroup(jPanel17Layout.createSequentialGroup()
+            .addComponent(keepAudioOpen)
+            .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
     );
     jPanel17Layout.setVerticalGroup(
@@ -739,6 +747,8 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(jLabel30)
           .addComponent(downloadPath, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(selectDownloadPath))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(keepAudioOpen)
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
@@ -752,7 +762,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(jPanel15, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel17, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap(156, Short.MAX_VALUE))
+        .addContainerGap(148, Short.MAX_VALUE))
     );
     audioLayout.setVerticalGroup(
       audioLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2345,6 +2355,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JScrollPane jScrollPane4;
   private javax.swing.JScrollPane jScrollPane5;
   private javax.swing.JTabbedPane jTabbedPane1;
+  private javax.swing.JCheckBox keepAudioOpen;
   private javax.swing.JLabel keyStatus;
   private javax.swing.JPanel l1;
   private javax.swing.JTextField l1auth;
@@ -2672,7 +2683,7 @@ public class EditSettings extends javax.swing.JDialog {
     hideWhenMinimized.setSelected(Settings.current.hideWhenMinimized);
     exitWhenClosed.setSelected(Settings.current.exitWhenClosed);
     alwaysOnTop.setSelected(Settings.current.alwaysOnTop);
-//    keepAudioOpen.setSelected(Settings.current.keepAudioOpen);
+    keepAudioOpen.setSelected(Settings.current.keepAudioOpen);
     smallerFont.setSelected(Settings.current.smallerFont);
     usePublish.setSelected(Settings.current.usePublish);
     reinvite.setSelected(Settings.current.reinvite);
@@ -2878,7 +2889,7 @@ public class EditSettings extends javax.swing.JDialog {
     Settings.current.hideWhenMinimized = hideWhenMinimized.isSelected();
     Settings.current.exitWhenClosed = exitWhenClosed.isSelected();
     Settings.current.alwaysOnTop = alwaysOnTop.isSelected();
-//    Settings.current.keepAudioOpen = keepAudioOpen.isSelected();
+    Settings.current.keepAudioOpen = keepAudioOpen.isSelected();
     Settings.current.smallerFont = smallerFont.isSelected();
     Settings.current.usePublish = usePublish.isSelected();
     Settings.current.reinvite = reinvite.isSelected();

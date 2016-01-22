@@ -42,6 +42,7 @@ public class AudioInput {
       device = "<default>";
     }
     af = new AudioFormat((float) freq, bits, chs, true, true);
+    JFLog.log("AudioInput:AudioFormat=" + af);
     Mixer.Info[] mi = AudioSystem.getMixerInfo();
     int idx = -1;
     for (int a = 0; a < mi.length; a++) {
@@ -87,6 +88,11 @@ public class AudioInput {
     }
     BE.byteArray2shortArray(buf8, buf16);
     return true;
+  }
+  
+  public void flush() {
+    tdl.drain();
+    tdl.flush();
   }
 
   public boolean stop() {

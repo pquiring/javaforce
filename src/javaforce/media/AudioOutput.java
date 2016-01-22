@@ -41,6 +41,7 @@ public class AudioOutput {
       device = "<default>";
     }
     af = new AudioFormat((float) freq, bits, chs, true, true);
+    JFLog.log("AudioOutput:AudioFormat=" + af);
     Mixer.Info[] mi = AudioSystem.getMixerInfo();
     int idx = -1;
     for (int a = 0; a < mi.length; a++) {
@@ -95,6 +96,11 @@ public class AudioOutput {
   public boolean write(short[] buf16) {
     sdl.write(BE.shortArray2byteArray(buf16, buf8), 0, buf16.length * 2);
     return true;
+  }
+  
+  public void flush() {
+    sdl.drain();
+    sdl.flush();
   }
 
   public boolean stop() {

@@ -24,6 +24,8 @@ public class Audio {
   private AudioInput input;
   private Timer timer;
   private Player player;
+  private Reader reader;
+  private Thread restart;
   private PhoneLine lines[];
   private int line = -1;
   private boolean inRinging = false, outRinging = false;
@@ -32,6 +34,7 @@ public class Audio {
   private boolean mute = false;
   private DTMF dtmf = new DTMF(44100);
   private boolean active = false;
+  private Object activeLock = new Object();
   private int deactivateDelay;
   private static final int deactivateDelayInit = 50 * 5;  //5 seconds
   private int underBufferCount;
@@ -48,6 +51,20 @@ public class Audio {
     sampleRate50 = sampleRate / 50;
     sampleRate50x2 = sampleRate50 * 2;
     //setup inbound ring tone
+    loadRingTones();
+    
+    if (!start()) return false;
+
+    timer = new Timer();
+    timer.scheduleAtFixedRate(new TimerTask() {
+      public void run() {
+        process();
+      }
+    }, 0, 20);
+    return true;
+  }
+  
+  private void loadRingTones() {
     if (Settings.current.inRingtone.startsWith("*")) {
       if (Settings.current.inRingtone.equals("*RING")) {
         inWav = new javaforce.voip.Wav();
@@ -87,13 +104,14 @@ public class Audio {
         initOutRinging(440, 480, 2000, 4000, 2000, 4000);  //north america
       }
     }
-
+  }
+  
+  private boolean start() {
     output = new AudioOutput();
     input = new AudioInput();
-    System.out.println("output=" + output + ",input=" + input);
+    JFLog.log("output=" + output + ",input=" + input);
     output.listDevices();
     input.listDevices();
-    active = true;
     deactivateDelay = deactivateDelayInit;
     underBufferCount = 0;
     if (!input.start(1, sampleRate, 16, sampleRate50x2, Settings.current.audioInput)) {
@@ -104,19 +122,38 @@ public class Audio {
       JFLog.log("Output.start() failed");
       return false;
     }
+    synchronized(activeLock) {
+      active = true;
+    }  
     write(silence);  //prime output
     player = new Player();
     player.start();
-    timer = new Timer();
-    timer.scheduleAtFixedRate(new TimerTask() {
-      public void run() {
-        process();
-      }
-    }, 0, 20);
+    reader = new Reader();
+    reader.start();
     return true;
   }
 
   int snd_id_play = -1, snd_id_record = -1;
+  
+  private void stop() {
+    if (player != null) {
+      player.cancel();
+      player = null;
+    }
+    if (reader != null) {
+      reader.cancel();
+      reader = null;
+    }
+    if (active) {
+      synchronized(activeLock) {
+        active = false;
+      }
+      output.stop();
+      input.stop();
+    }
+    mc.setMeterPlay(0);
+    mc.setMeterRec(0);
+  }
 
   /** Frees resources. */
 
@@ -126,21 +163,11 @@ public class Audio {
       timer = null;
       JF.sleep(25);  //wait for any pending timer events
     }
-    if (player != null) {
-      player.cancel();
-      player = null;
-    }
     if (record != null) {
       record.close();
       record = null;
     }
-    if (active) {
-      output.stop();
-      input.stop();
-      active = false;
-    }
-    mc.setMeterPlay(0);
-    mc.setMeterRec(0);
+    stop();
     inWav = null;
     outWav = null;
   }
@@ -215,7 +242,7 @@ public class Audio {
   /** Writes data to the audio system (output to speakers). */
 
   private void write(short buf[]) {
-    if (player == null) return;
+    if (player == null || !active) return;
     scaleBufferVolume(buf, 882, volPlay);
     player.buffer.add(buf, 0, 882);
     synchronized(player.lock) {
@@ -237,7 +264,8 @@ public class Audio {
   /** Reads data from the audio system (input from mic). */
 
   private boolean read(short buf[]) {
-    if (!input.read(buf)) return false;
+    if (reader == null || !active) return false;
+    if (!reader.read(buf)) return false;
     scaleBufferVolume(buf, buf.length, volRec);
     int lvl = 0;
     for (int a = 0; a < buf.length; a++) {
@@ -259,6 +287,7 @@ public class Audio {
   public void process() {
     //20ms timer
     if (timer == null) return;
+    long start = System.nanoTime();
     try {
       //do playback
       int cc = 0;  //conf count
@@ -266,33 +295,35 @@ public class Audio {
       if (!active) {
         for (int a = 0; a < 6; a++) {
           if ((lines[a].talking) || (lines[a].ringing) || (lines[a].dtmf != 'x')) {
-            active = true;
-            deactivateDelay = deactivateDelayInit;
-            underBufferCount = 0;
-            output.start(1, sampleRate, 16, sampleRate50x2, Settings.current.audioOutput);
-            write(silence);  //prime output
-            input.start(1, sampleRate, 16, sampleRate50x2, Settings.current.audioInput);
+            if (restart == null) {
+              restart = new Thread() {
+                public void run() {
+                  Audio.this.start();
+                  restart = null;
+                }
+              };
+              restart.start();
+            }
             break;
           }
         }
       } else {
-        int iuc = 0;  //in use count
-        for (int a = 0; a < 6; a++) {
-          if ((lines[a].talking) || (lines[a].ringing) || (lines[a].dtmf != 'x')) {
-            iuc++;
+        if (!Settings.current.keepAudioOpen) {
+          int iuc = 0;  //in use count
+          for (int a = 0; a < 6; a++) {
+            if ((lines[a].talking) || (lines[a].ringing) || (lines[a].dtmf != 'x')) {
+              iuc++;
+            }
           }
-        }
-        if (iuc == 0) {
-          deactivateDelay--;
-          if (deactivateDelay <= 0) {
-            active = false;
-            output.stop();
-            input.stop();
-            mc.setMeterPlay(0);
-            mc.setMeterRec(0);
+          if (iuc == 0) {
+            deactivateDelay--;
+            if (deactivateDelay <= 0) {
+              JFLog.log("Audio inactive");
+              stop();
+            }
+          } else {
+            deactivateDelay = deactivateDelayInit;
           }
-        } else {
-          deactivateDelay = deactivateDelayInit;
         }
       }
       for (int a = 0; a < 6; a++) {
@@ -426,6 +457,11 @@ public class Audio {
         }
       }
       if (record != null) record.add(recording);
+      long stop = System.nanoTime();
+      long diff = (stop - start) / 1000;
+      if (diff > 20000) {
+        JFLog.log("process took:" + diff);
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -724,13 +760,13 @@ public class Audio {
   public Record record;
 
   private class Player extends Thread {
-    private volatile boolean active = true;
+    private volatile boolean playerActive = true;
     private volatile boolean done = false;
     public AudioBuffer buffer = new AudioBuffer(44100, 1, 2);  //freq, chs, seconds
     public final Object lock = new Object();
     public void run() {
       short buf[] = new short[882];
-      while (active) {
+      while (playerActive) {
         synchronized(lock) {
           if (buffer.size() < 882) {
             try { lock.wait(); } catch (Exception e) {}
@@ -738,18 +774,59 @@ public class Audio {
           if (buffer.size() < 882) continue;
         }
         buffer.get(buf, 0, 882);
-        output.write(buf);
+        synchronized(activeLock) {
+          if (active) {
+            output.write(buf);
+          }
+        }
       }
       done = true;
     }
+    public void flush() {
+      buffer.clear();
+    }
     public void cancel() {
-      active = false;
+      playerActive = false;
       while (!done) {
         synchronized(lock) {
           lock.notify();
         }
         JF.sleep(10);
       }
+    }
+  }
+  private class Reader extends Thread {
+    private volatile boolean readerActive = true;
+    private volatile boolean done = false;
+    public AudioBuffer buffer = new AudioBuffer(44100, 1, 2);  //freq, chs, seconds
+    public void run() {
+      short buf[] = new short[882];
+      while (readerActive) {
+        synchronized(activeLock) {
+          if (active) {
+            if (input.read(buf)) {
+              buffer.add(buf, 0, 882);
+              continue;
+            }
+          }
+        }
+        JF.sleep(10);
+      }
+      done = true;
+    }
+    public void flush() {
+      buffer.clear();
+    }
+    public void cancel() {
+      readerActive = false;
+      while (!done) {
+        JF.sleep(10);
+      }
+    }
+    public boolean read(short buf[]) {
+      if (buffer.size() < buf.length) return false;
+      buffer.get(buf, 0, buf.length);
+      return true;
     }
   }
 }
