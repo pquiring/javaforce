@@ -21,7 +21,7 @@ import javax.swing.text.*;
 
 public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener {
 
-  private String getVersion() { return "0.9"; }
+  private String getVersion() { return "0.10"; }
 
   /** Creates new form jfedit */
   public JEdit() {
@@ -149,6 +149,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     JFTextArea txt;
     boolean dirty;
     File filename;
+    boolean bUnix;
   };
   private Vector<page> pages;
   private boolean bLoading = false;
@@ -245,6 +246,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   private page addpage(String title) {
     page pg = new page();
+    pg.bUnix = settings.bUnix;
     pg.panel = JF.createJPanel(new GridLayout(), null);
     pg.txt = createJFTextArea();
     pg.scroll = new JScrollPane(pg.txt);
@@ -276,7 +278,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
           pages.get(idx).txt.setCaretPosition(pages.get(idx).txt.getLineStartOffset(line));
         }
       }
-      if (!settings.bUnix) {
+      if (!pages.get(idx).bUnix) {
         tmp = tmp.replaceAll("\n", "\r\n");
       }
       FileOutputStream fos = new FileOutputStream(pages.get(idx).filename);
@@ -374,11 +376,27 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       File file = pages.get(idx).filename;
       if (!file.exists()) return;
       FileInputStream fis = new FileInputStream(file);
-      txt = new byte[fis.available()];
+      int size = fis.available();
+      if (size > 1024 * 1024) {
+        if (!JF.showConfirm("Warning", "File is > 1MB, load anyways?")) {
+          closepage(idx);
+          return;
+        }
+      }
+      txt = new byte[size];
       fis.read(txt);
       fis.close();
       bLoading = true;
-      setText(pages.get(idx).txt, new String(txt, "UTF-8"));
+      String str = new String(txt, "UTF-8");
+      boolean bUnix = settings.bUnix;
+      if (settings.bPreserve) {
+        int lf = str.indexOf("\n");
+        if (lf > 0) {
+          if (txt[lf-1] == '\r') bUnix = false;
+        }      
+      }
+      pages.get(idx).bUnix = bUnix;
+      setText(pages.get(idx).txt, str);
       pages.get(idx).txt.setCaretPosition(0);
       bLoading = false;
       tabs.setTitleAt(idx, pages.get(idx).filename.getName());

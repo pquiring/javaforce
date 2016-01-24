@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+1-24-2016 : v0.10
+  - added Preserve line ending option
+
 6-9-2015 : v0.9
   - added F9/F10 functions
   - fixed F7/F8 shift right functions that were adding unwanted spacing

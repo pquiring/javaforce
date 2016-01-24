@@ -8,7 +8,6 @@ import javaforce.JF;
  * @author  pquiring
  */
 
-
 public class EditSettings extends javax.swing.JDialog {
 
   /** Creates new form EditSettings */
@@ -42,6 +41,7 @@ public class EditSettings extends javax.swing.JDialog {
     sTabSize = new javax.swing.JSpinner();
     cbAutoIndent = new javax.swing.JCheckBox();
     cbLineWrap = new javax.swing.JCheckBox();
+    cbPreserve = new javax.swing.JCheckBox();
 
     FormListener formListener = new FormListener();
 
@@ -64,7 +64,7 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel1.setText("Font Size");
 
-    cbUnix.setText("Save in Unix format (no CR)");
+    cbUnix.setText("Create new files in Unix format (LF)");
     cbUnix.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
     cbUnix.setMargin(new java.awt.Insets(0, 0, 0, 0));
     cbUnix.addKeyListener(formListener);
@@ -88,6 +88,10 @@ public class EditSettings extends javax.swing.JDialog {
     cbLineWrap.setMargin(new java.awt.Insets(0, 0, 0, 0));
     cbLineWrap.addKeyListener(formListener);
 
+    cbPreserve.setText("Preserve line endings (CRLF or LF)");
+    cbPreserve.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+    cbPreserve.setMargin(new java.awt.Insets(0, 0, 0, 0));
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -110,8 +114,9 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(cbClean)
           .addComponent(cbUnix)
           .addComponent(cbAutoIndent)
-          .addComponent(cbLineWrap))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(cbLineWrap)
+          .addComponent(cbPreserve))
+        .addContainerGap(55, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -124,6 +129,8 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel2)
           .addComponent(sTabSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(cbPreserve)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(cbUnix)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -236,6 +243,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox cbAutoIndent;
   private javax.swing.JCheckBox cbClean;
   private javax.swing.JCheckBox cbLineWrap;
+  private javax.swing.JCheckBox cbPreserve;
   private javax.swing.JCheckBox cbUnix;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
@@ -256,6 +264,7 @@ public class EditSettings extends javax.swing.JDialog {
 
   private void load() {
     sFontSize.setValue(settings.fontSize);
+    cbPreserve.setSelected(settings.bPreserve);
     cbUnix.setSelected(settings.bUnix);
     cbClean.setSelected(settings.bClean);
     sTabSize.setValue(settings.tabSize);
@@ -265,6 +274,7 @@ public class EditSettings extends javax.swing.JDialog {
 
   private void save() {
     settings.fontSize = ((Integer)sFontSize.getValue()).intValue();
+    settings.bPreserve = cbPreserve.isSelected();
     settings.bUnix = cbUnix.isSelected();
     settings.bClean = cbClean.isSelected();
     settings.tabSize = ((Integer)sTabSize.getValue()).intValue();

@@ -1,6 +1,6 @@
 Buildroot: /.
 Name: jfedit
-Version: 0.9
+Version: 0.10
 Release: 1
 Summary: Multi-tabbed text editor
 License: LGPL

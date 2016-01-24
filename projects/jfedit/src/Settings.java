@@ -1,4 +1,5 @@
 public class Settings {
+  public boolean bPreserve = true;
   public boolean bUnix = true;
   public boolean bClean = false;
   public int fontSize = 12;
