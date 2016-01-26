@@ -181,6 +181,7 @@ public class JFImage extends JComponent implements Icon {
     BufferedImage tmp;
     try {
       tmp = ImageIO.read(in);
+      in.close();
     } catch (Exception e) {
       JFLog.log(e);
       return false;
@@ -197,16 +198,21 @@ public class JFImage extends JComponent implements Icon {
   }
 
   public boolean save(OutputStream out, String fmt) {
-    if (fmt.equals("jpg")) return saveJPG(out);  //Must convert image type
-    if (fmt.equals("ico")) return saveICO(out);  //ImageIO doesn't support ICO
-    if (fmt.equals("icns")) return saveICNS(out);  //ImageIO doesn't support ICNS
-    if (fmt.equals("bmp")) return saveBMP(out);  //ImageIO doesn't support BMP (except Windows)
-    try {
-      return ImageIO.write(bi, fmt, out);
-    } catch (Exception e) {
-      JFLog.log(e);
-      return false;
+    boolean ret;
+    if (fmt.equals("jpg")) ret = saveJPG(out);  //Must convert image type
+    else if (fmt.equals("ico")) ret = saveICO(out);  //ImageIO doesn't support ICO
+    else if (fmt.equals("icns")) ret = saveICNS(out);  //ImageIO doesn't support ICNS
+    else if (fmt.equals("bmp")) ret = saveBMP(out);  //ImageIO doesn't support BMP (except Windows)
+    else {
+      try {
+        ret = ImageIO.write(bi, fmt, out);
+      } catch (Exception e) {
+        JFLog.log(e);
+        ret = false;
+      }
     }
+    try {out.close();} catch (Exception e) {}
+    return ret;
   }
 
   public boolean load(String filename) {
@@ -310,6 +316,7 @@ public class JFImage extends JComponent implements Icon {
     int buf[];
     Dimension size = new Dimension(0, 0);
     buf = bmp.load(in, size);
+    try {in.close();} catch (Exception e) {}
     if (buf == null) {
       return false;
     }
@@ -436,6 +443,7 @@ public class JFImage extends JComponent implements Icon {
     int buf[];
     Dimension size = new Dimension(0, 0);
     buf = svg.load(in, size);
+    try {in.close();} catch (Exception e) {}
     if (buf == null) {
       return false;
     }
@@ -451,7 +459,9 @@ public class JFImage extends JComponent implements Icon {
     ByteArrayOutputStream png_data = new ByteArrayOutputStream();
     savePNG(png_data);
     Dimension size = new Dimension(getWidth(), getHeight());
-    return svg.save(out, png_data.toByteArray(), size);
+    boolean ret = svg.save(out, png_data.toByteArray(), size);
+    try {out.close();} catch (Exception e) {}
+    return ret;
   }
 
   public boolean loadXPM(String filename) {
