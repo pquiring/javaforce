@@ -22,6 +22,8 @@ public class JBusClient extends Thread {
   private OutputStream os;
   private volatile boolean ready;
   private int readyCnt = 0;
+  private boolean quiet = false;
+  private int port = 777;
 
   public JBusClient(String pack, Object obj) {
     if ((pack == null) || (obj == null)) {
@@ -32,9 +34,18 @@ public class JBusClient extends Thread {
     cls = obj.getClass();
   }
 
+  public void setQuiet(boolean state) {
+    quiet = state;
+  }
+
+  public void setPort(int port) {
+    this.port = port;
+  }
+
   public void run() {
     try {
-      s = new Socket(InetAddress.getByName("127.0.0.1"), JBusServer.port);
+      JFLog.log("JBusClient:connecting to 127.0.0.1:" + port);
+      s = new Socket(InetAddress.getByName("127.0.0.1"), port);
       is = s.getInputStream();
       os = s.getOutputStream();
       if (pack != null) {
@@ -63,9 +74,9 @@ public class JBusClient extends Thread {
         }
       }
     } catch (SocketException e2) {
-      JFLog.log("JBus Client closed : " + pack);
+      if (!quiet) JFLog.log("JBus Client closed : " + pack);
     } catch (Exception e3) {
-      JFLog.log(e3);
+      if (!quiet) JFLog.log(e3);
     }
   }
 
@@ -161,7 +172,7 @@ public class JBusClient extends Thread {
     }
   }
 
-  private boolean ready() {
+  public boolean ready() {
     return ready;
   }
 
@@ -177,11 +188,19 @@ public class JBusClient extends Thread {
     return "\"" + str + "\"";
   }
 
-  public static String encodeSafe(String in) {
-    return in.replaceAll("&", "&amp;").replaceAll("\"", "&quot;");  //order matters here
+  public static String encodeString(String in) {
+    try {
+      return URLEncoder.encode(in, "UTF-8");
+    } catch (Exception e) {
+      return null;
+    }
   }
 
-  public static String decodeSafe(String in) {
-    return in.replaceAll("&quot;", "\"").replaceAll("&amp;", "&");
+  public static String decodeString(String in) {
+    try {
+      return URLDecoder.decode(in, "UTF-8");
+    } catch (Exception e) {
+      return null;
+    }
   }
 }

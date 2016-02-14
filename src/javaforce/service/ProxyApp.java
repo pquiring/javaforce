@@ -9,9 +9,10 @@ package javaforce.service;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
+import java.util.*;
 
 import javaforce.*;
+import javaforce.jbus.*;
 
 public class ProxyApp extends javax.swing.JFrame implements ActionListener {
 
@@ -35,43 +36,24 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
     icon.addActionListener(this);
     tray = SystemTray.getSystemTray();
     try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
-    //start service
-    service = new Proxy();
-    service.start();
-  }
-
-  public void readConfig() {
-    try {
-      BufferedReader br = new BufferedReader(new FileReader(JF.getUserPath() + "/.jproxy.cfg"));
-      StringBuilder str = new StringBuilder();
-      while (true) {
-        String ln = br.readLine();
-        if (ln == null) break;
-        str.append(ln);
-        str.append("\n");
+    new Thread() {
+      public void run() {
+        Random r = new Random();
+        busClient = new JBusClient("org.sf.jfproxy.client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(Proxy.getBusPort());
+        busClient.start();
+        busClient.call("org.sf.jfproxy", "getConfig", "\"" + busClient.pack + "\"");
       }
-      config.setText(str.toString());
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    }.start();
+    JF.centerWindow(this);
   }
 
   public void writeConfig() {
-    try {
-      String cfg = config.getText().replaceAll("\n", "\r\n");
-      FileOutputStream fos = new FileOutputStream(JF.getUserPath() + "/.jproxy.cfg");
-      fos.write(cfg.getBytes());
-      fos.close();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    busClient.call("org.sf.jfproxy", "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    service.close();
-    JF.sleep(1000);
-    service = new Proxy();
-    service.start();
+    busClient.call("org.sf.jfproxy", "restart", "");
   }
 
   public void actionPerformed(ActionEvent e) {
@@ -80,7 +62,6 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
       System.exit(0);
     }
     if (o == show) {
-      readConfig();
       setVisible(true);
     }
   }
@@ -102,7 +83,7 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
 
     setTitle("Proxy Server");
 
-    save.setText("Save and Restart");
+    save.setText("Reload Config");
     save.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         saveActionPerformed(evt);
@@ -131,7 +112,7 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jScrollPane1)
           .addGroup(layout.createSequentialGroup()
-            .addGap(0, 395, Short.MAX_VALUE)
+            .addGap(0, 413, Short.MAX_VALUE)
             .addComponent(Cancel)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(save))
@@ -190,5 +171,16 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
   public SystemTray tray;
   public TrayIcon icon;
   public MenuItem exit, show;
-  public Proxy service;
+  public JBusClient busClient;
+
+  public class JBusMethods {
+    public void getConfig(String cfg) {
+      final String _cfg = cfg;
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          config.setText(JBusClient.decodeString(_cfg));
+        }
+      });
+    }
+  }
 }

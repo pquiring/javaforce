@@ -28,7 +28,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane1" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="0" pref="395" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="413" max="32767" attributes="0"/>
                       <Component id="Cancel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="save" min="-2" max="-2" attributes="0"/>
@@ -62,7 +62,7 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="save">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Save and Restart"/>
+        <Property name="text" type="java.lang.String" value="Reload Config"/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveActionPerformed"/>

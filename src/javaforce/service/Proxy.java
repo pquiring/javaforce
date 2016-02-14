@@ -5,7 +5,7 @@ package javaforce.service;
  *
  * Supports : SSL (CONNECT)
  *
- * ~/.jproxy.cfg example:
+ * jfproxy.cfg example:
  *   [global]
  *   port=3128
  *   allow=0.0.0.0/0
@@ -14,7 +14,7 @@ package javaforce.service;
  *   [urlchange]
  *   url = newURL
  *
- * Domains are in Regular Expression format
+ * Note : is [blockdomain] section the domains are in Regular Expression format
  * see : http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
  *
  * Note : in [urlchange] section the url is a regular expression
@@ -29,13 +29,31 @@ import java.net.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.jbus.*;
 
 public class Proxy extends Thread {
 
-  public static boolean SystemService = false;
+  private final static String UnixConfigFile = "/etc/jfproxy.cfg";
+  private final static String WinConfigFile =  System.getenv("ProgramData") + "/jfproxy.cfg";
 
-  private final static String UserConfigFile = JF.getUserPath() + "/.jproxy.cfg";
-  private final static String SystemConfigFile = "/etc/jproxy.cfg";
+  public static String getConfigFile() {
+    if (JF.isWindows()) {
+      return WinConfigFile;
+    } else {
+      return UnixConfigFile;
+    }
+  }
+
+  private final static String UnixLogFile = "/var/log/jproxy.log";
+  private final static String WinLogFile =  System.getenv("ProgramData") + "/jfproxy.log";
+
+  public static String getLogFile() {
+    if (JF.isWindows()) {
+      return WinLogFile;
+    } else {
+      return UnixLogFile;
+    }
+  }
 
   private static class URLChange {
     public String url, newurl;
@@ -48,11 +66,26 @@ public class Proxy extends Thread {
   private ArrayList<Integer> allow_net = new ArrayList<Integer>();
   private ArrayList<Integer> allow_mask = new ArrayList<Integer>();
   private int port = 3128;
+  private JBusServer busServer;
+  private JBusClient busClient;
+
+  public static int getBusPort() {
+    if (JF.isWindows()) {
+      return 33003;
+    } else {
+      return 777;
+    }
+  }
 
   public void close() {
+    JFLog.logTrace("proxy.close()");
     try {
       ss.close();
     } catch (Exception e) {}
+    if (JF.isWindows()) {
+      busServer.close();
+    }
+    busClient.close();
     //close list
     Session sess;
     while (list.size() > 0) {
@@ -62,13 +95,20 @@ public class Proxy extends Thread {
   }
 
   public void run() {
-    if (SystemService)
-      JFLog.init("/var/log/jproxy.log", false);
-    else
-      JFLog.init(JF.getUserPath() + "/.jproxy.log", true);
+    JFLog.init(getLogFile(), true);
     Socket s;
     Session sess;
     loadConfig();
+    if (JF.isWindows()) {
+      busServer = new JBusServer(getBusPort());
+      busServer.start();
+      while (!busServer.ready) {
+        JF.sleep(10);
+      }
+    }
+    busClient = new JBusClient("org.sf.jfproxy", new JBusMethods());
+    busClient.setPort(getBusPort());
+    busClient.start();
     //try to bind to port 5 times (in case restart() takes a while)
     for(int a=0;a<5;a++) {
       try {
@@ -108,13 +148,18 @@ public class Proxy extends Thread {
     + "[urlchange]\r\n"
     + "#www.example.com/test = www.google.com\r\n";
 
+  private String config;
+
   private void loadConfig() {
     Section section = Section.None;
     try {
-      BufferedReader br = new BufferedReader(new FileReader(SystemService ? SystemConfigFile : UserConfigFile));
+      StringBuilder cfg = new StringBuilder();
+      BufferedReader br = new BufferedReader(new FileReader(getConfigFile()));
       while (true) {
         String ln = br.readLine();
         if (ln == null) break;
+        cfg.append(ln);
+        cfg.append("\r\n");
         ln = ln.trim().toLowerCase();
         int idx = ln.indexOf('#');
         if (idx != -1) ln = ln.substring(0, idx).trim();
@@ -163,12 +208,14 @@ public class Proxy extends Thread {
             break;
         }
       }
+      config = cfg.toString();
     } catch (FileNotFoundException e) {
       //create default config
       try {
-        FileOutputStream fos = new FileOutputStream(SystemService ? SystemConfigFile : UserConfigFile);
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
         fos.write(defaultConfig.getBytes());
         fos.close();
+        config = defaultConfig;
       } catch (Exception e2) {
         JFLog.log(e2);
       }
@@ -591,5 +638,44 @@ public class Proxy extends Thread {
         } catch (Exception e) {}
       }
     }
+  }
+
+  public class JBusMethods {
+    public void getConfig(String pack) {
+      busClient.call(pack, "getConfig", busClient.quote(busClient.encodeString(config)));
+    }
+    public void setConfig(String cfg) {
+      //write new file
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    public void restart() {
+      proxy.close();
+      proxy = new Proxy();
+      proxy.start();
+    }
+  }
+
+  public static void main(String args[]) {
+    serviceStart(args);
+  }
+
+  //Win32 Service
+
+  private static Proxy proxy;
+
+  public static void serviceStart(String args[]) {
+    proxy = new Proxy();
+    proxy.start();
+  }
+
+  public static void serviceStop() {
+    JFLog.log("Stopping service");
+    proxy.close();
   }
 }

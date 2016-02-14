@@ -22,8 +22,17 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{4716693A-C18D-41B2-88E6-90F0CE287E5A}" Win64="yes">
-        <File Id="javaforce.jar" Source="javaforce.jar" KeyPath="yes"/>
+        <File Id="jfproxysvc.exe" Source="jfproxysvc.exe" KeyPath="yes"/>
         <File Id="jfproxy.exe" Source="jfproxy.exe"/>
+        <File Id="javaforce.jar" Source="javaforce.jar"/>
+        <ServiceInstall Id="ServiceInstaller" 
+          Type="ownProcess" 
+          Name="jfProxy" 
+          DisplayName="jfProxy" 
+          Description="jf Proxy Server" 
+          Start="auto" 
+          ErrorControl="normal" />
+<!--        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="TestService" Wait="yes" />  -->
       </Component>
     </DirectoryRef>
 

@@ -2,8 +2,10 @@
   <description>paint</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfproxy"/>
+  <property name="app2" value="jfproxysvc"/>
+  <property name="apptype2" value="s"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.3"/>
+  <property name="version" value="0.4"/>
 
   <import file="../../base.xml"/>
 

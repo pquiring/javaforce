@@ -1,9 +1,11 @@
 //Java Launcher Win32/64
 
-// version 1.4
-// supports passing command line options to java main()
-// now loads CLASSPATH and MAINCLASS from PE-EXE resource
-// now globbs arguments (see ExpandStringArray())
+// version 1.5
+// - supports passing command line options to java main()
+// - loads CLASSPATH and MAINCLASS from PE-EXE resource
+// - globbs arguments (see ExpandStringArray())
+// - supoprts console apps (type "c")
+// - supports windows services (type "s")
 
 #include <windows.h>
 #include <io.h>
@@ -43,22 +45,34 @@ char exepath[MAX_PATH];
 char classpath[1024];
 char mainclass[MAX_PATH];
 char method[MAX_PATH];
+#ifdef _JF_SERVICE
+char service[MAX_PATH];
+#endif
+JavaVM *g_jvm = NULL;
+JNIEnv *g_env = NULL;
 
 /* Prototypes */
 void error(char *msg);
-int JavaThread(void *ignore);
+int JavaStart(void *ignore);
+#ifdef _JF_SERVICE
+int JavaStop(void *ignore);
+#endif
 int loadProperties();
 
 /** Displays the error message in a dialog box. */
 void error(char *msg) {
   char fullmsg[1024];
   sprintf(fullmsg, "Failed to start Java\nPlease visit www.java.com and install Java\nError(%d):%s", sizeof(void*) * 8, msg);
+#ifndef _JF_SERVICE
   MessageBox(NULL, fullmsg, "Java Virtual Machine Launcher", (MB_OK | MB_ICONSTOP | MB_APPLMODAL));
+#else
+  printf("%s", fullmsg);
+#endif
 }
 
 /** Converts array of C strings into array of Java strings */
 jobjectArray
-ConvertStringArray(JNIEnv *env, char **strv, int strc)
+ConvertStringArray(JNIEnv *env, int strc, char **strv)
 {
   jarray cls;
   jarray outArray;
@@ -130,10 +144,27 @@ void printException(JNIEnv *env) {
   (*env)->ExceptionClear(env);
 }
 
-/** Continues loading the JVM in a new Thread. */
-int JavaThread(void *ignore) {
-  JavaVM *jvm = NULL;
-  JNIEnv *env = NULL;
+int InvokeMethod(char *_method, jobjectArray args, char *sign) {
+  jclass cls = (*g_env)->FindClass(g_env, mainclass);
+  if (cls == 0) {
+    printException(g_env);
+    error("Unable to find main class");
+    return 0;
+  }
+  jmethodID mid = (*g_env)->GetStaticMethodID(g_env, cls, _method, sign);
+  if (mid == 0) {
+    printException(g_env);
+    error("Unable to find main method");
+    return 0;
+  }
+
+  (*g_env)->CallStaticVoidMethod(g_env, cls, mid, args);
+
+  return 1;
+}
+
+/** Creates a new JVM. */
+int CreateJVM() {
   JavaVMInitArgs args;
   JavaVMOption options[1];
 
@@ -146,32 +177,41 @@ int JavaThread(void *ignore) {
   options[0].optionString = CreateClassPath();
   options[0].extraInfo = NULL;
 
-  if ((*CreateJavaVM)(&jvm, &env, &args) == -1) {
+  if ((*CreateJavaVM)(&g_jvm, &g_env, &args) == -1) {
     error("Unable to create Java VM");
     return 0;
   }
 
-  jclass cls = (*env)->FindClass(env, mainclass);
-  if (cls == 0) {
-    printException(env);
-    error("Unable to find main class");
-    return 0;
-  }
-  jmethodID mid = (*env)->GetStaticMethodID(env, cls, method, "([Ljava/lang/String;)V");
-  if (mid == 0) {
-    error("Unable to find main method");
-    return 0;
-  }
+  return 1;
+}
+
+/** Attachs current thread to JVM. */
+int AttachJVM() {
+  (*g_jvm)->AttachCurrentThread(g_jvm, (void**)&g_env, NULL);
+}
+
+/** Invokes the main method in a new thread. */
+int JavaStart(void *ignore) {
+  CreateJVM();
+
   char **argv = g_argv;
   int argc = g_argc;
   //skip argv[0]
   argv++;
   argc--;
-  (*env)->CallStaticVoidMethod(env, cls, mid, ExpandStringArray(env, ConvertStringArray(env, argv, argc)));
-  (*jvm)->DestroyJavaVM(jvm);  //waits till all threads are complete
-  //NOTE : Swing creates the EDT to keep Java alive until all windows are disposed
+  InvokeMethod(method, ExpandStringArray(g_env, ConvertStringArray(g_env, argc, argv)), "([Ljava/lang/String;)V");
+
+  (*g_jvm)->DestroyJavaVM(g_jvm);  //waits till all threads are complete
+
   return 1;
 }
+
+#ifdef _JF_SERVICE
+/** Invokes the stop method in a new thread (service only). */
+int JavaStop(void *ignore) {
+  InvokeMethod("serviceStop", NULL, "()V");
+}
+#endif
 
 int loadProperties() {
   void *data;
@@ -221,9 +261,15 @@ int loadProperties() {
     else if (strncmp(ln1, "JAVA_HOME=", 10) == 0) {
       strcpy(javahome, ln1 + 10);
     }
+#ifdef _JF_SERVICE
+    else if (strncmp(ln1, "SERVICE=", 8) == 0) {
+      strcpy(service, ln1 + 8);
+    }
+#else
     else if (strncmp(ln1, "METHOD=", 7) == 0) {
       strcpy(method, ln1 + 7);
     }
+#endif
     ln1 = ln2;
   }
   free(str);
@@ -317,6 +363,46 @@ int findJavaHomeRegistry(int showError) {
   return 1;
 }
 
+#ifdef _JF_SERVICE
+
+SERVICE_STATUS_HANDLE ServiceHandle;
+int s_argc;
+char **s_argv;
+
+void ServiceStatus(int state) {
+  SERVICE_STATUS ss;
+
+  ss.dwServiceType = SERVICE_WIN32;
+  ss.dwWin32ExitCode = 0;
+  ss.dwCurrentState = state;
+  ss.dwControlsAccepted = SERVICE_ACCEPT_STOP;
+  ss.dwWin32ExitCode = 0;
+  ss.dwServiceSpecificExitCode = 0;
+  ss.dwCheckPoint = 0;
+  ss.dwWaitHint = 0;
+
+  SetServiceStatus(ServiceHandle, &ss);
+}
+
+void __stdcall ServiceControl(int OpCode) {
+  switch (OpCode) {
+    case SERVICE_CONTROL_STOP:
+      AttachJVM();
+      ServiceStatus(SERVICE_STOPPED);
+      InvokeMethod("serviceStop", NULL, "()V");
+      break;
+  }
+}
+
+void __stdcall ServiceMain(int argc, char **argv) {
+  ServiceHandle = RegisterServiceCtrlHandler(service, (void (__stdcall *)(unsigned long))ServiceControl);
+  ServiceStatus(SERVICE_RUNNING);
+  CreateJVM();
+  InvokeMethod("serviceStart", ConvertStringArray(g_env, argc, argv), "([Ljava/lang/String;)V");
+}
+
+#endif
+
 /** Main entry point. */
 int main(int argc, char **argv) {
   g_argv = argv;
@@ -338,6 +424,7 @@ int main(int argc, char **argv) {
     if (findJavaHomeAppFolder() == 0) {
       if (findJavaHomeRegistry(FALSE) == 0) {
         if (findJavaHomeAppDataFolder() == 0) {
+#ifndef _JF_SERVICE
           int result = MessageBox(NULL, "This application requires Java which was not detected.\nWould like to download now?", "Java Virtual Machine Launcher", (MB_OKCANCEL | MB_ICONQUESTION | MB_APPLMODAL));
           if (result != IDOK) {
             return 2;
@@ -347,6 +434,7 @@ int main(int argc, char **argv) {
             error("Failed to download Java (error 1)");
             return 2;
           }
+#endif
           if (findJavaHomeAppDataFolder() == 0) {
             error("Failed to download Java (error 2)");
             return 2;
@@ -385,10 +473,17 @@ int main(int argc, char **argv) {
     return 2;
   }
 
-  //now continue in new thread (not really necessary but avoids some Java bugs)
-  thread_handle = CreateThread(NULL, 64 * 1024, (LPTHREAD_START_ROUTINE)&JavaThread, NULL, 0, (LPDWORD)&thread_id);
-
+#ifdef _JF_SERVICE
+  void *ServiceTable[4];
+  ServiceTable[0] = (void*)service;
+  ServiceTable[1] = (void*)ServiceMain;
+  ServiceTable[2] = NULL;
+  ServiceTable[3] = NULL;
+  StartServiceCtrlDispatcher((LPSERVICE_TABLE_ENTRY)&ServiceTable);
+#else
+  thread_handle = CreateThread(NULL, 64 * 1024, (LPTHREAD_START_ROUTINE)&JavaStart, NULL, 0, (LPDWORD)&thread_id);
   WaitForSingleObject(thread_handle, INFINITE);
+#endif
 
   return 0;
 }

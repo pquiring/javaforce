@@ -935,7 +935,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     }
 
     public void set(String fileset) {
-      FileApp.jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "setFileSelection", JBusClient.quote(JBusClient.encodeSafe(fileset)));
+      FileApp.jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "setFileSelection", JBusClient.quote(JBusClient.encodeString(fileset)));
     }
 
     public void clear() {

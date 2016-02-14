@@ -13,17 +13,25 @@ import javaforce.*;
 
 public class JBusServer extends Thread {
 
-  public final static int port = 777;  //port should be < 1024
+  public static int port;
   public static volatile boolean ready = false;
   private Vector<Client> clients = new Vector<Client>();
   private boolean active = true;
   private ServerSocket ss;
   private Object lock = new Object();
 
+  public JBusServer() {
+    port = 777;
+  }
+
+  public JBusServer(int port) {
+    this.port = port;
+  }
+
   public void run() {
     try {
       ss = new ServerSocket(port, 1024, InetAddress.getByName("127.0.0.1"));
-      JFLog.log("JBusServer starting");
+      JFLog.log("JBusServer starting on port " + port);
       ready = true;
       while (active) {
         try {
@@ -170,5 +178,17 @@ public class JBusServer extends Thread {
         }
       }
     }
+  }
+
+  /** Checks if a JBusServer is running. */
+  public static boolean present() {
+    JBusClient client = new JBusClient(null, null);
+    client.setQuiet(true);
+    client.start();
+    boolean present = client.ready();
+    if (present) {
+      client.close();
+    }
+    return present;
   }
 }

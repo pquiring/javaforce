@@ -2943,7 +2943,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   public void get() {
     if (fileSelection == null) return;
-    Desktop.desktop.browser.paste(JBusClient.decodeSafe(fileSelection));
+    Desktop.desktop.browser.paste(JBusClient.decodeString(fileSelection));
   }
   public void set(String fileset) {
     fileSelection = fileset;

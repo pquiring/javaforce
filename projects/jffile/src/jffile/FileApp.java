@@ -1153,7 +1153,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
       if (idx == -1) return;
       Site site = (Site)tabs.getSelectedComponent();
       if (site == null) return;
-      site.getFocusBrowser().paste(JBusClient.decodeSafe(fs));
+      site.getFocusBrowser().paste(JBusClient.decodeString(fs));
     }
   }
 }
