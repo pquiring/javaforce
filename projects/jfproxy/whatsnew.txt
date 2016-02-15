@@ -1,6 +1,12 @@
 what's new?
 ===========
 
+Feb ?, 2016 : version 0.4
+  - create windows service
+
+Sept 10, 2015 : version 0.3
+  - fixed host:port parsing
+
 Dec 9, 2013 : version 0.2
   - added support for HTTP/1.1 "chunked" encoding
   - fixed many bugs
