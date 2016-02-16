@@ -54,9 +54,6 @@ JNIEnv *g_env = NULL;
 /* Prototypes */
 void error(char *msg);
 int JavaStart(void *ignore);
-#ifdef _JF_SERVICE
-int JavaStop(void *ignore);
-#endif
 int loadProperties();
 
 /** Displays the error message in a dialog box. */
@@ -205,13 +202,6 @@ int JavaStart(void *ignore) {
 
   return 1;
 }
-
-#ifdef _JF_SERVICE
-/** Invokes the stop method in a new thread (service only). */
-int JavaStop(void *ignore) {
-  InvokeMethod("serviceStop", NULL, "()V");
-}
-#endif
 
 int loadProperties() {
   void *data;

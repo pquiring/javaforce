@@ -14,7 +14,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.jbus.*;
 
-public class ProxyApp extends javax.swing.JFrame implements ActionListener {
+public class ProxyApp extends javax.swing.JFrame {
 
   /**
    * Creates new form ProxyApp
@@ -24,18 +24,7 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
     //create tray icon to open app
     JFImage img = new JFImage();
     img.loadPNG(this.getClass().getResourceAsStream("/javaforce/icons/proxy.png"));
-    PopupMenu popup = new PopupMenu();
-    show = new MenuItem("Show");
-    show.addActionListener(this);
-    popup.add(show);
-    popup.addSeparator();
-    exit = new MenuItem("Exit");
-    exit.addActionListener(this);
-    popup.add(exit);
-    icon = new TrayIcon(img.getImage(), "Proxy", popup);
-    icon.addActionListener(this);
-    tray = SystemTray.getSystemTray();
-    try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
+    setIconImage(img.getImage());
     new Thread() {
       public void run() {
         Random r = new Random();
@@ -56,16 +45,6 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
     busClient.call("org.sf.jfproxy", "restart", "");
   }
 
-  public void actionPerformed(ActionEvent e) {
-    Object o = e.getSource();
-    if (o == exit) {
-      System.exit(0);
-    }
-    if (o == show) {
-      setVisible(true);
-    }
-  }
-
   /**
    * This method is called from within the constructor to initialize the form.
    * WARNING: Do NOT modify this code. The content of this method is always
@@ -76,29 +55,23 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
   private void initComponents() {
 
     save = new javax.swing.JButton();
-    Cancel = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
     config = new javax.swing.JTextArea();
     jLabel1 = new javax.swing.JLabel();
 
     setTitle("Proxy Server");
 
-    save.setText("Reload Config");
+    save.setText("Save");
     save.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         saveActionPerformed(evt);
       }
     });
 
-    Cancel.setText("Cancel");
-    Cancel.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        CancelActionPerformed(evt);
-      }
-    });
-
     config.setColumns(20);
     config.setRows(5);
+    config.setText(" [ loading ... ]");
+    config.setEnabled(false);
     jScrollPane1.setViewportView(config);
 
     jLabel1.setText("Proxy Configuration:");
@@ -110,11 +83,9 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane1)
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
-            .addGap(0, 413, Short.MAX_VALUE)
-            .addComponent(Cancel)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGap(0, 0, Short.MAX_VALUE)
             .addComponent(save))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1)
@@ -129,9 +100,7 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(save)
-          .addComponent(Cancel))
+        .addComponent(save)
         .addContainerGap())
     );
 
@@ -141,12 +110,8 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
   private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
     writeConfig();
     restart();
-    setVisible(false);
+    JF.showMessage("Notice", "Settings saved!");
   }//GEN-LAST:event_saveActionPerformed
-
-  private void CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelActionPerformed
-    setVisible(false);
-  }//GEN-LAST:event_CancelActionPerformed
 
   /**
    * @param args the command line arguments
@@ -155,22 +120,18 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        new ProxyApp();  //NOTE:Do NOT make it visible (it places icon in tray)
+        new ProxyApp().setVisible(true);
       }
     });
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton Cancel;
   private javax.swing.JTextArea config;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JButton save;
   // End of variables declaration//GEN-END:variables
 
-  public SystemTray tray;
-  public TrayIcon icon;
-  public MenuItem exit, show;
   public JBusClient busClient;
 
   public class JBusMethods {
@@ -179,6 +140,7 @@ public class ProxyApp extends javax.swing.JFrame implements ActionListener {
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
           config.setText(JBusClient.decodeString(_cfg));
+          config.setEnabled(true);
         }
       });
     }

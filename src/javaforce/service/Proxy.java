@@ -66,7 +66,7 @@ public class Proxy extends Thread {
   private ArrayList<Integer> allow_net = new ArrayList<Integer>();
   private ArrayList<Integer> allow_mask = new ArrayList<Integer>();
   private int port = 3128;
-  private JBusServer busServer;
+  private static JBusServer busServer;
   private JBusClient busClient;
 
   public static int getBusPort() {
@@ -99,13 +99,6 @@ public class Proxy extends Thread {
     Socket s;
     Session sess;
     loadConfig();
-    if (JF.isWindows()) {
-      busServer = new JBusServer(getBusPort());
-      busServer.start();
-      while (!busServer.ready) {
-        JF.sleep(10);
-      }
-    }
     busClient = new JBusClient("org.sf.jfproxy", new JBusMethods());
     busClient.setPort(getBusPort());
     busClient.start();
@@ -670,6 +663,13 @@ public class Proxy extends Thread {
   private static Proxy proxy;
 
   public static void serviceStart(String args[]) {
+    if (JF.isWindows()) {
+      busServer = new JBusServer(getBusPort());
+      busServer.start();
+      while (!busServer.ready) {
+        JF.sleep(10);
+      }
+    }
     proxy = new Proxy();
     proxy.start();
   }
