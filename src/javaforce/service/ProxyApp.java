@@ -28,21 +28,21 @@ public class ProxyApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient("org.sf.jfproxy.client" + r.nextInt(), new JBusMethods());
+        busClient = new JBusClient(Proxy.busPack + ".client" + r.nextInt(), new JBusMethods());
         busClient.setPort(Proxy.getBusPort());
         busClient.start();
-        busClient.call("org.sf.jfproxy", "getConfig", "\"" + busClient.pack + "\"");
+        busClient.call(Proxy.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
     JF.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call("org.sf.jfproxy", "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    busClient.call(Proxy.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    busClient.call("org.sf.jfproxy", "restart", "");
+    busClient.call(Proxy.busPack, "restart", "");
   }
 
   /**
@@ -59,9 +59,11 @@ public class ProxyApp extends javax.swing.JFrame {
     config = new javax.swing.JTextArea();
     jLabel1 = new javax.swing.JLabel();
 
+    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("Proxy Server");
 
     save.setText("Save");
+    save.setEnabled(false);
     save.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         saveActionPerformed(evt);
@@ -141,6 +143,7 @@ public class ProxyApp extends javax.swing.JFrame {
         public void run() {
           config.setText(JBusClient.decodeString(_cfg));
           config.setEnabled(true);
+          save.setEnabled(true);
         }
       });
     }

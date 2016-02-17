@@ -32,7 +32,7 @@
           Description="jf Proxy Server" 
           Start="auto" 
           ErrorControl="normal" />
-<!--        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="TestService" Wait="yes" />  -->
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfProxy" Wait="yes" />
       </Component>
     </DirectoryRef>
 

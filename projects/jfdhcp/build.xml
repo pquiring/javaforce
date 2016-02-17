@@ -1,7 +1,9 @@
 <project name="jfdhcp" default="jar" basedir=".">
   <description>DHCP Server</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfdhcp"/>
+  <property name="app" value="jfdhcpsvc"/>
+  <property name="apptype" value="s"/>
+  <property name="app2" value="jfdhcp"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.3"/>
 

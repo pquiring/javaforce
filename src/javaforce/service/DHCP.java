@@ -14,12 +14,33 @@ import java.net.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.jbus.*;
 
 public class DHCP extends Thread {
-  public static boolean SystemService = false;
 
-  private final static String UserConfigFile = JF.getUserPath() + "/.jfdhcp.cfg";
-  private final static String SystemConfigFile = "/etc/jfdhcp.cfg";
+  public final static String busPack = "net.sf.jfdhcp";
+
+  private final static String UnixConfigFile = "/etc/jfdhcp.cfg";
+  private final static String WinConfigFile =  System.getenv("ProgramData") + "/jfdhcp.cfg";
+
+  public static String getConfigFile() {
+    if (JF.isWindows()) {
+      return WinConfigFile;
+    } else {
+      return UnixConfigFile;
+    }
+  }
+
+  private final static String UnixLogFile = "/var/log/jfdhcp.log";
+  private final static String WinLogFile =  System.getenv("ProgramData") + "/jfdhcp.log";
+
+  public static String getLogFile() {
+    if (JF.isWindows()) {
+      return WinLogFile;
+    } else {
+      return UnixLogFile;
+    }
+  }
 
   private static int maxmtu = 1500 - 20 - 8;  //IP=20 UDP=8
   private static class Pool {
@@ -60,12 +81,12 @@ public class DHCP extends Thread {
   public static Object stateMonitor = new Object();
 
   public void run() {
-    if (SystemService)
-      JFLog.init("/var/log/jfdhcp.log", true);
-    else
-      JFLog.init(JF.getUserPath() + "/.jfdhcp.log", true);
+    JFLog.append(getLogFile(), true);
     try {
       loadConfig();
+      busClient = new JBusClient(busPack, new JBusMethods());
+      busClient.setPort(getBusPort());
+      busClient.start();
       if (!validConfig()) {
         throw new Exception("invalid config");
       }
@@ -99,6 +120,7 @@ public class DHCP extends Thread {
       ds = hosts.get(a).ds;
       if (ds != null) ds.close();
     }
+    busClient.close();
     synchronized(close) {
       close.notify();
     }
@@ -173,10 +195,13 @@ public class DHCP extends Thread {
     hosts.clear();
     Pool pool = null;
     try {
-      BufferedReader br = new BufferedReader(new FileReader(SystemService ? SystemConfigFile : UserConfigFile));
+      StringBuilder cfg = new StringBuilder();
+      BufferedReader br = new BufferedReader(new FileReader(getConfigFile()));
       while (true) {
         String ln = br.readLine();
         if (ln == null) break;
+        cfg.append(ln);
+        cfg.append("\r\n");
         ln = ln.trim().toLowerCase();
         int idx = ln.indexOf('#');
         if (idx != -1) ln = ln.substring(0, idx).trim();
@@ -202,12 +227,14 @@ public class DHCP extends Thread {
         else if (ln.startsWith("router=")) pool.router = ln.substring(7);
         else if (ln.startsWith("lease=")) pool.leaseTime = JF.atoi(ln.substring(6));
       }
+      config = cfg.toString();
     } catch (FileNotFoundException e) {
       //create default config
       try {
-        FileOutputStream fos = new FileOutputStream(SystemService ? SystemConfigFile : UserConfigFile);
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
         fos.write(defaultConfig.getBytes());
         fos.close();
+        config = defaultConfig;
       } catch (Exception e2) {
         JFLog.log(e2);
       }
@@ -619,5 +646,63 @@ public class DHCP extends Thread {
       replyBuffer.putInt(replyOffset, value);
       replyOffset += 4;
     }
+  }
+
+  private static JBusServer busServer;
+  private JBusClient busClient;
+  private String config;
+
+  public class JBusMethods {
+    public void getConfig(String pack) {
+      busClient.call(pack, "getConfig", busClient.quote(busClient.encodeString(config)));
+    }
+    public void setConfig(String cfg) {
+      //write new file
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    public void restart() {
+      dhcp.close();
+      dhcp = new DHCP();
+      dhcp.start();
+    }
+  }
+
+  public static int getBusPort() {
+    if (JF.isWindows()) {
+      return 33004;
+    } else {
+      return 777;
+    }
+  }
+
+  public static void main(String args[]) {
+    serviceStart(args);
+  }
+
+  //Win32 Service
+
+  private static DHCP dhcp;
+
+  public static void serviceStart(String args[]) {
+    if (JF.isWindows()) {
+      busServer = new JBusServer(getBusPort());
+      busServer.start();
+      while (!busServer.ready) {
+        JF.sleep(10);
+      }
+    }
+    dhcp = new DHCP();
+    dhcp.start();
+  }
+
+  public static void serviceStop() {
+    JFLog.log("Stopping service");
+    dhcp.close();
   }
 }

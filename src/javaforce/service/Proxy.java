@@ -33,6 +33,8 @@ import javaforce.jbus.*;
 
 public class Proxy extends Thread {
 
+  public final static String busPack = "net.sf.jfproxy";
+
   private final static String UnixConfigFile = "/etc/jfproxy.cfg";
   private final static String WinConfigFile =  System.getenv("ProgramData") + "/jfproxy.cfg";
 
@@ -44,7 +46,7 @@ public class Proxy extends Thread {
     }
   }
 
-  private final static String UnixLogFile = "/var/log/jproxy.log";
+  private final static String UnixLogFile = "/var/log/jfproxy.log";
   private final static String WinLogFile =  System.getenv("ProgramData") + "/jfproxy.log";
 
   public static String getLogFile() {
@@ -66,25 +68,12 @@ public class Proxy extends Thread {
   private ArrayList<Integer> allow_net = new ArrayList<Integer>();
   private ArrayList<Integer> allow_mask = new ArrayList<Integer>();
   private int port = 3128;
-  private static JBusServer busServer;
-  private JBusClient busClient;
-
-  public static int getBusPort() {
-    if (JF.isWindows()) {
-      return 33003;
-    } else {
-      return 777;
-    }
-  }
 
   public void close() {
     JFLog.logTrace("proxy.close()");
     try {
       ss.close();
     } catch (Exception e) {}
-    if (JF.isWindows()) {
-      busServer.close();
-    }
     busClient.close();
     //close list
     Session sess;
@@ -99,7 +88,7 @@ public class Proxy extends Thread {
     Socket s;
     Session sess;
     loadConfig();
-    busClient = new JBusClient("org.sf.jfproxy", new JBusMethods());
+    busClient = new JBusClient(busPack, new JBusMethods());
     busClient.setPort(getBusPort());
     busClient.start();
     //try to bind to port 5 times (in case restart() takes a while)
@@ -140,8 +129,6 @@ public class Proxy extends Thread {
     + "\r\n"
     + "[urlchange]\r\n"
     + "#www.example.com/test = www.google.com\r\n";
-
-  private String config;
 
   private void loadConfig() {
     Section section = Section.None;
@@ -633,6 +620,10 @@ public class Proxy extends Thread {
     }
   }
 
+  private static JBusServer busServer;
+  private JBusClient busClient;
+  private String config;
+
   public class JBusMethods {
     public void getConfig(String pack) {
       busClient.call(pack, "getConfig", busClient.quote(busClient.encodeString(config)));
@@ -651,6 +642,14 @@ public class Proxy extends Thread {
       proxy.close();
       proxy = new Proxy();
       proxy.start();
+    }
+  }
+
+  public static int getBusPort() {
+    if (JF.isWindows()) {
+      return 33003;
+    } else {
+      return 777;
     }
   }
 
@@ -676,6 +675,7 @@ public class Proxy extends Thread {
 
   public static void serviceStop() {
     JFLog.log("Stopping service");
+    busServer.close();
     proxy.close();
   }
 }

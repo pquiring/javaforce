@@ -22,8 +22,17 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{E6CA49CE-48B5-43CF-950D-49C9D9BA9C4F}">
-        <File Id="javaforce.jar" Source="javaforce.jar" KeyPath="yes"/>
+        <File Id="jfdhcpsvc.exe" Source="jfdhcpsvc.exe" KeyPath="yes"/>
         <File Id="jfdhcp.exe" Source="jfdhcp.exe"/>
+        <File Id="javaforce.jar" Source="javaforce.jar"/>
+        <ServiceInstall Id="ServiceInstaller" 
+          Type="ownProcess" 
+          Name="jfDHCP" 
+          DisplayName="jfDHCP" 
+          Description="jf DHCP Server" 
+          Start="auto" 
+          ErrorControl="normal" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfDHCP" Wait="yes" />
       </Component>
     </DirectoryRef>
 

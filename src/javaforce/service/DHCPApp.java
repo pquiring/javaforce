@@ -10,10 +10,12 @@ package javaforce.service;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
+import javaforce.jbus.*;
 
-public class DHCPApp extends javax.swing.JFrame implements ActionListener {
+public class DHCPApp extends javax.swing.JFrame {
 
   /**
    * Creates new form DHCPApp
@@ -23,20 +25,16 @@ public class DHCPApp extends javax.swing.JFrame implements ActionListener {
     //create tray icon to open app
     JFImage img = new JFImage();
     img.loadPNG(this.getClass().getResourceAsStream("/javaforce/icons/dhcp.png"));
-    PopupMenu popup = new PopupMenu();
-    show = new MenuItem("Show");
-    show.addActionListener(this);
-    popup.add(show);
-    popup.addSeparator();
-    exit = new MenuItem("Exit");
-    exit.addActionListener(this);
-    popup.add(exit);
-    icon = new TrayIcon(img.getImage(), "DHCP", popup);
-    icon.addActionListener(this);
-    tray = SystemTray.getSystemTray();
-    try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
-    //start service
-    start();
+    new Thread() {
+      public void run() {
+        Random r = new Random();
+        busClient = new JBusClient(DHCP.busPack + ".client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(DHCP.getBusPort());
+        busClient.start();
+        busClient.call(DHCP.busPack, "getConfig", "\"" + busClient.pack + "\"");
+      }
+    }.start();
+    JF.centerWindow(this);
   }
 
   public void readConfig() {
@@ -56,43 +54,11 @@ public class DHCPApp extends javax.swing.JFrame implements ActionListener {
   }
 
   public void writeConfig() {
-    try {
-      String cfg = config.getText().replaceAll("\n", "\r\n");
-      FileOutputStream fos = new FileOutputStream(JF.getUserPath() + "/.jfdhcp.cfg");
-      fos.write(cfg.getBytes());
-      fos.close();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  public void start() {
-    service = new DHCP();
-    synchronized(service.stateMonitor) {
-      service.start();
-      try {service.stateMonitor.wait();} catch (Exception e) {}
-    }
-
-    if (service.state == DHCP.State.Error) {
-      JF.showError("Error", "DHCP Service : Problem occured, please see log!");
-    }
+    busClient.call(DHCP.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    service.close();
-    JF.sleep(1000);
-    start();
-  }
-
-  public void actionPerformed(ActionEvent e) {
-    Object o = e.getSource();
-    if (o == exit) {
-      System.exit(0);
-    }
-    if (o == show) {
-      readConfig();
-      setVisible(true);
-    }
+    busClient.call(DHCP.busPack, "restart", "");
   }
 
   /**
@@ -105,30 +71,26 @@ public class DHCPApp extends javax.swing.JFrame implements ActionListener {
   private void initComponents() {
 
     save = new javax.swing.JButton();
-    Cancel = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
     config = new javax.swing.JTextArea();
     jLabel1 = new javax.swing.JLabel();
     viewLog = new javax.swing.JButton();
 
+    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("DHCP Server");
 
-    save.setText("Save and Restart");
+    save.setText("Save");
+    save.setEnabled(false);
     save.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         saveActionPerformed(evt);
       }
     });
 
-    Cancel.setText("Cancel");
-    Cancel.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        CancelActionPerformed(evt);
-      }
-    });
-
     config.setColumns(20);
     config.setRows(5);
+    config.setText(" [ loading ... ]");
+    config.setEnabled(false);
     jScrollPane1.setViewportView(config);
 
     jLabel1.setText("DHCP Configuration:");
@@ -147,12 +109,10 @@ public class DHCPApp extends javax.swing.JFrame implements ActionListener {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane1)
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(viewLog)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 320, Short.MAX_VALUE)
-            .addComponent(Cancel)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(save))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1)
@@ -169,7 +129,6 @@ public class DHCPApp extends javax.swing.JFrame implements ActionListener {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(save)
-          .addComponent(Cancel)
           .addComponent(viewLog))
         .addContainerGap())
     );
@@ -180,14 +139,8 @@ public class DHCPApp extends javax.swing.JFrame implements ActionListener {
   private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
     writeConfig();
     restart();
-    if (service.state == DHCP.State.Error) return;
-    setVisible(false);
+    JF.showMessage("Notice", "Settings saved!");
   }//GEN-LAST:event_saveActionPerformed
-
-  private void CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelActionPerformed
-    hideViewLog();
-    setVisible(false);
-  }//GEN-LAST:event_CancelActionPerformed
 
   private void viewLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewLogActionPerformed
     showViewLog();
@@ -200,13 +153,12 @@ public class DHCPApp extends javax.swing.JFrame implements ActionListener {
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        new DHCPApp();  //NOTE:Do NOT make it visible (it places icon in tray)
+        new DHCPApp().setVisible(true);
       }
     });
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton Cancel;
   private javax.swing.JTextArea config;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
@@ -214,15 +166,11 @@ public class DHCPApp extends javax.swing.JFrame implements ActionListener {
   private javax.swing.JButton viewLog;
   // End of variables declaration//GEN-END:variables
 
-  public SystemTray tray;
-  public TrayIcon icon;
-  public MenuItem exit, show;
-  public DHCP service;
   public ViewLog viewer;
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(JF.getUserPath() + "/.jfdhcp.log");
+      viewer = new ViewLog(DHCP.getLogFile());
     }
     viewer.setTitle("DHCP Log");
     viewer.setVisible(true);
@@ -232,6 +180,21 @@ public class DHCPApp extends javax.swing.JFrame implements ActionListener {
     if (viewer != null) {
       if (!viewer.isClosed) viewer.dispose();
       viewer = null;
+    }
+  }
+
+  public JBusClient busClient;
+
+  public class JBusMethods {
+    public void getConfig(String cfg) {
+      final String _cfg = cfg;
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          config.setText(JBusClient.decodeString(_cfg));
+          config.setEnabled(true);
+          save.setEnabled(true);
+        }
+      });
     }
   }
 }
