@@ -27,13 +27,22 @@ import javax.crypto.*;
 import javax.crypto.spec.*;
 
 import javaforce.*;
+import javaforce.jbus.JBusClient;
+import javaforce.jbus.JBusServer;
 
 public class STUN {
-  public static boolean SystemService = false;
   private static int defaultLifeTime = 600;
 
-  private final static String UserConfigFile = JF.getUserPath() + "/.jstun.cfg";
-  private final static String SystemConfigFile = "/etc/jstun.cfg";
+  public final static String busPack = "net.sf.jfstun";
+
+  public static String getConfigFile() {
+    return JF.getConfigPath() + "/jfstun.cfg";
+  }
+
+  public static String getLogFile() {
+    return JF.getLogPath() + "/jfstun.log";
+  }
+
 //requests
   private final static short BINDING_REQUEST = 0x0001;
   private final static short ALLOCATE_REQUEST = 0x0003;
@@ -92,11 +101,11 @@ public class STUN {
 
   /** Starts a STUN/TURN server, loading config from file. */
   public boolean start() {
-    if (SystemService)
-      JFLog.init("/var/log/jstun.log", false);
-    else
-      JFLog.init(JF.getUserPath() + "/.jstun.log", true);
+    JFLog.init(getLogFile(), true);
     loadConfig();
+    busClient = new JBusClient(busPack, new JBusMethods());
+    busClient.setPort(getBusPort());
+    busClient.start();
     return doStart();
   }
 
@@ -126,10 +135,13 @@ public class STUN {
   private void loadConfig() {
     Section section = Section.None;
     try {
-      BufferedReader br = new BufferedReader(new FileReader(SystemService ? SystemConfigFile : UserConfigFile));
+      BufferedReader br = new BufferedReader(new FileReader(getConfigFile()));
+      StringBuilder cfg = new StringBuilder();
       while (true) {
         String ln = br.readLine();
         if (ln == null) break;
+        cfg.append(ln);
+        cfg.append("\r\n");
         ln = ln.trim().toLowerCase();
         int idx = ln.indexOf('#');
         if (idx != -1) ln = ln.substring(0, idx).trim();
@@ -148,12 +160,14 @@ public class STUN {
             break;
         }
       }
+      config = cfg.toString();
     } catch (FileNotFoundException e) {
       //create default config
       try {
-        FileOutputStream fos = new FileOutputStream(SystemService ? SystemConfigFile : UserConfigFile);
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
         fos.write(defaultConfig.getBytes());
         fos.close();
+        config = defaultConfig;
       } catch (Exception e2) {
         JFLog.log(e2);
       }
@@ -802,5 +816,64 @@ public class STUN {
         }
       }
     }
+  }
+
+  private static JBusServer busServer;
+  private JBusClient busClient;
+  private String config;
+
+  public class JBusMethods {
+    public void getConfig(String pack) {
+      busClient.call(pack, "getConfig", busClient.quote(busClient.encodeString(config)));
+    }
+    public void setConfig(String cfg) {
+      //write new file
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    public void restart() {
+      stun.close();
+      stun = new STUN();
+      stun.start();
+    }
+  }
+
+  public static int getBusPort() {
+    if (JF.isWindows()) {
+      return 33006;
+    } else {
+      return 777;
+    }
+  }
+
+  public static void main(String args[]) {
+    serviceStart(args);
+  }
+
+  //Win32 Service
+
+  private static STUN stun;
+
+  public static void serviceStart(String args[]) {
+    if (JF.isWindows()) {
+      busServer = new JBusServer(getBusPort());
+      busServer.start();
+      while (!busServer.ready) {
+        JF.sleep(10);
+      }
+    }
+    stun = new STUN();
+    stun.start();
+  }
+
+  public static void serviceStop() {
+    JFLog.log("Stopping service");
+    busServer.close();
+    stun.close();
   }
 }

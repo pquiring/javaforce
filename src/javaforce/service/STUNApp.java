@@ -10,10 +10,12 @@ package javaforce.service;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
+import javaforce.jbus.*;
 
-public class STUNApp extends javax.swing.JFrame implements ActionListener {
+public class STUNApp extends javax.swing.JFrame {
 
   /**
    * Creates new form STUNApp
@@ -23,66 +25,25 @@ public class STUNApp extends javax.swing.JFrame implements ActionListener {
     //create tray icon to open app
     JFImage img = new JFImage();
     img.loadPNG(this.getClass().getResourceAsStream("/javaforce/icons/stun.png"));
-    PopupMenu popup = new PopupMenu();
-    show = new MenuItem("Show");
-    show.addActionListener(this);
-    popup.add(show);
-    popup.addSeparator();
-    exit = new MenuItem("Exit");
-    exit.addActionListener(this);
-    popup.add(exit);
-    icon = new TrayIcon(img.getImage(), "STUN", popup);
-    icon.addActionListener(this);
-    tray = SystemTray.getSystemTray();
-    try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
-    //start service
-    service = new STUN();
-    service.start();
-  }
-
-  public void readConfig() {
-    try {
-      BufferedReader br = new BufferedReader(new FileReader(JF.getUserPath() + "/.jstun.cfg"));
-      StringBuilder str = new StringBuilder();
-      while (true) {
-        String ln = br.readLine();
-        if (ln == null) break;
-        str.append(ln);
-        str.append("\n");
+    setIconImage(img.getImage());
+    new Thread() {
+      public void run() {
+        Random r = new Random();
+        busClient = new JBusClient(STUN.busPack + ".client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(STUN.getBusPort());
+        busClient.start();
+        busClient.call(STUN.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
-      config.setText(str.toString());
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    }.start();
+    JF.centerWindow(this);
   }
 
   public void writeConfig() {
-    try {
-      String cfg = config.getText().replaceAll("\n", "\r\n");
-      FileOutputStream fos = new FileOutputStream(JF.getUserPath() + "/.jstun.cfg");
-      fos.write(cfg.getBytes());
-      fos.close();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
+    busClient.call(STUN.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    service.close();
-    JF.sleep(1000);
-    service = new STUN();
-    service.start();
-  }
-
-  public void actionPerformed(ActionEvent e) {
-    Object o = e.getSource();
-    if (o == exit) {
-      System.exit(0);
-    }
-    if (o == show) {
-      readConfig();
-      setVisible(true);
-    }
+    busClient.call(STUN.busPack, "restart", "");
   }
 
   /**
@@ -95,29 +56,25 @@ public class STUNApp extends javax.swing.JFrame implements ActionListener {
   private void initComponents() {
 
     save = new javax.swing.JButton();
-    Cancel = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
     config = new javax.swing.JTextArea();
     jLabel1 = new javax.swing.JLabel();
 
+    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("STUN/TURN Server");
 
-    save.setText("Save and Restart");
+    save.setText("Save");
+    save.setEnabled(false);
     save.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         saveActionPerformed(evt);
       }
     });
 
-    Cancel.setText("Cancel");
-    Cancel.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        CancelActionPerformed(evt);
-      }
-    });
-
     config.setColumns(20);
     config.setRows(5);
+    config.setText(" [ loading ... ]\n");
+    config.setEnabled(false);
     jScrollPane1.setViewportView(config);
 
     jLabel1.setText("STUN/TURN Configuration:");
@@ -129,11 +86,9 @@ public class STUNApp extends javax.swing.JFrame implements ActionListener {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jScrollPane1)
+          .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
-            .addGap(0, 395, Short.MAX_VALUE)
-            .addComponent(Cancel)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGap(0, 0, Short.MAX_VALUE)
             .addComponent(save))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1)
@@ -148,9 +103,7 @@ public class STUNApp extends javax.swing.JFrame implements ActionListener {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(save)
-          .addComponent(Cancel))
+        .addComponent(save)
         .addContainerGap())
     );
 
@@ -160,12 +113,8 @@ public class STUNApp extends javax.swing.JFrame implements ActionListener {
   private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
     writeConfig();
     restart();
-    setVisible(false);
+    JF.showMessage("Notice", "Settings saved!");
   }//GEN-LAST:event_saveActionPerformed
-
-  private void CancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelActionPerformed
-    setVisible(false);
-  }//GEN-LAST:event_CancelActionPerformed
 
   /**
    * @param args the command line arguments
@@ -174,21 +123,31 @@ public class STUNApp extends javax.swing.JFrame implements ActionListener {
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        new STUNApp();  //NOTE:Do NOT make it visible (it places icon in tray)
+        new STUNApp().setVisible(true);
       }
     });
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton Cancel;
   private javax.swing.JTextArea config;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JButton save;
   // End of variables declaration//GEN-END:variables
 
-  public SystemTray tray;
-  public TrayIcon icon;
-  public MenuItem exit, show;
-  public STUN service;
+  public JBusClient busClient;
+
+  public class JBusMethods {
+    public void getConfig(String cfg) {
+      final String _cfg = cfg;
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          config.setText(JBusClient.decodeString(_cfg));
+          config.setEnabled(true);
+          save.setEnabled(true);
+        }
+      });
+    }
+  }
+
 }

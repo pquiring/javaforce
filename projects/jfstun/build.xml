@@ -2,6 +2,8 @@
   <description>paint</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfstun"/>
+  <property name="app2" value="jfstunsvc"/>
+  <property name="apptype2" value="s"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.1"/>
 

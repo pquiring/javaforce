@@ -22,8 +22,17 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{E6CA49CE-48B5-43CF-950D-49C9D9BA9C4F}" Win64="yes">
-        <File Id="javaforce.jar" Source="javaforce.jar" KeyPath="yes"/>
+        <File Id="jfstunsvc.exe" Source="jfstunsvc.exe" KeyPath="yes"/>
         <File Id="jfstun.exe" Source="jfstun.exe"/>
+        <File Id="javaforce.jar" Source="javaforce.jar"/>
+        <ServiceInstall Id="ServiceInstaller" 
+          Type="ownProcess" 
+          Name="jfSTUN" 
+          DisplayName="jfSTUN" 
+          Description="jf STUN Server" 
+          Start="auto" 
+          ErrorControl="normal" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfSTUN" Wait="yes" />
       </Component>
     </DirectoryRef>
 

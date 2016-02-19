@@ -21,8 +21,7 @@ import javaforce.*;
 import javaforce.jbus.*;
 
 public class DNS extends Thread {
-  public final static String busPack = "net.sf.jfproxy";
-
+  public final static String busPack = "net.sf.jfdns";
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfdns.cfg";
@@ -457,7 +456,6 @@ public class DNS extends Thread {
     busServer.close();
     dns.close();
   }
-
 }
 
 /*
