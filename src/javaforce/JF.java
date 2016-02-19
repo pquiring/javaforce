@@ -169,6 +169,7 @@ public class JF {
   public static String getCurrentUser() {
     return System.getProperty("user.name");
   }
+
   private static String user_dir = null;
 
   public static synchronized String getCurrentPath() {
@@ -184,6 +185,28 @@ public class JF {
   public static void setCurrentPath(String new_dir) {
     user_dir = new_dir;
   }
+
+  /** Returns system config path for system services. */
+  public static String getConfigPath() {
+    if (JF.isWindows()) {
+      String path = System.getenv("PROGRAMDATA");  //Win Vista/7/8/10
+      if (path == null) {
+        path = System.getenv("ALLUSERSPROFILE");  //WinXP
+      }
+      return path;
+    } else {
+      return "/etc";
+    }
+  }
+
+  public static String getLogPath() {
+    if (JF.isWindows()) {
+      return System.getenv("windir") + "/Logs";
+    } else {
+      return "/var/log";
+    }
+  }
+
 //file IO helper functions (these are little-endian format!!!)
 
   public static boolean eof(InputStream f) {
@@ -1154,7 +1177,7 @@ public class JF {
     root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(vk, 0), name);
     root.getActionMap().put(name, event);
   }
-  
+
   /** Due to JVM bugs finding a monospaced font is not that easy...
    * See : Java Bug # 9009891 @ bugs.sun.com
    */

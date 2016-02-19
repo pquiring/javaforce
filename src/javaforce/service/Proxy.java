@@ -35,26 +35,12 @@ public class Proxy extends Thread {
 
   public final static String busPack = "net.sf.jfproxy";
 
-  private final static String UnixConfigFile = "/etc/jfproxy.cfg";
-  private final static String WinConfigFile =  System.getenv("ProgramData") + "/jfproxy.cfg";
-
   public static String getConfigFile() {
-    if (JF.isWindows()) {
-      return WinConfigFile;
-    } else {
-      return UnixConfigFile;
-    }
+    return JF.getConfigPath() + "/jfproxy.cfg";
   }
 
-  private final static String UnixLogFile = "/var/log/jfproxy.log";
-  private final static String WinLogFile =  System.getenv("ProgramData") + "/jfproxy.log";
-
   public static String getLogFile() {
-    if (JF.isWindows()) {
-      return WinLogFile;
-    } else {
-      return UnixLogFile;
-    }
+    return JF.getLogPath() + "/jfproxy.log";
   }
 
   private static class URLChange {

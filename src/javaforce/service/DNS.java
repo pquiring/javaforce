@@ -18,12 +18,19 @@ import java.net.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.jbus.*;
 
 public class DNS extends Thread {
-  public static boolean SystemService = false;
+  public final static String busPack = "net.sf.jfproxy";
 
-  private final static String UserConfigFile = JF.getUserPath() + "/.jdns.cfg";
-  private final static String SystemConfigFile = "/etc/jdns.cfg";
+
+  public static String getConfigFile() {
+    return JF.getConfigPath() + "/jfdns.cfg";
+  }
+
+  public static String getLogFile() {
+    return JF.getLogPath() + "/jfdns.log";
+  }
 
   private DatagramSocket ds;
   private static int maxmtu = 512;  //standard
@@ -31,12 +38,12 @@ public class DNS extends Thread {
   private ArrayList<String> records = new ArrayList<String>();
 
   public void run() {
-    if (SystemService)
-      JFLog.init("/var/log/jdns.log", false);
-    else
-      JFLog.init(JF.getUserPath() + "/.jdns.log", false);
+    JFLog.append(getLogFile(), false);
     try {
       loadConfig();
+      busClient = new JBusClient(busPack, new JBusMethods());
+      busClient.setPort(getBusPort());
+      busClient.start();
       for(int a=0;a<5;a++) {
         try {
           ds = new DatagramSocket(53);
@@ -80,10 +87,13 @@ public class DNS extends Thread {
   private void loadConfig() {
     Section section = Section.None;
     try {
-      BufferedReader br = new BufferedReader(new FileReader(SystemService ? SystemConfigFile : UserConfigFile));
+      BufferedReader br = new BufferedReader(new FileReader(getConfigFile()));
+      StringBuilder cfg = new StringBuilder();
       while (true) {
         String ln = br.readLine();
         if (ln == null) break;
+        cfg.append(ln);
+        cfg.append("\r\n");
         ln = ln.trim().toLowerCase();
         int idx = ln.indexOf('#');
         if (idx != -1) ln = ln.substring(0, idx).trim();
@@ -107,13 +117,15 @@ public class DNS extends Thread {
             break;
         }
       }
+      config = cfg.toString();
     } catch (FileNotFoundException e) {
       //create default config
       uplink = "8.8.8.8";
       try {
-        FileOutputStream fos = new FileOutputStream(SystemService ? SystemConfigFile : UserConfigFile);
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
         fos.write(defaultConfig.getBytes());
         fos.close();
+        config = defaultConfig;
       } catch (Exception e2) {
         JFLog.log(e2);
       }
@@ -386,6 +398,66 @@ public class DNS extends Thread {
       replyOffset += 4;
     }
   }
+
+  private static JBusServer busServer;
+  private JBusClient busClient;
+  private String config;
+
+  public class JBusMethods {
+    public void getConfig(String pack) {
+      busClient.call(pack, "getConfig", busClient.quote(busClient.encodeString(config)));
+    }
+    public void setConfig(String cfg) {
+      //write new file
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    public void restart() {
+      dns.close();
+      dns = new DNS();
+      dns.start();
+    }
+  }
+
+  public static int getBusPort() {
+    if (JF.isWindows()) {
+      return 33005;
+    } else {
+      return 777;
+    }
+  }
+
+  public static void main(String args[]) {
+    serviceStart(args);
+  }
+
+  //Win32 Service
+
+  private static DNS dns;
+
+  public static void serviceStart(String args[]) {
+    if (JF.isWindows()) {
+      busServer = new JBusServer(getBusPort());
+      busServer.start();
+      while (!busServer.ready) {
+        JF.sleep(10);
+      }
+    }
+    dns = new DNS();
+    dns.start();
+  }
+
+  public static void serviceStop() {
+    JFLog.log("Stopping service");
+    busServer.close();
+    dns.close();
+  }
+
 }
 
 /*

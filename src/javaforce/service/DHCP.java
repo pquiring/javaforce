@@ -20,26 +20,12 @@ public class DHCP extends Thread {
 
   public final static String busPack = "net.sf.jfdhcp";
 
-  private final static String UnixConfigFile = "/etc/jfdhcp.cfg";
-  private final static String WinConfigFile =  System.getenv("ProgramData") + "/jfdhcp.cfg";
-
   public static String getConfigFile() {
-    if (JF.isWindows()) {
-      return WinConfigFile;
-    } else {
-      return UnixConfigFile;
-    }
+    return JF.getConfigPath() + "/jfdhcp.cfg";
   }
 
-  private final static String UnixLogFile = "/var/log/jfdhcp.log";
-  private final static String WinLogFile =  System.getenv("ProgramData") + "/jfdhcp.log";
-
   public static String getLogFile() {
-    if (JF.isWindows()) {
-      return WinLogFile;
-    } else {
-      return UnixLogFile;
-    }
+    return JF.getLogPath() + "/jfdhcp.log";
   }
 
   private static int maxmtu = 1500 - 20 - 8;  //IP=20 UDP=8

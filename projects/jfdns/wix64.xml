@@ -22,8 +22,17 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{B5CB89AD-03DD-4853-BCDD-189F7E352AA2}" Win64="yes">
-        <File Id="javaforce.jar" Source="javaforce.jar" KeyPath="yes"/>
+        <File Id="jfdnssvc.exe" Source="jfdnssvc.exe" KeyPath="yes"/>
         <File Id="jfdns.exe" Source="jfdns.exe"/>
+        <File Id="javaforce.jar" Source="javaforce.jar"/>
+        <ServiceInstall Id="ServiceInstaller" 
+          Type="ownProcess" 
+          Name="jfDNS" 
+          DisplayName="jfDNS" 
+          Description="jf DNS Server" 
+          Start="auto" 
+          ErrorControl="normal" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfDNS" Wait="yes" />
       </Component>
     </DirectoryRef>
 
