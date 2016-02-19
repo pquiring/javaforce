@@ -7,10 +7,9 @@ package javaforce.service;
  * Created : Nov 16, 2013
  */
 
-import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import javax.swing.*;
 
 import javaforce.*;
 import javaforce.jbus.*;
@@ -171,16 +170,10 @@ public class DHCPApp extends javax.swing.JFrame {
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
       viewer = new ViewLog(DHCP.getLogFile());
+      viewer.setTitle("DHCP Log");
     }
-    viewer.setTitle("DHCP Log");
     viewer.setVisible(true);
-  }
-
-  public void hideViewLog() {
-    if (viewer != null) {
-      if (!viewer.isClosed) viewer.dispose();
-      viewer = null;
-    }
+    viewer.setExtendedState(JFrame.NORMAL);
   }
 
   public JBusClient busClient;

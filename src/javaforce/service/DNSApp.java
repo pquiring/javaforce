@@ -7,10 +7,8 @@ package javaforce.service;
  * Created : Nov 16, 2013
  */
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
 import java.util.*;
+import javax.swing.*;
 
 import javaforce.*;
 import javaforce.jbus.*;
@@ -58,6 +56,7 @@ public class DNSApp extends javax.swing.JFrame {
     jScrollPane1 = new javax.swing.JScrollPane();
     config = new javax.swing.JTextArea();
     jLabel1 = new javax.swing.JLabel();
+    jButton1 = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("DNS Server");
@@ -78,6 +77,13 @@ public class DNSApp extends javax.swing.JFrame {
 
     jLabel1.setText("DNS Configuration:");
 
+    jButton1.setText("View Log");
+    jButton1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton1ActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -87,7 +93,8 @@ public class DNSApp extends javax.swing.JFrame {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jButton1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(save))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1)
@@ -102,7 +109,9 @@ public class DNSApp extends javax.swing.JFrame {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(save)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(save)
+          .addComponent(jButton1))
         .addContainerGap())
     );
 
@@ -114,6 +123,10 @@ public class DNSApp extends javax.swing.JFrame {
     restart();
     JF.showMessage("Notice", "Settings saved!");
   }//GEN-LAST:event_saveActionPerformed
+
+  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    showViewLog();
+  }//GEN-LAST:event_jButton1ActionPerformed
 
   /**
    * @param args the command line arguments
@@ -129,10 +142,22 @@ public class DNSApp extends javax.swing.JFrame {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextArea config;
+  private javax.swing.JButton jButton1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JButton save;
   // End of variables declaration//GEN-END:variables
+
+  public ViewLog viewer;
+
+  public void showViewLog() {
+    if (viewer == null || viewer.isClosed) {
+      viewer = new ViewLog(DNS.getLogFile());
+      viewer.setTitle("DNS Log");
+    }
+    viewer.setVisible(true);
+    viewer.setExtendedState(JFrame.NORMAL);
+  }
 
   public JBusClient busClient;
 
