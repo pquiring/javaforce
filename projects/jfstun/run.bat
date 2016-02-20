@@ -1,1 +1,1 @@
-start javaw -cp javaforce.jar javaforce.service.STUNApp %*
+start javaw -cp javaforce.jar javaforce.service.STUN %*

@@ -24,7 +24,7 @@ import javaforce.voip.*;
 
 public class Broadcast extends javax.swing.JFrame implements SIPClientInterface, RTPInterface, ActionListener {
 
-  public final String version = "0.34";
+  public final String version = "0.35";
 
   public String startList = null;
   public String cfgSuffix = "";
@@ -326,7 +326,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
             .addComponent(jLabel36)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(sip_end, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 433, Short.MAX_VALUE))
+            .addGap(0, 465, Short.MAX_VALUE))
           .addGroup(jPanel2Layout.createSequentialGroup()
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel10)
@@ -424,7 +424,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       }
     });
 
-    fix_list.setText("Fix All List...");
+    fix_list.setText("Fix 'calling' in List...");
     fix_list.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         fix_listActionPerformed(evt);
@@ -433,7 +433,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
 
     jLabel33.setText("Name:");
 
-    jButton2.setText("Fix Error List...");
+    jButton2.setText("Fix 'errors' in List...");
     jButton2.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         jButton2ActionPerformed(evt);
@@ -448,30 +448,28 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
         .addContainerGap()
         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(jPanel3Layout.createSequentialGroup()
+            .addComponent(jLabel5)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(selected_list, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addGroup(jPanel3Layout.createSequentialGroup()
             .addComponent(import_list)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(export_list))
           .addGroup(jPanel3Layout.createSequentialGroup()
-            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-              .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(selected_list, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(reset_list))
-              .addGroup(jPanel3Layout.createSequentialGroup()
-                .addComponent(create_list)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel33)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(list_name)))
+            .addComponent(reset_list)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(delete_list)
-            .addGap(6, 6, 6)
+            .addComponent(delete_list))
+          .addGroup(jPanel3Layout.createSequentialGroup()
             .addComponent(fix_list)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButton2)))
-        .addContainerGap(32, Short.MAX_VALUE))
+            .addComponent(jButton2))
+          .addGroup(jPanel3Layout.createSequentialGroup()
+            .addComponent(jLabel33)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(list_name, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(create_list)))
+        .addContainerGap(371, Short.MAX_VALUE))
     );
     jPanel3Layout.setVerticalGroup(
       jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -483,16 +481,20 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel5)
-          .addComponent(selected_list, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(reset_list)
-          .addComponent(delete_list)
-          .addComponent(fix_list)
-          .addComponent(jButton2))
+          .addComponent(selected_list, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(import_list)
           .addComponent(export_list))
-        .addContainerGap(296, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(reset_list)
+          .addComponent(delete_list))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(fix_list)
+          .addComponent(jButton2))
+        .addContainerGap(241, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Lists", jPanel3);
@@ -529,7 +531,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel11Layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 654, Short.MAX_VALUE)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 686, Short.MAX_VALUE)
         .addContainerGap())
     );
     jPanel11Layout.setVerticalGroup(
@@ -792,7 +794,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
             .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 104, Short.MAX_VALUE)))
+            .addGap(0, 136, Short.MAX_VALUE)))
         .addContainerGap())
     );
     jPanel4Layout.setVerticalGroup(
@@ -999,7 +1001,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       .addGroup(jPanel9Layout.createSequentialGroup()
         .addContainerGap()
         .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(461, Short.MAX_VALUE))
+        .addContainerGap(493, Short.MAX_VALUE))
     );
     jPanel9Layout.setVerticalGroup(
       jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1127,7 +1129,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
               .addGroup(jPanel5Layout.createSequentialGroup()
                 .addComponent(enable)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(wav_filename, javax.swing.GroupLayout.DEFAULT_SIZE, 359, Short.MAX_VALUE)
+                .addComponent(wav_filename, javax.swing.GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
               .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1265,7 +1267,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     jPanel6.setLayout(jPanel6Layout);
     jPanel6Layout.setHorizontalGroup(
       jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 674, Short.MAX_VALUE)
+      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 706, Short.MAX_VALUE)
     );
     jPanel6Layout.setVerticalGroup(
       jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1738,7 +1740,13 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     String sel = (String)selected_list.getSelectedItem();
     if (sel == null || sel.length() == 0) return;
     if (!quite) {
-      if (JOptionPane.showConfirmDialog(null, "Fix List:" + sel + "?", "Sure?", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
+      String msg;
+      if (errors) {
+        msg = "Fix 'errors' in List:" + sel + "?";
+      } else {
+        msg = "Fix 'calling' in List:" + sel + "?";
+      }
+      if (JOptionPane.showConfirmDialog(null, msg, "Sure?", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
     }
     SQL sql = new SQL();
     if (!sql.init()) {

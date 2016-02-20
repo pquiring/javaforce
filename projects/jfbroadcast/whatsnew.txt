@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+2-20-2016 : version 0.35
+  - added "Fix 'errors' in List..." button (user requested feature)
+
 12-27-2015 : version 0.34
   - update tray icon
 

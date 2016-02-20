@@ -1,1 +1,1 @@
-start javaw -cp javaforce.jar javaforce.service.ProxyApp %*
+start javaw -cp javaforce.jar javaforce.service.Proxy %*

@@ -5,7 +5,7 @@
   <property name="app2" value="jfstunsvc"/>
   <property name="apptype2" value="s"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.1"/>
+  <property name="version" value="0.2"/>
 
   <import file="../../base.xml"/>
 
@@ -22,7 +22,7 @@
       <fileset dir=".">
         <include name="*.jar"/>
         <include name="*.txt"/>
-        <include name="run.bat"/>
+        <include name="run*.bat"/>
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>

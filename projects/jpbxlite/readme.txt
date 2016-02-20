@@ -1,4 +1,4 @@
-jpbxlite/0.24
+jpbxlite/0.25
 =============
 
 Welcome to jpbxlite.
@@ -24,8 +24,7 @@ Notes
 
 Windows
 =======
-Recommend using MSI package, and launch with start menu shortcut.
-Otherwise use install.bat to place files into required folders and run %ProgramFiles%\jpbxlite\run.bat
+Recommend using MSI package to install Windows service.
 
 Linux
 =====
@@ -36,7 +35,7 @@ Web Based Configuration
 =======================
 When the server is running, it provides a web server running on port 80 (and secure 443).
 Point your browser to http://127.0.0.1
-The Admin button is in the top right corner (kinda hidden).
+The Admin button is in the top right corner.
 Default login is admin:admin
 From the admin console you can create trunks, extensions, etc.
 It is strongly recommended to set the "Local IP" in the general settings page.

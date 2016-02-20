@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{511FB535-1B0D-4745-AC9D-0D0920AFFE46}" Version="0.24" Language="1033" Name="jfPBXLite" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{511FB535-1B0D-4745-AC9D-0D0920AFFE46}" Version="0.25" Language="1033" Name="jfPBXLite" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
@@ -90,24 +90,11 @@
       </Component>
     </DirectoryRef>
 
-    <!-- Step 2b: Add the shortcut to your installer package -->
-<!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
-    <DirectoryRef Id="ProgramMenuFolder">
-      <Component Id="ApplicationShortcut" Guid="{BBE611BF-BBEB-45A1-859A-40436C022C7B}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfPBXLite" Description="Java PBXLite Editor" Target="[APPLICATIONROOTDIRECTORY]jpbxlite.exe"
-          WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
-<!-- Use the following if you want Shortcut in its own folder -->
-<!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfPBXLite" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
-      </Component>
-    </DirectoryRef>
-
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
       <ComponentRef Id="appfiles" />
       <ComponentRef Id="pluginfiles" />
       <ComponentRef Id="soundfiles" />
-      <ComponentRef Id="ApplicationShortcut" />
     </Feature>
   </Product>
 </Wix>

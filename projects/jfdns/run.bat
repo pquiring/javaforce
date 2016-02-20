@@ -1,1 +1,1 @@
-java -cp javaforce.jar javaforce.service.DNSApp %*
+java -cp javaforce.jar javaforce.service.DNS %*

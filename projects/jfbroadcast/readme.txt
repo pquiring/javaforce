@@ -28,8 +28,8 @@ If your WAV file(s) are too large you may get OutOfMemory exceptions,
     java.exe -Xmx256m -cp javaforce.jar;derby.jar;jfbroadcast.jar Broadcast
 Anwsering machine detection is accomplished by starting after 1 second of silence after something is heard (thresholds and duration are now adjustable).
 You can adjust the delay(ms) that is used between each attempt to start a new call (to prevent flooding your SIP server).
-The "Fix All List..." button will reset the status from "calling" to "new" if you forced program to exit while calling.
-The "Fix Error List..." button will reset the status if it is an error (such as err_404) to "new".
+The "Fix 'calling' in List..." button will reset the status from "calling" to "new" if you forced program to exit while calling.
+The "Fix 'errors' in List..." button will reset the status if it is an error (such as err_404) to "new".
 The "Reset List..." button will reset all numbers in current list to 'new' status.
 Messages should be at least 5 seconds long.
 NOTE : Please only broadcast to your own customers.  Laws in some countries/states may prohibit contacting unsolicited individuals.

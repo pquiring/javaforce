@@ -1,1 +1,1 @@
-java -cp javaforce.jar javaforce.service.DHCPApp %*
+java -cp javaforce.jar javaforce.service.DHCP %*

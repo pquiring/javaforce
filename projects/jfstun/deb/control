@@ -1,5 +1,5 @@
 Package: jfstun
-Version: 0.1
+Version: 0.2
 Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 1

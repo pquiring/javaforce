@@ -1,7 +1,7 @@
 what's new?
 ===========
 
-Feb ?, 2016 : version 0.4
+Feb 20, 2016 : version 0.4
   - created windows service
 
 Sept 10, 2015 : version 0.3

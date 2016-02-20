@@ -1,5 +1,11 @@
 What's new...
 
+Feb 20/2016 : JF 11.0.0 released!
+  - created Windows Service wrapper
+  - converted jfProxy/0.4, jfDHCP/0.4, jfDNS/0.3, jfSTUN/0.2 and jPBXlite/0.25 to Windows services
+  - jfBroadcast/0.35
+    - added "Fix 'errors' in List..." button
+
 Jan 22/2016 : JF 10.8.0 released!
   - jPhoneLite/1.9.10
     - fixed audio problem on some systems

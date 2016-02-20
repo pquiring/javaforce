@@ -1,6 +1,6 @@
 Buildroot: .
 Name: jfdns
-Version: 0.2
+Version: 0.3
 Release: 1
 Summary: DNS Server
 License: LGPL

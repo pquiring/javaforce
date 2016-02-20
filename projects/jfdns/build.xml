@@ -1,9 +1,9 @@
 <project name="jfdns" default="jar" basedir=".">
   <description>dns</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfdnssvc"/>
-  <property name="apptype" value="s"/>
-  <property name="app2" value="jfdns"/>
+  <property name="app" value="jfdns"/>
+  <property name="app2" value="jfdnssvc"/>
+  <property name="apptype2" value="s"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.3"/>
 
@@ -22,7 +22,7 @@
       <fileset dir=".">
         <include name="*.jar"/>
         <include name="*.txt"/>
-        <include name="run.bat"/>
+        <include name="run*.bat"/>
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>

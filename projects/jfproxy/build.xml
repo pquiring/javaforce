@@ -21,7 +21,7 @@
       <fileset dir=".">
         <include name="*.jar"/>
         <include name="*.txt"/>
-        <include name="run.bat"/>
+        <include name="run*.bat"/>
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>
