@@ -161,6 +161,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     import_list = new javax.swing.JButton();
     fix_list = new javax.swing.JButton();
     jLabel33 = new javax.swing.JLabel();
+    jButton2 = new javax.swing.JButton();
     jPanel11 = new javax.swing.JPanel();
     jScrollPane1 = new javax.swing.JScrollPane();
     listView = new javax.swing.JTable();
@@ -423,7 +424,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       }
     });
 
-    fix_list.setText("Fix List...");
+    fix_list.setText("Fix All List...");
     fix_list.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         fix_listActionPerformed(evt);
@@ -431,6 +432,13 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     });
 
     jLabel33.setText("Name:");
+
+    jButton2.setText("Fix Error List...");
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton2ActionPerformed(evt);
+      }
+    });
 
     javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
     jPanel3.setLayout(jPanel3Layout);
@@ -460,8 +468,10 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(delete_list)
             .addGap(6, 6, 6)
-            .addComponent(fix_list)))
-        .addContainerGap(157, Short.MAX_VALUE))
+            .addComponent(fix_list)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jButton2)))
+        .addContainerGap(32, Short.MAX_VALUE))
     );
     jPanel3Layout.setVerticalGroup(
       jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -476,7 +486,8 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
           .addComponent(selected_list, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(reset_list)
           .addComponent(delete_list)
-          .addComponent(fix_list))
+          .addComponent(fix_list)
+          .addComponent(jButton2))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(import_list)
@@ -1374,7 +1385,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   }//GEN-LAST:event_delayStateChanged
 
   private void fix_listActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fix_listActionPerformed
-    fixList(false);
+    fixList(false, false);
   }//GEN-LAST:event_fix_listActionPerformed
 
   private void import_listActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_import_listActionPerformed
@@ -1415,8 +1426,14 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
         lockFile.unlock();
       }
       System.exit(0);
+    } else {
+      icon.displayMessage(null, "jfBroadcast is still active", TrayIcon.MessageType.NONE);
     }
   }//GEN-LAST:event_formWindowClosing
+
+  private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    fixList(false, true);
+  }//GEN-LAST:event_jButton2ActionPerformed
 
   /**
    * @param args the command line arguments
@@ -1477,6 +1494,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   private javax.swing.JCheckBox human_vm_detect;
   private javax.swing.JButton import_list;
   private javax.swing.JButton jButton1;
+  private javax.swing.JButton jButton2;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel11;
@@ -1716,7 +1734,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     updateList();
   }
 
-  public void fixList(boolean quite) {
+  public void fixList(boolean quite, boolean errors) {
     String sel = (String)selected_list.getSelectedItem();
     if (sel == null || sel.length() == 0) return;
     if (!quite) {
@@ -1727,7 +1745,13 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       setStatus("SQL connection failed");
       return;
     }
-    if (!sql.execute("update listdata set status='new', attempts = 0, survey = '', called = null where status='calling' and id=(select id from lists where name='" + sel + "')")) {
+    String query;
+    if (errors) {
+      query = "update listdata set status='new', attempts = 0, survey = '', called = null where status like 'err_%' and id=(select id from lists where name='" + sel + "')";
+    } else {
+      query = "update listdata set status='new', attempts = 0, survey = '', called = null where status='calling' and id=(select id from lists where name='" + sel + "')";
+    }
+    if (!sql.execute(query)) {
       setStatus("update failed");
       return;
     }
@@ -2332,7 +2356,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       setStatus("calling");
 
     JFLog.log("thresholds : " + settings.greetingThreshold + "," + settings.silenceThreshold + "," + settings.silenceDuration);
-    fixList(true);
+    fixList(true, false);
 
     //load WAV file(s)
     wav = new Wav[NUMQUESTIONS];

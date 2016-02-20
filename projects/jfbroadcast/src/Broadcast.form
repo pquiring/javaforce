@@ -300,9 +300,11 @@
                               <Component id="delete_list" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="6" pref="6" max="-2" attributes="0"/>
                               <Component id="fix_list" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace pref="157" max="32767" attributes="0"/>
+                      <EmptySpace pref="32" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -321,6 +323,7 @@
                           <Component id="reset_list" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="delete_list" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="fix_list" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jButton2" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -395,7 +398,7 @@
             </Component>
             <Component class="javax.swing.JButton" name="fix_list">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Fix List..."/>
+                <Property name="text" type="java.lang.String" value="Fix All List..."/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fix_listActionPerformed"/>
@@ -405,6 +408,14 @@
               <Properties>
                 <Property name="text" type="java.lang.String" value="Name:"/>
               </Properties>
+            </Component>
+            <Component class="javax.swing.JButton" name="jButton2">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Fix Error List..."/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton2ActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

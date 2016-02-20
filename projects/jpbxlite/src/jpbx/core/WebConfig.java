@@ -24,14 +24,12 @@ public class WebConfig implements WebHandler {
 
   public boolean start() {
     JFLog.log("Starting Web Server on port " + http_port);
-    MainGUI.addLog("Starting Web Server on port " + http_port);
     http = new Web();
     http.start(this, http_port, false);
     if (new File(Paths.etc + "jpbx.key").exists()) {
       System.setProperty("javax.net.ssl.keyStore", Paths.etc + "jpbx.key");
       System.setProperty("javax.net.ssl.keyStorePassword", "password");
       JFLog.log("Starting Web Server on port " + https_port + " (secure)");
-      MainGUI.addLog("Starting Web Server on port " + https_port + " (secure)");
       https = new Web();
       https.start(this, https_port, true);
       if (!disableWebRTC) startWebRTC();

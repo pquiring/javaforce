@@ -48,7 +48,6 @@ public class SQL {
   public static boolean create() {
     if (new File(path + "/jpbxDB/service.properties").exists()) return true;
     JFLog.log("Creating database...");
-    MainGUI.addLog("Creating database...");
     try {
       Class.forName("org.apache.derby.jdbc.EmbeddedDriver").newInstance();
     } catch (Exception e) {

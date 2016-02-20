@@ -2,6 +2,7 @@
   <description>jpbx</description>
   <!-- set global properties for this build -->
   <property name="app" value="jpbxlite"/>
+  <property name="apptype" value="s"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>

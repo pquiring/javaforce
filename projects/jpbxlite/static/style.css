@@ -13,9 +13,7 @@ form {
 
 table {
   border: 0px;
-//  padding: 0px;
   border-spacing: 0px;
-//  border-collapse: collapse;
 }
 
 .divider {
@@ -28,8 +26,6 @@ table tr td {
 }
 
 textarea {
-//  max-width: 400px;
-//  max-height: 400px;
 }
 
 .menucat{
@@ -43,9 +39,6 @@ textarea {
   overflow: hidden;
   color: #000000;
   background-color: #eeeeff;
-//  background-image: url(/img/menucat.png);
-//  background-repeat: repeat-y;
-//  background-position: right;
 }
 
 .menuitem {
@@ -59,9 +52,6 @@ textarea {
   overflow: hidden;
   color: #000000;
   background-color: #8899ff;
-//  background-image: url(/img/menuitem.png);
-//  background-repeat: repeat-y;
-//  background-position: right;
 }
 
 .menuitem a {
@@ -96,9 +86,6 @@ textarea {
   overflow: hidden;
   color: #ffffff;
   background-color: #8899ff;
-//  background-image: url(/img/menuitem.png);
-//  background-repeat: repeat-y;
-//  background-position: right;
 }
 
 .menuitemselected a {

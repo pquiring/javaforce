@@ -545,6 +545,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.authsent = false;
     cd.src.extra = headers;
     cd.src.epass = null;
+    cd.src.uri = cd.dst.uri;
     boolean ret = issue(cd, "REFER", false, true);
     return ret;
   }

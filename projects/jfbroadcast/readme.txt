@@ -28,16 +28,11 @@ If your WAV file(s) are too large you may get OutOfMemory exceptions,
     java.exe -Xmx256m -cp javaforce.jar;derby.jar;jfbroadcast.jar Broadcast
 Anwsering machine detection is accomplished by starting after 1 second of silence after something is heard (thresholds and duration are now adjustable).
 You can adjust the delay(ms) that is used between each attempt to start a new call (to prevent flooding your SIP server).
-You can use "Fix List..." to change status from "calling" to "new" if you forced program to exit while calling.
+The "Fix All List..." button will reset the status from "calling" to "new" if you forced program to exit while calling.
+The "Fix Error List..." button will reset the status if it is an error (such as err_404) to "new".
 The "Reset List..." button will reset all numbers in current list to 'new' status.
 Messages should be at least 5 seconds long.
-The database was changed in v0.15 so you should export your lists in an older version and import with this version.
-The database location and config files location were changed in v0.18:
-  Windows : stored in %ProgramData%\jfBroadcast (or %AllUsersProfile%\jfBroadcast for Win2000/XP/2003)
-  Unix : stored in /var/lib/jfBroadcast
-  If you are upgrading the old location was ./database which you can manually move and rename.
-  The config files (broadcast.cfg and broadcast-msgs.cfg) are now stored in the user profile folder (%UserProfile% for Windows)
-Please only broadcast to your own customers.  Laws in some countries/states may prohibit contacting unsolicited individuals.
+NOTE : Please only broadcast to your own customers.  Laws in some countries/states may prohibit contacting unsolicited individuals.
 
 Surveys
 -------

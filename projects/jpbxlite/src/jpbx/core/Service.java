@@ -32,7 +32,6 @@ public class Service implements SIPServerInterface, PBXAPI {
     SQL sql = new SQL();
     if (!sql.init()) {
       JFLog.log("Failed to connect to database");
-      MainGUI.addLog("Failed to connect to database");
       return false;
     }
     //read config
@@ -80,7 +79,6 @@ public class Service implements SIPServerInterface, PBXAPI {
     new File(Paths.logs).mkdirs();
 
     loadPlugins(sql);
-    MainGUI.addLog("Starting SIP Server on port " + sip_port);
     ss.init(sip_port, this, SIP.Transport.UDP);
 //    ss.enableQOP(true);  //test!
     //create timer to register trunks (every 110 seconds)
