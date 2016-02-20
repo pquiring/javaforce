@@ -5,7 +5,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import javaforce.JFLog;
 
-/** MainCLI
+/** Main
  *
  * @author pquiring
  *
@@ -45,10 +45,10 @@ public class Main {
   private static WebConfig config;
 
   public static void main(String args[]) {
-    startService(args);
+    serviceStart(args);
   }
 
-  public static void startService(String args[]) {
+  public static void serviceStart(String args[]) {
     Paths.init();
     //create SQL database (if needed)
     if (!SQL.create()) {
@@ -70,7 +70,7 @@ public class Main {
     config.start();
   }
 
-  public static void stopService() {
+  public static void serviceStop() {
     System.exit(0);
   }
 }
