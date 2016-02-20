@@ -21,6 +21,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   private Hashtable<String, Extension> extList;
   private JBusClient jbusClient;
   private boolean relayAudio, relayVideo;
+  private Timer timer;
 
   public static int sip_port;
 
@@ -82,7 +83,7 @@ public class Service implements SIPServerInterface, PBXAPI {
     ss.init(sip_port, this, SIP.Transport.UDP);
 //    ss.enableQOP(true);  //test!
     //create timer to register trunks (every 110 seconds)
-    Timer timer = new Timer();
+    timer = new Timer();
     timer.scheduleAtFixedRate(new TimerTask() {public void run() {registerTrunks();}}, 0, 110 * 1000);
     sql.uninit();
     return true;
@@ -95,6 +96,10 @@ public class Service implements SIPServerInterface, PBXAPI {
     if (ss != null) {
       ss.uninit();
       ss = null;
+    }
+    if (timer != null) {
+      timer.cancel();
+      timer = null;
     }
   }
   public void restart() {

@@ -3,6 +3,7 @@ package jpbx.core;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+
 import javaforce.JFLog;
 
 /** Main
@@ -71,6 +72,7 @@ public class Main {
   }
 
   public static void serviceStop() {
-    System.exit(0);
+    service.uninit();
+    config.stop();
   }
 }

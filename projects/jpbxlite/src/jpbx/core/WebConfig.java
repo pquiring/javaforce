@@ -44,6 +44,21 @@ public class WebConfig implements WebHandler {
     if (https != null) https.setWebSocketHandler(webrtc);
   }
 
+  public void stop() {
+    if (http != null) {
+      http.stop();
+      http = null;
+    }
+    if (https != null) {
+      https.stop();
+      https = null;
+    }
+    if (webrtc != null) {
+//      webrtc.stop();
+      webrtc = null;
+    }
+  }
+
   private String decode(String in) {
     try {return URLDecoder.decode(in, "UTF-8");} catch (Exception e) {}
     return "";
