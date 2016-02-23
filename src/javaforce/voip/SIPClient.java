@@ -417,6 +417,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.dst.host = remoteip;
     cd.dst.port = remoteport;
     StringBuilder req = new StringBuilder();
+    if (cd.uri == null) {
+      cd.uri = "sip:" + user + "@" + remotehost;
+    }
     req.append(cmd + " " + cd.uri + " SIP/2.0\r\n");
     req.append("Via: SIP/2.0/" + transport.getName() + " " + cd.localhost + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
     req.append("Max-Forwards: 70\r\n");
@@ -947,6 +950,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           break;
         case 403:
           cd.src.epass = null;
+          cd.src.cseq = cd.dst.cseq;
           issue(cd, "ACK", false, true);
           if (cmd.equals("REGISTER")) {
             //bad password
@@ -959,6 +963,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         case 486:  //busy
           if (cd.dst.to != null) cd.src.to = cd.dst.to;
           cd.src.epass = null;
+          cd.src.cseq = cd.dst.cseq;
           issue(cd, "ACK", false, true);
           iface.onCancel(this, callid, type);
           setCallDetails(callid, null);
@@ -967,6 +972,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           //treat all other codes as a cancel
           if (cd.dst.to != null) cd.src.to = cd.dst.to;
           cd.src.epass = null;
+          cd.src.cseq = cd.dst.cseq;
           issue(cd, "ACK", false, true);
           iface.onCancel(this, callid, type);
 //          setCallDetails(callid, null);  //might not be done
