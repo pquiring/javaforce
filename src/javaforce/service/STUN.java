@@ -122,14 +122,14 @@ public class STUN {
   enum Section {None, Global};
 
   private final static String defaultConfig
-    = "[global]\r\n"
-    + "## remove comments below and change as desired.\r\n"
-    + "#user=\r\n"
-    + "#pass=\r\n"
-    + "#publicip=1.2.3.4\r\n"
-    + "## min/max are the UDP port ranges to use\r\n"
-    + "#min=10000\r\n"
-    + "#max=20000\r\n"
+    = "[global]\n"
+    + "## remove comments below and change as desired.\n"
+    + "#user=\n"
+    + "#pass=\n"
+    + "#publicip=1.2.3.4\n"
+    + "## min/max are the UDP port ranges to use\n"
+    + "#min=10000\n"
+    + "#max=20000\n"
     ;
 
   private void loadConfig() {
@@ -141,7 +141,7 @@ public class STUN {
         String ln = br.readLine();
         if (ln == null) break;
         cfg.append(ln);
-        cfg.append("\r\n");
+        cfg.append("\n");
         ln = ln.trim().toLowerCase();
         int idx = ln.indexOf('#');
         if (idx != -1) ln = ln.substring(0, idx).trim();

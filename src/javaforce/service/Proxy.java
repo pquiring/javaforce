@@ -104,17 +104,17 @@ public class Proxy extends Thread {
   private static enum Section {None, Global, BlockDomain, URLChange};
 
   private final static String defaultConfig
-    = "[global]\r\n"
-    + "port=3128\r\n"
-    + "allow=0.0.0.0/0 #allow all\r\n"
-    + "#allow=192.168.0.0/24 #allow subnet\r\n"
-    + "#allow=10.1.2.3/32 #allow single ip\r\n"
-    + "\r\n"
-    + "[blockdomain]\r\n"
-    + ".*youtube[.]com\r\n"
-    + "\r\n"
-    + "[urlchange]\r\n"
-    + "#www.example.com/test = www.google.com\r\n";
+    = "[global]\n"
+    + "port=3128\n"
+    + "allow=0.0.0.0/0 #allow all\n"
+    + "#allow=192.168.0.0/24 #allow subnet\n"
+    + "#allow=10.1.2.3/32 #allow single ip\n"
+    + "\n"
+    + "[blockdomain]\n"
+    + ".*youtube[.]com\n"
+    + "\n"
+    + "[urlchange]\n"
+    + "#www.example.com/test = www.google.com\n";
 
   private void loadConfig() {
     Section section = Section.None;
@@ -125,7 +125,7 @@ public class Proxy extends Thread {
         String ln = br.readLine();
         if (ln == null) break;
         cfg.append(ln);
-        cfg.append("\r\n");
+        cfg.append("\n");
         ln = ln.trim().toLowerCase();
         int idx = ln.indexOf('#');
         if (idx != -1) ln = ln.substring(0, idx).trim();

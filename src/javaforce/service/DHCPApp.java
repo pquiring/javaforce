@@ -36,22 +36,6 @@ public class DHCPApp extends javax.swing.JFrame {
     JF.centerWindow(this);
   }
 
-  public void readConfig() {
-    try {
-      BufferedReader br = new BufferedReader(new FileReader(JF.getUserPath() + "/.jfdhcp.cfg"));
-      StringBuilder str = new StringBuilder();
-      while (true) {
-        String ln = br.readLine();
-        if (ln == null) break;
-        str.append(ln);
-        str.append("\n");
-      }
-      config.setText(str.toString());
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
   public void writeConfig() {
     busClient.call(DHCP.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }

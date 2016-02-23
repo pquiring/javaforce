@@ -76,12 +76,15 @@ public class DNS extends Thread {
   enum Section {None, Global, Records};
 
   private final static String defaultConfig
-    = "[global]\r\n" + "uplink=8.8.8.8\r\n" + "[records]\r\n" + "#name,type,ttl,value\r\n"
-    + "#mydomain.com,cname,3600,www.mydomain.com\r\n"
-    + "#www.mydomain.com,a,3600,192.168.0.2\r\n"
-    + "#mydomain.com,mx,3600,50,mail.mydomain.com\r\n"
-    + "#mail.mydomain.com,a,3600,192.168.0.3\r\n"
-    + "#www.mydomain.com,aaaa,3600,1234:1234:1234:1234:1234:1234:1234:1234\r\n";
+    = "[global]\n"
+    + "uplink=8.8.8.8\n"
+    + "[records]\n"
+    + "#name,type,ttl,value\n"
+    + "#mydomain.com,cname,3600,www.mydomain.com\n"
+    + "#www.mydomain.com,a,3600,192.168.0.2\n"
+    + "#mydomain.com,mx,3600,50,mail.mydomain.com\n"
+    + "#mail.mydomain.com,a,3600,192.168.0.3\n"
+    + "#www.mydomain.com,aaaa,3600,1234:1234:1234:1234:1234:1234:1234:1234\n";
 
   private void loadConfig() {
     Section section = Section.None;
@@ -92,7 +95,7 @@ public class DNS extends Thread {
         String ln = br.readLine();
         if (ln == null) break;
         cfg.append(ln);
-        cfg.append("\r\n");
+        cfg.append("\n");
         ln = ln.trim().toLowerCase();
         int idx = ln.indexOf('#');
         if (idx != -1) ln = ln.substring(0, idx).trim();

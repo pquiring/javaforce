@@ -143,37 +143,37 @@ public class DHCP extends Thread {
   enum Section {None, Global, Pool};
 
   private final static String defaultConfig
-    = "#comments start with a # symbol\r\n"
-    + "[global]\r\n"
-    + "#dns=8.8.8.8\r\n"
-    + "\r\n"
-    + "[pool_192_168_0_x]\r\n"
-    + "#server_ip=192.168.0.2\r\n"
-    + "#bind_ip=192.168.0.2\r\n"
-    + "#pool_first=192.168.0.100\r\n"
-    + "#pool_last=192.168.0.199\r\n"
-    + "#mask=255.255.255.0\r\n"
-    + "#router=192.168.0.1\r\n"
-    + "#dns=8.8.8.8\r\n"
-    + "#lease=86400  #24 hrs\r\n"
-    + "\r\n"
-    + "[pool_192_168_1_x]\r\n"
-    + "#server_ip=192.168.1.2\r\n"
-    + "#bind_ip=192.168.1.2\r\n"
-    + "#pool_first=192.168.1.100\r\n"
-    + "#pool_last=192.168.1.250\r\n"
-    + "#mask=255.255.255.0\r\n"
-    + "#router=192.168.1.1\r\n"
-    + "#dns=8.8.8.8\r\n"
-    + "#lease=7200  #2 hrs\r\n"
-    + "\r\n"
-    + "[pool_10_1_1_x_for_relay_agents_only]\r\n"
-    + "#server_ip=192.168.1.2\r\n"
-    + "#bind_ip=0.0.0.0  #bind to all interfaces\r\n"
-    + "#pool_first=10.1.1.100\r\n"
-    + "#pool_last=10.1.1.250\r\n"
-    + "#mask=255.255.255.0\r\n"
-    + "#router=10.1.1.1\r\n"
+    = "#comments start with a # symbol\n"
+    + "[global]\n"
+    + "#dns=8.8.8.8\n"
+    + "\n"
+    + "[pool_192_168_0_x]\n"
+    + "#server_ip=192.168.0.2\n"
+    + "#bind_ip=192.168.0.2\n"
+    + "#pool_first=192.168.0.100\n"
+    + "#pool_last=192.168.0.199\n"
+    + "#mask=255.255.255.0\n"
+    + "#router=192.168.0.1\n"
+    + "#dns=8.8.8.8\n"
+    + "#lease=86400  #24 hrs\n"
+    + "\n"
+    + "[pool_192_168_1_x]\n"
+    + "#server_ip=192.168.1.2\n"
+    + "#bind_ip=192.168.1.2\n"
+    + "#pool_first=192.168.1.100\n"
+    + "#pool_last=192.168.1.250\n"
+    + "#mask=255.255.255.0\n"
+    + "#router=192.168.1.1\n"
+    + "#dns=8.8.8.8\n"
+    + "#lease=7200  #2 hrs\n"
+    + "\n"
+    + "[pool_10_1_1_x_for_relay_agents_only]\n"
+    + "#server_ip=192.168.1.2\n"
+    + "#bind_ip=0.0.0.0  #bind to all interfaces\n"
+    + "#pool_first=10.1.1.100\n"
+    + "#pool_last=10.1.1.250\n"
+    + "#mask=255.255.255.0\n"
+    + "#router=10.1.1.1\n"
     ;
 
   private void loadConfig() {
@@ -187,7 +187,7 @@ public class DHCP extends Thread {
         String ln = br.readLine();
         if (ln == null) break;
         cfg.append(ln);
-        cfg.append("\r\n");
+        cfg.append("\n");
         ln = ln.trim().toLowerCase();
         int idx = ln.indexOf('#');
         if (idx != -1) ln = ln.substring(0, idx).trim();
