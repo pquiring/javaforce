@@ -62,7 +62,7 @@ public class SIPServer extends SIP implements SIPInterface {
     CallDetails.SideDetails cdsd = (src ? cd.pbxsrc : cd.pbxdst);
     JFLog.log("callid:" + cd.callid + "\r\nissue command : " + cd.cmd + " from : " + cd.user + " to : " + cdsd.host + ":" + cdsd.port);
     StringBuffer req = new StringBuffer();
-    req.append(cd.cmd + " " + cdsd.uri + " SIP/2.0\r\n");
+    req.append(cd.cmd + " " + cd.uri + " SIP/2.0\r\n");
     req.append("Via: SIP/2.0/UDP " + cd.localhost + ":" + localport + ";branch=" + cdsd.branch + "\r\n");
     req.append("Max-Forwards: 70\r\n");
     req.append("Contact: " + cdsd.contact + "\r\n");
@@ -165,7 +165,7 @@ public class SIPServer extends SIP implements SIPInterface {
     cd.pbxsrc.from = new String[]{user, user, remotehost + ":" + remoteport, ":"};
     cd.pbxsrc.from = replacetag(cd.pbxsrc.from, generatetag());
     cd.pbxsrc.contact = "<sip:" + did + "@" + cd.localhost + ":" + localport + ">";
-    cd.pbxsrc.uri = "sip:" + remotehost;  // + ";rinstance=" + getrinstance();
+    cd.uri = "sip:" + remotehost;  // + ";rinstance=" + getrinstance();
     cd.callid = regcallid;
     cd.pbxsrc.branch = getbranch();
     cd.pbxsrc.cseq++;
@@ -183,7 +183,6 @@ public class SIPServer extends SIP implements SIPInterface {
     dst.port = src.port;
     dst.to = src.to.clone();
     dst.from = src.from.clone();
-    dst.uri = src.uri;
     dst.cseq = src.cseq;
     dst.branch = src.branch;
     dst.contact = src.contact;
@@ -268,15 +267,10 @@ public class SIPServer extends SIP implements SIPInterface {
         cd.user = cdsd.from[1];
         //get via list
         cdsd.vialist = getvialist(msg);
-        //set contact
-        cdsd.contact = "<sip:" + cd.user + "@" + cd.localhost + ":" + localport + ">";
         //get uri (it must equal the Contact field)
-        cdsd.uri = getHeader("Contact:", msg);
-        if (cdsd.uri == null) {
-          cdsd.uri = getHeader("m:", msg);
-        }
-        if (cdsd.uri != null) {
-          cdsd.uri = cdsd.uri.substring(1, cdsd.uri.length() - 1);  //remove < > brackets
+        cdsd.contact = getHeader("Contact:", msg);
+        if (cdsd.contact == null) {
+          cdsd.contact = getHeader("m:", msg);
         }
         cd.cmd = getcseqcmd(msg);
         int type = getResponseType(msg);

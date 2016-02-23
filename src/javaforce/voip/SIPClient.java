@@ -184,7 +184,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
-    cd.src.uri = "sip:" + remotehost;  // + ";rinstance=" + getrinstance();
+    cd.uri = "sip:" + remotehost;  // + ";rinstance=" + getrinstance();
     cd.src.branch = getbranch();
     cd.src.cseq++;
     if ((password == null) || (password.length() == 0)) {
@@ -222,7 +222,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
-    cd.src.uri = "sip:" + user + "@" + remotehost;
+    cd.uri = "sip:" + user + "@" + remotehost;
     cd.src.branch = getbranch();
     cd.src.cseq++;
     cd.sdp = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><presence xmlns=\"urn:ietf:params:xml:ns:pidf\" entity=\"pres:" + user + "@" + remotehost
@@ -243,7 +243,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
-    cd.src.uri = "sip:" + subuser + "@" + remotehost;
+    cd.uri = "sip:" + subuser + "@" + remotehost;
     cd.src.branch = getbranch();
     cd.src.cseq++;
     cd.src.expires = expires;
@@ -417,7 +417,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.dst.host = remoteip;
     cd.dst.port = remoteport;
     StringBuilder req = new StringBuilder();
-    req.append(cmd + " " + cdsd.uri + " SIP/2.0\r\n");
+    req.append(cmd + " " + cd.uri + " SIP/2.0\r\n");
     req.append("Via: SIP/2.0/" + transport.getName() + " " + cd.localhost + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
     req.append("Max-Forwards: 70\r\n");
     if (cdsd.routelist != null) {
@@ -426,7 +426,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         req.append("\r\n");
       }
     }
-    req.append("Contact: " + cdsd.contact + "\r\n");
+    if (cdsd.contact != null) {
+      req.append("Contact: " + cdsd.contact + "\r\n");
+    }
     req.append("To: " + join(cdsd.to) + "\r\n");
     req.append("From: " + join(cdsd.from) + "\r\n");
     req.append("Call-ID: " + cd.callid + "\r\n");
@@ -513,7 +515,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
     cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
-    cd.src.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
+    cd.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.branch = getbranch();
     cd.src.o1 = 256;
@@ -545,7 +547,6 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.authsent = false;
     cd.src.extra = headers;
     cd.src.epass = null;
-    cd.src.uri = cd.dst.uri;
     boolean ret = issue(cd, "REFER", false, true);
     return ret;
   }
@@ -666,7 +667,6 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.to = cd.dst.from.clone();
     cd.src.from = cd.dst.to.clone();
     //copy all other needed fields
-    cd.src.uri = cd.dst.uri;
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.branch = cd.dst.branch;
     return true;
@@ -683,7 +683,6 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     reply(cd, "INVITE", 200, "OK", true, false);
     //do NOT swap to/from in this case
     //copy all other needed fields
-    cd.src.uri = cd.dst.uri;
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
     cd.src.branch = cd.dst.branch;
     return true;
@@ -775,14 +774,11 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       //get route list (RFC 2543 6.29)
       cd.dst.routelist = getroutelist(msg);
       //set contact
-      cd.dst.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
+//      cd.dst.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
       //get uri (it must equal the Contact field)
-      cd.dst.uri = getHeader("Contact:", msg);
-      if (cd.dst.uri == null) {
-        cd.dst.uri = getHeader("m:", msg);
-      }
-      if (cd.dst.uri != null) {
-        cd.dst.uri = cd.dst.uri.substring(1, cd.dst.uri.length() - 1);  //remove < > brackets
+      cd.dst.contact = getHeader("Contact:", msg);
+      if (cd.dst.contact == null) {
+        cd.dst.contact = getHeader("m:", msg);
       }
       String cmd = getcseqcmd(msg);
       int type = getResponseType(msg);
@@ -795,6 +791,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         }
       } else {
         req = getRequest(msg);
+        cd.uri = getURI(msg);
         JFLog.log("callid:" + callid + "\r\nrequest=" + req);
       }
       switch (type) {
@@ -902,14 +899,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             }
           } else if (cmd.equals("INVITE")) {
             cd.dst.sdp = getSDP(msg);
-
             //update cd.src.to tag value
             cd.src.to = cd.dst.to;
-
             cd.src.epass = null;
-            if (cd.dst.uri != null) {
-              cd.src.uri = cd.dst.uri;
-            }
             cd.src.routelist = cd.dst.routelist;  //RFC 2543 6.29
             if (type == 200) issue(cd, "ACK", false, true);
             iface.onSuccess(this, callid, cd.dst.sdp, type == 200);
@@ -931,9 +923,6 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           } else {
             String src_to[] = cd.src.to;
             cd.src.to = cd.dst.to;  //update to (tag may have been added)
-            if (cd.dst.uri != null) {
-              cd.src.uri = cd.dst.uri;
-            }
             issue(cd, "ACK", false, true);
             cd.src.to = src_to;
             cd.authstr = getHeader("WWW-Authenticate:", msg);
@@ -958,9 +947,6 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           break;
         case 403:
           cd.src.epass = null;
-          if (cd.dst.uri != null) {
-            cd.src.uri = cd.dst.uri;
-          }
           issue(cd, "ACK", false, true);
           if (cmd.equals("REGISTER")) {
             //bad password
@@ -973,9 +959,6 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         case 486:  //busy
           if (cd.dst.to != null) cd.src.to = cd.dst.to;
           cd.src.epass = null;
-          if (cd.dst.uri != null) {
-            cd.src.uri = cd.dst.uri;
-          }
           issue(cd, "ACK", false, true);
           iface.onCancel(this, callid, type);
           setCallDetails(callid, null);
@@ -984,9 +967,6 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           //treat all other codes as a cancel
           if (cd.dst.to != null) cd.src.to = cd.dst.to;
           cd.src.epass = null;
-          if (cd.dst.uri != null) {
-            cd.src.uri = cd.dst.uri;
-          }
           issue(cd, "ACK", false, true);
           iface.onCancel(this, callid, type);
 //          setCallDetails(callid, null);  //might not be done

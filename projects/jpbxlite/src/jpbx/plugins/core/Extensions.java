@@ -76,7 +76,7 @@ public class Extensions implements Plugin, DialChain {
     cd.pbxdst.cseq = 1;
     cd.pbxdst.host = x.remoteip;
     cd.pbxdst.port = x.remoteport;
-    cd.pbxdst.uri = "sip:" + cd.dialed + "@" + cd.pbxdst.host + ":" + cd.pbxdst.port;
+    cd.uri = "sip:" + cd.dialed + "@" + cd.pbxdst.host + ":" + cd.pbxdst.port;
     api.connect(cd);
     cd.sip.buildsdp(cd, cd.pbxdst);
     api.issue(cd, null, true, false);

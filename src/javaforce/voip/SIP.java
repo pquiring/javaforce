@@ -744,6 +744,12 @@ public abstract class SIP {
     return msg[0].substring(0, idx);
   }
 
+  /** Returns URI in SIP msg. (INVITE "uri" SIP/2.0) */
+  protected String getURI(String msg[]) {
+    String parts[] = msg[0].split(" ");
+    return parts[1];
+  }
+
   /**
    * Returns the response number from a SIP reply message. (100, 200, 401, etc.)
    */

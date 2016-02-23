@@ -173,7 +173,7 @@ public class Trunks implements Plugin, DialChain {
     cd.pbxdst.to[0] = cd.pbxdst.to[1];
     cd.sip.buildsdp(cd, cd.pbxdst);
     cd.pbxdst.cseq = cd.src.cseq;
-    cd.pbxdst.uri = "sip:" + cd.dialed + "@" + cd.pbxdst.host;
+    cd.uri = "sip:" + cd.dialed + "@" + cd.pbxdst.host;
     cd.pbxdst.to[2] = cd.pbxdst.host;
     cd.cmd = "INVITE";
     cd.pbxdst.to = SIP.removetag(cd.pbxdst.to.clone());

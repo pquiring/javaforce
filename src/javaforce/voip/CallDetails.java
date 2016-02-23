@@ -18,7 +18,6 @@ public class CallDetails implements Cloneable {
     public int cseq = 0;
     public int expires = 0;
     public String to[], from[];  //0=name < 1=# 2=host/port ... > ':' ...
-    public String uri;
     public String contact;
     public String vialist[];
     public String routelist[];
@@ -44,6 +43,8 @@ public class CallDetails implements Cloneable {
   public SideDetails dst = new SideDetails();
   /** unique id for this call leg (not caller ID) */
   public String callid;
+  /** URI is what this call leg is about. */
+  public String uri;
   /** sdp content to be added to outbound packets */
   public String sdp;
   /** Authorization string */

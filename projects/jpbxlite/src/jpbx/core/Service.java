@@ -420,7 +420,7 @@ public class Service implements SIPServerInterface, PBXAPI {
     cd.pid = 0;
     cd.dst = new CallDetails.SideDetails();
     cd.pbxdst = new CallDetails.SideDetails();
-    JFLog.log("transfer_src:from="+cd.src.from[0]+":"+cd.src.from[1]+":"+cd.src.contact+":"+cd.src.uri);
+    JFLog.log("transfer_src:from="+cd.src.from[0]+":"+cd.src.from[1]+":"+cd.src.contact+":"+cd.uri);
     //do reinvites
     onInvite(cd, true);
     return true;
