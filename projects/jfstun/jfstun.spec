@@ -1,6 +1,6 @@
 Buildroot: .
 Name: jfstun
-Version: 0.2
+Version: 0.3
 Release: 1
 Summary: STUN/TURN Server
 License: LGPL

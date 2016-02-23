@@ -1,5 +1,5 @@
 Package: jfbroadcast
-Version: 0.35
+Version: 0.36
 Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 1

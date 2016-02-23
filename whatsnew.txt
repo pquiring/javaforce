@@ -1,5 +1,17 @@
 What's new...
 
+Feb 23/2016 : JF 11.1.0 released!
+  - VoIP : many improvements to message handling
+    - jPhoneLite/1.9.11
+      - should fix bug #35
+    - jPBXlite/0.26
+    - jfBroadcast/0.36
+  - fix : remove \r from JTextArea from service config apps
+    - jfProxy/0.5
+    - jfDHCP/0.5
+    - jfDNS/0.4
+    - jfSTUN/0.3
+
 Feb 20/2016 : JF 11.0.0 released!
   - created Windows Service wrapper
   - converted jfProxy/0.4, jfDHCP/0.4, jfDNS/0.3, jfSTUN/0.2 and jPBXlite/0.25 to Windows services

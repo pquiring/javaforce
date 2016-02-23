@@ -1,6 +1,6 @@
 Buildroot: /.
 Name: jpbxlite
-Version: 0.25
+Version: 0.26
 Release: 1
 Summary: VoIP PBX
 License: LGPL
