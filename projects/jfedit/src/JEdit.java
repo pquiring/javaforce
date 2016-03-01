@@ -393,7 +393,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
         int lf = str.indexOf("\n");
         if (lf > 0) {
           if (txt[lf-1] == '\r') bUnix = false;
-        }      
+        }
       }
       pages.get(idx).bUnix = bUnix;
       setText(pages.get(idx).txt, str);

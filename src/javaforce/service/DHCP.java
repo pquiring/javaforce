@@ -42,6 +42,7 @@ public class DHCP extends Thread {
     public int pool_last_int;  //pool last ip (as int)
     public String mask;  //subnet mask
     public int mask_int;  //subnet mask (as int)
+    public int host_mask_int;  //inverse subnet mask (host bits)
     public int count = 0;  //# of IPs in pool
     public long pool_time[];  //timestamp of issue (0=not in use)
     public int pool_hwlen[];  //hwaddr len of client
@@ -118,6 +119,7 @@ public class DHCP extends Thread {
       this.host = host;
     }
     public void run() {
+      JFLog.log("Starting HostWorker on : " + host.ip);
       try {
         host.ds = new DatagramSocket(67, InetAddress.getByName(host.ip));
         while (true) {
@@ -147,7 +149,7 @@ public class DHCP extends Thread {
     + "[global]\n"
     + "#dns=8.8.8.8\n"
     + "\n"
-    + "[pool_192_168_0_x]\n"
+    + "#[pool_192_168_0_x]\n"
     + "#server_ip=192.168.0.2\n"
     + "#bind_ip=192.168.0.2\n"
     + "#pool_first=192.168.0.100\n"
@@ -157,7 +159,7 @@ public class DHCP extends Thread {
     + "#dns=8.8.8.8\n"
     + "#lease=86400  #24 hrs\n"
     + "\n"
-    + "[pool_192_168_1_x]\n"
+    + "#[pool_192_168_1_x]\n"
     + "#server_ip=192.168.1.2\n"
     + "#bind_ip=192.168.1.2\n"
     + "#pool_first=192.168.1.100\n"
@@ -167,7 +169,7 @@ public class DHCP extends Thread {
     + "#dns=8.8.8.8\n"
     + "#lease=7200  #2 hrs\n"
     + "\n"
-    + "[pool_10_1_1_x_for_relay_agents_only]\n"
+    + "#[pool_10_1_1_x_for_relay_agents_only]\n"
     + "#server_ip=192.168.1.2\n"
     + "#bind_ip=0.0.0.0  #bind to all interfaces\n"
     + "#pool_first=10.1.1.100\n"
@@ -192,7 +194,6 @@ public class DHCP extends Thread {
         int idx = ln.indexOf('#');
         if (idx != -1) ln = ln.substring(0, idx).trim();
         if (ln.length() == 0) continue;
-        JFLog.log("ln=" + ln);
         if (ln.startsWith("[") && ln.endsWith("]")) {
           String sectionName = ln.substring(1,ln.length() - 1);
           if (sectionName.equals("global")) {
@@ -263,10 +264,12 @@ public class DHCP extends Thread {
         if ((pool.pool_first_int & pool.mask_int) != (pool.pool_last_int & pool.mask_int)) {
           throw new Exception(pool.name + " : invalid pool range : " + pool.pool_first + "-" + pool.pool_last + ",mask=" + pool.mask);
         }
-        pool.count = pool.pool_last_int & pool.mask_int - pool.pool_first_int & pool.mask_int + 1;
+        pool.host_mask_int = pool.mask_int ^ 0xffffffff;
+        pool.count = (pool.pool_last_int & pool.host_mask_int) - (pool.pool_first_int & pool.host_mask_int) + 1;
         pool.pool_time = new long[pool.count];
         pool.pool_hwlen = new int[pool.count];
         pool.pool_hwaddr = new byte[pool.count][16];
+        JFLog.log("pool:" + IP4toString(pool.pool_first_int) + "-" + IP4toString(pool.pool_last_int) + ":" + pool.count + " IPs");
       }
       for(int a=0;a<cnt;a++) {
         Pool poola = pools.get(a);
@@ -330,8 +333,16 @@ public class DHCP extends Thread {
     return ret;
   }
 
+  private static byte[] IP4toByteArray(int ip) {
+    return IP4toByteArray(IP4toString(ip));
+  }
+
   private static String IP4toString(int ip) {
-    return String.format("%d.%d.%d.%d", ip >> 24, (ip >> 16) & 0xff, (ip >> 8) & 0xff, ip & 0xff);
+    return String.format("%d.%d.%d.%d", ip >>> 24, (ip >> 16) & 0xff, (ip >> 8) & 0xff, ip & 0xff);
+  }
+
+  private static String IP4toString(byte ip[]) {
+    return IP4toString(BE.getuint32(ip, 0));
   }
 
   private static final int cookie = 0x63825363;
@@ -346,7 +357,21 @@ public class DHCP extends Thread {
   private static final int DHCPACK = 5;
   private static final int DHCPNAK = 6;
   private static final int DHCPRELEASE = 7;
-  //private static final int DHCPINFORM = 8;  //???
+  private static final int DHCPINFORM = 8;
+
+  private static String getMsgType(int type) {
+    switch (type) {
+      case DHCPDISCOVER: return "DHCPDISCOVER";
+      case DHCPOFFER: return "DHCPOFFER";
+      case DHCPREQUEST: return "DHCPREQUEST";
+      case DHCPDECLINE: return "DHCPDECLINE";
+      case DHCPACK: return "DHCPACK";
+      case DHCPNAK: return "DHCPNAK";
+      case DHCPRELEASE: return "DHCPRELEASE";
+      case DHCPINFORM: return "DHCPINFORM";
+    }
+    return "???";
+  }
 
   private static final byte OPT_PAD = 0;
   private static final byte OPT_SUBNET_MASK = 1;
@@ -375,6 +400,7 @@ public class DHCP extends Thread {
     }
     public void run() {
       try {
+        JFLog.log("Received request from:" + packet.getSocketAddress());
         req = packet.getData();
         ByteBuffer bb = ByteBuffer.wrap(req);
         bb.order(ByteOrder.BIG_ENDIAN);
@@ -410,7 +436,7 @@ public class DHCP extends Thread {
         if (from_ip == 0) {
           throw new Exception("can not determine pool for request");
         }
-//        JFLog.log("ip=" + IP4toString(from_ip));
+        JFLog.log("ip=" + IP4toString(from_ip));
         for(int a=0;a<cnt;a++) {
           pool = pools.get(a);
           if ((pool.pool_first_int & pool.mask_int) == (from_ip & pool.mask_int)) {
@@ -434,11 +460,11 @@ public class DHCP extends Thread {
           byte len = req[offset++];
           switch (opt) {
             case OPT_DHCP_MSG_TYPE:
-              if (len != 1) throw new Exception("bad dhcp msg type");
+              if (len != 1) throw new Exception("bad dhcp msg type (size != 1)");
               msgType = req[offset];
               break;
             case OPT_REQUEST_IP:
-              if (len != 4) throw new Exception("bad request ip size");
+              if (len != 4) throw new Exception("bad request ip (size != 4)");
               yip = bb.getInt(offset);
               if ((yip & pool.mask_int) == (pool.pool_first_int & pool.mask_int)) {
                 yipOffset = yip - pool.pool_first_int;
@@ -449,6 +475,7 @@ public class DHCP extends Thread {
           offset += len;
         }
         if (msgType == -1) throw new Exception("no dhcp msg type");
+        JFLog.log("MsgType=" + getMsgType(msgType));
         long now = System.currentTimeMillis();
         switch (msgType) {
           case DHCPDISCOVER:
@@ -461,18 +488,19 @@ public class DHCP extends Thread {
                 }
                 if (pool.pool_time[i] == 0) {
                   //check with ping (Java 5 required)
-                  byte addr[] = IP4toByteArray(pool.pool_first + i);
+                  byte addr[] = IP4toByteArray(pool.pool_first_int + i);
                   InetAddress inet = InetAddress.getByAddress(addr);
                   if (inet.isReachable(1000)) {
                     //IP still in use!
                     //this could happen if DHCP service is restarted since leases are only saved in memory
                     pool.pool_time[i] = now + (pool.leaseTime * 1000);
+                    JFLog.log("warning:IP in use but not in database:" + IP4toString(addr));
                   } else {
                     //offer this
                     sendReply(addr, DHCPOFFER, id, pool, rip);
                     pool.next = i+1;
                     if (pool.next == pool.count) pool.next = 0;
-                    break;
+                    return;
                   }
                 }
                 c++;
@@ -481,6 +509,7 @@ public class DHCP extends Thread {
               }
             }
             //nothing left in pool to send an offer (ignore request)
+            JFLog.log("no free IPs in pool for request");
             break;
           case DHCPREQUEST:
             //mark ip as used and send ack or nak if already in use
@@ -552,6 +581,7 @@ public class DHCP extends Thread {
     }
 
     private void sendReply(byte yip[], int msgType /*offer,ack,nak*/, int id, Pool pool, int rip) {
+      JFLog.log("Reply:" + IP4toString(yip) + ":" + getMsgType(msgType));
       reply = new byte[maxmtu];
       replyBuffer = ByteBuffer.wrap(reply);
       replyBuffer.order(ByteOrder.BIG_ENDIAN);
