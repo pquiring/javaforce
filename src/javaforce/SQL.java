@@ -23,12 +23,11 @@ public class SQL {
   public static String oracleSQL = "oracle.jdbc.driver.OracleDriver";
 
   /** Init JDBC driver (need only call once) */
-  public boolean initClass(String jdbcClass) {
+  public static boolean initClass(String jdbcClass) {
     try {
       Class.forName(jdbcClass).newInstance();
       return true;
     } catch (Exception e) {
-      lastException = e;
       return false;
     }
   }

@@ -30,6 +30,8 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   public String cfgSuffix = "";
   public boolean allowdups = false;
   public JFLockFile lockFile;
+  public String databaseName = "jfBroadcastSchema2";
+  public String dbPath;
 
   /** Creates new form Broadcast */
   public Broadcast() {
@@ -39,7 +41,13 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       JF.showError("Error", "Another instance of jfBroadcast is already running!");
       System.exit(0);
     }
-    SQL.initOnce();
+    dbPath = null;
+    if (dbPath == null) {
+      dbPath = System.getProperty("user.home");
+    }
+    //setup derby.system.home
+    System.setProperty("derby.system.home", dbPath);
+    SQL.initClass(SQL.derbySQL);
     initComponents();
     setPosition();
     loadHelp();
@@ -1626,14 +1634,14 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   final static int A_XFER = 6;
 
   public void createDatabase() {
-    if (new File(SQL.path + "/" + SQL.databaseName + "/service.properties").exists()) return;  //already exists
+    if (new File(dbPath + "/" + databaseName + "/service.properties").exists()) return;  //already exists
     JFTask task = new JFTask() {
       public boolean work() {
         this.setTitle("Creating database...");
         this.setLabel("Creating database...");
         this.setProgress(25);
         SQL sql = new SQL();
-        if (!sql.init("create=true")) {
+        if (!sql.connect("jdbc:derby:" + databaseName + ";" + "create=true")) {
           this.setLabel("Database create failed : SQL connection failed");
           return false;
         }
@@ -1685,7 +1693,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     String safe = safe(list_name.getText());
     if (safe.length() == 0) return;
     SQL sql = new SQL();
-    if (!sql.init()) {
+    if (!sql.connect("jdbc:derby:" + databaseName)) {
       setStatus("SQL connection failed");
       return;
     }
@@ -1702,7 +1710,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     if (sel == null || sel.length() == 0) return;
     if (JOptionPane.showConfirmDialog(null, "Delete List:" + sel + "?", "Sure?", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
     SQL sql = new SQL();
-    if (!sql.init()) {
+    if (!sql.connect("jdbc:derby:" + databaseName)) {
       setStatus("SQL connection failed");
       return;
     }
@@ -1724,7 +1732,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     if (sel == null || sel.length() == 0) return;
     if (JOptionPane.showConfirmDialog(null, "Reset List:" + sel + "?", "Sure?", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
     SQL sql = new SQL();
-    if (!sql.init()) {
+    if (!sql.connect("jdbc:derby:" + databaseName)) {
       setStatus("SQL connection failed");
       return;
     }
@@ -1749,7 +1757,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       if (JOptionPane.showConfirmDialog(null, msg, "Sure?", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) return;
     }
     SQL sql = new SQL();
-    if (!sql.init()) {
+    if (!sql.connect("jdbc:derby:" + databaseName)) {
       setStatus("SQL connection failed");
       return;
     }
@@ -1770,11 +1778,11 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   }
 
   public final void updateAvailableLists() {
-    File file = new File(SQL.path + "/" + SQL.databaseName);
+    File file = new File(dbPath + "/" + databaseName);
     if (!file.exists()) return;  //not ready
     String data[][];
     SQL sql = new SQL();
-    if (!sql.init()) {
+    if (!sql.connect("jdbc:derby:" + databaseName)) {
 //      setStatus("SQL connection failed");
       return;
     }
@@ -1820,7 +1828,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
     String num;
     SQL sql = new SQL();
-    if (!sql.init()) {
+    if (!sql.connect("jdbc:derby:" + databaseName)) {
       setStatus("SQL connection failed");
       return;
     }
@@ -1883,7 +1891,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return;
     String num;
     SQL sql = new SQL();
-    if (!sql.init()) {
+    if (!sql.connect("jdbc:derby:" + databaseName)) {
       setStatus("SQL connection failed");
       return;
     }
@@ -1921,7 +1929,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       return;
     }
     SQL sql = new SQL();
-    if (!sql.init()) {
+    if (!sql.connect("jdbc:derby:" + databaseName)) {
 //      setStatus("SQL connection failed");
       return;
     }
@@ -2388,7 +2396,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
 
     //create persistant sql connection
     psql = new SQL();
-    if (!psql.init()) {
+    if (!psql.connect("jdbc:derby:" + databaseName)) {
       setStatus("SQL connection failed");
       setState(true);
       return;
@@ -2397,7 +2405,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     listid = getid(psql, sel);
     if (listid == null) {
       setStatus("Error : Pick a valid list");
-      psql.uninit();
+      psql.close();
       setState(true);
       return;
     }
@@ -2480,7 +2488,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       JF.sleep(1000);  //wait for all calls to finish
     }
     processUpdateList();
-    psql.uninit();
+    psql.close();
     timer.cancel();
     //unlock resources
     setState(true);
@@ -3222,7 +3230,7 @@ JFLog.log("connected : number=" + lines[a].number);
           JFLog.log("Error:Must include path with -dbpath option");
           return;
         }
-        SQL.path = args[a];
+        dbPath = args[a];
       }
       else if (args[a].equals("-cfgsuffix")) {
         a++;
@@ -3333,5 +3341,4 @@ JFLog.log("connected : number=" + lines[a].number);
   public SystemTray tray;
   public TrayIcon icon;
   public MenuItem exit, show;
-
 }
