@@ -13,10 +13,19 @@ public class SQL {
 
   private java.sql.Connection conn;
 
+  /** Apache Derby SQL JDBC Class */
+  public static String derbySQL = "org.apache.derby.jdbc.EmbeddedDriver";
+  /** Microsoft SQL JDBC Class */
+  public static String msSQL = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+  /** MySQL JDBC Class */
+  public static String mySQL = "com.mysql.jdbc.Driver";
+  /** Oracle JDBC Class */
+  public static String oracleSQL = "oracle.jdbc.driver.OracleDriver";
+
   /** Init JDBC driver (need only call once) */
   public boolean initClass(String jdbcClass) {
     try {
-      Class.forName(jdbcClass);
+      Class.forName(jdbcClass).newInstance();
       return true;
     } catch (Exception e) {
       lastException = e;
