@@ -54,7 +54,7 @@ public class DHCP extends Thread {
   }
   private static ArrayList<Pool> pools = new ArrayList<Pool>();
   private static Pool global = new Pool();
-  private static InetAddress broadcastAddress;
+  private static Inet4Address broadcastAddress;
   private static class Host {
     public String ip;
     public int ip_int;
@@ -77,7 +77,7 @@ public class DHCP extends Thread {
       if (!validConfig()) {
         throw new Exception("invalid config");
       }
-      broadcastAddress = InetAddress.getByName("255.255.255.255");
+      broadcastAddress = (Inet4Address)Inet4Address.getByName("255.255.255.255");
       for(int a=0;a<hosts.size();a++) {
         new HostWorker(hosts.get(a)).start();
       }
@@ -121,7 +121,7 @@ public class DHCP extends Thread {
     public void run() {
       JFLog.log("Starting HostWorker on : " + host.ip);
       try {
-        host.ds = new DatagramSocket(67, InetAddress.getByName(host.ip));
+        host.ds = new DatagramSocket(67, Inet4Address.getByName(host.ip));
         while (true) {
           byte data[] = new byte[maxmtu];
           DatagramPacket packet = new DatagramPacket(data, maxmtu);
@@ -489,7 +489,7 @@ public class DHCP extends Thread {
                 if (pool.pool_time[i] == 0) {
                   //check with ping (Java 5 required)
                   byte addr[] = IP4toByteArray(pool.pool_first_int + i);
-                  InetAddress inet = InetAddress.getByAddress(addr);
+                  Inet4Address inet = (Inet4Address)Inet4Address.getByAddress(addr);
                   if (inet.isReachable(1000)) {
                     //IP still in use!
                     //this could happen if DHCP service is restarted since leases are only saved in memory
@@ -572,16 +572,18 @@ public class DHCP extends Thread {
         if (rip == 0)
           out.setAddress(broadcastAddress);
         else
-          out.setAddress(InetAddress.getByAddress(new byte[] {(byte)(rip >> 24), (byte)((rip >> 16) & 0xff), (byte)((rip >> 8) & 0xff), (byte)(rip & 0xff)}));
-        out.setPort(packet.getPort());
+          out.setAddress(Inet4Address.getByAddress(new byte[] {(byte)(rip >> 24), (byte)((rip >> 16) & 0xff), (byte)((rip >> 8) & 0xff), (byte)(rip & 0xff)}));
+        int port = packet.getPort();
+        out.setPort(port);
         host.ds.send(out);
+        JFLog.log("ReplyTo:" + IP4toString(rip) + ":" + port);
       } catch (Exception e) {
         JFLog.log(e);
       }
     }
 
     private void sendReply(byte yip[], int msgType /*offer,ack,nak*/, int id, Pool pool, int rip) {
-      JFLog.log("Reply:" + IP4toString(yip) + ":" + getMsgType(msgType));
+      JFLog.log("ReplyFor:" + IP4toString(yip) + ":" + getMsgType(msgType));
       reply = new byte[maxmtu];
       replyBuffer = ByteBuffer.wrap(reply);
       replyBuffer.order(ByteOrder.BIG_ENDIAN);
