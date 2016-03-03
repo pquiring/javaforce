@@ -219,4 +219,8 @@ public class SQL {
     }
     return ret;
   }
+
+  public Exception getLastException() {
+    return lastException;
+  }
 }

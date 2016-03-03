@@ -168,7 +168,7 @@ public class Extensions implements Plugin, DialChain {
           cd.cmd = "CANCEL";
           api.issue(cd, null, false, false);
           SQL sql = new SQL();
-          if (!sql.init()) return;  //ohoh
+          if (!sql.connect(Service.jdbc)) return;  //ohoh
           //check if ext has voicemail?
           String value = sql.select1value("SELECT value FROM extopts WHERE ext=" + sql.quote(cd.dialed) + " AND id='vm'");
           if ((value != null) && (value.equals("yes"))) {
@@ -181,7 +181,7 @@ public class Extensions implements Plugin, DialChain {
             cd.cmd = "INVITE";
             api.reply(cd, 486, "NO ONE HERE", null, false, true);
           }
-          sql.uninit();
+          sql.close();
         }
       }
       public TimerTask init(CallDetailsPBX cd) {

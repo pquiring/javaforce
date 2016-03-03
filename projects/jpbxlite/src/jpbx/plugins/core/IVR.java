@@ -524,9 +524,9 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
 
   private void runScript(CallDetailsPBX cd) {
     SQL sql = new SQL();
-    if (!sql.init()) return;
+    if (!sql.connect(Service.jdbc)) return;
     while (runScript(cd, sql)) {}
-    sql.uninit();
+    sql.close();
   }
 
   private void hangup(CallDetailsPBX cd) {

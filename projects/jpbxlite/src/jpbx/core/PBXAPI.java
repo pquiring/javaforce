@@ -1,5 +1,6 @@
 package jpbx.core;
 
+import javaforce.*;
 import javaforce.voip.*;
 
 /** Low-level and high-level APIs used by Plugins for processing SIP messages. */

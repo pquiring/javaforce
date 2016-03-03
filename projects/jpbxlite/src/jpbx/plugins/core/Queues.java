@@ -60,7 +60,7 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
         member.pids = new int[agentList.length];
       }
       SQL sql = new SQL();
-      if (!sql.init()) return;
+      if (!sql.connect(Service.jdbc)) return;
       for(int a=0;a<agentList.length;a++) {
         if (agentList[a].length() == 0) continue;
         JFLog.log("Calling agent:" + agentList[a]);
@@ -88,7 +88,7 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
         agent.pid = pid;
         member.agents[a] = agent;
       }
-      sql.uninit();
+      sql.close();
     }
   }
 

@@ -208,9 +208,9 @@ public class Trunks implements Plugin, DialChain {
               return;
             }
             SQL sql = new SQL();
-            if (!sql.init()) return;  //ohoh
+            if (!sql.connect(Service.jdbc)) return;  //ohoh
             tryTrunk(cd, sql);
-            sql.uninit();
+            sql.close();
           }
         }
       }

@@ -1,10 +1,9 @@
 package jpbx.core;
 
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.io.*;
+import java.net.*;
 
-import javaforce.JFLog;
+import javaforce.*;
 
 /** Main
  *
@@ -18,12 +17,12 @@ public class Main {
   private static String cfg[][];
   public static void shutdownService() {
     SQL sql = new SQL();
-    if (!sql.init()) {
+    if (!sql.connect(Service.jdbc)) {
       System.out.println("SQL init failed");
       return;
     }
     cfg = sql.select("SELECT id,value FROM config");
-    sql.uninit();
+    sql.close();
     //send "SHUTDOWN" command to SIP port (this command is only accepted from localhost)
     try {
       int port = Integer.valueOf(getCfg("port"));
@@ -42,6 +41,17 @@ public class Main {
     return null;
   }
 
+  public static boolean createDB() {
+    if (new File(Service.dbPath + "/jpbxDB/service.properties").exists()) return true;
+    JFLog.log("Creating database...");
+    SQL sql = new SQL();
+    if (!sql.connect(Service.jdbc + ";create=true")) return false;
+    sql.execute("CREATE TABLE users (userid VARCHAR(16) PRIMARY KEY NOT NULL, passmd5 VARCHAR(32) NOT NULL)");
+    sql.execute("INSERT INTO users (userid, passmd5) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3')");
+    sql.close();
+    return true;
+  }
+
   private static Service service;
   private static WebConfig config;
 
@@ -51,14 +61,14 @@ public class Main {
 
   public static void serviceStart(String args[]) {
     Paths.init();
-    //create SQL database (if needed)
-    if (!SQL.create()) {
-      JFLog.log("Failed to create database");
+    //load SQL database
+    if (!SQL.initClass(SQL.derbySQL)) {
+      JFLog.log("Failed to init database");
       return;
     }
-    //load SQL database
-    if (!SQL.initOnce()) {
-      JFLog.log("Failed to init database");
+    //create SQL database (if needed)
+    if (!createDB()) {
+      JFLog.log("Failed to create database");
       return;
     }
     //init log files

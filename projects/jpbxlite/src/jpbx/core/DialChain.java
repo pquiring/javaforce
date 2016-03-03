@@ -1,5 +1,7 @@
 package jpbx.core;
 
+import javaforce.*;
+
 public interface DialChain {
   public int getPriority();  //pid value from 1-100
   /** Invoked for each inbound INVITE message.
