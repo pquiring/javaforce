@@ -45,6 +45,7 @@ char exepath[MAX_PATH];
 char classpath[1024];
 char mainclass[MAX_PATH];
 char method[MAX_PATH];
+char xoptions[MAX_PATH];
 #ifdef _JF_SERVICE
 char service[MAX_PATH];
 #endif
@@ -121,7 +122,8 @@ char *CreateClassPath() {
       ClassPath[a] = 0;
     }
   }
-  char *ExpandedClassPath = malloc(strlen(DOption) + sl + (ml * cnt) + 1);
+  int len = strlen(DOption) + sl + (ml * cnt) + 1;
+  char *ExpandedClassPath = malloc(len);
   ExpandedClassPath[0] = 0;
   strcat(ExpandedClassPath, DOption);
   for(a=0;a<cnt;a++) {
@@ -160,24 +162,62 @@ int InvokeMethod(char *_method, jobjectArray args, char *sign) {
   return 1;
 }
 
+JavaVMInitArgs *BuildArgs() {
+  JavaVMInitArgs *args;
+  JavaVMOption *options;
+  int nOpts = 1;
+  char *opts[64];
+  int idx;
+
+  opts[0] = CreateClassPath();
+  if (strlen(xoptions) > 0) {
+    char *x = xoptions;
+    while (x != NULL) {
+      opts[nOpts++] = x;
+      x = strchr(x, ' ');
+      if (x != NULL) {
+        *x = 0;
+        x++;
+      }
+    }    
+  }
+
+  args = malloc(sizeof(JavaVMInitArgs));
+  memset(args, 0, sizeof(JavaVMInitArgs));
+  options = malloc(sizeof(JavaVMOption) * nOpts);
+  memset(options, 0, sizeof(JavaVMOption) * nOpts);
+
+  for(idx=0;idx<nOpts;idx++) {
+    options[idx].optionString = opts[idx];
+//    printf("[] = %s\n", opts[idx]);  //debug
+  }
+
+  args->version = JNI_VERSION_1_2;
+  args->nOptions = nOpts;
+  args->options = options;
+  args->ignoreUnrecognized = JNI_FALSE;
+
+  return args;
+}
+
+void FreeArgs(JavaVMInitArgs *args) {
+  int idx;
+  for(idx=0;idx<args->nOptions;idx++) {
+    free(args->options[idx].optionString);
+  }
+  free(args->options);
+  free(args);
+}
+
 /** Creates a new JVM. */
 int CreateJVM() {
-  JavaVMInitArgs args;
-  JavaVMOption options[1];
-
-  memset(&args, 0, sizeof(args));
-  args.version = JNI_VERSION_1_2;
-  args.nOptions = 1;
-  args.options = options;
-  args.ignoreUnrecognized = JNI_FALSE;
-
-  options[0].optionString = CreateClassPath();
-  options[0].extraInfo = NULL;
-
-  if ((*CreateJavaVM)(&g_jvm, &g_env, &args) == -1) {
+  JavaVMInitArgs *args = BuildArgs();
+  if ((*CreateJavaVM)(&g_jvm, &g_env, args) == -1) {
     error("Unable to create Java VM");
     return 0;
   }
+
+//  FreeArgs(args);
 
   return 1;
 }
@@ -209,6 +249,8 @@ int loadProperties() {
   HRSRC res;
   HGLOBAL global;
   int size;
+
+  xoptions[0] = 0;
 
   strcpy(method, "main");  //default method name
   javahome[0] = 0;  //detect later
@@ -250,6 +292,9 @@ int loadProperties() {
     }
     else if (strncmp(ln1, "JAVA_HOME=", 10) == 0) {
       strcpy(javahome, ln1 + 10);
+    }
+    else if (strncmp(ln1, "OPTIONS=", 8) == 0) {
+      strcpy(xoptions, ln1 + 8);
     }
 #ifdef _JF_SERVICE
     else if (strncmp(ln1, "SERVICE=", 8) == 0) {
@@ -389,6 +434,7 @@ void __stdcall ServiceMain(int argc, char **argv) {
   ServiceStatus(SERVICE_RUNNING);
   CreateJVM();
   InvokeMethod("serviceStart", ConvertStringArray(g_env, argc, argv), "([Ljava/lang/String;)V");
+  (*g_jvm)->DestroyJavaVM(g_jvm);  //waits till all threads are complete
 }
 
 #endif
@@ -469,7 +515,7 @@ int main(int argc, char **argv) {
   ServiceTable[1] = (void*)ServiceMain;
   ServiceTable[2] = NULL;
   ServiceTable[3] = NULL;
-  StartServiceCtrlDispatcher((LPSERVICE_TABLE_ENTRY)&ServiceTable);
+  StartServiceCtrlDispatcher((LPSERVICE_TABLE_ENTRY)&ServiceTable);  //does not return until all services have been stopped
 #else
   thread_handle = CreateThread(NULL, 64 * 1024, (LPTHREAD_START_ROUTINE)&JavaStart, NULL, 0, (LPDWORD)&thread_id);
   WaitForSingleObject(thread_handle, INFINITE);

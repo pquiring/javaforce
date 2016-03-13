@@ -345,19 +345,23 @@ public class DHCP extends Thread {
     return IP4toString(BE.getuint32(ip, 0));
   }
 
+  public static String IP4toString(byte ip[], int offset) {
+    return IP4toString(BE.getuint32(ip, offset));
+  }
+
   private static final int cookie = 0x63825363;
 
-  private static final int DHCP_OPCODE_REQUEST = 1;
-  private static final int DHCP_OPCODE_REPLY = 2;
+  public static final int DHCP_OPCODE_REQUEST = 1;
+  public static final int DHCP_OPCODE_REPLY = 2;
 
-  private static final int DHCPDISCOVER = 1;
-  private static final int DHCPOFFER = 2;
-  private static final int DHCPREQUEST = 3;
-  private static final int DHCPDECLINE = 4;
-  private static final int DHCPACK = 5;
-  private static final int DHCPNAK = 6;
-  private static final int DHCPRELEASE = 7;
-  private static final int DHCPINFORM = 8;
+  public static final int DHCPDISCOVER = 1;
+  public static final int DHCPOFFER = 2;
+  public static final int DHCPREQUEST = 3;
+  public static final int DHCPDECLINE = 4;
+  public static final int DHCPACK = 5;
+  public static final int DHCPNAK = 6;
+  public static final int DHCPRELEASE = 7;
+  public static final int DHCPINFORM = 8;
 
   private static String getMsgType(int type) {
     switch (type) {

@@ -30,6 +30,8 @@
                   <Component id="jScrollPane1" pref="583" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="viewLog" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                      <Component id="test" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="save" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -53,6 +55,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="save" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="viewLog" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="test" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -97,6 +100,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewLogActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="test">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Test"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="testActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>

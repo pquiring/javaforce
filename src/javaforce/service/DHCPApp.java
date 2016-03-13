@@ -8,6 +8,7 @@ package javaforce.service;
  */
 
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import javax.swing.*;
 
@@ -58,6 +59,7 @@ public class DHCPApp extends javax.swing.JFrame {
     config = new javax.swing.JTextArea();
     jLabel1 = new javax.swing.JLabel();
     viewLog = new javax.swing.JButton();
+    test = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("DHCP Server");
@@ -85,6 +87,13 @@ public class DHCPApp extends javax.swing.JFrame {
       }
     });
 
+    test.setText("Test");
+    test.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        testActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -95,6 +104,8 @@ public class DHCPApp extends javax.swing.JFrame {
           .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(viewLog)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(test)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(save))
           .addGroup(layout.createSequentialGroup()
@@ -112,7 +123,8 @@ public class DHCPApp extends javax.swing.JFrame {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(save)
-          .addComponent(viewLog))
+          .addComponent(viewLog)
+          .addComponent(test))
         .addContainerGap())
     );
 
@@ -128,6 +140,10 @@ public class DHCPApp extends javax.swing.JFrame {
   private void viewLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewLogActionPerformed
     showViewLog();
   }//GEN-LAST:event_viewLogActionPerformed
+
+  private void testActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testActionPerformed
+    test();
+  }//GEN-LAST:event_testActionPerformed
 
   /**
    * @param args the command line arguments
@@ -146,6 +162,7 @@ public class DHCPApp extends javax.swing.JFrame {
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JButton save;
+  private javax.swing.JButton test;
   private javax.swing.JButton viewLog;
   // End of variables declaration//GEN-END:variables
 
@@ -158,6 +175,47 @@ public class DHCPApp extends javax.swing.JFrame {
     }
     viewer.setVisible(true);
     viewer.setExtendedState(JFrame.NORMAL);
+  }
+
+  private void test() {
+    try {
+      DatagramSocket s = new DatagramSocket(68);
+      byte d[] = new byte[242];
+      d[0] = DHCP.DHCP_OPCODE_REQUEST;
+      d[1] = 1;  //ethernet
+      d[2] = 6;  //hw len (MAC size)
+      d[3] = 0;  //hops
+      BE.setuint16(d, 4, 0x12341234);  //transaction id
+      //8-9 = seconds
+      //10-11 = flags
+      //12-15 = client IP
+      //16-19 = your IP
+      //20-23 = next server IP
+      //24-27 = relay IP
+      //28-33 = client MAC address
+      //33-42 = padding
+      //43-104 = server host name
+      //105-233 = boot file name
+      //234-237 = cookie
+      BE.setuint16(d, 234, 0x12341234);  //cookie
+      //DHCP Option : DHCP_DISCOVER
+      d[238] = 0x35;
+      d[239] = 0x1;
+      d[240] = 0x1;
+      //DHCP Option : END
+      d[241] = (byte)0xff;
+      DatagramPacket p = new DatagramPacket(d, d.length);
+      p.setAddress(Inet4Address.getByName("255.255.255.255"));
+      p.setPort(67);
+      s.send(p);
+      d = new byte[1024];
+      p = new DatagramPacket(d, d.length);
+      s.receive(p);
+      JF.showMessage("IP", DHCP.IP4toString(d, 16));
+      s.close();
+    } catch (Exception e) {
+      JF.showError("Error", e.toString());
+    }
   }
 
   public JBusClient busClient;
