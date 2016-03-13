@@ -710,7 +710,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_impersonateUser
   if (!ok) {
     CloseHandle(token);
   }
-  return ok ? JNI_TRUE | JNI_FALSE;
+  return ok ? JNI_TRUE : JNI_FALSE;
 }
 
 #include "../common/ffmpeg.cpp"
