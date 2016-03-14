@@ -1,5 +1,11 @@
 What's new...
 
+Mar 14/2016 : JF 11.2.0 released!
+  - added firewall exceptions in Wix config for services (except jfSTUN which uses dynamic ports)
+  - jfProxy/0.6
+  - jfDHCP/0.6
+  - jfDNS/0.5
+
 Feb 23/2016 : JF 11.1.0 released!
   - VoIP : many improvements to message handling
     - jPhoneLite/1.9.11
