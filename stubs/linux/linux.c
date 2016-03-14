@@ -45,6 +45,7 @@ char link2[MAX_PATH];
 char classpath[1024];
 char mainclass[MAX_PATH];
 char method[MAX_PATH];
+char xoptions[MAX_PATH];
 char cfgargs[1024];
 
 /* Prototypes */
@@ -134,6 +135,53 @@ char *CreateClassPath() {
   return ExpandedClassPath;
 }
 
+JavaVMInitArgs *BuildArgs() {
+  JavaVMInitArgs *args;
+  JavaVMOption *options;
+  int nOpts = 1;
+  char *opts[64];
+  int idx;
+
+  opts[0] = CreateClassPath();
+  if (strlen(xoptions) > 0) {
+    char *x = xoptions;
+    while (x != NULL) {
+      opts[nOpts++] = x;
+      x = strchr(x, ' ');
+      if (x != NULL) {
+        *x = 0;
+        x++;
+      }
+    }
+  }
+
+  args = malloc(sizeof(JavaVMInitArgs));
+  memset(args, 0, sizeof(JavaVMInitArgs));
+  options = malloc(sizeof(JavaVMOption) * nOpts);
+  memset(options, 0, sizeof(JavaVMOption) * nOpts);
+
+  for(idx=0;idx<nOpts;idx++) {
+    options[idx].optionString = opts[idx];
+//    printf("[] = %s\n", opts[idx]);  //debug
+  }
+
+  args->version = JNI_VERSION_1_2;
+  args->nOptions = nOpts;
+  args->options = options;
+  args->ignoreUnrecognized = JNI_FALSE;
+
+  return args;
+}
+
+void FreeArgs(JavaVMInitArgs *args) {
+  int idx;
+  for(idx=0;idx<args->nOptions;idx++) {
+    free(args->options[idx].optionString);
+  }
+  free(args->options);
+  free(args);
+}
+
 void printException(JNIEnv *env) {
   jthrowable exc;
   exc = (*env)->ExceptionOccurred(env);
@@ -147,19 +195,8 @@ void printException(JNIEnv *env) {
 int JavaThread(void *ignore) {
   JavaVM *jvm = NULL;
   JNIEnv *env = NULL;
-  JavaVMInitArgs args;
-  JavaVMOption options[1];
 
-  memset(&args, 0, sizeof(args));
-  args.version = JNI_VERSION_1_2;
-  args.nOptions = 1;
-  args.options = options;
-  args.ignoreUnrecognized = JNI_FALSE;
-
-  options[0].optionString = CreateClassPath();
-  options[0].extraInfo = NULL;
-
-  if ((*CreateJavaVM)(&jvm, &env, &args) == -1) {
+  if ((*CreateJavaVM)(&jvm, &env, BuildArgs()) == -1) {
     error("Unable to create Java VM");
     return -1;
   }
@@ -207,6 +244,8 @@ int loadProperties() {
   char *data, *ln1, *ln2;
   int sl, fs;
   struct Header header;
+
+  xoptions[0] = 0;
 
   strcpy(method, "main");
   cfgargs[0] = 0;
@@ -258,6 +297,9 @@ int loadProperties() {
     }
     else if (strncmp(ln1, "ARGS=", 5) == 0) {
       strcpy(cfgargs, ln1 + 5);
+    }
+    else if (strncmp(ln1, "OPTIONS=", 8) == 0) {
+      strcpy(xoptions, ln1 + 8);
     }
     ln1 = ln2;
   }

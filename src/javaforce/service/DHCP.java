@@ -71,11 +71,9 @@ public class DHCP extends Thread {
     JFLog.append(getLogFile(), true);
     try {
       loadConfig();
-      if (!JF.isWindows()) {
-        busClient = new JBusClient(busPack, new JBusMethods());
-        busClient.setPort(getBusPort());
-        busClient.start();
-      }
+      busClient = new JBusClient(busPack, new JBusMethods());
+      busClient.setPort(getBusPort());
+      busClient.start();
       if (!validConfig()) {
         throw new Exception("invalid config");
       }

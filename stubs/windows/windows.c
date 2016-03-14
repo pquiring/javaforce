@@ -179,7 +179,7 @@ JavaVMInitArgs *BuildArgs() {
         *x = 0;
         x++;
       }
-    }    
+    }
   }
 
   args = malloc(sizeof(JavaVMInitArgs));
@@ -434,7 +434,7 @@ void __stdcall ServiceMain(int argc, char **argv) {
   ServiceStatus(SERVICE_RUNNING);
   CreateJVM();
   InvokeMethod("serviceStart", ConvertStringArray(g_env, argc, argv), "([Ljava/lang/String;)V");
-  (*g_jvm)->DestroyJavaVM(g_jvm);  //waits till all threads are complete
+  (*g_jvm)->DestroyJavaVM(g_jvm);
 }
 
 #endif
