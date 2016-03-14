@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
   <Product Id="*" UpgradeCode="{4A0F1642-9982-47FA-96C8-E5058B62CA7D}" Version="0.4" Language="1033" Name="jfDNS" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
@@ -22,15 +22,24 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{B5CB89AD-03DD-4853-BCDD-189F7E352AA2}" Win64="yes">
-        <File Id="jfdnssvc.exe" Source="jfdnssvc.exe" KeyPath="yes"/>
+        <File Id="jfdnssvc.exe" Source="jfdnssvc.exe" KeyPath="yes">
+          <fire:FirewallException
+            Id="FirewallRule"
+            Name="jfDNS"
+            Protocol="udp"
+            Port="53"
+            Scope="any"
+            IgnoreFailure="yes"
+            Profile="all" />
+        </File>
         <File Id="jfdns.exe" Source="jfdns.exe"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <ServiceInstall Id="ServiceInstaller" 
-          Type="ownProcess" 
-          Name="jfDNS" 
-          DisplayName="jfDNS" 
-          Description="jf DNS Server" 
-          Start="auto" 
+        <ServiceInstall Id="ServiceInstaller"
+          Type="ownProcess"
+          Name="jfDNS"
+          DisplayName="jfDNS"
+          Description="jf DNS Server"
+          Start="auto"
           ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfDNS" Wait="yes" />
       </Component>

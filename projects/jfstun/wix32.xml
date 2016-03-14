@@ -25,12 +25,12 @@
         <File Id="jfstunsvc.exe" Source="jfstunsvc.exe" KeyPath="yes"/>
         <File Id="jfstun.exe" Source="jfstun.exe"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <ServiceInstall Id="ServiceInstaller" 
-          Type="ownProcess" 
-          Name="jfSTUN" 
-          DisplayName="jfSTUN" 
-          Description="jf STUN Server" 
-          Start="auto" 
+        <ServiceInstall Id="ServiceInstaller"
+          Type="ownProcess"
+          Name="jfSTUN"
+          DisplayName="jfSTUN"
+          Description="jf STUN Server"
+          Start="auto"
           ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfSTUN" Wait="yes" />
       </Component>

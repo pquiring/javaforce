@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
   <Product Id="*" UpgradeCode="{F6420D32-DDFA-42FB-A3A6-20A60EC9BED7}" Version="0.5" Language="1033" Name="jfProxy" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
@@ -22,15 +22,24 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{4716693A-C18D-41B2-88E6-90F0CE287E5A}" Win64="yes">
-        <File Id="jfproxysvc.exe" Source="jfproxysvc.exe" KeyPath="yes"/>
+        <File Id="jfproxysvc.exe" Source="jfproxysvc.exe" KeyPath="yes">
+          <fire:FirewallException
+            Id="FirewallRule"
+            Name="jfProxy"
+            Protocol="tcp"
+            Port="3128"
+            Scope="any"
+            IgnoreFailure="yes"
+            Profile="all" />
+        </File>
         <File Id="jfproxy.exe" Source="jfproxy.exe"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <ServiceInstall Id="ServiceInstaller" 
-          Type="ownProcess" 
-          Name="jfProxy" 
-          DisplayName="jfProxy" 
-          Description="jf Proxy Server" 
-          Start="auto" 
+        <ServiceInstall Id="ServiceInstaller"
+          Type="ownProcess"
+          Name="jfProxy"
+          DisplayName="jfProxy"
+          Description="jf Proxy Server"
+          Start="auto"
           ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfProxy" Wait="yes" />
       </Component>

@@ -21,12 +21,10 @@ public class DHCP extends Thread {
   public final static String busPack = "net.sf.jfdhcp";
 
   public static String getConfigFile() {
-    if (JF.isWindows()) return JF.getUserPath() + "/jfdhcp.cfg";
     return JF.getConfigPath() + "/jfdhcp.cfg";
   }
 
   public static String getLogFile() {
-    if (JF.isWindows()) return JF.getUserPath() + "/jfdhcp.log";
     return JF.getLogPath() + "/jfdhcp.log";
   }
 

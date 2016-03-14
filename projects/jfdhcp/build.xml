@@ -2,11 +2,10 @@
   <description>DHCP Server</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfdhcp"/>
-  <property name="apptype" value="c"/>
   <property name="app2" value="jfdhcpsvc"/>
   <property name="apptype2" value="s"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.5"/>
+  <property name="version" value="0.6"/>
 
   <import file="../../base.xml"/>
 

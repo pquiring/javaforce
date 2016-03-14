@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
   <Product Id="*" UpgradeCode="{0595AC71-0C0B-4F51-9AF6-1355755D944D}" Version="0.5" Language="1033" Name="jfDHCP" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
@@ -22,15 +22,24 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{E6CA49CE-48B5-43CF-950D-49C9D9BA9C4F}" Win64="yes">
-        <File Id="jfdhcpsvc.exe" Source="jfdhcpsvc.exe" KeyPath="yes"/>
+        <File Id="jfdhcpsvc.exe" Source="jfdhcpsvc.exe" KeyPath="yes">
+          <fire:FirewallException
+            Id="FirewallRule"
+            Name="jfDHCP"
+            Protocol="udp"
+            Port="67"
+            Scope="any"
+            IgnoreFailure="yes"
+            Profile="all" />
+        </File>
         <File Id="jfdhcp.exe" Source="jfdhcp.exe"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <ServiceInstall Id="ServiceInstaller" 
-          Type="ownProcess" 
-          Name="jfDHCP" 
-          DisplayName="jfDHCP" 
-          Description="jf DHCP Server" 
-          Start="auto" 
+        <ServiceInstall Id="ServiceInstaller"
+          Type="ownProcess"
+          Name="jfDHCP"
+          DisplayName="jfDHCP"
+          Description="jf DHCP Server"
+          Start="auto"
           ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfDHCP" Wait="yes" />
       </Component>
