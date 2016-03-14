@@ -740,7 +740,9 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     }
     if ((f1 == KeyEvent.VK_F4) && (f2 == 0)) {
       idx = getidx();
-      txt = pages.get(idx).txt;
+      page pg = pages.get(idx);
+      txt = pg.txt;
+      boolean bUnix = pg.bUnix;
       int cp, px, py;
       try {
         cp = txt.getCaretPosition();
@@ -752,9 +754,13 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       }
       px++;
       py++;
-      JOptionPane.showMessageDialog(this,
-        "Lines : " + txt.getLineCount() + "\n" + "Current Position : " + px + "," + py + "\nJVM=" + System.getProperty("java.version")
-        , "Info", JOptionPane.INFORMATION_MESSAGE);
+      StringBuilder info = new StringBuilder();
+      info.append("File : " + pg.filename + "\n");
+      info.append("Lines : " + txt.getLineCount() + "\n");
+      info.append("Current Position : " + px + "," + py + "\n");
+      info.append("Line Endings : " + (bUnix ? "LF" : "CRLF") + "\n");
+//      info.append("JVM : " + System.getProperty("java.version"));
+      JOptionPane.showMessageDialog(this, info.toString(), "Info", JOptionPane.INFORMATION_MESSAGE);
       return;
     }
     if ((f1 == KeyEvent.VK_F5) && (f2 == 0)) { shift_left(' '); }
