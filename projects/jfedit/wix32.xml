@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{C7D9918C-24BF-4826-913F-4C6BCE70746D}" Version="0.10" Language="1033" Name="jfEdit" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{C7D9918C-24BF-4826-913F-4C6BCE70746D}" Version="0.11" Language="1033" Name="jfEdit" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />

@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+3-14-2016 : v0.11
+  - added Line Ending to info dialog (F4)
+
 1-24-2016 : v0.10
   - added Preserve line ending option
 
