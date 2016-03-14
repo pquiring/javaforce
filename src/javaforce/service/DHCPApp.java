@@ -59,7 +59,6 @@ public class DHCPApp extends javax.swing.JFrame {
     config = new javax.swing.JTextArea();
     jLabel1 = new javax.swing.JLabel();
     viewLog = new javax.swing.JButton();
-    test = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("DHCP Server");
@@ -87,13 +86,6 @@ public class DHCPApp extends javax.swing.JFrame {
       }
     });
 
-    test.setText("Test");
-    test.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        testActionPerformed(evt);
-      }
-    });
-
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -104,8 +96,6 @@ public class DHCPApp extends javax.swing.JFrame {
           .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(viewLog)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(test)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(save))
           .addGroup(layout.createSequentialGroup()
@@ -123,8 +113,7 @@ public class DHCPApp extends javax.swing.JFrame {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(save)
-          .addComponent(viewLog)
-          .addComponent(test))
+          .addComponent(viewLog))
         .addContainerGap())
     );
 
@@ -140,10 +129,6 @@ public class DHCPApp extends javax.swing.JFrame {
   private void viewLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewLogActionPerformed
     showViewLog();
   }//GEN-LAST:event_viewLogActionPerformed
-
-  private void testActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_testActionPerformed
-    test();
-  }//GEN-LAST:event_testActionPerformed
 
   /**
    * @param args the command line arguments
@@ -162,7 +147,6 @@ public class DHCPApp extends javax.swing.JFrame {
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JButton save;
-  private javax.swing.JButton test;
   private javax.swing.JButton viewLog;
   // End of variables declaration//GEN-END:variables
 

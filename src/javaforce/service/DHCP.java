@@ -21,10 +21,12 @@ public class DHCP extends Thread {
   public final static String busPack = "net.sf.jfdhcp";
 
   public static String getConfigFile() {
+    if (JF.isWindows()) return JF.getUserPath() + "/jfdhcp.cfg";
     return JF.getConfigPath() + "/jfdhcp.cfg";
   }
 
   public static String getLogFile() {
+    if (JF.isWindows()) return JF.getUserPath() + "/jfdhcp.log";
     return JF.getLogPath() + "/jfdhcp.log";
   }
 
@@ -71,9 +73,11 @@ public class DHCP extends Thread {
     JFLog.append(getLogFile(), true);
     try {
       loadConfig();
-      busClient = new JBusClient(busPack, new JBusMethods());
-      busClient.setPort(getBusPort());
-      busClient.start();
+      if (!JF.isWindows()) {
+        busClient = new JBusClient(busPack, new JBusMethods());
+        busClient.setPort(getBusPort());
+        busClient.start();
+      }
       if (!validConfig()) {
         throw new Exception("invalid config");
       }
@@ -107,7 +111,7 @@ public class DHCP extends Thread {
       ds = hosts.get(a).ds;
       if (ds != null) ds.close();
     }
-    busClient.close();
+    if (busClient != null) busClient.close();
     synchronized(close) {
       close.notify();
     }
