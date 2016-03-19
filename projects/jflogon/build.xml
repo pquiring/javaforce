@@ -40,7 +40,7 @@
   </target>
 
   <!-- sudo ant install -->
-  <target name="install-ubuntu" description="install files">
+  <target name="install" description="install files">
     <elf bin="sbin"/>
     <copy file="jflogon.jar" todir="/usr/share/java"/>
     <copy file="jflogon.sh" todir="/usr/sbin"/>
@@ -51,46 +51,21 @@
     <chmod file="/usr/sbin/jflogon-rundomain" perm="+x"/>
     <copy file="dhclient-script" todir="/etc/dhcp"/>
     <chmod file="/etc/dhcp/dhclient-script" perm="+x"/>
-    <!-- JFL services folder -->
-    <mkdir dir="/etc/jinit"/>
-    <copy file="jinit.txt" todir="/etc/jinit"/>
-    <!-- systemd in /lib -->
+    <!-- systemd in /lib for ubuntu and fedora(linked) -->
     <mkdir dir="/lib/systemd/system-preset/"/>
     <copy file="82-jflogon.preset" todir="/lib/systemd/system-preset"/>
     <mkdir dir="/lib/systemd/system/"/>
     <copy file="jflogon.service" todir="/lib/systemd/system"/>
   </target>
 
-  <!-- sudo ant install -->
-  <target name="install-fedora" description="install files">
-    <elf bin="sbin"/>
-    <copy file="jflogon.jar" todir="/usr/share/java"/>
-    <copy file="jflogon.sh" todir="/usr/sbin"/>
-    <chmod file="/usr/sbin/jflogon.sh" perm="+x"/>
-    <copy file="jflogon-runsession" todir="/usr/sbin"/>
-    <chmod file="/usr/sbin/jflogon-runsession" perm="+x"/>
-    <copy file="jflogon-rundomain" todir="/usr/sbin"/>
-    <chmod file="/usr/sbin/jflogon-rundomain" perm="+x"/>
-    <copy file="dhclient-script" todir="/etc/dhcp"/>
-    <chmod file="/etc/dhcp/dhclient-script" perm="+x"/>
-    <!-- JFL services folder -->
-    <mkdir dir="/etc/jinit"/>
-    <copy file="jinit.txt" todir="/etc/jinit"/>
-    <!-- systemd in /usr/lib -->
-    <mkdir dir="/usr/lib/systemd/system-preset/"/>
-    <copy file="82-jflogon.preset" todir="/usr/lib/systemd/system-preset"/>
-    <mkdir dir="/usr/lib/systemd/system/"/>
-    <copy file="jflogon.service" todir="/usr/lib/systemd/system"/>
-  </target>
-
+  <!-- sudo ant uninstall -->
   <target name="uninstall">
     <delete file="/usr/share/java/jflogon.jar"/>
+    <delete file="/usr/sbin/jflogon.sh"/>
     <delete file="/usr/sbin/jflogon-runsession"/>
     <delete file="/usr/sbin/jflogon-rundomain"/>
     <delete file="/usr/sbin/jflogon"/>
     <delete file="/etc/dhcp/dhclient-script"/>
-    <delete file="/usr/lib/systemd/system-preset/82-jflogon.preset"/>
-    <delete file="/usr/lib/systemd/system/jflogon.service"/>
     <delete file="/lib/systemd/system-preset/82-jflogon.preset"/>
     <delete file="/lib/systemd/system/jflogon.service"/>
   </target>

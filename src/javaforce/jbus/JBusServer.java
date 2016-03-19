@@ -191,4 +191,24 @@ public class JBusServer extends Thread {
     }
     return present;
   }
+  
+
+  public static void main(String args[]) {
+    serviceStart(args);
+  }
+
+  //Win32 Service
+
+  private static JBusServer svr;
+
+  public static void serviceStart(String args[]) {
+    svr = new JBusServer();
+    svr.start();
+  }
+
+  public static void serviceStop() {
+    JFLog.log("Stopping service");
+    svr.close();
+  }
+
 }

@@ -1,0 +1,12 @@
+Package: jfbusserver
+Version: 0.1
+Architecture: @ARCH@
+Maintainer: Peter Quiring <pquiring@jflinux.org>
+Installed-Size: 1
+Depends: javaforce
+Recommends:
+Replaces:
+Section: net
+Priority: optional
+Homepage: http://javaforce.sourceforge.net
+Description: Bus Server
