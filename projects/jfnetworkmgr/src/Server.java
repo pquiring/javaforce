@@ -1,5 +1,3 @@
-package jnetworkmgr;
-
 /** jNetwork Manager
  *
  * Created : May 3, 2012
@@ -518,7 +516,7 @@ public class Server {
       newWapList += genWAPList(iface.dev, wapScan);
     }
     wapList = newWapList;
-    jbusClient.call("org.jflinux.jsystemmgr", "broadcastWAPList", quote(wapList));
+    jbusClient.call("org.jflinux.jfsystemmgr", "broadcastWAPList", quote(wapList));
   }
 
   private String genWAPList(String dev, String wapScan) {

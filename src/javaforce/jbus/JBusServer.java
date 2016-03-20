@@ -105,6 +105,7 @@ public class JBusServer extends Thread {
     }
 
     private void doCmd(String cmd) throws Exception {
+      boolean broadcast = false;
       if (cmd.startsWith("cmd.")) {
         if (cmd.startsWith("cmd.package=")) {
           if (pack != null) {
@@ -117,9 +118,15 @@ public class JBusServer extends Thread {
           }
           return;
         }
-        //unknown cmd
-        JFLog.log("JBus : unknown cmd:" + cmd);
-        return;
+        else if (cmd.startsWith("cmd.broadcast=")) {
+          broadcast = true;
+          cmd = cmd.substring(14);
+        }  
+        else {
+          //unknown cmd
+          JFLog.log("JBus : unknown cmd:" + cmd);
+          return; 
+        }  
       }
       //must be a remote function call
       //general format : org.package.func(args)
@@ -138,7 +145,7 @@ public class JBusServer extends Thread {
       synchronized (lock) {
         for (int a = 0; a < clients.size(); a++) {
           Client client = clients.get(a);
-          if (client.pack.equals(call_pack)) {
+          if (client.pack.equals(call_pack) || (broadcast && client.pack.startsWith(call_pack))) {
             client.os.write(cmd.getBytes());
             client.os.flush();
             return;

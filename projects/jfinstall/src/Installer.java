@@ -27,7 +27,7 @@ public class Installer extends javax.swing.JFrame {
     initComponents();
     jbusClient = new JBusClient(null, null);
     jbusClient.start();
-    jbusClient.call("org.jflinux.jsystemmgr", "stopAutoMounter", "");  //annoying
+    jbusClient.call("org.jflinux.jfsystemmgr", "stopAutoMounter", "");  //annoying
     loadPanel(new Welcome());
     setPosition();
     JFLog.init("/tmp/install.log", true);
@@ -136,7 +136,7 @@ public class Installer extends javax.swing.JFrame {
 
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
     if (disabled) return;
-    jbusClient.call("org.jflinux.jsystemmgr", "startAutoMounter", "");
+    jbusClient.call("org.jflinux.jfsystemmgr", "startAutoMounter", "");
     System.exit(0);
   }//GEN-LAST:event_formWindowClosing
 

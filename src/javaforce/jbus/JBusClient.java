@@ -171,6 +171,10 @@ public class JBusClient extends Thread {
       return false;
     }
   }
+  
+  public boolean broadcast(String pack, String func, String args) {
+    return call("cmd.broadcast=" + pack + "." + func + "(" + args + ")\n");
+  }
 
   public boolean ready() {
     return ready;

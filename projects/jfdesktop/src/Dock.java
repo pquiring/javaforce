@@ -347,14 +347,14 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void RebootActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebootActionPerformed
     if (!JF.showConfirm("Confirm", "Are you sure you want to reboot?")) return;
-    jbusClient.call("org.jflinux.jsystemmgr", "reboot", "");
+    jbusClient.call("org.jflinux.jfsystemmgr", "reboot", "");
     closeAllApps();
     System.exit(0);
   }//GEN-LAST:event_RebootActionPerformed
 
   private void ShutdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShutdownActionPerformed
     if (!JF.showConfirm("Confirm", "Are you sure you want to shutdown?")) return;
-    jbusClient.call("org.jflinux.jsystemmgr", "shutdown", "");
+    jbusClient.call("org.jflinux.jfsystemmgr", "shutdown", "");
     closeAllApps();
     System.exit(0);
   }//GEN-LAST:event_ShutdownActionPerformed
@@ -375,7 +375,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     //disconnect all VPN
     jbusClient.call("org.jflinux", "closeAllVPN", "");
     JF.sleep(500);
-    jbusClient.call("org.jflinux.jsystemmgr", "sleep" , "");
+    jbusClient.call("org.jflinux.jfsystemmgr", "sleep" , "");
     //reset clock after 10 seconds (hopefully after we resume from sleep)
     new java.util.Timer().schedule(new TimerTask() {
       public void run() {

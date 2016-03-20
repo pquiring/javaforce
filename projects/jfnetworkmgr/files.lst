@@ -1,0 +1,4 @@
+/usr/bin/jfnetworkmgr
+/usr/share/java/jfnetworkmgr.jar
+/lib/systemd/system/jfnetworkmgr.service
+

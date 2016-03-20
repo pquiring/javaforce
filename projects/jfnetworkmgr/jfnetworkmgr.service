@@ -1,0 +1,9 @@
+[Unit]
+Description=JavaForce Network Manager
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/sbin/jfnetworkmgr
+Restart=always
+
+[Install]

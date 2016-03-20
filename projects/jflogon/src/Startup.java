@@ -1,6 +1,6 @@
 /**
  * jfLinux Startup
- *  - includes org.jflinux.jsystemmgr
+ *  - includes org.jflinux.jfsystemmgr
  *
  * Created : Mar 31, 2012
  *
@@ -19,7 +19,6 @@ public class Startup implements ShellProcessListener{
   private static ShellProcess x11process;
   private static boolean rebootFlag, shutdownFlag;
 
-  public static JBusServer jbusServer;
   public static AutoMounter autoMounter;
   public static JBusClient jbusClient;
 
@@ -31,20 +30,12 @@ public class Startup implements ShellProcessListener{
       fixSudoers();
       Linux.init();
       monitordir.init();
-      //start JBus
-      jbusServer = new JBusServer();
-      jbusServer.start();
-      while (!JBusServer.ready) JF.sleep(50);
-      //start jnetworkmgr
-      new jnetworkmgr.Server().start();
-      //start jsystemmgr
-      jbusClient = new JBusClient("org.jflinux.jsystemmgr", new JBusMethods());
+      //start jfsystemmgr
+      jbusClient = new JBusClient("org.jflinux.jfsystemmgr", new JBusMethods());
       jbusClient.start();
       //start automounter
       autoMounter = new AutoMounter();
       autoMounter.start();
-      //start JF services
-      startJFServices();
       //start device monitor
       new DeviceMonitor().start();
       //stop plymouth
@@ -181,60 +172,6 @@ public class Startup implements ShellProcessListener{
     } catch (Exception e) {
       JFLog.log(e);
     }
-  }
-
-  private static ArrayList<String> services = new ArrayList<String>();
-
-  public static void startJFServices() {
-    //open all .conf files in /etc/jinit
-    File etcjinit = new File("/etc/jinit");
-    if (!etcjinit.exists()) return;
-    File confs[] = etcjinit.listFiles();
-    if (confs == null) return;
-    for(int a=0;a<confs.length;a++) {
-      String svc = confs[a].getName();
-      if (!svc.endsWith(".conf")) continue;
-      int idx1 = svc.lastIndexOf("/");
-      int idx2 = svc.indexOf(".conf");
-      svc = svc.substring(idx1+1, idx2);
-      startJFService(svc);
-    }
-  }
-
-  public static void startJFService(String svc) {
-    String conf = "/etc/jinit/" + svc + ".conf";
-    if (services.contains(svc)) return;  //already loaded
-    try {
-      Properties props = new Properties();
-      FileInputStream fis = new FileInputStream(conf);
-      props.load(fis);
-      fis.close();
-      String cp = props.getProperty("CLASSPATH");
-      String cls = props.getProperty("CLASS");
-      if ((cp == null) || (cls == null)) throw new Exception("Invalid conf:" + conf);
-      Runtime.getRuntime().exec(new String[] {"java", "-cp", cp, cls});
-      services.add(svc);
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  public static void stopJFService(String svc) {
-    //this just removes it from the list
-    for(int a=0;a<services.size();a++) {
-      if (services.get(a).equals(svc)) {
-        services.remove(a);
-        return;
-      }
-    }
-  }
-
-  public static String serviceStatusAll() {
-    StringBuilder sb = new StringBuilder();
-    for(int a=0;a<services.size();a++) {
-      sb.append("Service:" + services.get(a) + " running.|");
-    }
-    return sb.toString();
   }
 
   public static void runSession(String user, String session, String env_names[], String env_values[], boolean domainLogon) {
@@ -461,7 +398,7 @@ public class Startup implements ShellProcessListener{
       shutdownFlag = true;
     }
     public void upgradesAvailable(int upgrades) {
-      Startup.jbusServer.broadcast("org.jflinux.jdesktop", "updatesAvailable", "" + upgrades);
+      jbusClient.broadcast("org.jflinux.jdesktop", "updatesAvailable", "" + upgrades);
     }
     public void mount(String dev) {
       JFLog.log("mount:" + dev);
@@ -523,17 +460,6 @@ public class Startup implements ShellProcessListener{
       jbusClient.call(pack, "storageInfo", quote(dev) + "," + quote(volName) + "," + quote(tmp.fs) + ","
         + quote(mountPt));
     }
-    public void startService(String svc) {
-      Startup.startJFService(svc);
-    }
-    public void stopService(String svc) {
-      Startup.stopJFService(svc);
-      jbusClient.call("org.jflinux.service." + svc, "stop", "");
-    }
-    public void serviceStatusAll(String pack) {
-      String ret = Startup.serviceStatusAll();
-      jbusClient.call(pack, "serviceStatusAll", quote(ret));
-    }
     public void stopAutoMounter() {
       AutoMounter.paused--;
     }
@@ -541,11 +467,11 @@ public class Startup implements ShellProcessListener{
       AutoMounter.paused++;
     }
     public void broadcastWAPList(String list) {
-      Startup.jbusServer.broadcast("org.jflinux.jdesktop.", "setWAPList", quote(list));
+      jbusClient.broadcast("org.jflinux.jdesktop.", "setWAPList", quote(list));
     }
     public void broadcastVideoChanged(String reason) {
-      Startup.jbusServer.broadcast("org.jflinux.jdesktop.", "videoChanged", quote(reason));
-      Startup.jbusServer.broadcast("org.jflinux.jconfig.", "videoChanged", quote(reason));
+      jbusClient.broadcast("org.jflinux.jdesktop.", "videoChanged", quote(reason));
+      jbusClient.broadcast("org.jflinux.jconfig.", "videoChanged", quote(reason));
     }
   }
 }

@@ -1,0 +1,9 @@
+[Unit]
+Description=JavaForce Bus Server
+After=
+
+[Service]
+ExecStart=/usr/sbin/jfbusserver
+Restart=always
+
+[Install]

@@ -207,7 +207,7 @@ public class Drives extends javax.swing.JDialog {
     mounted.setText("???");
     mount.setEnabled(false);
     umount.setEnabled(false);
-    jbusClient.call("org.jflinux.jsystemmgr", "getStorageInfo", "\"" + jbusClient.pack + "\",\"" + dev + "\"");
+    jbusClient.call("org.jflinux.jfsystemmgr", "getStorageInfo", "\"" + jbusClient.pack + "\",\"" + dev + "\"");
   }
 
   public void storageInfo(String dev, String volName, String fsType, String mountPt) {
@@ -223,14 +223,14 @@ public class Drives extends javax.swing.JDialog {
     int idx = list.getSelectedIndex();
     if (idx == -1) return;
     String dev = devList.get(idx);
-    jbusClient.call("org.jflinux.jsystemmgr", "mount", "\"" + dev + "\"");
+    jbusClient.call("org.jflinux.jfsystemmgr", "mount", "\"" + dev + "\"");
   }
 
   private void umount() {
     int idx = list.getSelectedIndex();
     if (idx == -1) return;
     String dev = devList.get(idx);
-    jbusClient.call("org.jflinux.jsystemmgr", "umount", "\"" + dev + "\"");
+    jbusClient.call("org.jflinux.jfsystemmgr", "umount", "\"" + dev + "\"");
   }
 
   public void rescan() {

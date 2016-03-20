@@ -184,7 +184,7 @@ public class UpgradeApp extends javax.swing.JFrame {
   private static void sendCounts(int upgrade) {
     JBusClient client = new JBusClient(null, null);
     client.start();
-    client.call("org.jflinux.jsystemmgr", "upgradesAvailable", "" + upgrade);
+    client.call("org.jflinux.jfsystemmgr", "upgradesAvailable", "" + upgrade);
     client.close();
   }
 
