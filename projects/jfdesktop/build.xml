@@ -44,7 +44,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
+    
     <copy file="jfdesktop.jar" todir="/usr/share/java"/>
     <copy file="jfdesktop-run" todir="/usr/bin"/>
     <chmod file="/usr/bin/jfdesktop-run" perm="+x"/>

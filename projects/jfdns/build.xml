@@ -31,8 +31,6 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
-    <mkdir dir="/etc/jinit"/>
-    <copy file="jfdns.conf" todir="/etc/jinit"/>
+    <copy file="${app}.service" todir="/lib/systemd/system"/>
   </target>
 </project>

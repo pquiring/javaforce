@@ -43,7 +43,7 @@
 
   <!-- sudo -E ant install -->
   <target name="install" depends="jar" description="install files">
-    <elf/>
+    
     <copy file="jfrepo.jar" todir="/usr/share/java"/>
     <copy file="jfrepo-ubuntu.list" todir="/etc"/>
     <copy file="jfrepo-fedora.list" todir="/etc"/>

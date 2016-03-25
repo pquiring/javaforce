@@ -86,7 +86,7 @@
     <mkdir dir="/usr/share/sounds/jpbx/en"/>
 
     <copy file="jpbxlite.html" todir="/usr/share/jhelp"/>
-    <copy file="jpbxlite.conf" todir="/etc/jinit"/>
+    <copy file="${app}.service" todir="/lib/systemd/system"/>
     <copy todir="/usr/share/java/jpbx">
       <fileset file="*.jar"/>
     </copy>

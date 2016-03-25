@@ -1,9 +1,9 @@
 [Unit]
-Description=JavaForce Network Manager
+Description=JavaForce PBX Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfnetworkmgr
+ExecStart=/usr/bin/jpbxlite
 Restart=always
 
 [Install]

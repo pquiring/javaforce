@@ -49,14 +49,6 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
-
-    <elf app="${app2}"/>
-
-    <elf app="${app3}"/>
-
-    <elf app="${app4}"/>
-
     <copy file="jffile.jar" todir="/usr/share/java"/>
     <copy file="jffile.desktop" todir="/usr/share/applications"/>
     <copy file="jffile.png" todir="/usr/share/icons/hicolor/48x48/apps"/>

@@ -41,7 +41,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
+    
     <copy file="jfupgrade.jar" todir="/usr/share/java"/>
     <copy file="jfupgrade-cron.sh" todir="/etc/cron.weekly"/>
     <chmod file="/etc/cron.weekly/jfupgrade-cron.sh" perm="+x"/>

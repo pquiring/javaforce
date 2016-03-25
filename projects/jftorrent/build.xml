@@ -45,7 +45,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
+    
     <copy file="${app}.jar" todir="/usr/share/java"/>
     <copy file="${app}Tracker" todir="/usr/bin"/>
     <chmod file="/usr/bin/${app}Tracker" perm="+x"/>

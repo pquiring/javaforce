@@ -41,10 +41,9 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
+    
     <copy file="jfqemu.jar" todir="/usr/share/java"/>
-    <mkdir dir="/etc/jinit"/>
-    <copy file="jfqemu.conf" todir="/etc/jinit"/>
+    <copy file="${app}.service" todir="/lib/systemd/system"/>
     <copy file="jfqemu.desktop" todir="/usr/share/applications"/>
     <copy file="jfqemu.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
     <copy file="jfqemu.html" todir="/usr/share/jhelp"/>

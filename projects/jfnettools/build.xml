@@ -32,7 +32,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
+    
     <copy file="jfnettools.jar" todir="/usr/share/java"/>
   </target>
 

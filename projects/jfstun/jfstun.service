@@ -1,9 +1,9 @@
 [Unit]
-Description=JavaForce Network Manager
+Description=JavaForce STUN Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfnetworkmgr
+ExecStart=/usr/bin/jfstunsvc
 Restart=always
 
 [Install]

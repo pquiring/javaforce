@@ -1,4 +1,5 @@
 /usr/bin/jfdhcp
-/etc/jinit/jfdhcp.conf
+/usr/bin/jfdhcpsvc
+/lib/systemd/system/jfdhcp.service
 
 

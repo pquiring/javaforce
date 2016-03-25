@@ -45,7 +45,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
+    
     <copy file="jfmedia.jar" todir="/usr/share/java"/>
     <copy file="jfmedia.desktop" todir="/usr/share/applications"/>
     <copy file="jfmedia.png" todir="/usr/share/icons/hicolor/48x48/apps"/>

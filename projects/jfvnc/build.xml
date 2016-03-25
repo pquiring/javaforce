@@ -40,7 +40,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
+    
     <copy file="jfvnc.jar" todir="/usr/share/java"/>
   </target>
 

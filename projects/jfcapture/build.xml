@@ -40,7 +40,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
+    
     <copy file="jfcapture.jar" todir="/usr/share/java"/>
     <copy file="jfcapture-screen" todir="/usr/bin"/>
     <chmod file="/usr/bin/jfcapture-screen" perm="+x"/>

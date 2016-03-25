@@ -1,9 +1,9 @@
 [Unit]
-Description=JavaForce Network Manager
+Description=JavaForce QEMU Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jfnetworkmgr
+ExecStart=/usr/bin/jfqemu
 Restart=always
 
 [Install]

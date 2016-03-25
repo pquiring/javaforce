@@ -46,7 +46,6 @@
   </target>
 
   <target name="install" description="install files for linux">
-    <elf/>
     <copy file="jfnetworkmgr.jar" todir="/usr/share/java"/>
     <copy file="jfnetworkmgr.service" todir="/lib/systemd/system"/>
   </target>

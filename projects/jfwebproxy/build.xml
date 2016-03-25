@@ -31,7 +31,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
+    
     <copy file="jfwebproxy.jar" todir="/usr/share/java"/>
   </target>
 

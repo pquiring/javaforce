@@ -141,6 +141,7 @@
 
   <macrodef name="elf">
     <attribute name="app" default="${app}"/>
+    <attribute name="apptype" default="${apptype}"/>
     <attribute name="cfgdir" default=""/>
     <attribute name="bin" default="bin"/>
     <sequential>
@@ -153,7 +154,23 @@
     </sequential>
   </macrodef>
 
-  <target name="deb32" depends="jar"  description="create deb package">
+  <target name="elf32" depends="jar,depjars,depnatives" description="create elf binaries">
+    <elf appx="${app}" apptype="${apptype}" bits="32" ico="${ico}"/>
+    <elf appx="${app2}" apptype="${apptype2}" bits="32" ico="${ico2}" unless:blank="${app2}"/>
+    <elf appx="${app3}" apptype="${apptype3}" bits="32" ico="${ico3}" unless:blank="${app3}"/>
+    <elf appx="${app4}" apptype="${apptype4}" bits="32" ico="${ico4}" unless:blank="${app4}"/>
+    <elf appx="${app5}" apptype="${apptype5}" bits="32" ico="${ico5}" unless:blank="${app5}"/>
+  </target>
+
+  <target name="elf64" depends="jar,depjars,depnatives" description="create elf binaries">
+    <elf appx="${app}" apptype="${apptype}" bits="64" ico="${ico}"/>
+    <elf appx="${app2}" apptype="${apptype2}" bits="64" ico="${ico2}" unless:blank="${app2}"/>
+    <elf appx="${app3}" apptype="${apptype3}" bits="64" ico="${ico3}" unless:blank="${app3}"/>
+    <elf appx="${app4}" apptype="${apptype4}" bits="64" ico="${ico4}" unless:blank="${app4}"/>
+    <elf appx="${app5}" apptype="${apptype5}" bits="64" ico="${ico5}" unless:blank="${app5}"/>
+  </target>
+
+  <target name="deb32" depends="elf32,jar"  description="create deb package">
     <exec executable="jfdeb">
       <arg value="${app}-${version}_i386.deb"/>
       <arg value="32"/>
@@ -161,7 +178,7 @@
     <copy file="${app}-${version}_i386.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
   </target>
 
-  <target name="deb64" depends="jar"  description="create deb package">
+  <target name="deb64" depends="elf64,jar"  description="create deb package">
     <exec executable="jfdeb">
       <arg value="${app}-${version}_amd64.deb"/>
       <arg value="64"/>
@@ -169,7 +186,7 @@
     <copy file="${app}-${version}_amd64.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
   </target>
 
-  <target name="rpm32" depends="jar"  description="create rpm package">
+  <target name="rpm32" depends="elf32,jar" description="create rpm package">
     <exec executable="jfrpm">
       <arg value="${app}.spec"/>
       <arg value="32"/>
@@ -177,7 +194,7 @@
     <copy file="${app}-${version}-1.i686.rpm" todir="${home}/repo/fedora" overwrite="true"/>
   </target>
 
-  <target name="rpm64" depends="jar"  description="create rpm package">
+  <target name="rpm64" depends="elf64,jar"  description="create rpm package">
     <exec executable="jfrpm">
       <arg value="${app}.spec"/>
       <arg value="64"/>
@@ -217,7 +234,11 @@
     <copy file="${app}-${version}.dmg" todir="${home}/release" overwrite="true"/>
   </target>
 
-  <!-- Applet stuff : highly deprecated : Chrome 42+ by default no longer supports Applets -->
+  <!--
+    Applet stuff :
+     - highly deprecated : Chrome 42+ by default no longer supports Applets
+     - please consider migrating to JNLP
+  -->
 
   <available property="keyexists" file="keystore.key"/>
 

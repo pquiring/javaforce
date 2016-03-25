@@ -41,7 +41,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <elf/>
+    
     <copy file="jfparted.jar" todir="/usr/share/java"/>
     <copy file="jfparted.desktop" todir="/usr/share/applications"/>
     <copy file="jfparted.png" todir="/usr/share/icons/hicolor/48x48/apps"/>

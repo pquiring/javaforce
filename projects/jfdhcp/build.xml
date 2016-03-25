@@ -30,8 +30,7 @@
   </target>
 
   <target name="install" description="install files for linux">
-    <elf/>
-    <mkdir dir="/etc/jinit"/>
-    <copy file="${app}.conf" todir="/etc/jinit"/>
+    
+    <copy file="${app}.service" todir="/lib/systemd/system"/>
   </target>
 </project>
