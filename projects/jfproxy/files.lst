@@ -1,4 +1,5 @@
 /usr/bin/jfproxy
-/etc/jinit/jfproxy.conf
+/usr/bin/jfproxysvc
+/lib/systemd/system/jfproxy.service
 
 

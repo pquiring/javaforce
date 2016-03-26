@@ -1,6 +1,6 @@
 /usr/share/java/jfqemu.jar
 /usr/bin/jfqemu
-/etc/jinit/jfqemu.conf
+/lib/systemd/system/jfqemu.service
 /usr/share/jhelp/jfqemu.html
 /usr/share/applications/jfqemu.desktop
 /usr/share/icons/hicolor/48x48/apps/jfqemu.png

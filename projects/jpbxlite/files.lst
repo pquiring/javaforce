@@ -1,4 +1,4 @@
-/etc/jinit/jpbxlite.conf
+/lib/systemd/system/jpbxlite.service
 /usr/share/jhelp/jpbxlite.html
 /usr/share/java/jpbx/jpbxcore.jar
 /usr/share/java/jpbx/plugins/extensions.jar

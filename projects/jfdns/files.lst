@@ -1,4 +1,5 @@
 /usr/bin/jfdns
-/etc/jinit/jfdns.conf
+/usr/bin/jfdnssvc
+/lib/systemd/system/jfdns.service
 
 

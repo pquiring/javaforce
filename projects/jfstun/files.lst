@@ -1,2 +1,4 @@
 /usr/bin/jfstun
-/etc/jinit/jfstun.conf
+/usr/bin/jfstunsvc
+/lib/systemd/system/jfstun.service
+
