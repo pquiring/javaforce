@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="*" UpgradeCode="{A2C46BAA-9D3B-4646-9ED6-9846CDF194CF}" Version="0.1" Language="1033" Name="jfBusServer" Manufacturer="Peter Quiring">
-    <Package InstallerVersion="300" Compressed="yes" Platform="x64"/>
+    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
 

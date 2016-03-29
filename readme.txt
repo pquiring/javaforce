@@ -58,7 +58,7 @@ compile : compile projects java files
 jar : build the projects main jar file
 depjars : copy dependant jar files into project folder
 install : install files into proper folders (Linux only)
- - you MUST specify -Dbits=32|64
+ - for the main JavaForce library you MUST specify -Dbits=32|64
  - requires root access
  - example : "sudo ant install -Dbits=32"
 deb : build Ubuntu deb file (after install)

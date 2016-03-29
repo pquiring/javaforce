@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="*" UpgradeCode="{EB4B842C-B5B9-4308-B2DC-ABB0B912A8E7}" Version="0.8" Language="1033" Name="jfHex" Manufacturer="Peter Quiring">
-    <Package InstallerVersion="300" Compressed="yes" Platform="x64"/>
+    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
 
