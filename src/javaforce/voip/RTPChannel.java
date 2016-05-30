@@ -34,7 +34,7 @@ public class RTPChannel {
 
   public RTP rtp;
   public SDP.Stream stream;
-  public Coder coder_g711u, coder_g711a, coder_g722, coder_g729a;
+  public Coder coder_g711u, coder_g711a, coder_g722, coder_g729a, coder_gsm;
   public Coder coder;  //selected audio encoder
 
   protected RTPChannel(RTP rtp, int ssrc, SDP.Stream stream) {
@@ -152,7 +152,7 @@ public class RTPChannel {
   public static void buildHeader(byte data[], int id, int seqnum, int timestamp, int ssrc, boolean last) {
     //build RTP header
     data[0] = (byte) 0x80;  //version
-    data[1] = (byte) id;    //0=g711u 8=g711a 18=g729a 26=JPEG 34=H.263 etc.
+    data[1] = (byte) id;    //0=g711u 3=gsm 8=g711a 18=g729a 26=JPEG 34=H.263 etc.
     if (last) {
       data[1] |= 0x80;
     }
@@ -240,6 +240,7 @@ public class RTPChannel {
 
       coder_g711u = new g711u(rtp);
       coder_g711a = new g711a(rtp);
+      coder_gsm = new gsm(rtp);
       coder_g722 = new g722(rtp);
       coder_g729a = new g729a(rtp);
       if (stream.type == SDP.Type.audio) {
@@ -254,6 +255,10 @@ public class RTPChannel {
           } else if (codec.equals(RTP.CODEC_G711a)) {
             coder = coder_g711a;
             JFLog.log("codec = g711a");
+            break;
+          } else if (codec.equals(RTP.CODEC_GSM)) {
+            coder = coder_gsm;
+            JFLog.log("codec = gsm");
             break;
           } else if (codec.equals(RTP.CODEC_G722)) {
             coder = coder_g722;
@@ -334,6 +339,8 @@ public class RTPChannel {
         coder = coder_g711u;
       } else if (new_stream.hasCodec(RTP.CODEC_G711a)) {
         coder = coder_g711a;
+      } else if (new_stream.hasCodec(RTP.CODEC_GSM)) {
+        coder = coder_gsm;
       } else if (new_stream.hasCodec(RTP.CODEC_G722)) {
         coder = coder_g722;
       } else if (new_stream.hasCodec(RTP.CODEC_G729a)) {
@@ -367,6 +374,15 @@ public class RTPChannel {
             break;
           }
           addSamples(coder_g711u.decode(data, off));
+          rtp.iface.rtpSamples(this);
+          break;
+        case 3:
+          dtmfSent = false;  //just in case end of dtmf was not received
+          if (len != 33 + 12) {
+            JFLog.log("RTP:Bad gsm length");
+            break;
+          }
+          addSamples(coder_gsm.decode(data, off));
           rtp.iface.rtpSamples(this);
           break;
         case 8:

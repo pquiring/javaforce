@@ -35,6 +35,7 @@ public class RTP implements STUN.Listener {
   public static boolean debug = false;  //set to true and recompile to get a lot of output
   public final static Codec CODEC_UNKNOWN = new Codec("?", -1);
   public final static Codec CODEC_G711u = new Codec("PCMU", 0);  //patent expired
+  public final static Codec CODEC_GSM = new Codec("GSM", 3);  //patent expired
   public final static Codec CODEC_G711a = new Codec("PCMA", 8);  //patent expired
   public final static Codec CODEC_G722 = new Codec("G722", 9);  //patent expired
   public final static Codec CODEC_G729a = new Codec("G729", 18);  //patent encumbered

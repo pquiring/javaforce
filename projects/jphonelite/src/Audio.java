@@ -53,7 +53,7 @@ public class Audio {
     sampleRate50x2 = sampleRate50 * 2;
     //setup inbound ring tone
     loadRingTones();
-    
+
     if (!start()) return false;
 
     timer = new Timer();
@@ -64,7 +64,7 @@ public class Audio {
     }, 0, 20);
     return true;
   }
-  
+
   private void loadRingTones() {
     if (Settings.current.inRingtone.startsWith("*")) {
       if (Settings.current.inRingtone.equals("*RING")) {
@@ -106,7 +106,7 @@ public class Audio {
       }
     }
   }
-  
+
   private boolean start() {
     output = new AudioOutput();
     input = new AudioInput();
@@ -126,7 +126,7 @@ public class Audio {
     primeOutput = true;
     synchronized(activeLock) {
       active = true;
-    }  
+    }
     player = new Player();
     player.start();
     reader = new Reader();
@@ -135,7 +135,7 @@ public class Audio {
   }
 
   int snd_id_play = -1, snd_id_record = -1;
-  
+
   private void stop() {
     if (player != null) {
       player.cancel();
@@ -246,7 +246,7 @@ public class Audio {
     if (player == null || !active) return;
     scaleBufferVolume(buf, 882, volPlay);
     if (primeOutput) {
-      player.add(silence);      
+      player.add(silence);
       primeOutput = false;
     }
     player.add(buf);
@@ -392,7 +392,7 @@ public class Audio {
           RTPChannel channel = lines[line].audioRTP.getDefaultChannel();
           int rate = channel.coder.getSampleRate();
           switch (rate) {
-            case 8000:  //G729, G711
+            case 8000:  //G729, G711, GSM
               if (channel.getSamples(indata8)) {
                 mix(mixed, indata8, 9);
               }

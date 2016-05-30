@@ -108,6 +108,7 @@ public class Settings {
       //force settings
       if (!current.hasAudioCodec(RTP.CODEC_G711a)
         && !current.hasAudioCodec(RTP.CODEC_G711u)
+        && !current.hasAudioCodec(RTP.CODEC_GSM)
         && !current.hasAudioCodec(RTP.CODEC_G722)
         && !current.hasAudioCodec(RTP.CODEC_G729a)
          )

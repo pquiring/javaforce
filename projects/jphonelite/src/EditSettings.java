@@ -2698,6 +2698,7 @@ public class EditSettings extends javax.swing.JDialog {
     for(int a=0;a<codecs.length;a++) {
       if (codecs[a].equals("PCMU")) enabledAudioCodecsList.addElement("g711u");
       if (codecs[a].equals("PCMA")) enabledAudioCodecsList.addElement("g711a");
+      if (codecs[a].equals("GSM")) enabledAudioCodecsList.addElement("gsm");
       if (codecs[a].equals("G722")) enabledAudioCodecsList.addElement("g722");
       if (codecs[a].equals("G729")) enabledAudioCodecsList.addElement("g729a");
     }
@@ -2706,6 +2707,9 @@ public class EditSettings extends javax.swing.JDialog {
     }
     if (!Settings.current.hasAudioCodec(RTP.CODEC_G711a)) {
       disabledAudioCodecsList.addElement("g711a");
+    }
+    if (!Settings.current.hasAudioCodec(RTP.CODEC_GSM)) {
+      disabledAudioCodecsList.addElement("gsm");
     }
     if (!Settings.current.hasAudioCodec(RTP.CODEC_G722)) {
       disabledAudioCodecsList.addElement("g722");
@@ -2987,6 +2991,7 @@ public class EditSettings extends javax.swing.JDialog {
       String codec = (String)enabledAudioCodecsList.get(a);
       if (codec.equals("g711u")) sb.append("PCMU");
       if (codec.equals("g711a")) sb.append("PCMA");
+      if (codec.equals("gsm")) sb.append("GSM");
       if (codec.equals("g722")) sb.append("G722");
       if (codec.equals("g729a")) sb.append("G729");
     }
