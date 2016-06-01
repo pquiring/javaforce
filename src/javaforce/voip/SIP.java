@@ -501,6 +501,8 @@ public abstract class SIP {
     switch (id) {
       case 0:
         return "PCMU";
+      case 3:
+        return "GSM";
       case 8:
         return "PCMA";
       case 9:
