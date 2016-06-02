@@ -1,4 +1,8 @@
 CHANGELOG:
+6-2-2015 : v1.10.0 released
+  - added GSM codec (bug #37)
+  - fix : if call comes in on line that failed to register, mark the line as active to allow user to answer the call
+    - this is a rare case where server may have been unreachable briefly
 9-24-2015 : v1.9.9 released
   - added display name to sip accounts
   - added lock file to prevent running multiple copies

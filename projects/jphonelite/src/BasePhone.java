@@ -23,7 +23,7 @@ import javaforce.media.*;
 
 public abstract class BasePhone extends javax.swing.JPanel implements SIPClientInterface, RTPInterface, ActionListener, KeyEventDispatcher {
 
-  public static String version = "1.10 Beta 1";
+  public static String version = "1.10";
 
   public void initBasePhone(GUI gui, WindowController wc) {
     JFLog.init(JF.getUserPath() + "/.jphone.log", true);
@@ -1284,6 +1284,9 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     for(int a=0;a<6;a++) {
       PhoneLine pl = lines[a];
       if (pl.sip == sip) {
+        if (!pl.auth) {
+          pl.auth = true;  //received a call on a line that failed to register (can happen if server was down briefly)
+        }
         if (pl.callid.equals(callid)) {
           if (pl.talking) {
             //reINVITE

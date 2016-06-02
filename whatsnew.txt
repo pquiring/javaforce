@@ -1,5 +1,9 @@
 What's new...
 
+Jun 2/2016 : JF 11.3.0 released!
+  - jPhoneLite/1.10.0
+    - added GSM codec
+
 Mar 14/2016 : JF 11.2.0 released!
   - added firewall exceptions in Wix config for services (except jfSTUN which uses dynamic ports)
   - jfProxy/0.6
