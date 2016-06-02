@@ -1097,6 +1097,9 @@ public abstract class SIP {
       if (hasCodec(stream.codecs, RTP.CODEC_G711a)) {
         content.append("a=rtpmap:8 PCMA/8000\r\n");
       }
+      if (hasCodec(stream.codecs, RTP.CODEC_GSM)) {
+        content.append("a=rtpmap:3 GSM/8000\r\n");
+      }
       if (hasCodec(stream.codecs, RTP.CODEC_G722)) {
         content.append("a=rtpmap:9 G722/8000\r\n");  //NOTE:It's really 16000 but an error in RFC claims it as 8000
       }
