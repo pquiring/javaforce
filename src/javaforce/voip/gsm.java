@@ -22,7 +22,7 @@ public class gsm implements Coder {
   //samples must be 160 samples
   public byte[] encode(short samples[]) {
     RTPChannel rtpChannel = rtp.getDefaultChannel();
-    rtpChannel.buildHeader(encoded, 18, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
+    rtpChannel.buildHeader(encoded, 3, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
     encoder.encode(samples, edata);
     System.arraycopy(edata, 0, encoded, 12, 33);
     return encoded;
