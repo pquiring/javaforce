@@ -1,5 +1,9 @@
 What's new...
 
+Jun ?/2016 : JF 11.4.0 released!
+  - DHCP server
+    - new : support for custom options
+
 Jun 2/2016 : JF 11.3.0 released!
   - jPhoneLite/1.10.0
     - added GSM codec

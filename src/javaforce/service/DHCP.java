@@ -29,6 +29,15 @@ public class DHCP extends Thread {
   }
 
   private static int maxmtu = 1500 - 20 - 8;  //IP=20 UDP=8
+
+  private static enum OptionType {string, ip4, integer};
+
+  private static class Option {
+    public int num;
+    public OptionType type;
+    public String data;
+  }
+
   private static class Pool {
     public Object lock = new Object();
     public String name;
@@ -51,6 +60,7 @@ public class DHCP extends Thread {
     public String router;
     public String dns = "8.8.8.8";
     public int leaseTime = 3600 * 24;  //in seconds
+    public ArrayList<Option> options = new ArrayList<Option>();
   }
   private static ArrayList<Pool> pools = new ArrayList<Pool>();
   private static Pool global = new Pool();
@@ -158,6 +168,9 @@ public class DHCP extends Thread {
     + "#router=192.168.0.1\n"
     + "#dns=8.8.8.8\n"
     + "#lease=86400  #24 hrs\n"
+    + "#option=128:string:your_string\n"
+    + "#option=129:ip4:1.2.3.4\n"
+    + "#option=130:int:1234\n"
     + "\n"
     + "#[pool_192_168_1_x]\n"
     + "#server_ip=192.168.1.2\n"
@@ -177,6 +190,34 @@ public class DHCP extends Thread {
     + "#mask=255.255.255.0\n"
     + "#router=10.1.1.1\n"
     ;
+
+  private void addOption(Pool pool, String str) {
+    int i1 = str.indexOf(":");
+    if (i1 == -1) {
+      JFLog.log("bad option:" + str);
+      return;
+    }
+    int i2 = str.substring(i1+1).indexOf(":");
+    if (i2 == -1) {
+      JFLog.log("bad option:" + str);
+      return;
+    }
+    i2 += i1;
+    String num = str.substring(0, i1);
+    String type = str.substring(i1+1, i2);
+    String data = str.substring(i2+1);
+    Option opt = new Option();
+    opt.num = Integer.valueOf(num);
+    if (type.equals("int")) {
+      opt.type = OptionType.integer;
+    } else if (type.equals("ip4")) {
+      opt.type = OptionType.ip4;
+    } else {
+      opt.type = OptionType.string;
+    }
+    opt.data = data;
+    pool.options.add(opt);
+  }
 
   private void loadConfig() {
     pools.clear();
@@ -213,6 +254,7 @@ public class DHCP extends Thread {
         else if (ln.startsWith("dns=")) pool.dns = ln.substring(4);
         else if (ln.startsWith("router=")) pool.router = ln.substring(7);
         else if (ln.startsWith("lease=")) pool.leaseTime = JF.atoi(ln.substring(6));
+        else if (ln.startsWith("option=")) addOption(pool, ln.substring(7));
       }
       config = cfg.toString();
     } catch (FileNotFoundException e) {
@@ -633,6 +675,26 @@ public class DHCP extends Thread {
       reply[replyOffset++] = OPT_LEASE_TIME;
       reply[replyOffset++] = 4;
       putInt(pool.leaseTime);
+
+      //add custom options
+      for(int a=0;a<pool.options.size();a++) {
+        Option opt = pool.options.get(a);
+        reply[replyOffset++] = (byte)opt.num;
+        switch (opt.type) {
+          case string:
+            reply[replyOffset++] = (byte)opt.data.length();
+            putByteArray(opt.data.getBytes());
+            break;
+          case integer:
+            reply[replyOffset++] = 4;
+            putInt(Integer.valueOf(opt.data));
+            break;
+          case ip4:
+            reply[replyOffset++] = 4;
+            putIP4(opt.data);
+            break;
+        }
+      }
 
       reply[replyOffset++] = OPT_END;
 
