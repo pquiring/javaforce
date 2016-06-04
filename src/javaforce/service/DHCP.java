@@ -167,7 +167,7 @@ public class DHCP extends Thread {
     + "#mask=255.255.255.0\n"
     + "#router=192.168.0.1\n"
     + "#dns=8.8.8.8\n"
-    + "#lease=86400  #24 hrs\n"
+    + "#lease=86400  #24 hrs (1hr=min 24hrs=max)\n"
     + "#option=128:string:your_string\n"
     + "#option=129:ip4:1.2.3.4\n"
     + "#option=130:int:1234\n"
@@ -231,7 +231,7 @@ public class DHCP extends Thread {
         if (ln == null) break;
         cfg.append(ln);
         cfg.append("\n");
-        ln = ln.trim().toLowerCase();
+        ln = ln.trim();
         int idx = ln.indexOf('#');
         if (idx != -1) ln = ln.substring(0, idx).trim();
         if (ln.length() == 0) continue;
@@ -246,15 +246,23 @@ public class DHCP extends Thread {
           }
           continue;
         }
-             if (ln.startsWith("pool_first=")) pool.pool_first = ln.substring(11);
-        else if (ln.startsWith("pool_last=")) pool.pool_last = ln.substring(10);
-        else if (ln.startsWith("server_ip=")) pool.server_ip = ln.substring(10);
-        else if (ln.startsWith("bind_ip=")) pool.bind_ip = ln.substring(8);
-        else if (ln.startsWith("mask=")) pool.mask = ln.substring(5);
-        else if (ln.startsWith("dns=")) pool.dns = ln.substring(4);
-        else if (ln.startsWith("router=")) pool.router = ln.substring(7);
-        else if (ln.startsWith("lease=")) pool.leaseTime = JF.atoi(ln.substring(6));
-        else if (ln.startsWith("option=")) addOption(pool, ln.substring(7));
+        idx = ln.indexOf("=");
+        if (idx == -1) continue;
+        String key = ln.substring(0, idx).toLowerCase().trim();
+        String value = ln.substring(idx+1).trim();
+             if (key.equals("pool_first")) pool.pool_first = value;
+        else if (key.equals("pool_last")) pool.pool_last = value;
+        else if (key.equals("server_ip")) pool.server_ip = value;
+        else if (key.equals("bind_ip")) pool.bind_ip = value;
+        else if (key.equals("mask")) pool.mask = value;
+        else if (key.equals("dns")) pool.dns = value;
+        else if (key.equals("router")) pool.router = value;
+        else if (key.equals("lease")) {
+          pool.leaseTime = JF.atoi(value);
+          if (pool.leaseTime < 3600) pool.leaseTime = 3600;  //1hr min
+          if (pool.leaseTime > 86400) pool.leaseTime = 86400;  //1 day max
+        }
+        else if (key.equals("option")) addOption(pool, value);
       }
       config = cfg.toString();
     } catch (FileNotFoundException e) {
@@ -427,6 +435,8 @@ public class DHCP extends Thread {
   private static final byte OPT_LEASE_TIME = 51;
   private static final byte OPT_DHCP_MSG_TYPE = 53;
   private static final byte OPT_DHCP_SERVER_IP = 54;
+  private static final byte OPT_RENEWAL_TIME = 58;
+  private static final byte OPT_REBINDING_TIME = 59;
   private static final byte OPT_END = -1;  //255
 
   private static class RequestWorker extends Thread {
@@ -640,7 +650,7 @@ public class DHCP extends Thread {
       reply[replyOffset++] = 0;  //hops
       putInt(id);
       putShort((short)0);  //seconds
-      putShort((short)0);  //flags
+      putShort((short)0x8000);  //flags  (bit 15 = broadcast)
       putInt(0);  //client IP
       putByteArray(yip);  //your IP
       putIP4(pool.server_ip);  //server ip
@@ -671,6 +681,14 @@ public class DHCP extends Thread {
       reply[replyOffset++] = OPT_DHCP_SERVER_IP;
       reply[replyOffset++] = 4;
       putIP4(pool.server_ip);
+
+      reply[replyOffset++] = OPT_RENEWAL_TIME;
+      reply[replyOffset++] = 4;
+      putInt(pool.leaseTime - 1800);  //30 mins early
+
+      reply[replyOffset++] = OPT_REBINDING_TIME;
+      reply[replyOffset++] = 4;
+      putInt(pool.leaseTime - 900);  //15 mins early
 
       reply[replyOffset++] = OPT_LEASE_TIME;
       reply[replyOffset++] = 4;
