@@ -202,7 +202,7 @@ public class DHCP extends Thread {
       JFLog.log("bad option:" + str);
       return;
     }
-    i2 += i1;
+    i2 += i1 + 1;
     String num = str.substring(0, i1);
     String type = str.substring(i1+1, i2);
     String data = str.substring(i2+1);
