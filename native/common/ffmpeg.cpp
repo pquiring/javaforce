@@ -57,8 +57,8 @@ void (*_av_init_packet)(AVPacket *pkt);
 void (*_av_free_packet)(AVPacket *pkt);  //free data inside packet (not packet itself)
 //encoding
 AVCodec* (*_avcodec_find_encoder)(int codec_id);
-int (*_avpicture_alloc)(AVPicture *pic, int pix_fmt, int width, int height);
-int (*_avpicture_free)(AVPicture *pic);
+//int (*_avpicture_alloc)(AVPicture *pic, int pix_fmt, int width, int height);
+//int (*_avpicture_free)(AVPicture *pic);
 int (*_avcodec_encode_video2)(AVCodecContext *cc, AVPacket *pkt, AVFrame *frame, int* intref);
 int (*_avcodec_encode_audio2)(AVCodecContext *cc, AVPacket *pkt, AVFrame *frame, int* intref);
 int (*_avcodec_fill_audio_frame)(AVFrame *frame, int nb_channels, int fmt, void* buf, int bufsize, int align);
@@ -169,11 +169,13 @@ static AVOutputFormat *AVOutputFormat_New() {
   return ofmt;
 }
 
+/*
 static AVPicture *AVPicture_New() {
   AVPicture *pic = (AVPicture*)(*_av_malloc)(sizeof(AVPicture));
   memset(pic, 0, sizeof(AVPicture));
   return pic;
 }
+*/
 
 static AVOutputFormat *vpx = NULL;
 
@@ -197,6 +199,18 @@ static void register_vpx() {
   vpx->write_packet = h264->write_packet;
   vpx->flags = h264->flags;
   (*_av_register_output_format)(vpx);
+}
+
+//AVPicture was deprecated in ffmpeg/3.0 - use AVFrame instead - this function does the same as avpicture_alloc() except using AVFrame
+int _avframe_alloc(AVFrame *picture, enum AVPixelFormat pix_fmt, int width, int height)
+{
+  int ret = (*_av_image_alloc)(picture->data, picture->linesize, width, height, pix_fmt, 1);
+  if (ret < 0) {
+    memset(picture, 0, sizeof(AVFrame));
+    return ret;
+  }
+
+  return 0;
 }
 
 static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const char* filterFile, const char* formatFile
@@ -257,8 +271,8 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(codec, (void**)&_av_init_packet, "av_init_packet");
   getFunction(codec, (void**)&_av_free_packet, "av_free_packet");
   getFunction(codec, (void**)&_avcodec_find_encoder, "avcodec_find_encoder");
-  getFunction(codec, (void**)&_avpicture_alloc, "avpicture_alloc");
-  getFunction(codec, (void**)&_avpicture_free, "avpicture_free");
+//  getFunction(codec, (void**)&_avpicture_alloc, "avpicture_alloc");
+//  getFunction(codec, (void**)&_avpicture_free, "avpicture_free");
   getFunction(codec, (void**)&_avcodec_encode_video2, "avcodec_encode_video2");
   getFunction(codec, (void**)&_avcodec_encode_audio2, "avcodec_encode_audio2");
   getFunction(codec, (void**)&_avcodec_fill_audio_frame, "avcodec_fill_audio_frame");
@@ -453,7 +467,7 @@ struct FFContext {
   int width, height, fps;
   int chs, freq;
   AVFrame *audio_frame, *video_frame;
-  AVPicture *src_pic, *dst_pic;
+  AVFrame *src_pic, *dst_pic;
   jboolean audio_frame_size_variable;
   int audio_frame_size;
   short *audio_buffer;
@@ -1287,12 +1301,12 @@ static jboolean open_video(FFContext *ctx) {
   if (ret < 0) return JNI_FALSE;
   ctx->video_frame = (*_avcodec_alloc_frame)();
   if (ctx->video_frame == NULL) return JNI_FALSE;
-  ctx->dst_pic = AVPicture_New();
-  ret = (*_avpicture_alloc)(ctx->dst_pic, ctx->video_codec_ctx->pix_fmt, ctx->video_codec_ctx->width, ctx->video_codec_ctx->height);
+  ctx->dst_pic = (*_avcodec_alloc_frame)();
+  ret = _avframe_alloc(ctx->dst_pic, ctx->video_codec_ctx->pix_fmt, ctx->video_codec_ctx->width, ctx->video_codec_ctx->height);
   if (ret < 0) return JNI_FALSE;
   if (ctx->video_codec_ctx->pix_fmt != AV_PIX_FMT_BGRA) {
-    ctx->src_pic = AVPicture_New();
-    ret = (*_avpicture_alloc)(ctx->src_pic, AV_PIX_FMT_BGRA, ctx->video_codec_ctx->width, ctx->video_codec_ctx->height);
+    ctx->src_pic = (*_avcodec_alloc_frame)();
+    ret = _avframe_alloc(ctx->src_pic, AV_PIX_FMT_BGRA, ctx->video_codec_ctx->width, ctx->video_codec_ctx->height);
     if (ret < 0) return JNI_FALSE;
     ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, AV_PIX_FMT_BGRA
       , ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt, SWS_BICUBIC, NULL, NULL, NULL);
@@ -1708,12 +1722,10 @@ static void encoder_stop(FFContext *ctx)
     ctx->fmt_ctx = NULL;
   }
   if (ctx->src_pic != NULL) {
-    (*_avpicture_free)(ctx->src_pic);
-    ctx->src_pic = NULL;
+    (*_avcodec_free_frame)((void**)&ctx->src_pic);
   }
   if (ctx->dst_pic != NULL) {
-    (*_avpicture_free)(ctx->dst_pic);
-    ctx->dst_pic = NULL;
+    (*_avcodec_free_frame)((void**)&ctx->dst_pic);
   }
   if (ctx->sws_ctx != NULL) {
     (*_sws_freeContext)(ctx->sws_ctx);
