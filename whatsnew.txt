@@ -1,7 +1,7 @@
 What's new...
 
-Jun ?/2016 : JF 11.4.0 released!
-  - DHCP server
+Jun 4/2016 : JF 11.4.0 released!
+  - jfDHCP/0.7
     - new : support for custom options
 
 Jun 2/2016 : JF 11.3.0 released!
