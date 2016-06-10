@@ -1,9 +1,9 @@
 <project name="stubs" default="mac" basedir=".">
   <description>stubs</description>
-  <property name="JAVA_HOME" value="/Library/Java/JavaVirtualMachines/jdk1.8.0_45.jdk/Contents/Home"/>
+  <property environment="env"/>
 
   <target name="mac" description="create mac stubs">
-    <exec command="gcc -I ${JAVA_HOME}/include -I ${JAVA_HOME}/include/darwin mac.c -ldl -lpthread -o ../mac64.bin"/>
+    <exec command="gcc -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/darwin mac.c -ldl -lpthread -o ../mac64.bin"/>
   </target>
 
   <target name="clean" description="deletes compiled files">
