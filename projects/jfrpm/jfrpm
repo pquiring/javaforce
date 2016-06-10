@@ -35,7 +35,7 @@ WORKDIR=`pwd`
 mkdir $TMPDIR
 
 #build data.tar.bz2 (gz,bz2,lzma,others?)
-rm -f data.tar.bz2 2>/dev/null
+if [ -f data.tar.bz2 ]; then rm -f data.tar.bz2; fi
 tar cjf data.tar.bz2 -T $FILES
 
 cp $SPEC $TMPDIR

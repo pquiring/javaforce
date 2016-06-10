@@ -1,4 +1,4 @@
-<project name="jfrpm" default="help" basedir=".">
+<project name="jfrpm" default="install" basedir=".">
   <description>rpm</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfrpm"/>

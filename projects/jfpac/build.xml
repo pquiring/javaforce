@@ -1,7 +1,7 @@
-<project name="jfdeb" default="install" basedir=".">
-  <description>paint</description>
+<project name="jfpac" default="help" basedir=".">
+  <description>pac</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfdeb"/>
+  <property name="app" value="jfpac"/>
   <property name="home" location="../.."/>
   <property name="version" value="1.0"/>
 
@@ -13,7 +13,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <copy file="jfdeb" todir="/usr/bin"/>
-    <chmod file="/usr/bin/jfdeb" perm="+x"/>
+    <copy file="jfpac" todir="/usr/bin"/>
+    <chmod file="/usr/bin/jfpac" perm="+x"/>
   </target>
 </project>

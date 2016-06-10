@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Note : Make sure you place NOPASSWD in your /etc/sudoers or this script will annoy you (see jfconfig -> fix stuff)
+
+function usage() {
+  echo usage : jfpac output-file-version.pkg.tar.xz bits [files.lst]
+  echo desc : creates PAC package
+  echo bits : 32 or 64 bit
+  exit
+}
+
+function error() {
+  echo Error : $1
+  exit
+}
+
+if [ "$1" = "" ]; then usage; fi
+if [ "$1" = "--help" ]; then usage; fi
+if [ "$1" = "-h" ]; then usage; fi
+
+FILES=files.lst
+BITS=$2
+if [ -f files-$BITS.lst ]; then FILES=files-$BITS.lst; fi
+
+if [ ! "$3" = "" ]; then FILES=$3; fi
+
+TMPDIR=jfpac.$RANDOM
+
+WORKDIR=`pwd`
+mkdir $TMPDIR
+
+#build data.tar.bz2 (tmp)
+if [ -f data.tar.bz2 ]; then rm -f data.tar.bz2; fi
+tar cjf data.tar.bz2 -T $FILES
+
+cd $TMPDIR
+
+if [ ! `pwd` = $WORKDIR/$TMPDIR ]; then error "failed to use temp folder $TMPDIR"; fi
+
+if [ $BITS = "32" ]; then
+  java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "i686" .PKGINFO
+else
+  java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "x86_64" .PKGINFO
+fi
+
+sudo tar xjf ../data.tar.bz2
+
+size=`du -s . | cut -f1`
+
+java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@SIZE@" "$size" .PKGINFO
+
+cp pac.info $TMPDIR/.PKGINFO
+
+#build .MTREE
+sudo bsdtar -czf .MTREE --format=mtree --options='!all,use-set,type,uid,gid,mode,time,size,md5,sha256,link' *
+sudo tar cf ../$1 *
+cd ..
+sudo rm -rf $TMPDIR
+rm -f data.tar.bz2
+
+echo Complete!

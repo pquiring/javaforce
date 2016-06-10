@@ -39,11 +39,18 @@ Use buildAllFedora32|64.sh to build all projects for Fedora.
 To use sudo you may need to add yourself to the 'wheel' group
   usermod -a -G wheel my_user_name
 
+arch
+----
+Again basically the same just replace 'deb' with 'pac'.
+Use buildAllArch32|64.sh to build all projects for Arch.
+
 Required packages to compile JavaForce on Linux
 ===============================================
 
 Ubuntu: default-jdk ant gnupg gcc dpkg-dev
 
 Fedora: java ant gnupg gcc rpm-sign createrepo livecd-tools
+
+Arch: jdk8-openjdk apache-ant gcc
 
 Enjoy!

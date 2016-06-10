@@ -33,7 +33,7 @@ if [ ! -f $CONTROL_FILES/control ]; then error "$CONTROL_FILES/control not found
 TMPDIR=jfdeb.$RANDOM
 
 #build control.tar.gz (gz only)
-rm -f control.tar.gz 2>/dev/null
+if [ -f control.tar.gz ]; then rm -f control.tar.gz; fi
 mkdir $TMPDIR
 cp $CONTROL_FILES/* $TMPDIR
 cd $TMPDIR
@@ -48,7 +48,7 @@ rm $TMPDIR/*
 rmdir $TMPDIR
 
 #build data.tar.bz2 (gz,bz2,lzma,others?)
-rm -f data.tar.bz2 2>/dev/null
+if [ -f data.tar.bz2 ]; then rm -f data.tar.bz2; fi
 tar cjf data.tar.bz2 -T $FILES
 
 #build $DEB
