@@ -37,7 +37,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_MacNative_macInit
 JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
   (JNIEnv *e, jclass c)
 {
-  if (funcs[0].func != NULL) return;  //already done
+  if (funcs[0].func != NULL) return JNI_TRUE;  //already done
   void *func;
   void *gl = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/OpenGL.dylib", RTLD_LAZY | RTLD_GLOBAL);
   if (gl == NULL) return JNI_FALSE;
