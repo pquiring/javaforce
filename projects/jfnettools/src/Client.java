@@ -17,6 +17,7 @@ public class Client extends Thread {
   private TT task;
   private Reader reader;
   private Writer writer;
+  private Latency latency;
   private long read;
   private Object readLock = new Object();
   private long written;
@@ -55,18 +56,27 @@ public class Client extends Thread {
           reader = new Reader();
           reader.start();
           break;
+        case 'L':  //latency test
+          latency = new Latency();
+          latency.start();
+          break;
       }
     } catch (Exception e) {
       e.printStackTrace();
       win.setClientStatus(e.toString());
     }
-    timer = new Timer();
-    task = new TT();
-    timer.scheduleAtFixedRate(task, 1000, 1000);
+    if (mode != 'L') {
+      timer = new Timer();
+      task = new TT();
+      timer.scheduleAtFixedRate(task, 1000, 1000);
+    }
   }
   public void close() {
     active = false;
-    timer.cancel();
+    if (timer != null) {
+      timer.cancel();
+      timer = null;
+    }
     try { s.close(); } catch (Exception e) {}
   }
   private class TT extends TimerTask {
@@ -136,6 +146,52 @@ public class Client extends Thread {
           synchronized(writtenLock) {
             written += 1460;
           }
+        }
+      } catch (Exception e) {
+      }
+    }
+  }
+
+  //LE set/get
+
+  private static void setuint32(byte[] data, int offset, int num) {
+    data[offset+0] = (byte)(num & 0xff);
+    num >>= 8;
+    data[offset+1] = (byte)(num & 0xff);
+    num >>= 8;
+    data[offset+2] = (byte)(num & 0xff);
+    num >>= 8;
+    data[offset+3] = (byte)(num & 0xff);
+  }
+
+  private static int getuint32(byte[] data, int offset) {
+    int ret;
+    ret  = (int)data[offset] & 0xff;
+    ret += ((int)data[offset+1] & 0xff) << 8;
+    ret += ((int)data[offset+2] & 0xff) << 16;
+    ret += ((int)data[offset+3] & 0xff) << 24;
+    return ret;
+  }
+
+  private class Latency extends Thread {
+    public void run() {
+      byte data[] = new byte[4];
+      int idx = 0;
+      int sidx;
+      long s1, s2, diff;
+      try {
+        while (active) {
+          Thread.sleep(5);
+          setuint32(data, 0, idx);
+          s1 = System.nanoTime();
+          os.write(data);
+          int read = is.read(data);
+          if (read == 4) {
+            sidx = getuint32(data, 0);
+          }
+          s2 = System.nanoTime();
+          diff = s2 - s1;
+          win.addLatency((int)(diff / 1000L));
         }
       } catch (Exception e) {
       }

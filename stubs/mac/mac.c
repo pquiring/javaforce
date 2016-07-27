@@ -18,6 +18,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <dlfcn.h>
+#include <dirent.h>
 
 #ifndef MAX_PATH
   #define MAX_PATH 255
@@ -29,7 +30,6 @@
 int type;
 char version[MAX_PATH];
 char javahome[MAX_PATH];
-char dll[MAX_PATH];
 int size = MAX_PATH;
 int (*CreateJavaVM)(void*,void*,void*);
 int thread_handle;
@@ -37,7 +37,6 @@ int thread_id;
 char **g_argv;
 int g_argc;
 void *jvm_dll;
-void *jawt_dll;
 pthread_t thread;
 pthread_attr_t thread_attr;
 char link1[MAX_PATH];
@@ -254,6 +253,29 @@ int loadProperties() {
   return 0;
 }
 
+void findJava() {
+  DIR *dir;
+  struct dirent *dp;
+
+  dir = opendir("/Library/Java/JavaVirtualMachines");
+  if (dir == NULL) {
+    error("Unable to open JVMs folder.");
+  }
+  while ((dp = readdir(dir)) != NULL) {
+    strcpy(javahome, "/Library/Java/JavaVirtualMachines/");
+    strcat(javahome, dp->d_name);
+    strcat(javahome, "/Contents/Home/jre/lib/server/libjvm.dylib");
+    printf("Trying %s\n", javahome);
+    int fd = open(javahome, O_RDONLY);
+    if (fd != -1) {
+      close(fd);
+      closedir(dir);
+      return;
+    }
+  }
+  error("No JVMs installed.");
+}
+
 /** Main entry point. */
 int main(int argc, char **argv) {
   void *retval;
@@ -263,32 +285,12 @@ int main(int argc, char **argv) {
   loadProperties();
 
   //get java home
-  //strcpy(javahome, resolvelink("/usr/bin/java"));
-  if (appleJava)
-    strcpy(javahome, "/System/Library/Java/JavaVirtualMachines/1.6.0.jdk/Contents/Libraries");  //Apple Java 6
-  else
-    strcpy(javahome, "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/lib");  //Oracle Java 7+
+  findJava();
 
   //open libjvm.dylib
-  strcpy(dll, javahome);
-  if (!appleJava) {
-    strcat(dll, "/server/libjvm.dylib");
-  } else {
-    strcat(dll, "/libserver.dylib");
-  }
-
-  jvm_dll = dlopen(dll, RTLD_NOW);
+  jvm_dll = dlopen(javahome, RTLD_NOW);
   if (jvm_dll == NULL) {
     error("Unable to open libjvm.dylib");
-  }
-
-  //open libjawt.so (otherwise Mac can't find it later)
-  strcpy(dll, javahome);
-  strcat(dll, "/libjawt.dylib");
-
-  jawt_dll = dlopen(dll, RTLD_NOW);
-  if (jawt_dll == NULL) {
-    error("Unable to open libjawt.dylib");
   }
 
   CreateJavaVM = (int (*)(void*,void*,void*)) dlsym(jvm_dll, "JNI_CreateJavaVM");

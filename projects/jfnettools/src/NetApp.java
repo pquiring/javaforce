@@ -7,10 +7,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 
 public class NetApp extends javax.swing.JFrame {
 
-  public static String version = "0.1";
+  public static String version = "0.2";
 
   /**
    * Creates new form NetApp
@@ -19,6 +20,7 @@ public class NetApp extends javax.swing.JFrame {
     initComponents();
     setTitle("Net Tools/" + version);
     centerWindow(this);
+    latency = new int[latencyLabel.getWidth()];
   }
 
   /**
@@ -33,19 +35,28 @@ public class NetApp extends javax.swing.JFrame {
     jTabbedPane1 = new javax.swing.JTabbedPane();
     clientTab = new javax.swing.JPanel();
     jPanel8 = new javax.swing.JPanel();
-    clientStatus = new javax.swing.JLabel();
     jLabel4 = new javax.swing.JLabel();
     jLabel3 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
     clientPort = new javax.swing.JTextField();
     clientMode = new javax.swing.JComboBox();
     clientHost = new javax.swing.JTextField();
-    clientStart = new javax.swing.JButton();
+    jPanel9 = new javax.swing.JPanel();
     jPanel4 = new javax.swing.JPanel();
     jLabel5 = new javax.swing.JLabel();
     jLabel6 = new javax.swing.JLabel();
     upSpeed = new javax.swing.JTextField();
     downSpeed = new javax.swing.JTextField();
+    clientStatus = new javax.swing.JLabel();
+    clientStart = new javax.swing.JButton();
+    jPanel10 = new javax.swing.JPanel();
+    latencyLabel = new javax.swing.JLabel() {
+      public void paintComponent(Graphics g) {
+        paintLatency(g);
+      }
+    };
+    clientStart2 = new javax.swing.JButton();
+    clientStatus2 = new javax.swing.JLabel();
     jPanel7 = new javax.swing.JPanel();
     serverStatus = new javax.swing.JLabel();
     serverPort = new javax.swing.JTextField();
@@ -90,8 +101,6 @@ public class NetApp extends javax.swing.JFrame {
 
     jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Client"));
 
-    clientStatus.setText("Idle");
-
     jLabel4.setText("Mode");
 
     jLabel3.setText("Port");
@@ -104,12 +113,7 @@ public class NetApp extends javax.swing.JFrame {
 
     clientHost.setText("127.0.0.1");
 
-    clientStart.setText("Start");
-    clientStart.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        clientStartActionPerformed(evt);
-      }
-    });
+    jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Bandwidth Test"));
 
     jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Stats"));
 
@@ -131,7 +135,7 @@ public class NetApp extends javax.swing.JFrame {
           .addGroup(jPanel4Layout.createSequentialGroup()
             .addComponent(jLabel6)
             .addGap(18, 18, 18)
-            .addComponent(downSpeed, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE))
+            .addComponent(downSpeed, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE))
           .addGroup(jPanel4Layout.createSequentialGroup()
             .addComponent(jLabel5)
             .addGap(31, 31, 31)
@@ -152,6 +156,81 @@ public class NetApp extends javax.swing.JFrame {
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
+    clientStatus.setText("Idle");
+
+    clientStart.setText("Start");
+    clientStart.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        clientStartActionPerformed(evt);
+      }
+    });
+
+    javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+    jPanel9.setLayout(jPanel9Layout);
+    jPanel9Layout.setHorizontalGroup(
+      jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel9Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(jPanel9Layout.createSequentialGroup()
+            .addComponent(clientStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(clientStart)))
+        .addContainerGap())
+    );
+    jPanel9Layout.setVerticalGroup(
+      jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel9Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(clientStatus)
+          .addComponent(clientStart))
+        .addContainerGap())
+    );
+
+    jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Latency Test"));
+
+    latencyLabel.setBackground(new java.awt.Color(0, 0, 0));
+    latencyLabel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+    clientStart2.setText("Start");
+    clientStart2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        clientStart2ActionPerformed(evt);
+      }
+    });
+
+    clientStatus2.setText("Idle");
+
+    javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+    jPanel10.setLayout(jPanel10Layout);
+    jPanel10Layout.setHorizontalGroup(
+      jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel10Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(latencyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(jPanel10Layout.createSequentialGroup()
+            .addComponent(clientStatus2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(clientStart2)))
+        .addContainerGap())
+    );
+    jPanel10Layout.setVerticalGroup(
+      jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel10Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(latencyLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(clientStatus2)
+          .addComponent(clientStart2))
+        .addContainerGap())
+    );
+
     javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
     jPanel8.setLayout(jPanel8Layout);
     jPanel8Layout.setHorizontalGroup(
@@ -159,7 +238,6 @@ public class NetApp extends javax.swing.JFrame {
       .addGroup(jPanel8Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(jPanel8Layout.createSequentialGroup()
             .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel2)
@@ -172,12 +250,10 @@ public class NetApp extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(clientMode, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(clientMode, 0, 130, Short.MAX_VALUE)
                 .addGap(130, 130, 130))))
-          .addGroup(jPanel8Layout.createSequentialGroup()
-            .addComponent(clientStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(clientStart)))
+          .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
     jPanel8Layout.setVerticalGroup(
@@ -194,11 +270,9 @@ public class NetApp extends javax.swing.JFrame {
           .addComponent(clientMode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jLabel4))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(clientStatus)
-          .addComponent(clientStart))
+        .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
@@ -228,7 +302,7 @@ public class NetApp extends javax.swing.JFrame {
             .addComponent(jLabel1)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(serverPort, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(0, 288, Short.MAX_VALUE))
+            .addGap(0, 0, Short.MAX_VALUE))
           .addGroup(jPanel7Layout.createSequentialGroup()
             .addComponent(serverStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -256,8 +330,8 @@ public class NetApp extends javax.swing.JFrame {
       .addGroup(clientTabLayout.createSequentialGroup()
         .addContainerGap()
         .addGroup(clientTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jPanel8, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
     );
     clientTabLayout.setVerticalGroup(
@@ -478,9 +552,9 @@ public class NetApp extends javax.swing.JFrame {
         .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(21, 21, 21))
+        .addContainerGap(140, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Tools", toolsTab);
@@ -553,7 +627,7 @@ public class NetApp extends javax.swing.JFrame {
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addContainerGap()
         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(347, Short.MAX_VALUE))
+        .addContainerGap(466, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Misc", jPanel1);
@@ -562,9 +636,7 @@ public class NetApp extends javax.swing.JFrame {
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(layout.createSequentialGroup()
-        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addGap(0, 0, Short.MAX_VALUE))
+      .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 475, javax.swing.GroupLayout.PREFERRED_SIZE)
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -615,22 +687,7 @@ public class NetApp extends javax.swing.JFrame {
   }//GEN-LAST:event_serverStartActionPerformed
 
   private void clientStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clientStartActionPerformed
-    if (client == null) {
-      clientHost.setEnabled(false);
-      clientPort.setEnabled(false);
-      clientMode.setEnabled(false);
-      clientStart.setText("Stop");
-      client = new Client(this, clientHost.getText(), Integer.valueOf(clientPort.getText()), getMode());
-      client.start();
-    } else {
-      client.close();
-      client = null;
-      clientStart.setText("Start");
-      clientStatus.setText("Idle");
-      clientHost.setEnabled(true);
-      clientPort.setEnabled(true);
-      clientMode.setEnabled(true);
-    }
+    startClientBandwidthTest();
   }//GEN-LAST:event_clientStartActionPerformed
 
   private void fileStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileStartActionPerformed
@@ -659,6 +716,10 @@ public class NetApp extends javax.swing.JFrame {
   private void checkipStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkipStartActionPerformed
     getIP();
   }//GEN-LAST:event_checkipStartActionPerformed
+
+  private void clientStart2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clientStart2ActionPerformed
+    startClientLatencyTest();
+  }//GEN-LAST:event_clientStart2ActionPerformed
 
   /**
    * @param args the command line arguments
@@ -696,7 +757,9 @@ public class NetApp extends javax.swing.JFrame {
   private javax.swing.JComboBox clientMode;
   private javax.swing.JTextField clientPort;
   private javax.swing.JButton clientStart;
+  private javax.swing.JButton clientStart2;
   private javax.swing.JLabel clientStatus;
+  private javax.swing.JLabel clientStatus2;
   private javax.swing.JPanel clientTab;
   private javax.swing.JTextField dnsHost;
   private javax.swing.JTextArea dnsIP;
@@ -727,6 +790,7 @@ public class NetApp extends javax.swing.JFrame {
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
   private javax.swing.JPanel jPanel1;
+  private javax.swing.JPanel jPanel10;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel jPanel4;
@@ -734,8 +798,10 @@ public class NetApp extends javax.swing.JFrame {
   private javax.swing.JPanel jPanel6;
   private javax.swing.JPanel jPanel7;
   private javax.swing.JPanel jPanel8;
+  private javax.swing.JPanel jPanel9;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JTabbedPane jTabbedPane1;
+  private javax.swing.JLabel latencyLabel;
   private javax.swing.JTextField pingHost;
   private javax.swing.JButton pingStart;
   private javax.swing.JLabel pingStatus;
@@ -751,6 +817,8 @@ public class NetApp extends javax.swing.JFrame {
   public Ping ping;
   public DNS dns;
   public FileTest fileTest;
+  public int latency[];
+  public char mode;
 
   private char getMode() {
     return ((String)clientMode.getSelectedItem()).charAt(0);
@@ -761,7 +829,11 @@ public class NetApp extends javax.swing.JFrame {
   }
 
   public void setClientStatus(String status) {
-    clientStatus.setText(status);
+    if (mode == 'L') {
+      clientStatus2.setText(status);
+    } else {
+      clientStatus.setText(status);
+    }
   }
 
   public void setReadSpeed(String spd) {
@@ -817,10 +889,87 @@ public class NetApp extends javax.swing.JFrame {
     }
   }
 
+  private void startClientBandwidthTest() {
+    if (client == null) {
+      clientHost.setEnabled(false);
+      clientPort.setEnabled(false);
+      clientMode.setEnabled(false);
+      clientStart.setText("Stop");
+      clientStart2.setEnabled(false);
+      mode = getMode();
+      client = new Client(this, clientHost.getText(), Integer.valueOf(clientPort.getText()), mode);
+      client.start();
+    } else {
+      client.close();
+      client = null;
+      clientStart.setText("Start");
+      clientStart2.setEnabled(true);
+      clientStatus.setText("Idle");
+      clientHost.setEnabled(true);
+      clientPort.setEnabled(true);
+      clientMode.setEnabled(true);
+    }
+  }
+
+  private void startClientLatencyTest() {
+    if (client == null) {
+      clientHost.setEnabled(false);
+      clientPort.setEnabled(false);
+      clientMode.setEnabled(false);
+      clientStart2.setText("Stop");
+      clientStart.setEnabled(false);
+      mode = 'L';
+      client = new Client(this, clientHost.getText(), Integer.valueOf(clientPort.getText()), mode);
+      client.start();
+      clearLatency();
+    } else {
+      client.close();
+      client = null;
+      clientStart2.setText("Start");
+      clientStart.setEnabled(true);
+      clientStatus2.setText("Idle");
+      clientHost.setEnabled(true);
+      clientPort.setEnabled(true);
+      clientMode.setEnabled(true);
+    }
+  }
+
   /** Centers a window on screen (works with java.awt.Window/Frame javax.swing.JWindow/JFrame/JDialog */
   public static void centerWindow(java.awt.Window window) {
     Dimension d = window.getSize();
     Rectangle s = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     window.setLocation(s.width/2 - d.width/2, s.height/2 - d.height/2);
+  }
+
+  private void clearLatency() {
+    Arrays.fill(latency, 0);
+  }
+
+  public void addLatency(int value) {
+    for(int a=1;a<latency.length;a++) {
+      latency[a-1] = latency[a];
+    }
+    latency[latency.length - 1] = value / 10;
+    latencyLabel.repaint();
+  }
+
+  public void paintLatency(Graphics g) {
+    int w = latency.length;
+    int h = latencyLabel.getHeight();
+    int max = 1;
+    for(int a=0;a<w;a++) {
+      if (latency[a] > max) {
+        max = latency[a];
+      }
+    }
+    g.setColor(Color.black);
+    g.fillRect(0, 0, w, h);
+    g.setColor(Color.green);
+    for(int x=0;x<w;x++) {
+      int y = h - (latency[x] * 100 / max);
+      if (y >= h) y = h-1;
+      if (y < 0) y = 0;
+      g.drawLine(x, y, x, h-1);
+    }
   }
 }

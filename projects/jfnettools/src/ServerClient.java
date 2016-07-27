@@ -13,6 +13,7 @@ public class ServerClient extends Thread {
   private char mode;
   private Reader reader;
   private Writer writer;
+  private Latency latency;
   public ServerClient(Socket s) {
     this.s = s;
   }
@@ -36,6 +37,10 @@ public class ServerClient extends Thread {
         case 'R':  //client recv only
           writer = new Writer();
           writer.start();
+          break;
+        case 'L':  //latency test
+          latency = new Latency();
+          latency.start();
           break;
         default:
           s.close();
@@ -62,6 +67,20 @@ public class ServerClient extends Thread {
       byte data[] = new byte[1460];
       try {
         while (true) {
+          os.write(data);
+        }
+      } catch (Exception e) {
+      }
+    }
+  }
+
+  private class Latency extends Thread {
+    public void run() {
+      byte data[] = new byte[4];
+      try {
+        while (true) {
+          int r = is.read(data);
+          if (r == -1) break;
           os.write(data);
         }
       } catch (Exception e) {
