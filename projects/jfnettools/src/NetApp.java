@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class NetApp extends javax.swing.JFrame {
 
-  public static String version = "0.2";
+  public static String version = "0.3";
 
   /**
    * Creates new form NetApp
@@ -42,13 +42,12 @@ public class NetApp extends javax.swing.JFrame {
     clientMode = new javax.swing.JComboBox();
     clientHost = new javax.swing.JTextField();
     jPanel9 = new javax.swing.JPanel();
-    jPanel4 = new javax.swing.JPanel();
-    jLabel5 = new javax.swing.JLabel();
-    jLabel6 = new javax.swing.JLabel();
-    upSpeed = new javax.swing.JTextField();
-    downSpeed = new javax.swing.JTextField();
     clientStatus = new javax.swing.JLabel();
     clientStart = new javax.swing.JButton();
+    jLabel5 = new javax.swing.JLabel();
+    upSpeed = new javax.swing.JTextField();
+    jLabel6 = new javax.swing.JLabel();
+    downSpeed = new javax.swing.JTextField();
     jPanel10 = new javax.swing.JPanel();
     latencyLabel = new javax.swing.JLabel() {
       public void paintComponent(Graphics g) {
@@ -57,6 +56,10 @@ public class NetApp extends javax.swing.JFrame {
     };
     clientStart2 = new javax.swing.JButton();
     clientStatus2 = new javax.swing.JLabel();
+    jLabel15 = new javax.swing.JLabel();
+    latencyMaxEver = new javax.swing.JTextField();
+    jLabel16 = new javax.swing.JLabel();
+    latencyMaxWindow = new javax.swing.JTextField();
     jPanel7 = new javax.swing.JPanel();
     serverStatus = new javax.swing.JLabel();
     serverPort = new javax.swing.JTextField();
@@ -115,47 +118,6 @@ public class NetApp extends javax.swing.JFrame {
 
     jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Bandwidth Test"));
 
-    jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Stats"));
-
-    jLabel5.setText("Upload Speed");
-
-    jLabel6.setText("Download Speed");
-
-    upSpeed.setEditable(false);
-
-    downSpeed.setEditable(false);
-
-    javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-    jPanel4.setLayout(jPanel4Layout);
-    jPanel4Layout.setHorizontalGroup(
-      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel4Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel4Layout.createSequentialGroup()
-            .addComponent(jLabel6)
-            .addGap(18, 18, 18)
-            .addComponent(downSpeed, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE))
-          .addGroup(jPanel4Layout.createSequentialGroup()
-            .addComponent(jLabel5)
-            .addGap(31, 31, 31)
-            .addComponent(upSpeed)))
-        .addContainerGap())
-    );
-    jPanel4Layout.setVerticalGroup(
-      jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel4Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel5)
-          .addComponent(upSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel6)
-          .addComponent(downSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
-
     clientStatus.setText("Idle");
 
     clientStart.setText("Start");
@@ -165,6 +127,14 @@ public class NetApp extends javax.swing.JFrame {
       }
     });
 
+    jLabel5.setText("Upload Speed");
+
+    upSpeed.setEditable(false);
+
+    jLabel6.setText("Download Speed");
+
+    downSpeed.setEditable(false);
+
     javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
     jPanel9.setLayout(jPanel9Layout);
     jPanel9Layout.setHorizontalGroup(
@@ -172,20 +142,33 @@ public class NetApp extends javax.swing.JFrame {
       .addGroup(jPanel9Layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(jPanel9Layout.createSequentialGroup()
             .addComponent(clientStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(clientStart)))
+            .addComponent(clientStart))
+          .addGroup(jPanel9Layout.createSequentialGroup()
+            .addComponent(jLabel5)
+            .addGap(31, 31, 31)
+            .addComponent(upSpeed))
+          .addGroup(jPanel9Layout.createSequentialGroup()
+            .addComponent(jLabel6)
+            .addGap(18, 18, 18)
+            .addComponent(downSpeed, javax.swing.GroupLayout.DEFAULT_SIZE, 288, Short.MAX_VALUE)))
         .addContainerGap())
     );
     jPanel9Layout.setVerticalGroup(
       jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(jPanel9Layout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel5)
+          .addComponent(upSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel6)
+          .addComponent(downSpeed, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
           .addComponent(clientStatus)
           .addComponent(clientStart))
         .addContainerGap())
@@ -205,6 +188,14 @@ public class NetApp extends javax.swing.JFrame {
 
     clientStatus2.setText("Idle");
 
+    jLabel15.setText("Max (us)");
+
+    latencyMaxEver.setEditable(false);
+
+    jLabel16.setText("Window Max (us)");
+
+    latencyMaxWindow.setEditable(false);
+
     javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
     jPanel10.setLayout(jPanel10Layout);
     jPanel10Layout.setHorizontalGroup(
@@ -214,9 +205,17 @@ public class NetApp extends javax.swing.JFrame {
         .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(latencyLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(jPanel10Layout.createSequentialGroup()
-            .addComponent(clientStatus2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(clientStatus2, javax.swing.GroupLayout.DEFAULT_SIZE, 325, Short.MAX_VALUE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(clientStart2)))
+            .addComponent(clientStart2))
+          .addGroup(jPanel10Layout.createSequentialGroup()
+            .addComponent(jLabel15)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(latencyMaxEver)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(jLabel16)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(latencyMaxWindow, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
     jPanel10Layout.setVerticalGroup(
@@ -228,7 +227,12 @@ public class NetApp extends javax.swing.JFrame {
         .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(clientStatus2)
           .addComponent(clientStart2))
-        .addContainerGap())
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel15)
+          .addComponent(latencyMaxEver, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel16)
+          .addComponent(latencyMaxWindow, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
     );
 
     javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
@@ -250,8 +254,8 @@ public class NetApp extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(clientMode, 0, 130, Short.MAX_VALUE)
-                .addGap(130, 130, 130))))
+                .addComponent(clientMode, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
           .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addContainerGap())
@@ -339,7 +343,7 @@ public class NetApp extends javax.swing.JFrame {
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, clientTabLayout.createSequentialGroup()
         .addContainerGap()
         .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
@@ -554,7 +558,7 @@ public class NetApp extends javax.swing.JFrame {
         .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(140, Short.MAX_VALUE))
+        .addContainerGap(100, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Tools", toolsTab);
@@ -627,7 +631,7 @@ public class NetApp extends javax.swing.JFrame {
       .addGroup(jPanel1Layout.createSequentialGroup()
         .addContainerGap()
         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(466, Short.MAX_VALUE))
+        .addContainerGap(426, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Misc", jPanel1);
@@ -781,6 +785,8 @@ public class NetApp extends javax.swing.JFrame {
   private javax.swing.JLabel jLabel12;
   private javax.swing.JLabel jLabel13;
   private javax.swing.JLabel jLabel14;
+  private javax.swing.JLabel jLabel15;
+  private javax.swing.JLabel jLabel16;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
@@ -793,7 +799,6 @@ public class NetApp extends javax.swing.JFrame {
   private javax.swing.JPanel jPanel10;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel3;
-  private javax.swing.JPanel jPanel4;
   private javax.swing.JPanel jPanel5;
   private javax.swing.JPanel jPanel6;
   private javax.swing.JPanel jPanel7;
@@ -802,6 +807,8 @@ public class NetApp extends javax.swing.JFrame {
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JTabbedPane jTabbedPane1;
   private javax.swing.JLabel latencyLabel;
+  private javax.swing.JTextField latencyMaxEver;
+  private javax.swing.JTextField latencyMaxWindow;
   private javax.swing.JTextField pingHost;
   private javax.swing.JButton pingStart;
   private javax.swing.JLabel pingStatus;
@@ -819,6 +826,7 @@ public class NetApp extends javax.swing.JFrame {
   public FileTest fileTest;
   public int latency[];
   public char mode;
+  public int maxEver, maxWindow;  //latency values
 
   private char getMode() {
     return ((String)clientMode.getSelectedItem()).charAt(0);
@@ -943,13 +951,15 @@ public class NetApp extends javax.swing.JFrame {
 
   private void clearLatency() {
     Arrays.fill(latency, 0);
+    maxEver = 0;
+    maxWindow = 0;
   }
 
   public void addLatency(int value) {
     for(int a=1;a<latency.length;a++) {
       latency[a-1] = latency[a];
     }
-    latency[latency.length - 1] = value / 10;
+    latency[latency.length - 1] = value;
     latencyLabel.repaint();
   }
 
@@ -961,6 +971,16 @@ public class NetApp extends javax.swing.JFrame {
       if (latency[a] > max) {
         max = latency[a];
       }
+    }
+    if (max > maxEver) {
+      maxEver = max;
+      latencyMaxEver.setText(Integer.toString(maxEver));
+//      latencyMaxEver.repaint();
+    }
+    if (max != maxWindow) {
+      maxWindow = max;
+      latencyMaxWindow.setText(Integer.toString(maxWindow));
+//      latencyMaxWindow.repaint();
     }
     g.setColor(Color.black);
     g.fillRect(0, 0, w, h);

@@ -1,5 +1,5 @@
 Package: jfnettools
-Version: 0.1
+Version: 0.3
 Architecture: @ARCH@
 Maintainer: Peter Quiring <pquiring@jflinux.org>
 Installed-Size: 1

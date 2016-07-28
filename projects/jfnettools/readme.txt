@@ -2,7 +2,7 @@ jfNet Tools
 ===========
 
 Network Tools
- - LAN Benchmark (server, client)
+ - LAN Benchmark and Latency tests (server, client)
  - Ping
  - DNS (A, MX, AAAA, etc.)
  - etc.

@@ -1,6 +1,6 @@
 Buildroot: .
 Name: jfnettools
-Version: 0.1
+Version: 0.3
 Release: 1
 Summary: Network Admin Tools
 License: LGPL

@@ -177,7 +177,7 @@ public class Client extends Thread {
     public void run() {
       byte data[] = new byte[4];
       int idx = 0;
-      int sidx;
+      int ridx = 0;
       long s1, s2, diff;
       try {
         while (active) {
@@ -187,11 +187,15 @@ public class Client extends Thread {
           os.write(data);
           int read = is.read(data);
           if (read == 4) {
-            sidx = getuint32(data, 0);
+            ridx = getuint32(data, 0);
+          }
+          if (ridx != idx) {
+            System.out.println("Error:Latency read back error");
           }
           s2 = System.nanoTime();
           diff = s2 - s1;
           win.addLatency((int)(diff / 1000L));
+          idx++;
         }
       } catch (Exception e) {
       }
