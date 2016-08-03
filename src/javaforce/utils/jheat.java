@@ -12,8 +12,6 @@ package javaforce.utils;
 
 import java.io.*;
 import java.util.*;
-import java.util.zip.*;
-import javaforce.JF;
 
 public class jheat {
   private static void usage() {
@@ -27,6 +25,7 @@ public class jheat {
 
   private static StringBuilder out;
   private static String java_home;
+  private static ArrayList<String> wixfolders = new ArrayList<String>();
   private static ArrayList<Entry> wixfiles = new ArrayList<Entry>();
   private static boolean win64;
 
@@ -35,160 +34,69 @@ public class jheat {
     out.append("<Wix xmlns=\"http://schemas.microsoft.com/wix/2006/wi\">\n");
   }
 
-  private static boolean omitPath(String file) {
-    if (file.startsWith("com/oracle")) return true;
-//    if (file.startsWith("com/sun/beans")) return true;
-//    if (file.startsWith("java/beans")) return true;
-    if (file.startsWith("com/sun/corba")) return true;
-    if (file.startsWith("com/sun/jmx")) return true;
-    if (file.startsWith("com/sun/jndi")) return true;
-    if (file.startsWith("com/sun/org/")) return true;
-    if (file.startsWith("com/sun/xml/")) return true;
-    if (file.startsWith("com/sun/security/")) return true;
-    if (file.startsWith("org/omg/")) return true;
-    if (file.startsWith("org/jcp/")) return true;
-    if (file.startsWith("org/w3c/")) return true;
-    if (file.startsWith("org/xml/")) return true;
-    if (file.startsWith("sun/applet/")) return true;
-    if (file.startsWith("sun/corba/")) return true;
-    if (file.startsWith("sun/rmi/")) return true;
-    if (file.startsWith("sun/launcher/")) return true;
-    if (file.startsWith("java/rmi/")) return true;
-    if (file.startsWith("javax/xml/")) return true;
-//    if (file.startsWith("jdk/")) return true;
-    if (!awt) {
-      if (file.startsWith("java/awt/")) return true;
-    }
-    if (!swing) {
-      if (file.startsWith("javax/swing/")) return true;
-    }
-    if (!sql) {
-      if (file.startsWith("java/sql/")) return true;
-      if (file.startsWith("javax/sql/")) return true;
-    }
-    if (!ssl) {
-      if (file.startsWith("com/sun/net/ssl/")) return true;
-      if (file.startsWith("javax/net/ssl/")) return true;
-    }
-    return false;
-  }
-
-  private static byte buf[] = new byte[1024 * 64];
-
-  private static void buildRT_JAR(String in_rt_jar) {
-    try {
-      ZipFile in = new ZipFile(in_rt_jar);
-      FileOutputStream fos = new FileOutputStream("rt.jar");
-      ZipOutputStream out = new ZipOutputStream(fos);
-      Enumeration<? extends ZipEntry> e = in.entries();
-      while (e.hasMoreElements()) {
-        ZipEntry ze = e.nextElement();
-        if (omitPath(ze.getName())) continue;
-        InputStream is = in.getInputStream(ze);
-        out.putNextEntry(ze);
-        int length = is.available();
-        int copied = 0;
-        while (copied < length) {
-          int read = is.read(buf);
-          if (read > 0) {
-            out.write(buf, 0, read);
-            copied += read;
-          }
-        }
-        is.close();
-        out.closeEntry();
-      }
-      out.close();
-      fos.close();
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
-  }
-
-  private static String omitFiles[] = {
-    "jfxmedia.dll",  //139K
-    "jfxwebkit.dll",  //20M
-    "deploy.jar",  //4.7M
-    "deploy.dll",  //568K
-    "plugin.jar",  //1.9M
-    "charsets.jar",  //3M
-    "gstreamer-lite.dll",  //622K
-    "glib-lite.dll",  //456K
-    "fxplugins.dll",  //187K
-    "javafx_font.dll",  //75K
-    "javafx_font_t2k.dll",  //539K
-    "splashscreen.dll",  //210K
-    "javaws.jar",  //920K
-    "javafx.properties",  //30B
-    "jfxswt.jar",  //33K
-    "jfr.jar",  //555K
-  };
-
-  private static boolean omitFile(String file) {
-    for(int a=0;a<omitFiles.length;a++) {
-      if (file.equals(omitFiles[a])) return true;
-    }
-    if (!awt) {
-      if (file.equals("awt.dll")) return true;
-      if (file.equals("jawt.dll")) return true;
-      if (file.equals("resources.jar")) return true;
-    }
-    if (!ssl) {
-//      if (file.equals("jsse.jar")) return true;  //needed
-      if (file.equals("jce.jar")) return true;
-    }
-    return false;
-  }
-
-  private static void addFolder(String path, final String filespec) throws Exception {
-    File folder = new File(path);
-    File files[] = folder.listFiles(new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        return JF.wildcardCompare(name, filespec, false);
-      }
-    });
+  private static void addFolder(String parent, String path) throws Exception {
+    if (path.startsWith("/")) path = path.substring(1);
+    String fullpath = java_home + path;
+//    System.out.println("Path:" + fullpath);
+    File folder = new File(fullpath);
+    File files[] = folder.listFiles();
+    if (files == null || files.length == 0) return;
+    int idx = path.lastIndexOf("/");
+    if (idx == -1) idx = 0; else idx++;
+    outFolder(parent, path.substring(idx), path);
+    wixfolders.add(path);
     for(int a=0;a<files.length;a++) {
       String name = files[a].getName();
-      if (omitFile(name)) continue;
-      Entry e = new Entry();
-      e.path = path;
-      e.file = name;
-      wixfiles.add(e);
+      if (files[a].isDirectory()) {
+        addFolder(path, path + "/" + name);
+      } else {
+//        System.out.println("File:" + path + ":" + name);
+        Entry e = new Entry();
+        e.path = path;
+        e.file = name;
+        wixfiles.add(e);
+      }
     }
   }
 
   private static void outFolder(String parent, String name, String path) {
+    if (name.equals("")) name = "jre";  //base folder
     String id = path.replaceAll("/", "_");
-    String did = "dir" + id;
+    String did = "dir_" + id;
+    String pid = parent.replaceAll("/", "_");
+    String dpid = "dir_" + pid;
+    if (parent.equals("APPLICATIONROOTDIRECTORY")) {
+      dpid = "APPLICATIONROOTDIRECTORY";
+    }
     out.append("<Fragment>\n");
-    out.append("  <DirectoryRef Id=\"" + parent + "\">\n");
-    out.append("    <Directory Id=\"" + did + "\" Name=\"" + name + "\" FileSource=\"" + java_home + path + "\" />\n");
+    out.append("  <DirectoryRef Id=\"" + dpid + "\">\n");
+    out.append("    <Directory Id=\"" + did + "\" Name=\"" + name + "\" FileSource=\"" + (java_home + path).replaceAll("/", "\\\\") + "\" />\n");
     out.append("  </DirectoryRef>\n");
     out.append("</Fragment>\n");
   }
 
-  private static int guid;
+  private static int guid = 1000;
   private static int fileid;
 
   private static void outFiles(String path) {
-    int cnt = wixfiles.size();
     String id = path.replaceAll("/", "_");
-    String did = "dir" + id;
-    String cid = "cmp" + id;
+    String did = "dir_" + id;
+    String cid = "cmp_" + id;
 
     out.append("<Fragment>\n");
     out.append("    <DirectoryRef Id=\"" + did + "\">\n");
-    out.append("        <Component Id=\"" + cid + "\" Guid=\"{8A8E15CB-3AA6-4D96-AD6D-5241AD6E3F6" + guid++ + "}\"" + (win64 ? " Win64=\"yes\"" : "") + ">\n");
+    out.append("        <Component Id=\"" + cid + "\" Guid=\"{8A8E15CB-3AA6-4D96-AD6D-5241AD6E" + guid++ + "}\"" + (win64 ? " Win64=\"yes\"" : "") + ">\n");
+    int cnt = wixfiles.size();
     for(int a=0;a<cnt;a++) {
       Entry e = wixfiles.get(a);
-      if (!e.path.endsWith(path)) continue;
-      if (e.file.equals("rt.jar")) {
-        buildRT_JAR(e.path + "/" + e.file);
-        out.append("<File Id=\"_" + fileid++ + "\" Source=\"rt.jar\" />\n");
+      if (!e.path.equals(path)) continue;
+      String src;
+      if (e.path.length() == 0) {
+        src = e.file;
       } else {
-        out.append("<File Id=\"_" + fileid++ + "\" Source=\"" + e.path + "/" + e.file + "\" />\n");
+        src = e.path + "/" + e.file;
       }
+      out.append("<File Id=\"_" + fileid++ + "\" Source=\"" + src + "\" />\n");
     }
     out.append("        </Component>\n");
     out.append("    </DirectoryRef>\n");
@@ -198,35 +106,22 @@ public class jheat {
   private static void outTrailer() {
     out.append("<Fragment>\n");
     out.append("  <ComponentGroup Id=\"JRE\">\n");
-    out.append("    <ComponentRef Id=\"cmp_bin\" />\n");
-    out.append("    <ComponentRef Id=\"cmp_bin_server\" />\n");
-    out.append("    <ComponentRef Id=\"cmp_lib\" />\n");
-    out.append("    <ComponentRef Id=\"cmp_lib_fonts\" />\n");
-    out.append("    <ComponentRef Id=\"cmp_lib_images_cursors\" />\n");
-    out.append("    <ComponentRef Id=\"cmp_lib_security\" />\n");
+    for(int a=0;a<wixfolders.size();a++) {
+      String path = wixfolders.get(a).replaceAll("/", "_");
+      out.append("    <ComponentRef Id=\"cmp_" + path + "\" />\n");
+    }
     out.append("  </ComponentGroup>\n");
     out.append("</Fragment>\n");
     out.append("</Wix>\n");
   }
-
-  private static boolean awt = false;
-  private static boolean swing = false;
-  private static boolean ssl = false;  //and crypto stuff
-  private static boolean sql = false;
 
   private static void loadProperties() {
     try {
       Properties props = new Properties();
       FileInputStream fis = new FileInputStream("jre.properties");
       props.load(fis);
+      //TODO - any config options
       fis.close();
-      String modules[] = props.getProperty("modules").split(",");
-      for(int a=0;a<modules.length;a++) {
-        if (modules[a].equals("awt")) awt = true;
-        else if (modules[a].equals("swing")) swing = true;
-        else if (modules[a].equals("sql")) sql = true;
-        else if (modules[a].equals("ssl")) ssl = true;
-      }
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
@@ -240,47 +135,24 @@ public class jheat {
     loadProperties();
     //create jvm.xml
     out = new StringBuilder();
-    java_home = args[0];
+    java_home = args[0].replaceAll("\\\\", "/");
     if (args.length > 1 && args[1].equals("win64")) {
       win64 = true;
     }
+    if (!java_home.endsWith("/")) {
+      java_home += "/";
+    }
     try {
-      File test = new File(java_home + "/release");
+      File test = new File(java_home + "release");
       if (!test.exists()) throw new Exception("JAVA_HOME not valid:" + java_home);
 
       outHeader();
 
-      addFolder(java_home + "/bin", "*.dll");
-      addFolder(java_home + "/bin/server", "*.dll");
-      addFolder(java_home + "/lib", "*.jar");
-      addFolder(java_home + "/lib", "keytool.exe");
-      addFolder(java_home + "/lib/fonts", "*.ttf");
-      addFolder(java_home + "/lib/images/cursors", "*");
-      addFolder(java_home + "/lib/security", "*");
-      addFolder(java_home + "/lib", "*.bfc");
-      addFolder(java_home + "/lib", "*.dat");
-      addFolder(java_home + "/lib", "*.data");
-      addFolder(java_home + "/lib", "classlist");
-      addFolder(java_home + "/lib", "meta-index");
-      addFolder(java_home + "/lib", "tzmappings");
-      addFolder(java_home + "/lib", "*.ja");
-      addFolder(java_home + "/lib", "*.src");
-      addFolder(java_home + "/lib", "*.properties");
+      addFolder("APPLICATIONROOTDIRECTORY", "");
 
-      outFolder("APPLICATIONROOTDIRECTORY", "bin", "/bin");
-      outFolder("dir_bin", "server", "/bin/server");
-      outFolder("APPLICATIONROOTDIRECTORY", "lib", "/lib");
-      outFolder("dir_lib", "fonts", "/lib/fonts");
-      outFolder("dir_lib", "images", "/lib/images");
-      outFolder("dir_lib_images", "cursors", "/lib/images/cursors");
-      outFolder("dir_lib", "security", "/lib/security");
-
-      outFiles("/bin");
-      outFiles("/bin/server");
-      outFiles("/lib");
-      outFiles("/lib/fonts");
-      outFiles("/lib/images/cursors");
-      outFiles("/lib/security");
+      for(int a=0;a<wixfolders.size();a++) {
+        outFiles(wixfolders.get(a));
+      }
 
       outTrailer();
 

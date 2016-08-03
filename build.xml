@@ -7,6 +7,8 @@
   <property name="home" value="."/>
   <property name="version" value="11.4.0"/>
 
+  <property environment="env"/>
+
   <import file="base.xml"/>
 
   <available property="have_bouncycastle" file="jars/bouncycastle.jar"/>
@@ -166,6 +168,10 @@
   <target name="runas" depends="jar" description="build exe for RunAs 32/64bit">
     <appmacro app="RunAs32" cfg="runas" bits="32"/>
     <appmacro app="RunAs64" cfg="runas" bits="64"/>
+  </target>
+
+  <target name="jre" description="build JRE for bundled JRE builds">
+    <exec command="jlink --modulepath ${env.JAVA_HOME}/jmods --addmods java.base,java.desktop --output jre"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

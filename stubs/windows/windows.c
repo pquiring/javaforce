@@ -319,6 +319,7 @@ int exists(char *file) {
 int findJavaHomeAppFolder() {
   //try to find JRE in Apps folder
   strcpy(javahome, exepath);
+  strcat(javahome, "jre\\");
   int sl = strlen(javahome);
   strcat(javahome, "bin\\server\\jvm.dll");
   if (exists(javahome) == 1) {
