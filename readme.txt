@@ -65,9 +65,17 @@ deb : build Ubuntu deb file (after install)
 rpm : build Fedora rpm file (after install)
 msi32 : build Windows msi file (32bit)
 msi64 : build Windows msi file (64bit)
+jremsi32 : build Windows msi file with JRE bundled (32bit)
+jremsi64 : build Windows msi file with JRE bundled (64bit)
 dmg : build Mac dmg file (mac only)
 genisodmg : build Mac dmg file (cygwin/linux/mac) (uncompressed)
 javadoc : create javadoc api help files (open ./javadoc/index.html)
+
+Bundled JRE
+-----------
+To bundle the JRE with packages you must:
+  - use Java 9 (project jigsaw)
+  - run "ant jre" in main folder
 
 License
 =======
