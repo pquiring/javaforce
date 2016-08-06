@@ -215,6 +215,7 @@
     <exec executable="jfdmg">
       <arg value="${app}"/>
       <arg value="${app}-${version}.dmg"/>
+      <arg value="${home}"/>
     </exec>
     <delete file="${app}"/>
     <copy file="${app}-${version}.dmg" todir="${home}/release" overwrite="true"/>
