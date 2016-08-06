@@ -1,9 +1,11 @@
 #!/bin/bash
 
 function usage() {
-  echo usage : jfdmg app outputfile-version-release.dmg [-geniso]
+  echo usage : jfdmg app outputfile-version-release.dmg javaforce_home [-geniso]
   echo - app : app name \(.app prefix will be added\)
   echo - output : outputfile-version-release.dmg
+  echo - javaforce_home : must be RELATIVE path to JavaForce home folder
+  echo   Note : project must be within JavaForce folder
   echo - -geniso : use genisoimage instead of hdiutil
   echo Files :
   echo - app.icns : app icon \(mac format\)
@@ -36,7 +38,7 @@ if [ ! -f $ICNS ]; then error "$ICNS not found"; fi
 if [ ! -f $FILES ]; then error "$FILES not found"; fi
 
 #build folder layout
-tar cjf data.tar.bz2 -T $FILES
+tar cjf data.tar.bz2 -T $FILES $HOME/jre
 mkdir -p /tmp/dmg.tmp/$1.app/Contents/Resources
 mkdir -p /tmp/dmg.tmp/$1.app/Contents/MacOS
 tar xjf data.tar.bz2 -C /tmp/dmg.tmp/$1.app/Contents/MacOS
@@ -56,5 +58,6 @@ fi
 
 #cleanup
 rm -rf /tmp/dmg.tmp 2>/dev/null
+rm data.tar.bz2
 
 echo Complete!
