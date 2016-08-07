@@ -254,6 +254,9 @@ int loadProperties() {
 }
 
 void findJava() {
+#if 0
+  //this doesn't work - it always just pops up a window asking user to install java when it is installed
+  //user should have got a PC!
   DIR *dir;
   struct dirent *dp;
 
@@ -274,6 +277,10 @@ void findJava() {
     }
   }
   error("No JVMs installed.");
+#else
+  //just use the bundled JRE
+  strcpy(javahome, "jre/lib/server/libjvm.dylib");
+#endif
 }
 
 /** Main entry point. */
