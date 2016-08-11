@@ -117,13 +117,13 @@
         <arg value="win@{bits}"/>
       </java>
       <exec command="candle -o jre.obj jre.xml"/>
-      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -cultures:en-us -b ${home} -b ${home}/jre -dWixUILicenseRtf=${home}/license.rtf -o @{msi}-${version}-win@{bits}.msi wix.obj jre.obj"/>
+      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -cultures:en-us -b ${home} -b ${home}/jre -dWixUILicenseRtf=${home}/license.rtf -o @{msi}-${version}-win@{bits}-jre.msi wix.obj jre.obj"/>
       <delete file="wix.obj"/>
       <delete file="jre.obj"/>
       <delete file="_jre.xml"/>
       <delete file="rt.jar"/>
       <delete file="@{msi}-${version}-win@{bits}.wixpdb"/>
-      <move unless:set="nomove" file="@{msi}-${version}-win@{bits}.msi" todir="${home}/release"/>
+      <move unless:set="nomove" file="@{msi}-${version}-win@{bits}-jre.msi" todir="${home}/release"/>
     </sequential>
   </macrodef>
 
