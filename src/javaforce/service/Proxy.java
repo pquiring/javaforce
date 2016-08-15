@@ -14,7 +14,7 @@ package javaforce.service;
  *   [urlchange]
  *   url = newURL
  *
- * Note : is [blockdomain] section the domains are in Regular Expression format
+ * Note : in [blockdomain] section the domains are in Regular Expression format
  * see : http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
  *
  * Note : in [urlchange] section the url is a regular expression
@@ -316,11 +316,28 @@ public class Proxy extends Thread {
         replyError(505, "No host specified");
         return;
       }
-      String hostln = ln[hostidx].substring(6);
+      String hostln = ln[hostidx].substring(6);  //"Host: "
       String host;
-      int port = 80;
-      int portidx = hostln.indexOf(':');
       try {
+        String method = null, proto = null, url = null, http = null;
+        int port;
+        String f[] = ln[0].split(" ");
+        method = f[0];
+        url = f[1];
+        http = f[2];
+        if (url.startsWith("http://")) {
+          proto = "http://";
+          url = url.substring(7);
+          port = 80;
+        } else if (url.startsWith("ftp://")) {
+          proto = "ftp://";
+          url = url.substring(6);
+          port = 21;
+        } else {
+          proto = "http://";  //assume http
+          port = 80;
+        }
+        int portidx = hostln.indexOf(':');
         if (portidx != -1) {
           host = hostln.substring(0, portidx);
           port = Integer.valueOf(hostln.substring(portidx+1));
@@ -335,34 +352,9 @@ public class Proxy extends Thread {
             return;
           }
         }
-        if (ln[0].regionMatches(true, 0, "CONNECT ", 0, 8)) {
+        if (method.equals("CONNECT")) {
           connectCommand(host, ln[0]);
           return;
-        }
-        String method = null, proto = null, url = null, http = null;
-        if (ln[0].regionMatches(true, 0, "POST ", 0, 5)) {
-          method = "POST";
-          String fn = ln[0].substring(5);
-          int idx = fn.indexOf(" ");
-          url = fn.substring(0, idx);
-          http = fn.substring(idx+1);
-        }
-        else if (ln[0].regionMatches(true, 0, "GET ", 0, 4)) {
-          method = "GET";
-          String fn = ln[0].substring(4);
-          int idx = fn.indexOf(" ");
-          url = fn.substring(0, idx);
-          http = fn.substring(idx+1);
-        }
-        else {
-          replyError(505, "Unknown request");
-          return;
-        }
-        if (url.startsWith("http://")) {
-          proto = "http://";
-          url = url.substring(7);
-        } else {
-          proto = "";
         }
         //check if url is changed
         for(int a=0;a<urlChanges.size();a++) {
@@ -385,10 +377,14 @@ public class Proxy extends Thread {
             break;
           }
         }
-        connect(host, port);
-        sendRequest(ln);
-        if (method.equals("POST")) sendPost(ln);
-        relayReply(proto + url);
+        if (proto.equals("http://")) {
+          connect(host, port);
+          sendRequest(ln);
+          if (method.equals("POST")) sendPost(ln);
+          relayReply(proto + url);
+        } else {
+          ftp(host, port, url);
+        }
         return;
       } catch (UnknownHostException uhe) {
         replyError(404, "Domain not found");
@@ -406,6 +402,66 @@ public class Proxy extends Thread {
       i = new Socket(host, port);
       iis = i.getInputStream();
       ios = i.getOutputStream();
+    }
+    private void ftp(String host, int port, String url) throws Exception {
+      int idx = url.indexOf('/');
+      url = url.substring(idx);  //remove host
+      FTP ftp = new FTP();
+      log("ftp:" + url);
+      try {
+        ftp.connect(host, port);
+        ftp.login("anonymous", "nobody@jfproxy.sf.net");
+        if (url.endsWith("/")) {
+          //directory listing
+          String ls = ftp.ls(url);
+          String lns[] = ls.replaceAll("\r", "").split("\n");
+          StringBuffer content = new StringBuffer();
+          content.append("<html>");
+          //TODO : fix this for Firefox - only works with Chrome
+          content.append("<style type=\"text/css\">\r\n");
+          content.append("a.file\r\n {\r\nbackground :\r\n url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABnRSTlMAAAAAAABupgeRAAABHUlEQVR42o2RMW7DIBiF3498iHRJD5JKHurL+CRVBp+i2T16tTynF2gO0KSb5ZrBBl4HHDBuK/WXACH4eO9/CAAAbdvijzLGNE1TVZXfZuHg6XCAQESAZXbOKaXO57eiKG6ft9PrKQIkCQqFoIiQFBGlFIB5nvM8t9aOX2Nd18oDzjnPgCDpn/BH4zh2XZdlWVmWiUK4IgCBoFMUz9eP6zRN75cLgEQhcmTQIbl72O0f9865qLAAsURAAgKBJKEtgLXWvyjLuFsThCSstb8rBCaAQhDYWgIZ7myM+TUBjDHrHlZcbMYYk34cN0YSLcgS+wL0fe9TXDMbY33fR2AYBvyQ8L0Gk8MwREBrTfKe4TpTzwhArXWi8HI84h/1DfwI5mhxJamFAAAAAElFTkSuQmCC \") left top no-repeat;\r\npadding-left : 24px;\r\n}\r\n");
+          content.append("a.folder\r\n {\r\nbackground :\r\n url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAd5JREFUeNqMU79rFUEQ/vbuodFEEkzAImBpkUabFP4ldpaJhZXYm/RiZWsv/hkWFglBUyTIgyAIIfgIRjHv3r39MePM7N3LcbxAFvZ2b2bn22/mm3XMjF+HL3YW7q28YSIw8mBKoBihhhgCsoORot9d3/ywg3YowMXwNde/PzGnk2vn6PitrT+/PGeNaecg4+qNY3D43vy16A5wDDd4Aqg/ngmrjl/GoN0U5V1QquHQG3q+TPDVhVwyBffcmQGJmSVfyZk7R3SngI4JKfwDJ2+05zIg8gbiereTZRHhJ5KCMOwDFLjhoBTn2g0ghagfKeIYJDPFyibJVBtTREwq60SpYvh5++PpwatHsxSm9QRLSQpEVSd7/TYJUb49TX7gztpjjEffnoVw66+Ytovs14Yp7HaKmUXeX9rKUoMoLNW3srqI5fWn8JejrVkK0QcrkFLOgS39yoKUQe292WJ1guUHG8K2o8K00oO1BTvXoW4yasclUTgZYJY9aFNfAThX5CZRmczAV52oAPoupHhWRIUUAOoyUIlYVaAa/VbLbyiZUiyFbjQFNwiZQSGl4IDy9sO5Wrty0QLKhdZPxmgGcDo8ejn+c/6eiK9poz15Kw7Dr/vN/z6W7q++091/AQYA5mZ8GYJ9K0AAAAAASUVORK5CYII= \") left top no-repeat;\r\npadding-left : 24px;\r\n}\r\n");
+          content.append("a.up\r\n {\r\nbackground :\r\n url(\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAmlJREFUeNpsU0toU0EUPfPysx/tTxuDH9SCWhUDooIbd7oRUUTMouqi2iIoCO6lceHWhegy4EJFinWjrlQUpVm0IIoFpVDEIthm0dpikpf3ZuZ6Z94nrXhhMjM3c8895977BBHB2PznK8WPtDgyWH5q77cPH8PpdXuhpQT4ifR9u5sfJb1bmw6VivahATDrxcRZ2njfoaMv+2j7mLDn93MPiNRMvGbL18L9IpF8h9/TN+EYkMffSiOXJ5+hkD+PdqcLpICWHOHc2CC+LEyA/K+cKQMnlQHJX8wqYG3MAJy88Wa4OLDvEqAEOpJd0LxHIMdHBziowSwVlF8D6QaicK01krw/JynwcKoEwZczewroTvZirlKJs5CqQ5CG8pb57FnJUA0LYCXMX5fibd+p8LWDDemcPZbzQyjvH+Ki1TlIciElA7ghwLKV4kRZstt2sANWRjYTAGzuP2hXZFpJ/GsxgGJ0ox1aoFWsDXyyxqCs26+ydmagFN/rRjymJ1898bzGzmQE0HCZpmk5A0RFIv8Pn0WYPsiu6t/Rsj6PauVTwffTSzGAGZhUG2F06hEc9ibS7OPMNp6ErYFlKavo7MkhmTqCxZ/jwzGA9Hx82H2BZSw1NTN9Gx8ycHkajU/7M+jInsDC7DiaEmo1bNl1AMr9ASFgqVu9MCTIzoGUimXVAnnaN0PdBBDCCYbEtMk6wkpQwIG0sn0PQIUF4GsTwLSIFKNqF6DVrQq+IWVrQDxAYQC/1SsYOI4pOxKZrfifiUSbDUisif7XlpGIPufXd/uvdvZm760M0no1FZcnrzUdjw7au3vu/BVgAFLXeuTxhTXVAAAAAElFTkSuQmCC \") left top no-repeat;\r\npadding-left : 24px;\r\n}\r\n");
+          content.append("</style>\r\n");
+          content.append("</html><body>");
+          if (!url.equals("/")) {
+            //add up link
+            int upidx = url.substring(0, url.length() - 1).lastIndexOf("/");
+            String up = url.substring(0, upidx+1);
+            content.append("<a class='up' href='" + up + "'>[parent folder]</a><br>\r\n");
+          }
+          for(int a=0;a<lns.length;a++) {
+            String f[] = lns[a].split(" ", -1);  //drwxrwxrwx ? uid gid size month day time_or_year filename
+            int last = f.length - 1;
+            if (f[0].charAt(0) == 'd') {
+              //folder
+              content.append("<a class='folder' href='" + f[last] + "/'>[" + f[last] + "]</a><br>\r\n");
+            } else {
+              //file
+              content.append("<a class='file' href='" + f[last] + "'>" + f[last] + "</a><br>\r\n");
+            }
+          }
+          content.append("</body>");
+          int code = 200;
+          String msg = "OK";
+          String headers = "HTTP/1.1 " + code + " " + msg + "\r\nContent-Type: text/html\r\nContent-Length: " + content.length() + "\r\n\r\n";
+          pos.write(headers.getBytes());
+          pos.write(content.toString().getBytes());
+          pos.flush();
+        } else {
+          //download file
+          int code = 200;
+          String msg = "OK";
+          String headers = "HTTP/1.0 " + code + " " + msg + "\r\n\r\n";
+          disconn = true;
+          pos.write(headers.getBytes());
+          ftp.get(url, pos);
+          pos.flush();
+        }
+      } catch (Exception e) {
+        replyError(505, "Exception:" + e);
+        log(e);
+      }
     }
     private void replyError(int code, String msg) throws Exception {
       log("Error:" + code);

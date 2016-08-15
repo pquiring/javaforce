@@ -369,6 +369,7 @@ public class FTP {
   private InputStream getData() throws Exception {
     aborted = false;
     if (passive) {
+      JFLog.log("FTP:connect:" + host + ":" + pasvport);
       ds = new Socket(host, pasvport);
     } else {
       ds = ss.accept();
@@ -384,6 +385,7 @@ public class FTP {
   private void getData(OutputStream os) throws Exception {
     aborted = false;
     if (passive) {
+      JFLog.log("FTP:connect:" + host + ":" + pasvport);
       ds = new Socket(host, pasvport);
     } else {
       ds = ss.accept();
@@ -431,6 +433,7 @@ public class FTP {
   private OutputStream putData() throws Exception {
     aborted = false;
     if (passive) {
+      JFLog.log("FTP:connect:" + host + ":" + pasvport);
       ds = new Socket(host, pasvport);
     } else {
       ds = ss.accept();
@@ -446,6 +449,7 @@ public class FTP {
   private void putData(InputStream is) throws Exception {
     aborted = false;
     if (passive) {
+      JFLog.log("FTP:connect:" + host + ":" + pasvport);
       ds = new Socket(host, pasvport);
     } else {
       ds = ss.accept();
