@@ -12,7 +12,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import javaforce.*;
 import javaforce.controls.s7.*;
 import javaforce.controls.mod.*;
 import javaforce.controls.ab.*;
@@ -54,10 +53,8 @@ public class Controller {
           byte reply[] = new byte[1500];
           int replySize = 0;
           do {
-//            System.out.println("s7.connect1:reading");
             int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read 1");
-//            System.out.println("s7.connect1:reply.length=" + read);
+            if (read == -1) throw new Exception("bad read");
             replySize += read;
           } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
         }
@@ -70,10 +67,8 @@ public class Controller {
           byte reply[] = new byte[1500];
           int replySize = 0;
           do {
-//            System.out.println("s7.connect2:reading");
             int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read 1");
-//            System.out.println("s7.connect2:reply.length=" + read);
+            if (read == -1) throw new Exception("bad read");
             replySize += read;
           } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
         }
@@ -118,10 +113,8 @@ public class Controller {
           byte reply[] = new byte[1500];
           int replySize = 0;
           do {
-//            System.out.println("s7.connect1:reading");
             int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read 1");
-//            System.out.println("s7.connect1:reply.length=" + read);
+            if (read == -1) throw new Exception("bad read");
             replySize += read;
           } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
           ENIP ip = new ENIP();
@@ -254,10 +247,8 @@ public class Controller {
         int replySize = 0;
         try {
           do {
-    //        System.out.println("s7.read:reading");
             int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read 1");
-    //        System.out.println("s7.read:reply.length=" + read);
+            if (read == -1) throw new Exception("bad read");
             replySize += read;
           } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
         } catch (Exception e) {
@@ -281,7 +272,7 @@ public class Controller {
         try {
           do {
             int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read 1");
+            if (read == -1) throw new Exception("bad read");
             replySize += read;
           } while (!ModPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
         } catch (Exception e) {

@@ -14,7 +14,7 @@ public class ABPacket {
   public static byte[] makeConnectPacket(ABContext context) {
     byte packet[];
     ENIP ip = new ENIP(ENIP.CMD_GET_SESSION);
-    ip.setSizes(4);
+    ip.setSizes(0);
     int size = ip.size();
     packet = new byte[size];
     int offset = 0;
