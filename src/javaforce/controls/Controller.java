@@ -12,18 +12,20 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import javaforce.BE;
-import javaforce.JF;
+import javaforce.*;
 import javaforce.controls.s7.*;
 import javaforce.controls.mod.*;
+import javaforce.controls.ab.*;
 
 public class Controller {
   private boolean connected;
   private Socket socket;
   private InputStream is;
   private OutputStream os;
-  private enum type {S7, MODBUS};
+  private enum type {S7, MODBUS, AB};
   private type plc;
+
+  private ABContext ab_context;
 
   public Exception lastException;
 
@@ -31,6 +33,7 @@ public class Controller {
    *
    * url = "S7:host"
    * url = "MODBUS:host"
+   * url = "AB:host"
    *
    */
   public boolean connect(String url) {
@@ -97,6 +100,42 @@ public class Controller {
       connected = true;
       return true;
     }
+    if (url.startsWith("AB:")) {
+      ab_context = new ABContext();
+      plc = type.AB;
+      String host = url.substring(3);
+      try {
+        socket = new Socket(host, 44818);
+        socket.setSoTimeout(3000);
+        os = socket.getOutputStream();
+        is = socket.getInputStream();
+
+        //connect1
+        {
+          byte packet[] = ABPacket.makeConnectPacket(ab_context);
+          os.write(packet);
+
+          byte reply[] = new byte[1500];
+          int replySize = 0;
+          do {
+//            System.out.println("s7.connect1:reading");
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read 1");
+//            System.out.println("s7.connect1:reply.length=" + read);
+            replySize += read;
+          } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          ENIP ip = new ENIP();
+          ip.read(reply, 0);
+          ab_context.session = ip.session;
+        }
+
+      } catch (Exception e) {
+        e.printStackTrace();
+        return false;
+      }
+      connected = true;
+      return true;
+    }
     return false;
   }
   /** Disconnects from PLC. */
@@ -105,6 +144,7 @@ public class Controller {
     switch (plc) {
       case S7:
       case MODBUS:
+      case AB:
         try {
           if (socket != null) {
             socket.close();
@@ -119,8 +159,19 @@ public class Controller {
     connected = false;
     return true;
   }
+
+  /** Data types for write() function.  Only AB protocol requires these. */
+  public enum datatype {
+    ANY, INTEGER, FLOAT, BOOLEAN
+  }
+
   /** Writes data to PLC. */
   public boolean write(String addr, byte data[]) {
+    return write(addr, data, datatype.ANY);
+  }
+
+  /** Writes data to PLC. */
+  public boolean write(String addr, byte data[], datatype type) {
     if (!connected) return false;
     switch (plc) {
       case S7: {
@@ -150,9 +201,32 @@ public class Controller {
         try {
           do {
             int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read 1");
+            if (read == -1) throw new Exception("bad read");
             replySize += read;
           } while (!ModPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+        } catch (Exception e) {
+          lastException = e;
+          return false;
+        }
+        return true;
+      }
+      case AB: {
+        if (type == datatype.ANY) return false;
+        byte packet[] = ABPacket.makeWritePacket(addr, ABPacket.getType(type), data, ab_context);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return false;
+        }
+        byte reply[] = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
         } catch (Exception e) {
           lastException = e;
           return false;
@@ -217,6 +291,28 @@ public class Controller {
         ModData data = ModPacket.decodePacket(Arrays.copyOf(reply, replySize));
         return data.data;
       }
+      case AB: {
+        byte packet[] = ABPacket.makeReadPacket(addr, ab_context);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        byte reply[] = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          return ABPacket.decodePacket(reply);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+      }
     }
     return null;
   }
@@ -229,3 +325,4 @@ public class Controller {
     }
   }
 }
+
