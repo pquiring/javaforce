@@ -103,7 +103,6 @@
   <macrodef name="jremsimacro">
     <attribute name="xml"/>
     <attribute name="bits"/>
-    <attribute name="jre"/>
     <attribute name="msi" default="${msi}"/>
     <sequential>
       <exemacro appx="${app}" apptype="${apptype}" bits="@{bits}" ico="${ico}"/>
@@ -113,11 +112,11 @@
       <exemacro appx="${app5}" apptype="${apptype5}" bits="@{bits}" ico="${ico5}" unless:blank="${app5}"/>
       <exec command="candle ${candle_extra} -o wix.obj @{xml}.xml"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.jheat" fork="true">
-        <arg value="@{jre}"/>
+        <arg value="${jre}"/>
         <arg value="win@{bits}"/>
       </java>
       <exec command="candle -o jre.obj jre.xml"/>
-      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -cultures:en-us -b ${home} -b ${home}/jre -dWixUILicenseRtf=${home}/license.rtf -o @{msi}-${version}-win@{bits}-jre.msi wix.obj jre.obj"/>
+      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -cultures:en-us -b ${home} -b ${jre} -dWixUILicenseRtf=${home}/license.rtf -o @{msi}-${version}-win@{bits}-jre.msi wix.obj jre.obj"/>
       <delete file="wix.obj"/>
       <delete file="jre.obj"/>
       <delete file="_jre.xml"/>
@@ -128,11 +127,11 @@
   </macrodef>
 
   <target name="jremsi32" depends="jar,depjars" description="create msi installer file 32bit">
-    <jremsimacro xml="wix32" bits="32" jre="${home}/jre"/>
+    <jremsimacro xml="wix32" bits="32"/>
   </target>
 
   <target name="jremsi64" depends="jar,depjars"  description="create msi installer file 64bit">
-    <jremsimacro xml="wix64" bits="64" jre="${home}/jre"/>
+    <jremsimacro xml="wix64" bits="64"/>
   </target>
 
   <!-- Linux targets -->

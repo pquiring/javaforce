@@ -3,7 +3,6 @@ package javaforce;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import javax.net.*;
 import javax.net.ssl.*;
 
 /**
@@ -26,6 +25,9 @@ public class SMTP {
    * Holds the repsonse strings from the last executed command
    */
   public String response[];
+
+  public static final int PORT = 25;  //default port
+  public static final int SSLPORT = 465;  //default SSL port
 
   public boolean connect(String host, int port) throws Exception {
     s = new Socket(host, port);
@@ -172,4 +174,4 @@ public class SMTP {
       }
     }
   }
-};
+}

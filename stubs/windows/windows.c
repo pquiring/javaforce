@@ -4,7 +4,7 @@
 // - supports passing command line options to java main()
 // - loads CLASSPATH and MAINCLASS from PE-EXE resource
 // - globbs arguments (see ExpandStringArray())
-// - supoprts console apps (type "c")
+// - supports console apps (type "c")
 // - supports windows services (type "s")
 
 #include <windows.h>
