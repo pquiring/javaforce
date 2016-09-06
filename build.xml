@@ -52,6 +52,8 @@
     <jar destfile="jars/javaforce.jar" includes="**/*.class" basedir="${build}">
       <fileset dir="${src}">
         <include name="**/*.png"/>
+        <include name="**/*.js"/>
+        <include name="**/*.css"/>
       </fileset>
     </jar>
   </target>

@@ -115,24 +115,10 @@ public class jheat {
     out.append("</Wix>\n");
   }
 
-  private static void loadProperties() {
-    try {
-      Properties props = new Properties();
-      FileInputStream fis = new FileInputStream("jre.properties");
-      props.load(fis);
-      //TODO - any config options
-      fis.close();
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
-  }
-
   public static void main(String args[]) {
     if (args.length == 0) {
       usage();
     }
-    loadProperties();
     //create jvm.xml
     out = new StringBuilder();
     java_home = args[0].replaceAll("\\\\", "/");
