@@ -154,16 +154,18 @@ public class Web {
       res.addHeader("Upgrade: websocket");
       res.addHeader("Connection: Upgrade");
       String inKey = null;
+      String protocols[] = null;
       for(int a=0;a<req.fields.length;a++) {
         String field = req.fields[a];
         if (field.startsWith("Sec-WebSocket-Key:")) {
           inKey = field.substring(18).trim();
-          break;
+        }
+        if (field.startsWith("Sec-WebSocket-Protcol:")) {
+          protocols = field.substring(22).trim().split(",");
         }
       }
       String outKey = encodeKey(inKey);
       res.addHeader("Sec-WebSocket-Accept: " + outKey);
-      res.addHeader("Sec-WebSocket-Version: 13");
       try {
         res.writeAll(req);
       } catch (Exception e) {
@@ -180,7 +182,7 @@ public class Web {
     }
     private void processWebSocket(WebSocket socket) {
       //keep reading packets and deliver to WebHandler
-      byte mask[] = new byte[4];
+      byte maskKey[] = new byte[4];
       try {
         while (true) {
           int opcode = socket.is.read();
@@ -191,7 +193,7 @@ public class Web {
           long length = 0;
           int len7 = socket.is.read();
           if (len7 == -1) throw new Exception("socket error");
-          boolean hasMask = (len7 & 0x80) == 0x80;
+          boolean hasMask = (len7 & WebSocket.MASK) == WebSocket.MASK;
           len7 &= 0x7f;
           switch (len7) {
             case 126:  //16bits = payload
@@ -217,7 +219,7 @@ public class Web {
             for(int a=0;a<4;a++) {
               int mask8 = socket.is.read();
               if (mask8 == -1) throw new Exception("socket error");
-              mask[a] = (byte)mask8;
+              maskKey[a] = (byte)mask8;
             }
           } else {
             throw new Exception("WebSocket message without mask");
@@ -229,7 +231,7 @@ public class Web {
           byte data[] = JF.readAll(socket.is, (int)length);
           //unmask data
           for(int a=0;a<length;a++) {
-            data[a] ^= mask[a % 4];
+            data[a] ^= maskKey[a % 4];
           }
           if (opcode == WebSocket.TYPE_PING) {
             //ping message

@@ -27,31 +27,35 @@ public class WebResponse extends OutputStream {
   }
 
   void writeAll(WebRequest req) throws Exception {
-    boolean gzip = false;
-    if (Web.config_enable_gzip) {
-      String accept = req.getHeader("Accept-Encoding");
-      if (accept != null) {
-        String encodings[] = accept.split(",");
-        for(int a=0;a<encodings.length;a++) {
-          if (encodings[a].trim().equals("gzip")) {
-            gzip = true;
-            break;
+    byte data[] = buf.toByteArray();
+    if (data.length > 0) {
+      boolean gzip = false;
+      if (Web.config_enable_gzip) {
+        String accept = req.getHeader("Accept-Encoding");
+        if (accept != null) {
+          String encodings[] = accept.split(",");
+          for(int a=0;a<encodings.length;a++) {
+            if (encodings[a].trim().equals("gzip")) {
+              gzip = true;
+              break;
+            }
           }
         }
       }
-    }
-    byte data[] = buf.toByteArray();
-    if (gzip) {
-      addHeader("Content-Encoding: gzip");
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      GZIPOutputStream gos = new GZIPOutputStream(baos);
-      gos.write(data);
-      gos.finish();
-      data = baos.toByteArray();
+      if (gzip) {
+        addHeader("Content-Encoding: gzip");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        GZIPOutputStream gos = new GZIPOutputStream(baos);
+        gos.write(data);
+        gos.finish();
+        data = baos.toByteArray();
+      }
     }
     int size = data.length;
     writeHeaders(size);
-    os.write(data);
+    if (data.length >0 ) {
+      os.write(data);
+    }
   }
 
   void writeHeaders(int contentLength) throws Exception {

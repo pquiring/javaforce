@@ -23,6 +23,9 @@ public class WebSocket {
   protected static final int TYPE_PING = 0x09;
   protected static final int TYPE_PONG = 0x0a;
 
+  public static final int FIN = 0x80;
+  public static final int MASK = 0x80;
+
   /** Free to use data */
   public Object userobj;
 
@@ -32,10 +35,10 @@ public class WebSocket {
   }
 
   /** Writes a WebSocket message to client.
-   * Type = TYPE_BINARY
+   * Type = TYPE_TEXT
    */
   public void write(byte msg[]) {
-    write(msg, TYPE_BINARY);
+    write(msg, TYPE_TEXT);
   }
 
   /** Writes a WebSocket message to client.
@@ -51,7 +54,7 @@ public class WebSocket {
       if (len > 65535) {
         //create 64bit packet length
         byte header[] = new byte[10];
-        header[0] = (byte)(0x80 | type);
+        header[0] = (byte)(FIN | type);
         header[1] = 127;
         //bytes 2-6 : not supported (64bit length), only support 24bit
         header[7] = (byte)((len & 0xff0000) >> 16);
@@ -61,7 +64,7 @@ public class WebSocket {
       } else if (len >= 126) {
         //create 16bit packet length
         byte header[] = new byte[4];
-        header[0] = (byte)(0x80 | type);
+        header[0] = (byte)(FIN | type);
         header[1] = 126;
         header[2] = (byte)((len & 0xff00) >> 8);
         header[3] = (byte)(len & 0xff);
@@ -69,8 +72,8 @@ public class WebSocket {
       } else {
         //create 7bit packet length
         byte header[] = new byte[2];
-        header[0] = (byte)(0x80 | type);
-        header[1] = (byte)msg.length;
+        header[0] = (byte)(FIN | type);
+        header[1] = (byte)len;
         os.write(header);
       }
       os.write(msg);
