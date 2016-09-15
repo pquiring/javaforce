@@ -189,7 +189,7 @@
 
   <target name="clean" description="deletes compiled files">
     <delete>
-      <fileset dir="classes/javaforce" includes="**/*.class"/>
+      <fileset dir="classes" includes="**/*.class"/>
       <fileset dir="jars" includes="javaforce.jar"/>
     </delete>
   </target>

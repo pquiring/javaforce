@@ -111,11 +111,21 @@ public class JSON {
       }
       if ((ch == '\\') && (!escape)) {
         escape = true;
-      } else {
-        escape = false;
       }
       if (quote) {
-        e.value += ch;
+        if (escape) {
+          switch (ch) {
+            case 'n': e.value += "\n"; break;
+            case 'r': e.value += "\r"; break;
+            case 't': e.value += "\t"; break;
+            case 'b': e.value += "\b"; break;
+            case 'f': e.value += "\f"; break;
+            default:  e.value += ch; break;
+          }
+          escape = false;
+        } else {
+          e.value += ch;
+        }
       } else {
         switch (ch) {
           case ' ':
@@ -134,6 +144,9 @@ public class JSON {
             if (e.value.length() > 0) throw new Exception("bad value");
             return parseElement(e, str.substring(pos-1));
           case '}':
+            if (e.value.length() > 0) {
+              return str.substring(pos);
+            }
             throw new Exception("bad value");
           case '[':
             if (e.value.length() > 0) throw new Exception("bad value");
@@ -142,7 +155,19 @@ public class JSON {
             if (!array) throw new Exception("bad array");
             return str.substring(pos-1);
           default:
-            e.value += ch;
+            if (escape) {
+              switch (ch) {
+                case 'n': e.value += "\n"; break;
+                case 'r': e.value += "\r"; break;
+                case 't': e.value += "\t"; break;
+                case 'b': e.value += "\b"; break;
+                case 'f': e.value += "\f"; break;
+                default:  e.value += ch; break;
+              }
+              escape = false;
+            } else {
+              e.value += ch;
+            }
         }
       }
     }
