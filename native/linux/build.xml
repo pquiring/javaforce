@@ -12,6 +12,8 @@
       <class name="javaforce.media.MediaEncoder"/>
       <class name="javaforce.media.MediaVideoDecoder"/>
       <class name="javaforce.jni.LnxNative"/>
+      <class name="javaforce.pi.GPIO"/>
+      <class name="javaforce.pi.I2C"/>
     </javah>
   </target>
 

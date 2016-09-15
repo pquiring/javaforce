@@ -29,6 +29,12 @@
 #include "javaforce_media_MediaEncoder.h"
 #include "javaforce_media_MediaVideoDecoder.h"
 
+#ifdef __arm__
+  //Raspberry PI stuff
+  #include "gpio.c"
+  #include "i2c.c"
+#endif
+
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
 #endif
