@@ -24,6 +24,8 @@ public class Test implements WebUIHandler {
     initResources();
     Server server = new Server();
     server.start(this, 8080, false);
+    Worker worker = new Worker();
+    worker.start();
   }
 
   public class TestPanel extends Panel {
