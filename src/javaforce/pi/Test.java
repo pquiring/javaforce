@@ -93,9 +93,11 @@ public class Test implements WebUIHandler {
         //get inputs
         for(int a=0;a<8;a++) {
           inputs[a] = GPIO.read(a);
-          if (inputs[a] != display[a]) {
-            display[a] = inputs[a];
-            panel.i[a].setImage(inputs[a] ? on : off);
+          if (panel != null) {
+            if (inputs[a] != display[a]) {
+              display[a] = inputs[a];
+              panel.i[a].setImage(inputs[a] ? on : off);
+            }
           }
         }
         JF.sleep(1000);
