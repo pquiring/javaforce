@@ -26,7 +26,6 @@ public class Test implements WebUIHandler {
     server.start(this, 8080, false);
   }
 
-  public Client client;
   public class TestPanel extends Panel {
     public Label il[];
     public Image i[];
@@ -42,7 +41,6 @@ public class Test implements WebUIHandler {
   }
 
   public Panel getRootPanel(Client client) {
-    this.client = client;
     panel = new TestPanel();
     Column col = new Column();
     panel.add(col);

@@ -109,13 +109,17 @@ public class Server implements WebHandler, WebSocketHandler {
   }
 
   public boolean doWebSocketConnect(WebSocket sock) {
-    //create form manually
-    Client client = new Client();
-    client.setPanel(handler.getRootPanel(client));
-    client.setSocket(sock);  //set last so any events triggered are not sent during setup
-    client.root.setClient(client);
-    clients.add(client);
-    return true;
+    try {
+      Client client = new Client();
+      client.setPanel(handler.getRootPanel(client));  //client can be used to save/store values
+      client.setSocket(sock);
+      client.root.setClient(client);
+      clients.add(client);
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
   }
 
   public void doWebSocketClosed(WebSocket sock) {

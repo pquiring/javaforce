@@ -53,7 +53,7 @@ public class Client {
       }
     }
   }
-  public void sendEvent(String comp, String event, String args[]) {
+  public synchronized void sendEvent(String comp, String event, String args[]) {
     if (socket == null) return;
     StringBuffer sb = new StringBuffer();
     sb.append("{\"event\":\"" + event + "\",\"comp\":\"" + comp + "\"");

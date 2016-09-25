@@ -21,6 +21,7 @@ public abstract class Component {
   /** Perform any initialization with the client peer. */
   public void init() {}
   public void setClient(Client client) {
+    if (name != null) return;
     peer = client;
     name = "c" + client.getNextID();
     init();
