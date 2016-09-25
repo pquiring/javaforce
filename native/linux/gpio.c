@@ -32,7 +32,7 @@ volatile unsigned int *gpio;  //32bits (each bit is a port)
 // Set up a memory regions to access GPIO
 //
 JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_init
-  (JNIEnv *env, jobject obj)
+  (JNIEnv *env, jclass obj)
 {
   int  mem_fd;
   void *gpio_map;
@@ -67,7 +67,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_init
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_configOutput
-  (JNIEnv *env, jobject obj, jint bit)
+  (JNIEnv *env, jclass obj, jint bit)
 {
   INP_GPIO(bit);  //Always use INP_GPIO before OUT_GPIO -- why???
   OUT_GPIO(bit);
@@ -75,14 +75,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_configOutput
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_configInput
-  (JNIEnv *env, jobject obj, jint bit)
+  (JNIEnv *env, jclass obj, jint bit)
 {
   INP_GPIO(bit);
   return JNI_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_write
-  (JNIEnv *env, jobject obj, jint bit, jboolean value)
+  (JNIEnv *env, jclass obj, jint bit, jboolean value)
 {
   if (value == JNI_TRUE) {
     GPIO_SET = 1 << bit;
@@ -93,7 +93,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_write
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_read
-  (JNIEnv *env, jobject obj, jint bit)
+  (JNIEnv *env, jclass obj, jint bit)
 {
   return GET_GPIO(bit);
 }
