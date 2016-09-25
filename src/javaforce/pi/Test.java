@@ -44,7 +44,7 @@ public class Test implements WebUIHandler {
     panel = new TestPanel();
     Column col = new Column();
     panel.add(col);
-    for(int a=0;a<7;a++) {
+    for(int a=0;a<8;a++) {
       Row row = new Row();
       col.add(row);
       row.add(new Pad());
@@ -54,7 +54,7 @@ public class Test implements WebUIHandler {
       row.add(panel.i[a]);
       row.add(new Pad());
     }
-    for(int a=0;a<7;a++) {
+    for(int a=0;a<8;a++) {
       Row row = new Row();
       col.add(row);
       row.add(new Pad());

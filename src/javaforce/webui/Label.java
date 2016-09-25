@@ -15,10 +15,10 @@ public class Label extends Component {
     setClass("noselect");
   }
   public String html() {
-    return "<label id='" + name + "'" + getEvents() + " class='" + cls + "'>" + text + "</label>";
+    return "<label id='" + id + "'" + getEvents() + " class='" + cls + "'>" + text + "</label>";
   }
   public void setText(String txt) {
     text = txt;
-    peer.sendEvent(name, "settext", new String[] {"text=" + text});
+    peer.sendEvent(id, "settext", new String[] {"text=" + text});
   }
 }

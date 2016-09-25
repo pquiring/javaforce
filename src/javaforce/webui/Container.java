@@ -23,7 +23,7 @@ public abstract class Container extends Component {
     int cnt = count();
     for(int a=0;a<cnt;a++) {
       Component comp = get(a);
-      if (comp.name.equals(name)) return comp;
+      if (comp.id.equals(name)) return comp;
       if (comp instanceof Container) {
         Container container = (Container)comp;
         comp = container.get(name);

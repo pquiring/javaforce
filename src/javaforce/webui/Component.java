@@ -8,7 +8,7 @@ package javaforce.webui;
 import java.util.*;
 
 public abstract class Component {
-  public String name;
+  public String id;
   public String cls = "";
   private static class Event {
     public String event;
@@ -21,9 +21,9 @@ public abstract class Component {
   /** Perform any initialization with the client peer. */
   public void init() {}
   public void setClient(Client client) {
-    if (name != null) return;
+    if (id != null) return;
     peer = client;
-    name = "c" + client.getNextID();
+    id = "c" + client.getNextID();
     init();
   }
   /** Returns HTML to render component. */

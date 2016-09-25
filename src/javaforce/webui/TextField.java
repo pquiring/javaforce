@@ -13,11 +13,11 @@ public class TextField extends Component {
     setClass("textfield");
   }
   public String html() {
-    return "<input id='" + name + "'" + getEvents() + " class='" + cls + "' value='" + text + "'>";
+    return "<input id='" + id + "'" + getEvents() + " class='" + cls + "' value='" + text + "'>";
   }
   public void setText(String txt) {
     text = txt;
-    peer.sendEvent(name, "settext", new String[] {"text=" + text});
+    peer.sendEvent(id, "settext", new String[] {"text=" + text});
   }
   public String getText() {
     return text;

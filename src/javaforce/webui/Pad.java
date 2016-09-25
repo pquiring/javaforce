@@ -7,6 +7,6 @@ package javaforce.webui;
 
 public class Pad extends Component {
   public String html() {
-    return "<div id='" + name + "' class='pad'></div>";
+    return "<div id='" + id + "' class='pad'></div>";
   }
 }

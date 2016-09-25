@@ -24,7 +24,7 @@ public class Table extends Container {
   }
   public String html() {
     StringBuffer sb = new StringBuffer();
-    sb.append("<table id='" + name + "'");
+    sb.append("<table id='" + id + "'");
     if (border) sb.append(" class='border'");
     sb.append(" style='width: " + (width * cols) + "px; height: " + (height * rows) + "px;'");
     sb.append(">");

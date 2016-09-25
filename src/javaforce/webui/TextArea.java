@@ -13,11 +13,11 @@ public class TextArea extends Component {
     setClass("textfield");
   }
   public String html() {
-    return "<textarea id='" + name + "'" + getEvents() + " class='" + cls + "'>" + text + "</textarea>";
+    return "<textarea id='" + id + "'" + getEvents() + " class='" + cls + "'>" + text + "</textarea>";
   }
   public void setText(String txt) {
     text = txt;
-    peer.sendEvent(name, "settext", new String[] {"text=" + text});
+    peer.sendEvent(id, "settext", new String[] {"text=" + text});
   }
   public String getText() {
     return text;

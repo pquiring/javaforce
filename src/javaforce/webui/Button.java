@@ -12,7 +12,7 @@ public class Button extends Component {
     this.text = text;
   }
   public String html() {
-    return "<button id='" + name + "' onclick='return onClick(this);' class=button>" + text + "</button>";
+    return "<button id='" + id + "' onclick='return onClick(this);' class=button>" + text + "</button>";
   }
   private String text;
   public void setText(String text) {

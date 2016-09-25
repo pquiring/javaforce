@@ -10,7 +10,7 @@ public class CheckBox extends Component {
     this.text = text;
   }
   public String html() {
-    return "<input type=checkbox id='" + name + "' onclick='return onClick(this);' class=checkbox" + (selected ? " checked" : "") + "><label for='" + name + "' class='noselect'>" + text + "</label>";
+    return "<input type=checkbox id='" + id + "' onclick='return onClick(this);' class=checkbox" + (selected ? " checked" : "") + "><label for='" + id + "' class='noselect'>" + text + "</label>";
   }
   private String text;
   private boolean selected;
@@ -20,7 +20,7 @@ public class CheckBox extends Component {
   public void setSelected(boolean state) {
     if (selected == state) return;
     selected = state;
-    peer.sendEvent(name, "setSelected", new String[] {"state=" + selected});
+    peer.sendEvent(id, "setSelected", new String[] {"state=" + selected});
   }
   public boolean isSelected() {
     return selected;
