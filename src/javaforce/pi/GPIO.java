@@ -8,9 +8,9 @@ package javaforce.pi;
  */
 
 public class GPIO {
-  public native boolean init();
-  public native boolean configOutput(int idx);
-  public native boolean configInput(int idx);
-  public native boolean write(int idx, boolean state);
-  public native boolean read(int idx);
+  public native static boolean init();
+  public native static boolean configOutput(int idx);
+  public native static boolean configInput(int idx);
+  public native static boolean write(int idx, boolean state);
+  public native static boolean read(int idx);
 }
