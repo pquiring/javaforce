@@ -12,11 +12,11 @@ public class Image extends Component {
   }
 
   public String html() {
-    return "<img src='/static/" + img.id + "'>";
+    return "<img id='" + id + "' src='/static/" + img.id + "'>";
   }
 
   public void setImage(Resource img) {
     this.img = img;
-    peer.sendEvent(id, "setsrc", new String[] {"src=/static/" + img.id});
+    peer.sendEvent(id, "setsrc", new String[] {"src='/static/" + img.id + "'"});
   }
 }
