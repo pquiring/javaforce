@@ -28,8 +28,10 @@ public class Test implements WebUIHandler {
 
   public Client client;
   public class TestPanel extends Panel {
-    public Button b[];
+    public Label il[];
     public Image i[];
+    public Button o[];
+    public Image oi[];
   }
   public static TestPanel panel;
   public static Resource on, off;
@@ -49,23 +51,28 @@ public class Test implements WebUIHandler {
       Row row = new Row();
       col.add(row);
       row.add(new Pad());
+      panel.il[a] = new Label("I" + (a+1));
+      row.add(panel.il[a]);
       panel.i[a] = new Image(off);
       row.add(panel.i[a]);
       row.add(new Pad());
     }
-    panel.b = new Button[8];
+    panel.o = new Button[8];
     for(int a=0;a<7;a++) {
       Row row = new Row();
       col.add(row);
       row.add(new Pad());
-      panel.b[a] = new Button("O" + (a+1));
-      final int idx = a+8;
-      panel.b[a].addClickListener((Button b) -> {
+      panel.o[a] = new Button("O" + (a+1));
+      final int idx = a;
+      panel.o[a].addClickListener((Button b) -> {
         boolean state = !outputs[idx];
         outputs[idx] = state;
-        GPIO.write(idx, state);
+        GPIO.write(idx + 8, state);
+        panel.oi[idx].setImage(state ? on : off);
       });
-      row.add(panel.b[a]);
+      row.add(panel.o[a]);
+      panel.oi[a] = new Image(off);
+      row.add(panel.oi[a]);
       row.add(new Pad());
     }
     return panel;
