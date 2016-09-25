@@ -17,6 +17,6 @@ public class Image extends Component {
 
   public void setImage(Resource img) {
     this.img = img;
-    peer.sendEvent(id, "setsrc", new String[] {"src='/static/" + img.id + "'"});
+    peer.sendEvent(id, "setsrc", new String[] {"src=/static/" + img.id});
   }
 }
