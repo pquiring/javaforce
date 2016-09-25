@@ -59,7 +59,7 @@ public class Test implements WebUIHandler {
       col.add(row);
       row.add(new Pad());
       panel.b[a] = new Button("O" + (a+1));
-      final int idx = a;
+      final int idx = a+8;
       panel.b[a].addClickListener((Button b) -> {
         boolean state = !outputs[idx];
         outputs[idx] = state;

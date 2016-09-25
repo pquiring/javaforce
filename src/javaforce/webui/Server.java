@@ -113,6 +113,7 @@ public class Server implements WebHandler, WebSocketHandler {
     Client client = new Client();
     client.setPanel(handler.getRootPanel(client));
     client.setSocket(sock);  //set last so any events triggered are not sent during setup
+    client.root.setClient(client);
     clients.add(client);
     return true;
   }
