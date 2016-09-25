@@ -1,0 +1,112 @@
+body {
+  margin: 0px;
+}
+
+div {
+  overflow: hidden;
+  white-space: nowrap;
+  margin: 0px;
+}
+
+span {
+  margin: 0px;
+}
+
+th, td {
+  vertical-align: top;
+  overflow: hidden;
+  white-space: nowrap;
+  margin: 0px;
+}
+
+table {
+  border-collapse: collapse;
+  padding: 0px;
+  table-layout: fixed;
+  margin: 0px;
+}
+
+select {
+  margin: 0px;
+}
+
+button {
+  margin: 0px;
+}
+
+.border {
+  border: 1px solid black;
+}
+
+.panel {
+  width: 100%;
+  height: 100%;
+}
+
+.button {
+
+}
+
+.label {
+}
+
+.row {
+  display: inline-flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.column {
+  display: inline-flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.pad {
+  flex-grow: 1;
+}
+
+.tab {
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+}
+
+.tabactive {
+  margin: 0px;
+  padding: 0px;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #ccc;
+}
+
+.tabinactive {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+.tabcontenthidden {
+  display: none;
+  padding: 0px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.tabcontentshown {
+  display: block;
+  padding: 0px;
+  border: 1px solid #ccc;
+  border-top: none;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* Internet Explorer/Edge */
+}
