@@ -27,10 +27,10 @@ public class Test implements WebUIHandler {
   }
 
   public class TestPanel extends Panel {
-    public Label il[];
-    public Image i[];
-    public Button o[];
-    public Image oi[];
+    public Label il[] = new Label[8];
+    public Image i[] = new Image[8];
+    public Button o[] = new Button[8];
+    public Image oi[] = new Image[8];
   }
   public static TestPanel panel;
   public static Resource on, off;
@@ -44,7 +44,6 @@ public class Test implements WebUIHandler {
     panel = new TestPanel();
     Column col = new Column();
     panel.add(col);
-    panel.i = new Image[8];
     for(int a=0;a<7;a++) {
       Row row = new Row();
       col.add(row);
@@ -55,7 +54,6 @@ public class Test implements WebUIHandler {
       row.add(panel.i[a]);
       row.add(new Pad());
     }
-    panel.o = new Button[8];
     for(int a=0;a<7;a++) {
       Row row = new Row();
       col.add(row);
