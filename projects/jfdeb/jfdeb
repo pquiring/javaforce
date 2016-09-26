@@ -1,9 +1,8 @@
 #!/bin/bash
 
 function usage() {
-  echo usage : jfdeb outputfile-version-release.deb bits [deb-control-folder [files-list]]
-  echo - output : outputfile-version-release.deb
-  echo - bits : 32 or 64
+  echo usage : jfdeb outputfile-version-release.deb arch [deb-control-folder [files-list]]
+  echo - arch : x32 or x64 or a32
   echo - deb-control-folder : holds deb control files \(default = deb\)
   echo - files-list : lists data files \(one per line\) \(default = files.lst\)
   exit
@@ -23,10 +22,16 @@ CONTROL_FILES=deb
 DEB=$1
 FILES=files.lst
 if [ -f files-ubuntu.lst ]; then FILES=files-ubuntu.lst; fi
-BITS=$2
+ARCH=$2
+BITS=${ARCH:1:2}
 if [ -f files-$BITS.lst ]; then FILES=files-$BITS.lst; fi
 if [ ! "$3" = "" ]; then CONTROL_FILES=$3; fi
 if [ ! "$4" = "" ]; then FILES=$4; fi
+ARCHTYPE=
+if [ $ARCH = "x32" ]; then ARCHTYPE=i386; fi
+if [ $ARCH = "x64" ]; then ARCHTYPE=amd64; fi
+if [ $ARCH = "a32" ]; then ARCHTYPE=armhf; fi
+if [ $ARCHTYPE = ""]; then error "Invalid arch specified"; fi
 
 if [ ! -f $CONTROL_FILES/control ]; then error "$CONTROL_FILES/control not found"; fi
 
@@ -37,11 +42,7 @@ if [ -f control.tar.gz ]; then rm -f control.tar.gz; fi
 mkdir $TMPDIR
 cp $CONTROL_FILES/* $TMPDIR
 cd $TMPDIR
-if [ $BITS = "32" ]; then
-  java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "i386" control
-else
-  java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "amd64" control
-fi
+java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr @ARCH@ $ARCHTYPE control
 tar czf ../control.tar.gz *
 cd ..
 rm $TMPDIR/*

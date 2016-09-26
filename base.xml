@@ -170,7 +170,7 @@
   <target name="deb32" depends="elf32,jar"  description="create deb package">
     <exec executable="jfdeb">
       <arg value="${app}-${version}_i386.deb"/>
-      <arg value="32"/>
+      <arg value="x32"/>
     </exec>
     <copy file="${app}-${version}_i386.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
   </target>
@@ -178,9 +178,17 @@
   <target name="deb64" depends="elf64,jar"  description="create deb package">
     <exec executable="jfdeb">
       <arg value="${app}-${version}_amd64.deb"/>
-      <arg value="64"/>
+      <arg value="x64"/>
     </exec>
     <copy file="${app}-${version}_amd64.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
+  </target>
+
+  <target name="debarm" depends="elf32,jar"  description="create deb package">
+    <exec executable="jfdeb">
+      <arg value="${app}-${version}_armhf.deb"/>
+      <arg value="32"/>
+    </exec>
+    <copy file="${app}-${version}_armhf.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
   </target>
 
   <target name="rpm32" depends="elf32,jar" description="create rpm package">
