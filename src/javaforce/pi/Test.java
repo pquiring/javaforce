@@ -100,7 +100,7 @@ public class Test implements WebUIHandler {
             }
           }
         }
-        JF.sleep(1000);
+        JF.sleep(100);
       }
     }
   }
