@@ -22,11 +22,12 @@ CONTROL_FILES=deb
 DEB=$1
 FILES=files.lst
 if [ -f files-ubuntu.lst ]; then FILES=files-ubuntu.lst; fi
+if [ ! "$3" = "" ]; then CONTROL_FILES=$3; fi
+if [ ! "$4" = "" ]; then FILES=$4; fi
+
 ARCH=$2
 BITS=${ARCH:1:2}
 if [ -f files-$BITS.lst ]; then FILES=files-$BITS.lst; fi
-if [ ! "$3" = "" ]; then CONTROL_FILES=$3; fi
-if [ ! "$4" = "" ]; then FILES=$4; fi
 ARCHTYPE=
 if [ $ARCH = "x32" ]; then ARCHTYPE=i386; fi
 if [ $ARCH = "x64" ]; then ARCHTYPE=amd64; fi

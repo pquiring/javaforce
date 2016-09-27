@@ -3,9 +3,9 @@
 # Note : Make sure you place NOPASSWD in your /etc/sudoers or this script will annoy you (see jconfig -> fix stuff)
 
 function usage() {
-  echo usage : jfrpm file.spec bits [files.lst]
+  echo usage : jfrpm file.spec arch [files.lst]
   echo desc : creates RPM files from file.spec
-  echo bits : 32 or 64 bit
+  echo arch : 32 or 64 or noarch
   echo note : files.lst is appended to file.spec during process
   exit
 }
@@ -23,10 +23,17 @@ if [ ! -f $1 ]; then error "$1 not found"; fi
 
 FILES=files.lst
 if [ -f files-fedora.lst ]; then FILES=files-fedora.lst; fi
-BITS=$2
-if [ -f files-$BITS.lst ]; then FILES=files-$BITS.lst; fi
-
 if [ ! "$3" = "" ]; then FILES=$3; fi
+
+ARCH=$2
+BITS=${ARCH:1:2}
+if [ -f files-$BITS.lst ]; then FILES=files-$BITS.lst; fi
+ARCHTYPE=
+if [ $ARCH = "x32" ]; then ARCHTYPE=i686; fi
+if [ $ARCH = "x64" ]; then ARCHTYPE=x86_64; fi
+if [ $ARCH = "a32" ]; then ARCHTYPE=armv7hl; fi
+if [ $ARCH = "noarch" ]; then ARCHTYPE=noarch; fi
+if [ $ARCHTYPE = ""]; then error "Invalid arch specified"; fi
 
 TMPDIR=jfrpm.$RANDOM
 SPEC=$1
@@ -44,11 +51,7 @@ cd $TMPDIR
 
 if [ ! `pwd` = $WORKDIR/$TMPDIR ]; then error "failed to use temp folder $TMPDIR"; fi
 
-if [ $BITS = "32" ]; then
-  java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "i686" $SPEC
-else
-  java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" "x86_64" $SPEC
-fi
+java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" $ARCHTYPE $SPEC
 
 sudo tar xjf ../data.tar.bz2
 #NOTE:rpmbuild nukes the buildroot once complete, which is the current folder - be careful!!!

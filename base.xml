@@ -201,10 +201,18 @@
     <copy file="${app}-${version}_armhf.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
   </target>
 
+  <target name="rpm" description="create rpm package">
+    <exec executable="jfrpm">
+      <arg value="${app}.spec"/>
+      <arg value="noarch"/>
+    </exec>
+    <copy file="${app}-${version}-1.noarch.rpm" todir="${home}/repo/fedora" overwrite="true"/>
+  </target>
+
   <target name="rpm32" depends="elf32,jar" description="create rpm package">
     <exec executable="jfrpm">
       <arg value="${app}.spec"/>
-      <arg value="32"/>
+      <arg value="x32"/>
     </exec>
     <copy file="${app}-${version}-1.i686.rpm" todir="${home}/repo/fedora" overwrite="true"/>
   </target>
@@ -212,9 +220,17 @@
   <target name="rpm64" depends="elf64,jar"  description="create rpm package">
     <exec executable="jfrpm">
       <arg value="${app}.spec"/>
-      <arg value="64"/>
+      <arg value="x64"/>
     </exec>
     <copy file="${app}-${version}-1.x86_64.rpm" todir="${home}/repo/fedora" overwrite="true"/>
+  </target>
+
+  <target name="rpmarm" depends="elf32,jar" description="create rpm package">
+    <exec executable="jfrpm">
+      <arg value="${app}.spec"/>
+      <arg value="a32"/>
+    </exec>
+    <copy file="${app}-${version}-1.armv7hl.rpm" todir="${home}/repo/fedora" overwrite="true"/>
   </target>
 
   <!-- MacOSX targets -->
