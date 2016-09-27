@@ -137,17 +137,19 @@
   <!-- Linux targets -->
 
   <macrodef name="elf">
-    <attribute name="app" default="${app}"/>
+    <attribute name="appx" default="${app}"/>
     <attribute name="apptype" default="${apptype}"/>
     <attribute name="cfgdir" default=""/>
     <attribute name="bin" default="bin"/>
+    <attribute name="bits"/>
+    <attribute name="ico"/>
     <sequential>
-      <copy file="${home}/stubs/linux${bits}.bin" tofile="/usr/@{bin}/@{app}"/>
+      <copy file="${home}/stubs/linux@{bits}.bin" tofile="/usr/@{bin}/@{appx}"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.jresmgr">
-        <arg value="/usr/@{bin}/@{app}"/>
-        <arg value="@{cfgdir}@{app}.cfg"/>
+        <arg value="/usr/@{bin}/@{appx}"/>
+        <arg value="@{cfgdir}@{appx}.cfg"/>
       </java>
-      <chmod file="/usr/@{bin}/@{app}" perm="+x"/>
+      <chmod file="/usr/@{bin}/@{appx}" perm="+x"/>
     </sequential>
   </macrodef>
 
@@ -165,6 +167,14 @@
     <elf appx="${app3}" apptype="${apptype3}" bits="64" ico="${ico3}" unless:blank="${app3}"/>
     <elf appx="${app4}" apptype="${apptype4}" bits="64" ico="${ico4}" unless:blank="${app4}"/>
     <elf appx="${app5}" apptype="${apptype5}" bits="64" ico="${ico5}" unless:blank="${app5}"/>
+  </target>
+
+  <target name="deb" description="create deb package">
+    <exec executable="jfdeb">
+      <arg value="${app}-${version}_noarch.deb"/>
+      <arg value="noarch"/>
+    </exec>
+    <copy file="${app}-${version}_noarch.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
   </target>
 
   <target name="deb32" depends="elf32,jar"  description="create deb package">

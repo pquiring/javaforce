@@ -23,7 +23,7 @@ To create the jfLinux image follow these steps:
     - ant deb
   - package JavaForce
     - cd /
-    - ant deb
+    - ant deb32|64
   - build all projects
     - cd /projects
     - buildAllUbuntu32|64.sh
