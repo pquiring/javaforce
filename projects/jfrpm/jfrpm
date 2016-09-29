@@ -3,9 +3,9 @@
 # Note : Make sure you place NOPASSWD in your /etc/sudoers or this script will annoy you (see jconfig -> fix stuff)
 
 function usage() {
-  echo usage : jfrpm file.spec arch [files.lst]
+  echo usage : jfrpm arch [files.lst]
   echo desc : creates RPM files from file.spec
-  echo arch : 32 or 64 or noarch
+  echo arch : any, x32, x64, a32, a64
   echo note : files.lst is appended to file.spec during process
   exit
 }
@@ -19,24 +19,17 @@ if [ "$1" = "" ]; then usage; fi
 if [ "$1" = "--help" ]; then usage; fi
 if [ "$1" = "-h" ]; then usage; fi
 
-if [ ! -f $1 ]; then error "$1 not found"; fi
-
 FILES=files.lst
 if [ -f files-fedora.lst ]; then FILES=files-fedora.lst; fi
-if [ ! "$3" = "" ]; then FILES=$3; fi
+if [ ! "$2" = "" ]; then FILES=$2; fi
 
-ARCH=$2
+ARCH=$1
 BITS=${ARCH:1:2}
 if [ -f files-$BITS.lst ]; then FILES=files-$BITS.lst; fi
-ARCHTYPE=
-if [ $ARCH = "x32" ]; then ARCHTYPE=i686; fi
-if [ $ARCH = "x64" ]; then ARCHTYPE=x86_64; fi
-if [ $ARCH = "a32" ]; then ARCHTYPE=armv7hl; fi
-if [ $ARCH = "noarch" ]; then ARCHTYPE=noarch; fi
-if [ $ARCHTYPE = "" ]; then error "Invalid arch specified"; fi
 
 TMPDIR=jfrpm.$RANDOM
-SPEC=$1
+
+java -cp /usr/share/java/javaforce.jar javaforce.utils.jpkginfo fedora $ARCH $FILES
 
 WORKDIR=`pwd`
 mkdir $TMPDIR
@@ -45,20 +38,20 @@ mkdir $TMPDIR
 if [ -f data.tar.bz2 ]; then rm -f data.tar.bz2; fi
 tar cjf data.tar.bz2 -T $FILES
 
-cp $SPEC $TMPDIR
-cat $FILES >> $TMPDIR/$SPEC
+cp rpm.spec $TMPDIR
+cat $FILES >> $TMPDIR/rpm.spec
 cd $TMPDIR
 
 if [ ! `pwd` = $WORKDIR/$TMPDIR ]; then error "failed to use temp folder $TMPDIR"; fi
 
-java -cp /usr/share/java/javaforce.jar javaforce.utils.jfr "@ARCH@" $ARCHTYPE $SPEC
-
 sudo tar xjf ../data.tar.bz2
 #NOTE:rpmbuild nukes the buildroot once complete, which is the current folder - be careful!!!
-sudo rpmbuild -bb $SPEC --buildroot `pwd`
+sudo rpmbuild -bb rpm.spec --buildroot `pwd`
 cd ..
 sudo rm -rf $TMPDIR
 rm -f data.tar.bz2
 sudo chown $USER:$USER *.rpm
+
+rm rpm.spec
 
 echo Complete!
