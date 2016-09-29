@@ -33,7 +33,7 @@ if [ $ARCH = "x32" ]; then ARCHTYPE=i686; fi
 if [ $ARCH = "x64" ]; then ARCHTYPE=x86_64; fi
 if [ $ARCH = "a32" ]; then ARCHTYPE=armv7hl; fi
 if [ $ARCH = "noarch" ]; then ARCHTYPE=noarch; fi
-if [ $ARCHTYPE = ""]; then error "Invalid arch specified"; fi
+if [ $ARCHTYPE = "" ]; then error "Invalid arch specified"; fi
 
 TMPDIR=jfrpm.$RANDOM
 SPEC=$1

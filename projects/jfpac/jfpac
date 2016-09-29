@@ -27,7 +27,7 @@ if [ $ARCH = "x32" ]; then ARCHTYPE=i686; fi
 if [ $ARCH = "x64" ]; then ARCHTYPE=x86_64; fi
 if [ $ARCH = "a32" ]; then ARCHTYPE=arm; fi
 if [ $ARCH = "noarch" ]; then ARCHTYPE=any; fi
-if [ $ARCHTYPE = ""]; then error "Invalid arch specified"; fi
+if [ $ARCHTYPE = "" ]; then error "Invalid arch specified"; fi
 
 if [ ! "$3" = "" ]; then FILES=$3; fi
 

@@ -33,7 +33,7 @@ if [ $ARCH = "x32" ]; then ARCHTYPE=i386; fi
 if [ $ARCH = "x64" ]; then ARCHTYPE=amd64; fi
 if [ $ARCH = "a32" ]; then ARCHTYPE=armhf; fi
 if [ $ARCH = "noarch" ]; then ARCHTYPE=noarch; fi
-if [ $ARCHTYPE = ""]; then error "Invalid arch specified"; fi
+if [ $ARCHTYPE = "" ]; then error "Invalid arch specified"; fi
 
 if [ ! -f $CONTROL_FILES/control ]; then error "$CONTROL_FILES/control not found"; fi
 
