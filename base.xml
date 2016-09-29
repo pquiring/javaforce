@@ -141,8 +141,8 @@
     <attribute name="apptype" default="${apptype}"/>
     <attribute name="cfgdir" default=""/>
     <attribute name="bin" default="bin"/>
-    <attribute name="bits"/>
-    <attribute name="ico"/>
+    <attribute name="bits" default="${bits}"/>
+    <attribute name="ico" default=""/>
     <sequential>
       <copy file="${home}/stubs/linux@{bits}.bin" tofile="/usr/@{bin}/@{appx}"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.jresmgr">
