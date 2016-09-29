@@ -1,0 +1,11 @@
+pkgname = javaforce
+pkgver = 12.0-1
+pkgdesc = JavaForce library
+url = https://javaforce.sourceforge.net
+builddate = 1475156680
+packager = Peter Quiring <pquiring@gmail.com>
+size = @SIZE@
+arch = @ARCH@
+license = LGPL
+depend =
+makedepend =
