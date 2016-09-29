@@ -28,6 +28,21 @@ Fedora:
 
   Run 'ant'
 
+Arch:
+
+  Required packages :
+    sudo pacman -S gcc jdk8-openjdk apache-ant xproto fuse pam ffmpeg mesa libxcursor libxrandr libxinerama libxi libxt
+
+  To build the 32bit image:
+    sudo vi /etc/pacman.conf
+    #uncomment [multilib] section (2 lines)
+    sudo pacman -Syu
+
+  Required environment variable:
+    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+
+  Run 'ant'
+
 Raspberry Pi (Ubuntu):
 
   Same packages as Ubuntu above.
