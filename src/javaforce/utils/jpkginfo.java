@@ -126,9 +126,23 @@ public class jpkginfo {
       sb.append("Installed-Size: " + size + "\n");
       sb.append(getDepends("ubuntu.depends", "Depends: "));
       new File("deb").mkdir();
-      FileOutputStream fos = new FileOutputStream("deb/control");
-      fos.write(sb.toString().getBytes());
-      fos.close();
+      {
+        FileOutputStream fos = new FileOutputStream("deb/control");
+        fos.write(sb.toString().getBytes());
+        fos.close();
+      }
+      //generate deb/postinst if not present
+      if (!new File("deb/postinst").exists()) {
+        FileOutputStream fos = new FileOutputStream("deb/postinst");
+        fos.write("#!/bin/sh\nset -e\nupdate-desktop-database\n".getBytes());
+        fos.close();
+      }
+      //generate deb/postrm if not present
+      if (!new File("deb/postrm").exists()) {
+        FileOutputStream fos = new FileOutputStream("deb/postrm");
+        fos.write("#!/bin/sh\nset -e\nupdate-desktop-database\n".getBytes());
+        fos.close();
+      }
       System.out.println("Ubuntu package info created");
     } catch (Exception e) {
       e.printStackTrace();
