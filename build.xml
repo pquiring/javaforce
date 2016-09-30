@@ -7,6 +7,8 @@
   <property name="home" value="."/>
   <property name="version" value="11.4.0"/>
 
+  <property name="ubuntu.depends" value="openjdk-8-jre, libjsch-java (>= 0.1.42), libjzlib-java, libjcifs-java, fuse, libfuse2, fuseiso, libcdio13, mate-icon-theme, libv4l-dev"/>
+
   <property environment="env"/>
 
   <import file="base.xml"/>

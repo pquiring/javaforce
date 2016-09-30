@@ -8,6 +8,8 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.18"/>
 
+  <property name="ubuntu.depends" value="libjsch-java, libjzlib-java, openssh-server"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars" depends="depnatives">
@@ -65,7 +67,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="jfterm.jar" todir="/usr/share/java"/>
     <copy file="jfterm.desktop" todir="/usr/share/applications"/>
     <copy file="jfterm.png" todir="/usr/share/icons/hicolor/48x48/apps"/>

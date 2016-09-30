@@ -11,6 +11,8 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.12"/>
 
+  <property name="ubuntu.depends" value="samba"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars">

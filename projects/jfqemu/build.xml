@@ -8,6 +8,8 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.2"/>
 
+  <property name="ubuntu.depends" value="qemu, jfvnc"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars" depends="depnatives">
@@ -41,7 +43,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="jfqemu.jar" todir="/usr/share/java"/>
     <copy file="${app}.service" todir="/lib/systemd/system"/>
     <copy file="jfqemu.desktop" todir="/usr/share/applications"/>

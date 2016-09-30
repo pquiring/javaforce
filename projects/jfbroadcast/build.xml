@@ -8,6 +8,8 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.36"/>
 
+  <property name="ubuntu.depends" value="libderby-java"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars">
@@ -51,7 +53,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="jfbroadcast.jar" todir="/usr/share/java"/>
     <copy file="jfbroadcast.desktop" todir="/usr/share/applications"/>
     <copy file="jfbroadcast.png" todir="/usr/share/icons/hicolor/48x48/apps"/>

@@ -7,6 +7,8 @@
   <property name="build" location="classes"/>
   <property name="version" value="0.1"/>
 
+  <property name="ubuntu.depends" value="libgl1-mesa-dev"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars" depends="depnatives">
@@ -40,7 +42,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="jftest3d.jar" todir="/usr/share/java"/>
     <copy file="opengl.png" todir="/usr/bin"/>
   </target>

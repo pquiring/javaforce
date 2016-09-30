@@ -9,6 +9,8 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.12"/>
 
+  <property name="ubuntu.depends" value="jfparted, jfapps, jfrepo, libnss3-tools"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars" depends="depnatives">

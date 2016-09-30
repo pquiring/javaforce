@@ -8,6 +8,8 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.1"/>
 
+  <property name="ubuntu.depends" value="jfvnc, rdesktop"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars">
@@ -40,7 +42,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="jfremote.jar" todir="/usr/share/java"/>
     <copy file="jfremote.desktop" todir="/usr/share/applications"/>
     <copy file="jfremote.png" todir="/usr/share/icons/hicolor/48x48/apps"/>

@@ -8,6 +8,8 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.4"/>
 
+  <property name="ubuntu.depends" value="scrot"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars">
@@ -40,7 +42,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="jfcapture.jar" todir="/usr/share/java"/>
     <copy file="jfcapture-screen" todir="/usr/bin"/>
     <chmod file="/usr/bin/jfcapture-screen" perm="+x"/>

@@ -8,6 +8,8 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.5"/>
 
+  <property name="ubuntu.depends" value="jfparted, jfconfig, rsync"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars">
@@ -45,7 +47,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="jfinstall.jar" todir="/usr/share/java"/>
     <copy file="jfinstall-chroot.sh" todir="/usr/bin"/>
     <chmod file="/usr/bin/jfinstall-chroot.sh" perm="+x"/>
