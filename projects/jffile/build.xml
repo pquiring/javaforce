@@ -12,6 +12,7 @@
   <property name="version" value="0.12"/>
 
   <property name="ubuntu.depends" value="samba"/>
+  <property name="fedora.depends" value="samba"/>
 
   <import file="../../base.xml"/>
 

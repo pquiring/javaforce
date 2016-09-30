@@ -9,6 +9,7 @@
   <property name="version" value="0.14"/>
 
   <property name="ubuntu.depends" value="ffmpeg"/>
+  <property name="fedora.depends" value="ffmpeg"/>
 
   <import file="../../base.xml"/>
 

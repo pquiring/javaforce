@@ -9,6 +9,7 @@
   <property name="version" value="0.5"/>
 
   <property name="ubuntu.depends" value="jfparted, jfconfig, rsync"/>
+  <property name="fedora.depends" value="jfparted, jfconfig, rsync, grub2, grub2-tools"/>
 
   <import file="../../base.xml"/>
 

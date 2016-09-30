@@ -9,6 +9,7 @@
   <property name="version" value="0.2"/>
 
   <property name="ubuntu.depends" value="wodim"/>
+  <property name="fedora.depends" value="wodim"/>
 
   <import file="../../base.xml"/>
 

@@ -9,6 +9,7 @@
   <property name="version" value="0.1"/>
 
   <property name="ubuntu.depends" value="jfvnc, rdesktop"/>
+  <property name="fedora.depends" value="jfvnc, rdesktop"/>
 
   <import file="../../base.xml"/>
 

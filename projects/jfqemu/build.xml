@@ -9,6 +9,7 @@
   <property name="version" value="0.2"/>
 
   <property name="ubuntu.depends" value="qemu, jfvnc"/>
+  <property name="fedora.depends" value="qemu, jfvnc"/>
 
   <import file="../../base.xml"/>
 

@@ -9,6 +9,7 @@
   <property name="version" value="0.18"/>
 
   <property name="ubuntu.depends" value="libjsch-java, libjzlib-java, openssh-server"/>
+  <property name="fedora.depends" value="jsch, jzlib, openssh-server"/>
 
   <import file="../../base.xml"/>
 

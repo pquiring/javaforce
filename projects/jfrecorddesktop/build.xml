@@ -8,6 +8,9 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.4"/>
 
+  <property name="ubuntu.depends" value="ffmpeg"/>
+  <property name="fedora.depends" value="ffmpeg"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars" depends="depnatives">
@@ -46,7 +49,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="jfrecorddesktop.jar" todir="/usr/share/java"/>
     <copy file="jfrecorddesktop.desktop" todir="/usr/share/applications"/>
     <copy file="jfrecorddesktop.png" todir="/usr/share/icons/hicolor/48x48/apps"/>

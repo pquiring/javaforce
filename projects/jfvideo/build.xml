@@ -7,6 +7,9 @@
   <property name="build" location="classes"/>
   <property name="version" value="0.18"/>
 
+  <property name="ubuntu.depends" value="ffmpeg"/>
+  <property name="fedora.depends" value="ffmpeg"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars" depends="depnatives">
@@ -55,7 +58,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="${app}.jar" todir="/usr/share/java"/>
     <copy file="${app}.desktop" todir="/usr/share/applications"/>
     <copy file="${app}.png" todir="/usr/share/icons/hicolor/48x48/apps"/>

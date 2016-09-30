@@ -10,6 +10,7 @@
   <property name="version" value="0.12"/>
 
   <property name="ubuntu.depends" value="jfparted, jfapps, jfrepo, libnss3-tools"/>
+  <property name="fedora.depends" value="jfparted, jfapps, jfrepo, pciutils"/>
 
   <import file="../../base.xml"/>
 
