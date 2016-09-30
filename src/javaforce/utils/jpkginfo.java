@@ -170,6 +170,14 @@ public class jpkginfo {
       sb.append("Summary: " + desc + "\n");
       sb.append(getDepends("fedora.depends", "Requires: "));
       sb.append("%description\n " + desc + "\n");
+      sb.append("%post\n");
+      sb.append("#!/bin/sh\n");
+      sb.append("set -e\n");
+      sb.append("update-desktop-database\n");
+      sb.append("%pre\n");
+      sb.append("#!/bin/sh\n");
+      sb.append("set -e\n");
+      sb.append("update-desktop-database\n");
       //%files is added by jfrpm
       FileOutputStream fos = new FileOutputStream("rpm.spec");
       fos.write(sb.toString().getBytes());
