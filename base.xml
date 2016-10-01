@@ -243,7 +243,7 @@
 
   <target name="pac32" depends="elf32,jar"  description="create pac package">
     <exec executable="jfpac">
-      <arg value="${app}-${version}-i386.pac"/>
+      <arg value="${app}-${version}-i686.pac"/>
       <arg value="x32"/>
     </exec>
     <copy file="${app}-${version}-i686.pac" todir="${home}/repo/arch" overwrite="true"/>
