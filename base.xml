@@ -235,34 +235,34 @@
 
   <target name="pac" description="create pac package">
     <exec executable="jfpac">
-      <arg value="${app}-${version}-any.pac"/>
+      <arg value="${app}-${version}-any.pkg.tar.xz"/>
       <arg value="noarch"/>
     </exec>
-    <copy file="${app}-${version}-any.pac" todir="${home}/repo/arch" overwrite="true"/>
+    <copy file="${app}-${version}-any.pkg.tar.xz" todir="${home}/repo/arch" overwrite="true"/>
   </target>
 
   <target name="pac32" depends="elf32,jar"  description="create pac package">
     <exec executable="jfpac">
-      <arg value="${app}-${version}-i686.pac"/>
+      <arg value="${app}-${version}-i686.pkg.tar.xz"/>
       <arg value="x32"/>
     </exec>
-    <copy file="${app}-${version}-i686.pac" todir="${home}/repo/arch" overwrite="true"/>
+    <copy file="${app}-${version}-i686.pkg.tar.xz" todir="${home}/repo/arch" overwrite="true"/>
   </target>
 
   <target name="pac64" depends="elf64,jar"  description="create pac package">
     <exec executable="jfpac">
-      <arg value="${app}-${version}-x86_64.pac"/>
+      <arg value="${app}-${version}-x86_64.pkg.tar.xz"/>
       <arg value="x64"/>
     </exec>
-    <copy file="${app}-${version}-x86_64.pac" todir="${home}/repo/arch" overwrite="true"/>
+    <copy file="${app}-${version}-x86_64.pkg.tar.xz" todir="${home}/repo/arch" overwrite="true"/>
   </target>
 
   <target name="pacarm" depends="elf32,jar"  description="create pac package">
     <exec executable="jfpac">
-      <arg value="${app}-${version}-arm.pac"/>
+      <arg value="${app}-${version}-arm.pkg.tar.xz"/>
       <arg value="32"/>
     </exec>
-    <copy file="${app}-${version}-arm.pac" todir="${home}/repo/arch" overwrite="true"/>
+    <copy file="${app}-${version}-arm.pkg.tar.xz" todir="${home}/repo/arch" overwrite="true"/>
   </target>
 
   <!-- MacOSX targets -->
