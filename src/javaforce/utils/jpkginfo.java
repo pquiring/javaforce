@@ -89,10 +89,19 @@ public class jpkginfo {
       XML.XMLTag tag = xml.root.getChildAt(a);
       if (!tag.name.equals("property")) continue;
       int attrs = tag.attrs.size();
+      String attrName = null;
+      String attrValue = null;
       for(int b=0;b<attrs;b++) {
-        if (tag.attrs.get(b).name.equals(name)) {
-          return tag.attrs.get(b).value;
+        XML.XMLAttr attr = tag.attrs.get(b);
+        if (attr.name.equals("name")) {
+          attrName = attr.value;
         }
+        if (attr.name.equals("value")) {
+          attrValue = attr.value;
+        }
+      }
+      if (attrName != null && attrName.equals(name)) {
+        return attrValue;
       }
     }
     return null;
