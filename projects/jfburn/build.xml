@@ -10,6 +10,7 @@
 
   <property name="ubuntu.depends" value="wodim"/>
   <property name="fedora.depends" value="wodim"/>
+  <property name="arch.depends" value="cdrkit"/>
 
   <import file="../../base.xml"/>
 
