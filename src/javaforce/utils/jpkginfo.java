@@ -23,7 +23,8 @@ public class jpkginfo {
   }
 
   private static XML xml;
-  private static String app, desc, archtype, ver, size;
+  private static String app, desc, archtype, ver;
+  private static long size;  //in bytes
 
   public static void main(String args[]) {
     if (args == null || args.length < 3) {
@@ -49,18 +50,18 @@ public class jpkginfo {
     }
   }
 
-  private static String calcSize(String files_list) {
+  private static long calcSize(String files_list) {
     try {
       String files[] = new String(JF.readAll(new FileInputStream(files_list))).replaceAll("\r", "").split("\n");
       long size = 0;
       for(int a=0;a<files.length;a++) {
         size += new File(files[a]).length();
       }
-      return Long.toString(size / 1024L);
+      return size;
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
-      return null;
+      return -1;
     }
   }
 
@@ -109,7 +110,6 @@ public class jpkginfo {
 
   private static String getDepends(String tagName, String fieldName) {
     String depends = getProperty(tagName);
-    if (depends.length() > 0) depends = "," + depends;
     if (!app.equals("javaforce")) depends = "javaforce" + ((depends.length() > 0) ? "," : "") + depends;
     if (depends.length() > 0) return fieldName + depends + "\n"; else return "";
   }
@@ -132,7 +132,7 @@ public class jpkginfo {
       sb.append("Description: " + desc + "\n");
       sb.append("Maintainer: Peter Quiring <pquiring@gmail.com>");
       //optional
-      sb.append("Installed-Size: " + size + "\n");
+      sb.append("Installed-Size: " + Long.toString(size / 1024L) + "\n");
       sb.append(getDepends("ubuntu.depends", "Depends: "));
       new File("deb").mkdir();
       {
@@ -204,7 +204,7 @@ public class jpkginfo {
       sb.append("pkgname = " + app + "\n");
       sb.append("pkgver = " + ver + "\n");
       sb.append("pkgdesc = " + desc + "\n");
-      sb.append("builddate = " + Long.toString(Calendar.getInstance().getTimeInMillis() / 1000L));
+      sb.append("builddate = " + Long.toString(Calendar.getInstance().getTimeInMillis() / 1000L) + "\n");
       sb.append("packager = Peter Quiring <pquiring@gmail.com>\n");
       sb.append("size = " + size + "\n");
       sb.append("license = LGPL\n");

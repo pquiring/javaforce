@@ -254,29 +254,19 @@ public class XML implements TreeModelListener {
   private final int XML_DATA = 2;
   private final int XML_CLOSE = 3;
   private final int XML_SINGLE = 4;
-  private int type, nexttype;
+  private int type;
+  private int line, pos;
+  private byte buf[];
 
-  private XMLTagPart readtag(Reader rdr) {
+  private XMLTagPart readtag() {
     boolean quote = false, isAttrs = false;
-    int ich;
     char ch;
     XMLTagPart tag = new XMLTagPart();
 
     type = XML_DATA;
-    if (nexttype != -1) {
-      type = nexttype;
-      nexttype = -1;
-    }
-    while (true) {
-      try {
-        ich = rdr.read();
-      } catch (Exception e) {
-        break;
-      }
-      if (ich == -1) {
-        break;
-      }
-      ch = (char) ich;
+    while (pos < buf.length) {
+      ch = (char) buf[pos++];
+      if (ch == '\n') line++;
       switch (type) {
         case XML_OPEN:
         case XML_CLOSE:
@@ -309,7 +299,7 @@ public class XML implements TreeModelListener {
         case XML_DATA:
           if ((ch == '<') && (!quote)) {
             if (tag.content.length() > 0) {
-              nexttype = XML_OPEN;
+              pos--;
               break;
             }
             type = XML_OPEN;
@@ -487,23 +477,22 @@ public class XML implements TreeModelListener {
    * @param event callback handler to process each loaded XML tag
    */
   public boolean read(InputStream is, XMLEvent event) {
-    BufferedReader bris;
+    this.event = event;
     try {
-      bris = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+      buf = JF.readAll(is);
     } catch (Exception e) {
-      JFLog.log(e);
+      e.printStackTrace();
       return false;
     }
-    this.event = event;
     deleteAll();
     type = XML_DATA;
-    nexttype = -1;
     XMLTagPart tagpart;
     XMLTag tag = null, newtag;
     boolean bRoot = false;
     boolean bHeader = false;
+    line = 1;
     while (true) {
-      tagpart = readtag(bris);
+      tagpart = readtag();
       if (tagpart == null) {
         break;
       }
@@ -520,6 +509,10 @@ public class XML implements TreeModelListener {
             if (event != null) {
               event.XMLTagAdded(header);
             }
+            break;
+          }
+          if (tagpart.content.startsWith("!--")) {
+            //ignore comments
             break;
           }
         //no break
@@ -553,11 +546,11 @@ public class XML implements TreeModelListener {
           break;
         case XML_CLOSE:
           if (tag == null) {
-            JFLog.log("XML:tag closed but never opened");
+            JFLog.log("XML:tag closed but never opened:line=" + line);
             return false;
           }  //bad xml file
           if (!tagpart.content.equalsIgnoreCase(tag.name)) {
-            JFLog.log("XML:tag closed doesn't match open");
+            JFLog.log("XML:tag closed doesn't match open:tag.open=" + tag.name + ":tag.close=" + tagpart.content + ":line=" + line );
             return false;
           }  //unmatched closing tag
           tag = (XMLTag) tag.getParent();
@@ -570,6 +563,7 @@ public class XML implements TreeModelListener {
           break;
       }
     }
+    buf = null;
     if (tag != null) {
       JFLog.log("XML:tag left open");
       return false;
@@ -821,7 +815,7 @@ public class XML implements TreeModelListener {
     if (objs == null || objs.length == 0) {
       return null;
     }
-    name = tag.getName();
+    name = tag.getXMLName();
     if (!name.equals(objs[0].toString())) {
       return null;
     }
@@ -833,7 +827,7 @@ public class XML implements TreeModelListener {
       cnt = tag.getChildCount();
       for (int i = 0; i < cnt; i++) {
         child = (XMLTag) tag.getChildAt(i);
-        name = child.getName();
+        name = child.getXMLName();
         if (name.equals(objs[idx].toString())) {
           ok = true;
           idx++;
