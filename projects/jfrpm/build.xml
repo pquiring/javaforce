@@ -4,6 +4,7 @@
   <property name="app" value="jfrpm"/>
   <property name="home" location="../.."/>
   <property name="version" value="1.0"/>
+  <property name="noelf" value="true"/>
 
   <import file="../../base.xml"/>
 

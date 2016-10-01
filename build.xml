@@ -6,6 +6,7 @@
   <property name="build" location="classes"/>
   <property name="home" value="."/>
   <property name="version" value="11.4.0"/>
+  <property name="noelf" value="true"/>
 
   <property name="ubuntu.depends" value="openjdk-8-jre, libjsch-java, libjzlib-java, libjcifs-java, fuse, libfuse2, fuseiso, libcdio13, mate-icon-theme, libv4l-dev"/>
   <property name="fedora.depends" value="java-1.8.0-openjdk, jsch, jzlib, jcifs, fuse, fuse-libs, fuseiso, libcdio"/>
@@ -157,24 +158,6 @@
     <utilsmacro app="pngalpha" bits="64"/>
     <utilsmacro app="jfshare" bits="64"/>
     <utilsmacro app="WinPE" bits="64"/>
-  </target>
-
-  <macrodef name="appmacro">
-    <attribute name="app"/>
-    <attribute name="cfg"/>
-    <attribute name="bits"/>
-    <sequential>
-      <copy file="${home}/stubs/win@{bits}.exe" tofile="@{app}.exe" overwrite="true"/>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
-        <arg value="@{app}.exe"/>
-        <arg value="cfg/@{cfg}.cfg"/>
-      </java>
-    </sequential>
-  </macrodef>
-
-  <target name="runas" depends="jar" description="build exe for RunAs 32/64bit">
-    <appmacro app="RunAs32" cfg="runas" bits="32"/>
-    <appmacro app="RunAs64" cfg="runas" bits="64"/>
   </target>
 
   <target name="jre-base-desktop" description="build JRE for bundled JRE builds with desktop (swing) support">
