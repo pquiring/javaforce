@@ -40,7 +40,7 @@ public class jpkginfo {
     xml = loadXML();
     app = getProperty("app");
     desc = getTag("description");
-    app = getProperty("version");
+    ver = getProperty("version");
     switch (distro) {
       case "ubuntu": ubuntu(); break;
       case "fedora": fedora(); break;
@@ -104,11 +104,11 @@ public class jpkginfo {
         return attrValue;
       }
     }
-    return null;
+    return "";
   }
 
   private static String getDepends(String tagName, String fieldName) {
-    String depends = getTag(tagName);
+    String depends = getProperty(tagName);
     if (depends.length() > 0) depends = "," + depends;
     if (!app.equals("javaforce")) depends = "javaforce" + ((depends.length() > 0) ? "," : "") + depends;
     if (depends.length() > 0) return fieldName + depends + "\n"; else return "";
