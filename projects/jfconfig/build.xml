@@ -11,6 +11,7 @@
 
   <property name="ubuntu.depends" value="jfparted, jfapps, jfrepo, libnss3-tools"/>
   <property name="fedora.depends" value="jfparted, jfapps, jfrepo, pciutils"/>
+  <property name="arch.depends" value="jfparted, jfapps, jfrepo, nss"/>
 
   <import file="../../base.xml"/>
 

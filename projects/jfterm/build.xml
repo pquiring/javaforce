@@ -10,6 +10,7 @@
 
   <property name="ubuntu.depends" value="libjsch-java, libjzlib-java, openssh-server"/>
   <property name="fedora.depends" value="jsch, jzlib, openssh-server"/>
+  <property name="arch.depends" value="jsch, openssh"/>  <!-- missing jzlib -->
 
   <import file="../../base.xml"/>
 

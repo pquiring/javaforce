@@ -10,6 +10,7 @@
 
   <property name="ubuntu.depends" value="jfvnc, rdesktop"/>
   <property name="fedora.depends" value="jfvnc, rdesktop"/>
+  <property name="arch.depends" value="jfvnc, rdesktop"/>
 
   <import file="../../base.xml"/>
 

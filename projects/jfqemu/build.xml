@@ -10,6 +10,7 @@
 
   <property name="ubuntu.depends" value="qemu, jfvnc"/>
   <property name="fedora.depends" value="qemu, jfvnc"/>
+  <property name="arch.depends" value="qemu, jfvnc"/>
 
   <import file="../../base.xml"/>
 

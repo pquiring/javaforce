@@ -10,6 +10,7 @@
 
   <property name="ubuntu.depends" value="parted"/>
   <property name="fedora.depends" value="parted"/>
+  <property name="arch.depends" value="parted"/>
 
   <import file="../../base.xml"/>
 

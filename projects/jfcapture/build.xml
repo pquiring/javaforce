@@ -9,6 +9,8 @@
   <property name="version" value="0.4"/>
 
   <property name="ubuntu.depends" value="scrot"/>
+  <property name="fedora.depends" value="scrot"/>
+  <property name="arch.depends" value="scrot"/>
 
   <import file="../../base.xml"/>
 
