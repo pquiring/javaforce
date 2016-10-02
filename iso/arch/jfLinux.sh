@@ -4,26 +4,20 @@ sudo pacman -S git make arch-install-scripts squashfs-tools libisoburn dosfstool
 
 git clone https://projects.archlinux.org/archiso.git/
 
-sudo make -C archiso/archiso install
+sudo make -C archiso install
 
-mkdir -p ~/archlive
+mkdir -p ~/archlive/out
 
 cp -r /usr/share/archiso/configs/releng/* ~/archlive
 
 #customize begin
 
-echo pacman.conf >> archlive/pacman.conf
-echo packages >> archlive/packages.both
+echo pacman.conf >> ~/archlive/pacman.conf
+echo packages >> ~/archlive/packages.both
 
 #customize end
 
-cd archlive
-
-sudo ./build.sh
-
-cd ..
-
-sudo rm -rf archlive
-rm -rf archiso
+cd ~/archlive
+sudo ./build.sh -v
 
 echo Complete!
