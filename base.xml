@@ -238,7 +238,8 @@
       <arg value="${app}-${version}-any.pkg.tar.xz"/>
       <arg value="noarch"/>
     </exec>
-    <copy file="${app}-${version}-any.pkg.tar.xz" todir="${home}/repo/arch" overwrite="true"/>
+    <copy file="${app}-${version}-any.pkg.tar.xz" todir="${home}/repo/arch/x32" overwrite="true"/>
+    <copy file="${app}-${version}-any.pkg.tar.xz" todir="${home}/repo/arch/x64" overwrite="true"/>
   </target>
 
   <target name="pac32" depends="elf32,jar"  description="create pac package">
@@ -246,7 +247,7 @@
       <arg value="${app}-${version}-i686.pkg.tar.xz"/>
       <arg value="x32"/>
     </exec>
-    <copy file="${app}-${version}-i686.pkg.tar.xz" todir="${home}/repo/arch" overwrite="true"/>
+    <copy file="${app}-${version}-i686.pkg.tar.xz" todir="${home}/repo/arch/x32" overwrite="true"/>
   </target>
 
   <target name="pac64" depends="elf64,jar"  description="create pac package">
@@ -254,7 +255,7 @@
       <arg value="${app}-${version}-x86_64.pkg.tar.xz"/>
       <arg value="x64"/>
     </exec>
-    <copy file="${app}-${version}-x86_64.pkg.tar.xz" todir="${home}/repo/arch" overwrite="true"/>
+    <copy file="${app}-${version}-x86_64.pkg.tar.xz" todir="${home}/repo/arch/x64" overwrite="true"/>
   </target>
 
   <target name="pacarm" depends="elf32,jar"  description="create pac package">

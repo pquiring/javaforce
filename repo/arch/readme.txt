@@ -1,4 +1,4 @@
-This is the JavaForce PAC Repository.
+This is the JavaForce Arch Repository.
 
 You need to run:
   gpg --gen-key
@@ -11,6 +11,9 @@ If you get error that pinentry is not found, you need to create a symlink to pin
   rm pinentry
   ln -s pinentry.curses pinentry
 
-Then run update.sh to build repo files.
+There are two repos for each arch (x32 and x64).
+Run the following scripts in each one:
 
-Then run rsync.sh to upload to sourceforge.
+update.sh to build repo files.
+
+rsync.sh to upload to sourceforge.
