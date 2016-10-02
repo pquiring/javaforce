@@ -108,10 +108,14 @@ public class jpkginfo {
     return "";
   }
 
-  private static String getDepends(String tagName, String fieldName) {
-    String depends = getProperty(tagName);
-    if (!app.equals("javaforce")) depends = "javaforce" + ((depends.length() > 0) ? "," : "") + depends;
-    if (depends.length() > 0) return fieldName + depends + "\n"; else return "";
+  private static String[] getDepends(String tagName) {
+    ArrayList<String> depends = new ArrayList<String>();
+    String list[] = getProperty(tagName).split(",");
+    if (!app.equals("javaforce")) depends.add("javaforce");
+    for(int a=0;a<list.length;a++) {
+      depends.add(list[a].trim());
+    }
+    return depends.toArray(new String[0]);
   }
 
   private static void ubuntu() {
@@ -133,7 +137,13 @@ public class jpkginfo {
       sb.append("Maintainer: Peter Quiring <pquiring@gmail.com>");
       //optional
       sb.append("Installed-Size: " + Long.toString(size / 1024L) + "\n");
-      sb.append(getDepends("ubuntu.depends", "Depends: "));
+      sb.append("Depends: ");
+      String depends[] = getDepends("ubuntu.depends");
+      for(int a=0;a<depends.length;a++) {
+        if (a > 0) sb.append(",");
+        sb.append(depends[a]);
+      }
+      sb.append("\n");
       new File("deb").mkdir();
       {
         FileOutputStream fos = new FileOutputStream("deb/control");
@@ -177,7 +187,13 @@ public class jpkginfo {
       }
       sb.append("\n");
       sb.append("Summary: " + desc + "\n");
-      sb.append(getDepends("fedora.depends", "Requires: "));
+      sb.append("Requires: ");
+      String depends[] = getDepends("fedora.depends");
+      for(int a=0;a<depends.length;a++) {
+        if (a > 0) sb.append(",");
+        sb.append(depends[a]);
+      }
+      sb.append("\n");
       sb.append("%description\n " + desc + "\n");
       sb.append("%post\n");
       sb.append("#!/bin/sh\n");
@@ -202,7 +218,7 @@ public class jpkginfo {
     try {
       StringBuffer sb = new StringBuffer();
       sb.append("pkgname = " + app + "\n");
-      sb.append("pkgver = " + ver + "\n");
+      sb.append("pkgver = " + ver + "-1\n");
       sb.append("pkgdesc = " + desc + "\n");
       sb.append("builddate = " + Long.toString(Calendar.getInstance().getTimeInMillis() / 1000L) + "\n");
       sb.append("packager = Peter Quiring <pquiring@gmail.com>\n");
@@ -217,7 +233,12 @@ public class jpkginfo {
         case "a64": sb.append("aarch64"); break;
       }
       sb.append("\n");
-      sb.append(getDepends("arch.depends", "depend = "));
+      String depends[] = getDepends("arch.depends");
+      for(int a=0;a<depends.length;a++) {
+        sb.append("depend = ");
+        sb.append(depends[a]);
+        sb.append("\n");
+      }
       FileOutputStream fos = new FileOutputStream(".PKGINFO");
       fos.write(sb.toString().getBytes());
       fos.close();
