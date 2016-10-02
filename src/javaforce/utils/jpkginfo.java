@@ -218,7 +218,7 @@ public class jpkginfo {
       }
       sb.append("\n");
       sb.append(getDepends("arch.depends", "depend = "));
-      FileOutputStream fos = new FileOutputStream("pac.info");
+      FileOutputStream fos = new FileOutputStream(".PKGINFO");
       fos.write(sb.toString().getBytes());
       fos.close();
       System.out.println("Arch package info created");
