@@ -2,4 +2,4 @@
 USERNAME=digiboy86,javaforce
 SITE=web.sf.net
 FOLDER=/home/project-web/javaforce/htdocs/arch
-rsync -v *.xz *.gz $USERNAME@$SITE:$FOLDER
+rsync -vl *.xz *.gz *.db *.files $USERNAME@$SITE:$FOLDER
