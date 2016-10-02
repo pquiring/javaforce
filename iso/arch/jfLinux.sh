@@ -12,8 +12,8 @@ cp -r /usr/share/archiso/configs/releng/* ~/archlive
 
 #customize begin
 
-echo pacman.conf >> ~/archlive/pacman.conf
-echo packages >> ~/archlive/packages.both
+cat pacman.conf >> ~/archlive/pacman.conf
+cat packages >> ~/archlive/packages.both
 
 #customize end
 
