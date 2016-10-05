@@ -121,7 +121,8 @@ public class S7Params {
       }
       if (func == READ) {
         byte transport_type = data[offset++];
-        short len = (short)BE.getuint16(data, offset);
+        int len = BE.getuint16(data, offset);  //in bits
+        len = (len + 7) >> 3; //divide by 8
         offset += 2;
         out.data = new byte[len];
         System.arraycopy(data,offset,out.data,0,len);
