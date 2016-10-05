@@ -35,7 +35,7 @@ public class S7Params {
     funcData[2] = 10;  //length of def
     funcData[3] = 0x10;  //S7ANY
     funcData[4] = data_type;  //INT, BYTE, etc.
-    BE.setuint16(funcData, 5, len);  //length (# of elements)
+    BE.setuint16(funcData, 5, 1);  //length (# of elements)
     BE.setuint16(funcData, 7, block_number);  //DBxx
     funcData[9] = block_type;  //DB, I, Q, etc.
     //BE.setuint24(data, 9, off);
@@ -83,7 +83,7 @@ public class S7Params {
     funcData[2] = 10;  //length of def
     funcData[3] = 0x10;  //S7ANY
     funcData[4] = data_type;  //INT, BYTE, etc.
-    BE.setuint16(funcData, 5, len);  //length (# of elements)
+    BE.setuint16(funcData, 5, 1);  //length (# of elements)
     BE.setuint16(funcData, 7, block_number);  //DBxx
     funcData[9] = block_type;  //DB, I, Q, etc.
     //BE.setuint24(data, 9, off);
@@ -93,7 +93,8 @@ public class S7Params {
 
     funcData[13] = 0x00;  //res
     funcData[14] = getTransportType(data_type);  //transport type
-    BE.setuint16(funcData, 15, len << 3);  //length (# of bytes)
+    if (len > 1) len <<= 3;  //length in bits
+    BE.setuint16(funcData, 15, len);
     System.arraycopy(data, 0, funcData, 17, data.length);
   }
 
