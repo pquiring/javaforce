@@ -9,12 +9,10 @@ import javax.net.ssl.*;
 //remove these for Android
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import javaforce.jni.JFNative;
+import java.lang.reflect.*;
+import java.security.*;
 import javax.swing.*;
+import javax.swing.filechooser.*;
 
 /**
  * A collection of static methods. Many methods help reduce try/catch clutter by
@@ -1384,5 +1382,111 @@ public class JF {
 
   public static boolean is64Bit() {
     return System.getProperty("sun.arch.data.model").equals("64");
+  }
+
+  public static String getOpenFile(String path) {
+    return getOpenFile(path, null);
+  }
+
+  /** Show open file dialog.
+   *
+   * @param path = init path
+   * @param filters[][] = new String[][] { {"desc", "*.txt"}, ...};
+   * @return
+   */
+  public static String getOpenFile(String path, String filters[][]) {
+    JFileChooser chooser = new JFileChooser();
+    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    chooser.setMultiSelectionEnabled(false);
+    chooser.setCurrentDirectory(new File(path));
+    if (filters != null) {
+      for(int a=0;a<filters.length;a++) {
+        javax.swing.filechooser.FileFilter ff = new FileNameExtensionFilter(filters[a][0], filters[a][1]);
+        chooser.addChoosableFileFilter(ff);
+        if (a == 0) chooser.setFileFilter(ff);
+      }
+    }
+    if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+      return chooser.getSelectedFile().getAbsolutePath();
+    } else {
+      return null;
+    }
+  }
+
+  public static String getSaveFile(String file) {
+    return getSaveFile(file, null);
+  }
+
+  /** Show save file dialog.
+   *
+   * @param file = init file
+   * @param filters[][] = new String[][] { {"desc", "*.txt"}, ...};
+   * @return
+   */
+  public static String getSaveFile(String file, String filters[][]) {
+    JFileChooser chooser = new JFileChooser();
+    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    chooser.setMultiSelectionEnabled(false);
+    chooser.setCurrentDirectory(new File(file).getParentFile());
+    if (filters != null) {
+      for(int a=0;a<filters.length;a++) {
+        javax.swing.filechooser.FileFilter ff = new FileNameExtensionFilter(filters[a][0], filters[a][1]);
+        chooser.addChoosableFileFilter(ff);
+        if (a == 0) chooser.setFileFilter(ff);
+      }
+    }
+    chooser.setSelectedFile(new File(file));
+    if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+      return chooser.getSelectedFile().getAbsolutePath();
+    } else {
+      return null;
+    }
+  }
+
+  public static String getSaveAsFile(String path) {
+    return getSaveAsFile(path, null);
+  }
+
+  /** Show save file dialog.
+   *
+   * @param path = init path
+   * @param filters[][] = new String[][] { {"desc", "*.txt"}, ...};
+   * @return
+   */
+  public static String getSaveAsFile(String path, String filters[][]) {
+    JFileChooser chooser = new JFileChooser();
+    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    chooser.setMultiSelectionEnabled(false);
+    chooser.setCurrentDirectory(new File(path));
+    if (filters != null) {
+      for(int a=0;a<filters.length;a++) {
+        javax.swing.filechooser.FileFilter ff = new FileNameExtensionFilter(filters[a][0], filters[a][1]);
+        chooser.addChoosableFileFilter(ff);
+        if (a == 0) chooser.setFileFilter(ff);
+      }
+    }
+    if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+      return chooser.getSelectedFile().getAbsolutePath();
+    } else {
+      return null;
+    }
+  }
+
+  public static String getOpenFolder(String path) {
+    JFileChooser chooser = new JFileChooser();
+    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    chooser.setMultiSelectionEnabled(false);
+    chooser.setCurrentDirectory(new File(path));
+    if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+      return chooser.getSelectedFile().getAbsolutePath();
+    } else {
+      return null;
+    }
+  }
+
+  /** Returns path component of a filename */
+  public static String getPath(String filename) {
+    File file = new File(filename);
+    return file.getParent();
   }
 }
