@@ -547,17 +547,21 @@ public class App extends javax.swing.JFrame {
       cs = new ArrayList<Controller>();
       urls = new ArrayList<String>();
       //create controllers and find fastest timer
-      int cnt = tags.size();
       tableModel.setColumnCount(0);
       tableModel.addColumn("timestamp");
+      int cnt = tags.size();
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
+        tag.children.clear();
+        tag.child = false;
         String url = tag.getURL();
         boolean have = false;
+        Tag parent = null;
         for(int b=0;b<urls.size();b++) {
           if (urls.get(b).equals(url)) {
             have = true;
             tag.c = cs.get(b);
+            parent = tags.get(b);
             break;
           }
         }
@@ -570,11 +574,27 @@ public class App extends javax.swing.JFrame {
           cs.add(c);
           urls.add(url);
           tag.c = c;
+        } else {
+          if (tag.type == Tag.types.S7) {
+            parent.children.add(tag);
+            tag.child = true;
+          }
         }
         tableModel.addColumn(tag.toString());
       }
       //init
       first = true;
+      for(int a=0;a<cnt;a++) {
+        Tag tag = tags.get(a);
+        if (tag.children.size() > 0) {
+          int ccnt = tag.children.size();
+          tag.tags = new String[ccnt+1];
+          tag.tags[0] = tag.tag;
+          for(int b=0;b<ccnt;b++) {
+            tag.tags[b+1] = tag.children.get(b).tag;
+          }
+        }
+      }
       //start timer
       timer = new java.util.Timer();
       task = new Task();
@@ -616,14 +636,37 @@ public class App extends javax.swing.JFrame {
         idx = 1;
         for(int a=0;a<cnt;a++) {
           Tag tag = tags.get(a);
-          byte data[] = tag.c.read(tag.tag);
-          if (data == null) data = new byte[4];
-          switch (tag.size) {
-            case bit: log(tag, data[0] == 0 ? 0 : 1); break;
-            case int8: log(tag, data[0] & 0xff); break;
-            case int16: log(tag, BE.getuint16(data, 0)); break;
-            case int32: log(tag, BE.getuint32(data, 0)); break;
-            case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
+          if (tag.children.size() > 0) {
+            //read multiple tags
+            byte datas[][] = tag.c.read(tag.tags);
+            int ccnt = tag.children.size();
+            for(int b=0;b<ccnt;b++) {
+              tag.children.get(b).data = datas[b+1];
+            }
+            byte data[] = datas[0];
+            switch (tag.size) {
+              case bit: log(tag, data[0] == 0 ? 0 : 1); break;
+              case int8: log(tag, data[0] & 0xff); break;
+              case int16: log(tag, BE.getuint16(data, 0)); break;
+              case int32: log(tag, BE.getuint32(data, 0)); break;
+              case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
+            }
+          } else {
+            //read one tag
+            byte data[];
+            if (tag.child) {
+              data = tag.data;
+            } else {
+              data = tag.c.read(tag.tag);
+            }
+            if (data == null) data = new byte[4];
+            switch (tag.size) {
+              case bit: log(tag, data[0] == 0 ? 0 : 1); break;
+              case int8: log(tag, data[0] & 0xff); break;
+              case int16: log(tag, BE.getuint16(data, 0)); break;
+              case int32: log(tag, BE.getuint32(data, 0)); break;
+              case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
+            }
           }
           ln += ",";
           ln += row[idx];
@@ -638,7 +681,7 @@ public class App extends javax.swing.JFrame {
         }
         gui(() -> {
           tableModel.addRow(row);
-          if (tableModel.getRowCount() > 100) {
+          if (tableModel.getRowCount() > 10) {
             tableModel.removeRow(0);
           }
         });

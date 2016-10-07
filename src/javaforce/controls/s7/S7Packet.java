@@ -47,14 +47,36 @@ public class S7Packet {
   }
 
   /** Creates a packet to read data from S7. */
-  public static byte[] makeReadPacket(S7Data type) {
+  public static byte[] makeReadPacket(S7Data s7) {
     TPKT tpkt = new TPKT();
     COTP cotp = new COTP(COTP.type_data);
     S7Header header = new S7Header();
     S7Params params = new S7Params();
     byte data[];
 
-    params.makeRead(type.block_type, type.block_number, type.data_type, type.offset, type.length);
+    params.makeRead(s7);
+    int size = tpkt.size() + cotp.size() + header.size() + params.size();
+    data = new byte[size];
+    int dataoff = 0;
+    tpkt.write(data, dataoff, (short)size);
+    dataoff += tpkt.size();
+    cotp.write(data, dataoff);
+    dataoff += cotp.size();
+    header.write(data, dataoff, (short)params.size(), (short)0);
+    dataoff += header.size();
+    params.write(data, dataoff);
+    return data;
+  }
+
+  /** Creates a packet to read data from S7. */
+  public static byte[] makeReadPacket(S7Data s7[]) {
+    TPKT tpkt = new TPKT();
+    COTP cotp = new COTP(COTP.type_data);
+    S7Header header = new S7Header();
+    S7Params params = new S7Params();
+    byte data[];
+
+    params.makeRead(s7);
     int size = tpkt.size() + cotp.size() + header.size() + params.size();
     data = new byte[size];
     int dataoff = 0;
@@ -140,6 +162,34 @@ public class S7Packet {
   public static S7Data decodePacket(byte packet[]) {
     try {
       S7Data data = new S7Data();
+      int offset = 0;
+      TPKT tpkt = new TPKT();
+      tpkt.read(packet, offset);
+      offset += tpkt.size();
+      COTP cotp = new COTP();
+      cotp.read(packet, offset);
+      if (cotp.PDU_type == COTP.type_connect) return data;
+      if (cotp.PDU_type == COTP.type_connect_ack) return data;
+      offset += cotp.size();
+      S7Header header = new S7Header();
+      header.read(packet, offset);
+      offset += header.size();
+      S7Params params = new S7Params();
+      params.read(packet, offset, data);
+      return data;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /** Decodes a packet and returns any data returned. */
+  public static S7Data[] decodeMultiPacket(byte packet[], int count) {
+    try {
+      S7Data data[] = new S7Data[count];
+      for(int a=0;a<count;a++) {
+        data[a] = new S7Data();
+      }
       int offset = 0;
       TPKT tpkt = new TPKT();
       tpkt.read(packet, offset);

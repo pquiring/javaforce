@@ -131,6 +131,7 @@ public class Controller {
     }
     return false;
   }
+
   /** Disconnects from PLC. */
   public boolean disconnect() {
     if (!connected) return false;
@@ -163,7 +164,10 @@ public class Controller {
     return write(addr, data, datatype.ANY);
   }
 
-  /** Writes data to PLC. */
+  /** Writes data to PLC.
+   *
+   * datatype is required for AB controllers.
+   */
   public boolean write(String addr, byte data[], datatype type) {
     if (!connected) return false;
     switch (plc) {
@@ -304,6 +308,93 @@ public class Controller {
           return null;
         }
       }
+    }
+    return null;
+  }
+
+  /** Reads multiple data tags from PLC. (only S7 is currently supported) */
+  public byte[][] read(String addr[]) {
+    if (!connected) return null;
+    switch (plc) {
+      case S7: {
+        S7Data s7[] = new S7Data[addr.length];
+        for(int a=0;a<addr.length;a++) {
+          s7[a] = S7Packet.decodeAddress(addr[a]);
+        }
+        byte packet[] = S7Packet.makeReadPacket(s7);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        byte reply[] = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        s7 = S7Packet.decodeMultiPacket(Arrays.copyOf(reply, replySize), addr.length);
+        byte ret[][] = new byte[addr.length][];
+        for(int a=0;a<addr.length;a++) {
+          ret[a] = s7[a].data;
+        }
+        return ret;
+      }
+/*
+      case MODBUS: {
+        ModAddr ma = ModPacket.decodeAddress(addr);
+        byte packet[] = ModPacket.makeReadPacket(ma);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        byte reply[] = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!ModPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        ModData data = ModPacket.decodePacket(Arrays.copyOf(reply, replySize));
+        return data.data;
+      }
+      case AB: {
+        byte packet[] = ABPacket.makeReadPacket(addr, ab_context);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        byte reply[] = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          return ABPacket.decodePacket(reply);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+      }
+*/
     }
     return null;
   }

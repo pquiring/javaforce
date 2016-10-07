@@ -26,22 +26,47 @@ public class S7Params {
     funcData[5] = 1; funcData[6] = (byte)0xe0;  //PDU length
   }
 
-  /** Create a packet to read data. */
-  public void makeRead(byte block_type, short block_number, byte data_type, int off/*24bit*/, short len) {
+  /** Create a packet to read single tag. */
+  public void makeRead(S7Data s7) {
     func = READ;
     funcData = new byte[13];
     funcData[0] = 1;  //count
     funcData[1] = 0x12;  //var def
     funcData[2] = 10;  //length of def
     funcData[3] = 0x10;  //S7ANY
-    funcData[4] = data_type;  //INT, BYTE, etc.
+    funcData[4] = s7.data_type;  //INT, BYTE, etc.
     BE.setuint16(funcData, 5, 1);  //length (# of elements)
-    BE.setuint16(funcData, 7, block_number);  //DBxx
-    funcData[9] = block_type;  //DB, I, Q, etc.
+    BE.setuint16(funcData, 7, s7.block_number);  //DBxx
+    funcData[9] = s7.block_type;  //DB, I, Q, etc.
     //BE.setuint24(data, 9, off);
-    funcData[10] = (byte)((off & 0xff0000) >> 16);
-    funcData[11] = (byte)((off & 0xff00) >> 8);
-    funcData[12] = (byte)(off & 0xff);
+    funcData[10] = (byte)((s7.offset & 0xff0000) >> 16);
+    funcData[11] = (byte)((s7.offset & 0xff00) >> 8);
+    funcData[12] = (byte)(s7.offset & 0xff);
+  }
+
+  /** Create a packet to read multiple tags. */
+  public void makeRead(S7Data s7s[]) {
+    func = READ;
+    byte cnt = (byte)s7s.length;
+    funcData = new byte[1 + cnt * 12];
+    funcData[0] = cnt;  //count
+    int offset = 1;
+    for(byte a=0;a<cnt;a++) {
+      S7Data s7 = s7s[a];
+      funcData[offset++] = 0x12;  //var def
+      funcData[offset++] = 10;  //length of def
+      funcData[offset++] = 0x10;  //S7ANY
+      funcData[offset++] = s7.data_type;  //INT, BYTE, etc.
+      BE.setuint16(funcData, offset, 1);  //length (# of elements)
+      offset += 2;
+      BE.setuint16(funcData, offset, s7.block_number);  //DBxx
+      offset += 2;
+      funcData[offset++] = s7.block_type;  //DB, I, Q, etc.
+      //BE.setuint24(data, 9, off);
+      funcData[offset++] = (byte)((s7.offset & 0xff0000) >> 16);
+      funcData[offset++] = (byte)((s7.offset & 0xff00) >> 8);
+      funcData[offset++] = (byte)(s7.offset & 0xff);
+    }
   }
 
   //transport types
@@ -113,7 +138,6 @@ public class S7Params {
   public boolean read(byte data[], int offset, S7Data out) throws Exception {
     func = data[offset++];
     byte count = data[offset++];
-    if (count > 1) throw new Exception("S7:only support 1 data per packet:" + count);
     for(int a=0;a<count;a++) {
       byte success = data[offset++];
       if (success != (byte)0xff) {
@@ -125,9 +149,41 @@ public class S7Params {
         int len = BE.getuint16(data, offset);  //in bits
         len = (len + 7) >> 3; //divide by 8
         offset += 2;
+        if (a == 0) {
+          out.data = new byte[len];
+          System.arraycopy(data,offset,out.data,0,len);
+        }
+        offset += len;
+        if (len % 2 == 1) {
+          offset++;  //fill byte
+        }
+      }
+    }
+    return true;
+  }
+
+  /** Reads params from packet and fills in S7Data. */
+  public boolean read(byte data[], int offset, S7Data outs[]) throws Exception {
+    func = data[offset++];
+    byte count = data[offset++];
+    for(int a=0;a<count;a++) {
+      S7Data out = outs[a];
+      byte success = data[offset++];
+      if (success != (byte)0xff) {
+        JFLog.log("Error:success=" + success);
+        return false;
+      }
+      if (func == READ) {
+        byte transport_type = data[offset++];
+        int len = BE.getuint16(data, offset);  //in bits
+        len = (len + 7) >> 3; //divide by 8
+        offset += 2;
         out.data = new byte[len];
         System.arraycopy(data,offset,out.data,0,len);
         offset += len;
+        if (len % 2 == 1) {
+          offset++;  //fill byte
+        }
       }
     }
     return true;

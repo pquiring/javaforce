@@ -3,6 +3,8 @@
  * @author pquiring
  */
 
+import java.util.*;
+
 import javaforce.controls.*;
 
 public class Tag {
@@ -27,6 +29,10 @@ public class Tag {
   public int lastScaledValue;
 
   public Controller c;
+  public ArrayList<Tag> children = new ArrayList<Tag>();
+  public String tags[];
+  public boolean child;
+  public byte data[];  //data from parent
 
   public String getURL() {
     switch (type) {
