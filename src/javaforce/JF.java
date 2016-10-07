@@ -1391,7 +1391,7 @@ public class JF {
   /** Show open file dialog.
    *
    * @param path = init path
-   * @param filters[][] = new String[][] { {"desc", "*.txt"}, ...};
+   * @param filters[][] = new String[][] { {"desc", "txt"}, ...};
    * @return
    */
   public static String getOpenFile(String path, String filters[][]) {
@@ -1420,7 +1420,7 @@ public class JF {
   /** Show save file dialog.
    *
    * @param file = init file
-   * @param filters[][] = new String[][] { {"desc", "*.txt"}, ...};
+   * @param filters[][] = new String[][] { {"desc", "txt"}, ...};
    * @return
    */
   public static String getSaveFile(String file, String filters[][]) {
@@ -1450,7 +1450,7 @@ public class JF {
   /** Show save file dialog.
    *
    * @param path = init path
-   * @param filters[][] = new String[][] { {"desc", "*.txt"}, ...};
+   * @param filters[][] = new String[][] { {"desc", "txt"}, ...};
    * @return
    */
   public static String getSaveAsFile(String path, String filters[][]) {

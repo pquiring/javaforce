@@ -24,6 +24,9 @@ public class App extends javax.swing.JFrame {
   public App() {
     app = this;
     initComponents();
+    JFImage icon = new JFImage();
+    icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfdatalogger.png"));
+    setIconImage(icon.getImage());
     for(int a=0;a<delays.length;a++) {
       speed.addItem(Integer.toString(delays[a]) + "ms");
     }
