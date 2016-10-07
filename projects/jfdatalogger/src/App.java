@@ -355,7 +355,7 @@ public class App extends javax.swing.JFrame {
   public static ArrayList<Tag> tags = new ArrayList<Tag>();
   public static DefaultTableModel tableModel = new DefaultTableModel();
   public static DefaultListModel listModel = new DefaultListModel();
-  public static JFImage logImage = new JFImage(1000, 510);
+  public static JFImage logImage = new JFImage(1, 510);
   public static Worker worker;
   public static Task task;
   public static int delay;
@@ -507,7 +507,24 @@ public class App extends javax.swing.JFrame {
   }
 
   public void drawImage(Graphics g) {
-    g.drawImage(logImage.getImage(), -(1000 - img.getWidth()), 0, null);
+    if (logImage.getWidth() != img.getWidth()) {
+      int ow = logImage.getWidth();
+      int nw = img.getWidth();
+      int diff = nw - ow;
+      if (diff > 0) {
+        //expanding image
+        int px[] = logImage.getPixels();
+        logImage.setSize(img.getWidth(), 510);
+        logImage.putPixels(px, diff, 0, ow, 510, 0);
+      } else {
+        //shrinking image
+        diff *= -1;
+        int px[] = logImage.getPixels(diff, 0, nw, 510);
+        logImage.setSize(img.getWidth(), 510);
+        logImage.putPixels(px, 0, 0, nw, 510, 0);
+      }
+    }
+    g.drawImage(logImage.getImage(), 0, 0, null);
   }
 
   public static void gui(Runnable task) {
@@ -662,15 +679,16 @@ public class App extends javax.swing.JFrame {
       row[idx] = Float.toString(value);
     }
     public void updateImage() {
-      int px[] = logImage.getPixels(1, 0, 999, 510);
-      logImage.putPixels(px, 0, 0, 999, 510, 0);
-      logImage.line(999, 0, 999, 509, 0);
+      int x2 = logImage.getWidth() - 1;
+      int px[] = logImage.getPixels(1, 0, x2, 510);
+      logImage.putPixels(px, 0, 0, x2, 510, 0);
+      logImage.line(x2, 0, x2, 509, 0);
       int cnt = tags.size();
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
         int y = 5 + 500 - (tag.scaledValue * 5);
         int ly = 5 + 500 - (tag.lastScaledValue * 5);
-        logImage.line(998, ly, 999, y, tag.color);
+        logImage.line(x2-1, ly, x2, y, tag.color);
         tag.lastScaledValue = tag.scaledValue;
       }
     }
