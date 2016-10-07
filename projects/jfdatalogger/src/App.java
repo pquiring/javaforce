@@ -577,7 +577,8 @@ public class App extends javax.swing.JFrame {
       first = true;
       //start timer
       timer = new java.util.Timer();
-      timer.scheduleAtFixedRate(new Task(), delay, delay);
+      task = new Task();
+      timer.scheduleAtFixedRate(task, delay, delay);
       JFLog.log("running...");
       running = true;
     }
@@ -589,8 +590,8 @@ public class App extends javax.swing.JFrame {
       task = null;
       if (logger != null) {
         try { logger.close(); } catch (Exception e) {}
+        logger = null;
       }
-      logger = null;
       app.run.setText("Run");
       app.setState(false);
     }
@@ -606,9 +607,9 @@ public class App extends javax.swing.JFrame {
         int cnt = tags.size();
         row = new String[cnt+1];
         if (start == -1) {
-          start = System.nanoTime() / 1000L;
+          start = System.nanoTime();
         }
-        int timestamp = (int)((System.nanoTime() - start) / 1000L);
+        int timestamp = (int)((System.nanoTime() - start) / 1000000L);
         String now = Long.toString(timestamp);
         row[0] = now;
         ln = now;
