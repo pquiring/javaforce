@@ -141,7 +141,7 @@ public class S7Params {
     for(int a=0;a<count;a++) {
       byte success = data[offset++];
       if (success != (byte)0xff) {
-        JFLog.log("Error:" + success);
+        JFLog.log("Error:success=" + success);
         return false;
       }
       if (func == READ) {
