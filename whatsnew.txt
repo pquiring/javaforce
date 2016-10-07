@@ -1,5 +1,12 @@
 What's new...
 
+Oct 7/2016 : JF 12.0.0 released!
+  - added new Controller library (talk to PLCs)
+  - added jfDataLogger/0.1
+    - log PLC data
+  - added support to build jfLinux with Arch
+    - but the build fails in ArchISO somewhere
+
 Jun 4/2016 : JF 11.4.0 released!
   - jfDHCP/0.7
     - new : support for custom options
