@@ -139,8 +139,10 @@ public class DNS extends Thread {
   //flags
   private static final int QR = 0x8000;  //1=response (0=query)
   //4 bits opcode
+  private static final int OPCODE_MASK = 0x7800;
   private static final int OPCODE_QUERY = 0x0000;
-  private static final int OPCODE_IQUERY = 0x4000;
+  private static final int OPCODE_IQUERY = 0x4000;  //(8)
+  private static final int OPCODE_UPDATE = 0x2800;  //(5)
   private static final int AA = 0x0400;  //auth answer
   private static final int TC = 0x0200;  //truncated (if packet > 512 bytes)
   private static final int RD = 0x0100;  //recursive desired
@@ -154,6 +156,7 @@ public class DNS extends Thread {
 
   private static final int A = 1;
   private static final int CNAME = 5;
+  private static final int SOA = 6;  //start of auth
   private static final int PTR = 12;
   private static final int MX = 15;
   private static final int AAAA = 28;
@@ -165,57 +168,77 @@ public class DNS extends Thread {
 
     private byte reply[];
     private int replyOffset;
+    private ByteBuffer bb;
     private ByteBuffer replyBuffer;
+    private short id, flgs;
+    private int opcode;
 
     public Worker(DatagramPacket packet) {
       this.packet = packet;
     }
+
     public void run() {
       try {
         data = packet.getData();
-        ByteBuffer bb = ByteBuffer.wrap(data);
+        bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.BIG_ENDIAN);
-        short id = bb.getShort(0);
-        short flgs = bb.getShort(2);
+        id = bb.getShort(0);
+        flgs = bb.getShort(2);
         if ((flgs & QR) != 0) {
           throw new Exception("response sent to server");
         }
-        if ((flgs & OPCODE_IQUERY) != 0) {
-          throw new Exception("inverse query not supported");
-        }
-        short cndQ = bb.getShort(4);
-        if (cndQ != 1) throw new Exception("only 1 question supported");
-        short cndA = bb.getShort(6);
-        if (cndA != 0) throw new Exception("query with answers?");
-        short cndS = bb.getShort(8);
-        if (cndS != 0) throw new Exception("query with auth names?");
-        short cndAdd = bb.getShort(10);
-        if (cndAdd != 0) throw new Exception("query with adds?");
-        int offset = 12;
-        for(int a=0;a < cndQ; a++) {
-          String domain = getName(data, offset);
-          offset += nameLength;
-          int type = bb.getShort(offset);
-          offset += 2;
-          int cls = bb.getShort(offset);
-          if (cls != 1) throw new Exception("only internet class supported");
-          offset += 2;
-          if (domain.endsWith(".in-addr.arpa")) {
-            //reverse IPv4 query (just send bogus info)
-            sendReply(domain, "*.in-addr.arpa,ptr,1440,localdomain", type, id);
-            continue;
-          }
-          if (domain.endsWith(".ip6.arpa")) {
-            //reverse IPv6 query (just send bogus info)
-            sendReply(domain, "*.ip6.arpa,ptr,1440,localdomain", type, id);
-            continue;
-          }
-          if (queryLocal(domain, type, id)) continue;
-          queryRemote(domain, type);
+        opcode = flgs & OPCODE_MASK;
+        switch (opcode) {
+          default:
+            throw new Exception("opcode not supported:" + opcode);
+          case OPCODE_IQUERY:
+            throw new Exception("inverse query not supported");
+          case OPCODE_UPDATE:
+            throw new Exception("update not supported");
+          case OPCODE_QUERY:
+            doQuery();
+            break;
         }
       } catch (Exception e) {
         JFLog.log(e);
       }
+    }
+
+    private void doQuery() throws Exception {
+      short cndQ = bb.getShort(4);
+      if (cndQ != 1) throw new Exception("only 1 question supported");
+      short cndA = bb.getShort(6);
+      if (cndA != 0) throw new Exception("query with answers?");
+      short cndS = bb.getShort(8);
+      if (cndS != 0) throw new Exception("query with auth names?");
+      short cndAdd = bb.getShort(10);
+      if (cndAdd != 0) throw new Exception("query with adds?");
+      int offset = 12;
+      for(int a=0;a < cndQ; a++) {
+        String domain = getName(data, offset);
+        offset += nameLength;
+        int type = bb.getShort(offset);
+        offset += 2;
+        int cls = bb.getShort(offset);
+        if (cls != 1) throw new Exception("only internet class supported");
+        offset += 2;
+        if (domain.endsWith(".in-addr.arpa")) {
+          //reverse IPv4 query (just send bogus info)
+          sendReply(domain, "*.in-addr.arpa,ptr,1440,localdomain", type, id);
+          continue;
+        }
+        if (domain.endsWith(".ip6.arpa")) {
+          //reverse IPv6 query (just send bogus info)
+          sendReply(domain, "*.ip6.arpa,ptr,1440,localdomain", type, id);
+          continue;
+        }
+        if (queryLocal(domain, type, id)) continue;
+        queryRemote(domain, type);
+      }
+    }
+
+    private void doUpdate() throws Exception {
+
     }
 
     private String getName(byte data[], int offset) {
