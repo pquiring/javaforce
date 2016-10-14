@@ -7,6 +7,10 @@
     <exec command="gcc -m32 -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux linux.c -ldl -lpthread -o ../linux32.bin"/>
   </target>
 
+  <target name="pi" description="create linux stubs">
+    <exec command="gcc -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux linux.c -ldl -lpthread -o ../linux32.bin"/>
+  </target>
+
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.bin"/>
