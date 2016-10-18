@@ -1,0 +1,5 @@
+Oct 18/2016 : v0.2 released
+  - fix : s7 tags were limited to block number 127
+
+Oct 7/2016 : v0.1 released
+  - init public release
