@@ -15,12 +15,12 @@ public class Table extends Container {
     this.rows = rows;  //Y
   }
   public void setBorder(boolean state) {
+    border = state;
     if (border) {
       addClass("border");
     } else {
       removeClass("border");
     }
-    this.border = border;
   }
   private int get(Component comp, String key, int def) {
     Integer i = (Integer)comp.getProperty(key);
