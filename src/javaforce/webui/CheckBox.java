@@ -8,9 +8,11 @@ package javaforce.webui;
 public class CheckBox extends Component {
   public CheckBox(String text) {
     this.text = text;
+    addEvent("onclick", "return onClick(this);");
+    setClass("noselect");
   }
   public String html() {
-    return "<input type=checkbox id='" + id + "' onclick='return onClick(this);' class=checkbox" + (selected ? " checked" : "") + "><label for='" + id + "' class='noselect'>" + text + "</label>";
+    return "<input type=checkbox" + getAttrs() + (selected ? " checked" : "") + "><label for='" + id + "' class='noselect'>" + text + "</label>";
   }
   private String text;
   private boolean selected;

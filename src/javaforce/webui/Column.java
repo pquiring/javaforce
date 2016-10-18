@@ -11,7 +11,7 @@ public class Column extends Container {
   }
   public String html() {
     StringBuffer sb = new StringBuffer();
-    sb.append("<div id='" + id + "' class='" + cls + "'>");
+    sb.append("<div" + getAttrs() + ">");
     int cnt = count();
     for(int a=0;a<cnt;a++) {
       sb.append(get(a).html());

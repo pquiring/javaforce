@@ -55,9 +55,28 @@ public abstract class Component {
   public void setClass(String cls) {
     this.cls = cls;
   }
+  public boolean hasClass(String cls) {
+    String cs[] = this.cls.split(" ");
+    for(int a=0;a<cs.length;a++) {
+      if (cs[a].equals(cls)) return true;
+    }
+    return false;
+  }
   public void addClass(String cls) {
+    if (hasClass(cls)) return;
     if (this.cls.length() > 0) this.cls += " ";
     this.cls += cls;
+  }
+  public void removeClass(String cls) {
+    if (!hasClass(cls)) return;
+    String cs[] = this.cls.split(" ");
+    StringBuffer sb = new StringBuffer();
+    for(int a=0;a<cs.length;a++) {
+      if (cs[a].equals(cls)) continue;
+      if (sb.length() > 0) sb.append(' ');
+      sb.append(cs[a]);
+    }
+    this.cls = sb.toString();
   }
   private Event getEvent(String onX) {
     int cnt = events.size();
@@ -102,14 +121,18 @@ public abstract class Component {
     backclr = clr;
   }
   public String getAttrs() {
+    return getAttrs("");
+  }
+  public String getAttrs(String extra_style) {
     StringBuffer sb = new StringBuffer();
-    sb.append(" id='" + id + "' ");
-    sb.append(" class='" + cls + "' ");
+    sb.append(" id='" + id + "'");
+    if (cls.length() > 0) sb.append(" class='" + cls + "'");
     sb.append(getEvents());
     sb.append(" style='");
     if (width != null) sb.append("width:" + width + ";");
     if (height != null) sb.append("height:" + height + ";");
     if (backclr != null) sb.append("background-color:" + backclr + ";");
+    sb.append(extra_style);
     sb.append("'");
     return sb.toString();
   }

@@ -10,9 +10,11 @@ package javaforce.webui;
 public class Button extends Component {
   public Button(String text) {
     this.text = text;
+    addEvent("onclick", "return onClick(this);");
+    setClass("button");
   }
   public String html() {
-    return "<button id='" + id + "' onclick='return onClick(this);' class=button>" + text + "</button>";
+    return "<button" + getAttrs() + ">" + text + "</button>";
   }
   private String text;
   public void setText(String text) {

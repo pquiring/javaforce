@@ -67,6 +67,7 @@ public class Test implements WebUIHandler {
     //add : tab panel
     TabPanel tab = new TabPanel();
     row2.add(tab);
+//    row2.addClass("pad");
 
     //add : table
     Table table = new Table(50, 50, 3, 3);

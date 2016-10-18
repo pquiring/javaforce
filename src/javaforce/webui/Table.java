@@ -15,7 +15,12 @@ public class Table extends Container {
     this.rows = rows;  //Y
   }
   public void setBorder(boolean state) {
-    border = state;
+    if (border) {
+      addClass("border");
+    } else {
+      removeClass("border");
+    }
+    this.border = border;
   }
   private int get(Component comp, String key, int def) {
     Integer i = (Integer)comp.getProperty(key);
@@ -24,10 +29,7 @@ public class Table extends Container {
   }
   public String html() {
     StringBuffer sb = new StringBuffer();
-    sb.append("<table id='" + id + "'");
-    if (border) sb.append(" class='border'");
-    sb.append(" style='width: " + (width * cols) + "px; height: " + (height * rows) + "px;'");
-    sb.append(">");
+    sb.append("<table" + getAttrs("width: " + (width * cols) + "px; height: " + (height * rows) + "px;") + ">");
     for(int y=0;y<rows;y++) {
       sb.append("<tr>");
       for(int x=0;x<cols;x++) {
