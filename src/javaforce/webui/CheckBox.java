@@ -20,7 +20,7 @@ public class CheckBox extends Component {
   public void setSelected(boolean state) {
     if (selected == state) return;
     selected = state;
-    peer.sendEvent(id, "setSelected", new String[] {"state=" + selected});
+    client.sendEvent(id, "setSelected", new String[] {"state=" + selected});
   }
   public boolean isSelected() {
     return selected;

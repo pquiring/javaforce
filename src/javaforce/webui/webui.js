@@ -33,6 +33,20 @@ ws.onmessage = function (event) {
   }
 };
 
+var splitDragging = null;
+
+function onmouseupBody(e) {
+  if (splitDragging) {
+    splitDragging = null;
+  }
+}
+
+function onmousemoveBody(e) {
+  if (splitDragging) {
+    onmousemoveSplitPanel(e);
+  }
+}
+
 function onClick(comp) {
   var msg = {
     event: "click",
@@ -90,4 +104,36 @@ function openTab(tab, idx) {
       nodes2[i].className = "tabinactive";
     }
   }
+}
+
+function onmousedownSplitPanel(e, e1, e2) {
+  var ele1 = document.getElementById(e1);
+  var ele2 = document.getElementById(e2);
+  splitDragging = {
+    //mouse coords
+    mouseX: window.event.clientX,
+    mouseY: window.event.clientY,
+    //left/top current size
+    startX: ele1.clientWidth,
+    startY: ele1.clientHeight,
+    //elements
+    element1: ele1,
+    element2: ele2
+  };
+//  console.log("m=" + window.event.clientX + "," + window.event.clientY);
+//  console.log("o=" + e.offsetLeft + "," + e.offsetTop);
+//  console.log("s=" + ele1.clientWidth + "," + ele1.clientHeight);
+}
+
+function onmousemoveSplitPanel(e) {
+//  console.log("m=" + window.event.clientX + "," + window.event.clientY);
+  var width = splitDragging.startX + (window.event.clientX - splitDragging.mouseX);
+  splitDragging.element1.style.width = width + "px";
+}
+
+function onmousemoveDrag(e) {
+  var top = splitDragging.startY + (window.event.clientY - splitDragging.mouseY);
+  var left = splitDragging.startX + (window.event.clientX - splitDragging.mouseX);
+  dragging.element.style.top = (Math.max(0, top)) + "px";
+  dragging.element.style.left = (Math.max(0, left)) + "px";
 }

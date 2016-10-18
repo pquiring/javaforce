@@ -10,28 +10,35 @@ import java.util.*;
 public abstract class Component {
   public String id;
   public String cls = "";
+  public Container parent;
+  public Client client;
+  public String width, height, backclr;
+
+  public Component() {
+    client = Client.NULL;
+  }
+
   private static class Event {
     public String event;
     public String js;
   }
   public ArrayList<Event> events = new ArrayList<Event>();
-  public Component() {
-    peer = Client.NULL;
-  }
-  /** Perform any initialization with the client peer. */
-  public void init() {}
+
+  /** Provides the client (connection to web browser side) and init other variables. */
   public void setClient(Client client) {
     if (id != null) return;
-    peer = client;
+    this.client = client;
     id = "c" + client.getNextID();
     init();
   }
+  /** Perform any initialization with the client.
+   * Containers should call init() on all sub-components.
+   */
+  public void init() {}
   /** Returns HTML to render component. */
   public abstract String html();
-  /** Dispatched event. */
+  /** Dispatches event. */
   public void dispatchEvent(String event, String args[]) {}
-  public Container parent;
-  public Client peer;
   /** Component constructor.
    * @param parent = Panel
    * @param name = name of component
@@ -83,6 +90,27 @@ public abstract class Component {
       sb.append(event.js);
       sb.append("'");
     }
+    return sb.toString();
+  }
+  public void setWidth(String width) {
+    this.width = width;
+  }
+  public void setHeight(String height) {
+    this.height = height;
+  }
+  public void setBackColor(String clr) {
+    backclr = clr;
+  }
+  public String getAttrs() {
+    StringBuffer sb = new StringBuffer();
+    sb.append(" id='" + id + "' ");
+    sb.append(" cls='" + cls + "' ");
+    sb.append(getEvents());
+    sb.append(" style='");
+    if (width != null) sb.append("width:" + width + ";");
+    if (height != null) sb.append("height:" + height + ";");
+    if (backclr != null) sb.append("background-color:" + backclr + ";");
+    sb.append("'");
     return sb.toString();
   }
 }

@@ -10,10 +10,13 @@ public class TabPanel extends Container {
   private Row row;
   public TabPanel() {
     top = new Column();
+    add(top);
     top.addClass("tab");
     row = new Row();
+    add(row);
     top.add(row);
     tabs = new Column();
+    add(tabs);
     top.add(tabs);
   }
   public void add(Panel panel, String text) {

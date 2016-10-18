@@ -99,6 +99,11 @@ public class Test implements WebUIHandler {
     Image i = new Image(img);
     row3.add(i);
 
+    SplitPanel sp = new SplitPanel(SplitPanel.VERTICAL);
+    sp.setLeftComponent(new Label("AA"));
+    sp.setRightComponent(new Label("BB"));
+    row3.add(sp);
+
     tab.add(t2, "Tab#2");
     Pad pad2 = new Pad();
     panel.add(pad2);

@@ -15,6 +15,13 @@ public abstract class Container extends Component {
       get(a).setClient(client);
     }
   }
+  public void init() {
+    super.init();
+    int cnt = count();
+    for(int a=0;a<cnt;a++) {
+      get(a).init();
+    }
+  }
   private ArrayList<Component> components = new ArrayList<Component>();
   public Component get(int idx) {
     return components.get(idx);
@@ -32,11 +39,15 @@ public abstract class Container extends Component {
     }
     return null;
   }
+  public void set(int idx, Component c) {
+    components.set(idx, c);
+  }
   public void add(Component comp) {
     comp.parent = this;
     components.add(comp);
-    if (peer != Client.NULL) {
-      comp.setClient(peer);
+    if (client != Client.NULL) {
+      comp.setClient(client);
+      comp.init();
     }
   }
   public void remove(Component comp) {

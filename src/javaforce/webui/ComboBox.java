@@ -20,7 +20,7 @@ public class ComboBox extends Component {
 
   public String html() {
     StringBuffer sb = new StringBuffer();
-    sb.append("<select id='" + id + "'" + getEvents() + ">");
+    sb.append("<select" + getAttrs() + ">");
     int cnt = values.size();
     for(int a=0;a<cnt;a++) {
       sb.append("<option value='" + values.get(a) + "'" + (a == def ? " selected" : "") + ">");

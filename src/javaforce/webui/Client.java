@@ -68,7 +68,7 @@ public class Client {
         }
         String key = arg.substring(0, idx);
         String value = arg.substring(idx+1);
-        sb.append(",\"" + key + "\":\"" + value + "\"");
+        sb.append(",\"" + key + "\":\"" + value.replaceAll("\"", "\\\\\"") + "\"");
       }
     }
     sb.append("}");

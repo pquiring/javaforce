@@ -6,6 +6,7 @@ div {
   overflow: hidden;
   white-space: nowrap;
   margin: 0px;
+  display: inline-block;
 }
 
 span {
@@ -109,4 +110,8 @@ button {
   -khtml-user-select: none;    /* Konqueror */
   -moz-user-select: none;      /* Firefox */
   -ms-user-select: none;       /* Internet Explorer/Edge */
+}
+
+.splitPanel {
+  overflow: hidden;
 }
