@@ -104,7 +104,7 @@ public abstract class Component {
   public String getAttrs() {
     StringBuffer sb = new StringBuffer();
     sb.append(" id='" + id + "' ");
-    sb.append(" cls='" + cls + "' ");
+    sb.append(" class='" + cls + "' ");
     sb.append(getEvents());
     sb.append(" style='");
     if (width != null) sb.append("width:" + width + ";");

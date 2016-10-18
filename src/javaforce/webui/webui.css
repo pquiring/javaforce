@@ -3,7 +3,6 @@ body {
 }
 
 div {
-  overflow: hidden;
   white-space: nowrap;
   margin: 0px;
   display: inline-block;
@@ -54,13 +53,11 @@ button {
 .row {
   display: inline-flex;
   flex-direction: row;
-  width: 100%;
 }
 
 .column {
   display: inline-flex;
   flex-direction: column;
-  height: 100%;
 }
 
 .pad {
@@ -114,4 +111,14 @@ button {
 
 .splitPanel {
   overflow: hidden;
+}
+
+.layersPanel {
+  position: relative;
+}
+
+.layer {
+  position: absolute;
+  top: 0;
+  left: 0;
 }

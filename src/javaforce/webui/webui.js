@@ -82,8 +82,8 @@ function sendText(comp, text) {
   ws.send(JSON.stringify(msg));
 }
 
-function openTab(tab, idx) {
-  var tabs = document.getElementById(tab.id + "_tabs");
+function openTab(idx, tabsid, rowsid) {
+  var tabs = document.getElementById(tabsid);
   var nodes = tabs.childNodes;
   var cnt = nodes.length;
   for(i = 0;i < cnt;i++) {
@@ -94,7 +94,7 @@ function openTab(tab, idx) {
     }
   }
 
-  var tabs2 = document.getElementById(tab.id + "_row");
+  var tabs2 = document.getElementById(rowsid);
   var nodes2 = tabs2.childNodes;
   var cnt2 = nodes2.length;
   for(i = 0;i < cnt2;i++) {

@@ -23,7 +23,6 @@ public class TabPanel extends Container {
     add(panel);
     int cnt = row.count();
     Label label = new Label(text);
-    label.addEvent("onclick", "openTab(this," + cnt + ");");
     label.setClass("tab" + (cnt == 0 ? "active" : "inactive"));
     row.add(label);
     tabs.add(panel);
@@ -31,5 +30,12 @@ public class TabPanel extends Container {
   }
   public String html() {
     return top.html();
+  }
+  public void init() {
+    int cnt = row.count();
+    for(int a=0;a<cnt;a++) {
+      Component c = row.get(a);
+      c.addEvent("onclick", "openTab(" + a + ",\"" + tabs.id + "\",\"" + row.id + "\");");
+    }
   }
 }

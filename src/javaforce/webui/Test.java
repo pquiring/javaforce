@@ -67,16 +67,20 @@ public class Test implements WebUIHandler {
     //add : tab panel
     TabPanel tab = new TabPanel();
     row2.add(tab);
+
     //add : table
     Table table = new Table(50, 50, 3, 3);
     table.setBorder(true);
     table.add(new Label("cell_0_0"), 0, 0);
     table.add(new Label("cell_1_1"), 1, 1);
     table.add(new Label("cell_2_2_______________too_long"), 2, 2);
+
+    //add TabPanel
     Panel t1 = new Panel();
-    t1.add(table);
     tab.add(t1, "Tab#1");
+    t1.add(table);
     Panel t2 = new Panel();
+    tab.add(t2, "Tab#2");
     Column col = new Column();
     t2.add(col);
     Label l2 = new Label("Another Label");
@@ -104,9 +108,20 @@ public class Test implements WebUIHandler {
     sp.setRightComponent(new Label("BB"));
     row3.add(sp);
 
-    tab.add(t2, "Tab#2");
-    Pad pad2 = new Pad();
-    panel.add(pad2);
+    //add forth row
+    Row row4 = new Row();
+    panel.add(row4);
+
+    LayersPanel lp = new LayersPanel();
+    Label layer1 = new Label("NO");
+    lp.add(layer1);
+    Label layer2 = new Label("-----YES");
+    lp.add(layer2);
+
+    row4.add(lp);
+
+//    Pad pad2 = new Pad();
+//    panel.add(pad2);
     return panel;
   }
 }
