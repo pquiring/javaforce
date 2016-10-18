@@ -127,7 +127,7 @@ public class S7Packet {
     if (addr.startsWith("DB")) {
       data.block_type = S7Types.DB;
       int idx = addr.indexOf('.');
-      data.block_number = Byte.valueOf(addr.substring(2, idx));
+      data.block_number = Short.valueOf(addr.substring(2, idx));
       addr = addr.substring(idx+2);  //B?##[.#]
     } else if (addr.startsWith("M")) {
       data.block_type = S7Types.M;
