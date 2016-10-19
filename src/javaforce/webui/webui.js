@@ -18,17 +18,20 @@ ws.onmessage = function (event) {
       break;
     case "show":
       break;
+    case "gettext":
+      sendText(msg.comp, comp.innerHTML);
+      break;
     case "sethtml":
       comp.innerHTML = msg.html;
       break;
     case "setsrc":
       comp.src = msg.src;
       break;
-    case "gettext":
-      sendText(msg.comp, comp.innerHTML);
-      break;
     case "settext":
       comp.innerHTML = msg.text;
+      break;
+    case "setvalue":
+      comp.value = msg.value;
       break;
   }
 };

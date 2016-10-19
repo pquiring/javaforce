@@ -28,6 +28,8 @@ public class Test implements WebUIHandler {
     return null;
   }
 
+  private int value = 50;
+
   public Panel getRootPanel(Client client) {
     Panel panel = new Panel();
     Row row1 = new Row();
@@ -45,6 +47,8 @@ public class Test implements WebUIHandler {
       if (times == null) times = new Integer(1);
       l.setText("You clicked it " + times + " times!");
       client.setProperty("times", new Integer(times + 1));
+      ProgressBar bar = (ProgressBar)client.getProperty("bar");
+      bar.setValue(++value);
     });
     //add : padding
     Pad pad = new Pad();
@@ -129,6 +133,11 @@ public class Test implements WebUIHandler {
     row5.add(vslider);
     Slider hslider = new Slider(Slider.HORIZONTAL, 0, 100, 5);
     row5.add(hslider);
+
+    ProgressBar bar = new ProgressBar(100);
+    bar.setValue(50);
+    row5.add(bar);
+    client.setProperty("bar", bar);
 
 //    Pad pad2 = new Pad();
 //    panel.add(pad2);
