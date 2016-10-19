@@ -9,20 +9,21 @@ import java.util.*;
 
 public abstract class Component {
   public String id;
-  public String cls = "";
   public Container parent;
   public Client client;
-  public String width, height, backclr;
-
-  public Component() {
-    client = Client.NULL;
-  }
+  public ArrayList<String> classes = new ArrayList<String>();
+  public HashMap<String, String> attrs = new HashMap<String, String>();
+  public HashMap<String, String> styles = new HashMap<String, String>();
 
   private static class Event {
     public String event;
     public String js;
   }
   public ArrayList<Event> events = new ArrayList<Event>();
+
+  public Component() {
+    client = Client.NULL;
+  }
 
   /** Provides the client (connection to web browser side) and init other variables. */
   public void setClient(Client client) {
@@ -52,32 +53,42 @@ public abstract class Component {
   public Object getProperty(String key) {
     return map.get(key);
   }
+
   public void setClass(String cls) {
-    this.cls = cls;
+    classes.clear();
+    classes.add(cls);
   }
   public boolean hasClass(String cls) {
-    String cs[] = this.cls.split(" ");
-    for(int a=0;a<cs.length;a++) {
-      if (cs[a].equals(cls)) return true;
-    }
-    return false;
+    return classes.contains(cls);
   }
   public void addClass(String cls) {
     if (hasClass(cls)) return;
-    if (this.cls.length() > 0) this.cls += " ";
-    this.cls += cls;
+    classes.add(cls);
   }
   public void removeClass(String cls) {
-    if (!hasClass(cls)) return;
-    String cs[] = this.cls.split(" ");
-    StringBuffer sb = new StringBuffer();
-    for(int a=0;a<cs.length;a++) {
-      if (cs[a].equals(cls)) continue;
-      if (sb.length() > 0) sb.append(' ');
-      sb.append(cs[a]);
-    }
-    this.cls = sb.toString();
+    classes.remove(cls);
   }
+
+  public boolean hasAttr(String attr) {
+    return attrs.containsKey(attr);
+  }
+  public void addAttr(String attr, String value) {
+    attrs.put(attr, value);
+  }
+  public void removeAttr(String attr) {
+    attrs.remove(attr);
+  }
+
+  public boolean hasStyle(String style) {
+    return styles.containsKey(style);
+  }
+  public void setStyle(String style, String value) {
+    styles.put(style, value);
+  }
+  public void removeStyle(String style) {
+    styles.remove(style);
+  }
+
   private Event getEvent(String onX) {
     int cnt = events.size();
     for(int a=0;a<cnt;a++) {
@@ -112,28 +123,44 @@ public abstract class Component {
     return sb.toString();
   }
   public void setWidth(String width) {
-    this.width = width;
+    setStyle("width", width);
   }
   public void setHeight(String height) {
-    this.height = height;
+    setStyle("height", height);
   }
   public void setBackColor(String clr) {
-    backclr = clr;
+    setStyle("background-color", clr);
   }
   public String getAttrs() {
-    return getAttrs("");
-  }
-  public String getAttrs(String extra_style) {
     StringBuffer sb = new StringBuffer();
     sb.append(" id='" + id + "'");
-    if (cls.length() > 0) sb.append(" class='" + cls + "'");
+    if (attrs.size() > 0) {
+      int size = attrs.size();
+      String keys[] = attrs.keySet().toArray(new String[size]);
+      String vals[] = attrs.values().toArray(new String[size]);
+      for(int a=0;a<size;a++) {
+        sb.append(" " + keys[a] + "='" + vals[a] + "'");
+      }
+    }
+    if (classes.size() > 0) {
+      sb.append(" class='");
+      for(int a=0;a<classes.size();a++) {
+        if (a > 0) sb.append(' ');
+        sb.append(classes.get(a));
+      }
+      sb.append("'");
+    }
     sb.append(getEvents());
-    sb.append(" style='");
-    if (width != null) sb.append("width:" + width + ";");
-    if (height != null) sb.append("height:" + height + ";");
-    if (backclr != null) sb.append("background-color:" + backclr + ";");
-    sb.append(extra_style);
-    sb.append("'");
+    if (styles.size() > 0) {
+      sb.append(" style='");
+      int size = styles.size();
+      String keys[] = styles.keySet().toArray(new String[size]);
+      String vals[] = styles.values().toArray(new String[size]);
+      for(int a=0;a<size;a++) {
+        sb.append(keys[a] + ":" + vals[a] + ";");
+      }
+      sb.append("'");
+    }
     return sb.toString();
   }
 }

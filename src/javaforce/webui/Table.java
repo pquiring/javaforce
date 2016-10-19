@@ -13,6 +13,8 @@ public class Table extends Container {
     this.height = height;  //Y
     this.cols = cols;  //X
     this.rows = rows;  //Y
+    setWidth((width * cols) + "px");
+    setHeight((height * rows) + "px");
   }
   public void setBorder(boolean state) {
     border = state;
@@ -29,7 +31,7 @@ public class Table extends Container {
   }
   public String html() {
     StringBuffer sb = new StringBuffer();
-    sb.append("<table" + getAttrs("width: " + (width * cols) + "px; height: " + (height * rows) + "px;") + ">");
+    sb.append("<table" + getAttrs() + ">");
     for(int y=0;y<rows;y++) {
       sb.append("<tr>");
       for(int x=0;x<cols;x++) {
