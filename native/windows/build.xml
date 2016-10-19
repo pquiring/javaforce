@@ -12,6 +12,7 @@
       <class name="javaforce.media.MediaEncoder"/>
       <class name="javaforce.media.MediaVideoDecoder"/>
       <class name="javaforce.jni.WinNative"/>
+      <class name="javaforce.controls.ni.DAQmx"/>
     </javah>
   </target>
 

@@ -22,18 +22,6 @@
 static jboolean libav_org = JNI_FALSE;
 static jboolean loaded = JNI_FALSE;
 
-#ifdef __WIN32__
-  #define LIB_HANDLE HMODULE
-  #define LIB_OPEN LoadLibrary
-  #define LIB_OPTS
-  #define LIB_GET_FUNC GetProcAddress
-#else
-  #define LIB_HANDLE void*
-  #define LIB_OPEN dlopen
-  #define LIB_OPTS ,RTLD_LAZY|RTLD_GLOBAL
-  #define LIB_GET_FUNC dlsym
-#endif
-
 #define DEBUG_TRAP __asm("int $3");
 
 LIB_HANDLE codec = NULL;
@@ -147,15 +135,6 @@ void* (*_sws_getContext)(int srcW,int srcH,int srcFormat,int dstW,int dstH,int d
 int (*_sws_scale)(void* c, uint8_t* srcSlice[],int srcStride[],int srcSliceY,int srcSliceH
   ,uint8_t* dst[],int dstStride[]);
 void (*_sws_freeContext)(void* ctx);
-
-static void getFunction(LIB_HANDLE handle, void **funcPtr, const char *name) {
-  void *func = (void*)LIB_GET_FUNC(handle, name);
-  if (func == NULL) {
-    printf("FFMPEG Error:Can not find function:%s\n", name);
-  } else {
-    *funcPtr = func;
-  }
-}
 
 static AVPacket *AVPacket_New() {
   AVPacket *pkt = (AVPacket*)(*_av_malloc)(sizeof(AVPacket));

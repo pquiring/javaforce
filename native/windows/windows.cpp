@@ -14,6 +14,7 @@
 #include "javaforce_media_MediaDecoder.h"
 #include "javaforce_media_MediaEncoder.h"
 #include "javaforce_media_MediaVideoDecoder.h"
+#include "javaforce_controls_ni_DAQmx.h"
 
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
@@ -701,16 +702,20 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_impersonateUser
   const char *cdomain = e->GetStringUTFChars(domain,NULL);
   const char *cuser = e->GetStringUTFChars(user,NULL);
   const char *cpasswd = e->GetStringUTFChars(passwd,NULL);
-  ok = LogonUser(cuser, cdomain, cpasswd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &token);     
+  ok = LogonUser(cuser, cdomain, cpasswd, LOGON32_LOGON_INTERACTIVE, LOGON32_PROVIDER_DEFAULT, &token);
   e->ReleaseStringUTFChars(domain, cdomain);
   e->ReleaseStringUTFChars(user, cuser);
   e->ReleaseStringUTFChars(passwd, cpasswd);
   if (!ok) return JNI_FALSE;
-  ok = ImpersonateLoggedOnUser(token);    
+  ok = ImpersonateLoggedOnUser(token);
   if (!ok) {
     CloseHandle(token);
   }
   return ok ? JNI_TRUE : JNI_FALSE;
 }
 
+#include "../common/library.h"
+
 #include "../common/ffmpeg.cpp"
+
+#include "../common/ni.cpp"

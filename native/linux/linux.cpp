@@ -28,6 +28,7 @@
 #include "javaforce_media_MediaDecoder.h"
 #include "javaforce_media_MediaEncoder.h"
 #include "javaforce_media_MediaVideoDecoder.h"
+#include "javaforce_controls_ni_DAQmx.h"
 
 #ifdef __arm__
   //Raspberry PI stuff
@@ -1933,4 +1934,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_setenv
   e->ReleaseStringUTFChars(value, cvalue);
 }
 
+#include "../common/library.h"
+
 #include "../common/ffmpeg.cpp"
+
+#include "../common/ni.cpp"

@@ -17,6 +17,7 @@
 #include "javaforce_media_MediaDecoder.h"
 #include "javaforce_media_MediaEncoder.h"
 #include "javaforce_media_MediaVideoDecoder.h"
+#include "javaforce_controls_ni_DAQmx.h"
 
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
@@ -311,4 +312,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
   return ctx->height;
 }
 
+#include "../common/library.h"
+
 #include "../common/ffmpeg.cpp"
+
+#include "../common/ni.cpp"
