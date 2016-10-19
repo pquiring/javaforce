@@ -121,6 +121,15 @@ public class Test implements WebUIHandler {
 
     row4.add(lp);
 
+    //add fifth row
+    Row row5 = new Row();
+    panel.add(row5);
+
+    Slider vslider = new Slider(Slider.VERTICAL, 0, 100, 5);
+    row5.add(vslider);
+    Slider hslider = new Slider(Slider.HORIZONTAL, 0, 100, 5);
+    row5.add(hslider);
+
 //    Pad pad2 = new Pad();
 //    panel.add(pad2);
     return panel;

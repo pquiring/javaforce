@@ -131,6 +131,7 @@ public abstract class Component {
   public void setBackColor(String clr) {
     setStyle("background-color", clr);
   }
+  /** Returns all attributes defined for a component (id, attrs, class, styles) */
   public String getAttrs() {
     StringBuffer sb = new StringBuffer();
     sb.append(" id='" + id + "'");

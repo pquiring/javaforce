@@ -122,3 +122,12 @@ button {
   top: 0;
   left: 0;
 }
+
+.vslider {
+  transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+}
+
+.hslider {
+
+}
