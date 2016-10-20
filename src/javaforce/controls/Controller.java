@@ -15,24 +15,33 @@ import java.util.*;
 import javaforce.controls.s7.*;
 import javaforce.controls.mod.*;
 import javaforce.controls.ab.*;
+import javaforce.controls.ni.*;
 
 public class Controller {
   private boolean connected;
   private Socket socket;
   private InputStream is;
   private OutputStream os;
-  private enum type {S7, MODBUS, AB};
+  private enum type {S7, MODBUS, AB, NI};
   private type plc;
+  private DAQmx daq;
 
   private ABContext ab_context;
 
+  public static double rate;  //sample rate for all controllers (set before connecting to any controllers)
+
   public Exception lastException;
+
+  public void setRate(float rate) {
+    this.rate = rate;
+  }
 
   /** Connects to a PLC:
    *
    * url = "S7:host"
    * url = "MODBUS:host"
    * url = "AB:host"
+   * url = "NI:device/options"
    *
    */
   public boolean connect(String url) {
@@ -129,6 +138,15 @@ public class Controller {
       connected = true;
       return true;
     }
+    if (url.startsWith("NI:")) {
+      daq = new DAQmx();
+      connected = daq.connect(url.substring(3));
+      if (!connected) {
+        daq.close();
+        daq = null;
+      }
+      return connected;
+    }
     return false;
   }
 
@@ -147,6 +165,12 @@ public class Controller {
         } catch (Exception e) {
           e.printStackTrace();
           return false;
+        }
+        break;
+      case NI:
+        if (daq != null) {
+          daq.close();
+          daq = null;
         }
         break;
     }
@@ -230,6 +254,10 @@ public class Controller {
         }
         return true;
       }
+      case NI: {
+        System.out.println("NI write() not implemented");
+        return false;
+      }
     }
     return false;
   }
@@ -307,6 +335,9 @@ public class Controller {
           lastException = e;
           return null;
         }
+      }
+      case NI: {
+        return daq.read();
       }
     }
     return null;

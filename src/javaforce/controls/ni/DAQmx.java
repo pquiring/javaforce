@@ -15,7 +15,9 @@ package javaforce.controls.ni;
  * @author pquiring
  */
 
+import javaforce.BE;
 import javaforce.jni.*;
+import javaforce.controls.*;
 
 public class DAQmx {
   static {
@@ -44,6 +46,101 @@ public class DAQmx {
   public static native int readTaskCounter(long task, double freq[]);
   public static native boolean stopTask(long task);
   public static native boolean clearTask(long task);
-
   public static native void printError();  //prints any errors to stdout
+
+  //DAQ instance
+
+  private long handle;
+  private enum types {AI,DI,CI};
+  private types type;
+
+  public boolean connect(String url) {
+    //url = device/port
+    //device = cDAQ9188-189E9F4Mod1
+    //port = ai0 or port0/line0 or ctr0/pfi0
+    int idx = url.indexOf('/');
+    String device = url.substring(0, idx);
+    String port = url.substring(idx+1);
+    if (port.startsWith("ai")) {
+      //analog input (voltage)
+      type = types.AI;
+      handle = createTask();
+      if (!createChannelAnalog(handle, device, Controller.rate, (int)Controller.rate, -10, 10)) return false;
+      return startTask(handle);
+    }
+    else if (port.startsWith("port")) {
+      //digital input
+      type = types.DI;
+      handle = createTask();
+      if (!createChannelDigital(handle, device, Controller.rate, (int)Controller.rate)) return false;
+      return startTask(handle);
+    }
+    else if (port.startsWith("ctr")) {
+      //counter (freq) input
+      type = types.CI;
+      handle = createTask();
+      //device = DEVICE/ctr0/pfi0
+      String p[] = device.split("/");
+      device = p[0] + "/" + p[1];
+      port = "/" + p[0] + "/" + p[2];
+      if (!createChannelCounter(handle, device, (int)Controller.rate, 0, 1000000.0, port, 0.1, 1)) return false;
+      return startTask(handle);
+    }
+    System.out.println("Unsupported DAQmx host:" + url);
+    return false;
+  }
+
+  public void close() {
+    if (handle != 0) {
+      stopTask(handle);
+      clearTask(handle);
+      handle = 0;
+    }
+  }
+
+  public byte[] read() {
+    int read = 0;
+    int size = (int)Controller.rate;
+    byte out[] = null;
+    switch (type) {
+      case AI: {
+        double data[] = new double[size];
+        read = readTaskDouble(handle, data);
+        out = new byte[size * 8];
+        //copy data -> out
+        int pos = 0;
+        for(int a=0;a<size;a++) {
+          BE.setuint64(out, pos, Double.doubleToLongBits(data[a]));
+          pos += 8;
+        }
+        break;
+      }
+      case DI: {
+        int data[] = new int[size];
+        read = readTaskDigital(handle, data);
+        out = new byte[size];
+        //copy data -> out
+        int pos = 0;
+        for(int a=0;a<size;a++) {
+          out[a++] = (byte)data[a];
+        }
+        break;
+      }
+      case CI: {
+        double data[] = new double[size];
+        read = readTaskCounter(handle, data);
+        out = new byte[size * 8];
+        int pos = 0;
+        for(int a=0;a<size;a++) {
+          BE.setuint64(out, pos, Double.doubleToLongBits(data[a]));
+          pos += 8;
+        }
+        break;
+      }
+    }
+    if (read != (int)Controller.rate) {
+      printError();
+    }
+    return out;
+  }
 }
