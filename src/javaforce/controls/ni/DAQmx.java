@@ -21,11 +21,15 @@ public class DAQmx {
   static {
     JFNative.load();  //ensure native library is loaded
     if (JFNative.loaded) {
-      daqInit();
+      loaded = daqInit();
+    } else {
+      loaded = false;
     }
   }
 
-  public static void load() {}  //ensure native library is loaded
+  public static boolean loaded;
+
+  public static boolean load() {return loaded;}  //ensure native library is loaded
 
   private static native boolean daqInit();
 

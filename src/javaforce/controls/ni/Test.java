@@ -10,6 +10,10 @@ public class Test {
     double f[] = new double[20];
     int i[] = new int[20];
     DAQmx.load();
+    if (!DAQmx.loaded) {
+      System.out.println("DAQmx not loaded");
+      return;
+    }
 
     try {
       long task = DAQmx.createTask();
