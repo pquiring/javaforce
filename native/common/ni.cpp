@@ -92,6 +92,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelDigital
   }
   return status == 0;
 }
+
 JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelCounter
   (JNIEnv *e, jclass cls, jlong task, jstring dev, jlong samples, jdouble min, jdouble max, jstring term, jdouble measureTime, jint divisor)
 {
