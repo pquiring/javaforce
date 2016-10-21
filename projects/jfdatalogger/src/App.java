@@ -11,6 +11,7 @@ import javax.swing.table.*;
 
 import javaforce.*;
 import javaforce.controls.*;
+import javaforce.controls.ni.DAQmx;
 
 public class App extends javax.swing.JFrame {
 
@@ -549,6 +550,8 @@ public class App extends javax.swing.JFrame {
       //create controllers and find fastest timer
       tableModel.setColumnCount(0);
       tableModel.addColumn("timestamp");
+      Controller.rate = 1000 / delay;
+      System.gc();  //ensure all prev connections are closed
       int cnt = tags.size();
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
@@ -570,6 +573,9 @@ public class App extends javax.swing.JFrame {
           JFLog.log("connect:" + url);
           if (!c.connect(url)) {
             JFLog.log("Connection failed:" + url);
+            if (url.startsWith("NI:")) {
+              DAQmx.printError();
+            }
           }
           cs.add(c);
           urls.add(url);
@@ -611,6 +617,12 @@ public class App extends javax.swing.JFrame {
       if (logger != null) {
         try { logger.close(); } catch (Exception e) {}
         logger = null;
+      }
+      int cnt = tags.size();
+      for(int a=0;a<cnt;a++) {
+        Tag tag = tags.get(a);
+        if (tag.child) continue;
+        tag.c.disconnect();
       }
       app.run.setText("Run");
       app.setState(false);
@@ -659,13 +671,14 @@ public class App extends javax.swing.JFrame {
             } else {
               data = tag.c.read(tag.tag);
             }
-            if (data == null) data = new byte[4];
+            if (data == null) data = new byte[8];
             switch (tag.size) {
               case bit: log(tag, data[0] == 0 ? 0 : 1); break;
               case int8: log(tag, data[0] & 0xff); break;
               case int16: log(tag, BE.getuint16(data, 0)); break;
               case int32: log(tag, BE.getuint32(data, 0)); break;
               case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
+              case float64: log(tag, Double.longBitsToDouble(BE.getuint64(data, 0))); break;
             }
           }
           ln += ",";
@@ -714,6 +727,14 @@ public class App extends javax.swing.JFrame {
       float fmin = tag.min;
       return (int)((fval - fmin) / delta * 100.0);
     }
+    public int scale(Tag tag, double value) {
+      if (value < tag.fmin) return 0;
+      if (value > tag.fmax) return 100;
+      double delta = tag.fmax - tag.fmin;
+      double fval = value;
+      double fmin = tag.min;
+      return (int)((fval - fmin) / delta * 100.0);
+    }
     public void log(Tag tag, int value) {
       tag.scaledValue = scale(tag, value);
       row[idx] = Integer.toString(value);
@@ -721,6 +742,10 @@ public class App extends javax.swing.JFrame {
     public void log(Tag tag, float value) {
       tag.scaledValue = scale(tag, value);
       row[idx] = Float.toString(value);
+    }
+    public void log(Tag tag, double value) {
+      tag.scaledValue = scale(tag, value);
+      row[idx] = Double.toString(value);
     }
     public void updateImage() {
       int x2 = logImage.getWidth() - 1;

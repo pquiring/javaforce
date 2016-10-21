@@ -20,7 +20,7 @@ public class Test {
       if (task == 0) throw new Exception("createTask failed");
       if (!DAQmx.createChannelAnalog(task, "cDAQ9188-189E9F4Mod6/ai0", 20.0, 20, -10, 10)) throw new Exception("createChannel failed");
       if (!DAQmx.startTask(task)) throw new Exception("startTask failed");
-      int read = DAQmx.readTaskDouble(task, f);
+      int read = DAQmx.readTaskAnalog(task, f);
       if (read == 0) throw new Exception("no data");
       System.out.println("read=" + read);
       for(int a=0;a<read;a++) {

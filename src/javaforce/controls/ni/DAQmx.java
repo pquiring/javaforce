@@ -40,7 +40,7 @@ public class DAQmx {
   public static native boolean createChannelDigital(long task, String dev, double rate, long samples);
   public static native boolean createChannelCounter(long task, String dev, long samples, double min, double max, String term, double measureTime, int divisor);
   public static native boolean startTask(long task);
-  public static native int readTaskDouble(long task, double data[]);
+  public static native int readTaskAnalog(long task, double data[]);
   public static native int readTaskBinary(long task, int data[]);
   public static native int readTaskDigital(long task, int data[]);
   public static native int readTaskCounter(long task, double freq[]);
@@ -57,22 +57,24 @@ public class DAQmx {
   public boolean connect(String url) {
     //url = device/port
     //device = cDAQ9188-189E9F4Mod1
-    //port = ai0 or port0/line0 or ctr0/pfi0
+    //port = ai0 or port0/line0[:7] or ctr0/pfi0
     int idx = url.indexOf('/');
     String device = url.substring(0, idx);
     String port = url.substring(idx+1);
+    int samples = (int)Controller.rate;
+    if (samples == 0) samples = 1;
     if (port.startsWith("ai")) {
       //analog input (voltage)
       type = types.AI;
       handle = createTask();
-      if (!createChannelAnalog(handle, device, Controller.rate, (int)Controller.rate, -10, 10)) return false;
+      if (!createChannelAnalog(handle, url, Controller.rate, samples, -10, 10)) return false;
       return startTask(handle);
     }
     else if (port.startsWith("port")) {
       //digital input
       type = types.DI;
       handle = createTask();
-      if (!createChannelDigital(handle, device, Controller.rate, (int)Controller.rate)) return false;
+      if (!createChannelDigital(handle, url, Controller.rate, samples)) return false;
       return startTask(handle);
     }
     else if (port.startsWith("ctr")) {
@@ -80,14 +82,18 @@ public class DAQmx {
       type = types.CI;
       handle = createTask();
       //device = DEVICE/ctr0/pfi0
-      String p[] = device.split("/");
+      String p[] = url.split("/");
       device = p[0] + "/" + p[1];
       port = "/" + p[0] + "/" + p[2];
-      if (!createChannelCounter(handle, device, (int)Controller.rate, 0, 1000000.0, port, 0.1, 1)) return false;
+      if (!createChannelCounter(handle, device, samples, 0, 1000000.0, port, 0.1, 1)) return false;
       return startTask(handle);
     }
     System.out.println("Unsupported DAQmx host:" + url);
     return false;
+  }
+
+  public void finalize() {
+    close();
   }
 
   public void close() {
@@ -105,7 +111,7 @@ public class DAQmx {
     switch (type) {
       case AI: {
         double data[] = new double[size];
-        read = readTaskDouble(handle, data);
+        read = readTaskAnalog(handle, data);
         out = new byte[size * 8];
         //copy data -> out
         int pos = 0;

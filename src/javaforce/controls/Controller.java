@@ -139,6 +139,7 @@ public class Controller {
       return true;
     }
     if (url.startsWith("NI:")) {
+      plc = type.NI;
       daq = new DAQmx();
       connected = daq.connect(url.substring(3));
       if (!connected) {

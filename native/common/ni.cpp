@@ -118,7 +118,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_startTask
   return (*_DAQmxStartTask)(taskHandle) == 0;
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskDouble
+JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskAnalog
   (JNIEnv *e, jclass cls, jlong task, jdoubleArray data)
 {
   TaskHandle taskHandle=(TaskHandle)task;

@@ -44,13 +44,19 @@ public class TagDialog extends javax.swing.JDialog {
     host = new javax.swing.JTextField();
     jLabel8 = new javax.swing.JLabel();
     color = new javax.swing.JButton();
+    help = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Tag Properties");
 
     jLabel1.setText("Type");
 
-    type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Siemens", "AllenBradley", "ModBus" }));
+    type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Siemens", "AllenBradley", "ModBus", "NI" }));
+    type.addItemListener(new java.awt.event.ItemListener() {
+      public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        typeItemStateChanged(evt);
+      }
+    });
 
     jLabel2.setText("Tag");
 
@@ -70,7 +76,7 @@ public class TagDialog extends javax.swing.JDialog {
 
     jLabel4.setText("Size");
 
-    size.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "bit", "int8", "int16", "int32", "float32" }));
+    size.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "bit", "int8", "int16", "int32", "float32", "float64" }));
     size.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         sizeItemStateChanged(evt);
@@ -101,6 +107,13 @@ public class TagDialog extends javax.swing.JDialog {
       }
     });
 
+    help.setText("Help");
+    help.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        helpActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -114,7 +127,7 @@ public class TagDialog extends javax.swing.JDialog {
               .addComponent(jLabel7))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(type, 0, 155, Short.MAX_VALUE)
+              .addComponent(type, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
               .addComponent(host)))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel2)
@@ -122,7 +135,9 @@ public class TagDialog extends javax.swing.JDialog {
             .addComponent(tag))
           .addGroup(layout.createSequentialGroup()
             .addComponent(ok)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 77, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(help)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(cancel))
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -172,7 +187,8 @@ public class TagDialog extends javax.swing.JDialog {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(ok)
-          .addComponent(cancel))
+          .addComponent(cancel)
+          .addComponent(help))
         .addContainerGap())
     );
 
@@ -209,9 +225,23 @@ public class TagDialog extends javax.swing.JDialog {
     changeColor();
   }//GEN-LAST:event_colorActionPerformed
 
+  private void typeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_typeItemStateChanged
+    if (type.getSelectedIndex() == 3) {
+      tag.setEnabled(false);
+      tag.setText("");
+    } else {
+      tag.setEnabled(true);
+    }
+  }//GEN-LAST:event_typeItemStateChanged
+
+  private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
+    JF.openURL("http://jfdatalogger.sf.net/help.php");
+  }//GEN-LAST:event_helpActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton cancel;
   private javax.swing.JButton color;
+  private javax.swing.JButton help;
   private javax.swing.JTextField host;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
@@ -236,6 +266,7 @@ public class TagDialog extends javax.swing.JDialog {
       case S7: type.setSelectedIndex(0); break;
       case AB: type.setSelectedIndex(1); break;
       case MB: type.setSelectedIndex(2); break;
+      case NI: type.setSelectedIndex(3); break;
     }
     host.setText(in.host);
     tag.setText(in.tag);
@@ -246,6 +277,7 @@ public class TagDialog extends javax.swing.JDialog {
       case int16: size.setSelectedIndex(2); break;
       case int32: size.setSelectedIndex(3); break;
       case float32: size.setSelectedIndex(4); isFloat = true; break;
+      case float64: size.setSelectedIndex(5); isFloat = true; break;
     }
     if (!isFloat) {
       max.setText(Integer.toString(in.max));
@@ -263,6 +295,7 @@ public class TagDialog extends javax.swing.JDialog {
         case 0: out.type = Tag.types.S7; break;
         case 1: out.type = Tag.types.AB; break;
         case 2: out.type = Tag.types.MB; break;
+        case 3: out.type = Tag.types.NI; break;
       }
       out.host = host.getText();
       out.tag = tag.getText();
@@ -273,6 +306,7 @@ public class TagDialog extends javax.swing.JDialog {
         case 2: out.size = Tag.sizes.int16; break;
         case 3: out.size = Tag.sizes.int32; break;
         case 4: out.size = Tag.sizes.float32; isFloat = true; break;
+        case 5: out.size = Tag.sizes.float64; isFloat = true; break;
       }
       if (!isFloat) {
         out.min = Integer.valueOf(min.getText());

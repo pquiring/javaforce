@@ -34,7 +34,7 @@
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="type" pref="155" max="32767" attributes="0"/>
+                          <Component id="type" max="32767" attributes="0"/>
                           <Component id="host" max="32767" attributes="0"/>
                       </Group>
                   </Group>
@@ -45,7 +45,9 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="ok" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="77" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="help" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
                       <Component id="cancel" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
@@ -110,6 +112,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="ok" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="cancel" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="help" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -125,13 +128,17 @@
     <Component class="javax.swing.JComboBox" name="type">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="3">
+          <StringArray count="4">
             <StringItem index="0" value="Siemens"/>
             <StringItem index="1" value="AllenBradley"/>
             <StringItem index="2" value="ModBus"/>
+            <StringItem index="3" value="NI"/>
           </StringArray>
         </Property>
       </Properties>
+      <Events>
+        <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="typeItemStateChanged"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
       </AuxValues>
@@ -167,12 +174,13 @@
     <Component class="javax.swing.JComboBox" name="size">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="5">
+          <StringArray count="6">
             <StringItem index="0" value="bit"/>
             <StringItem index="1" value="int8"/>
             <StringItem index="2" value="int16"/>
             <StringItem index="3" value="int32"/>
             <StringItem index="4" value="float32"/>
+            <StringItem index="5" value="float64"/>
           </StringArray>
         </Property>
       </Properties>
@@ -224,6 +232,14 @@
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="colorActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="help">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Help"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="helpActionPerformed"/>
       </Events>
     </Component>
   </SubComponents>
