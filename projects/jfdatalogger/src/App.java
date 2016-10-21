@@ -569,6 +569,9 @@ public class App extends javax.swing.JFrame {
           }
         }
         if (!have) {
+          if (tag.type == Tag.types.NI && !DAQmx.loaded) {
+            continue;
+          }
           Controller c = new Controller();
           JFLog.log("connect:" + url);
           if (!c.connect(url)) {
@@ -622,7 +625,9 @@ public class App extends javax.swing.JFrame {
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
         if (tag.child) continue;
-        tag.c.disconnect();
+        if (tag.c != null) {
+          tag.c.disconnect();
+        }
       }
       app.run.setText("Run");
       app.setState(false);

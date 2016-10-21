@@ -25,6 +25,7 @@
         <File Id="jfdatalogger.jar" Source="jfdatalogger.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="jfdatalogger.exe" Source="jfdatalogger.exe" KeyPath="yes"/>
+        <File Id="jfnative32.dll" Source="jfnative32.dll"/>
       </Component>
     </DirectoryRef>
 

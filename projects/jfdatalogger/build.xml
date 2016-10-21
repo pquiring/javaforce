@@ -54,6 +54,7 @@
         <include name="*.jar"/>
         <include name="*.txt"/>
         <include name="run.bat"/>
+        <include name="*.dll"/>
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>
