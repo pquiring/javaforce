@@ -40,7 +40,7 @@ public class DAQmx {
   public static native long createTask();
   public static native boolean createChannelAnalog(long task, String dev, double rate, long samples, double min, double max);
   public static native boolean createChannelDigital(long task, String dev, double rate, long samples);
-  public static native boolean createChannelCounter(long task, String dev, long samples, double min, double max, String term, double measureTime, int divisor);
+  public static native boolean createChannelCounter(long task, String dev, double rate, long samples, double min, double max, String term, double measureTime, int divisor);
   public static native boolean startTask(long task);
   public static native int readTaskAnalog(long task, double data[]);
   public static native int readTaskBinary(long task, int data[]);
@@ -87,7 +87,7 @@ public class DAQmx {
       String p[] = url.split("/");
       device = p[0] + "/" + p[1];
       port = "/" + p[0] + "/" + p[2];
-      if (!createChannelCounter(handle, device, samples, 0, 1000000.0, port, 0.1, 1)) return false;
+      if (!createChannelCounter(handle, device, 20000000.0, samples, 1.0, 1000000.0, port, 1.0 / Controller.rate, 1)) return false;
       return startTask(handle);
     }
     System.out.println("Unsupported DAQmx host:" + url);
@@ -128,9 +128,8 @@ public class DAQmx {
         read = readTaskDigital(handle, data);
         out = new byte[size];
         //copy data -> out
-        int pos = 0;
         for(int a=0;a<size;a++) {
-          out[a++] = (byte)data[a];
+          out[a] = (byte)data[a];
         }
         break;
       }

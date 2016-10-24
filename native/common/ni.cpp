@@ -27,6 +27,7 @@ int32 (*__CFUNC _DAQmxReadCounterU32)(TaskHandle taskHandle, int32 numSampsPerCh
 int32 (*__CFUNC _DAQmxReadCtrFreq)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, bool32 interleaved, float64 readArrayFrequency[], float64 readArrayDutyCycle[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
 int32 (*__CFUNC _DAQmxGetExtendedErrorInfo)(char errorString[], uInt32 bufferSize);
 int32 (*__CFUNC _DAQmxSetCIFreqTerm)(TaskHandle taskHandle, const char channel[], const char *data);
+int32 (*__CFUNC _DAQmxSetCICtrTimebaseRate)(TaskHandle taskHandle, const char channel[], float64 data);
 
 JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_daqInit
   (JNIEnv *e, jclass cls)
@@ -53,6 +54,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_daqInit
   getFunction(nidll, (void**)&_DAQmxReadCtrFreq, "DAQmxReadCtrFreq");
   getFunction(nidll, (void**)&_DAQmxGetExtendedErrorInfo, "DAQmxGetExtendedErrorInfo");
   getFunction(nidll, (void**)&_DAQmxSetCIFreqTerm, "DAQmxSetCIFreqTerm");
+  getFunction(nidll, (void**)&_DAQmxSetCICtrTimebaseRate, "DAQmxSetCICtrTimebaseRate");
 
   return JNI_TRUE;
 }
@@ -94,7 +96,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelDigital
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelCounter
-  (JNIEnv *e, jclass cls, jlong task, jstring dev, jlong samples, jdouble min, jdouble max, jstring term, jdouble measureTime, jint divisor)
+  (JNIEnv *e, jclass cls, jlong task, jstring dev, jdouble rate, jlong samples, jdouble min, jdouble max, jstring term, jdouble measureTime, jint divisor)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 status = 0;
@@ -105,7 +107,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelCounter
     status = (*_DAQmxSetCIFreqTerm)(taskHandle, _dev, _term);
   }
   if (status == 0) {
-    status = (*_DAQmxCfgImplicitTiming)(taskHandle, DAQmx_Val_ContSamps, samples);
+    status = (*_DAQmxCfgImplicitTiming)(taskHandle, DAQmx_Val_ContSamps, rate);
+  }
+  if (status == 0) {
+    status = (*_DAQmxSetCICtrTimebaseRate)(taskHandle, _dev, rate);
   }
   e->ReleaseStringUTFChars(dev, _dev);
   e->ReleaseStringUTFChars(term, _term);

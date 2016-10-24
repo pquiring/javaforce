@@ -118,14 +118,14 @@ public class Tag {
     public byte data[];
     public byte datas[][];
     public void run() {
-      while (App.active) {
-        if (tag.tags != null) {
-          byte nxts[][] = tag.c.read(tag.tags);
-          if (nxts == null) continue;
+      if (tag.tags != null) {
+        byte nxts[][] = tag.c.read(tag.tags);
+        if (nxts != null) {
           datas = nxts;
-        } else {
-          byte nxt[] = tag.c.read(tag.tag);
-          if (nxt == null) continue;
+        }
+      } else {
+        byte nxt[] = tag.c.read(tag.tag);
+        if (nxt != null) {
           data = nxt;
         }
       }
