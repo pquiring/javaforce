@@ -8,7 +8,7 @@ package javaforce.webui;
 public class CheckBox extends Component {
   public CheckBox(String text) {
     this.text = text;
-    addEvent("onclick", "return onClick(this);");
+    addEvent("onclick", "onClick(this);");
     setClass("noselect");
   }
   public String html() {

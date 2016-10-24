@@ -1,5 +1,13 @@
 What's new...
 
+Oct 24/2015 : JF 12.2.0 released!
+  - added support for National Instruments DAQmx controller
+    - javaforce.controls.ni
+  - jfDataLogger/0.3
+    - support for NI
+    - multi-threaded for better performance
+  - more webui improvements
+
 Oct 18/2016 : JF 12.1.0 released!
   - fix : s7 tags were limited to block number 127
   - jfDataLogger/0.2

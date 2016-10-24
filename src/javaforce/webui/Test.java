@@ -32,6 +32,28 @@ public class Test implements WebUIHandler {
 
   public Panel getRootPanel(Client client) {
     Panel panel = new Panel();
+
+    //add a menubar
+    MenuBar menubar = new MenuBar();
+    panel.add(menubar);
+    Menu m1 = new Menu("File");
+    menubar.add(m1);
+    MenuItem m1a = new MenuItem("Open");
+    m1.add(m1a);
+    MenuItem m1b = new MenuItem("Save");
+    m1.add(m1b);
+    MenuItem m1c = new MenuItem("Save As");
+    m1.add(m1c);
+
+    Menu m2 = new Menu("Edit");
+    menubar.add(m2);
+    MenuItem m2a = new MenuItem("Cut");
+    m2.add(m2a);
+    MenuItem m2b = new MenuItem("Copy");
+    m2.add(m2b);
+    MenuItem m2c = new MenuItem("Paste");
+    m2.add(m2c);
+
     Row row1 = new Row();
     panel.add(row1);
     //add : button

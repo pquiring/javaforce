@@ -14,9 +14,8 @@ ws.onmessage = function (event) {
   switch (msg.event) {
     case "redir":
       break;
-    case "hide":
-      break;
-    case "show":
+    case "display":
+      comp.style.display = msg.val;
       break;
     case "gettext":
       sendText(msg.comp, comp.innerHTML);
@@ -32,6 +31,10 @@ ws.onmessage = function (event) {
       break;
     case "setvalue":
       comp.value = msg.value;
+      break;
+    case "setpos":
+      comp.style.left = msg.x;
+      comp.style.top = msg.y;
       break;
   }
 };
@@ -139,4 +142,13 @@ function onmousemoveDrag(e) {
   var left = splitDragging.startX + (window.event.clientX - splitDragging.mouseX);
   dragging.element.style.top = (Math.max(0, top)) + "px";
   dragging.element.style.left = (Math.max(0, left)) + "px";
+}
+
+function onClickMenu(comp) {
+  var msg = {
+    event: "click",
+    comp: comp.id,
+    pos: comp.offsetLeft + "," + comp.offsetTop + "," + comp.offsetWidth + "," + comp.offsetHeight
+  };
+  ws.send(JSON.stringify(msg));
 }

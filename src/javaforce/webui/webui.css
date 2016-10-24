@@ -125,9 +125,33 @@ button {
 
 .vslider {
   transform: rotate(270deg);
-  -moz-transform: rotate(270deg);
 }
 
 .hslider {
 
+}
+
+.menubar {
+  display: inline-flex;
+  flex-direction: row;
+  background-color: #ccc;
+}
+
+.menu {
+  background-color: #ccc;
+}
+
+.menuitem {
+  background-color: #ccc;
+}
+
+.menuitem:hover {
+  background-color: #ccc;
+}
+
+.popupmenu {
+  position: fixed;
+  display: none;
+  flex-direction: column;
+  background-color: #ccc;
 }

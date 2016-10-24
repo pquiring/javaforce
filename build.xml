@@ -5,7 +5,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="home" value="."/>
-  <property name="version" value="12.1.0"/>
+  <property name="version" value="12.2.0"/>
   <property name="noelf" value="true"/>
 
   <property name="ubuntu.depends" value="openjdk-8-jre, libjsch-java, libjzlib-java, libjcifs-java, fuse, libfuse2, fuseiso, libcdio13, mate-icon-theme, libv4l-dev"/>
@@ -69,10 +69,7 @@
       <fileset dir=".">
         <include name="jars/javaforce.jar"/>
         <include name="native/*.dll"/>
-        <include name="native/*.so"/>
-        <include name="native/*.dylib"/>  <!-- not available yet -->
         <include name="stubs/*.exe"/>
-        <include name="stubs/*.bin"/>
       </fileset>
     </zip>
     <move file="javaforce-bin-${version}.zip" todir="${home}/release"/>
