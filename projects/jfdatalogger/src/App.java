@@ -367,6 +367,7 @@ public class App extends javax.swing.JFrame {
 
   public void newProject() {
     tags.clear();
+    listModel.clear();
     list.removeAll();
     clear();
     projectFile = null;
@@ -551,6 +552,7 @@ public class App extends javax.swing.JFrame {
       tableModel.setColumnCount(0);
       tableModel.addColumn("timestamp");
       Controller.rate = 1000 / delay;
+      System.out.println("rate=" + Controller.rate);
       System.gc();  //ensure all prev connections are closed
       int cnt = tags.size();
       for(int a=0;a<cnt;a++) {
@@ -569,8 +571,11 @@ public class App extends javax.swing.JFrame {
           }
         }
         if (!have) {
-          if (tag.type == Tag.types.NI && !DAQmx.loaded) {
-            continue;
+          if (tag.type == Tag.types.NI) {
+            if (!DAQmx.loaded) {
+              System.out.println("Warning:DAQmx not available for tag:" + tag.host);
+              continue;
+            }
           }
           Controller c = new Controller();
           JFLog.log("connect:" + url);
