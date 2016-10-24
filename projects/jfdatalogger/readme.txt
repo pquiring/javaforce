@@ -7,6 +7,7 @@ Supports:
  - Siemens S7-300/400 PLCs
  - AllenBradley
  - ModBus IP protocol
+ - National Instruments DAQmx systems
 
 Has the option to save to a csv file.
 

@@ -15,6 +15,8 @@ import javaforce.controls.ni.DAQmx;
 
 public class App extends javax.swing.JFrame {
 
+  public static String version = "0.3";
+
   public static int delays[] = new int[] {
     25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
   };
@@ -34,6 +36,7 @@ public class App extends javax.swing.JFrame {
     table.setModel(tableModel);
     list.setModel(listModel);
     newProject();
+    setTitle("jfDataLogger/" + version);
     JF.centerWindow(this);
   }
 

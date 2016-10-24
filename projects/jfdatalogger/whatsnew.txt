@@ -1,3 +1,6 @@
+Oct 24/2016 : v0.3 released
+  - new : added support for National Instruments DAQmx systems
+
 Oct 18/2016 : v0.2 released
   - fix : s7 tags were limited to block number 127
 

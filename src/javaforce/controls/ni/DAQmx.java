@@ -15,6 +15,8 @@ package javaforce.controls.ni;
  * @author pquiring
  */
 
+import java.util.*;
+
 import javaforce.BE;
 import javaforce.jni.*;
 import javaforce.controls.*;
@@ -106,7 +108,7 @@ public class DAQmx {
 
   public byte[] read() {
     int read = 0;
-    int size = (int)Controller.rate;
+    int size = 1;  //(int)Controller.rate;
     byte out[] = null;
     switch (type) {
       case AI: {
