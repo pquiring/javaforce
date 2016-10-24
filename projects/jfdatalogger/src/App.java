@@ -367,6 +367,7 @@ public class App extends javax.swing.JFrame {
   public static FileOutputStream logger;
   public String projectFile;
   public String logFile;
+  public static boolean active;
 
   public void newProject() {
     tags.clear();
@@ -555,6 +556,7 @@ public class App extends javax.swing.JFrame {
       tableModel.setColumnCount(0);
       tableModel.addColumn("timestamp");
       Controller.rate = 1000 / delay;
+      active = true;
       System.out.println("rate=" + Controller.rate);
       System.gc();  //ensure all prev connections are closed
       int cnt = tags.size();
@@ -612,6 +614,12 @@ public class App extends javax.swing.JFrame {
           }
         }
       }
+      //start tag timers
+      for(int a=0;a<cnt;a++) {
+        Tag tag = tags.get(a);
+        if (tag.child) continue;
+        tag.start(delay);
+      }
       //start timer
       timer = new java.util.Timer();
       task = new Task();
@@ -621,6 +629,7 @@ public class App extends javax.swing.JFrame {
     }
     public void cancel() {
       if (!running) return;
+      active = false;
       timer.cancel();
       timer = null;
       worker = null;
@@ -636,9 +645,11 @@ public class App extends javax.swing.JFrame {
         if (tag.c != null) {
           tag.c.disconnect();
         }
+        tag.stop();
       }
       app.run.setText("Run");
       app.setState(false);
+      running = false;
     }
   }
   public static class Task extends TimerTask {
@@ -663,7 +674,7 @@ public class App extends javax.swing.JFrame {
           Tag tag = tags.get(a);
           if (tag.children.size() > 0) {
             //read multiple tags
-            byte datas[][] = tag.c.read(tag.tags);
+            byte datas[][] = tag.reads();
             int ccnt = tag.children.size();
             for(int b=0;b<ccnt;b++) {
               tag.children.get(b).data = datas[b+1];
@@ -682,7 +693,7 @@ public class App extends javax.swing.JFrame {
             if (tag.child) {
               data = tag.data;
             } else {
-              data = tag.c.read(tag.tag);
+              data = tag.read();
             }
             if (data == null) data = new byte[8];
             switch (tag.size) {

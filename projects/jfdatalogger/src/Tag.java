@@ -34,6 +34,9 @@ public class Tag {
   public boolean child;
   public byte data[];  //data from parent
 
+  public Timer timer;
+  public Reader reader;
+
   public String getURL() {
     switch (type) {
       case S7: return "S7:" + host;
@@ -85,4 +88,54 @@ public class Tag {
     }
     color = Long.valueOf(f[6], 16).intValue();
   }
+
+  public void start(int delay) {
+    timer = new Timer();
+    reader = new Reader();
+    reader.tag = this;
+    timer.scheduleAtFixedRate(reader, delay, delay);
+  }
+
+  public void stop() {
+    if (timer != null) {
+      timer.cancel();
+      timer = null;
+    }
+    if (reader != null) {
+      reader = null;
+    }
+  }
+
+  public byte[] read() {
+    return reader.data;
+  }
+  public byte[][] reads() {
+    return reader.datas;
+  }
+
+  public static class Reader extends TimerTask {
+    public Tag tag;
+    public byte data[];
+    public byte datas[][];
+    public void run() {
+      while (App.active) {
+        if (tag.tags != null) {
+          byte nxts[][] = tag.c.read(tag.tags);
+          if (nxts == null) continue;
+          datas = nxts;
+        } else {
+          byte nxt[] = tag.c.read(tag.tag);
+          if (nxt == null) continue;
+          data = nxt;
+        }
+      }
+    }
+    public byte[] read() {
+      return data;
+    }
+    public byte[][] reads() {
+      return datas;
+    }
+  }
+
 }
