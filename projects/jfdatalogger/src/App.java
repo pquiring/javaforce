@@ -589,6 +589,9 @@ public class App extends javax.swing.JFrame {
             if (url.startsWith("NI:")) {
               DAQmx.printError();
             }
+            tag.connected = false;
+          } else {
+            tag.connected = true;
           }
           cs.add(c);
           urls.add(url);
@@ -597,6 +600,7 @@ public class App extends javax.swing.JFrame {
           if (tag.type == Tag.types.S7) {
             parent.children.add(tag);
             tag.child = true;
+            tag.parent = parent;
           }
         }
         tableModel.addColumn(tag.toString());
@@ -672,37 +676,41 @@ public class App extends javax.swing.JFrame {
         idx = 1;
         for(int a=0;a<cnt;a++) {
           Tag tag = tags.get(a);
-          if (tag.children.size() > 0) {
-            //read multiple tags
-            byte datas[][] = tag.reads();
-            int ccnt = tag.children.size();
-            for(int b=0;b<ccnt;b++) {
-              tag.children.get(b).data = datas[b+1];
-            }
-            byte data[] = datas[0];
-            switch (tag.size) {
-              case bit: log(tag, data[0] == 0 ? 0 : 1); break;
-              case int8: log(tag, data[0] & 0xff); break;
-              case int16: log(tag, BE.getuint16(data, 0)); break;
-              case int32: log(tag, BE.getuint32(data, 0)); break;
-              case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
-            }
+          if ((tag.parent != null && !tag.parent.connected) || (tag.parent == null && !tag.connected)) {
+            row[idx] = "N/C";
           } else {
-            //read one tag
-            byte data[];
-            if (tag.child) {
-              data = tag.data;
+            if (tag.children.size() > 0) {
+              //read multiple tags
+              byte datas[][] = tag.reads();
+              int ccnt = tag.children.size();
+              for(int b=0;b<ccnt;b++) {
+                tag.children.get(b).data = datas[b+1];
+              }
+              byte data[] = datas[0];
+              switch (tag.size) {
+                case bit: log(tag, data[0] == 0 ? 0 : 1); break;
+                case int8: log(tag, data[0] & 0xff); break;
+                case int16: log(tag, BE.getuint16(data, 0)); break;
+                case int32: log(tag, BE.getuint32(data, 0)); break;
+                case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
+              }
             } else {
-              data = tag.read();
-            }
-            if (data == null) data = new byte[8];
-            switch (tag.size) {
-              case bit: log(tag, data[0] == 0 ? 0 : 1); break;
-              case int8: log(tag, data[0] & 0xff); break;
-              case int16: log(tag, BE.getuint16(data, 0)); break;
-              case int32: log(tag, BE.getuint32(data, 0)); break;
-              case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
-              case float64: log(tag, Double.longBitsToDouble(BE.getuint64(data, 0))); break;
+              //read one tag
+              byte data[] = null;
+              if (tag.child) {
+                data = tag.data;
+              } else {
+                data = tag.read();
+              }
+              if (data == null) data = new byte[8];
+              switch (tag.size) {
+                case bit: log(tag, data[0] == 0 ? 0 : 1); break;
+                case int8: log(tag, data[0] & 0xff); break;
+                case int16: log(tag, BE.getuint16(data, 0)); break;
+                case int32: log(tag, BE.getuint32(data, 0)); break;
+                case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
+                case float64: log(tag, Double.longBitsToDouble(BE.getuint64(data, 0))); break;
+              }
             }
           }
           ln += ",";

@@ -28,10 +28,12 @@ public class Tag {
   public int scaledValue;
   public int lastScaledValue;
 
+  public boolean connected;
   public Controller c;
   public ArrayList<Tag> children = new ArrayList<Tag>();
   public String tags[];
   public boolean child;
+  public Tag parent;
   public byte data[];  //data from parent
 
   public Timer timer;
