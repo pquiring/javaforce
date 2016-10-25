@@ -1,6 +1,11 @@
 What's new...
 
-Oct 24/2015 : JF 12.2.0 released!
+Oct 25/2016 : JF 12.3.0 released!
+  - fixed NI-DAQmx counter and digital inputs
+  - jfDataLogger/0.4
+    - improved fault tolerance
+
+Oct 24/2016 : JF 12.2.0 released!
   - added support for National Instruments DAQmx controller
     - javaforce.controls.ni
   - jfDataLogger/0.3
