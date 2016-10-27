@@ -15,10 +15,14 @@ import javaforce.controls.ni.DAQmx;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.4";
+  public static String version = "0.5";
 
   public static int delays[] = new int[] {
     25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
+  };
+
+  public static int ticks[] = new int[] {
+    40, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10
   };
 
   /**
@@ -362,7 +366,9 @@ public class App extends javax.swing.JFrame {
   public static JFImage logImage = new JFImage(1, 510);
   public static Worker worker;
   public static Task task;
+  public static int speedIdx;
   public static int delay;
+  public static int tickCounter;
   public static boolean first;
   public static FileOutputStream logger;
   public String projectFile;
@@ -481,7 +487,9 @@ public class App extends javax.swing.JFrame {
         return;
       }
       setState(true);
-      delay = delays[speed.getSelectedIndex()];
+      speedIdx = speed.getSelectedIndex();
+      delay = delays[speedIdx];
+      tickCounter = ticks[speedIdx];
       clear();
       if (logFile != null) {
         try {
@@ -791,6 +799,12 @@ public class App extends javax.swing.JFrame {
         int ly = 5 + 500 - (tag.lastScaledValue * 5);
         logImage.line(x2-1, ly, x2, y, tag.color);
         tag.lastScaledValue = tag.scaledValue;
+      }
+      tickCounter--;
+      if (tickCounter == 0) {
+        tickCounter = ticks[speedIdx];
+        logImage.line(x2, 0, x2, 4, 0xffffff);
+        logImage.line(x2, 505, x2, 509, 0xffffff);
       }
     }
   }

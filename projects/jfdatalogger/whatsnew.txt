@@ -1,3 +1,7 @@
+Oct ?/2016 : v0.5 released
+  - fix : colors were reset when editing a tag
+  - new : added ticks on graph every second (or 5 or 10 seconds for slow speeds)
+
 Oct 25/2016 : v0.4 released
   - fix : DAQmx counter and digital inputs fixed
 

@@ -15,8 +15,6 @@ package javaforce.controls.ni;
  * @author pquiring
  */
 
-import java.util.*;
-
 import javaforce.BE;
 import javaforce.jni.*;
 import javaforce.controls.*;
@@ -42,10 +40,10 @@ public class DAQmx {
   public static native boolean createChannelDigital(long task, String dev, double rate, long samples);
   public static native boolean createChannelCounter(long task, String dev, double rate, long samples, double min, double max, String term, double measureTime, int divisor);
   public static native boolean startTask(long task);
-  public static native int readTaskAnalog(long task, double data[]);
-  public static native int readTaskBinary(long task, int data[]);
-  public static native int readTaskDigital(long task, int data[]);
-  public static native int readTaskCounter(long task, double freq[]);
+  public static native int readTaskAnalog(long task, int numchs, double data[]);
+  public static native int readTaskBinary(long task, int numchs, int data[]);
+  public static native int readTaskDigital(long task, int numchs, int data[]);
+  public static native int readTaskCounter(long task, int numchs, double freq[]);
   public static native boolean stopTask(long task);
   public static native boolean clearTask(long task);
   public static native void printError();  //prints any errors to stdout
@@ -55,6 +53,7 @@ public class DAQmx {
   private long handle;
   private enum types {AI,DI,CI};
   private types type;
+  private int bits;  //for DI
 
   public boolean connect(String url) {
     //url = device/port
@@ -77,6 +76,17 @@ public class DAQmx {
       type = types.DI;
       handle = createTask();
       if (!createChannelDigital(handle, url, Controller.rate, samples)) return false;
+      // device/portx/liney:z
+      int li = url.lastIndexOf("/");
+      if (li == -1) {
+        bits = 1;
+      } else {
+        String ln = url.substring(li+1+4);
+        String yz[] = ln.split(":");
+        int y = Integer.valueOf(yz[0]);
+        int z = Integer.valueOf(yz[1]);
+        bits = z - y + 1;
+      }
       return startTask(handle);
     }
     else if (port.startsWith("ctr")) {
@@ -108,12 +118,12 @@ public class DAQmx {
 
   public byte[] read() {
     int read = 0;
-    int size = 1;  //(int)Controller.rate;
+    int size = 1;
     byte out[] = null;
     switch (type) {
       case AI: {
         double data[] = new double[size];
-        read = readTaskAnalog(handle, data);
+        read = readTaskAnalog(handle, 1, data);
         out = new byte[size * 8];
         //copy data -> out
         int pos = 0;
@@ -124,18 +134,21 @@ public class DAQmx {
         break;
       }
       case DI: {
+        size = bits;
         int data[] = new int[size];
-        read = readTaskDigital(handle, data);
+        read = readTaskDigital(handle, bits, data);
         out = new byte[size];
         //copy data -> out
+        int pos = 0;
         for(int a=0;a<size;a++) {
-          out[a] = (byte)data[a];
+          out[pos++] |= (byte)(data[a]);
+          if (pos == bits) pos = 0;
         }
         break;
       }
       case CI: {
         double data[] = new double[size];
-        read = readTaskCounter(handle, data);
+        read = readTaskCounter(handle, 1, data);
         out = new byte[size * 8];
         int pos = 0;
         for(int a=0;a<size;a++) {

@@ -287,6 +287,7 @@ public class TagDialog extends javax.swing.JDialog {
       min.setText(Float.toString(in.fmin));
     }
     color.setBackground(new Color(in.color));
+    clr = in.color;
   }
 
   public boolean save(Tag out) {
@@ -330,7 +331,7 @@ public class TagDialog extends javax.swing.JDialog {
   public void changeColor() {
     Color newClr = JColorChooser.showDialog(this, "Tag Color", new Color(clr));
     if (newClr == null) return;
-    clr = newClr.getRGB();
+    clr = newClr.getRGB() & 0xffffff;
     color.setBackground(newClr);
   }
 }

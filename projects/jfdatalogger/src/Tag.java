@@ -88,7 +88,7 @@ public class Tag {
       min = Integer.valueOf(f[4]);
       max = Integer.valueOf(f[5]);
     }
-    color = Long.valueOf(f[6], 16).intValue();
+    color = Integer.valueOf(f[6], 16);
   }
 
   public void start(int delay) {

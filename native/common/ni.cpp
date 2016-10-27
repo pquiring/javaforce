@@ -125,49 +125,49 @@ JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_startTask
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskAnalog
-  (JNIEnv *e, jclass cls, jlong task, jdoubleArray data)
+  (JNIEnv *e, jclass cls, jlong task, jint numchs, jdoubleArray data)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 read = 0;
   void *_data = e->GetDoubleArrayElements(data, NULL);
   int size = e->GetArrayLength(data);
-  (*_DAQmxReadAnalogF64)(taskHandle, size, 10.0, DAQmx_Val_GroupByChannel, (float64*)_data, size, &read, NULL);
+  (*_DAQmxReadAnalogF64)(taskHandle, size / numchs, 10.0, DAQmx_Val_GroupByChannel, (float64*)_data, size, &read, NULL);
   e->ReleaseDoubleArrayElements(data, (jdouble*)_data, JNI_COMMIT);
   return read;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskBinary
-  (JNIEnv *e, jclass cls, jlong task, jintArray data)
+  (JNIEnv *e, jclass cls, jlong task, jint numchs, jintArray data)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 read = 0;
   void *_data = e->GetIntArrayElements(data, NULL);
   int size = e->GetArrayLength(data);
-  (*_DAQmxReadBinaryU32)(taskHandle, size, 10.0, DAQmx_Val_GroupByChannel, (uInt32*)_data, size, &read, NULL);
+  (*_DAQmxReadBinaryU32)(taskHandle, size / numchs, 10.0, DAQmx_Val_GroupByChannel, (uInt32*)_data, size, &read, NULL);
   e->ReleaseIntArrayElements(data, (jint*)_data, JNI_COMMIT);
   return read;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskDigital
-  (JNIEnv *e, jclass cls, jlong task, jintArray data)
+  (JNIEnv *e, jclass cls, jlong task, jint numchs, jintArray data)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 read = 0;
   void *_data = e->GetIntArrayElements(data, NULL);
   int size = e->GetArrayLength(data);
-  (*_DAQmxReadDigitalU32)(taskHandle, size, 10.0, DAQmx_Val_GroupByChannel, (uInt32*)_data, size, &read, NULL);
+  (*_DAQmxReadDigitalU32)(taskHandle, size / numchs, 10.0, DAQmx_Val_GroupByChannel, (uInt32*)_data, size, &read, NULL);
   e->ReleaseIntArrayElements(data, (jint*)_data, JNI_COMMIT);
   return read;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_controls_ni_DAQmx_readTaskCounter
-  (JNIEnv *e, jclass cls, jlong task, jdoubleArray data)
+  (JNIEnv *e, jclass cls, jlong task, jint numchs, jdoubleArray data)
 {
   TaskHandle taskHandle=(TaskHandle)task;
   int32 read = 0;
   void *_data = e->GetDoubleArrayElements(data, NULL);
   int size = e->GetArrayLength(data);
-  (*_DAQmxReadCounterF64)(taskHandle, size, 10.0, (float64*)_data, size, &read, NULL);
+  (*_DAQmxReadCounterF64)(taskHandle, size / numchs, 10.0, (float64*)_data, size, &read, NULL);
   e->ReleaseDoubleArrayElements(data, (jdouble*)_data, JNI_COMMIT);
   return read;
 }
