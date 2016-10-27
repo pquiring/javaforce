@@ -47,7 +47,7 @@ public class SplitPanel extends Container {
 
   public void init() {
     super.init();
-    div.addEvent("onmousedown", "onmousedownSplitPanel(this,\"" + get(0).id + "\",\"" + get(1).id + "\");");
+    div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + get(0).id + "\",\"" + get(1).id + "\");");
   }
 
   public String html() {

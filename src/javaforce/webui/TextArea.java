@@ -9,7 +9,7 @@ public class TextArea extends Component {
   public String text;
   public TextArea(String text) {
     this.text = text;
-    addEvent("onchange", "onTextChange(this);");
+    addEvent("onchange", "onTextChange(event, this);");
     setClass("textfield");
   }
   public String html() {
@@ -23,19 +23,8 @@ public class TextArea extends Component {
     return text;
   }
 
-  public void dispatchEvent(String event, String args[]) {
-    if (event.equals("changed")) {
-      int idx = args[0].indexOf("=");
-      text = args[0].substring(idx+1);
-      if (change != null) change.onChange(this);
-    }
-  }
-
-  private Change change;
-  public void addChangeListener(Change handler) {
-    change = handler;
-  }
-  public static interface Change {
-    public void onChange(TextArea combo);
+  public void onChanged(String args[]) {
+    int idx = args[0].indexOf("=");
+    text = args[0].substring(idx+1);
   }
 }

@@ -7,6 +7,8 @@ package javaforce.webui;
 
 import java.util.*;
 
+import javaforce.webui.event.*;
+
 public abstract class Component {
   public String id;
   public Container parent;
@@ -14,6 +16,7 @@ public abstract class Component {
   public ArrayList<String> classes = new ArrayList<String>();
   public HashMap<String, String> attrs = new HashMap<String, String>();
   public HashMap<String, String> styles = new HashMap<String, String>();
+  public int x,y,width,height;  //position and size (updated with mouseenter event)
 
   private static class Event {
     public String event;
@@ -23,6 +26,7 @@ public abstract class Component {
 
   public Component() {
     client = Client.NULL;
+    addEvent("onmouseenter", "onMouseEnter(event, this);");
   }
 
   /** Provides the client (connection to web browser side) and init other variables. */
@@ -38,8 +42,6 @@ public abstract class Component {
   public void init() {}
   /** Returns HTML to render component. */
   public abstract String html();
-  /** Dispatches event. */
-  public void dispatchEvent(String event, String args[]) {}
   /** Component constructor.
    * @param parent = Panel
    * @param name = name of component
@@ -163,5 +165,105 @@ public abstract class Component {
       sb.append("'");
     }
     return sb.toString();
+  }
+
+  public String display = "block-inline";
+
+  public void setVisible(boolean state) {
+    if (state)
+      client.sendEvent(id, "display", new String[] {"val=" + display});
+    else
+      client.sendEvent(id, "display", new String[] {"val=none"});
+  }
+
+  public void setPosition(int x, int y) {
+    client.sendEvent(id, "setpos", new String[] {"x=" + x, "y=" + y});
+    this.x = x;
+    this.y = y;
+  }
+
+  //event handlers
+
+  /** Dispatches event. */
+  public void dispatchEvent(String event, String args[]) {
+    switch (event) {
+      case "click":
+        onClick(args);
+        if (click != null) click.onClick(this);
+        break;
+      case "changed":
+        onChanged(args);
+        if (changed != null) changed.onChanged(this);
+        break;
+      case "mousedown":
+        onMouseDown(args);
+        if (mouseDown != null) mouseDown.onMouseDown(this);
+        break;
+      case "mouseup":
+        onMouseUp(args);
+        if (mouseUp != null) mouseUp.onMouseUp(this);
+        break;
+      case "mousemove":
+        onMouseMove(args);
+        if (mouseMove != null) mouseMove.onMouseMove(this);
+        break;
+      case "mouseenter":
+        onMouseEnter(args);
+        if (mouseEnter != null) mouseEnter.onMouseEnter(this);
+        break;
+    }
+  }
+
+  protected void onClick(String args[]) {}
+  private Click click;
+  public void addClickListener(Click handler) {
+    click = handler;
+  }
+
+  public void onMouseUp(String args[]) {}
+  private MouseUp mouseUp;
+  public void addMouseUpListener(MouseUp handler) {
+    mouseUp = handler;
+  }
+
+  public void onMouseDown(String args[]) {}
+  private MouseDown mouseDown;
+  public void addMouseDownListener(MouseDown handler) {
+    mouseDown = handler;
+  }
+
+  public void onMouseMove(String args[]) {}
+  private MouseMove mouseMove;
+  public void addMouseMoveListener(MouseMove handler) {
+    mouseMove = handler;
+  }
+
+  public void onMouseEnter(String args[]) {
+    //args : s=w,h p=x,y
+    for(int c=0;c<args.length;c++) {
+      String a = args[c];
+      if (a.startsWith("x=")) {
+        x = Integer.valueOf(a.substring(2));
+      }
+      if (a.startsWith("y=")) {
+        y = Integer.valueOf(a.substring(2));
+      }
+      if (a.startsWith("w=")) {
+        width = Integer.valueOf(a.substring(2));
+      }
+      if (a.startsWith("h=")) {
+        height = Integer.valueOf(a.substring(2));
+      }
+    }
+  }
+  private MouseEnter mouseEnter;
+  public void addMouseEnterListener(MouseEnter handler) {
+    mouseEnter = handler;
+  }
+
+  public void onChanged(String args[]) {}
+  private Changed changed;
+  public void addChangedListener(Changed handler) {
+    changed = handler;
   }
 }

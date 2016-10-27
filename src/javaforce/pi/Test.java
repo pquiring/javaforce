@@ -62,7 +62,7 @@ public class Test implements WebUIHandler {
       row.add(new Pad());
       panel.o[a] = new Button("O" + (a+1));
       final int idx = a;
-      panel.o[a].addClickListener((Button b) -> {
+      panel.o[a].addClickListener((Component button) -> {
         boolean state = !outputs[idx];
         outputs[idx] = state;
         GPIO.write(idx + 8, state);

@@ -17,6 +17,9 @@ public class Client {
   public String hash;
   public int nextID;
 
+  public boolean popupMenuMouseDown;
+  public PopupMenu topPopupMenu;
+
   public static Client NULL = new Client();
 
   public Client() {
@@ -36,27 +39,30 @@ public class Client {
   public void setPanel(Panel root) {
     this.root = root;
   }
-  public void dispatchEvent(String comp, String event, String args[]) {
-    if (comp.length() == 0) {
+  public void dispatchEvent(String id, String event, String args[]) {
+    if (id.length() == 0 || id.equals("body")) {
       switch (event) {
         case "load":
           String html = root.html();
           sendEvent("body", "sethtml", new String[] {"html=" + html});
           break;
+        case "mousedown":
+          Menu.onMouseDownBody(this, args);
+          break;
       }
     } else {
-      Component c = root.get(comp);
+      Component c = root.get(id);
       if (c != null) {
         c.dispatchEvent(event, args);
       } else {
-        System.out.println("Error:Component not found:" + comp);
+        System.out.println("Error:Component not found:" + id);
       }
     }
   }
-  public synchronized void sendEvent(String comp, String event, String args[]) {
+  public synchronized void sendEvent(String id, String event, String args[]) {
     if (socket == null) return;
     StringBuffer sb = new StringBuffer();
-    sb.append("{\"event\":\"" + event + "\",\"comp\":\"" + comp + "\"");
+    sb.append("{\"event\":\"" + event + "\",\"id\":\"" + id + "\"");
     if (args != null) {
       int cnt = args.length;
       for(int a=0;a<cnt;a++) {
@@ -72,7 +78,9 @@ public class Client {
       }
     }
     sb.append("}");
-    socket.write(sb.toString().getBytes());
+    String json = sb.toString();
+    System.out.println("SEND=" + json);
+    socket.write(json.getBytes());
   }
   public void redirect(Panel panel) {
     root = panel;

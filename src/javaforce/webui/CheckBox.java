@@ -8,7 +8,7 @@ package javaforce.webui;
 public class CheckBox extends Component {
   public CheckBox(String text) {
     this.text = text;
-    addEvent("onclick", "onClick(this);");
+    addEvent("onclick", "onClick(event, this);");
     setClass("noselect");
   }
   public String html() {
@@ -27,17 +27,7 @@ public class CheckBox extends Component {
   public boolean isSelected() {
     return selected;
   }
-  public void dispatchEvent(String event, String args[]) {
-    if (event.equals("click")) {
-      selected = !selected;
-      if (click != null) click.onClick(this);
-    }
-  }
-  private Click click;
-  public void addClickListener(Click handler) {
-    click = handler;
-  }
-  public static interface Click {
-    public void onClick(CheckBox button);
+  public void onClick(String args[]) {
+    selected = !selected;
   }
 }

@@ -35,7 +35,7 @@ public class TabPanel extends Container {
     int cnt = row.count();
     for(int a=0;a<cnt;a++) {
       Component c = row.get(a);
-      c.addEvent("onclick", "openTab(" + a + ",\"" + tabs.id + "\",\"" + row.id + "\");");
+      c.addEvent("onclick", "openTab(event, " + a + ",\"" + tabs.id + "\",\"" + row.id + "\");");
     }
   }
 }

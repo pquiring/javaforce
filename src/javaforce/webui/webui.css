@@ -139,13 +139,10 @@ button {
 
 .menu {
   background-color: #ccc;
+  padding-right: 10px;
 }
 
 .menuitem {
-  background-color: #ccc;
-}
-
-.menuitem:hover {
   background-color: #ccc;
 }
 

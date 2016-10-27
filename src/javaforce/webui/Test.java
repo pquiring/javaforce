@@ -53,6 +53,15 @@ public class Test implements WebUIHandler {
     m2.add(m2b);
     MenuItem m2c = new MenuItem("Paste");
     m2.add(m2c);
+    Menu m3 = new Menu("More");
+    m2.add(m3);
+
+    MenuItem m3a = new MenuItem("X1");
+    m3.add(m3a);
+    MenuItem m3b = new MenuItem("X2");
+    m3.add(m3b);
+    MenuItem m3c = new MenuItem("X3");
+    m3.add(m3c);
 
     Row row1 = new Row();
     panel.add(row1);
@@ -63,7 +72,7 @@ public class Test implements WebUIHandler {
     Label l = new Label("Ready!");
     row1.add(l);
     //create event handler for button
-    b.addClickListener((Button button) -> {
+    b.addClickListener((Component button) -> {
       JFLog.log("button handler");
       Integer times = (Integer)client.getProperty("times");
       if (times == null) times = new Integer(1);
@@ -80,8 +89,9 @@ public class Test implements WebUIHandler {
     comboBox.add("option1", "Option #1");
     comboBox.add("option2", "Option #2");
     comboBox.add("option3", "Option #3");
-    comboBox.addChangeListener((ComboBox combobox) -> {
-      System.out.println("comboxbox index=" + combobox.getSelected());
+    comboBox.addChangedListener((Component comp) -> {
+      ComboBox cb = (ComboBox)comp;
+      System.out.println("comboxbox index=" + cb.getSelected());
     });
     row1.add(comboBox);
     //add : checkbox
@@ -113,14 +123,16 @@ public class Test implements WebUIHandler {
     Label l2 = new Label("Another Label");
     col.add(l2);
     TextField tf1 = new TextField("init text");
-    tf1.addChangeListener((TextField tf) -> {
+    tf1.addChangedListener((Component comp) -> {
+      TextField tf = (TextField)comp;
       System.out.println("textfield text=" + tf.getText());
     });
     col.add(tf1);
 
     TextArea ta1 = new TextArea("init text");
-    ta1.addChangeListener((TextArea tf) -> {
-      System.out.println("textarea text=" + tf.getText());
+    ta1.addChangedListener((Component comp) -> {
+      TextArea ta = (TextArea)comp;
+      System.out.println("textarea text=" + ta.getText());
     });
     col.add(ta1);
 

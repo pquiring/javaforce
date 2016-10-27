@@ -9,7 +9,7 @@ import java.util.*;
 
 public class ComboBox extends Component {
   public ComboBox() {
-    addEvent("onchange", "onComboBoxChange(this);");
+    addEvent("onchange", "onComboBoxChange(event, this);");
   }
 
   private ArrayList<String> values = new ArrayList<String>();
@@ -49,19 +49,8 @@ public class ComboBox extends Component {
     return index;
   }
 
-  public void dispatchEvent(String event, String args[]) {
-    if (event.equals("changed")) {
-      int idx = args[0].indexOf("=");
-      index = Integer.valueOf(args[0].substring(idx+1));
-      if (change != null) change.onChange(this);
-    }
-  }
-
-  private Change change;
-  public void addChangeListener(Change handler) {
-    change = handler;
-  }
-  public static interface Change {
-    public void onChange(ComboBox combo);
+  public void onChanged(String args[]) {
+    int idx = args[0].indexOf("=");
+    index = Integer.valueOf(args[0].substring(idx+1));
   }
 }

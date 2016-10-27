@@ -134,7 +134,7 @@ public class Server implements WebHandler, WebSocketHandler {
       return;
     }
     String msg = new String(data);
-    JFLog.log("JSON=" + msg);  //test
+    JFLog.log("RECV=" + msg);
     //decode JSON
     JSON.Element json;
     try {
@@ -143,14 +143,14 @@ public class Server implements WebHandler, WebSocketHandler {
       e.printStackTrace();
       return;
     }
-    String comp = "";
+    String id = "";
     String event = "";
     ArrayList<String> args = new ArrayList<String>();
     int cnt = json.children.size();
     for(int a=0;a<cnt;a++) {
       JSON.Element e = json.children.get(a);
-      if (e.key.equals("comp")) {
-        comp = e.value;
+      if (e.key.equals("id")) {
+        id = e.value;
       }
       else if (e.key.equals("event")) {
         event = e.value;
@@ -159,7 +159,10 @@ public class Server implements WebHandler, WebSocketHandler {
         args.add(e.key + "=" + e.value);
       }
     }
-    JFLog.log("event:" + comp + "," + event);
-    client.dispatchEvent(comp, event, args.toArray(new String[args.size()]));
+    try {
+      client.dispatchEvent(id, event, args.toArray(new String[args.size()]));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

@@ -10,85 +10,95 @@ ws.onopen = function (event) {
 ws.onmessage = function (event) {
   var msg = JSON.parse(event.data);
   console.log("event:" + msg.event);
-  var comp = document.getElementById(msg.comp);
+  var element = document.getElementById(msg.id);
   switch (msg.event) {
     case "redir":
       break;
     case "display":
-      comp.style.display = msg.val;
+      element.style.display = msg.val;
       break;
     case "gettext":
-      sendText(msg.comp, comp.innerHTML);
+      sendText(msg.id, element.innerHTML);
       break;
     case "sethtml":
-      comp.innerHTML = msg.html;
+      element.innerHTML = msg.html;
       break;
     case "setsrc":
-      comp.src = msg.src;
+      element.src = msg.src;
       break;
     case "settext":
-      comp.innerHTML = msg.text;
+      element.innerHTML = msg.text;
       break;
     case "setvalue":
-      comp.value = msg.value;
+      element.value = msg.value;
       break;
     case "setpos":
-      comp.style.left = msg.x;
-      comp.style.top = msg.y;
+      element.style.left = msg.x;
+      element.style.top = msg.y;
       break;
   }
 };
 
 var splitDragging = null;
 
-function onmouseupBody(e) {
+function onmouseupBody(event, element) {
   if (splitDragging) {
     splitDragging = null;
   }
 }
 
-function onmousemoveBody(e) {
+function onmousedownBody(event, element) {
+  console.log("mousedownBody:" + event.x + "," + event.y + "," + element.id);
+  var msg = {
+    event: "mousedown",
+    id: element.id,
+    p: event.clientX + "," + event.clientY
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function onmousemoveBody(event, element) {
   if (splitDragging) {
-    onmousemoveSplitPanel(e);
+    onmousemoveSplitPanel(event, element);
   }
 }
 
-function onClick(comp) {
+function onClick(event, element) {
   var msg = {
     event: "click",
-    comp: comp.id
+    id: element.id
   };
   ws.send(JSON.stringify(msg));
 }
 
-function onComboBoxChange(comp) {
+function onComboBoxChange(event, element) {
   var msg = {
     event: "changed",
-    comp: comp.id,
-    index: comp.selectedIndex
+    id: element.id,
+    index: element.selectedIndex
   };
   ws.send(JSON.stringify(msg));
 }
 
-function onTextChange(comp) {
+function onTextChange(event, element) {
   var msg = {
     event: "changed",
-    comp: comp.id,
-    text: comp.value
+    id: element.id,
+    text: element.value
   };
   ws.send(JSON.stringify(msg));
 }
 
-function sendText(comp, text) {
+function sendText(id, text) {
   var msg = {
     event: "sendtext",
-    comp: comp,
+    id: id,
     text: text
   };
   ws.send(JSON.stringify(msg));
 }
 
-function openTab(idx, tabsid, rowsid) {
+function openTab(event, idx, tabsid, rowsid) {
   var tabs = document.getElementById(tabsid);
   var nodes = tabs.childNodes;
   var cnt = nodes.length;
@@ -112,43 +122,70 @@ function openTab(idx, tabsid, rowsid) {
   }
 }
 
-function onmousedownSplitPanel(e, e1, e2) {
-  var ele1 = document.getElementById(e1);
-  var ele2 = document.getElementById(e2);
+function onmousedownSplitPanel(event, element, id1, id2) {
+  var element1 = document.getElementById(id1);
+  var element2 = document.getElementById(id2);
   splitDragging = {
     //mouse coords
-    mouseX: window.event.clientX,
-    mouseY: window.event.clientY,
+    mouseX: event.clientX,
+    mouseY: event.clientY,
     //left/top current size
-    startX: ele1.clientWidth,
-    startY: ele1.clientHeight,
+    startX: element1.clientWidth,
+    startY: element1.clientHeight,
     //elements
-    element1: ele1,
-    element2: ele2
+    element: element,
+    element1: element1,
+    element2: element2
   };
-//  console.log("m=" + window.event.clientX + "," + window.event.clientY);
-//  console.log("o=" + e.offsetLeft + "," + e.offsetTop);
-//  console.log("s=" + ele1.clientWidth + "," + ele1.clientHeight);
 }
 
-function onmousemoveSplitPanel(e) {
-//  console.log("m=" + window.event.clientX + "," + window.event.clientY);
-  var width = splitDragging.startX + (window.event.clientX - splitDragging.mouseX);
+function onmousemoveSplitPanel(event, element) {
+//  console.log("m=" + event.clientX + "," + event.clientY);
+  var width = splitDragging.startX + (event.clientX - splitDragging.mouseX);
   splitDragging.element1.style.width = width + "px";
 }
 
-function onmousemoveDrag(e) {
-  var top = splitDragging.startY + (window.event.clientY - splitDragging.mouseY);
-  var left = splitDragging.startX + (window.event.clientX - splitDragging.mouseX);
+function onmousemoveDrag(event, element) {
+  var top = splitDragging.startY + (event.clientY - splitDragging.mouseY);
+  var left = splitDragging.startX + (event.clientX - splitDragging.mouseX);
   dragging.element.style.top = (Math.max(0, top)) + "px";
   dragging.element.style.left = (Math.max(0, left)) + "px";
 }
 
-function onClickMenu(comp) {
+function onClickMenu(event, element) {
   var msg = {
     event: "click",
-    comp: comp.id,
-    pos: comp.offsetLeft + "," + comp.offsetTop + "," + comp.offsetWidth + "," + comp.offsetHeight
+    id: element.id
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function onMouseEnter(event, element) {
+  var rect = element.getBoundingClientRect();
+  var msg = {
+    event: "mouseenter",
+    id: element.id,
+    x: Math.floor(rect.left),
+    y: Math.floor(rect.top),
+    w: Math.floor(rect.width),
+    h: Math.floor(rect.height)
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function onMouseMove(event, element) {
+  var msg = {
+    event: "mousemove",
+    id: element.id
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function onMouseDown(event, element) {
+  var msg = {
+    event: "mousedown",
+    id: element.id,
+    p: event.clientX + "," + event.clientY
   };
   ws.send(JSON.stringify(msg));
 }

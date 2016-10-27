@@ -4,7 +4,11 @@
   <script src=webui.js></script>
   <link rel="stylesheet" type="text/css" href="webui.css">
 </head>
-<body id=body onmouseup='onmouseupBody(this);' onmousemove='onmousemoveBody(this);'>
+<body id=body
+  onmouseup='onmouseupBody(event, this);'
+  onmousedown='onmousedownBody(event, this);'
+  onmousemove='onmousemoveBody(event, this);'
+>
 Loading...
 </body>
 </html>

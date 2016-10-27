@@ -1,21 +1,20 @@
 package javaforce.webui;
 
-/** Label.java
- *
- * Generic Label.
+/** MenuItem
  *
  * @author pquiring
  */
 
-public class Label extends Component {
+public class MenuItem extends Container {
   public String text;
-  public Label(String text) {
+  public MenuItem(String text) {
     this.text = text;
-    addEvent("onclick", "onClick(event, this);");
+    addEvent("onclick", "onClickMenu(event, this);");
+    addEvent("onmousedown", "onMouseDown(event, this);");
     setClass("noselect");
   }
   public String html() {
-    return "<label" + getAttrs() + ">" + text + "</label>";
+    return "<div" + getAttrs() + ">" + text + "</div>";
   }
   public void setText(String txt) {
     text = txt;
