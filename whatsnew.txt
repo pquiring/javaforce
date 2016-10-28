@@ -1,5 +1,10 @@
 What's new...
 
+Oct 28/2016 : JF 12.4.0 released!
+  - fixed NI-DAQmx freq counter logic
+  - jfDataLogger/0.5
+    - many fixes
+
 Oct 25/2016 : JF 12.3.0 released!
   - fixed NI-DAQmx counter and digital inputs
   - jfDataLogger/0.4
