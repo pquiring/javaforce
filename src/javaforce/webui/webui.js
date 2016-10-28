@@ -36,14 +36,74 @@ ws.onmessage = function (event) {
       element.style.left = msg.x;
       element.style.top = msg.y;
       break;
+    case "getpossize":
+      sendPosSize(msg.id);
+      break;
+    case "getpos":
+      sendPos(msg.id);
+      break;
+    case "getsize":
+      sendSize(msg.id);
+      break;
   }
 };
 
+function sendPosSize(id) {
+  var element = document.getElementById(id);
+  var rect = element.getBoundingClientRect();
+  var msg = {
+    event: "possize",
+    id: id,
+    x: Math.floor(rect.left),
+    y: Math.floor(rect.top),
+    w: Math.floor(rect.width),
+    h: Math.floor(rect.height)
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function sendSize(id) {
+  var element = document.getElementById(id);
+  var rect = element.getBoundingClientRect();
+  var msg = {
+    event: "size",
+    id: id,
+    w: Math.floor(rect.width),
+    h: Math.floor(rect.height)
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function sendPos(id) {
+  var element = document.getElementById(id);
+  var rect = element.getBoundingClientRect();
+  var msg = {
+    event: "pos",
+    id: id,
+    x: Math.floor(rect.left),
+    y: Math.floor(rect.top)
+  };
+  ws.send(JSON.stringify(msg));
+}
+
 var splitDragging = null;
+var popupDragging = null;
 
 function onmouseupBody(event, element) {
   if (splitDragging) {
     splitDragging = null;
+  }
+  if (popupDragging) {
+    popupDragging = null;
+  }
+}
+
+function onmousemoveBody(event, element) {
+  if (splitDragging) {
+    onmousemoveSplitPanel(event, element);
+  }
+  if (popupDragging) {
+    onmousemovePopupPanel(event, element);
   }
 }
 
@@ -55,12 +115,6 @@ function onmousedownBody(event, element) {
     p: event.clientX + "," + event.clientY
   };
   ws.send(JSON.stringify(msg));
-}
-
-function onmousemoveBody(event, element) {
-  if (splitDragging) {
-    onmousemoveSplitPanel(event, element);
-  }
 }
 
 function onClick(event, element) {
@@ -129,7 +183,7 @@ function onmousedownSplitPanel(event, element, id1, id2) {
     //mouse coords
     mouseX: event.clientX,
     mouseY: event.clientY,
-    //left/top current size
+    //current size
     startX: element1.clientWidth,
     startY: element1.clientHeight,
     //elements
@@ -145,11 +199,25 @@ function onmousemoveSplitPanel(event, element) {
   splitDragging.element1.style.width = width + "px";
 }
 
-function onmousemoveDrag(event, element) {
-  var top = splitDragging.startY + (event.clientY - splitDragging.mouseY);
-  var left = splitDragging.startX + (event.clientX - splitDragging.mouseX);
-  dragging.element.style.top = (Math.max(0, top)) + "px";
-  dragging.element.style.left = (Math.max(0, left)) + "px";
+function onmousedownPopupPanel(event, element) {
+  var rect = element.getBoundingClientRect();
+  popupDragging = {
+    //mouse coords
+    mouseX: event.clientX,
+    mouseY: event.clientY,
+    //left/top
+    startX: rect.left,
+    startY: rect.top,
+    //elements
+    element: element
+  };
+}
+
+function onmousemovePopupPanel(event, element) {
+  var top = popupDragging.startY + (event.clientY - popupDragging.mouseY);
+  var left = popupDragging.startX + (event.clientX - popupDragging.mouseX);
+  popupDragging.element.style.top = (Math.max(0, top)) + "px";
+  popupDragging.element.style.left = (Math.max(0, left)) + "px";
 }
 
 function onClickMenu(event, element) {
@@ -186,6 +254,15 @@ function onMouseDown(event, element) {
     event: "mousedown",
     id: element.id,
     p: event.clientX + "," + event.clientY
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function closePanel(event, element) {
+  element.style.display = "none";
+  var msg = {
+    event: "close",
+    id: element.id
   };
   ws.send(JSON.stringify(msg));
 }

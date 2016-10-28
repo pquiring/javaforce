@@ -140,10 +140,12 @@ button {
 .menu {
   background-color: #ccc;
   padding-right: 10px;
+  cursor: default;
 }
 
 .menuitem {
   background-color: #ccc;
+  cursor: default;
 }
 
 .popupmenu {
@@ -151,4 +153,30 @@ button {
   display: none;
   flex-direction: column;
   background-color: #ccc;
+}
+
+.popuppanel {
+  position: fixed;
+  display: none;
+  background-color: #fff;
+  min-height: 64px;
+  min-width: 64px;
+  border: 1px solid;
+  flex-direction: column;
+}
+
+.titlebar {
+  background-color: #00e;
+  width: 100%;
+  display: inline-flex;
+  flex-direction: row;
+  cursor: default;
+}
+
+.defaultcursor {
+  cursor: default;
+}
+
+.close {
+
 }

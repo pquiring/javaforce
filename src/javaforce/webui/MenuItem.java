@@ -11,7 +11,7 @@ public class MenuItem extends Container {
     this.text = text;
     addEvent("onclick", "onClickMenu(event, this);");
     addEvent("onmousedown", "onMouseDown(event, this);");
-    setClass("noselect");
+    setClass("noselect menuitem");
   }
   public String html() {
     return "<div" + getAttrs() + ">" + text + "</div>";

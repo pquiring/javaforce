@@ -26,7 +26,6 @@ public abstract class Component {
 
   public Component() {
     client = Client.NULL;
-    addEvent("onmouseenter", "onMouseEnter(event, this);");
   }
 
   /** Provides the client (connection to web browser side) and init other variables. */
@@ -167,7 +166,7 @@ public abstract class Component {
     return sb.toString();
   }
 
-  public String display = "block-inline";
+  public String display = "inline-block";
 
   public void setVisible(boolean state) {
     if (state)
@@ -211,6 +210,57 @@ public abstract class Component {
         onMouseEnter(args);
         if (mouseEnter != null) mouseEnter.onMouseEnter(this);
         break;
+      case "possize":
+        onPosSize(args);
+        break;
+      case "pos":
+        onPos(args);
+        break;
+      case "size":
+        onSize(args);
+        break;
+    }
+  }
+
+  public void onPosSize(String args[]) {
+    for(int c=0;c<args.length;c++) {
+      String a = args[c];
+      if (a.startsWith("x=")) {
+        x = Integer.valueOf(a.substring(2));
+      }
+      if (a.startsWith("y=")) {
+        y = Integer.valueOf(a.substring(2));
+      }
+      if (a.startsWith("w=")) {
+        width = Integer.valueOf(a.substring(2));
+      }
+      if (a.startsWith("h=")) {
+        height = Integer.valueOf(a.substring(2));
+      }
+    }
+  }
+
+  public void onSize(String args[]) {
+    for(int c=0;c<args.length;c++) {
+      String a = args[c];
+      if (a.startsWith("w=")) {
+        width = Integer.valueOf(a.substring(2));
+      }
+      if (a.startsWith("h=")) {
+        height = Integer.valueOf(a.substring(2));
+      }
+    }
+  }
+
+  public void onPos(String args[]) {
+    for(int c=0;c<args.length;c++) {
+      String a = args[c];
+      if (a.startsWith("x=")) {
+        x = Integer.valueOf(a.substring(2));
+      }
+      if (a.startsWith("y=")) {
+        y = Integer.valueOf(a.substring(2));
+      }
     }
   }
 
@@ -239,22 +289,6 @@ public abstract class Component {
   }
 
   public void onMouseEnter(String args[]) {
-    //args : s=w,h p=x,y
-    for(int c=0;c<args.length;c++) {
-      String a = args[c];
-      if (a.startsWith("x=")) {
-        x = Integer.valueOf(a.substring(2));
-      }
-      if (a.startsWith("y=")) {
-        y = Integer.valueOf(a.substring(2));
-      }
-      if (a.startsWith("w=")) {
-        width = Integer.valueOf(a.substring(2));
-      }
-      if (a.startsWith("h=")) {
-        height = Integer.valueOf(a.substring(2));
-      }
-    }
   }
   private MouseEnter mouseEnter;
   public void addMouseEnterListener(MouseEnter handler) {

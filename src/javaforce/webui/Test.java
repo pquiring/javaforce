@@ -5,8 +5,6 @@ package javaforce.webui;
  * @author pquiring
  */
 
-import javaforce.*;
-
 public class Test implements WebUIHandler {
   public Resource img;
 
@@ -73,7 +71,6 @@ public class Test implements WebUIHandler {
     row1.add(l);
     //create event handler for button
     b.addClickListener((Component button) -> {
-      JFLog.log("button handler");
       Integer times = (Integer)client.getProperty("times");
       if (times == null) times = new Integer(1);
       l.setText("You clicked it " + times + " times!");
@@ -81,6 +78,20 @@ public class Test implements WebUIHandler {
       ProgressBar bar = (ProgressBar)client.getProperty("bar");
       bar.setValue(++value);
     });
+    //another button to popup window
+    Button b2 = new Button("Popup");
+    row1.add(b2);
+    //add popuppanel
+    PopupPanel pp = new PopupPanel("Test");
+    panel.add(pp);
+    b2.addClickListener((Component button) -> {
+      System.out.println("Popup Panel");
+      pp.setPosition(100, 100);
+      pp.setVisible(true);
+    });
+    //add something to popup panel
+    Label ppl1 = new Label("Popup Panel!");
+    pp.add(ppl1);
     //add : padding
     Pad pad = new Pad();
     row1.add(pad);

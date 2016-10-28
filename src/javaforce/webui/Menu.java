@@ -38,6 +38,10 @@ public class Menu extends MenuItem {
 
   }
   public void onClick(String args[]) {
+    client.sendEvent(id, "getpossize", null);
+  }
+  public void onPosSize(String args[]) {
+    super.onPosSize(args);
     if (inMenuBar)
       menu.setPosition(x, y + height);
     else
