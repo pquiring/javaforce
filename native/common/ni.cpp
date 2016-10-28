@@ -107,10 +107,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_createChannelCounter
     status = (*_DAQmxSetCIFreqTerm)(taskHandle, _dev, _term);
   }
   if (status == 0) {
-    status = (*_DAQmxCfgImplicitTiming)(taskHandle, DAQmx_Val_ContSamps, samples);
+//    status = (*_DAQmxCfgImplicitTiming)(taskHandle, DAQmx_Val_ContSamps, samples);
   }
   if (status == 0) {
-    status = (*_DAQmxSetCICtrTimebaseRate)(taskHandle, _dev, rate);
+//    status = (*_DAQmxSetCICtrTimebaseRate)(taskHandle, _dev, rate);
   }
   e->ReleaseStringUTFChars(dev, _dev);
   e->ReleaseStringUTFChars(term, _term);

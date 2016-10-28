@@ -53,7 +53,7 @@ public class DAQmx {
   private long handle;
   private enum types {AI,DI,CI};
   private types type;
-  private int bits;  //for DI
+  private int chs = 1;
 
   public boolean connect(String url) {
     //url = device/port
@@ -64,6 +64,7 @@ public class DAQmx {
     String port = url.substring(idx+1);
     int samples = (int)Controller.rate;
     if (samples == 0) samples = 1;
+    samples = 1;
     if (port.startsWith("ai")) {
       //analog input (voltage)
       type = types.AI;
@@ -78,14 +79,14 @@ public class DAQmx {
       if (!createChannelDigital(handle, url, Controller.rate, samples)) return false;
       // device/portx/liney:z
       int li = url.lastIndexOf("/");
-      if (li == -1) {
-        bits = 1;
-      } else {
+      if (li != -1) {
         String ln = url.substring(li+1+4);
         String yz[] = ln.split(":");
-        int y = Integer.valueOf(yz[0]);
-        int z = Integer.valueOf(yz[1]);
-        bits = z - y + 1;
+        if (yz.length == 2) {
+          int y = Integer.valueOf(yz[0]);
+          int z = Integer.valueOf(yz[1]);
+          chs = z - y + 1;
+        }
       }
       return startTask(handle);
     }
@@ -97,7 +98,7 @@ public class DAQmx {
       String p[] = url.split("/");
       device = p[0] + "/" + p[1];
       port = "/" + p[0] + "/" + p[2];
-      if (!createChannelCounter(handle, device, 20000000.0, samples, 1.0, 1000000.0, port, 1.0 / Controller.rate, 1)) return false;
+      if (!createChannelCounter(handle, device, 20000000.0, samples, 2.0, 1000.0, port, 1.0 / Controller.rate, 4)) return false;
       return startTask(handle);
     }
     System.out.println("Unsupported DAQmx host:" + url);
@@ -118,47 +119,45 @@ public class DAQmx {
 
   public byte[] read() {
     int read = 0;
-    int size = 1;
     byte out[] = null;
     switch (type) {
       case AI: {
-        double data[] = new double[size];
+        double data[] = new double[chs];
         read = readTaskAnalog(handle, 1, data);
-        out = new byte[size * 8];
+        out = new byte[chs * 8];
         //copy data -> out
         int pos = 0;
-        for(int a=0;a<size;a++) {
+        for(int a=0;a<chs;a++) {
           BE.setuint64(out, pos, Double.doubleToLongBits(data[a]));
           pos += 8;
         }
         break;
       }
       case DI: {
-        size = bits;
-        int data[] = new int[size];
-        read = readTaskDigital(handle, bits, data);
-        out = new byte[size];
+        int data[] = new int[chs];
+        read = readTaskDigital(handle, chs, data);
+        out = new byte[chs];
         //copy data -> out
         int pos = 0;
-        for(int a=0;a<size;a++) {
+        for(int a=0;a<chs;a++) {
           out[pos++] |= (byte)(data[a]);
-          if (pos == bits) pos = 0;
+          if (pos == chs) pos = 0;
         }
         break;
       }
       case CI: {
-        double data[] = new double[size];
+        double data[] = new double[chs];
         read = readTaskCounter(handle, 1, data);
-        out = new byte[size * 8];
+        out = new byte[chs * 8];
         int pos = 0;
-        for(int a=0;a<size;a++) {
+        for(int a=0;a<chs;a++) {
           BE.setuint64(out, pos, Double.doubleToLongBits(data[a]));
           pos += 8;
         }
         break;
       }
     }
-    if (read != (int)Controller.rate) {
+    if (read != chs) {
       printError();
     }
     return out;
