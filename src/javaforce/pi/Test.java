@@ -7,6 +7,7 @@ package javaforce.pi;
 
 import javaforce.*;
 import javaforce.webui.*;
+import javaforce.webui.event.*;
 
 public class Test implements WebUIHandler {
   public static void main(String args[]) {
@@ -62,7 +63,7 @@ public class Test implements WebUIHandler {
       row.add(new Pad());
       panel.o[a] = new Button("O" + (a+1));
       final int idx = a;
-      panel.o[a].addClickListener((Component button) -> {
+      panel.o[a].addClickListener((Event event, Component button) -> {
         boolean state = !outputs[idx];
         outputs[idx] = state;
         GPIO.write(idx + 8, state);
