@@ -45,6 +45,12 @@ ws.onmessage = function (event) {
     case "getsize":
       sendSize(msg.id);
       break;
+    case "addclass":
+      element.className += " " + msg.cls;
+      break;
+    case "delclass":
+      element.className = element.className.replace(" " + msg.cls, "");
+      break;
   }
 };
 
@@ -120,7 +126,10 @@ function onmousedownBody(event, element) {
 function onClick(event, element) {
   var msg = {
     event: "click",
-    id: element.id
+    id: element.id,
+    ck: event.ctrlKey,
+    ak: event.altKey,
+    sk: event.shiftKey
   };
   ws.send(JSON.stringify(msg));
 }
@@ -218,14 +227,6 @@ function onmousemovePopupPanel(event, element) {
   var left = popupDragging.startX + (event.clientX - popupDragging.mouseX);
   popupDragging.element.style.top = (Math.max(0, top)) + "px";
   popupDragging.element.style.left = (Math.max(0, left)) + "px";
-}
-
-function onClickMenu(event, element) {
-  var msg = {
-    event: "click",
-    id: element.id
-  };
-  ws.send(JSON.stringify(msg));
 }
 
 function onMouseEnter(event, element) {

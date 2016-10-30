@@ -180,3 +180,15 @@ button {
 .close {
 
 }
+
+.scrollpanel {
+  overflow: auto;
+}
+
+.list {
+
+}
+
+.selected {
+  background-color: #00e;
+}

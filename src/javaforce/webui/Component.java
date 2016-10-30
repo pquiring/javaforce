@@ -18,11 +18,11 @@ public abstract class Component {
   public HashMap<String, String> styles = new HashMap<String, String>();
   public int x,y,width,height;  //position and size (updated with mouseenter event)
 
-  private static class Event {
+  private static class OnEvent {
     public String event;
     public String js;
   }
-  public ArrayList<Event> events = new ArrayList<Event>();
+  public ArrayList<OnEvent> events = new ArrayList<OnEvent>();
 
   public Component() {
     client = Client.NULL;
@@ -33,7 +33,6 @@ public abstract class Component {
     if (id != null) return;
     this.client = client;
     id = "c" + client.getNextID();
-    init();
   }
   /** Perform any initialization with the client.
    * Containers should call init() on all sub-components.
@@ -90,21 +89,21 @@ public abstract class Component {
     styles.remove(style);
   }
 
-  private Event getEvent(String onX) {
+  private OnEvent getEvent(String onX) {
     int cnt = events.size();
     for(int a=0;a<cnt;a++) {
-      Event event = events.get(a);
+      OnEvent event = events.get(a);
       if (event.event.equals(onX)) return event;
     }
     return null;
   }
   public void addEvent(String onX, String js) {
-    Event event;
+    OnEvent event;
     event = getEvent(onX);
     if (event != null) {
       event.js = js;
     } else {
-      event = new Event();
+      event = new OnEvent();
       event.event = onX;
       event.js = js;
       events.add(event);
@@ -115,7 +114,7 @@ public abstract class Component {
     int cnt = events.size();
     for(int a=0;a<cnt;a++) {
       sb.append(' ');
-      Event event = events.get(a);
+      OnEvent event = events.get(a);
       sb.append(event.event);
       sb.append("='");
       sb.append(event.js);
@@ -181,14 +180,30 @@ public abstract class Component {
     this.y = y;
   }
 
+  public String toString() {
+    return getClass().getName() + ":" + id;
+  }
+
   //event handlers
 
   /** Dispatches event. */
   public void dispatchEvent(String event, String args[]) {
+    Event e = new Event();
+    for(int a=0;a<args.length;a++) {
+      if (args[a].equals("ck=true")) {
+        e.ctrlKey = true;
+      }
+      if (args[a].equals("ak=true")) {
+        e.altKey = true;
+      }
+      if (args[a].equals("sk=true")) {
+        e.shiftKey = true;
+      }
+    }
     switch (event) {
       case "click":
         onClick(args);
-        if (click != null) click.onClick(this);
+        if (click != null) click.onClick(e, this);
         break;
       case "changed":
         onChanged(args);
@@ -265,37 +280,36 @@ public abstract class Component {
   }
 
   protected void onClick(String args[]) {}
-  private Click click;
+  public Click click;
   public void addClickListener(Click handler) {
     click = handler;
   }
 
-  public void onMouseUp(String args[]) {}
+  protected void onMouseUp(String args[]) {}
   private MouseUp mouseUp;
   public void addMouseUpListener(MouseUp handler) {
     mouseUp = handler;
   }
 
-  public void onMouseDown(String args[]) {}
+  protected void onMouseDown(String args[]) {}
   private MouseDown mouseDown;
   public void addMouseDownListener(MouseDown handler) {
     mouseDown = handler;
   }
 
-  public void onMouseMove(String args[]) {}
+  protected void onMouseMove(String args[]) {}
   private MouseMove mouseMove;
   public void addMouseMoveListener(MouseMove handler) {
     mouseMove = handler;
   }
 
-  public void onMouseEnter(String args[]) {
-  }
+  protected void onMouseEnter(String args[]) {}
   private MouseEnter mouseEnter;
   public void addMouseEnterListener(MouseEnter handler) {
     mouseEnter = handler;
   }
 
-  public void onChanged(String args[]) {}
+  protected void onChanged(String args[]) {}
   private Changed changed;
   public void addChangedListener(Changed handler) {
     changed = handler;

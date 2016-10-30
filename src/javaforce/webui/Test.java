@@ -5,6 +5,8 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import javaforce.webui.event.*;
+
 public class Test implements WebUIHandler {
   public Resource img;
 
@@ -70,7 +72,7 @@ public class Test implements WebUIHandler {
     Label l = new Label("Ready!");
     row1.add(l);
     //create event handler for button
-    b.addClickListener((Component button) -> {
+    b.addClickListener((Event e, Component button) -> {
       Integer times = (Integer)client.getProperty("times");
       if (times == null) times = new Integer(1);
       l.setText("You clicked it " + times + " times!");
@@ -84,7 +86,7 @@ public class Test implements WebUIHandler {
     //add popuppanel
     PopupPanel pp = new PopupPanel("Test");
     panel.add(pp);
-    b2.addClickListener((Component button) -> {
+    b2.addClickListener((Event e, Component button) -> {
       System.out.println("Popup Panel");
       pp.setPosition(100, 100);
       pp.setVisible(true);
@@ -146,6 +148,16 @@ public class Test implements WebUIHandler {
       System.out.println("textarea text=" + ta.getText());
     });
     col.add(ta1);
+
+    List list = new List();
+    list.setHeight("50px");
+    list.add("Option #1");
+    list.add("Option #2");
+    list.add("Option #3");
+
+    Panel p = new Panel();
+    p.add(list);
+    tab.add(p, "Tab#3");
 
     //add third row
     Row row3 = new Row();

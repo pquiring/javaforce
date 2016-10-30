@@ -8,5 +8,5 @@ package javaforce.webui.event;
 import javaforce.webui.*;
 
 public interface Click {
-  public void onClick(Component c);
+  public void onClick(Event e, Component c);
 }

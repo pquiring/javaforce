@@ -79,7 +79,9 @@ public class Client {
     }
     sb.append("}");
     String json = sb.toString();
-    System.out.println("SEND=" + json);
+    if (!event.equals("sethtml")) {
+      System.out.println("SEND=" + json);
+    }
     socket.write(json.getBytes());
   }
   public void redirect(Panel panel) {

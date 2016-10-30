@@ -32,6 +32,7 @@ public class TabPanel extends Container {
     return top.html();
   }
   public void init() {
+    super.init();
     int cnt = row.count();
     for(int a=0;a<cnt;a++) {
       Component c = row.get(a);

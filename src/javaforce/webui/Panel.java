@@ -7,7 +7,8 @@ package javaforce.webui;
 
 public class Panel extends Container {
   public Panel() {
-    setClass("panel column");
+    addClass("panel");
+    addClass("column");
   }
   public String html() {
     StringBuffer sb = new StringBuffer();
