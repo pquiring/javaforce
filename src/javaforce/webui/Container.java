@@ -56,6 +56,9 @@ public abstract class Container extends Component {
   public void remove(int idx) {
     components.remove(idx);
   }
+  public void removeAll() {
+    components.clear();
+  }
   public int count() {
     return components.size();
   }

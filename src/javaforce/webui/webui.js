@@ -45,6 +45,9 @@ ws.onmessage = function (event) {
     case "getsize":
       sendSize(msg.id);
       break;
+    case "setclass":
+      element.className = msg.cls;
+      break;
     case "addclass":
       element.className += " " + msg.cls;
       break;

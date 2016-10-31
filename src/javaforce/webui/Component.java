@@ -53,10 +53,10 @@ public abstract class Component {
   public Object getProperty(String key) {
     return map.get(key);
   }
-
   public void setClass(String cls) {
     classes.clear();
     classes.add(cls);
+    client.sendEvent(id, "setclass", new String [] {"cls=" + cls});
   }
   public boolean hasClass(String cls) {
     return classes.contains(cls);
@@ -188,7 +188,7 @@ public abstract class Component {
 
   /** Dispatches event. */
   public void dispatchEvent(String event, String args[]) {
-    Event e = new Event();
+    MouseEvent e = new MouseEvent();
     for(int a=0;a<args.length;a++) {
       if (args[a].equals("ck=true")) {
         e.ctrlKey = true;

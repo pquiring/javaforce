@@ -72,7 +72,7 @@ public class Test implements WebUIHandler {
     Label l = new Label("Ready!");
     row1.add(l);
     //create event handler for button
-    b.addClickListener((Event e, Component button) -> {
+    b.addClickListener((MouseEvent e, Component button) -> {
       Integer times = (Integer)client.getProperty("times");
       if (times == null) times = new Integer(1);
       l.setText("You clicked it " + times + " times!");
@@ -86,7 +86,7 @@ public class Test implements WebUIHandler {
     //add popuppanel
     PopupPanel pp = new PopupPanel("Test");
     panel.add(pp);
-    b2.addClickListener((Event e, Component button) -> {
+    b2.addClickListener((MouseEvent e, Component button) -> {
       System.out.println("Popup Panel");
       pp.setPosition(100, 100);
       pp.setVisible(true);
@@ -158,6 +158,25 @@ public class Test implements WebUIHandler {
     Panel p = new Panel();
     p.add(list);
     tab.add(p, "Tab#3");
+
+    Tree tree = new Tree();
+    tree.setHeight("50px");
+    TreeNode node = tree.getRootNode();
+    node.setData("root");
+    TreeNode child = new TreeNode();
+    child.setData("t1");
+    node.addNode(child);
+    child = new TreeNode();
+    child.setData("t2");
+    node.addNode(child);
+    node = child;
+    child = new TreeNode();
+    child.setData("t3");
+    node.addNode(child);
+
+    Panel p2 = new Panel();
+    p2.add(tree);
+    tab.add(p2, "Tab#4");
 
     //add third row
     Row row3 = new Row();

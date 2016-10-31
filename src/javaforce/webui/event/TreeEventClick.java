@@ -1,12 +1,12 @@
 package javaforce.webui.event;
 
-/** Click handler.
+/** Tree Event
  *
  * @author pquiring
  */
 
 import javaforce.webui.*;
 
-public interface Click {
-  public void onClick(MouseEvent e, Component c);
+public interface TreeEventClick {
+  public void nodeClick(TreeNode node);
 }

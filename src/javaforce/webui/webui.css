@@ -5,7 +5,6 @@ body {
 div {
   white-space: nowrap;
   margin: 0px;
-  display: inline-block;
 }
 
 span {
@@ -191,4 +190,45 @@ button {
 
 .selected {
   background-color: #00e;
+}
+
+.tree {
+  width: 100%;
+  height: 100%;
+}
+
+.treerow {
+  display: flex;
+  flex-direction: row;
+  height: 20px;
+  width: 100%;
+}
+
+.treeindex {
+  background-image: url('webui-tree-row.png');
+  width: 20px;
+  height: 20px;
+}
+
+.treeopened {
+  background-image: url('webui-tree-open.png');
+  width: 20px;
+  height: 20px;
+}
+
+.treeclosed {
+  background-image: url('webui-tree-close.png');
+  width: 20px;
+  height: 20px;
+}
+
+.treeleaf {
+  background-image: url('webui-tree-leaf.png');
+  width: 20px;
+  height: 20px;
+}
+
+.treelabel {
+  height: 20px;
+  flex-grow: 1;
 }
