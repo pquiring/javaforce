@@ -15,7 +15,7 @@ import javaforce.controls.ni.DAQmx;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.5";
+  public static String version = "0.6";
 
   public static int delays[] = new int[] {
     25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
@@ -387,7 +387,7 @@ public class App extends javax.swing.JFrame {
     while (tableModel.getRowCount() > 0) {
       tableModel.removeRow(0);
     }
-    logImage.clear();
+    logImage.fill(0, 0, logImage.getWidth(), logImage.getHeight(), 0xffffffff);
   }
 
   public static String dl_filters[][] = new String[][] { {"Data Logger Files (*.dl)", "dl"} };
@@ -529,12 +529,14 @@ public class App extends javax.swing.JFrame {
         //expanding image
         int px[] = logImage.getPixels();
         logImage.setSize(img.getWidth(), 510);
+        logImage.fill(0, 0, logImage.getWidth(), logImage.getHeight(), 0xffffffff);
         logImage.putPixels(px, diff, 0, ow, 510, 0);
       } else {
         //shrinking image
         diff *= -1;
         int px[] = logImage.getPixels(diff, 0, nw, 510);
         logImage.setSize(img.getWidth(), 510);
+        logImage.fill(0, 0, logImage.getWidth(), logImage.getHeight(), 0xffffffff);
         logImage.putPixels(px, 0, 0, nw, 510, 0);
       }
     }
@@ -575,12 +577,15 @@ public class App extends javax.swing.JFrame {
         String url = tag.getURL();
         boolean have = false;
         Tag parent = null;
-        for(int b=0;b<urls.size();b++) {
-          if (urls.get(b).equals(url)) {
-            have = true;
-            tag.c = cs.get(b);
-            parent = tags.get(b);
-            break;
+        if (tag.type == Tag.types.S7) {
+          for(int b=0;b<urls.size();b++) {
+            if (a == b) continue;
+            if (urls.get(b).equals(url)) {
+              have = true;
+              tag.c = cs.get(b);
+              parent = tags.get(b);
+              break;
+            }
           }
         }
         if (!have) {
@@ -605,11 +610,9 @@ public class App extends javax.swing.JFrame {
           urls.add(url);
           tag.c = c;
         } else {
-          if (tag.type == Tag.types.S7) {
-            parent.children.add(tag);
-            tag.child = true;
-            tag.parent = parent;
-          }
+          parent.children.add(tag);
+          tag.child = true;
+          tag.parent = parent;
         }
         tableModel.addColumn(tag.toString());
       }
@@ -791,7 +794,7 @@ public class App extends javax.swing.JFrame {
       int x2 = logImage.getWidth() - 1;
       int px[] = logImage.getPixels(1, 0, x2, 510);
       logImage.putPixels(px, 0, 0, x2, 510, 0);
-      logImage.line(x2, 0, x2, 509, 0);
+      logImage.line(x2, 0, x2, 509, 0xffffff);
       int cnt = tags.size();
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
@@ -803,8 +806,8 @@ public class App extends javax.swing.JFrame {
       tickCounter--;
       if (tickCounter == 0) {
         tickCounter = ticks[speedIdx];
-        logImage.line(x2, 0, x2, 4, 0xffffff);
-        logImage.line(x2, 505, x2, 509, 0xffffff);
+        logImage.line(x2, 0, x2, 4, 0x000000);
+        logImage.line(x2, 505, x2, 509, 0x000000);
       }
     }
   }

@@ -17,8 +17,10 @@ public class TagDialog extends javax.swing.JDialog {
     super(parent, modal);
     initComponents();
     JF.centerWindow(this);
-    color.setBackground(Color.white);
-    clr = 0xffffff;
+    color.setBackground(Color.black);
+    clr = 0x000000;
+    JF.assignHotKey(this, ok, java.awt.event.KeyEvent.VK_ENTER);
+    JF.assignHotKey(this, cancel, java.awt.event.KeyEvent.VK_ESCAPE);
   }
 
   /**
@@ -100,6 +102,7 @@ public class TagDialog extends javax.swing.JDialog {
 
     jLabel8.setText("color");
 
+    color.setForeground(new java.awt.Color(0, 153, 204));
     color.setText("Change...");
     color.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
