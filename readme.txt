@@ -13,7 +13,7 @@ Includes many apps built around the library such as jPhoneLite, jfVideo Creator,
 
 JF is also the core library in the Java infused Linux Operating system : http://jfLinux.sourceforge.net
 
-JF is also used to create jfCraft, a Minecraft clone : http://jfcraft.sourceforge.net
+JF is also used to create jfCraft, a Minecraft clone : http://pquiring.github.io/jfcraft
 
 Projects
 ========
