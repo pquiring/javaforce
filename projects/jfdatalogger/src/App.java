@@ -42,6 +42,7 @@ public class App extends javax.swing.JFrame {
     newProject();
     setTitle("jfDataLogger/" + version);
     JF.centerWindow(this);
+    setExtendedState(JFrame.MAXIMIZED_BOTH);
   }
 
   /**
