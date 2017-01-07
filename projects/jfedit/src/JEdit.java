@@ -30,6 +30,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     JFImage icon = new JFImage();
     icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfedit.png"));
     setIconImage(icon.getImage());
+    loadProject();
   }
 
   /** This method is called from within the constructor to
@@ -790,5 +791,38 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     }
     if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_MINUS)) tabs.setSelectedIndex(10);
     if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_EQUALS)) tabs.setSelectedIndex(11);
+  }
+
+  private enum Section {None, Folders, Files};
+  private ArrayList<String> folders = new ArrayList<String>();
+  private ArrayList<String> files = new ArrayList<String>();
+
+  private void loadProject() {
+    if (!new File(".project").exists()) return;
+    try {
+      FileInputStream fis = new FileInputStream(".project");
+      String project = new String(JF.readAll(fis));
+      fis.close();
+      String lns[] = project.replaceAll("\r", "").split("\n");
+      Section sec = Section.None;
+      for(int a=0;a<lns.length;a++) {
+        String ln = lns[a].toLowerCase().trim();
+        switch (ln) {
+          case "[folders]": sec = Section.Folders; break;
+          case "[files]": sec = Section.Files; break;
+          default:
+            if (ln.length() == 0) break;
+            if (ln.charAt(0) == '[') break;
+            switch (sec) {
+              case Folders: folders.add(ln); break;
+              case Files: files.add(ln); break;
+            }
+            break;
+        }
+      }
+      //TODO : build Tree
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

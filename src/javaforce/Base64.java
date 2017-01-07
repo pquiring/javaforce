@@ -46,12 +46,6 @@ public class Base64 {
     int i3m = in.length % 3;
     byte e1, e2, e3, e4;  //elements
     ByteArrayOutputStream out = new ByteArrayOutputStream();
-    if (i3m > 0) {
-      //append zero bytes
-      byte in3[] = new byte[in.length + i3m];
-      System.arraycopy(in, 0, in3, 0, in.length);
-      in = in3;
-    }
     int inpos = 0;
     if (lineLength > 0) {
       lineLength &= (0x10000 - 3);
@@ -74,11 +68,12 @@ public class Base64 {
     if (i3m > 0) {
       //Note : 64 == '='
       e1 = (byte) ((in[inpos] & 0xfc) >>> 2);
-      e2 = (byte) (((in[inpos + 1] & 0xf0) >>> 4) + ((in[inpos] & 0x03) << 4));
       if (i3m == 1) {
+        e2 = (byte) ((in[inpos] & 0x03) << 4);
         e3 = 64;
       } else {
-        e3 = (byte) (((in[inpos + 1] & 0x0f) << 2) + ((in[inpos + 2] & 0xc0) >>> 6));
+        e2 = (byte) (((in[inpos + 1] & 0xf0) >>> 4) + ((in[inpos] & 0x03) << 4));
+        e3 = (byte) ((in[inpos + 1] & 0x0f) << 2);
       }
       e4 = 64;
       out.write(etable[e1]);
