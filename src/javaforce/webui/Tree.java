@@ -74,7 +74,7 @@ public class Tree extends ScrollPanel implements Click {
     l.addEvent("onclick", "onClick(event," + row.id + ");");
     l.addClickListener(this);
     row.add(l);
-    int cnt = node.getChildrenCount();
+    int cnt = node.getChildCount();
     offset++;
     for(int a=0;a<cnt;a++) {
       addNode(node.getChildAt(a), offset);
@@ -101,13 +101,13 @@ public class Tree extends ScrollPanel implements Click {
   private void setNodeVisible(TreeNode node, boolean state) {
     Block row = getRow(node);
     row.setVisible(state);
-    int cnt = node.getChildrenCount();
+    int cnt = node.getChildCount();
     for(int a=0;a<cnt;a++) {
       setNodeVisible(node.getChildAt(a), state);
     }
   }
   private void setNodeChildrenVisible(TreeNode node, boolean state) {
-    int cnt = node.getChildrenCount();
+    int cnt = node.getChildCount();
     for(int a=0;a<cnt;a++) {
       setNodeVisible(node.getChildAt(a), state);
     }

@@ -28,6 +28,10 @@ public class TreeNode {
     return data;
   }
 
+  public Object getUserObject() {
+    return null;
+  }
+
   public String toString() {
     if (data == null) return "null";
     return data.toString();
@@ -50,7 +54,7 @@ public class TreeNode {
     return children.size() > 0;
   }
 
-  public int getChildrenCount() {
+  public int getChildCount() {
     return children.size();
   }
 
@@ -59,7 +63,7 @@ public class TreeNode {
   }
 
   public TreeNode[] getChildren() {
-    return children.toArray(new TreeNode[getChildrenCount()]);
+    return children.toArray(new TreeNode[getChildCount()]);
   }
 
   public void setParent(TreeNode newParent) {
@@ -69,5 +73,9 @@ public class TreeNode {
     }
     parent = newParent;
     parent.addNode(this);
+  }
+
+  public TreeNode getParent() {
+    return parent;
   }
 }

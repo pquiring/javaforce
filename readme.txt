@@ -27,7 +27,7 @@ jPBXlite - Java VoIP PBX
 
 jfBroadcast - VoIP Auto Dialer System
 
-jfTerm - Telnet client application that includes support scripting
+jfTerm - Telnet client application that includes scripting support
 
 jfEdit - multi-tabbed text editor.
 
