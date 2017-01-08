@@ -11,8 +11,14 @@ public class Tree extends ScrollPanel implements Click {
   public Tree() {
     removeClass("column");
     addClass("tree");
+    model = new TreeModel(new TreeNode());
   }
-  private TreeNode root = new TreeNode();
+  public Tree(TreeModel model) {
+    removeClass("column");
+    addClass("tree");
+    this.model = model;
+  }
+  private TreeModel model;
   public void init() {
     rebuild();
     super.init();
@@ -33,12 +39,12 @@ public class Tree extends ScrollPanel implements Click {
     return sb.toString();
   }
   public void setRootNode(TreeNode newRoot) {
-    root = newRoot;
+    model.setRoot(newRoot);
     rebuild();
     client.sendEvent("sethtml", id, new String[] {"html=" + innerhtml()});
   }
   public TreeNode getRootNode() {
-    return root;
+    return model.getRoot();
   }
   private void addNode(TreeNode node, int offset) {
     Block row = new Block();
@@ -82,7 +88,7 @@ public class Tree extends ScrollPanel implements Click {
   }
   private void rebuild() {
     removeAll();
-    addNode(root, 0);
+    addNode(model.getRoot(), 0);
   }
   private TreeEventClick handler;
   public void addEventHandler(TreeEventClick handler) {
