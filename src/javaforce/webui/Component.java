@@ -75,6 +75,10 @@ public abstract class Component {
     classes.remove(cls);
   }
 
+  public void setFlex(boolean state) {
+    if (state) addClass("pad"); else removeClass("pad");
+  }
+
   public boolean hasAttr(String attr) {
     return attrs.containsKey(attr);
   }
@@ -93,6 +97,10 @@ public abstract class Component {
   }
   public void removeStyle(String style) {
     styles.remove(style);
+  }
+
+  public void setFontSize(int size) {
+    setStyle("font-size", size + "pt");
   }
 
   private OnEvent getEvent(String onX) {
@@ -286,7 +294,7 @@ public abstract class Component {
   }
 
   protected void onClick(String args[]) {}
-  public Click click;
+  private Click click;
   public void addClickListener(Click handler) {
     click = handler;
   }

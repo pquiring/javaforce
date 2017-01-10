@@ -7,6 +7,7 @@ package javaforce.webui;
 
 public class TextField extends Component {
   public String text;
+  public boolean password;
   public TextField(String text) {
     this.text = text;
     addEvent("onchange", "onTextChange(event, this);");
@@ -21,6 +22,12 @@ public class TextField extends Component {
   }
   public String getText() {
     return text;
+  }
+  public void setPassword(boolean state) {
+    if (state)
+      addAttr("type", "password");
+    else
+      removeAttr("type");
   }
 
   public void onChanged(String args[]) {

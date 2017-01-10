@@ -113,8 +113,7 @@ public class Server implements WebHandler, WebSocketHandler {
       Client client = new Client();
       client.setPanel(handler.getRootPanel(client));  //client can be used to save/store values
       client.setSocket(sock);
-      client.root.setClient(client);
-      client.root.init();
+      client.initPanel();
       clients.add(client);
       return true;
     } catch (Exception e) {

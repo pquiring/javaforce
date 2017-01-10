@@ -57,13 +57,11 @@ button {
 .row {
   display: inline-flex;
   flex-direction: row;
-  width: 100%;
 }
 
 .column {
   display: inline-flex;
   flex-direction: column;
-  height: 100%;
 }
 
 .pad {
