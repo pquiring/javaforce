@@ -39,6 +39,10 @@ public class Client {
   public void setPanel(Panel root) {
     this.root = root;
   }
+  public void initPanel() {
+    root.setClient(this);
+    root.init();
+  }
   public void dispatchEvent(String id, String event, String args[]) {
     if (id.length() == 0 || id.equals("body")) {
       switch (event) {
@@ -85,7 +89,8 @@ public class Client {
     socket.write(json.getBytes());
   }
   public void redirect(Panel panel) {
-    root = panel;
+    setPanel(panel);
+    initPanel();
     socket.write(("{\"event\":\"redir\"}").getBytes());
   }
   public String html() {
