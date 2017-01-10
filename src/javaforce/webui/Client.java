@@ -86,7 +86,7 @@ public class Client {
   }
   public void redirect(Panel panel) {
     root = panel;
-    socket.write(("{\"event\":\"redir\",\"url\":\"" + panel.id + "\"}").getBytes());
+    socket.write(("{\"event\":\"redir\"}").getBytes());
   }
   public String html() {
     return root.html();

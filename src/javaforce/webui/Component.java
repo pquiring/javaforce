@@ -34,6 +34,12 @@ public abstract class Component {
     this.client = client;
     id = "c" + client.getNextID();
   }
+
+  /** Returns client. */
+  public Client getClient() {
+    return client;
+  }
+
   /** Perform any initialization with the client.
    * Containers should call init() on all sub-components.
    */

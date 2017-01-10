@@ -42,6 +42,11 @@ button {
   height: 100%;
 }
 
+.innerpanel {
+  display: inline-flex;
+  flex-direction: column;
+}
+
 .button {
 
 }
@@ -52,11 +57,13 @@ button {
 .row {
   display: inline-flex;
   flex-direction: row;
+  width: 100%;
 }
 
 .column {
   display: inline-flex;
   flex-direction: column;
+  height: 100%;
 }
 
 .pad {

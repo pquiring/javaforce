@@ -1,11 +1,13 @@
 var ws = new WebSocket("ws://" + location.host + "/ws");
 
-ws.onopen = function (event) {
+function load(event) {
   var msg = {
     event: "load"
   };
   ws.send(JSON.stringify(msg));
 };
+
+ws.onopen = load;
 
 ws.onmessage = function (event) {
   var msg = JSON.parse(event.data);
@@ -13,6 +15,7 @@ ws.onmessage = function (event) {
   var element = document.getElementById(msg.id);
   switch (msg.event) {
     case "redir":
+      load();
       break;
     case "display":
       element.style.display = msg.val;
