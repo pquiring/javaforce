@@ -41,12 +41,29 @@ public class ComboBox extends Component {
     texts.add(text);
   }
 
+  public void clear() {
+    values.clear();
+    texts.clear();
+  }
+
   public void setDefault(int idx) {
     def = idx;
   }
 
   public int getSelected() {
     return index;
+  }
+
+  public String getSelectedValue() {
+    int idx = getSelected();
+    if (idx == -1) return null;
+    return values.get(idx);
+  }
+
+  public String getSelectedText() {
+    int idx = getSelected();
+    if (idx == -1) return null;
+    return texts.get(idx);
   }
 
   public void onChanged(String args[]) {
