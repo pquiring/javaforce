@@ -14,11 +14,11 @@ public class Main implements WebUIHandler {
     //start logic server
     Service.main();
     //start webui server
-    Server server = new Server();
+    WebUIServer server = new WebUIServer();
     server.start(new Main(), 34000, false);
   }
 
-  public Panel getRootPanel(Client client) {
+  public Panel getRootPanel(WebUIClient client) {
     System.out.println("getRootPanel()");
     return new MainPanel();
   }

@@ -8,7 +8,7 @@ package javaforce.webui;
 import java.util.*;
 
 public abstract class Container extends Component {
-  public void setClient(Client client) {
+  public void setClient(WebUIClient client) {
     super.setClient(client);
     int cnt = count();
     for(int a=0;a<cnt;a++) {
@@ -45,7 +45,7 @@ public abstract class Container extends Component {
   public void add(Component comp) {
     comp.parent = this;
     components.add(comp);
-    if (client != Client.NULL) {
+    if (client != WebUIClient.NULL) {
       comp.setClient(client);
       comp.init();
     }

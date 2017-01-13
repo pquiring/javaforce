@@ -11,7 +11,7 @@ import java.util.*;
 
 import javaforce.service.*;
 
-public class Client {
+public class WebUIClient {
   public WebSocket socket;
   public Panel root;
   public String hash;
@@ -20,9 +20,9 @@ public class Client {
   public boolean popupMenuMouseDown;
   public PopupMenu topPopupMenu;
 
-  public static Client NULL = new Client();
+  public static WebUIClient NULL = new WebUIClient();
 
-  public Client() {
+  public WebUIClient() {
     hash = Integer.toString(this.hashCode(), 16);
   }
 

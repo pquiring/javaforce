@@ -20,7 +20,7 @@ public class Test implements WebUIHandler {
   }
 
   public static void main(String args[]) {
-    new Server().start(new Test(), 8080, false);
+    new WebUIServer().start(new Test(), 8080, false);
   }
 
   public byte[] getResource(String url) {
@@ -30,7 +30,7 @@ public class Test implements WebUIHandler {
 
   private int value = 50;
 
-  public Panel getRootPanel(Client client) {
+  public Panel getRootPanel(WebUIClient client) {
     Panel panel = new Panel();
 
     //add a menubar

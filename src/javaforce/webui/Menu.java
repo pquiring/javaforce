@@ -62,7 +62,7 @@ public class Menu extends MenuItem {
   public void closeMenu() {
     menu.setVisible(false);
   }
-  public static void onMouseDownBody(Client client, String args[]) {
+  public static void onMouseDownBody(WebUIClient client, String args[]) {
     //args : p=x,y
 /*
     System.out.println("args=" + args.length);

@@ -12,7 +12,7 @@ import javaforce.webui.event.*;
 public abstract class Component {
   public String id;
   public Container parent;
-  public Client client;
+  public WebUIClient client;
   public ArrayList<String> classes = new ArrayList<String>();
   public HashMap<String, String> attrs = new HashMap<String, String>();
   public HashMap<String, String> styles = new HashMap<String, String>();
@@ -25,18 +25,18 @@ public abstract class Component {
   public ArrayList<OnEvent> events = new ArrayList<OnEvent>();
 
   public Component() {
-    client = Client.NULL;
+    client = WebUIClient.NULL;
   }
 
   /** Provides the client (connection to web browser side) and init other variables. */
-  public void setClient(Client client) {
+  public void setClient(WebUIClient client) {
     if (id != null) return;
     this.client = client;
     id = "c" + client.getNextID();
   }
 
   /** Returns client. */
-  public Client getClient() {
+  public WebUIClient getClient() {
     return client;
   }
 

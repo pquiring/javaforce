@@ -7,7 +7,7 @@ package javaforce.webui;
 
 public interface WebUIHandler {
   /** Returns a root panel for a new client. */
-  Panel getRootPanel(Client client);
+  Panel getRootPanel(WebUIClient client);
   /** Returns raw resources from /static/... */
   byte[] getResource(String url);
 }

@@ -23,7 +23,7 @@ public class Test implements WebUIHandler {
       GPIO.configOutput(a+8);
     }
     initResources();
-    Server server = new Server();
+    WebUIServer server = new WebUIServer();
     server.start(this, 8080, false);
     Worker worker = new Worker();
     worker.start();
@@ -43,7 +43,7 @@ public class Test implements WebUIHandler {
     off = Resource.readResource("javaforce/pi/off.png", Resource.PNG);
   }
 
-  public Panel getRootPanel(Client client) {
+  public Panel getRootPanel(WebUIClient client) {
     panel = new TestPanel();
     Column col = new Column();
     panel.add(col);

@@ -23,7 +23,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.service.*;
 
-public class Server implements WebHandler, WebSocketHandler {
+public class WebUIServer implements WebHandler, WebSocketHandler {
   private Web web;
   private WebUIHandler handler;
 
@@ -84,12 +84,12 @@ public class Server implements WebHandler, WebSocketHandler {
     }
   }
 
-  public ArrayList<Client> clients = new ArrayList<Client>();
+  public ArrayList<WebUIClient> clients = new ArrayList<WebUIClient>();
 
-  public Client getClient(WebSocket sock) {
+  public WebUIClient getClient(WebSocket sock) {
     int cnt = clients.size();
     for(int a=0;a<cnt;a++) {
-      Client client = clients.get(a);
+      WebUIClient client = clients.get(a);
       if (client.socket == sock) {
         return client;
       }
@@ -97,10 +97,10 @@ public class Server implements WebHandler, WebSocketHandler {
     return null;
   }
 
-  public Client getClient(String hash) {
+  public WebUIClient getClient(String hash) {
     int cnt = clients.size();
     for(int a=0;a<cnt;a++) {
-      Client client = clients.get(a);
+      WebUIClient client = clients.get(a);
       if (client.hash.equals(hash)) {
         return client;
       }
@@ -110,7 +110,7 @@ public class Server implements WebHandler, WebSocketHandler {
 
   public boolean doWebSocketConnect(WebSocket sock) {
     try {
-      Client client = new Client();
+      WebUIClient client = new WebUIClient();
       client.setPanel(handler.getRootPanel(client));  //client can be used to save/store values
       client.setSocket(sock);
       client.initPanel();
@@ -127,7 +127,7 @@ public class Server implements WebHandler, WebSocketHandler {
   }
 
   public void doWebSocketMessage(WebSocket sock, byte[] data, int type) {
-    Client client = getClient(sock);
+    WebUIClient client = getClient(sock);
     if (client == null) {
       JFLog.log("Unknown Socket:" + sock);
       return;

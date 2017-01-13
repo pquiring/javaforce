@@ -23,7 +23,7 @@ public class Panels extends Panel {
     view.addClickListener((me, c) -> {
       String id = panel.getSelectedValue();
       if (id == null) return;
-      c.client.setPanel(new ViewPanel(id));
+      c.getClient().setPanel(new ViewPanel(id));
     });
     row.add(view);
     delete = new Button("Delete");
@@ -54,7 +54,7 @@ public class Panels extends Panel {
     back = new Button("Back");
     back.setFontSize(56);
     back.addClickListener((me, c) -> {
-      c.client.setPanel(new MainPanel());
+      c.getClient().setPanel(new MainPanel());
     });
     add(back);
   }
