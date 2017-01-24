@@ -39,8 +39,6 @@ int (*_avcodec_decode_video2)(AVCodecContext *avctx,AVFrame *picture,int* got_pi
 int (*_avcodec_decode_audio4)(AVCodecContext *avctx,AVFrame *frame,int* got_frame_ptr,AVPacket *avpkt);
 int (*_avcodec_open2)(AVCodecContext *avctx,AVCodec *codec,void* options);
 AVCodecContext* (*_avcodec_alloc_context3)(AVCodec *codec);
-AVFrame* (*_avcodec_alloc_frame)();
-void (*_avcodec_free_frame)(void** frame);
 void (*_av_init_packet)(AVPacket *pkt);
 void (*_av_free_packet)(AVPacket *pkt);  //free data inside packet (not packet itself)
 //encoding
@@ -92,7 +90,9 @@ void (*_av_image_copy)(uint8_t* dst_data[],int dst_linesizes[]
   , uint8_t* src_data[],int src_linesizes[],int pix_fmt,int width,int height);
 int (*_av_get_bytes_per_sample)(int sample_fmt);
 void* (*_av_malloc)(int size);
+void* (*_av_mallocz)(int size);
 void (*_av_free)(void* ptr);
+void (*_av_freep)(void** ptr);
 int (*_av_image_alloc)(uint8_t* ptrs[],int linesizes[],int w,int h,int pix_fmt,int align);
 int (*_av_opt_set)(void* obj,const char* name,const char* val,int search_flags);
 int (*_av_opt_set_int)(void* obj,const char* name,int64_t val,int search_flags);
@@ -113,6 +113,8 @@ int (*_av_dict_set)(void** dictref, const char* key, const char* value, int flag
 int (*_av_frame_make_writable)(AVFrame *frame);
 int (*_av_compare_ts)(int64_t ts_a, AVRational tb_a, int64_t ts_b, AVRational tb_b);
 int (*_av_frame_get_buffer)(AVFrame *frame, int align);
+AVFrame* (*_av_frame_alloc)();
+void (*_av_frame_free)(void** frame);
 
 //swresample functions )(ffmpeg.org)
 void* (*_swr_alloc)();
@@ -245,8 +247,6 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(codec, (void**)&_avcodec_decode_audio4, "avcodec_decode_audio4");
   getFunction(codec, (void**)&_avcodec_open2, "avcodec_open2");
   getFunction(codec, (void**)&_avcodec_alloc_context3, "avcodec_alloc_context3");
-  getFunction(codec, (void**)&_avcodec_alloc_frame, "avcodec_alloc_frame");
-  getFunction(codec, (void**)&_avcodec_free_frame, "avcodec_free_frame");
   getFunction(codec, (void**)&_av_init_packet, "av_init_packet");
   getFunction(codec, (void**)&_av_free_packet, "av_free_packet");
   getFunction(codec, (void**)&_avcodec_find_encoder, "avcodec_find_encoder");
@@ -291,7 +291,9 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(util, (void**)&_av_image_copy, "av_image_copy");
   getFunction(util, (void**)&_av_get_bytes_per_sample, "av_get_bytes_per_sample");
   getFunction(util, (void**)&_av_malloc, "av_malloc");
+  getFunction(util, (void**)&_av_mallocz, "av_mallocz");
   getFunction(util, (void**)&_av_free, "av_free");
+  getFunction(util, (void**)&_av_freep, "av_freep");
   getFunction(util, (void**)&_av_image_alloc, "av_image_alloc");
   getFunction(util, (void**)&_av_opt_set, "av_opt_set");
   getFunction(util, (void**)&_av_opt_set_int, "av_opt_set_int");
@@ -311,6 +313,8 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(util, (void**)&_av_frame_make_writable, "av_frame_make_writable");
   getFunction(util, (void**)&_av_compare_ts, "av_compare_ts");
   getFunction(util, (void**)&_av_frame_get_buffer, "av_frame_get_buffer");
+  getFunction(util, (void**)&_av_frame_alloc, "av_frame_alloc");
+  getFunction(util, (void**)&_av_frame_free, "av_frame_free");
 
   if (!libav_org) {
     getFunction(resample, (void**)&_swr_alloc, "swr_alloc");
@@ -656,7 +660,7 @@ static jboolean open_codecs(FFContext *ctx, int new_width, int new_height, int n
     ctx->dst_rate = new_freq;
   }
 
-  if ((ctx->frame = (*_avcodec_alloc_frame)()) == NULL) return JNI_FALSE;
+  if ((ctx->frame = (*_av_frame_alloc)()) == NULL) return JNI_FALSE;
   ctx->pkt = AVPacket_New();
   (*_av_init_packet)(ctx->pkt);
   ctx->pkt->data = NULL;
@@ -759,7 +763,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
     //BUG:I think this frees all the codec stuff too ???
   }
   if (ctx->frame != NULL) {
-    (*_avcodec_free_frame)((void**)&ctx->frame);
+    (*_av_frame_free)((void**)&ctx->frame);
   }
   if (ctx->video_dst_data[0] != NULL) {
     (*_av_free)(ctx->video_dst_data[0]);
@@ -1083,7 +1087,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
     , new_width, new_height, AV_PIX_FMT_BGRA
     , SWS_BILINEAR, NULL, NULL, NULL);
 
-  if ((ctx->frame = (*_avcodec_alloc_frame)()) == NULL) return JNI_FALSE;
+  if ((ctx->frame = (*_av_frame_alloc)()) == NULL) return JNI_FALSE;
   ctx->pkt = AVPacket_New();
   (*_av_init_packet)(ctx->pkt);
 
@@ -1099,7 +1103,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
 {
   FFContext *ctx = getFFContext(e,c);
   if (ctx->frame != NULL) {
-    (*_avcodec_free_frame)((void**)&ctx->frame);
+    (*_av_frame_free)((void**)&ctx->frame);
   }
   if (ctx->video_codec_ctx != NULL) {
     (*_avcodec_close)(ctx->video_codec_ctx);
@@ -1278,13 +1282,13 @@ static jboolean add_stream(FFContext *ctx, int codec_id) {
 static jboolean open_video(FFContext *ctx) {
   int ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
   if (ret < 0) return JNI_FALSE;
-  ctx->video_frame = (*_avcodec_alloc_frame)();
+  ctx->video_frame = (*_av_frame_alloc)();
   if (ctx->video_frame == NULL) return JNI_FALSE;
-  ctx->dst_pic = (*_avcodec_alloc_frame)();
+  ctx->dst_pic = (*_av_frame_alloc)();
   ret = _avframe_alloc(ctx->dst_pic, ctx->video_codec_ctx->pix_fmt, ctx->video_codec_ctx->width, ctx->video_codec_ctx->height);
   if (ret < 0) return JNI_FALSE;
   if (ctx->video_codec_ctx->pix_fmt != AV_PIX_FMT_BGRA) {
-    ctx->src_pic = (*_avcodec_alloc_frame)();
+    ctx->src_pic = (*_av_frame_alloc)();
     ret = _avframe_alloc(ctx->src_pic, AV_PIX_FMT_BGRA, ctx->video_codec_ctx->width, ctx->video_codec_ctx->height);
     if (ret < 0) return JNI_FALSE;
     ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, AV_PIX_FMT_BGRA
@@ -1313,9 +1317,9 @@ static jboolean open_audio(FFContext *ctx) {
     printf("avcodec_open2() failed!\n");
     return JNI_FALSE;
   }
-  ctx->audio_frame = (*_avcodec_alloc_frame)();
+  ctx->audio_frame = (*_av_frame_alloc)();
   if (ctx->audio_frame == NULL) {
-    printf("avcodec_alloc_frame() failed!\n");
+    printf("av_frame_alloc() failed!\n");
     return JNI_FALSE;
   }
   ctx->audio_frame->format = ctx->audio_codec_ctx->sample_fmt;
@@ -1691,20 +1695,20 @@ static void encoder_stop(FFContext *ctx)
     ctx->video_stream = NULL;
   }
   if (ctx->audio_frame != NULL) {
-    (*_avcodec_free_frame)((void**)&ctx->audio_frame);
+    (*_av_frame_free)((void**)&ctx->audio_frame);
   }
   if (ctx->video_frame != NULL) {
-    (*_avcodec_free_frame)((void**)&ctx->video_frame);
+    (*_av_frame_free)((void**)&ctx->video_frame);
   }
   if (ctx->fmt_ctx != NULL) {
     (*_avformat_free_context)(ctx->fmt_ctx);
     ctx->fmt_ctx = NULL;
   }
   if (ctx->src_pic != NULL) {
-    (*_avcodec_free_frame)((void**)&ctx->src_pic);
+    (*_av_frame_free)((void**)&ctx->src_pic);
   }
   if (ctx->dst_pic != NULL) {
-    (*_avcodec_free_frame)((void**)&ctx->dst_pic);
+    (*_av_frame_free)((void**)&ctx->dst_pic);
   }
   if (ctx->sws_ctx != NULL) {
     (*_sws_freeContext)(ctx->sws_ctx);
