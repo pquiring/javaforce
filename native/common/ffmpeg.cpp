@@ -17,7 +17,7 @@
 #define AUDIO_FRAME 1
 #define VIDEO_FRAME 2
 
-#define AVOID_AVSTREAM_CODEC 0 //set to 1 to avoid using AVCodec.stream which is now deprecated (not working yet)
+//#define AVOID_AVSTREAM_CODEC //uncomment to avoid using AVCodec.stream which is now deprecated (not working yet)
 
 static jboolean libav_org = JNI_FALSE;
 static jboolean loaded = JNI_FALSE;
@@ -404,6 +404,8 @@ struct FFContext {
 
   void* input_fmt;
 
+  AVCodecContext *codec_ctx;  //returned by open_codec_context()
+
   int video_stream_idx;
   AVStream *video_stream;
   AVCodecContext *video_codec_ctx;
@@ -576,7 +578,6 @@ static int open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, int type
   int ret;
   int stream_idx;
   AVStream *stream;
-  AVCodecContext *codec_ctx;
   AVCodec *codec;
   stream_idx = (*_av_find_best_stream)(ctx->fmt_ctx, type, -1, -1, NULL, 0);
   if (stream_idx < 0) {
@@ -587,13 +588,13 @@ static int open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, int type
     if (codec == NULL) {
       return -1;
     }
-    if (AVOID_AVSTREAM_CODEC) {
-      codec_ctx = (*_avcodec_alloc_context3)(codec);  //BUG : need to free this now
-      (*_avcodec_parameters_to_context)(codec_ctx, stream->codecpar);
-    } else {
-      codec_ctx = stream->codec;  //deprecated
-    }
-    if ((ret = (*_avcodec_open2)(codec_ctx, codec, NULL)) < 0) {
+    #ifdef AVOID_AVSTREAM_CODEC
+      ctx->codec_ctx = (*_avcodec_alloc_context3)(codec);  //BUG : need to free this now
+      (*_avcodec_parameters_to_context)(ctx->codec_ctx, stream->codecpar);
+    #else
+      ctx->codec_ctx = stream->codec;  //deprecated
+    #endif
+    if ((ret = (*_avcodec_open2)(ctx->codec_ctx, codec, NULL)) < 0) {
       return ret;
     }
   }
@@ -601,18 +602,10 @@ static int open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, int type
 }
 
 static jboolean open_codecs(FFContext *ctx, int new_width, int new_height, int new_chs, int new_freq) {
-  AVCodec *codec;
   AVCodecContext *codec_ctx;
   if ((ctx->video_stream_idx = open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_VIDEO)) >= 0) {
     ctx->video_stream = (AVStream*)ctx->fmt_ctx->streams[ctx->video_stream_idx];
-    if (AVOID_AVSTREAM_CODEC) {
-      codec = (*_avcodec_find_decoder)(ctx->video_stream->codecpar->codec_id);
-      if (codec == NULL) return JNI_FALSE;
-      ctx->video_codec_ctx = (*_avcodec_alloc_context3)(codec);
-      (*_avcodec_parameters_to_context)(ctx->video_codec_ctx, ctx->video_stream->codecpar);
-    } else {
-      ctx->video_codec_ctx = ctx->video_stream->codec;  //deprecated
-    }
+    ctx->video_codec_ctx = ctx->codec_ctx;
     if (new_width == -1) new_width = ctx->video_codec_ctx->width;
     if (new_height == -1) new_height = ctx->video_codec_ctx->height;
     if ((ctx->video_dst_bufsize = (*_av_image_alloc)(ctx->video_dst_data, ctx->video_dst_linesize
@@ -637,14 +630,7 @@ static jboolean open_codecs(FFContext *ctx, int new_width, int new_height, int n
 
   if ((ctx->audio_stream_idx = open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_AUDIO)) >= 0) {
     ctx->audio_stream = (AVStream*)ctx->fmt_ctx->streams[ctx->audio_stream_idx];
-    if (AVOID_AVSTREAM_CODEC) {
-      codec = (*_avcodec_find_decoder)(ctx->audio_stream->codecpar->codec_id);
-      if (codec == NULL) return JNI_FALSE;
-      ctx->audio_codec_ctx = (*_avcodec_alloc_context3)(codec);
-      (*_avcodec_parameters_to_context)(ctx->audio_codec_ctx, ctx->audio_stream->codecpar);
-    } else {
-      ctx->audio_codec_ctx = ctx->audio_stream->codec;  //deprecated
-    }
+    ctx->audio_codec_ctx = ctx->codec_ctx;
     //create audio conversion context
     if (libav_org)
       ctx->swr_ctx = (*_avresample_alloc_context)();
@@ -1235,13 +1221,13 @@ static jboolean add_stream(FFContext *ctx, int codec_id) {
   stream = (*_avformat_new_stream)(ctx->fmt_ctx, codec);
   if (stream == NULL) return JNI_FALSE;
   stream->id = ctx->fmt_ctx->nb_streams-1;
-  if (AVOID_AVSTREAM_CODEC) {
+  #ifdef AVOID_AVSTREAM_CODEC
     codec_ctx = (*_avcodec_alloc_context3)(codec);
-    printf("codec=%p ctx=%p codecpar=%p\n", codec, codec_ctx, stream->codecpar);  //test
+    printf("codec=%p stream ctx=%p my ctx=%p codecpar=%p\n", codec, stream->codec, codec_ctx, stream->codecpar);  //test
     (*_avcodec_parameters_to_context)(codec_ctx, stream->codecpar);
-  } else {
+  #else
     codec_ctx = stream->codec;
-  }
+  #endif
 
   switch (codec->type) {
     case AVMEDIA_TYPE_AUDIO:
