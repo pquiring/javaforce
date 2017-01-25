@@ -17,7 +17,7 @@
 #define AUDIO_FRAME 1
 #define VIDEO_FRAME 2
 
-//#define AVOID_AVSTREAM_CODEC //uncomment to avoid using AVCodec.stream which is now deprecated (not working yet)
+//#define AVOID_AVSTREAM_CODEC //uncomment to avoid using AVStream.codec which is now deprecated (not working yet)
 
 static jboolean libav_org = JNI_FALSE;
 static jboolean loaded = JNI_FALSE;
