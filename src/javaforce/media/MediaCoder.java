@@ -178,7 +178,12 @@ public class MediaCoder {
             return false;
           }
           {
-            InputStream is = new URL(url).openStream();
+            url = url.replaceAll("http", "https");
+            URL urlAddr = new URL(url);
+            URLConnection conn = urlAddr.openConnection();
+            conn.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393");
+            conn.connect();
+            InputStream is = conn.getInputStream();
             FileOutputStream fos = new FileOutputStream(zfile);
             System.out.println("Downloading:" + url);
             while (true) {
@@ -200,7 +205,11 @@ public class MediaCoder {
           }
           if (z7) {
             //download 7za.exe (~500KB)
-            InputStream is = new URL(url7).openStream();
+            URL urlAddr = new URL(url7);
+            URLConnection conn = urlAddr.openConnection();
+            conn.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393");
+            conn.connect();
+            InputStream is = conn.getInputStream();
             FileOutputStream fos = new FileOutputStream(new File(destFolder + "/7za.exe"));
             length = 0;
             System.out.println("Downloading:" + url7);
