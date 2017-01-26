@@ -104,7 +104,7 @@ public class Test implements WebUIHandler {
     comboBox.add("option3", "Option #3");
     comboBox.addChangedListener((Component comp) -> {
       ComboBox cb = (ComboBox)comp;
-      System.out.println("comboxbox index=" + cb.getSelected());
+      System.out.println("comboxbox index=" + cb.getSelectedIndex());
     });
     row1.add(comboBox);
     //add : checkbox

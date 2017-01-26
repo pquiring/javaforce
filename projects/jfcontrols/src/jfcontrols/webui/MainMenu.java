@@ -34,7 +34,7 @@ public class MainMenu extends Panel {
     exit.setFontSize(56);
     col.add(exit);
     logout.addClickListener((me, c) -> {
-      c.getClient().redirect(new MainPanel());
+      c.getClient().setPanel(new MainPanel());
     });
     exit.addClickListener((me, c) -> {
       System.exit(0);

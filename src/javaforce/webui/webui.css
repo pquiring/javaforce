@@ -128,11 +128,17 @@ button {
 }
 
 .vslider {
-  transform: rotate(270deg);
+  transform: rotate(-90deg);
+  transform-origin: 16px 50%;
 }
 
 .hslider {
 
+}
+
+.cslider {
+  overflow: hidden;
+  display: inline-block;
 }
 
 .menubar {
@@ -236,4 +242,13 @@ button {
 .treelabel {
   height: 20px;
   flex-grow: 1;
+}
+
+.modal {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: none;
+  top: 0px;
+  left: 0px;
 }

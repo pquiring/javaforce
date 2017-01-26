@@ -9,7 +9,7 @@
  *
  * Browser support (WebSocket, css:flex):
  *
- *    IE 10+ (but still has issues with flex layouts)
+ *    Internet Explorer is NOT supported
  *    Edge 12+
  *    FireFox 28+
  *    Chrome 21+
@@ -59,6 +59,13 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     String url = req.getURL();
     byte data[] = null;
     if (url.equals("/")) {
+      String browser = req.getHeader("User-Agent");
+      if (browser != null) {
+        if (browser.indexOf("Trident") != -1) {
+          //Internet Explorer - not supported
+          url = "/webui-ie.html";
+        }
+      }
       url = "/webui.html";
     }
     if (url.startsWith("/static/")) {
@@ -111,7 +118,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   public boolean doWebSocketConnect(WebSocket sock) {
     try {
       WebUIClient client = new WebUIClient();
-      client.setPanel(handler.getRootPanel(client));  //client can be used to save/store values
+      client.setPanel(handler.getRootPanel(client));
       client.setSocket(sock);
       client.initPanel();
       clients.add(client);

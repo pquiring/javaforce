@@ -38,6 +38,10 @@ public class WebUIClient {
   }
   public void setPanel(Panel root) {
     this.root = root;
+    if (socket != null) {
+      initPanel();
+      dispatchEvent("", "load", null);
+    }
   }
   public void initPanel() {
     root.setClient(this);
@@ -66,7 +70,10 @@ public class WebUIClient {
   public synchronized void sendEvent(String id, String event, String args[]) {
     if (socket == null) return;
     StringBuffer sb = new StringBuffer();
-    sb.append("{\"event\":\"" + event + "\",\"id\":\"" + id + "\"");
+    sb.append("{\"event\":\"" + event + "\"");
+    if (id != null) {
+      sb.append(",\"id\":\"" + id + "\"");
+    }
     if (args != null) {
       int cnt = args.length;
       for(int a=0;a<cnt;a++) {
@@ -87,11 +94,6 @@ public class WebUIClient {
       System.out.println("SEND=" + json);
     }
     socket.write(json.getBytes());
-  }
-  public void redirect(Panel panel) {
-    setPanel(panel);
-    initPanel();
-    socket.write(("{\"event\":\"redir\"}").getBytes());
   }
   public String html() {
     return root.html();

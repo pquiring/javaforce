@@ -35,6 +35,27 @@ ws.onmessage = function (event) {
     case "setvalue":
       element.value = msg.value;
       break;
+    case "setidx":
+      element.selectedIndex = msg.idx;
+      break;
+    case "setclr":
+      element.style.color = msg.clr;
+      break;
+    case "setbackclr":
+      element.style.backgroundColor = msg.clr;
+      break;
+    case "setpos":
+      element.value = msg.pos;
+      break;
+    case "addoption":
+      var option = document.createElement("option");
+      option.value = msg.value;
+      option.text = msg.text;
+      element.add(option);
+      break;
+    case "removeoption":
+      element.remove(msg.idx);
+      break;
     case "setpos":
       element.style.left = msg.x;
       element.style.top = msg.y;
@@ -261,6 +282,15 @@ function onMouseDown(event, element) {
     event: "mousedown",
     id: element.id,
     p: event.clientX + "," + event.clientY
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function onSliderMove(event, element) {
+  var msg = {
+    event: "changed",
+    id: element.id,
+    pos: element.value
   };
   ws.send(JSON.stringify(msg));
 }

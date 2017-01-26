@@ -49,7 +49,7 @@ public class LoginPanel extends InnerPanel {
 
     login.addClickListener((MouseEvent me, Component c) -> {
       if (login()) {
-        c.getClient().redirect(new MainMenu());
+        c.getClient().setPanel(new MainMenu());
       } else {
         if (cnt > 0) {
           msg.setText("Access denied (" + cnt + ")");

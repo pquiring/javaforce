@@ -7,14 +7,26 @@ package javaforce.webui;
 
 public class PopupPanel extends Container {
   private TitleBar titleBar;
+  private Block block;
+  private boolean modal;
   public PopupPanel(String title) {
     titleBar = new TitleBar(title, this);
     add(titleBar);
     setClass("popuppanel");
     display = "inline-flex";
+    modal = false;
+    block = new Block();
+    block.setClass("modal");
+  }
+  /** Modal windows block all other windows underneath it. */
+  public void setModal(boolean state) {
+    modal = state;
   }
   public String html() {
     StringBuffer sb = new StringBuffer();
+    if (modal) {
+      sb.append(block.html());
+    }
     sb.append("<div" + getAttrs() + "'>");
     int cnt = count();
     for(int a=0;a<cnt;a++) {
@@ -22,5 +34,15 @@ public class PopupPanel extends Container {
     }
     sb.append("</div>");
     return sb.toString();
+  }
+  public void setVisible(boolean state) {
+    super.setVisible(state);
+    if (modal) {
+      block.setVisible(state);
+    }
+  }
+  public void setClient(WebUIClient client) {
+    super.setClient(client);
+    block.setClient(client);
   }
 }

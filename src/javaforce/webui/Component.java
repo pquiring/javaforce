@@ -102,6 +102,22 @@ public abstract class Component {
   public void setFontSize(int size) {
     setStyle("font-size", size + "pt");
   }
+  public final static int LEFT = 0;
+  public final static int CENTER = 1;
+  public final static int RIGHT = 2;
+  public void setAlign(int align) {
+    switch (align) {
+      case LEFT:
+        setStyle("text-align", "left");
+        break;
+      case CENTER:
+        setStyle("text-align", "center");
+        break;
+      case RIGHT:
+        setStyle("text-align", "right");
+        break;
+    }
+  }
 
   private OnEvent getEvent(String onX) {
     int cnt = events.size();
@@ -142,8 +158,13 @@ public abstract class Component {
   public void setHeight(String height) {
     setStyle("height", height);
   }
+  public void setColor(String clr) {
+    setStyle("color", clr);
+    getClient().sendEvent(id, "setclr", new String[] {"clr=" + clr});
+  }
   public void setBackColor(String clr) {
     setStyle("background-color", clr);
+    getClient().sendEvent(id, "setbackclr", new String[] {"clr=" + clr});
   }
   /** Returns all attributes defined for a component (id, attrs, class, styles) */
   public String getAttrs() {
@@ -186,6 +207,9 @@ public abstract class Component {
       client.sendEvent(id, "display", new String[] {"val=" + display});
     else
       client.sendEvent(id, "display", new String[] {"val=none"});
+    if (visible != null) {
+      visible.onVisible(this, state);
+    }
   }
 
   public void setPosition(int x, int y) {
@@ -327,5 +351,28 @@ public abstract class Component {
   private Changed changed;
   public void addChangedListener(Changed handler) {
     changed = handler;
+  }
+
+  private Visible visible;
+  public void addVisibleListener(Visible handler) {
+    visible = handler;
+  }
+
+  private Validate validate;
+  public void addValidateListener(Validate handler) {
+    validate = handler;
+  }
+  public boolean validate() {
+    if (validate == null) return true;
+    return validate.validate(this);
+  }
+
+  private Action action;
+  public void addActionListener(Action handler) {
+    action = handler;
+  }
+  public void action() {
+    if (action == null) return;
+    action.action(this);
   }
 }
