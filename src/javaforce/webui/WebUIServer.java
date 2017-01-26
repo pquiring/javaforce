@@ -59,6 +59,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     String url = req.getURL();
     byte data[] = null;
     if (url.equals("/")) {
+      url = "/webui.html";
       String browser = req.getHeader("User-Agent");
       if (browser != null) {
         if (browser.indexOf("Trident") != -1) {
@@ -66,7 +67,6 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
           url = "/webui-ie.html";
         }
       }
-      url = "/webui.html";
     }
     if (url.startsWith("/static/")) {
       // url = /static/r#
