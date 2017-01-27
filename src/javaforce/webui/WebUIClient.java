@@ -16,6 +16,7 @@ public class WebUIClient {
   public Panel root;
   public String hash;
   public int nextID;
+  public int zIndex = 1;
 
   public boolean popupMenuMouseDown;
   public PopupMenu topPopupMenu;
@@ -109,5 +110,11 @@ public class WebUIClient {
   /** Get user define property. */
   public Object getProperty(String key) {
     return map.get(key);
+  }
+  public int getZIndex() {
+    return zIndex++;
+  }
+  public void releaseZIndex() {
+    zIndex--;
   }
 }

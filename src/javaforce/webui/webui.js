@@ -47,6 +47,9 @@ ws.onmessage = function (event) {
     case "setpos":
       element.value = msg.pos;
       break;
+    case "setzindex":
+      element.style.zIndex = msg.idx;
+      break;
     case "addoption":
       var option = document.createElement("option");
       option.value = msg.value;

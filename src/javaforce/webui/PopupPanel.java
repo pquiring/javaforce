@@ -36,10 +36,20 @@ public class PopupPanel extends Container {
     return sb.toString();
   }
   public void setVisible(boolean state) {
-    super.setVisible(state);
     if (modal) {
+      if (state) {
+        client.sendEvent(block.id, "setzindex", new String[] {"idx=" + getClient().getZIndex()});
+      } else {
+        getClient().releaseZIndex();
+      }
       block.setVisible(state);
     }
+    if (state) {
+      client.sendEvent(id, "setzindex", new String[] {"idx=" + getClient().getZIndex()});
+    } else {
+      getClient().releaseZIndex();
+    }
+    super.setVisible(state);
   }
   public void setClient(WebUIClient client) {
     super.setClient(client);
