@@ -21,10 +21,12 @@ public class TitleBar extends Container {
     add(pad);
     button = new Button("X");
     add(button);
+    button.addClickListener((e, c) -> {
+      panel.setVisible(false);
+    });
   }
   public void init() {
     addEvent("onmousedown", "onmousedownPopupPanel(event, " + panel.id + ");");
-    button.addEvent("onclick", "closePanel(event," + panel.id + ");");
   }
   public String html() {
     StringBuffer sb = new StringBuffer();
