@@ -31,6 +31,7 @@ public class ComboBox extends Component {
   }
 
   public void add(String value, String text) {
+    if (index == -1) index = 0;
     values.add(value);
     texts.add(text);
     getClient().sendEvent(id, "addoption", new String[] {"value=" + value, "text=" + text});
@@ -40,6 +41,7 @@ public class ComboBox extends Component {
     for(int a=0;a<values.size();a++) {
       getClient().sendEvent(id, "removeoption", new String[] {"idx=" + a});
     }
+    index = -1;
     values.clear();
     texts.clear();
   }
