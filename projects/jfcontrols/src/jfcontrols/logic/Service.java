@@ -31,8 +31,8 @@ public class Service extends Thread {
       //create database
       SQL sql = new SQL();
       sql.connect(derbyURI + ";create=true");
+      //create tables
       sql.close();
-      //insert tables
     } else {
       //update database if required
       SQL sql = new SQL();
