@@ -16,7 +16,7 @@ public class Service {
   private static Object tagsLock = new Object();
 
   public static String dataPath;
-  public static String databaseName = "jfcontrols";
+  public static String databaseName = "jfdataloggerplus";
   public static String logsPath;
   public static String derbyURI;
 
@@ -70,11 +70,12 @@ public class Service {
     derbyURI = "jdbc:derby:jfdataloggerplus";
 
     new File(logsPath).mkdirs();
-    JFLog.init(logsPath, true);
+    JFLog.append(logsPath, true);
     System.setProperty("derby.system.home", dataPath);
     if (!new File(dataPath + "/" + databaseName + "/service.properties").exists()) {
       //create database
       SQL sql = new SQL();
+      JFLog.log("DB creating...");
       sql.connect(derbyURI + ";create=true");
       //create tables
       sql.execute("create table tags (id int primary key, host varchar(64), type int, tag varchar(128), size int, color int, min varchar(32), max varchar(32), delay int)");
@@ -86,7 +87,8 @@ public class Service {
       //update database if required
       SQL sql = new SQL();
       sql.connect(derbyURI);
-      //TODO
+      String version = sql.select1value("select value from config where id='version'");
+      JFLog.log("DB version=" + version);
       sql.close();
     }
   }
@@ -97,6 +99,7 @@ public class Service {
     sql.connect(derbyURI);
     String query[][] = sql.select("select id,host,type,tag,size,color,min,max,delay from tags");
     sql.close();
+    if (query == null) return;
     for(int a=0;a<query.length;a++) {
       Tag tag = new Tag();
       tag.id = JF.atoi(query[a][0]);
