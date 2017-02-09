@@ -6,6 +6,12 @@
 import javaforce.webui.*;
 
 public class EditTagPopup extends PopupPanel {
+  public static int delays[] = new int[] {
+    25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
+  };
+  public static String delays_txt[] = new String[] {
+    "25ms", "50ms", "100ms", "500ms", "1s", "3s", "5s", "10s", "30s", "60s", "300s"
+  };
   public EditTagPopup(ColorChooserPopup ccp) {
     super("Edit Tag");
     this.ccp = ccp;
@@ -51,6 +57,16 @@ public class EditTagPopup extends PopupPanel {
     size.add("3", "int32");
     size.add("4", "float32");
     size.add("5", "float64");
+
+    row = new Row();
+    add(row);
+    label = new Label("Speed");
+    row.add(label);
+    delay = new ComboBox();
+    row.add(delay);
+    for(int a=0;a<delays.length;a++) {
+      delay.add(Integer.toString(delays[a]), delays_txt[a]);
+    }
 
     row = new Row();
     add(row);
@@ -104,6 +120,7 @@ public class EditTagPopup extends PopupPanel {
   public TextField host;
   public TextField tag;
   public ComboBox size;
+  public ComboBox delay;
   public TextField max, min;
   public Button color;
   public Button ok, cancel;
@@ -121,6 +138,9 @@ public class EditTagPopup extends PopupPanel {
     host.setText(intag.host);
     tag.setText(intag.tag);
     size.setSelectedIndex(intag.size.ordinal());
+    for(int a=0;a<delays.length;a++) {
+      if (delays[a] == intag.delay) {delay.setSelectedIndex(a); break;}
+    }
     max.setText(Integer.toString(intag.max));
     min.setText(Integer.toString(intag.min));
     rgb = intag.color;
@@ -132,6 +152,7 @@ public class EditTagPopup extends PopupPanel {
     host.setText("");
     tag.setText("");
     size.setSelectedIndex(0);
+    delay.setSelectedIndex(4);  //1s default
     max.setText("1");
     min.setText("0");
     rgb = 0;
@@ -157,6 +178,7 @@ public class EditTagPopup extends PopupPanel {
     outtag.host = host.getText();
     outtag.tag = tag.getText();
     outtag.size = Tag.sizes.values()[size.getSelectedIndex()];
+    outtag.delay = delays[delay.getSelectedIndex()];
     if (outtag.size == Tag.sizes.float32 || outtag.size == Tag.sizes.float64) {
       outtag.fmax = Float.valueOf(max.getText());
       outtag.fmin = Float.valueOf(min.getText());

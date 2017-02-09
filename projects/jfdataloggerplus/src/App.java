@@ -8,6 +8,10 @@ import javaforce.webui.*;
 public class App implements WebUIHandler {
   public static WebUIServer server;
 
+  public static void main(String args[]) {
+    serviceStart(args);
+  }
+
   public static void serviceStart(String args[]) {
     Service.start();
     server = new WebUIServer();

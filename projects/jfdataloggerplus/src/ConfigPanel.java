@@ -91,7 +91,7 @@ public class ConfigPanel extends CenteredPanel {
     list = Service.getTags();
     tags.clear();
     for(int a=0;a<list.length;a++) {
-      String url = list[a].getURL();
+      String url = list[a].toString();
       tags.add("i" + a, url);
     }
   }
