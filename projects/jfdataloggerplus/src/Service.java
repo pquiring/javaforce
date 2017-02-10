@@ -25,16 +25,47 @@ public class Service {
       return tags.toArray(new Tag[tags.size()]);
     }
   }
-  public static void addTag(Tag tag) {
+  public static void initTag(Tag tag) {
     synchronized (tagsLock) {
       tags.add(tag);
       tag.start();
     }
   }
+  public static void addTag(Tag tag) {
+    synchronized (tagsLock) {
+      tags.add(tag);
+      tag.start();
+      SQL sql = new SQL();
+      sql.connect(derbyURI);
+      String query = String.format("insert into tags (host,type,tag,size,color,minvalue,maxvalue,delay) values ('%s',%d,'%s',%d,%d,'%s','%s',%d)", tag.host, tag.type.ordinal(), tag.tag, tag.size.ordinal(), tag.color, tag.getmin(), tag.getmax(), tag.delay);
+      sql.execute(query);
+      if (sql.lastException != null) {
+        JFLog.log("query=" + query);
+        JFLog.log(sql.lastException);
+      }
+      query = String.format("select id from tags where host='%s' and tag='%s'", tag.host, tag.tag);
+      String id = sql.select1value(query);
+      tag.id = JF.atoi(id);
+      sql.close();
+    }
+  }
+  public static boolean exists(String host, String tag) {
+    Tag[] list = getTags();
+    for(int a=0;a<list.length;a++) {
+      Tag t = list[a];
+      if (t.host.equals(host) && t.tag.equals(tag)) return true;
+    }
+    return false;
+  }
   public static void removeTag(Tag tag) {
     synchronized (tagsLock) {
       tag.stop();
       tags.remove(tag);
+      SQL sql = new SQL();
+      sql.connect(derbyURI);
+      String query = String.format("delete from tags where id=%d", tag.id);
+      sql.execute(query);
+      sql.close();
     }
   }
   public static void updateTag(Tag tag) {
@@ -57,6 +88,9 @@ public class Service {
     SQL sql = new SQL();
     sql.connect(derbyURI);
     String out[][] = sql.select(query);
+    if (sql.lastException != null) {
+      JFLog.log(sql.lastException);
+    }
     sql.close();
     return out;
   }
@@ -66,11 +100,11 @@ public class Service {
     } else {
       dataPath = "/var/jfdataloggerplus";
     }
-    logsPath = dataPath + "/logs/service.log";
+    logsPath = dataPath + "/logs";
     derbyURI = "jdbc:derby:jfdataloggerplus";
 
     new File(logsPath).mkdirs();
-    JFLog.append(logsPath, true);
+    JFLog.append(logsPath + "/service.log", true);
     System.setProperty("derby.system.home", dataPath);
     if (!new File(dataPath + "/" + databaseName + "/service.properties").exists()) {
       //create database
@@ -78,7 +112,7 @@ public class Service {
       JFLog.log("DB creating...");
       sql.connect(derbyURI + ";create=true");
       //create tables
-      sql.execute("create table tags (id int primary key, host varchar(64), type int, tag varchar(128), size int, color int, min varchar(32), max varchar(32), delay int)");
+      sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, host varchar(64), type int, tag varchar(128), size int, color int, minvalue varchar(32), maxvalue varchar(32), delay int, unique (host, tag))");
       sql.execute("create table config (id varchar(32), value varchar(128))");
       sql.execute("create table history (id int, value varchar(128), when timestamp)");
       sql.execute("insert into config (id, value) values ('version', '0.0')");
@@ -97,7 +131,7 @@ public class Service {
     initDB();
     SQL sql = new SQL();
     sql.connect(derbyURI);
-    String query[][] = sql.select("select id,host,type,tag,size,color,min,max,delay from tags");
+    String query[][] = sql.select("select id,host,type,tag,size,color,minvalue,maxvalue,delay from tags");
     sql.close();
     if (query == null) return;
     for(int a=0;a<query.length;a++) {
@@ -107,7 +141,7 @@ public class Service {
       tag.type = Tag.types.values()[JF.atoi(query[a][2])];
       tag.tag = query[a][3];
       tag.size = Tag.sizes.values()[JF.atoi(query[a][4])];
-      tag.color = JF.atox(query[a][5]);
+      tag.color = JF.atoi(query[a][5]);
       if (tag.isFloat()) {
         tag.fmin = JF.atof(query[a][6]);
         tag.fmax = JF.atof(query[a][7]);
@@ -116,7 +150,7 @@ public class Service {
         tag.max = JF.atoi(query[a][7]);
       }
       tag.delay = JF.atoi(query[a][8]);
-      addTag(tag);
+      initTag(tag);
     }
   }
   public static void stop() {

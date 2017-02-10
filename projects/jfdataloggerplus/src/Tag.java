@@ -92,6 +92,22 @@ public class Tag {
     delay = Integer.valueOf(f[7]);
   }
 
+  public String getmin() {
+    if (size == sizes.float32 || size == sizes.float64) {
+      return Float.toString(fmin);
+    } else {
+      return Integer.toString(min);
+    }
+  }
+
+  public String getmax() {
+    if (size == sizes.float32 || size == sizes.float64) {
+      return Float.toString(fmax);
+    } else {
+      return Integer.toString(max);
+    }
+  }
+
   public void start() {
     if (!connect()) return;
     timer = new Timer();

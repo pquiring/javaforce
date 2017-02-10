@@ -7,7 +7,7 @@ import java.util.*;
 import javaforce.SQL;
 
 import javaforce.webui.*;
-
+import javaforce.*;
 
 public class ReportsPanel extends Panel {
   public ReportsPanel() {
@@ -18,7 +18,7 @@ public class ReportsPanel extends Panel {
     int hh = c.get(Calendar.HOUR_OF_DAY);
     int mm = c.get(Calendar.MINUTE);
     int ss = c.get(Calendar.SECOND);
-    String date = String.format("%04d/%02d/%02d", year, month, day);
+    String date = String.format("%04d-%02d-%02d", year, month, day);
     String time = String.format("%02d:%02d:%02d", hh, mm, ss);
 
     Row row = new Row();
@@ -83,7 +83,10 @@ public class ReportsPanel extends Panel {
 
   private void update() {
     int idx = tags.getSelectedIndex();
-    if (idx == -1) return;
+    if (idx == -1) {
+      JFLog.log("no tag selected for report");
+      return;
+    }
     String start = date_start.getText() + " " + time_start.getText();
     String end = date_end.getText() + " " + time_end.getText();
     Tag tag = list[idx];
@@ -100,8 +103,8 @@ public class ReportsPanel extends Panel {
       }
       sb.append("<br>");
     }
+    sb.append("End of report:" + tag.tag);
     report.setText(sb.toString());
-    loadTags();
   }
   public void loadTags() {
     list = Service.getTags();

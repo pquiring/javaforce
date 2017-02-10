@@ -188,4 +188,10 @@ public class EditTagPopup extends PopupPanel {
     }
     outtag.color = rgb;
   }
+  public String getHost() {
+    return host.getText();
+  }
+  public String getTag() {
+    return tag.getText();
+  }
 }

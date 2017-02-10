@@ -49,6 +49,9 @@ public class ConfigPanel extends CenteredPanel {
       editingTag = list[idx];
       editTag.editTag(editingTag);
     });
+    editTag.addValidateListener((c) -> {
+      return !Service.exists(editTag.getHost(), editTag.getTag());
+    });
     delete.addClickListener((me, c) -> {
       int idx = tags.getSelectedIndex();
       if (idx == -1) return;
