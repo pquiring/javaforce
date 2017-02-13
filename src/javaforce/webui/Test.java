@@ -65,6 +65,9 @@ public class Test implements WebUIHandler {
 
     Row row1 = new Row();
     panel.add(row1);
+    //add : togglebutton
+    ToggleButton t = new ToggleButton("Toggle Me!");
+    row1.add(t);
     //add : button
     Button b = new Button("Click Me!");
     row1.add(b);

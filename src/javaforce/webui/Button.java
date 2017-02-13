@@ -19,5 +19,6 @@ public class Button extends Component {
   private String text;
   public void setText(String text) {
     this.text = text;
+    getClient().sendEvent(id, "settext", new String[] {"text=" + text});
   }
 }
