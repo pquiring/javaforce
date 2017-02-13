@@ -40,7 +40,7 @@ public class ReportsPanel extends Panel {
     row.add(date_start);
 
     row.add(new Label("Start Time"));
-    time_start = new TextField(time);
+    time_start = new TextField("00:00:00");
     row.add(time_start);
 
     row.add(new Label("End Date"));
@@ -101,7 +101,7 @@ public class ReportsPanel extends Panel {
           sb.append(query[a][b]);
         }
       }
-      sb.append("<br>");
+      sb.append("\r\n");
     }
     sb.append("End of report:" + tag.tag);
     report.setText(sb.toString());

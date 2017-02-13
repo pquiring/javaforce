@@ -68,6 +68,23 @@ public class WebUIClient {
       }
     }
   }
+  private String stringify(String in) {
+    StringBuilder sb = new StringBuilder();
+    char ca[] = in.toCharArray();
+    int len = ca.length;
+    sb.append("\"");
+    for(int a=0;a<len;a++) {
+      char ch = ca[a];
+      switch (ch) {
+        case '\"': sb.append("\\\""); break;
+        case '\r': sb.append("\\r"); break;
+        case '\n': sb.append("\\n"); break;
+        default: sb.append(ch); break;
+      }
+    }
+    sb.append("\"");
+    return sb.toString();
+  }
   public synchronized void sendEvent(String id, String event, String args[]) {
     if (socket == null) return;
     StringBuffer sb = new StringBuffer();
@@ -86,14 +103,14 @@ public class WebUIClient {
         }
         String key = arg.substring(0, idx);
         String value = arg.substring(idx+1);
-        sb.append(",\"" + key + "\":\"" + value.replaceAll("\"", "\\\\\"") + "\"");
+        sb.append(",\"" + key + "\":" + stringify(value));
       }
     }
     sb.append("}");
     String json = sb.toString();
-    if (!event.equals("sethtml")) {
+//    if (!event.equals("sethtml")) {
       System.out.println("SEND=" + json);
-    }
+//    }
     socket.write(json.getBytes());
   }
   public String html() {

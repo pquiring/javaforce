@@ -82,6 +82,9 @@ public class Service {
     sql.connect(derbyURI);
     String query = String.format("insert into history (id, value, when) values (%d,'%s',current_timestamp)", tag.id, value);
     sql.execute(query);
+    if (sql.lastException != null) {
+      JFLog.log(sql.lastException);
+    }
     sql.close();
   }
   public static String[][] queryHistory(String query) {
