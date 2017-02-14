@@ -6,7 +6,7 @@ public class jimgconvert {
   public static void main(String args[]) {
     if (args.length != 2) {
       System.out.println("Usage : jimgconvert filein fileout");
-      System.out.println("Suppports : jpg, png, bmp, ico(output only), icns(ouput only)");
+      System.out.println("Suppports : jpg, png, bmp, ico(output only), icns(output only)");
       return;
     }
     try {
