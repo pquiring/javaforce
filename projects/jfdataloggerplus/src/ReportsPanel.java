@@ -87,28 +87,39 @@ public class ReportsPanel extends Panel {
       JFLog.log("no tag selected for report");
       return;
     }
+    String query;
     String start = date_start.getText() + " " + time_start.getText();
     String end = date_end.getText() + " " + time_end.getText();
-    Tag tag = list[idx];
-    String query[][] = Service.queryHistory("select id,value,when from history where id=" + tag.id + " and when >= " + SQL.quote(start) + " and when <=" + SQL.quote(end));
+    String name;
+    if (idx == 0) {
+      //all tags
+      query = "select id,value,when from history where when >= " + SQL.quote(start) + " and when <=" + SQL.quote(end);
+      name = "All tags";
+    } else {
+      Tag tag = list[idx-1];
+      query = "select id,value,when from history where id=" + tag.id + " and when >= " + SQL.quote(start) + " and when <=" + SQL.quote(end);
+      name = tag.tag;
+    }
+    String data[][] = Service.queryHistory(query);
     StringBuilder sb = new StringBuilder();
-    for(int a=0;a<query.length;a++) {
-      for(int b=0;b<query[a].length;b++) {
+    for(int a=0;a<data.length;a++) {
+      for(int b=0;b<data[a].length;b++) {
         if (b > 0) sb.append(",");
         if (b == 0) {
-          sb.append(getTag(query[a][b]));  //convert id to tag name
+          sb.append(getTag(data[a][b]));  //convert id to tag name
         } else {
-          sb.append(query[a][b]);
+          sb.append(data[a][b]);
         }
       }
       sb.append("\r\n");
     }
-    sb.append("End of report:" + tag.tag);
+    sb.append("End of report:" + name);
     report.setText(sb.toString());
   }
   public void loadTags() {
     list = Service.getTags();
     tags.clear();
+    tags.add("*", "All tags");
     for(int a=0;a<list.length;a++) {
       String url = list[a].toString();
       tags.add("i" + a, url);
