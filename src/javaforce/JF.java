@@ -23,7 +23,7 @@ import javax.swing.filechooser.*;
 public class JF {
 
   public static String getVersion() {
-    return "12.5.0";
+    return "14.0.0";
   }
 
   public static void sleep(int milli) {

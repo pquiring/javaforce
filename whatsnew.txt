@@ -1,5 +1,12 @@
 What's new...
 
+Feb 16/2017 : JF 14.0.0 released!
+  - new app : jfDataLoggerPlus
+    - this is an app that logs changes to PLC tags similar to jfDataLogger but this is a service for long term data collection
+    - data is collected into an SQL database
+    - first app to use the new WebUI which is still a work in progress
+  - this is the 13th major release of JavaForce ;)
+
 Nov 22/2016 : JF 12.5.0 released!
   - jfDataLogger/0.6
     - minor fixes
