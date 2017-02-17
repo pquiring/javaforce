@@ -22,8 +22,7 @@ public class Controller {
   private Socket socket;
   private InputStream is;
   private OutputStream os;
-  private enum type {S7, MODBUS, AB, NI};
-  private type plc;
+  private types plc;
   private DAQmx daq;
 
   private ABContext ab_context;
@@ -31,6 +30,14 @@ public class Controller {
   public static double rate;  //sample rate for all controllers (set before connecting to any controllers)
 
   public Exception lastException;
+
+  public static enum types {
+    S7, AB, MB, NI
+  };
+
+  public static enum sizes {
+    bit, int8, int16, int32, float32, float64
+  }
 
   public void setRate(float rate) {
     this.rate = rate;
@@ -46,7 +53,7 @@ public class Controller {
    */
   public boolean connect(String url) {
     if (url.startsWith("S7:")) {
-      plc = type.S7;
+      plc = types.S7;
       String host = url.substring(3);
       try {
         socket = new Socket(host, 102);
@@ -90,7 +97,7 @@ public class Controller {
       return true;
     }
     if (url.startsWith("MODBUS:")) {
-      plc = type.MODBUS;
+      plc = types.MB;
       String host = url.substring(7);
       try {
         socket = new Socket(host, 502);
@@ -106,7 +113,7 @@ public class Controller {
     }
     if (url.startsWith("AB:")) {
       ab_context = new ABContext();
-      plc = type.AB;
+      plc = types.AB;
       String host = url.substring(3);
       try {
         socket = new Socket(host, 44818);
@@ -139,7 +146,7 @@ public class Controller {
       return true;
     }
     if (url.startsWith("NI:")) {
-      plc = type.NI;
+      plc = types.NI;
       daq = new DAQmx();
       connected = daq.connect(url.substring(3));
       if (!connected) {
@@ -156,7 +163,7 @@ public class Controller {
     if (!connected) return false;
     switch (plc) {
       case S7:
-      case MODBUS:
+      case MB:
       case AB:
         try {
           if (socket != null) {
@@ -208,7 +215,7 @@ public class Controller {
         }
         return true;
       }
-      case MODBUS: {
+      case MB: {
         ModAddr ma = ModPacket.decodeAddress(addr);
         ma.state = data[0] != 0;
         byte packet[] = ModPacket.makeWritePacket(ma);
@@ -291,7 +298,7 @@ public class Controller {
         s7 = S7Packet.decodePacket(Arrays.copyOf(reply, replySize));
         return s7.data;
       }
-      case MODBUS: {
+      case MB: {
         ModAddr ma = ModPacket.decodeAddress(addr);
         byte packet[] = ModPacket.makeReadPacket(ma);
         try {
@@ -344,93 +351,6 @@ public class Controller {
     return null;
   }
 
-  /** Reads multiple data tags from PLC. (only S7 is currently supported) */
-  public byte[][] read(String addr[]) {
-    if (!connected) return null;
-    switch (plc) {
-      case S7: {
-        S7Data s7[] = new S7Data[addr.length];
-        for(int a=0;a<addr.length;a++) {
-          s7[a] = S7Packet.decodeAddress(addr[a]);
-        }
-        byte packet[] = S7Packet.makeReadPacket(s7);
-        try {
-          os.write(packet);
-        } catch (Exception e) {
-          lastException = e;
-          return null;
-        }
-        byte reply[] = new byte[1500];
-        int replySize = 0;
-        try {
-          do {
-            int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read");
-            replySize += read;
-          } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
-        } catch (Exception e) {
-          lastException = e;
-          return null;
-        }
-        s7 = S7Packet.decodeMultiPacket(Arrays.copyOf(reply, replySize), addr.length);
-        byte ret[][] = new byte[addr.length][];
-        for(int a=0;a<addr.length;a++) {
-          ret[a] = s7[a].data;
-        }
-        return ret;
-      }
-/*
-      case MODBUS: {
-        ModAddr ma = ModPacket.decodeAddress(addr);
-        byte packet[] = ModPacket.makeReadPacket(ma);
-        try {
-          os.write(packet);
-        } catch (Exception e) {
-          lastException = e;
-          return null;
-        }
-        byte reply[] = new byte[1500];
-        int replySize = 0;
-        try {
-          do {
-            int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read");
-            replySize += read;
-          } while (!ModPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
-        } catch (Exception e) {
-          lastException = e;
-          return null;
-        }
-        ModData data = ModPacket.decodePacket(Arrays.copyOf(reply, replySize));
-        return data.data;
-      }
-      case AB: {
-        byte packet[] = ABPacket.makeReadPacket(addr, ab_context);
-        try {
-          os.write(packet);
-        } catch (Exception e) {
-          lastException = e;
-          return null;
-        }
-        byte reply[] = new byte[1500];
-        int replySize = 0;
-        try {
-          do {
-            int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read");
-            replySize += read;
-          } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
-          return ABPacket.decodePacket(reply);
-        } catch (Exception e) {
-          lastException = e;
-          return null;
-        }
-      }
-*/
-    }
-    return null;
-  }
-
   public boolean isConnected() {
     try {
       return socket.isConnected();
@@ -439,4 +359,3 @@ public class Controller {
     }
   }
 }
-

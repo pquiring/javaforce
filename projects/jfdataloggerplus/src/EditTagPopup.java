@@ -3,6 +3,7 @@
  * @author pquiring
  */
 
+import javaforce.controls.*;
 import javaforce.webui.*;
 
 public class EditTagPopup extends PopupPanel {
@@ -174,12 +175,12 @@ public class EditTagPopup extends PopupPanel {
     }
   }
   public void saveTag(Tag outtag) {
-    outtag.type = Tag.types.values()[type.getSelectedIndex()];
+    outtag.type = Controller.types.values()[type.getSelectedIndex()];
     outtag.host = host.getText();
     outtag.tag = tag.getText();
-    outtag.size = Tag.sizes.values()[size.getSelectedIndex()];
+    outtag.size = Controller.sizes.values()[size.getSelectedIndex()];
     outtag.delay = delays[delay.getSelectedIndex()];
-    if (outtag.size == Tag.sizes.float32 || outtag.size == Tag.sizes.float64) {
+    if (outtag.isFloat()) {
       outtag.fmax = Float.valueOf(max.getText());
       outtag.fmin = Float.valueOf(min.getText());
     } else {

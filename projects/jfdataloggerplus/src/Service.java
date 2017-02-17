@@ -8,7 +8,7 @@
 import java.io.*;
 import java.util.*;
 
-import javaforce.webui.*;
+import javaforce.controls.*;
 import javaforce.*;
 
 public class Service {
@@ -45,7 +45,7 @@ public class Service {
       }
       query = String.format("select id from tags where host='%s' and tag='%s'", tag.host, tag.tag);
       String id = sql.select1value(query);
-      tag.id = JF.atoi(id);
+      tag.setData("id", JF.atoi(id));
       sql.close();
     }
   }
@@ -63,7 +63,7 @@ public class Service {
       tags.remove(tag);
       SQL sql = new SQL();
       sql.connect(derbyURI);
-      String query = String.format("delete from tags where id=%d", tag.id);
+      String query = String.format("delete from tags where id=%d", tag.getData("id"));
       sql.execute(query);
       sql.close();
     }
@@ -80,7 +80,7 @@ public class Service {
   public static void logChange(Tag tag, String value) {
     SQL sql = new SQL();
     sql.connect(derbyURI);
-    String query = String.format("insert into history (id, value, when) values (%d,'%s',current_timestamp)", tag.id, value);
+    String query = String.format("insert into history (id, value, when) values (%d,'%s',current_timestamp)", tag.getData("id"), value);
     sql.execute(query);
     if (sql.lastException != null) {
       JFLog.log(sql.lastException);
@@ -139,11 +139,11 @@ public class Service {
     if (query == null) return;
     for(int a=0;a<query.length;a++) {
       Tag tag = new Tag();
-      tag.id = JF.atoi(query[a][0]);
+      tag.setData("id", query[a][0]);
       tag.host = query[a][1];
-      tag.type = Tag.types.values()[JF.atoi(query[a][2])];
+      tag.type = Controller.types.values()[JF.atoi(query[a][2])];
       tag.tag = query[a][3];
-      tag.size = Tag.sizes.values()[JF.atoi(query[a][4])];
+      tag.size = Controller.sizes.values()[JF.atoi(query[a][4])];
       tag.color = JF.atoi(query[a][5]);
       if (tag.isFloat()) {
         tag.fmin = JF.atof(query[a][6]);

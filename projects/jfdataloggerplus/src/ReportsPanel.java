@@ -7,6 +7,7 @@ import java.util.*;
 import javaforce.SQL;
 
 import javaforce.webui.*;
+import javaforce.controls.*;
 import javaforce.*;
 
 public class ReportsPanel extends Panel {
@@ -72,9 +73,9 @@ public class ReportsPanel extends Panel {
   public Tag list[];
 
   private String getTag(String id) {
-    int iid = Integer.valueOf(id);
     for(int a=0;a<list.length;a++) {
-      if (list[a].id == iid) {
+      String tid = (String)list[a].getData("id");
+      if (tid.equals(id)) {
         return list[a].toString();
       }
     }
@@ -97,7 +98,7 @@ public class ReportsPanel extends Panel {
       name = "All tags";
     } else {
       Tag tag = list[idx-1];
-      query = "select id,value,when from history where id=" + tag.id + " and when >= " + SQL.quote(start) + " and when <=" + SQL.quote(end);
+      query = "select id,value,when from history where id=" + tag.getData("id") + " and when >= " + SQL.quote(start) + " and when <=" + SQL.quote(end);
       name = tag.tag;
     }
     String data[][] = Service.queryHistory(query);

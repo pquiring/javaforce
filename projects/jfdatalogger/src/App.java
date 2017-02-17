@@ -11,7 +11,6 @@ import javax.swing.table.*;
 
 import javaforce.*;
 import javaforce.controls.*;
-import javaforce.controls.ni.DAQmx;
 
 public class App extends javax.swing.JFrame {
 
@@ -370,7 +369,6 @@ public class App extends javax.swing.JFrame {
   public static int speedIdx;
   public static int delay;
   public static int tickCounter;
-  public static boolean first;
   public static FileOutputStream logger;
   public String projectFile;
   public String logFile;
@@ -405,10 +403,42 @@ public class App extends javax.swing.JFrame {
     for(int a=0;a<cnt;a++) {
       XML.XMLTag xmltag = xml.root.getChildAt(a);
       Tag tag = new Tag();
-      tag.load(xmltag.content);
+      tag_load(tag, xmltag.content);
       tags.add(tag);
       listModel.addElement(tag.toString());
     }
+  }
+
+  public void tag_load(Tag tag, String data) {
+    String f[] = data.split("[|]");
+    tag.host = f[0];
+    switch (f[1]) {
+      case "S7": tag.type = Controller.types.S7; break;
+      case "AB": tag.type = Controller.types.AB; break;
+      case "MB": tag.type = Controller.types.MB; break;
+      case "NI": tag.type = Controller.types.NI; break;
+    }
+    tag.tag = f[2];
+    switch (f[3]) {
+      case "bit": tag.size = Controller.sizes.bit; break;
+      case "int8": tag.size = Controller.sizes.int8; break;
+      case "int16": tag.size = Controller.sizes.int16; break;
+      case "int32": tag.size = Controller.sizes.int32; break;
+      case "float32": tag.size = Controller.sizes.float32; break;
+      case "float64": tag.size = Controller.sizes.float64; break;
+    }
+    if (tag.isFloat()) {
+      tag.fmin = Float.valueOf(f[4]);
+      tag.fmax = Float.valueOf(f[5]);
+    } else {
+      tag.min = Integer.valueOf(f[4]);
+      tag.max = Integer.valueOf(f[5]);
+    }
+    tag.color = Integer.valueOf(f[6], 16);
+  }
+
+  public String tag_save(Tag tag) {
+    return tag.host + "|" + tag.type + "|" + tag + "|" + tag.size + "|" + tag.getmin() + "|" + tag.getmax() + "|" + Integer.toUnsignedString(tag.color, 16);
   }
 
   public void save() {
@@ -427,7 +457,7 @@ public class App extends javax.swing.JFrame {
     int cnt = tags.size();
     for(int a=0;a<cnt;a++) {
       Tag tag = tags.get(a);
-      xml.addTag(xml.root, "tag", "", tag.save());
+      xml.addTag(xml.root, "tag", "", tag_save(tag));
     }
     xml.write(filename);
     projectFile = filename;
@@ -552,8 +582,6 @@ public class App extends javax.swing.JFrame {
     }
   }
 
-  public static ArrayList<Controller> cs;
-  public static ArrayList<String> urls;
   public static java.util.Timer timer;
   public static boolean running;
 
@@ -561,8 +589,6 @@ public class App extends javax.swing.JFrame {
     public void run() {
       JFLog.log("connecting to controllers...");
       running = false;
-      cs = new ArrayList<Controller>();
-      urls = new ArrayList<String>();
       //create controllers and find fastest timer
       tableModel.setColumnCount(0);
       tableModel.addColumn("timestamp");
@@ -571,70 +597,12 @@ public class App extends javax.swing.JFrame {
       System.out.println("rate=" + Controller.rate);
       System.gc();  //ensure all prev connections are closed
       int cnt = tags.size();
-      for(int a=0;a<cnt;a++) {
-        Tag tag = tags.get(a);
-        tag.children.clear();
-        tag.child = false;
-        String url = tag.getURL();
-        boolean have = false;
-        Tag parent = null;
-        if (tag.type == Tag.types.S7) {
-          for(int b=0;b<urls.size();b++) {
-            if (a == b) continue;
-            if (urls.get(b).equals(url)) {
-              have = true;
-              tag.c = cs.get(b);
-              parent = tags.get(b);
-              break;
-            }
-          }
-        }
-        if (!have) {
-          if (tag.type == Tag.types.NI) {
-            if (!DAQmx.loaded) {
-              System.out.println("Warning:DAQmx not available for tag:" + tag.host);
-              continue;
-            }
-          }
-          Controller c = new Controller();
-          JFLog.log("connect:" + url);
-          if (!c.connect(url)) {
-            JFLog.log("Connection failed:" + url);
-            if (url.startsWith("NI:")) {
-              DAQmx.printError();
-            }
-            tag.connected = false;
-          } else {
-            tag.connected = true;
-          }
-          cs.add(c);
-          urls.add(url);
-          tag.c = c;
-        } else {
-          parent.children.add(tag);
-          tag.child = true;
-          tag.parent = parent;
-        }
-        tableModel.addColumn(tag.toString());
-      }
-      //init
-      first = true;
-      for(int a=0;a<cnt;a++) {
-        Tag tag = tags.get(a);
-        if (tag.children.size() > 0) {
-          int ccnt = tag.children.size();
-          tag.tags = new String[ccnt+1];
-          tag.tags[0] = tag.tag;
-          for(int b=0;b<ccnt;b++) {
-            tag.tags[b+1] = tag.children.get(b).tag;
-          }
-        }
-      }
       //start tag timers
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
-        if (tag.child) continue;
-        tag.start(delay);
+        tag.delay = delay;
+        tag.start();
+        tableModel.addColumn(tag.toString());
       }
       //start timer
       timer = new java.util.Timer();
@@ -657,10 +625,6 @@ public class App extends javax.swing.JFrame {
       int cnt = tags.size();
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
-        if (tag.child) continue;
-        if (tag.c != null) {
-          tag.c.disconnect();
-        }
         tag.stop();
       }
       app.run.setText("Run");
@@ -688,61 +652,15 @@ public class App extends javax.swing.JFrame {
         idx = 1;
         for(int a=0;a<cnt;a++) {
           Tag tag = tags.get(a);
-          if ((tag.parent != null && !tag.parent.connected) || (tag.parent == null && !tag.connected)) {
-            row[idx] = "N/C";
+          String data = tag.getValue();
+          if (data == null) {
+            row[idx] = "error";
           } else {
-            if (tag.children.size() > 0) {
-              //read multiple tags
-              byte datas[][] = tag.reads();
-              int ccnt = tag.children.size();
-              for(int b=0;b<ccnt;b++) {
-                tag.children.get(b).data = datas[b+1];
-              }
-              byte data[] = datas[0];
-              switch (tag.size) {
-                case bit: log(tag, data[0] == 0 ? 0 : 1); break;
-                case int8: log(tag, data[0] & 0xff); break;
-                case int16: log(tag, BE.getuint16(data, 0)); break;
-                case int32: log(tag, BE.getuint32(data, 0)); break;
-                case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
-              }
-            } else {
-              //read one tag
-              byte data[] = null;
-              if (tag.child) {
-                data = tag.data;
-              } else {
-                data = tag.read();
-              }
-              int size = -1;
-              switch (tag.size) {
-                case bit: size = 1; break;
-                case int8: size = 1; break;
-                case int16: size = 2; break;
-                case int32: size = 3; break;
-                case float32: size = 4; break;
-                case float64: size = 8; break;
-              }
-              if (data == null || data.length < size) {
-                row[idx] = "error";
-              } else {
-                switch (tag.size) {
-                  case bit: log(tag, data[0] == 0 ? 0 : 1); break;
-                  case int8: log(tag, data[0] & 0xff); break;
-                  case int16: log(tag, BE.getuint16(data, 0)); break;
-                  case int32: log(tag, BE.getuint32(data, 0)); break;
-                  case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
-                  case float64: log(tag, Double.longBitsToDouble(BE.getuint64(data, 0))); break;
-                }
-              }
-            }
+            row[idx] = data;
           }
           ln += ",";
           ln += row[idx];
           idx++;
-          if (first) {
-            tag.lastScaledValue = tag.scaledValue;
-          }
         }
         ln += "\r\n";
         if (logger != null) {
@@ -762,28 +680,25 @@ public class App extends javax.swing.JFrame {
           });
           delaycount = 0;
         }
-        if (first) {
-          first = false;
-        }
       } catch (Exception e) {
         e.printStackTrace();
       }
     }
-    public int scale(Tag tag, int value) {
+    public int scaleInt(Tag tag, int value) {
       if (value < tag.min) return 0;
       if (value > tag.max) return 100;
       float delta = tag.max - tag.min;
       return (int)((value - tag.min) / delta * 100.0);
     }
-    public int scale(Tag tag, float value) {
+    public int scaleFloat(Tag tag, float value) {
       if (value < tag.fmin) return 0;
       if (value > tag.fmax) return 100;
       float delta = tag.fmax - tag.fmin;
       float fval = value;
-      float fmin = tag.min;
+      float fmin = tag.fmin;
       return (int)((fval - fmin) / delta * 100.0);
     }
-    public int scale(Tag tag, double value) {
+    public int scaleDouble(Tag tag, double value) {
       if (value < tag.fmin) return 0;
       if (value > tag.fmax) return 100;
       double delta = tag.fmax - tag.fmin;
@@ -791,17 +706,32 @@ public class App extends javax.swing.JFrame {
       double fmin = tag.min;
       return (int)((fval - fmin) / delta * 100.0);
     }
-    public void log(Tag tag, int value) {
-      tag.scaledValue = scale(tag, value);
-      row[idx] = Integer.toString(value);
-    }
-    public void log(Tag tag, float value) {
-      tag.scaledValue = scale(tag, value);
-      row[idx] = Float.toString(value);
-    }
-    public void log(Tag tag, double value) {
-      tag.scaledValue = scale(tag, value);
-      row[idx] = Double.toString(value);
+    public int sv, lsv;
+    public void getValues(Tag tag) {
+      String value = tag.getValue();
+      if (value == null) value = "0";
+      int iv;
+      float fv;
+      double dv;
+      if (tag.isFloat()) {
+        if (tag.getSize() == 8) {
+          dv = Double.valueOf(value);
+          sv = scaleDouble(tag, dv);
+        } else {
+          fv = Float.valueOf(value);
+          sv = scaleFloat(tag, fv);
+        }
+      } else {
+        iv = Integer.valueOf(value);
+        sv = scaleInt(tag, iv);
+      }
+      Integer lv = (Integer)tag.getData("last");
+      if (lv != null) {
+        lsv = lv;
+      } else {
+        lsv = sv;
+      }
+      tag.setData("last", sv);
     }
     public void updateImage() {
       int x2 = logImage.getWidth() - 1;
@@ -811,10 +741,10 @@ public class App extends javax.swing.JFrame {
       int cnt = tags.size();
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
-        int y = 5 + 500 - (tag.scaledValue * 5);
-        int ly = 5 + 500 - (tag.lastScaledValue * 5);
+        getValues(tag);
+        int y = 5 + 500 - (sv * 5);
+        int ly = 5 + 500 - (lsv * 5);
         logImage.line(x2-1, ly, x2, y, tag.color);
-        tag.lastScaledValue = tag.scaledValue;
       }
       tickCounter--;
       if (tickCounter == 0) {

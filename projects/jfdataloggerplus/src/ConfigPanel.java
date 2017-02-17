@@ -4,6 +4,7 @@
  */
 
 import javaforce.webui.*;
+import javaforce.controls.*;
 
 public class ConfigPanel extends CenteredPanel {
   public ConfigPanel() {

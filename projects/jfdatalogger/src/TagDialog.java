@@ -5,8 +5,10 @@
  */
 
 import java.awt.Color;
-import javaforce.*;
 import javax.swing.JColorChooser;
+
+import javaforce.*;
+import javaforce.controls.*;
 
 public class TagDialog extends javax.swing.JDialog {
 
@@ -296,21 +298,21 @@ public class TagDialog extends javax.swing.JDialog {
   public boolean save(Tag out) {
     try {
       switch (type.getSelectedIndex()) {
-        case 0: out.type = Tag.types.S7; break;
-        case 1: out.type = Tag.types.AB; break;
-        case 2: out.type = Tag.types.MB; break;
-        case 3: out.type = Tag.types.NI; break;
+        case 0: out.type = Controller.types.S7; break;
+        case 1: out.type = Controller.types.AB; break;
+        case 2: out.type = Controller.types.MB; break;
+        case 3: out.type = Controller.types.NI; break;
       }
       out.host = host.getText();
       out.tag = tag.getText();
       boolean isFloat = false;
       switch (size.getSelectedIndex()) {
-        case 0: out.size = Tag.sizes.bit; break;
-        case 1: out.size = Tag.sizes.int8; break;
-        case 2: out.size = Tag.sizes.int16; break;
-        case 3: out.size = Tag.sizes.int32; break;
-        case 4: out.size = Tag.sizes.float32; isFloat = true; break;
-        case 5: out.size = Tag.sizes.float64; isFloat = true; break;
+        case 0: out.size = Controller.sizes.bit; break;
+        case 1: out.size = Controller.sizes.int8; break;
+        case 2: out.size = Controller.sizes.int16; break;
+        case 3: out.size = Controller.sizes.int32; break;
+        case 4: out.size = Controller.sizes.float32; isFloat = true; break;
+        case 5: out.size = Controller.sizes.float64; isFloat = true; break;
       }
       if (!isFloat) {
         out.min = Integer.valueOf(min.getText());
