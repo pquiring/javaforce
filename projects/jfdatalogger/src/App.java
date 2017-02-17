@@ -714,14 +714,26 @@ public class App extends javax.swing.JFrame {
               } else {
                 data = tag.read();
               }
-              if (data == null) data = new byte[8];
+              int size = -1;
               switch (tag.size) {
-                case bit: log(tag, data[0] == 0 ? 0 : 1); break;
-                case int8: log(tag, data[0] & 0xff); break;
-                case int16: log(tag, BE.getuint16(data, 0)); break;
-                case int32: log(tag, BE.getuint32(data, 0)); break;
-                case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
-                case float64: log(tag, Double.longBitsToDouble(BE.getuint64(data, 0))); break;
+                case bit: size = 1; break;
+                case int8: size = 1; break;
+                case int16: size = 2; break;
+                case int32: size = 3; break;
+                case float32: size = 4; break;
+                case float64: size = 8; break;
+              }
+              if (data == null || data.length < size) {
+                row[idx] = "error";
+              } else {
+                switch (tag.size) {
+                  case bit: log(tag, data[0] == 0 ? 0 : 1); break;
+                  case int8: log(tag, data[0] & 0xff); break;
+                  case int16: log(tag, BE.getuint16(data, 0)); break;
+                  case int32: log(tag, BE.getuint32(data, 0)); break;
+                  case float32: log(tag, Float.intBitsToFloat(BE.getuint32(data, 0))); break;
+                  case float64: log(tag, Double.longBitsToDouble(BE.getuint64(data, 0))); break;
+                }
               }
             }
           }

@@ -97,7 +97,8 @@ public class ABPacket {
 
   public static byte getType(Controller.datatype type) {
     switch (type) {
-      case INTEGER: return ABTypes.DINT;
+      case INTEGER16: return ABTypes.INT;
+      case INTEGER32: return ABTypes.DINT;
       case FLOAT: return ABTypes.REAL;
       case BOOLEAN: return ABTypes.BOOL;
     }

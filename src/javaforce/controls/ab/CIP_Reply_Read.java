@@ -26,6 +26,9 @@ public class CIP_Reply_Read {
     reserved = data[offset++];
     int size = 0;
     switch (type) {
+      case ABTypes.INT:
+        size = 2;
+        break;
       case ABTypes.DINT:
       case ABTypes.REAL:
         size = 4;

@@ -181,7 +181,7 @@ public class Controller {
 
   /** Data types for write() function.  Only AB protocol requires these. */
   public enum datatype {
-    ANY, INTEGER, FLOAT, BOOLEAN
+    ANY, INTEGER16, INTEGER32, FLOAT, BOOLEAN
   }
 
   /** Writes data to PLC. */
