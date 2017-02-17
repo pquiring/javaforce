@@ -24,6 +24,7 @@ public class Controller {
   private OutputStream os;
   private types plc;
   private DAQmx daq;
+  private Object lock = new Object();
 
   private ABContext ab_context;
 
@@ -201,154 +202,158 @@ public class Controller {
    * datatype is required for AB controllers.
    */
   public boolean write(String addr, byte data[], datatype type) {
-    if (!connected) return false;
-    switch (plc) {
-      case S7: {
-        S7Data s7 = S7Packet.decodeAddress(addr);
-        s7.data = data;
-        byte packet[] = S7Packet.makeWritePacket(s7);
-        try {
-          os.write(packet);
-        } catch (Exception e) {
-          lastException = e;
+    synchronized(lock) {
+      if (!connected) return false;
+      switch (plc) {
+        case S7: {
+          S7Data s7 = S7Packet.decodeAddress(addr);
+          s7.data = data;
+          byte packet[] = S7Packet.makeWritePacket(s7);
+          try {
+            os.write(packet);
+          } catch (Exception e) {
+            lastException = e;
+            return false;
+          }
+          return true;
+        }
+        case MB: {
+          ModAddr ma = ModPacket.decodeAddress(addr);
+          ma.state = data[0] != 0;
+          byte packet[] = ModPacket.makeWritePacket(ma);
+          try {
+            os.write(packet);
+          } catch (Exception e) {
+            lastException = e;
+            return false;
+          }
+          byte reply[] = new byte[1500];
+          int replySize = 0;
+          try {
+            do {
+              int read = is.read(reply, replySize, 1500 - replySize);
+              if (read == -1) throw new Exception("bad read");
+              replySize += read;
+            } while (!ModPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          } catch (Exception e) {
+            lastException = e;
+            return false;
+          }
+          return true;
+        }
+        case AB: {
+          if (type == datatype.ANY) return false;
+          byte packet[] = ABPacket.makeWritePacket(addr, ABPacket.getType(type), data, ab_context);
+          try {
+            os.write(packet);
+          } catch (Exception e) {
+            lastException = e;
+            return false;
+          }
+          byte reply[] = new byte[1500];
+          int replySize = 0;
+          try {
+            do {
+              int read = is.read(reply, replySize, 1500 - replySize);
+              if (read == -1) throw new Exception("bad read");
+              replySize += read;
+            } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          } catch (Exception e) {
+            lastException = e;
+            return false;
+          }
+          return true;
+        }
+        case NI: {
+          System.out.println("NI write() not implemented");
           return false;
         }
-        return true;
       }
-      case MB: {
-        ModAddr ma = ModPacket.decodeAddress(addr);
-        ma.state = data[0] != 0;
-        byte packet[] = ModPacket.makeWritePacket(ma);
-        try {
-          os.write(packet);
-        } catch (Exception e) {
-          lastException = e;
-          return false;
-        }
-        byte reply[] = new byte[1500];
-        int replySize = 0;
-        try {
-          do {
-            int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read");
-            replySize += read;
-          } while (!ModPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
-        } catch (Exception e) {
-          lastException = e;
-          return false;
-        }
-        return true;
-      }
-      case AB: {
-        if (type == datatype.ANY) return false;
-        byte packet[] = ABPacket.makeWritePacket(addr, ABPacket.getType(type), data, ab_context);
-        try {
-          os.write(packet);
-        } catch (Exception e) {
-          lastException = e;
-          return false;
-        }
-        byte reply[] = new byte[1500];
-        int replySize = 0;
-        try {
-          do {
-            int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read");
-            replySize += read;
-          } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
-        } catch (Exception e) {
-          lastException = e;
-          return false;
-        }
-        return true;
-      }
-      case NI: {
-        System.out.println("NI write() not implemented");
-        return false;
-      }
+      return false;
     }
-    return false;
   }
 
   /** Reads data from PLC. */
   public byte[] read(String addr) {
-    if (!connected) return null;
-    switch (plc) {
-      case S7: {
-        S7Data s7 = S7Packet.decodeAddress(addr);
-        byte packet[] = S7Packet.makeReadPacket(s7);
-        try {
-          os.write(packet);
-        } catch (Exception e) {
-          lastException = e;
-          return null;
+    synchronized(lock) {
+      if (!connected) return null;
+      switch (plc) {
+        case S7: {
+          S7Data s7 = S7Packet.decodeAddress(addr);
+          byte packet[] = S7Packet.makeReadPacket(s7);
+          try {
+            os.write(packet);
+          } catch (Exception e) {
+            lastException = e;
+            return null;
+          }
+          byte reply[] = new byte[1500];
+          int replySize = 0;
+          try {
+            do {
+              int read = is.read(reply, replySize, 1500 - replySize);
+              if (read == -1) throw new Exception("bad read");
+              replySize += read;
+            } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          } catch (Exception e) {
+            lastException = e;
+            return null;
+          }
+          s7 = S7Packet.decodePacket(Arrays.copyOf(reply, replySize));
+          return s7.data;
         }
-        byte reply[] = new byte[1500];
-        int replySize = 0;
-        try {
-          do {
-            int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read");
-            replySize += read;
-          } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
-        } catch (Exception e) {
-          lastException = e;
-          return null;
+        case MB: {
+          ModAddr ma = ModPacket.decodeAddress(addr);
+          byte packet[] = ModPacket.makeReadPacket(ma);
+          try {
+            os.write(packet);
+          } catch (Exception e) {
+            lastException = e;
+            return null;
+          }
+          byte reply[] = new byte[1500];
+          int replySize = 0;
+          try {
+            do {
+              int read = is.read(reply, replySize, 1500 - replySize);
+              if (read == -1) throw new Exception("bad read");
+              replySize += read;
+            } while (!ModPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          } catch (Exception e) {
+            lastException = e;
+            return null;
+          }
+          ModData data = ModPacket.decodePacket(Arrays.copyOf(reply, replySize));
+          return data.data;
         }
-        s7 = S7Packet.decodePacket(Arrays.copyOf(reply, replySize));
-        return s7.data;
+        case AB: {
+          byte packet[] = ABPacket.makeReadPacket(addr, ab_context);
+          try {
+            os.write(packet);
+          } catch (Exception e) {
+            lastException = e;
+            return null;
+          }
+          byte reply[] = new byte[1500];
+          int replySize = 0;
+          try {
+            do {
+              int read = is.read(reply, replySize, 1500 - replySize);
+              if (read == -1) throw new Exception("bad read");
+              replySize += read;
+            } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+            return ABPacket.decodePacket(reply);
+          } catch (Exception e) {
+            lastException = e;
+            return null;
+          }
+        }
+        case NI: {
+          return daq.read();
+        }
       }
-      case MB: {
-        ModAddr ma = ModPacket.decodeAddress(addr);
-        byte packet[] = ModPacket.makeReadPacket(ma);
-        try {
-          os.write(packet);
-        } catch (Exception e) {
-          lastException = e;
-          return null;
-        }
-        byte reply[] = new byte[1500];
-        int replySize = 0;
-        try {
-          do {
-            int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read");
-            replySize += read;
-          } while (!ModPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
-        } catch (Exception e) {
-          lastException = e;
-          return null;
-        }
-        ModData data = ModPacket.decodePacket(Arrays.copyOf(reply, replySize));
-        return data.data;
-      }
-      case AB: {
-        byte packet[] = ABPacket.makeReadPacket(addr, ab_context);
-        try {
-          os.write(packet);
-        } catch (Exception e) {
-          lastException = e;
-          return null;
-        }
-        byte reply[] = new byte[1500];
-        int replySize = 0;
-        try {
-          do {
-            int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read");
-            replySize += read;
-          } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
-          return ABPacket.decodePacket(reply);
-        } catch (Exception e) {
-          lastException = e;
-          return null;
-        }
-      }
-      case NI: {
-        return daq.read();
-      }
+      return null;
     }
-    return null;
   }
 
   public boolean isConnected() {
