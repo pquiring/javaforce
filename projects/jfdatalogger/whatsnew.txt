@@ -1,3 +1,6 @@
+Feb 17/2017 : v0.7 released
+  - fix : added support for AB INT data type
+
 Nov 22/2016 : v0.6 released
   - fix : changed image background to white for printing
   - fix : grouping siemens tags

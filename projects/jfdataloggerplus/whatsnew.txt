@@ -1,0 +1,5 @@
+Feb 17/2017 : v0.2 released
+  - fix : added support for AB INT data type
+
+Feb 16/2017 : v0.1 released
+  - first public release
