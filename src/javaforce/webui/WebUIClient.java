@@ -109,9 +109,9 @@ public class WebUIClient {
     }
     sb.append("}");
     String json = sb.toString();
-//    if (!event.equals("sethtml")) {
+    if (!event.equals("sethtml")) {
       System.out.println("SEND=" + json);
-//    }
+    }
     socket.write(json.getBytes());
   }
   public String html() {

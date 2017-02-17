@@ -20,6 +20,12 @@ public class Service {
   public static String logsPath;
   public static String derbyURI;
 
+  private static TagListener listener = new TagListener() {
+    public void tagChanged(Tag tag) {
+      logChange(tag, tag.getValue());
+    }
+  };
+
   public static Tag[] getTags() {
     synchronized (tagsLock) {
       return tags.toArray(new Tag[tags.size()]);
@@ -32,6 +38,7 @@ public class Service {
     }
   }
   public static void addTag(Tag tag) {
+    tag.setListener(listener);
     synchronized (tagsLock) {
       tags.add(tag);
       tag.start();
@@ -80,7 +87,7 @@ public class Service {
   public static void logChange(Tag tag, String value) {
     SQL sql = new SQL();
     sql.connect(derbyURI);
-    String query = String.format("insert into history (id, value, when) values (%d,'%s',current_timestamp)", tag.getData("id"), value);
+    String query = String.format("insert into history (id, value, when) values (%s,'%s',current_timestamp)", tag.getData("id"), value);
     sql.execute(query);
     if (sql.lastException != null) {
       JFLog.log(sql.lastException);
@@ -139,6 +146,7 @@ public class Service {
     if (query == null) return;
     for(int a=0;a<query.length;a++) {
       Tag tag = new Tag();
+      tag.setListener(listener);
       tag.setData("id", query[a][0]);
       tag.host = query[a][1];
       tag.type = Controller.types.values()[JF.atoi(query[a][2])];

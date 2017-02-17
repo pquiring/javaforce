@@ -140,7 +140,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       return;
     }
     String msg = new String(data);
-    JFLog.log("RECV=" + msg);
+    System.out.println("RECV=" + msg);
     //decode JSON
     JSON.Element json;
     try {

@@ -1,5 +1,10 @@
 What's new...
 
+Feb 17/2017 : JF 14.1.0 released!
+  - javaforce.controls now supports AB INT data type (java:short 16bits)
+  - new javaforce.controls.Tag to be shared between controls apps
+  - jfDataLogger/0.7 and jfDataLoggerPlus/0.2 released
+
 Feb 16/2017 : JF 14.0.0 released!
   - new app : jfDataLoggerPlus
     - this is an app that logs changes to PLC tags similar to jfDataLogger but this is a service for long term data collection
