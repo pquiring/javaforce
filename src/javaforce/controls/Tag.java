@@ -99,7 +99,6 @@ public class Tag {
   }
 
   public void start() {
-    if (!connect()) return;
     timer = new Timer();
     reader = new Reader();
     reader.tag = this;
@@ -144,10 +143,12 @@ public class Tag {
     public Tag tag;
     public byte data[];
     public void run() {
+      if (tag.c == null) {
+        if (!tag.connect()) return;
+      }
       String lastValue = tag.value;
       if (!tag.c.isConnected()) {
         if (!tag.connect()) {
-          tag.stop();
           return;
         }
       }

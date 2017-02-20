@@ -45,7 +45,7 @@ public class COTP {
         data[offset++] = 0x00;  //flags
         data[offset++] = (byte)0xc0;  //param code : TPDU size
         data[offset++] = 1;  //param length
-        data[offset++] = 0x0a;  //1024
+        data[offset++] = 0x0a;  //0x09=512 , 0x0a=1024
         data[offset++] = (byte)0xc1;  //param code : src-tsap
         data[offset++] = 2;  //param length
         data[offset++] = 0x01;
