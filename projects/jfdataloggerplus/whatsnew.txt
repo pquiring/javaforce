@@ -1,3 +1,7 @@
+Feb 20/2017 : v0.3 released
+  - fix : change DB layout to use enum values instead of index that could change
+    - no upgrade available, user must re-enter in tags (only been available for 4 days)
+
 Feb 17/2017 : v0.2 released
   - fix : added support for AB INT data type
 

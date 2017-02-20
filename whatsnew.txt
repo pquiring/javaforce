@@ -1,5 +1,8 @@
 What's new...
 
+Feb 20/2017 : JF 14.2.0 released!
+  - jfDataLoggerPlus : minor DB change
+
 Feb 17/2017 : JF 14.1.0 released!
   - javaforce.controls now supports AB INT data type (java:short 16bits)
   - new javaforce.controls.Tag to be shared between controls apps
