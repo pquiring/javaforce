@@ -44,7 +44,7 @@ public class Service {
       tag.start();
       SQL sql = new SQL();
       sql.connect(derbyURI);
-      String query = String.format("insert into tags (host,type,tag,size,color,minvalue,maxvalue,delay) values ('%s',%d,'%s',%d,%d,'%s','%s',%d)", tag.host, tag.type.ordinal(), tag.tag, tag.size.ordinal(), tag.color, tag.getmin(), tag.getmax(), tag.delay);
+      String query = String.format("insert into tags (host,type,tag,size,color,minvalue,maxvalue,delay) values ('%s','%s','%s','%s',%d,'%s','%s',%d)", tag.host, tag.type, tag.tag, tag.size, tag.color, tag.getmin(), tag.getmax(), tag.delay);
       sql.execute(query);
       if (sql.lastException != null) {
         JFLog.log("query=" + query);
@@ -118,23 +118,33 @@ public class Service {
     System.setProperty("derby.system.home", dataPath);
     if (!new File(dataPath + "/" + databaseName + "/service.properties").exists()) {
       //create database
-      SQL sql = new SQL();
-      JFLog.log("DB creating...");
-      sql.connect(derbyURI + ";create=true");
-      //create tables
-      sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, host varchar(64), type int, tag varchar(128), size int, color int, minvalue varchar(32), maxvalue varchar(32), delay int, unique (host, tag))");
-      sql.execute("create table config (id varchar(32), value varchar(128))");
-      sql.execute("create table history (id int, value varchar(128), when timestamp)");
-      sql.execute("insert into config (id, value) values ('version', '0.0')");
-      sql.close();
+      createDB();
     } else {
       //update database if required
       SQL sql = new SQL();
       sql.connect(derbyURI);
       String version = sql.select1value("select value from config where id='version'");
       JFLog.log("DB version=" + version);
+      if (version.equals("0.0")) {
+        //drop old tables - sorry no upgrade
+        sql.execute("drop table tags");
+        sql.execute("delete from history");
+        createDB();
+        sql.execute("update config set value='0.1' where id='version'");
+      }
       sql.close();
     }
+  }
+  private static void createDB() {
+    SQL sql = new SQL();
+    JFLog.log("DB creating...");
+    sql.connect(derbyURI + ";create=true");
+    //create tables
+    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, host varchar(64), type varchar(32), tag varchar(128), size varchar(32), color int, minvalue varchar(32), maxvalue varchar(32), delay int, unique (host, tag))");
+    sql.execute("create table config (id varchar(32), value varchar(128))");
+    sql.execute("create table history (id int, value varchar(128), when timestamp)");
+    sql.execute("insert into config (id, value) values ('version', '0.1')");
+    sql.close();
   }
   public static void start() {
     //load init tags from database
@@ -149,9 +159,21 @@ public class Service {
       tag.setListener(listener);
       tag.setData("id", query[a][0]);
       tag.host = query[a][1];
-      tag.type = Controller.types.values()[JF.atoi(query[a][2])];
+      switch (query[a][2]) {
+        case "S7": tag.type = Controller.types.S7; break;
+        case "AB": tag.type = Controller.types.AB; break;
+        case "MB": tag.type = Controller.types.MB; break;
+        case "NI": tag.type = Controller.types.NI; break;
+      }
       tag.tag = query[a][3];
-      tag.size = Controller.sizes.values()[JF.atoi(query[a][4])];
+      switch (query[a][4]) {
+        case "bit": tag.size = Controller.sizes.bit; break;
+        case "int8": tag.size = Controller.sizes.int8; break;
+        case "int16": tag.size = Controller.sizes.int16; break;
+        case "int32": tag.size = Controller.sizes.int32; break;
+        case "float32": tag.size = Controller.sizes.float32; break;
+        case "float64": tag.size = Controller.sizes.float64; break;
+      }
       tag.color = JF.atoi(query[a][5]);
       if (tag.isFloat()) {
         tag.fmin = JF.atof(query[a][6]);
