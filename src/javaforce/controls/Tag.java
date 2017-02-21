@@ -36,6 +36,14 @@ public class Tag {
   public void setData(String key, Object value) {
     user.put(key, value);
   }
+  /** Set host,type,tag,size,delay(ms). */
+  public void setTag(String host, Controller.types type, String tag, Controller.sizes size, int delay) {
+    this.host = host;
+    this.type = type;
+    this.tag = tag;
+    this.size = size;
+    this.delay = delay;
+  }
 
   private Controller c;
   private Timer timer;
@@ -84,7 +92,7 @@ public class Tag {
   }
 
   public String getmin() {
-    if (size == Controller.sizes.float32 || size == Controller.sizes.float64) {
+    if (isFloat()) {
       return Float.toString(fmin);
     } else {
       return Integer.toString(min);
@@ -92,34 +100,41 @@ public class Tag {
   }
 
   public String getmax() {
-    if (size == Controller.sizes.float32 || size == Controller.sizes.float64) {
+    if (isFloat()) {
       return Float.toString(fmax);
     } else {
       return Integer.toString(max);
     }
   }
 
-  private void startTimer() {
-    c = new Controller();
+  private boolean startTimer() {
+    if (parent == null) {
+      c = new Controller();
+    } else {
+      c = null;
+    }
     timer = new Timer();
     reader = new Reader();
     reader.tag = this;
     if (delay < 25) delay = 25;
     timer.scheduleAtFixedRate(reader, delay, delay);
+    return true;
   }
 
-  /** Starting reading tag at interval (delay). */
-  public void start() {
+  /** Start reading tag at interval (delay). */
+  public boolean start() {
     parent = null;
-    startTimer();
+    return startTimer();
   }
 
-  /** Starting reading tag at interval (delay) using another Tags connection. */
-  public void start(Tag parent) {
+  /** Start reading tag at interval (delay) using another Tags connection. */
+  public boolean start(Tag parent) {
     this.parent = parent;
-    startTimer();
+    if (parent != null && parent.type != type) return false;
+    return startTimer();
   }
 
+  /** Stop monitoring tag value. */
   public void stop() {
     if (timer != null) {
       timer.cancel();
@@ -132,6 +147,7 @@ public class Tag {
   }
 
   public boolean connect() {
+    if (parent != null) return false;  //wait for parent to connect
     if (c.connect(getURL())) return true;
     return false;
   }
@@ -151,7 +167,22 @@ public class Tag {
     return value;
   }
 
-  /** Reads value directly (do NOT use if start() has been called). */
+  /** Returns current value as int (only valid if start() has been called). */
+  public int intValue() {
+    return Integer.valueOf(value);
+  }
+
+  /** Returns current value as float (only valid if start() has been called). */
+  public float floatValue() {
+    return Float.valueOf(value);
+  }
+
+  /** Returns current value as double (float64) (only valid if start() has been called). */
+  public double doubleValue() {
+    return Double.valueOf(value);
+  }
+
+  /** Reads value directly. */
   public byte[] read() {
     if (parent != null) {
       return parent.c.read(tag);

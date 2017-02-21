@@ -146,8 +146,10 @@ public class S7Params {
       }
       if (func == READ) {
         byte transport_type = data[offset++];
-        int len = BE.getuint16(data, offset);  //in bits
-        len = (len + 7) >> 3; //divide by 8
+        int len = BE.getuint16(data, offset);
+        if (transport_type == TT_BIT) {
+          len = (len + 7) >> 3; //divide by 8
+        }
         offset += 2;
         if (a == 0) {
           out.data = new byte[len];
