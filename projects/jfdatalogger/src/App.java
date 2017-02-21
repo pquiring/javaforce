@@ -601,7 +601,17 @@ public class App extends javax.swing.JFrame {
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
         tag.delay = delay;
-        tag.start();
+        Tag parent = null;
+        for(int b=0;b<a;b++) {
+          if (tags.get(b).host.equals(tag.host)) {
+            parent = tags.get(b);
+            break;
+          }
+        }
+        if (parent != null)
+          tag.start(parent);
+        else
+          tag.start();
         tableModel.addColumn(tag.toString());
       }
       //start timer

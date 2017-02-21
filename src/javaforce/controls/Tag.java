@@ -42,6 +42,7 @@ public class Tag {
   private Reader reader;
   private TagListener listener;
   private HashMap<String, Object> user = new HashMap<String, Object>();
+  private Tag parent;
 
   /** Returns true if data type is float32 or float64 */
   public boolean isFloat() {
@@ -98,12 +99,25 @@ public class Tag {
     }
   }
 
-  public void start() {
+  private void startTimer() {
+    c = new Controller();
     timer = new Timer();
     reader = new Reader();
     reader.tag = this;
     if (delay < 25) delay = 25;
     timer.scheduleAtFixedRate(reader, delay, delay);
+  }
+
+  /** Starting reading tag at interval (delay). */
+  public void start() {
+    parent = null;
+    startTimer();
+  }
+
+  /** Starting reading tag at interval (delay) using another Tags connection. */
+  public void start(Tag parent) {
+    this.parent = parent;
+    startTimer();
   }
 
   public void stop() {
@@ -114,12 +128,20 @@ public class Tag {
     if (reader != null) {
       reader = null;
     }
+    disconnect();
   }
 
   public boolean connect() {
-    c = new Controller();
     if (c.connect(getURL())) return true;
     return false;
+  }
+
+  public void disconnect() {
+    if (parent != null) return;
+    if (c != null) {
+      c.disconnect();
+      c = null;
+    }
   }
 
   private String value;
@@ -131,43 +153,54 @@ public class Tag {
 
   /** Reads value directly (do NOT use if start() has been called). */
   public byte[] read() {
-    return c.read(tag);
+    if (parent != null) {
+      return parent.c.read(tag);
+    } else {
+      return c.read(tag);
+    }
   }
 
   /** Writes data to tag. */
   public void write(byte data[]) {
-    c.write(tag, data);
+    if (parent != null) {
+      parent.c.write(tag, data);
+    } else {
+      c.write(tag, data);
+    }
   }
 
   private static class Reader extends TimerTask {
     public Tag tag;
     public byte data[];
     public void run() {
-      if (tag.c == null) {
-        if (!tag.connect()) return;
-      }
-      String lastValue = tag.value;
-      if (!tag.c.isConnected()) {
-        if (!tag.connect()) {
-          return;
+      try {
+        String lastValue = tag.value;
+        if (tag.parent == null) {
+          if (!tag.c.isConnected()) {
+            if (!tag.connect()) {
+              return;
+            }
+          }
         }
-      }
-      data = tag.c.read(tag.tag);
-      if (data == null) {
-        tag.value = "error";
-      } else {
-        switch (tag.size) {
-          case bit: tag.value = data[0] == 0 ? "0" : "1"; break;
-          case int8: tag.value = Byte.toString(data[0]); break;
-          case int16: tag.value = Short.toString((short)BE.getuint16(data, 0)); break;
-          case int32: tag.value = Integer.toString(BE.getuint32(data, 0)); break;
-          case float32: tag.value = Float.toString(Float.intBitsToFloat(BE.getuint32(data, 0))); break;
-          case float64: tag.value = Double.toString(Double.longBitsToDouble(BE.getuint64(data, 0))); break;
+        data = tag.read();
+        if (data == null) {
+          tag.value = "error";
+        } else {
+          switch (tag.size) {
+            case bit: tag.value = data[0] == 0 ? "0" : "1"; break;
+            case int8: tag.value = Byte.toString(data[0]); break;
+            case int16: tag.value = Short.toString((short)BE.getuint16(data, 0)); break;
+            case int32: tag.value = Integer.toString(BE.getuint32(data, 0)); break;
+            case float32: tag.value = Float.toString(Float.intBitsToFloat(BE.getuint32(data, 0))); break;
+            case float64: tag.value = Double.toString(Double.longBitsToDouble(BE.getuint64(data, 0))); break;
+          }
         }
-      }
-      if (tag.listener == null) return;
-      if (lastValue == null || !tag.value.equals(lastValue)) {
-        tag.listener.tagChanged(tag);
+        if (tag.listener == null) return;
+        if (lastValue == null || !tag.value.equals(lastValue)) {
+          tag.listener.tagChanged(tag);
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
       }
     }
   }

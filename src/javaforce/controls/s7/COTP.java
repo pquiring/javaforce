@@ -10,13 +10,20 @@ public class COTP {
   public byte PDU_type;
   public byte pdata[];
 
+  private short src_ref;
+
+  private static short next_id = 0x0f00;
+
   public static final byte type_data = (byte)0xf0;
   public static final byte type_connect = (byte)0xe0;
   public static final byte type_connect_ack = (byte)0xd0;
 
-  public COTP() {}
+  public COTP() {
+    src_ref = get_next_id();
+  }
   public COTP(byte type) {
     PDU_type = type;
+    src_ref = get_next_id();
     switch (type) {
       case type_data:
         length = 2;
@@ -28,6 +35,9 @@ public class COTP {
         System.out.println("Error:Unknown COTP type!!!");
         break;
     }
+  }
+  private synchronized short get_next_id() {
+    return next_id++;
   }
   public int size() {
     return length + 1;
@@ -41,7 +51,7 @@ public class COTP {
         break;
       case type_connect:
         data[offset++] = 0x00; data[offset++] = 0x00;  //dest ref
-        data[offset++] = 0x00; data[offset++] = 0x01;  //src ref
+        data[offset++] = (byte)(src_ref >>> 8); data[offset++] = (byte)(src_ref & 0xff);  //src ref
         data[offset++] = 0x00;  //flags
         data[offset++] = (byte)0xc0;  //param code : TPDU size
         data[offset++] = 1;  //param length

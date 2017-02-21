@@ -24,7 +24,8 @@ public class Controller {
   private OutputStream os;
   private types plc;
   private DAQmx daq;
-  private Object lock = new Object();
+  private Object lock = new Object();  //read/write lock
+  private static Object s7_connect_lock = new Object();
 
   private ABContext ab_context;
 
@@ -53,46 +54,49 @@ public class Controller {
    *
    */
   public boolean connect(String url) {
+    connected = false;
     if (url.startsWith("S7:")) {
       plc = types.S7;
       String host = url.substring(3);
-      try {
-        socket = new Socket(host, 102);
-        socket.setSoTimeout(3000);
-        os = socket.getOutputStream();
-        is = socket.getInputStream();
+      synchronized(s7_connect_lock) {
+        try {
+          socket = new Socket(host, 102);
+          socket.setSoTimeout(3000);
+          os = socket.getOutputStream();
+          is = socket.getInputStream();
 
-        //connect1
-        {
-          byte packet[] = S7Packet.makeConnectPacket1();
-          os.write(packet);
+          //connect1
+          {
+            byte packet[] = S7Packet.makeConnectPacket1();
+            os.write(packet);
 
-          byte reply[] = new byte[1500];
-          int replySize = 0;
-          do {
-            int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read");
-            replySize += read;
-          } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
+            byte reply[] = new byte[1500];
+            int replySize = 0;
+            do {
+              int read = is.read(reply, replySize, 1500 - replySize);
+              if (read == -1) throw new Exception("bad read");
+              replySize += read;
+            } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          }
+
+          //connect2
+          {
+            byte packet[] = S7Packet.makeConnectPacket2();
+            os.write(packet);
+
+            byte reply[] = new byte[1500];
+            int replySize = 0;
+            do {
+              int read = is.read(reply, replySize, 1500 - replySize);
+              if (read == -1) throw new Exception("bad read");
+              replySize += read;
+            } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          }
+
+        } catch (Exception e) {
+          e.printStackTrace();
+          return false;
         }
-
-        //connect2
-        {
-          byte packet[] = S7Packet.makeConnectPacket2();
-          os.write(packet);
-
-          byte reply[] = new byte[1500];
-          int replySize = 0;
-          do {
-            int read = is.read(reply, replySize, 1500 - replySize);
-            if (read == -1) throw new Exception("bad read");
-            replySize += read;
-          } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
-        }
-
-      } catch (Exception e) {
-        e.printStackTrace();
-        return false;
       }
       connected = true;
       return true;
