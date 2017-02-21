@@ -209,6 +209,7 @@ public class Tag {
   /** Reads value directly. */
   public byte[] read() {
     if (parent != null) {
+      if (parent.c == null) return null;
       return parent.c.read(tag);
     } else {
       return c.read(tag);
@@ -218,6 +219,7 @@ public class Tag {
   /** Writes data to tag. */
   public void write(byte data[]) {
     if (parent != null) {
+      if (parent.c == null) return;
       parent.c.write(tag, data);
     } else {
       c.write(tag, data);
