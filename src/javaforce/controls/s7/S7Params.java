@@ -134,6 +134,17 @@ public class S7Params {
     System.arraycopy(funcData, 0, data, offset, funcData.length);
   }
 
+  private boolean isBits(byte transport_type) {
+    switch (transport_type) {
+      case TT_BIT: return true;
+      case TT_UINT: return true;
+      case TT_SINT: return true;
+      case TT_REAL: return false;
+      case TT_CHAR: return false;
+      default: return false;
+    }
+  }
+
   /** Reads params from packet and fills in S7Data. */
   public boolean read(byte data[], int offset, S7Data out) throws Exception {
     func = data[offset++];
@@ -147,7 +158,7 @@ public class S7Params {
       if (func == READ) {
         byte transport_type = data[offset++];
         int len = BE.getuint16(data, offset);
-        if (transport_type == TT_BIT) {
+        if (isBits(transport_type)) {
           len = (len + 7) >> 3; //divide by 8
         }
         offset += 2;
@@ -177,8 +188,10 @@ public class S7Params {
       }
       if (func == READ) {
         byte transport_type = data[offset++];
-        int len = BE.getuint16(data, offset);  //in bits
-        len = (len + 7) >> 3; //divide by 8
+        int len = BE.getuint16(data, offset);
+        if (isBits(transport_type)) {
+          len = (len + 7) >> 3; //divide by 8
+        }
         offset += 2;
         out.data = new byte[len];
         System.arraycopy(data,offset,out.data,0,len);

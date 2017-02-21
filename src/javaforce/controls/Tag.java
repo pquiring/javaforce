@@ -96,6 +96,14 @@ public class Tag {
     return null;
   }
 
+  public Controller getController() {
+    if (parent != null) {
+      return parent.c;
+    } else {
+      return c;
+    }
+  }
+
   public void setListener(TagListener listener) {
     this.listener = listener;
   }
@@ -176,7 +184,7 @@ public class Tag {
     }
   }
 
-  private String value;
+  private String value = "0";
 
   /** Returns current value (only valid if start() has been called). */
   public String getValue() {
@@ -231,26 +239,26 @@ public class Tag {
         }
         data = tag.read();
         if (data == null) {
-          tag.value = "error";
+          System.out.println("Tag:error:data==null:Controller=" + tag.getController());
+          return;
+        }
+        if (tag.isBE()) {
+          switch (tag.size) {
+            case bit: tag.value = data[0] == 0 ? "0" : "1"; break;
+            case int8: tag.value = Byte.toString(data[0]); break;
+            case int16: tag.value = Short.toString((short)BE.getuint16(data, 0)); break;
+            case int32: tag.value = Integer.toString(BE.getuint32(data, 0)); break;
+            case float32: tag.value = Float.toString(Float.intBitsToFloat(BE.getuint32(data, 0))); break;
+            case float64: tag.value = Double.toString(Double.longBitsToDouble(BE.getuint64(data, 0))); break;
+          }
         } else {
-          if (tag.isBE()) {
-            switch (tag.size) {
-              case bit: tag.value = data[0] == 0 ? "0" : "1"; break;
-              case int8: tag.value = Byte.toString(data[0]); break;
-              case int16: tag.value = Short.toString((short)BE.getuint16(data, 0)); break;
-              case int32: tag.value = Integer.toString(BE.getuint32(data, 0)); break;
-              case float32: tag.value = Float.toString(Float.intBitsToFloat(BE.getuint32(data, 0))); break;
-              case float64: tag.value = Double.toString(Double.longBitsToDouble(BE.getuint64(data, 0))); break;
-            }
-          } else {
-            switch (tag.size) {
-              case bit: tag.value = data[0] == 0 ? "0" : "1"; break;
-              case int8: tag.value = Byte.toString(data[0]); break;
-              case int16: tag.value = Short.toString((short)LE.getuint16(data, 0)); break;
-              case int32: tag.value = Integer.toString(LE.getuint32(data, 0)); break;
-              case float32: tag.value = Float.toString(Float.intBitsToFloat(LE.getuint32(data, 0))); break;
-              case float64: tag.value = Double.toString(Double.longBitsToDouble(LE.getuint64(data, 0))); break;
-            }
+          switch (tag.size) {
+            case bit: tag.value = data[0] == 0 ? "0" : "1"; break;
+            case int8: tag.value = Byte.toString(data[0]); break;
+            case int16: tag.value = Short.toString((short)LE.getuint16(data, 0)); break;
+            case int32: tag.value = Integer.toString(LE.getuint32(data, 0)); break;
+            case float32: tag.value = Float.toString(Float.intBitsToFloat(LE.getuint32(data, 0))); break;
+            case float64: tag.value = Double.toString(Double.longBitsToDouble(LE.getuint64(data, 0))); break;
           }
         }
         if (tag.listener == null) return;

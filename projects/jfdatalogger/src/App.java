@@ -608,10 +608,7 @@ public class App extends javax.swing.JFrame {
             break;
           }
         }
-        if (parent != null)
-          tag.start(parent);
-        else
-          tag.start();
+        tag.start(parent);
         tableModel.addColumn(tag.toString());
       }
       //start timer
