@@ -31,17 +31,10 @@ public class Service {
       return tags.toArray(new Tag[tags.size()]);
     }
   }
-  public static void initTag(Tag tag) {
-    synchronized (tagsLock) {
-      tags.add(tag);
-      tag.start();
-    }
-  }
   public static void addTag(Tag tag) {
     tag.setListener(listener);
     synchronized (tagsLock) {
       tags.add(tag);
-      tag.start();
       SQL sql = new SQL();
       sql.connect(derbyURI);
       String query = String.format("insert into tags (host,type,tag,size,color,minvalue,maxvalue,delay) values ('%s','%s','%s','%s',%d,'%s','%s',%d)", tag.host, tag.type, tag.tag, tag.size, tag.color, tag.getmin(), tag.getmax(), tag.delay);
@@ -66,25 +59,47 @@ public class Service {
   }
   public static void removeTag(Tag tag) {
     synchronized (tagsLock) {
-      tag.stop();
       tags.remove(tag);
       SQL sql = new SQL();
       sql.connect(derbyURI);
       String query = String.format("delete from tags where id=%d", tag.getData("id"));
       sql.execute(query);
+      query = String.format("delete from history where id=%d", tag.getData("id"));
+      sql.execute(query);
       sql.close();
+      restart();
+    }
+  }
+  public static void restart() {
+    synchronized(tagsLock) {
+      Tag tags[] = getTags();
+      //stop all tags
+      for(int a=0;a<tags.length;a++) {
+        tags[a].stop();
+      }
+      //start all tags
+      for(int a=0;a<tags.length;a++) {
+        Tag parent = null;
+        for(int b=0;b<tags.length;b++) {
+          if (tags[a].host.equals(tags[b].host)) {
+            parent = tags[b];
+            break;
+          }
+        }
+        tags[a].start(parent);
+      }
     }
   }
   public static void updateTag(Tag tag) {
-    synchronized (tagsLock) {
-      tag.stop();
-      tag.start();
+    synchronized(tagsLock) {
+      restart();
     }
   }
   public static void logMsg(String msg) {
     JFLog.log(msg);
   }
   public static void logChange(Tag tag, String value) {
+    if (value == null || value.equals("error")) return;
     SQL sql = new SQL();
     sql.connect(derbyURI);
     String query = String.format("insert into history (id, value, when) values (%s,'%s',current_timestamp)", tag.getData("id"), value);
@@ -156,6 +171,7 @@ public class Service {
     if (query == null) return;
     for(int a=0;a<query.length;a++) {
       Tag tag = new Tag();
+      tags.add(tag);
       tag.setListener(listener);
       tag.setData("id", query[a][0]);
       tag.host = query[a][1];
@@ -183,8 +199,8 @@ public class Service {
         tag.max = JF.atoi(query[a][7]);
       }
       tag.delay = JF.atoi(query[a][8]);
-      initTag(tag);
     }
+    restart();
   }
   public static void stop() {
     synchronized (tagsLock) {
