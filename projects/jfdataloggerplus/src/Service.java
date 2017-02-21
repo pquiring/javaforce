@@ -47,6 +47,7 @@ public class Service {
       String id = sql.select1value(query);
       tag.setData("id", JF.atoi(id));
       sql.close();
+      restart();
     }
   }
   public static boolean exists(String host, String tag) {
