@@ -60,6 +60,7 @@ public class Service {
   }
   public static void removeTag(Tag tag) {
     synchronized (tagsLock) {
+      tag.stop();
       tags.remove(tag);
       SQL sql = new SQL();
       sql.connect(derbyURI);
