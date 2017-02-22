@@ -4,6 +4,7 @@
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
 
     <Icon Id="icon.ico" SourceFile="jfhex.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico"/>

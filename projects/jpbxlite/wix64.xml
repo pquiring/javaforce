@@ -4,6 +4,7 @@
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
 
     <Icon Id="icon.ico" SourceFile="jpbxlite.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
@@ -35,12 +36,12 @@
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="bouncycastle.jar" Source="bouncycastle.jar"/>
         <File Id="derby.jar" Source="derby.jar"/>
-        <ServiceInstall Id="ServiceInstaller" 
-          Type="ownProcess" 
-          Name="jPBXlite" 
-          DisplayName="jPBXlite" 
-          Description="jf PBX Server" 
-          Start="auto" 
+        <ServiceInstall Id="ServiceInstaller"
+          Type="ownProcess"
+          Name="jPBXlite"
+          DisplayName="jPBXlite"
+          Description="jf PBX Server"
+          Start="auto"
           ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jPBXlite" Wait="yes" />
       </Component>

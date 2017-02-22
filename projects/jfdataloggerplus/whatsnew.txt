@@ -1,3 +1,6 @@
+Feb 22/2017 : v0.4 released
+  - fix : improved PLC connections
+
 Feb 20/2017 : v0.3 released
   - fix : change DB layout to use enum values instead of index that could change
     - no upgrade available, user must re-enter in tags (only been available for 4 days)
