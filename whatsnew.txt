@@ -1,5 +1,10 @@
 What's new...
 
+Feb 22/2017 : JF 14.3.0 released!
+  - javaforce.controls.Tag now supports sharing a tcp connection
+  - jfDataLogger/0.8
+  - jfDataLoggerPlus/0.4
+
 Feb 20/2017 : JF 14.2.0 released!
   - jfDataLoggerPlus : minor DB change
 
