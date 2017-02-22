@@ -1,3 +1,6 @@
+Feb 22/2017 : v0.8 released
+  - fix : improved PLC connections
+
 Feb 17/2017 : v0.7 released
   - fix : added support for AB INT data type
 

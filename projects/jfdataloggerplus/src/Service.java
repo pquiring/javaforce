@@ -47,7 +47,7 @@ public class Service {
       String id = sql.select1value(query);
       tag.setData("id", JF.atoi(id));
       sql.close();
-      restart();
+      restart(false);
     }
   }
   public static boolean exists(String host, String tag) {
@@ -69,20 +69,22 @@ public class Service {
       query = String.format("delete from history where id=%d", tag.getData("id"));
       sql.execute(query);
       sql.close();
-      restart();
+      restart(false);
     }
   }
-  public static void restart() {
+  public static void restart(boolean first) {
     synchronized(tagsLock) {
       Tag tags[] = getTags();
       //stop all tags
+      if (!first) JFLog.log("Stopping " + tags.length + " tags");
       for(int a=0;a<tags.length;a++) {
         tags[a].stop();
       }
       //start all tags
+      JFLog.log("Starting " + tags.length + " tags");
       for(int a=0;a<tags.length;a++) {
         Tag parent = null;
-        for(int b=0;b<tags.length;b++) {
+        for(int b=0;b<a;b++) {
           if (tags[a].host.equals(tags[b].host)) {
             parent = tags[b];
             break;
@@ -94,7 +96,7 @@ public class Service {
   }
   public static void updateTag(Tag tag) {
     synchronized(tagsLock) {
-      restart();
+      restart(false);
     }
   }
   public static void logMsg(String msg) {
@@ -171,6 +173,7 @@ public class Service {
     String query[][] = sql.select("select id,host,type,tag,size,color,minvalue,maxvalue,delay from tags");
     sql.close();
     if (query == null) return;
+    JFLog.log("Loaded " + query.length + " tags");
     for(int a=0;a<query.length;a++) {
       Tag tag = new Tag();
       tags.add(tag);
@@ -202,7 +205,7 @@ public class Service {
       }
       tag.delay = JF.atoi(query[a][8]);
     }
-    restart();
+    restart(true);
   }
   public static void stop() {
     synchronized (tagsLock) {
