@@ -58,6 +58,9 @@ public class WebUIClient {
         case "mousedown":
           Menu.onMouseDownBody(this, args);
           break;
+        case "ack":
+          root.dispatchEvent(event, args);
+          break;
       }
     } else {
       Component c = root.get(id);

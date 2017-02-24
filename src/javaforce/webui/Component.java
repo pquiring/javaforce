@@ -272,6 +272,9 @@ public abstract class Component {
       case "size":
         onSize(args);
         break;
+      case "ack":
+        onLoaded(args);
+        break;
     }
   }
 
@@ -316,6 +319,8 @@ public abstract class Component {
       }
     }
   }
+
+  public void onLoaded(String args[]) {}
 
   protected void onClick(String args[]) {}
   private Click click;

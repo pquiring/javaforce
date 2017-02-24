@@ -25,6 +25,7 @@ ws.onmessage = function (event) {
       break;
     case "sethtml":
       element.innerHTML = msg.html;
+      sendAck(msg.id);
       break;
     case "setsrc":
       element.src = msg.src;
@@ -81,8 +82,20 @@ ws.onmessage = function (event) {
     case "delclass":
       element.className = element.className.replace(" " + msg.cls, "");
       break;
+    case "initwebgl":
+      element.gl = element.getContext('webgl');
+      setInterval(render, 16, element);
+      break;
   }
 };
+
+function sendAck(id) {
+  var msg = {
+    event: "ack",
+    id: id
+  };
+  ws.send(JSON.stringify(msg));
+}
 
 function sendPosSize(id) {
   var element = document.getElementById(id);

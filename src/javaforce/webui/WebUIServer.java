@@ -58,6 +58,20 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   public void doGet(WebRequest req, WebResponse res) {
     String url = req.getURL();
     byte data[] = null;
+/*
+    if (url.endsWith(".html")) {
+      res.setContentType("text/html");  //default
+    }
+*/
+    if (url.endsWith(".css")) {
+      res.setContentType("text/css");
+    }
+    if (url.endsWith(".png")) {
+      res.setContentType("image/png");
+    }
+    if (url.endsWith(".js")) {
+      res.setContentType("text/javascript");
+    }
     if (url.equals("/")) {
       url = "/webui.html";
       String browser = req.getHeader("User-Agent");
