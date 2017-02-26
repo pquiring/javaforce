@@ -1,5 +1,7 @@
 package javaforce.gl;
 
+import javaforce.LE;
+
 /** 4x4 matrix */
 public class GLMatrix implements Cloneable {
   public float m[] = new float[16];
@@ -431,13 +433,14 @@ public class GLMatrix implements Cloneable {
 
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("\r\n");
+    sb.append("[");
     for(int a=0;a<16;a+=4) {
-      sb.append(String.format("%.3f,%.3f,%.3f,%.3f\r\n", m[a + 0], m[a + 1], m[a + 2], m[a + 3]));
+      if (a > 0) sb.append(",");
+      sb.append(String.format("%.3f,%.3f,%.3f,%.3f", m[a + 0], m[a + 1], m[a + 2], m[a + 3]));
     }
+    sb.append("]");
     return sb.toString();
   }
-
 }
 
 /*

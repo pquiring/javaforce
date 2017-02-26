@@ -1,4 +1,6 @@
-var ws = new WebSocket("ws://" + location.host + "/ws");
+var ws = new WebSocket("ws://" + location.host + "/webui");
+
+var bindata;
 
 function load(event) {
   var msg = {
@@ -7,12 +9,23 @@ function load(event) {
   ws.send(JSON.stringify(msg));
 };
 
+//WebSocket binaryType default is Blob but converting it to TypedArray is very SLOW, so ask to get data in ArrayBuffer format instead
+ws.binaryType = "arraybuffer";
+
 ws.onopen = load;
 
 ws.onmessage = function (event) {
+  if (event.data instanceof ArrayBuffer) {
+    bindata = event.data;
+    return;
+  }
   var msg = JSON.parse(event.data);
   console.log("event:" + msg.event);
   var element = document.getElementById(msg.id);
+  if (element.gl) {
+    gl_message(msg, element);
+    return;
+  }
   switch (msg.event) {
     case "redir":
       load();
@@ -83,8 +96,7 @@ ws.onmessage = function (event) {
       element.className = element.className.replace(" " + msg.cls, "");
       break;
     case "initwebgl":
-      element.gl = element.getContext('webgl');
-      setInterval(render, 16, element);
+      gl_init(element);
       break;
   }
 };

@@ -8,6 +8,7 @@ package javaforce.webui;
  */
 
 import java.util.*;
+import javaforce.LE;
 
 import javaforce.service.*;
 
@@ -89,6 +90,9 @@ public class WebUIClient {
     sb.append("\"");
     return sb.toString();
   }
+  public void sendData(byte data[]) {
+    socket.write(data, WebSocket.TYPE_BINARY);
+  }
   public synchronized void sendEvent(String id, String event, String args[]) {
     if (socket == null) return;
     StringBuffer sb = new StringBuffer();
@@ -111,11 +115,11 @@ public class WebUIClient {
       }
     }
     sb.append("}");
-    String json = sb.toString();
+    byte json[] = sb.toString().getBytes();
     if (!event.equals("sethtml")) {
-      System.out.println("SEND=" + json);
+      System.out.println("SEND=" + new String(json));
     }
-    socket.write(json.getBytes());
+    socket.write(json);
   }
   public String html() {
     return root.html();
