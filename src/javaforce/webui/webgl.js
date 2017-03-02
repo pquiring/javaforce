@@ -11,6 +11,7 @@ function gl_init(canvas) {
   canvas.matrix = [];
   canvas.attribs = [];
   canvas.uniforms = [];
+  canvas.textures = [];
   canvas.render = [];  //render functions r_...
   canvas.args = [];  //render arguments
   setInterval(gl_render, 16, canvas);
@@ -68,6 +69,15 @@ function gl_message(msg, canvas) {
     case "matrix":
       canvas.matrix[msg.idx] = new Float32Array(bindata,0);
       break;
+    case "loadt":
+      canvas.textures[msg.idx] = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, canvas.textures[msg.idx]);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, msg.x, msg.y, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array(bindata));
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+      gl.generateMipmap(gl.TEXTURE_2D);
+      gl.bindTexture(gl.TEXTURE_2D, null);
+      break;
     case "getuniform":
       var uniform = gl.getUniformLocation(canvas.program, msg.name);
       canvas.uniforms[msg.idx] = uniform;
@@ -87,6 +97,11 @@ function gl_message(msg, canvas) {
       canvas.render[idx] = r_attrib;
       canvas.args[idx] = {aidx:msg.aidx, bufidx:msg.bufidx, cnt:msg.cnt};
       break;
+    case "r_bindt":
+      var idx = msg.idx;
+      canvas.render[idx] = r_bindt;
+      canvas.args[idx] = {tidx:msg.tidx};
+      break;
     case "r_drawArrays":
       var idx = msg.idx;
       canvas.render[idx] = r_drawArrays;
@@ -104,6 +119,11 @@ function r_matrix(canvas, gl, args) {
 function r_attrib(canvas, gl, args) {
   gl.bindBuffer(gl.ARRAY_BUFFER, canvas.buffers[args.bufidx]);
   gl.vertexAttribPointer(canvas.attribs[args.aidx], args.cnt, gl.FLOAT, false, 0, 0);
+}
+
+function r_bindt(canvas, gl, args) {
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, canvas.textures[args.tidx]);
 }
 
 function r_drawArrays(canvas, gl, args) {
