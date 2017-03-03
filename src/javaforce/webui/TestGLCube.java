@@ -45,42 +45,45 @@ public class TestGLCube implements WebUIHandler {
 "  }\n";
 
   private float[] vertices =
-{1.0f, 1.0f, 0.0f,
--1.0f, 1.0f, 0.0f,
- 1.0f,-1.0f, 0.0f,
--1.0f,-1.0f, 0.0f};
+  {
+     1.0f,-1.0f, 0.0f,
+    -1.0f,-1.0f, 0.0f,
+     1.0f, 1.0f, 0.0f,
+    -1.0f, 1.0f, 0.0f,
+  };
 
   private float[] textCoords =
   {  // Front
-  0.0f,  0.0f,
-  1.0f,  0.0f,
-  1.0f,  1.0f,
-  0.0f,  1.0f,
-  // Back
-  0.0f,  0.0f,
-  1.0f,  0.0f,
-  1.0f,  1.0f,
-  0.0f,  1.0f,
-  // Top
-  0.0f,  0.0f,
-  1.0f,  0.0f,
-  1.0f,  1.0f,
-  0.0f,  1.0f,
-  // Bottom
-  0.0f,  0.0f,
-  1.0f,  0.0f,
-  1.0f,  1.0f,
-  0.0f,  1.0f,
-  // Right
-  0.0f,  0.0f,
-  1.0f,  0.0f,
-  1.0f,  1.0f,
-  0.0f,  1.0f,
-  // Left
-  0.0f,  0.0f,
-  1.0f,  0.0f,
-  1.0f,  1.0f,
-  0.0f,  1.0f};
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+    1.0f, 0.0f,
+    0.0f, 0.0f,
+    // Back
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+    // Top
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+    // Bottom
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f,
+    // Right
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f,  1.0f,
+    // Left
+    0.0f, 0.0f,
+    1.0f, 0.0f,
+    1.0f, 1.0f,
+    0.0f, 1.0f
+  };
 
   public byte[] convertFloatArray(float m[]) {
     byte data[] = new byte[m.length * 4];
@@ -94,10 +97,17 @@ public class TestGLCube implements WebUIHandler {
 
   public byte[] convertIntArray(int i[]) {
     byte data[] = new byte[i.length * 4];
-    int off = 0;
+    int offset = 0;
     for(int a=0;a<i.length;a++) {
-      javaforce.LE.setuint32(data, off, i[a]);
-      off += 4;
+      int num = i[a];
+      data[offset+2] = (byte)(num & 0xff);
+      num >>= 8;
+      data[offset+1] = (byte)(num & 0xff);
+      num >>= 8;
+      data[offset+0] = (byte)(num & 0xff);
+      num >>= 8;
+      data[offset+3] = (byte)(num & 0xff);
+      offset += 4;
     }
     return data;
   }
@@ -136,7 +146,7 @@ public class TestGLCube implements WebUIHandler {
         client.sendEvent(canvas.id, "r_matrix", new String[] {"idx=0", "uidx=0", "midx=0"});
         client.sendEvent(canvas.id, "r_matrix", new String[] {"idx=1", "uidx=1", "midx=1"});
         client.sendEvent(canvas.id, "r_attrib", new String[] {"idx=2", "aidx=0", "bufidx=0", "cnt=3"});
-        client.sendEvent(canvas.id, "r_attrib", new String[] {"idx=3", "aidx=1", "bufidx=1", "cnt=4"});
+        client.sendEvent(canvas.id, "r_attrib", new String[] {"idx=3", "aidx=1", "bufidx=1", "cnt=2"});
         client.sendEvent(canvas.id, "r_bindt", new String[] {"idx=4", "tidx=0"});
         client.sendEvent(canvas.id, "r_drawArrays", new String[] {"idx=5", "type=" + GL.GL_TRIANGLE_STRIP, "cnt=4"});
       }
