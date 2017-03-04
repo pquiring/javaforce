@@ -1,4 +1,4 @@
-package jfcontrols.logic;
+package jfcontrols.functions;
 
 /** Logic Service
  *
@@ -9,7 +9,7 @@ import java.io.*;
 
 import javaforce.*;
 
-public class Service extends Thread {
+public class FunctionService extends Thread {
   public static String dataPath;
   public static String databaseName = "jfcontrols";
   public static String logsPath;
@@ -41,7 +41,7 @@ public class Service extends Thread {
       sql.close();
     }
     //start executor
-    new Service().start();
+    new FunctionService().start();
   }
   public void run() {
     //execute logic

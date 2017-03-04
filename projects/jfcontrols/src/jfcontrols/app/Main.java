@@ -7,12 +7,12 @@ package jfcontrols.app;
 
 import jfcontrols.webui.MainPanel;
 import javaforce.webui.*;
-import jfcontrols.logic.Service;
+import jfcontrols.functions.FunctionService;
 
 public class Main implements WebUIHandler {
   public static void main(String args[]) {
     //start logic server
-    Service.main();
+    FunctionService.main();
     //start webui server
     WebUIServer server = new WebUIServer();
     server.start(new Main(), 34000, false);

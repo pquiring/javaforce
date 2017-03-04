@@ -7,7 +7,7 @@ package jfcontrols.webui;
 
 import javaforce.*;
 import javaforce.webui.*;
-import jfcontrols.logic.Service;
+import jfcontrols.functions.FunctionService;
 
 public class Panels extends Panel {
   public Panels() {
@@ -43,7 +43,7 @@ public class Panels extends Panel {
       str = SQL.quote(str);
       String q = "insert into panels (name) values (" + str + ")";
       SQL sql = new SQL();
-      sql.connect(Service.derbyURI);
+      sql.connect(FunctionService.derbyURI);
       sql.execute(q);
       sql.close();
       loadPanels();
@@ -60,7 +60,7 @@ public class Panels extends Panel {
   }
   public void loadPanels() {
     SQL sql = new SQL();
-    sql.connect(Service.derbyURI);
+    sql.connect(FunctionService.derbyURI);
     String panels[][] = sql.select("select id,name from panels");
     panel.clear();
     for(int a=0;a<panels.length;a++) {
