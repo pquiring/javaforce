@@ -5,9 +5,9 @@ package jfcontrols.app;
  * @author pquiring
  */
 
-import jfcontrols.webui.MainPanel;
 import javaforce.webui.*;
-import jfcontrols.functions.FunctionService;
+import jfcontrols.panels.*;
+import jfcontrols.functions.*;
 
 public class Main implements WebUIHandler {
   public static void main(String args[]) {
@@ -20,7 +20,7 @@ public class Main implements WebUIHandler {
 
   public Panel getRootPanel(WebUIClient client) {
     System.out.println("getRootPanel()");
-    return new MainPanel();
+    return Panels.getPanel("main");
   }
 
   public byte[] getResource(String string) {
