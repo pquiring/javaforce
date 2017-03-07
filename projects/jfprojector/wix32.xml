@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{56317B62-FDB6-4314-A3EB-E7AD1F623217}" Version="0.1" Language="1033" Name="jfProjector" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{8F97E4C6-0D2B-4569-82A8-E55D3D281177}" Version="0.1" Language="1033" Name="jfProjector" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
@@ -22,7 +22,7 @@
 
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
-      <Component Id="appfiles" Guid="{3BE06EFB-D219-4A6E-9B93-97BE48F7C50B}">
+      <Component Id="appfiles" Guid="{E19D405C-074E-4F47-BB63-E0829E10A108}">
         <File Id="jfprojector.jar" Source="jfprojector.jar" KeyPath="yes"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="jfprojector.exe" Source="jfprojector.exe"/>
@@ -34,14 +34,14 @@
     <!-- Step 2b: Add the shortcut to your installer package -->
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
-      <Component Id="ApplicationShortcut" Guid="{363A7CF2-0F6F-4090-A518-884B028A213A}">
+      <Component Id="ApplicationShortcut" Guid="{57E969FA-93A0-471D-A4C2-0FA91CB5677B}">
         <Shortcut Id="ApplicationStartMenuShortcut" Name="jfProjector" Description="Projector" Target="[APPLICATIONROOTDIRECTORY]jfprojector.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
         <RegistryValue Root="HKCU" Key="Software\Microsoft\jfProjector" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
-      <Component Id="ApplicationShortcut2" Guid="{363A7CF2-0F6F-4090-A518-884B028A213B}">
+      <Component Id="ApplicationShortcut2" Guid="{CBB25B08-A78F-489A-A346-F05A9745228B}">
         <Shortcut Id="ApplicationStartMenuShortcut2" Name="jfProjector Server" Description="Projector Server" Target="[APPLICATIONROOTDIRECTORY]jfprojectorsvr.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
