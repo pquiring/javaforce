@@ -485,7 +485,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
       try {is.close();} catch (Exception e) {}
       JFImage scaled = new JFImage(size.width, size.height);
       scaled.fill(0, 0, size.width, size.height, 0x00000000, true);  //fill with alpha transparent
-      if (false) {
+      if (true) {
         //scaled image (looks bad sometimes)
         scaled.getGraphics().drawImage(appicon.getImage()
           , 0, 0, size.width, size.height
