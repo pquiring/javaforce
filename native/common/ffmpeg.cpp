@@ -594,6 +594,7 @@ static int open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, int type
     #else
       ctx->codec_ctx = stream->codec;  //deprecated
     #endif
+    ctx->codec_ctx->flags |= CODEC_FLAG_LOW_DELAY;
     if ((ret = (*_avcodec_open2)(ctx->codec_ctx, codec, NULL)) < 0) {
       return ret;
     }
@@ -1273,6 +1274,7 @@ static jboolean add_stream(FFContext *ctx, int codec_id) {
       codec_ctx->gop_size = ctx->config_gop_size;
       codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
       if (codec_ctx->codec_id == AV_CODEC_ID_H264) {
+        (*_av_opt_set)(codec_ctx->priv_data, "profile", "baseline", 0);
         (*_av_opt_set)(codec_ctx->priv_data, "preset", "slow", 0);
       }
 

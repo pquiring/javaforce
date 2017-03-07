@@ -1107,7 +1107,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
         int audioLengthPerFrame = config.audioRate / config.videoRate;
         int audioFraction = config.audioRate % config.videoRate;
         MediaEncoder ff = new MediaEncoder();
-        ff.set1000Over1001(config.v1001);
+        ff.set1000over1001(config.v1001);
         System.out.println("bitRates:" + config.videoBitRate + "," + config.audioBitRate);
         ff.setVideoBitRate(config.videoBitRate);
         ff.setAudioBitRate(config.audioBitRate);

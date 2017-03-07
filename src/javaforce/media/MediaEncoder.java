@@ -14,7 +14,7 @@ public class MediaEncoder extends MediaCoder {
   public native boolean start(MediaIO io, int width, int height, int fps, int chs, int freq, String codec,
     boolean doVideo, boolean doAudio);
   /** Sets frame rate = fps * 1000 / 1001 (default = false) */
-  public void set1000Over1001(boolean state) {
+  public void set1000over1001(boolean state) {
     fps_1000_1001 = state;
   }
   /** Sets frames per key frame (gop) (default = 12) */
