@@ -1,5 +1,18 @@
 What's new...
 
+Mar 7/2017 : JF 15.0.0 released!
+  - jfProjector/0.1
+    - new app to projector your desktop to another desktop
+  - ffmpeg : downloading on Windows can now goto %appdata% folder (no longer need admin access)
+  - re-release ffmpeg based apps:
+    - jfAudio/0.15
+    - jfMedia/0.11
+    - jfMusic/0.4
+    - jfRecordCamera/0.4
+    - jfRecordDesktop/0.5
+    - jfVideo/0.19
+    - jPhoneLite/1.11
+
 Feb 22/2017 : JF 14.3.0 released!
   - javaforce.controls.Tag now supports sharing a tcp connection
   - jfDataLogger/0.8

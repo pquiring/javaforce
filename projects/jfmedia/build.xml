@@ -6,7 +6,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
-  <property name="version" value="0.10"/>
+  <property name="version" value="0.11"/>
 
   <import file="../../base.xml"/>
 
@@ -45,7 +45,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="jfmedia.jar" todir="/usr/share/java"/>
     <copy file="jfmedia.desktop" todir="/usr/share/applications"/>
     <copy file="jfmedia.png" todir="/usr/share/icons/hicolor/48x48/apps"/>

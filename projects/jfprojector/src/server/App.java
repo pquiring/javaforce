@@ -72,7 +72,7 @@ public class App extends Thread implements ActionListener {
           , (size.height - appicon.getIconHeight()) / 2
           , null);
       }
-      icon = new TrayIcon(scaled.getImage(), "jPhoneLite", popup);
+      icon = new TrayIcon(scaled.getImage(), "jfProjector Server", popup);
       icon.addActionListener(this);
     }
   }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{9F2A3DD8-2CF3-48B0-BA4D-2D6F614EFBC9}" Version="0.3" Language="1033" Name="jfRecordCamera" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{9F2A3DD8-2CF3-48B0-BA4D-2D6F614EFBC9}" Version="0.4" Language="1033" Name="jfRecordCamera" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />

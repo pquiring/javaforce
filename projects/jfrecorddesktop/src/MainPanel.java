@@ -521,7 +521,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
           , (size.height - appicon.getIconHeight()) / 2
           , null);
       }
-      icon = new TrayIcon(scaled.getImage(), "jPhoneLite", popup);
+      icon = new TrayIcon(scaled.getImage(), "jfRecordDesktop", popup);
       icon.addActionListener(this);
     }
   }
