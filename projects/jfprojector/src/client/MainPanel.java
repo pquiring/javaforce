@@ -302,6 +302,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
       start.setText("Stopping");
       return;
     }
+    saveServers();
     working = true;
     setState(false);
     new Worker().start();
@@ -551,13 +552,38 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
 
   private void loadServers() {
     try {
-      BufferedReader br = new BufferedReader(new FileReader("servers.ini"));
+      BufferedReader br = new BufferedReader(new FileReader(JF.getUserPath() + "/jfprojector.ini"));
       String ln;
       while ((ln = br.readLine()) != null) {
         serverField.addItem(ln);
       }
     } catch (FileNotFoundException fnf) {
 
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  private void saveServers() {
+    try {
+      StringBuffer sb = new StringBuffer();
+      int cnt = serverField.getItemCount();
+      String svr = (String)serverField.getSelectedItem();
+      for(int a=0;a<cnt;a++) {
+        String item = serverField.getItemAt(a);
+        if (item.equals(svr)) {
+          svr = null;
+        }
+        sb.append(item);
+        sb.append("\r\n");
+      }
+      if (svr != null) {
+        sb.append(svr);
+        sb.append("\r\n");
+      }
+      FileOutputStream fos = new FileOutputStream(JF.getUserPath() + "/jfprojector.ini");
+      fos.write(sb.toString().getBytes());
+      fos.close();
     } catch (Exception e) {
       JFLog.log(e);
     }
