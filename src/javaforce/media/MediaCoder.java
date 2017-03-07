@@ -33,7 +33,7 @@ public class MediaCoder {
     File sysFolders[];
     String ext = "";
     if (JF.isWindows()) {
-      sysFolders = new File[] {new File(".")};
+      sysFolders = new File[] {new File("."), new File(System.getenv("appdata") + "/ffmpeg")};
       ext = ".dll";
     } else {
       sysFolders = new File[] {new File("/usr/lib"), new File("/usr/lib64")};
@@ -50,6 +50,7 @@ public class MediaCoder {
       , new Library("avformat")
       , new Library("avutil")
       , new Library("swscale")
+      , new Library("postproc")
       , new Library("swresample", true)  //(ffmpeg)
       , new Library("avresample", true)  //(libav_org)
     };
@@ -61,8 +62,8 @@ public class MediaCoder {
     }
     if (!haveLibs(libs)) {
       for(int a=0;a<libs.length;a++) {
-        if (a == 6 && libav_org) continue;
-        if (a == 7 && !libav_org) continue;
+        if (a == 7 && libav_org) continue;
+        if (a == 8 && !libav_org) continue;
         if (libs[a].path == null) {
           System.out.println("Error:Unable to load library:" + libs[a].name + ext);
         }
@@ -71,19 +72,19 @@ public class MediaCoder {
       return false;
     }
     loaded = ffmpeg_init(libs[0].path, libs[1].path, libs[2].path, libs[3].path
-      , libs[4].path, libs[5].path, libav_org ? libs[7].path : libs[6].path, libav_org);
+      , libs[4].path, libs[5].path, libs[6].path, libav_org ? libs[8].path : libs[7].path, libav_org);
     return loaded;
   }
-  private static native boolean ffmpeg_init(String codec, String device, String filter, String format, String util, String scale, String resample, boolean libav_org);
+  private static native boolean ffmpeg_init(String codec, String device, String filter, String format, String util, String scale, String postproc, String resample, boolean libav_org);
 
   private static boolean haveLibs(Library libs[]) {
     int cnt = 0;
-    for(int a=0;a<6;a++) {
+    for(int a=0;a<7;a++) {
       if (libs[a].path != null) cnt++;
     }
-    if (libs[6].path != null) cnt++;
-    else if (libs[7].path != null) cnt++;
-    return cnt == 7;
+    if (libs[7].path != null) cnt++;
+    else if (libs[8].path != null) cnt++;
+    return cnt == 8;
   }
 
   //constants
@@ -140,13 +141,22 @@ public class MediaCoder {
         String destFolder = ".";
         //find best place to extract to
         try {
-          File file = new File(destFolder + "\\$testfile$.tmp");
+          File file = new File(destFolder + "/$testfile$.tmp");
           FileOutputStream fos = new FileOutputStream(file);
           fos.close();
           file.delete();
         } catch (Exception e) {
-          this.setLabel("Download failed (no write access to folder)");
-          return false;
+          destFolder = System.getenv("appdata") + "/ffmpeg";
+          new File(destFolder).mkdir();
+          try {
+            File file = new File(destFolder + "/$testfile$.tmp");
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.close();
+            file.delete();
+          } catch (Exception e2) {
+            this.setLabel("Download failed (no write access to folder)");
+            return false;
+          }
         }
         //first download latest URL from javaforce.sf.net
         try {

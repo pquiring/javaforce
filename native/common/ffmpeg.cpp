@@ -30,6 +30,7 @@ LIB_HANDLE filter = NULL;
 LIB_HANDLE format = NULL;
 LIB_HANDLE util = NULL;
 LIB_HANDLE resample = NULL;
+LIB_HANDLE postproc = NULL;
 LIB_HANDLE scale = NULL;
 
 //avcodec functions
@@ -195,49 +196,62 @@ int _avframe_alloc(AVFrame *picture, enum AVPixelFormat pix_fmt, int width, int 
   return 0;
 }
 
+#ifndef __WIN32__
+int GetLastError() {
+  return errno;
+}
+#endif
+
 static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const char* filterFile, const char* formatFile
-  , const char* utilFile, const char* scaleFile, const char* resampleFile)
+  , const char* utilFile, const char* scaleFile, const char* postFile, const char* resampleFile)
 {
-  //load libraries
-  codec = LIB_OPEN(codecFile LIB_OPTS);
-  if (codec == NULL) {
-    printf("Could not find:%s\n", codecFile);
-    return JNI_FALSE;
-  }
-
-  device = LIB_OPEN(deviceFile LIB_OPTS);
-  if (device == NULL) {
-    printf("Could not find:%s\n", deviceFile);
-    return JNI_FALSE;
-  }
-
-  filter = LIB_OPEN(filterFile LIB_OPTS);
-  if (filter == NULL) {
-    printf("Could not find:%s\n", filterFile);
-    return JNI_FALSE;
-  }
-
-  format = LIB_OPEN(formatFile LIB_OPTS);
-  if (format == NULL)  {
-    printf("Could not find:%s\n", formatFile);
-    return JNI_FALSE;
-  }
+  //load libraries (order is important)
 
   util = LIB_OPEN(utilFile LIB_OPTS);
   if (util == NULL) {
-    printf("Could not find:%s\n", utilFile);
+    printf("Could not find(0x%x):%s\n", GetLastError(), utilFile);
     return JNI_FALSE;
   }
 
   resample = LIB_OPEN(resampleFile LIB_OPTS);
   if (resample == NULL) {
-    printf("Could not find:%s\n", resampleFile);
+    printf("Could not find(0x%x):%s\n", GetLastError(), resampleFile);
     return JNI_FALSE;
   }
 
   scale = LIB_OPEN(scaleFile LIB_OPTS);
   if (scale == NULL) {
-    printf("Could not find:%s\n", scaleFile);
+    printf("Could not find(0x%x):%s\n", GetLastError(), scaleFile);
+    return JNI_FALSE;
+  }
+
+  postproc = LIB_OPEN(postFile LIB_OPTS);
+  if (postproc == NULL) {
+    printf("Could not find(0x%x):%s\n", GetLastError(), postFile);
+    return JNI_FALSE;
+  }
+
+  codec = LIB_OPEN(codecFile LIB_OPTS);
+  if (codec == NULL) {
+    printf("Could not find(0x%x):%s\n", GetLastError(), codecFile);
+    return JNI_FALSE;
+  }
+
+  format = LIB_OPEN(formatFile LIB_OPTS);
+  if (format == NULL)  {
+    printf("Could not find(0x%x):%s\n", GetLastError(), formatFile);
+    return JNI_FALSE;
+  }
+
+  filter = LIB_OPEN(filterFile LIB_OPTS);
+  if (filter == NULL) {
+    printf("Could not find(0x%x):%s\n", GetLastError(), filterFile);
+    return JNI_FALSE;
+  }
+
+  device = LIB_OPEN(deviceFile LIB_OPTS);
+  if (device == NULL) {
+    printf("Could not find(0x%x):%s\n", GetLastError(), deviceFile);
     return JNI_FALSE;
   }
 
@@ -318,6 +332,10 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(util, (void**)&_av_frame_alloc, "av_frame_alloc");
   getFunction(util, (void**)&_av_frame_free, "av_frame_free");
 
+  getFunction(scale, (void**)&_sws_getContext, "sws_getContext");
+  getFunction(scale, (void**)&_sws_scale, "sws_scale");
+  getFunction(scale, (void**)&_sws_freeContext, "sws_freeContext");
+
   if (!libav_org) {
     getFunction(resample, (void**)&_swr_alloc, "swr_alloc");
     getFunction(resample, (void**)&_swr_init, "swr_init");
@@ -331,9 +349,6 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
     getFunction(resample, (void**)&_avresample_get_delay, "avresample_get_delay");
     getFunction(resample, (void**)&_avresample_convert, "avresample_convert");
   }
-  getFunction(scale, (void**)&_sws_getContext, "sws_getContext");
-  getFunction(scale, (void**)&_sws_scale, "sws_scale");
-  getFunction(scale, (void**)&_sws_freeContext, "sws_freeContext");
 
   //register_all
   (*_avcodec_register_all)();
@@ -346,7 +361,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ffmpeg_1init
-  (JNIEnv *e, jclass c, jstring jcodec, jstring jdevice, jstring jfilter, jstring jformat, jstring jutil, jstring jresample, jstring jscale, jboolean _libav_org)
+  (JNIEnv *e, jclass c, jstring jcodec, jstring jdevice, jstring jfilter, jstring jformat, jstring jutil, jstring jresample, jstring jpostproc, jstring jscale, jboolean _libav_org)
 {
   if (loaded) return loaded;
   libav_org = _libav_org;
@@ -363,9 +378,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ffmpeg_1init
 
   const char *resampleFile = e->GetStringUTFChars(jresample, NULL);
 
+  const char *postFile = e->GetStringUTFChars(jpostproc, NULL);
+
   const char *scaleFile = e->GetStringUTFChars(jscale, NULL);
 
-  jboolean ret = ffmpeg_init(codecFile, deviceFile, filterFile, formatFile, utilFile, resampleFile, scaleFile);
+  jboolean ret = ffmpeg_init(codecFile, deviceFile, filterFile, formatFile, utilFile, resampleFile, postFile, scaleFile);
 
   e->ReleaseStringUTFChars(jcodec, codecFile);
   e->ReleaseStringUTFChars(jdevice, deviceFile);
@@ -373,6 +390,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ffmpeg_1init
   e->ReleaseStringUTFChars(jformat, formatFile);
   e->ReleaseStringUTFChars(jutil, utilFile);
   e->ReleaseStringUTFChars(jresample, resampleFile);
+  e->ReleaseStringUTFChars(jpostproc, postFile);
   e->ReleaseStringUTFChars(jscale, scaleFile);
 
   if (!ret) return JNI_FALSE;
