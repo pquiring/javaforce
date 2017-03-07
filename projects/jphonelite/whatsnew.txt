@@ -1,4 +1,6 @@
 CHANGELOG:
+3-7-2017 : v1.11.0 released
+  - updated ffmpeg support
 6-2-2015 : v1.10.0 released
   - added GSM codec (bug #37)
   - fix : if call comes in on line that failed to register, mark the line as active to allow user to answer the call
