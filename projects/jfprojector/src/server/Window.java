@@ -16,6 +16,7 @@ public class Window extends javax.swing.JFrame {
    */
   public Window() {
     initComponents();
+    setVisible(true);
     setFullScreen();
   }
 
@@ -26,7 +27,7 @@ public class Window extends javax.swing.JFrame {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     setUndecorated(true);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -47,49 +48,62 @@ public class Window extends javax.swing.JFrame {
   // End of variables declaration//GEN-END:variables
 
   private JFImage img, new_img;
-  private boolean needPainting = false;
+  private volatile boolean needPainting = true;
+  private Object lock = new Object();
 
   public void setImage(JFImage src) {
     new_img = src;
-    if (needPainting) {
-      JFLog.log("Video updating too slow");
-      return;
+    synchronized(lock) {
+      if (needPainting) {
+        JFLog.log("Warning:Video updating too slow");
+      } else {
+        needPainting = true;
+      }
     }
-    needPainting = true;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        img = new_img;
-        repaint();
+        try {
+          img = new_img;
+          repaint();
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
       }
     });
   }
 
   public void paint(Graphics g) {
-    if (!needPainting) {
-      JFLog.log("VideoPanel:not painting");
-      return;
-    }
-    int w = getWidth();
-    int h = getHeight();
-    //paint controls
-    if (img == null) {
-      JFLog.log("VideoPanel:no image available");
-      g.fillRect(0, 0, w, h);
-    } else {
-      int iw = img.getWidth();
-      int ih = img.getHeight();
-      if (((iw != w) || (ih != h))) {
-        JFLog.log("VideoPanel:image scaled");
-        JFImage scaled = new JFImage();
-        scaled.setImageSize(w, h);
-        scaled.getGraphics().drawImage(img.getImage(), 0,0, w,h, 0,0, iw,ih, null);
-        img = scaled;
-      } else {
-        JFLog.log("VideoPanel:image not scaled");
+    try {
+      synchronized(lock) {
+        if (!needPainting) {
+          JFLog.log("VideoPanel:not painting");
+          return;
+        }
       }
-      g.drawImage(img.getImage(), 0, 0, null);
+      int w = getWidth();
+      int h = getHeight();
+      //paint controls
+      if (img == null) {
+        JFLog.log("VideoPanel:no image available");
+        g.fillRect(0, 0, w, h);
+      } else {
+        int iw = img.getWidth();
+        int ih = img.getHeight();
+        if (((iw != w) || (ih != h))) {
+//          JFLog.log("VideoPanel:image scaled");
+          JFImage scaled = new JFImage();
+          scaled.setImageSize(w, h);
+          scaled.getGraphics().drawImage(img.getImage(), 0,0, w,h, 0,0, iw,ih, null);
+          img = scaled;
+        }
+        g.drawImage(img.getImage(), 0, 0, null);
+      }
+      synchronized(lock) {
+        needPainting = false;
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
     }
-    needPainting = false;
   }
 
   public void setFullScreen() {

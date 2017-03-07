@@ -34,7 +34,10 @@ public class Session {
   private Window window;
   private Thread playThread;
   private ReadThread readThread;
+  private int frame;
+
   private static boolean inuse = false;
+  private static Object lock = new Object();
 
   private AudioBuffer audio_buffer;
   private VideoBuffer video_buffer;
@@ -79,9 +82,7 @@ public class Session {
         is = socket.getInputStream();
         decoder = new MediaDecoder();
         if (decoder == null) throw new Exception("Unable to allocate decoder");
-        JFLog.log("Starting decoder");
         if (!decoder.start(this, -1, -1, chs, 44100, false)) throw new Exception("Unable to start decoder");
-        JFLog.log("Decoder Started!");
 
         long mediaLength = decoder.getDuration();
         JFLog.log("Duration=" + mediaLength);
@@ -100,18 +101,6 @@ public class Session {
 //        if (avBitRate == 0) avBitRate = 64000;
         playing = true;
         while (playing) {
-          if ((video_buffer != null && video_buffer.size() >= fps * (buffer_seconds-1)) || (audio_buffer.size() > (44100 * chs * (buffer_seconds-1)))) {
-            int sleep;
-            if (fps > 0) {
-              sleep = 1000 / (int)fps;
-//              JFLog.log("video sleeping:" + sleep + ":" + fps);
-            } else {
-              sleep = 1000 / ((44100 * chs) / (audio_bufsiz));
-//              JFLog.log("audio sleeping:" + sleep);
-            }
-            JF.sleep(sleep);
-            continue;
-          }
           if (resizeVideo) {
             synchronized(sizeLock) {
               width = new_width;
@@ -124,6 +113,9 @@ public class Session {
             case MediaCoder.AUDIO_FRAME:  //audio packet read
               short audio[] = decoder.getAudio();
               audio_buffer.add(audio, 0, audio.length);
+              synchronized(lock) {
+                lock.notify();
+              }
               break;
             case MediaCoder.VIDEO_FRAME:  //video packet read
               int video[] = decoder.getVideo();
@@ -137,9 +129,13 @@ public class Session {
               } else {
                 JFLog.log("Warning : VideoBuffer overflow");
               }
+              synchronized(lock) {
+                lock.notify();
+              }
               break;
             case MediaCoder.END_FRAME:
               eof = true;
+              playing = false;
               break;
           }
         }
@@ -147,9 +143,7 @@ public class Session {
         JFLog.log(e);
       }
       try {
-        JFLog.log("wait for play thread");
         playThread.join();
-        JFLog.log("play thread done");
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -162,13 +156,11 @@ public class Session {
       }
       decoder = null;
       inuse = false;
-      JFLog.log("read thread exit");
     }
     public int read(MediaCoder coder, byte data[]) {
       int read = 0;
       try {
         read = is.read(data, 0, data.length);
-//        JFLog.log("read=" + read);
       } catch (Exception e) {
         JFLog.log(e);
         playing = false;
@@ -184,7 +176,6 @@ public class Session {
       return 0;
     }
     public long seek(MediaCoder coder, long pos, int how) {
-      JFLog.log("seek=" + pos + "," + how);
       switch (how) {
         case MediaCoder.SEEK_SET: return pos;
         case MediaCoder.SEEK_CUR: return pos;
@@ -195,87 +186,50 @@ public class Session {
   }
   public class PlayAudioVideoThread extends Thread {
     public void run() {
-      double frameDelay = 1000.0f / fps;
-      double samplesPerFrame = (44100.0 * ((double)chs)) / fps;
-      JFLog.log("samplesPerFrame=" + samplesPerFrame);
-      double samplesToWrite = 0;
       AudioOutput output = new AudioOutput();
       output.start(chs, 44100, 16, audio_bufsiz * 2 /*bytes*/, "<default>");
       short samples[] = new short[audio_bufsiz];
-      double current = System.currentTimeMillis();
-      int skip = 0;
       for(int a=0;a<2;a++) output.write(samples);  //prime audio output
       while (playing) {
-        samplesToWrite += samplesPerFrame;
-        if (eof) {
-          if ((video_buffer.size() == 0) && (audio_buffer.size() < audio_bufsiz)) break;
+        synchronized(lock) {
+          try {lock.wait();} catch (Exception e) {}
         }
-        while (audio_buffer.size() >= audio_bufsiz && samplesToWrite >= audio_bufsiz) {
+        while (audio_buffer.size() >= audio_bufsiz) {
           audio_buffer.get(samples, 0, audio_bufsiz);
           output.write(samples);
-          samplesToWrite -= audio_bufsiz;
           synchronized(countLock) { audioCount += audio_bufsiz; };
         }
-        if (video_buffer.size() > 0) {
+        while (video_buffer.size() > 0) {
           JFImage img = video_buffer.getNextFrame();
           synchronized(countLock) { frameCount++; }
-          while (skip > 0 && video_buffer.size() > 1) {
-            if (img == null) break;
-            skip--;
-            video_buffer.freeNextFrame();
-            img = video_buffer.getNextFrame();
-            synchronized(countLock) { frameCount++; }
-          }
-          skip = 0;
           if (img != null) {
+            String txt = "Frame:" + frame++ + ":" + video_buffer.size();
+            img.getGraphics().drawBytes(txt.getBytes(), 0, txt.length(), 0, 25);
             window.setImage(img);
             video_buffer.freeNextFrame();
           }
-        } else {
-          JFLog.log("Playback too slow - skipping a frame");
-          skip++;
-        }
-        current += frameDelay;
-        double now = System.currentTimeMillis();
-        double delay = (current - now);
-        if (delay >= 1.0) {
-          JF.sleep((int)delay);
         }
       }
       output.stop();
-      JFLog.log("play thread exit");
     }
   }
   public class PlayAudioOnlyThread extends Thread {
     public void run() {
-      double frameDelay = 1000.0 / ((44100.0 * chs) / (audio_bufsiz));
-      double samplesPerFrame = audio_bufsiz;
-      double samplesToWrite = 0;
       AudioOutput output = new AudioOutput();
       output.start(chs, 44100, 16, audio_bufsiz * 2 /*bytes*/, "<default>");
       short samples[] = new short[audio_bufsiz];
-      double current = System.currentTimeMillis();
       for(int a=0;a<2;a++) output.write(samples);  //prime output
       while (playing) {
-        samplesToWrite += samplesPerFrame;
-        if (eof) {
-          if (audio_buffer.size() < audio_bufsiz) break;
+        synchronized(lock) {
+          try {lock.wait();} catch (Exception e) {}
         }
-        while (audio_buffer.size() >= audio_bufsiz && samplesToWrite >= audio_bufsiz) {
+        while (audio_buffer.size() >= audio_bufsiz) {
           audio_buffer.get(samples, 0, audio_bufsiz);
           output.write(samples);
-          samplesToWrite -= audio_bufsiz;
           synchronized(countLock) { audioCount += audio_bufsiz; };
-        }
-        current += frameDelay;
-        double now = System.currentTimeMillis();
-        double delay = (current - now);
-        if (delay >= 1.0) {
-          JF.sleep((int)delay);
         }
       }
       output.stop();
-      JFLog.log("play thread exit");
     }
   }
 }

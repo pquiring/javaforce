@@ -1,6 +1,6 @@
 package client;
 
-/**
+/** MainPanel
  *
  * @author pquiring
  *
@@ -410,10 +410,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
         double now = System.currentTimeMillis();
         int sleep = (int)(delay - (now - current));
         if (sleep > 0) {
-          JFLog.log("sleep=" + sleep);
           JF.sleep(sleep);
         } else {
-          JFLog.log("sleep <= 0");
           skip_frame = true;  //system too slow
         }
         current += delay;
