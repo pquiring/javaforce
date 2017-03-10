@@ -63,7 +63,7 @@ public class Tag {
       case S7: return true;
       case AB: return false;
       case MB: return true;
-      case NI: return false;
+      case NI: return true;
       default: return true;
     }
   }
