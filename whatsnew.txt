@@ -1,5 +1,10 @@
 What's new...
 
+Mar 10/2017 : JF 15.1.0 released!
+  - fix : javaforce.controls.Tag : NI is little endian
+    - jfDataLogger/0.9
+    - jfDataLoggerPlus/0.5
+
 Mar 7/2017 : JF 15.0.0 released!
   - jfProjector/0.1
     - new app to projector your desktop to another desktop

@@ -14,7 +14,7 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.8";
+  public static String version = "0.9";
 
   public static int delays[] = new int[] {
     25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
@@ -387,6 +387,7 @@ public class App extends javax.swing.JFrame {
       tableModel.removeRow(0);
     }
     logImage.fill(0, 0, logImage.getWidth(), logImage.getHeight(), 0xffffffff);
+    img.repaint();
   }
 
   public static String dl_filters[][] = new String[][] { {"Data Logger Files (*.dl)", "dl"} };
@@ -471,9 +472,6 @@ public class App extends javax.swing.JFrame {
         logFile += ".csv";
       }
       logBtn.setText("LogFile*");
-    } else {
-      logFile = null;
-      JF.showMessage("Notice", "Log file turned off");
     }
   }
 
@@ -537,6 +535,10 @@ public class App extends javax.swing.JFrame {
       worker.start();
     } else {
       worker.cancel();
+      if (logFile != null) {
+        logBtn.setText("LogFile");
+        logFile = null;
+      }
     }
   }
 
