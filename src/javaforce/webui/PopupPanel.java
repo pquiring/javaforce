@@ -5,7 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class PopupPanel extends Container {
+public class PopupPanel extends Panel {
   private TitleBar titleBar;
   private Block block;
   private boolean modal;

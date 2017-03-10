@@ -58,9 +58,6 @@ ws.onmessage = function (event) {
     case "setbackclr":
       element.style.backgroundColor = msg.clr;
       break;
-    case "setpos":
-      element.value = msg.pos;
-      break;
     case "setzindex":
       element.style.zIndex = msg.idx;
       break;

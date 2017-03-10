@@ -136,6 +136,9 @@ public class WebUIClient {
   public Object getProperty(String key) {
     return map.get(key);
   }
+  public HashMap<String,Object> getProperties() {
+    return map;
+  }
   public int getZIndex() {
     return zIndex++;
   }

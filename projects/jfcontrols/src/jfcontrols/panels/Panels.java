@@ -1,6 +1,6 @@
 package jfcontrols.panels;
 
-/** Panel
+/** Panels
  *
  * @author pquiring
  */
@@ -13,25 +13,44 @@ import jfcontrols.sql.*;
 public class Panels {
   public static String cellWidth = "64";
   public static String cellHeight = "64";
-  public static Panel getLoginPanel() {
+  public static PopupPanel getLoginPanel(WebUIClient client) {
+    PopupPanel panel = (PopupPanel)getPanel(new PopupPanel("Login"), "_jfc_login", client);
+    client.setProperty("popup_panel", panel);
+    return panel;
+  }
+  public static PopupPanel getMenuPanel(WebUIClient client) {
     return null;
   }
-  public static Panel getMainPanel() {
+  public static Panel getTagsPanel(WebUIClient client) {
     return null;
   }
-  public static Panel getTagsPanel() {
-    return null;
-  }
-  public static Panel getPanelsPanel() {
+  public static Panel getPanelsPanel(WebUIClient client) {
     return null;
   }
   //...
-  public static Panel getPanel(String pname) {
+  public static Panel getPanel(String pname, WebUIClient client) {
+    return getPanel(new Panel(), pname, client);
+  }
+  public static Panel getPanel(Panel panel, String pname, WebUIClient client) {
     SQL sql = SQLService.getSQL();
     String pid = sql.select1value("select id from panels where name=" + SQL.quote(pname));
-    if (pid == null) return null;
-    String cells[][] = sql.select("select id,x,y,w,h,name,text,tag,func,arg,style from cells where pid=" + SQL.quote(pid));
-    Panel panel = new Panel();
+    if (pid == null) {
+      JFLog.log("Error:Unable to find panel:" + pname);
+      return null;
+    }
+    String builtin = sql.select1value("select builtin from panels where id=" + pid);
+    String cells[][] = sql.select("select id,x,y,w,h,name,text,tag,func,arg,style from cells where pid=" + pid);
+    sql.close();
+    panel.add(getTable(cells, builtin.equals("true")));
+    if (builtin.equals("true")) return panel;
+    if (client.getProperty("user") == null) {
+      panel.add(getLoginPanel(client));
+    } else {
+      panel.add(getMenuPanel(client));
+    }
+    return panel;
+  }
+  private static Table getTable(String cells[][], boolean builtin) {
     int mx = 1;
     int my = 1;
     for(int a=0;a<cells.length;a++) {
@@ -47,7 +66,6 @@ public class Panels {
       }
     }
     Table table = new Table(Integer.valueOf(cellWidth),Integer.valueOf(cellHeight),mx,my);
-    panel.add(table);
     for(int a=0;a<cells.length;a++) {
       String cid = cells[a][0];
       int x = Integer.valueOf(cells[a][1]);
@@ -58,24 +76,47 @@ public class Panels {
       Component c = getCell(cname, cid, cells[a]);
       c.setWidth(cellWidth);
       c.setHeight(cellHeight);
-      table.add(c, x, y);
+      if (w == 1 && h == 1)
+        table.add(c, x, y);
+      else
+        table.add(c, x, y, w, h);
     }
-    return panel;
+    return table;
   }
   public static Component getCell(String name, String cid, String v[]) {
     switch (name) {
+      case "label": return getLabel(cid, v);
       case "button": return getButton(cid, v);
+      case "textfield": return getTextField(cid, v);
     }
     return null;
   }
   //id,x,y,w,h,name,text,tag,func,arg,style
+  private final static int X = 1;
+  private final static int Y = 2;
+  private final static int W = 3;
+  private final static int H = 4;
+  private final static int NAME = 5;
+  private final static int TEXT = 6;
+  private final static int TAG = 7;
+  private final static int FUNC = 8;
+  private final static int ARG = 9;
+  private final static int STYLE = 10;
+  private static Label getLabel(String cid, String v[]) {
+    Label b = new Label(v[TEXT]);
+    return b;
+  }
   private static Button getButton(String cid, String v[]) {
-    Button b = new Button(v[6]);
-    b.setProperty("func", v[8]);
-    b.setProperty("arg", v[9]);
+    Button b = new Button(v[TEXT]);
+    b.setProperty("func", v[FUNC]);
+    b.setProperty("arg", v[ARG]);
     b.addClickListener((me, c) -> {
       Events.click(c);
     });
+    return b;
+  }
+  private static TextField getTextField(String cid, String v[]) {
+    TextField b = new TextField(v[TEXT]);
     return b;
   }
 }

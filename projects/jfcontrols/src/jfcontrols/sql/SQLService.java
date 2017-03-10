@@ -51,10 +51,13 @@ public class SQLService {
     //create tables
     sql.execute("create table conts (id int not null generated always as identity (start with 1, increment by 1) primary key)");
     sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key)");
-    sql.execute("create table panels (id int not null generated always as identity (start with 1, increment by 1) primary key)");
-    sql.execute("create table cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int)");
+    sql.execute("create table panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32), builtin boolean)");
+    sql.execute("create table cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int, name varchar(32), text varchar(512), tag varchar(32), func varchar(32), arg varchar(32), style varchar(512))");
     sql.execute("create table funcs (id int not null generated always as identity (start with 1, increment by 1) primary key)");
     sql.execute("create table rungs (id int not null generated always as identity (start with 1, increment by 1) primary key, fid int)");
+    sql.execute("create table users (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32), pass varchar(32))");
+    sql.execute("insert into users (name, pass) values ('admin', 'admin')");
+    sql.execute("insert into users (name, pass) values ('oper', 'oper')");
     sql.execute("create table config (id varchar(32), value varchar(512))");
     sql.execute("insert into config (id, value) values ('version', '0.1')");
     if (!JF.isWindows()) {
@@ -63,6 +66,20 @@ public class SQLService {
       sql.execute("insert into config (id, value) values ('ip_gateway', '10.1.1.1')");
       sql.execute("insert into config (id, value) values ('ip_dns', '8.8.8.8')");
     }
+    //create builtin panels
+    sql.execute("insert into panels (name, builtin) values ('_jfc_login', true)");
+    String pid = sql.select1value("select id from panels where name='_jfc_login'");
+    sql.execute("insert into cells (pid,x,y,w,h,name,text) values (" + pid + ",1,1,3,1,'label','Username:')");
+    sql.execute("insert into cells (pid,x,y,w,h,name,text) values (" + pid + ",5,1,3,1,'textfield','')");
+    sql.execute("insert into cells (pid,x,y,w,h,name,text) values (" + pid + ",1,3,3,1,'label','Password:')");
+    sql.execute("insert into cells (pid,x,y,w,h,name,text) values (" + pid + ",5,3,3,1,'textfield','')");
+    sql.execute("insert into cells (pid,x,y,w,h,name,text,func) values (" + pid + ",1,5,3,1,'button','Login','_jfc_login_ok')");
+    sql.execute("insert into cells (pid,x,y,w,h,name,text,func) values (" + pid + ",5,5,3,1,'button','Cancel','_jfc_login_cancel')");
+    sql.execute("insert into panels (name, builtin) values ('main', false)");
+    pid = sql.select1value("select id from panels where name='main'");
+    sql.execute("insert into cells (pid,x,y,w,h,name,text,func) values (" + pid + ",0,0,1,1,'button','X','showMenu')");
+    sql.execute("insert into cells (pid,x,y,w,h,name,text) values (" + pid + ",1,1,7,1,'label','Welcome to jfControls!')");
+    sql.execute("insert into cells (pid,x,y,w,h,name,text) values (" + pid + ",1,3,10,1,'label','Click on the Menu Icon in the top left corner to get started.')");
     sql.close();
   }
   public static void start() {

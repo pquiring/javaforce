@@ -153,9 +153,11 @@ public abstract class Component {
     return sb.toString();
   }
   public void setWidth(String width) {
+//    this.width = Integer.valueOf(width);
     setStyle("width", width);
   }
   public void setHeight(String height) {
+//    this.height = Integer.valueOf(height);
     setStyle("height", height);
   }
   public void setColor(String clr) {
@@ -216,6 +218,8 @@ public abstract class Component {
     client.sendEvent(id, "setpos", new String[] {"x=" + x, "y=" + y});
     this.x = x;
     this.y = y;
+    setStyle("left", Integer.toString(x));
+    setStyle("top", Integer.toString(y));
   }
 
   public String toString() {
