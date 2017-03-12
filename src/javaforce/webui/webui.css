@@ -12,10 +12,12 @@ span {
 }
 
 th, td {
-  vertical-align: top;
+  vertical-align: center;
+  text-align: center;
   overflow: hidden;
   white-space: nowrap;
   margin: 0px;
+  padding: 0px;
 }
 
 table {

@@ -13,6 +13,7 @@ public abstract class Component {
   public String id;
   public Container parent;
   public WebUIClient client;
+  public String name;
   public ArrayList<String> classes = new ArrayList<String>();
   public HashMap<String, String> attrs = new HashMap<String, String>();
   public HashMap<String, String> styles = new HashMap<String, String>();
@@ -24,8 +25,37 @@ public abstract class Component {
   }
   public ArrayList<OnEvent> events = new ArrayList<OnEvent>();
 
+  /** Component constructor.
+   * @param parent = Panel
+   * @param name = name of component
+   */
   public Component() {
     client = WebUIClient.NULL;
+  }
+
+  /** Sets Component's name. */
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  /** Gets Component's name. */
+  public String getName() {
+    return name;
+  }
+
+  /** Returns Component's parent Container. */
+  public Container getParent() {
+    return parent;
+  }
+
+  /** Returns Component's top-most parent Container. */
+  public Container getTopParent() {
+    Container top = parent;
+    do {
+      Container next = top.getParent();
+      if (next == null) return top;
+      top = next;
+    } while (true);
   }
 
   /** Provides the client (connection to web browser side) and init other variables. */
@@ -46,10 +76,6 @@ public abstract class Component {
   public void init() {}
   /** Returns HTML to render component. */
   public abstract String html();
-  /** Component constructor.
-   * @param parent = Panel
-   * @param name = name of component
-   */
   private HashMap<String,Object> map = new HashMap<>();
   /** Set user define property. */
   public void setProperty(String key, Object value) {

@@ -22,6 +22,22 @@ public abstract class Container extends Component {
       get(a).init();
     }
   }
+  public Component findComponent(String name) {
+    int cnt = count();
+    for(int a=0;a<cnt;a++) {
+      Component child = get(a);
+      if (child instanceof Container) {
+        Container container = (Container)child;
+        child = container.findComponent(name);
+        if (child != null) return child;
+      } else {
+        if (child.name != null && child.name.equals(name)) {
+          return child;
+        }
+      }
+    }
+    return null;
+  }
   private ArrayList<Component> components = new ArrayList<Component>();
   public Component get(int idx) {
     return components.get(idx);

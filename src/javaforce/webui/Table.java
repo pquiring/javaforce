@@ -45,9 +45,11 @@ public class Table extends Container {
           }
           if (spanx > 1) {
             sb.append(" colspan=" + spanx);
+            x += spanx-1;
           }
           if (spany > 1) {
             sb.append(" rowspan=" + spany);
+            y += spany-1;
           }
           int w = width * spanx;
           int h = height * spany;
