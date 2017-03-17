@@ -12,7 +12,7 @@ span {
 }
 
 th, td {
-  vertical-align: center;
+  vertical-align: middle;
   text-align: center;
   overflow: hidden;
   white-space: nowrap;
@@ -54,6 +54,11 @@ button {
 }
 
 .label {
+}
+
+.valigncenter {
+  display: flex;
+  align-items: center;
 }
 
 .row {

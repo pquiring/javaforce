@@ -11,6 +11,9 @@ import jfcontrols.functions.*;
 import jfcontrols.sql.*;
 
 public class Main implements WebUIHandler {
+
+  public static String version = "0.1B";
+
   public static void main(String args[]) {
     //start database
     SQLService.start();

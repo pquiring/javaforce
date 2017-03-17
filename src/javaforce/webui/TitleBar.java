@@ -16,6 +16,7 @@ public class TitleBar extends Container {
     label = new Label(title);
     label.addClass("defaultcursor");
     label.addClass("noselect");
+    label.setColor("white");
     add(label);
     pad = new Pad();
     add(pad);
@@ -37,5 +38,10 @@ public class TitleBar extends Container {
     }
     sb.append("</div>");
     return sb.toString();
+  }
+  public void setHeight(String h) {
+    super.setHeight(h);
+    button.setWidth(h);
+    button.setHeight(h);
   }
 }

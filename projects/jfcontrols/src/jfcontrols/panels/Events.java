@@ -60,7 +60,11 @@ public class Events {
         panel.setVisible(false);
         break;
       }
-      case "changePanel":
+      case "setPanel":
+        Panel panel = Panels.getPanel(arg, client);
+        if (panel != null) {
+          client.setPanel(panel);
+        }
         break;
       case "toggleBit":
         break;

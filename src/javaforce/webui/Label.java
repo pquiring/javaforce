@@ -12,7 +12,9 @@ public class Label extends Component {
   public Label(String text) {
     this.text = text;
     addEvent("onclick", "onClick(event, this);");
-    setClass("noselect");
+    setClass("label");
+    addClass("noselect");
+    addClass("valigncenter");
   }
   public String html() {
     return "<label" + getAttrs() + ">" + text + "</label>";

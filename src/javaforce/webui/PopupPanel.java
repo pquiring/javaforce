@@ -53,6 +53,10 @@ public class PopupPanel extends Panel {
   }
   public void setClient(WebUIClient client) {
     super.setClient(client);
+    titleBar.setClient(client);
     block.setClient(client);
+  }
+  public void setTitleBarSize(String sz) {
+    titleBar.setHeight(sz);
   }
 }
