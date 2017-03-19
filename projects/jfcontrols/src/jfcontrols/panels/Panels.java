@@ -14,12 +14,12 @@ public class Panels {
   public static int cellWidth = 32;
   public static int cellHeight = 32;
   public static PopupPanel getLoginPanel(WebUIClient client) {
-    PopupPanel panel = (PopupPanel)getPanel(createPopupPanel("Login"), "_jfc_login", client);
+    PopupPanel panel = (PopupPanel)getPanel(createPopupPanel("Login"), "jfc_login", client);
     client.setProperty("login_panel", panel);
     return panel;
   }
   public static PopupPanel getMenuPanel(WebUIClient client) {
-    PopupPanel panel = (PopupPanel)getPanel(createPopupPanel("Menu"), "_jfc_main", client);
+    PopupPanel panel = (PopupPanel)getPanel(createPopupPanel("Menu"), "jfc_main", client);
     client.setProperty("menu_panel", panel);
     return panel;
   }
@@ -137,27 +137,24 @@ public class Panels {
     String text = v[TEXT];
     if (text == null) text = "";
     TextField b = new TextField(text);
-    String arg = v[ARG];
-    if (arg != null) {
-      b.setProperty("arg", arg);
-      SQL sql = SQLService.getSQL();
-      if (arg.startsWith("_jfc_config_")) {
-        arg = arg.substring(12);
-        text = sql.select1value("select value from config where id='" + arg + "'");
-        if (text != null) {
-          b.setText(text);
-        }
-      }
-      sql.close();
-    }
-    String tag = v[TAG];
-    if (tag != null) {
-      //TODO:hook text field to tag
-    }
+    b.setProperty("tag", v[TAG]);
     return b;
   }
   private static ComboBox getComboBox(String v[]) {
     ComboBox cb = new ComboBox();
+    String arg = v[ARG];
+    SQL sql = SQLService.getSQL();
+    JFLog.log("arg=" + arg);
+    String lid = sql.select1value("select id from lists where name=" + SQL.quote(arg));
+    JFLog.log("lid=" + lid);
+    String pairs[][] = sql.select("select value, text from listdata where lid=" + lid);
+    JFLog.log("pairs=" + pairs.length);
+    sql.close();
+    if (pairs != null) {
+      for(int a=0;a<pairs.length;a++) {
+        cb.add(pairs[a][0], pairs[a][1]);
+      }
+    }
     return cb;
   }
 }

@@ -29,13 +29,13 @@ public class Events {
         }
         break;
       }
-      case "_jfc_logout": {
+      case "jfc_logout": {
         client.setProperty("user", null);
         PopupPanel panel = (PopupPanel)client.getProperty("menu_panel");
         panel.setVisible(false);
         break;
       }
-      case "_jfc_login_ok":
+      case "jfc_login_ok":
         String user = ((TextField)c.getParent().findComponent("user")).getText();
         String pass = ((TextField)c.getParent().findComponent("pass")).getText();
         JFLog.log("user/pass=" + user + "," + pass);
@@ -55,7 +55,7 @@ public class Events {
           break;
         }
         //no break
-      case "_jfc_login_cancel": {
+      case "jfc_login_cancel": {
         PopupPanel panel = (PopupPanel)client.getProperty("login_panel");
         panel.setVisible(false);
         break;
