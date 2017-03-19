@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+3-18-2017 : v0.12
+  - added popup context menu for clipboard functions
+
 3-14-2016 : v0.11
   - added Line Ending to info dialog (F4)
 

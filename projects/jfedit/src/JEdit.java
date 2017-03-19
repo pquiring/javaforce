@@ -19,9 +19,9 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 
-public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener {
+public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener, ActionListener {
 
-  private String getVersion() { return "0.11"; }
+  private String getVersion() { return "0.12"; }
 
   /** Creates new form jfedit */
   public JEdit() {
@@ -31,6 +31,10 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfedit.png"));
     setIconImage(icon.getImage());
     loadProject();
+    cut.addActionListener(this);
+    copy.addActionListener(this);
+    paste.addActionListener(this);
+    delete.addActionListener(this);
   }
 
   /** This method is called from within the constructor to
@@ -41,7 +45,25 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
+    popup = new javax.swing.JPopupMenu();
+    cut = new javax.swing.JMenuItem();
+    copy = new javax.swing.JMenuItem();
+    paste = new javax.swing.JMenuItem();
+    delete = new javax.swing.JMenuItem();
+
     FormListener formListener = new FormListener();
+
+    cut.setText("Cut");
+    popup.add(cut);
+
+    copy.setText("Copy");
+    popup.add(copy);
+
+    paste.setText("Paste");
+    popup.add(paste);
+
+    delete.setText("Delete");
+    popup.add(delete);
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     addComponentListener(formListener);
@@ -141,6 +163,11 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JMenuItem copy;
+  private javax.swing.JMenuItem cut;
+  private javax.swing.JMenuItem delete;
+  private javax.swing.JMenuItem paste;
+  private javax.swing.JPopupMenu popup;
   // End of variables declaration//GEN-END:variables
   private static Settings settings = new Settings();
 
@@ -243,6 +270,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     });
     txt.getDocument().addDocumentListener(this);
     txt.getActionMap().put(DefaultEditorKit.insertBreakAction, indentBreakAction);
+    txt.setComponentPopupMenu(popup);
     return txt;
   }
   private page addpage(String title) {
@@ -823,6 +851,40 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       //TODO : build Tree
     } catch (Exception e) {
       e.printStackTrace();
+    }
+  }
+
+  private void cut() {
+    int idx = getidx();
+    JFTextArea txt = pages.get(idx).txt;
+    txt.cut();
+  }
+
+  private void copy() {
+    int idx = getidx();
+    JFTextArea txt = pages.get(idx).txt;
+    txt.copy();
+  }
+
+  private void paste() {
+    int idx = getidx();
+    JFTextArea txt = pages.get(idx).txt;
+    txt.paste();
+  }
+
+  private void delete() {
+    int idx = getidx();
+    JFTextArea txt = pages.get(idx).txt;
+    txt.replaceSelection("");
+  }
+
+  public void actionPerformed(ActionEvent ae) {
+    String a = ae.getActionCommand();
+    switch (a) {
+      case "Cut": cut(); break;
+      case "Copy": copy(); break;
+      case "Paste": paste(); break;
+      case "Delete": delete(); break;
     }
   }
 }
