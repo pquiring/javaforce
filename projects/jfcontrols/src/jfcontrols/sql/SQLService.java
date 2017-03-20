@@ -63,7 +63,7 @@ public class SQLService {
     sql.execute("create table users (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32), pass varchar(32))");
     sql.execute("create table lists (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique)");
     sql.execute("create table listdata (id int not null generated always as identity (start with 1, increment by 1) primary key, lid int, value int, text varchar(128))");
-    sql.execute("create table config (id varchar(32), value varchar(512))");
+    sql.execute("create table config (id varchar(32) unique, value varchar(512))");
 
     //create users
     sql.execute("insert into users (name, pass) values ('admin', 'admin')");
@@ -108,7 +108,7 @@ public class SQLService {
 
     sql.execute("insert into panels (name, popup) values ('jfc_main', true)");
     id = sql.select1value("select id from panels where name='jfc_main'");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",0,0,3,1,'button','','Main Panel','setPanel','main')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",0,0,3,1,'button','','Main Panel','setPanel','_main')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",0,1,3,1,'button','','Controllers','setPanel', 'jfc_controllers')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",0,2,3,1,'button','','Tags','setPanel','jfc_tags')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",0,3,3,1,'button','','Panels','setPanel','jfc_panels')");
@@ -121,11 +121,12 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,3,1,'label','','IP')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",5,1,2,1,'label','','Type')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",7,1,2,1,'label','','Speed')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",10,0,3,1,'button','','Save','jfc_ctrl_save')");
     for(int a=1;a<=10;a++) {
       sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0," + (a+1) + ",2,1,'label','','C" + a + "')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag) values (" +  id + ",2," + (a+1) + ",3,1,'textfield','c" + a + "_ip','jfc_config_c" + a + "_ip')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",5," + (a+1) + ",2,1,'combobox','c" + a + "_type','jfc_config_c" + a + "_type','jfc_ctrl_type')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",7," + (a+1) + ",2,1,'combobox','c" + a + "_speed','jfc_config_c" + a + "_speed','jfc_ctrl_speed')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag) values (" +  id + ",2," + (a+1) + ",3,1,'textfield','c" + a + "_ip','jfc_c" + a + "_ip')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",5," + (a+1) + ",2,1,'combobox','c" + a + "_type','jfc_c" + a + "_type','jfc_ctrl_type')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",7," + (a+1) + ",2,1,'combobox','c" + a + "_speed','jfc_c" + a + "_speed','jfc_ctrl_speed')");
     }
     sql.close();
   }

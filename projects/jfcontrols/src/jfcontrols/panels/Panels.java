@@ -9,6 +9,7 @@ import javaforce.*;
 import javaforce.webui.*;
 
 import jfcontrols.sql.*;
+import jfcontrols.tags.*;
 
 public class Panels {
   public static int cellWidth = 32;
@@ -134,10 +135,23 @@ public class Panels {
     return b;
   }
   private static TextField getTextField(String v[]) {
-    String text = v[TEXT];
+    SQL sql = SQLService.getSQL();
+    String tag = v[TAG];
+    String text = null;
+    if (tag != null) {
+      if (tag.startsWith("jfc_")) {
+        text = sql.select1value("select value from config where id=" + SQL.quote(tag));
+      } else {
+        text = TagsService.read(tag);
+      }
+    }
     if (text == null) text = "";
     TextField b = new TextField(text);
     b.setProperty("tag", v[TAG]);
+    b.addChangedListener((c) -> {
+      Events.edit((TextField)c);
+    });
+    sql.close();
     return b;
   }
   private static ComboBox getComboBox(String v[]) {

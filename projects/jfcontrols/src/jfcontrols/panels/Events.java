@@ -9,8 +9,10 @@ import javaforce.*;
 import javaforce.webui.*;
 
 import jfcontrols.sql.*;
+import jfcontrols.tags.TagsService;
 
 public class Events {
+  //button clicked
   public static void click(Component c) {
     WebUIClient client = c.getClient();
     String func = (String)c.getProperty("func");
@@ -60,6 +62,10 @@ public class Events {
         panel.setVisible(false);
         break;
       }
+      case "jfc_ctrl_save": {
+        //force a reload of config options
+        break;
+      }
       case "setPanel":
         Panel panel = Panels.getPanel(arg, client);
         if (panel != null) {
@@ -75,6 +81,24 @@ public class Events {
       default:
         //TODO : support plugin events
         break;
+    }
+    sql.close();
+  }
+  //textfield edited
+  public static void edit(TextField tf) {
+    WebUIClient client = tf.getClient();
+    String tag = (String)tf.getProperty("tag");
+    if (tag == null) return;
+    SQL sql = SQLService.getSQL();
+    if (tag.startsWith("jfc_")) {
+      //write to config table
+      String exists = sql.select1value("select value from config where id=" + SQL.quote(tag));
+      if (exists == null)
+        sql.execute("insert into config (id,value) values (" + SQL.quote(tag) + "," + SQL.quote(tf.getText()) + ")");
+      else
+        sql.execute("update config set value=" + SQL.quote(tf.getText()) + " where id=" + SQL.quote(tag));
+    } else {
+      TagsService.write(tag, tf.getText());
     }
     sql.close();
   }
