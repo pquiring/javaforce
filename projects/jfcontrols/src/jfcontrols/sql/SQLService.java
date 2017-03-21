@@ -8,7 +8,6 @@ package jfcontrols.sql;
 import java.io.*;
 
 import javaforce.*;
-import jfcontrols.app.Main;
 
 public class SQLService {
   public static String dataPath;

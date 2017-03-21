@@ -147,7 +147,7 @@ public class Panels {
     }
     if (text == null) text = "";
     TextField b = new TextField(text);
-    b.setProperty("tag", v[TAG]);
+    b.setProperty("tag", tag);
     b.addChangedListener((c) -> {
       Events.edit((TextField)c);
     });
@@ -156,19 +156,36 @@ public class Panels {
   }
   private static ComboBox getComboBox(String v[]) {
     ComboBox cb = new ComboBox();
+    String tag = v[TAG];
     String arg = v[ARG];
     SQL sql = SQLService.getSQL();
-    JFLog.log("arg=" + arg);
     String lid = sql.select1value("select id from lists where name=" + SQL.quote(arg));
-    JFLog.log("lid=" + lid);
     String pairs[][] = sql.select("select value, text from listdata where lid=" + lid);
-    JFLog.log("pairs=" + pairs.length);
+    String value = null;
+    if (tag != null) {
+      if (tag.startsWith("jfc_")) {
+        value = sql.select1value("select value from config where id=" + SQL.quote(tag));
+      } else {
+        value = TagsService.read(tag);
+      }
+    }
     sql.close();
+    int selidx = -1;
     if (pairs != null) {
       for(int a=0;a<pairs.length;a++) {
         cb.add(pairs[a][0], pairs[a][1]);
+        if (value != null && pairs[a][0].equals(value)) {
+          selidx = a;
+        }
       }
     }
+    if (selidx != -1) {
+      cb.setSelectedIndex(selidx);
+    }
+    cb.setProperty("tag", tag);
+    cb.addChangedListener((c) -> {
+      Events.changed((ComboBox)c);
+    });
     return cb;
   }
 }

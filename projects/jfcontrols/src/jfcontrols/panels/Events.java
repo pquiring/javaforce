@@ -89,17 +89,36 @@ public class Events {
     WebUIClient client = tf.getClient();
     String tag = (String)tf.getProperty("tag");
     if (tag == null) return;
-    SQL sql = SQLService.getSQL();
     if (tag.startsWith("jfc_")) {
+      SQL sql = SQLService.getSQL();
       //write to config table
       String exists = sql.select1value("select value from config where id=" + SQL.quote(tag));
       if (exists == null)
         sql.execute("insert into config (id,value) values (" + SQL.quote(tag) + "," + SQL.quote(tf.getText()) + ")");
       else
         sql.execute("update config set value=" + SQL.quote(tf.getText()) + " where id=" + SQL.quote(tag));
+      sql.close();
     } else {
       TagsService.write(tag, tf.getText());
     }
-    sql.close();
+  }
+  //combobox changed
+  public static void changed(ComboBox cb) {
+    WebUIClient client = cb.getClient();
+    String tag = (String)cb.getProperty("tag");
+    if (tag == null) return;
+    String value = cb.getSelectedValue();
+    if (tag.startsWith("jfc_")) {
+      SQL sql = SQLService.getSQL();
+      //write to config table
+      String exists = sql.select1value("select value from config where id=" + SQL.quote(tag));
+      if (exists == null)
+        sql.execute("insert into config (id,value) values (" + SQL.quote(tag) + "," + SQL.quote(value) + ")");
+      else
+        sql.execute("update config set value=" + SQL.quote(value) + " where id=" + SQL.quote(tag));
+      sql.close();
+    } else {
+      TagsService.write(tag, value);
+    }
   }
 }
