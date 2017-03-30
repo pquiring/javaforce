@@ -10,7 +10,7 @@ package javaforce.controls.ni;
  * AnalogInput : cDAQ9188-189E9F4Mod6/ai0
  * DigitalInput : cDAQ9188-189E9F4Mod8/port0/line0
  * DigitalInput(s) : cDAQ9188-189E9F4Mod8/port0/line0:7
- * CounterInput : cDAQ9188-189E9F4Mod1/ctr0 term=/cDAQ9188-189E9F4Mod1/pfi0
+ * CounterInput : cDAQ9188-189E9F4Mod1/ctr0/pfi0
  *
  * @author pquiring
  */
@@ -70,7 +70,9 @@ public class DAQmx {
       type = types.AI;
       handle = createTask();
       if (!createChannelAnalog(handle, url, Controller.rate, samples, -10, 10)) return false;
-      return startTask(handle);
+      if (startTask(handle)) return true;
+      printError();
+      return false;
     }
     else if (port.startsWith("port")) {
       //digital input
@@ -88,7 +90,9 @@ public class DAQmx {
           chs = z - y + 1;
         }
       }
-      return startTask(handle);
+      if (startTask(handle)) return true;
+      printError();
+      return false;
     }
     else if (port.startsWith("ctr")) {
       //counter (freq) input
@@ -99,7 +103,9 @@ public class DAQmx {
       device = p[0] + "/" + p[1];
       port = "/" + p[0] + "/" + p[2];
       if (!createChannelCounter(handle, device, 20000000.0, samples, 2.0, 1000.0, port, 1.0 / Controller.rate, 4)) return false;
-      return startTask(handle);
+      if (startTask(handle)) return true;
+      printError();
+      return false;
     }
     System.out.println("Unsupported DAQmx host:" + url);
     return false;
@@ -116,7 +122,7 @@ public class DAQmx {
       handle = 0;
     }
   }
-
+  
   public byte[] read() {
     int read = 0;
     byte out[] = null;

@@ -54,6 +54,7 @@ public class Controller {
    *
    */
   public boolean connect(String url) {
+    System.out.println("Controller.connect():" + url);
     connected = false;
     if (url.startsWith("S7:")) {
       plc = types.S7;
@@ -362,8 +363,17 @@ public class Controller {
 
   public boolean isConnected() {
     try {
-      return socket.isConnected();
+      switch (plc) {
+        case S7:
+        case AB:
+        case MB:
+          return socket.isConnected();
+        case NI:
+        default:
+          return connected;
+      }
     } catch (Exception e) {
+      e.printStackTrace();
       return false;
     }
   }
