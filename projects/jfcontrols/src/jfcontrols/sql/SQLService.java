@@ -9,6 +9,8 @@ import java.io.*;
 
 import javaforce.*;
 
+import jfcontrols.tags.*;
+
 public class SQLService {
   public static String dataPath;
   public static String databaseName = "jfcontrols";
@@ -122,10 +124,24 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",7,1,2,1,'label','','Speed')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",10,0,3,1,'button','','Save','jfc_ctrl_save')");
     for(int a=1;a<=10;a++) {
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0," + (a+1) + ",2,1,'label','','C" + a + "')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag) values (" +  id + ",2," + (a+1) + ",3,1,'textfield','c" + a + "_ip','jfc_c" + a + "_ip')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",5," + (a+1) + ",2,1,'combobox','c" + a + "_type','jfc_c" + a + "_type','jfc_ctrl_type')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",7," + (a+1) + ",2,1,'combobox','c" + a + "_speed','jfc_c" + a + "_speed','jfc_ctrl_speed')");
+      int y = a + 1;
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0," + y + ",2,1,'label','','C" + a + "')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag) values (" +  id + ",2," + y + ",3,1,'textfield','c" + a + "_ip','jfc_c" + a + "_ip')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",5," + y + ",2,1,'combobox','c" + a + "_type','jfc_c" + a + "_type','jfc_ctrl_type')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",7," + y + ",2,1,'combobox','c" + a + "_speed','jfc_c" + a + "_speed','jfc_ctrl_speed')");
+    }
+
+    sql.execute("insert into panels (name, popup) values ('jfc_tags', false)");
+    id = sql.select1value("select id from panels where name='jfc_tags'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,7,1,'label','','Name')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",9,1,2,1,'label','','Type')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,0,3,1,'button','','New','jfc_tags_new')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,0,3,1,'button','','Save','jfc_tags_save')");
+    Tag tags[] = TagsService.getTags();
+    for(int a=0;a<tags.length;a++) {
+      int y = a + 2;
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag) values (" +  id + ",2," + y + ",3,1,'textfield',''," + tags[a].getName() + ")");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",5," + y + ",2,1,'combobox','','','jfc_tags_type')");
     }
     sql.close();
   }

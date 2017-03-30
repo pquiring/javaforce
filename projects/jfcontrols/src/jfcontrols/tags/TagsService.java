@@ -12,4 +12,7 @@ public class TagsService {
   public static void write(String tag, String value) {
 
   }
+  public static Tag[] getTags() {
+    return new Tag[0];
+  }
 }
