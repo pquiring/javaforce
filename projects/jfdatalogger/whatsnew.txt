@@ -1,3 +1,6 @@
+Mar 30/2017 : v0.10 released
+  - fix : NI connection issue
+
 Mar 10/2017 : v0.9 released
   - fix : NI is big endian
 

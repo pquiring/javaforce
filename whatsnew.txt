@@ -1,5 +1,10 @@
 What's new...
 
+Mar 30/2017 : JF 15.2.0 released!
+  - fix : javaforce.controls.Controller.isConnected() was always returning false for NI devices
+    - jfDataLogger/0.10
+    - jfDataLoggerPlus/0.6
+
 Mar 10/2017 : JF 15.1.0 released!
   - fix : javaforce.controls.Tag : NI is big endian
     - jfDataLogger/0.9
