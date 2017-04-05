@@ -54,7 +54,7 @@ public class Controller {
    *
    */
   public boolean connect(String url) {
-    System.out.println("Controller.connect():" + url);
+    System.out.println("Info:" + System.currentTimeMillis() + ":Controller.connect():" + url);
     connected = false;
     if (url.startsWith("S7:")) {
       plc = types.S7;
@@ -361,7 +361,95 @@ public class Controller {
     }
   }
 
+ /** Reads multiple data tags from PLC. (only S7 is currently supported) */
+  public byte[][] read(String addr[]) {
+    if (!connected) return null;
+    switch (plc) {
+      case S7: {
+        S7Data s7[] = new S7Data[addr.length];
+        for(int a=0;a<addr.length;a++) {
+          s7[a] = S7Packet.decodeAddress(addr[a]);
+        }
+        byte packet[] = S7Packet.makeReadPacket(s7);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        byte reply[] = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        s7 = S7Packet.decodeMultiPacket(Arrays.copyOf(reply, replySize), addr.length);
+        byte ret[][] = new byte[addr.length][];
+        for(int a=0;a<addr.length;a++) {
+          ret[a] = s7[a].data;
+        }
+        return ret;
+      }
+/*
+      case MODBUS: {
+        ModAddr ma = ModPacket.decodeAddress(addr);
+        byte packet[] = ModPacket.makeReadPacket(ma);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        byte reply[] = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!ModPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        ModData data = ModPacket.decodePacket(Arrays.copyOf(reply, replySize));
+        return data.data;
+      }
+      case AB: {
+        byte packet[] = ABPacket.makeReadPacket(addr, ab_context);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        byte reply[] = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!ABPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          return ABPacket.decodePacket(reply);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+      }
+*/
+    }
+    return null;
+  }
+
   public boolean isConnected() {
+    if (plc == null) return false;
     try {
       switch (plc) {
         case S7:

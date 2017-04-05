@@ -51,6 +51,12 @@ public class Tag {
   private TagListener listener;
   private HashMap<String, Object> user = new HashMap<String, Object>();
   private Tag parent;
+  private int childIdx;
+  private Object lock = new Object();
+  private ArrayList<Tag> children = new ArrayList<Tag>();
+  private byte[][] childData;
+  private ArrayList<Tag> queue = new ArrayList<Tag>();
+  private boolean multiRead = true;
 
   /** Returns true if data type is float32 or float64 */
   public boolean isFloat() {
@@ -71,6 +77,25 @@ public class Tag {
   /** Returns true is controller is Little Endian byte order. */
   public boolean isLE() {
     return !isBE();
+  }
+
+  /** Enables reading multiple tags in one request (currently only S7 supported) */
+  public void setMultiRead(boolean state) {
+    if (type != Controller.types.S7) return;
+    if (true) return;  //TODO!!!
+    multiRead = state;
+  }
+
+  /** Adds a child tag and returns index. */
+  public int addChild(Tag child) {
+    children.add(child);
+    return children.size() - 1;
+  }
+
+  private void queue(Tag tag) {
+    synchronized(queue) {
+      queue.add(tag);
+    }
   }
 
   /** Returns # of bytes tag uses. */
@@ -133,6 +158,7 @@ public class Tag {
 
   private boolean startTimer() {
     if (parent == null) {
+      childData = null;
       c = new Controller();
     } else {
       c = null;
@@ -154,7 +180,10 @@ public class Tag {
   /** Start reading tag at interval (delay) using another Tags connection. */
   public boolean start(Tag parent) {
     this.parent = parent;
-    if (parent != null && parent.type != type) return false;
+    if (parent != null) {
+      if (parent.type != type) return false;
+      childIdx = parent.addChild(this);
+    }
     return startTimer();
   }
 
@@ -210,9 +239,39 @@ public class Tag {
   public byte[] read() {
     if (parent != null) {
       if (parent.c == null) return null;
-      return parent.c.read(tag);
+      if (multiRead) {
+        return parent.read(childIdx);
+      } else {
+        //queue read with parent to prevent some threads from starving
+        synchronized(lock) {
+          parent.queue(this);
+          try {lock.wait();} catch (Exception e) {}
+          return parent.c.read(tag);
+        }
+      }
     } else {
-      return c.read(tag);
+      if (multiRead && type == Controller.types.S7 && children.size() > 0) {
+        int cnt = children.size();
+        String tags[] = new String[cnt+1];
+        tags[cnt] = tag;
+        for(int a=0;a<cnt;a++) {
+          tags[a] = children.get(a).tag;
+        }
+        childData = c.read(tags);
+        if (childData == null) return null;
+        return childData[cnt];
+      } else {
+        //allow queued children to proceed
+        synchronized(queue) {
+          while (queue.size() > 0) {
+            Tag child = queue.remove(0);
+            synchronized(child.lock) {
+              child.lock.notify();
+            }
+          }
+        }
+        return c.read(tag);
+      }
     }
   }
 
@@ -224,6 +283,11 @@ public class Tag {
     } else {
       c.write(tag, data);
     }
+  }
+
+  private byte[] read(int idx) {
+    if (childData == null || idx >= childData.length) return null;
+    return childData[idx];
   }
 
   private static class Reader extends TimerTask {
@@ -241,7 +305,7 @@ public class Tag {
         }
         data = tag.read();
         if (data == null) {
-          System.out.println("Tag:error:data==null:Controller=" + tag.getController());
+          System.out.println("Error:" + System.currentTimeMillis() + ":data==null:host=" + tag.host + ":tag=" + tag.tag);
           return;
         }
         if (tag.isBE()) {
