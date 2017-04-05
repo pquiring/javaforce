@@ -1,3 +1,6 @@
+Apr 5/2017 : v0.11 released
+  - fix : brought back S7 multi-tag reading (performance improvement)
+
 Mar 30/2017 : v0.10 released
   - fix : NI connection issue
 
