@@ -5,6 +5,8 @@ package jfcontrols.panels;
  * @author pquiring
  */
 
+import java.util.*;
+
 import javaforce.*;
 import javaforce.webui.*;
 
@@ -16,12 +18,12 @@ public class Panels {
   public static int cellHeight = 32;
   public static PopupPanel getLoginPanel(WebUIClient client) {
     PopupPanel panel = (PopupPanel)getPanel(createPopupPanel("Login"), "jfc_login", client);
-    client.setProperty("login_panel", panel);
+    panel.setName("login_panel");
     return panel;
   }
   public static PopupPanel getMenuPanel(WebUIClient client) {
     PopupPanel panel = (PopupPanel)getPanel(createPopupPanel("Menu"), "jfc_main", client);
-    client.setProperty("menu_panel", panel);
+    panel.setName("menu_panel");
     return panel;
   }
   public static Panel getTagsPanel(WebUIClient client) {
@@ -49,7 +51,7 @@ public class Panels {
     String popup = sql.select1value("select popup from panels where id=" + pid);
     String cells[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style from cells where pid=" + pid);
     sql.close();
-    panel.add(getTable(panel, cells, popup.equals("true")));
+    panel.add(getTable(cells, popup.equals("true")));
     if (popup.equals("true")) return panel;
     panel.add(getLoginPanel(client));
     panel.add(getMenuPanel(client));
@@ -68,7 +70,7 @@ public class Panels {
   private final static int FUNC = 9;
   private final static int ARG = 10;
   private final static int STYLE = 11;
-  private static Table getTable(Panel panel, String cells[][], boolean popup) {
+  private static Table getTable(String cells[][], boolean popup) {
     int mx = 1;
     int my = 1;
     for(int a=0;a<cells.length;a++) {
@@ -118,6 +120,7 @@ public class Panels {
       case "button": return getButton(v);
       case "textfield": return getTextField(v);
       case "combobox": return getComboBox(v);
+      case "table": return getTable(v);
     }
     return null;
   }
@@ -187,5 +190,52 @@ public class Panels {
       Events.changed((ComboBox)c);
     });
     return cb;
+  }
+  private static String[] createCell(String id, int x, int y, int w, int h, String comp, String name, String text, String tag, String func, String arg, String style) {
+    String cell[] = new String[12];
+    cell[0] = id;
+    cell[1] = Integer.toString(x);
+    cell[2] = Integer.toString(y);
+    cell[3] = Integer.toString(w);
+    cell[4] = Integer.toString(h);
+    cell[5] = comp;
+    cell[6] = name;
+    cell[7] = text;
+    cell[8] = tag;
+    cell[9] = func;
+    cell[10] = arg;
+    cell[11] = style;
+    return cell;
+  }
+//   cells[][] = "id,x,y,w,h,comp,name,text,tag,func,arg,style"
+  private static Table getTable(String v[]) {
+    String name = v[NAME];
+    SQL sql = SQLService.getSQL();
+    ArrayList<String[]> cells = new ArrayList<String[]>();
+  //id,x,y,w,h,name,text,tag,func,arg,style
+    switch (name) {
+      case "jfc_ctrls" : {
+        String data[][] = sql.select("select id,ip,ctype from ctrls");
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          cells.add(createCell("", 0, a+2, 1, 1, "label", null, "C" + a, null, null, null, null));
+          cells.add(createCell("", 1, a+2, 3, 1, "textfield", "c_" + a + "_ip", null, "jfc_c_" + a + "_ip", null, null, null));
+          cells.add(createCell("", 4, a+2, 2, 1, "combobox", "c_" + a + "_type", null, "jfc_c_" + a + "_type", null, "jfc_ctrl_type", null));
+          cells.add(createCell("", 6, a+2, 2, 1, "combobox", "c_" + a + "_speed", null, "jfc_c_" + a + "_speed", null, "jfc_ctrl_speed", null));
+        }
+        break;
+      }
+      case "jfc_tags": {
+        String data[][] = sql.select("select id,name,dtype from tags");
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          cells.add(createCell("", 1, a+2, 5, 1, "textfield", "t_" + a + "_name", null, "jfc_t_" + a + "_name", null, null, null));
+          cells.add(createCell("", 6, a+2, 2, 1, "combobox", "t_" + a + "_type", null, "jfc_t_" + a + "_type", null, "jfc_tag_type", null));
+        }
+        break;
+      }
+    }
+    sql.close();
+    return getTable(cells.toArray(new String[0][0]), true);
   }
 }

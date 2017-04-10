@@ -77,6 +77,39 @@ To bundle the JRE with packages you must:
   - use Java 9 (project jigsaw)
   - run "ant jre" in main folder
 
+Linux Repo
+----------
+To install the JavaForce repo for linux, follow these commands:
+
+ubuntu/debian:
+  #download JavaForce Repo file
+  cd /etc/apt/sources.list.d
+  if [ ! -f javaforce.list ]; then
+    echo Download javaforce.list
+    wget http://javaforce.sf.net/ubuntu/javaforce.list
+  fi
+  cd /etc/apt/trusted.gpg.d
+  if [ ! -f javaforce.gpg ]; then
+    echo Download javaforce.gpg
+    wget http://javaforce.sf.net/ubuntu/javaforce.gpg
+  fi
+  cd /
+
+fedora:
+  #cut/paste this into /etc/yum.repos.d/javaforce.repo
+  [javaforce]
+  name=JavaForce Yum Repo
+  baseurl=http://javaforce.sourceforge.net/fedora
+  enabled=1
+  gpgcheck=1
+  gpgkey=http://javaforce.sourceforge.net/fedora/RPM-GPG-KEY-javaforce
+
+arch:
+  #paste this into /etc/pacman/pacman.conf
+  [javaforce]
+  SigLevel = TrustAll
+  Server = http://javaforce.sourceforge.net/arch/$arch
+
 License
 =======
 JavaForce itself is licensed under the LGPL license which can be read in license.txt.

@@ -16,7 +16,7 @@ public class SQLService {
   public static String databaseName = "jfcontrols";
   public static String logsPath;
   public static String derbyURI;
-  public static String dbVersion = "0.1B";
+  public static String dbVersion = "0.0.1";
 
   public static SQL getSQL() {
     SQL sql = new SQL();
@@ -56,11 +56,12 @@ public class SQLService {
     JFLog.log("DB creating...");
     sql.connect(derbyURI + ";create=true");
     //create tables
-    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key)");
+    sql.execute("create table ctrls (id int not null primary key, ip varchar(32), ctype int)");
+    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), dtype int, speed int)");
     sql.execute("create table panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, popup boolean)");
     sql.execute("create table cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int,comp  varchar(32), name varchar(32), text varchar(512), tag varchar(32), func varchar(32), arg varchar(32), style varchar(512))");
     sql.execute("create table funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique)");
-    sql.execute("create table rungs (id int not null generated always as identity (start with 1, increment by 1) primary key, fid int, logic varchar(32000))");
+    sql.execute("create table rungs (id int not null generated always as identity (start with 1, increment by 1) primary key, rung int, fid int, logic varchar(32000))");
     sql.execute("create table users (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32), pass varchar(32))");
     sql.execute("create table lists (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique)");
     sql.execute("create table listdata (id int not null generated always as identity (start with 1, increment by 1) primary key, lid int, value int, text varchar(128))");
@@ -85,12 +86,23 @@ public class SQLService {
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",2,'AB')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",3,'MB')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",4,'NI')");
+
     sql.execute("insert into lists (name) values ('jfc_ctrl_speed')");
     id = sql.select1value("select id from lists where name='jfc_ctrl_speed'");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",0,'Auto')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",1,'1s')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",2,'100ms')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",3,'10ms')");
+
+    sql.execute("insert into lists (name) values ('jfc_tag_type')");
+    id = sql.select1value("select id from lists where name='jfc_tag_type'");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",0,'boolean')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",1,'byte')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",2,'short')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",3,'int')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",4,'long')");
+    //create local controller
+    sql.execute("insert into ctrls (id,ip,ctype) values (0,'127.0.0.1',0)");
     //create panels
     sql.execute("insert into panels (name, popup) values ('jfc_login', true)");
     id = sql.select1value("select id from panels where name='jfc_login'");
@@ -122,27 +134,16 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,3,1,'label','','IP')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",5,1,2,1,'label','','Type')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",7,1,2,1,'label','','Speed')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",10,0,3,1,'button','','Save','jfc_ctrl_save')");
-    for(int a=1;a<=10;a++) {
-      int y = a + 1;
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0," + y + ",2,1,'label','','C" + a + "')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag) values (" +  id + ",2," + y + ",3,1,'textfield','c" + a + "_ip','jfc_c" + a + "_ip')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",5," + y + ",2,1,'combobox','c" + a + "_type','jfc_c" + a + "_type','jfc_ctrl_type')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",7," + y + ",2,1,'combobox','c" + a + "_speed','jfc_c" + a + "_speed','jfc_ctrl_speed')");
-    }
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",10,1,3,1,'button','','Save','jfc_ctrl_save')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,3,1,'table','jfc_ctrls')");
 
     sql.execute("insert into panels (name, popup) values ('jfc_tags', false)");
     id = sql.select1value("select id from panels where name='jfc_tags'");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,7,1,'label','','Name')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",9,1,2,1,'label','','Type')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,0,3,1,'button','','New','jfc_tags_new')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,0,3,1,'button','','Save','jfc_tags_save')");
-    Tag tags[] = TagsService.getTags();
-    for(int a=0;a<tags.length;a++) {
-      int y = a + 2;
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag) values (" +  id + ",2," + y + ",3,1,'textfield',''," + tags[a].getName() + ")");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,tag,arg) values (" +  id + ",5," + y + ",2,1,'combobox','','','jfc_tags_type')");
-    }
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,1,3,1,'button','','New','jfc_tags_new')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,1,3,1,'button','','Save','jfc_tags_save')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,3,1,'table','jfc_tags')");
     sql.close();
   }
   public static void start() {

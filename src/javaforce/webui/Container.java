@@ -24,6 +24,9 @@ public abstract class Container extends Component {
   }
   public Component findComponent(String name) {
     int cnt = count();
+    if (this.name != null && this.name.equals(name)) {
+      return this;
+    }
     for(int a=0;a<cnt;a++) {
       Component child = get(a);
       if (child instanceof Container) {

@@ -171,99 +171,26 @@
 
   <target name="deb" description="create deb package">
     <exec executable="jfdeb">
-      <arg value="${app}-${version}_noarch.deb"/>
-      <arg value="noarch"/>
+      <arg value="${app}-${version}_${archext}.deb"/>
+      <arg value="${arch}"/>
     </exec>
-    <copy file="${app}-${version}_noarch.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
-  </target>
-
-  <target name="deb32" depends="elf32,jar"  description="create deb package">
-    <exec executable="jfdeb">
-      <arg value="${app}-${version}_i386.deb"/>
-      <arg value="x32"/>
-    </exec>
-    <copy file="${app}-${version}_i386.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
-  </target>
-
-  <target name="deb64" depends="elf64,jar"  description="create deb package">
-    <exec executable="jfdeb">
-      <arg value="${app}-${version}_amd64.deb"/>
-      <arg value="x64"/>
-    </exec>
-    <copy file="${app}-${version}_amd64.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
-  </target>
-
-  <target name="debarm" depends="elf32,jar"  description="create deb package">
-    <exec executable="jfdeb">
-      <arg value="${app}-${version}_armhf.deb"/>
-      <arg value="32"/>
-    </exec>
-    <copy file="${app}-${version}_armhf.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
+    <copy file="${app}-${version}_${archext}.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
   </target>
 
   <target name="rpm" description="create rpm package">
     <exec executable="jfrpm">
       <arg value="${app}.spec"/>
-      <arg value="noarch"/>
+      <arg value="${arch}"/>
     </exec>
-    <copy file="${app}-${version}-1.noarch.rpm" todir="${home}/repo/fedora" overwrite="true"/>
-  </target>
-
-  <target name="rpm32" depends="elf32,jar" description="create rpm package">
-    <exec executable="jfrpm">
-      <arg value="${app}.spec"/>
-      <arg value="x32"/>
-    </exec>
-    <copy file="${app}-${version}-1.i686.rpm" todir="${home}/repo/fedora" overwrite="true"/>
-  </target>
-
-  <target name="rpm64" depends="elf64,jar" description="create rpm package">
-    <exec executable="jfrpm">
-      <arg value="${app}.spec"/>
-      <arg value="x64"/>
-    </exec>
-    <copy file="${app}-${version}-1.x86_64.rpm" todir="${home}/repo/fedora" overwrite="true"/>
-  </target>
-
-  <target name="rpmarm" depends="elf32,jar" description="create rpm package">
-    <exec executable="jfrpm">
-      <arg value="${app}.spec"/>
-      <arg value="a32"/>
-    </exec>
-    <copy file="${app}-${version}-1.armv7hl.rpm" todir="${home}/repo/fedora" overwrite="true"/>
+    <copy file="${app}-${version}-1.${archext}.rpm" todir="${home}/repo/fedora" overwrite="true"/>
   </target>
 
   <target name="pac" description="create pac package">
     <exec executable="jfpac">
-      <arg value="${app}-${version}-any.pkg.tar.xz"/>
-      <arg value="noarch"/>
+      <arg value="${app}-${version}-${archext}.pkg.tar.xz"/>
+      <arg value="${arch}"/>
     </exec>
-    <copy file="${app}-${version}-any.pkg.tar.xz" todir="${home}/repo/arch/x32" overwrite="true"/>
-    <copy file="${app}-${version}-any.pkg.tar.xz" todir="${home}/repo/arch/x64" overwrite="true"/>
-  </target>
-
-  <target name="pac32" depends="elf32,jar"  description="create pac package">
-    <exec executable="jfpac">
-      <arg value="${app}-${version}-i686.pkg.tar.xz"/>
-      <arg value="x32"/>
-    </exec>
-    <copy file="${app}-${version}-i686.pkg.tar.xz" todir="${home}/repo/arch/x32" overwrite="true"/>
-  </target>
-
-  <target name="pac64" depends="elf64,jar"  description="create pac package">
-    <exec executable="jfpac">
-      <arg value="${app}-${version}-x86_64.pkg.tar.xz"/>
-      <arg value="x64"/>
-    </exec>
-    <copy file="${app}-${version}-x86_64.pkg.tar.xz" todir="${home}/repo/arch/x64" overwrite="true"/>
-  </target>
-
-  <target name="pacarm" depends="elf32,jar"  description="create pac package">
-    <exec executable="jfpac">
-      <arg value="${app}-${version}-arm.pkg.tar.xz"/>
-      <arg value="32"/>
-    </exec>
-    <copy file="${app}-${version}-arm.pkg.tar.xz" todir="${home}/repo/arch" overwrite="true"/>
+    <copy file="${app}-${version}-${archext}.pkg.tar.xz" todir="${home}/repo/arch/${arch}" overwrite="true"/>
   </target>
 
   <!-- MacOSX targets -->

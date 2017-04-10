@@ -12,6 +12,7 @@ import jfcontrols.sql.*;
 import jfcontrols.tags.TagsService;
 
 public class Events {
+  private static final Object lock = new Object();
   //button clicked
   public static void click(Component c) {
     WebUIClient client = c.getClient();
@@ -23,23 +24,23 @@ public class Events {
     switch (func) {
       case "showMenu": {
         if (client.getProperty("user") == null) {
-          PopupPanel panel = (PopupPanel)client.getProperty("login_panel");
+          PopupPanel panel = (PopupPanel)client.root.findComponent("login_panel");
           panel.setVisible(true);
         } else {
-          PopupPanel panel = (PopupPanel)client.getProperty("menu_panel");
+          PopupPanel panel = (PopupPanel)client.root.findComponent("menu_panel");
           panel.setVisible(true);
         }
         break;
       }
       case "jfc_logout": {
         client.setProperty("user", null);
-        PopupPanel panel = (PopupPanel)client.getProperty("menu_panel");
+        PopupPanel panel = (PopupPanel)client.root.findComponent("menu_panel");
         panel.setVisible(false);
         break;
       }
-      case "jfc_login_ok":
-        String user = ((TextField)c.getParent().findComponent("user")).getText();
-        String pass = ((TextField)c.getParent().findComponent("pass")).getText();
+      case "jfc_login_ok": {
+        String user = ((TextField)client.root.findComponent("user")).getText();
+        String pass = ((TextField)client.root.findComponent("pass")).getText();
         JFLog.log("user/pass=" + user + "," + pass);
         String data[][] = sql.select("select name,pass from users");
         boolean ok = false;
@@ -52,18 +53,38 @@ public class Events {
           }
         }
         if (!ok) {
-          Label lbl = (Label)c.getParent().findComponent("errmsg");
+          Label lbl = (Label)client.root.findComponent("errmsg");
           lbl.setText("Invalid username or password!");
           break;
         }
         //no break
+      }
       case "jfc_login_cancel": {
-        PopupPanel panel = (PopupPanel)client.getProperty("login_panel");
+        PopupPanel panel = (PopupPanel)client.root.findComponent("login_panel");
         panel.setVisible(false);
+        break;
+      }
+      case "jfc_ctrl_new": {
+        break;
+      }
+      case "jfc_ctrl_delete": {
         break;
       }
       case "jfc_ctrl_save": {
         //force a reload of config options
+        break;
+      }
+      case "jfc_tags_new": {
+        synchronized(lock) {
+          Panel panel = client.root;
+
+        }
+        break;
+      }
+      case "jfc_tags_delete": {
+        break;
+      }
+      case "jfc_tags_save": {
         break;
       }
       case "setPanel":

@@ -13,6 +13,9 @@ public class Table extends Container {
     this.height = height;  //Y
     this.cols = cols;  //X
     this.rows = rows;  //Y
+    setSize();
+  }
+  private void setSize() {
     setWidth((width * cols) + "px");
     setHeight((height * rows) + "px");
   }
@@ -87,5 +90,13 @@ public class Table extends Container {
     comp.setProperty("spanx", spanx);
     comp.setProperty("spany", spany);
     add(comp);
+  }
+  public void addRow() {
+    rows++;
+    setSize();
+  }
+  public void addCol() {
+    cols++;
+    setSize();
   }
 }

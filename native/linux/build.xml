@@ -18,19 +18,20 @@
     </javah>
   </target>
 
-  <target name="linux" depends="javah"  description="create linux native so">
-
+  <target name="x64" depends="javah"  description="create linux native so">
     <exec command="gcc -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/x86_64-linux-gnu linux.cpp -c -o linux64.o -fPIC"/>
-    <exec command="gcc -I../glfw/include glfw.c -c -o glfw64.o -fPIC"/>
+    <exec command="gcc -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw.c -c -o glfw64.o -fPIC"/>
     <exec command="gcc -shared linux64.o glfw64.o -L /usr/lib/x86_64-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -o ../jfnative64.so"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
     </delete>
+  </target>
 
-    <exec command="gcc -m32 -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/x86_64-linux-gnu linux.cpp -c -o linux32.o -fPIC"/>
-    <exec command="gcc -m32 -I../glfw/include glfw.c -c -o glfw32.o -fPIC"/>
-    <exec command="gcc -m32 -shared linux32.o glfw32.o -L /usr/lib/i386-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -o ../jfnative32.so"/>
+  <target name="x32" depends="javah"  description="create linux native so">
+    <exec command="gcc -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/i386-linux-gnu linux.cpp -c -o linux32.o -fPIC"/>
+    <exec command="gcc -I ../glfw/include -I /usr/include/i386-linux-gnu glfw.c -c -o glfw32.o -fPIC"/>
+    <exec command="gcc -shared linux32.o glfw32.o -L /usr/lib/i386-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -o ../jfnative32.so"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
@@ -38,15 +39,12 @@
   </target>
 
   <target name="pi" depends="javah"  description="create Raspberry Pi native so">
-
     <exec command="gcc -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/arm-linux-gnueabihf linux.cpp -c -o linux32.o -fPIC"/>
-    <exec command="gcc -I../glfw/include glfw.c -c -o glfw32.o -fPIC"/>
+    <exec command="gcc -I../glfw/include -I /usr/include/arm-linux-gnueabihf glfw.c -c -o glfw32.o -fPIC"/>
     <exec command="gcc -shared linux32.o glfw32.o -L /usr/lib/arm-linux-gnueabihf -lX11 -lXrandr -lXinerama -lXcursor -lpam -o ../jfnative32.so"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
     </delete>
-
   </target>
-
 </project>

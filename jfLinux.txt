@@ -17,16 +17,15 @@ To create the jfLinux image follow these steps:
       - ant
       - cd /stubs/linux
       - ant
-  - install/package jfdeb (packager)
+  - install jfdeb (packager)
     - cd /projects/jfdeb
     - sudo ant install -Dbits=32|64
-    - ant deb
   - package JavaForce
     - cd /
-    - ant deb32|64
+    - buildUbuntu.sh
   - build all projects
     - cd /projects
-    - buildAllUbuntu32|64.sh
+    - buildAllUbuntu.sh
   - see /repo/ubuntu/readme.txt for uploading packages
   - run /iso/ubuntu/jfLinux.sh to build image
 This creates the Ubuntu based image.
@@ -35,14 +34,14 @@ fedora
 ------
 The process is general the same as ubuntu except:
 Replace 'deb' with 'rpm' above.
-Use buildAllFedora32|64.sh to build all projects for Fedora.
+Use buildAllFedora.sh to build all projects for Fedora.
 To use sudo you may need to add yourself to the 'wheel' group
   usermod -a -G wheel my_user_name
 
 arch
 ----
 Again basically the same just replace 'deb' with 'pac'.
-Use buildAllArch32|64.sh to build all projects for Arch.
+Use buildAllArch.sh to build all projects for Arch.
 
 Required packages to compile JavaForce on Linux
 ===============================================
