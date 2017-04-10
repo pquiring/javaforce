@@ -1,4 +1,4 @@
-<project name="native" default="linux" basedir=".">
+<project name="native" default="help" basedir=".">
   <description>native</description>
   <property environment="env"/>
 
@@ -47,4 +47,12 @@
       <fileset dir="." includes="*.o"/>
     </delete>
   </target>
+
+  <target name="help">
+    <echo>ant x32 : build intel x86 32bit</echo>
+    <echo>ant x64 : build intel x86 64bit</echo>
+    <echo>ant a32 : build ARM 32bit</echo>
+    <echo>ant a64 : build ARM 64bit</echo>
+  </target>
+
 </project>

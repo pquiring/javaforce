@@ -14,7 +14,7 @@ To create the jfLinux image follow these steps:
       - ant get-bin
     - build yourself
       - cd /native/linux
-      - ant
+      - ant x32|x64|pi
       - cd /stubs/linux
       - ant
   - install jfdeb (packager)
