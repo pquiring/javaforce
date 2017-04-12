@@ -18,10 +18,10 @@ if [ "$1" == "" ]; then
   exit
 fi
 
-ARCH=$2
+ARCH=$1
 BITS=${ARCH:1:2}
 
-case $2 in
+case $1 in
 x32)
   ARCHEXT=i686
   ;;
