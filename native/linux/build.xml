@@ -48,7 +48,23 @@
     </delete>
   </target>
 
+  <target name="deb" description="install debian prerequisites">
+    <exec command="apt install g++ openjdk-8-jdk ant libx11-dev libfuse-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev"/>
+  </target>
+
+  <target name="rpm" description="install fedora prerequisites">
+    <exec command="yum install gcc-c++ java-1.8.0-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel"/>
+  </target>
+
+  <target name="pac" description="install arch prerequisites">
+    <exec command="pacman -S jdk8-openjdk apache-ant fuse pam ffmpeg mesa xproto libxcursor libxrandr libxinerama libxi libxt"/>
+  </target>
+
   <target name="help">
+    <echo>ant deb : install Debian/Ubuntu prerequisites</echo>
+    <echo>ant rpm : install Fedora prerequisites</echo>
+    <echo>ant pac : install Arch prerequisites</echo>
+
     <echo>ant x32 : build intel x86 32bit</echo>
     <echo>ant x64 : build intel x86 64bit</echo>
     <echo>ant a32 : build ARM 32bit</echo>
