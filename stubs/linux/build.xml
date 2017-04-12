@@ -1,14 +1,18 @@
-<project name="stubs" default="linux" basedir=".">
+<project name="stubs" default="help" basedir=".">
   <description>stubs</description>
   <property environment="env"/>
 
-  <target name="linux" description="create linux stubs">
+  <target name="64" description="create linux stubs">
     <exec command="gcc -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux linux.c -ldl -lpthread -o ../linux64.bin"/>
-    <exec command="gcc -m32 -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux linux.c -ldl -lpthread -o ../linux32.bin"/>
   </target>
 
-  <target name="pi" description="create linux stubs">
+  <target name="32" description="create linux stubs">
     <exec command="gcc -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux linux.c -ldl -lpthread -o ../linux32.bin"/>
+  </target>
+
+  <target name="help">
+    <echo>ant 32 : build 32bit</echo>
+    <echo>ant 64 : build 64bit</echo>
   </target>
 
   <target name="clean" description="deletes compiled files">
