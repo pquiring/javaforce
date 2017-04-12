@@ -8,7 +8,7 @@ function build {
   cd $1
   ant jar
   sudo ant install -Dbits=$2
-  ant deb -Darch=$3 -Darchext=$4
+  ant deb -Dbits=$2 -Darch=$3 -Darchext=$4
   cd ..
 }
 

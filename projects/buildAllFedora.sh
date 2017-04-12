@@ -12,9 +12,9 @@ function build {
   ant jar
   sudo ant install -Dbits=$2
   if [ "$1" == "jflogon" ]; then
-    sudo ant rpm -Darch=$3 -Darchext=$4
+    sudo ant rpm -Dbits=$2 -Darch=$3 -Darchext=$4
   else
-    ant rpm -Darch=$3 -Darchext=$4
+    ant rpm -Dbits=$2 -Darch=$3 -Darchext=$4
   fi
   cd ..
 }

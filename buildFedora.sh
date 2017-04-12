@@ -1,7 +1,7 @@
 function build {
   ant jar
   sudo ant install -Dbits=$1
-  ant rpm -Darch=$2 -Darchext=$3
+  ant rpm -Dbits=$1 -Darch=$2 -Darchext=$3
 }
 
 if [ "$1" == "" ]; then

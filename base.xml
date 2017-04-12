@@ -153,23 +153,15 @@
     </sequential>
   </macrodef>
 
-  <target name="elf32" depends="jar,depjars,depnatives" unless="noelf" description="create elf binaries">
-    <elf appx="${app}" apptype="${apptype}" bits="32" ico="${ico}"/>
-    <elf appx="${app2}" apptype="${apptype2}" bits="32" ico="${ico2}" unless:blank="${app2}"/>
-    <elf appx="${app3}" apptype="${apptype3}" bits="32" ico="${ico3}" unless:blank="${app3}"/>
-    <elf appx="${app4}" apptype="${apptype4}" bits="32" ico="${ico4}" unless:blank="${app4}"/>
-    <elf appx="${app5}" apptype="${apptype5}" bits="32" ico="${ico5}" unless:blank="${app5}"/>
+  <target name="elfall" depends="jar,depjars,depnatives" unless="noelf" description="create elf binaries">
+    <elf appx="${app}" apptype="${apptype}" ico="${ico}"/>
+    <elf appx="${app2}" apptype="${apptype2}" ico="${ico2}" unless:blank="${app2}"/>
+    <elf appx="${app3}" apptype="${apptype3}" ico="${ico3}" unless:blank="${app3}"/>
+    <elf appx="${app4}" apptype="${apptype4}" ico="${ico4}" unless:blank="${app4}"/>
+    <elf appx="${app5}" apptype="${apptype5}" ico="${ico5}" unless:blank="${app5}"/>
   </target>
 
-  <target name="elf64" depends="jar,depjars,depnatives" unless="noelf" description="create elf binaries">
-    <elf appx="${app}" apptype="${apptype}" bits="64" ico="${ico}"/>
-    <elf appx="${app2}" apptype="${apptype2}" bits="64" ico="${ico2}" unless:blank="${app2}"/>
-    <elf appx="${app3}" apptype="${apptype3}" bits="64" ico="${ico3}" unless:blank="${app3}"/>
-    <elf appx="${app4}" apptype="${apptype4}" bits="64" ico="${ico4}" unless:blank="${app4}"/>
-    <elf appx="${app5}" apptype="${apptype5}" bits="64" ico="${ico5}" unless:blank="${app5}"/>
-  </target>
-
-  <target name="deb" description="create deb package">
+  <target name="deb" depends="elfall" description="create deb package">
     <exec executable="jfdeb">
       <arg value="${app}-${version}_${archext}.deb"/>
       <arg value="${arch}"/>
@@ -177,7 +169,7 @@
     <copy file="${app}-${version}_${archext}.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
   </target>
 
-  <target name="rpm" description="create rpm package">
+  <target name="rpm" depends="elfall" description="create rpm package">
     <exec executable="jfrpm">
       <arg value="${app}.spec"/>
       <arg value="${arch}"/>
@@ -185,7 +177,7 @@
     <copy file="${app}-${version}-1.${archext}.rpm" todir="${home}/repo/fedora" overwrite="true"/>
   </target>
 
-  <target name="pac" description="create pac package">
+  <target name="pac" depends="elfall" description="create pac package">
     <exec executable="jfpac">
       <arg value="${app}-${version}-${archext}.pkg.tar.xz"/>
       <arg value="${arch}"/>
