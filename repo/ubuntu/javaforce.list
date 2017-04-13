@@ -1,1 +1,1 @@
-deb http://javaforce.sourceforge.net/ubuntu/ ./
+deb http://javaforce.sourceforge.net/ubuntu/$(ARCH)/ ./
