@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Data Logger
+Comment=Data Logger
+
+Icon=jfdatalogger
+
+Type=Application
+Categories=Settings
+
+Exec=jfdatalogger
+StartupNotify=false
+Terminal=false
+MimeType=application/x-deb
+
+Title=jfDataLogger
