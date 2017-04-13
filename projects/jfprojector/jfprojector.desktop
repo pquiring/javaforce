@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=Project Screen
+Comment=Project Screen
+
+Icon=jfprojector
+
+Type=Application
+Categories=AudioVideo
+
+Exec=jfprojector
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfProjector

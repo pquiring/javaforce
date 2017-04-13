@@ -29,7 +29,6 @@
   </target>
 
   <target name="install" description="install files for linux">
-    
-    <copy file="jfbusservice.service" todir="/lib/systemd/system"/>
+    <copy file="jfbusserver.service" todir="/lib/systemd/system"/>
   </target>
 </project>

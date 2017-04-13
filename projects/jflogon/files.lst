@@ -1,4 +1,4 @@
-/usr/sbin/jflogon
+/usr/bin/jflogon
 /usr/sbin/jflogon.sh
 /usr/sbin/jflogon-runsession
 /usr/sbin/jflogon-rundomain
