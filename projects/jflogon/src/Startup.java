@@ -102,17 +102,14 @@ public class Startup implements ShellProcessListener{
   public static void stopx() throws Exception {
     if (x11process != null) {
       JFLog.log("Stopping X Server...");
-//      x11process.destroy();  //doesn't work
-      int pid = x11process.getpid();
-      JFLog.log("X11 pid=" + pid);
-      Linux.kill(pid, Linux.SIGTERM);
+      x11process.destroy();  //doesn't work
       JF.sleep(500);
       for(int a=0;a<3;a++) {
         if (!x11process.isAlive()) break;
         JF.sleep(1000);
       }
       if (x11process.isAlive()) {
-        Linux.kill(pid, Linux.SIGKILL);
+        x11process.destroyForcibly();
         JF.sleep(500);
       }
       x11process = null;

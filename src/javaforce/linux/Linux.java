@@ -1143,6 +1143,7 @@ public class Linux {
    */
   public static void x11_rr_reset(String res) {
     Monitor config[] = x11_rr_get_setup(null);
+    if (config == null || config.length == 0) return;
     ArrayList<String> cmd = new ArrayList<String>();
     cmd.add("xrandr");
     cmd.add("--output");
