@@ -49,5 +49,6 @@ if [ ! -f javaforce.gpg ]; then
 fi
 cd /
 
+apt update
 apt install jflogon jfapps
 
