@@ -87,11 +87,13 @@ ubuntu/debian:
   if [ ! -f javaforce.list ]; then
     echo Download javaforce.list
     wget http://javaforce.sf.net/ubuntu/javaforce.list
+    chmod 644 javaforce.list
   fi
   cd /etc/apt/trusted.gpg.d
   if [ ! -f javaforce.gpg ]; then
     echo Download javaforce.gpg
     wget http://javaforce.sf.net/ubuntu/javaforce.gpg
+    chmod 644 javaforce.gpg
   fi
   cd /
 
