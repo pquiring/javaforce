@@ -102,7 +102,7 @@ public class Startup implements ShellProcessListener{
   public static void stopx() throws Exception {
     if (x11process != null) {
       JFLog.log("Stopping X Server...");
-      x11process.destroy();  //doesn't work
+      x11process.destroy();
       JF.sleep(500);
       for(int a=0;a<3;a++) {
         if (!x11process.isAlive()) break;
@@ -160,7 +160,7 @@ public class Startup implements ShellProcessListener{
       String casperFlag = props.getProperty("casper");
       if (casperFlag != null) casper = casperFlag.trim().equals("true");
       //run session as live user
-      runSession(user, "/usr/bin/jdesktop", null, null, false);
+      runSession(user, "/usr/bin/jfdesktop", null, null, false);
       stopx();
       JF.sleep(1000);
       System.out.println("" + (char)0x1b + "[2J");  //clear screen
@@ -289,7 +289,8 @@ public class Startup implements ShellProcessListener{
     Linux.x11_rr_reset("800x600");
     //execute greeter
     try {
-      Runtime.getRuntime().exec("jflogon");
+      Logon logon = new Logon();
+      logon.setVisible(true);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -395,7 +396,7 @@ public class Startup implements ShellProcessListener{
       shutdownFlag = true;
     }
     public void upgradesAvailable(int upgrades) {
-      jbusClient.broadcast("org.jflinux.jdesktop", "updatesAvailable", "" + upgrades);
+      jbusClient.broadcast("org.jflinux.jfdesktop", "updatesAvailable", "" + upgrades);
     }
     public void mount(String dev) {
       JFLog.log("mount:" + dev);
@@ -464,11 +465,11 @@ public class Startup implements ShellProcessListener{
       AutoMounter.paused++;
     }
     public void broadcastWAPList(String list) {
-      jbusClient.broadcast("org.jflinux.jdesktop.", "setWAPList", quote(list));
+      jbusClient.broadcast("org.jflinux.jfdesktop.", "setWAPList", quote(list));
     }
     public void broadcastVideoChanged(String reason) {
-      jbusClient.broadcast("org.jflinux.jdesktop.", "videoChanged", quote(reason));
-      jbusClient.broadcast("org.jflinux.jconfig.", "videoChanged", quote(reason));
+      jbusClient.broadcast("org.jflinux.jfdesktop.", "videoChanged", quote(reason));
+      jbusClient.broadcast("org.jflinux.jfconfig.", "videoChanged", quote(reason));
     }
   }
 }
