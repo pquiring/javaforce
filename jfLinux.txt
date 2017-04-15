@@ -4,24 +4,20 @@ jfLinux
 ubuntu
 ------
 To create the jfLinux image follow these steps:
-  - build/install JavaForce
+  - build JavaForce
     - cd /
     - ant jar
-    - sudo ant install -Dbits=32|64
-  - download or build native files
-    - download
-      - cd /
-      - ant get-bin
-    - build yourself
-      - cd /native/linux
-      - ant x32|x64|pi
-      - cd /stubs/linux
-      - ant
+  - build native files
+    - cd /native/linux
+    - ant x32|x64|pi
+    - cd /stubs/linux
+    - ant
   - install jfdeb (packager)
     - cd /projects/jfdeb
     - sudo ant install -Dbits=32|64
-  - package JavaForce
+  - install/package JavaForce
     - cd /
+    - sudo ant install -Dbits=32|64
     - buildUbuntu.sh
   - build all projects
     - cd /projects
