@@ -32,4 +32,6 @@ a64)
   ;;
 esac
 
+apt --yes install sudo bzip2
+
 build $BITS $ARCH $ARCHEXT
