@@ -457,7 +457,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     new Thread() {
       public void run() {
         try {
-          Startup.runSession(user, "/usr/bin/jdesktop", env_names, env_values, domainLogon);
+          Startup.runSession(user, "/usr/bin/jfdesktop", env_names, env_values, domainLogon);
         } catch (Exception e) {
           JF.showError("Session Failed", e.toString());
         }
