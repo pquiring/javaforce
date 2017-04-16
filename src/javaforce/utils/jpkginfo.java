@@ -113,7 +113,9 @@ public class jpkginfo {
     String list[] = getProperty(tagName).split(",");
     if (!app.equals("javaforce")) depends.add("javaforce");
     for(int a=0;a<list.length;a++) {
-      depends.add(list[a].trim());
+      String depend = list[a].trim();
+      if (depend.length() == 0) continue;
+      depends.add(depend);
     }
     return depends.toArray(new String[0]);
   }
@@ -134,7 +136,7 @@ public class jpkginfo {
       }
       sb.append("\n");
       sb.append("Description: " + desc + "\n");
-      sb.append("Maintainer: Peter Quiring <pquiring@gmail.com>");
+      sb.append("Maintainer: Peter Quiring <pquiring@gmail.com>\n");
       //optional
       sb.append("Installed-Size: " + Long.toString(size / 1024L) + "\n");
       sb.append("Depends: ");
