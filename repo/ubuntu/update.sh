@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#required packages : dpkg-dev
+apt --yes install dpkg-dev
 
 rm *.gz 2>/dev/null
 rm InRelease 2>/dev/null
@@ -22,4 +22,5 @@ gpg -abs -o Release.gpg Release
 
 if [ ! -f javaforce.gpg ]; then
   cp ~/.gnupg/pubring.gpg ./javaforce.gpg
+  chmod 644 javaforce.gpg
 fi
