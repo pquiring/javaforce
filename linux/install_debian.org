@@ -50,5 +50,6 @@ fi
 cd /
 
 apt update
-apt install jflogon jfapps
+apt install jflogon jfdesktop jfapps
+systemctl enable jflogon.service
 

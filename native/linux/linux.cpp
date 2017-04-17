@@ -1274,6 +1274,7 @@ static jmethodID mid_x11_listener_trayIconAdded;
 static jmethodID mid_x11_listener_trayIconRemoved;
 static jmethodID mid_x11_listener_windowsChanged;
 static JNIEnv *x11_window_e;
+static jclass cid_javaforce_linux_Linux;
 static jmethodID mid_x11_window_add;
 static jmethodID mid_x11_window_del;
 #define tray_icon_size 24  //fixed
@@ -1587,7 +1588,7 @@ static void x11_update_window_list(Display *display) {
     if (res_name != NULL) jres_name = x11_window_e->NewStringUTF(res_name);
     jstring jres_class = NULL;
     if (res_class != NULL) jres_class = x11_window_e->NewStringUTF(res_class);
-    x11_window_e->CallVoidMethod(x11_listener, mid_x11_window_add, xid, pid, jtitle, jname, jres_name, jres_class);
+    x11_window_e->CallStaticVoidMethod(cid_javaforce_linux_Linux, mid_x11_window_add, xid, pid, jtitle, jname, jres_name, jres_class);
     if (x11_window_e->ExceptionCheck()) x11_window_e->ExceptionClear();
     if (jtitle != NULL) x11_window_e->DeleteLocalRef(jtitle);
     if (jname != NULL) x11_window_e->DeleteLocalRef(jname);
@@ -1646,7 +1647,7 @@ static void x11_update_window_list(Display *display) {
         window_list_event_mask[z-1] = window_list_event_mask[z];
       }
       window_list_size--;
-      x11_window_e->CallVoidMethod(x11_listener, mid_x11_window_del, xid);
+      x11_window_e->CallStaticVoidMethod(cid_javaforce_linux_Linux, mid_x11_window_del, xid);
       if (x11_window_e->ExceptionCheck()) x11_window_e->ExceptionClear();
     } else {
       a++;
@@ -1657,9 +1658,9 @@ static void x11_update_window_list(Display *display) {
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1window_1list_1main
   (JNIEnv *e, jclass c)
 {
-  jclass cls = e->FindClass("javaforce/linux/Linux");
-  mid_x11_window_add = e->GetMethodID(cls, "x11_window_add", "(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
-  mid_x11_window_del = e->GetMethodID(cls, "x11_window_del", "(J)V");
+  cid_javaforce_linux_Linux = e->FindClass("javaforce/linux/Linux");
+  mid_x11_window_add = e->GetStaticMethodID(cid_javaforce_linux_Linux, "x11_window_add", "(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+  mid_x11_window_del = e->GetStaticMethodID(cid_javaforce_linux_Linux, "x11_window_del", "(J)V");
 
   x11_window_e = e;
 

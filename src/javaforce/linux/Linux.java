@@ -717,7 +717,7 @@ public class Linux {
 //tray functions
 
   public static void x11_set_listener(X11Listener cb) {
-    //x11_listener = cb; //TODO
+    LnxNative.x11_set_listener(cb);
   }
 
   /** Polls and dispatches tray events.  Does not return until x11_tray_stop() is called. */

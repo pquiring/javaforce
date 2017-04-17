@@ -84,7 +84,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       if (new File("/usr/sbin/hciconfig").exists()) {
         checkBluetooth();
       }
-      if (new File("/usr/bin/jwelcome").exists()) {
+      if (new File("/usr/bin/jfwelcome").exists()) {
         if (config.welcome) {
           showWelcome();
         }
