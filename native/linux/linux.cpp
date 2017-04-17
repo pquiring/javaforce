@@ -1500,7 +1500,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1set_1listener
   (JNIEnv *e, jclass c, jobject obj)
 {
   jclass cls = e->FindClass("javaforce/linux/X11Listener");
-  x11_listener = obj;
+  x11_listener = e->NewGlobalRef(obj);
   mid_x11_listener_trayIconAdded = e->GetMethodID(cls, "trayIconAdded", "(I)V");
   mid_x11_listener_trayIconRemoved = e->GetMethodID(cls, "trayIconRemoved", "(I)V");
   mid_x11_listener_windowsChanged = e->GetMethodID(cls, "windowsChanged", "()V");
