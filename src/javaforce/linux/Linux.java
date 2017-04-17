@@ -1227,4 +1227,22 @@ public class Linux {
   public static void setenv(String name, String value) {
     LnxNative.setenv(name, value);
   }
+
+  /* Test */
+  public static void main(String args[]) {
+    x11_set_listener(new X11Listener() {
+      public void trayIconAdded(int count) {
+        System.out.println("tragIconAdded:" + count);
+      }
+
+      public void trayIconRemoved(int count) {
+        System.out.println("tragIconRemoved:" + count);
+      }
+
+      public void windowsChanged() {
+        System.out.println("windowsChanged");
+      }
+    });
+    x11_window_list_main();
+  }
 }
