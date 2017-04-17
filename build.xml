@@ -8,7 +8,7 @@
   <property name="version" value="15.3.0"/>
   <property name="noelf" value="true"/>
 
-  <property name="ubuntu.depends" value="openjdk-8-jre, libjsch-java, libjzlib-java, libjcifs-java, fuse, libfuse2, fuseiso, libcdio13, mate-icon-theme, libv4l-dev"/>
+  <property name="debian.depends" value="openjdk-8-jre, libjsch-java, libjzlib-java, libjcifs-java, fuse, libfuse2, fuseiso, libcdio13, mate-icon-theme, libv4l-dev"/>
   <property name="fedora.depends" value="java-1.8.0-openjdk, jsch, jzlib, jcifs, fuse, fuse-libs, fuseiso, libcdio"/>
   <property name="arch.depends" value="jre8-openjdk, java-jsch, fuse, fuseiso, libcdio"/>  <!-- missing jzlib jcifs -->
 

@@ -45,7 +45,7 @@
   <target name="install" depends="jar" description="install files">
     
     <copy file="jfrepo.jar" todir="/usr/share/java"/>
-    <copy file="jfrepo-ubuntu.list" todir="/etc"/>
+    <copy file="jfrepo-debian.list" todir="/etc"/>
     <copy file="jfrepo-fedora.list" todir="/etc"/>
     <copy file="jfrepo.desktop" todir="/usr/share/applications"/>
     <copy file="jfrepo.png" todir="/usr/share/icons/hicolor/48x48/apps"/>

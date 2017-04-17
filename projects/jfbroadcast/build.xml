@@ -8,7 +8,7 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.36"/>
 
-  <property name="ubuntu.depends" value="libderby-java"/>
+  <property name="debian.depends" value="libderby-java"/>
 
   <import file="../../base.xml"/>
 

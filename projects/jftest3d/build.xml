@@ -7,7 +7,7 @@
   <property name="build" location="classes"/>
   <property name="version" value="0.1"/>
 
-  <property name="ubuntu.depends" value="libgl1-mesa-dev"/>
+  <property name="debian.depends" value="libgl1-mesa-dev"/>
 
   <import file="../../base.xml"/>
 

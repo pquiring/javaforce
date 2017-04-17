@@ -8,7 +8,7 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.1"/>
 
-  <property name="ubuntu.depends" value="jfvnc, rdesktop"/>
+  <property name="debian.depends" value="jfvnc, rdesktop"/>
   <property name="fedora.depends" value="jfvnc, rdesktop"/>
   <property name="arch.depends" value="jfvnc, rdesktop"/>
 

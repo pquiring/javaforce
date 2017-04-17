@@ -4,7 +4,7 @@ package javaforce.utils;
  *
  * Generates Linux package info files.
  *
- * ubuntu : deb/control
+ * debian : deb/control
  * fedora : rpm.spec
  * arch : .PKGINFO
  *
@@ -30,7 +30,7 @@ public class jpkginfo {
     if (args == null || args.length < 3) {
       System.out.println("jpkginfo : build linux package info files");
       System.out.println("  Usage : jpkginfo distro archtype files.list");
-      System.out.println("    distro = ubuntu fedora arch");
+      System.out.println("    distro = debian fedora arch");
       System.out.println("    archtype = x32 x64 a32 a64");
       System.exit(1);
     }
@@ -43,7 +43,7 @@ public class jpkginfo {
     desc = getTag("description");
     ver = getProperty("version");
     switch (distro) {
-      case "ubuntu": ubuntu(); break;
+      case "debian": debian(); break;
       case "fedora": fedora(); break;
       case "arch": arch(); break;
       default: error("Unknown distro:" + distro);
@@ -120,7 +120,7 @@ public class jpkginfo {
     return depends.toArray(new String[0]);
   }
 
-  private static void ubuntu() {
+  private static void debian() {
     try {
       StringBuffer sb = new StringBuffer();
       //mandatory
@@ -140,7 +140,7 @@ public class jpkginfo {
       //optional
       sb.append("Installed-Size: " + Long.toString(size / 1024L) + "\n");
       sb.append("Depends: ");
-      String depends[] = getDepends("ubuntu.depends");
+      String depends[] = getDepends("debian.depends");
       for(int a=0;a<depends.length;a++) {
         if (a > 0) sb.append(",");
         sb.append(depends[a]);
@@ -164,7 +164,7 @@ public class jpkginfo {
         fos.write("#!/bin/sh\nset -e\nupdate-desktop-database\n".getBytes());
         fos.close();
       }
-      System.out.println("Ubuntu package info created");
+      System.out.println("Debian package info created");
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);

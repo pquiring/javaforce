@@ -8,7 +8,7 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.18"/>
 
-  <property name="ubuntu.depends" value="xserver-xorg, x11-xserver-utils, libx11-dev, plymouth, gvfs-bin, bluez, pm-utils, winbind, smbclient, wpasupplicant, numlockx, dosfstools, ntfs-3g, sudo, psmisc"/>
+  <property name="debian.depends" value="xserver-xorg, x11-xserver-utils, libx11-dev, plymouth, gvfs-bin, bluez, pm-utils, winbind, smbclient, wpasupplicant, numlockx, dosfstools, ntfs-3g, sudo, psmisc"/>
   <property name="fedora.depends" value="xorg-x11-server-Xorg, plymouth, bluez, pm-utils, samba-winbind-clients, samba-client, wpa_supplicant, numlockx, dosfstools, ntfsprogs"/>
   <property name="arch.depends" value="xorg-server, xorg-server-utils, xproto, gvfs, bluez, pm-utils, libwbclient, smbclient, wpa_supplicant, numlockx, dosfstools, ntfs-3g"/> <!-- aur : plymouth -->
 
@@ -54,7 +54,7 @@
     <chmod file="/usr/sbin/jflogon-rundomain" perm="+x"/>
     <copy file="dhclient-script" todir="/etc/dhcp"/>
     <chmod file="/etc/dhcp/dhclient-script" perm="+x"/>
-    <!-- systemd in /lib for ubuntu and fedora(linked) -->
+    <!-- systemd in /lib for debian and fedora(linked) -->
     <mkdir dir="/lib/systemd/system-preset/"/>
     <copy file="82-jflogon.preset" todir="/lib/systemd/system-preset"/>
     <mkdir dir="/lib/systemd/system/"/>

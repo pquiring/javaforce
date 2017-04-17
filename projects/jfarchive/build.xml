@@ -8,7 +8,7 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.3"/>
 
-  <property name="ubuntu.depends" value="zip"/>
+  <property name="debian.depends" value="zip"/>
   <property name="fedora.depends" value="zip"/>
   <property name="arch.depends" value="zip"/>
 

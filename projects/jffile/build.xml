@@ -11,7 +11,7 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.12"/>
 
-  <property name="ubuntu.depends" value="samba"/>
+  <property name="debian.depends" value="samba"/>
   <property name="fedora.depends" value="samba"/>
   <property name="arch.depends" value="samba"/>
 
