@@ -5,7 +5,7 @@ function build {
 }
 
 if [ "$1" == "" ]; then
-  echo usage : buildUbuntu.sh {ARCH}
+  echo usage : buildDebian.sh {ARCH}
   echo where ARCH=x32,x64,a32,a64
   exit
 fi

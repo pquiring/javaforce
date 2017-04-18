@@ -166,7 +166,7 @@
       <arg value="${app}-${version}_${archext}.deb"/>
       <arg value="${arch}"/>
     </exec>
-    <copy file="${app}-${version}_${archext}.deb" todir="${home}/repo/ubuntu" overwrite="true"/>
+    <copy file="${app}-${version}_${archext}.deb" todir="${home}/repo/debian" overwrite="true"/>
   </target>
 
   <target name="rpm" depends="elfall" description="create rpm package">

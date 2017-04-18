@@ -8,5 +8,5 @@ sudo cp visualvm /usr/bin
 sudo chmod +x /usr/bin/visualvm
 sudo chmod +x /usr/lib/visualvm/bin/visualvm
 jdeb visualvm-1.3.8_all.deb
-mv *.deb ../ubuntu
+mv *.deb ../debian
 rm visualvm_138.zip
