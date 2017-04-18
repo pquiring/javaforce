@@ -38,13 +38,13 @@ esac
 cd /etc/apt/sources.list.d
 if [ ! -f javaforce.list ]; then
   echo Download javaforce.list
-  wget http://javaforce.sf.net/ubuntu/$ARCHEXT/javaforce.list
+  wget http://javaforce.sf.net/debian/$ARCHEXT/javaforce.list
   chmod 644 javaforce.list
 fi
 cd /etc/apt/trusted.gpg.d
 if [ ! -f javaforce.gpg ]; then
   echo Download javaforce.gpg
-  wget http://javaforce.sf.net/ubuntu/$ARCHEXT/javaforce.gpg
+  wget http://javaforce.sf.net/debian/$ARCHEXT/javaforce.gpg
   chmod 644 javaforce.gpg
 fi
 cd /
@@ -53,3 +53,4 @@ apt update
 apt install jflogon jfdesktop jfapps
 systemctl enable jflogon.service
 
+echo Install complete, please reboot!
