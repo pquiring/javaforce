@@ -14,7 +14,7 @@ To create the jfLinux image follow these steps:
     - ant deb
     - ant $ARCH
     - cd /stubs/linux
-    - ant
+    - ant ${ARCH:1:2}
   - install jfdeb (packager)
     - cd /projects/jfdeb
     - ant install
