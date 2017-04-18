@@ -1392,6 +1392,7 @@ static void tray_remove_icon(XDestroyWindowEvent *ev) {
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_x11_1tray_1main
   (JNIEnv *e, jclass c, jlong pid, jint screenWidth, jint trayPos, jint trayHeight)
 {
+  x11_tray_e = e;
   for(int a=0;a<MAX_TRAY_ICONS;a++) {
     tray_icons[a] = 0;
   }
