@@ -50,7 +50,7 @@ fi
 cd /
 
 apt update
-apt install jflogon jfdesktop jfapps
+apt --yes install jflogon jfdesktop jfapps
 systemctl enable jflogon.service
 
 echo Install complete, please reboot!
