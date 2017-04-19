@@ -29,6 +29,25 @@ ARCH=$2
 BITS=${ARCH:1:2}
 if [ -f files-$BITS.lst ]; then FILES=files-$BITS.lst; fi
 
+case $ARCH in
+x32)
+  ARCHEXT=i686
+  ;;
+x64)
+  ARCHEXT=x86_64
+  ;;
+a32)
+  ARCHEXT=armv7hl
+  ;;
+a64)
+  ARCHEXT=aarch64
+  ;;
+*)
+  echo Invalid arch!
+  exit
+  ;;
+esac
+
 TMPDIR=jfrpm.$RANDOM
 
 java -cp /usr/share/java/javaforce.jar javaforce.utils.jpkginfo fedora $ARCH $FILES
@@ -40,20 +59,21 @@ mkdir $TMPDIR
 if [ -f data.tar.bz2 ]; then rm -f data.tar.bz2; fi
 tar cjf data.tar.bz2 -T $FILES
 
-cp rpm.spec $TMPDIR
-cat $FILES >> $TMPDIR/rpm.spec
+cat $FILES >> rpm.spec
 cd $TMPDIR
 
 if [ ! `pwd` = $WORKDIR/$TMPDIR ]; then error "failed to use temp folder $TMPDIR"; fi
 
 sudo tar xjf ../data.tar.bz2
 #NOTE:rpmbuild nukes the buildroot once complete, which is the current folder - be careful!!!
-sudo rpmbuild -bb rpm.spec --buildroot `pwd`
+sudo rpmbuild -bb ../rpm.spec --buildroot `pwd`
 cd ..
 sudo rm -rf $TMPDIR
 rm -f data.tar.bz2
 sudo chown $USER:$USER *.rpm
 
 rm rpm.spec
+
+mv /root/rpmbuild/RPMS/$ARCHEXT/*.rpm .
 
 echo Complete!
