@@ -34,6 +34,8 @@ a64)
   ;;
 esac
 
+dnf -y install wget
+
 #configure JavaForce repository
 cd /etc/yum.repos.d
 if [ ! -f javaforce.repo ]; then
