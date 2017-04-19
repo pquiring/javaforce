@@ -207,7 +207,8 @@ public class jpkginfo {
       sb.append("#!/bin/sh\n");
       sb.append("set -e\n");
       sb.append("update-desktop-database\n");
-      //%files is added by jfrpm
+      sb.append("%files\n");
+      //files.lst is added by jfrpm
       FileOutputStream fos = new FileOutputStream("rpm.spec");
       fos.write(sb.toString().getBytes());
       fos.close();
