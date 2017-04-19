@@ -179,6 +179,7 @@ public class jpkginfo {
       sb.append("Version: " + ver + "\n");
       sb.append("Release: 1\n");
       sb.append("License: LGPL\n");
+/*
       sb.append("Architecture: ");
       switch (archtype) {
         case "any": sb.append("noarch"); break;
@@ -188,6 +189,7 @@ public class jpkginfo {
         case "a64": sb.append("aarch64"); break;
       }
       sb.append("\n");
+*/
       sb.append("Summary: " + desc + "\n");
       sb.append("Requires: ");
       String depends[] = getDepends("fedora.depends");
