@@ -1460,9 +1460,6 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
   public void mouseMoved(MouseEvent me) {
   }
 
-  jfuseiso iso;
-  jfusezip zip;
-
   private void openFile(String file) {
     //file = .iso or .zip
     if (mount != null) return;  //can not open a file in a file (!recursive)
@@ -1473,7 +1470,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     } else {
       name = file.substring(idx+1);
     }
-    String mount = JF.getUserPath() + "/.fuse/" + name;
+    String mount = JF.getUserPath() + "/.gfvs/" + name;
     String fullmount = mount;
     int cnt = 1;
     while (new File(fullmount).exists()) {
@@ -1482,27 +1479,9 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     new File(fullmount).mkdirs();
     final String args[] = new String[] {file, fullmount, "-f"};
     if (file.toLowerCase().endsWith(".iso")) {
-      iso = new jfuseiso();
-      if (!iso.auth(args, null)) {
-        JF.showError("Error", "Failed to open file");
-        return;
-      }
-      new Thread() {
-        public void run() {
-          iso.start(args);
-        }
-      }.start();
+      //TODO : send msg to jfDesktop.mount
     } else if (file.toLowerCase().endsWith(".zip")) {
-      zip = new jfusezip();
-      if (!zip.auth(args, null)) {
-        JF.showError("Error", "Failed to open file");
-        return;
-      }
-      new Thread() {
-        public void run() {
-          zip.start(args);
-        }
-      }.start();
+      //TODO : send msg to jfDesktop.mount
     } else {
       JFLog.log("Error:Can not open:" + file);
       setPath(JF.getUserPath());
@@ -1515,8 +1494,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
 
   public void closeFile() {
     if (mount == null) return;
-    execute(new String[] {"fusermount", "-u", mount}, true);
-    new File(mount).delete();
+    //TODO : send msg to jfDesktop.unmount
     mount = null;
   }
 

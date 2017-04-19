@@ -211,7 +211,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
       link = getDrive(drive);
     }
     dialog = this;
-    jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "fuse",
+    jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "mount",
       quote(jbusClient.pack) + "," + quote(uri) + "," + quote(target) + ","
       + quote(pass) + "," + quote(link));
   }//GEN-LAST:event_acceptActionPerformed
@@ -304,7 +304,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
     Random r = new Random();
     String folder;
     do {
-      folder = JF.getUserPath() + "/.fuse/" + Math.abs(r.nextInt()) + "/";
+      folder = JF.getUserPath() + "/.gvfs/" + Math.abs(r.nextInt()) + "/";
     } while (new File(folder).exists());
     return folder;
   }
@@ -351,8 +351,8 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
     JBusClient jbusClient = new JBusClient("org.jflinux.jfile." + Math.abs(new Random().nextInt())
       , new JBusMethods());
     jbusClient.start();
-    JFLog.log("fuse:calling:" + "org.jflinux.jdesktop." + System.getenv("JID"));
-    jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "fuse",
+    JFLog.log("mount:calling:" + "org.jflinux.jdesktop." + System.getenv("JID"));
+    jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "mount",
       quote(jbusClient.pack) + "," + quote(uri) + "," + quote(target) + ","
       + quote(pass) + "," + quote(link));
   }
@@ -376,7 +376,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
   private static MapNetworkShareDialog dialog;
 
   public static class JBusMethods {
-    public void fuseSuccess(String uri) {
+    public void mountSuccess(String uri) {
       Mappings.addMap(uri, target, pass, link);
       Mappings.saveMaps();
       if (isMain) {
@@ -386,7 +386,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
         dialog.dispose();
       }
     }
-    public void fuseFail(String uri) {
+    public void mountFail(String uri) {
       if (isMain) {
         System.out.println("Failed");
         System.exit(0);

@@ -106,17 +106,12 @@ public class UnmapNetworkShareDialog extends javax.swing.JDialog implements Acti
 
   public void actionPerformed(ActionEvent ae) {
     String mount = ae.getActionCommand();
+    //TODO : send msg jfDesktop.unmount
     ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"fusermount", "-u", mount}, true);
-    if (sp.getErrorLevel() != 0) {
-      FileApp.inDialog = true;
-      JF.showError("Warning", "Failed to disconnect network share");
-      FileApp.inDialog = false;
-    }
     JButton b = (JButton)ae.getSource();
     String wineDrive = (String)b.getClientProperty("wine");
     if ((wineDrive != null) && (wineDrive.length() > 0) && !wineDrive.equals("null")) {
-      output = sp.run(new String[] {"rm", wineDrive}, true);
+      String output = sp.run(new String[] {"rm", wineDrive}, true);
       if (sp.getErrorLevel() != 0) {
         FileApp.inDialog = true;
         JF.showError("Warning", "Failed to disconnect wine drive link");
@@ -155,13 +150,10 @@ public class UnmapNetworkShareDialog extends javax.swing.JDialog implements Acti
       System.out.println("Share is not mapped");
       System.exit(1);
     }
-    ShellProcess sp = new ShellProcess();
-    String output = sp.run(new String[] {"fusermount", "-u", mount}, true);
-    if (sp.getErrorLevel() != 0) {
-      System.out.println("Warning : Failed to disconnect network share");
-    }
+    //TODO : send msg to jfDesktop.unmount
     if (wineDrive != null) {
-      output = sp.run(new String[] {"rm", wineDrive}, true);
+      ShellProcess sp = new ShellProcess();
+      String output = sp.run(new String[] {"rm", wineDrive}, true);
       if (sp.getErrorLevel() != 0) {
         System.out.println("Warning : Failed to disconnect wine drive link");
       }

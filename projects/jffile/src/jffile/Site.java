@@ -757,7 +757,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     Random r = new Random();
     String folder;
     do {
-      folder = JF.getUserPath() + "/.fuse/" + Math.abs(r.nextInt()) + "/";
+      folder = JF.getUserPath() + "/.gvfs/" + Math.abs(r.nextInt()) + "/";
     } while (new File(folder).exists());
     return folder;
   }
@@ -791,24 +791,11 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
       }
       remoteRoot = getTarget();
       String uri = sd.username + "@" + sd.host + "/" + share;
-      jfusesmb fuse = new jfusesmb();
       String args[] = {uri, remoteRoot, "-f"};
-      if (!fuse.auth(args, sd.password)) return false;
       File folder = new File(remoteRoot);
       folder.mkdirs();
-      JFTask task = new JFTask() {
-        public boolean work() {
-          jfusesmb fuse = (jfusesmb)this.getProperty("fuse");
-          String args[] = (String[])this.getProperty("args");
-          File folder = new File(args[1]);
-          fuse.start(args);
-          folder.delete();
-          return true;
-        }
-      };
-      task.setProperty("fuse", fuse);
-      task.setProperty("args", args);
-      task.start();
+      //TODO : send msg to jfDesktop.mount
+      //TODO : send passwd
       remoteBrowser.setPath(remoteRoot + initRemoteDir);
       remote_build_tree();
       remote_ls();
@@ -818,24 +805,11 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
       share = "FTP";
       remoteRoot = getTarget();
       String uri = sd.username + "@" + sd.host;
-      jfuseftp fuse = new jfuseftp();
       String args[] = {uri, remoteRoot, "-f"};
-      if (!fuse.auth(args, sd.password)) return false;
       File folder = new File(remoteRoot);
       folder.mkdirs();
-      JFTask task = new JFTask() {
-        public boolean work() {
-          jfuseftp fuse = (jfuseftp)this.getProperty("fuse");
-          String args[] = (String[])this.getProperty("args");
-          File folder = new File(args[1]);
-          fuse.start(args);
-          folder.delete();
-          return true;
-        }
-      };
-      task.setProperty("fuse", fuse);
-      task.setProperty("args", args);
-      task.start();
+      //TODO : send msg to jfDesktop.mount
+      //TODO : send passwd
       remoteBrowser.setPath(remoteRoot + sd.remoteDir);
       remote_build_tree();
       remote_ls();
@@ -845,24 +819,11 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
       share = "SFTP";
       remoteRoot = getTarget();
       String uri = sd.username + "@" + sd.host;
-      jfusesftp fuse = new jfusesftp();
       String args[] = {uri, remoteRoot, "-f"};
-      if (!fuse.auth(args, sd.password)) return false;
       File folder = new File(remoteRoot);
       folder.mkdirs();
-      JFTask task = new JFTask() {
-        public boolean work() {
-          jfusesftp fuse = (jfusesftp)this.getProperty("fuse");
-          String args[] = (String[])this.getProperty("args");
-          File folder = new File(args[1]);
-          fuse.start(args);
-          folder.delete();
-          return true;
-        }
-      };
-      task.setProperty("fuse", fuse);
-      task.setProperty("args", args);
-      task.start();
+      //TODO : send msg to jfDesktop.mount
+      //TODO : send passwd
       remoteBrowser.setPath(remoteRoot + sd.remoteDir);
       remote_build_tree();
       remote_ls();
@@ -872,24 +833,11 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
       share = "FTPS";
       remoteRoot = getTarget();
       String uri = sd.username + "@" + sd.host;
-      jfuseftps fuse = new jfuseftps();
       String args[] = {uri, remoteRoot, "-f"};
-      if (!fuse.auth(args, sd.password)) return false;
       File folder = new File(remoteRoot);
       folder.mkdirs();
-      JFTask task = new JFTask() {
-        public boolean work() {
-          jfuseftps fuse = (jfuseftps)this.getProperty("fuse");
-          String args[] = (String[])this.getProperty("args");
-          File folder = new File(args[1]);
-          fuse.start(args);
-          folder.delete();
-          return true;
-        }
-      };
-      task.setProperty("fuse", fuse);
-      task.setProperty("args", args);
-      task.start();
+      //TODO : send msg to jfDesktop.mount
+      //TODO : send passwd
       remoteBrowser.setPath(remoteRoot + sd.remoteDir);
       remote_build_tree();
       remote_ls();
@@ -907,11 +855,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     if (sd == null) return;
     if (!sd.protocol.equals("local")) {
       remoteBrowser.setPath(null);
-      ShellProcess sp = new ShellProcess();
-      String output = sp.run(new String[] {"fusermount", "-u", remoteRoot}, true);
-      if (sp.getErrorLevel() != 0) {
-        JFLog.log("Error:Failed to unmount:" + sd.host + "/" + share + ":" + output);
-      }
+      //TODO : send msg to jfDesktop.unmount
     }
   }
 

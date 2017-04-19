@@ -2614,7 +2614,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     if (maps == null || maps.map == null) return;
     JBusMethods methods = new JBusMethods();
     for(int a=0;a<maps.map.length;a++) {
-      methods.fuse(null, maps.map[a].uri, maps.map[a].mount, maps.map[a].passwd, maps.map[a].wineDrive);
+      methods.mount(null, maps.map[a].uri, maps.map[a].mount, maps.map[a].passwd, maps.map[a].wineDrive);
     }
   }
 
@@ -2819,104 +2819,22 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     public void powerChanged() {
       updateBattery();
     }
-    public void fuse(String callback, String uri, String mount, String pass, String link) {
-      JFLog.log("fuse:" + uri + "," + mount);
-      if (uri.startsWith("smb://")) {
-        jfusesmb fuse = new jfusesmb();
-        String args[] = new String[] {uri, mount};
-        if (!fuse.auth(args, pass)) {
-          if (callback != null) jbusClient.call(callback, "fuseFail", JBusClient.quote(uri));
-        } else {
-          if (callback != null) jbusClient.call(callback, "fuseSuccess", JBusClient.quote(uri));
-          JFTask task = new JFTask() {
-            public boolean work() {
-              jfusesmb fuse = (jfusesmb)this.getProperty("fuse");
-              String args[] = (String[])this.getProperty("args");
-              String link = (String)this.getProperty("link");
-              File folder = new File(args[1]);
-              folder.mkdirs();
-              if (link != null && !link.equals("null")) {
-                try {
-                  Runtime.getRuntime().exec(new String[] {"ln", "-s", args[1], link});
-                } catch (Exception e) {
-                  JFLog.log(e);
-                }
-              }
-              fuse.start(args);
-              folder.delete();
-              return true;
-            }
-          };
-          task.setProperty("fuse", fuse);
-          task.setProperty("args", args);
-          task.setProperty("link", link);
-          task.start();
+    public void mount(String callback, String uri, String mount, String pass, String link) {
+      JFLog.log("mount:" + uri + "," + mount);
+      final String _callback = callback;
+      final String _uri = uri;
+      new Thread() {
+        public void run() {
+          try {
+            Process p = Runtime.getRuntime().exec(new String[] {"gnome-disk-image-mounter", _uri});
+            p.waitFor();
+            int result = p.exitValue();
+            if (_callback != null) jbusClient.call(_callback, result == 0 ? "mountSuccess" : "mountFail", JBusClient.quote(_uri));
+          } catch (Exception e) {
+            JFLog.log(e);
+          }
         }
-      } else if (uri.toLowerCase().endsWith(".zip")) {
-        jfusezip fuse = new jfusezip();
-        String args[] = new String[] {uri, mount};
-        if (!fuse.auth(args, pass)) {
-          if (callback != null) jbusClient.call(callback, "fuseFail", JBusClient.quote(uri));
-        } else {
-          if (callback != null) jbusClient.call(callback, "fuseSuccess", JBusClient.quote(uri));
-          JFTask task = new JFTask() {
-            public boolean work() {
-              jfusezip fuse = (jfusezip)this.getProperty("fuse");
-              String args[] = (String[])this.getProperty("args");
-              String link = (String)this.getProperty("link");
-              File folder = new File(args[1]);
-              folder.mkdirs();
-              if (link != null && !link.equals("null")) {
-                try {
-                  Runtime.getRuntime().exec(new String[] {"ln", "-s", args[1], link});
-                } catch (Exception e) {
-                  JFLog.log(e);
-                }
-              }
-              fuse.start(args);
-              folder.delete();
-              return true;
-            }
-          };
-          task.setProperty("fuse", fuse);
-          task.setProperty("args", args);
-          task.setProperty("link", link);
-          task.start();
-        }
-      } else if (uri.toLowerCase().endsWith(".iso")) {
-        jfuseiso fuse = new jfuseiso();
-        String args[] = new String[] {uri, mount};
-        if (!fuse.auth(args, pass)) {
-          if (callback != null) jbusClient.call(callback, "fuseFail", JBusClient.quote(uri));
-        } else {
-          if (callback != null) jbusClient.call(callback, "fuseSuccess", JBusClient.quote(uri));
-          JFTask task = new JFTask() {
-            public boolean work() {
-              jfuseiso fuse = (jfuseiso)this.getProperty("fuse");
-              String args[] = (String[])this.getProperty("args");
-              String link = (String)this.getProperty("link");
-              File folder = new File(args[1]);
-              folder.mkdirs();
-              if (link != null && !link.equals("null")) {
-                try {
-                  Runtime.getRuntime().exec(new String[] {"ln", "-s", args[1], link});
-                } catch (Exception e) {
-                  JFLog.log(e);
-                }
-              }
-              fuse.start(args);
-              folder.delete();
-              return true;
-            }
-          };
-          task.setProperty("fuse", fuse);
-          task.setProperty("args", args);
-          task.setProperty("link", link);
-          task.start();
-        }
-      } else {
-        if (callback != null) jbusClient.call(callback, "fuseFail", JBusClient.quote(uri));
-      }
+      }.start();
     }
     public void setWAPList(String list) {
       wapList = list;

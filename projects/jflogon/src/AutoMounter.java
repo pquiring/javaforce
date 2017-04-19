@@ -110,24 +110,8 @@ public class AutoMounter extends Thread implements monitordir.Listener {
     mount.dev = dev;
     mount.media = fullPath;
     if (dev.startsWith("/dev/sr")) {
-      //try mounting cdda
-      final jfusecdfs cdfs = new jfusecdfs();
-      if (cdfs.auth(new String[] {dev}, null)) {
-        final String _dev = dev;
-        final String _fullPath = fullPath;
-        new Thread() {
-          public void run() {
-            cdfs.start(new String[] {_dev, _fullPath, "-oallow_other"});
-          }
-        }.start();
-        JFLog.log("AutoMount:Mounted audio disc:" + dev);
-        synchronized(lock) {
-          mounts.add(mount);
-        }
-        //broadcast /media change
-        Startup.jbusClient.broadcast("org.jflinux.jfile", "rescanMedia", "");
-        return;
-      }
+      //do not automount cdda - user can use gvfs (gnome-disk-image-mounter)
+      return;
     }
     String cmd[] = {"mount", dev, fullPath, "-o", "user"};
     ShellProcess sp = new ShellProcess();

@@ -18,7 +18,7 @@ public class LnxNative {
     if (JFNative.loaded) {
       String bits;
       if (JF.is64Bit()) bits = "64"; else bits = "32";
-      Library libs[] = {new Library("libX11"), new Library("libGL"), new Library("libfuse"), new Library("libv4l2"), new Library("libcdio")};
+      Library libs[] = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
       if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File("/usr/lib" + bits)}, libs, ".so", libs.length, true)) {
         for(int a=0;a<libs.length;a++) {
           if (libs[a].path == null) {
@@ -35,25 +35,21 @@ public class LnxNative {
             else if (libs[a].name.equals("libv4l2")) {
               have_v4l2 = false;
             }
-            else if (libs[a].name.equals("libcdio")) {
-              have_cdio = false;
-            }
           }
         }
       }
-      lnxInit(libs[0].path, libs[1].path, libs[2].path, libs[3].path, libs[4].path);
+      lnxInit(libs[0].path, libs[1].path, libs[2].path);
     }
   }
 
   public static void load() {}  //ensure native library is loaded
 
-  private static native boolean lnxInit(String libX11, String libGL, String libfuse, String libv4l2, String libcdio);
+  private static native boolean lnxInit(String libX11, String libGL, String libv4l2);
 
   public static boolean have_x11 = true;
   public static boolean have_gl = true;
   public static boolean have_fuse = true;
   public static boolean have_v4l2 = true;
-  public static boolean have_cdio = true;
 
   //com port
   public static native int comOpen(String name, int baud);  //assumes 8 data bits, 1 stop bit, no parity, etc.
@@ -70,17 +66,6 @@ public class LnxNative {
   public static native void ptyWrite(long ctx, byte data[]);  //write to child on parent side
   public static native void ptySetSize(long ctx, int x, int y);  //set child term size
   public static native long ptyChildExec(String slaveName, String cmd, String args[], String env[]);  //spawn child process
-
-  //fuse (optional)
-  public static native void fuse(String args[], Fuse ops);
-
-  //cdio (optional)
-  public static native long cdio_open_linux(String dev);
-  public static native void cdio_destroy(long ptr);
-  public static native int cdio_get_num_tracks(long ptr);
-  public static native int cdio_get_track_lsn(long ptr, int track);  //start of track in Logical Sector Number
-  public static native int cdio_get_track_sec_count(long ptr, int track);
-  public static native int cdio_read_audio_sectors(long ptr, byte buf[], int lsn, int blocks);  //2352 bytes each
 
   //inotify (monitordir)
   public static native int inotify_init();  //return fd
