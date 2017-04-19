@@ -3,10 +3,11 @@
 # Note : Make sure you place NOPASSWD in your /etc/sudoers or this script will annoy you (see jconfig -> fix stuff)
 
 function usage() {
-  echo usage : jfrpm arch [files.lst]
+  echo usage : jfrpm output.rpm arch [files.lst]
   echo desc : creates RPM files from file.spec
   echo arch : any, x32, x64, a32, a64
   echo note : files.lst is appended to file.spec during process
+  echo note : output.rpm is ignored \(for compatibility with other scripts\)
   exit
 }
 
@@ -16,14 +17,15 @@ function error() {
 }
 
 if [ "$1" = "" ]; then usage; fi
+if [ "$2" = "" ]; then usage; fi
 if [ "$1" = "--help" ]; then usage; fi
 if [ "$1" = "-h" ]; then usage; fi
 
 FILES=files.lst
 if [ -f files-fedora.lst ]; then FILES=files-fedora.lst; fi
-if [ ! "$2" = "" ]; then FILES=$2; fi
+if [ ! "$3" = "" ]; then FILES=$3; fi
 
-ARCH=$1
+ARCH=$2
 BITS=${ARCH:1:2}
 if [ -f files-$BITS.lst ]; then FILES=files-$BITS.lst; fi
 

@@ -171,7 +171,7 @@
 
   <target name="rpm" depends="elfall" description="create rpm package">
     <exec executable="jfrpm">
-      <arg value="${app}.spec"/>
+      <arg value="${app}-${version}-1.${archext}.rpm"/>
       <arg value="${arch}"/>
     </exec>
     <copy file="${app}-${version}-1.${archext}.rpm" todir="${home}/repo/fedora" overwrite="true"/>
