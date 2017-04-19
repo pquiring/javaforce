@@ -21,7 +21,7 @@
     <exec command="git clone https://github.com/glfw/glfw.git native/glfw"/>
   </target>
 
-  <target name="depjars" depends="depnatives,bouncycastle,derby,glfw">
+  <target name="depjars" depends="depnatives,glfw">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
