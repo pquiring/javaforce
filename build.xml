@@ -8,9 +8,9 @@
   <property name="version" value="15.3.1"/>
   <property name="noelf" value="true"/>
 
-  <property name="debian.depends" value="openjdk-8-jre, libjsch-java, libjzlib-java, libjcifs-java, mate-icon-theme, libv4l-dev, gnome-disk-utility"/>
-  <property name="fedora.depends" value="java-1.8.0-openjdk, jsch, jzlib, jcifs, gnome-disk-utility"/>
-  <property name="arch.depends" value="jre8-openjdk, java-jsch, gnome-disk-utility"/>  <!-- missing jzlib jcifs -->
+  <property name="debian.depends" value="openjdk-8-jre, libjsch-java, libjzlib-java, libjcifs-java, libv4l-0"/>
+  <property name="fedora.depends" value="java-1.8.0-openjdk, jsch, jzlib, jcifs, libv4l"/>
+  <property name="arch.depends" value="jre8-openjdk, java-jsch, v4l-utils"/>  <!-- missing jzlib jcifs -->
 
   <property environment="env"/>
 
