@@ -83,28 +83,30 @@ To install the JavaForce repo for linux, follow these commands:
 
 ubuntu/debian:
   #download JavaForce Repo file
+  ARCH=x86_64
   cd /etc/apt/sources.list.d
   if [ ! -f javaforce.list ]; then
     echo Download javaforce.list
-    wget http://javaforce.sf.net/ubuntu/javaforce.list
+    wget http://javaforce.sf.net/ubuntu/$ARCH/javaforce.list
     chmod 644 javaforce.list
   fi
   cd /etc/apt/trusted.gpg.d
   if [ ! -f javaforce.gpg ]; then
     echo Download javaforce.gpg
-    wget http://javaforce.sf.net/ubuntu/javaforce.gpg
+    wget http://javaforce.sf.net/ubuntu/$ARCH/javaforce.gpg
     chmod 644 javaforce.gpg
   fi
   cd /
 
 fedora:
-  #cut/paste this into /etc/yum.repos.d/javaforce.repo
-  [javaforce]
-  name=JavaForce Yum Repo
-  baseurl=http://javaforce.sourceforge.net/fedora
-  enabled=1
-  gpgcheck=1
-  gpgkey=http://javaforce.sourceforge.net/fedora/RPM-GPG-KEY-javaforce
+  #download JavaForce Repo file
+  ARCH=x86_64
+  cd /etc/yum.repos.d
+  if [ ! -f javaforce.repo ]; then
+    echo Download javaforce.repo
+    wget http://javaforce.sf.net/fedora/$ARCH/javaforce.repo
+    chmod 644 javaforce.repo
+  fi
 
 arch:
   #paste this into /etc/pacman/pacman.conf
