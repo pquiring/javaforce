@@ -16,22 +16,6 @@
 
   <import file="base.xml"/>
 
-  <available property="have_bouncycastle" file="jars/bouncycastle.jar"/>
-  <target name="bouncycastle" unless="have_bouncycastle" description="download bouncycastle">
-    <get src="http://pquiring.github.io/javaforce/jars/bouncycastle.jar" dest="jars"/>
-  </target>
-
-  <available property="have_derby" file="jars/derby.jar"/>
-  <target name="derby" unless="have_derby" description="download derby">
-    <get src="http://pquiring.github.io/javaforce/jars/derby.jar" dest="jars"/>
-  </target>
-
-  <!-- not in use yet -->
-  <available property="have_android" file="jars/android.jar"/>
-  <target name="android" unless="have_android" description="download android">
-    <get src="http://pquiring.github.io/javaforce/jars/android.jar" dest="jars"/>
-  </target>
-
   <available property="have_glfw" file="native/glfw/src/window.c"/>
   <target name="glfw" unless="have_glfw" description="download glfw">
     <exec command="git clone https://github.com/glfw/glfw.git native/glfw"/>
@@ -62,22 +46,6 @@
         <include name="**/*.css"/>
       </fileset>
     </jar>
-  </target>
-
-  <target name="release-bin" depends="jar" description="create release zip file">
-    <zip destfile="javaforce-bin-${version}.zip">
-      <fileset dir=".">
-        <include name="jars/javaforce.jar"/>
-        <include name="native/*.dll"/>
-        <include name="stubs/*.exe"/>
-      </fileset>
-    </zip>
-    <move file="javaforce-bin-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="get-bin" description="download bin zip file">
-    <get src="http://github.com/pquiring/javaforce/releases/download/${version}/javaforce-bin-${version}.zip" dest="."/>
-    <unzip src="javaforce-bin-${version}.zip" dest="."/>
   </target>
 
   <target name="javadoc" description="generate java documentation">
@@ -170,5 +138,4 @@
       <fileset dir="jars" includes="javaforce.jar"/>
     </delete>
   </target>
-
 </project>
