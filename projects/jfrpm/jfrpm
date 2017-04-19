@@ -70,7 +70,6 @@ sudo rpmbuild -bb ../rpm.spec --buildroot `pwd`
 cd ..
 sudo rm -rf $TMPDIR
 rm -f data.tar.bz2
-sudo chown $USER:$USER *.rpm
 
 rm rpm.spec
 
