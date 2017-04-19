@@ -8,9 +8,9 @@
   <property name="version" value="15.3.1"/>
   <property name="noelf" value="true"/>
 
-  <property name="debian.depends" value="openjdk-8-jre, libjsch-java, libjzlib-java, libjcifs-java, fuse, libfuse2, fuseiso, libcdio13, mate-icon-theme, libv4l-dev"/>
-  <property name="fedora.depends" value="java-1.8.0-openjdk, jsch, jzlib, jcifs, fuse, fuse-libs, fuseiso, libcdio"/>
-  <property name="arch.depends" value="jre8-openjdk, java-jsch, fuse, fuseiso, libcdio"/>  <!-- missing jzlib jcifs -->
+  <property name="debian.depends" value="openjdk-8-jre, libjsch-java, libjzlib-java, libjcifs-java, mate-icon-theme, libv4l-dev"/>
+  <property name="fedora.depends" value="java-1.8.0-openjdk, jsch, jzlib, jcifs"/>
+  <property name="arch.depends" value="jre8-openjdk, java-jsch"/>  <!-- missing jzlib jcifs -->
 
   <property environment="env"/>
 
@@ -112,13 +112,6 @@
     <elf appx="jsmbget" cfgdir="cfg/"/>
     <elf appx="jservice" cfgdir="cfg/"/>
     <elf appx="jf-monitor-dir" cfgdir="cfg/"/>
-    <elf appx="jfuse-smb" cfgdir="cfg/"/>
-    <elf appx="jfuse-ftp" cfgdir="cfg/"/>
-    <elf appx="jfuse-ftps" cfgdir="cfg/"/>
-    <elf appx="jfuse-sftp" cfgdir="cfg/"/>
-    <elf appx="jfuse-zip" cfgdir="cfg/"/>
-    <elf appx="jfuse-iso" cfgdir="cfg/"/>
-    <elf appx="jfuse-cdfs" cfgdir="cfg/"/>
     <elf appx="jfshare" cfgdir="cfg/"/>
     <elf appx="jcp" cfgdir="cfg/"/>
     <elf appx="jmv" cfgdir="cfg/"/>
