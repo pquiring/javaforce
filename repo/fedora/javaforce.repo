@@ -1,6 +1,6 @@
 [javaforce]
 name=JavaForce Yum Repo
-baseurl=http://javaforce.sourceforge.net/fedora
+baseurl=http://javaforce.sourceforge.net/fedora/$basearch
 enabled=1
 gpgcheck=1
 gpgkey=http://javaforce.sourceforge.net/fedora/RPM-GPG-KEY-javaforce

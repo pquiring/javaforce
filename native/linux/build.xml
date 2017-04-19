@@ -53,7 +53,7 @@
   </target>
 
   <target name="rpm" description="install fedora prerequisites">
-    <exec command="yum install gcc-c++ java-1.8.0-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel"/>
+    <exec command="dnf -y install gcc-c++ java-1.8.0-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel"/>
   </target>
 
   <target name="pac" description="install arch prerequisites">

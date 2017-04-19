@@ -2,7 +2,7 @@ To compile:
 
   Must compile on a 64bit host (both 32/64bit images are created).
 
-Ubuntu:
+Debian/Ubuntu:
 
   Required packages :
     sudo apt-get install g++ openjdk-8-jdk ant libx11-dev libfuse-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev
@@ -16,6 +16,8 @@ Fedora:
 
   Required packages :
     sudo yum install gcc-c++ java-1.8.0-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel
+
+  Note : You will need to setup rpmfusion.org to get access to ffmpeg
 
   Required environment variable:
     export JAVA_HOME=/usr/lib/jvm/java
@@ -32,13 +34,11 @@ Arch:
 
   Run 'ant'
 
-Raspberry Pi (Ubuntu):
+Raspberry Pi (Debian):
 
-  Same packages as Ubuntu above.
+  Same packages as Debian above.
 
   Required environment variable:
     export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-armhf
 
   Run 'ant pi'
-
-  Only the 32bit image is created.
