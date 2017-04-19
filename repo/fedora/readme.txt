@@ -1,7 +1,7 @@
 This is the JavaForce RPM Repository.
 
 You will need to install dpkg-dev package:
-  sudo yum install createrepo rpm-sign
+  sudo dnf install createrepo rpm-sign
 
 Run gpg to create the key to sign the packages:
   gpg --gen-key

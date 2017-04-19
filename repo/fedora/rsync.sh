@@ -31,4 +31,4 @@ esac
 USERNAME=digiboy86,javaforce
 SITE=web.sf.net
 FOLDER=/home/project-web/javaforce/htdocs/fedora/$ARCHEXT
-rsync -v *.rpm *.repo RPM-GPG-KEY-javaforce repodata $USERNAME@$SITE:$FOLDER
+rsync -rv *.rpm *.repo RPM-GPG-KEY-javaforce repodata $USERNAME@$SITE:$FOLDER
