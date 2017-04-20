@@ -380,7 +380,7 @@ public class Startup implements ShellProcessListener{
     public void sleep() {
       if (globalConfig.disableSleep) return;
       try {
-        Runtime.getRuntime().exec("pm-suspend");
+        Runtime.getRuntime().exec(new String[] {"systemctl", "suspend"});
       } catch (Exception e) {
         JFLog.log(e);
       }
