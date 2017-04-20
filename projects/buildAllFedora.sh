@@ -1,7 +1,4 @@
 function build {
-  if [ "$1" == "jrepo" ]; then
-    return
-  fi
   if [ "$1" == "jphonelite-android" ]; then
     return
   fi
