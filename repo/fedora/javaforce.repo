@@ -2,5 +2,5 @@
 name=JavaForce
 baseurl=http://javaforce.sourceforge.net/fedora/$basearch
 enabled=1
-gpgcheck=1
+gpgcheck=0
 gpgkey=http://javaforce.sourceforge.net/fedora/$basearch/RPM-GPG-KEY-javaforce
