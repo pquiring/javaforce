@@ -9,7 +9,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
-  <property name="version" value="0.12"/>
+  <property name="version" value="0.13"/>
 
   <property name="debian.depends" value="samba"/>
   <property name="fedora.depends" value="samba"/>
