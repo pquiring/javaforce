@@ -125,8 +125,6 @@ public class MediaCoder {
     }
     if (!JF.showConfirm("Notice", "This application requires the codecpack which was not detected.\n"
       + "Please visit http://pquiring.github.io/javaforce/codecpack.html for more info.\n"
-      + "NOTE:To install the codecpack this app may require administrative rights.\n"
-      + "To run with admin rights, right click this app and select 'Run as Administrator'.\n"
       + "Press OK to download and install now.\n"
       + "Press CANCEL to visit website now.\n"))
     {
@@ -138,25 +136,16 @@ public class MediaCoder {
         this.setTitle("Downloading CodecPack");
         this.setLabel("Downloading CodecPack...");
         this.setProgress(-1);
-        String destFolder = ".";
-        //find best place to extract to
+        String destFolder = System.getenv("appdata") + "/ffmpeg";
         try {
+          new File(destFolder).mkdir();
           File file = new File(destFolder + "/$testfile$.tmp");
           FileOutputStream fos = new FileOutputStream(file);
           fos.close();
           file.delete();
         } catch (Exception e) {
-          destFolder = System.getenv("appdata") + "/ffmpeg";
-          new File(destFolder).mkdir();
-          try {
-            File file = new File(destFolder + "/$testfile$.tmp");
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.close();
-            file.delete();
-          } catch (Exception e2) {
-            this.setLabel("Download failed (no write access to folder)");
-            return false;
-          }
+          this.setLabel("Download failed (no write access to folder)");
+          return false;
         }
         //first download latest URL from javaforce.sf.net
         try {

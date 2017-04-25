@@ -6,6 +6,7 @@ package javaforce;
  * @author pquiring
  */
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class ProgressDialog extends javax.swing.JDialog {
 
@@ -119,6 +120,7 @@ public class ProgressDialog extends javax.swing.JDialog {
     }
     cancel.setEnabled(false);
     close.setEnabled(true);
+    JF.assignHotKey(this, close, KeyEvent.VK_ENTER);
   }
 
   /**

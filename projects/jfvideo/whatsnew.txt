@@ -1,5 +1,8 @@
 Whatsnew...
 
+Apr 25, 2017 : v0.20 relaesed!
+  - fixed decoding files with metadata
+
 Jun 15, 2015: v0.18 released!
   - added new higher video bit rates
 
