@@ -2,7 +2,8 @@ What's new...
 
 Apr 25/2017 : JF 15.4.0 released
   - fixed ffmpeg decoding (discard unknown packets)
-  - jfVideo/0.20
+    - jfVideo/0.20
+    - jfMedia/0.12
 
 Apr 5/2017 : JF 15.3.0 released
   - fix : javaforce.controls.Controller : brought back S7 multi-tag reading (performance improvement)
