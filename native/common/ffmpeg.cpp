@@ -847,8 +847,10 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
   if (ctx->pkt->stream_index == ctx->video_stream_idx) {
     //extract a video frame
     int got_frame = 0;
-    if ((*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt) < 0) {
+    int ret = (*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
+    if (ret < 0) {
       ctx->pkt_size_left = 0;
+      printf("Error:%d\n", ret);
       return NULL_FRAME;
     }
     (*_av_free_packet)(ctx->pkt);
@@ -869,6 +871,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
     int ret = (*_avcodec_decode_audio4)(ctx->audio_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
     if (ret < 0) {
       ctx->pkt_size_left = 0;
+      printf("Error:%d\n", ret);
       return NULL_FRAME;
     }
     ret = min(ctx->pkt_size_left, ret);
@@ -920,6 +923,11 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
     }
     return AUDIO_FRAME;
   }
+
+  //discard unknown packet
+  (*_av_free_packet)(ctx->pkt);
+  ctx->pkt_size_left = 0;  //use entire packet
+
   return NULL_FRAME;
 }
 

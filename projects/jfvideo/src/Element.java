@@ -249,6 +249,9 @@ public class Element implements MediaIO {
         int px[] = ff.getVideo();
         frames.add(px);
         break;
+      case MediaCoder.NULL_FRAME:
+//JFLog.log("NULL_FRAME");
+        break;
       case MediaCoder.END_FRAME:
 //JFLog.log("END_FRAME");
         eof = true;
