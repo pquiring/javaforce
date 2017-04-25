@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Apr 25, 2017 : v0.12 released!
+  - fixed decoding files with metadata
+
 Sept 20, 2014 : v0.10 released!
   - new : video frame was changed into a video panel and integrated into main frame
     - added a full screen button

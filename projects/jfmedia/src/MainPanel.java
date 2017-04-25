@@ -38,7 +38,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     video = xml.addTag(library, "Video", "", "");
     video.isLeaf = true;  //avoid showing files in JTree
 //    playlists = xml.addTag(xml.root, "Play Lists", "", "");
-    media = xml.addTag(xml.root, "Media", "", "");
+    if (!JF.isWindows()) {
+      media = xml.addTag(xml.root, "Media", "", "");
+    }
     addLibrary(new File(JF.getUserPath() + "/Music"));
     addLibrary(new File(JF.getUserPath() + "/Videos"));
     showAll();
@@ -233,9 +235,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     if (cnt != 1) return;
     XML.XMLTag tag = xml.getTag(tree.getSelectionPath());
     if (tag == xml.root) return;
-    if (tag == media) {
+    if (media != null && tag == media) {
       listDiscs();
-    } if (tag.getParent() == media) {
+    } if (media != null && tag.getParent() == media) {
       currentIdx = -1;  //BUG : status will no longer get updated
       listDisc(tag);
     } else {
@@ -394,6 +396,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     if (fn.endsWith(".h263")) return true;
     if (fn.endsWith(".h264")) return true;
     if (fn.endsWith(".webm")) return true;
+    if (fn.endsWith(".mov")) return true;
     return false;
   }
 
@@ -544,7 +547,10 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       xml.deleteTag(media.getChildAt(a));
     }
     File file = new File("/media");
+    if (!file.exists()) return;
+    if (!file.isDirectory()) return;
     File folders[] = file.listFiles();
+    if (folders == null) return;
     cnt = folders.length;
     int discNo = 1;
     for(int a=0;a<cnt;a++) {
