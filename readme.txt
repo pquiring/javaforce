@@ -135,4 +135,4 @@ Web : pquiring.github.io/javaforce
 
 Git : github.com/pquiring/javaforce
 
-Released : Apr 5, 2017
+Released : Apr 25, 2017
