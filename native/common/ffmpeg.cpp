@@ -17,8 +17,6 @@
 #define AUDIO_FRAME 1
 #define VIDEO_FRAME 2
 
-//#define AVOID_AVSTREAM_CODEC //uncomment to avoid using AVStream.codec which is now deprecated (not working yet)
-
 static jboolean libav_org = JNI_FALSE;
 static jboolean loaded = JNI_FALSE;
 
@@ -52,7 +50,8 @@ int (*_avcodec_fill_audio_frame)(AVFrame *frame, int nb_channels, int fmt, void*
 int (*_avcodec_close)(AVCodecContext *cc);
 const char* (*_avcodec_get_name)(AVCodecID id);
 void (*_av_packet_rescale_ts)(AVPacket *pkt, AVRational src, AVRational dst);
-void (*_avcodec_parameters_to_context)(AVCodecContext *ctx, const AVCodecParameters *par);
+int (*_avcodec_parameters_to_context)(AVCodecContext *ctx, const AVCodecParameters *par);
+int (*_avcodec_parameters_from_context)(AVCodecParameters *par, const AVCodecContext *ctx);
 
 //avdevice functions
 void (*_avdevice_register_all)();
@@ -276,6 +275,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   }
   getFunction(codec, (void**)&_av_packet_rescale_ts, "av_packet_rescale_ts");
   getFunction(codec, (void**)&_avcodec_parameters_to_context, "avcodec_parameters_to_context");
+  getFunction(codec, (void**)&_avcodec_parameters_from_context, "avcodec_parameters_from_context");
 
   getFunction(device, (void**)&_avdevice_register_all, "avdevice_register_all");
 
@@ -606,12 +606,8 @@ static int open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, int type
     if (codec == NULL) {
       return -1;
     }
-    #ifdef AVOID_AVSTREAM_CODEC
-      ctx->codec_ctx = (*_avcodec_alloc_context3)(codec);  //BUG : need to free this now
-      (*_avcodec_parameters_to_context)(ctx->codec_ctx, stream->codecpar);
-    #else
-      ctx->codec_ctx = stream->codec;  //deprecated
-    #endif
+    ctx->codec_ctx = (*_avcodec_alloc_context3)(codec);  //BUG : need to free this now
+    (*_avcodec_parameters_to_context)(ctx->codec_ctx, stream->codecpar);
     ctx->codec_ctx->flags |= CODEC_FLAG_LOW_DELAY;
     if ((ret = (*_avcodec_open2)(ctx->codec_ctx, codec, NULL)) < 0) {
       return ret;
@@ -1248,13 +1244,7 @@ static jboolean add_stream(FFContext *ctx, int codec_id) {
   stream = (*_avformat_new_stream)(ctx->fmt_ctx, codec);
   if (stream == NULL) return JNI_FALSE;
   stream->id = ctx->fmt_ctx->nb_streams-1;
-  #ifdef AVOID_AVSTREAM_CODEC
-    codec_ctx = (*_avcodec_alloc_context3)(codec);
-    printf("codec=%p stream ctx=%p my ctx=%p codecpar=%p\n", codec, stream->codec, codec_ctx, stream->codecpar);  //test
-    (*_avcodec_parameters_to_context)(codec_ctx, stream->codecpar);
-  #else
-    codec_ctx = stream->codec;
-  #endif
+  codec_ctx = (*_avcodec_alloc_context3)(codec);
 
   switch (codec->type) {
     case AVMEDIA_TYPE_AUDIO:
@@ -1352,6 +1342,12 @@ static jboolean open_video(FFContext *ctx) {
     ctx->video_frame->data[a] = ctx->dst_pic->data[a];
     ctx->video_frame->linesize[a] = ctx->dst_pic->linesize[a];
   }
+  //copy params
+  ret = (*_avcodec_parameters_from_context)(ctx->video_stream->codecpar, ctx->video_codec_ctx);
+  if (ret < 0) {
+    printf("avcoidec_parameters_from_context() failed!\n");
+    return JNI_FALSE;
+  }
   return JNI_TRUE;
 }
 
@@ -1383,6 +1379,12 @@ static jboolean open_audio(FFContext *ctx) {
   }
   if (ctx->audio_codec_ctx->sample_fmt == AV_SAMPLE_FMT_S16) {
     return JNI_TRUE;
+  }
+  //copy params
+  ret = (*_avcodec_parameters_from_context)(ctx->audio_stream->codecpar, ctx->audio_codec_ctx);
+  if (ret < 0) {
+    printf("avcoidec_parameters_from_context() failed!\n");
+    return JNI_FALSE;
   }
   //create audio conversion (S16 -> FLTP)
   if (libav_org)
