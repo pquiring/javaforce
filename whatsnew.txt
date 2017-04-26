@@ -1,5 +1,9 @@
 What's new...
 
+Apr 26/2017 : jfAudio update
+  - re-release jfAudio for last ffmpeg fix
+    - jfAudio/0.16
+
 Apr 25/2017 : JF 15.4.0 released
   - fixed ffmpeg decoding (discard unknown packets)
     - jfVideo/0.20
