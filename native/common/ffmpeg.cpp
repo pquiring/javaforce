@@ -598,15 +598,13 @@ static int open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, int type
   AVStream *stream;
   AVCodec *codec;
   stream_idx = (*_av_find_best_stream)(ctx->fmt_ctx, type, -1, -1, NULL, 0);
-  if (stream_idx < 0) {
-    return stream_idx;
-  } else {
+  if (stream_idx >= 0) {
     stream = (AVStream*)ctx->fmt_ctx->streams[stream_idx];
     codec = (*_avcodec_find_decoder)(stream->codecpar->codec_id);
     if (codec == NULL) {
       return -1;
     }
-    ctx->codec_ctx = (*_avcodec_alloc_context3)(codec);  //BUG : need to free this now
+    ctx->codec_ctx = (*_avcodec_alloc_context3)(codec);
     (*_avcodec_parameters_to_context)(ctx->codec_ctx, stream->codecpar);
     ctx->codec_ctx->flags |= CODEC_FLAG_LOW_DELAY;
     if ((ret = (*_avcodec_open2)(ctx->codec_ctx, codec, NULL)) < 0) {
@@ -784,7 +782,6 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
   if (ctx->fmt_ctx != NULL) {
     (*_avformat_free_context)(ctx->fmt_ctx);
     ctx->fmt_ctx = NULL;
-    //BUG:I think this frees all the codec stuff too ???
   }
   if (ctx->frame != NULL) {
     (*_av_frame_free)((void**)&ctx->frame);
@@ -1101,7 +1098,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
     return JNI_FALSE;
   }
 
-  //BUG : what are default values???
   if (new_width == -1) new_width = ctx->video_codec_ctx->width;
   if (new_height == -1) new_height = ctx->video_codec_ctx->height;
   if ((ctx->video_dst_bufsize = (*_av_image_alloc)(ctx->video_dst_data, ctx->video_dst_linesize
