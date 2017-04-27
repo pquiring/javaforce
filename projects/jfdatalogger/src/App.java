@@ -14,7 +14,7 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.11";
+  public static String version = "0.12";
 
   public static int delays[] = new int[] {
     25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
@@ -712,7 +712,7 @@ public class App extends javax.swing.JFrame {
       if (value > tag.fmax) return 100;
       double delta = tag.fmax - tag.fmin;
       double fval = value;
-      double fmin = tag.min;
+      double fmin = tag.fmin;
       return (int)((fval - fmin) / delta * 100.0);
     }
     public int sv, lsv;
