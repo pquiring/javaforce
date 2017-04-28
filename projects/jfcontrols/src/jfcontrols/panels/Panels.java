@@ -73,34 +73,35 @@ public class Panels {
   private static Table getTable(String cells[][], boolean popup) {
     int mx = 1;
     int my = 1;
+    Component cs[] = new Component[cells.length];
+    Rectangle rs[] = new Rectangle[cells.length];
     for(int a=0;a<cells.length;a++) {
-      int x = Integer.valueOf(cells[a][X]);
-      int y = Integer.valueOf(cells[a][Y]);
-      int w = Integer.valueOf(cells[a][W]);
-      int h = Integer.valueOf(cells[a][H]);
-      if (x + w > mx) {
-        mx = x + w;
+      rs[a] = new Rectangle();
+      rs[a].x = Integer.valueOf(cells[a][X]);
+      rs[a].y = Integer.valueOf(cells[a][Y]);
+      rs[a].width = Integer.valueOf(cells[a][W]);
+      rs[a].height = Integer.valueOf(cells[a][H]);
+      String comp = cells[a][COMP];
+      cs[a] = getCell(comp, cells[a], rs[a]);
+      int x2 = rs[a].x + rs[a].width;
+      if (x2 > mx) {
+        mx = x2;
       }
-      if (y + h > my) {
-        my = y + h;
+      int y2 = rs[a].y + rs[a].height;
+      if (y2 > my) {
+        my = y2;
       }
+      setCellSize(cs[a], rs[a].width, rs[a].height);
+      cs[a].setProperty("id", cells[a][ID]);
+      cs[a].setName(cells[a][NAME]);
     }
     Table table = new Table(cellWidth,cellHeight,mx,my);
     for(int a=0;a<cells.length;a++) {
-      int x = Integer.valueOf(cells[a][X]);
-      int y = Integer.valueOf(cells[a][Y]);
-      int w = Integer.valueOf(cells[a][W]);
-      int h = Integer.valueOf(cells[a][H]);
-      String comp = cells[a][COMP];
-      Component c = getCell(comp, cells[a]);
-      setCellSize(c, w, h);
-      if (w == 1 && h == 1)
-        table.add(c, x, y);
+      if (rs[a].width == 1 && rs[a].height == 1)
+        table.add(cs[a], rs[a].x, rs[a].y);
       else
-        table.add(c, x, y, w, h);
-      c.setProperty("id", cells[a][ID]);
-      c.setName(cells[a][NAME]);
-    }
+        table.add(cs[a], rs[a].x, rs[a].y, rs[a].width, rs[a].height);
+    }  
     if (!popup) {
       //add top components
       Button x = getButton(new String[] {null, null, null, null, null, "button", null, "X", null, "showMenu", null});
@@ -114,13 +115,13 @@ public class Panels {
     c.setWidth(Integer.toString(cellWidth * w));
     c.setHeight(Integer.toString(cellHeight * h));
   }
-  public static Component getCell(String name, String v[]) {
+  public static Component getCell(String name, String v[], Rectangle r) {
     switch (name) {
       case "label": return getLabel(v);
       case "button": return getButton(v);
       case "textfield": return getTextField(v);
       case "combobox": return getComboBox(v);
-      case "table": return getTable(v);
+      case "table": return getTable(v, r);
     }
     return null;
   }
@@ -208,34 +209,38 @@ public class Panels {
     return cell;
   }
 //   cells[][] = "id,x,y,w,h,comp,name,text,tag,func,arg,style"
-  private static Table getTable(String v[]) {
+  private static Table getTable(String v[], Rectangle r) {
     String name = v[NAME];
     SQL sql = SQLService.getSQL();
     ArrayList<String[]> cells = new ArrayList<String[]>();
   //id,x,y,w,h,name,text,tag,func,arg,style
     switch (name) {
       case "jfc_ctrls" : {
+        r.width = 8;
         String data[][] = sql.select("select id,ip,ctype from ctrls");
         if (data == null) data = new String[0][0];
+        r.height = data.length;
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a+2, 1, 1, "label", null, "C" + a, null, null, null, null));
-          cells.add(createCell("", 1, a+2, 3, 1, "textfield", "c_" + a + "_ip", null, "jfc_c_" + a + "_ip", null, null, null));
-          cells.add(createCell("", 4, a+2, 2, 1, "combobox", "c_" + a + "_type", null, "jfc_c_" + a + "_type", null, "jfc_ctrl_type", null));
-          cells.add(createCell("", 6, a+2, 2, 1, "combobox", "c_" + a + "_speed", null, "jfc_c_" + a + "_speed", null, "jfc_ctrl_speed", null));
+          cells.add(createCell("", 0, a, 1, 1, "label", null, "C" + a, null, null, null, null));
+          cells.add(createCell("", 1, a, 3, 1, "textfield", "c_" + a + "_ip", null, "jfc_c_" + a + "_ip", null, null, null));
+          cells.add(createCell("", 4, a, 2, 1, "combobox", "c_" + a + "_type", null, "jfc_c_" + a + "_type", null, "jfc_ctrl_type", null));
+          cells.add(createCell("", 6, a, 2, 1, "combobox", "c_" + a + "_speed", null, "jfc_c_" + a + "_speed", null, "jfc_ctrl_speed", null));
         }
         break;
       }
       case "jfc_tags": {
+        r.width = 7;
         String data[][] = sql.select("select id,name,dtype from tags");
         if (data == null) data = new String[0][0];
+        r.height = data.length;
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 1, a+2, 5, 1, "textfield", "t_" + a + "_name", null, "jfc_t_" + a + "_name", null, null, null));
-          cells.add(createCell("", 6, a+2, 2, 1, "combobox", "t_" + a + "_type", null, "jfc_t_" + a + "_type", null, "jfc_tag_type", null));
+          cells.add(createCell("", 1, a, 5, 1, "textfield", "t_" + a + "_name", null, "jfc_t_" + a + "_name", null, null, null));
+          cells.add(createCell("", 6, a, 2, 1, "combobox", "t_" + a + "_type", null, "jfc_t_" + a + "_type", null, "jfc_tag_type", null));
         }
         break;
       }
     }
     sql.close();
-    return getTable(cells.toArray(new String[0][0]), true);
+    return getTable(cells.toArray(new String[cells.size()][]), true);
   }
 }

@@ -131,11 +131,12 @@ public class SQLService {
 
     sql.execute("insert into panels (name, popup) values ('jfc_controllers', false)");
     id = sql.select1value("select id from panels where name='jfc_controllers'");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,3,1,'label','','IP')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",5,1,2,1,'label','','Type')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",7,1,2,1,'label','','Speed')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",10,1,3,1,'button','','Save','jfc_ctrl_save')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,3,1,'table','jfc_ctrls')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",3,1,3,1,'label','','IP')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",6,1,2,1,'label','','Type')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",8,1,2,1,'label','','Speed')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,1,3,1,'button','','New','jfc_ctrl_new')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,1,3,1,'button','','Save','jfc_ctrl_save')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_ctrls')");
 
     sql.execute("insert into panels (name, popup) values ('jfc_tags', false)");
     id = sql.select1value("select id from panels where name='jfc_tags'");
