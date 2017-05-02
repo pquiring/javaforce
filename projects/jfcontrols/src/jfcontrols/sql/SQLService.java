@@ -56,13 +56,13 @@ public class SQLService {
     JFLog.log("DB creating...");
     sql.connect(derbyURI + ";create=true");
     //create tables
-    sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, num int, ip varchar(32), type int, speed int)");
-    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), type int)");
+    sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, num int unique, ip varchar(32), type int, speed int)");
+    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32) unique, type int)");
     sql.execute("create table panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, popup boolean)");
     sql.execute("create table cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int,comp  varchar(32), name varchar(32), text varchar(512), tag varchar(32), func varchar(32), arg varchar(32), style varchar(512))");
     sql.execute("create table funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique)");
-    sql.execute("create table rungs (id int not null generated always as identity (start with 1, increment by 1) primary key, rung int, fid int, logic varchar(32000))");
-    sql.execute("create table users (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32), pass varchar(32))");
+    sql.execute("create table rungs (id int not null generated always as identity (start with 1, increment by 1) primary key, rung int unique, fid int, logic varchar(32000))");
+    sql.execute("create table users (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, pass varchar(32))");
     sql.execute("create table lists (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique)");
     sql.execute("create table listdata (id int not null generated always as identity (start with 1, increment by 1) primary key, lid int, value int, text varchar(128))");
     sql.execute("create table config (id varchar(32) unique, value varchar(512))");
