@@ -28,7 +28,9 @@ import javax.swing.event.*;
 
 public class XML implements TreeModelListener {
   private DefaultTreeModel treemodel;
-  private boolean useContentForNameGlobal = false;
+  private boolean useContentForName = false;
+  private boolean useNameAttributeForName = false;
+  private boolean useUniqueNames = true;
   private boolean fireEvents = true;
   private boolean ignoreEvents = false;
 
@@ -89,7 +91,6 @@ public class XML implements TreeModelListener {
     public boolean isNotLeaf = false;
     public boolean isLeaf = false;
     public boolean isReadOnly = false;
-    public boolean useContentForName = false;
 
     /**
      * Constructs a new XMLTag
@@ -134,21 +135,20 @@ public class XML implements TreeModelListener {
      * Returns a unique name for this node.
      */
     public String getName() {
-      if (useContentForName || useContentForNameGlobal) {
+      if (useContentForName) {
         return content;
       }
-      String argName = getArg("name");
-      if (argName != null) {
-        return argName;
+      if (useNameAttributeForName) {
+        String argName = getArg("name");
+        if (argName != null) {
+          return argName;
+        }
       }
-      return uname;
-    }
-
-    /**
-     * Returns a real name for this node (may not be unique).
-     */
-    public String getXMLName() {
-      return name;
+      if (useUniqueNames) {
+        return uname;
+      } else {
+        return name;
+      }  
     }
 
     /**
@@ -815,8 +815,9 @@ public class XML implements TreeModelListener {
     if (objs == null || objs.length == 0) {
       return null;
     }
-    name = tag.getXMLName();
+    name = tag.getName();
     if (!name.equals(objs[0].toString())) {
+      JFLog.log("getTag() : root does not match : " + objs[0].toString() + "!=" + name);
       return null;
     }
     int idx = 1;
@@ -827,7 +828,7 @@ public class XML implements TreeModelListener {
       cnt = tag.getChildCount();
       for (int i = 0; i < cnt; i++) {
         child = (XMLTag) tag.getChildAt(i);
-        name = child.getXMLName();
+        name = child.getName();
         if (name.equals(objs[idx].toString())) {
           ok = true;
           idx++;
@@ -836,6 +837,7 @@ public class XML implements TreeModelListener {
         }
       }
       if (!ok) {
+        JFLog.log("getTag() : child not found : " + objs[idx].toString());
         return null;  //next path element not found
       }
     }
@@ -871,20 +873,50 @@ public class XML implements TreeModelListener {
 
   /**
    * Forces getName() to return the tags content instead of the actual name.
-   * This causes JTree to display the content instead of the tag name.
    *
    * @param state
    */
   public void setUseContentForName(boolean state) {
-    useContentForNameGlobal = true;
+    useContentForName = state;
   }
 
   /**
    * Forces getName() to return the tags content instead of the actual name.
-   * This causes JTree to display the content instead of the tag name.
    */
   public boolean getUseContentForName() {
-    return useContentForNameGlobal;
+    return useContentForName;
+  }
+
+  /**
+   * Forces getName() to return the tags attribute 'name' (if available)
+   *
+   * @param state
+   */
+  public void setUseAttributeNameForName(boolean state) {
+    useNameAttributeForName = state;
+  }
+
+  /**
+   * Forces getName() to return the tags content instead of the actual name.
+   */
+  public boolean getUseAttributeNameForName() {
+    return useNameAttributeForName;
+  }
+
+  /**
+   * Forces getName() to return unique names.
+   *
+   * @param state
+   */
+  public void setUseUniqueNames(boolean state) {
+    useUniqueNames = state;
+  }
+
+  /**
+   * Forces getName() to return the tags content instead of the actual name.
+   */
+  public boolean getUseUniqueNames() {
+    return useUniqueNames;
   }
 
   /**
@@ -902,7 +934,7 @@ public class XML implements TreeModelListener {
       try {
         child = tag.getChildAt(a);
         int childChildcnt = child.getChildCount();
-        name = child.getXMLName();
+        name = child.getName();
         f = c.getField(name);
         if (f == null) {
           JFLog.log("XML:field not found:" + name);
@@ -1043,7 +1075,7 @@ public class XML implements TreeModelListener {
             array2[idx] = new Color(JF.atox(child.content));
             f.set(obj, array2);
           } else {
-            name = child.getXMLName();
+            name = child.getName();
             f = c.getField(name);
             fc = f.getType();
             Object childObject = fc.newInstance();
