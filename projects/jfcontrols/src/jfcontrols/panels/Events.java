@@ -65,9 +65,21 @@ public class Events {
         break;
       }
       case "jfc_ctrl_new": {
+        //find available ctrl id
+        synchronized(lock) {
+          int id = 1;
+          do {
+            String inuse = sql.select1value("select num from ctrls where num=" + id);
+            if (inuse == null) break;
+            id++;
+          } while (true);
+          sql.execute("insert into ctrls (num,ip,type,speed) values (" + id + ",'',0,0)");
+          client.setPanel(Panels.getPanel("jfc_controllers", client));
+        }
         break;
       }
       case "jfc_ctrl_delete": {
+        //TODO
         break;
       }
       case "jfc_ctrl_save": {
@@ -76,8 +88,14 @@ public class Events {
       }
       case "jfc_tags_new": {
         synchronized(lock) {
-          Panel panel = client.root;
-
+          int id = 1;
+          do {
+            String inuse = sql.select1value("select name from tags where name='tag" + id + "'");
+            if (inuse == null) break;
+            id++;
+          } while (true);
+          sql.execute("insert into tags (cid,name,type) values (0,'tag" + id + "',0)");
+          client.setPanel(Panels.getPanel("jfc_tags", client));
         }
         break;
       }
@@ -110,14 +128,19 @@ public class Events {
     WebUIClient client = tf.getClient();
     String tag = (String)tf.getProperty("tag");
     if (tag == null) return;
+    String value = tf.getText();
     if (tag.startsWith("jfc_")) {
+      String f[] = tag.split("_");
+      //jfc_table_col_id
+      String table = f[1];
+      String col = f[2];
+      String type = f[3];
+      String id = f[4];
       SQL sql = SQLService.getSQL();
-      //write to config table
-      String exists = sql.select1value("select value from config where id=" + SQL.quote(tag));
-      if (exists == null)
-        sql.execute("insert into config (id,value) values (" + SQL.quote(tag) + "," + SQL.quote(tf.getText()) + ")");
-      else
-        sql.execute("update config set value=" + SQL.quote(tf.getText()) + " where id=" + SQL.quote(tag));
+      sql.execute("update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id);
+      if (sql.lastException != null) {
+        JFLog.log(sql.lastException);
+      }
       sql.close();
     } else {
       TagsService.write(tag, tf.getText());
@@ -130,13 +153,17 @@ public class Events {
     if (tag == null) return;
     String value = cb.getSelectedValue();
     if (tag.startsWith("jfc_")) {
+      String f[] = tag.split("_");
+      //jfc_table_col_id
+      String table = f[1];
+      String col = f[2];
+      String type = f[3];
+      String id = f[4];
       SQL sql = SQLService.getSQL();
-      //write to config table
-      String exists = sql.select1value("select value from config where id=" + SQL.quote(tag));
-      if (exists == null)
-        sql.execute("insert into config (id,value) values (" + SQL.quote(tag) + "," + SQL.quote(value) + ")");
-      else
-        sql.execute("update config set value=" + SQL.quote(value) + " where id=" + SQL.quote(tag));
+      sql.execute("update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id);
+      if (sql.lastException != null) {
+        JFLog.log(sql.lastException);
+      }
       sql.close();
     } else {
       TagsService.write(tag, value);

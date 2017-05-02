@@ -56,8 +56,8 @@ public class SQLService {
     JFLog.log("DB creating...");
     sql.connect(derbyURI + ";create=true");
     //create tables
-    sql.execute("create table ctrls (id int not null primary key, ip varchar(32), ctype int)");
-    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), dtype int, speed int)");
+    sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, num int, ip varchar(32), type int, speed int)");
+    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), type int)");
     sql.execute("create table panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, popup boolean)");
     sql.execute("create table cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int,comp  varchar(32), name varchar(32), text varchar(512), tag varchar(32), func varchar(32), arg varchar(32), style varchar(512))");
     sql.execute("create table funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique)");
@@ -102,7 +102,7 @@ public class SQLService {
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",3,'int')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",4,'long')");
     //create local controller
-    sql.execute("insert into ctrls (id,ip,ctype) values (0,'127.0.0.1',0)");
+    sql.execute("insert into ctrls (num,ip,type,speed) values (0,'127.0.0.1',0,0)");
     //create panels
     sql.execute("insert into panels (name, popup) values ('jfc_login', true)");
     id = sql.select1value("select id from panels where name='jfc_login'");
@@ -131,6 +131,7 @@ public class SQLService {
 
     sql.execute("insert into panels (name, popup) values ('jfc_controllers', false)");
     id = sql.select1value("select id from panels where name='jfc_controllers'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,1,1,'label','','ID')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",3,1,3,1,'label','','IP')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",6,1,2,1,'label','','Type')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",8,1,2,1,'label','','Speed')");
@@ -147,6 +148,15 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,3,1,'table','jfc_tags')");
     sql.close();
   }
+  
+  public static String quote(String value, String type) {
+    if (type.equals("str")) {
+      return SQL.quote(value);
+    } else {
+      return value;
+    }
+  }
+  
   public static void start() {
     initDB();
   }

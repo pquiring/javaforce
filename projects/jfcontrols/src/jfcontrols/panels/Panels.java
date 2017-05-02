@@ -76,13 +76,15 @@ public class Panels {
     Component cs[] = new Component[cells.length];
     Rectangle rs[] = new Rectangle[cells.length];
     for(int a=0;a<cells.length;a++) {
-      rs[a] = new Rectangle();
-      rs[a].x = Integer.valueOf(cells[a][X]);
-      rs[a].y = Integer.valueOf(cells[a][Y]);
-      rs[a].width = Integer.valueOf(cells[a][W]);
-      rs[a].height = Integer.valueOf(cells[a][H]);
+      Rectangle r = new Rectangle();
+      rs[a] = r;
+      r.x = Integer.valueOf(cells[a][X]);
+      r.y = Integer.valueOf(cells[a][Y]);
+      r.width = Integer.valueOf(cells[a][W]);
+      r.height = Integer.valueOf(cells[a][H]);
       String comp = cells[a][COMP];
-      cs[a] = getCell(comp, cells[a], rs[a]);
+      Component c = getCell(comp, cells[a], rs[a]);
+      cs[a] = c;
       int x2 = rs[a].x + rs[a].width;
       if (x2 > mx) {
         mx = x2;
@@ -91,9 +93,23 @@ public class Panels {
       if (y2 > my) {
         my = y2;
       }
-      setCellSize(cs[a], rs[a].width, rs[a].height);
-      cs[a].setProperty("id", cells[a][ID]);
-      cs[a].setName(cells[a][NAME]);
+      setCellSize(c, rs[a].width, rs[a].height);
+      c.setProperty("id", cells[a][ID]);
+      c.setName(cells[a][NAME]);
+      String style = cells[a][STYLE];
+      if (style != null) {
+        String styles[] = style.split(";");
+        for(int b=0;b<styles.length;b++) {
+          if (styles[b].equals("readonly")) {
+            c.setReadonly(true);
+          } else if (styles[b].equals("disabled")) {
+            c.setDisabled(true);
+          } else {
+            String f[] = styles[b].split("=");
+            c.setStyle(f[0], f[1]);
+          }
+        }
+      }  
     }
     Table table = new Table(cellWidth,cellHeight,mx,my);
     for(int a=0;a<cells.length;a++) {
@@ -144,7 +160,13 @@ public class Panels {
     String text = null;
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
-        text = sql.select1value("select value from config where id=" + SQL.quote(tag));
+        String f[] = tag.split("_");
+        //jfc_table_col_id
+        String table = f[1];
+        String col = f[2];
+        String type = f[3];
+        String id = f[4];
+        text = sql.select1value("select " + col + " from " + table + " where id=" + id);
       } else {
         text = TagsService.read(tag);
       }
@@ -168,7 +190,13 @@ public class Panels {
     String value = null;
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
-        value = sql.select1value("select value from config where id=" + SQL.quote(tag));
+        String f[] = tag.split("_");
+        //jfc_table_col_id
+        String table = f[1];
+        String col = f[2];
+        String type = f[3];
+        String id = f[4];
+        value = sql.select1value("select " + col + " from " + table + " where id=" + id);
       } else {
         value = TagsService.read(tag);
       }
@@ -213,29 +241,32 @@ public class Panels {
     String name = v[NAME];
     SQL sql = SQLService.getSQL();
     ArrayList<String[]> cells = new ArrayList<String[]>();
-  //id,x,y,w,h,name,text,tag,func,arg,style
     switch (name) {
       case "jfc_ctrls" : {
         r.width = 8;
-        String data[][] = sql.select("select id,ip,ctype from ctrls");
+        String data[][] = sql.select("select id,num,ip,type from ctrls");
         if (data == null) data = new String[0][0];
         r.height = data.length;
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 1, 1, "label", null, "C" + a, null, null, null, null));
-          cells.add(createCell("", 1, a, 3, 1, "textfield", "c_" + a + "_ip", null, "jfc_c_" + a + "_ip", null, null, null));
-          cells.add(createCell("", 4, a, 2, 1, "combobox", "c_" + a + "_type", null, "jfc_c_" + a + "_type", null, "jfc_ctrl_type", null));
-          cells.add(createCell("", 6, a, 2, 1, "combobox", "c_" + a + "_speed", null, "jfc_c_" + a + "_speed", null, "jfc_ctrl_speed", null));
+          String style = data[a][1].equals("0") ? "disabled" : null;
+          cells.add(createCell("", 0, a, 1, 1, "textfield", null, data[a][1], "jfc_ctrls_num_int_" + data[a][0], null, null, style));
+          cells.add(createCell("", 1, a, 3, 1, "textfield", null, data[a][2], "jfc_ctrls_ip_str_" + data[a][0], null, null, style));
+          cells.add(createCell("", 4, a, 2, 1, "combobox", null, null, "jfc_ctrls_type_int_" + data[a][0], null, "jfc_ctrl_type", style));
+          cells.add(createCell("", 6, a, 2, 1, "combobox", null, null, "jfc_ctrls_speed_int_" + data[a][0], null, "jfc_ctrl_speed", style));
+          cells.add(createCell("", 8, a, 2, 1, "button", null, "Tags", null, "setPanel", "jfc_tags", null));
+          cells.add(createCell("", 12, a, 2, 1, "button", null, "Delete", null, "jfc_ctrl_delete", data[a][1], null));
         }
         break;
       }
       case "jfc_tags": {
-        r.width = 7;
-        String data[][] = sql.select("select id,name,dtype from tags");
+        r.width = 8;
+        String data[][] = sql.select("select id,cid,name,type from tags");
         if (data == null) data = new String[0][0];
         r.height = data.length;
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 1, a, 5, 1, "textfield", "t_" + a + "_name", null, "jfc_t_" + a + "_name", null, null, null));
-          cells.add(createCell("", 6, a, 2, 1, "combobox", "t_" + a + "_type", null, "jfc_t_" + a + "_type", null, "jfc_tag_type", null));
+          cells.add(createCell("", 1, a, 5, 1, "textfield", null, null, "jfc_tags_name_str_" + data[a][0], null, null, null));
+          cells.add(createCell("", 6, a, 2, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, "jfc_tag_type", null));
+          cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], null));
         }
         break;
       }
