@@ -501,7 +501,7 @@ public class SiteMgr extends javax.swing.JDialog {
     loadFolder(xml.root, Settings.settings.sites);
   }
   private void saveSite(XML.XMLTag tag, Settings.Site site) {
-    site.name = tag.getXMLName();
+    site.name = tag.getName();
     for(int b=0;b<tag.getChildCount();b++) {
       XML.XMLTag child = tag.getChildAt(b);
       if (child.name.equals("host")) site.host = child.content;

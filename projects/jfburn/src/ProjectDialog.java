@@ -410,10 +410,10 @@ public class ProjectDialog extends javax.swing.JDialog {
 
   private String getTagName(XML.XMLTag tag) {
     StringBuilder sb = new StringBuilder();
-    sb.append(tag.getXMLName());
+    sb.append(tag.getName());
     while ((tag = tag.getParent()) != xmlFiles) {
       sb.insert(0, "/");
-      sb.insert(0, tag.getXMLName());
+      sb.insert(0, tag.getName());
     }
     sb.insert(0, "/");
     return escapeName(sb.toString());

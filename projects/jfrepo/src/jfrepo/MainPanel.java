@@ -203,7 +203,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   private void ubuntu_parseTag(XML.XMLTag tag) {
     for(int i=0;i<tag.getChildCount();i++) {
       XML.XMLTag child = tag.getChildAt(i);
-      String name = child.getXMLName();  //th, span, a
+      String name = child.getName();  //th, span, a
       if (name.equals("tr")) col = 0;
       if (name.equals("th")) col++;
       if (child.getChildCount() > 0) {
@@ -271,7 +271,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   private void fedora_parseTag(XML.XMLTag tag) {
     for(int i=0;i<tag.getChildCount();i++) {
       XML.XMLTag child = tag.getChildAt(i);
-      String name = child.getXMLName();  //th, span, a
+      String name = child.getName();  //th, span, a
       if (name.equals("td") && (!inTable)) {
         tdcnt++;
         if (tdcnt == 1) {

@@ -76,11 +76,11 @@ public class Settings {
   private static void importTag(XML.XMLTag tag, Folder folder) {
     for(int a=0;a<tag.getChildCount();a++) {
       XML.XMLTag child = tag.getChildAt(a);
-      if (child.getXMLName().equalsIgnoreCase("Servers")) {
+      if (child.getName().equalsIgnoreCase("Servers")) {
         importTag(child, folder);
         continue;
       }
-      if (child.getXMLName().equalsIgnoreCase("Folder")) {
+      if (child.getName().equalsIgnoreCase("Folder")) {
         String name = child.getContent();
         int idx = name.indexOf("&");
         if (idx != -1) name = name.substring(0, idx);
@@ -88,7 +88,7 @@ public class Settings {
         importTag(child, folder.folder[folder.folder.length-1]);
         continue;
       }
-      if (child.getXMLName().equalsIgnoreCase("Server")) {
+      if (child.getName().equalsIgnoreCase("Server")) {
         cnt++;
         String name = "untitled", host = "", port = "21", protocol = "ftp", user = "", pass = "", localDir = "", remoteDir = "";
         XML.XMLTag field;

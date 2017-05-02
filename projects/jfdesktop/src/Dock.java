@@ -751,7 +751,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       xml.read(new ByteArrayInputStream(str.getBytes()));
       //remove old "desktop" config
       for(int a=0;a<xml.root.getChildCount();) {
-        if (xml.root.getChildAt(a).getXMLName().equals("desktop")) {
+        if (xml.root.getChildAt(a).getName().equals("desktop")) {
           xml.root.remove(a);
         } else {
           a++;
