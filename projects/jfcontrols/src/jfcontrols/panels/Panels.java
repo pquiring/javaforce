@@ -243,7 +243,7 @@ public class Panels {
     ArrayList<String[]> cells = new ArrayList<String[]>();
     switch (name) {
       case "jfc_ctrls" : {
-        r.width = 8;
+        r.width = 14;
         String data[][] = sql.select("select id,num,ip,type from ctrls");
         if (data == null) data = new String[0][0];
         r.height = data.length;
@@ -253,19 +253,19 @@ public class Panels {
           cells.add(createCell("", 1, a, 3, 1, "textfield", null, data[a][2], "jfc_ctrls_ip_str_" + data[a][0], null, null, style));
           cells.add(createCell("", 4, a, 2, 1, "combobox", null, null, "jfc_ctrls_type_int_" + data[a][0], null, "jfc_ctrl_type", style));
           cells.add(createCell("", 6, a, 2, 1, "combobox", null, null, "jfc_ctrls_speed_int_" + data[a][0], null, "jfc_ctrl_speed", style));
-          cells.add(createCell("", 8, a, 2, 1, "button", null, "Tags", null, "setPanel", "jfc_tags", null));
+          cells.add(createCell("", 9, a, 2, 1, "button", null, "Tags", null, "setPanel", "jfc_tags", null));
           cells.add(createCell("", 12, a, 2, 1, "button", null, "Delete", null, "jfc_ctrl_delete", data[a][1], null));
         }
         break;
       }
       case "jfc_tags": {
-        r.width = 8;
+        r.width = 12;
         String data[][] = sql.select("select id,cid,name,type from tags");
         if (data == null) data = new String[0][0];
         r.height = data.length;
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 1, a, 5, 1, "textfield", null, null, "jfc_tags_name_str_" + data[a][0], null, null, null));
-          cells.add(createCell("", 6, a, 2, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, "jfc_tag_type", null));
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_tags_name_str_" + data[a][0], null, null, null));
+          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, "jfc_tag_type", null));
           cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], null));
         }
         break;
