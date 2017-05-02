@@ -45,6 +45,9 @@ public class WebUIClient {
       dispatchEvent("", "load", null);
     }
   }
+  public void refresh() {
+    sendEvent("body", "redir", null);
+  }
   public void initPanel() {
     root.setClient(this);
     root.init();
@@ -118,6 +121,8 @@ public class WebUIClient {
     byte json[] = sb.toString().getBytes();
     if (!event.equals("sethtml")) {
       System.out.println("SEND=" + new String(json));
+    } else {
+      System.out.println("SEND={html...}");
     }
     socket.write(json);
   }

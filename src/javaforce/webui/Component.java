@@ -247,7 +247,23 @@ public abstract class Component {
     setStyle("left", Integer.toString(x));
     setStyle("top", Integer.toString(y));
   }
+  
+  public void setReadonly(boolean state) {
+    if (state) {
+      addAttr("readonly", "readonly");
+    } else {
+      removeAttr("readonly");
+    }
+  }
 
+  public void setDisabled(boolean state) {
+    if (state) {
+      addAttr("disabled", "true");
+    } else {
+      removeAttr("disabled");
+    }
+  }
+  
   public String toString() {
     return getClass().getName() + ":" + id;
   }

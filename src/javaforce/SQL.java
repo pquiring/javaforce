@@ -44,6 +44,7 @@ public class SQL {
       return true;
     } catch (Exception e) {
       lastException = e;
+      JFLog.log(e);
       return false;
     }
   }
@@ -95,6 +96,7 @@ public class SQL {
       stmt.close();
     } catch (Exception e) {
       lastException = e;
+      JFLog.log(e);
       return false;
     }
     return true;
@@ -122,6 +124,7 @@ public class SQL {
       stmt.close();
     } catch (Exception e) {
       lastException = e;
+      JFLog.log(e);
       return null;
     }
     return ret;
@@ -152,6 +155,7 @@ public class SQL {
       stmt.close();
     } catch (Exception e) {
       lastException = e;
+      JFLog.log(e);
       return null;
     }
     return ret;
@@ -178,6 +182,7 @@ public class SQL {
       stmt.close();
     } catch (Exception e) {
       lastException = e;
+      JFLog.log(e);
       return null;
     }
     String[] ret = new String[rows.size()];
@@ -213,6 +218,7 @@ public class SQL {
       stmt.close();
     } catch (Exception e) {
       lastException = e;
+      JFLog.log(e);
       return null;
     }
     String[][] ret = new String[rows.size()][];
