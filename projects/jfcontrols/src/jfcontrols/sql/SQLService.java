@@ -148,7 +148,7 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,3,1,'table','jfc_tags')");
     sql.close();
   }
-  
+
   public static String quote(String value, String type) {
     if (type.equals("str")) {
       return SQL.quote(value);
@@ -156,7 +156,7 @@ public class SQLService {
       return value;
     }
   }
-  
+
   public static void start() {
     initDB();
   }

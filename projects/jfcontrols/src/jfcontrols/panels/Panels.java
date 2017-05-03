@@ -109,7 +109,7 @@ public class Panels {
             c.setStyle(f[0], f[1]);
           }
         }
-      }  
+      }
     }
     Table table = new Table(cellWidth,cellHeight,mx,my);
     for(int a=0;a<cells.length;a++) {
@@ -117,7 +117,7 @@ public class Panels {
         table.add(cs[a], rs[a].x, rs[a].y);
       else
         table.add(cs[a], rs[a].x, rs[a].y, rs[a].width, rs[a].height);
-    }  
+    }
     if (!popup) {
       //add top components
       Button x = getButton(new String[] {null, null, null, null, null, "button", null, "X", null, "showMenu", null});
