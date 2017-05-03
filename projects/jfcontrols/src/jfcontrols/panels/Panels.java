@@ -51,7 +51,7 @@ public class Panels {
     String popup = sql.select1value("select popup from panels where id=" + pid);
     String cells[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style from cells where pid=" + pid);
     sql.close();
-    panel.add(getTable(cells, popup.equals("true")));
+    panel.add(getTable(cells, popup.equals("true"), client));
     if (popup.equals("true")) return panel;
     panel.add(getLoginPanel(client));
     panel.add(getMenuPanel(client));
@@ -70,7 +70,7 @@ public class Panels {
   private final static int FUNC = 9;
   private final static int ARG = 10;
   private final static int STYLE = 11;
-  private static Table getTable(String cells[][], boolean popup) {
+  private static Table getTable(String cells[][], boolean popup, WebUIClient client) {
     int mx = 1;
     int my = 1;
     Component cs[] = new Component[cells.length];
@@ -83,7 +83,7 @@ public class Panels {
       r.width = Integer.valueOf(cells[a][W]);
       r.height = Integer.valueOf(cells[a][H]);
       String comp = cells[a][COMP];
-      Component c = getCell(comp, cells[a], rs[a]);
+      Component c = getCell(comp, cells[a], rs[a], client);
       cs[a] = c;
       int x2 = rs[a].x + rs[a].width;
       if (x2 > mx) {
@@ -131,13 +131,13 @@ public class Panels {
     c.setWidth(Integer.toString(cellWidth * w));
     c.setHeight(Integer.toString(cellHeight * h));
   }
-  public static Component getCell(String name, String v[], Rectangle r) {
+  public static Component getCell(String name, String v[], Rectangle r, WebUIClient client) {
     switch (name) {
       case "label": return getLabel(v);
       case "button": return getButton(v);
       case "textfield": return getTextField(v);
       case "combobox": return getComboBox(v);
-      case "table": return getTable(v, r);
+      case "table": return getTable(v, r, client);
     }
     return null;
   }
@@ -237,7 +237,7 @@ public class Panels {
     return cell;
   }
 //   cells[][] = "id,x,y,w,h,comp,name,text,tag,func,arg,style"
-  private static Table getTable(String v[], Rectangle r) {
+  private static Table getTable(String v[], Rectangle r, WebUIClient client) {
     String name = v[NAME];
     SQL sql = SQLService.getSQL();
     ArrayList<String[]> cells = new ArrayList<String[]>();
@@ -253,14 +253,14 @@ public class Panels {
           cells.add(createCell("", 1, a, 3, 1, "textfield", null, data[a][2], "jfc_ctrls_ip_str_" + data[a][0], null, null, style));
           cells.add(createCell("", 4, a, 2, 1, "combobox", null, null, "jfc_ctrls_type_int_" + data[a][0], null, "jfc_ctrl_type", style));
           cells.add(createCell("", 6, a, 2, 1, "combobox", null, null, "jfc_ctrls_speed_int_" + data[a][0], null, "jfc_ctrl_speed", style));
-          cells.add(createCell("", 9, a, 2, 1, "button", null, "Tags", null, "setPanel", "jfc_tags", null));
+          cells.add(createCell("", 9, a, 2, 1, "button", null, "Tags", null, "jfc_ctrl_tags", data[a][0], null));
           cells.add(createCell("", 12, a, 2, 1, "button", null, "Delete", null, "jfc_ctrl_delete", data[a][1], null));
         }
         break;
       }
       case "jfc_tags": {
         r.width = 12;
-        String data[][] = sql.select("select id,cid,name,type from tags");
+        String data[][] = sql.select("select id,cid,name,type from tags where cid=" + client.getProperty("ctrl"));
         if (data == null) data = new String[0][0];
         r.height = data.length;
         for(int a=0;a<data.length;a++) {
@@ -272,6 +272,6 @@ public class Panels {
       }
     }
     sql.close();
-    return getTable(cells.toArray(new String[cells.size()][]), true);
+    return getTable(cells.toArray(new String[cells.size()][]), true, client);
   }
 }

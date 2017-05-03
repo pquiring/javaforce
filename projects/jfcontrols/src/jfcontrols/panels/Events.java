@@ -86,15 +86,21 @@ public class Events {
         //force a reload of config options
         break;
       }
+      case "jfc_ctrl_tags": {
+        //load tags for controller
+        client.setProperty("ctrl", arg);
+        client.setPanel(Panels.getPanel("jfc_tags", client));
+        break;
+      }
       case "jfc_tags_new": {
         synchronized(lock) {
           int id = 1;
           do {
-            String inuse = sql.select1value("select name from tags where name='tag" + id + "'");
+            String inuse = sql.select1value("select name from tags where name='tag" + id + "' and cid=" + client.getProperty("ctrl"));
             if (inuse == null) break;
             id++;
           } while (true);
-          sql.execute("insert into tags (cid,name,type) values (0,'tag" + id + "',0)");
+          sql.execute("insert into tags (cid,name,type) values (" + client.getProperty("ctrl") + ",'tag" + id + "',0)");
           client.setPanel(Panels.getPanel("jfc_tags", client));
         }
         break;
