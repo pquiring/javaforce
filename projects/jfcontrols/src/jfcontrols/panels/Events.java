@@ -111,6 +111,22 @@ public class Events {
       case "jfc_tags_save": {
         break;
       }
+      case "jfc_panels_new": {
+        synchronized(lock) {
+          int id = 1;
+          do {
+            String inuse = sql.select1value("select name from panels where name='panel" + id + "'");
+            if (inuse == null) break;
+            id++;
+          } while (true);
+          sql.execute("insert into panels (name, popup, builtin) values ('panel" + id + "', false, false)");
+          client.setPanel(Panels.getPanel("jfc_panels", client));
+        }
+        break;
+      }
+      case "jfc_panels_delete": {
+        break;
+      }
       case "setPanel":
         Panel panel = Panels.getPanel(arg, client);
         if (panel != null) {

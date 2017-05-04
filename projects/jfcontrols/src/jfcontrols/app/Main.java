@@ -26,7 +26,7 @@ public class Main implements WebUIHandler {
 
   public Panel getRootPanel(WebUIClient client) {
     System.out.println("getRootPanel()");
-    return Panels.getPanel(new Panel(), "_main", client);
+    return Panels.getPanel(new Panel(), "main", client);
   }
 
   public byte[] getResource(String string) {
