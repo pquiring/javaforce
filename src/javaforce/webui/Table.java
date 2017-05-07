@@ -36,7 +36,7 @@ public class Table extends Container {
     StringBuffer sb = new StringBuffer();
     sb.append("<table" + getAttrs() + ">");
     for(int y=0;y<rows;y++) {
-      sb.append("<tr>");
+      sb.append("<tr style='height: " + height + "px;'>");
       for(int x=0;x<cols;x++) {
         Component c = get(x,y);
         if (c != null) {
@@ -98,5 +98,11 @@ public class Table extends Container {
   public void addCol() {
     cols++;
     setSize();
+  }
+  public int getRows() {
+    return rows;
+  }
+  public int getColumns() {
+    return cols;
   }
 }

@@ -51,7 +51,7 @@ public class Panels {
     String popup = sql.select1value("select popup from panels where id=" + pid);
     String cells[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style from cells where pid=" + pid);
     sql.close();
-    panel.add(getTable(cells, popup.equals("true"), client));
+    panel.add(getTable(cells, popup.equals("true"), client, -1, -1));
     if (popup.equals("true")) return panel;
     panel.add(getLoginPanel(client));
     panel.add(getMenuPanel(client));
@@ -70,9 +70,11 @@ public class Panels {
   private final static int FUNC = 9;
   private final static int ARG = 10;
   private final static int STYLE = 11;
-  private static Table getTable(String cells[][], boolean popup, WebUIClient client) {
+  private static Table getTable(String cells[][], boolean popup, WebUIClient client, int ix, int iy) {
     int mx = 1;
+    if (ix != -1) mx = ix;
     int my = 1;
+    if (iy != -1) my = iy;
     Component cs[] = new Component[cells.length];
     Rectangle rs[] = new Rectangle[cells.length];
     for(int a=0;a<cells.length;a++) {
@@ -84,6 +86,10 @@ public class Panels {
       r.height = Integer.valueOf(cells[a][H]);
       String comp = cells[a][COMP];
       Component c = getCell(comp, cells[a], rs[a], client);
+      if (c == null) {
+        JFLog.log("Error:cell[] == null:");
+        c = new Label("null");
+      }
       cs[a] = c;
       int x2 = rs[a].x + rs[a].width;
       if (x2 > mx) {
@@ -106,7 +112,9 @@ public class Panels {
             c.setDisabled(true);
           } else {
             String f[] = styles[b].split("=");
-            c.setStyle(f[0], f[1]);
+            if (f.length == 2) {
+              c.setStyle(f[0], f[1]);
+            }
           }
         }
       }
@@ -138,6 +146,7 @@ public class Panels {
       case "textfield": return getTextField(v);
       case "combobox": return getComboBox(v);
       case "table": return getTable(v, r, client);
+      default: JFLog.log("Unknown component:" + name); break;
     }
     return null;
   }
@@ -237,16 +246,16 @@ public class Panels {
     return cell;
   }
 //   cells[][] = "id,x,y,w,h,comp,name,text,tag,func,arg,style"
-  private static Table getTable(String v[], Rectangle r, WebUIClient client) {
+  private static Component getTable(String v[], Rectangle r, WebUIClient client) {
     String name = v[NAME];
+    String arg = v[ARG];
     SQL sql = SQLService.getSQL();
     ArrayList<String[]> cells = new ArrayList<String[]>();
+    Table table;
     switch (name) {
       case "jfc_ctrls" : {
-        r.width = 14;
         String data[][] = sql.select("select id,num,ip,type from ctrls");
         if (data == null) data = new String[0][0];
-        r.height = data.length;
         for(int a=0;a<data.length;a++) {
           String style = data[a][1].equals("0") ? "disabled" : null;
           cells.add(createCell("", 0, a, 1, 1, "textfield", null, data[a][1], "jfc_ctrls_num_int_" + data[a][0], null, null, style));
@@ -261,10 +270,8 @@ public class Panels {
         break;
       }
       case "jfc_tags": {
-        r.width = 12;
         String data[][] = sql.select("select id,cid,name,type from tags where cid=" + client.getProperty("ctrl"));
         if (data == null) data = new String[0][0];
-        r.height = data.length;
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_tags_name_str_" + data[a][0], null, null, null));
           cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, "jfc_tag_type", null));
@@ -273,10 +280,8 @@ public class Panels {
         break;
       }
       case "jfc_panels": {
-        r.width = 12;
         String data[][] = sql.select("select id,name from panels where builtin=false");
         if (data == null) data = new String[0][0];
-        r.height = data.length;
         for(int a=0;a<data.length;a++) {
           String style = data[a][1].equals("main") ? "disabled" : null;
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_panels_name_str_" + data[a][0], null, null, style));
@@ -287,8 +292,44 @@ public class Panels {
         }
         break;
       }
+      case "jfc_panel_editor": {
+        String pid = (String)client.getProperty("panel");
+        String data[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style from cells where pid=" + pid);
+        for(int a=0;a<data.length;a++) {
+          cells.add(data[a]);
+        }
+        sql.close();
+        LayersPanel layers = new LayersPanel();
+        table = getTable(cells.toArray(new String[cells.size()][]), true, client, 64, 64);
+        r.width = table.getColumns();
+        r.height = table.getRows();
+        layers.add(table);
+        cells.clear();
+        for(int a=0;a<data.length;a++) {
+//TODO : put transparent button here
+          String cell[] = data[a];
+          cell[0] = "";
+          cell[5] = "button";
+          cell[6] = "";
+          cell[7] = "overlay";
+          cell[8] = null;
+          cell[9] = null;
+          cell[10] = null;
+          cell[11] = null;
+          cells.add(data[a]);
+        }
+        table = getTable(cells.toArray(new String[cells.size()][]), true, client, 64, 64);
+        layers.add(table);
+        return layers;
+      }
+      default: {
+        JFLog.log("Unknown table:" + name);
+      }
     }
     sql.close();
-    return getTable(cells.toArray(new String[cells.size()][]), true, client);
+    table = getTable(cells.toArray(new String[cells.size()][]), true, client, -1, -1);
+    r.width = table.getColumns();
+    r.height = table.getRows();
+    return table;
   }
 }

@@ -124,6 +124,11 @@ public class Events {
         }
         break;
       }
+      case "jfc_panels_edit": {
+        client.setProperty("panel", arg);
+        client.setPanel(Panels.getPanel("jfc_panel_editor", client));
+        break;
+      }
       case "jfc_panels_delete": {
         break;
       }
