@@ -58,6 +58,9 @@ ws.onmessage = function (event) {
     case "setbackclr":
       element.style.backgroundColor = msg.clr;
       break;
+    case "setborderclr":
+      element.style.borderColor = msg.clr;
+      break;
     case "setzindex":
       element.style.zIndex = msg.idx;
       break;

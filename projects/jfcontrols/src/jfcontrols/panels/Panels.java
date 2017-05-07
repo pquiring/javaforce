@@ -87,7 +87,7 @@ public class Panels {
       String comp = cells[a][COMP];
       Component c = getCell(comp, cells[a], rs[a], client);
       if (c == null) {
-        JFLog.log("Error:cell[] == null:");
+        JFLog.log("Error:cell == null:" + comp);
         c = new Label("null");
       }
       cs[a] = c;
@@ -146,6 +146,7 @@ public class Panels {
       case "textfield": return getTextField(v);
       case "combobox": return getComboBox(v);
       case "table": return getTable(v, r, client);
+      case "overlay": return getOverlay(v);
       default: JFLog.log("Unknown component:" + name); break;
     }
     return null;
@@ -306,16 +307,15 @@ public class Panels {
         layers.add(table);
         cells.clear();
         for(int a=0;a<data.length;a++) {
-//TODO : put transparent button here
           String cell[] = data[a];
-          cell[0] = "";
-          cell[5] = "button";
-          cell[6] = "";
-          cell[7] = "overlay";
-          cell[8] = null;
-          cell[9] = null;
-          cell[10] = null;
-          cell[11] = null;
+          cell[ID] = null;
+          cell[COMP] = "overlay";
+          cell[NAME] = "";
+          cell[TEXT] = "";
+          cell[TAG] = null;
+          cell[FUNC] = null;
+          cell[ARG] = null;
+          cell[STYLE] = null;
           cells.add(data[a]);
         }
         table = getTable(cells.toArray(new String[cells.size()][]), true, client, 64, 64);
@@ -331,5 +331,21 @@ public class Panels {
     r.width = table.getColumns();
     r.height = table.getRows();
     return table;
+  }
+  private static Component getOverlay(String v[]) {
+    Block div = new Block();
+    div.setStyle("border", "3px solid");
+    div.setStyle("box-sizing", "border-box");
+    div.setBorderColor("#000000");
+    div.addClickListener((me, comp) -> {
+      WebUIClient client = comp.getClient();
+      Block focus = (Block)client.getProperty("focus");
+      if (focus != null) {
+        focus.setBorderColor("#000000");
+      }
+      comp.setBorderColor("#00ff00");
+      client.setProperty("focus", comp);
+    });
+    return div;
   }
 }

@@ -194,6 +194,10 @@ public abstract class Component {
     setStyle("background-color", clr);
     getClient().sendEvent(id, "setbackclr", new String[] {"clr=" + clr});
   }
+  public void setBorderColor(String clr) {
+    setStyle("border-color", clr);
+    getClient().sendEvent(id, "setborderclr", new String[] {"clr=" + clr});
+  }
   /** Returns all attributes defined for a component (id, attrs, class, styles) */
   public String getAttrs() {
     StringBuffer sb = new StringBuffer();
@@ -247,7 +251,7 @@ public abstract class Component {
     setStyle("left", Integer.toString(x));
     setStyle("top", Integer.toString(y));
   }
-  
+
   public void setReadonly(boolean state) {
     if (state) {
       addAttr("readonly", "readonly");
@@ -263,7 +267,7 @@ public abstract class Component {
       removeAttr("disabled");
     }
   }
-  
+
   public String toString() {
     return getClass().getName() + ":" + id;
   }
@@ -371,6 +375,7 @@ public abstract class Component {
   protected void onClick(String args[]) {}
   private Click click;
   public void addClickListener(Click handler) {
+    addEvent("onclick", "onClick(event, this);");
     click = handler;
   }
 
