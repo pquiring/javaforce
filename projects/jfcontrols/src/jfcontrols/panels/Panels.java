@@ -246,6 +246,20 @@ public class Panels {
     cell[11] = style;
     return cell;
   }
+  private static boolean empty(String [][] cells, int cx, int cy) {
+    int cnt = cells.length;
+    for(int a=0;a<cnt;a++) {
+      String cell[] = cells[a];
+      int x = Integer.valueOf(cell[X]);
+      int y = Integer.valueOf(cell[Y]);
+      int w = Integer.valueOf(cell[W]) - 1;
+      int h = Integer.valueOf(cell[H]) - 1;
+      if ( (cx >= x && cx <= x + w) && (cy >= y && cy <= y + h) ) {
+        return false;
+      }
+    }
+    return true;
+  }
 //   cells[][] = "id,x,y,w,h,comp,name,text,tag,func,arg,style"
   private static Component getTable(String v[], Rectangle r, WebUIClient client) {
     String name = v[NAME];
@@ -317,6 +331,14 @@ public class Panels {
           cell[ARG] = null;
           cell[STYLE] = null;
           cells.add(data[a]);
+        }
+        String cellsArray[][] = cells.toArray(new String[cells.size()][]);
+        for(int x=0;x<64;x++) {
+          for(int y=0;y<64;y++) {
+            if (empty(cellsArray,x,y)) {
+              cells.add(createCell("", x, y, 1, 1, "overlay", null, null, null, null, null, null));
+            }
+          }
         }
         table = getTable(cells.toArray(new String[cells.size()][]), true, client, 64, 64);
         layers.add(table);

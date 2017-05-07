@@ -38,7 +38,8 @@ public class Table extends Container {
     for(int y=0;y<rows;y++) {
       sb.append("<tr style='height: " + height + "px;'>");
       for(int x=0;x<cols;x++) {
-        Component c = get(x,y);
+        Component c = _get(x,y);
+        if (c == SPAN) continue;
         if (c != null) {
           int spanx = get(c, "spanx", 1);
           int spany = get(c, "spany", 1);
@@ -69,13 +70,22 @@ public class Table extends Container {
     sb.append("</table>");
     return sb.toString();
   }
-  private Component get(int x,int y) {
+  private static Component SPAN = new Label("");
+  private Component _get(int x,int y) {
     int cnt = count();
     for(int a=0;a<cnt;a++) {
       Component c = get(a);
       int cx = get(c, "x", -1);
       int cy = get(c, "y", -1);
       if (cx == x && cy == y) return c;
+      int spanx = get(c, "spanx", 1) - 1;
+      int spany = get(c, "spany", 1) - 1;
+      if (spanx > 0 || spany > 0) {
+        if ((x >= cx && x <= cx + spanx) &&
+         (y >= cy && y <= cy + spany)) {
+          return SPAN;
+        }
+      }
     }
     return null;
   }
@@ -98,6 +108,21 @@ public class Table extends Container {
   public void addCol() {
     cols++;
     setSize();
+  }
+  public Component get(int col,int row) {
+    int cnt = count();
+    for(int a=0;a<cnt;a++) {
+      Component c = get(a);
+      int cx = get(c, "x", -1);
+      int cy = get(c, "y", -1);
+      int spanx = get(c, "spanx", 1) - 1;
+      int spany = get(c, "spany", 1) - 1;
+      if ((x >= cx && x <= cx + spanx) &&
+       (y >= cy && y <= cy + spany)) {
+        return c;
+      }
+    }
+    return null;
   }
   public int getRows() {
     return rows;
