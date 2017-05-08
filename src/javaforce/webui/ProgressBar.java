@@ -15,7 +15,7 @@ public class ProgressBar extends Component {
   public void setValue(int value) {
     this.value = value;
     addAttr("value", "" + value);
-    client.sendEvent(id, "setvalue", new String[] {"value=" + value});
+    sendEvent("setvalue", new String[] {"value=" + value});
   }
   public String html() {
     return "<progress " + getAttrs() + "></progress>";

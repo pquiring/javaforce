@@ -19,6 +19,6 @@ public class MenuItem extends Container {
   }
   public void setText(String txt) {
     text = txt;
-    client.sendEvent(id, "settext", new String[] {"text=" + text});
+    sendEvent("settext", new String[] {"text=" + text});
   }
 }

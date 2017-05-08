@@ -99,7 +99,7 @@ public class Panels {
       if (y2 > my) {
         my = y2;
       }
-      setCellSize(c, rs[a].width, rs[a].height);
+      setCellSize(c, rs[a]);
       c.setProperty("id", cells[a][ID]);
       c.setName(cells[a][NAME]);
       String style = cells[a][STYLE];
@@ -129,15 +129,16 @@ public class Panels {
     if (!popup) {
       //add top components
       Button x = getButton(new String[] {null, null, null, null, null, "button", null, "X", null, "showMenu", null});
-      setCellSize(x, 1, 1);
+      setCellSize(x, new Rectangle(0,0,1,1));
       table.add(x, 0, 0);
       //TODO : [alarm status] : [title]
     }
     return table;
   }
-  private static void setCellSize(Component c, int w, int h) {
-    c.setWidth(Integer.toString(cellWidth * w));
-    c.setHeight(Integer.toString(cellHeight * h));
+  public static void setCellSize(Component c, Rectangle r) {
+    c.setWidth(Integer.toString(cellWidth * r.width));
+    c.setHeight(Integer.toString(cellHeight * r.height));
+    c.setProperty("rect", r);
   }
   public static Component getCell(String name, String v[], Rectangle r, WebUIClient client) {
     switch (name) {
@@ -316,6 +317,7 @@ public class Panels {
         sql.close();
         LayersPanel layers = new LayersPanel();
         table = getTable(cells.toArray(new String[cells.size()][]), true, client, 64, 64);
+        table.setName("t1");
         r.width = table.getColumns();
         r.height = table.getRows();
         layers.add(table);
@@ -341,6 +343,7 @@ public class Panels {
           }
         }
         table = getTable(cells.toArray(new String[cells.size()][]), true, client, 64, 64);
+        table.setName("t2");
         layers.add(table);
         return layers;
       }

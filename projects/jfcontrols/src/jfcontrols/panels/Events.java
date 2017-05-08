@@ -24,23 +24,23 @@ public class Events {
     switch (func) {
       case "showMenu": {
         if (client.getProperty("user") == null) {
-          PopupPanel panel = (PopupPanel)client.root.findComponent("login_panel");
+          PopupPanel panel = (PopupPanel)client.root.getComponent("login_panel");
           panel.setVisible(true);
         } else {
-          PopupPanel panel = (PopupPanel)client.root.findComponent("menu_panel");
+          PopupPanel panel = (PopupPanel)client.root.getComponent("menu_panel");
           panel.setVisible(true);
         }
         break;
       }
       case "jfc_logout": {
         client.setProperty("user", null);
-        PopupPanel panel = (PopupPanel)client.root.findComponent("menu_panel");
+        PopupPanel panel = (PopupPanel)client.root.getComponent("menu_panel");
         panel.setVisible(false);
         break;
       }
       case "jfc_login_ok": {
-        String user = ((TextField)client.root.findComponent("user")).getText();
-        String pass = ((TextField)client.root.findComponent("pass")).getText();
+        String user = ((TextField)client.root.getComponent("user")).getText();
+        String pass = ((TextField)client.root.getComponent("pass")).getText();
         JFLog.log("user/pass=" + user + "," + pass);
         String data[][] = sql.select("select name,pass from users");
         boolean ok = false;
@@ -53,14 +53,14 @@ public class Events {
           }
         }
         if (!ok) {
-          Label lbl = (Label)client.root.findComponent("errmsg");
+          Label lbl = (Label)client.root.getComponent("errmsg");
           lbl.setText("Invalid username or password!");
           break;
         }
         //no break
       }
       case "jfc_login_cancel": {
-        PopupPanel panel = (PopupPanel)client.root.findComponent("login_panel");
+        PopupPanel panel = (PopupPanel)client.root.getComponent("login_panel");
         panel.setVisible(false);
         break;
       }
@@ -130,6 +130,30 @@ public class Events {
         break;
       }
       case "jfc_panels_delete": {
+        break;
+      }
+      case "jfc_panel_editor_add": {
+        ComboBox cb = (ComboBox)client.getPanel().getComponent("panel_type");
+        String type = cb.getSelectedText();
+        JFLog.log("type=" + type);
+        Component nc = null;
+        switch (type) {
+          case "label": nc = new Label("label"); break;
+          case "button": nc = new Button("button"); break;
+        }
+        if (nc == null) break;
+        Block focus = (Block)client.getProperty("focus");
+        if (focus == null) break;
+        Rectangle r = (Rectangle)focus.getProperty("rect");
+        Panels.setCellSize(nc, r);
+
+        Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+        t1.add(nc, r.x, r.y);
+        Table t2 = (Table)client.getPanel().getComponent("t2");  //overlays
+
+        break;
+      }
+      case "jfc_panel_editor_del": {
         break;
       }
       case "setPanel":

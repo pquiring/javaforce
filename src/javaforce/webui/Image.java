@@ -17,6 +17,6 @@ public class Image extends Component {
 
   public void setImage(Resource img) {
     this.img = img;
-    client.sendEvent(id, "setsrc", new String[] {"src=/static/" + img.id});
+    sendEvent("setsrc", new String[] {"src=/static/" + img.id});
   }
 }

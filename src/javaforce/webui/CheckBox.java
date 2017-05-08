@@ -22,7 +22,7 @@ public class CheckBox extends Component {
   public void setSelected(boolean state) {
     if (selected == state) return;
     selected = state;
-    client.sendEvent(id, "setSelected", new String[] {"state=" + selected});
+    sendEvent("setSelected", new String[] {"state=" + selected});
   }
   public boolean isSelected() {
     return selected;

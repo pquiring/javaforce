@@ -45,7 +45,7 @@ public class PopupPanel extends Panel {
       block.setVisible(state);
     }
     if (state) {
-      client.sendEvent(id, "setzindex", new String[] {"idx=" + getClient().getZIndex()});
+      sendEvent("setzindex", new String[] {"idx=" + getClient().getZIndex()});
     } else {
       getClient().releaseZIndex();
     }

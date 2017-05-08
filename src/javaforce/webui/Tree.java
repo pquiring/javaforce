@@ -41,7 +41,7 @@ public class Tree extends ScrollPanel implements Click {
   public void setRootNode(TreeNode newRoot) {
     model.setRoot(newRoot);
     rebuild();
-    client.sendEvent("sethtml", id, new String[] {"html=" + innerhtml()});
+    sendEvent("sethtml", new String[] {"html=" + innerhtml()});
   }
   public TreeNode getRootNode() {
     return model.getRoot();

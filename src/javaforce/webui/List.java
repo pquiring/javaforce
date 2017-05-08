@@ -80,10 +80,10 @@ public class List extends ScrollPanel implements Click {
     String selected = (String)c.getProperty("selected");
     if (selected.equals("false")) {
       c.setProperty("selected", "true");
-      c.client.sendEvent(c.id, "addclass", new String[] {"cls=selected"});
+      c.sendEvent("addclass", new String[] {"cls=selected"});
     } else {
       c.setProperty("selected", "false");
-      c.client.sendEvent(c.id, "delclass", new String[] {"cls=selected"});
+      c.sendEvent("delclass", new String[] {"cls=selected"});
     }
     if (!e.ctrlKey) {
       //clear all other items
@@ -95,7 +95,7 @@ public class List extends ScrollPanel implements Click {
         selected = (String)o.getProperty("selected");
         if (selected.equals("true")) {
           o.setProperty("selected", "false");
-          o.client.sendEvent(o.id, "delclass", new String[] {"cls=selected"});
+          o.sendEvent("delclass", new String[] {"cls=selected"});
         }
       }
     }

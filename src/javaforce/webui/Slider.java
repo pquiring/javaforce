@@ -37,7 +37,7 @@ public class Slider extends Component {
     if (pos < min) pos = min;
     if (pos > max) pos = max;
     this.pos = pos;
-    getClient().sendEvent(id, "setpos", new String[] {"pos=" + pos});
+    sendEvent("setpos", new String[] {"pos=" + pos});
   }
   public int getPos() {
     return pos;

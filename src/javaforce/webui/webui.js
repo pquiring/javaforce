@@ -95,6 +95,32 @@ ws.onmessage = function (event) {
     case "delclass":
       element.className = element.className.replace(" " + msg.cls, "");
       break;
+    case "setcell":
+      element.rows[msg.y].cells[msg.x].innerHTML = msg.html;
+      break;
+    case "addrow":
+      element.insertRow(msg.idx);
+      break;
+    case "addcol":
+      for (i = 0; i < element.rows.length; i++) {
+        element.rows[i].insertCell(msg.idx);
+      }
+      break;
+    case "delrow":
+      element.deleteRow(msg.idx);
+      break;
+    case "delcol":
+      for (i = 0; i < element.rows.length; i++) {
+        element.rows[i].deleteCell(msg.idx);
+      }
+      break;
+    case "delcell":
+      element.rows[msg.y].deleteCell(msg.x);
+      break;
+    case "setspans":
+      element.rows[msg.y].cells[msg.x].colspan = msg.sx;
+      element.rows[msg.y].cells[msg.x].rowspan = msg.sy;
+      break;
     case "initwebgl":
       gl_init(element);
       break;

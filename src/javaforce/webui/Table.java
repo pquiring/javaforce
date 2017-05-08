@@ -93,6 +93,7 @@ public class Table extends Container {
     comp.setProperty("x", x);
     comp.setProperty("y", y);
     add(comp);
+    sendEvent("setcell", new String[] {"x=" + x, "y=" + y, "html=" + comp.html()});
   }
   public void add(Component comp, int x, int y, int spanx, int spany) {
     comp.setProperty("x", x);
@@ -102,14 +103,22 @@ public class Table extends Container {
     add(comp);
   }
   public void addRow() {
+    sendEvent("addrow", new String[] {"idx=" + rows});
     rows++;
     setSize();
   }
-  public void addCol() {
+  public void addColumn() {
+    sendEvent("addcol", new String[] {"idx=" + cols});
     cols++;
     setSize();
   }
-  public Component get(int col,int row) {
+  public void remove(int x, int y) {
+    sendEvent("delcell", new String[] {"x=" + x, "y=" + y});
+  }
+  public void setSpans(int x,int y,int spanx, int spany) {
+    sendEvent("setspans", new String[] {"x=" + x, "y=" + y, "sx=" + spanx, "sy=" + spany});
+  }
+  public Component get(int x,int y) {
     int cnt = count();
     for(int a=0;a<cnt;a++) {
       Component c = get(a);

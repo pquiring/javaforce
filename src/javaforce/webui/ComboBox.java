@@ -34,12 +34,12 @@ public class ComboBox extends Component {
     if (index == -1) index = 0;
     values.add(value);
     texts.add(text);
-    getClient().sendEvent(id, "addoption", new String[] {"value=" + value, "text=" + text});
+    sendEvent("addoption", new String[] {"value=" + value, "text=" + text});
   }
 
   public void clear() {
     for(int a=0;a<values.size();a++) {
-      getClient().sendEvent(id, "removeoption", new String[] {"idx=" + a});
+      sendEvent("removeoption", new String[] {"idx=" + a});
     }
     index = -1;
     values.clear();
@@ -64,7 +64,7 @@ public class ComboBox extends Component {
 
   public void setSelectedIndex(int idx) {
     index = idx;
-    getClient().sendEvent(id, "setidx", new String[] {"idx=" + idx});
+    sendEvent("setidx", new String[] {"idx=" + idx});
   }
 
   public void onChanged(String args[]) {

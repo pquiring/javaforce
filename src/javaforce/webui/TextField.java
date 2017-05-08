@@ -18,7 +18,7 @@ public class TextField extends Component {
   }
   public void setText(String txt) {
     text = txt;
-    client.sendEvent(id, "setvalue", new String[] {"value=" + text});
+    sendEvent("setvalue", new String[] {"value=" + text});
   }
   public String getText() {
     return text;

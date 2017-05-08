@@ -18,6 +18,6 @@ public class Canvas extends Container {
   }
   /** Tells the client to start WebGL on canvas. */
   public void initWebGL() {
-    getClient().sendEvent(id, "initwebgl", null);
+    sendEvent("initwebgl", null);
   }
 }

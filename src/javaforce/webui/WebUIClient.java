@@ -22,8 +22,6 @@ public class WebUIClient {
   public boolean popupMenuMouseDown;
   public PopupMenu topPopupMenu;
 
-  public static WebUIClient NULL = new WebUIClient();
-
   public WebUIClient() {
     hash = Integer.toString(this.hashCode(), 16);
   }

@@ -29,9 +29,7 @@ public abstract class Component {
    * @param parent = Panel
    * @param name = name of component
    */
-  public Component() {
-    client = WebUIClient.NULL;
-  }
+  public Component() {}
 
   /** Sets Component's name. */
   public void setName(String name) {
@@ -85,10 +83,22 @@ public abstract class Component {
   public Object getProperty(String key) {
     return map.get(key);
   }
+  /** Invokes getClient().sendEvent() */
+  public void sendEvent(String event, String args[]) {
+    if (client != null) {
+      client . sendEvent(id, event, args);
+    }
+  }
+  /** Invokes getClient().sendData() */
+  public void sendData(byte data[]) {
+    if (client != null) {
+      client . sendData(data);
+    }
+  }
   public void setClass(String cls) {
     classes.clear();
     classes.add(cls);
-    client.sendEvent(id, "setclass", new String [] {"cls=" + cls});
+    sendEvent("setclass", new String [] {"cls=" + cls});
   }
   public boolean hasClass(String cls) {
     return classes.contains(cls);
@@ -188,15 +198,15 @@ public abstract class Component {
   }
   public void setColor(String clr) {
     setStyle("color", clr);
-    getClient().sendEvent(id, "setclr", new String[] {"clr=" + clr});
+    sendEvent("setclr", new String[] {"clr=" + clr});
   }
   public void setBackColor(String clr) {
     setStyle("background-color", clr);
-    getClient().sendEvent(id, "setbackclr", new String[] {"clr=" + clr});
+    sendEvent("setbackclr", new String[] {"clr=" + clr});
   }
   public void setBorderColor(String clr) {
     setStyle("border-color", clr);
-    getClient().sendEvent(id, "setborderclr", new String[] {"clr=" + clr});
+    sendEvent("setborderclr", new String[] {"clr=" + clr});
   }
   /** Returns all attributes defined for a component (id, attrs, class, styles) */
   public String getAttrs() {
@@ -236,16 +246,16 @@ public abstract class Component {
 
   public void setVisible(boolean state) {
     if (state)
-      client.sendEvent(id, "display", new String[] {"val=" + display});
+      sendEvent("display", new String[] {"val=" + display});
     else
-      client.sendEvent(id, "display", new String[] {"val=none"});
+      sendEvent("display", new String[] {"val=none"});
     if (visible != null) {
       visible.onVisible(this, state);
     }
   }
 
   public void setPosition(int x, int y) {
-    client.sendEvent(id, "setpos", new String[] {"x=" + x, "y=" + y});
+    sendEvent("setpos", new String[] {"x=" + x, "y=" + y});
     this.x = x;
     this.y = y;
     setStyle("left", Integer.toString(x));

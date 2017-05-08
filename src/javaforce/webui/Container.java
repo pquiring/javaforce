@@ -22,7 +22,7 @@ public abstract class Container extends Component {
       get(a).init();
     }
   }
-  public Component findComponent(String name) {
+  public Component getComponent(String name) {
     int cnt = count();
     if (this.name != null && this.name.equals(name)) {
       return this;
@@ -31,7 +31,7 @@ public abstract class Container extends Component {
       Component child = get(a);
       if (child instanceof Container) {
         Container container = (Container)child;
-        child = container.findComponent(name);
+        child = container.getComponent(name);
         if (child != null) return child;
       } else {
         if (child.name != null && child.name.equals(name)) {
@@ -64,7 +64,7 @@ public abstract class Container extends Component {
   public void add(Component comp) {
     comp.parent = this;
     components.add(comp);
-    if (client != WebUIClient.NULL) {
+    if (client != null) {
       comp.setClient(client);
       comp.init();
     }

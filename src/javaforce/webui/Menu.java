@@ -38,7 +38,7 @@ public class Menu extends MenuItem {
 
   }
   public void onClick(String args[]) {
-    client.sendEvent(id, "getpossize", null);
+    sendEvent("getpossize", null);
   }
   public void onPosSize(String args[]) {
     super.onPosSize(args);

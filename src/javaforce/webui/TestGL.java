@@ -74,30 +74,29 @@ public class TestGL implements WebUIHandler {
         GLMatrix mMatrix = new GLMatrix();
         mMatrix.addTranslate(0, 0, -4.0f);
         Canvas canvas = (Canvas)getProperty("canvas");
-        WebUIClient client = getClient();
         //init gl resources
-        client.sendEvent(canvas.id, "initwebgl", null);
-        client.sendEvent(canvas.id, "loadvs", new String[] {"src=" + vs});
-        client.sendEvent(canvas.id, "loadfs", new String[] {"src=" + fs});
-        client.sendEvent(canvas.id, "link", null);
-        client.sendEvent(canvas.id, "getuniform", new String[] {"idx=0", "name=uPMatrix"});
-        client.sendEvent(canvas.id, "getuniform", new String[] {"idx=1", "name=uMVMatrix"});
-        client.sendEvent(canvas.id, "getattrib", new String[] {"idx=0", "name=aVertexPosition"});
-        client.sendEvent(canvas.id, "getattrib", new String[] {"idx=1", "name=aVertexColor"});
-        client.sendData(convertFloatArray(pMatrix.m));
-        client.sendEvent(canvas.id, "matrix", new String[] {"idx=0"});
-        client.sendData(convertFloatArray(mMatrix.m));
-        client.sendEvent(canvas.id, "matrix", new String[] {"idx=1"});
-        client.sendData(convertFloatArray(vertices));
-        client.sendEvent(canvas.id, "buffer", new String[] {"idx=0"});
-        client.sendData(convertFloatArray(colors));
-        client.sendEvent(canvas.id, "buffer", new String[] {"idx=1"});
+        canvas.sendEvent("initwebgl", null);
+        canvas.sendEvent("loadvs", new String[] {"src=" + vs});
+        canvas.sendEvent("loadfs", new String[] {"src=" + fs});
+        canvas.sendEvent("link", null);
+        canvas.sendEvent("getuniform", new String[] {"idx=0", "name=uPMatrix"});
+        canvas.sendEvent("getuniform", new String[] {"idx=1", "name=uMVMatrix"});
+        canvas.sendEvent("getattrib", new String[] {"idx=0", "name=aVertexPosition"});
+        canvas.sendEvent("getattrib", new String[] {"idx=1", "name=aVertexColor"});
+        canvas.sendData(convertFloatArray(pMatrix.m));
+        canvas.sendEvent("matrix", new String[] {"idx=0"});
+        canvas.sendData(convertFloatArray(mMatrix.m));
+        canvas.sendEvent("matrix", new String[] {"idx=1"});
+        canvas.sendData(convertFloatArray(vertices));
+        canvas.sendEvent("buffer", new String[] {"idx=0"});
+        canvas.sendData(convertFloatArray(colors));
+        canvas.sendEvent("buffer", new String[] {"idx=1"});
         //setup rendering pipeline
-        client.sendEvent(canvas.id, "r_matrix", new String[] {"idx=0", "uidx=0", "midx=0"});
-        client.sendEvent(canvas.id, "r_matrix", new String[] {"idx=1", "uidx=1", "midx=1"});
-        client.sendEvent(canvas.id, "r_attrib", new String[] {"idx=2", "aidx=0", "bufidx=0", "cnt=3"});
-        client.sendEvent(canvas.id, "r_attrib", new String[] {"idx=3", "aidx=1", "bufidx=1", "cnt=4"});
-        client.sendEvent(canvas.id, "r_drawArrays", new String[] {"idx=4", "type=" + GL.GL_TRIANGLE_STRIP, "cnt=4"});
+        canvas.sendEvent("r_matrix", new String[] {"idx=0", "uidx=0", "midx=0"});
+        canvas.sendEvent("r_matrix", new String[] {"idx=1", "uidx=1", "midx=1"});
+        canvas.sendEvent("r_attrib", new String[] {"idx=2", "aidx=0", "bufidx=0", "cnt=3"});
+        canvas.sendEvent("r_attrib", new String[] {"idx=3", "aidx=1", "bufidx=1", "cnt=4"});
+        canvas.sendEvent("r_drawArrays", new String[] {"idx=4", "type=" + GL.GL_TRIANGLE_STRIP, "cnt=4"});
       }
     };
 

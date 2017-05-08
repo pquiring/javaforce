@@ -16,7 +16,7 @@ public class ToggleButton extends Component {
   }
   public void onClick(String args[]) {
     state = !state;
-    getClient().sendEvent(id, "setclass", new String[] {"cls=" + (state ? "toggle_on" : "toggle_off")});
+    sendEvent("setclass", new String[] {"cls=" + (state ? "toggle_on" : "toggle_off")});
   }
   public String html() {
     return "<button" + getAttrs() + ">" + text + "</button>";
@@ -24,11 +24,11 @@ public class ToggleButton extends Component {
   private String text;
   public void setText(String text) {
     this.text = text;
-    getClient().sendEvent(id, "settext", new String[] {"text=" + text});
+    sendEvent("settext", new String[] {"text=" + text});
   }
   public void setSelected(boolean state) {
     this.state = state;
-    getClient().sendEvent(id, "setclass", new String[] {"cls=" + (state ? "toggle_on" : "toggle_off")});
+    sendEvent("setclass", new String[] {"cls=" + (state ? "toggle_on" : "toggle_off")});
   }
   public boolean isSelected() {
     return state;
