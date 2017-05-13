@@ -13,7 +13,27 @@ public class Table extends Container {
     this.height = height;  //Y
     this.cols = cols;  //X
     this.rows = rows;  //Y
+    setClass("table");
     setSize();
+  }
+  private class Cell extends Container {
+    public int x,y,spanx,spany;
+    public Cell(Component comp) {
+      setClass("cell");
+      add(comp);
+    }
+    public String html() {
+      setWidth((spanx * Table.this.width) + "px");
+      setHeight((spany * Table.this.height) + "px");
+      //setPosition(x * Table.this.width, y * Table.this.height);
+      setStyle("left", Integer.toString(x * Table.this.width));
+      setStyle("top", Integer.toString(y * Table.this.height));
+      StringBuffer sb = new StringBuffer();
+      sb.append("<div" + getAttrs() + ">");
+      sb.append(get(0).html());
+      sb.append("</div>");
+      return sb.toString();
+    }
   }
   private void setSize() {
     setWidth((width * cols) + "px");
@@ -27,111 +47,78 @@ public class Table extends Container {
       removeClass("border");
     }
   }
-  private int get(Component comp, String key, int def) {
-    Integer i = (Integer)comp.getProperty(key);
-    if (i == null) return def;
-    return i;
-  }
   public String html() {
     StringBuffer sb = new StringBuffer();
-    sb.append("<table" + getAttrs() + ">");
+    //using an actualy <table> proved to be too difficult once spans where implemented
+    sb.append("<div" + getAttrs() + ">");
     for(int y=0;y<rows;y++) {
-      sb.append("<tr style='height: " + height + "px;'>");
       for(int x=0;x<cols;x++) {
-        Component c = _get(x,y);
-        if (c == SPAN) continue;
-        if (c != null) {
-          int spanx = get(c, "spanx", 1);
-          int spany = get(c, "spany", 1);
-          sb.append("<td");
-          if (border) {
-            sb.append(" class='border'");
-          }
-          if (spanx > 1) {
-            sb.append(" colspan=" + spanx);
-            x += spanx-1;
-          }
-          if (spany > 1) {
-            sb.append(" rowspan=" + spany);
-            y += spany-1;
-          }
-          int w = width * spanx;
-          int h = height * spany;
-          sb.append(" style='width:" + w + "px; height:" + h + "px;'");
-          sb.append(">");
-          sb.append(c.html());
-          sb.append("</td>");
-        } else {
-          sb.append("<td style='width: " + width + "px; height: " + height + "px;'></td>");
-        }
+        Cell cell = getCell(x,y,false);
+        if (cell == null) continue;
+        sb.append(cell.html());
       }
-      sb.append("</tr>");
     }
-    sb.append("</table>");
+    sb.append("</div>");
     return sb.toString();
   }
-  private static Component SPAN = new Label("");
-  private Component _get(int x,int y) {
-    int cnt = count();
-    for(int a=0;a<cnt;a++) {
-      Component c = get(a);
-      int cx = get(c, "x", -1);
-      int cy = get(c, "y", -1);
-      if (cx == x && cy == y) return c;
-      int spanx = get(c, "spanx", 1) - 1;
-      int spany = get(c, "spany", 1) - 1;
-      if (spanx > 0 || spany > 0) {
-        if ((x >= cx && x <= cx + spanx) &&
-         (y >= cy && y <= cy + spany)) {
-          return SPAN;
-        }
-      }
-    }
-    return null;
-  }
   public void add(Component comp, int x, int y) {
-    comp.setProperty("x", x);
-    comp.setProperty("y", y);
-    add(comp);
-    sendEvent("setcell", new String[] {"x=" + x, "y=" + y, "html=" + comp.html()});
+    add(comp,x,y,1,1);
   }
   public void add(Component comp, int x, int y, int spanx, int spany) {
-    comp.setProperty("x", x);
-    comp.setProperty("y", y);
-    comp.setProperty("spanx", spanx);
-    comp.setProperty("spany", spany);
-    add(comp);
+    String html;
+    Cell cell = new Cell(comp);
+    cell.x = x;
+    cell.y = y;
+    cell.spanx = spanx;
+    cell.spany = spany;
+    add(cell);
+    if (id == null) return;
+    sendEvent("add", new String[] {"html=" + cell.html()});
   }
   public void addRow() {
-    sendEvent("addrow", new String[] {"idx=" + rows});
     rows++;
     setSize();
   }
   public void addColumn() {
-    sendEvent("addcol", new String[] {"idx=" + cols});
     cols++;
     setSize();
   }
-  public void remove(int x, int y) {
-    sendEvent("delcell", new String[] {"x=" + x, "y=" + y});
+  public void remove(int x,int y) {
+    Cell cell = getCell(x,y,false);
+    if (cell != null) {
+      remove(cell);
+      sendEvent("remove", new String[] {"child=" + cell.id});
+    }
   }
   public void setSpans(int x,int y,int spanx, int spany) {
-    sendEvent("setspans", new String[] {"x=" + x, "y=" + y, "sx=" + spanx, "sy=" + spany});
+    Cell cell = getCell(x,y,false);
+    if (cell == null) return;
+    cell.spanx = spanx;
+    cell.spany = spany;
+    cell.sendEvent("setsize", new String[] {"w=" + spanx * width, "h=" + spany * height});
   }
-  public Component get(int x,int y) {
+  private Cell getCell(int x,int y,boolean checkSpans) {
     int cnt = count();
     for(int a=0;a<cnt;a++) {
-      Component c = get(a);
-      int cx = get(c, "x", -1);
-      int cy = get(c, "y", -1);
-      int spanx = get(c, "spanx", 1) - 1;
-      int spany = get(c, "spany", 1) - 1;
-      if ((x >= cx && x <= cx + spanx) &&
-       (y >= cy && y <= cy + spany)) {
-        return c;
+      Cell cell = (Cell)get(a);
+      int x1 = cell.x;
+      int y1 = cell.y;
+      int x2 = x1;
+      int y2 = y1;
+      if (checkSpans) {
+        x2 += cell.spanx - 1;
+        y2 += cell.spany - 1;
+      }
+      if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
+        return cell;
       }
     }
     return null;
+  }
+  public Component get(int x,int y,boolean checkSpans) {
+    Cell cell = getCell(x,y,checkSpans);
+    if (cell == null) return null;
+    return cell.get(0);
   }
   public int getRows() {
     return rows;

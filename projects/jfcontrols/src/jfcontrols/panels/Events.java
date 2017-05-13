@@ -156,6 +156,22 @@ public class Events {
       case "jfc_panel_editor_del": {
         break;
       }
+      case "jfc_panel_editor_move_u": {
+        Panels.moveCell(client, 0, -1);
+        break;
+      }
+      case "jfc_panel_editor_move_d": {
+        Panels.moveCell(client, 0, +1);
+        break;
+      }
+      case "jfc_panel_editor_move_l": {
+        Panels.moveCell(client, -1, 0);
+        break;
+      }
+      case "jfc_panel_editor_move_r": {
+        Panels.moveCell(client, +1, 0);
+        break;
+      }
       case "setPanel":
         Panel panel = Panels.getPanel(arg, client);
         if (panel != null) {

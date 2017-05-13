@@ -8,8 +8,8 @@ package javaforce.webui;
  */
 
 import java.util.*;
-import javaforce.LE;
 
+import javaforce.*;
 import javaforce.service.*;
 
 public class WebUIClient {
@@ -69,7 +69,7 @@ public class WebUIClient {
       if (c != null) {
         c.dispatchEvent(event, args);
       } else {
-        System.out.println("Error:Component not found:" + id);
+        JFLog.log("Error:Component not found:" + id);
       }
     }
   }
@@ -118,9 +118,9 @@ public class WebUIClient {
     sb.append("}");
     byte json[] = sb.toString().getBytes();
     if (!event.equals("sethtml")) {
-      System.out.println("SEND=" + new String(json));
+      JFLog.log("SEND=" + new String(json));
     } else {
-      System.out.println("SEND={html...}");
+      JFLog.log("SEND={html...}");
     }
     socket.write(json);
   }

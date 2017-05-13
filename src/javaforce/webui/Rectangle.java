@@ -15,4 +15,7 @@ public class Rectangle {
     this.width = width;
     this.height = height;
   }
+  public String toString() {
+    return "Rectangle:x=" + x + ",y=" + y + ",width=" + width + ",height=" + height;
+  }
 }

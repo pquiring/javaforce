@@ -11,20 +11,21 @@ span {
   margin: 0px;
 }
 
-th, td {
+.cell {
   vertical-align: middle;
   text-align: center;
   overflow: hidden;
   white-space: nowrap;
   margin: 0px;
   padding: 0px;
+  position: absolute;
 }
 
-table {
+.table {
   border-collapse: collapse;
   padding: 0px;
-  table-layout: fixed;
   margin: 0px;
+  position: relative;
 }
 
 select {

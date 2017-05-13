@@ -5,6 +5,7 @@ package jfcontrols.app;
  * @author pquiring
  */
 
+import javaforce.JFLog;
 import javaforce.webui.*;
 import jfcontrols.panels.*;
 import jfcontrols.functions.*;

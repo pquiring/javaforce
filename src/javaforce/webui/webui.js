@@ -2,6 +2,8 @@ var ws = new WebSocket("ws://" + location.host + "/webui");
 
 var bindata;
 
+var temp = document.createElement('div');
+
 function load(event) {
   var msg = {
     event: "load"
@@ -86,6 +88,10 @@ ws.onmessage = function (event) {
     case "getsize":
       sendSize(msg.id);
       break;
+    case "setsize":
+      element.style.width = msg.w;
+      element.style.height = msg.h;
+      break;
     case "setclass":
       element.className = msg.cls;
       break;
@@ -95,31 +101,13 @@ ws.onmessage = function (event) {
     case "delclass":
       element.className = element.className.replace(" " + msg.cls, "");
       break;
-    case "setcell":
-      element.rows[msg.y].cells[msg.x].innerHTML = msg.html;
+    case "add":
+      temp.innerHTML = msg.html;
+      element.appendChild(temp.firstChild);
       break;
-    case "addrow":
-      element.insertRow(msg.idx);
-      break;
-    case "addcol":
-      for (i = 0; i < element.rows.length; i++) {
-        element.rows[i].insertCell(msg.idx);
-      }
-      break;
-    case "delrow":
-      element.deleteRow(msg.idx);
-      break;
-    case "delcol":
-      for (i = 0; i < element.rows.length; i++) {
-        element.rows[i].deleteCell(msg.idx);
-      }
-      break;
-    case "delcell":
-      element.rows[msg.y].deleteCell(msg.x);
-      break;
-    case "setspans":
-      element.rows[msg.y].cells[msg.x].colspan = msg.sx;
-      element.rows[msg.y].cells[msg.x].rowspan = msg.sy;
+    case "remove":
+      var child = document.getElementById(msg.child);
+      element.removeChild(child);
       break;
     case "initwebgl":
       gl_init(element);
