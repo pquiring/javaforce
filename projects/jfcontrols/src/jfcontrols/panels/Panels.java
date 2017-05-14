@@ -347,6 +347,20 @@ public class Panels {
         layers.add(table);
         return layers;
       }
+      case "jfc_funcs": {
+        String data[][] = sql.select("select id,name from funcs");
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          String funcname = data[a][1];
+          String style = funcname.equals("main") || funcname.equals("init") ? "disabled" : null;
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_funcs_name_str_" + data[a][0], null, null, style));
+          cells.add(createCell("", 7, a, 2, 1, "button", null, "Edit", null, "jfc_funcs_edit", data[a][0], null));
+          if (style == null) {
+            cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_funcs_delete", data[a][0], null));
+          }
+        }
+        break;
+      }
       default: {
         JFLog.log("Unknown table:" + name);
       }

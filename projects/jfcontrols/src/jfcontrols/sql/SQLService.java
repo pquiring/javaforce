@@ -123,7 +123,10 @@ public class SQLService {
     id = sql.select1value("select id from panels where name='main'");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,1,7,1,'label','','Welcome to jfControls!')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,12,1,'label','','Click on the Menu Icon in the top left corner to get started.')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,5,3,1,'button','','TEST','setPanel','jfc_panels')");
+//test
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,5,3,1,'button','','Panels','setPanel','jfc_panels')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,7,3,1,'button','','Funcs','setPanel','jfc_funcs')");
+//test
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_main', true, true)");
     id = sql.select1value("select id from panels where name='jfc_main'");
@@ -176,6 +179,16 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",23,1,1,1,'button','','H+','jfc_panel_editor_size_h_inc')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",24,1,1,1,'button','','H-','jfc_panel_editor_size_h_dec')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,2,1,1,'table','jfc_panel_editor')");
+
+    sql.execute("insert into panels (name, popup, builtin) values ('jfc_funcs', false, true)");
+    id = sql.select1value("select id from panels where name='jfc_funcs'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,7,1,'label','','Name')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,1,3,1,'button','','New','jfc_funcs_new')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_funcs')");
+
+    //insert system funcs
+    sql.execute("insert into funcs (name) values ('main')");
+    sql.execute("insert into funcs (name) values ('init')");
 
     sql.close();
   }

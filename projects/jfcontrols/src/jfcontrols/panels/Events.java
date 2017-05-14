@@ -120,8 +120,8 @@ public class Events {
             id++;
           } while (true);
           sql.execute("insert into panels (name, popup, builtin) values ('panel" + id + "', false, false)");
-          client.setPanel(Panels.getPanel("jfc_panels", client));
         }
+        client.setPanel(Panels.getPanel("jfc_panels", client));
         break;
       }
       case "jfc_panels_edit": {
@@ -185,6 +185,28 @@ public class Events {
       }
       case "jfc_panel_editor_size_h_dec": {
         Panels.resizeCell(client, 0, -1);
+        break;
+      }
+
+      case "jfc_funcs_new": {
+        synchronized(lock) {
+          int id = 1;
+          do {
+            String inuse = sql.select1value("select name from funcs where name='func" + id + "'");
+            if (inuse == null) break;
+            id++;
+          } while (true);
+          sql.execute("insert into funcs (name) values ('func" + id + "')");
+        }
+        client.setPanel(Panels.getPanel("jfc_funcs", client));
+        break;
+      }
+      case "jfc_funcs_edit": {
+        client.setProperty("func", arg);
+        client.setPanel(Panels.getPanel("jfc_func_editor", client));
+        break;
+      }
+      case "jfc_funcs_delete": {
         break;
       }
 
