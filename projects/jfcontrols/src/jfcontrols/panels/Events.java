@@ -145,12 +145,10 @@ public class Events {
         Block focus = (Block)client.getProperty("focus");
         if (focus == null) break;
         Rectangle r = (Rectangle)focus.getProperty("rect");
-        Panels.setCellSize(nc, r);
-
+        Rectangle nr = new Rectangle(r);
+        Panels.setCellSize(nc, nr);
         Table t1 = (Table)client.getPanel().getComponent("t1");  //components
         t1.add(nc, r.x, r.y);
-        Table t2 = (Table)client.getPanel().getComponent("t2");  //overlays
-
         break;
       }
       case "jfc_panel_editor_del": {
