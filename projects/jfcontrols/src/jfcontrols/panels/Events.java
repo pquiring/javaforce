@@ -172,6 +172,24 @@ public class Events {
         Panels.moveCell(client, +1, 0);
         break;
       }
+
+      case "jfc_panel_editor_size_w_inc": {
+        Panels.resizeCell(client, +1, 0);
+        break;
+      }
+      case "jfc_panel_editor_size_w_dec": {
+        Panels.resizeCell(client, -1, 0);
+        break;
+      }
+      case "jfc_panel_editor_size_h_inc": {
+        Panels.resizeCell(client, 0, +1);
+        break;
+      }
+      case "jfc_panel_editor_size_h_dec": {
+        Panels.resizeCell(client, 0, -1);
+        break;
+      }
+
       case "setPanel":
         Panel panel = Panels.getPanel(arg, client);
         if (panel != null) {

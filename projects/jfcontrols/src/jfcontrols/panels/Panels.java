@@ -412,16 +412,9 @@ public class Panels {
     moveComponent(t1, fr.x, fr.y, x1, y1, false);
     moveComponent(t2, fr.x, fr.y, x1, y1, true);
   }
-  public static void moveComponent(Table tbl, int sx, int sy, int dx, int dy, boolean fillOverlay) {
+  private static void moveComponent(Table tbl, int sx, int sy, int dx, int dy, boolean fillOverlay) {
     Component c = tbl.get(sx, sy, false);
     Rectangle r = (Rectangle)c.getProperty("rect");
-    if (fillOverlay) {
-      JFLog.log(7, "focus=" + c);
-      JFLog.log(7, "rect=" + r);
-    } else {
-      JFLog.log(7, "comp=" + c);
-      JFLog.log(7, "rect=" + r);
-    }
     int x1 = r.x;
     int y1 = r.y;
     int x2 = x1 + r.width - 1;
@@ -455,6 +448,79 @@ public class Panels {
       for(y = y1;y <= y2;y++) {
         tbl.remove(x, y);
         if (x == x1 && y == y1) {
+          tbl.add(c, x, y);
+          tbl.setSpans(x, y, r.width, r.height);
+        }
+      }
+    }
+  }
+  public static void resizeCell(WebUIClient client, int deltax, int deltay) {
+    Block focus = (Block)client.getProperty("focus");
+    if (focus == null) {
+      JFLog.log("Error:no focus");
+      return;
+    }
+    Rectangle fr = (Rectangle)focus.getProperty("rect");
+    //calc new position
+    int x1 = fr.x;
+    int x2 = fr.x + fr.width + deltax - 1;
+    int y1 = fr.y;
+    int y2 = fr.y + fr.height + deltay - 1;
+    if ((x1 < 0) || (x2 > 63) || (y1 < 0) || (y2 > 63)) return;  //off screen
+    if (x2 < x1 || y2 < y1) return;  //too small
+    Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+    Component comp = t1.get(fr.x, fr.y, false);
+    if (comp == null) {
+      JFLog.log("Error:nothing there:" + fr.x + "," + fr.y);
+      return;
+    }
+    Rectangle cr = (Rectangle)comp.getProperty("rect");
+    Table t2 = (Table)client.getPanel().getComponent("t2");  //overlays
+    for(int x=x1;x<=x2;x++) {
+      for(int y=y1;y<=y2;y++) {
+        Component cell = t1.get(x, y, true);
+        if (cell == null) continue;
+        if (cell.id == comp.id) continue;
+        JFLog.log("Error: something in the way:" + x + "," + y + ":" + t1.get(x, y, true).id);
+        return;
+      }
+    }
+    resizeComponent(t1, fr.x, fr.y, deltax, deltay, false);
+    resizeComponent(t2, fr.x, fr.y, deltax, deltay, true);
+  }
+  private static void resizeComponent(Table tbl, int cx, int cy, int deltax, int deltay, boolean fillOverlay) {
+    Component c = tbl.get(cx, cy, false);
+    Rectangle r = (Rectangle)c.getProperty("rect");
+    int x1 = r.x;
+    int y1 = r.y;
+    int x2 = x1 + r.width - 1;
+    int y2 = y1 + r.height - 1;
+    int x,y;
+    //remove from src pos
+    for(x = x1;x <= x2;x++) {
+      for(y = y1;y <= y2;y++) {
+        if (x == x1 && y == y1) {
+          tbl.remove(x, y);
+          if (fillOverlay) {
+            tbl.add(getOverlay(x, y), x, y);
+          }
+        } else {
+          if (fillOverlay) {
+            tbl.add(getOverlay(x, y), x, y);
+          }
+        }
+      }
+    }
+    x2 += deltax;
+    y2 += deltay;
+    r.width += deltax;
+    r.height += deltay;
+    //set to dest pos
+    for(x = x1;x <= x2;x++) {
+      for(y = y1;y <= y2;y++) {
+        tbl.remove(x, y);
+        if (x == x1 && y == y1) {
+          setCellSize(c, r);
           tbl.add(c, x, y);
           tbl.setSpans(x, y, r.width, r.height);
         }
