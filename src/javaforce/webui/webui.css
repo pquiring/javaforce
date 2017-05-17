@@ -40,6 +40,10 @@ button {
   border: 1px solid black;
 }
 
+.bordergray {
+  border: 1px solid #ccc;
+}
+
 .panel {
   width: 100%;
   height: 100%;
@@ -51,7 +55,8 @@ button {
 }
 
 .button {
-
+  padding: 0px;
+  margin: 0px;
 }
 
 .label {
@@ -80,14 +85,12 @@ button {
   margin: 0px;
   padding: 0px;
   overflow: hidden;
-  border: 1px solid #ccc;
 }
 
 .tabactive {
   margin: 0px;
   padding: 0px;
   overflow: hidden;
-  border: 1px solid #ccc;
   background-color: #ccc;
 }
 
@@ -95,21 +98,18 @@ button {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  border: 1px solid #ccc;
   background-color: #f1f1f1;
 }
 
 .tabcontenthidden {
   display: none;
   padding: 0px;
-  border: 1px solid #ccc;
   border-top: none;
 }
 
 .tabcontentshown {
   display: block;
   padding: 0px;
-  border: 1px solid #ccc;
   border-top: none;
 }
 

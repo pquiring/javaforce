@@ -97,9 +97,15 @@ public class WebUIClient {
   public synchronized void sendEvent(String id, String event, String args[]) {
     if (socket == null) return;
     StringBuffer sb = new StringBuffer();
-    sb.append("{\"event\":\"" + event + "\"");
+    StringBuffer log = new StringBuffer();
+    String str;
+    str = "{\"event\":\"" + event + "\"";
+    sb.append(str);
+    log.append(str);
     if (id != null) {
-      sb.append(",\"id\":\"" + id + "\"");
+      str = ",\"id\":\"" + id + "\"";
+      sb.append(str);
+      log.append(str);
     }
     if (args != null) {
       int cnt = args.length;
@@ -112,17 +118,19 @@ public class WebUIClient {
         }
         String key = arg.substring(0, idx);
         String value = arg.substring(idx+1);
-        sb.append(",\"" + key + "\":" + stringify(value));
+        str = ",\"" + key + "\":" + stringify(value);
+        sb.append(str);
+        if (key.equals("html")) {
+          log.append(",\"" + key + "\":\"...\"");
+        } else {
+          log.append(str);
+        }
       }
     }
     sb.append("}");
-    byte json[] = sb.toString().getBytes();
-    if (!event.equals("sethtml")) {
-      JFLog.log("SEND=" + new String(json));
-    } else {
-      JFLog.log("SEND={html...}");
-    }
-    socket.write(json);
+    log.append("}");
+    JFLog.log("SEND=" + log.toString());
+    socket.write(sb.toString().getBytes());
   }
   public String html() {
     return root.html();

@@ -278,6 +278,20 @@ public abstract class Component {
     }
   }
 
+  public void setBorderGray(boolean state) {
+    if (state)
+      addClass("bordergray");
+    else
+      removeClass("bordergray");
+  }
+
+  public void setBorder(boolean state) {
+    if (state)
+      addClass("border");
+    else
+      removeClass("border");
+  }
+
   public String toString() {
     return getClass().getName() + ":" + id;
   }

@@ -6,7 +6,7 @@ package javaforce.webui;
  */
 
 public class Image extends Component {
-  public Resource img;
+  private Resource img;
   public Image(Resource img) {
     this.img = img;
   }

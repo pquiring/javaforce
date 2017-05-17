@@ -1,13 +1,14 @@
 package javaforce.webui;
 
-import java.io.InputStream;
-import java.util.HashMap;
-import javaforce.JF;
-
-/**
+/** Resource
  *
  * @author pquiring
  */
+
+import java.io.InputStream;
+import java.util.HashMap;
+
+import javaforce.*;
 
 public class Resource {
   public byte data[];
@@ -21,17 +22,24 @@ public class Resource {
 
   private static int nextID;
   private static HashMap<String, Resource> resList = new HashMap<String, Resource>();
+  private static ClassLoader loader = Resource.class.getClassLoader();
+
+  public static void setClassLoader(ClassLoader loader) {
+    Resource.loader = loader;
+  }
+
   public static synchronized Resource registerResource(byte data[], String mime) {
     Resource res = new Resource();
     res.data = data;
     res.id = "r" + nextID++;
-    res.mime = "";
+    res.mime = mime;
     resList.put(res.id, res);
     return res;
   }
   public static Resource readResource(String name, String mime) {
-    InputStream is = Resource.class.getClassLoader().getResourceAsStream(name);
+    InputStream is = loader.getResourceAsStream(name);
     if (is == null) {
+      JFLog.log("Error:Resource not found:" + name);
       return null;
     }
     byte data[] = JF.readAll(is);

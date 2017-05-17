@@ -60,8 +60,10 @@ public class SQLService {
     sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32) unique, type int)");
     sql.execute("create table panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, popup boolean, builtin boolean)");
     sql.execute("create table cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int,comp  varchar(32), name varchar(32), text varchar(512), tag varchar(32), func varchar(32), arg varchar(32), style varchar(512))");
-    sql.execute("create table funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique)");
-    sql.execute("create table rungs (id int not null generated always as identity (start with 1, increment by 1) primary key, rung int unique, fid int, logic varchar(32000))");
+    sql.execute("create table funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32) unique, comment varchar(8192))");
+    sql.execute("create table rungs (id int not null generated always as identity (start with 1, increment by 1) primary key, fid int, rid int, comment varchar(512), logic varchar(16384))");
+    sql.execute("create table immvalues (id int not null generated always as identity (start with 1, increment by 1) primary key, type int, value varchar(512))");
+    sql.execute("create table blocks (id int not null generated always as identity (start with 1, increment by 1) primary key, rid int, name varchar(32), tags varchar(512))");
     sql.execute("create table users (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, pass varchar(32))");
     sql.execute("create table lists (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique)");
     sql.execute("create table listdata (id int not null generated always as identity (start with 1, increment by 1) primary key, lid int, value int, text varchar(128))");
@@ -106,6 +108,12 @@ public class SQLService {
     id = sql.select1value("select id from lists where name='jfc_panel_type'");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",0,'label')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",1,'button')");
+
+    sql.execute("insert into lists (name) values ('jfc_rung_groups')");
+    id = sql.select1value("select id from lists where name='jfc_rung_groups'");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",0,'bits')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",1,'math')");
+
     //create local controller
     sql.execute("insert into ctrls (num,ip,type,speed) values (0,'127.0.0.1',0,0)");
     //create panels
@@ -185,6 +193,22 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,7,1,'label','','Name')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,1,3,1,'button','','New','jfc_funcs_new')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_funcs')");
+
+    sql.execute("insert into panels (name, popup, builtin) values ('jfc_func_editor', false, true)");
+    id = sql.select1value("select id from panels where name='jfc_func_editor'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",1,1,1,1,'button','','+','jfc_func_editor_add_rung')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",3,1,1,1,'button','','-','jfc_func_editor_del_rung')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,2,1,'button','','Edit','jfc_func_editor_edit_rung')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,2,1,1,'table','jfc_rungs_viewer')");
+
+    sql.execute("insert into panels (name, popup, builtin) values ('jfc_rung_editor', false, true)");
+    id = sql.select1value("select id from panels where name='jfc_rung_editor'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",1,1,1,1,'button','','-','jfc_rung_editor_del')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",3,1,1,1,'button','','F','jfc_rung_editor_fork')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,1,1,'button','','S','jfc_rung_editor_save')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",7,1,3,1,'combobox','group_type','','jfc_rung_groups')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",11,1,16,1,'table','jfc_rung_groups')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,2,1,1,'table','jfc_rung_editor')");
 
     //insert system funcs
     sql.execute("insert into funcs (name) values ('main')");

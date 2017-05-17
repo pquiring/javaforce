@@ -5,6 +5,7 @@ package jfcontrols.panels;
  * @author pquiring
  */
 
+import java.util.ArrayList;
 import javaforce.*;
 import javaforce.webui.*;
 
@@ -126,6 +127,7 @@ public class Events {
       }
       case "jfc_panels_edit": {
         client.setProperty("panel", arg);
+        client.setProperty("focus", null);
         client.setPanel(Panels.getPanel("jfc_panel_editor", client));
         break;
       }
@@ -203,10 +205,88 @@ public class Events {
       }
       case "jfc_funcs_edit": {
         client.setProperty("func", arg);
+        client.setProperty("focus", null);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
       case "jfc_funcs_delete": {
+        break;
+      }
+
+      case "jfc_func_editor_add_rung": {
+        int fid = Integer.valueOf((String)client.getProperty("func"));
+        Component focus = (Component)client.getProperty("focus");
+        int idx = 0;
+        Object obj = null;
+        if (focus != null) {
+          obj = focus.getProperty("obj");
+        }
+        Node node;
+        NodeRef ref;
+        if (obj != null) {
+          if (obj instanceof Node) {
+            node = (Node)obj;
+            idx = node.rid;
+          } else if (obj instanceof NodeRef) {
+            ref = (NodeRef)obj;
+            idx = ref.ref.rid;
+          }
+        }
+        //insert rung before current one
+        sql.execute("update rungs set rid=rid+1 where fid=" + fid + " and rid>=" + idx);
+        sql.execute("insert into rungs (fid,rid,comment,logic) values (" + fid + "," + idx + ",'','')");
+        ArrayList<String[]> cells = new ArrayList<String[]>();
+        ArrayList<Object> objs = new ArrayList<Object>();
+        String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + idx);
+        Panels.buildRung(data, cells, objs, sql);
+        Table table = Panels.getTable(cells.toArray(new String[cells.size()][]), false, client, 0, 0, data);
+        Rungs rungs = (Rungs)client.getProperty("rungs");
+        rungs.table.add(idx, table);
+        break;
+      }
+
+      case "jfc_func_editor_edit_rung": {
+        Component focus = (Component)client.getProperty("focus");
+        int idx = 0;
+        Object obj = null;
+        if (focus != null) {
+          obj = focus.getProperty("obj");
+        }
+        Node node;
+        NodeRef ref;
+        if (obj != null) {
+          if (obj instanceof Node) {
+            node = (Node)obj;
+            idx = node.rid;
+          } else if (obj instanceof NodeRef) {
+            ref = (NodeRef)obj;
+            idx = ref.ref.rid;
+          }
+        }
+        client.setProperty("rung", Integer.toString(idx));
+        client.setPanel(Panels.getPanel("jfc_rung_editor", client));
+        break;
+      }
+
+      case "jfc_rung_editor_add": {
+        JFLog.log("TODO:add:" + c.getName());
+        break;
+      }
+
+      case "jfc_rung_editor_del": {
+        Component focus = (Component)client.getProperty("focus");
+        JFLog.log("TODO:delete:" + focus);
+        break;
+      }
+
+      case "jfc_rung_editor_fork": {
+        JFLog.log("TODO:fork");
+        break;
+      }
+
+      case "jfc_rung_editor_save": {
+        //TODO : validate logic
+        client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
 
@@ -224,6 +304,7 @@ public class Events {
         break;
       default:
         //TODO : support plugin events
+        JFLog.log("Unknown event:" + func);
         break;
     }
     sql.close();

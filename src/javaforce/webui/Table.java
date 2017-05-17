@@ -72,8 +72,6 @@ public class Table extends Container {
     cell.spanx = spanx;
     cell.spany = spany;
     add(cell);
-    if (id == null) return;
-    sendEvent("add", new String[] {"html=" + cell.html()});
   }
   public void addRow() {
     rows++;

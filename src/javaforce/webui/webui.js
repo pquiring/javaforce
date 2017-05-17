@@ -24,6 +24,10 @@ ws.onmessage = function (event) {
   var msg = JSON.parse(event.data);
   console.log("event:" + msg.event);
   var element = document.getElementById(msg.id);
+  if (element == null) {
+    console.log("element not found:" + msg.id);
+    return;
+  }
   if (element.gl) {
     gl_message(msg, element);
     return;
@@ -105,9 +109,16 @@ ws.onmessage = function (event) {
       temp.innerHTML = msg.html;
       element.appendChild(temp.firstChild);
       break;
+    case "addbefore":
+      temp.innerHTML = msg.html;
+      element.insertBefore(temp.firstChild, document.getElementById(msg.beforeid));
+      break;
     case "remove":
       var child = document.getElementById(msg.child);
       element.removeChild(child);
+      break;
+    case "settab":
+      openTab(null, parseInt(msg.idx), msg.tabs, msg.row);
       break;
     case "initwebgl":
       gl_init(element);
@@ -230,7 +241,7 @@ function sendText(id, text) {
   ws.send(JSON.stringify(msg));
 }
 
-function openTab(event, idx, tabsid, rowsid) {
+function openTab(event, idx, tabsid, rowid) {
   var tabs = document.getElementById(tabsid);
   var nodes = tabs.childNodes;
   var cnt = nodes.length;
@@ -242,7 +253,9 @@ function openTab(event, idx, tabsid, rowsid) {
     }
   }
 
-  var tabs2 = document.getElementById(rowsid);
+  if (rowid == null) return;
+
+  var tabs2 = document.getElementById(rowid);
   var nodes2 = tabs2.childNodes;
   var cnt2 = nodes2.length;
   for(i = 0;i < cnt2;i++) {

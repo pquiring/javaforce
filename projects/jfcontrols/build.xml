@@ -40,7 +40,7 @@
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
     <jar destfile="${app}.jar" includes="**/*.class" basedir="${build}">
-      <fileset dir="." includes="*.png"/>
+      <fileset dir="src" includes="**/*.png"/>
       <fileset dir="." includes="*.crt"/>
       <manifest>
         <attribute name="Main-Class" value="jfcontrols.app.Main"/>

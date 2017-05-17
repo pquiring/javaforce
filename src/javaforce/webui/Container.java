@@ -61,12 +61,32 @@ public abstract class Container extends Component {
   public void set(int idx, Component c) {
     components.set(idx, c);
   }
+  /** Add component to end of components. */
   public void add(Component comp) {
     comp.parent = this;
     components.add(comp);
     if (client != null) {
       comp.setClient(client);
       comp.init();
+    }
+    if (id != null) {
+      sendEvent("add", new String[] {"html=" + comp.html()});
+    }
+  }
+  /** Add component at index. */
+  public void add(int idx, Component comp) {
+    comp.parent = this;
+    Component before = (idx < 0 || idx >= count()) ? null : components.get(idx);
+    components.add(idx, comp);
+    if (client != null) {
+      comp.setClient(client);
+      comp.init();
+    }
+    if (id != null) {
+      if (before == null)
+        sendEvent("add", new String[] {"html=" + comp.html()});
+      else
+        sendEvent("addbefore", new String[] {"html=" + comp.html(), "beforeid=" + before.id});
     }
   }
   public void remove(Component comp) {

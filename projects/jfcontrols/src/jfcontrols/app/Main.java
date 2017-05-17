@@ -5,15 +5,19 @@ package jfcontrols.app;
  * @author pquiring
  */
 
-import javaforce.JFLog;
+import java.io.*;
+
+import javaforce.*;
 import javaforce.webui.*;
 import jfcontrols.panels.*;
 import jfcontrols.functions.*;
 import jfcontrols.sql.*;
+import jfcontrols.images.*;
 
 public class Main implements WebUIHandler {
 
   public static String version = "0.1B";
+  public static ClassLoader loader;
 
   public static void main(String args[]) {
     //start database
