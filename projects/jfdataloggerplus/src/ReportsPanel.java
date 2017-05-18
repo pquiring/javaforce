@@ -33,7 +33,7 @@ public class ReportsPanel extends Panel {
 
     row.add(new Label("Tag"));
     tags = new ComboBox();
-    tags.setWidth("200px");
+    tags.setWidth(200);
     row.add(tags);
 
     row.add(new Label("Start Date"));

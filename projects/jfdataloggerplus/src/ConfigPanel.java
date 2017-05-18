@@ -15,7 +15,7 @@ public class ConfigPanel extends CenteredPanel {
     ltags = new Label("Tags");
     row.add(ltags);
     tags = new ComboBox();
-    tags.setWidth("250px");
+    tags.setWidth(250);
     row.add(tags);
 
     loadTags();
