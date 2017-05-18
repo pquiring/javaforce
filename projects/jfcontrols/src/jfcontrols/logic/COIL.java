@@ -9,8 +9,8 @@ import jfcontrols.tags.*;
 
 public class COIL extends Logic {
 
-  public Type getType() {
-    return Type.inline;
+  public boolean isBlock() {
+    return false;
   }
 
   public String getName() {
@@ -18,7 +18,7 @@ public class COIL extends Logic {
   }
 
   public String getCode() {
-    return "tags[0].set(en[enidx]);\r\n";
+    return "tags[0].setBoolean(enabled);\r\n";
   }
 
   public int getTagsCount() {

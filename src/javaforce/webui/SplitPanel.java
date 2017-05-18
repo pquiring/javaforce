@@ -28,17 +28,17 @@ public class SplitPanel extends Container {
     switch (dir) {
       case VERTICAL:
         top = new Row();
-        get(0).setWidth(pos + "px");
+        get(0).setWidth(pos);
         break;
       case HORIZONTAL:
         top = new Column();
-        get(0).setHeight(pos + "px");
+        get(0).setHeight(pos);
         break;
     }
     add(top);
     top.add(get(0));  //left/top component
     div = new Block();
-    div.setWidth("5px");
+    div.setWidth(5);
     div.setBackColor("grey");
     top.add(div);
     top.add(get(1));  //right/bottom component
@@ -61,8 +61,8 @@ public class SplitPanel extends Container {
   public void setDividerPosition(int pos) {
     this.pos = pos;
     switch (dir) {
-      case VERTICAL: getLeftComponent().setWidth(pos + "px"); break;
-      case HORIZONTAL: getTopComponent().setHeight(pos + "px"); break;
+      case VERTICAL: getLeftComponent().setWidth(pos); break;
+      case HORIZONTAL: getTopComponent().setHeight(pos); break;
     }
   }
 

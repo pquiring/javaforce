@@ -39,7 +39,7 @@ public class TitleBar extends Container {
     sb.append("</div>");
     return sb.toString();
   }
-  public void setHeight(String h) {
+  public void setHeight(int h) {
     super.setHeight(h);
     button.setWidth(h);
     button.setHeight(h);

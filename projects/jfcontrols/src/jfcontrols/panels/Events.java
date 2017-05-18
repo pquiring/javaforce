@@ -10,7 +10,8 @@ import javaforce.*;
 import javaforce.webui.*;
 
 import jfcontrols.sql.*;
-import jfcontrols.tags.TagsService;
+import jfcontrols.tags.*;
+import jfcontrols.logic.*;
 
 public class Events {
   private static final Object lock = new Object();
@@ -217,30 +218,26 @@ public class Events {
         int fid = Integer.valueOf((String)client.getProperty("func"));
         Component focus = (Component)client.getProperty("focus");
         int idx = 0;
-        Object obj = null;
+        Node node = null;
         if (focus != null) {
-          obj = focus.getProperty("obj");
+          node = (Node)focus.getProperty("node");
         }
-        Node node;
-        NodeRef ref;
-        if (obj != null) {
-          if (obj instanceof Node) {
-            node = (Node)obj;
-            idx = node.rid;
-          } else if (obj instanceof NodeRef) {
-            ref = (NodeRef)obj;
-            idx = ref.ref.rid;
+        if (node != null) {
+          if (node.ref == null) {
+            idx = node.root.rid;
+          } else {
+            idx = node.ref.root.rid;
           }
         }
         //insert rung before current one
         sql.execute("update rungs set rid=rid+1 where fid=" + fid + " and rid>=" + idx);
-        sql.execute("insert into rungs (fid,rid,comment,logic) values (" + fid + "," + idx + ",'','')");
+        sql.execute("insert into rungs (fid,rid,comment,logic) values (" + fid + "," + idx + ",'','h')");
         ArrayList<String[]> cells = new ArrayList<String[]>();
-        ArrayList<Object> objs = new ArrayList<Object>();
+        ArrayList<Node> nodes = new ArrayList<Node>();
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + idx);
-        Panels.buildRung(data, cells, objs, sql);
-        Table table = Panels.getTable(cells.toArray(new String[cells.size()][]), false, client, 0, 0, data);
         Rungs rungs = (Rungs)client.getProperty("rungs");
+        rungs.rungs.add(idx, Panels.buildRung(data, cells, nodes, sql));
+        Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, null);
         rungs.table.add(idx, table);
         break;
       }
@@ -248,19 +245,15 @@ public class Events {
       case "jfc_func_editor_edit_rung": {
         Component focus = (Component)client.getProperty("focus");
         int idx = 0;
-        Object obj = null;
+        Node node = null;
         if (focus != null) {
-          obj = focus.getProperty("obj");
+          node = (Node)focus.getProperty("node");
         }
-        Node node;
-        NodeRef ref;
-        if (obj != null) {
-          if (obj instanceof Node) {
-            node = (Node)obj;
-            idx = node.rid;
-          } else if (obj instanceof NodeRef) {
-            ref = (NodeRef)obj;
-            idx = ref.ref.rid;
+        if (node != null) {
+          if (node.ref == null) {
+            idx = node.root.rid;
+          } else {
+            idx = node.ref.root.rid;
           }
         }
         client.setProperty("rung", Integer.toString(idx));
@@ -269,7 +262,42 @@ public class Events {
       }
 
       case "jfc_rung_editor_add": {
-        JFLog.log("TODO:add:" + c.getName());
+        Component focus = (Component)client.getProperty("focus");
+        if (focus == null) {
+          JFLog.log("Error:focus == null");
+          break;
+        }
+        Node prev = null;
+        if (focus != null) {
+          prev = (Node)focus.getProperty("node");
+        }
+        if (prev == null) {
+          JFLog.log("Error:Node not found");
+          break;
+        }
+        int x = 0, y = 0;
+        if (prev.ref != null) {
+          prev = prev.ref;
+        }
+        x = prev.x + prev.getWidth();
+        y = prev.y;
+        String name = c.getName();
+        Logic blk = null;
+        try {
+          Class cls = Class.forName("jfcontrols.logic." + name.replaceAll(" ", "_").toUpperCase());
+          blk = (Logic)cls.newInstance();
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
+        if (blk == null) {
+          JFLog.log("Error:Logic not found:" + name);
+          break;
+        }
+        int rid = Integer.valueOf((String)client.getProperty("rung"));
+        //add new block after node
+        JFLog.log("add:prev=" + prev + ":" + x + "," + y);
+        prev.insertLogic('#', x, y, "???", blk, "???");
+        Panels.layoutNodes(prev.root, (Table)client.getPanel().getComponent("jfc_rung_editor"), rid);
         break;
       }
 
@@ -285,7 +313,12 @@ public class Events {
       }
 
       case "jfc_rung_editor_save": {
-        //TODO : validate logic
+        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
+        int rid = Integer.valueOf((String)client.getProperty("rung"));
+        Component comp = logic.get(0, 0, false);
+        NodeRoot root = ((Node)comp.getProperty("node")).root;
+        String str = root.saveLogic();
+        JFLog.log("logic=" + str);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }

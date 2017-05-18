@@ -18,7 +18,7 @@ public class List extends ScrollPanel implements Click {
 
   public void add(Component item) {
     super.add(item);
-    item.setWidth("100%");
+    item.addClass("width100");
     item.setProperty("selected", "false");
   }
 

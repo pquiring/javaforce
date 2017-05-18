@@ -6,9 +6,7 @@ package jfcontrols.logic;
  */
 
 public abstract class Logic {
-  public enum Type {inline, box};
-
-  public abstract Type getType();
+  public abstract boolean isBlock();
   public abstract String getName();
   public abstract String getCode();
 

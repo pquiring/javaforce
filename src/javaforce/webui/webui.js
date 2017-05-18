@@ -96,6 +96,12 @@ ws.onmessage = function (event) {
       element.style.width = msg.w;
       element.style.height = msg.h;
       break;
+    case "setwidth":
+      element.style.width = msg.w;
+      break;
+    case "setheight":
+      element.style.height = msg.h;
+      break;
     case "setclass":
       element.className = msg.cls;
       break;

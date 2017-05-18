@@ -101,8 +101,7 @@ public class TestGL implements WebUIHandler {
     };
 
     Canvas canvas = new Canvas();
-    canvas.setWidth("640px");
-    canvas.setHeight("480px");
+    canvas.setSize(640, 480);
     panel.add(canvas);
 
     panel.setProperty("canvas", canvas);

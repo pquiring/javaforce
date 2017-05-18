@@ -3,16 +3,17 @@ package jfcontrols.panels;
 /** Node */
 
 import java.util.ArrayList;
+import javaforce.JFLog;
 import jfcontrols.logic.Logic;
 
 /*
 Ladder Logic Notation
 ---------------------
 hth#hth
-v   v
-ah#hb
-v   v
-ch#hd
+ v   v
+ ah#hb
+ v   v
+ ch#hd
 block(t#,c#t#,i#,d#,a#,...) - call block
 c# = controller id # (optional, default = 0)
 t# = tag id #
@@ -31,62 +32,92 @@ Example Logic:
 xon(c1t1)|f(t2,t3)|t|xon(t4)|t|c,xon(t5)|d|coil(t6)
 */
 
+import javaforce.webui.*;
+
 public class Node {
 
   public char type;
-  public String args; //if "b"
-  public int rid;
+  public String args; //if "#"
   public int x;
   public int y;
   public boolean closed;
   public Node prev;
   public Node next;
   public Node upper; //b,d only
-  //b,d only
+  public Node ref;
   public String bid;
   public Logic blk;
   public String tags;
-  public ArrayList<NodeRef> refs = new ArrayList<NodeRef>();
+  public Component comp;
+  public NodeRoot root;
 
-  public Node(Node prev, int rung, char type, int x, int y) {
-    if (prev != null) {
-      prev.next = this;
-    }
-    this.prev = prev;
-    this.rid = rung;
-    this.type = type;
-    this.x = x;
-    this.y = y;
+  public Node insertRef(Node ref, char type, int x, int y) {
+    JFLog.log("insertRef:" + type);
+    Node node = new Node();
+    node.root = root;
+    //insert BEFORE this node
+    node.prev = prev;
+    node.next = this;
+    if (prev != null) prev.next = node;
+    prev = node;
+
+    node.type = type;
+    node.x = x;
+    node.y = y;
+    node.ref = ref;
+    return node;
   }
 
-  public Node(Node prev, Node upper, int rung, char type, int x, int y) {
-    this.upper = upper;
-    if (prev != null) {
-      prev.next = this;
-    }
-    this.prev = prev;
-    this.rid = rung;
-    this.type = type;
-    this.x = x;
-    this.y = y;
+  public Node insertNode(char type, int x, int y) {
+    JFLog.log("insertNode:" + type);
+    Node node = new Node();
+    node.root = root;
+    //insert AFTER this node
+    node.prev = this;
+    node.next = next;
+    if (next != null) next.prev = node;
+    next = node;
+
+    node.type = type;
+    node.x = x;
+    node.y = y;
+    return node;
   }
 
-  public Node(Node prev, int rung, char type, int x, int y, String bid, Logic blk, String tags) {
-    if (prev != null) {
-      prev.next = this;
-    }
-    this.prev = prev;
-    this.rid = rung;
-    this.type = type;
-    this.x = x;
-    this.y = y;
-    this.bid = bid;
-    this.blk = blk;
-    this.tags = tags;
+  public Node insertLogic(char type, int x, int y, String bid, Logic blk, String tags) {
+    JFLog.log("insertLogic:" + type);
+    Node node = new Node();
+    node.root = root;
+    //insert AFTER this node
+    node.prev = this;
+    node.next = next;
+    if (next != null) next.prev = node;
+    next = node;
+
+    node.type = type;
+    node.x = x;
+    node.y = y;
+    node.bid = bid;
+    node.blk = blk;
+    node.tags = tags;
+    return node;
   }
 
-  public void close() {
-    closed = true;
+  public Node insertLinkUpper(Node upper, char type, int x, int y) {
+    JFLog.log("insertLinkUpper:" + type);
+    Node node = new Node();
+    node.root = root;
+    //insert AFTER this node
+    node.prev = this;
+    node.next = next;
+    if (next != null) next.prev = node;
+    next = node;
+
+    node.type = type;
+    node.x = x;
+    node.y = y;
+    node.upper = upper;
+    return node;
   }
 
   public static Node findFirstOpenNode(ArrayList<Node> stack, String types) {
@@ -99,6 +130,7 @@ public class Node {
       }
       for (int c = 0; c < ca.length; c++) {
         if (node.type == ca[c]) {
+          node.closed = true;
           return node;
         }
       }
@@ -116,6 +148,7 @@ public class Node {
       }
       for (int c = 0; c < ca.length; c++) {
         if (node.type == ca[c]) {
+          node.closed = true;
           return node;
         }
       }
@@ -123,4 +156,25 @@ public class Node {
     return null;
   }
 
+  public int getWidth() {
+    if (blk != null) {
+      if (blk.isBlock()) {
+        return 5;
+      } else {
+        return 3;
+      }
+    }
+    return 1;
+  }
+
+  public int getHeight() {
+    if (blk != null) {
+      if (blk.isBlock()) {
+        return 3 + blk.getTagsCount();
+      } else {
+        return 1 + blk.getTagsCount();
+      }
+    }
+    return 1;
+  }
 }

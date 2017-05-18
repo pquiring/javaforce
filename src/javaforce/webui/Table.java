@@ -6,11 +6,11 @@ package javaforce.webui;
  */
 
 public class Table extends Container {
-  private int width, height, cols, rows;
+  private int cellWidth, cellHeight, cols, rows;
   private boolean border;
-  public Table(int width, int height, int cols, int rows) {
-    this.width = width;  //X
-    this.height = height;  //Y
+  public Table(int cellWidth, int cellHeight, int cols, int rows) {
+    this.cellWidth = cellWidth;  //X
+    this.cellHeight = cellHeight;  //Y
     this.cols = cols;  //X
     this.rows = rows;  //Y
     setClass("table");
@@ -23,11 +23,10 @@ public class Table extends Container {
       add(comp);
     }
     public String html() {
-      setWidth((spanx * Table.this.width) + "px");
-      setHeight((spany * Table.this.height) + "px");
-      //setPosition(x * Table.this.width, y * Table.this.height);
-      setStyle("left", Integer.toString(x * Table.this.width));
-      setStyle("top", Integer.toString(y * Table.this.height));
+      setSize(spanx * cellWidth, spany * cellHeight);
+      //setPosition(x * width, y * height);
+      setStyle("left", Integer.toString(x * cellWidth));
+      setStyle("top", Integer.toString(y * cellHeight));
       StringBuffer sb = new StringBuffer();
       sb.append("<div" + getAttrs() + ">");
       sb.append(get(0).html());
@@ -36,8 +35,8 @@ public class Table extends Container {
     }
   }
   private void setSize() {
-    setWidth((width * cols) + "px");
-    setHeight((height * rows) + "px");
+    setSize(cellWidth * cols, cellHeight * rows);
+    sendEvent("setsize", new String [] {"w=" + (cellWidth * cols), "h=" + (cellHeight * rows)});
   }
   public void setBorder(boolean state) {
     border = state;
@@ -81,6 +80,12 @@ public class Table extends Container {
     cols++;
     setSize();
   }
+  /** Sets number of columns and rows. */
+  public void setTableSize(int cols, int rows) {
+    this.cols = cols;
+    this.rows = rows;
+    setSize();
+  }
   public void remove(int x,int y) {
     Cell cell = getCell(x,y,false);
     if (cell != null) {
@@ -93,7 +98,7 @@ public class Table extends Container {
     if (cell == null) return;
     cell.spanx = spanx;
     cell.spany = spany;
-    cell.sendEvent("setsize", new String[] {"w=" + spanx * width, "h=" + spany * height});
+    cell.sendEvent("setsize", new String[] {"w=" + spanx * cellWidth, "h=" + spany * cellHeight});
   }
   private Cell getCell(int x,int y,boolean checkSpans) {
     int cnt = count();

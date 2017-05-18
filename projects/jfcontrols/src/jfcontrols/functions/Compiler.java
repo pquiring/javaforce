@@ -10,9 +10,10 @@ public class Compiler {
     StringBuilder sb = new StringBuilder();
     sb.append("public class test {\r\n");
     sb.append("  public boolean func(Tag args[]) {\r\n");
+    sb.append("    boolean enabled;\r\n");
     sb.append("    boolean en[] = new boolean[256];\r\n");
     sb.append("    int enidx = 0;\r\n");
-    sb.append("    en[enidx] = true;\r\n");
+    sb.append("    enabled = true;\r\n");
     sb.append("    Tag tags[] = new Tag[32];\r\n");
     sb.append("    \r\n");
 

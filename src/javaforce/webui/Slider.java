@@ -20,8 +20,7 @@ public class Slider extends Component {
     addAttr("max", Integer.toString(max));
     addAttr("step", Integer.toString(step));
     int delta = max - min;
-    setWidth((delta + 32) + "px");
-    setHeight("32px");
+    setSize(delta + 32, 32);
     switch (dir) {
       case VERTICAL:
         setClass("vslider");

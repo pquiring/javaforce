@@ -188,13 +188,22 @@ public abstract class Component {
     }
     return sb.toString();
   }
-  public void setWidth(String width) {
-//    this.width = Integer.valueOf(width);
-    setStyle("width", width);
+  public void setSize(int width, int height) {
+    this.width = width;
+    this.height = height;
+    setStyle("width", width + "px");
+    setStyle("height", height + "px");
+    sendEvent("setsize", new String[] {"w=" + width, "h=" + height});
   }
-  public void setHeight(String height) {
-//    this.height = Integer.valueOf(height);
-    setStyle("height", height);
+  public void setWidth(int width) {
+    this.width = width;
+    setStyle("width", width + "px");
+    sendEvent("setwidth", new String[] {"w=" + width});
+  }
+  public void setHeight(int height) {
+    this.height = height;
+    setStyle("height", height + "px");
+    sendEvent("setheight", new String[] {"h=" + height});
   }
   public void setColor(String clr) {
     setStyle("color", clr);

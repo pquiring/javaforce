@@ -74,8 +74,7 @@ public class ColorChooserPopup extends PopupPanel {
     add(row);
     row.add(new Pad());
     clr = new Block();
-    clr.setWidth("64px");
-    clr.setHeight("64px");
+    clr.setSize(64, 64);
     row.add(clr);
     row.add(new Pad());
 

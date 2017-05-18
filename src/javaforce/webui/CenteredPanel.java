@@ -9,7 +9,7 @@ public class CenteredPanel extends Panel {
   public CenteredPanel() {
     addClass("panel");
     addClass("column");
-    setHeight("100%");
+    addClass("height100");
   }
   public String html() {
     StringBuffer sb = new StringBuffer();

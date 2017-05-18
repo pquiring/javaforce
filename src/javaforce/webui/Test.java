@@ -153,7 +153,7 @@ public class Test implements WebUIHandler {
     col.add(ta1);
 
     List list = new List();
-    list.setHeight("50px");
+    list.setHeight(50);
     list.add("Option #1");
     list.add("Option #2");
     list.add("Option #3");
@@ -163,7 +163,7 @@ public class Test implements WebUIHandler {
     tab.add(p, "Tab#3");
 
     Tree tree = new Tree();
-    tree.setHeight("50px");
+    tree.setHeight(50);
     TreeNode node = tree.getRootNode();
     node.setData("root");
     TreeNode child = new TreeNode();

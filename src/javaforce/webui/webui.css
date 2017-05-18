@@ -5,10 +5,12 @@ body {
 div {
   white-space: nowrap;
   margin: 0px;
+  box-sizing: border-box;
 }
 
 span {
   margin: 0px;
+  box-sizing: border-box;
 }
 
 .cell {
@@ -19,6 +21,7 @@ span {
   margin: 0px;
   padding: 0px;
   position: absolute;
+  box-sizing: border-box;
 }
 
 .table {
@@ -34,6 +37,15 @@ select {
 
 button {
   margin: 0px;
+  box-sizing: border-box;
+}
+
+img {
+  box-sizing: border-box;
+}
+
+input {
+  box-sizing: border-box;
 }
 
 .border {
@@ -268,4 +280,12 @@ button {
 
 .toggle_off {
   background-color: #777;
+}
+
+.width100 {
+  width: 100%;
+}
+
+.height100 {
+  height: 100%;
 }

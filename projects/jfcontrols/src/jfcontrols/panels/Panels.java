@@ -18,13 +18,14 @@ import jfcontrols.images.*;
 public class Panels {
   public static int cellWidth = 32;
   public static int cellHeight = 32;
+  public static boolean debug;
   public static PopupPanel getLoginPanel(WebUIClient client) {
-    PopupPanel panel = (PopupPanel)getPanel(createPopupPanel("Login"), "jfc_login", client);
+    PopupPanel panel = (PopupPanel)buildPanel(createPopupPanel("Login"), "jfc_login", client);
     panel.setName("login_panel");
     return panel;
   }
   public static PopupPanel getMenuPanel(WebUIClient client) {
-    PopupPanel panel = (PopupPanel)getPanel(createPopupPanel("Menu"), "jfc_main", client);
+    PopupPanel panel = (PopupPanel)buildPanel(createPopupPanel("Menu"), "jfc_main", client);
     panel.setName("menu_panel");
     return panel;
   }
@@ -36,14 +37,14 @@ public class Panels {
   }
   private static PopupPanel createPopupPanel(String title) {
     PopupPanel pp = new PopupPanel(title);
-    pp.setTitleBarSize(cellHeight + "px");
+    pp.setTitleBarSize(cellHeight);
     return pp;
   }
   //...
   public static Panel getPanel(String pname, WebUIClient client) {
-    return getPanel(new Panel(), pname, client);
+    return buildPanel(new Panel(), pname, client);
   }
-  public static Panel getPanel(Panel panel, String pname, WebUIClient client) {
+  public static Panel buildPanel(Panel panel, String pname, WebUIClient client) {
     SQL sql = SQLService.getSQL();
     String pid = sql.select1value("select id from panels where name=" + SQL.quote(pname));
     if (pid == null) {
@@ -53,8 +54,15 @@ public class Panels {
     String popup = sql.select1value("select popup from panels where id=" + pid);
     String cells[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style from cells where pid=" + pid);
     sql.close();
-    panel.add(getTable(cells, popup.equals("true"), client, -1, -1, null));
+    Table table = new Table(cellWidth,cellHeight,1,1);
+    panel.add(table);
+    buildTable(table, panel, cells, client, -1, -1, null);
     if (popup.equals("true")) return panel;
+    //add top components
+    Button x = getButton(new String[] {null, null, null, null, null, "button", null, "!image:menu", null, "showMenu", null});
+    setCellSize(x, new Rectangle(0,0,1,1));
+    table.add(x, 0, 0);
+    //TODO : [alarm status] : [title]
     panel.add(getLoginPanel(client));
     panel.add(getMenuPanel(client));
     return panel;
@@ -72,13 +80,14 @@ public class Panels {
   private final static int FUNC = 9;
   private final static int ARG = 10;
   private final static int STYLE = 11;
-  public static Table getTable(String cells[][], boolean popup, WebUIClient client, int ix, int iy, Object objs[]) {
-    int mx = 1;
+  public static Table buildTable(Table table, Container container, String cells[][], WebUIClient client, int ix, int iy, Node nodes[]) {
+    int mx = table.getColumns();
     if (ix != -1) mx = ix;
-    int my = 1;
+    int my = table.getRows();
     if (iy != -1) my = iy;
     Component cs[] = new Component[cells.length];
     Rectangle rs[] = new Rectangle[cells.length];
+    boolean flow[] = new boolean[cells.length];
     for(int a=0;a<cells.length;a++) {
       Rectangle r = new Rectangle();
       rs[a] = r;
@@ -86,10 +95,13 @@ public class Panels {
       r.y = Integer.valueOf(cells[a][Y]);
       r.width = Integer.valueOf(cells[a][W]);
       r.height = Integer.valueOf(cells[a][H]);
-      String comp = cells[a][COMP];
-      Component c = getCell(comp, cells[a], rs[a], client);
+      String compType = cells[a][COMP];
+      if (debug) {
+        JFLog.log("debug:create cell:" + rs[a].x + "," + rs[a].y + ":" + compType);
+      }
+      Component c = getCell(compType, container, cells[a], rs[a], client);
       if (c == null) {
-        JFLog.log("Error:cell == null:" + comp);
+        JFLog.log("Error:cell == null:" + compType);
         c = new Label("null");
       }
       cs[a] = c;
@@ -104,8 +116,21 @@ public class Panels {
       setCellSize(c, rs[a]);
       c.setProperty("id", cells[a][ID]);
       c.setName(cells[a][NAME]);
-      if (objs != null && objs.length > a) {
-        c.setProperty("obj", objs[a]);
+      if (nodes != null && nodes.length > a) {
+        JFLog.log("debug:assign node=" + nodes[a] + " to comp=" + c);
+        c.setProperty("node", nodes[a]);
+        nodes[a].comp = c;
+        c.addClickListener((me, comp) -> {
+//          WebUIClient client = comp.getClient();
+          Component focus = (Component)client.getProperty("focus");
+          if (focus != null) {
+            focus.setBorder(false);
+          }
+          comp.setBorder(true);
+          client.setProperty("focus", comp);
+          Node node = (Node)comp.getProperty("node");
+          JFLog.log("focus=" + node.x + "," + node.y + ":" + comp);
+        });
       }
       String style = cells[a][STYLE];
       if (style != null) {
@@ -115,6 +140,8 @@ public class Panels {
             c.setReadonly(true);
           } else if (styles[b].equals("disabled")) {
             c.setDisabled(true);
+          } else if (styles[b].equals("flow")) {
+            flow[a] = true;
           } else {
             String f[] = styles[b].split("=");
             if (f.length == 2) {
@@ -124,34 +151,32 @@ public class Panels {
         }
       }
     }
-    Table table = new Table(cellWidth,cellHeight,mx,my);
+    table.setTableSize(mx, my);
     for(int a=0;a<cells.length;a++) {
-      if (rs[a].width == 1 && rs[a].height == 1)
-        table.add(cs[a], rs[a].x, rs[a].y);
-      else
-        table.add(cs[a], rs[a].x, rs[a].y, rs[a].width, rs[a].height);
-    }
-    if (!popup) {
-      //add top components
-      Button x = getButton(new String[] {null, null, null, null, null, "button", null, "!image:menu", null, "showMenu", null});
-      setCellSize(x, new Rectangle(0,0,1,1));
-      table.add(x, 0, 0);
-      //TODO : [alarm status] : [title]
+      if (flow[a]) {
+        JFLog.log("flow:" + cs[a]);
+        container.add(cs[a]);
+      } else {
+        if (rs[a].width == 1 && rs[a].height == 1)
+          table.add(cs[a], rs[a].x, rs[a].y);
+        else
+          table.add(cs[a], rs[a].x, rs[a].y, rs[a].width, rs[a].height);
+      }
     }
     return table;
   }
-  public static void setCellSize(Component c, Rectangle r) {
-    c.setWidth(Integer.toString(cellWidth * r.width));
-    c.setHeight(Integer.toString(cellHeight * r.height));
+  public static Component setCellSize(Component c, Rectangle r) {
+    c.setSize(cellWidth * r.width, cellHeight * r.height);
     c.setProperty("rect", r);
+    return c;
   }
-  public static Component getCell(String name, String v[], Rectangle r, WebUIClient client) {
+  public static Component getCell(String name, Container container, String v[], Rectangle r, WebUIClient client) {
     switch (name) {
       case "label": return getLabel(v);
       case "button": return getButton(v);
       case "textfield": return getTextField(v);
       case "combobox": return getComboBox(v);
-      case "table": return getTable(v, r, client);
+      case "table": return getTable(v, container, r, client);
       case "overlay": return getOverlay(v);
       case "image": return getImage(v);
       default: JFLog.log("Unknown component:" + name); break;
@@ -291,12 +316,12 @@ public class Panels {
     return true;
   }
 //   cells[][] = "id,x,y,w,h,comp,name,text,tag,func,arg,style"
-  private static Component getTable(String v[], Rectangle r, WebUIClient client) {
+  private static Component getTable(String v[], Container container, Rectangle r, WebUIClient client) {
     String name = v[NAME];
     String arg = v[ARG];
     SQL sql = SQLService.getSQL();
     ArrayList<String[]> cells = new ArrayList<String[]>();
-    ArrayList<Object> objs = new ArrayList<Object>();
+    ArrayList<Node> objs = new ArrayList<Node>();
     Table table;
     switch (name) {
       case "jfc_ctrls" : {
@@ -346,7 +371,7 @@ public class Panels {
           cells.add(data[a]);
         }
         LayersPanel layers = new LayersPanel();
-        table = getTable(cells.toArray(new String[cells.size()][]), true, client, 64, 64, null);
+        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null);
         table.setName("t1");
         r.width = table.getColumns();
         r.height = table.getRows();
@@ -372,7 +397,7 @@ public class Panels {
             }
           }
         }
-        table = getTable(cells.toArray(new String[cells.size()][]), true, client, 64, 64, null);
+        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null);
         table.setName("t2");
         layers.add(table);
         return layers;
@@ -395,8 +420,8 @@ public class Panels {
         TabPanel tabs = new TabPanel();
         tabs.setTabsVisible(false);
         tabs.setBorders(false);
-        tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_bits", null, null, null, null, null), new Rectangle(r), client)), "");
-        tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_math", null, null, null, null, null), new Rectangle(r), client)), "");
+        tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_bits", null, null, null, null, null), null, new Rectangle(r), client)), "");
+        tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_math", null, null, null, null, null), null, new Rectangle(r), client)), "");
         setCellSize(tabs, r);
         client.setProperty("groups", tabs);
         return tabs;
@@ -416,7 +441,8 @@ public class Panels {
         String fid = (String)client.getProperty("func");
         String data[][] = sql.select("select rid,logic,comment from rungs where fid=" + fid);
         client.setProperty("rungs", new Rungs());
-        buildRungs(data, cells, objs, sql);
+        debug = true;
+        buildRungs(data, cells, sql);
         break;
       }
       case "jfc_rung_viewer": {
@@ -424,6 +450,7 @@ public class Panels {
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + arg);
         Rungs rungs = (Rungs)client.getProperty("rungs");
         r.y = rungs.y;
+        debug = true;
         rungs.rungs.add(buildRung(data, cells, objs, sql));
         break;
       }
@@ -431,6 +458,7 @@ public class Panels {
         String fid = (String)client.getProperty("func");
         String rid = (String)client.getProperty("rung");
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
+        debug = true;
         buildRung(data, cells, objs, sql);
         break;
       }
@@ -439,19 +467,25 @@ public class Panels {
       }
     }
     sql.close();
-    table = getTable(cells.toArray(new String[cells.size()][]), true, client, -1, -1, objs.toArray(new Object[objs.size()]));
+    table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, objs.toArray(new Node[objs.size()]));
     r.width = table.getColumns();
     r.height = table.getRows();
     switch (name) {
       case "jfc_rungs_viewer": {
+        debug = false;
         Rungs rungs = (Rungs)client.getProperty("rungs");
         rungs.table = table;
         break;
       }
       case "jfc_rung_viewer": {
+        debug = false;
         Rungs rungs = (Rungs)client.getProperty("rungs");
         rungs.y += r.height;
         rungs.rungs.get(rungs.rungs.size() - 1).table = table;
+        break;
+      }
+      case "jfc_rung_editor": {
+        debug = false;
         break;
       }
     }
@@ -459,8 +493,7 @@ public class Panels {
   }
   private static Component getOverlay(String v[]) {
     Block div = new Block();
-    div.setStyle("border", "3px solid");
-    div.setStyle("box-sizing", "border-box");
+    div.setBorder(true);
     div.setBorderColor("#000000");
     div.addClickListener((me, comp) -> {
       WebUIClient client = comp.getClient();
@@ -632,18 +665,14 @@ public class Panels {
       }
     }
   }
-  public static void buildRungs(String data[][], ArrayList<String[]> cells, ArrayList<Object> objs, SQL sql) {
-    int y = 0;
-    int lvl = 0;
+  public static void buildRungs(String data[][], ArrayList<String[]> cells, SQL sql) {
     for(int rung=0;rung<data.length;rung++) {
-      cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], null));
+      cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], "flow"));
     }
   }
-  public static Rung buildRung(String data[], ArrayList<String[]> cells, ArrayList<Object> objs, SQL sql) {
-    int y = 0;
-    int lvl = 0;
+  public static Rung buildRung(String data[], ArrayList<String[]> cells, ArrayList<Node> objs, SQL sql) {
     int x = 0;
-    int my = 1;
+    int y = 0;
     int smy = 1;  //segment max y (blocks can increase this)
     int rid = Integer.valueOf(data[0]);
     Rung rung = new Rung();
@@ -652,81 +681,78 @@ public class Panels {
     String parts[] = logic.split("|");
     String blocks[][] = sql.select("select id,name,tags from blocks where rid=" + rid);
     ArrayList<Node> nodes = new ArrayList<Node>();
-    Node last = null;
-    nodes.add(last = new Node(last, rid, '-', x, y));
-    x++;
-    rung.root = last;
+    Node root = new NodeRoot(rid);
+    Node node = root;
     for(int p=0;p<parts.length;p++) {
       String part = parts[p];
       switch (part) {
         case "t": {
-          nodes.add(last = new Node(last, rid, 't', x, y));
-          x += 2;
+          nodes.add(node = node.insertNode('t', x, y));
+          x++;
           break;
         }
+        case "h":
+          JFLog.log("Error:h in logic!!!");
+          nodes.add(node = node.insertNode('h', x, y));
+          y++;
+          break;
+        case "v":
+          nodes.add(node = node.insertNode('v', x, y));
+          x++;
+          break;
         case "a": {
           //a can only be under t,a
-          Node node = Node.findFirstOpenNode(nodes, "ta");
-          if (node == null) {
+          Node upper = Node.findFirstOpenNode(nodes, "ta");
+          if (upper == null) {
             JFLog.log("Error:corrupt logic");
             return null;
           }
-          node.close();
-          x = node.x;
-          y = node.y + smy;
+          x = upper.x;
+          y = upper.y + smy;
           smy = 1;
-          nodes.add(last = new Node(last, rid, 'a', x, y));
+          nodes.add(node = node.insertLinkUpper(upper, 'a', x, y));
           break;
         }
         case "b": {
           //b can only be under t,b
-          Node node = Node.findLastOpenNode(nodes, "tb");
-          if (node == null) {
+          Node upper = Node.findLastOpenNode(nodes, "tb");
+          if (upper == null) {
             JFLog.log("Error:corrupt logic");
             return null;
           }
-          node.close();
-          if (node.x < x) node.x = x;
-          if (node.x > x) x = node.x;
+          if (upper.x < x) upper.x = x;
+          if (upper.x > x) x = upper.x;
           smy = 1;
-          nodes.add(last = new Node(last, node, rid, 'b', x, y));
+          nodes.add(node = node.insertLinkUpper(upper, 'b', x, y));
           break;
         }
         case "c": {
           //c can only be under t,a
-          Node node = Node.findFirstOpenNode(nodes, "ta");
-          if (node == null) {
+          Node upper = Node.findFirstOpenNode(nodes, "ta");
+          if (upper == null) {
             JFLog.log("Error:corrupt logic");
             return null;
           }
-          node.close();
-          x = node.x;
-          y = node.y + smy;
+          x = upper.x;
+          y = upper.y + smy;
           smy = 1;
-          nodes.add(last = new Node(last, rid, 'c', x, y));
+          nodes.add(node = node.insertLinkUpper(upper, 'c', x, y));
           break;
         }
         case "d": {
           //d can only be under t,b
-          Node node = Node.findFirstOpenNode(nodes, "tb");
-          if (node == null) {
+          Node upper = Node.findFirstOpenNode(nodes, "tb");
+          if (upper == null) {
             JFLog.log("Error:corrupt logic");
             return null;
           }
-          node.close();
-          if (node.x < x) node.x = x;
-          if (node.x > x) x = node.x;
+          if (upper.x < x) upper.x = x;
+          if (upper.x > x) x = upper.x;
           smy = 1;
-          nodes.add(last = new Node(last, node, rid, 'd', x, y));
-          break;
-        }
-        case "-": {
-          nodes.add(last = new Node(last, rid, '-', x, y));
-          x++;
+          nodes.add(node = node.insertLinkUpper(upper, 'd', x, y));
           break;
         }
         default: {
-          //adjust smy based on block y size
           String name = null;
           String tags = null;
           for(int a=0;a<blocks.length;a++) {
@@ -737,7 +763,7 @@ public class Panels {
             }
           }
           if (name == null) {
-            JFLog.log("Error:Block not found:rid=" + rid + ":bid=" + part);
+            JFLog.log("Error:Block not found:rid=" + rid + ":bid=" + part + ":name=");
             continue;
           }
           Logic blk = null;
@@ -753,141 +779,225 @@ public class Panels {
           }
           int by = 3 + blk.getTagsCount();
           if (by > smy) smy = by;
-          nodes.add(last = new Node(last, rid, '#', x, y, part, blk, tags));
+          nodes.add(node = node.insertLogic('#', x, y, part, blk, tags));
+          x+=3;
           break;
         }
       }
     }
-    int cnt = nodes.size();
-    x = 0;
-    y = 0;
-    cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
-    objs.add(new Node(null, rid, '-', x, y));
-    for(int n=0;n<cnt;n++) {
-      Node node = nodes.get(n);
+    rung.root = root;
+    buildNodes(root, cells, objs, rid);
+    return rung;
+  }
+  public static void buildNodes(Node root, ArrayList<String[]> newCells, ArrayList<Node> newNodes, int rid) {
+    int x = 0;
+    int y = 0;
+    Node node = root.next;
+    JFLog.log("buildNodes");
+    while (node != null) {
+      if (node.comp != null) {
+        x = node.x;
+        y = node.y;
+        JFLog.log("debug:skip Node:" + node.type + "@" + x + "," + y + ":" + node);
+        x += node.getWidth();
+        node = node.next;
+        continue;
+      }
+      JFLog.log("debug:build Node:" + node.type + "@" + x + "," + y + ":" + node);
       switch (node.type) {
+        case 'h':
+          newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+          newNodes.add(node);
+          x++;
+          break;
+        case 'v':
+          x--;
+          y++;
+          newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
+          newNodes.add(node);
+          x++;
+          break;
         case 'a':
         case 'c':
           x = node.x;
+          y++;
           while (y != node.y) {
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
+            newNodes.add(node.insertRef(node, 'v', x, y));
             y++;
           }
-          cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
-          objs.add(node);
+          newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
+          newNodes.add(node);
           x++;
           break;
         case 'b':
         case 'd':
           while (x != node.x) {
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newNodes.add(node.insertRef(node, 'h', x, y));
             x++;
           }
-          cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
-          objs.add(node);
+          newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
+          newNodes.add(node);
           while (y != node.upper.y) {
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
+            newNodes.add(node.insertRef(node, 'v', x, y));
             y--;
           }
           if (node.upper.type == 't') {
             x++;
           }
           break;
-        case '-':
-          cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
-          objs.add(node);
-          x++;
-          break;
         case 't':
           while (x != node.x) {
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newNodes.add(node.insertRef(node, 'h', x, y));
             x++;
           }
-          cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_t", null));
-          objs.add(node);
+          newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_t", null));
+          newNodes.add(node);
           x++;
           break;
-        case '#':
+        case '#': {
           //create cells for block
           while (x != node.x) {
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
-            objs.add(new NodeRef(node, x, y));
+            JFLog.log("pre:x=" + x + ",node.x=" + node.x);
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newNodes.add(node.insertRef(node, 'h', x, y));
             x++;
           }
           //id,name,tags
           Logic blk = node.blk;
-          createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null);
-          x++;
-          if (blk.getType() == Logic.Type.inline) {
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, blk.getImage(), null));
-            objs.add(node);
+          if (!blk.isBlock()) {
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newNodes.add(node.insertRef(node, 'h', x, y));
+            x++;
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, blk.getImage(), null));
+            newNodes.add(node);
+            x++;
             if (blk.getTagsCount() == 1) {
               //show tag
-              x--;
+              x -= 2;
               y++;
-              cells.add(createCell(null, x, y, 3, 1, "textfield", null, null, null, null, null, null));
-              objs.add(new NodeRef(node, x, y));
-              x++;
+              newCells.add(createCell(null, x, y, 3, 1, "textfield", null, null, null, null, null, null));
+              newNodes.add(node.insertRef(node, 'T', x, y));
               y--;
+              x += 2;
             }
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newNodes.add(node.insertRef(node, 'h', x, y));
             x++;
           } else {
             int bx = x;
             int by = y;
             //draw a box the size of the logic block
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b7", null));
-            objs.add(node);
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b7", null));
+            newNodes.add(node);
             x++;
-            cells.add(createCell(null, x, y, 3, 1, "image", null, null, null, null, "b8", null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 3, 1, "image", null, null, null, null, "b8", null));
+            newNodes.add(node.insertRef(node, 'x', x, y));
             x += 3;
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b9", null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b9", null));
+            newNodes.add(node.insertRef(node, 'x', x, y));
             x -= 4; y++;
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
+            newNodes.add(node.insertRef(node, 'x', x, y));
             x++;
-            cells.add(createCell(null, x, y, 3, 1, "label", null, blk.getName(), null, null, null, null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 3, 1, "label", null, blk.getName(), null, null, null, null));
+            newNodes.add(node.insertRef(node, 'x', x, y));
             x += 3;
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b6", null));
+            newNodes.add(node.insertRef(node, 'x', x, y));
             x -= 4; y++;
             //output tags
             int tagcnt = blk.getTagsCount();
             for(int a=0;a<tagcnt;a++) {
-              cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
-              objs.add(new NodeRef(node, x, y));
+              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
+              newNodes.add(node.insertRef(node, 'x', x, y));
               x++;
-              cells.add(createCell(null, x, y, 3, 1, "textfield", null, null, null, null, null, null));
-              objs.add(new NodeRef(node, x, y));
+              newCells.add(createCell(null, x, y, 3, 1, "textfield", null, null, null, null, null, null));
+              newNodes.add(node.insertRef(node, 'x', x, y));
               x += 3;
-              cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b6", null));
-              objs.add(new NodeRef(node, x, y));
+              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b6", null));
+              newNodes.add(node.insertRef(node, 'x', x, y));
               x -= 4; y++;
             }
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b1", null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b1", null));
+            newNodes.add(node.insertRef(node, 'x', x, y));
             x++;
-            cells.add(createCell(null, x, y, 3, 1, "image", null, null, null, null, "b2", null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 3, 1, "image", null, null, null, null, "b2", null));
+            newNodes.add(node.insertRef(node, 'x', x, y));
             x += 3;
-            cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b3", null));
-            objs.add(new NodeRef(node, x, y));
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b3", null));
+            newNodes.add(node.insertRef(node, 'x', x, y));
             x -= 4; y++;
             x = bx + 5;
             y = by;
           }
-          cells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
-          objs.add(new NodeRef(node, x, y));
-          x++;
           break;
+        }
+        case 'r': break;  //root node
+        case 'T': break;  //textfield
+        default: {
+          JFLog.log("Error:Unknown node type:" + node.type + ":" + node);
+          break;
+        }
       }
+      node = node.next;
     }
-    return rung;
+  }
+  public static void layoutNodes(Node root, Table logic, int rid) {
+    if (logic == null) {
+      JFLog.log("Error:unable to find logic table");
+      return;
+    }
+    if (root == null) {
+      JFLog.log("Error:unable to find root node");
+      return;
+    }
+    ArrayList<String[]> newCells = new ArrayList<String[]>();
+    ArrayList<Node> newNodes = new ArrayList<Node>();
+    debug = true;
+    buildNodes(root, newCells, newNodes, rid);
+    buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), logic.getClient(), -1, -1, newNodes.toArray(new Node[newNodes.size()]));
+    debug = false;
+    //TODO - layout new components (expanding as needed) (no shrinking)
+    Node node = root;
+    int x = 0;
+    int y = 0;
+    int mx = 1;
+    int my = 1;
+    int cnt = 0;
+    while (node != null) {
+      cnt++;
+      x = node.x;
+      y = node.y;
+      int x2 = x + node.getWidth() - 1;
+      int y2 = y + node.getHeight() - 1;
+      if (x2 > mx) mx = x2;
+      if (y2 > my) my = y2;
+      switch (node.type) {
+        case 'v': break;
+        case 'h': break;
+        case 't': break;
+        case 'a': break;
+        case 'b': break;
+        case 'c': break;
+        case 'd': break;
+        case '#': {
+          if (!node.blk.isBlock()) {
+
+          } else {
+
+          }
+          break;
+        }
+      }
+      node = node.next;
+    }
+    JFLog.log("cnt=" + cnt);
+    JFLog.log("setSize=" + mx + "," + my);
+    logic.setTableSize(mx, my);
+    JFLog.log("id=" + logic.id);
   }
 }

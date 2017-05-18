@@ -56,7 +56,7 @@ public class PopupPanel extends Panel {
     titleBar.setClient(client);
     block.setClient(client);
   }
-  public void setTitleBarSize(String sz) {
+  public void setTitleBarSize(int sz) {
     titleBar.setHeight(sz);
   }
 }

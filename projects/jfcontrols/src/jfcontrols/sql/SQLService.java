@@ -199,7 +199,7 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",1,1,1,1,'button','','+','jfc_func_editor_add_rung')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",3,1,1,1,'button','','-','jfc_func_editor_del_rung')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,2,1,'button','','Edit','jfc_func_editor_edit_rung')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,2,1,1,'table','jfc_rungs_viewer')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,style) values (" +  id + ",0,2,1,1,'table','jfc_rungs_viewer', 'flow')");
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_rung_editor', false, true)");
     id = sql.select1value("select id from panels where name='jfc_rung_editor'");
@@ -208,7 +208,7 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,1,1,'button','','S','jfc_rung_editor_save')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",7,1,3,1,'combobox','group_type','','jfc_rung_groups')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",11,1,16,1,'table','jfc_rung_groups')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,2,1,1,'table','jfc_rung_editor')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,style) values (" +  id + ",0,2,1,1,'table','jfc_rung_editor', 'flow')");
 
     //insert system funcs
     sql.execute("insert into funcs (name) values ('main')");

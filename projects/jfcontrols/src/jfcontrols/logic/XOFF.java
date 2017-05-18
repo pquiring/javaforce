@@ -9,8 +9,8 @@ import jfcontrols.tags.*;
 
 public class XOFF extends Logic {
 
-  public Type getType() {
-    return Type.inline;
+  public boolean isBlock() {
+    return false;
   }
 
   public String getName() {
@@ -18,7 +18,7 @@ public class XOFF extends Logic {
   }
 
   public String getCode() {
-    return "en[enidx] &= !tags[0].isset();\r\n";
+    return "enabled &= !tags[0].getBoolean();\r\n";
   }
 
   public int getTagsCount() {
