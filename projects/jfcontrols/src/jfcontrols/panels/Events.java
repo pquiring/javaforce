@@ -295,8 +295,7 @@ public class Events {
         }
         int rid = Integer.valueOf((String)client.getProperty("rung"));
         //add new block after node
-        JFLog.log("add:prev=" + prev + ":" + x + "," + y);
-        prev.insertLogic('#', x, y, "???", blk, "???");
+        prev.insertLogic('#', x, y, "TODO", blk, "TODO");
         Panels.layoutNodes(prev.root, (Table)client.getPanel().getComponent("jfc_rung_editor"), rid);
         break;
       }

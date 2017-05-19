@@ -172,23 +172,15 @@ public class Node {
     return null;
   }
 
+  /** Returns delta x to next node.
+   * Only valid for major nodes (not ref nodes)
+   */
   public int getWidth() {
     if (blk != null) {
       if (blk.isBlock()) {
         return 1;
       } else {
         return 2;
-      }
-    }
-    return 1;
-  }
-
-  public int getHeight() {
-    if (blk != null) {
-      if (blk.isBlock()) {
-        return 3 + blk.getTagsCount();
-      } else {
-        return 1 + blk.getTagsCount();
       }
     }
     return 1;

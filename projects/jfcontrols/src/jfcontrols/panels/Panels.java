@@ -1063,6 +1063,7 @@ public class Panels {
 
             //output tags
             int tagcnt = blk.getTagsCount();
+            JFLog.log("tagcnt=" + tagcnt);
             for(int a=0;a<tagcnt;a++) {
               if (create) {
                 newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
@@ -1093,8 +1094,8 @@ public class Panels {
                 if (node.x != x || node.y != y) {
                   moveNode(logic, map, node, x, y, 1);
                 }
+                node = node.next;
               }
-              node = node.next;
               x -= 4; y++;
             }
 
@@ -1129,6 +1130,7 @@ public class Panels {
               if (node.x != x || node.y != y) {
                 moveNode(logic, map, node, x, y, 1);
               }
+              node = node.next;
             }
             y = by;
 
@@ -1141,7 +1143,6 @@ public class Panels {
               if (node.x != x || node.y != y) {
                 moveNode(logic, map, node, x, y, 1);
               }
-              node = node.next;
             }
             x++;
           }
@@ -1181,10 +1182,8 @@ public class Panels {
       cnt++;
       x = node.x;
       y = node.y;
-      int x2 = x + node.getWidth() - 1;
-      int y2 = y + node.getHeight() - 1;
-      if (x2 > mx) mx = x2;
-      if (y2 > my) my = y2;
+      if (x > mx) mx = x;
+      if (y > my) my = y;
       node = node.next;
     }
     JFLog.log("cnt=" + cnt);
