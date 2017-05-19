@@ -136,6 +136,9 @@ public class Node {
     node.x = x;
     node.y = y;
     node.upper = upper;
+    if (node.validFork()) {
+      upper.lower = node;
+    }
     return node;
   }
 
@@ -153,6 +156,7 @@ public class Node {
     node.x = x;
     node.y = y;
     node.lower = lower;
+//    lower.upper = node;
     return node;
   }
 
@@ -170,6 +174,7 @@ public class Node {
     node.x = x;
     node.y = y;
     node.upper = upper;
+//    upper.lower = node;
     return node;
   }
 
@@ -187,6 +192,7 @@ public class Node {
     node.x = x;
     node.y = y;
     node.lower = lower;
+//    lower.upper = node;
     return node;
   }
 

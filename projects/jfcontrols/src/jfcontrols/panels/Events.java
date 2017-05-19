@@ -293,7 +293,6 @@ public class Events {
           JFLog.log("Error:Logic not found:" + name);
           break;
         }
-        int rid = Integer.valueOf((String)client.getProperty("rung"));
         if (node.type != 'h') {
           node = node.insertNode('h', x, y);
         }
@@ -301,7 +300,9 @@ public class Events {
         if (node.next == null || !node.next.validFork()) {
           node = node.insertNode('h', x, y);
         }
-        Panels.layoutNodes(node.root, (Table)client.getPanel().getComponent("jfc_rung_editor"));
+        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
+        Panels.layoutNodes(node.root, logic);
+        Panels.layoutNodes(node.root, logic);  //perform twice to adjust layout (until no more changes?)
         break;
       }
 

@@ -876,7 +876,7 @@ public class Panels {
           x = node.upper.x;
           y2 = node.upper.y + sh + 1;
           y++;
-          sh = 1;
+          sh = 1;  //TODO : push sh
           while (y < y2) {
             newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
             newNodes.add(node.insertPreLinkLower(node, 'v', x, y));
@@ -916,22 +916,29 @@ public class Panels {
               moveNode(logic, map, node, x, y, 1);
             }
           }
-          Node after = node;
+          Node next = node.next;
           y--;
           while (y > node.upper.y) {
-            if (after.next == null || after.next.type != 'v') {
+            if (next == null || next.type != 'v') {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
-              newNodes.add(after = node.insertLinkUpper(node.upper, 'v', x, y));
+              newNodes.add(next = node.insertLinkUpper(node.upper, 'v', x, y));
             } else {
-              after = after.next;
+              if (next.x != x || next.y != y) {
+                moveNode(logic, map, next, x, y, 1);
+              }
+              next = next.next;
             }
             y--;
           }
           x++;
-          node = after;  //skip inserted 'v' nodes
+          node = next;  //skip inserted 'v' nodes
           break;
         case 't':
-          x2 = node.adjustX(x);
+          x2 = x;
+          if (node.lower != null) {
+            x2 = node.lower.x;
+            JFLog.log("'t' x2=" + x2 + ":type=" + node.lower.type);
+          }
           while (x < x2) {
             newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
             newNodes.add(node.insertPreNode('h', x, y));
