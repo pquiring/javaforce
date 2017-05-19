@@ -236,7 +236,7 @@ public class Events {
         ArrayList<Node> nodes = new ArrayList<Node>();
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + idx);
         Rungs rungs = (Rungs)client.getProperty("rungs");
-        rungs.rungs.add(idx, Panels.buildRung(data, cells, nodes, sql));
+        rungs.rungs.add(idx, Panels.buildRung(data, cells, nodes, sql, true));
         Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, null);
         rungs.table.add(idx, table);
         break;

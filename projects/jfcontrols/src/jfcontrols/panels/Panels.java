@@ -451,7 +451,7 @@ public class Panels {
         Rungs rungs = (Rungs)client.getProperty("rungs");
         r.y = rungs.y;
         debug = true;
-        rungs.rungs.add(buildRung(data, cells, objs, sql));
+        rungs.rungs.add(buildRung(data, cells, objs, sql, true));
         break;
       }
       case "jfc_rung_editor": {
@@ -459,7 +459,7 @@ public class Panels {
         String rid = (String)client.getProperty("rung");
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
         debug = true;
-        buildRung(data, cells, objs, sql);
+        buildRung(data, cells, objs, sql, false);
         break;
       }
       default: {
@@ -670,7 +670,7 @@ public class Panels {
       cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], "flow"));
     }
   }
-  public static Rung buildRung(String data[], ArrayList<String[]> cells, ArrayList<Node> objs, SQL sql) {
+  public static Rung buildRung(String data[], ArrayList<String[]> cells, ArrayList<Node> objs, SQL sql, boolean readonly) {
     int x = 0;
     int y = 0;
     int smy = 1;  //segment max y (blocks can increase this)
@@ -786,16 +786,37 @@ public class Panels {
       }
     }
     rung.root = root;
-    buildNodes(root, null, cells, objs, rid);
+    buildNodes(root, null, cells, objs, rid, readonly);
     return rung;
   }
-  public static void buildNodes(Node root, Table logic, ArrayList<String[]> newCells, ArrayList<Node> newNodes, int rid) {
+  private static void moveNode(Table logic, HashMap<String, Component> map, Node node, int x, int y, int spanx) {
+    String coords = node.x + "," + node.y;
+    Component move;
+    if (map.containsKey(coords)) {
+      move = map.remove(coords);
+    } else {
+      move = logic.remove(node.x, node.y);
+    }
+    node.x = x;
+    node.y = y;
+    for(int a=0;a<spanx;a++) {
+      int xa = x + a;
+      Component intheway = logic.remove(xa, y);
+      if (intheway != null) {
+        coords = xa + "," + y;
+        map.put(coords, intheway);
+      }
+    }
+    logic.add(move, x, y, spanx, 1);
+  }
+  public static void buildNodes(Node root, Table logic, ArrayList<String[]> newCells, ArrayList<Node> newNodes, int rid, boolean readonly) {
     int x = 0;
     int y = 0;
     Node node = root.next;
     JFLog.log("buildNodes");
     boolean create;
-    Component move;
+    String style = readonly ? "readonly" : null;
+    HashMap<String, Component> map = new HashMap<>();
     while (node != null) {
       create = node.comp == null;
       JFLog.log("debug:build Node:" + node.type + "@" + x + "," + y + ":" + node);
@@ -808,14 +829,13 @@ public class Panels {
       switch (type) {
         case 'h':
           if (create) {
+            node.x = x;
+            node.y = y;
             newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y) {
-              move = logic.remove(node.x, node.y);
-              node.x = x;
-              node.y = y;
-              logic.add(move, x, y);
+              moveNode(logic, map, node, x, y, 1);
             }
           }
           x++;
@@ -824,14 +844,13 @@ public class Panels {
           x--;
           y++;
           if (create) {
+            node.x = x;
+            node.y = y;
             newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y) {
-              move = logic.remove(node.x, node.y);
-              node.x = x;
-              node.y = y;
-              logic.add(move, x, y);
+              moveNode(logic, map, node, x, y, 1);
             }
           }
           x++;
@@ -840,7 +859,7 @@ public class Panels {
         case 'c':
           x = node.x;
           y++;
-          while (y != node.y) {
+          while (y < node.y) {
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
               newNodes.add(node.insertPre('v', x, y));
@@ -848,21 +867,20 @@ public class Panels {
             y++;
           }
           if (create) {
+            node.x = x;
+            node.y = y;
             newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y) {
-              move = logic.remove(node.x, node.y);
-              node.x = x;
-              node.y = y;
-              logic.add(move, x, y);
+              moveNode(logic, map, node, x, y, 1);
             }
           }
           x++;
           break;
         case 'b':
         case 'd':
-          while (x != node.x) {
+          while (x < node.x) {
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
               newNodes.add(node.insertPre('h', x, y));
@@ -870,17 +888,16 @@ public class Panels {
             x++;
           }
           if (create) {
+            node.x = x;
+            node.y = y;
             newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y) {
-              move = logic.remove(node.x, node.y);
-              node.x = x;
-              node.y = y;
-              logic.add(move, x, y);
+              moveNode(logic, map, node, x, y, 1);
             }
           }
-          while (y != node.upper.y) {
+          while (y > node.upper.y) {
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
               newNodes.add(node.insertPre('v', x, y));
@@ -892,7 +909,7 @@ public class Panels {
           }
           break;
         case 't':
-          while (x != node.x) {
+          while (x < node.x) {
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
               newNodes.add(node.insertPre('h', x, y));
@@ -900,21 +917,20 @@ public class Panels {
             x++;
           }
           if (create) {
+            node.x = x;
+            node.y = y;
             newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_t", null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y) {
-              move = logic.remove(node.x, node.y);
-              node.x = x;
-              node.y = y;
-              logic.add(move, x, y);
+              moveNode(logic, map, node, x, y, 1);
             }
           }
           x++;
           break;
         case '#': {
           //create cells for block
-          while (x != node.x) {
+          while (x < node.x) {
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
               newNodes.add(node.insertPre('h', x, y));
@@ -930,10 +946,7 @@ public class Panels {
               newNodes.add(node.insertRef(node, 'h', x, y));
             } else {
               if (node.x != x || node.y != y) {
-                move = logic.remove(node.x, node.y);
-                node.x = x;
-                node.y = y;
-                logic.add(move, x, y);
+                moveNode(logic, map, node, x, y, 1);
               }
               node = node.next;
             }
@@ -948,11 +961,7 @@ public class Panels {
                 newNodes.add(node.insertRef(node, 'T', x, y));
               } else {
                 if (node.x != x || node.y != y) {
-                  move = logic.remove(node.x, node.y);
-                  logic.setSpans(node.x, node.y, 1, 1);
-                  node.x = x;
-                  node.y = y;
-                  logic.add(move, x, y, 3, 1);
+                  moveNode(logic, map, node, x, y, 3);
                 }
                 node = node.next;
               }
@@ -967,10 +976,7 @@ public class Panels {
               newNodes.add(node.insertRef(node, 'h', x, y));
             } else {
               if (node.x != x || node.y != y) {
-                move = logic.remove(node.x, node.y);
-                node.x = x;
-                node.y = y;
-                logic.add(move, x, y);
+                moveNode(logic, map, node, x, y, 1);
               }
               node = node.next;
             }
@@ -978,14 +984,13 @@ public class Panels {
             x--;
 
             if (create) {
+              node.x = x;
+              node.y = y;
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, blk.getImage(), null));
               newNodes.add(node);
             } else {
               if (node.x != x || node.y != y) {
-                move = logic.remove(node.x, node.y);
-                node.x = x;
-                node.y = y;
-                logic.add(move, x, y);
+                moveNode(logic, map, node, x, y, 1);
               }
             }
             x += 2;
@@ -1000,10 +1005,7 @@ public class Panels {
               newNodes.add(node.insertRef(node, 'x', x, y));
             } else {
               if (node.x != x || node.y != y) {
-                move = logic.remove(node.x, node.y);
-                node.x = x;
-                node.y = y;
-                logic.add(move, x, y);
+                moveNode(logic, map, node, x, y, 1);
               }
               node = node.next;
             }
@@ -1015,39 +1017,23 @@ public class Panels {
                 newNodes.add(node.insertRef(node, 'x', x, y));
               } else {
                 if (node.x != x || node.y != y) {
-                  move = logic.remove(node.x, node.y);
-                  node.x = x;
-                  node.y = y;
-                  logic.add(move, x, y, 1, 1);
+                  moveNode(logic, map, node, x, y, 1);
                 }
                 node = node.next;
               }
               x++;
             }
 
-            if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b9", null));
-              newNodes.add(node.insertRef(node, 'x', x, y));
-            } else {
-              if (node.x != x || node.y != y) {
-                move = logic.remove(node.x, node.y);
-                node.x = x;
-                node.y = y;
-                logic.add(move, x, y);
-              }
-              node = node.next;
-            }
-            x -= 4; y++;
+            //skip b9 (do it last)
+            x -= 4;
+            y++;
 
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
               newNodes.add(node.insertRef(node, 'x', x, y));
             } else {
               if (node.x != x || node.y != y) {
-                move = logic.remove(node.x, node.y);
-                node.x = x;
-                node.y = y;
-                logic.add(move, x, y);
+                moveNode(logic, map, node, x, y, 1);
               }
               node = node.next;
             }
@@ -1058,11 +1044,7 @@ public class Panels {
               newNodes.add(node.insertRef(node, 'x', x, y));
             } else {
               if (node.x != x || node.y != y) {
-                move = logic.remove(node.x, node.y);
-                logic.setSpans(node.x, node.y, 1, 1);
-                node.x = x;
-                node.y = y;
-                logic.add(move, x, y, 3, 1);
+                moveNode(logic, map, node, x, y, 3);
               }
               node = node.next;
             }
@@ -1073,10 +1055,7 @@ public class Panels {
               newNodes.add(node.insertRef(node, 'x', x, y));
             } else {
               if (node.x != x || node.y != y) {
-                move = logic.remove(node.x, node.y);
-                node.x = x;
-                node.y = y;
-                logic.add(move, x, y);
+                moveNode(logic, map, node, x, y, 1);
               }
               node = node.next;
             }
@@ -1090,25 +1069,18 @@ public class Panels {
                 newNodes.add(node.insertRef(node, 'x', x, y));
               } else {
                 if (node.x != x || node.y != y) {
-                  move = logic.remove(node.x, node.y);
-                  node.x = x;
-                  node.y = y;
-                  logic.add(move, x, y);
+                  moveNode(logic, map, node, x, y, 1);
                 }
                 node = node.next;
               }
               x++;
 
               if (create) {
-                newCells.add(createCell(null, x, y, 3, 1, "textfield", null, null, null, null, null, null));
+                newCells.add(createCell(null, x, y, 3, 1, "textfield", null, null, null, null, null, style));
                 newNodes.add(node.insertRef(node, 'x', x, y));
               } else {
                 if (node.x != x || node.y != y) {
-                  move = logic.remove(node.x, node.y);
-                  logic.setSpans(node.x, node.y, 1, 1);
-                  node.x = x;
-                  node.y = y;
-                  logic.add(move, x, y, 3, 1);
+                  moveNode(logic, map, node, x, y, 3);
                 }
                 node = node.next;
               }
@@ -1119,10 +1091,7 @@ public class Panels {
                 newNodes.add(node.insertRef(node, 'x', x, y));
               } else {
                 if (node.x != x || node.y != y) {
-                  move = logic.remove(node.x, node.y);
-                  node.x = x;
-                  node.y = y;
-                  logic.add(move, x, y);
+                  moveNode(logic, map, node, x, y, 1);
                 }
               }
               node = node.next;
@@ -1134,10 +1103,7 @@ public class Panels {
               newNodes.add(node.insertRef(node, 'x', x, y));
             } else {
               if (node.x != x || node.y != y) {
-                move = logic.remove(node.x, node.y);
-                node.x = x;
-                node.y = y;
-                logic.add(move, x, y);
+                moveNode(logic, map, node, x, y, 1);
               }
               node = node.next;
             }
@@ -1149,10 +1115,7 @@ public class Panels {
                 newNodes.add(node.insertRef(node, 'x', x, y));
               } else {
                 if (node.x != x || node.y != y) {
-                  move = logic.remove(node.x, node.y);
-                  node.x = x;
-                  node.y = y;
-                  logic.add(move, x, y);
+                  moveNode(logic, map, node, x, y, 1);
                 }
                 node = node.next;
               }
@@ -1161,19 +1124,26 @@ public class Panels {
 
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b3", null));
+              newNodes.add(node.insertRef(node, 'x', x, y));
+            } else {
+              if (node.x != x || node.y != y) {
+                moveNode(logic, map, node, x, y, 1);
+              }
+            }
+            y = by;
+
+            if (create) {
+              node.x = x;
+              node.y = y;
+              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b9", null));
               newNodes.add(node);
             } else {
               if (node.x != x || node.y != y) {
-                move = logic.remove(node.x, node.y);
-                node.x = x;
-                node.y = y;
-                logic.add(move, x, y);
+                moveNode(logic, map, node, x, y, 1);
               }
+              node = node.next;
             }
-            x -= 4; y++;
-
-            x = bx + 5;
-            y = by;
+            x++;
           }
           break;
         }
@@ -1197,10 +1167,10 @@ public class Panels {
     ArrayList<String[]> newCells = new ArrayList<String[]>();
     ArrayList<Node> newNodes = new ArrayList<Node>();
     debug = true;
-    buildNodes(root, logic, newCells, newNodes, rid);
+    buildNodes(root, logic, newCells, newNodes, rid, false);
     buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), logic.getClient(), -1, -1, newNodes.toArray(new Node[newNodes.size()]));
     debug = false;
-    //TODO - layout new components (expanding as needed) (no shrinking)
+    //calc max table size
     Node node = root;
     int x = 0;
     int y = 0;
@@ -1215,23 +1185,6 @@ public class Panels {
       int y2 = y + node.getHeight() - 1;
       if (x2 > mx) mx = x2;
       if (y2 > my) my = y2;
-      switch (node.type) {
-        case 'v': break;
-        case 'h': break;
-        case 't': break;
-        case 'a': break;
-        case 'b': break;
-        case 'c': break;
-        case 'd': break;
-        case '#': {
-          if (!node.blk.isBlock()) {
-
-          } else {
-
-          }
-          break;
-        }
-      }
       node = node.next;
     }
     JFLog.log("cnt=" + cnt);

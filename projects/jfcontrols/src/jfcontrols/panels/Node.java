@@ -175,9 +175,9 @@ public class Node {
   public int getWidth() {
     if (blk != null) {
       if (blk.isBlock()) {
-        return 5;
+        return 1;
       } else {
-        return 3;
+        return 2;
       }
     }
     return 1;
