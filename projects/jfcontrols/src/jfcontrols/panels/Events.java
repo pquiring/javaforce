@@ -308,6 +308,18 @@ public class Events {
       case "jfc_rung_editor_del": {
         Component focus = (Component)client.getProperty("focus");
         JFLog.log("TODO:delete:" + focus);
+        Node node = null;
+        if (focus != null) {
+          node = (Node)focus.getProperty("node");
+        }
+        if (node == null) {
+          JFLog.log("Error:Node not found");
+          break;
+        }
+        if (node.ref != null) {
+          node = node.ref;
+        }
+        Panels.layoutNodes(node.root, (Table)client.getPanel().getComponent("jfc_rung_editor"));
         break;
       }
 

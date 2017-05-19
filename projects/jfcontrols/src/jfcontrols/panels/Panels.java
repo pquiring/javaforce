@@ -869,12 +869,12 @@ public class Panels {
               moveNode(logic, map, node, x, y, 1);
             }
           }
-          //x/y not adjusted to next position
+          x++;
           break;
         case 'a':
         case 'c':
           x = node.upper.x;
-          y2 = y + sh + 1;
+          y2 = node.upper.y + sh + 1;
           y++;
           sh = 1;
           while (y < y2) {
@@ -903,6 +903,9 @@ public class Panels {
             newNodes.add(node.insertPreNode('h', x, y));
             x++;
           }
+          if (x > x2) {
+            JFLog.log("Error:buildNodes() failed to adjust upper node");
+          }
           if (create) {
             node.x = x;
             node.y = y;
@@ -924,9 +927,7 @@ public class Panels {
             }
             y--;
           }
-          if (node.upper.type == 't') {
-            x++;
-          }
+          x++;
           node = after;  //skip inserted 'v' nodes
           break;
         case 't':
@@ -1171,6 +1172,7 @@ public class Panels {
       node = node.next;
     }
   }
+
   public static void layoutNodes(NodeRoot root, Table logic) {
     if (logic == null) {
       JFLog.log("Error:unable to find logic table");
