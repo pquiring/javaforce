@@ -68,6 +68,22 @@ public class Node {
     return node;
   }
 
+  public Node insertPre(char type, int x, int y) {
+    JFLog.log("insertPre:" + type);
+    Node node = new Node();
+    node.root = root;
+    //insert BEFORE this node
+    node.prev = prev;
+    node.next = this;
+    if (prev != null) prev.next = node;
+    prev = node;
+
+    node.type = type;
+    node.x = x;
+    node.y = y;
+    return node;
+  }
+
   public Node insertNode(char type, int x, int y) {
     JFLog.log("insertNode:" + type);
     Node node = new Node();

@@ -86,12 +86,14 @@ public class Table extends Container {
     this.rows = rows;
     setSize();
   }
-  public void remove(int x,int y) {
+  public Component remove(int x,int y) {
     Cell cell = getCell(x,y,false);
     if (cell != null) {
       remove(cell);
       sendEvent("remove", new String[] {"child=" + cell.id});
+      return cell.get(0);
     }
+    return null;
   }
   public void setSpans(int x,int y,int spanx, int spany) {
     Cell cell = getCell(x,y,false);
