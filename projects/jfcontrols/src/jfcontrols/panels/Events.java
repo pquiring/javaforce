@@ -267,20 +267,20 @@ public class Events {
           JFLog.log("Error:focus == null");
           break;
         }
-        Node prev = null;
+        Node node = null;
         if (focus != null) {
-          prev = (Node)focus.getProperty("node");
+          node = (Node)focus.getProperty("node");
         }
-        if (prev == null) {
+        if (node == null) {
           JFLog.log("Error:Node not found");
           break;
         }
         int x = 0, y = 0;
-        if (prev.ref != null) {
-          prev = prev.ref;
+        if (node.ref != null) {
+          node = node.ref;
         }
-        x = prev.x + prev.getWidth();
-        y = prev.y;
+        x = node.x + node.getDelta();
+        y = node.y;
         String name = c.getName();
         Logic blk = null;
         try {
@@ -294,9 +294,14 @@ public class Events {
           break;
         }
         int rid = Integer.valueOf((String)client.getProperty("rung"));
-        //add new block after node
-        prev.insertLogic('#', x, y, "TODO", blk, "TODO");
-        Panels.layoutNodes(prev.root, (Table)client.getPanel().getComponent("jfc_rung_editor"), rid);
+        if (node.type != 'h') {
+          node = node.insertNode('h', x, y);
+        }
+        node = node.insertLogic('#', x, y, "TODO", blk, "TODO");
+        if (node.next == null || !node.next.validFork()) {
+          node = node.insertNode('h', x, y);
+        }
+        Panels.layoutNodes(node.root, (Table)client.getPanel().getComponent("jfc_rung_editor"));
         break;
       }
 
@@ -307,7 +312,24 @@ public class Events {
       }
 
       case "jfc_rung_editor_fork": {
-        JFLog.log("TODO:fork");
+        Node fork = (Node)client.getProperty("fork");
+        if (fork != null) {
+          fork.forkCancel(client);
+          break;
+        }
+        Component focus = (Component)client.getProperty("focus");
+        Node node = null;
+        if (focus != null) {
+          node = (Node)focus.getProperty("node");
+        }
+        if (node == null) {
+          JFLog.log("Error:Node not found");
+          break;
+        }
+        if (node.ref != null) {
+          node = node.ref;
+        }
+        node.forkSource(client);
         break;
       }
 
@@ -316,7 +338,7 @@ public class Events {
         int rid = Integer.valueOf((String)client.getProperty("rung"));
         Component comp = logic.get(0, 0, false);
         NodeRoot root = ((Node)comp.getProperty("node")).root;
-        String str = root.saveLogic();
+        String str = root.saveLogic(false);
         JFLog.log("logic=" + str);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;

@@ -18,4 +18,7 @@ public class Color {
     g = (rgb >> 8) & 0xff;
     b = (rgb >> 16) & 0xff;
   }
+  public String toString() {
+    return String.format("#%02d%02d%02d", r, g, b);
+  }
 }

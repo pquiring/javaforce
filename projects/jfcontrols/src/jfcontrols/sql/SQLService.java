@@ -204,7 +204,7 @@ public class SQLService {
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_rung_editor', false, true)");
     id = sql.select1value("select id from panels where name='jfc_rung_editor'");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",1,1,1,1,'button','','-','jfc_rung_editor_del')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",3,1,1,1,'button','','F','jfc_rung_editor_fork')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",3,1,1,1,'button','','!image:fork','jfc_rung_editor_fork')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,1,1,'button','','S','jfc_rung_editor_save')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",7,1,3,1,'combobox','group_type','','jfc_rung_groups')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",11,1,16,1,'table','jfc_rung_groups')");

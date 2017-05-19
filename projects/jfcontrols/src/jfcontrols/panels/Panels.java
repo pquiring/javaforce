@@ -126,10 +126,14 @@ public class Panels {
           if (focus != null) {
             focus.setBorder(false);
           }
+          Node node = (Node)comp.getProperty("node");
+          comp.setBorderColor("#000");
           comp.setBorder(true);
           client.setProperty("focus", comp);
-          Node node = (Node)comp.getProperty("node");
-          JFLog.log("focus=" + node.x + "," + node.y + ":" + comp);
+          Node src = (Node)client.getProperty("fork");
+          if (src != null) {
+            node.forkDest(client, table, src);
+          }
         });
       }
       String style = cells[a][STYLE];
@@ -692,13 +696,13 @@ public class Panels {
           break;
         }
         case "h":
-          JFLog.log("Error:h in logic!!!");
           nodes.add(node = node.insertNode('h', x, y));
-          y++;
+          x++;
           break;
         case "v":
+          JFLog.log("Error:'v' found in logic");
           nodes.add(node = node.insertNode('v', x, y));
-          x++;
+          y++;
           break;
         case "a": {
           //a can only be under t,a
@@ -753,6 +757,7 @@ public class Panels {
           break;
         }
         default: {
+          nodes.add(node = node.insertNode('h', x, y));
           String name = null;
           String tags = null;
           for(int a=0;a<blocks.length;a++) {
@@ -784,6 +789,9 @@ public class Panels {
           break;
         }
       }
+    }
+    if (nodes.size() > 1) {
+      nodes.add(node = node.insertNode('h', x, y));
     }
     rung.root = root;
     buildNodes(root, null, cells, objs, rid, readonly);
@@ -817,6 +825,8 @@ public class Panels {
     boolean create;
     String style = readonly ? "readonly" : null;
     HashMap<String, Component> map = new HashMap<>();
+    int x2, y2;
+    int sh = 1;  //segment height
     while (node != null) {
       create = node.comp == null;
       JFLog.log("debug:build Node:" + node.type + "@" + x + "," + y + ":" + node);
@@ -841,8 +851,14 @@ public class Panels {
           x++;
           break;
         case 'v':
-          x--;
-          y++;
+          if (node.lower != null) {
+            x = node.lower.x;
+            y++;
+          }
+          if (node.upper != null) {
+            x = node.upper.x;
+            y--;
+          }
           if (create) {
             node.x = x;
             node.y = y;
@@ -853,17 +869,17 @@ public class Panels {
               moveNode(logic, map, node, x, y, 1);
             }
           }
-          x++;
+          //x/y not adjusted to next position
           break;
         case 'a':
         case 'c':
-          x = node.x;
+          x = node.upper.x;
+          y2 = y + sh + 1;
           y++;
-          while (y < node.y) {
-            if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
-              newNodes.add(node.insertPre('v', x, y));
-            }
+          sh = 1;
+          while (y < y2) {
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
+            newNodes.add(node.insertPreLinkLower(node, 'v', x, y));
             y++;
           }
           if (create) {
@@ -880,11 +896,11 @@ public class Panels {
           break;
         case 'b':
         case 'd':
-          while (x < node.x) {
-            if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
-              newNodes.add(node.insertPre('h', x, y));
-            }
+          sh = 1;  //TODO : pop sh
+          x2 = node.upper.x;
+          while (x < x2) {
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newNodes.add(node.insertPreNode('h', x, y));
             x++;
           }
           if (create) {
@@ -897,23 +913,27 @@ public class Panels {
               moveNode(logic, map, node, x, y, 1);
             }
           }
+          Node after = node;
+          y--;
           while (y > node.upper.y) {
-            if (create) {
+            if (after.next == null || after.next.type != 'v') {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
-              newNodes.add(node.insertPre('v', x, y));
+              newNodes.add(after = node.insertLinkUpper(node.upper, 'v', x, y));
+            } else {
+              after = after.next;
             }
             y--;
           }
           if (node.upper.type == 't') {
             x++;
           }
+          node = after;  //skip inserted 'v' nodes
           break;
         case 't':
-          while (x < node.x) {
-            if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
-              newNodes.add(node.insertPre('h', x, y));
-            }
+          x2 = node.adjustX(x);
+          while (x < x2) {
+            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newNodes.add(node.insertPreNode('h', x, y));
             x++;
           }
           if (create) {
@@ -930,20 +950,15 @@ public class Panels {
           break;
         case '#': {
           //create cells for block
-          while (x < node.x) {
-            if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
-              newNodes.add(node.insertPre('h', x, y));
-            }
-            x++;
-          }
           //id,name,tags
           Logic blk = node.blk;
           if (blk == null) blk = node.ref.blk;
+          int bh = node.getHeight();
+          if (bh > sh) sh = bh;
           if (!blk.isBlock()) {
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
-              newNodes.add(node.insertRef(node, 'h', x, y));
+              newNodes.add(node.insertPreRef(node, 'h', x, y));
             } else {
               if (node.x != x || node.y != y) {
                 moveNode(logic, map, node, x, y, 1);
@@ -958,7 +973,7 @@ public class Panels {
               y++;
               if (create) {
                 newCells.add(createCell(null, x, y, 3, 1, "textfield", null, null, null, null, null, null));
-                newNodes.add(node.insertRef(node, 'T', x, y));
+                newNodes.add(node.insertPreRef(node, 'T', x, y));
               } else {
                 if (node.x != x || node.y != y) {
                   moveNode(logic, map, node, x, y, 3);
@@ -973,7 +988,7 @@ public class Panels {
 
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
-              newNodes.add(node.insertRef(node, 'h', x, y));
+              newNodes.add(node.insertPreRef(node, 'h', x, y));
             } else {
               if (node.x != x || node.y != y) {
                 moveNode(logic, map, node, x, y, 1);
@@ -1002,7 +1017,7 @@ public class Panels {
             //draw a box the size of the logic block
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b7", null));
-              newNodes.add(node.insertRef(node, 'x', x, y));
+              newNodes.add(node.insertPreRef(node, 'x', x, y));
             } else {
               if (node.x != x || node.y != y) {
                 moveNode(logic, map, node, x, y, 1);
@@ -1014,7 +1029,7 @@ public class Panels {
             for(int a=0;a<3;a++) {
               if (create) {
                 newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b8", null));
-                newNodes.add(node.insertRef(node, 'x', x, y));
+                newNodes.add(node.insertPreRef(node, 'x', x, y));
               } else {
                 if (node.x != x || node.y != y) {
                   moveNode(logic, map, node, x, y, 1);
@@ -1030,7 +1045,7 @@ public class Panels {
 
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
-              newNodes.add(node.insertRef(node, 'x', x, y));
+              newNodes.add(node.insertPreRef(node, 'x', x, y));
             } else {
               if (node.x != x || node.y != y) {
                 moveNode(logic, map, node, x, y, 1);
@@ -1041,7 +1056,7 @@ public class Panels {
 
             if (create) {
               newCells.add(createCell(null, x, y, 3, 1, "label", null, blk.getName(), null, null, null, null));
-              newNodes.add(node.insertRef(node, 'x', x, y));
+              newNodes.add(node.insertPreRef(node, 'x', x, y));
             } else {
               if (node.x != x || node.y != y) {
                 moveNode(logic, map, node, x, y, 3);
@@ -1052,7 +1067,7 @@ public class Panels {
 
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b6", null));
-              newNodes.add(node.insertRef(node, 'x', x, y));
+              newNodes.add(node.insertPreRef(node, 'x', x, y));
             } else {
               if (node.x != x || node.y != y) {
                 moveNode(logic, map, node, x, y, 1);
@@ -1067,7 +1082,7 @@ public class Panels {
             for(int a=0;a<tagcnt;a++) {
               if (create) {
                 newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
-                newNodes.add(node.insertRef(node, 'x', x, y));
+                newNodes.add(node.insertPreRef(node, 'x', x, y));
               } else {
                 if (node.x != x || node.y != y) {
                   moveNode(logic, map, node, x, y, 1);
@@ -1078,7 +1093,7 @@ public class Panels {
 
               if (create) {
                 newCells.add(createCell(null, x, y, 3, 1, "textfield", null, null, null, null, null, style));
-                newNodes.add(node.insertRef(node, 'x', x, y));
+                newNodes.add(node.insertPreRef(node, 'x', x, y));
               } else {
                 if (node.x != x || node.y != y) {
                   moveNode(logic, map, node, x, y, 3);
@@ -1089,7 +1104,7 @@ public class Panels {
 
               if (create) {
                 newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b6", null));
-                newNodes.add(node.insertRef(node, 'x', x, y));
+                newNodes.add(node.insertPreRef(node, 'x', x, y));
               } else {
                 if (node.x != x || node.y != y) {
                   moveNode(logic, map, node, x, y, 1);
@@ -1101,7 +1116,7 @@ public class Panels {
 
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b1", null));
-              newNodes.add(node.insertRef(node, 'x', x, y));
+              newNodes.add(node.insertPreRef(node, 'x', x, y));
             } else {
               if (node.x != x || node.y != y) {
                 moveNode(logic, map, node, x, y, 1);
@@ -1113,7 +1128,7 @@ public class Panels {
             for(int a=0;a<3;a++) {
               if (create) {
                 newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b2", null));
-                newNodes.add(node.insertRef(node, 'x', x, y));
+                newNodes.add(node.insertPreRef(node, 'x', x, y));
               } else {
                 if (node.x != x || node.y != y) {
                   moveNode(logic, map, node, x, y, 1);
@@ -1125,7 +1140,7 @@ public class Panels {
 
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b3", null));
-              newNodes.add(node.insertRef(node, 'x', x, y));
+              newNodes.add(node.insertPreRef(node, 'x', x, y));
             } else {
               if (node.x != x || node.y != y) {
                 moveNode(logic, map, node, x, y, 1);
@@ -1156,7 +1171,7 @@ public class Panels {
       node = node.next;
     }
   }
-  public static void layoutNodes(Node root, Table logic, int rid) {
+  public static void layoutNodes(NodeRoot root, Table logic) {
     if (logic == null) {
       JFLog.log("Error:unable to find logic table");
       return;
@@ -1168,7 +1183,7 @@ public class Panels {
     ArrayList<String[]> newCells = new ArrayList<String[]>();
     ArrayList<Node> newNodes = new ArrayList<Node>();
     debug = true;
-    buildNodes(root, logic, newCells, newNodes, rid, false);
+    buildNodes(root, logic, newCells, newNodes, root.rid, false);
     buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), logic.getClient(), -1, -1, newNodes.toArray(new Node[newNodes.size()]));
     debug = false;
     //calc max table size

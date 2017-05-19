@@ -106,9 +106,11 @@ public abstract class Component {
   public void addClass(String cls) {
     if (hasClass(cls)) return;
     classes.add(cls);
+    sendEvent("addclass", new String[] {"cls=" + cls});
   }
   public void removeClass(String cls) {
     classes.remove(cls);
+    sendEvent("delclass", new String[] {"cls=" + cls});
   }
 
   public void setFlex(boolean state) {
