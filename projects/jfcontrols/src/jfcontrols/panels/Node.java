@@ -47,9 +47,8 @@ public class Node {
   public Node upper; //b,d only
   public Node lower; //a,c only
   public Node parent;
-  public String bid;
   public Logic blk;
-  public String tags;
+  public String tags[];
   public Component comp;
   public NodeRoot root;
   public boolean highlight;  //possible fork dest
@@ -134,7 +133,7 @@ public class Node {
     return node;
   }
 
-  public Node insertLogic(char type, int x, int y, String bid, Logic blk, String tags) {
+  public Node insertLogic(char type, int x, int y, Logic blk, String tags[]) {
     JFLog.log("insertLogic:" + type);
     Node node = new Node();
     node.root = root;
@@ -147,9 +146,11 @@ public class Node {
     node.type = type;
     node.x = x;
     node.y = y;
-    node.bid = bid;
     node.blk = blk;
     node.tags = tags;
+    for(int a=0;a<tags.length;a++) {
+      if (tags[a] == null) tags[a] = "";
+    }
     return node;
   }
 
@@ -400,7 +401,6 @@ public class Node {
     if (dest.parent != null) dest = dest.parent;
     if (!dest.highlight) return;
     //fork it!
-    JFLog.log("pre logic=" + root.saveLogic(true));
 
     while (src.type == 'b' || src.type == 'd') {
       src = src.upper;
@@ -437,7 +437,6 @@ public class Node {
       img.setImage(Images.getImage("w_a"));
     }
     client.setProperty("fork", null);
-    JFLog.log("pst logic=" + root.saveLogic(true));
     node = dest.root;
     //clear all highlighted destinations
     while (node != null) {
@@ -465,6 +464,22 @@ public class Node {
 
   public int adjustX(int x) {
     //TODO : may need to move over to right for branches below this node
+    //NOTE : this is already fixed by looping over layoutNodes() until no change is detected
     return x;
+  }
+
+  public String getTags() {
+    StringBuilder sb = new StringBuilder();
+    int cnt = childs.size();
+    for(int a=0;a<cnt;a++) {
+      Node child = childs.get(a);
+      if (child.type == 'T') {
+        TextField tf = (TextField)child.comp;
+        sb.append(",");
+        sb.append(tf.getText());
+      }
+    }
+    if (sb.length() > 0) sb.append(",");
+    return sb.toString();
   }
 }

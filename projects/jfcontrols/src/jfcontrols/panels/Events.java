@@ -236,7 +236,7 @@ public class Events {
         ArrayList<Node> nodes = new ArrayList<Node>();
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + idx);
         Rungs rungs = (Rungs)client.getProperty("rungs");
-        rungs.rungs.add(idx, Panels.buildRung(data, cells, nodes, sql, true));
+        rungs.rungs.add(idx, Panels.buildRung(data, cells, nodes, sql, true, fid));
         Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, null);
         rungs.table.add(idx, table);
         break;
@@ -296,7 +296,7 @@ public class Events {
         if (node.type != 'h') {
           node = node.insertNode('h', x, y);
         }
-        node = node.insertLogic('#', x, y, "TODO", blk, "TODO");
+        node = node.insertLogic('#', x, y, blk, new String[blk.getTagsCount() + 1]);
         if (node.next == null || !node.next.validFork()) {
           node = node.insertNode('h', x, y);
         }
@@ -347,12 +347,15 @@ public class Events {
 
       case "jfc_rung_editor_save": {
         Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
-        int rid = Integer.valueOf((String)client.getProperty("rung"));
+        String fid = (String)client.getProperty("func");
+        String rid = (String)client.getProperty("rung");
         Component comp = logic.get(0, 0, false);
         NodeRoot root = ((Node)comp.getProperty("node")).root;
-        String str = root.saveLogic(false);
+        sql.execute("delete from blocks where fid=" + fid + " and rid=" + rid);
+        String str = root.saveLogic(sql);
         JFLog.log("logic=" + str);
-//        client.setPanel(Panels.getPanel("jfc_func_editor", client));
+        sql.execute("update rungs set logic='" + str + "' where rid=" + rid + " and fid=" + fid);
+        client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
 

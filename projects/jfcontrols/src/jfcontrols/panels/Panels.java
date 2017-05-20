@@ -204,7 +204,7 @@ public class Panels {
   private static TextField getTextField(String v[]) {
     SQL sql = SQLService.getSQL();
     String tag = v[TAG];
-    String text = null;
+    String text = v[TEXT];
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
         String f[] = tag.split("_");
@@ -444,18 +444,18 @@ public class Panels {
         break;
       }
       case "jfc_rung_viewer": {
-        String fid = (String)client.getProperty("func");
+        int fid = Integer.valueOf((String)client.getProperty("func"));
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + arg);
         Rungs rungs = (Rungs)client.getProperty("rungs");
         r.y = rungs.y;
-        rungs.rungs.add(buildRung(data, cells, objs, sql, true));
+        rungs.rungs.add(buildRung(data, cells, objs, sql, true, fid));
         break;
       }
       case "jfc_rung_editor": {
-        String fid = (String)client.getProperty("func");
-        String rid = (String)client.getProperty("rung");
+        int fid = Integer.valueOf((String)client.getProperty("func"));
+        int rid = Integer.valueOf((String)client.getProperty("rung"));
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
-        buildRung(data, cells, objs, sql, false);
+        buildRung(data, cells, objs, sql, false, fid);
         break;
       }
       default: {
@@ -660,7 +660,7 @@ public class Panels {
       cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], "flow"));
     }
   }
-  public static Rung buildRung(String data[], ArrayList<String[]> cells, ArrayList<Node> objs, SQL sql, boolean readonly) {
+  public static Rung buildRung(String data[], ArrayList<String[]> cells, ArrayList<Node> objs, SQL sql, boolean readonly, int fid) {
     int x = 0;
     int y = 0;
     int sh = 1;  //segment height
@@ -669,9 +669,9 @@ public class Panels {
     String logic = data[1];
     String comment = data[2];
     String parts[] = logic.split("|");
-    String blocks[][] = sql.select("select id,name,tags from blocks where rid=" + rid);
+    String blocks[][] = sql.select("select bid,name,tags from blocks where fid=" + fid + " and rid=" + rid);
     ArrayList<Node> nodes = new ArrayList<Node>();
-    NodeRoot root = new NodeRoot(rid);
+    NodeRoot root = new NodeRoot(fid, rid);
     Node node = root;
     for(int p=0;p<parts.length;p++) {
       String part = parts[p];
@@ -744,6 +744,7 @@ public class Panels {
         }
         default: {
           nodes.add(node = node.insertNode('h', x, y));
+          x++;
           String name = null;
           String tags = null;
           for(int a=0;a<blocks.length;a++) {
@@ -757,9 +758,10 @@ public class Panels {
             JFLog.log("Error:Block not found:rid=" + rid + ":bid=" + part + ":name=");
             continue;
           }
+          JFLog.log("name=" + name + ",tags=" + tags);
           Logic blk = null;
           try {
-            Class cls = Class.forName("jfcontrols.blocks." + name);
+            Class cls = Class.forName("jfcontrols.logic." + name.toUpperCase());
             blk = (Logic)cls.newInstance();
           } catch (Exception e) {
             JFLog.log(e);
@@ -770,7 +772,7 @@ public class Panels {
           }
           int by = 3 + blk.getTagsCount();
           if (by > sh) sh = by;
-          nodes.add(node = node.insertLogic('#', x, y, part, blk, tags));
+          nodes.add(node = node.insertLogic('#', x, y, blk, tags.split(",")));
           x+=3;
           break;
         }
@@ -797,13 +799,13 @@ public class Panels {
     }
     logic.add(node.comp, x, y, spanx, 1);
     node.moved = false;
-    node.root.moved = true;
+    node.root.changed = true;
   }
   public static void buildNodes(NodeRoot root, Table logic, ArrayList<String[]> newCells, ArrayList<Node> newNodes, int rid, boolean readonly) {
     int x = 0;
     int y = 0;
     Node node = root.next;
-    JFLog.log("buildNodes:" + root.saveLogic(true));
+    JFLog.log("buildNodes");
     boolean create;
     String style = readonly ? "readonly" : null;
     int x2, y2;
@@ -941,6 +943,7 @@ public class Panels {
           int bh = node.getHeight();
           if (bh > sh) sh = bh;
           childIdx = 0;
+          int tagIdx = 1;
           if (!blk.isBlock()) {
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
@@ -958,7 +961,7 @@ public class Panels {
               x--;
               y++;
               if (create) {
-                newCells.add(createCell(null, x, y, 3, 1, "textfield", null, null, null, null, null, null));
+                newCells.add(createCell(null, x, y, 3, 1, "textfield", null, node.tags[tagIdx++], null, null, null, null));
                 newNodes.add(node.addChild('T', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1078,7 +1081,7 @@ public class Panels {
               x++;
 
               if (create) {
-                newCells.add(createCell(null, x, y, 3, 1, "textfield", null, null, null, null, null, style));
+                newCells.add(createCell(null, x, y, 3, 1, "textfield", null, node.tags[tagIdx++], null, null, null, style));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1169,12 +1172,12 @@ public class Panels {
       return;
     }
     do {
-      root.moved = false;
+      root.changed = false;
       ArrayList<String[]> newCells = new ArrayList<String[]>();
       ArrayList<Node> newNodes = new ArrayList<Node>();
       buildNodes(root, logic, newCells, newNodes, root.rid, false);
       buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), logic.getClient(), -1, -1, newNodes.toArray(new Node[newNodes.size()]));
-    } while (root.moved);
+    } while (root.changed);
     //calc max table size
     Node node = root;
     int x = 0;

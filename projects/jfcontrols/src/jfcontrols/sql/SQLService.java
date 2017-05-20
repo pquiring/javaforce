@@ -63,7 +63,7 @@ public class SQLService {
     sql.execute("create table funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32) unique, comment varchar(8192))");
     sql.execute("create table rungs (id int not null generated always as identity (start with 1, increment by 1) primary key, fid int, rid int, comment varchar(512), logic varchar(16384))");
     sql.execute("create table immvalues (id int not null generated always as identity (start with 1, increment by 1) primary key, type int, value varchar(512))");
-    sql.execute("create table blocks (id int not null generated always as identity (start with 1, increment by 1) primary key, rid int, name varchar(32), tags varchar(512))");
+    sql.execute("create table blocks (id int not null generated always as identity (start with 1, increment by 1) primary key, fid int, rid int, bid int, name varchar(32), tags varchar(512))");
     sql.execute("create table users (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, pass varchar(32))");
     sql.execute("create table lists (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique)");
     sql.execute("create table listdata (id int not null generated always as identity (start with 1, increment by 1) primary key, lid int, value int, text varchar(128))");
