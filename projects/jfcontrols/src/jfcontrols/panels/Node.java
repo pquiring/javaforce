@@ -34,7 +34,6 @@ xon(c1t1)|f(t2,t3)|t|xon(t4)|t|c,xon(t5)|d|coil(t6)
 
 import javaforce.webui.*;
 import jfcontrols.images.Images;
-import static jfcontrols.panels.Panels.layoutNodes;
 
 public class Node {
 
@@ -168,9 +167,9 @@ public class Node {
     node.x = x;
     node.y = y;
     node.upper = upper;
-    if (node.validFork()) {
+//    if (node.validFork()) {
       upper.lower = node;
-    }
+//    }
     return node;
   }
 
@@ -446,8 +445,7 @@ public class Node {
       node = node.next;
     }
     try {
-      layoutNodes(dest.root, table);
-      layoutNodes(dest.root, table);
+      Panels.layoutNodes(dest.root, table);
     } catch (Exception e) {
       JFLog.log(e);
     }

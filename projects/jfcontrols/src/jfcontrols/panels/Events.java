@@ -302,7 +302,6 @@ public class Events {
         }
         Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
         Panels.layoutNodes(node.root, logic);
-        Panels.layoutNodes(node.root, logic);
         break;
       }
 

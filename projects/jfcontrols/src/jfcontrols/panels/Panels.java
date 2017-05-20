@@ -797,6 +797,7 @@ public class Panels {
     }
     logic.add(node.comp, x, y, spanx, 1);
     node.moved = false;
+    node.root.moved = true;
   }
   public static void buildNodes(NodeRoot root, Table logic, ArrayList<String[]> newCells, ArrayList<Node> newNodes, int rid, boolean readonly) {
     int x = 0;
@@ -867,6 +868,11 @@ public class Panels {
         case 'd':
           sh = 1;  //TODO : pop sh
           x2 = node.upper.x;
+          if (node.lower != null) {
+            if (node.lower.x > x2) {
+              x2 = node.lower.x;
+            }
+          }
           while (x < x2) {
             newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
             newNodes.add(node.insertPreNode('h', x, y));
@@ -899,6 +905,11 @@ public class Panels {
             newNodes.add(node.addChildLower('v', x, y));
             y--;
           }
+          child = node.upper;
+          do {
+            y = child.y;
+            child = child.upper;
+          } while (child != null);
           x++;
           break;
         case 't':
@@ -1157,10 +1168,13 @@ public class Panels {
       JFLog.log("Error:unable to find root node");
       return;
     }
-    ArrayList<String[]> newCells = new ArrayList<String[]>();
-    ArrayList<Node> newNodes = new ArrayList<Node>();
-    buildNodes(root, logic, newCells, newNodes, root.rid, false);
-    buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), logic.getClient(), -1, -1, newNodes.toArray(new Node[newNodes.size()]));
+    do {
+      root.moved = false;
+      ArrayList<String[]> newCells = new ArrayList<String[]>();
+      ArrayList<Node> newNodes = new ArrayList<Node>();
+      buildNodes(root, logic, newCells, newNodes, root.rid, false);
+      buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), logic.getClient(), -1, -1, newNodes.toArray(new Node[newNodes.size()]));
+    } while (root.moved);
     //calc max table size
     Node node = root;
     int x = 0;
