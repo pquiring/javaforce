@@ -129,7 +129,7 @@ public class WebUIClient {
     }
     sb.append("}");
     log.append("}");
-    JFLog.log("SEND=" + log.toString());
+    if (WebUIServer.debug) JFLog.log("SEND=" + log.toString());
     socket.write(sb.toString().getBytes());
   }
   public String html() {

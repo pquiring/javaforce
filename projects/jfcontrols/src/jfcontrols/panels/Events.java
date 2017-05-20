@@ -223,10 +223,10 @@ public class Events {
           node = (Node)focus.getProperty("node");
         }
         if (node != null) {
-          if (node.ref == null) {
+          if (node.parent == null) {
             idx = node.root.rid;
           } else {
-            idx = node.ref.root.rid;
+            idx = node.parent.root.rid;
           }
         }
         //insert rung before current one
@@ -250,10 +250,10 @@ public class Events {
           node = (Node)focus.getProperty("node");
         }
         if (node != null) {
-          if (node.ref == null) {
+          if (node.parent == null) {
             idx = node.root.rid;
           } else {
-            idx = node.ref.root.rid;
+            idx = node.parent.root.rid;
           }
         }
         client.setProperty("rung", Integer.toString(idx));
@@ -276,8 +276,8 @@ public class Events {
           break;
         }
         int x = 0, y = 0;
-        if (node.ref != null) {
-          node = node.ref;
+        if (node.parent != null) {
+          node = node.parent;
         }
         x = node.x + node.getDelta();
         y = node.y;
@@ -302,7 +302,7 @@ public class Events {
         }
         Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
         Panels.layoutNodes(node.root, logic);
-        Panels.layoutNodes(node.root, logic);  //perform twice to adjust layout (until no more changes?)
+        Panels.layoutNodes(node.root, logic);
         break;
       }
 
@@ -317,8 +317,8 @@ public class Events {
           JFLog.log("Error:Node not found");
           break;
         }
-        if (node.ref != null) {
-          node = node.ref;
+        if (node.parent != null) {
+          node = node.parent;
         }
         Panels.layoutNodes(node.root, (Table)client.getPanel().getComponent("jfc_rung_editor"));
         break;
@@ -339,8 +339,8 @@ public class Events {
           JFLog.log("Error:Node not found");
           break;
         }
-        if (node.ref != null) {
-          node = node.ref;
+        if (node.parent != null) {
+          node = node.parent;
         }
         node.forkSource(client);
         break;
@@ -353,7 +353,7 @@ public class Events {
         NodeRoot root = ((Node)comp.getProperty("node")).root;
         String str = root.saveLogic(false);
         JFLog.log("logic=" + str);
-        client.setPanel(Panels.getPanel("jfc_func_editor", client));
+//        client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
 

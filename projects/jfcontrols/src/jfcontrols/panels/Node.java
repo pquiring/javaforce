@@ -33,6 +33,7 @@ xon(c1t1)|f(t2,t3)|t|xon(t4)|t|c,xon(t5)|d|coil(t6)
 */
 
 import javaforce.webui.*;
+import jfcontrols.images.Images;
 import static jfcontrols.panels.Panels.layoutNodes;
 
 public class Node {
@@ -46,28 +47,59 @@ public class Node {
   public Node next;
   public Node upper; //b,d only
   public Node lower; //a,c only
-  public Node ref;
+  public Node parent;
   public String bid;
   public Logic blk;
   public String tags;
   public Component comp;
   public NodeRoot root;
   public boolean highlight;  //possible fork dest
+  public ArrayList<Node> childs = new ArrayList<Node>();
+  public boolean moved;
 
-  public Node insertPreRef(Node ref, char type, int x, int y) {
-    JFLog.log("insertPreRef:" + type);
+  public Node addChild(char type, int x, int y) {
+    JFLog.log("addChild:" + type);
     Node node = new Node();
     node.root = root;
-    //insert BEFORE this node
-    node.prev = prev;
-    node.next = this;
-    if (prev != null) prev.next = node;
-    prev = node;
 
     node.type = type;
     node.x = x;
     node.y = y;
-    node.ref = ref;
+    node.parent = this;
+
+    childs.add(node);
+    return node;
+  }
+
+  public Node addChildLower(char type, int x, int y) {
+    JFLog.log("addChild:" + type);
+    Node node = new Node();
+    node.root = root;
+
+    node.type = type;
+    node.x = x;
+    node.y = y;
+    node.parent = this;
+
+    node.lower = this;
+
+    childs.add(node);
+    return node;
+  }
+
+  public Node addChildUpper(char type, int x, int y) {
+    JFLog.log("addChild:" + type);
+    Node node = new Node();
+    node.root = root;
+
+    node.type = type;
+    node.x = x;
+    node.y = y;
+    node.parent = this;
+
+    node.upper = this;
+
+    childs.add(node);
     return node;
   }
 
@@ -142,6 +174,7 @@ public class Node {
     return node;
   }
 
+/*/
   public Node insertLinkLower(Node lower, char type, int x, int y) {
     JFLog.log("insertLinkLower:" + type);
     Node node = new Node();
@@ -159,7 +192,6 @@ public class Node {
 //    lower.upper = node;
     return node;
   }
-
   public Node insertPreLinkUpper(Node upper, char type, int x, int y) {
     JFLog.log("insertPreLinkUpper:" + type);
     Node node = new Node();
@@ -195,6 +227,7 @@ public class Node {
 //    lower.upper = node;
     return node;
   }
+/*/
 
   public static Node findFirstOpenNode(ArrayList<Node> stack, String types) {
     int cnt = stack.size();
@@ -272,13 +305,31 @@ public class Node {
   }
 
   public boolean validFork() {
-    if (ref != null) return false;
+    if (parent != null) return false;
     switch (type) {
       case 'h':
       case 't':
       case 'a':
       case 'b':
       case 'c':
+      case 'd':
+        return true;
+    }
+    return false;
+  }
+
+  public boolean validForkSrc() {
+    if (parent != null) return false;
+    switch (type) {
+      case 'c':
+        return true;
+    }
+    return false;
+  }
+
+  public boolean validForkDest() {
+    if (parent != null) return false;
+    switch (type) {
       case 'd':
         return true;
     }
@@ -312,7 +363,7 @@ public class Node {
       } else {
         node = node.prev;
       }
-      while (node != null && node.ref != null) {
+      while (node != null && node.parent != null) {
         node = node.prev;
       }
     }
@@ -320,19 +371,18 @@ public class Node {
     //highlight possible destinations
     Node src = node;
     node = node.next;
-    if (node != null && node.ref != null) node = node.ref;
+    if (node != null && node.parent != null) node = node.parent;
     int cnt = 0;
+    boolean last = false;
     while (node != null) {
       if (node.validFork()) {
         node.setHighlight(true);
         cnt++;
+        if (node.endFork()) break;
       }
       node = node.next;
-      if (node != null && node.ref != null) {
-        node = node.ref;
-      }
-      if (node != null && node.endFork()) {
-        break;
+      if (node != null && node.parent != null) {
+        node = node.parent;
       }
     }
     if (cnt == 0) {
@@ -348,16 +398,45 @@ public class Node {
     //src = fork source
     //dest = fork destination
     Node dest = this, node;
-    if (dest.ref != null) dest = dest.ref;
+    if (dest.parent != null) dest = dest.parent;
     if (!dest.highlight) return;
     //fork it!
     JFLog.log("pre logic=" + root.saveLogic(true));
-    src = src.insertNode('t', src.x + 1, src.y);
-    src.insertNode('h', src.x + 1, src.y);
-    dest = dest.insertNode('t', src.x + 1, src.y);
-    dest.insertNode('h', src.x + 1, src.y);
+
+    while (src.type == 'b' || src.type == 'd') {
+      src = src.upper;
+    }
+    while (src.type == 'a') {
+      src = src.lower;
+    }
+    if (!src.validForkSrc()) {
+      src = src.insertNode('t', src.x + 1, src.y);
+    }
+//    src.insertNode('h', src.x + 1, src.y);
+
+    while (dest.type == 'b' || dest.type == 't') {
+      dest = dest.lower;
+    }
+    while (dest.type == 'a') {
+      dest = dest.upper;
+    }
+    if (!dest.validForkDest()) {
+      dest = dest.insertNode('t', src.x + 1, src.y);
+    }
+//    dest.insertNode('h', src.x + 1, src.y);
+
     dest.insertLinkUpper(dest, 'd', dest.x, dest.y + 1);
+    if (dest.type == 'd') {
+      dest.type = 'b';
+      Image img = (Image)dest.comp;
+      img.setImage(Images.getImage("w_b"));
+    }
     dest.insertLinkUpper(src, 'c', src.x, src.y + 1);
+    if (src.type == 'c') {
+      src.type = 'a';
+      Image img = (Image)src.comp;
+      img.setImage(Images.getImage("w_a"));
+    }
     client.setProperty("fork", null);
     JFLog.log("pst logic=" + root.saveLogic(true));
     node = dest.root;
@@ -367,6 +446,7 @@ public class Node {
       node = node.next;
     }
     try {
+      layoutNodes(dest.root, table);
       layoutNodes(dest.root, table);
     } catch (Exception e) {
       JFLog.log(e);

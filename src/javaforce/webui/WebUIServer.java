@@ -27,6 +27,8 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   private Web web;
   private WebUIHandler handler;
 
+  public static boolean debug = false;
+
   public void start(WebUIHandler handler, int port, boolean secure) {
     this.handler = handler;
     if (web != null) stop();
@@ -154,7 +156,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       return;
     }
     String msg = new String(data);
-    JFLog.log("RECV=" + msg);
+    if (debug) JFLog.log("RECV=" + msg);
     //decode JSON
     JSON.Element json;
     try {
