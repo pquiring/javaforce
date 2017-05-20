@@ -482,4 +482,62 @@ public class Node {
     if (sb.length() > 0) sb.append(",");
     return sb.toString();
   }
+
+  private void remove(Table logic) {
+    logic.remove(x, y);
+    if (prev != null) {
+      prev.next = next;
+    }
+    if (next != null) {
+      next.prev = prev;
+    }
+    int cnt = childs.size();
+    for(int a=0;a<cnt;a++) {
+      childs.get(a).remove(logic);
+    }
+  }
+
+  public void delete(Table logic) {
+    switch (type) {
+      case 'a':
+        //delete segment forward to 'b'
+        remove(logic);
+        while (next != null) {
+          next.remove(logic);
+          if (next.type == 'b') break;
+          next = next.next;
+        }
+        break;
+      case 'b':
+        //delete segment backwards to 'a'
+        remove(logic);
+        while (prev != null) {
+          prev.remove(logic);
+          if (prev.type == 'a') break;
+          prev = prev.next;
+        }
+        break;
+      case 'c':
+        //delete segment forward to 'd'
+        remove(logic);
+        while (next != null) {
+          next.remove(logic);
+          if (next.type == 'd') break;
+          next = next.next;
+        }
+        break;
+      case 'd':
+        //delete segment backwards to 'c'
+        remove(logic);
+        while (prev != null) {
+          prev.remove(logic);
+          if (prev.type == 'c') break;
+          prev = prev.next;
+        }
+        break;
+      default:
+        remove(logic);
+        break;
+    }
+  }
 }

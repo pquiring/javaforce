@@ -307,7 +307,6 @@ public class Events {
 
       case "jfc_rung_editor_del": {
         Component focus = (Component)client.getProperty("focus");
-        JFLog.log("TODO:delete:" + focus);
         Node node = null;
         if (focus != null) {
           node = (Node)focus.getProperty("node");
@@ -319,7 +318,10 @@ public class Events {
         if (node.parent != null) {
           node = node.parent;
         }
-        Panels.layoutNodes(node.root, (Table)client.getPanel().getComponent("jfc_rung_editor"));
+        JFLog.log("TODO:delete:" + focus);
+        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
+        node.delete(logic);
+        Panels.layoutNodes(node.root, logic);
         break;
       }
 
