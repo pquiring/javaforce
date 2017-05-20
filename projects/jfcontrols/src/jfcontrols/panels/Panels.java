@@ -122,6 +122,7 @@ public class Panels {
             focus.setBorder(false);
           }
           Node node = (Node)comp.getProperty("node");
+          JFLog.log("node=" + node);
           comp.setBorderColor("#000");
           comp.setBorder(true);
           client.setProperty("focus", comp);
@@ -838,8 +839,8 @@ public class Panels {
         case 'a':
         case 'c':
           x = node.upper.x;
-          y2 = node.upper.y + sh + 1;
-          y++;
+          y = node.upper.y + 1;
+          y2 = node.upper.y + sh;
           sh = 1;  //TODO : push sh
           cnt = node.childs.size();
           for(int a=0;a<cnt;a++) {
@@ -907,11 +908,14 @@ public class Panels {
             newNodes.add(node.addChildLower('v', x, y));
             y--;
           }
-          child = node.upper;
-          do {
-            y = child.y;
-            child = child.upper;
-          } while (child != null);
+          if (node.type == 'd') {
+            //move up to top
+            child = node.upper;
+            do {
+              y = child.y;
+              child = child.upper;
+            } while (child != null);
+          }
           x++;
           break;
         case 't':

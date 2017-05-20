@@ -2,9 +2,11 @@ package jfcontrols.panels;
 
 /** Node */
 
-import java.util.ArrayList;
-import javaforce.JFLog;
-import jfcontrols.logic.Logic;
+import java.util.*;
+
+import javaforce.*;
+
+import jfcontrols.logic.*;
 
 /*
 Ladder Logic Notation
@@ -498,46 +500,113 @@ public class Node {
   }
 
   public void delete(Table logic) {
+    if (prev == root) return;
     switch (type) {
       case 'a':
         //delete segment forward to 'b'
         remove(logic);
+        upper.lower = null;
         while (next != null) {
           next.remove(logic);
-          if (next.type == 'b') break;
+          if (next.type == 'b') {
+            next.upper.lower = null;
+            break;
+          }
           next = next.next;
         }
+        next = null;
+        prev = null;
         break;
       case 'b':
         //delete segment backwards to 'a'
+        upper.lower = null;
         remove(logic);
         while (prev != null) {
           prev.remove(logic);
-          if (prev.type == 'a') break;
-          prev = prev.next;
+          if (prev.type == 'a') {
+            prev.upper.lower = null;
+            break;
+          }
+          prev = prev.prev;
         }
+        next = null;
+        prev = null;
         break;
       case 'c':
         //delete segment forward to 'd'
+        upper.lower = null;
+        if (upper.type == 'a') {
+          upper.type = 'c';
+          upper.setImage("w_c");
+        }
         remove(logic);
         while (next != null) {
           next.remove(logic);
-          if (next.type == 'd') break;
+          if (next.type == 'd') {
+            if (next.upper.type == 'b') {
+              next.upper.type = 'd';
+              next.upper.setImage("w_d");
+            }
+            next.upper.lower = null;
+            break;
+          }
           next = next.next;
         }
+        next = null;
+        prev = null;
         break;
       case 'd':
         //delete segment backwards to 'c'
+        upper.lower = null;
+        if (upper.type == 'b') {
+          upper.type = 'd';
+          upper.setImage("w_d");
+        }
         remove(logic);
         while (prev != null) {
           prev.remove(logic);
-          if (prev.type == 'c') break;
-          prev = prev.next;
+          if (prev.type == 'c') {
+            if (prev.upper.type == 'a') {
+              prev.upper.type = 'c';
+              prev.upper.setImage("w_c");
+            }
+            prev.upper.lower = null;
+            break;
+          }
+          prev = prev.prev;
         }
+        next = null;
+        prev = null;
+        break;
+      case 't':
+        //this is too complex - so only allow if there is nothing under it
         break;
       default:
         remove(logic);
         break;
     }
+    Node node = root;
+    //delete orphaned 't's
+    while (node != null) {
+      if (node.type == 't' && node.lower == null) {
+        node.remove(logic);
+      }
+      node = node.next;
+    }
+    Panels.layoutNodes(root, logic);
+  }
+
+  public void setImage(String name) {
+    Image img = (Image)comp;
+    img.setImage(Images.getImage(name));
+  }
+
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Node:" + type);
+    if (upper != null) sb.append(":upper=" + upper.type);
+    if (lower != null) sb.append(":lower=" + lower.type);
+    if (parent != null) sb.append(":parent=" + parent.type);
+    return sb.toString();
   }
 }
