@@ -271,7 +271,7 @@ public class Node {
 
   /** Returns delta x to next node.
    * This may not be the actual width.
-   * Only valid for major nodes (not ref nodes)
+   * Only valid for major nodes (not child nodes)
    */
   public int getDelta() {
     if (blk != null) {
@@ -285,7 +285,7 @@ public class Node {
   }
 
   /** Returns actual width of node.
-   * Only valid for major nodes (not ref nodes)
+   * Only valid for major nodes (not child nodes)
    */
   public int getWidth() {
     if (blk != null) {
@@ -295,7 +295,7 @@ public class Node {
   }
 
   /** Returns actual height of node.
-   * Only valid for major nodes (not ref nodes)
+   * Only valid for major nodes (not child nodes)
    */
   public int getHeight() {
     if (blk != null) {
@@ -606,6 +606,25 @@ public class Node {
     this.type = type;
     Image image = (Image)comp;
     image.setImage(Images.getImage(imagename));
+  }
+
+  public int getSegmentMaxY(Node src) {
+    int max = y;
+    if (type != 't' && type != 'a') {
+      JFLog.log("Error:Node.getSegmentMaxY() called but wrong node type");
+      return max;
+    }
+    Node node = this, child;
+    while (node != src) {
+      if (node.y > max) max = node.y;
+      int cnt = node.childs.size();
+      for(int a=0;a<cnt;a++) {
+        child = node.childs.get(a);
+        if (child.y > max) max = child.y;
+      }
+      node = node.next;
+    }
+    return max;
   }
 
   public String toString() {

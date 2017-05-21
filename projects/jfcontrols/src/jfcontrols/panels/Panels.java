@@ -666,7 +666,6 @@ public class Panels {
   public static Rung buildRung(String data[], ArrayList<String[]> cells, ArrayList<Node> objs, SQL sql, boolean readonly, int fid) {
     int x = 0;
     int y = 0;
-    int sh = 1;  //segment height
     int rid = Integer.valueOf(data[0]);
     Rung rung = new Rung();
     String logic = data[1];
@@ -713,8 +712,7 @@ public class Panels {
             return null;
           }
           x = upper.x;
-          y = upper.y + sh;
-          sh = 1;
+          y = upper.getSegmentMaxY(node) + 1;
           nodes.add(node = node.insertLinkUpper(upper, 'a', x, y));
           break;
         }
@@ -727,7 +725,6 @@ public class Panels {
           }
           if (upper.x < x) upper.x = x;
           if (upper.x > x) x = upper.x;
-          sh = 1;
           nodes.add(node = node.insertLinkUpper(upper, 'b', x, y));
           break;
         }
@@ -739,8 +736,7 @@ public class Panels {
             return null;
           }
           x = upper.x;
-          y = upper.y + sh;
-          sh = 1;
+          y = upper.getSegmentMaxY(node) + 1;
           nodes.add(node = node.insertLinkUpper(upper, 'c', x, y));
           break;
         }
@@ -753,7 +749,6 @@ public class Panels {
           }
           if (upper.x < x) upper.x = x;
           if (upper.x > x) x = upper.x;
-          sh = 1;
           nodes.add(node = node.insertLinkUpper(upper, 'd', x, y));
           break;
         }
@@ -785,8 +780,6 @@ public class Panels {
             JFLog.log("Error:Block not found:rid=" + rid + ":bid=" + part);
             continue;
           }
-          int by = 3 + blk.getTagsCount();
-          if (by > sh) sh = by;
           nodes.add(node = node.insertLogic('#', x, y, blk, tags.split(",")));
           x+=3;
           break;
@@ -825,7 +818,6 @@ public class Panels {
     String style = readonly ? "readonly" : null;
     String field = readonly ? "label" : "textfield";
     int x2, y2;
-    int sh = 1;  //segment height
     Node child;
     int childIdx;
     int cnt;
@@ -855,8 +847,7 @@ public class Panels {
         case 'c':
           x = node.upper.x;
           y = node.upper.y + 1;
-          y2 = node.upper.y + sh;
-          sh = 1;  //TODO : push sh
+          y2 = node.upper.getSegmentMaxY(node) + 1;
           cnt = node.childs.size();
           for(int a=0;a<cnt;a++) {
             child = node.childs.get(a);
@@ -884,7 +875,6 @@ public class Panels {
           break;
         case 'b':
         case 'd':
-          sh = 1;  //TODO : pop sh
           x2 = node.upper.x;
           if (node.lower != null) {
             if (node.lower.x > x2) {
@@ -959,8 +949,6 @@ public class Panels {
           //create cells for block
           //id,name,tags
           Logic blk = node.blk;
-          int bh = node.getHeight();
-          if (bh > sh) sh = bh;
           childIdx = 0;
           int tagIdx = 1;
           if (!blk.isBlock()) {
