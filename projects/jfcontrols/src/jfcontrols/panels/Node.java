@@ -1,6 +1,8 @@
 package jfcontrols.panels;
 
-/** Node */
+/** Rung Node
+ *
+ */
 
 import java.util.*;
 

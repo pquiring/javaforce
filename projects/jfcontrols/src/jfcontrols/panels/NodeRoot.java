@@ -12,6 +12,7 @@ public class NodeRoot extends Node {
   public int fid;  //func id
   public int rid;  //rung id
   public boolean changed;
+  public TextField comment;
   public NodeRoot(int fid, int rid) {
     this.root = this;
     this.type = 'r'; //root node

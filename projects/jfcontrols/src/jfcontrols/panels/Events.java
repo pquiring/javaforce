@@ -71,21 +71,28 @@ public class Events {
         synchronized(lock) {
           int id = 1;
           do {
-            String inuse = sql.select1value("select num from ctrls where num=" + id);
+            String inuse = sql.select1value("select cid from ctrls where cid=" + id);
             if (inuse == null) break;
             id++;
           } while (true);
-          sql.execute("insert into ctrls (num,ip,type,speed) values (" + id + ",'',0,0)");
+          sql.execute("insert into ctrls (cid,ip,type,speed) values (" + id + ",'',0,0)");
           client.setPanel(Panels.getPanel("jfc_controllers", client));
         }
         break;
       }
       case "jfc_ctrl_delete": {
-        //TODO
+        //TODO : check if in use
+        String inuse = sql.select1value("select count(tags) from blocks where tags like '%,c" + arg + "#%'");
+        if (!inuse.equals("0")) {
+          JFLog.log("Can not delete controller that is in use!");
+          break;
+        }
+        sql.execute("delete from ctrls where cid=" + arg);
+        client.setPanel(Panels.getPanel("jfc_controllers", client));
         break;
       }
       case "jfc_ctrl_save": {
-        //force a reload of config options
+        //TODO : force a reload of config options
         break;
       }
       case "jfc_ctrl_tags": {
@@ -231,7 +238,7 @@ public class Events {
         }
         //insert rung before current one
         sql.execute("update rungs set rid=rid+1 where fid=" + fid + " and rid>=" + idx);
-        sql.execute("insert into rungs (fid,rid,comment,logic) values (" + fid + "," + idx + ",'','h')");
+        sql.execute("insert into rungs (fid,rid,comment,logic) values (" + fid + "," + idx + ",'Comment','h')");
         ArrayList<String[]> cells = new ArrayList<String[]>();
         ArrayList<Node> nodes = new ArrayList<Node>();
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + idx);
@@ -318,7 +325,6 @@ public class Events {
         if (node.parent != null) {
           node = node.parent;
         }
-        JFLog.log("TODO:delete:" + focus);
         Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
         node.delete(logic);
         Panels.layoutNodes(node.root, logic);

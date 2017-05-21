@@ -269,15 +269,17 @@ public class Panels {
         Events.changed((ComboBox)c);
       });
     }
-    switch (name) {
-      case "group_type":
-        cb.addChangedListener((c) -> {
-          ComboBox groups = (ComboBox)c;
-          WebUIClient client = c.getClient();
-          TabPanel tabs = (TabPanel)client.getProperty("groups");
-          tabs.setTabIndex(groups.getSelectedIndex());
-        });
-        break;
+    if (name != null) {
+      switch (name) {
+        case "group_type":
+          cb.addChangedListener((c) -> {
+            ComboBox groups = (ComboBox)c;
+            WebUIClient client = c.getClient();
+            TabPanel tabs = (TabPanel)client.getProperty("groups");
+            tabs.setTabIndex(groups.getSelectedIndex());
+          });
+          break;
+      }
     }
     return cb;
   }
@@ -325,11 +327,11 @@ public class Panels {
     Table table;
     switch (name) {
       case "jfc_ctrls" : {
-        String data[][] = sql.select("select id,num,ip,type from ctrls");
+        String data[][] = sql.select("select id,cid,ip,type from ctrls");
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           String style = data[a][1].equals("0") ? "disabled" : null;
-          cells.add(createCell("", 0, a, 1, 1, "textfield", null, data[a][1], "jfc_ctrls_num_int_" + data[a][0], null, null, style));
+          cells.add(createCell("", 0, a, 1, 1, "textfield", null, data[a][1], "jfc_ctrls_cid_int_" + data[a][0], null, null, style));
           cells.add(createCell("", 1, a, 3, 1, "textfield", null, data[a][2], "jfc_ctrls_ip_str_" + data[a][0], null, null, style));
           cells.add(createCell("", 4, a, 2, 1, "combobox", null, null, "jfc_ctrls_type_int_" + data[a][0], null, "jfc_ctrl_type", style));
           cells.add(createCell("", 6, a, 2, 1, "combobox", null, null, "jfc_ctrls_speed_int_" + data[a][0], null, "jfc_ctrl_speed", style));
@@ -673,6 +675,18 @@ public class Panels {
     String blocks[][] = sql.select("select bid,name,tags from blocks where fid=" + fid + " and rid=" + rid);
     ArrayList<Node> nodes = new ArrayList<Node>();
     NodeRoot root = new NodeRoot(fid, rid);
+
+    //add rung title / comment
+    String style = readonly ? "readonly" : null;
+    String field = readonly ? "label" : "textfield";
+    cells.add(createCell(null, x, y, 3, 1, "label", null, "Rung " + rid, null, null, null, null));
+    objs.add(root);
+    x += 3;
+    cells.add(createCell(null, x, y, 12, 1, field, "comment" + rid, comment, null, null, null, style));
+    objs.add(root);
+    x = 0;
+    y++;
+
     Node node = root;
     for(int p=0;p<parts.length;p++) {
       String part = parts[p];
@@ -804,11 +818,12 @@ public class Panels {
   }
   public static void buildNodes(NodeRoot root, Table logic, ArrayList<String[]> newCells, ArrayList<Node> newNodes, int rid, boolean readonly) {
     int x = 0;
-    int y = 0;
+    int y = 1;
     Node node = root.next;
     JFLog.log("buildNodes");
     boolean create;
     String style = readonly ? "readonly" : null;
+    String field = readonly ? "label" : "textfield";
     int x2, y2;
     int sh = 1;  //segment height
     Node child;
@@ -965,7 +980,7 @@ public class Panels {
               x--;
               y++;
               if (create) {
-                newCells.add(createCell(null, x, y, 3, 1, "textfield", null, node.tags[tagIdx++], null, null, null, null));
+                newCells.add(createCell(null, x, y, 3, 1, field, null, node.tags[tagIdx++], null, null, null, style));
                 newNodes.add(node.addChild('T', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1085,7 +1100,7 @@ public class Panels {
               x++;
 
               if (create) {
-                newCells.add(createCell(null, x, y, 3, 1, "textfield", null, node.tags[tagIdx++], null, null, null, style));
+                newCells.add(createCell(null, x, y, 3, 1, field, null, node.tags[tagIdx++], null, null, null, style));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);

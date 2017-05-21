@@ -56,7 +56,7 @@ public class SQLService {
     JFLog.log("DB creating...");
     sql.connect(derbyURI + ";create=true");
     //create tables
-    sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, num int unique, ip varchar(32), type int, speed int)");
+    sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int unique, ip varchar(32), type int, speed int)");
     sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32) unique, type int)");
     sql.execute("create table panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, popup boolean, builtin boolean)");
     sql.execute("create table cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int,comp  varchar(32), name varchar(32), text varchar(512), tag varchar(32), func varchar(32), arg varchar(32), style varchar(512))");
@@ -115,7 +115,7 @@ public class SQLService {
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",1,'math')");
 
     //create local controller
-    sql.execute("insert into ctrls (num,ip,type,speed) values (0,'127.0.0.1',0,0)");
+    sql.execute("insert into ctrls (cid,ip,type,speed) values (0,'127.0.0.1',0,0)");
     //create panels
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_login', true, true)");
     id = sql.select1value("select id from panels where name='jfc_login'");
@@ -134,6 +134,7 @@ public class SQLService {
 //test
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,5,3,1,'button','','Panels','setPanel','jfc_panels')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,7,3,1,'button','','Funcs','setPanel','jfc_funcs')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,9,3,1,'button','','Controllers','setPanel','jfc_controllers')");
 //test
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_main', true, true)");
