@@ -411,7 +411,11 @@ public class Node {
       src = src.lower;
     }
     if (!src.validForkSrc()) {
-      src = src.insertNode('t', src.x + 1, src.y);
+      if (src.type == 'h' && src.prev != src.root) {
+        src.setType('t', "w_t");
+      } else {
+        src = src.insertNode('t', src.x + 1, src.y);
+      }
     }
 //    src.insertNode('h', src.x + 1, src.y);
 
@@ -422,21 +426,21 @@ public class Node {
       dest = dest.upper;
     }
     if (!dest.validForkDest()) {
-      dest = dest.insertNode('t', src.x + 1, src.y);
+      if (dest.type == 'h') {
+        dest.setType('t', "w_t");
+      } else {
+        dest = dest.insertNode('t', src.x + 1, src.y);
+      }
     }
 //    dest.insertNode('h', src.x + 1, src.y);
 
     dest.insertLinkUpper(dest, 'd', dest.x, dest.y + 1);
     if (dest.type == 'd') {
-      dest.type = 'b';
-      Image img = (Image)dest.comp;
-      img.setImage(Images.getImage("w_b"));
+      dest.setType('b', "w_b");
     }
     dest.insertLinkUpper(src, 'c', src.x, src.y + 1);
     if (src.type == 'c') {
-      src.type = 'a';
-      Image img = (Image)src.comp;
-      img.setImage(Images.getImage("w_a"));
+      src.setType('a', "w_a");
     }
     client.setProperty("fork", null);
     node = dest.root;
@@ -536,16 +540,14 @@ public class Node {
         //delete segment forward to 'd'
         upper.lower = null;
         if (upper.type == 'a') {
-          upper.type = 'c';
-          upper.setImage("w_c");
+          upper.setType('c', "w_c");
         }
         remove(logic);
         while (next != null) {
           next.remove(logic);
           if (next.type == 'd') {
             if (next.upper.type == 'b') {
-              next.upper.type = 'd';
-              next.upper.setImage("w_d");
+              next.upper.setType('d', "w_d");
             }
             next.upper.lower = null;
             break;
@@ -559,16 +561,14 @@ public class Node {
         //delete segment backwards to 'c'
         upper.lower = null;
         if (upper.type == 'b') {
-          upper.type = 'd';
-          upper.setImage("w_d");
+          upper.setType('d', "w_d");
         }
         remove(logic);
         while (prev != null) {
           prev.remove(logic);
           if (prev.type == 'c') {
             if (prev.upper.type == 'a') {
-              prev.upper.type = 'c';
-              prev.upper.setImage("w_c");
+              prev.upper.setType('c', "w_c");
             }
             prev.upper.lower = null;
             break;
@@ -579,7 +579,7 @@ public class Node {
         prev = null;
         break;
       case 't':
-        //this is too complex - so only allow if there is nothing under it
+        //this is too complex
         break;
       default:
         remove(logic);
@@ -589,16 +589,21 @@ public class Node {
     //delete orphaned 't's
     while (node != null) {
       if (node.type == 't' && node.lower == null) {
-        node.remove(logic);
+        if (node.prev.type == 'h') {
+          node.remove(logic);
+        } else {
+          node.setType('h', "w_h");
+        }
       }
       node = node.next;
     }
     Panels.layoutNodes(root, logic);
   }
 
-  public void setImage(String name) {
-    Image img = (Image)comp;
-    img.setImage(Images.getImage(name));
+  public void setType(char type, String imagename) {
+    this.type = type;
+    Image image = (Image)comp;
+    image.setImage(Images.getImage(imagename));
   }
 
   public String toString() {
