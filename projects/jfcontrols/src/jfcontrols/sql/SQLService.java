@@ -155,6 +155,7 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",8,1,2,1,'label','','Speed')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,1,3,1,'button','','New','jfc_ctrl_new')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,1,3,1,'button','','Save','jfc_ctrl_save')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",20,1,10,1,'label','jfc_error','')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_ctrls')");
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_tags', false, true)");

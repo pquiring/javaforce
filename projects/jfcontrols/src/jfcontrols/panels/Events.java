@@ -84,7 +84,7 @@ public class Events {
         //TODO : check if in use
         String inuse = sql.select1value("select count(tags) from blocks where tags like '%,c" + arg + "#%'");
         if (!inuse.equals("0")) {
-          JFLog.log("Can not delete controller that is in use!");
+          Panels.error(client, "Can not delete controller that is in use!");
           break;
         }
         sql.execute("delete from ctrls where cid=" + arg);

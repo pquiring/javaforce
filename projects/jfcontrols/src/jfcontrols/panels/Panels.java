@@ -1214,4 +1214,8 @@ public class Panels {
     }
     logic.setTableSize(mx, my);
   }
+  public static void error(WebUIClient client, String msg) {
+    Label lbl = (Label)client.getPanel().getComponent("jfc_error");
+    lbl.setText(msg);
+  }
 }
