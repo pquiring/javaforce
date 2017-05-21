@@ -353,6 +353,9 @@ public class Events {
         String rid = (String)client.getProperty("rung");
         Component comp = logic.get(0, 0, false);
         NodeRoot root = ((Node)comp.getProperty("node")).root;
+        if (!root.isValid(client)) {
+          break;
+        }
         sql.execute("delete from blocks where fid=" + fid + " and rid=" + rid);
         String str = root.saveLogic(sql);
         JFLog.log("logic=" + str);

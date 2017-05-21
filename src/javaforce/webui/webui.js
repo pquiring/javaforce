@@ -126,6 +126,9 @@ ws.onmessage = function (event) {
     case "settab":
       openTab(null, parseInt(msg.idx), msg.tabs, msg.row);
       break;
+    case "focus":
+      element.focus();
+      break;
     case "initwebgl":
       gl_init(element);
       break;

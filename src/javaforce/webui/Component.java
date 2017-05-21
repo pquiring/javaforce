@@ -303,6 +303,10 @@ public abstract class Component {
       removeClass("border");
   }
 
+  public void setFocus() {
+    sendEvent("focus", null);
+  }
+
   public String toString() {
     return getClass().getName() + ":" + id;
   }
