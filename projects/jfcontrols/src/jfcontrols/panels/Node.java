@@ -398,7 +398,7 @@ public class Node {
     client.setProperty("fork", src);
   }
 
-  public void forkDest(WebUIClient client, Table table, Node src) {
+  public void forkDest(WebUIClient client, Table table, Node src, SQL sql) {
     //src = fork source
     //dest = fork destination
     Node dest = this, node;
@@ -452,7 +452,7 @@ public class Node {
       node = node.next;
     }
     try {
-      Panels.layoutNodes(dest.root, table);
+      Panels.layoutNodes(dest.root, table, sql);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -485,6 +485,10 @@ public class Node {
         TextField tf = (TextField)child.comp;
         sb.append(",");
         sb.append(tf.getText());
+      } else if (child.type == 'C') {
+        ComboBox cb = (ComboBox)child.comp;
+        sb.append(",");
+        sb.append(cb.getSelectedValue());
       }
     }
     if (sb.length() > 0) sb.append(",");
@@ -505,7 +509,7 @@ public class Node {
     }
   }
 
-  public void delete(Table logic) {
+  public void delete(Table logic, SQL sql) {
     if (prev == root) return;
     switch (type) {
       case 'a':
@@ -599,7 +603,7 @@ public class Node {
       }
       node = node.next;
     }
-    Panels.layoutNodes(root, logic);
+    Panels.layoutNodes(root, logic, sql);
   }
 
   public void setType(char type, String imagename) {

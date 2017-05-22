@@ -5,6 +5,10 @@ package jfcontrols.logic;
  * @author pquiring
  */
 
+import javaforce.*;
+
+import jfcontrols.tags.*;
+
 public abstract class Logic {
   public abstract boolean isBlock();
   public abstract String getName();

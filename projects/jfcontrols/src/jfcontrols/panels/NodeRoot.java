@@ -33,12 +33,7 @@ public class NodeRoot extends Node {
           sb.append(node.type);
           break;
         case '#':
-          //check all tags are valid
-          int cnt = node.childs.size();
-          for(int a=0;a<cnt;a++) {
-
-          }
-          sql.execute("insert into blocks (fid,rid,bid,name,tags) values (" + fid + "," + rid + "," + bid + ",'" + node.blk.getName() + "'," + SQL.quote(node.getTags()) + ")");
+          sql.execute("insert into blocks (fid,rid,bid,name,tags) values (" + fid + "," + rid + "," + bid + ",'" + node.blk.getName().toUpperCase() + "'," + SQL.quote(node.getTags()) + ")");
           sb.append(Integer.toString(bid));
           bid++;
           break;

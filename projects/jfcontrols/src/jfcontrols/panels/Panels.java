@@ -55,7 +55,7 @@ public class Panels {
     sql.close();
     Table table = new Table(cellWidth,cellHeight,1,1);
     panel.add(table);
-    buildTable(table, panel, cells, client, -1, -1, null);
+    buildTable(table, panel, cells, client, -1, -1, null, sql);
     if (popup.equals("true")) return panel;
     //add top components
     Button x = getButton(new String[] {null, null, null, null, null, "button", null, "!image:menu", null, "showMenu", null});
@@ -79,7 +79,7 @@ public class Panels {
   private final static int FUNC = 9;
   private final static int ARG = 10;
   private final static int STYLE = 11;
-  public static Table buildTable(Table table, Container container, String cells[][], WebUIClient client, int ix, int iy, Node nodes[]) {
+  public static Table buildTable(Table table, Container container, String cells[][], WebUIClient client, int ix, int iy, Node nodes[], SQL sql) {
     int mx = table.getColumns();
     if (ix != -1) mx = ix;
     int my = table.getRows();
@@ -128,7 +128,7 @@ public class Panels {
           client.setProperty("focus", comp);
           Node src = (Node)client.getProperty("fork");
           if (src != null) {
-            node.forkDest(client, table, src);
+            node.forkDest(client, table, src, sql);
           }
         });
       }
@@ -233,10 +233,15 @@ public class Panels {
     String name = v[NAME];
     String tag = v[TAG];
     String arg = v[ARG];
+    String value = v[TEXT];
     SQL sql = SQLService.getSQL();
-    String lid = sql.select1value("select id from lists where name=" + SQL.quote(arg));
-    String pairs[][] = sql.select("select value, text from listdata where lid=" + lid);
-    String value = null;
+    String pairs[][];
+    if (arg.equals("jfc_function")) {
+      pairs = sql.select("select id, name from funcs");
+    } else {
+      String lid = sql.select1value("select id from lists where name=" + SQL.quote(arg));
+      pairs = sql.select("select value, text from listdata where lid=" + lid);
+    }
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
         String f[] = tag.split("_");
@@ -277,6 +282,14 @@ public class Panels {
             WebUIClient client = c.getClient();
             TabPanel tabs = (TabPanel)client.getProperty("groups");
             tabs.setTabIndex(groups.getSelectedIndex());
+          });
+          break;
+        case "jfc_function":
+          cb.addChangedListener((c) -> {
+            ComboBox funcs = (ComboBox)c;
+            WebUIClient client = c.getClient();
+            Node node = (Node)c.getProperty("node");
+            node.parent.tags[1] = funcs.getSelectedValue();
           });
           break;
       }
@@ -373,7 +386,7 @@ public class Panels {
           cells.add(data[a]);
         }
         LayersPanel layers = new LayersPanel();
-        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null);
+        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null, sql);
         table.setName("t1");
         r.width = table.getColumns();
         r.height = table.getRows();
@@ -399,7 +412,7 @@ public class Panels {
             }
           }
         }
-        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null);
+        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null, sql);
         table.setName("t2");
         layers.add(table);
         return layers;
@@ -418,12 +431,24 @@ public class Panels {
         }
         break;
       }
+      case "jfc_rung_args": {
+        cells.add(createCell("", 0, 0, 1, 1, "button", null, "UP", null, "jfc_rung_args_up", null, null));
+        cells.add(createCell("", 0, 1, 1, 1, "button", null, "+", null, "jfc_rung_args_add", null, null));
+        cells.add(createCell("", 0, 2, 1, 1, "button", null, "-", null, "jfc_rung_args_del", null, null));
+        cells.add(createCell("", 0, 3, 1, 1, "button", null, "DN", null, "jfc_rung_args_dn", null, null));
+        for(int a=0;a<4;a++) {
+          cells.add(createCell("", 1, a, 6, 1, "textfield", null, null, null, null, null, null));
+          cells.add(createCell("", 7, a, 3, 1, "combobox", null, null, null, null, "jfc_tag_type", null));
+        }
+        break;
+      }
       case "jfc_rung_groups": {
         TabPanel tabs = new TabPanel();
         tabs.setTabsVisible(false);
         tabs.setBorders(false);
         tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_bits", null, null, null, null, null), null, new Rectangle(r), client)), "");
         tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_math", null, null, null, null, null), null, new Rectangle(r), client)), "");
+        tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_func", null, null, null, null, null), null, new Rectangle(r), client)), "");
         setCellSize(tabs, r);
         client.setProperty("groups", tabs);
         return tabs;
@@ -437,6 +462,10 @@ public class Panels {
       case "jfc_rung_math": {
         cells.add(createCell("", 0, 0, 1, 1, "button", "add", "Add", null, "jfc_rung_editor_add", null, null));
         cells.add(createCell("", 1, 0, 1, 1, "button", "sub", "Sub", null, "jfc_rung_editor_add", null, null));
+        break;
+      }
+      case "jfc_rung_func": {
+        cells.add(createCell("", 0, 0, 1, 1, "button", "call", "Call", null, "jfc_rung_editor_add", null, null));
         break;
       }
       case "jfc_rungs_viewer": {
@@ -466,7 +495,7 @@ public class Panels {
       }
     }
     sql.close();
-    table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, objs.toArray(new Node[objs.size()]));
+    table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, objs.toArray(new Node[objs.size()]), sql);
     r.width = table.getColumns();
     r.height = table.getRows();
     switch (name) {
@@ -790,7 +819,7 @@ public class Panels {
       nodes.add(node = node.insertNode('h', x, y));
     }
     rung.root = root;
-    buildNodes(root, null, cells, objs, rid, readonly);
+    buildNodes(root, null, cells, objs, sql, rid, readonly);
     return rung;
   }
   private static void moveNode(Table logic, Node node, int x, int y, int spanx) {
@@ -809,14 +838,15 @@ public class Panels {
     node.moved = false;
     node.root.changed = true;
   }
-  public static void buildNodes(NodeRoot root, Table logic, ArrayList<String[]> newCells, ArrayList<Node> newNodes, int rid, boolean readonly) {
+  public static void buildNodes(NodeRoot root, Table logic, ArrayList<String[]> newCells, ArrayList<Node> newNodes, SQL sql, int rid, boolean readonly) {
     int x = 0;
     int y = 1;
     Node node = root.next;
     JFLog.log("buildNodes");
     boolean create;
     String style = readonly ? "readonly" : null;
-    String field = readonly ? "label" : "textfield";
+    String textfield = readonly ? "label" : "textfield";
+    String combobox = readonly ? "label" : "combobox";
     int x2, y2;
     Node child;
     int childIdx;
@@ -968,7 +998,7 @@ public class Panels {
               x--;
               y++;
               if (create) {
-                newCells.add(createCell(null, x, y, 3, 1, field, null, node.tags[tagIdx++], null, null, null, style));
+                newCells.add(createCell(null, x, y, 3, 1, textfield, null, node.tags[tagIdx++], null, null, null, style));
                 newNodes.add(node.addChild('T', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1088,8 +1118,19 @@ public class Panels {
               x++;
 
               if (create) {
-                newCells.add(createCell(null, x, y, 3, 1, field, null, node.tags[tagIdx++], null, null, null, style));
-                newNodes.add(node.addChild('x', x, y));
+                if (blk.getTagType(a) == Types.FUNCTION) {
+                  String txt = node.tags[tagIdx++];
+                  JFLog.log("txt=" + txt);
+                  if (readonly) {
+                    txt = sql.select1value("select name from funcs where id=" + txt);
+                  }
+                  JFLog.log("txt=" + txt);
+                  newCells.add(createCell(null, x, y, 3, 1, combobox, "jfc_function", txt, null, null, "jfc_function", style));
+                  newNodes.add(node.addChild('C', x, y));
+                } else {
+                  newCells.add(createCell(null, x, y, 3, 1, textfield, null, node.tags[tagIdx++], null, null, null, style));
+                  newNodes.add(node.addChild('T', x, y));
+                }
               } else {
                 child = node.childs.get(childIdx++);
                 if (child.x != x || child.y != y || child.moved) {
@@ -1169,7 +1210,7 @@ public class Panels {
     }
   }
 
-  public static void layoutNodes(NodeRoot root, Table logic) {
+  public static void layoutNodes(NodeRoot root, Table logic, SQL sql) {
     if (logic == null) {
       JFLog.log("Error:unable to find logic table");
       return;
@@ -1182,8 +1223,8 @@ public class Panels {
       root.changed = false;
       ArrayList<String[]> newCells = new ArrayList<String[]>();
       ArrayList<Node> newNodes = new ArrayList<Node>();
-      buildNodes(root, logic, newCells, newNodes, root.rid, false);
-      buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), logic.getClient(), -1, -1, newNodes.toArray(new Node[newNodes.size()]));
+      buildNodes(root, logic, newCells, newNodes, sql, root.rid, false);
+      buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), logic.getClient(), -1, -1, newNodes.toArray(new Node[newNodes.size()]), sql);
     } while (root.changed);
     //calc max table size
     Node node = root;

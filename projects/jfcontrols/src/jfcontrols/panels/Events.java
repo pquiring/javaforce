@@ -218,6 +218,16 @@ public class Events {
         break;
       }
       case "jfc_funcs_delete": {
+        String inuse = sql.select1value("select count(id) from blocks where name='CALL' and tags='," + arg + ",'");
+        if (!inuse.equals("0")) {
+          Panels.error(client, "Can not delete function that is in use");
+          break;
+        }
+        //TODO : confirm action
+        sql.execute("delete from funcs where id=" + arg);
+        sql.execute("delete from rungs where fid=" + arg);
+        sql.execute("delete from blocks where fid=" + arg);
+        client.setPanel(Panels.getPanel("jfc_funcs", client));
         break;
       }
 
@@ -244,7 +254,7 @@ public class Events {
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + idx);
         Rungs rungs = (Rungs)client.getProperty("rungs");
         rungs.rungs.add(idx, Panels.buildRung(data, cells, nodes, sql, true, fid));
-        Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, null);
+        Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, null, sql);
         rungs.table.add(idx, table);
         break;
       }
@@ -303,12 +313,16 @@ public class Events {
         if (node.type != 'h') {
           node = node.insertNode('h', x, y);
         }
-        node = node.insertLogic('#', x, y, blk, new String[blk.getTagsCount() + 1]);
+        String tags[] = new String[blk.getTagsCount() + 1];
+        for(int a=0;a<tags.length;a++) {
+          tags[a] = "0";
+        }
+        node = node.insertLogic('#', x, y, blk, tags);
         if (node.next == null || !node.next.validFork()) {
           node = node.insertNode('h', x, y);
         }
         Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
-        Panels.layoutNodes(node.root, logic);
+        Panels.layoutNodes(node.root, logic, sql);
         break;
       }
 
@@ -326,8 +340,8 @@ public class Events {
           node = node.parent;
         }
         Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
-        node.delete(logic);
-        Panels.layoutNodes(node.root, logic);
+        node.delete(logic, sql);
+        Panels.layoutNodes(node.root, logic, sql);
         break;
       }
 
@@ -404,9 +418,6 @@ public class Events {
       String id = f[4];
       SQL sql = SQLService.getSQL();
       sql.execute("update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id);
-      if (sql.lastException != null) {
-        JFLog.log(sql.lastException);
-      }
       sql.close();
     } else {
       TagsService.write(tag, tf.getText());
@@ -427,9 +438,6 @@ public class Events {
       String id = f[4];
       SQL sql = SQLService.getSQL();
       sql.execute("update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id);
-      if (sql.lastException != null) {
-        JFLog.log(sql.lastException);
-      }
       sql.close();
     } else {
       TagsService.write(tag, value);
