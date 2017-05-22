@@ -13,6 +13,7 @@ public abstract class Logic {
   public abstract boolean isBlock();
   public abstract String getName();
   public abstract String getCode();
+  public String getCode(String func) {return null;}
 
   public abstract int getTagsCount();
   public abstract int getTagType(int idx);

@@ -998,7 +998,7 @@ public class Panels {
               x--;
               y++;
               if (create) {
-                newCells.add(createCell(null, x, y, 3, 1, textfield, null, node.tags[tagIdx++], null, null, null, style));
+                newCells.add(createCell(null, x, y, 3, 1, textfield, null, node.tags[tagIdx++].substring(1), null, null, null, style));
                 newNodes.add(node.addChild('T', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1104,7 +1104,6 @@ public class Panels {
 
             //output tags
             int tagcnt = blk.getTagsCount();
-            JFLog.log("tagcnt=" + tagcnt);
             for(int a=0;a<tagcnt;a++) {
               if (create) {
                 newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
@@ -1119,16 +1118,14 @@ public class Panels {
 
               if (create) {
                 if (blk.getTagType(a) == Types.FUNCTION) {
-                  String txt = node.tags[tagIdx++];
-                  JFLog.log("txt=" + txt);
+                  String txt = node.tags[tagIdx++].substring(1);
                   if (readonly) {
                     txt = sql.select1value("select name from funcs where id=" + txt);
                   }
-                  JFLog.log("txt=" + txt);
                   newCells.add(createCell(null, x, y, 3, 1, combobox, "jfc_function", txt, null, null, "jfc_function", style));
                   newNodes.add(node.addChild('C', x, y));
                 } else {
-                  newCells.add(createCell(null, x, y, 3, 1, textfield, null, node.tags[tagIdx++], null, null, null, style));
+                  newCells.add(createCell(null, x, y, 3, 1, textfield, null, node.tags[tagIdx++].substring(1), null, null, null, style));
                   newNodes.add(node.addChild('T', x, y));
                 }
               } else {

@@ -46,4 +46,32 @@ public class FunctionService extends Thread {
   public void run() {
     //execute logic
   }
+  public static boolean generateFunction(int fid, SQL sql) {
+    String code = FunctionCompiler.generateFunction(fid, sql);
+    new File("work/java").mkdirs();
+    new File("work/class").mkdirs();
+    String java_file = "work/java/Code_" + fid + ".java";
+    String class_file = "work/class/Code_" + fid + ".class";
+    try {
+      FileOutputStream fos = new FileOutputStream(java_file);
+      fos.write(code.getBytes());
+      fos.close();
+      return true;
+    } catch (Exception e) {
+      new File(java_file).delete();
+      JFLog.log(e);
+      return false;
+    }
+  }
+  public static boolean compileProgram(SQL sql) {
+    try {
+      //TODO : log output - use javaforce.ShellProcess
+      Process p = Runtime.getRuntime().exec(new String[] {"javac" , "work/java/*.java", "-d", "work/class"});
+      p.waitFor();
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
 }

@@ -15,4 +15,7 @@ public class TagsService {
   public static Tag[] getTags() {
     return new Tag[0];
   }
+  public static Tag getTag(String name) {
+    return null;
+  }
 }

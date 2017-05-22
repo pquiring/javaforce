@@ -18,7 +18,19 @@ public class Tag {
     return name;
   }
 
-  public boolean isset() {
+  public boolean getBoolean() {
     return !value.equals("0");
+  }
+
+  public void setBoolean(boolean value) {
+    this.value = value ? "1" : "0";
+  }
+
+  public int getInt() {
+    return Integer.valueOf(value);
+  }
+
+  public void setInt(int value) {
+    this.value = Integer.toString(value);
   }
 }

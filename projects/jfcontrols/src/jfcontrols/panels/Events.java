@@ -5,10 +5,11 @@ package jfcontrols.panels;
  * @author pquiring
  */
 
-import java.util.ArrayList;
+import java.util.*;
 import javaforce.*;
 import javaforce.webui.*;
 
+import jfcontrols.functions.*;
 import jfcontrols.sql.*;
 import jfcontrols.tags.*;
 import jfcontrols.logic.*;
@@ -380,6 +381,9 @@ public class Events {
         String str = root.saveLogic(sql);
         JFLog.log("logic=" + str);
         sql.execute("update rungs set logic='" + str + "' where rid=" + rid + " and fid=" + fid);
+        //recompile logic
+        FunctionService.generateFunction(Integer.valueOf(fid), sql);
+        FunctionService.compileProgram(sql);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }

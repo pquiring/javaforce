@@ -9,6 +9,7 @@ import java.util.*;
 import javaforce.*;
 
 import jfcontrols.logic.*;
+import jfcontrols.tags.*;
 
 /*
 Ladder Logic Notation
@@ -476,18 +477,32 @@ public class Node {
     return x;
   }
 
+  private String encodeTag(String tag, int tagType) {
+    char first = tag.toLowerCase().charAt(0);
+    switch (tagType) {
+      case Types.FUNCTION:
+        return "f" + tag;
+      default:
+        if ((first >= 'a' && first <= 'z') || first == '#') {
+          return "t" + tag;
+        }
+        return "i" + tag;
+    }
+  }
+
   public String getTags() {
     StringBuilder sb = new StringBuilder();
     int cnt = childs.size();
+    int tagIdx = 0;
     for(int a=0;a<cnt;a++) {
       Node child = childs.get(a);
       if (child.type == 'T') {
         TextField tf = (TextField)child.comp;
         sb.append(",");
-        sb.append(tf.getText());
+        sb.append(encodeTag(tf.getText(), blk.getTagType(tagIdx++)));
       } else if (child.type == 'C') {
         ComboBox cb = (ComboBox)child.comp;
-        sb.append(",");
+        sb.append(",f");
         sb.append(cb.getSelectedValue());
       }
     }

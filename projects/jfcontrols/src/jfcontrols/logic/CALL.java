@@ -28,8 +28,10 @@ public class CALL extends Logic {
     return "Call";
   }
 
-  public String getCode() {
-    return "  jfcontrols.functions.Invoke.invoke(tags[0]);";
+  public String getCode() {return null;}
+
+  public String getCode(String func) {
+    return "  if (enabled) enabled = code.class_" + func + ".code(tags[0]);";
   }
 
   public int getTagsCount() {
