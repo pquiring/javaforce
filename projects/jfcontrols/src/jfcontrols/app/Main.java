@@ -12,7 +12,7 @@ import javaforce.webui.*;
 import jfcontrols.panels.*;
 import jfcontrols.functions.*;
 import jfcontrols.sql.*;
-import jfcontrols.images.*;
+import jfcontrols.tags.*;
 
 public class Main implements WebUIHandler {
 
@@ -22,6 +22,8 @@ public class Main implements WebUIHandler {
   public static void main(String args[]) {
     //start database
     SQLService.start();
+    //start tags server
+    TagsService.main();
     //start logic server
     FunctionService.main();
     //start webui server
@@ -37,5 +39,12 @@ public class Main implements WebUIHandler {
   public byte[] getResource(String string) {
     System.out.println("getResource(" + string + ")");
     return null;
+  }
+
+  public static void restart() {
+    FunctionService.cancel();
+    TagsService.cancel();
+    FunctionService.main();
+    TagsService.main();
   }
 }

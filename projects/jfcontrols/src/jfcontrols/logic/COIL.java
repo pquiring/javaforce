@@ -26,6 +26,6 @@ public class COIL extends Logic {
   }
 
   public int getTagType(int idx) {
-    return Types.BIT;
+    return TagType.BIT;
   }
 }

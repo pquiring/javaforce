@@ -5,7 +5,7 @@ package jfcontrols.tags;
  * @author pquiring
  */
 
-public class Types {
+public class TagType {
   public static final int BIT = 1;
   public static final int BYTE = 8;
   public static final int SHORT = 16;

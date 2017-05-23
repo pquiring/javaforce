@@ -6,46 +6,71 @@ package jfcontrols.functions;
  */
 
 import java.io.*;
+import java.lang.reflect.*;
 
 import javaforce.*;
 
+import jfcontrols.tags.*;
+
 public class FunctionService extends Thread {
-  public static String dataPath;
-  public static String databaseName = "jfcontrols";
-  public static String logsPath;
-  public static String derbyURI;
+  public static volatile boolean active;
+  public static Object lock = new Object();
 
   public static void main() {
-    if (JF.isWindows()) {
-      dataPath = System.getenv("ProgramData") + "/jfcontrols";
-    } else {
-      dataPath = "/var/jfcontrols";
-    }
-    logsPath = dataPath + "/logs/service.log";
-    derbyURI = "jdbc:derby:jfcontrols";
-
-    new File(logsPath).mkdirs();
-    JFLog.init(logsPath, true);
-    System.setProperty("derby.system.home", dataPath);
-    if (!new File(dataPath + "/" + databaseName + "/service.properties").exists()) {
-      //create database
-      SQL sql = new SQL();
-      sql.connect(derbyURI + ";create=true");
-      //create tables
-      sql.close();
-    } else {
-      //update database if required
-      SQL sql = new SQL();
-      sql.connect(derbyURI);
-
-      sql.close();
-    }
-    //start executor
     new FunctionService().start();
   }
+
   public void run() {
-    //execute logic
+    LogicLoader loader = new LogicLoader();
+    Class mainCls, initCls;
+    try {
+      mainCls = loader.loadClass("code.func_0");
+      initCls = loader.loadClass("code.func_1");
+    } catch (Exception e) {
+      JFLog.log(e);
+      return;
+    }
+    Method main, init;
+    try {
+      main = mainCls.getMethod("code", Tag[].class);
+      init = initCls.getMethod("code", Tag[].class);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return;
+    }
+    active = true;
+    TagsService.doReads();
+    try {
+      init.invoke(null, new Object[] {null});
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    TagsService.doWrites();
+    while (active) {
+      TagsService.doReads();
+      try {
+        main.invoke(null, new Object[] {null});
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      TagsService.doWrites();
+    }
+    synchronized(lock) {
+      lock.notify();
+    }
   }
+
+  public static void cancel() {
+    synchronized(lock) {
+      active = false;
+      try {lock.wait();} catch (Exception e) {}
+    }
+  }
+
+  public static boolean isActive() {
+    return active;
+  }
+
   public static boolean generateFunction(int fid, SQL sql) {
     String code = FunctionCompiler.generateFunction(fid, sql);
     new File("work/java").mkdirs();

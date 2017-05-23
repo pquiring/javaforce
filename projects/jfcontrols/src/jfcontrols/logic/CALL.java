@@ -7,7 +7,7 @@ package jfcontrols.logic;
 
 import javaforce.*;
 
-import jfcontrols.tags.Types;
+import jfcontrols.tags.TagType;
 
 public class CALL extends Logic {
 
@@ -41,6 +41,6 @@ public class CALL extends Logic {
 
   public int getTagType(int idx) {
     //return types[idx];
-    return Types.FUNCTION;
+    return TagType.FUNCTION;
   }
 }

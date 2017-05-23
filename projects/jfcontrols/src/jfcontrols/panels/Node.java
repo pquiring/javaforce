@@ -480,7 +480,7 @@ public class Node {
   private String encodeTag(String tag, int tagType) {
     char first = tag.toLowerCase().charAt(0);
     switch (tagType) {
-      case Types.FUNCTION:
+      case TagType.FUNCTION:
         return "f" + tag;
       default:
         if ((first >= 'a' && first <= 'z') || first == '#') {

@@ -26,6 +26,6 @@ public class XOFF extends Logic {
   }
 
   public int getTagType(int idx) {
-    return Types.BIT;
+    return TagType.BIT;
   }
 }

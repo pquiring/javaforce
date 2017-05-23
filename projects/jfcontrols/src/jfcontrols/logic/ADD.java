@@ -26,6 +26,6 @@ public class ADD extends Logic {
   }
 
   public int getTagType(int idx) {
-    return Types.INT;
+    return TagType.INT;
   }
 }

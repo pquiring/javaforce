@@ -1117,7 +1117,7 @@ public class Panels {
               x++;
 
               if (create) {
-                if (blk.getTagType(a) == Types.FUNCTION) {
+                if (blk.getTagType(a) == TagType.FUNCTION) {
                   String txt = node.tags[tagIdx++].substring(1);
                   if (readonly) {
                     txt = sql.select1value("select name from funcs where id=" + txt);
