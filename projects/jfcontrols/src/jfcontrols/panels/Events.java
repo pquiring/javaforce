@@ -171,6 +171,9 @@ public class Events {
         Rectangle r = (Rectangle)focus.getProperty("rect");
         String pid = (String)client.getProperty("panel");
         String events = sql.select1value("select events from cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+        String tag = sql.select1value("select tag from cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+        if (tag == null) tag = "";
+        TextField tagTF = (TextField)client.getPanel().getComponent("tag");
         TextField pressTF = (TextField)client.getPanel().getComponent("press");
         TextField releaseTF = (TextField)client.getPanel().getComponent("release");
         TextField clickTF = (TextField)client.getPanel().getComponent("click");
@@ -190,6 +193,7 @@ public class Events {
             }
           }
         }
+        tagTF.setText(tag);
         pressTF.setText(press);
         releaseTF.setText(release);
         clickTF.setText(click);
@@ -200,6 +204,12 @@ public class Events {
       case "jfc_panel_props_ok": {
         Component focus = (Component)client.getProperty("focus");
         if (focus != null) {
+          TextField tagTF = (TextField)client.getPanel().getComponent("tag");
+          String tag = tagTF.getText();
+          if (tag.indexOf("|") != -1) {
+            tagTF.setFocus();
+            break;
+          }
           TextField pressTF = (TextField)client.getPanel().getComponent("press");
           String press = pressTF.getText();
           if (press.indexOf("|") != -1) {
@@ -221,7 +231,7 @@ public class Events {
           String events = "press=" + press + "|release=" + release + "|click=" + click;
           Rectangle r = (Rectangle)focus.getProperty("rect");
           String pid = (String)client.getProperty("panel");
-          sql.execute("update cells set events=" + SQL.quote(events) + " where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+          sql.execute("update cells set events=" + SQL.quote(events) + ",tag=" + SQL.quote(tag) + " where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
           JFLog.log("update:" + r.x + "," + r.y + ",pid=" + pid);
         }
         PopupPanel panel = (PopupPanel)client.getPanel().getComponent("props_panel");
@@ -462,17 +472,38 @@ public class Events {
           client.setPanel(panel);
         }
         break;
-      case "toggleBit":
-        break;
-      case "setBit":
-        break;
-      case "clearBit":
-        break;
       default:
         //TODO : support plugin events
         JFLog.log("Unknown event:" + func);
         break;
     }
+
+    String events = (String)c.getProperty("events");
+    if (events == null) return;
+    String parts[] = events.split("[|]");
+    String click = "";
+    for(int a=0;a<parts.length;a++) {
+      String part = parts[a];
+      int idx = part.indexOf("=");
+      if (idx == -1) continue;
+      String key = part.substring(0, idx);
+      String value = part.substring(idx + 1);
+      switch (key) {
+//        case "press": press = value; break;
+//        case "release": release = value; break;
+        case "click": click = value; break;
+      }
+    }
+    String cmds[] = click.split(";");
+    for(int a=0;a<cmds.length;a++) {
+      String cmd_args_ = cmds[a].trim();
+      int i1 = cmd_args_.indexOf("(");
+      int i2 = cmd_args_.indexOf(")");
+      String cmd = cmd_args_.substring(0, i1);
+      String args[] = cmd_args_.substring(i1+1, i2).split(",");
+      doCommand(cmd, args);
+    }
+
     sql.close();
   }
   //textfield edited
@@ -513,6 +544,86 @@ public class Events {
       sql.close();
     } else {
       TagsService.write(tag, value);
+    }
+  }
+  public static void press(Component c) {
+    String events = (String)c.getProperty("events");
+    if (events == null) return;
+    String parts[] = events.split("[|]");
+    String press = "";
+    for(int a=0;a<parts.length;a++) {
+      String part = parts[a];
+      int idx = part.indexOf("=");
+      if (idx == -1) continue;
+      String key = part.substring(0, idx);
+      String value = part.substring(idx + 1);
+      switch (key) {
+        case "press": press = value; break;
+//        case "release": release = value; break;
+//        case "click": click = value; break;
+      }
+    }
+    String cmds[] = press.split(";");
+    for(int a=0;a<cmds.length;a++) {
+      String cmd_args_ = cmds[a].trim();
+      int i1 = cmd_args_.indexOf("(");
+      int i2 = cmd_args_.indexOf(")");
+      String cmd = cmd_args_.substring(0, i1);
+      String args[] = cmd_args_.substring(i1+1, i2).split(",");
+      doCommand(cmd, args);
+    }
+  }
+  public static void release(Component c) {
+    String events = (String)c.getProperty("events");
+    if (events == null) return;
+    String parts[] = events.split("[|]");
+    String release = "";
+    for(int a=0;a<parts.length;a++) {
+      String part = parts[a];
+      int idx = part.indexOf("=");
+      if (idx == -1) continue;
+      String key = part.substring(0, idx);
+      String value = part.substring(idx + 1);
+      switch (key) {
+//        case "press": press = value; break;
+        case "release": release = value; break;
+//        case "click": click = value; break;
+      }
+    }
+    String cmds[] = release.split(";");
+    for(int a=0;a<cmds.length;a++) {
+      String cmd_args_ = cmds[a].trim();
+      int i1 = cmd_args_.indexOf("(");
+      int i2 = cmd_args_.indexOf(")");
+      String cmd = cmd_args_.substring(0, i1);
+      String args[] = cmd_args_.substring(i1+1, i2).split(",");
+      doCommand(cmd, args);
+    }
+  }
+  public static void doCommand(String cmd, String args[]) {
+    //TODO : these commands need to be processed by the FunctionService thread - in between scan cycles
+    switch (cmd) {
+      case "toggleBit": {
+        Tag tag = TagsService.getTag(args[0]);
+        if (tag != null) {
+          tag.setBoolean(!tag.getBoolean());
+        }
+        break;
+      }
+      case "setBit": {
+        Tag tag = TagsService.getTag(args[0]);
+        if (tag != null) {
+          tag.setBoolean(true);
+        }
+        break;
+      }
+      case "clearBit": {
+        Tag tag = TagsService.getTag(args[0]);
+        if (tag != null) {
+          tag.setBoolean(false);
+        }
+        break;
+      }
     }
   }
 }

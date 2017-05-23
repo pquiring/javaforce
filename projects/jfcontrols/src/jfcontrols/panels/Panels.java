@@ -59,7 +59,7 @@ public class Panels {
       return null;
     }
     String popup = sql.select1value("select popup from panels where id=" + pid);
-    String cells[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style from cells where pid=" + pid);
+    String cells[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style,events from cells where pid=" + pid);
     sql.close();
     Table table = new Table(cellWidth,cellHeight,1,1);
     panel.add(table);
@@ -90,6 +90,7 @@ public class Panels {
   private final static int FUNC = 9;
   private final static int ARG = 10;
   private final static int STYLE = 11;
+  private final static int EVENTS = 12;
   public static Table buildTable(Table table, Container container, String cells[][], WebUIClient client, int ix, int iy, Node nodes[], SQL sql) {
     int mx = table.getColumns();
     if (ix != -1) mx = ix;
@@ -122,6 +123,10 @@ public class Panels {
       }
       setCellSize(c, rs[a]);
       c.setProperty("id", cells[a][ID]);
+      c.setProperty("tag", cells[a][TAG]);
+      c.setProperty("func", cells[a][FUNC]);
+      c.setProperty("arg", cells[a][ARG]);
+      c.setProperty("events", cells[a][EVENTS]);
       c.setName(cells[a][NAME]);
       if (nodes != null && nodes.length > a) {
         c.setProperty("node", nodes[a]);
@@ -206,10 +211,14 @@ public class Panels {
     } else {
       b = new Button(v[TEXT]);
     }
-    b.setProperty("func", v[FUNC]);
-    b.setProperty("arg", v[ARG]);
     b.addClickListener((me, c) -> {
       Events.click(c);
+    });
+    b.addMouseDownListener((c) -> {
+      Events.press(c);
+    });
+    b.addMouseUpListener((c) -> {
+      Events.release(c);
     });
     return b;
   }
@@ -232,7 +241,6 @@ public class Panels {
     }
     if (text == null) text = "";
     TextField b = new TextField(text);
-    b.setProperty("tag", tag);
     b.addChangedListener((c) -> {
       Events.edit((TextField)c);
     });
@@ -280,7 +288,6 @@ public class Panels {
       cb.setSelectedIndex(selidx);
     }
     if (tag != null) {
-      cb.setProperty("tag", tag);
       cb.addChangedListener((c) -> {
         Events.changed((ComboBox)c);
       });
@@ -312,7 +319,7 @@ public class Panels {
     return new Image(Images.getImage(arg));
   }
   private static String[] createCell(String id, int x, int y, int w, int h, String comp, String name, String text, String tag, String func, String arg, String style) {
-    String cell[] = new String[12];
+    String cell[] = new String[13];
     cell[0] = id;
     cell[1] = Integer.toString(x);
     cell[2] = Integer.toString(y);
@@ -391,7 +398,7 @@ public class Panels {
       }
       case "jfc_panel_editor": {
         String pid = (String)client.getProperty("panel");
-        String data[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style from cells where pid=" + pid);
+        String data[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style,events from cells where pid=" + pid);
         sql.close();
         for(int a=0;a<data.length;a++) {
           cells.add(data[a]);
