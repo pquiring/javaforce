@@ -20,12 +20,20 @@ public class Panels {
   public static int cellHeight = 32;
   public static PopupPanel getLoginPanel(WebUIClient client) {
     PopupPanel panel = (PopupPanel)buildPanel(createPopupPanel("Login"), "jfc_login", client);
+    panel.setModal(true);
     panel.setName("login_panel");
     return panel;
   }
   public static PopupPanel getMenuPanel(WebUIClient client) {
     PopupPanel panel = (PopupPanel)buildPanel(createPopupPanel("Menu"), "jfc_main", client);
+    panel.setModal(true);
     panel.setName("menu_panel");
+    return panel;
+  }
+  public static PopupPanel getPropsPanel(WebUIClient client) {
+    PopupPanel panel = (PopupPanel)buildPanel(createPopupPanel("Properties"), "jfc_panel_props", client);
+    panel.setModal(true);
+    panel.setName("props_panel");
     return panel;
   }
   public static Panel getTagsPanel(WebUIClient client) {
@@ -64,6 +72,9 @@ public class Panels {
     //TODO : [alarm status] : [title]
     panel.add(getLoginPanel(client));
     panel.add(getMenuPanel(client));
+    if (pname.equals("jfc_panel_editor")) {
+      panel.add(getPropsPanel(client));
+    }
     return panel;
   }
   //id,x,y,w,h,name,text,tag,func,arg,style
@@ -699,7 +710,7 @@ public class Panels {
     Rung rung = new Rung();
     String logic = data[1];
     String comment = data[2];
-    String parts[] = logic.split("|");
+    String parts[] = logic.split("[|]");
     String blocks[][] = sql.select("select bid,name,tags from blocks where fid=" + fid + " and rid=" + rid);
     ArrayList<Node> nodes = new ArrayList<Node>();
     NodeRoot root = new NodeRoot(fid, rid);

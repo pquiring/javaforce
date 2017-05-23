@@ -27,23 +27,23 @@ public class Events {
     switch (func) {
       case "showMenu": {
         if (client.getProperty("user") == null) {
-          PopupPanel panel = (PopupPanel)client.root.getComponent("login_panel");
+          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("login_panel");
           panel.setVisible(true);
         } else {
-          PopupPanel panel = (PopupPanel)client.root.getComponent("menu_panel");
+          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("menu_panel");
           panel.setVisible(true);
         }
         break;
       }
       case "jfc_logout": {
         client.setProperty("user", null);
-        PopupPanel panel = (PopupPanel)client.root.getComponent("menu_panel");
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("menu_panel");
         panel.setVisible(false);
         break;
       }
       case "jfc_login_ok": {
-        String user = ((TextField)client.root.getComponent("user")).getText();
-        String pass = ((TextField)client.root.getComponent("pass")).getText();
+        String user = ((TextField)client.getPanel().getComponent("user")).getText();
+        String pass = ((TextField)client.getPanel().getComponent("pass")).getText();
         JFLog.log("user/pass=" + user + "," + pass);
         String data[][] = sql.select("select name,pass from users");
         boolean ok = false;
@@ -56,14 +56,14 @@ public class Events {
           }
         }
         if (!ok) {
-          Label lbl = (Label)client.root.getComponent("errmsg");
+          Label lbl = (Label)client.getPanel().getComponent("errmsg");
           lbl.setText("Invalid username or password!");
           break;
         }
         //no break
       }
       case "jfc_login_cancel": {
-        PopupPanel panel = (PopupPanel)client.root.getComponent("login_panel");
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("login_panel");
         panel.setVisible(false);
         break;
       }
@@ -163,6 +163,74 @@ public class Events {
         break;
       }
       case "jfc_panel_editor_del": {
+        break;
+      }
+      case "jfc_panel_editor_props": {
+        Component focus = (Component)client.getProperty("focus");
+        if (focus == null) break;
+        Rectangle r = (Rectangle)focus.getProperty("rect");
+        String pid = (String)client.getProperty("panel");
+        String events = sql.select1value("select events from cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+        TextField pressTF = (TextField)client.getPanel().getComponent("press");
+        TextField releaseTF = (TextField)client.getPanel().getComponent("release");
+        TextField clickTF = (TextField)client.getPanel().getComponent("click");
+        String press = "", release = "", click = "";
+        if (events != null) {
+          String parts[] = events.split("[|]");
+          for(int a=0;a<parts.length;a++) {
+            String part = parts[a];
+            int idx = part.indexOf("=");
+            if (idx == -1) continue;
+            String key = part.substring(0, idx);
+            String value = part.substring(idx + 1);
+            switch (key) {
+              case "press": press = value; break;
+              case "release": release = value; break;
+              case "click": click = value; break;
+            }
+          }
+        }
+        pressTF.setText(press);
+        releaseTF.setText(release);
+        clickTF.setText(click);
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("props_panel");
+        panel.setVisible(true);
+        break;
+      }
+      case "jfc_panel_props_ok": {
+        Component focus = (Component)client.getProperty("focus");
+        if (focus != null) {
+          TextField pressTF = (TextField)client.getPanel().getComponent("press");
+          String press = pressTF.getText();
+          if (press.indexOf("|") != -1) {
+            pressTF.setFocus();
+            break;
+          }
+          TextField releaseTF = (TextField)client.getPanel().getComponent("release");
+          String release = releaseTF.getText();
+          if (release.indexOf("|") != -1) {
+            releaseTF.setFocus();
+            break;
+          }
+          TextField clickTF = (TextField)client.getPanel().getComponent("click");
+          String click = clickTF.getText();
+          if (click.indexOf("|") != -1) {
+            clickTF.setFocus();
+            break;
+          }
+          String events = "press=" + press + "|release=" + release + "|click=" + click;
+          Rectangle r = (Rectangle)focus.getProperty("rect");
+          String pid = (String)client.getProperty("panel");
+          sql.execute("update cells set events=" + SQL.quote(events) + " where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+          JFLog.log("update:" + r.x + "," + r.y + ",pid=" + pid);
+        }
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("props_panel");
+        panel.setVisible(false);
+        break;
+      }
+      case "jfc_panel_props_cancel": {
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("props_panel");
+        panel.setVisible(false);
         break;
       }
       case "jfc_panel_editor_move_u": {
