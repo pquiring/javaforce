@@ -23,6 +23,16 @@ public class FunctionService extends Thread {
   public void run() {
     LogicLoader loader = new LogicLoader();
     Class mainCls, initCls;
+    File mainFile = new File("work/class/main.class");
+    if (!mainFile.exists()) {
+      JFLog.log("main function not compiled");
+      return;
+    }
+    File initFile = new File("work/class/init.class");
+    if (!initFile.exists()) {
+      JFLog.log("init function not compiled");
+      return;
+    }
     try {
       mainCls = loader.loadClass("code.func_0");
       initCls = loader.loadClass("code.func_1");
