@@ -66,7 +66,8 @@ public class Panels {
     buildTable(table, panel, cells, client, -1, -1, null, sql);
     if (popup.equals("true")) return panel;
     //add top components
-    Button x = getButton(new String[] {null, null, null, null, null, "button", null, "!image:menu", null, "showMenu", null});
+    Button x = getButton(new String[] {null, null, null, null, null, "button", null, "!image:menu", null, "showMenu", null, null});
+    x.setProperty("func", "showMenu");
     setCellSize(x, new Rectangle(0,0,1,1));
     table.add(x, 0, 0);
     //TODO : [alarm status] : [title]
@@ -562,7 +563,7 @@ public class Panels {
     p.add(comp);
     return p;
   }
-  public static void moveCell(WebUIClient client, int deltax, int deltay) {
+  public static void moveCell(WebUIClient client, int deltax, int deltay, SQL sql) {
     Block focus = (Block)client.getProperty("focus");
     if (focus == null) {
       JFLog.log("Error:no focus");
@@ -592,6 +593,8 @@ public class Panels {
         return;
       }
     }
+    String pid = (String)client.getProperty("panel");
+    sql.execute("update cells set x=" + (fr.x + deltax) + ",y=" + (fr.y + deltay) + " where x=" + fr.x + " and y=" + fr.y + " and pid=" + pid);
     moveComponent(t1, fr.x, fr.y, x1, y1, false);
     moveComponent(t2, fr.x, fr.y, x1, y1, true);
   }
@@ -637,7 +640,7 @@ public class Panels {
       }
     }
   }
-  public static void resizeCell(WebUIClient client, int deltax, int deltay) {
+  public static void resizeCell(WebUIClient client, int deltax, int deltay, SQL sql) {
     Block focus = (Block)client.getProperty("focus");
     if (focus == null) {
       JFLog.log("Error:no focus");
@@ -668,6 +671,8 @@ public class Panels {
         return;
       }
     }
+    String pid = (String)client.getProperty("panel");
+    sql.execute("update cells set w=" + (fr.width + deltax) + ",h=" + (fr.height + deltay) + " where x=" + fr.x + " and y=" + fr.y + " and pid=" + pid);
     resizeComponent(t1, fr.x, fr.y, deltax, deltay, false);
     resizeComponent(t2, fr.x, fr.y, deltax, deltay, true);
   }

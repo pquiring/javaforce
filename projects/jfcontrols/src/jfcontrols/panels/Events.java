@@ -146,23 +146,35 @@ public class Events {
       case "jfc_panel_editor_add": {
         ComboBox cb = (ComboBox)client.getPanel().getComponent("panel_type");
         String type = cb.getSelectedText();
-        JFLog.log("type=" + type);
-        Component nc = null;
-        switch (type) {
-          case "label": nc = new Label("label"); break;
-          case "button": nc = new Button("button"); break;
-        }
-        if (nc == null) break;
         Block focus = (Block)client.getProperty("focus");
         if (focus == null) break;
         Rectangle r = (Rectangle)focus.getProperty("rect");
         Rectangle nr = new Rectangle(r);
-        Panels.setCellSize(nc, nr);
         Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+        if (t1.get(r.x, r.y, false) != null) break;  //something already there
+        Component nc = null;
+        String text = null;
+        switch (type) {
+          case "label": text = "label"; nc = new Label(text); break;
+          case "button": text = "button"; nc = new Button(text); break;
+        }
+        if (nc == null) break;
+        Panels.setCellSize(nc, nr);
         t1.add(nc, r.x, r.y);
+        String pid = (String)client.getProperty("panel");
+        sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + pid + "," + r.x + "," + r.y + ",1,1," + SQL.quote(type) + "," + SQL.quote(text) + ")");
         break;
       }
       case "jfc_panel_editor_del": {
+        Block focus = (Block)client.getProperty("focus");
+        if (focus == null) break;
+        Rectangle r = (Rectangle)focus.getProperty("rect");
+        Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+        Component comp = t1.get(r.x, r.y, false);
+        if (comp == null) break;
+        t1.remove(r.x, r.y);
+        String pid = (String)client.getProperty("panel");
+        sql.execute("delete from cells where pid=" + pid + " and x=" + r.x + " and y=" + r.y);
         break;
       }
       case "jfc_panel_editor_props": {
@@ -250,7 +262,6 @@ public class Events {
           String events = "press=" + press + "|release=" + release + "|click=" + click;
           String pid = (String)client.getProperty("panel");
           sql.execute("update cells set events=" + SQL.quote(events) + ",tag=" + SQL.quote(tag) + ",text=" + SQL.quote(text) + " where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
-          JFLog.log("update:" + r.x + "," + r.y + ",pid=" + pid);
         }
         PopupPanel panel = (PopupPanel)client.getPanel().getComponent("props_panel");
         panel.setVisible(false);
@@ -262,36 +273,36 @@ public class Events {
         break;
       }
       case "jfc_panel_editor_move_u": {
-        Panels.moveCell(client, 0, -1);
+        Panels.moveCell(client, 0, -1, sql);
         break;
       }
       case "jfc_panel_editor_move_d": {
-        Panels.moveCell(client, 0, +1);
+        Panels.moveCell(client, 0, +1, sql);
         break;
       }
       case "jfc_panel_editor_move_l": {
-        Panels.moveCell(client, -1, 0);
+        Panels.moveCell(client, -1, 0, sql);
         break;
       }
       case "jfc_panel_editor_move_r": {
-        Panels.moveCell(client, +1, 0);
+        Panels.moveCell(client, +1, 0, sql);
         break;
       }
 
       case "jfc_panel_editor_size_w_inc": {
-        Panels.resizeCell(client, +1, 0);
+        Panels.resizeCell(client, +1, 0, sql);
         break;
       }
       case "jfc_panel_editor_size_w_dec": {
-        Panels.resizeCell(client, -1, 0);
+        Panels.resizeCell(client, -1, 0, sql);
         break;
       }
       case "jfc_panel_editor_size_h_inc": {
-        Panels.resizeCell(client, 0, +1);
+        Panels.resizeCell(client, 0, +1, sql);
         break;
       }
       case "jfc_panel_editor_size_h_dec": {
-        Panels.resizeCell(client, 0, -1);
+        Panels.resizeCell(client, 0, -1, sql);
         break;
       }
 
