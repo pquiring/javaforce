@@ -18,37 +18,21 @@ import jfcontrols.images.*;
 public class Panels {
   public static int cellWidth = 32;
   public static int cellHeight = 32;
-  public static PopupPanel getLoginPanel(WebUIClient client) {
-    PopupPanel panel = (PopupPanel)buildPanel(createPopupPanel("Login"), "jfc_login", client);
+  public static PopupPanel getPopupPanel(WebUIClient client, String title, String name) {
+    PopupPanel panel = (PopupPanel)buildPanel(createPopupPanel(title, name), name, client);
     panel.setModal(true);
-    panel.setName("login_panel");
     return panel;
   }
-  public static PopupPanel getMenuPanel(WebUIClient client) {
-    PopupPanel panel = (PopupPanel)buildPanel(createPopupPanel("Menu"), "jfc_main", client);
-    panel.setModal(true);
-    panel.setName("menu_panel");
-    return panel;
-  }
-  public static PopupPanel getPropsPanel(WebUIClient client) {
-    PopupPanel panel = (PopupPanel)buildPanel(createPopupPanel("Properties"), "jfc_panel_props", client);
-    panel.setModal(true);
-    panel.setName("props_panel");
-    return panel;
-  }
-  public static Panel getTagsPanel(WebUIClient client) {
-    return null;
-  }
-  public static Panel getPanelsPanel(WebUIClient client) {
-    return null;
-  }
-  private static PopupPanel createPopupPanel(String title) {
+  private static PopupPanel createPopupPanel(String title, String name) {
     PopupPanel pp = new PopupPanel(title);
     pp.setTitleBarSize(cellHeight);
+    pp.setName(name);
     return pp;
   }
   //...
   public static Panel getPanel(String pname, WebUIClient client) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    context.clear();
     return buildPanel(new Panel(), pname, client);
   }
   public static Panel buildPanel(Panel panel, String pname, WebUIClient client) {
@@ -71,10 +55,10 @@ public class Panels {
     setCellSize(x, new Rectangle(0,0,1,1));
     table.add(x, 0, 0);
     //TODO : [alarm status] : [title]
-    panel.add(getLoginPanel(client));
-    panel.add(getMenuPanel(client));
+    panel.add(getPopupPanel(client, "Login", "jfc_login"));
+    panel.add(getPopupPanel(client, "Menu", "jfc_menu"));
     if (pname.equals("jfc_panel_editor")) {
-      panel.add(getPropsPanel(client));
+      panel.add(getPopupPanel(client, "Properties", "jfc_panel_props"));
     }
     return panel;
   }
@@ -127,7 +111,7 @@ public class Panels {
       c.setProperty("id", cells[a][ID]);
       String cellTag = cells[a][TAG];
       if (cellTag != null) {
-        c.setProperty("tag", cells[a][TAG]);
+        c.setProperty("tag", cellTag);
         context.addListener((MonitoredTag)TagsService.getTag(cellTag), c);
       }
       c.setProperty("func", cells[a][FUNC]);

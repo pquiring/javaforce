@@ -36,7 +36,7 @@ public class Main implements WebUIHandler {
     ClientContext context = new ClientContext(client);
     client.setProperty("context", context);
     context.start();
-    return Panels.buildPanel(new Panel(), "main", client);
+    return Panels.getPanel("main", client);
   }
 
   public byte[] getResource(String string) {

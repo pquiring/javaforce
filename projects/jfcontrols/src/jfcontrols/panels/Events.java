@@ -27,17 +27,17 @@ public class Events {
     switch (func) {
       case "showMenu": {
         if (client.getProperty("user") == null) {
-          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("login_panel");
+          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_login");
           panel.setVisible(true);
         } else {
-          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("menu_panel");
+          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_menu");
           panel.setVisible(true);
         }
         break;
       }
       case "jfc_logout": {
         client.setProperty("user", null);
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("menu_panel");
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_menu");
         panel.setVisible(false);
         break;
       }
@@ -63,7 +63,7 @@ public class Events {
         //no break
       }
       case "jfc_login_cancel": {
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("login_panel");
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_login");
         panel.setVisible(false);
         break;
       }
@@ -213,7 +213,7 @@ public class Events {
         pressTF.setText(press);
         releaseTF.setText(release);
         clickTF.setText(click);
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("props_panel");
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
         panel.setVisible(true);
         break;
       }
@@ -263,12 +263,12 @@ public class Events {
           String pid = (String)client.getProperty("panel");
           sql.execute("update cells set events=" + SQL.quote(events) + ",tag=" + SQL.quote(tag) + ",text=" + SQL.quote(text) + " where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
         }
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("props_panel");
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
         panel.setVisible(false);
         break;
       }
       case "jfc_panel_props_cancel": {
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("props_panel");
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
         panel.setVisible(false);
         break;
       }

@@ -138,8 +138,8 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,9,3,1,'button','','Controllers','setPanel','jfc_controllers')");
 //test
 
-    sql.execute("insert into panels (name, popup, builtin) values ('jfc_main', true, true)");
-    id = sql.select1value("select id from panels where name='jfc_main'");
+    sql.execute("insert into panels (name, popup, builtin) values ('jfc_menu', true, true)");
+    id = sql.select1value("select id from panels where name='jfc_menu'");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",0,0,3,1,'button','','Main Panel','setPanel','main')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",0,1,3,1,'button','','Controllers','setPanel', 'jfc_controllers')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",0,2,3,1,'button','','Tags','jfc_ctrl_tags','0')");
