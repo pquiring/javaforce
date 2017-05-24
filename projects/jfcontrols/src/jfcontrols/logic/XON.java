@@ -18,7 +18,7 @@ public class XON extends Logic {
   }
 
   public String getCode() {
-    return "enabled &= tags[0].getBoolean();\r\n";
+    return "enabled &= tags[1].getBoolean();\r\n";
   }
 
   public int getTagsCount() {

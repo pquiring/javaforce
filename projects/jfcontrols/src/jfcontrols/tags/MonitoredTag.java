@@ -11,12 +11,15 @@ import javaforce.*;
 
 public abstract class MonitoredTag extends Tag {
 
+  private ArrayList<TagListener> listeners = new ArrayList<>();
+  private Object lock = new Object();
+
   public MonitoredTag(String name, int type, SQL sql) {
     super(name, type, sql);
   }
 
-  private ArrayList<TagListener> listeners = new ArrayList<>();
-  private Object lock = new Object();
+  public abstract void updateRead(SQL sql);
+  public abstract void updateWrite(SQL sql);
 
   public void addListener(TagListener listener) {
     synchronized(lock) {

@@ -24,7 +24,6 @@ public class FunctionCompiler {
     sb.append("    int eidx = 0;\r\n");
     sb.append("    en[eidx] = enabled;\r\n");
     sb.append("    Tag tags[] = new Tag[33];\r\n");
-    sb.append("    Tag temp[] = new Tag[33];\r\n");
 
     //append code from rungs
     String rungs[][] = sql.select("select logic from rungs where fid=" + fid);
@@ -71,19 +70,16 @@ public class FunctionCompiler {
             };
             break;
           case '#': {
-            int tempidx = 0;
             for(int t=1;t<node.tags.length;t++) {
               String tag = node.tags[t];
               char type = tag.charAt(0);
               String ag = tag.substring(1);
               switch (type) {
                 case 't':
-                  sb.append("tags[" + (t-1) + "] = TagsService.getTag(\"" + ag + "\");\r\n");
+                  sb.append("tags[" + t + "] = TagsService.getTag(\"" + ag + "\");\r\n");
                   break;
                 case 'i':
-                  sb.append("tags[" + (t-1) + "] = temp[" + tempidx + "];");
-                  sb.append("temp[" + tempidx + "].setValue(" + ag + ");\r\n");
-                  tempidx++;
+                  sb.append("tags[" + t + "] = new Tag(null,0,\"" + ag + "\");");
                   break;
                 case 'f':
                   func = ag;

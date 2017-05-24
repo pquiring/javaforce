@@ -18,7 +18,7 @@ public class ADD extends Logic {
   }
 
   public String getCode() {
-    return "tag[2].setInt(tag[0].getInt() + tag[1].getInt() );\r\n";
+    return "tag[3].setInt(tag[1].getInt() + tag[2].getInt() );\r\n";
   }
 
   public int getTagsCount() {

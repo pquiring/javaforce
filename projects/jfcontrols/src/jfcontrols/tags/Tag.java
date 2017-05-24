@@ -7,20 +7,23 @@ package jfcontrols.tags;
 
 import javaforce.*;
 
-public abstract class Tag {
+public class Tag {
   protected String name;
   protected int type;
   protected String value;  //cached value
   protected boolean dirty;
+
+  public Tag(String name, int type, String value) {
+    this.name = name;
+    this.type = type;
+    this.value = value;
+  }
 
   public Tag(String name, int type, SQL sql) {
     this.name = name;
     this.type = type;
     value = "0";
   }
-
-  public abstract void updateRead(SQL sql);
-  public abstract void updateWrite(SQL sql);
 
   public String getName() {
     return name;
