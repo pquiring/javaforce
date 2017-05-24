@@ -19,8 +19,8 @@ public class TagsService extends Thread {
   private static volatile boolean doReads;
   private static volatile boolean doWrites;
 
-  private HashMap<String, Tag> localTags;
-  private HashMap<String, Tag> remoteTags;
+  private HashMap<String, Tag> localTags = new HashMap<>();
+  private HashMap<String, Tag> remoteTags = new HashMap<>();
 
   public static String read(String tag) {
     return getTag(tag).getValue();

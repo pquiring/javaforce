@@ -173,6 +173,9 @@ public class Events {
         String events = sql.select1value("select events from cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
         String tag = sql.select1value("select tag from cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
         if (tag == null) tag = "";
+        String text = sql.select1value("select text from cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+        if (text == null) text = "";
+        TextField textTF = (TextField)client.getPanel().getComponent("text");
         TextField tagTF = (TextField)client.getPanel().getComponent("tag");
         TextField pressTF = (TextField)client.getPanel().getComponent("press");
         TextField releaseTF = (TextField)client.getPanel().getComponent("release");
@@ -193,6 +196,7 @@ public class Events {
             }
           }
         }
+        textTF.setText(text);
         tagTF.setText(tag);
         pressTF.setText(press);
         releaseTF.setText(release);
@@ -204,34 +208,48 @@ public class Events {
       case "jfc_panel_props_ok": {
         Component focus = (Component)client.getProperty("focus");
         if (focus != null) {
+          TextField textTF = (TextField)client.getPanel().getComponent("text");
+          String text = textTF.getText();
+          if (text.indexOf("|") != -1) {
+            setFocus(textTF);
+            break;
+          }
           TextField tagTF = (TextField)client.getPanel().getComponent("tag");
           String tag = tagTF.getText();
           if (tag.indexOf("|") != -1) {
-            tagTF.setFocus();
+            setFocus(tagTF);
             break;
           }
           TextField pressTF = (TextField)client.getPanel().getComponent("press");
           String press = pressTF.getText();
           if (press.indexOf("|") != -1) {
-            pressTF.setFocus();
+            setFocus(pressTF);
             break;
           }
           TextField releaseTF = (TextField)client.getPanel().getComponent("release");
           String release = releaseTF.getText();
           if (release.indexOf("|") != -1) {
-            releaseTF.setFocus();
+            setFocus(releaseTF);
             break;
           }
           TextField clickTF = (TextField)client.getPanel().getComponent("click");
           String click = clickTF.getText();
           if (click.indexOf("|") != -1) {
-            clickTF.setFocus();
+            setFocus(clickTF);
             break;
           }
-          String events = "press=" + press + "|release=" + release + "|click=" + click;
           Rectangle r = (Rectangle)focus.getProperty("rect");
+          Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+          Component comp = t1.get(r.x, r.y, false);
+          if (comp instanceof Button) {
+            ((Button)comp).setText(text);
+          }
+          if (comp instanceof Label) {
+            ((Label)comp).setText(text);
+          }
+          String events = "press=" + press + "|release=" + release + "|click=" + click;
           String pid = (String)client.getProperty("panel");
-          sql.execute("update cells set events=" + SQL.quote(events) + ",tag=" + SQL.quote(tag) + " where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+          sql.execute("update cells set events=" + SQL.quote(events) + ",tag=" + SQL.quote(tag) + ",text=" + SQL.quote(text) + " where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
           JFLog.log("update:" + r.x + "," + r.y + ",pid=" + pid);
         }
         PopupPanel panel = (PopupPanel)client.getPanel().getComponent("props_panel");
@@ -497,8 +515,10 @@ public class Events {
     String cmds[] = click.split(";");
     for(int a=0;a<cmds.length;a++) {
       String cmd_args_ = cmds[a].trim();
+      if (cmd_args_.length() == 0) continue;
       int i1 = cmd_args_.indexOf("(");
       int i2 = cmd_args_.indexOf(")");
+      if (i1 == -1 || i2 == -1) continue;
       String cmd = cmd_args_.substring(0, i1);
       String args[] = cmd_args_.substring(i1+1, i2).split(",");
       doCommand(cmd, args);
@@ -509,6 +529,11 @@ public class Events {
   //textfield edited
   public static void edit(TextField tf) {
     WebUIClient client = tf.getClient();
+    String red = (String)tf.getProperty("red");
+    if (red != null) {
+      tf.setBackColor("#fff");
+      tf.setProperty("red", null);
+    }
     String tag = (String)tf.getProperty("tag");
     if (tag == null) return;
     String value = tf.getText();
@@ -625,5 +650,10 @@ public class Events {
         break;
       }
     }
+  }
+  public static void setFocus(TextField tf) {
+    tf.setFocus();
+    tf.setBackColor("#c00");
+    tf.setProperty("red", "true");
   }
 }

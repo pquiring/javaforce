@@ -61,7 +61,7 @@ public class NodeRoot extends Node {
                   focus.setBorder(false);
                   client.setProperty("focus", null);
                 }
-                tf.setFocus();
+                Events.setFocus(tf);
                 return false;
               }
             }

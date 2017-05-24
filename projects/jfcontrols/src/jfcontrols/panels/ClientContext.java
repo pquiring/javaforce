@@ -41,6 +41,7 @@ public class ClientContext extends Thread {
   }
 
   public void addListener(MonitoredTag tag, Component comp) {
+    if (tag == null) return;
     Pair pair = new Pair(tag, comp, this);
     listeners.add(pair);
     tag.addListener(pair);
@@ -59,6 +60,7 @@ public class ClientContext extends Thread {
     while (active) {
       synchronized(lock) {
         try {lock.wait();} catch (Exception e) {}
+        if (stack.size() == 0) continue;
         pair = stack.remove(0);
       }
       if (pair == null) continue;
