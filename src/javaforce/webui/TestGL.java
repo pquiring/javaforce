@@ -18,6 +18,9 @@ public class TestGL implements WebUIHandler {
     new WebUIServer().start(new TestGL(), 8080, false);
   }
 
+  public void clientDisconnected(WebUIClient client) {
+  }
+
   public byte[] getResource(String url) {
     //TODO : return static images, etc needed by webpage
     return null;

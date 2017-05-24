@@ -146,7 +146,9 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   }
 
   public void doWebSocketClosed(WebSocket sock) {
-    clients.remove(getClient(sock));
+    WebUIClient client = getClient(sock);
+    clients.remove(client);
+    handler.clientDisconnected(client);
   }
 
   public void doWebSocketMessage(WebSocket sock, byte[] data, int type) {

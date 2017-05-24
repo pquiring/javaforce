@@ -33,12 +33,21 @@ public class Main implements WebUIHandler {
 
   public Panel getRootPanel(WebUIClient client) {
     System.out.println("getRootPanel()");
+    ClientContext context = new ClientContext(client);
+    client.setProperty("context", context);
     return Panels.buildPanel(new Panel(), "main", client);
   }
 
   public byte[] getResource(String string) {
     System.out.println("getResource(" + string + ")");
     return null;
+  }
+
+  public void clientDisconnected(WebUIClient client) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    if (context != null) {
+      context.cancel();
+    }
   }
 
   public static void restart() {

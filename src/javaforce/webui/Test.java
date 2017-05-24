@@ -23,6 +23,9 @@ public class Test implements WebUIHandler {
     new WebUIServer().start(new Test(), 8080, false);
   }
 
+  public void clientDisconnected(WebUIClient client) {
+  }
+
   public byte[] getResource(String url) {
     //TODO : return static images, etc needed by webpage
     return null;

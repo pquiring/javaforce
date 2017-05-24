@@ -30,4 +30,8 @@ public class App implements WebUIHandler {
   public byte[] getResource(String url) {
     return null;
   }
+
+  public void clientDisconnected(WebUIClient client) {
+  }
+
 }

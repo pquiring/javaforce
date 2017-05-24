@@ -10,4 +10,6 @@ public interface WebUIHandler {
   Panel getRootPanel(WebUIClient client);
   /** Returns raw resources from /static/... */
   byte[] getResource(String url);
+  /** Invoked when a client disconnects for cleanup */
+  void clientDisconnected(WebUIClient client);
 }

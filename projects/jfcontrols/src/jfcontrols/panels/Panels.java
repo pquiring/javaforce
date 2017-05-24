@@ -99,6 +99,7 @@ public class Panels {
     Component cs[] = new Component[cells.length];
     Rectangle rs[] = new Rectangle[cells.length];
     boolean flow[] = new boolean[cells.length];
+    ClientContext context = (ClientContext)client.getProperty("context");
     for(int a=0;a<cells.length;a++) {
       Rectangle r = new Rectangle();
       rs[a] = r;
@@ -123,7 +124,11 @@ public class Panels {
       }
       setCellSize(c, rs[a]);
       c.setProperty("id", cells[a][ID]);
-      c.setProperty("tag", cells[a][TAG]);
+      String cellTag = cells[a][TAG];
+      if (cellTag != null) {
+        c.setProperty("tag", cells[a][TAG]);
+        context.addListener((MonitoredTag)TagsService.getTag(cellTag), c);
+      }
       c.setProperty("func", cells[a][FUNC]);
       c.setProperty("arg", cells[a][ARG]);
       c.setProperty("events", cells[a][EVENTS]);

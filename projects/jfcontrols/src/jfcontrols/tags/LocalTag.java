@@ -7,7 +7,7 @@ package jfcontrols.tags;
 
 import javaforce.*;
 
-public class LocalTag extends Tag {
+public class LocalTag extends MonitoredTag {
 
   public LocalTag(String name, int type, SQL sql) {
     super(name, type, sql);
@@ -21,6 +21,7 @@ public class LocalTag extends Tag {
     if (dirty) {
       sql.execute("update tags set value=" + SQL.quote(value) + " where cid=0 and name=" + SQL.quote(name));
       dirty = false;
+      tagChanged();
     }
   }
 }
