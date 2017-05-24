@@ -35,6 +35,7 @@ public class Main implements WebUIHandler {
     System.out.println("getRootPanel()");
     ClientContext context = new ClientContext(client);
     client.setProperty("context", context);
+    context.start();
     return Panels.buildPanel(new Panel(), "main", client);
   }
 
