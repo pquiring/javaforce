@@ -93,6 +93,15 @@ public class Panels {
       r.width = Integer.valueOf(cells[a][W]);
       r.height = Integer.valueOf(cells[a][H]);
       String compType = cells[a][COMP];
+      String tagName = cells[a][TAG];
+      if (tagName != null && !tagName.startsWith("jfc_")) {
+        Tag tag = TagsService.getTag(tagName);
+        if (tag == null) {
+          JFLog.log("Error:Tag not found:" + tagName);
+        } else {
+          cells[a][TEXT] = tag.getValue();
+        }
+      }
       Component c = getCell(compType, container, cells[a], rs[a], client);
       if (c == null) {
         JFLog.log("Error:cell == null:" + compType);
@@ -190,8 +199,7 @@ public class Panels {
     return null;
   }
   private static Label getLabel(String v[]) {
-    Label b = new Label(v[TEXT]);
-    return b;
+    return new Label(v[TEXT]);
   }
   private static Button getButton(String v[]) {
     String text = v[TEXT];

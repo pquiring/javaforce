@@ -14,8 +14,8 @@ public abstract class MonitoredTag extends Tag {
   private ArrayList<TagListener> listeners = new ArrayList<>();
   private Object lock = new Object();
 
-  public MonitoredTag(String name, int type, SQL sql) {
-    super(name, type, sql);
+  public MonitoredTag(int cid, String name, int type, SQL sql) {
+    super(cid, name, type, sql);
   }
 
   public abstract void updateRead(SQL sql);

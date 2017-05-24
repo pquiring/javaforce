@@ -42,7 +42,7 @@ public class TagsService extends Thread {
     SQL sql = SQLService.getSQL();
     String tags[][] = sql.select("select name,type from tags where cid=0");
     for(int a=0;a<tags.length;a++) {
-      localTags.put(tags[a][0], new LocalTag(tags[a][0], Integer.valueOf(tags[a][1]), sql));
+      localTags.put(tags[a][0], new LocalTag(0, tags[a][0], Integer.valueOf(tags[a][1]), sql));
     }
     active = true;
     synchronized(lock) {

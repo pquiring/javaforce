@@ -8,18 +8,21 @@ package jfcontrols.tags;
 import javaforce.*;
 
 public class Tag {
+  protected int cid;
   protected String name;
   protected int type;
   protected String value;  //cached value
   protected boolean dirty;
 
+  /** Create temp tag. */
   public Tag(String name, int type, String value) {
+    this.cid = 0;
     this.name = name;
     this.type = type;
     this.value = value;
   }
 
-  public Tag(String name, int type, SQL sql) {
+  public Tag(int cid, String name, int type, SQL sql) {
     this.name = name;
     this.type = type;
     value = "0";
