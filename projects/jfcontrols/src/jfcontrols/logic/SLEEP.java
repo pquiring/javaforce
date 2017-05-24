@@ -7,22 +7,22 @@ package jfcontrols.logic;
 
 import jfcontrols.tags.*;
 
-public class ADD extends Logic {
+public class SLEEP extends Logic {
 
   public boolean isBlock() {
     return true;
   }
 
   public String getName() {
-    return "Add";
+    return "Sleep";
   }
 
   public String getCode() {
-    return "if (enabled) tag[3].setInt(tag[1].getInt() + tag[2].getInt() );\r\n";
+    return "if (enabled) javaforce.JF.sleep(tags[1].getInt());\r\n";
   }
 
   public int getTagsCount() {
-    return 3;
+    return 1;
   }
 
   public int getTagType(int idx) {

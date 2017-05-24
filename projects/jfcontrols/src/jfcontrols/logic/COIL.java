@@ -14,7 +14,7 @@ public class COIL extends Logic {
   }
 
   public String getName() {
-    return "coil";
+    return "Coil";
   }
 
   public String getCode() {

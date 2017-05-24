@@ -1,31 +1,31 @@
 package jfcontrols.logic;
 
-/** Add
+/** Sets bit.
  *
  * @author pquiring
  */
 
 import jfcontrols.tags.*;
 
-public class ADD extends Logic {
+public class SET extends Logic {
 
   public boolean isBlock() {
-    return true;
+    return false;
   }
 
   public String getName() {
-    return "Add";
+    return "set";
   }
 
   public String getCode() {
-    return "if (enabled) tag[3].setInt(tag[1].getInt() + tag[2].getInt() );\r\n";
+    return "if (enabled) tags[1].setBoolean(true);\r\n";
   }
 
   public int getTagsCount() {
-    return 3;
+    return 1;
   }
 
   public int getTagType(int idx) {
-    return TagType.INT;
+    return TagType.BIT;
   }
 }

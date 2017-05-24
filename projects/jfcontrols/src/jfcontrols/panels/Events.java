@@ -656,7 +656,7 @@ public class Events {
         }
         break;
       }
-      case "clearBit": {
+      case "resetBit": {
         Tag tag = TagsService.getTag(args[0]);
         if (tag != null) {
           tag.setBoolean(false);

@@ -475,6 +475,8 @@ public class Panels {
         cells.add(createCell("", 0, 0, 1, 1, "button", "xon", "!image:xon", null, "jfc_rung_editor_add", null, null));
         cells.add(createCell("", 1, 0, 1, 1, "button", "xoff", "!image:xoff", null, "jfc_rung_editor_add", null, null));
         cells.add(createCell("", 2, 0, 1, 1, "button", "coil", "!image:coil", null, "jfc_rung_editor_add", null, null));
+        cells.add(createCell("", 2, 0, 1, 1, "button", "set", "!image:set", null, "jfc_rung_editor_add", null, null));
+        cells.add(createCell("", 2, 0, 1, 1, "button", "reset", "!image:reset", null, "jfc_rung_editor_add", null, null));
         break;
       }
       case "jfc_rung_math": {

@@ -40,9 +40,14 @@ public class TagsService extends Thread {
   public void run() {
     service = this;
     SQL sql = SQLService.getSQL();
-    String tags[][] = sql.select("select name,type from tags where cid=0");
+    String ctrls[][] = sql.select("select cid,type from ctrls");
+    String tags[][] = sql.select("select name,type,cid from tags");
     for(int a=0;a<tags.length;a++) {
-      localTags.put(tags[a][0], new LocalTag(0, tags[a][0], Integer.valueOf(tags[a][1]), sql));
+      if (tags[a][2].equals("0")) {
+        localTags.put(tags[a][0], new LocalTag(0, tags[a][0], Integer.valueOf(tags[a][1]), sql));
+      } else {
+        remoteTags.put("c" + tags[a][2] + "#" + tags[a][0], new RemoteTag(Integer.valueOf(tags[a][2]), tags[a][0], Integer.valueOf(tags[a][1]), sql));
+      }
     }
     active = true;
     synchronized(lock) {
@@ -84,7 +89,20 @@ public class TagsService extends Thread {
   }
   public Tag get_Tag(String name) {
     synchronized(lock) {
-      return localTags.get(name);
+      int cid = 0;
+      int idx = name.indexOf("#");
+      if (idx != -1) {
+        if (name.charAt(0) != 'c') {
+          JFLog.log("Error:invalid tag:" + name);
+          return null;
+        }
+        cid = Integer.valueOf(name.substring(1, idx));
+      }
+      if (cid == 0) {
+        return localTags.get(name);
+      } else {
+        return remoteTags.get(name);
+      }
     }
   }
   public static void doReads() {
