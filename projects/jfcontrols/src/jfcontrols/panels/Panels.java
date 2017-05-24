@@ -429,12 +429,13 @@ public class Panels {
         String data[][] = sql.select("select id,name from funcs");
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
+          String fid = data[a][0];
           String funcname = data[a][1];
           String style = funcname.equals("main") || funcname.equals("init") ? "disabled" : null;
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_funcs_name_str_" + data[a][0], null, null, style));
-          cells.add(createCell("", 7, a, 2, 1, "button", null, "Edit", null, "jfc_funcs_edit", data[a][0], null));
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_funcs_name_str_" + fid, null, null, style));
+          cells.add(createCell("", 7, a, 2, 1, "button", null, "Edit", null, "jfc_funcs_edit", fid, null));
           if (style == null) {
-            cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_funcs_delete", data[a][0], null));
+            cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_funcs_delete", fid, null));
           }
         }
         break;
@@ -457,6 +458,7 @@ public class Panels {
         tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_bits", null, null, null, null, null), null, new Rectangle(r), client)), "");
         tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_math", null, null, null, null, null), null, new Rectangle(r), client)), "");
         tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_func", null, null, null, null, null), null, new Rectangle(r), client)), "");
+        tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_prog", null, null, null, null, null), null, new Rectangle(r), client)), "");
         setCellSize(tabs, r);
         client.setProperty("groups", tabs);
         return tabs;
@@ -474,6 +476,10 @@ public class Panels {
       }
       case "jfc_rung_func": {
         cells.add(createCell("", 0, 0, 1, 1, "button", "call", "Call", null, "jfc_rung_editor_add", null, null));
+        break;
+      }
+      case "jfc_rung_prog": {
+        cells.add(createCell("", 0, 0, 1, 1, "button", "sleep", "Sleep", null, "jfc_rung_editor_add", null, null));
         break;
       }
       case "jfc_rungs_viewer": {

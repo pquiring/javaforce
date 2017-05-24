@@ -22,6 +22,7 @@ public class Events {
     String func = (String)c.getProperty("func");
     String arg = (String)c.getProperty("arg");
     JFLog.log("click:" + c + ":func=" + func + ":arg=" + arg);
+    clickEvents(c);
     if (func == null) return;
     SQL sql = SQLService.getSQL();
     switch (func) {
@@ -320,6 +321,7 @@ public class Events {
         break;
       }
       case "jfc_funcs_edit": {
+        JFLog.log("func=" + arg);
         client.setProperty("func", arg);
         client.setProperty("focus", null);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
@@ -506,35 +508,6 @@ public class Events {
         JFLog.log("Unknown event:" + func);
         break;
     }
-
-    String events = (String)c.getProperty("events");
-    if (events == null) return;
-    String parts[] = events.split("[|]");
-    String click = "";
-    for(int a=0;a<parts.length;a++) {
-      String part = parts[a];
-      int idx = part.indexOf("=");
-      if (idx == -1) continue;
-      String key = part.substring(0, idx);
-      String value = part.substring(idx + 1);
-      switch (key) {
-//        case "press": press = value; break;
-//        case "release": release = value; break;
-        case "click": click = value; break;
-      }
-    }
-    String cmds[] = click.split(";");
-    for(int a=0;a<cmds.length;a++) {
-      String cmd_args_ = cmds[a].trim();
-      if (cmd_args_.length() == 0) continue;
-      int i1 = cmd_args_.indexOf("(");
-      int i2 = cmd_args_.indexOf(")");
-      if (i1 == -1 || i2 == -1) continue;
-      String cmd = cmd_args_.substring(0, i1);
-      String args[] = cmd_args_.substring(i1+1, i2).split(",");
-      doCommand(cmd, args);
-    }
-
     sql.close();
   }
   //textfield edited
@@ -580,6 +553,35 @@ public class Events {
       sql.close();
     } else {
       TagsService.write(tag, value);
+    }
+  }
+  public static void clickEvents(Component c) {
+    String events = (String)c.getProperty("events");
+    if (events == null) return;
+    String parts[] = events.split("[|]");
+    String click = "";
+    for(int a=0;a<parts.length;a++) {
+      String part = parts[a];
+      int idx = part.indexOf("=");
+      if (idx == -1) continue;
+      String key = part.substring(0, idx);
+      String value = part.substring(idx + 1);
+      switch (key) {
+//        case "press": press = value; break;
+//        case "release": release = value; break;
+        case "click": click = value; break;
+      }
+    }
+    String cmds[] = click.split(";");
+    for(int a=0;a<cmds.length;a++) {
+      String cmd_args_ = cmds[a].trim();
+      if (cmd_args_.length() == 0) continue;
+      int i1 = cmd_args_.indexOf("(");
+      int i2 = cmd_args_.indexOf(")");
+      if (i1 == -1 || i2 == -1) continue;
+      String cmd = cmd_args_.substring(0, i1);
+      String args[] = cmd_args_.substring(i1+1, i2).split(",");
+      doCommand(cmd, args);
     }
   }
   public static void press(Component c) {
@@ -638,6 +640,7 @@ public class Events {
   }
   public static void doCommand(String cmd, String args[]) {
     //TODO : these commands need to be processed by the FunctionService thread - in between scan cycles
+    JFLog.log("cmd=" + cmd);
     switch (cmd) {
       case "toggleBit": {
         Tag tag = TagsService.getTag(args[0]);

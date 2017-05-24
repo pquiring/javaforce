@@ -17,9 +17,10 @@ public class FunctionCompiler {
   public static String generateFunction(int fid, SQL sql) {
     error = null;
     StringBuilder sb = new StringBuilder();
-    sb.append("package code;\r\n");
-    sb.append("public class func_ " + fid + " {\r\n");
+    sb.append("import jfcontrols.tags.Tag;\r\n");
+    sb.append("public class func_" + fid + " {\r\n");
     sb.append("  public static boolean code(Tag args[]) {\r\n");
+    sb.append("    boolean enabled = true;\r\n");
     sb.append("    boolean en[] = new boolean[256];\r\n");
     sb.append("    int eidx = 0;\r\n");
     sb.append("    en[eidx] = enabled;\r\n");

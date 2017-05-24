@@ -65,7 +65,7 @@ public class TagsService extends Thread {
     sql.close();
   }
   public void processReads(SQL sql) {
-    MonitoredTag tags[] = (MonitoredTag[])localTags.values().toArray(new Tag[0]);
+    MonitoredTag tags[] = (MonitoredTag[])localTags.values().toArray(new MonitoredTag[0]);
     for(int a=0;a<tags.length;a++) {
       tags[a].updateRead(sql);
     }
@@ -74,7 +74,7 @@ public class TagsService extends Thread {
     }
   }
   public void processWrites(SQL sql) {
-    MonitoredTag tags[] = (MonitoredTag[])localTags.values().toArray(new Tag[0]);
+    MonitoredTag tags[] = (MonitoredTag[])localTags.values().toArray(new MonitoredTag[0]);
     for(int a=0;a<tags.length;a++) {
       tags[a].updateWrite(sql);
     }

@@ -35,7 +35,7 @@ public class ClientContext extends Thread {
       synchronized(ctx.lock) {
         this.value = value;
         ctx.stack.add(this);
-        ctx.notify();
+        ctx.lock.notify();
       }
     }
   }

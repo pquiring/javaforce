@@ -114,6 +114,7 @@ public class SQLService {
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",0,'bits')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",1,'math')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",2,'func')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",3,'prog')");
 
     //create local controller
     sql.execute("insert into ctrls (cid,ip,type,speed) values (0,'127.0.0.1',0,0)");
@@ -136,6 +137,7 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,5,3,1,'button','','Panels','setPanel','jfc_panels')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,7,3,1,'button','','Funcs','setPanel','jfc_funcs')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,9,3,1,'button','','Controllers','setPanel','jfc_controllers')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,11,3,1,'button','','Tags','jfc_ctrl_tags','0')");
 //test
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_menu', true, true)");

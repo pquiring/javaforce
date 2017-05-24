@@ -11,7 +11,7 @@ import javaforce.*;
 
 public class LogicLoader extends ClassLoader {
   public Class findClass(String cls) throws ClassNotFoundException {
-    if (!cls.startsWith("code.")) return super.findClass(cls);
+    if (!cls.startsWith("func_")) return super.findClass(cls);
     byte[] b = loadClassData(cls);
     return defineClass(cls, b, 0, b.length);
   }
