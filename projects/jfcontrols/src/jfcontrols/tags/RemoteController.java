@@ -7,6 +7,7 @@ package jfcontrols.tags;
 
 import java.util.*;
 
+import javaforce.*;
 import javaforce.controls.*;
 
 public class RemoteController {
@@ -58,6 +59,7 @@ public class RemoteController {
           case TagType.DOUBLE: tag.size = Controller.sizes.float64; break;
         }
         tag.tag = name;
+        JFLog.log("type=" + controllerType);
         switch (controllerType) {
 //          case 0: tag.type = Controller.types.JFC; break;
           case 1: tag.type = Controller.types.S7; break;

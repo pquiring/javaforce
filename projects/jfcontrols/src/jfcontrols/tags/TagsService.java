@@ -40,7 +40,6 @@ public class TagsService extends Thread {
   public void run() {
     service = this;
     SQL sql = SQLService.getSQL();
-    String ctrls[][] = sql.select("select cid,type from ctrls");
     String tags[][] = sql.select("select name,type,cid from tags");
     for(int a=0;a<tags.length;a++) {
       if (tags[a][2].equals("0")) {
