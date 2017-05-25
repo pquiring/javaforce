@@ -67,4 +67,22 @@ public class Tag {
     dirty = true;
     this.value = Long.toString(value);
   }
+
+  public float getFloat() {
+    return Float.valueOf(value);
+  }
+
+  public void setFloat(float value) {
+    dirty = true;
+    this.value = Float.toString(value);
+  }
+
+  public double getDouble() {
+    return Double.valueOf(value);
+  }
+
+  public void setDouble(double value) {
+    dirty = true;
+    this.value = Double.toString(value);
+  }
 }

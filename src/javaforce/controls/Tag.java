@@ -28,6 +28,10 @@ public class Tag {
   public float fmin, fmax;
   /** Speed to poll data (delay = ms delay between polls) (min = 25ms) */
   public int delay;
+
+  private byte pending[];
+  private Object pendingLock = new Object();
+
   /** Get user data. */
   public Object getData(String key) {
     return user.get(key);
@@ -220,6 +224,33 @@ public class Tag {
     return value;
   }
 
+  /** Queues pending data to be written on next cycle. (only valid if start() has been called). */
+  public void setValue(String value) {
+    byte data[] = null;
+    if (isBE()) {
+      switch (size) {
+        case bit: data = new byte[] {(byte)(value.equals("0") ? 0 : 1)}; break;
+        case int8: data = new byte[] {Byte.valueOf(value)}; break;
+        case int16: data = new byte[2]; BE.setuint16(data, 0, Short.valueOf(value)); break;
+        case int32: data = new byte[4]; BE.setuint32(data, 0, Integer.valueOf(value)); break;
+        case float32: data = new byte[4]; BE.setuint32(data, 0, Float.floatToIntBits(Float.valueOf(value))); break;
+        case float64: data = new byte[4]; BE.setuint64(data, 0, Double.doubleToLongBits(Double.valueOf(value))); break;
+      }
+    } else {
+      switch (size) {
+        case bit: data = new byte[] {(byte)(value.equals("0") ? 0 : 1)}; break;
+        case int8: data = new byte[] {Byte.valueOf(value)}; break;
+        case int16: data = new byte[2]; LE.setuint16(data, 0, Short.valueOf(value)); break;
+        case int32: data = new byte[4]; LE.setuint32(data, 0, Integer.valueOf(value)); break;
+        case float32: data = new byte[4]; LE.setuint32(data, 0, Float.floatToIntBits(Float.valueOf(value))); break;
+        case float64: data = new byte[4]; LE.setuint64(data, 0, Double.doubleToLongBits(Double.valueOf(value))); break;
+      }
+    }
+    synchronized(pendingLock) {
+      pending = data;
+    }
+  }
+
   /** Returns current value as int (only valid if start() has been called). */
   public int intValue() {
     return Integer.valueOf(value);
@@ -325,6 +356,11 @@ public class Tag {
             case int32: tag.value = Integer.toString(LE.getuint32(data, 0)); break;
             case float32: tag.value = Float.toString(Float.intBitsToFloat(LE.getuint32(data, 0))); break;
             case float64: tag.value = Double.toString(Double.longBitsToDouble(LE.getuint64(data, 0))); break;
+          }
+        }
+        synchronized(tag.pendingLock) {
+          if (tag.pending != null) {
+            tag.write(tag.pending);
           }
         }
         if (tag.listener == null) return;

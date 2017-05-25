@@ -57,7 +57,6 @@ public class RemoteController {
           case TagType.FLOAT: tag.size = Controller.sizes.float32; break;
           case TagType.DOUBLE: tag.size = Controller.sizes.float64; break;
         }
-        tag.size = Controller.sizes.int16;  //TODO
         tag.tag = name;
         switch (controllerType) {
 //          case 0: tag.type = Controller.types.JFC; break;
@@ -66,13 +65,8 @@ public class RemoteController {
           case 3: tag.type = Controller.types.MB; break;
           case 4: tag.type = Controller.types.NI; break;
         }
-        if (map.size() == 0 || tagType > 1) {
-          tag.start();
-          first = tag;
-        } else {
-          //only JFC and S7 support multi-read
-          tag.start(first);
-        }
+        tag.start(first);
+        if (first == null) first = tag;
       }
       return tag;
     }
