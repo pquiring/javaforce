@@ -42,8 +42,8 @@ public class TagDialog extends javax.swing.JDialog {
     size = new javax.swing.JComboBox<>();
     max = new javax.swing.JTextField();
     min = new javax.swing.JTextField();
-    jLabel5 = new javax.swing.JLabel();
-    jLabel6 = new javax.swing.JLabel();
+    l_max = new javax.swing.JLabel();
+    l_min = new javax.swing.JLabel();
     jLabel7 = new javax.swing.JLabel();
     host = new javax.swing.JTextField();
     jLabel8 = new javax.swing.JLabel();
@@ -96,9 +96,9 @@ public class TagDialog extends javax.swing.JDialog {
 
     min.setText("0");
 
-    jLabel5.setText("max");
+    l_max.setText("max");
 
-    jLabel6.setText("min");
+    l_min.setText("min");
 
     jLabel7.setText("Host");
 
@@ -147,8 +147,8 @@ public class TagDialog extends javax.swing.JDialog {
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel4)
-              .addComponent(jLabel5)
-              .addComponent(jLabel6)
+              .addComponent(l_max)
+              .addComponent(l_min)
               .addComponent(jLabel8))
             .addGap(11, 11, 11)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -180,11 +180,11 @@ public class TagDialog extends javax.swing.JDialog {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(max, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jLabel5))
+          .addComponent(l_max))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(min, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jLabel6))
+          .addComponent(l_min))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel8)
@@ -201,6 +201,7 @@ public class TagDialog extends javax.swing.JDialog {
   }// </editor-fold>//GEN-END:initComponents
 
   private void okActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okActionPerformed
+    if (!valid()) return;
     accepted = true;
     dispose();
   }//GEN-LAST:event_okActionPerformed
@@ -211,15 +212,7 @@ public class TagDialog extends javax.swing.JDialog {
   }//GEN-LAST:event_cancelActionPerformed
 
   private void sizeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_sizeItemStateChanged
-    int idx = size.getSelectedIndex();
-    min.setText("0");
-    switch (idx) {
-      case 0: max.setText("1"); break;
-      case 1: max.setText("255"); break;
-      case 2: max.setText("65535"); break;
-      case 3: max.setText("16777216"); break;
-      case 4: max.setText("1.0"); break;
-    }
+    setMinMax();
   }//GEN-LAST:event_sizeItemStateChanged
 
   private void maxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_maxActionPerformed
@@ -251,10 +244,10 @@ public class TagDialog extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel4;
-  private javax.swing.JLabel jLabel5;
-  private javax.swing.JLabel jLabel6;
   private javax.swing.JLabel jLabel7;
   private javax.swing.JLabel jLabel8;
+  private javax.swing.JLabel l_max;
+  private javax.swing.JLabel l_min;
   private javax.swing.JTextField max;
   private javax.swing.JTextField min;
   private javax.swing.JButton ok;
@@ -277,13 +270,14 @@ public class TagDialog extends javax.swing.JDialog {
     tag.setText(in.tag);
     boolean isFloat = false;
     switch (in.size) {
-      case bit: size.setSelectedIndex(0); break;
+      case bit: size.setSelectedIndex(0); in.max = 0; break;
       case int8: size.setSelectedIndex(1); break;
       case int16: size.setSelectedIndex(2); break;
       case int32: size.setSelectedIndex(3); break;
       case float32: size.setSelectedIndex(4); isFloat = true; break;
       case float64: size.setSelectedIndex(5); isFloat = true; break;
     }
+    setMinMax();
     if (!isFloat) {
       max.setText(Integer.toString(in.max));
       min.setText(Integer.toString(in.min));
@@ -338,5 +332,37 @@ public class TagDialog extends javax.swing.JDialog {
     if (newClr == null) return;
     clr = newClr.getRGB() & 0xffffff;
     color.setBackground(newClr);
+  }
+
+  private void setMinMax() {
+    int idx = size.getSelectedIndex();
+    min.setText("0");
+    if (idx == 0) {
+      max.setEnabled(false);
+      l_max.setText("n/a");
+      l_min.setText("0-100");
+    } else {
+      max.setEnabled(true);
+      l_max.setText("max");
+      l_min.setText("min");
+    }
+    switch (idx) {
+      case 0: max.setText("0"); break;
+      case 1: max.setText("255"); break;
+      case 2: max.setText("65535"); break;
+      case 3: max.setText("16777216"); break;
+      case 4: max.setText("1.0"); break;
+    }
+  }
+
+  private boolean valid() {
+    if (size.getSelectedIndex() == 0) {
+      int _min = Integer.valueOf(min.getText());
+      if (_min < 0 || _min > 100) {
+        min.requestFocus();
+        return false;
+      }
+    }
+    return true;
   }
 }

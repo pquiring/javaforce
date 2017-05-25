@@ -14,7 +14,7 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.12";
+  public static String version = "0.14";
 
   public static int delays[] = new int[] {
     25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
@@ -731,8 +731,12 @@ public class App extends javax.swing.JFrame {
           sv = scaleFloat(tag, fv);
         }
       } else {
-        iv = Integer.valueOf(value);
-        sv = scaleInt(tag, iv);
+        if (tag.size == Controller.sizes.bit) {
+          sv = value.equals("0") ? 0 : tag.min;
+        } else {
+          iv = Integer.valueOf(value);
+          sv = scaleInt(tag, iv);
+        }
       }
       Integer lv = (Integer)tag.getData("last");
       if (lv != null) {
@@ -753,7 +757,13 @@ public class App extends javax.swing.JFrame {
         getValues(tag);
         int y = 5 + 500 - (sv * 5);
         int ly = 5 + 500 - (lsv * 5);
-        logImage.line(x2-1, ly, x2, y, tag.color);
+        if (tag.size == Controller.sizes.bit) {
+          if (!tag.getValue().equals("0")) {
+            logImage.putPixel(x2, y, tag.color);
+          }
+        } else {
+          logImage.line(x2-1, ly, x2, y, tag.color);
+        }
       }
       tickCounter--;
       if (tickCounter == 0) {
