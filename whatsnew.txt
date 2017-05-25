@@ -1,5 +1,9 @@
 What's new...
 
+May 25/2017 : JF 15.6.0 released
+  - jfDataLogger/0.14
+    - new : bits are printed like a dotted line now with an offset 0-100
+
 Apr 27/2017 : JF 15.5.0 released
   - fix : ffmpeg : no longer using deprecated AVStream.codec
     - compilation is now clean and quiet

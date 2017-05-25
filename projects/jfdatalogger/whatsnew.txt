@@ -1,3 +1,6 @@
+May 25/2017 : v0.14 released
+  - new : bits are printed like a dotted line now with an offset 0-100
+
 Apr 5/2017 : v0.11 released
   - fix : brought back S7 multi-tag reading (performance improvement)
 
