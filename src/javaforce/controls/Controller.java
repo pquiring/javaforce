@@ -207,6 +207,7 @@ public class Controller {
    * datatype is required for AB controllers.
    */
   public boolean write(String addr, byte data[], datatype type) {
+    addr = addr.toUpperCase();
     synchronized(lock) {
       if (!connected) return false;
       switch (plc) {
@@ -280,11 +281,13 @@ public class Controller {
 
   /** Reads data from PLC. */
   public byte[] read(String addr) {
+    addr = addr.toUpperCase();
     synchronized(lock) {
       if (!connected) return null;
       switch (plc) {
         case S7: {
           S7Data s7 = S7Packet.decodeAddress(addr);
+          if (s7 == null) return null;
           byte packet[] = S7Packet.makeReadPacket(s7);
           try {
             os.write(packet);
@@ -364,6 +367,9 @@ public class Controller {
  /** Reads multiple data tags from PLC. (only S7 is currently supported) */
   public byte[][] read(String addr[]) {
     if (!connected) return null;
+    for(int a=0;a<addr.length;a++) {
+      addr[a] = addr[a].toUpperCase();
+    }
     switch (plc) {
       case S7: {
         S7Data s7[] = new S7Data[addr.length];

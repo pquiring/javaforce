@@ -94,7 +94,7 @@ public class Panels {
       r.height = Integer.valueOf(cells[a][H]);
       String compType = cells[a][COMP];
       String tagName = cells[a][TAG];
-      if (tagName != null && !tagName.startsWith("jfc_")) {
+      if (tagName != null && !tagName.startsWith("jfc_") && tagName.length() > 0) {
         Tag tag = TagsService.getTag(tagName);
         if (tag == null) {
           JFLog.log("Error:Tag not found:" + tagName);

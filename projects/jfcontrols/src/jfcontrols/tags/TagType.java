@@ -17,6 +17,8 @@ public class TagType {
   public static final int DOUBLE = 4;
   public static final int FUNCTION = 5;
 
+  public static final int NOTFOUND = 404;
+
   public static final int UNSIGNED = 0x8000;
   public static final int ARRAY = 0x4000;
 }

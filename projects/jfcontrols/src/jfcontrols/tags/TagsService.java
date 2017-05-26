@@ -69,18 +69,26 @@ public class TagsService extends Thread {
     sql.close();
   }
   public void processReads(SQL sql) {
-    MonitoredTag tags[] = (MonitoredTag[])localTags.values().toArray(new MonitoredTag[0]);
-    for(int a=0;a<tags.length;a++) {
-      tags[a].updateRead(sql);
+    MonitoredTag localtags[] = (MonitoredTag[])localTags.values().toArray(new MonitoredTag[0]);
+    for(int a=0;a<localtags.length;a++) {
+      localtags[a].updateRead(sql);
+    }
+    MonitoredTag remotetags[] = (MonitoredTag[])remoteTags.values().toArray(new MonitoredTag[0]);
+    for(int a=0;a<remotetags.length;a++) {
+      remotetags[a].updateRead(sql);
     }
     synchronized(done) {
       done.notify();
     }
   }
   public void processWrites(SQL sql) {
-    MonitoredTag tags[] = (MonitoredTag[])localTags.values().toArray(new MonitoredTag[0]);
-    for(int a=0;a<tags.length;a++) {
-      tags[a].updateWrite(sql);
+    MonitoredTag localtags[] = (MonitoredTag[])localTags.values().toArray(new MonitoredTag[0]);
+    for(int a=0;a<localtags.length;a++) {
+      localtags[a].updateWrite(sql);
+    }
+    MonitoredTag remotetags[] = (MonitoredTag[])remoteTags.values().toArray(new MonitoredTag[0]);
+    for(int a=0;a<remotetags.length;a++) {
+      remotetags[a].updateWrite(sql);
     }
     synchronized(done) {
       done.notify();
@@ -91,7 +99,8 @@ public class TagsService extends Thread {
       int cid = 0;
       int idx = name.indexOf("#");
       if (idx != -1) {
-        if (name.charAt(0) != 'c') {
+        char c = name.charAt(0);
+        if (c != 'c' && c != 'C') {
           JFLog.log("Error:invalid tag:" + name);
           return null;
         }

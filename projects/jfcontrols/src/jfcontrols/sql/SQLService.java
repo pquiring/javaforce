@@ -98,11 +98,11 @@ public class SQLService {
 
     sql.execute("insert into lists (name) values ('jfc_tag_type')");
     id = sql.select1value("select id from lists where name='jfc_tag_type'");
-    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",0,'boolean')");
-    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",1,'byte')");
-    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",2,'short')");
-    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",3,'int')");
-    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",4,'long')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",1,'boolean')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",8,'byte')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",16,'short')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",32,'int')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",64,'long')");
 
     sql.execute("insert into lists (name) values ('jfc_panel_type')");
     id = sql.select1value("select id from lists where name='jfc_panel_type'");

@@ -57,6 +57,7 @@ public class RemoteController {
 //          case TagType.LONG: tag.size = Controller.sizes.int64; break;
           case TagType.FLOAT: tag.size = Controller.sizes.float32; break;
           case TagType.DOUBLE: tag.size = Controller.sizes.float64; break;
+          default: JFLog.log("Error:TagType unknown:" + tagType); return null;
         }
         tag.tag = name;
         JFLog.log("type=" + controllerType);
