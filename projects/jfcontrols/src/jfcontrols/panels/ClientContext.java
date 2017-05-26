@@ -21,7 +21,7 @@ public class ClientContext extends Thread {
   public ClientContext(WebUIClient client) {
     this.client = client;
   }
-  private static class Pair implements TagListener {
+  private static class Pair implements TagBaseListener {
     public MonitoredTag tag;
     public Component comp;
     public ClientContext ctx;
@@ -31,7 +31,7 @@ public class ClientContext extends Thread {
       this.comp = comp;
       this.ctx = ctx;
     }
-    public void tagChanged(Tag tag, String value) {
+    public void tagChanged(TagBase tag, String value) {
       synchronized(ctx.lock) {
         this.value = value;
         ctx.stack.add(this);

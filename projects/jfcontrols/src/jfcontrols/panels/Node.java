@@ -7,6 +7,7 @@ package jfcontrols.panels;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.controls.*;
 
 import jfcontrols.logic.*;
 import jfcontrols.tags.*;
@@ -480,7 +481,7 @@ public class Node {
   private String encodeTag(String tag, int tagType) {
     char first = tag.toLowerCase().charAt(0);
     switch (tagType) {
-      case TagType.FUNCTION:
+      case TagType.function:
         return "f" + tag;
       default:
         if ((first >= 'a' && first <= 'z') || first == '#') {

@@ -23,7 +23,7 @@ public class Controller {
   private Socket socket;
   private InputStream is;
   private OutputStream os;
-  private types plc;
+  private int plc;
   private DAQmx daq;
   private Object lock = new Object();  //read/write lock
   private static Object s7_connect_lock = new Object();
@@ -33,14 +33,6 @@ public class Controller {
   public static double rate;  //sample rate for all controllers (set before connecting to any controllers)
 
   public Exception lastException;
-
-  public static enum types {
-    S7, AB, MB, NI, JF
-  };
-
-  public static enum sizes {
-    bit, int8, int16, int32, float32, float64
-  }
 
   public void setRate(float rate) {
     this.rate = rate;
@@ -58,7 +50,7 @@ public class Controller {
     System.out.println("Info:" + System.currentTimeMillis() + ":Controller.connect():" + url);
     connected = false;
     if (url.startsWith("S7:")) {
-      plc = types.S7;
+      plc = ControllerType.S7;
       String host = url.substring(3);
       synchronized(s7_connect_lock) {
         try {
@@ -104,7 +96,7 @@ public class Controller {
       return true;
     }
     if (url.startsWith("MODBUS:")) {
-      plc = types.MB;
+      plc = ControllerType.MB;
       String host = url.substring(7);
       try {
         socket = new Socket(host, 502);
@@ -120,7 +112,7 @@ public class Controller {
     }
     if (url.startsWith("AB:")) {
       ab_context = new ABContext();
-      plc = types.AB;
+      plc = ControllerType.AB;
       String host = url.substring(3);
       try {
         socket = new Socket(host, 44818);
@@ -153,7 +145,7 @@ public class Controller {
       return true;
     }
     if (url.startsWith("NI:")) {
-      plc = types.NI;
+      plc = ControllerType.NI;
       daq = new DAQmx();
       connected = daq.connect(url.substring(3));
       if (!connected) {
@@ -169,10 +161,10 @@ public class Controller {
   public boolean disconnect() {
     if (!connected) return false;
     switch (plc) {
-      case S7:
-      case MB:
-      case AB:
-      case JF:
+      case ControllerType.S7:
+      case ControllerType.MB:
+      case ControllerType.AB:
+      case ControllerType.JF:
         try {
           if (socket != null) {
             socket.close();
@@ -183,7 +175,7 @@ public class Controller {
           return false;
         }
         break;
-      case NI:
+      case ControllerType.NI:
         if (daq != null) {
           daq.close();
           daq = null;
@@ -213,7 +205,7 @@ public class Controller {
     synchronized(lock) {
       if (!connected) return false;
       switch (plc) {
-        case S7: {
+        case ControllerType.S7: {
           S7Data s7 = S7Packet.decodeAddress(addr);
           s7.data = data;
           byte packet[] = S7Packet.makeWritePacket(s7);
@@ -225,7 +217,7 @@ public class Controller {
           }
           return true;
         }
-        case MB: {
+        case ControllerType.MB: {
           ModAddr ma = ModPacket.decodeAddress(addr);
           ma.state = data[0] != 0;
           byte packet[] = ModPacket.makeWritePacket(ma);
@@ -249,7 +241,7 @@ public class Controller {
           }
           return true;
         }
-        case AB: {
+        case ControllerType.AB: {
           if (type == datatype.ANY) return false;
           byte packet[] = ABPacket.makeWritePacket(addr, ABPacket.getType(type), data, ab_context);
           try {
@@ -272,7 +264,7 @@ public class Controller {
           }
           return true;
         }
-        case JF: {
+        case ControllerType.JF: {
           JFTag tag = JFPacket.decodeAddress(addr);
           tag.data = data;
           byte packet[] = JFPacket.makeWritePacket(tag, data);
@@ -284,7 +276,7 @@ public class Controller {
           }
           return true;
         }
-        case NI: {
+        case ControllerType.NI: {
           System.out.println("NI write() not implemented");
           return false;
         }
@@ -299,7 +291,7 @@ public class Controller {
     synchronized(lock) {
       if (!connected) return null;
       switch (plc) {
-        case S7: {
+        case ControllerType.S7: {
           S7Data s7 = S7Packet.decodeAddress(addr);
           if (s7 == null) return null;
           byte packet[] = S7Packet.makeReadPacket(s7);
@@ -324,7 +316,7 @@ public class Controller {
           s7 = S7Packet.decodePacket(Arrays.copyOf(reply, replySize));
           return s7.data;
         }
-        case MB: {
+        case ControllerType.MB: {
           ModAddr ma = ModPacket.decodeAddress(addr);
           byte packet[] = ModPacket.makeReadPacket(ma);
           try {
@@ -348,7 +340,7 @@ public class Controller {
           ModData data = ModPacket.decodePacket(Arrays.copyOf(reply, replySize));
           return data.data;
         }
-        case AB: {
+        case ControllerType.AB: {
           byte packet[] = ABPacket.makeReadPacket(addr, ab_context);
           try {
             os.write(packet);
@@ -370,7 +362,7 @@ public class Controller {
             return null;
           }
         }
-        case JF: {
+        case ControllerType.JF: {
           JFTag tag = JFPacket.decodeAddress(addr);
           if (tag == null) return null;
           byte packet[] = JFPacket.makeReadPacket(tag);
@@ -395,7 +387,7 @@ public class Controller {
           tag = JFPacket.decodePacket(Arrays.copyOf(reply, replySize));
           return tag.data;
         }
-        case NI: {
+        case ControllerType.NI: {
           return daq.read();
         }
       }
@@ -410,7 +402,7 @@ public class Controller {
       addr[a] = addr[a].toUpperCase();
     }
     switch (plc) {
-      case S7: {
+      case ControllerType.S7: {
         S7Data s7[] = new S7Data[addr.length];
         for(int a=0;a<addr.length;a++) {
           s7[a] = S7Packet.decodeAddress(addr[a]);
@@ -442,7 +434,7 @@ public class Controller {
         return ret;
       }
 /*
-      case MODBUS: {
+      case ControllerType.MODBUS: {
         ModAddr ma = ModPacket.decodeAddress(addr);
         byte packet[] = ModPacket.makeReadPacket(ma);
         try {
@@ -489,7 +481,7 @@ public class Controller {
         }
       }
 */
-      case JF: {
+      case ControllerType.JF: {
         JFTag tags[] = new JFTag[addr.length];
         for(int a=0;a<addr.length;a++) {
           tags[a] = JFPacket.decodeAddress(addr[a]);
@@ -525,15 +517,15 @@ public class Controller {
   }
 
   public boolean isConnected() {
-    if (plc == null) return false;
+    if (plc == 0) return false;
     try {
       switch (plc) {
-        case S7:
-        case AB:
-        case MB:
-        case JF:
+        case ControllerType.S7:
+        case ControllerType.AB:
+        case ControllerType.MB:
+        case ControllerType.JF:
           return socket.isConnected();
-        case NI:
+        case ControllerType.NI:
         default:
           return connected;
       }

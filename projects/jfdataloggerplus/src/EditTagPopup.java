@@ -27,6 +27,7 @@ public class EditTagPopup extends PopupPanel {
     row.add(label);
     type = new ComboBox();
     row.add(type);
+    type.add("JF", "jfControls");
     type.add("S7", "Siemens S7 PLC");
     type.add("AB", "Allen Bradley PLC");
     type.add("MB", "Modbus TCP");
@@ -131,14 +132,15 @@ public class EditTagPopup extends PopupPanel {
 
   public void editTag(Tag intag) {
     switch (intag.type) {
-      case S7: type.setSelectedIndex(0); break;
-      case AB: type.setSelectedIndex(1); break;
-      case MB: type.setSelectedIndex(2); break;
-      case NI: type.setSelectedIndex(3); break;
+      case ControllerType.JF: type.setSelectedIndex(0); break;
+      case ControllerType.S7: type.setSelectedIndex(1); break;
+      case ControllerType.AB: type.setSelectedIndex(2); break;
+      case ControllerType.MB: type.setSelectedIndex(3); break;
+      case ControllerType.NI: type.setSelectedIndex(4); break;
     }
     host.setText(intag.host);
     tag.setText(intag.tag);
-    size.setSelectedIndex(intag.size.ordinal());
+    size.setSelectedIndex(intag.size - 1);
     for(int a=0;a<delays.length;a++) {
       if (delays[a] == intag.delay) {delay.setSelectedIndex(a); break;}
     }
@@ -175,10 +177,25 @@ public class EditTagPopup extends PopupPanel {
     }
   }
   public void saveTag(Tag outtag) {
-    outtag.type = Controller.types.values()[type.getSelectedIndex()];
+    int ctype = type.getSelectedIndex();
+    switch (ctype) {
+      case 0: outtag.type = ControllerType.JF; break;
+      case 1: outtag.type = ControllerType.S7; break;
+      case 2: outtag.type = ControllerType.AB; break;
+      case 3: outtag.type = ControllerType.MB; break;
+      case 4: outtag.type = ControllerType.NI; break;
+    }
     outtag.host = host.getText();
     outtag.tag = tag.getText();
-    outtag.size = Controller.sizes.values()[size.getSelectedIndex()];
+    int ttype = size.getSelectedIndex();
+    switch (ttype) {
+      case 0: outtag.size = TagType.bit; break;
+      case 1: outtag.size = TagType.int8; break;
+      case 2: outtag.size = TagType.int16; break;
+      case 3: outtag.size = TagType.int32; break;
+      case 4: outtag.size = TagType.float32; break;
+      case 5: outtag.size = TagType.float64; break;
+    }
     outtag.delay = delays[delay.getSelectedIndex()];
     if (outtag.isFloat()) {
       outtag.fmax = Float.valueOf(max.getText());

@@ -10,6 +10,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.webui.*;
+import javaforce.controls.*;
 
 import jfcontrols.sql.*;
 import jfcontrols.tags.*;
@@ -95,7 +96,7 @@ public class Panels {
       String compType = cells[a][COMP];
       String tagName = cells[a][TAG];
       if (tagName != null && !tagName.startsWith("jfc_") && tagName.length() > 0) {
-        Tag tag = TagsService.getTag(tagName);
+        jfcontrols.tags.TagBase tag = TagsService.getTag(tagName);
         if (tag == null) {
           JFLog.log("Error:Tag not found:" + tagName);
         } else {
@@ -1145,7 +1146,7 @@ public class Panels {
               x++;
 
               if (create) {
-                if (blk.getTagType(a) == TagType.FUNCTION) {
+                if (blk.getTagType(a) == TagType.function) {
                   String txt = node.tags[tagIdx++].substring(1);
                   if (readonly) {
                     txt = sql.select1value("select name from funcs where id=" + txt);

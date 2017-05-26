@@ -10,6 +10,7 @@ import java.net.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.controls.TagType;
 
 import jfcontrols.functions.*;
 import jfcontrols.tags.*;
@@ -62,7 +63,7 @@ public class APIService extends Thread {
   private static final int ERR_DATA_SHORT = 0x0403;
   private static final int ERR_FUNC_NOT_FOUND = 0x404;
 
-  private static class Session extends Thread implements TagListener {
+  private static class Session extends Thread implements TagBaseListener {
     private Socket s;
     private InputStream is;
     private OutputStream os;
@@ -114,7 +115,7 @@ public class APIService extends Thread {
       int len = data.length;
       int cnt, pos = 0, size = 0, type;
       String tagName;
-      Tag tag;
+      TagBase tag;
       MonitoredTag mtag;
       TagsQuery q;
       switch (cmd) {
@@ -166,11 +167,11 @@ public class APIService extends Thread {
           for(int a=0;a<cnt;a++) {
             tag = q.tags[a];
             if (tag == null) {
-              LE.setuint16(data, pos, TagType.NOTFOUND); pos += 2;
+              LE.setuint16(data, pos, TagType.unknown); pos += 2;
             } else {
               type = tag.getType();
               LE.setuint16(data, pos, type); pos += 2;
-              Tag.encode(type, q.values[a], data, pos); pos += q.sizes[a];
+              TagBase.encode(type, q.values[a], data, pos); pos += q.sizes[a];
             }
           }
           break;
@@ -191,10 +192,10 @@ public class APIService extends Thread {
             q.tags[a] = tag;
             if (len < 2) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
             type = LE.getuint16(data, pos); len -= 2; pos += 2;
-            size = Tag.getSize(type);
+            size = TagBase.getSize(type);
             q.sizes[a] = size;
             if (len < size) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
-            q.values[a] = Tag.decode(type, data, pos); pos += size; len -= size;
+            q.values[a] = TagBase.decode(type, data, pos); pos += size; len -= size;
           }
           //build query to function service
           FunctionService.addWriteQuery(q);
@@ -291,14 +292,14 @@ public class APIService extends Thread {
       LE.setuint16(reply, 8, error);
     }
 
-    public void tagChanged(Tag tag, String value) {
+    public void tagChanged(TagBase tag, String value) {
       int size = tag.getSize();
       int type = tag.getType();
       byte reply[] = new byte[8 + 2 + 2 + size];
       setupSuccess(reply, 0x0002, 0);
       LE.setuint16(reply, 8, 1);  //count
       LE.setuint16(reply, 10, type);  //type
-      Tag.encode(type, value, reply, 12);
+      TagBase.encode(type, value, reply, 12);
       synchronized(writeLock) {
         try { os.write(reply); } catch (Exception e) {}
       }

@@ -21,8 +21,8 @@ public class Service {
   public static String derbyURI;
 
   private static TagListener listener = new TagListener() {
-    public void tagChanged(Tag tag) {
-      logChange(tag, tag.getValue());
+    public void tagChanged(Tag tag, String value) {
+      logChange(tag, value);
     }
   };
 
@@ -181,19 +181,20 @@ public class Service {
       tag.setData("id", query[a][0]);
       tag.host = query[a][1];
       switch (query[a][2]) {
-        case "S7": tag.type = Controller.types.S7; break;
-        case "AB": tag.type = Controller.types.AB; break;
-        case "MB": tag.type = Controller.types.MB; break;
-        case "NI": tag.type = Controller.types.NI; break;
+        case "JF": tag.type = ControllerType.JF; break;
+        case "S7": tag.type = ControllerType.S7; break;
+        case "AB": tag.type = ControllerType.AB; break;
+        case "MB": tag.type = ControllerType.MB; break;
+        case "NI": tag.type = ControllerType.NI; break;
       }
       tag.tag = query[a][3];
       switch (query[a][4]) {
-        case "bit": tag.size = Controller.sizes.bit; break;
-        case "int8": tag.size = Controller.sizes.int8; break;
-        case "int16": tag.size = Controller.sizes.int16; break;
-        case "int32": tag.size = Controller.sizes.int32; break;
-        case "float32": tag.size = Controller.sizes.float32; break;
-        case "float64": tag.size = Controller.sizes.float64; break;
+        case "bit": tag.size = TagType.bit; break;
+        case "int8": tag.size = TagType.int8; break;
+        case "int16": tag.size = TagType.int16; break;
+        case "int32": tag.size = TagType.int32; break;
+        case "float32": tag.size = TagType.float32; break;
+        case "float64": tag.size = TagType.float64; break;
       }
       tag.color = JF.atoi(query[a][5]);
       if (tag.isFloat()) {

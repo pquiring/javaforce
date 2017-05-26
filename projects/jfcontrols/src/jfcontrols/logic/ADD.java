@@ -5,6 +5,8 @@ package jfcontrols.logic;
  * @author pquiring
  */
 
+import javaforce.controls.*;
+
 import jfcontrols.tags.*;
 
 public class ADD extends Logic {
@@ -26,6 +28,6 @@ public class ADD extends Logic {
   }
 
   public int getTagType(int idx) {
-    return TagType.INT32;
+    return TagType.int32;
   }
 }

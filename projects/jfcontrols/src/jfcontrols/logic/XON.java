@@ -5,7 +5,7 @@ package jfcontrols.logic;
  * @author pquiring
  */
 
-import jfcontrols.tags.*;
+import javaforce.controls.*;
 
 public class XON extends Logic {
 
@@ -26,6 +26,6 @@ public class XON extends Logic {
   }
 
   public int getTagType(int idx) {
-    return TagType.BIT;
+    return TagType.bit;
   }
 }

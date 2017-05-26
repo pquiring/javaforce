@@ -19,8 +19,8 @@ public class TagsService extends Thread {
   private static volatile boolean doReads;
   private static volatile boolean doWrites;
 
-  private HashMap<String, Tag> localTags = new HashMap<>();
-  private HashMap<String, Tag> remoteTags = new HashMap<>();
+  private HashMap<String, TagBase> localTags = new HashMap<>();
+  private HashMap<String, TagBase> remoteTags = new HashMap<>();
 
   public static String read(String tag) {
     return getTag(tag).getValue();
@@ -28,7 +28,7 @@ public class TagsService extends Thread {
   public static void write(String tag, String value) {
     getTag(tag).setValue(value);
   }
-  public static Tag getTag(String name) {
+  public static TagBase getTag(String name) {
     return service.get_Tag(name);
   }
   public static void main() {
@@ -94,7 +94,7 @@ public class TagsService extends Thread {
       done.notify();
     }
   }
-  public Tag get_Tag(String name) {
+  public TagBase get_Tag(String name) {
     synchronized(lock) {
       int cid = 0;
       int idx = name.indexOf("#");

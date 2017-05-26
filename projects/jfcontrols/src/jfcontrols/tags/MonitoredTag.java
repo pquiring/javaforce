@@ -9,9 +9,9 @@ import java.util.*;
 
 import javaforce.*;
 
-public abstract class MonitoredTag extends Tag {
+public abstract class MonitoredTag extends TagBase {
 
-  private ArrayList<TagListener> listeners = new ArrayList<>();
+  private ArrayList<TagBaseListener> listeners = new ArrayList<>();
   private Object lock = new Object();
 
   public MonitoredTag(int cid, String name, int type, SQL sql) {
@@ -21,13 +21,13 @@ public abstract class MonitoredTag extends Tag {
   public abstract void updateRead(SQL sql);
   public abstract void updateWrite(SQL sql);
 
-  public void addListener(TagListener listener) {
+  public void addListener(TagBaseListener listener) {
     synchronized(lock) {
       listeners.add(listener);
     }
   }
 
-  public void removeListener(TagListener listener) {
+  public void removeListener(TagBaseListener listener) {
     synchronized(lock) {
       listeners.remove(listener);
     }

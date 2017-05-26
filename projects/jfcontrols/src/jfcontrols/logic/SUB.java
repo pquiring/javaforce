@@ -5,7 +5,7 @@ package jfcontrols.logic;
  * @author pquiring
  */
 
-import jfcontrols.tags.*;
+import javaforce.controls.*;
 
 public class SUB extends Logic {
 
@@ -26,6 +26,6 @@ public class SUB extends Logic {
   }
 
   public int getTagType(int idx) {
-    return TagType.INT32;
+    return TagType.int32;
   }
 }

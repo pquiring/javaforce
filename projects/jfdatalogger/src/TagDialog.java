@@ -261,21 +261,21 @@ public class TagDialog extends javax.swing.JDialog {
 
   public void load(Tag in) {
     switch (in.type) {
-      case S7: type.setSelectedIndex(0); break;
-      case AB: type.setSelectedIndex(1); break;
-      case MB: type.setSelectedIndex(2); break;
-      case NI: type.setSelectedIndex(3); break;
+      case ControllerType.S7: type.setSelectedIndex(0); break;
+      case ControllerType.AB: type.setSelectedIndex(1); break;
+      case ControllerType.MB: type.setSelectedIndex(2); break;
+      case ControllerType.NI: type.setSelectedIndex(3); break;
     }
     host.setText(in.host);
     tag.setText(in.tag);
     boolean isFloat = false;
     switch (in.size) {
-      case bit: size.setSelectedIndex(0); in.max = 0; break;
-      case int8: size.setSelectedIndex(1); break;
-      case int16: size.setSelectedIndex(2); break;
-      case int32: size.setSelectedIndex(3); break;
-      case float32: size.setSelectedIndex(4); isFloat = true; break;
-      case float64: size.setSelectedIndex(5); isFloat = true; break;
+      case TagType.bit: size.setSelectedIndex(0); in.max = 0; break;
+      case TagType.int8: size.setSelectedIndex(1); break;
+      case TagType.int16: size.setSelectedIndex(2); break;
+      case TagType.int32: size.setSelectedIndex(3); break;
+      case TagType.float32: size.setSelectedIndex(4); isFloat = true; break;
+      case TagType.float64: size.setSelectedIndex(5); isFloat = true; break;
     }
     setMinMax();
     if (!isFloat) {
@@ -292,21 +292,21 @@ public class TagDialog extends javax.swing.JDialog {
   public boolean save(Tag out) {
     try {
       switch (type.getSelectedIndex()) {
-        case 0: out.type = Controller.types.S7; break;
-        case 1: out.type = Controller.types.AB; break;
-        case 2: out.type = Controller.types.MB; break;
-        case 3: out.type = Controller.types.NI; break;
+        case 0: out.type = ControllerType.S7; break;
+        case 1: out.type = ControllerType.AB; break;
+        case 2: out.type = ControllerType.MB; break;
+        case 3: out.type = ControllerType.NI; break;
       }
       out.host = host.getText();
       out.tag = tag.getText();
       boolean isFloat = false;
       switch (size.getSelectedIndex()) {
-        case 0: out.size = Controller.sizes.bit; break;
-        case 1: out.size = Controller.sizes.int8; break;
-        case 2: out.size = Controller.sizes.int16; break;
-        case 3: out.size = Controller.sizes.int32; break;
-        case 4: out.size = Controller.sizes.float32; isFloat = true; break;
-        case 5: out.size = Controller.sizes.float64; isFloat = true; break;
+        case 0: out.size = TagType.bit; break;
+        case 1: out.size = TagType.int8; break;
+        case 2: out.size = TagType.int16; break;
+        case 3: out.size = TagType.int32; break;
+        case 4: out.size = TagType.float32; isFloat = true; break;
+        case 5: out.size = TagType.float64; isFloat = true; break;
       }
       if (!isFloat) {
         out.min = Integer.valueOf(min.getText());

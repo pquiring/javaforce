@@ -14,7 +14,7 @@ public class RemoteController {
   private int cid;
   private Object lock = new Object();
   private javaforce.controls.Tag first;
-  private HashMap<Tag, javaforce.controls.Tag> map = new HashMap<>();
+  private HashMap<TagBase, javaforce.controls.Tag> map = new HashMap<>();
   private int delay;
   private String ip;
   private int controllerType;
@@ -50,23 +50,23 @@ public class RemoteController {
         tag.delay = delay;
         tag.host = ip;
         switch (tagType) {
-          case TagType.BIT: tag.size = Controller.sizes.bit; break;
-          case TagType.INT8: tag.size = Controller.sizes.int8; break;
-          case TagType.INT16: tag.size = Controller.sizes.int16; break;
-          case TagType.INT32: tag.size = Controller.sizes.int32; break;
-//          case TagType.LONG: tag.size = Controller.sizes.int64; break;
-          case TagType.FLOAT32: tag.size = Controller.sizes.float32; break;
-          case TagType.FLOAT64: tag.size = Controller.sizes.float64; break;
+          case TagType.bit: tag.size = TagType.bit; break;
+          case TagType.int8: tag.size = TagType.int8; break;
+          case TagType.int16: tag.size = TagType.int16; break;
+          case TagType.int32: tag.size = TagType.int32; break;
+//          case TagType.LONG: tag.size = TagType.int64; break;
+          case TagType.float32: tag.size = TagType.float32; break;
+          case TagType.float64: tag.size = TagType.float64; break;
           default: JFLog.log("Error:TagType unknown:" + tagType); return null;
         }
         tag.tag = name;
         JFLog.log("type=" + controllerType);
         switch (controllerType) {
-          case 0: tag.type = Controller.types.JF; break;
-          case 1: tag.type = Controller.types.S7; break;
-          case 2: tag.type = Controller.types.AB; break;
-          case 3: tag.type = Controller.types.MB; break;
-          case 4: tag.type = Controller.types.NI; break;
+          case 0: tag.type = ControllerType.JF; break;
+          case 1: tag.type = ControllerType.S7; break;
+          case 2: tag.type = ControllerType.AB; break;
+          case 3: tag.type = ControllerType.MB; break;
+          case 4: tag.type = ControllerType.NI; break;
         }
         tag.start(first);
         if (first == null) first = tag;

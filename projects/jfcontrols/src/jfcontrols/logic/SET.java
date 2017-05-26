@@ -5,7 +5,7 @@ package jfcontrols.logic;
  * @author pquiring
  */
 
-import jfcontrols.tags.*;
+import javaforce.controls.*;
 
 public class SET extends Logic {
 
@@ -26,6 +26,6 @@ public class SET extends Logic {
   }
 
   public int getTagType(int idx) {
-    return TagType.BIT;
+    return TagType.bit;
   }
 }

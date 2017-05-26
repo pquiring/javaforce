@@ -388,53 +388,7 @@ public class Events {
         break;
       }
 
-      case "jfc_rung_editor_add": {
-        Component focus = (Component)client.getProperty("focus");
-        if (focus == null) {
-          JFLog.log("Error:focus == null");
-          break;
-        }
-        Node node = null;
-        if (focus != null) {
-          node = (Node)focus.getProperty("node");
-        }
-        if (node == null) {
-          JFLog.log("Error:Node not found");
-          break;
-        }
-        int x = 0, y = 0;
-        if (node.parent != null) {
-          node = node.parent;
-        }
-        x = node.x + node.getDelta();
-        y = node.y;
-        String name = c.getName();
-        Logic blk = null;
-        try {
-          Class cls = Class.forName("jfcontrols.logic." + name.replaceAll(" ", "_").toUpperCase());
-          blk = (Logic)cls.newInstance();
-        } catch (Exception e) {
-          JFLog.log(e);
-        }
-        if (blk == null) {
-          JFLog.log("Error:Logic not found:" + name);
-          break;
-        }
-        if (node.type != 'h') {
-          node = node.insertNode('h', x, y);
-        }
-        String tags[] = new String[blk.getTagsCount() + 1];
-        for(int a=0;a<tags.length;a++) {
-          tags[a] = "0";
-        }
-        node = node.insertLogic('#', x, y, blk, tags);
-        if (node.next == null || !node.next.validFork()) {
-          node = node.insertNode('h', x, y);
-        }
-        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
-        Panels.layoutNodes(node.root, logic, sql);
-        break;
-      }
+      case "jfc_rung_editor_add":
 
       case "jfc_rung_editor_del": {
         Component focus = (Component)client.getProperty("focus");
@@ -643,21 +597,21 @@ public class Events {
     JFLog.log("cmd=" + cmd);
     switch (cmd) {
       case "toggleBit": {
-        Tag tag = TagsService.getTag(args[0]);
+        TagBase tag = TagsService.getTag(args[0]);
         if (tag != null) {
           tag.setBoolean(!tag.getBoolean());
         }
         break;
       }
       case "setBit": {
-        Tag tag = TagsService.getTag(args[0]);
+        TagBase tag = TagsService.getTag(args[0]);
         if (tag != null) {
           tag.setBoolean(true);
         }
         break;
       }
       case "resetBit": {
-        Tag tag = TagsService.getTag(args[0]);
+        TagBase tag = TagsService.getTag(args[0]);
         if (tag != null) {
           tag.setBoolean(false);
         }

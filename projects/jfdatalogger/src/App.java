@@ -414,19 +414,19 @@ public class App extends javax.swing.JFrame {
     String f[] = data.split("[|]");
     tag.host = f[0];
     switch (f[1]) {
-      case "S7": tag.type = Controller.types.S7; break;
-      case "AB": tag.type = Controller.types.AB; break;
-      case "MB": tag.type = Controller.types.MB; break;
-      case "NI": tag.type = Controller.types.NI; break;
+      case "S7": tag.type = ControllerType.S7; break;
+      case "AB": tag.type = ControllerType.AB; break;
+      case "MB": tag.type = ControllerType.MB; break;
+      case "NI": tag.type = ControllerType.NI; break;
     }
     tag.tag = f[2];
     switch (f[3]) {
-      case "bit": tag.size = Controller.sizes.bit; break;
-      case "int8": tag.size = Controller.sizes.int8; break;
-      case "int16": tag.size = Controller.sizes.int16; break;
-      case "int32": tag.size = Controller.sizes.int32; break;
-      case "float32": tag.size = Controller.sizes.float32; break;
-      case "float64": tag.size = Controller.sizes.float64; break;
+      case "bit": tag.size = TagType.bit; break;
+      case "int8": tag.size = TagType.int8; break;
+      case "int16": tag.size = TagType.int16; break;
+      case "int32": tag.size = TagType.int32; break;
+      case "float32": tag.size = TagType.float32; break;
+      case "float64": tag.size = TagType.float64; break;
     }
     if (tag.isFloat()) {
       tag.fmin = Float.valueOf(f[4]);
@@ -731,7 +731,7 @@ public class App extends javax.swing.JFrame {
           sv = scaleFloat(tag, fv);
         }
       } else {
-        if (tag.size == Controller.sizes.bit) {
+        if (tag.size == TagType.bit) {
           sv = value.equals("0") ? 0 : tag.min;
         } else {
           iv = Integer.valueOf(value);
@@ -757,7 +757,7 @@ public class App extends javax.swing.JFrame {
         getValues(tag);
         int y = 5 + 500 - (sv * 5);
         int ly = 5 + 500 - (lsv * 5);
-        if (tag.size == Controller.sizes.bit) {
+        if (tag.size == TagType.bit) {
           if (!tag.getValue().equals("0")) {
             logImage.putPixel(x2, y, tag.color);
           }

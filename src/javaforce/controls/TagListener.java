@@ -7,5 +7,5 @@ package javaforce.controls;
 
 public interface TagListener {
   /** Invoked when a tag's value has changed. */
-  public void tagChanged(Tag tag);
+  public void tagChanged(Tag tag, String value);
 }
