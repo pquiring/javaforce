@@ -51,12 +51,12 @@ public class RemoteController {
         tag.host = ip;
         switch (tagType) {
           case TagType.BIT: tag.size = Controller.sizes.bit; break;
-          case TagType.BYTE: tag.size = Controller.sizes.int8; break;
-          case TagType.SHORT: tag.size = Controller.sizes.int16; break;
-          case TagType.INT: tag.size = Controller.sizes.int32; break;
+          case TagType.INT8: tag.size = Controller.sizes.int8; break;
+          case TagType.INT16: tag.size = Controller.sizes.int16; break;
+          case TagType.INT32: tag.size = Controller.sizes.int32; break;
 //          case TagType.LONG: tag.size = Controller.sizes.int64; break;
-          case TagType.FLOAT: tag.size = Controller.sizes.float32; break;
-          case TagType.DOUBLE: tag.size = Controller.sizes.float64; break;
+          case TagType.FLOAT32: tag.size = Controller.sizes.float32; break;
+          case TagType.FLOAT64: tag.size = Controller.sizes.float64; break;
           default: JFLog.log("Error:TagType unknown:" + tagType); return null;
         }
         tag.tag = name;

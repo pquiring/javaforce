@@ -26,6 +26,6 @@ public class SLEEP extends Logic {
   }
 
   public int getTagType(int idx) {
-    return TagType.INT;
+    return TagType.INT32;
   }
 }

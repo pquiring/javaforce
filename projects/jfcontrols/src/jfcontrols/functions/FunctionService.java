@@ -10,18 +10,22 @@ import java.lang.reflect.*;
 
 import javaforce.*;
 
+import jfcontrols.api.*;
 import jfcontrols.tags.*;
 
 public class FunctionService extends Thread {
   public static volatile boolean active;
-  public static Object lock = new Object();
+  public static Object done = new Object();
+  public static Object rapi = new Object();
+  public static Object wapi = new Object();
+  public static Object fapi = new Object();
+  public static LogicLoader loader = new LogicLoader();
 
   public static void main() {
     new FunctionService().start();
   }
 
   public void run() {
-    LogicLoader loader = new LogicLoader();
     Class mainCls, initCls;
     File mainFile = new File("work/class/func_1.class");
     if (!mainFile.exists()) {
@@ -59,24 +63,33 @@ public class FunctionService extends Thread {
     while (active) {
       long begin = System.currentTimeMillis();
       TagsService.doReads();
+      synchronized(rapi) {
+        rapi.notifyAll();
+      }
+      synchronized(fapi) {
+        fapi.notifyAll();
+      }
       try {
         main.invoke(null, new Object[] {null});
       } catch (Exception e) {
         JFLog.log(e);
       }
+      synchronized(wapi) {
+        wapi.notifyAll();
+      }
       TagsService.doWrites();
       long end = System.currentTimeMillis();
       JFLog.log("scan cycle=" + (end-begin));
     }
-    synchronized(lock) {
-      lock.notify();
+    synchronized(done) {
+      done.notify();
     }
   }
 
   public static void cancel() {
-    synchronized(lock) {
+    synchronized(done) {
       active = false;
-      try {lock.wait();} catch (Exception e) {}
+      try {done.wait();} catch (Exception e) {}
     }
   }
 
@@ -89,6 +102,49 @@ public class FunctionService extends Thread {
 
   public static boolean isActive() {
     return active;
+  }
+
+  public static void addReadQuery(TagsQuery q) {
+    synchronized(rapi) {
+      try {rapi.wait(10 * 1000);} catch (Exception e) {return;}
+      for(int a=0;a<q.count;a++) {
+        q.values[a] = q.tags[a].getValue();
+      }
+    }
+  }
+
+  public static void addWriteQuery(TagsQuery q) {
+    synchronized(wapi) {
+      try {wapi.wait(10 * 1000);} catch (Exception e) {return;}
+      for(int a=0;a<q.count;a++) {
+        q.tags[a].setValue(q.values[a]);
+      }
+    }
+  }
+
+  public static void functionRequest(int fid) {
+    synchronized(fapi) {
+      try {fapi.wait(10 * 1000);} catch (Exception e) {return;}
+      Class cls;
+      try {
+        cls = loader.loadClass("func_" + fid);
+      } catch (Exception e) {
+        JFLog.log(e);
+        return;
+      }
+      Method main;
+      try {
+        main = cls.getMethod("code", Tag[].class);
+      } catch (Exception e) {
+        JFLog.log(e);
+        return;
+      }
+      try {
+        main.invoke(null, new Object[] {null});
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
   }
 
   public static boolean generateFunction(int fid, SQL sql) {

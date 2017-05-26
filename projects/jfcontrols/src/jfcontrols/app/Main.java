@@ -9,6 +9,7 @@ import java.io.*;
 
 import javaforce.*;
 import javaforce.webui.*;
+import jfcontrols.api.APIService;
 import jfcontrols.panels.*;
 import jfcontrols.functions.*;
 import jfcontrols.sql.*;
@@ -26,6 +27,8 @@ public class Main implements WebUIHandler {
     TagsService.main();
     //start logic server
     FunctionService.main();
+    //start api server
+    APIService.main();
     //start webui server
     WebUIServer server = new WebUIServer();
     server.start(new Main(), 34000, false);
