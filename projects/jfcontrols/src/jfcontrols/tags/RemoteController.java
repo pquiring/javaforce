@@ -62,7 +62,7 @@ public class RemoteController {
         tag.tag = name;
         JFLog.log("type=" + controllerType);
         switch (controllerType) {
-//          case 0: tag.type = Controller.types.JFC; break;
+          case 0: tag.type = Controller.types.JF; break;
           case 1: tag.type = Controller.types.S7; break;
           case 2: tag.type = Controller.types.AB; break;
           case 3: tag.type = Controller.types.MB; break;

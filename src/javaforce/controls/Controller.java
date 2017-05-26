@@ -16,6 +16,7 @@ import javaforce.controls.s7.*;
 import javaforce.controls.mod.*;
 import javaforce.controls.ab.*;
 import javaforce.controls.ni.*;
+import javaforce.controls.jfc.*;
 
 public class Controller {
   private boolean connected;
@@ -34,7 +35,7 @@ public class Controller {
   public Exception lastException;
 
   public static enum types {
-    S7, AB, MB, NI
+    S7, AB, MB, NI, JF
   };
 
   public static enum sizes {
@@ -171,6 +172,7 @@ public class Controller {
       case S7:
       case MB:
       case AB:
+      case JF:
         try {
           if (socket != null) {
             socket.close();
@@ -270,6 +272,18 @@ public class Controller {
           }
           return true;
         }
+        case JF: {
+          JFTag tag = JFPacket.decodeAddress(addr);
+          tag.data = data;
+          byte packet[] = JFPacket.makeWritePacket(tag, data);
+          try {
+            os.write(packet);
+          } catch (Exception e) {
+            lastException = e;
+            return false;
+          }
+          return true;
+        }
         case NI: {
           System.out.println("NI write() not implemented");
           return false;
@@ -355,6 +369,31 @@ public class Controller {
             lastException = e;
             return null;
           }
+        }
+        case JF: {
+          JFTag tag = JFPacket.decodeAddress(addr);
+          if (tag == null) return null;
+          byte packet[] = JFPacket.makeReadPacket(tag);
+          try {
+            os.write(packet);
+          } catch (Exception e) {
+            lastException = e;
+            return null;
+          }
+          byte reply[] = new byte[1500];
+          int replySize = 0;
+          try {
+            do {
+              int read = is.read(reply, replySize, 1500 - replySize);
+              if (read == -1) throw new Exception("bad read");
+              replySize += read;
+            } while (!JFPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+          } catch (Exception e) {
+            lastException = e;
+            return null;
+          }
+          tag = JFPacket.decodePacket(Arrays.copyOf(reply, replySize));
+          return tag.data;
         }
         case NI: {
           return daq.read();
@@ -450,6 +489,37 @@ public class Controller {
         }
       }
 */
+      case JF: {
+        JFTag tags[] = new JFTag[addr.length];
+        for(int a=0;a<addr.length;a++) {
+          tags[a] = JFPacket.decodeAddress(addr[a]);
+        }
+        byte packet[] = JFPacket.makeReadPacket(tags);
+        try {
+          os.write(packet);
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        byte reply[] = new byte[1500];
+        int replySize = 0;
+        try {
+          do {
+            int read = is.read(reply, replySize, 1500 - replySize);
+            if (read == -1) throw new Exception("bad read");
+            replySize += read;
+          } while (!JFPacket.isPacketComplete(Arrays.copyOf(reply, replySize)));
+        } catch (Exception e) {
+          lastException = e;
+          return null;
+        }
+        tags = JFPacket.decodeMultiPacket(Arrays.copyOf(reply, replySize), addr.length);
+        byte ret[][] = new byte[addr.length][];
+        for(int a=0;a<addr.length;a++) {
+          ret[a] = tags[a].data;
+        }
+        return ret;
+      }
     }
     return null;
   }
@@ -461,6 +531,7 @@ public class Controller {
         case S7:
         case AB:
         case MB:
+        case JF:
           return socket.isConnected();
         case NI:
         default:
