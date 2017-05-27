@@ -151,7 +151,7 @@ public class APIService extends Thread {
             tagName = new String(str);
             tag = TagsService.getTag(tagName);
             q.tags[a] = tag;
-            size += 4;  //size / type
+            size += 4;  //type / size
             if (tag == null) {
               q.sizes[a] = tag.getSize();
               size += q.sizes[a];
@@ -194,7 +194,8 @@ public class APIService extends Thread {
             q.tags[a] = tag;
             if (len < 2) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
             type = LE.getuint16(data, pos); len -= 2; pos += 2;
-            size = TagBase.getSize(type);
+            size = LE.getuint16(data, pos); len -= 2; pos += 2;
+            if (size != TagBase.getSize(type)) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
             q.sizes[a] = size;
             if (len < size) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
             q.values[a] = TagBase.decode(type, data, pos); pos += size; len -= size;

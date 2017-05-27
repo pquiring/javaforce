@@ -17,14 +17,19 @@ public class JFPacket {
 
   public static byte[] makeWritePacket(JFTag tag, byte tagdata[]) {
     int strlen = tag.tag.length();
-    byte data[] = new byte[8 + 2 + 1 + strlen + tagdata.length];
+    byte data[] = new byte[8 + 2 + 1 + strlen + 2 + 2 + tagdata.length];
     LE.setuint16(data, 0, 0x0004);  //write tag cmd
     LE.setuint16(data, 2, 0x1234);  //unique id
     LE.setuint32(data, 4, 2 + strlen);  //data length
     LE.setuint16(data, 8, 1);  //count
     LE.setuint8(data, 10, strlen);  //strlen
     System.arraycopy(tag.tag.getBytes(), 0, data, 11, strlen);
-    System.arraycopy(tagdata, 0, data, 11 + strlen, tagdata.length);
+    int pos = 11 + strlen;
+    LE.setuint16(data, pos, tag.type);  //tagtype
+    pos += 2;
+    LE.setuint16(data, pos, tagdata.length);  //tag size
+    pos += 2;
+    System.arraycopy(tagdata, 0, data, pos, tagdata.length);
     return data;
   }
 
@@ -81,6 +86,10 @@ public class JFPacket {
       pos++;
       System.arraycopy(tags[a].tag.getBytes(), 0, data, pos, strlen);
       pos += strlen;
+      LE.setuint16(data, pos, tags[a].type);  //tag type
+      pos += 2;
+      LE.setuint16(data, pos, tagdata[a].length);  //tag size
+      pos += 2;
       System.arraycopy(tagdata[a], 0, data, pos, tagdata[a].length);
       pos += tagdata[a].length;
     }

@@ -1,6 +1,6 @@
 package jfcontrols.functions;
 
-/** Logic Service
+/** Function Service
  *
  * @author pquiring
  */
@@ -19,7 +19,7 @@ public class FunctionService extends Thread {
   public static Object rapi = new Object();
   public static Object wapi = new Object();
   public static Object fapi = new Object();
-  public static LogicLoader loader = new LogicLoader();
+  public static FunctionLoader loader = new FunctionLoader();
 
   public static void main() {
     new FunctionService().start();
