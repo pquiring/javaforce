@@ -344,28 +344,30 @@ public class Events {
       case "jfc_func_editor_add_rung": {
         int fid = Integer.valueOf((String)client.getProperty("func"));
         Component focus = (Component)client.getProperty("focus");
-        int idx = 0;
+        int rid = 0;
         Node node = null;
         if (focus != null) {
           node = (Node)focus.getProperty("node");
         }
         if (node != null) {
           if (node.parent == null) {
-            idx = node.root.rid;
+            rid = node.root.rid;
           } else {
-            idx = node.parent.root.rid;
+            rid = node.parent.root.rid;
           }
         }
         //insert rung before current one
-        sql.execute("update rungs set rid=rid+1 where fid=" + fid + " and rid>=" + idx);
-        sql.execute("insert into rungs (fid,rid,comment,logic) values (" + fid + "," + idx + ",'Comment','h')");
+        JFLog.log("rid=" + rid);
+        sql.execute("update rungs set rid=rid+1 where fid=" + fid + " and rid>=" + rid);
+        sql.execute("insert into rungs (fid,rid,comment,logic) values (" + fid + "," + rid + ",'Comment','h')");
         ArrayList<String[]> cells = new ArrayList<String[]>();
         ArrayList<Node> nodes = new ArrayList<Node>();
-        String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + idx);
+        String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
         Rungs rungs = (Rungs)client.getProperty("rungs");
-        rungs.rungs.add(idx, Panels.buildRung(data, cells, nodes, sql, true, fid));
+        rungs.rungs.add(rid, Panels.buildRung(data, cells, nodes, sql, true, fid));
         Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, null, sql);
-        rungs.table.add(idx, table);
+        rungs.table.add(rid, table);
+        //BUG : need to re-number rungs above idx
         break;
       }
 

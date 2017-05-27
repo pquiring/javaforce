@@ -495,7 +495,7 @@ public class Panels {
       }
       case "jfc_rungs_viewer": {
         String fid = (String)client.getProperty("func");
-        String data[][] = sql.select("select rid,logic,comment from rungs where fid=" + fid);
+        String data[][] = sql.select("select rid,logic,comment from rungs where fid=" + fid + " order by rid");
         client.setProperty("rungs", new Rungs());
         buildRungs(data, cells, sql);
         break;
@@ -736,7 +736,7 @@ public class Panels {
     //add rung title / comment
     String style = readonly ? "readonly" : null;
     String field = readonly ? "label" : "textfield";
-    cells.add(createCell(null, x, y, 3, 1, "label", null, "Rung " + rid, null, null, null, null));
+    cells.add(createCell(null, x, y, 3, 1, "label", null, "Rung " + (rid+1), null, null, null, null));
     objs.add(root);
     x += 3;
     cells.add(createCell(null, x, y, 12, 1, field, "comment" + rid, comment, null, null, null, style));
