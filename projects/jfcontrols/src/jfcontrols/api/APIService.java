@@ -70,7 +70,6 @@ public class APIService extends Thread {
     private Object writeLock = new Object();
     private ArrayList<String> subs = new ArrayList<String>();
 
-    private int error = 0;
     private int clientVersion = 0x100;
 
     public Session(Socket s) {
@@ -87,23 +86,24 @@ public class APIService extends Thread {
           if (read > 0) {
             size += read;
           }
-          if (read < 8) continue;
+          if (size < 8) continue;
           int cmd = LE.getuint16(header, 0);
           int id = LE.getuint16(header, 2);
           int len = LE.getuint32(header, 4);
           byte data[] = JF.readAll(is, len);
           if (data == null || data.length != len) break;
           doCommand(cmd, id, data);
+          size = 0;
         }
       } catch (APIException e) {
         JFLog.log(e);
         try {
           byte reply[] = new byte[8 + 2];
-          LE.setuint16(reply, 8, e.reason);
-          setupSuccess(reply, e.cmd, e.id);
+          setupError(reply, e.cmd, e.id, e.reason);
           synchronized(writeLock) {
             os.write(reply);
           }
+          os.flush();
         } catch (Exception ex) {}
       } catch (Exception e) {
         JFLog.log(e);
@@ -128,12 +128,12 @@ public class APIService extends Thread {
             throw new APIException(cmd, id, ERR_BAD_VERSION, "Error:API:client not supported");
           }
           reply = new byte[8 + 2];
-          setupSuccess(reply, 0x0101, id);
+          setupSuccess(reply, cmd, id);
           LE.setuint16(data, 8, serverVersion);
           break;
         case 0x0002:  //ping
           reply = new byte[8];
-          setupSuccess(reply, 0x0102, id);
+          setupSuccess(reply, cmd, id);
           break;
         case 0x0003:  //read tag(s)
           if (len < 2) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
@@ -151,7 +151,7 @@ public class APIService extends Thread {
             tagName = new String(str);
             tag = TagsService.getTag(tagName);
             q.tags[a] = tag;
-            size += 2;  //type
+            size += 4;  //size / type
             if (tag == null) {
               q.sizes[a] = tag.getSize();
               size += q.sizes[a];
@@ -168,9 +168,11 @@ public class APIService extends Thread {
             tag = q.tags[a];
             if (tag == null) {
               LE.setuint16(data, pos, TagType.unknown); pos += 2;
+              LE.setuint16(data, pos, 0); pos += 2;
             } else {
               type = tag.getType();
               LE.setuint16(data, pos, type); pos += 2;
+              LE.setuint16(data, pos, q.sizes[a]); pos += 2;
               TagBase.encode(type, q.values[a], data, pos); pos += q.sizes[a];
             }
           }
@@ -277,18 +279,19 @@ public class APIService extends Thread {
       synchronized(writeLock) {
         os.write(reply);
       }
+      os.flush();
     }
 
     private void setupSuccess(byte reply[], int cmd, int id) {
       LE.setuint16(reply, 0, 0x100 | cmd);
       LE.setuint16(reply, 2, id);
-      LE.setuint32(reply, 4, reply.length);
+      LE.setuint32(reply, 4, reply.length - 8);
     }
 
     private void setupError(byte reply[], int cmd, int id, int error) {
       LE.setuint16(reply, 0, 0x200 | cmd);
       LE.setuint16(reply, 2, id);
-      LE.setuint32(reply, 4, reply.length);
+      LE.setuint32(reply, 4, reply.length - 8);
       LE.setuint16(reply, 8, error);
     }
 
@@ -296,7 +299,7 @@ public class APIService extends Thread {
       int size = tag.getSize();
       int type = tag.getType();
       byte reply[] = new byte[8 + 2 + 2 + size];
-      setupSuccess(reply, 0x0002, 0);
+      setupSuccess(reply, 0x0003, 0);  //read cmd
       LE.setuint16(reply, 8, 1);  //count
       LE.setuint16(reply, 10, type);  //type
       TagBase.encode(type, value, reply, 12);

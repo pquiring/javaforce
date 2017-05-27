@@ -102,7 +102,8 @@ public class JFPacket {
     int cnt = LE.getuint16(data, 8);
     if (cnt != 1) return null;
     int type = LE.getuint16(data, 10);
-    int datalen = len - 4;
+    int size = LE.getuint16(data, 12);
+    int datalen = len - 6;
     JFTag tag = new JFTag(null);
     tag.data = Arrays.copyOfRange(data, 12, 12 + datalen);
     return tag;
@@ -120,30 +121,12 @@ public class JFPacket {
       tags[a] = new JFTag(null);
       int type = LE.getuint16(data, pos);
       pos += 2;
-      int datalen = getSize(type);
+      int datalen = LE.getuint16(data, pos);
+      pos += 2;
       JFTag tag = new JFTag(null);
       tag.data = Arrays.copyOfRange(data, pos, pos + datalen);
       pos += datalen;
     }
     return tags;
-  }
-
-  private static int getSize(int type) {
-    switch (type) {
-      default:
-      case 1:
-      case 2:
-      case 8:
-        return 1;
-      case 3:
-      case 9:
-        return 2;
-      case 4:
-      case 6:
-        return 4;
-      case 5:
-      case 7:
-        return 8;
-    }
   }
 }
