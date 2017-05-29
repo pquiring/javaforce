@@ -197,10 +197,16 @@ public abstract class Component {
     setStyle("height", height + "px");
     sendEvent("setsize", new String[] {"w=" + width, "h=" + height});
   }
+  public int getWidth() {
+    return width;
+  }
   public void setWidth(int width) {
     this.width = width;
     setStyle("width", width + "px");
     sendEvent("setwidth", new String[] {"w=" + width});
+  }
+  public int getHeight() {
+    return height;
   }
   public void setHeight(int height) {
     this.height = height;
@@ -354,12 +360,16 @@ public abstract class Component {
         break;
       case "possize":
         onPosSize(args);
+        if (moved != null) moved.onMoved(this, x, y);
+        if (resized != null) resized.onResized(this, width, height);
         break;
       case "pos":
         onPos(args);
+        if (moved != null) moved.onMoved(this, x, y);
         break;
       case "size":
         onSize(args);
+        if (resized != null) resized.onResized(this, width, height);
         break;
       case "ack":
         onLoaded(args);
@@ -469,5 +479,17 @@ public abstract class Component {
   public void action() {
     if (action == null) return;
     action.action(this);
+  }
+
+  private Resized resized;
+  public void addResizedListener(Resized handler) {
+    addEvent("onresize", "onResize(event, this);");
+    resized = handler;
+  }
+
+  private Moved moved;
+  public void addMovedListener(Moved handler) {
+    addEvent("onmoved", "onMoved(event, this);");
+    moved = handler;
   }
 }

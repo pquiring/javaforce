@@ -537,6 +537,11 @@ public class Panels {
     //flow components are placed below the main table
     String name = v[NAME];
     AutoScrollPanel div = new AutoScrollPanel();
+    JFLog.log("client.height=" + client.getHeight());
+    div.setHeight(client.getHeight() - (cellHeight * 2));
+    client.addResizedListener((cmp, width, height) -> {
+      div.setHeight(client.getHeight() - (cellHeight * 2));
+    });
     switch (name) {
       case "jfc_rungs_viewer": {
         String fid = (String)client.getProperty("func");

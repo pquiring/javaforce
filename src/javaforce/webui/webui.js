@@ -5,6 +5,7 @@ var bindata;
 var temp = document.createElement('div');
 
 function load(event) {
+  sendSize('body');
   var msg = {
     event: "load"
   };
@@ -212,6 +213,10 @@ function onmousedownBody(event, element) {
   ws.send(JSON.stringify(msg));
 }
 
+function onresizeBody(event, element) {
+  sendSize('body');
+}
+
 function onClick(event, element) {
   var msg = {
     event: "click",
@@ -366,4 +371,12 @@ function closePanel(event, element) {
     id: element.id
   };
   ws.send(JSON.stringify(msg));
+}
+
+function onResized(event, element) {
+  sendSize(element.id);
+}
+
+function onMoved(event, element) {
+  sendPos(element.id);
 }

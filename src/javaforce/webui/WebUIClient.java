@@ -11,6 +11,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.service.*;
+import javaforce.webui.event.*;
 
 public class WebUIClient {
   public WebSocket socket;
@@ -18,6 +19,7 @@ public class WebUIClient {
   public String hash;
   public int nextID;
   public int zIndex = 1;
+  public int width, height;
 
   public boolean popupMenuMouseDown;
   public PopupMenu topPopupMenu;
@@ -59,6 +61,15 @@ public class WebUIClient {
           break;
         case "mousedown":
           Menu.onMouseDownBody(this, args);
+          break;
+        case "size":
+          for(int a=0;a<args.length;a++) {
+            if (args[a].startsWith("w=")) width = Integer.valueOf(args[a].substring(2));
+            if (args[a].startsWith("h=")) height = Integer.valueOf(args[a].substring(2));
+          }
+          if (resized != null) {
+            resized.onResized(null, width, height);
+          }
           break;
         case "ack":
           root.dispatchEvent(event, args);
@@ -155,5 +166,16 @@ public class WebUIClient {
   }
   public void releaseZIndex() {
     zIndex--;
+  }
+  public int getWidth() {
+    return width;
+  }
+  public int getHeight() {
+    return height;
+  }
+
+  private Resized resized;
+  public void addResizedListener(Resized handler) {
+    resized = handler;
   }
 }
