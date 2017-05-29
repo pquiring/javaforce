@@ -13,10 +13,11 @@ public class PopupPanel extends Panel {
     titleBar = new TitleBar(title, this);
     add(titleBar);
     setClass("popuppanel");
-    display = "inline-flex";
+    display = "inline";
     modal = false;
     block = new Block();
     block.setClass("modal");
+    setPosition(0, 0);
   }
   /** Modal windows block all other windows underneath it. */
   public void setModal(boolean state) {

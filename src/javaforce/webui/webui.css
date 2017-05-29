@@ -62,8 +62,7 @@ input {
 }
 
 .innerpanel {
-  display: inline-flex;
-  flex-direction: column;
+  display: inline;
 }
 
 .button {
@@ -72,25 +71,21 @@ input {
 }
 
 .label {
+  display: inline-block;
 }
 
 .valigncenter {
-  display: flex;
   align-items: center;
 }
 
 .row {
-  display: inline-flex;
-  flex-direction: row;
 }
 
 .column {
-  display: inline-flex;
-  flex-direction: column;
 }
 
 .pad {
-  flex-grow: 1;
+  display: inline;
 }
 
 .tab {
@@ -162,18 +157,18 @@ input {
 }
 
 .menubar {
-  display: inline-flex;
-  flex-direction: row;
   background-color: #ccc;
 }
 
 .menu {
+  display: inline;
   background-color: #ccc;
   padding-right: 10px;
   cursor: default;
 }
 
 .menuitem {
+  display: block;
   background-color: #ccc;
   cursor: default;
 }
@@ -181,7 +176,6 @@ input {
 .popupmenu {
   position: fixed;
   display: none;
-  flex-direction: column;
   background-color: #ccc;
 }
 
@@ -192,14 +186,11 @@ input {
   min-height: 64px;
   min-width: 64px;
   border: 1px solid;
-  flex-direction: column;
 }
 
 .titlebar {
   background-color: #00e;
   width: 100%;
-  display: inline-flex;
-  flex-direction: row;
   cursor: default;
 }
 
@@ -229,8 +220,6 @@ input {
 }
 
 .treerow {
-  display: flex;
-  flex-direction: row;
   height: 20px;
   width: 100%;
 }
@@ -261,7 +250,6 @@ input {
 
 .treelabel {
   height: 20px;
-  flex-grow: 1;
 }
 
 .modal {
@@ -288,4 +276,12 @@ input {
 
 .height100 {
   height: 100%;
+}
+
+.autoscroll {
+  overflow: auto;
+}
+
+.right {
+  float: right;
 }

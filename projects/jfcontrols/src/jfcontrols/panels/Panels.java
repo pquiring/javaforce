@@ -182,7 +182,9 @@ public class Panels {
     return table;
   }
   public static Component setCellSize(Component c, Rectangle r) {
-    c.setSize(cellWidth * r.width, cellHeight * r.height);
+    if (r.width > 0 && r.height > 0) {
+      c.setSize(cellWidth * r.width, cellHeight * r.height);
+    }
     c.setProperty("rect", r);
     return c;
   }
@@ -195,6 +197,7 @@ public class Panels {
       case "table": return getTable(v, container, r, client);
       case "overlay": return getOverlay(v);
       case "image": return getImage(v);
+      case "flow": return getFlow(v, container, client);
       default: JFLog.log("Unknown component:" + name); break;
     }
     return null;
@@ -353,7 +356,7 @@ public class Panels {
     String arg = v[ARG];
     SQL sql = SQLService.getSQL();
     ArrayList<String[]> cells = new ArrayList<String[]>();
-    ArrayList<Node> objs = new ArrayList<Node>();
+    ArrayList<Node> nodes = new ArrayList<Node>();
     Table table;
     switch (name) {
       case "jfc_ctrls" : {
@@ -493,26 +496,18 @@ public class Panels {
         cells.add(createCell("", 0, 0, 1, 1, "button", "sleep", "Sleep", null, "jfc_rung_editor_add", null, null));
         break;
       }
-      case "jfc_rungs_viewer": {
-        String fid = (String)client.getProperty("func");
-        String data[][] = sql.select("select rid,logic,comment from rungs where fid=" + fid + " order by rid");
-        client.setProperty("rungs", new Rungs());
-        buildRungs(data, cells, sql);
-        break;
-      }
       case "jfc_rung_viewer": {
         int fid = Integer.valueOf((String)client.getProperty("func"));
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + arg);
         Rungs rungs = (Rungs)client.getProperty("rungs");
-        r.y = rungs.y;
-        rungs.rungs.add(buildRung(data, cells, objs, sql, true, fid));
+        rungs.rungs.add(buildRung(data, cells, nodes, sql, true, fid));
         break;
       }
       case "jfc_rung_editor": {
         int fid = Integer.valueOf((String)client.getProperty("func"));
         int rid = Integer.valueOf((String)client.getProperty("rung"));
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
-        buildRung(data, cells, objs, sql, false, fid);
+        buildRung(data, cells, nodes, sql, false, fid);
         break;
       }
       default: {
@@ -520,23 +515,41 @@ public class Panels {
       }
     }
     sql.close();
-    table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, objs.toArray(new Node[objs.size()]), sql);
+    table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, nodes.toArray(new Node[nodes.size()]), sql);
     r.width = table.getColumns();
     r.height = table.getRows();
     switch (name) {
-      case "jfc_rungs_viewer": {
-        Rungs rungs = (Rungs)client.getProperty("rungs");
-        rungs.table = table;
-        break;
-      }
       case "jfc_rung_viewer": {
         Rungs rungs = (Rungs)client.getProperty("rungs");
-        rungs.y += r.height;
         rungs.rungs.get(rungs.rungs.size() - 1).table = table;
         break;
       }
     }
     return table;
+  }
+  private static Component getFlow(String v[], Container container, WebUIClient client) {
+    //flow components are placed below the main table
+    String name = v[NAME];
+    AutoScrollPanel div = new AutoScrollPanel();
+    switch (name) {
+      case "jfc_rungs_viewer": {
+        String fid = (String)client.getProperty("func");
+        SQL sql = SQLService.getSQL();
+        String data[][] = sql.select("select rid,logic,comment from rungs where fid=" + fid + " order by rid");
+        sql.close();
+        client.setProperty("rungs", new Rungs());
+        for(int rung=0;rung<data.length;rung++) {
+          ArrayList<String[]> cells = new ArrayList<String[]>();
+          cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], null));
+          Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null, sql);
+          div.add(table);
+        }
+        Rungs rungs = (Rungs)client.getProperty("rungs");
+        rungs.div = div;
+        break;
+      }
+    }
+    return div;
   }
   private static Component getOverlay(String v[]) {
     Block div = new Block();
@@ -714,11 +727,6 @@ public class Panels {
           tbl.setSpans(x, y, r.width, r.height);
         }
       }
-    }
-  }
-  public static void buildRungs(String data[][], ArrayList<String[]> cells, SQL sql) {
-    for(int rung=0;rung<data.length;rung++) {
-      cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], "flow"));
     }
   }
   public static Rung buildRung(String data[], ArrayList<String[]> cells, ArrayList<Node> objs, SQL sql, boolean readonly, int fid) {

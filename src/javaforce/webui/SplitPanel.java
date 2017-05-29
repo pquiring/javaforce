@@ -42,7 +42,7 @@ public class SplitPanel extends Container {
     div.setBackColor("grey");
     top.add(div);
     top.add(get(1));  //right/bottom component
-    get(1).addClass("pad");  //flex
+    get(1).addClass("pad");
   }
 
   public void init() {

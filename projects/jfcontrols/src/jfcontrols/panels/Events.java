@@ -364,10 +364,17 @@ public class Events {
         ArrayList<Node> nodes = new ArrayList<Node>();
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
         Rungs rungs = (Rungs)client.getProperty("rungs");
-        rungs.rungs.add(rid, Panels.buildRung(data, cells, nodes, sql, true, fid));
-        Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, null, sql);
-        rungs.table.add(rid, table);
-        //BUG : need to re-number rungs above idx
+        Rung rung = Panels.buildRung(data, cells, nodes, sql, true, fid);
+        rungs.rungs.add(rid, rung);
+        Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, nodes.toArray(new Node[0]), sql);
+        rungs.div.add(rid, table);
+        rung.table = table;
+        int cnt = rungs.rungs.size();
+        for(int a=rid+1;a<cnt;a++) {
+          Rung r = rungs.rungs.get(a);
+          Label lbl = (Label)r.table.get(0, 0, false);
+          lbl.setText("Rung " + (a+1));
+        }
         break;
       }
 

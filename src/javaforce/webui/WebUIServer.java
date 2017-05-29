@@ -7,7 +7,7 @@
  * No ugly javascript, css or html knowledge needed.
  * WebUI is not dependant on AWT or any related APIs and should work with the Java base module.
  *
- * Browser support (WebSocket, css:flex):
+ * Browser support:
  *
  *    Internet Explorer is NOT supported
  *    Edge 12+

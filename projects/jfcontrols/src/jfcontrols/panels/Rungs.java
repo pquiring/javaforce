@@ -11,6 +11,5 @@ import javaforce.webui.*;
 
 public class Rungs {
   public ArrayList<Rung> rungs = new ArrayList<Rung>();
-  public Table table;
-  public int y;
+  public AutoScrollPanel div;
 }

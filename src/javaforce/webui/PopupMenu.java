@@ -9,7 +9,7 @@ public class PopupMenu extends Container {
   public MenuItem activeItem;
   public PopupMenu() {
     setClass("popupmenu");
-    display = "inline-flex";
+    display = "inline";
     addEvent("mousedown", "onMouseDown(event, this);");
   }
   public String html() {

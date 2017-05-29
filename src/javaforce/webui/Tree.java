@@ -19,10 +19,6 @@ public class Tree extends ScrollPanel implements Click {
     this.model = model;
   }
   private TreeModel model;
-  public void init() {
-    rebuild();
-    super.init();
-  }
   public String html() {
     StringBuffer sb = new StringBuffer();
     sb.append("<div" + getAttrs() + "'>");
@@ -49,7 +45,7 @@ public class Tree extends ScrollPanel implements Click {
   private void addNode(TreeNode node, int offset) {
     Block row = new Block();
     row.setClass("treerow");
-    row.display = "flex";
+    row.display = "inline";
     add(row);
     row.setProperty("node", node);
     row.addClickListener(this);
