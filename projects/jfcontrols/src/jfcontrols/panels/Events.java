@@ -380,19 +380,20 @@ public class Events {
 
       case "jfc_func_editor_edit_rung": {
         Component focus = (Component)client.getProperty("focus");
-        int idx = 0;
+        int rid = 0;
         Node node = null;
         if (focus != null) {
           node = (Node)focus.getProperty("node");
         }
         if (node != null) {
           if (node.parent == null) {
-            idx = node.root.rid;
+            rid = node.root.rid;
           } else {
-            idx = node.parent.root.rid;
+            rid = node.parent.root.rid;
           }
         }
-        client.setProperty("rung", Integer.toString(idx));
+        if (rid == -1) break;
+        client.setProperty("rung", Integer.toString(rid));
         client.setPanel(Panels.getPanel("jfc_rung_editor", client));
         break;
       }

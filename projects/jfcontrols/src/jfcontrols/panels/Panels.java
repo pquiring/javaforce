@@ -503,6 +503,12 @@ public class Panels {
         rungs.rungs.add(buildRung(data, cells, nodes, sql, true, fid));
         break;
       }
+      case "jfc_rung_viewer_end": {
+        int fid = Integer.valueOf((String)client.getProperty("func"));
+        cells.add(createCell("", 0, 0, 5, 1, "label", null, "End of Function", null, null, null, null));
+        nodes.add(new NodeRoot(fid, -1));
+        break;
+      }
       case "jfc_rung_editor": {
         int fid = Integer.valueOf((String)client.getProperty("func"));
         int rid = Integer.valueOf((String)client.getProperty("rung"));
@@ -544,6 +550,10 @@ public class Panels {
           Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null, sql);
           div.add(table);
         }
+        ArrayList<String[]> cells = new ArrayList<String[]>();
+        cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer_end", null, null, null, null, null));
+        Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null, sql);
+        div.add(table);
         Rungs rungs = (Rungs)client.getProperty("rungs");
         rungs.div = div;
         break;
