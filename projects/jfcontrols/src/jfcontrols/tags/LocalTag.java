@@ -35,6 +35,7 @@ public class LocalTag extends MonitoredTag {
           TagValue tv = tvs[a];
           if (tv.insert) {
             sql.execute("inset into tagvalues (tid,idx,value) values (" + tid + "," + tv.idx + "," + SQL.quote(tv.value) + ")");
+            tv.insert = false;
           } else {
             sql.execute("update tagvalues set value=" + SQL.quote(tv.value) + " where tid=" + tid + " and idx=" + tv.idx);
           }
