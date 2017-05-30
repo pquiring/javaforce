@@ -16,7 +16,6 @@ import jfcontrols.logic.*;
 
 public class Events {
   private static final Object lock = new Object();
-  //button clicked
   public static void click(Component c) {
     WebUIClient client = c.getClient();
     String func = (String)c.getProperty("func");
@@ -521,7 +520,6 @@ public class Events {
     }
     sql.close();
   }
-  //textfield edited
   public static void edit(TextField tf) {
     WebUIClient client = tf.getClient();
     String red = (String)tf.getProperty("red");
@@ -546,7 +544,6 @@ public class Events {
       TagsService.write(tag, tf.getText());
     }
   }
-  //combobox/checkbox changed
   public static void changed(ComboBox cb) {
     WebUIClient client = cb.getClient();
     String tag = (String)cb.getProperty("tag");
@@ -567,7 +564,6 @@ public class Events {
     }
   }
   public static void changed(CheckBox cb) {
-    JFLog.log("change:" + cb);
     WebUIClient client = cb.getClient();
     String tag = (String)cb.getProperty("tag");
     if (tag == null) return;

@@ -53,8 +53,4 @@ public class CheckBox extends Container {
   public boolean isSelected() {
     return selected;
   }
-  public void setSize(int w,int h) {
-//    input.setSize(height, height);
-    super.setSize(width, height);
-  }
 }
