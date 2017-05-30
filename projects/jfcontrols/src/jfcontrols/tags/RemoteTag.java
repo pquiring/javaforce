@@ -12,8 +12,8 @@ public class RemoteTag extends MonitoredTag {
 
   private javaforce.controls.Tag remoteTag;
 
-  public RemoteTag(int cid, String name, int type, SQL sql) {
-    super(cid, name, type, sql);
+  public RemoteTag(int cid, String name, int type, boolean unsigned, boolean array_not_supported, SQL sql) {
+    super(cid, name, type, unsigned, array_not_supported, sql);
     remoteTag = RemoteControllers.getTag(cid, name, type, sql);
   }
 
@@ -30,5 +30,16 @@ public class RemoteTag extends MonitoredTag {
       remoteTag.setValue(value);
       dirty = false;
     }
+  }
+
+  protected String readValue(int idx) {
+    return null;
+  }
+
+  public String getValue(int idx) {
+    return null;
+  }
+
+  public void setValue(String value, int idx) {
   }
 }

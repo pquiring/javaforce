@@ -23,10 +23,20 @@ public class TagsService extends Thread {
   private HashMap<String, TagBase> remoteTags = new HashMap<>();
 
   public static String read(String tag) {
-    return getTag(tag).getValue();
+    TagAddr ta = TagAddr.decode(tag);
+    if (ta.nidx == -1) {
+      return getTag(ta.name).getValue();
+    } else {
+      return getTag(ta.name).getValue(ta.nidx);
+    }
   }
   public static void write(String tag, String value) {
-    getTag(tag).setValue(value);
+    TagAddr ta = TagAddr.decode(tag);
+    if (ta.nidx == -1) {
+      getTag(ta.name).setValue(value);
+    } else {
+      getTag(ta.name).setValue(value, ta.nidx);
+    }
   }
   public static TagBase getTag(String name) {
     return service.get_Tag(name);
@@ -40,12 +50,12 @@ public class TagsService extends Thread {
   public void run() {
     service = this;
     SQL sql = SQLService.getSQL();
-    String tags[][] = sql.select("select name,type,cid from tags");
+    String tags[][] = sql.select("select name,type,cid,unsigned,array from tags");
     for(int a=0;a<tags.length;a++) {
       if (tags[a][2].equals("0")) {
-        localTags.put(tags[a][0], new LocalTag(0, tags[a][0], Integer.valueOf(tags[a][1]), sql));
+        localTags.put(tags[a][0], new LocalTag(0, tags[a][0], Integer.valueOf(tags[a][1]), tags[a][3].equals("true"), tags[a][4].equals("true"), sql));
       } else {
-        remoteTags.put("c" + tags[a][2] + "#" + tags[a][0], new RemoteTag(Integer.valueOf(tags[a][2]), tags[a][0], Integer.valueOf(tags[a][1]), sql));
+        remoteTags.put("c" + tags[a][2] + "#" + tags[a][0], new RemoteTag(Integer.valueOf(tags[a][2]), tags[a][0], Integer.valueOf(tags[a][1]), tags[a][3].equals("true"), false, sql));
       }
     }
     active = true;

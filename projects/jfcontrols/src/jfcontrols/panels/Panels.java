@@ -194,6 +194,7 @@ public class Panels {
       case "button": return getButton(v);
       case "textfield": return getTextField(v);
       case "combobox": return getComboBox(v);
+      case "checkbox": return getCheckBox(v);
       case "table": return getTable(v, container, r, client);
       case "overlay": return getOverlay(v);
       case "image": return getImage(v);
@@ -316,6 +317,37 @@ public class Panels {
     }
     return cb;
   }
+  private static CheckBox getCheckBox(String v[]) {
+    String tag = v[TAG];
+    String text = v[TEXT];
+    String value = "0";
+    SQL sql = SQLService.getSQL();
+    if (tag != null) {
+      if (tag.startsWith("jfc_")) {
+        String f[] = tag.split("_");
+        //jfc_table_col_id
+        String table = f[1];
+        String col = f[2];
+        String type = f[3];
+        String id = f[4];
+        value = sql.select1value("select " + col + " from " + table + " where id=" + id);
+        if (value != null) {
+          value = value.equals("false") ? "0" : "1";
+        }
+      } else {
+        value = TagsService.read(tag);
+      }
+    }
+    sql.close();
+    if (text == null) text = "???";
+    if (value == null) value = "0";
+    CheckBox cb = new CheckBox(text);
+    if (!value.equals("0")) cb.setSelected(true);
+    cb.addChangedListener((cmpnt) -> {
+      Events.changed(cb);
+    });
+    return cb;
+  }
   private static Image getImage(String v[]) {
     String arg = v[ARG];
     return new Image(Images.getImage(arg));
@@ -376,12 +408,17 @@ public class Panels {
         break;
       }
       case "jfc_tags": {
-        String data[][] = sql.select("select id,cid,name,type from tags where cid=" + client.getProperty("ctrl"));
+        String cid = (String)client.getProperty("ctrl");
+        String data[][] = sql.select("select id,cid,name,type from tags where cid=" + cid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_tags_name_str_" + data[a][0], null, null, null));
           cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, "jfc_tag_type", null));
-          cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], null));
+          cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_tags_unsigned_boolean_" + data[a][0], null, null, null));
+          if (cid.equals("0")) {
+            cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, null));
+          }
+          cells.add(createCell("", 17, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], null));
         }
         break;
       }

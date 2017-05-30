@@ -53,10 +53,10 @@ public class Menu extends MenuItem {
   }
   public void onMouseMove(String args[]) {
     if (inMenu) {
-      onClick(args);
+      onClick(null, args);
     } else if (client.topPopupMenu != null && client.topPopupMenu != menu) {
       client.topPopupMenu.setVisible(false);
-      onClick(args);
+      onClick(null, args);
     }
   }
   public void closeMenu() {

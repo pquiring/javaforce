@@ -5,29 +5,56 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class CheckBox extends Component {
+import javaforce.webui.event.*;
+
+public class CheckBox extends Container {
+  private HTML input;
+  private HTML label;
+  private boolean selected;
+
   public CheckBox(String text) {
-    this.text = text;
-    addEvent("onclick", "onClick(event, this);");
+    input = new HTML("input");
+    input.setEnclosed(false);
+    input.addAttr("type", "checkbox");
+    input.addEvent("onchange", "onCheckBoxChange(event, this);");
+    input.addChangedListener((c) -> {
+      selected = !selected;
+      onChanged(new String[0]);
+    });
+    label = new HTML("label");
+    label.setText(text);
+    input.add(label);
+    add(input);
     setClass("noselect");
   }
+
   public String html() {
-    return "<input type=checkbox" + getAttrs() + (selected ? " checked" : "") + "><label for='" + id + "' class='noselect'>" + text + "</label>";
+    label.addAttr("for", "'" + input.id + "'");
+    if (selected) {
+      input.addAttr("checked", null);
+    }
+    StringBuffer sb = new StringBuffer();
+    sb.append("<div" + getAttrs() + ">");
+    int cnt = count();
+    for(int a=0;a<cnt;a++) {
+      sb.append(get(a).html());
+    }
+    sb.append("</div>");
+    return sb.toString();
   }
-  private String text;
-  private boolean selected;
   public void setText(String text) {
-    this.text = text;
+    label.setText(text);
   }
   public void setSelected(boolean state) {
     if (selected == state) return;
     selected = state;
-    sendEvent("setSelected", new String[] {"state=" + selected});
+    input.sendEvent("setselected", new String[] {"state=" + selected});
   }
   public boolean isSelected() {
     return selected;
   }
-  public void onClick(String args[]) {
-    selected = !selected;
+  public void setSize(int w,int h) {
+//    input.setSize(height, height);
+    super.setSize(width, height);
   }
 }

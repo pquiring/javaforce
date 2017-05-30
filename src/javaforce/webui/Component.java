@@ -234,7 +234,11 @@ public abstract class Component {
       String keys[] = attrs.keySet().toArray(new String[size]);
       String vals[] = attrs.values().toArray(new String[size]);
       for(int a=0;a<size;a++) {
-        sb.append(" " + keys[a] + "='" + vals[a] + "'");
+        if (vals[a] == null) {
+          sb.append(" " + keys[a]);
+        } else {
+          sb.append(" " + keys[a] + "='" + vals[a] + "'");
+        }
       }
     }
     if (classes.size() > 0) {
@@ -321,26 +325,24 @@ public abstract class Component {
 
   /** Dispatches event. */
   public void dispatchEvent(String event, String args[]) {
-    MouseEvent e = new MouseEvent();
+    MouseEvent me = new MouseEvent();
     for(int a=0;a<args.length;a++) {
       if (args[a].equals("ck=true")) {
-        e.ctrlKey = true;
+        me.ctrlKey = true;
       }
       if (args[a].equals("ak=true")) {
-        e.altKey = true;
+        me.altKey = true;
       }
       if (args[a].equals("sk=true")) {
-        e.shiftKey = true;
+        me.shiftKey = true;
       }
     }
     switch (event) {
       case "click":
-        onClick(args);
-        if (click != null) click.onClick(e, this);
+        onClick(me, args);
         break;
       case "changed":
         onChanged(args);
-        if (changed != null) changed.onChanged(this);
         break;
       case "mousedown":
         onMouseDown(args);
@@ -421,7 +423,9 @@ public abstract class Component {
 
   public void onLoaded(String args[]) {}
 
-  protected void onClick(String args[]) {}
+  protected void onClick(MouseEvent me, String args[]) {
+    if (click != null) click.onClick(me, this);
+  }
   private Click click;
   public void addClickListener(Click handler) {
     addEvent("onclick", "onClick(event, this);");
@@ -452,7 +456,9 @@ public abstract class Component {
     mouseEnter = handler;
   }
 
-  protected void onChanged(String args[]) {}
+  protected void onChanged(String args[]) {
+    if (changed != null) changed.onChanged(this);
+  }
   private Changed changed;
   public void addChangedListener(Changed handler) {
     changed = handler;

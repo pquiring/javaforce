@@ -173,7 +173,7 @@ public class APIService extends Thread {
               type = tag.getType();
               LE.setuint16(data, pos, type); pos += 2;
               LE.setuint16(data, pos, q.sizes[a]); pos += 2;
-              TagBase.encode(type, q.values[a], data, pos); pos += q.sizes[a];
+              TagBase.encode(type, tag.isArray(), q.values[a], data, pos); pos += q.sizes[a];
             }
           }
           break;
@@ -198,7 +198,7 @@ public class APIService extends Thread {
             if (size != TagBase.getSize(type)) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
             q.sizes[a] = size;
             if (len < size) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
-            q.values[a] = TagBase.decode(type, data, pos); pos += size; len -= size;
+            q.values[a] = TagBase.decode(type, tag.isArray(), data, pos); pos += size; len -= size;
           }
           //build query to function service
           FunctionService.addWriteQuery(q);
@@ -303,7 +303,7 @@ public class APIService extends Thread {
       setupSuccess(reply, 0x0003, 0);  //read cmd
       LE.setuint16(reply, 8, 1);  //count
       LE.setuint16(reply, 10, type);  //type
-      TagBase.encode(type, value, reply, 12);
+      TagBase.encode(type, tag.isArray(), value, reply, 12);
       synchronized(writeLock) {
         try { os.write(reply); } catch (Exception e) {}
       }

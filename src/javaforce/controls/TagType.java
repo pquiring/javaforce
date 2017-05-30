@@ -21,7 +21,4 @@ public class TagType {
   public static final int function = 32;
 
   public static final int any = 64;
-
-  public static final int array = 0x0100;
-  public static final int unsigned = 0x0200;
 }

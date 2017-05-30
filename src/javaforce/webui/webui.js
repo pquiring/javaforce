@@ -34,6 +34,9 @@ ws.onmessage = function (event) {
     return;
   }
   switch (msg.event) {
+    case "initwebgl":
+      gl_init(element);
+      break;
     case "redir":
       load();
       break;
@@ -130,8 +133,8 @@ ws.onmessage = function (event) {
     case "focus":
       element.focus();
       break;
-    case "initwebgl":
-      gl_init(element);
+    case "setselected":
+      element.selected = msg.state;
       break;
   }
 };
@@ -233,6 +236,15 @@ function onComboBoxChange(event, element) {
     event: "changed",
     id: element.id,
     index: element.selectedIndex
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function onCheckBoxChange(event, element) {
+  var msg = {
+    event: "changed",
+    id: element.id,
+    on: element.on
   };
   ws.send(JSON.stringify(msg));
 }

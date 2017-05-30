@@ -5,14 +5,20 @@ package jfcontrols.tags;
  * @author pquiring
  */
 
+import java.util.*;
+
 import javaforce.*;
 import javaforce.controls.*;
+import jfcontrols.sql.SQLService;
 
-public class TagBase {
+public abstract class TagBase {
   protected int cid;
   protected String name;
   protected int type;
   protected String value;  //cached value
+  protected HashMap<Integer, TagValue> values;
+  protected boolean unsigned;
+  protected boolean array;
   protected boolean dirty;
 
   /** Create temp tag. */
@@ -23,9 +29,11 @@ public class TagBase {
     this.value = value;
   }
 
-  public TagBase(int cid, String name, int type, SQL sql) {
+  public TagBase(int cid, String name, int type, boolean array, boolean unsigned, SQL sql) {
     this.name = name;
     this.type = type;
+    this.unsigned = unsigned;
+    this.array = array;
     value = "0";
   }
 
@@ -37,10 +45,14 @@ public class TagBase {
     return value;
   }
 
+  public abstract String getValue(int idx);
+
   public void setValue(String value) {
     dirty = true;
     this.value = value;
   }
+
+  public abstract void setValue(String value, int idx);
 
   public boolean getBoolean() {
     return !value.equals("0");
@@ -114,9 +126,15 @@ public class TagBase {
     return type;
   }
 
-  public static String decode(int type, byte in[], int pos) {
-    boolean unsigned = (type & TagType.unsigned) != 0;
-//    boolean array = (type & TagType.UNSIGNED) != 0;
+  public boolean isArray() {
+    return array;
+  }
+
+  public boolean isUnsigned() {
+    return unsigned;
+  }
+
+  public static String decode(int type, boolean unsigned, byte in[], int pos) {
     switch (type & 0xff) {
       case TagType.bit:
         return in[pos] == 0 ? "0" : "1";
@@ -146,9 +164,7 @@ public class TagBase {
     return null;
   }
 
-  public static void encode(int type, String in, byte out[], int pos) {
-    boolean unsigned = (type & TagType.unsigned) != 0;
-//    boolean array = (type & TagType.UNSIGNED) != 0;
+  public static void encode(int type, boolean unsigned, String in, byte out[], int pos) {
     switch (type & 0xff) {
       case TagType.bit:
         out[pos] = (byte)(in.equals("0") ? 0 : 1);

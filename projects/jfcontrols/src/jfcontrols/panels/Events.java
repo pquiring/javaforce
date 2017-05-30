@@ -111,7 +111,7 @@ public class Events {
             if (inuse == null) break;
             id++;
           } while (true);
-          sql.execute("insert into tags (cid,name,type) values (" + client.getProperty("ctrl") + ",'tag" + id + "',0)");
+          sql.execute("insert into tags (cid,name,type,unsigned,array) values (" + client.getProperty("ctrl") + ",'tag" + id + "',0,false,false)");
           client.setPanel(Panels.getPanel("jfc_tags", client));
         }
         break;
@@ -546,7 +546,7 @@ public class Events {
       TagsService.write(tag, tf.getText());
     }
   }
-  //combobox changed
+  //combobox/checkbox changed
   public static void changed(ComboBox cb) {
     WebUIClient client = cb.getClient();
     String tag = (String)cb.getProperty("tag");
@@ -564,6 +564,26 @@ public class Events {
       sql.close();
     } else {
       TagsService.write(tag, value);
+    }
+  }
+  public static void changed(CheckBox cb) {
+    JFLog.log("change:" + cb);
+    WebUIClient client = cb.getClient();
+    String tag = (String)cb.getProperty("tag");
+    if (tag == null) return;
+    boolean set = cb.isSelected();
+    if (tag.startsWith("jfc_")) {
+      String f[] = tag.split("_");
+      //jfc_table_col_id
+      String table = f[1];
+      String col = f[2];
+      String type = f[3];
+      String id = f[4];
+      SQL sql = SQLService.getSQL();
+      sql.execute("update " + table + " set " + col + "=" + (set ? "true" : "false") + " where id=" + id);
+      sql.close();
+    } else {
+      TagsService.write(tag, set ? "0" : "1");
     }
   }
   public static void clickEvents(Component c) {
