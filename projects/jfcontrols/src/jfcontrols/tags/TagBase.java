@@ -13,91 +13,21 @@ import jfcontrols.sql.SQLService;
 
 public abstract class TagBase {
   protected int cid;
-  protected String name;
   protected int type;
-  protected String value;  //cached value
-  protected HashMap<Integer, TagValue> values;
   protected boolean unsigned;
   protected boolean array;
   protected boolean dirty;
 
-  /** Create temp tag. */
-  public TagBase(String name, int type, String value) {
-    this.cid = 0;
-    this.name = name;
-    this.type = type;
-    this.value = value;
-  }
-
-  public TagBase(int cid, String name, int type, boolean array, boolean unsigned, SQL sql) {
-    this.name = name;
+  public TagBase(int cid, int type, boolean unsigned, boolean array) {
+    this.cid = cid;
     this.type = type;
     this.unsigned = unsigned;
     this.array = array;
-    value = "0";
   }
 
-  public String getName() {
-    return name;
-  }
+  public abstract String getValue(TagAddr addr);
 
-  public String getValue() {
-    return value;
-  }
-
-  public abstract String getValue(int idx);
-
-  public void setValue(String value) {
-    dirty = true;
-    this.value = value;
-  }
-
-  public abstract void setValue(String value, int idx);
-
-  public boolean getBoolean() {
-    return !value.equals("0");
-  }
-
-  public void setBoolean(boolean value) {
-    dirty = true;
-    this.value = value ? "1" : "0";
-  }
-
-  public int getInt() {
-    return Integer.valueOf(value);
-  }
-
-  public void setInt(int value) {
-    dirty = true;
-    this.value = Integer.toString(value);
-  }
-
-  public long getLong() {
-    return Long.valueOf(value);
-  }
-
-  public void setLong(long value) {
-    dirty = true;
-    this.value = Long.toString(value);
-  }
-
-  public float getFloat() {
-    return Float.valueOf(value);
-  }
-
-  public void setFloat(float value) {
-    dirty = true;
-    this.value = Float.toString(value);
-  }
-
-  public double getDouble() {
-    return Double.valueOf(value);
-  }
-
-  public void setDouble(double value) {
-    dirty = true;
-    this.value = Double.toString(value);
-  }
+  public abstract void setValue(TagAddr addr, String value);
 
   public int getSize() {
     return getSize(type);

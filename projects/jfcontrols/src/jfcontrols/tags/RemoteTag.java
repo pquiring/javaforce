@@ -11,9 +11,10 @@ import javaforce.controls.*;
 public class RemoteTag extends MonitoredTag {
 
   private javaforce.controls.Tag remoteTag;
+  private String value = "0";
 
   public RemoteTag(int cid, String name, int type, boolean unsigned, boolean array_not_supported, SQL sql) {
-    super(cid, name, type, unsigned, array_not_supported, sql);
+    super(cid, type, unsigned, array_not_supported);
     remoteTag = RemoteControllers.getTag(cid, name, type, sql);
   }
 
@@ -21,7 +22,7 @@ public class RemoteTag extends MonitoredTag {
     String newValue = remoteTag.getValue();
     if (!newValue.equals(value)) {
       value = newValue;
-      tagChanged();
+      tagChanged(0, value);
     }
   }
 
@@ -32,14 +33,12 @@ public class RemoteTag extends MonitoredTag {
     }
   }
 
-  protected String readValue(int idx) {
-    return null;
+  public String getValue(TagAddr addr) {
+    return value;
   }
 
-  public String getValue(int idx) {
-    return null;
-  }
-
-  public void setValue(String value, int idx) {
+  public void setValue(TagAddr addr, String value) {
+    dirty = true;
+    this.value = value;
   }
 }

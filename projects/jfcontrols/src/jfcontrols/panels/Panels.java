@@ -96,11 +96,12 @@ public class Panels {
       String compType = cells[a][COMP];
       String tagName = cells[a][TAG];
       if (tagName != null && !tagName.startsWith("jfc_") && tagName.length() > 0) {
-        jfcontrols.tags.TagBase tag = TagsService.getTag(tagName);
+        TagAddr ta = TagAddr.decode(tagName);
+        jfcontrols.tags.TagBase tag = TagsService.getTag(ta);
         if (tag == null) {
           JFLog.log("Error:Tag not found:" + tagName);
         } else {
-          cells[a][TEXT] = tag.getValue();
+          cells[a][TEXT] = tag.getValue(ta);
         }
       }
       Component c = getCell(compType, container, cells[a], rs[a], client);
@@ -122,7 +123,8 @@ public class Panels {
       String cellTag = cells[a][TAG];
       if (cellTag != null) {
         c.setProperty("tag", cellTag);
-        context.addListener((MonitoredTag)TagsService.getTag(cellTag), c);
+        TagAddr ta = TagAddr.decode(cellTag);
+        context.addListener(ta, (MonitoredTag)TagsService.getTag(ta), c);
       }
       c.setProperty("func", cells[a][FUNC]);
       c.setProperty("arg", cells[a][ARG]);

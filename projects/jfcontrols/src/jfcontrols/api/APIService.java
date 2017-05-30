@@ -149,7 +149,8 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            tag = TagsService.getTag(tagName);
+            q.addr[a] = TagAddr.decode(tagName);
+            tag = TagsService.getTag(q.addr[a]);
             q.tags[a] = tag;
             size += 4;  //type / size
             if (tag == null) {
@@ -173,7 +174,7 @@ public class APIService extends Thread {
               type = tag.getType();
               LE.setuint16(data, pos, type); pos += 2;
               LE.setuint16(data, pos, q.sizes[a]); pos += 2;
-              TagBase.encode(type, tag.isArray(), q.values[a], data, pos); pos += q.sizes[a];
+              TagBase.encode(type, tag.isUnsigned(), q.values[a], data, pos); pos += q.sizes[a];
             }
           }
           break;
@@ -190,7 +191,8 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            tag = TagsService.getTag(tagName);
+            TagAddr ta = TagAddr.decode(tagName);
+            tag = TagsService.getTag(ta);
             q.tags[a] = tag;
             if (len < 2) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
             type = LE.getuint16(data, pos); len -= 2; pos += 2;
@@ -219,7 +221,8 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            mtag = (MonitoredTag)TagsService.getTag(tagName);
+            TagAddr ta = TagAddr.decode(tagName);
+            mtag = (MonitoredTag)TagsService.getTag(ta);
             if (mtag == null) {
               if (!subs.contains(tagName)) {
                 mtag.addListener(this);
@@ -243,7 +246,8 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            mtag = (MonitoredTag)TagsService.getTag(tagName);
+            TagAddr ta = TagAddr.decode(tagName);
+            mtag = (MonitoredTag)TagsService.getTag(ta);
             if (mtag == null) {
               if (subs.contains(tagName)) {
                 mtag.removeListener(this);
@@ -296,14 +300,14 @@ public class APIService extends Thread {
       LE.setuint16(reply, 8, error);
     }
 
-    public void tagChanged(TagBase tag, String value) {
+    public void tagChanged(TagBase tag, int idx, String value) {
       int size = tag.getSize();
       int type = tag.getType();
       byte reply[] = new byte[8 + 2 + 2 + size];
       setupSuccess(reply, 0x0003, 0);  //read cmd
       LE.setuint16(reply, 8, 1);  //count
       LE.setuint16(reply, 10, type);  //type
-      TagBase.encode(type, tag.isArray(), value, reply, 12);
+      TagBase.encode(type, tag.isUnsigned(), value, reply, 12);
       synchronized(writeLock) {
         try { os.write(reply); } catch (Exception e) {}
       }

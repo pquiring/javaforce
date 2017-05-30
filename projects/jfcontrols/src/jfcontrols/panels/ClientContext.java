@@ -22,16 +22,18 @@ public class ClientContext extends Thread {
     this.client = client;
   }
   private static class Pair implements TagBaseListener {
+    public TagAddr ta;
     public MonitoredTag tag;
     public Component comp;
     public ClientContext ctx;
     public String value;
-    public Pair(MonitoredTag tag, Component comp, ClientContext ctx) {
+    public Pair(TagAddr ta, MonitoredTag tag, Component comp, ClientContext ctx) {
+      this.ta = ta;
       this.tag = tag;
       this.comp = comp;
       this.ctx = ctx;
     }
-    public void tagChanged(TagBase tag, String value) {
+    public void tagChanged(TagBase tag, int idx, String value) {
       synchronized(ctx.lock) {
         this.value = value;
         ctx.stack.add(this);
@@ -40,9 +42,9 @@ public class ClientContext extends Thread {
     }
   }
 
-  public void addListener(MonitoredTag tag, Component comp) {
+  public void addListener(TagAddr ta, MonitoredTag tag, Component comp) {
     if (tag == null) return;
-    Pair pair = new Pair(tag, comp, this);
+    Pair pair = new Pair(ta, tag, comp, this);
     listeners.add(pair);
     tag.addListener(pair);
   }

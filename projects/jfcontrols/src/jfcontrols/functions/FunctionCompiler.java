@@ -18,7 +18,7 @@ public class FunctionCompiler {
     error = null;
     StringBuilder sb = new StringBuilder();
     sb.append("import jfcontrols.tags.Tag;\r\n");
-    sb.append("public class func_" + fid + " {\r\n");
+    sb.append("public class func_" + fid + " extends jfcontrols.functions.Runtime {\r\n");
     sb.append("  public static boolean code(Tag args[]) {\r\n");
     sb.append("    boolean enabled = true;\r\n");
     sb.append("    boolean en[] = new boolean[256];\r\n");

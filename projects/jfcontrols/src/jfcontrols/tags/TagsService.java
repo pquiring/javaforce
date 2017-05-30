@@ -24,22 +24,14 @@ public class TagsService extends Thread {
 
   public static String read(String tag) {
     TagAddr ta = TagAddr.decode(tag);
-    if (ta.nidx == -1) {
-      return getTag(ta.name).getValue();
-    } else {
-      return getTag(ta.name).getValue(ta.nidx);
-    }
+    return getTag(ta).getValue(ta);
   }
   public static void write(String tag, String value) {
     TagAddr ta = TagAddr.decode(tag);
-    if (ta.nidx == -1) {
-      getTag(ta.name).setValue(value);
-    } else {
-      getTag(ta.name).setValue(value, ta.nidx);
-    }
+    getTag(ta).setValue(ta, value);
   }
-  public static TagBase getTag(String name) {
-    return service.get_Tag(name);
+  public static TagBase getTag(TagAddr ta) {
+    return service.get_Tag(ta);
   }
   public static void main() {
     synchronized(lock) {
@@ -104,22 +96,13 @@ public class TagsService extends Thread {
       done.notify();
     }
   }
-  public TagBase get_Tag(String name) {
+  public TagBase get_Tag(TagAddr ta) {
     synchronized(lock) {
-      int cid = 0;
-      int idx = name.indexOf("#");
-      if (idx != -1) {
-        char c = name.charAt(0);
-        if (c != 'c' && c != 'C') {
-          JFLog.log("Error:invalid tag:" + name);
-          return null;
-        }
-        cid = Integer.valueOf(name.substring(1, idx));
-      }
-      if (cid == 0) {
-        return localTags.get(name);
+      if (ta.cid == 0) {
+        TagBase tag = localTags.get(ta.name);
+        return tag;
       } else {
-        return remoteTags.get(name);
+        return remoteTags.get(ta.name);
       }
     }
   }

@@ -13,12 +13,14 @@ import jfcontrols.sql.SQLService;
 public class LocalTag extends MonitoredTag {
   private int tid;
   private Object arrayLock = new Object();
+  private String value;
+  private HashMap<Integer, TagValue> values;
 
   public LocalTag(int cid, String name, int type, boolean unsigned, boolean array, SQL sql) {
-    super(cid, name, type, unsigned, array, sql);
+    super(cid, type, unsigned, array);
+    tid = Integer.valueOf(sql.select1value("select id from tags where cid=0 and name=" + SQL.quote(name)));
     if (array) {
       values = new HashMap<>();
-      tid = Integer.valueOf(sql.select1value("select id from tags where cid=0 and name=" + SQL.quote(name)));
     } else {
       value = sql.select1value("select value from tags where cid=0 and name=" + SQL.quote(name));
     }
@@ -34,17 +36,18 @@ public class LocalTag extends MonitoredTag {
         for(int a=0;a<tvs.length;a++) {
           TagValue tv = tvs[a];
           if (tv.insert) {
-            sql.execute("inset into tagvalues (tid,idx,value) values (" + tid + "," + tv.idx + "," + SQL.quote(tv.value) + ")");
+            sql.execute("insert into tagvalues (tid,idx,value) values (" + tid + "," + tv.idx + "," + SQL.quote(tv.value) + ")");
             tv.insert = false;
           } else {
             sql.execute("update tagvalues set value=" + SQL.quote(tv.value) + " where tid=" + tid + " and idx=" + tv.idx);
           }
+          tagChanged(tv.idx, value);
         }
       } else {
-        sql.execute("update tags set value=" + SQL.quote(value) + " where cid=0 and name=" + SQL.quote(name));
+        sql.execute("update tags set value=" + SQL.quote(value) + " where cid=0 and id=" + tid);
+        tagChanged(0, value);
       }
       dirty = false;
-      tagChanged();
     }
   }
 
@@ -59,30 +62,39 @@ public class LocalTag extends MonitoredTag {
     tv.value = value;
   }
 
-  public String getValue(int idx) {
-    synchronized(arrayLock) {
-      TagValue tv = values.get(idx);
-      if (tv == null) {
-        tv = new TagValue();
-        tv.idx = idx;
-        readValue(tv);
-        values.put(idx, tv);
+  public String getValue(TagAddr ta) {
+    if (array) {
+      synchronized(arrayLock) {
+        TagValue tv = values.get(ta.nidx);
+        if (tv == null) {
+          tv = new TagValue();
+          tv.idx = ta.nidx;
+          readValue(tv);
+          values.put(ta.nidx, tv);
+        }
+        return tv.value;
       }
-      return tv.value;
+    } else {
+      return value;
     }
   }
 
-  public void setValue(String value, int idx) {
-    synchronized(arrayLock) {
-      TagValue tv = values.get(idx);
-      if (tv == null) {
-        tv = new TagValue();
-        tv.idx = idx;
-        readValue(tv);
-        values.put(idx, tv);
+  public void setValue(TagAddr addr, String value) {
+    if (array) {
+      synchronized(arrayLock) {
+        TagValue tv = values.get(addr.nidx);
+        if (tv == null) {
+          tv = new TagValue();
+          tv.idx = addr.nidx;
+          readValue(tv);
+          values.put(addr.nidx, tv);
+        }
+        tv.dirty = true;
+        tv.value = value;
       }
-      tv.dirty = true;
-      tv.value = value;
+    } else {
+      this.value = value;
     }
+    dirty = true;
   }
 }

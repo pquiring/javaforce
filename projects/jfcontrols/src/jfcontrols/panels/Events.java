@@ -670,23 +670,26 @@ public class Events {
     JFLog.log("cmd=" + cmd);
     switch (cmd) {
       case "toggleBit": {
-        TagBase tag = TagsService.getTag(args[0]);
+        TagAddr ta = TagAddr.decode(args[0]);
+        TagBase tag = TagsService.getTag(ta);
         if (tag != null) {
-          tag.setBoolean(!tag.getBoolean());
+          tag.setValue(ta, tag.getValue(ta).equals("0") ? "1" : "0");
         }
         break;
       }
       case "setBit": {
-        TagBase tag = TagsService.getTag(args[0]);
+        TagAddr ta = TagAddr.decode(args[0]);
+        TagBase tag = TagsService.getTag(ta);
         if (tag != null) {
-          tag.setBoolean(true);
+          tag.setValue(ta, "1");
         }
         break;
       }
       case "resetBit": {
-        TagBase tag = TagsService.getTag(args[0]);
+        TagAddr ta = TagAddr.decode(args[0]);
+        TagBase tag = TagsService.getTag(ta);
         if (tag != null) {
-          tag.setBoolean(false);
+          tag.setValue(ta, "0");
         }
         break;
       }

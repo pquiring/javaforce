@@ -14,8 +14,8 @@ public abstract class MonitoredTag extends TagBase {
   private ArrayList<TagBaseListener> listeners = new ArrayList<>();
   private Object lock = new Object();
 
-  public MonitoredTag(int cid, String name, int type, boolean unsigned, boolean array, SQL sql) {
-    super(cid, name, type, unsigned, array, sql);
+  public MonitoredTag(int cid, int type, boolean unsigned, boolean array) {
+    super(cid, type, unsigned, array);
   }
 
   public abstract void updateRead(SQL sql);
@@ -33,11 +33,11 @@ public abstract class MonitoredTag extends TagBase {
     }
   }
 
-  public void tagChanged() {
+  public void tagChanged(int idx, String value) {
     synchronized(lock) {
       int cnt = listeners.size();
       for(int a=0;a<cnt;a++) {
-        listeners.get(0).tagChanged(this, value);
+        listeners.get(0).tagChanged(this, idx, value);
       }
     }
   }

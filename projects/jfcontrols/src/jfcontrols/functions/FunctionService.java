@@ -108,7 +108,7 @@ public class FunctionService extends Thread {
     synchronized(rapi) {
       try {rapi.wait(10 * 1000);} catch (Exception e) {return;}
       for(int a=0;a<q.count;a++) {
-        q.values[a] = q.tags[a].getValue();
+        q.values[a] = q.tags[a].getValue(q.addr[a]);
       }
     }
   }
@@ -117,7 +117,7 @@ public class FunctionService extends Thread {
     synchronized(wapi) {
       try {wapi.wait(10 * 1000);} catch (Exception e) {return;}
       for(int a=0;a<q.count;a++) {
-        q.tags[a].setValue(q.values[a]);
+        q.tags[a].setValue(q.addr[a], q.values[a]);
       }
     }
   }
