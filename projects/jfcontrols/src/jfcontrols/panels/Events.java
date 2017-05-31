@@ -138,7 +138,7 @@ public class Events {
         synchronized(lock) {
           int uid = SQLService.uid_user;
           do {
-            String inuse = sql.select1value("select id from udts where uid=" + uid + " or name='udt" + (uid-0x1ff) + "'");
+            String inuse = sql.select1value("select id from udts where uid=" + uid + " or name='udt" + (uid-SQLService.uid_user+1) + "'");
             if (inuse == null) break;
             uid++;
             if (uid == SQLService.uid_user_end) {
@@ -147,7 +147,7 @@ public class Events {
             }
           } while (true);
           if (uid == SQLService.uid_user_end) break;
-          sql.execute("insert into udts (name, uid) values ('udt" + (uid-0x1ff) + "', " + uid + ")");
+          sql.execute("insert into udts (name, uid) values ('udt" + (uid-SQLService.uid_user+1) + "', " + uid + ")");
         }
         client.setPanel(Panels.getPanel("jfc_udts", client));
         break;
