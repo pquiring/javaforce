@@ -18,7 +18,7 @@ public class SUB extends Logic {
   }
 
   public String getCode() {
-    return "if (enabled) tag[3].setInt(tag[1].getInt() - tag[2].getInt() );\r\n";
+    return "if (enabled) setInt(tag[3], getInt(tag[1]) - getInt(tag[2]) );\r\n";
   }
 
   public int getTagsCount() {

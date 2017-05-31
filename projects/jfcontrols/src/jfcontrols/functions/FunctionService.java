@@ -46,8 +46,8 @@ public class FunctionService extends Thread {
     }
     Method main, init;
     try {
-      main = mainCls.getMethod("code", TagBase[].class);
-      init = initCls.getMethod("code", TagBase[].class);
+      main = mainCls.getMethod("code", TagAddr[].class);
+      init = initCls.getMethod("code", TagAddr[].class);
     } catch (Exception e) {
       JFLog.log(e);
       return;
@@ -134,7 +134,7 @@ public class FunctionService extends Thread {
       }
       Method main;
       try {
-        main = cls.getMethod("code", TagBase[].class);
+        main = cls.getMethod("code", TagAddr[].class);
       } catch (Exception e) {
         JFLog.log(e);
         return;

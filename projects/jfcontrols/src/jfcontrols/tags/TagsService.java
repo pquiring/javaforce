@@ -13,8 +13,11 @@ import javaforce.controls.TagType;
 import jfcontrols.sql.*;
 
 public class TagsService extends Thread {
-  private static Object lock = new Object();
-  private static Object done = new Object();
+  private static Object lock_main = new Object();
+  private static Object lock_signal = new Object();
+  private static Object lock_tags = new Object();
+  private static Object lock_done_reads = new Object();
+  private static Object lock_done_writes = new Object();
   private static TagsService service;
   private static volatile boolean active;
   private static volatile boolean doReads;
@@ -27,19 +30,36 @@ public class TagsService extends Thread {
     TagAddr ta = TagAddr.decode(tag);
     return getTag(ta).getValue(ta);
   }
+
   public static void write(String tag, String value) {
     TagAddr ta = TagAddr.decode(tag);
     getTag(ta).setValue(ta, value);
   }
+
   public static TagBase getTag(TagAddr ta) {
-    return service.get_Tag(ta);
+    return service.findTag(ta);
   }
-  public static void main() {
-    synchronized(lock) {
-      new TagsService().start();
-      try {lock.wait();} catch (Exception e) {}
+
+  private TagBase findTag(TagAddr ta) {
+    if (ta.tempValue != null) {
+      return new TagTemp(ta.tempValue);
+    }
+    synchronized(lock_tags) {
+      if (ta.cid == 0) {
+        return localTags.get(ta.name);
+      } else {
+        return remoteTags.get(ta.name);
+      }
     }
   }
+
+  public static void main() {
+    synchronized(lock_main) {
+      new TagsService().start();
+      try {lock_main.wait();} catch (Exception e) {}
+    }
+  }
+
   public void run() {
     service = this;
     SQL sql = SQLService.getSQL();
@@ -53,26 +73,24 @@ public class TagsService extends Thread {
       }
     }
     active = true;
-    synchronized(lock) {
-      lock.notify();  //signal main to continue
+    synchronized(lock_main) {
+      lock_main.notify();  //signal main to continue
     }
-    while (active) {
-      synchronized(lock) {
-        try {lock.wait();} catch (Exception e) {}
+    synchronized(lock_signal) {
+      while (active) {
+        try {lock_signal.wait();} catch (Exception e) {}
         if (doReads) {
           processReads(sql);
-          doReads = false;
         }
         if (doWrites) {
           processWrites(sql);
-          doWrites = false;
         }
       }
     }
     service = null;
     sql.close();
   }
-  public void processReads(SQL sql) {
+  private void processReads(SQL sql) {
     MonitoredTag localtags[] = (MonitoredTag[])localTags.values().toArray(new MonitoredTag[0]);
     for(int a=0;a<localtags.length;a++) {
       localtags[a].updateRead(sql);
@@ -81,11 +99,12 @@ public class TagsService extends Thread {
     for(int a=0;a<remotetags.length;a++) {
       remotetags[a].updateRead(sql);
     }
-    synchronized(done) {
-      done.notify();
+    synchronized(lock_done_reads) {
+      doReads = false;
+      lock_done_reads.notify();
     }
   }
-  public void processWrites(SQL sql) {
+  private void processWrites(SQL sql) {
     MonitoredTag localtags[] = (MonitoredTag[])localTags.values().toArray(new MonitoredTag[0]);
     for(int a=0;a<localtags.length;a++) {
       localtags[a].updateWrite(sql);
@@ -94,45 +113,33 @@ public class TagsService extends Thread {
     for(int a=0;a<remotetags.length;a++) {
       remotetags[a].updateWrite(sql);
     }
-    synchronized(done) {
-      done.notify();
-    }
-  }
-  public TagBase get_Tag(TagAddr ta) {
-    if (ta.tempValue != null) {
-      return new TagTemp(ta.tempValue);
-    }
-    synchronized(lock) {
-      if (ta.cid == 0) {
-        TagBase tag = localTags.get(ta.name);
-        return tag;
-      } else {
-        return remoteTags.get(ta.name);
-      }
+    synchronized(lock_done_writes) {
+      doWrites = false;
+      lock_done_writes.notify();
     }
   }
   public static void doReads() {
-    synchronized(done) {
-      doReads = true;
-      synchronized(lock) {
-        lock.notify();
+    synchronized(lock_done_reads) {
+      synchronized(lock_signal) {
+        doReads = true;
+        lock_signal.notify();
       }
-      try {done.wait();} catch (Exception e) {}
+      try {lock_done_reads.wait();} catch (Exception e) {}
     }
   }
   public static void doWrites() {
-    synchronized(done) {
-      doWrites = true;
-      synchronized(lock) {
-        lock.notify();
+    synchronized(lock_done_writes) {
+      synchronized(lock_signal) {
+        doWrites = true;
+        lock_signal.notify();
       }
-      try {done.wait();} catch (Exception e) {}
+      try {lock_done_writes.wait();} catch (Exception e) {}
     }
   }
   public static void cancel() {
-    synchronized(lock) {
+    synchronized(lock_signal) {
       active = false;
-      lock.notify();
+      lock_signal.notify();
     }
   }
 }

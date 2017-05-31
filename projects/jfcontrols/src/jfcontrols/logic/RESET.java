@@ -18,7 +18,7 @@ public class RESET extends Logic {
   }
 
   public String getCode() {
-    return "if (enabled) tags[1].setBoolean(false);\r\n";
+    return "if (enabled) setBoolean(tags[1], false);\r\n";
   }
 
   public int getTagsCount() {

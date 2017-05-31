@@ -18,7 +18,7 @@ public class SLEEP extends Logic {
   }
 
   public String getCode() {
-    return "if (enabled) javaforce.JF.sleep(tags[1].getInt());\r\n";
+    return "if (enabled) javaforce.JF.sleep(getInt(tags[1]));\r\n";
   }
 
   public int getTagsCount() {

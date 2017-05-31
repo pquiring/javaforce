@@ -639,35 +639,47 @@ public class Panels {
   private static Component getFlow(String v[], Container container, WebUIClient client) {
     //flow components are placed below the main table
     String name = v[NAME];
-    AutoScrollPanel div = new AutoScrollPanel();
+    AutoScrollPanel panel = new AutoScrollPanel();
     JFLog.log("client.height=" + client.getHeight());
-    div.setHeight(client.getHeight() - (cellHeight * 2));
+    panel.setHeight(client.getHeight() - (cellHeight * 2));
     client.addResizedListener((cmp, width, height) -> {
-      div.setHeight(client.getHeight() - (cellHeight * 2));
+      panel.setHeight(client.getHeight() - (cellHeight * 2));
     });
+    SQL sql = SQLService.getSQL();
     switch (name) {
       case "jfc_rungs_viewer": {
         String fid = (String)client.getProperty("func");
-        SQL sql = SQLService.getSQL();
         String data[][] = sql.select("select rid,logic,comment from rungs where fid=" + fid + " order by rid");
-        sql.close();
         client.setProperty("rungs", new Rungs());
         for(int rung=0;rung<data.length;rung++) {
           ArrayList<String[]> cells = new ArrayList<String[]>();
           cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], null));
           Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null, sql);
-          div.add(table);
+          panel.add(table);
         }
         ArrayList<String[]> cells = new ArrayList<String[]>();
         cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer_end", null, null, null, null, null));
         Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null, sql);
-        div.add(table);
+        panel.add(table);
         Rungs rungs = (Rungs)client.getProperty("rungs");
-        rungs.div = div;
+        rungs.div = panel;
+        break;
+      }
+      case "jfc_rung_editor": {
+        int fid = Integer.valueOf((String)client.getProperty("func"));
+        int rid = Integer.valueOf((String)client.getProperty("rung"));
+        ArrayList<String[]> cells = new ArrayList<String[]>();
+        String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
+        ArrayList<Node> nodes = new ArrayList<Node>();
+        buildRung(data, cells, nodes, sql, false, fid);
+        Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, nodes.toArray(new Node[nodes.size()]), sql);
+        table.setName(name + "_table");
+        panel.add(table);
         break;
       }
     }
-    return div;
+    sql.close();
+    return panel;
   }
   private static Component getOverlay(String v[]) {
     Block div = new Block();

@@ -409,6 +409,11 @@ public class Events {
             rid = node.parent.root.rid;
           }
         }
+        Rungs rungs = (Rungs)client.getProperty("rungs");
+        if (rid == -1) {
+          //insert at end
+          rid = rungs.rungs.size();
+        }
         //insert rung before current one
         JFLog.log("rid=" + rid);
         sql.execute("update rungs set rid=rid+1 where fid=" + fid + " and rid>=" + rid);
@@ -416,7 +421,6 @@ public class Events {
         ArrayList<String[]> cells = new ArrayList<String[]>();
         ArrayList<Node> nodes = new ArrayList<Node>();
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
-        Rungs rungs = (Rungs)client.getProperty("rungs");
         Rung rung = Panels.buildRung(data, cells, nodes, sql, true, fid);
         rungs.rungs.add(rid, rung);
         Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, nodes.toArray(new Node[0]), sql);
@@ -494,7 +498,7 @@ public class Events {
         if (node.next == null || !node.next.validFork()) {
           node = node.insertNode('h', x, y);
         }
-        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
+        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor_table");
         Panels.layoutNodes(node.root, logic, sql);
         break;
       }
@@ -513,7 +517,7 @@ public class Events {
         if (node.parent != null) {
           node = node.parent;
         }
-        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
+        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor_table");
         node.delete(logic, sql);
         Panels.layoutNodes(node.root, logic, sql);
         break;
@@ -542,7 +546,7 @@ public class Events {
       }
 
       case "jfc_rung_editor_save": {
-        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor");
+        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor_table");
         String fid = (String)client.getProperty("func");
         String rid = (String)client.getProperty("rung");
         Component comp = logic.get(0, 0, false);
