@@ -168,11 +168,11 @@ public class Events {
         synchronized(lock) {
           int id = 1;
           do {
-            String inuse = sql.select1value("select name from udtmems where uid=" + uid + " and mem=" + id);
+            String inuse = sql.select1value("select name from udtmems where uid=" + uid + " and mid=" + id);
             if (inuse == null) break;
             id++;
           } while (true);
-          sql.execute("insert into udtmems (name, uid, mem, type, unsigned, array) values ('member" + id + "', " + uid + "," + id + ",0,false,false)");
+          sql.execute("insert into udtmems (name, uid, mid, type, unsigned, array) values ('member" + id + "', " + uid + "," + id + ",0,false,false)");
         }
         client.setPanel(Panels.getPanel("jfc_udt_editor", client));
         break;

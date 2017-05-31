@@ -56,11 +56,11 @@ public class SQLService {
     JFLog.log("DB creating...");
     sql.connect(derbyURI + ";create=true");
     //create tables
-    sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int unique, ip varchar(32), type int, speed int)");
+    sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int unique, ip varar(32), type int, speed int)");
     sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), type int, array boolean, unsigned boolean, value varchar(128), unique (cid, name))");
-    sql.execute("create table tagvalues (id int not null generated always as identity (start with 1, increment by 1) primary key, tid int, idx int, mem int, memidx int, value varchar(128))");
+    sql.execute("create table tagvalues (id int not null generated always as identity (start with 1, increment by 1) primary key, tid int, idx int, mid int, midx int, value varchar(128))");
     sql.execute("create table udts (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, name varchar(32) unique)");
-    sql.execute("create table udtmems (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, mem int, name varchar(32), type int, array boolean, unsigned boolean)");
+    sql.execute("create table udtmems (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, mid int, name varchar(32), type int, array boolean, unsigned boolean)");
     sql.execute("create table panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, popup boolean, builtin boolean)");
     sql.execute("create table cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int,comp  varchar(32), name varchar(32), text varchar(512), tag varchar(32), func varchar(32), arg varchar(32), style varchar(512), events varchar(1024))");
     sql.execute("create table funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32) unique, comment varchar(8192))");

@@ -424,11 +424,17 @@ public class Panels {
       }
       case "jfc_tags": {
         String cid = (String)client.getProperty("ctrl");
+        String tag_types;
+        if (cid.equals("0")) {
+          tag_types = "jfc_tag_type_udt";
+        } else {
+          tag_types = "jfc_tag_type";
+        }
         String data[][] = sql.select("select id,cid,name,type from tags where cid=" + cid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_tags_name_str_" + data[a][0], null, null, null));
-          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, "jfc_tag_type_udt", null));
+          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, tag_types, null));
           cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_tags_unsigned_boolean_" + data[a][0], null, null, null));
           if (cid.equals("0")) {
             cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, null));
@@ -449,7 +455,7 @@ public class Panels {
       }
       case "jfc_udt_editor": {
         String uid = (String)client.getProperty("udt");
-        String data[][] = sql.select("select id,name,type,mem from udtmems where uid=" + uid);
+        String data[][] = sql.select("select id,name,type,mid from udtmems where uid=" + uid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_str_" + data[a][0], null, null, null));
@@ -471,7 +477,7 @@ public class Panels {
       }
       case "jfc_sdt_editor": {
         String uid = (String)client.getProperty("udt");
-        String data[][] = sql.select("select id,name,type,mem from udtmems where uid=" + uid);
+        String data[][] = sql.select("select id,name,type,mid from udtmems where uid=" + uid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_str_" + data[a][0], null, null, "readonly"));
