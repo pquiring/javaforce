@@ -136,18 +136,18 @@ public class Events {
       }
       case "jfc_udts_new": {
         synchronized(lock) {
-          int id = 0x200;  //512
+          int uid = 0x200;  //512
           do {
-            String inuse = sql.select1value("select name from udts where uid=" + id);
+            String inuse = sql.select1value("select id from udts where uid=" + uid + " or name='udt" + (uid-0x1ff) + "'");
             if (inuse == null) break;
-            id++;
-            if (id == 0x400) {
+            uid++;
+            if (uid == 0x400) {
               JFLog.log("Error:Too many UDTs");
               break;
             }
           } while (true);
-          if (id == 0x400) break;
-          sql.execute("insert into udts (name, uid) values ('udt" + id + "', " + id + ")");
+          if (uid == 0x400) break;
+          sql.execute("insert into udts (name, uid) values ('udt" + (uid-0x1ff) + "', " + uid + ")");
         }
         client.setPanel(Panels.getPanel("jfc_udts", client));
         break;
@@ -157,7 +157,6 @@ public class Events {
         break;
       }
       case "jfc_udts_edit": {
-        JFLog.log("udts=" + arg);
         client.setProperty("udt", arg);
         client.setPanel(Panels.getPanel("jfc_udt_editor", client));
         break;
@@ -166,13 +165,13 @@ public class Events {
       case "jfc_udt_editor_new": {
         String uid = (String)client.getProperty("udt");
         synchronized(lock) {
-          int id = 1;
+          int mid = 0;
           do {
-            String inuse = sql.select1value("select name from udtmems where uid=" + uid + " and mid=" + id);
+            String inuse = sql.select1value("select name from udtmems where uid=" + uid + " and mid=" + mid);
             if (inuse == null) break;
-            id++;
+            mid++;
           } while (true);
-          sql.execute("insert into udtmems (name, uid, mid, type, unsigned, array) values ('member" + id + "'," + uid + "," + id + ",1,false,false)");
+          sql.execute("insert into udtmems (name, uid, mid, type, unsigned, array) values ('member" + (mid+1) + "'," + uid + "," + mid + ",1,false,false)");
         }
         client.setPanel(Panels.getPanel("jfc_udt_editor", client));
         break;
