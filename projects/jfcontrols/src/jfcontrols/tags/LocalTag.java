@@ -49,7 +49,7 @@ public class LocalTag extends MonitoredTag {
           } else {
             sql.execute("update tagvalues set value=" + SQL.quote(tv.value) + " where tid=" + tid + " and idx=" + tv.nidx);
           }
-          tagChanged(tv.nidx, value);
+          tagChanged(tv.nidx, tv.value);
         }
       } else {
         sql.execute("update tags set value=" + SQL.quote(value) + " where cid=0 and id=" + tid);

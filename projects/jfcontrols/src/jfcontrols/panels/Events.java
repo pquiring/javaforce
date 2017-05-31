@@ -110,7 +110,7 @@ public class Events {
             if (inuse == null) break;
             id++;
           } while (true);
-          sql.execute("insert into tags (cid,name,type,unsigned,array) values (" + client.getProperty("ctrl") + ",'tag" + id + "',1,false,false)");
+          sql.execute("insert into tags (cid,name,type,unsigned,array,builtin) values (" + client.getProperty("ctrl") + ",'tag" + id + "',1,false,false,false)");
           client.setPanel(Panels.getPanel("jfc_tags", client));
         }
         break;
@@ -136,17 +136,17 @@ public class Events {
       }
       case "jfc_udts_new": {
         synchronized(lock) {
-          int uid = 0x200;  //512
+          int uid = SQLService.uid_user;
           do {
             String inuse = sql.select1value("select id from udts where uid=" + uid + " or name='udt" + (uid-0x1ff) + "'");
             if (inuse == null) break;
             uid++;
-            if (uid == 0x400) {
+            if (uid == SQLService.uid_user_end) {
               JFLog.log("Error:Too many UDTs");
               break;
             }
           } while (true);
-          if (uid == 0x400) break;
+          if (uid == SQLService.uid_user_end) break;
           sql.execute("insert into udts (name, uid) values ('udt" + (uid-0x1ff) + "', " + uid + ")");
         }
         client.setPanel(Panels.getPanel("jfc_udts", client));

@@ -429,23 +429,30 @@ public class Panels {
         if (cid.equals("0")) {
           tag_types = "jfc_tag_type_udt";
         } else {
+          //TODO : support remote UDT if controller = JFC
           tag_types = "jfc_tag_type";
         }
-        String data[][] = sql.select("select id,cid,name,type from tags where cid=" + cid);
+        String data[][] = sql.select("select id,cid,name,type,builtin from tags where cid=" + cid);
         if (data == null) data = new String[0][0];
+        String style;
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_tags_name_str_" + data[a][0], null, null, null));
-          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, tag_types, null));
-          cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_tags_unsigned_boolean_" + data[a][0], null, null, null));
-          if (cid.equals("0")) {
-            cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, null));
+          if (data[a][4].equals("true")) {
+            style = "readonly";
+          } else {
+            style = null;
           }
-          cells.add(createCell("", 17, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], null));
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_tags_name_str_" + data[a][0], null, null, style));
+          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, tag_types, style));
+          cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_tags_unsigned_boolean_" + data[a][0], null, null, style));
+          if (cid.equals("0")) {
+            cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, style));
+          }
+          cells.add(createCell("", 17, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], style));
         }
         break;
       }
       case "jfc_udts": {
-        String data[][] = sql.select("select id,uid,name from udts where uid >= 512");
+        String data[][] = sql.select("select id,uid,name from udts where uid >= " + SQLService.uid_user);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_str_" + data[a][0], null, null, null));
@@ -468,7 +475,7 @@ public class Panels {
         break;
       }
       case "jfc_sdts": {
-        String data[][] = sql.select("select id,uid,name from udts where uid < 512");
+        String data[][] = sql.select("select id,uid,name from udts where uid < " + SQLService.uid_user);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_str_" + data[a][0], null, null, "readonly"));

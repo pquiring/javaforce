@@ -6,6 +6,7 @@ package jfcontrols.panels;
  */
 
 import java.util.*;
+import javaforce.JF;
 
 import javaforce.webui.*;
 
@@ -13,21 +14,21 @@ import jfcontrols.tags.*;
 
 public class ClientContext extends Thread {
   private WebUIClient client;
-  private ArrayList<Pair> listeners = new ArrayList<>();
+  private ArrayList<Monitor> listeners = new ArrayList<>();
   private volatile boolean active;
   private Object lock = new Object();
-  private ArrayList<Pair> stack = new ArrayList<>();
+  private ArrayList<Monitor> stack = new ArrayList<>();
 
   public ClientContext(WebUIClient client) {
     this.client = client;
   }
-  private static class Pair implements TagBaseListener {
+  private static class Monitor implements TagBaseListener {
     public TagAddr ta;
     public MonitoredTag tag;
     public Component comp;
     public ClientContext ctx;
     public String value;
-    public Pair(TagAddr ta, MonitoredTag tag, Component comp, ClientContext ctx) {
+    public Monitor(TagAddr ta, MonitoredTag tag, Component comp, ClientContext ctx) {
       this.ta = ta;
       this.tag = tag;
       this.comp = comp;
@@ -44,31 +45,35 @@ public class ClientContext extends Thread {
 
   public void addListener(TagAddr ta, MonitoredTag tag, Component comp) {
     if (tag == null) return;
-    Pair pair = new Pair(ta, tag, comp, this);
-    listeners.add(pair);
-    tag.addListener(pair);
+    Monitor monitor = new Monitor(ta, tag, comp, this);
+    listeners.add(monitor);
+    tag.addListener(monitor);
   }
 
   public void clear() {
     while (listeners.size() > 0) {
-      Pair pair = listeners.remove(0);
-      pair.tag.removeListener(pair);
+      Monitor monitor = listeners.remove(0);
+      monitor.tag.removeListener(monitor);
     }
   }
 
   public void run() {
-    Pair pair;
+    Monitor monitor;
     active = true;
+    //wait till client is ready
+    while (!client.isReady()) {
+      JF.sleep(100);
+    }
     while (active) {
       synchronized(lock) {
         try {lock.wait();} catch (Exception e) {}
         if (stack.size() == 0) continue;
-        pair = stack.remove(0);
+        monitor = stack.remove(0);
       }
-      if (pair == null) continue;
-      Component c = pair.comp;
+      if (monitor == null) continue;
+      Component c = monitor.comp;
       if (c instanceof Label) {
-        ((Label)c).setText(pair.value);
+        ((Label)c).setText(monitor.value);
       }
     }
   }

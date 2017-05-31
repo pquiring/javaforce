@@ -20,6 +20,7 @@ public class WebUIClient {
   public int nextID;
   public int zIndex = 1;
   public int width, height;
+  public boolean isReady;
 
   public boolean popupMenuMouseDown;
   public PopupMenu topPopupMenu;
@@ -56,6 +57,7 @@ public class WebUIClient {
     if (id.length() == 0 || id.equals("body")) {
       switch (event) {
         case "load":
+          isReady = true;
           String html = root.html();
           sendEvent("body", "sethtml", new String[] {"html=" + html});
           break;
@@ -172,6 +174,9 @@ public class WebUIClient {
   }
   public int getHeight() {
     return height;
+  }
+  public boolean isReady() {
+    return isReady;
   }
 
   private Resized resized;

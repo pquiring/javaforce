@@ -24,7 +24,7 @@ public abstract class TagBase {
     this.type = type;
     this.unsigned = unsigned;
     this.array = array;
-    this.udt = type >= 0x100;
+    this.udt = type >= SQLService.uid_first;
   }
 
   public abstract String getValue(TagAddr addr);

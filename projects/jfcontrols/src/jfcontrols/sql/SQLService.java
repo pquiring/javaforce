@@ -18,6 +18,13 @@ public class SQLService {
   public static String derbyURI;
   public static String dbVersion = "0.0.1";
 
+  //user data type ranges
+  public static final int uid_first = 0x100;
+  public static final int uid_sdt = 0x100;
+  public static final int uid_sys = 0x200;
+  public static final int uid_user = 0x1000;
+  public static final int uid_user_end = 0x1100;
+
   public static SQL getSQL() {
     SQL sql = new SQL();
     sql.connect(derbyURI);
@@ -57,7 +64,7 @@ public class SQLService {
     sql.connect(derbyURI + ";create=true");
     //create tables
     sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int unique, ip varchar(32), type int, speed int)");
-    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), type int, array boolean, unsigned boolean, value varchar(128), unique (cid, name))");
+    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), type int, array boolean, unsigned boolean, builtin boolean, value varchar(128), unique (cid, name))");
     sql.execute("create table tagvalues (id int not null generated always as identity (start with 1, increment by 1) primary key, tid int, idx int, mid int, midx int, value varchar(128))");
     sql.execute("create table udts (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, name varchar(32) unique)");
     sql.execute("create table udtmems (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, mid int, name varchar(32), type int, array boolean, unsigned boolean)");
@@ -126,10 +133,16 @@ public class SQLService {
     sql.execute("insert into ctrls (cid,ip,type,speed) values (0,'127.0.0.1',0,0)");
 
     //create SDTs
-    sql.execute("insert into udts (uid,name) values (256,'string8')");
-    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (256,0,'char',16,true,true)");
-    sql.execute("insert into udts (uid,name) values (257,'string16')");
-    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (257,0,'char',17,true,true)");
+    int uid = uid_sys;
+    sql.execute("insert into udts (uid,name) values (" + uid + ",'system')");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (" + uid + ",0,'scantime',4,false,false)");
+    sql.execute("insert into tags (cid,name,type,array,unsigned,builtin) values (0,'system'," + uid + ",false,false,true)");
+    uid = uid_sdt;
+    sql.execute("insert into udts (uid,name) values (" + uid + ",'string8')");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (" + uid + ",0,'char',16,true,true)");
+    uid++;
+    sql.execute("insert into udts (uid,name) values (" + uid + ",'string16')");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (" + uid + ",0,'char',17,true,true)");
 
     //create panels
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_login', true, true)");

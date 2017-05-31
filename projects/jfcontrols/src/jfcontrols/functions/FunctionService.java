@@ -60,6 +60,8 @@ public class FunctionService extends Thread {
       JFLog.log(e);
     }
     TagsService.doWrites();
+    TagAddr ta = TagAddr.decode("system.scantime");
+    TagBase tag = TagsService.getTag(ta);
     while (active) {
       long begin = System.currentTimeMillis();
       TagsService.doReads();
@@ -79,7 +81,8 @@ public class FunctionService extends Thread {
       }
       TagsService.doWrites();
       long end = System.currentTimeMillis();
-      JFLog.log("scan cycle=" + (end-begin));
+      long scantime = end - begin;
+      tag.setValue(ta, Long.toString(scantime));
     }
     synchronized(done) {
       done.notify();

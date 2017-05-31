@@ -6,7 +6,11 @@ package javaforce.webui;
  */
 
 public interface WebUIHandler {
-  /** Returns a root panel for a new client. */
+  /** Returns a root panel for a new client.
+   *
+   *  NOTE : You should not make changes to the components until this function has returned.
+   *  If you do then use WebUIClient.isReady() to ensure you don't send requests before the client is ready.
+   */
   Panel getRootPanel(WebUIClient client);
   /** Returns raw resources from /static/... */
   byte[] getResource(String url);
