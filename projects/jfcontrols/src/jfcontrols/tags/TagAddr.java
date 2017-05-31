@@ -10,7 +10,7 @@ import javaforce.*;
 public class TagAddr {
   public int cid = 0;
   public String name;
-  public int nidx = 0;
+  public int idx = 0;
   public String member;
   public int midx = 0;
   public static TagAddr decode(String addr) {
@@ -40,7 +40,7 @@ public class TagAddr {
     }
     idx = ta.name.indexOf('[');
     if (idx != -1) {
-      ta.nidx = Integer.valueOf(ta.name.substring(idx+1, ta.name.length() - 1));
+      ta.idx = Integer.valueOf(ta.name.substring(idx+1, ta.name.length() - 1));
       ta.name = ta.name.substring(0, idx);
     }
     if (ta.member != null) {

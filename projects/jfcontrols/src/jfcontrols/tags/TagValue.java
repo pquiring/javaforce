@@ -6,7 +6,7 @@ package jfcontrols.tags;
  */
 
 public class TagValue {
-  public int idx;
+  public int nidx, mid, midx;
   public boolean dirty;
   public String value;
   public boolean insert;

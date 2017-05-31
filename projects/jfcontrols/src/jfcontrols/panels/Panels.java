@@ -262,6 +262,19 @@ public class Panels {
     String pairs[][];
     if (arg.equals("jfc_function")) {
       pairs = sql.select("select id, name from funcs");
+    } else if (arg.equals("jfc_tag_type_udt")) {
+      arg = "jfc_tag_type";
+      String lid = sql.select1value("select id from lists where name=" + SQL.quote(arg));
+      String basic[][] = sql.select("select value, text from listdata where lid=" + lid);
+      String udts[][] = sql.select("select uid, name from udts");
+      pairs = new String[basic.length + udts.length][];
+      int pos = 0;
+      for(int a=0;a<basic.length;a++) {
+        pairs[pos++] = basic[a];
+      }
+      for(int a=0;a<udts.length;a++) {
+        pairs[pos++] = udts[a];
+      }
     } else {
       String lid = sql.select1value("select id from lists where name=" + SQL.quote(arg));
       pairs = sql.select("select value, text from listdata where lid=" + lid);
@@ -415,12 +428,56 @@ public class Panels {
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_tags_name_str_" + data[a][0], null, null, null));
-          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, "jfc_tag_type", null));
+          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, "jfc_tag_type_udt", null));
           cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_tags_unsigned_boolean_" + data[a][0], null, null, null));
           if (cid.equals("0")) {
             cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, null));
           }
           cells.add(createCell("", 17, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], null));
+        }
+        break;
+      }
+      case "jfc_udts": {
+        String data[][] = sql.select("select id,name from udts where uid >= 512");
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_str_" + data[a][0], null, null, null));
+          cells.add(createCell("", 8, a, 2, 1, "button", null, "Edit", null, "jfc_udts_edit", data[a][0], null));
+          cells.add(createCell("", 11, a, 2, 1, "button", null, "Delete", null, "jfc_udts_delete", data[a][0], null));
+        }
+        break;
+      }
+      case "jfc_udt_editor": {
+        String uid = (String)client.getProperty("udt");
+        String data[][] = sql.select("select id,name,type,mem from udtmems where uid=" + uid);
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_str_" + data[a][0], null, null, null));
+          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", null));
+          cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, null));
+          cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_udtmems_array_boolean_" + data[a][0], null, null, null));
+          cells.add(createCell("", 17, a, 2, 1, "button", null, "Delete", null, "jfc_udts_editor_delete", data[a][0], null));
+        }
+        break;
+      }
+      case "jfc_sdts": {
+        String data[][] = sql.select("select id,name from udts where uid < 512");
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_sdts_name_str_" + data[a][0], null, null, "readonly"));
+          cells.add(createCell("", 8, a, 2, 1, "button", null, "View", null, "jfc_udts_edit", data[a][0], null));
+        }
+        break;
+      }
+      case "jfc_sdt_editor": {
+        String uid = (String)client.getProperty("udt");
+        String data[][] = sql.select("select id,name,type,mem from udtmems where uid=" + uid);
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_str_" + data[a][0], null, null, "readonly"));
+          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", "readonly"));
+          cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, "readonly"));
+          cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_udtmems_array_boolean_" + data[a][0], null, null, "readonly"));
         }
         break;
       }
@@ -498,7 +555,7 @@ public class Panels {
         cells.add(createCell("", 0, 3, 1, 1, "button", null, "DN", null, "jfc_rung_args_dn", null, null));
         for(int a=0;a<4;a++) {
           cells.add(createCell("", 1, a, 6, 1, "textfield", null, null, null, null, null, null));
-          cells.add(createCell("", 7, a, 3, 1, "combobox", null, null, null, null, "jfc_tag_type", null));
+          cells.add(createCell("", 7, a, 3, 1, "combobox", null, null, null, null, "jfc_tag_type_udt", null));
         }
         break;
       }

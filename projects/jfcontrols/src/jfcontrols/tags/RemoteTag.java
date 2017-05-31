@@ -14,7 +14,7 @@ public class RemoteTag extends MonitoredTag {
   private String value = "0";
 
   public RemoteTag(int cid, String name, int type, boolean unsigned, boolean array_not_supported, SQL sql) {
-    super(cid, type, unsigned, array_not_supported);
+    super(cid, type, unsigned, array_not_supported, false);
     remoteTag = RemoteControllers.getTag(cid, name, type, sql);
   }
 

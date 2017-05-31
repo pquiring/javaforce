@@ -33,5 +33,6 @@ public class TextField extends Component {
   public void onChanged(String args[]) {
     int idx = args[0].indexOf("=");
     text = args[0].substring(idx+1);
+    super.onChanged(args);
   }
 }

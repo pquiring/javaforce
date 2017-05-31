@@ -134,6 +134,61 @@ public class Events {
         client.setPanel(Panels.getPanel("jfc_panels", client));
         break;
       }
+      case "jfc_udts_new": {
+        synchronized(lock) {
+          int id = 0x200;  //512
+          do {
+            String inuse = sql.select1value("select name from udts where uid=" + id);
+            if (inuse == null) break;
+            id++;
+            if (id == 0x400) {
+              JFLog.log("Error:Too many UDTs");
+              break;
+            }
+          } while (true);
+          if (id == 0x400) break;
+          sql.execute("insert into udts (name, uid) values ('udt" + id + "', " + id + ")");
+        }
+        client.setPanel(Panels.getPanel("jfc_udts", client));
+        break;
+      }
+      case "jfc_udts_delete": {
+        //TODO : check if in use
+        break;
+      }
+      case "jfc_udts_edit": {
+        JFLog.log("udts=" + arg);
+        client.setProperty("udt", arg);
+        client.setPanel(Panels.getPanel("jfc_udt_editor", client));
+        break;
+      }
+
+      case "jfc_udt_editor_new": {
+        String uid = (String)client.getProperty("udt");
+        synchronized(lock) {
+          int id = 1;
+          do {
+            String inuse = sql.select1value("select name from udtmems where uid=" + uid + " and mem=" + id);
+            if (inuse == null) break;
+            id++;
+          } while (true);
+          sql.execute("insert into udtmems (name, uid, mem, type, unsigned, array) values ('member" + id + "', " + uid + "," + id + ",0,false,false)");
+        }
+        client.setPanel(Panels.getPanel("jfc_udt_editor", client));
+        break;
+      }
+
+      case "jfc_udt_editor_delete": {
+        //TODO : check if in use
+        break;
+      }
+
+      case "jfc_sdts_edit": {
+        client.setProperty("udt", arg);
+        client.setPanel(Panels.getPanel("jfc_sdt_editor", client));
+        break;
+      }
+
       case "jfc_panels_edit": {
         client.setProperty("panel", arg);
         client.setProperty("focus", null);
@@ -538,7 +593,8 @@ public class Events {
       String type = f[3];
       String id = f[4];
       SQL sql = SQLService.getSQL();
-      sql.execute("update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id);
+      String stmt = "update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id;
+      sql.execute(stmt);
       sql.close();
     } else {
       TagsService.write(tag, tf.getText());

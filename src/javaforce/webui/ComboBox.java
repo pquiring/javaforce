@@ -70,5 +70,6 @@ public class ComboBox extends Component {
   public void onChanged(String args[]) {
     int idx = args[0].indexOf("=");
     index = Integer.valueOf(args[0].substring(idx+1));
+    super.onChanged(args);
   }
 }
