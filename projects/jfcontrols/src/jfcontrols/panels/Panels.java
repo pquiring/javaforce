@@ -156,6 +156,7 @@ public class Panels {
         for(int b=0;b<styles.length;b++) {
           if (styles[b].equals("readonly")) {
             c.setReadonly(true);
+            c.setDisabled(true);
           } else if (styles[b].equals("disabled")) {
             c.setDisabled(true);
           } else if (styles[b].equals("flow")) {
@@ -282,7 +283,7 @@ public class Panels {
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
         String f[] = tag.split("_");
-        //jfc_table_col_id
+        //jfc_table_col_type_id
         String table = f[1];
         String col = f[2];
         String type = f[3];
@@ -444,7 +445,7 @@ public class Panels {
         break;
       }
       case "jfc_udts": {
-        String data[][] = sql.select("select id,name from udts where uid >= 512");
+        String data[][] = sql.select("select uid,name from udts where uid >= 512");
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_str_" + data[a][0], null, null, null));
@@ -455,7 +456,7 @@ public class Panels {
       }
       case "jfc_udt_editor": {
         String uid = (String)client.getProperty("udt");
-        String data[][] = sql.select("select id,name,type,mid from udtmems where uid=" + uid);
+        String data[][] = sql.select("select uid,name,type,mid from udtmems where uid=" + uid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_str_" + data[a][0], null, null, null));
@@ -467,17 +468,17 @@ public class Panels {
         break;
       }
       case "jfc_sdts": {
-        String data[][] = sql.select("select id,name from udts where uid < 512");
+        String data[][] = sql.select("select id,uid,name from udts where uid < 512");
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_sdts_name_str_" + data[a][0], null, null, "readonly"));
-          cells.add(createCell("", 8, a, 2, 1, "button", null, "View", null, "jfc_udts_edit", data[a][0], null));
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_str_" + data[a][0], null, null, "readonly"));
+          cells.add(createCell("", 8, a, 2, 1, "button", null, "View", null, "jfc_sdts_edit", data[a][1], null));
         }
         break;
       }
       case "jfc_sdt_editor": {
         String uid = (String)client.getProperty("udt");
-        String data[][] = sql.select("select id,name,type,mid from udtmems where uid=" + uid);
+        String data[][] = sql.select("select id,uid,name,type,mid from udtmems where uid=" + uid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_str_" + data[a][0], null, null, "readonly"));

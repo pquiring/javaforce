@@ -56,7 +56,7 @@ public class SQLService {
     JFLog.log("DB creating...");
     sql.connect(derbyURI + ";create=true");
     //create tables
-    sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int unique, ip varar(32), type int, speed int)");
+    sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int unique, ip varchar(32), type int, speed int)");
     sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), type int, array boolean, unsigned boolean, value varchar(128), unique (cid, name))");
     sql.execute("create table tagvalues (id int not null generated always as identity (start with 1, increment by 1) primary key, tid int, idx int, mid int, midx int, value varchar(128))");
     sql.execute("create table udts (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, name varchar(32) unique)");
@@ -107,6 +107,8 @@ public class SQLService {
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",5,'int64')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",6,'float32')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",7,'float64')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",16,'char8')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",17,'char16')");
 
     sql.execute("insert into lists (name) values ('jfc_panel_type')");
     id = sql.select1value("select id from lists where name='jfc_panel_type'");
@@ -122,6 +124,13 @@ public class SQLService {
 
     //create local controller
     sql.execute("insert into ctrls (cid,ip,type,speed) values (0,'127.0.0.1',0,0)");
+
+    //create SDTs
+    sql.execute("insert into udts (uid,name) values (256,'string8')");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (256,0,'char',16,true,true)");
+    sql.execute("insert into udts (uid,name) values (257,'string16')");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (257,0,'char',17,true,true)");
+
     //create panels
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_login', true, true)");
     id = sql.select1value("select id from panels where name='jfc_login'");
@@ -143,7 +152,7 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,9,3,1,'button','','Controllers','setPanel','jfc_controllers')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,11,3,1,'button','','Tags','jfc_ctrl_tags','0')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,13,3,1,'button','','UDT','setPanel','jfc_udts')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,13,3,1,'button','','SDT','setPanel','jfc_sdts')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,15,3,1,'button','','SDT','setPanel','jfc_sdts')");
 //test
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_menu', true, true)");

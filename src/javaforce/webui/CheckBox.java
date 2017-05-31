@@ -53,4 +53,10 @@ public class CheckBox extends Container {
   public boolean isSelected() {
     return selected;
   }
+  public void setReadonly(boolean state) {
+    input.setReadonly(state);
+  }
+  public void setDisabled(boolean state) {
+    input.setDisabled(state);
+  }
 }
