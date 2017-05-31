@@ -10,7 +10,6 @@ package javaforce.webui;
 public class LayersPanel extends Container {
   public LayersPanel() {
     addClass("layersPanel");
-    addClass("pad");
   }
   public String html() {
     StringBuffer sb = new StringBuffer();
