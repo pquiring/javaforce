@@ -83,6 +83,7 @@ public class FunctionService extends Thread {
       long end = System.currentTimeMillis();
       long scantime = end - begin;
       tag.setValue(ta, Long.toString(scantime));
+//      System.out.println("scantime=" + scantime);
     }
     synchronized(done) {
       done.notify();
