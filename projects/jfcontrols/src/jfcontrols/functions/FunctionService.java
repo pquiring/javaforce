@@ -11,6 +11,7 @@ import java.lang.reflect.*;
 import javaforce.*;
 
 import jfcontrols.api.*;
+import jfcontrols.sql.*;
 import jfcontrols.tags.*;
 
 public class FunctionService extends Thread {
@@ -26,13 +27,28 @@ public class FunctionService extends Thread {
   }
 
   public void run() {
+    SQL sql = SQLService.getSQL();
     Class mainCls, initCls;
     File mainFile = new File("work/class/func_1.class");
+    boolean compile = false;
+    if (!mainFile.exists()) {
+      FunctionService.generateFunction(1, sql);
+      compile = true;
+    }
+    File initFile = new File("work/class/func_2.class");
+    if (!initFile.exists()) {
+      FunctionService.generateFunction(2, sql);
+      compile = true;
+    }
+    if (compile) {
+      FunctionService.compileProgram(sql);
+    }
+    sql.close();
+    sql = null;
     if (!mainFile.exists()) {
       JFLog.log("main function not compiled");
       return;
     }
-    File initFile = new File("work/class/func_2.class");
     if (!initFile.exists()) {
       JFLog.log("init function not compiled");
       return;

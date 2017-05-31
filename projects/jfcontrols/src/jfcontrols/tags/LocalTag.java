@@ -30,7 +30,7 @@ public class LocalTag extends MonitoredTag {
     if (array || udt) {
       values = new HashMap<>();
     } else {
-      value = sql.select1value("select value from tags where cid=0 and name=" + SQL.quote(name));
+      value = sql.select1value("select value from tagvalues where idx=0 and mid=0 and midx=0 and tid=" + tid);
     }
   }
 
@@ -44,15 +44,15 @@ public class LocalTag extends MonitoredTag {
         for(int a=0;a<tvs.length;a++) {
           TagValue tv = tvs[a];
           if (tv.insert) {
-            sql.execute("insert into tagvalues (tid,idx,value) values (" + tid + "," + tv.nidx + "," + SQL.quote(tv.value) + ")");
+            sql.execute("insert into tagvalues (tid,idx,mid,midx,value) values (" + tid + "," + tv.idx + "," + tv.mid + "," + tv.midx + "," + SQL.quote(tv.value) + ")");
             tv.insert = false;
           } else {
-            sql.execute("update tagvalues set value=" + SQL.quote(tv.value) + " where tid=" + tid + " and idx=" + tv.nidx);
+            sql.execute("update tagvalues set value=" + SQL.quote(tv.value) + " where idx=" + tv.idx + " and mid=" + tv.mid + " and midx=" + tv.midx + " and tid=" + tid);
           }
-          tagChanged(tv.nidx, tv.value);
+          tagChanged(tv.idx, tv.value);
         }
       } else {
-        sql.execute("update tags set value=" + SQL.quote(value) + " where cid=0 and id=" + tid);
+        sql.execute("update tagvalues set value=" + SQL.quote(value) + " where idx=0 and mid=0 and midx=0 and tid=" + tid);
         tagChanged(0, value);
       }
       dirty = false;
@@ -61,7 +61,7 @@ public class LocalTag extends MonitoredTag {
 
   private void readValue(TagValue tv) {
     SQL sql = SQLService.getSQL();
-    String value = sql.select1value("select value from tagvalues where tid=" + tid + " and idx=" + tv.nidx);
+    String value = sql.select1value("select value from tagvalues where tid=" + tid + " and idx=" + tv.idx + " and mid=" + tv.mid + " and midx=" + tv.midx);
     sql.close();
     if (value == null) {
       tv.insert = true;
@@ -79,7 +79,7 @@ public class LocalTag extends MonitoredTag {
         TagValue tv = values.get(id);
         if (tv == null) {
           tv = new TagValue();
-          tv.nidx = ta.idx;
+          tv.idx = ta.idx;
           readValue(tv);
           values.put(id, tv);
         }
@@ -99,7 +99,7 @@ public class LocalTag extends MonitoredTag {
         TagValue tv = values.get(id);
         if (tv == null) {
           tv = new TagValue();
-          tv.nidx = ta.idx;
+          tv.idx = ta.idx;
           readValue(tv);
           values.put(id, tv);
         }

@@ -64,7 +64,7 @@ public class SQLService {
     sql.connect(derbyURI + ";create=true");
     //create tables
     sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int unique, ip varchar(32), type int, speed int)");
-    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), type int, array boolean, unsigned boolean, builtin boolean, value varchar(128), unique (cid, name))");
+    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), type int, array boolean, unsigned boolean, builtin boolean, unique (cid, name))");
     sql.execute("create table tagvalues (id int not null generated always as identity (start with 1, increment by 1) primary key, tid int, idx int, mid int, midx int, value varchar(128))");
     sql.execute("create table udts (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, name varchar(32) unique)");
     sql.execute("create table udtmems (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, mid int, name varchar(32), type int, array boolean, unsigned boolean)");
@@ -143,6 +143,15 @@ public class SQLService {
     uid++;
     sql.execute("insert into udts (uid,name) values (" + uid + ",'string16')");
     sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (" + uid + ",0,'char',17,true,true)");
+
+    //create default UDTs
+    uid = uid_user;
+    sql.execute("insert into udts (uid,name) values (" + uid + ",'alarms')");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (" + uid + ",0,'active',1,false,false)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (" + uid + ",0,'ack',1,false,false)");
+
+    //create default user tags
+    sql.execute("insert into tags (cid,name,type,array,unsigned,builtin) values (0,'alarms'," + uid + ",false,false,false)");
 
     //create panels
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_login', true, true)");
