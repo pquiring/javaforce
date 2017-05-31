@@ -110,7 +110,7 @@ public class Events {
             if (inuse == null) break;
             id++;
           } while (true);
-          sql.execute("insert into tags (cid,name,type,unsigned,array) values (" + client.getProperty("ctrl") + ",'tag" + id + "',0,false,false)");
+          sql.execute("insert into tags (cid,name,type,unsigned,array) values (" + client.getProperty("ctrl") + ",'tag" + id + "',1,false,false)");
           client.setPanel(Panels.getPanel("jfc_tags", client));
         }
         break;
@@ -172,7 +172,7 @@ public class Events {
             if (inuse == null) break;
             id++;
           } while (true);
-          sql.execute("insert into udtmems (name, uid, mid, type, unsigned, array) values ('member" + id + "', " + uid + "," + id + ",0,false,false)");
+          sql.execute("insert into udtmems (name, uid, mid, type, unsigned, array) values ('member" + id + "'," + uid + "," + id + ",1,false,false)");
         }
         client.setPanel(Panels.getPanel("jfc_udt_editor", client));
         break;
