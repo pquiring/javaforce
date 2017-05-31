@@ -18,13 +18,13 @@ public class FunctionCompiler {
     error = null;
     StringBuilder sb = new StringBuilder();
     sb.append("import jfcontrols.tags.Tag;\r\n");
-    sb.append("public class func_" + fid + " extends jfcontrols.functions.Runtime {\r\n");
+    sb.append("public class func_" + fid + " extends jfcontrols.functions.FunctionRuntime {\r\n");
     sb.append("  public static boolean code(Tag args[]) {\r\n");
     sb.append("    boolean enabled = true;\r\n");
     sb.append("    boolean en[] = new boolean[256];\r\n");
     sb.append("    int eidx = 0;\r\n");
     sb.append("    en[eidx] = enabled;\r\n");
-    sb.append("    Tag tags[] = new Tag[33];\r\n");
+    sb.append("    TagAddr tags[] = new TagAddr[33];\r\n");
 
     //append code from rungs
     String rungs[][] = sql.select("select logic from rungs where fid=" + fid);
@@ -77,10 +77,10 @@ public class FunctionCompiler {
               String ag = tag.substring(1);
               switch (type) {
                 case 't':
-                  sb.append("tags[" + t + "] = TagsService.getTag(\"" + ag + "\");\r\n");
+                  sb.append("tags[" + t + "] = TagsAddr.decode(\"" + ag + "\");\r\n");
                   break;
                 case 'i':
-                  sb.append("tags[" + t + "] = new Tag(null,0,\"" + ag + "\");");
+                  sb.append("tags[" + t + "] = new TagAddr(\"" + ag + "\");");
                   break;
                 case 'f':
                   func = ag;

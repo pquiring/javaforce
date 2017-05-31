@@ -13,8 +13,15 @@ public class TagAddr {
   public int idx = 0;
   public String member;
   public int midx = 0;
+  public String tempValue;
+  public static TagAddr tempValue(String value) {
+    TagAddr ta = new TagAddr();
+    ta.tempValue = value;
+    return ta;
+  }
   public static TagAddr decode(String addr) {
-    // addr = c# '#' name [idx] . member [idx]
+    // addr = {c# '#'} name {[idx]} {. member {[idx]}}
+    // {} = optional
     TagAddr ta = new TagAddr();
     int idx;
     idx = addr.indexOf('#');

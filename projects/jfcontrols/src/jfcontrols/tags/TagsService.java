@@ -101,6 +101,9 @@ public class TagsService extends Thread {
     }
   }
   public TagBase get_Tag(TagAddr ta) {
+    if (ta.tempValue != null) {
+      return new TagTemp(ta.tempValue);
+    }
     synchronized(lock) {
       if (ta.cid == 0) {
         TagBase tag = localTags.get(ta.name);
