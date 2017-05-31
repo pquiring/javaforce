@@ -46,10 +46,8 @@ public class TagsService extends Thread {
     String tags[][] = sql.select("select name,type,cid,unsigned,array from tags");
     for(int a=0;a<tags.length;a++) {
       if (tags[a][2].equals("0")) {
-//  public LocalTag(int cid, String name, int type, boolean unsigned, boolean array, boolean udt, int uid, SQL sql) {
         int type = Integer.valueOf(tags[a][1]);
-        boolean udt = type >= 0x100;
-        localTags.put(tags[a][0], new LocalTag(0, tags[a][0], type, tags[a][3].equals("true"), tags[a][4].equals("true"), udt, sql));
+        localTags.put(tags[a][0], new LocalTag(0, tags[a][0], type, tags[a][3].equals("true"), tags[a][4].equals("true"), sql));
       } else {
         remoteTags.put("c" + tags[a][2] + "#" + tags[a][0], new RemoteTag(Integer.valueOf(tags[a][2]), tags[a][0], Integer.valueOf(tags[a][1]), tags[a][3].equals("true"), false, sql));
       }

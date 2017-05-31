@@ -19,12 +19,12 @@ public abstract class TagBase {
   protected boolean dirty;
   protected boolean udt;
 
-  public TagBase(int cid, int type, boolean unsigned, boolean array, boolean udt) {
+  public TagBase(int cid, int type, boolean unsigned, boolean array) {
     this.cid = cid;
     this.type = type;
     this.unsigned = unsigned;
     this.array = array;
-    this.udt = udt;
+    this.udt = type >= 0x100;
   }
 
   public abstract String getValue(TagAddr addr);

@@ -17,8 +17,8 @@ public class LocalTag extends MonitoredTag {
   private HashMap<TagID, TagValue> values;
   private HashMap<String, Integer> mids;
 
-  public LocalTag(int cid, String name, int type, boolean unsigned, boolean array, boolean udt, SQL sql) {
-    super(cid, type, unsigned, array, udt);
+  public LocalTag(int cid, String name, int type, boolean unsigned, boolean array, SQL sql) {
+    super(cid, type, unsigned, array);
     tid = Integer.valueOf(sql.select1value("select id from tags where cid=0 and name=" + SQL.quote(name)));
     if (udt) {
       mids = new HashMap<>();
@@ -39,7 +39,7 @@ public class LocalTag extends MonitoredTag {
 
   public void updateWrite(SQL sql) {
     if (dirty) {
-      if (array) {
+      if (array || udt) {
         TagValue tvs[] = values.values().toArray(new TagValue[0]);
         for(int a=0;a<tvs.length;a++) {
           TagValue tv = tvs[a];
@@ -73,7 +73,8 @@ public class LocalTag extends MonitoredTag {
   public String getValue(TagAddr ta) {
     if (array || udt) {
       synchronized(arrayLock) {
-        int mid = mids.get(ta.member);
+        int mid = 0;
+        if (udt) mid = mids.get(ta.member);
         TagID id = new TagID(ta.idx, mid, ta.midx);
         TagValue tv = values.get(id);
         if (tv == null) {
@@ -92,7 +93,8 @@ public class LocalTag extends MonitoredTag {
   public void setValue(TagAddr ta, String value) {
     if (array || udt) {
       synchronized(arrayLock) {
-        int mid = mids.get(ta.member);
+        int mid = 0;
+        if (udt) mid = mids.get(ta.member);
         TagID id = new TagID(ta.idx, mid, ta.midx);
         TagValue tv = values.get(id);
         if (tv == null) {
