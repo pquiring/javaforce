@@ -635,6 +635,17 @@ public class Panels {
         buildRung(data, cells, nodes, sql, false, fid);
         break;
       }
+      case "jfc_alarm_editor": {
+        String tid = sql.select1value("select id from tags where name='alarms'");
+        String data[][] = sql.select("select id,tid,idx,value from tagvalues where mid=0 and tid=" + tid);
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          cells.add(createCell("", 0, a, 2, 1, "label", null, data[a][2], null, null, null, null));
+          cells.add(createCell("", 2, a, 6, 1, "textfield", null, null, "jfc_tagvalues_value_str_" + data[a][0], null, null, null));
+          cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_alarms_editor_delete", data[a][2], null));
+        }
+        break;
+      }
       default: {
         JFLog.log("Unknown table:" + name);
       }

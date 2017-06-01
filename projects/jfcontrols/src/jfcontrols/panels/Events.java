@@ -538,7 +538,6 @@ public class Events {
         break;
       }
 
-
       case "jfc_rung_editor_del": {
         Component focus = (Component)client.getProperty("focus");
         Node node = null;
@@ -597,6 +596,25 @@ public class Events {
         FunctionService.generateFunction(Integer.valueOf(fid), sql);
         FunctionService.compileProgram(sql);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
+        break;
+      }
+
+      case "jfc_alarm_editor_new": {
+        synchronized(lock) {
+          String tid = sql.select1value("select id from tags where name='alarms'");
+          int idx = 0;
+          do {
+            String inuse = sql.select1value("select value from tagvalues where tid=" + tid + " and idx=" + idx);
+            if (inuse == null) break;
+            idx++;
+          } while (true);
+          sql.execute("insert into tagvalues (tid,idx,mid,midx,value) values (" + tid + "," + idx + ",0,0,'alarm" + idx + "')");
+        }
+        client.setPanel(Panels.getPanel("jfc_alarm_editor", client));
+        break;
+      }
+
+      case "jfc_alarm_editor_del": {
         break;
       }
 
