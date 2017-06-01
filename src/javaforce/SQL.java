@@ -96,6 +96,7 @@ public class SQL {
       stmt.close();
     } catch (Exception e) {
       lastException = e;
+      JFLog.log(str);
       JFLog.log(e);
       return false;
     }
@@ -124,6 +125,7 @@ public class SQL {
       stmt.close();
     } catch (Exception e) {
       lastException = e;
+      JFLog.log(str);
       JFLog.log(e);
       return null;
     }
@@ -155,6 +157,7 @@ public class SQL {
       stmt.close();
     } catch (Exception e) {
       lastException = e;
+      JFLog.log(str);
       JFLog.log(e);
       return null;
     }
@@ -182,6 +185,7 @@ public class SQL {
       stmt.close();
     } catch (Exception e) {
       lastException = e;
+      JFLog.log(str);
       JFLog.log(e);
       return null;
     }
@@ -218,6 +222,7 @@ public class SQL {
       stmt.close();
     } catch (Exception e) {
       lastException = e;
+      JFLog.log(str);
       JFLog.log(e);
       return null;
     }

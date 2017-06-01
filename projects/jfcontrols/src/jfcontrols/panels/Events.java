@@ -6,9 +6,11 @@ package jfcontrols.panels;
  */
 
 import java.util.*;
+
 import javaforce.*;
 import javaforce.webui.*;
 
+import jfcontrols.app.*;
 import jfcontrols.functions.*;
 import jfcontrols.sql.*;
 import jfcontrols.tags.*;
@@ -119,6 +121,28 @@ public class Events {
         break;
       }
       case "jfc_tags_save": {
+        break;
+      }
+      case "jfc_config_save": {
+        int uid = SQLService.uid_io;
+        int idx = ((ComboBox)client.getPanel().getComponent("config_type")).getSelectedIndex();
+        switch (idx) {
+          case 0:  //none
+            sql.execute("delete from udtmems where uid=" + uid);
+            sql.execute("update config set value='' where id='hw_di'");
+            sql.execute("update config set value='' where id='hw_do'");
+            break;
+          case 1:  //di8 do8
+            sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (" + uid + ",0,'di',1,true,false)");
+            sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (" + uid + ",1,'do',1,true,false)");
+            sql.execute("update config set value='0,1,2,3,4,5,6,7' where id='hw_di'");
+            sql.execute("update config set value='8,9,10,11,12,13,14,15' where id='hw_do'");
+            break;
+        }
+        if (!JF.isWindows()) {
+          //TODO:save IP config
+        }
+        Main.restart();
         break;
       }
       case "jfc_panels_new": {
@@ -600,12 +624,15 @@ public class Events {
     if (tag == null) return;
     String value = tf.getText();
     if (tag.startsWith("jfc_")) {
-      String f[] = tag.split("_");
+      String f[] = tag.split("_", 5);
       //jfc_table_col_id
       String table = f[1];
       String col = f[2];
       String type = f[3];
       String id = f[4];
+      if (table.equals("config")) {
+        id = "\'" + id + "\'";
+      }
       SQL sql = SQLService.getSQL();
       String stmt = "update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id;
       sql.execute(stmt);
@@ -620,12 +647,15 @@ public class Events {
     if (tag == null) return;
     String value = cb.getSelectedValue();
     if (tag.startsWith("jfc_")) {
-      String f[] = tag.split("_");
+      String f[] = tag.split("_", 5);
       //jfc_table_col_id
       String table = f[1];
       String col = f[2];
       String type = f[3];
       String id = f[4];
+      if (table.equals("config")) {
+        id = "\'" + id + "\'";
+      }
       SQL sql = SQLService.getSQL();
       sql.execute("update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id);
       sql.close();
@@ -639,12 +669,15 @@ public class Events {
     if (tag == null) return;
     boolean set = cb.isSelected();
     if (tag.startsWith("jfc_")) {
-      String f[] = tag.split("_");
+      String f[] = tag.split("_", 5);
       //jfc_table_col_id
       String table = f[1];
       String col = f[2];
       String type = f[3];
       String id = f[4];
+      if (table.equals("config")) {
+        id = "\'" + id + "\'";
+      }
       SQL sql = SQLService.getSQL();
       sql.execute("update " + table + " set " + col + "=" + (set ? "true" : "false") + " where id=" + id);
       sql.close();

@@ -234,12 +234,15 @@ public class Panels {
     String text = v[TEXT];
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
-        String f[] = tag.split("_");
+        String f[] = tag.split("_", 5);
         //jfc_table_col_id
         String table = f[1];
         String col = f[2];
         String type = f[3];
         String id = f[4];
+        if (table.equals("config")) {
+          id = "\'" + id + "\'";
+        }
         text = sql.select1value("select " + col + " from " + table + " where id=" + id);
       } else {
         text = TagsService.read(tag);
@@ -282,12 +285,15 @@ public class Panels {
     }
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
-        String f[] = tag.split("_");
+        String f[] = tag.split("_", 5);
         //jfc_table_col_type_id
         String table = f[1];
         String col = f[2];
         String type = f[3];
         String id = f[4];
+        if (table.equals("config")) {
+          id = "\'" + id + "\'";
+        }
         value = sql.select1value("select " + col + " from " + table + " where id=" + id);
       } else {
         value = TagsService.read(tag);
@@ -340,12 +346,15 @@ public class Panels {
     SQL sql = SQLService.getSQL();
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
-        String f[] = tag.split("_");
+        String f[] = tag.split("_", 5);
         //jfc_table_col_id
         String table = f[1];
         String col = f[2];
         String type = f[3];
         String id = f[4];
+        if (table.equals("config")) {
+          id = "\'" + id + "\'";
+        }
         value = sql.select1value("select " + col + " from " + table + " where id=" + id);
         if (value != null) {
           value = value.equals("false") ? "0" : "1";

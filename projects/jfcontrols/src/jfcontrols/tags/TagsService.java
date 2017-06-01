@@ -67,7 +67,10 @@ public class TagsService extends Thread {
     for(int a=0;a<tags.length;a++) {
       if (tags[a][2].equals("0")) {
         int type = Integer.valueOf(tags[a][1]);
-        localTags.put(tags[a][0], new LocalTag(0, tags[a][0], type, tags[a][3].equals("true"), tags[a][4].equals("true"), sql));
+        if (tags[a][0].equals("io"))
+          localTags.put(tags[a][0], new IOTag(0, tags[a][0], type, tags[a][3].equals("true"), tags[a][4].equals("true"), sql));
+        else
+          localTags.put(tags[a][0], new LocalTag(0, tags[a][0], type, tags[a][3].equals("true"), tags[a][4].equals("true"), sql));
       } else {
         remoteTags.put("c" + tags[a][2] + "#" + tags[a][0], new RemoteTag(Integer.valueOf(tags[a][2]), tags[a][0], Integer.valueOf(tags[a][1]), tags[a][3].equals("true"), false, sql));
       }
