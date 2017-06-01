@@ -703,7 +703,7 @@ public class Panels {
     });
     return div;
   }
-  private static Component getOverlay(int x,int y) {
+  public static Component getOverlay(int x,int y) {
     Component c = getOverlay(null);
     Rectangle r = new Rectangle(x,y,1,1);
     setCellSize(c, r);

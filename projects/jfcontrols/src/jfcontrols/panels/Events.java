@@ -229,6 +229,17 @@ public class Events {
         t1.remove(r.x, r.y);
         String pid = (String)client.getProperty("panel");
         sql.execute("delete from cells where pid=" + pid + " and x=" + r.x + " and y=" + r.y);
+        if (r.width > 1 || r.height > 1) {
+          Table t2 = (Table)client.getPanel().getComponent("t2");  //overlays
+          t2.remove(r.x, r.y);
+          int x2 = r.x + r.width - 1;
+          int y2 = r.y + r.height - 1;
+          for(int x=r.x;x<=x2;x++) {
+            for(int y=r.y;y<=y2;y++) {
+              t2.add(Panels.getOverlay(x,y), x, y);
+            }
+          }
+        }
         break;
       }
       case "jfc_panel_editor_props": {
