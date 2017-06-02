@@ -59,4 +59,12 @@ public class TagAddr {
     }
     return ta;
   }
+
+  public String toString() {
+    if (member != null) {
+      return "TagAddr:" + name + "[" + idx + "]." + member;
+    } else {
+      return "TagAddr:" + name + "[" + idx + "]";
+    }
+  }
 }

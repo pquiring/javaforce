@@ -74,12 +74,16 @@ public class LocalTag extends MonitoredTag {
     if (array || udt) {
       synchronized(arrayLock) {
         int mid = 0;
-        if (udt) mid = mids.get(ta.member);
+        if (udt) {
+          mid = mids.get(ta.member);
+        }
         TagID id = new TagID(ta.idx, mid, ta.midx);
         TagValue tv = values.get(id);
         if (tv == null) {
           tv = new TagValue();
           tv.idx = ta.idx;
+          tv.mid = mid;
+          tv.midx = ta.midx;
           readValue(tv);
           values.put(id, tv);
         }
@@ -94,12 +98,16 @@ public class LocalTag extends MonitoredTag {
     if (array || udt) {
       synchronized(arrayLock) {
         int mid = 0;
-        if (udt) mid = mids.get(ta.member);
+        if (udt) {
+          mid = mids.get(ta.member);
+        }
         TagID id = new TagID(ta.idx, mid, ta.midx);
         TagValue tv = values.get(id);
         if (tv == null) {
           tv = new TagValue();
           tv.idx = ta.idx;
+          tv.mid = mid;
+          tv.midx = ta.midx;
           readValue(tv);
           values.put(id, tv);
         }

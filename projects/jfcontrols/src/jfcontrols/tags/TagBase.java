@@ -24,7 +24,7 @@ public abstract class TagBase {
     this.type = type;
     this.unsigned = unsigned;
     this.array = array;
-    this.udt = type >= SQLService.uid_first;
+    this.udt = type >= SQLService.uid_sdt;
   }
 
   public abstract String getValue(TagAddr addr);
@@ -117,5 +117,9 @@ public abstract class TagBase {
         LE.setuint64(out, pos, Double.doubleToLongBits(Double.valueOf(in)));
         break;
     }
+  }
+
+  public String toString() {
+    return "Tag:" + type;
   }
 }

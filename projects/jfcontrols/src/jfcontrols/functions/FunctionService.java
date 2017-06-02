@@ -10,6 +10,7 @@ import java.lang.reflect.*;
 
 import javaforce.*;
 
+import jfcontrols.app.*;
 import jfcontrols.api.*;
 import jfcontrols.sql.*;
 import jfcontrols.tags.*;
@@ -98,7 +99,9 @@ public class FunctionService extends Thread {
       TagsService.doWrites();
       long end = System.currentTimeMillis();
       long scantime = end - begin;
-      tag.setValue(ta, Long.toString(scantime));
+      if (!Main.debug) {
+        tag.setValue(ta, Long.toString(scantime));
+      }
 //      System.out.println("scantime=" + scantime);
     }
     synchronized(done) {
@@ -186,14 +189,12 @@ public class FunctionService extends Thread {
   }
   public static boolean compileProgram(SQL sql) {
     try {
-      //TODO : log output - use javaforce.ShellProcess
-      Process p = Runtime.getRuntime().exec(new String[] {"javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", "work/java/*.java", "-d", "work/class"});
-      InputStream is = p.getInputStream();
-      p.waitFor();
-      byte out[] = JF.readAll(is);
-      if (out != null) JFLog.log("compiler=" + new String(out));
+      ShellProcess sp = new ShellProcess();
+      sp.keepOutput(true);
+      String output = sp.run(new String[] {"javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", "work/java/*.java", "-d", "work/class"}, true);
+      JFLog.log("compiler=" + output);
       restart();
-      return true;
+      return output.length() == 0;
     } catch (Exception e) {
       JFLog.log(e);
       return false;

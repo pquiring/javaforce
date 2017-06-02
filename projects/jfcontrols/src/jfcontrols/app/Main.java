@@ -9,7 +9,8 @@ import java.io.*;
 
 import javaforce.*;
 import javaforce.webui.*;
-import jfcontrols.api.APIService;
+
+import jfcontrols.api.*;
 import jfcontrols.panels.*;
 import jfcontrols.functions.*;
 import jfcontrols.sql.*;
@@ -19,8 +20,13 @@ public class Main implements WebUIHandler {
 
   public static String version = "0.1B";
   public static ClassLoader loader;
+  public static boolean debug = false;
 
   public static void main(String args[]) {
+    if (args != null && args[0].equals("debug")) {
+      debug = true;
+    }
+    if (debug) SQL.debug = true;
     //start database
     SQLService.start();
     //start tags server

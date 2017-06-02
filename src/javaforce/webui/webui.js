@@ -1,10 +1,14 @@
-var ws = new WebSocket("ws://" + location.host + "/webui");
+var ws;
 
 var bindata;
 
+var body = document.getElementById('body');
+var orghtml = body.innerHTML;
 var temp = document.createElement('div');
 
-function load(event) {
+var delay = 500;
+
+function wsopen(event) {
   sendSize('body');
   var msg = {
     event: "load"
@@ -12,12 +16,21 @@ function load(event) {
   ws.send(JSON.stringify(msg));
 };
 
-//WebSocket binaryType default is Blob but converting it to TypedArray is very SLOW, so ask to get data in ArrayBuffer format instead
-ws.binaryType = "arraybuffer";
+function wsclose(event) {
+  body.innerHTML = orghtml;
+  setTimeout(connect, delay);
+}
 
-ws.onopen = load;
+function connect() {
+  ws = new WebSocket("ws://" + location.host + "/webui")
+  //WebSocket binaryType default is Blob but converting it to TypedArray is very SLOW, so ask to get data in ArrayBuffer format instead
+  ws.binaryType = "arraybuffer";
+  ws.onopen = wsopen;
+  ws.onclose = wsclose;
+  ws.onmessage = wsevent;
+}
 
-ws.onmessage = function (event) {
+function wsevent(event) {
   if (event.data instanceof ArrayBuffer) {
     bindata = event.data;
     return;
@@ -392,3 +405,5 @@ function onResized(event, element) {
 function onMoved(event, element) {
   sendPos(element.id);
 }
+
+setTimeout(connect, delay);

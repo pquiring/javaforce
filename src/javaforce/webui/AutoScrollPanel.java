@@ -5,18 +5,8 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class AutoScrollPanel extends Container {
+public class AutoScrollPanel extends Panel {
   public AutoScrollPanel() {
-    setClass("autoscroll");
-  }
-  public String html() {
-    StringBuffer sb = new StringBuffer();
-    sb.append("<div" + getAttrs() + ">");
-    int cnt = count();
-    for(int a=0;a<cnt;a++) {
-      sb.append(get(a).html());
-    }
-    sb.append("</div>");
-    return sb.toString();
+    addClass("autoscroll");
   }
 }

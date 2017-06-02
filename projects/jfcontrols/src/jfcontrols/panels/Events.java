@@ -133,8 +133,8 @@ public class Events {
             sql.execute("update config set value='' where id='hw_do'");
             break;
           case 1:  //di8 do8
-            sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (" + uid + ",0,'di',1,true,false)");
-            sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned) values (" + uid + ",1,'do',1,true,false)");
+            sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'di',1,true,false,false)");
+            sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",1,'do',1,true,false,false)");
             sql.execute("update config set value='0,1,2,3,4,5,6,7' where id='hw_di'");
             sql.execute("update config set value='8,9,10,11,12,13,14,15' where id='hw_do'");
             break;
@@ -195,7 +195,7 @@ public class Events {
             if (inuse == null) break;
             mid++;
           } while (true);
-          sql.execute("insert into udtmems (name, uid, mid, type, unsigned, array) values ('member" + (mid+1) + "'," + uid + "," + mid + ",1,false,false)");
+          sql.execute("insert into udtmems (name,uid,mid,type,unsigned,array,builtin) values ('member" + (mid+1) + "'," + uid + "," + mid + ",1,false,false,false)");
         }
         client.setPanel(Panels.getPanel("jfc_udt_editor", client));
         break;
@@ -459,7 +459,7 @@ public class Events {
         Rung rung = Panels.buildRung(data, cells, nodes, sql, true, fid);
         rungs.rungs.add(rid, rung);
         Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, nodes.toArray(new Node[0]), sql);
-        rungs.div.add(rid, table);
+        rungs.panel.add(rid, table);
         rung.table = table;
         int cnt = rungs.rungs.size();
         for(int a=rid+1;a<cnt;a++) {

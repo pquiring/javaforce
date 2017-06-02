@@ -11,6 +11,9 @@ public class SQL {
   /** Column names from last query. */
   public String colNames[];
 
+  /** Outputs all statements to stdout (default = false). */
+  public static boolean debug = false;
+
   private java.sql.Connection conn;
 
   /** Apache Derby SQL JDBC Class */
@@ -90,6 +93,7 @@ public class SQL {
     java.sql.Statement stmt = null;
     java.sql.ResultSet rs = null;
     java.sql.ResultSetMetaData rsmd = null;
+    if (debug) JFLog.log(str);
     try {
       stmt = conn.createStatement();
       stmt.execute(str);  //ignore return value (Exception will be thrown in an error)
@@ -109,6 +113,7 @@ public class SQL {
     java.sql.Statement stmt = null;
     java.sql.ResultSet rs = null;
     java.sql.ResultSetMetaData rsmd = null;
+    if (debug) JFLog.log(str);
     try {
       stmt = conn.createStatement();
       if (!stmt.execute(str)) throw new Exception();
@@ -138,6 +143,7 @@ public class SQL {
     java.sql.Statement stmt = null;
     java.sql.ResultSet rs = null;
     java.sql.ResultSetMetaData rsmd = null;
+    if (debug) JFLog.log(str);
     try {
       stmt = conn.createStatement();
       if (!stmt.execute(str)) throw new Exception();
@@ -170,6 +176,7 @@ public class SQL {
     java.sql.Statement stmt = null;
     java.sql.ResultSet rs = null;
     java.sql.ResultSetMetaData rsmd = null;
+    if (debug) JFLog.log(str);
     int colcnt;
     try {
       stmt = conn.createStatement();
@@ -203,6 +210,7 @@ public class SQL {
     java.sql.Statement stmt = null;
     java.sql.ResultSet rs = null;
     java.sql.ResultSetMetaData rsmd = null;
+    if (debug) JFLog.log(str);
     int colcnt;
     try {
       stmt = conn.createStatement();

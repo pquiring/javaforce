@@ -19,35 +19,44 @@ public class ClientContext extends Thread {
   private Object lock = new Object();
   private ArrayList<Monitor> stack = new ArrayList<>();
 
+  public HashMap<String, Component> alarms = new HashMap<>();
+  public int lastAlarmID;
+
   public ClientContext(WebUIClient client) {
     this.client = client;
   }
   private static class Monitor implements TagBaseListener {
     public TagAddr ta;
     public MonitoredTag tag;
-    public Component comp;
     public ClientContext ctx;
     public String value;
-    public Monitor(TagAddr ta, MonitoredTag tag, Component comp, ClientContext ctx) {
+    public Component cmp;
+    public int idx;
+    public TagAction action;
+    public Monitor(TagAddr ta, MonitoredTag tag, Component cmp, TagAction action, ClientContext ctx) {
       this.ta = ta;
       this.tag = tag;
-      this.comp = comp;
+      this.cmp = cmp;
+      this.action = action;
       this.ctx = ctx;
     }
     public void tagChanged(TagBase tag, int idx, String value) {
+      //NOTE : this function is running in FuntionService - it must return asap
       synchronized(ctx.lock) {
         this.value = value;
+        this.idx = idx;
         ctx.stack.add(this);
         ctx.lock.notify();
       }
     }
   }
 
-  public void addListener(TagAddr ta, MonitoredTag tag, Component comp) {
+  public void addListener(TagAddr ta, TagBase tag, Component cmp, TagAction action) {
     if (tag == null) return;
-    Monitor monitor = new Monitor(ta, tag, comp, this);
+    MonitoredTag mtag = (MonitoredTag)tag;
+    Monitor monitor = new Monitor(ta, mtag, cmp, action, this);
     listeners.add(monitor);
-    tag.addListener(monitor);
+    mtag.addListener(monitor);
   }
 
   public void clear() {
@@ -71,10 +80,7 @@ public class ClientContext extends Thread {
         monitor = stack.remove(0);
       }
       if (monitor == null) continue;
-      Component c = monitor.comp;
-      if (c instanceof Label) {
-        ((Label)c).setText(monitor.value);
-      }
+      monitor.action.tagChanged(monitor.tag, monitor.idx, monitor.value, monitor.cmp);
     }
   }
 
