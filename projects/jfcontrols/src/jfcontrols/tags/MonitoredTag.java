@@ -33,11 +33,11 @@ public abstract class MonitoredTag extends TagBase {
     }
   }
 
-  public void tagChanged(int idx, String value) {
+  public void tagChanged(TagID id, String oldValue, String newValue) {
     synchronized(lock) {
       int cnt = listeners.size();
       for(int a=0;a<cnt;a++) {
-        listeners.get(0).tagChanged(this, idx, value);
+        listeners.get(0).tagChanged(this, id, oldValue, newValue);
       }
     }
   }

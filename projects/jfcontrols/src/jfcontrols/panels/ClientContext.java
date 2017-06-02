@@ -29,9 +29,9 @@ public class ClientContext extends Thread {
     public TagAddr ta;
     public MonitoredTag tag;
     public ClientContext ctx;
-    public String value;
+    public String oldValue, newValue;
     public Component cmp;
-    public int idx;
+    public TagID id;
     public TagAction action;
     public Monitor(TagAddr ta, MonitoredTag tag, Component cmp, TagAction action, ClientContext ctx) {
       this.ta = ta;
@@ -40,11 +40,12 @@ public class ClientContext extends Thread {
       this.action = action;
       this.ctx = ctx;
     }
-    public void tagChanged(TagBase tag, int idx, String value) {
+    public void tagChanged(TagBase tag, TagID id, String oldValue, String newValue) {
       //NOTE : this function is running in FuntionService - it must return asap
       synchronized(ctx.lock) {
-        this.value = value;
-        this.idx = idx;
+        this.oldValue = oldValue;
+        this.newValue = newValue;
+        this.id = id;
         ctx.stack.add(this);
         ctx.lock.notify();
       }
@@ -80,7 +81,7 @@ public class ClientContext extends Thread {
         monitor = stack.remove(0);
       }
       if (monitor == null) continue;
-      monitor.action.tagChanged(monitor.tag, monitor.idx, monitor.value, monitor.cmp);
+      monitor.action.tagChanged(monitor.tag, monitor.id, monitor.oldValue, monitor.newValue, monitor.cmp);
     }
   }
 

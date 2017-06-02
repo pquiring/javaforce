@@ -20,8 +20,9 @@ public class RemoteTag extends MonitoredTag {
   public void updateRead(SQL sql) {
     String newValue = remoteTag.getValue();
     if (!newValue.equals(value)) {
+      String oldValue = value;
       value = newValue;
-      tagChanged(0, value);
+      tagChanged(null, oldValue, newValue);
     }
   }
 

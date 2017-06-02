@@ -7,5 +7,5 @@ package jfcontrols.tags;
 
 public interface TagBaseListener {
   /** Invoked when a tag's value has changed. */
-  public void tagChanged(TagBase tag, int idx, String value);
+  public void tagChanged(TagBase tag, TagID id, String oldValue, String newValue);
 }

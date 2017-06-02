@@ -14,6 +14,7 @@ public class LocalTag extends MonitoredTag {
   private int tid;
   private Object arrayLock = new Object();
   private String value;
+  private String oldValue;
   private HashMap<TagID, TagValue> values;
   private HashMap<String, Integer> mids;
 
@@ -31,6 +32,7 @@ public class LocalTag extends MonitoredTag {
       values = new HashMap<>();
     } else {
       value = sql.select1value("select value from tagvalues where idx=0 and mid=0 and midx=0 and tid=" + tid);
+      oldValue = value;
     }
   }
 
@@ -44,16 +46,17 @@ public class LocalTag extends MonitoredTag {
         for(int a=0;a<tvs.length;a++) {
           TagValue tv = tvs[a];
           if (tv.insert) {
-            sql.execute("insert into tagvalues (tid,idx,mid,midx,value) values (" + tid + "," + tv.idx + "," + tv.mid + "," + tv.midx + "," + SQL.quote(tv.value) + ")");
+            sql.execute("insert into tagvalues (tid,idx,mid,midx,value) values (" + tid + "," + tv.id.idx + "," + tv.id.mid + "," + tv.id.midx + "," + SQL.quote(tv.value) + ")");
             tv.insert = false;
           } else {
-            sql.execute("update tagvalues set value=" + SQL.quote(tv.value) + " where idx=" + tv.idx + " and mid=" + tv.mid + " and midx=" + tv.midx + " and tid=" + tid);
+            sql.execute("update tagvalues set value=" + SQL.quote(tv.value) + " where idx=" + tv.id.idx + " and mid=" + tv.id.mid + " and midx=" + tv.id.midx + " and tid=" + tid);
           }
-          tagChanged(tv.idx, tv.value);
+          tagChanged(tv.id, tv.value, tv.oldValue);
         }
       } else {
         sql.execute("update tagvalues set value=" + SQL.quote(value) + " where idx=0 and mid=0 and midx=0 and tid=" + tid);
-        tagChanged(0, value);
+        tagChanged(null, oldValue, value);
+        oldValue = value;
       }
       dirty = false;
     }
@@ -61,13 +64,14 @@ public class LocalTag extends MonitoredTag {
 
   private void readValue(TagValue tv) {
     SQL sql = SQLService.getSQL();
-    String value = sql.select1value("select value from tagvalues where tid=" + tid + " and idx=" + tv.idx + " and mid=" + tv.mid + " and midx=" + tv.midx);
+    String value = sql.select1value("select value from tagvalues where tid=" + tid + " and idx=" + tv.id.idx + " and mid=" + tv.id.mid + " and midx=" + tv.id.midx);
     sql.close();
     if (value == null) {
       tv.insert = true;
       value = "0";
     }
     tv.value = value;
+    tv.oldValue = value;
   }
 
   public String getValue(TagAddr ta) {
@@ -77,13 +81,10 @@ public class LocalTag extends MonitoredTag {
         if (udt) {
           mid = mids.get(ta.member);
         }
-        TagID id = new TagID(ta.idx, mid, ta.midx);
+        TagID id = new TagID(tid, ta.idx, mid, ta.midx);
         TagValue tv = values.get(id);
         if (tv == null) {
-          tv = new TagValue();
-          tv.idx = ta.idx;
-          tv.mid = mid;
-          tv.midx = ta.midx;
+          tv = new TagValue(id);
           readValue(tv);
           values.put(id, tv);
         }
@@ -101,15 +102,15 @@ public class LocalTag extends MonitoredTag {
         if (udt) {
           mid = mids.get(ta.member);
         }
-        TagID id = new TagID(ta.idx, mid, ta.midx);
+        TagID id = new TagID(tid, ta.idx, mid, ta.midx);
         TagValue tv = values.get(id);
         if (tv == null) {
-          tv = new TagValue();
-          tv.idx = ta.idx;
-          tv.mid = mid;
-          tv.midx = ta.midx;
+          tv = new TagValue(id);
           readValue(tv);
           values.put(id, tv);
+        }
+        if (!tv.dirty) {
+          tv.oldValue = tv.value;
         }
         tv.dirty = true;
         tv.value = value;

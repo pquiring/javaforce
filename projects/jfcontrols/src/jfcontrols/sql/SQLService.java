@@ -11,6 +11,7 @@ import javaforce.*;
 import javaforce.controls.*;
 
 import jfcontrols.app.*;
+import jfcontrols.tags.*;
 
 public class SQLService {
   public static String dataPath;
@@ -18,16 +19,6 @@ public class SQLService {
   public static String logsPath;
   public static String derbyURI;
   public static String dbVersion = "0.0.1";
-
-  //0x00 - 0xff = standard data types
-  //0x100 - 0xfff = system data types
-  public static final int uid_sdt = 0x100;
-  public static final int uid_sys = 0x100;
-  public static final int uid_io = 0x101;
-  //0x1000 - 0x11ff = user data types
-  public static final int uid_user = 0x1000;
-  public static final int uid_alarms = 0x1000;
-  public static final int uid_user_end = 0x1100;
 
   public static SQL getSQL() {
     SQL sql = new SQL();
@@ -148,16 +139,16 @@ public class SQLService {
     sql.execute("insert into ctrls (cid,ip,type,speed) values (0,'127.0.0.1',0,0)");
 
     //create SDTs
-    int uid = uid_sys;
+    int uid = IDs.uid_sys;
     sql.execute("insert into udts (uid,name) values (" + uid + ",'system')");
     sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'scantime'," + TagType.int32 + ",false,false,true)");
     sql.execute("insert into tags (cid,name,type,array,unsigned,builtin) values (0,'system'," + uid + ",false,false,true)");
-    uid = uid_io;
+    uid = IDs.uid_io;
     sql.execute("insert into udts (uid,name) values (" + uid + ",'io')");
     //udtmems are created in hardware config panel
 
     //create default UDTs
-    uid = uid_alarms;
+    uid = IDs.uid_alarms;
     sql.execute("insert into udts (uid,name) values (" + uid + ",'alarms')");
     sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'text'," + TagType.string + ",false,false,true)");
     sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",1,'active'," + TagType.bit + ",false,false,true)");
@@ -166,7 +157,7 @@ public class SQLService {
     sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",4,'audio'," + TagType.int32 + ",false,false,false)");
 
     //create default user tags
-    uid = uid_alarms;
+    uid = IDs.uid_alarms;
     sql.execute("insert into tags (cid,name,type,array,unsigned,builtin) values (0,'alarms'," + uid + ",true,false,false)");
 
     //create panels

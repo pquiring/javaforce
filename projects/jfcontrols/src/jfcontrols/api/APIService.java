@@ -300,14 +300,14 @@ public class APIService extends Thread {
       LE.setuint16(reply, 8, error);
     }
 
-    public void tagChanged(TagBase tag, int idx, String value) {
+    public void tagChanged(TagBase tag, TagID id, String oldValue, String newValue) {
       int size = tag.getSize();
       int type = tag.getType();
       byte reply[] = new byte[8 + 2 + 2 + size];
       setupSuccess(reply, 0x0003, 0);  //read cmd
       LE.setuint16(reply, 8, 1);  //count
       LE.setuint16(reply, 10, type);  //type
-      TagBase.encode(type, tag.isUnsigned(), value, reply, 12);
+      TagBase.encode(type, tag.isUnsigned(), newValue, reply, 12);
       synchronized(writeLock) {
         try { os.write(reply); } catch (Exception e) {}
       }

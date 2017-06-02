@@ -62,9 +62,9 @@ public class IOTag extends MonitoredTag {
     TagValue tvs[] = values.values().toArray(new TagValue[values.size()]);
     for(int a=0;a<tvs.length;a++) {
       TagValue tv = tvs[a];
-      if (tv.mid != 0) continue;  //di only
-      tv.value = GPIO.read(dis[tv.mid]) ? "1" : "0";
-      tagChanged(tv.idx, tv.value);
+      if (tv.id.mid != 0) continue;  //di only
+      tv.value = GPIO.read(dis[tv.id.mid]) ? "1" : "0";
+      tagChanged(tv.id, tv.value, tv.oldValue);
     }
   }
 
@@ -74,31 +74,30 @@ public class IOTag extends MonitoredTag {
       TagValue tvs[] = values.values().toArray(new TagValue[values.size()]);
       for(int a=0;a<tvs.length;a++) {
         TagValue tv = tvs[a];
-        if (tv.mid != 1) continue;  //do only
-        GPIO.write(dos[tv.mid], !tv.value.equals("0"));
-        tagChanged(tv.idx, tv.value);
+        if (tv.id.mid != 1) continue;  //do only
+        GPIO.write(dos[tv.id.mid], !tv.value.equals("0"));
+        tagChanged(tv.id, tv.value, tv.oldValue);
       }
       dirty = false;
     }
   }
 
   private void readValue(TagValue tv) {
-    tv.value = GPIO.read(dis[tv.midx]) ? "1" : "0";
+    tv.value = GPIO.read(dis[tv.id.midx]) ? "1" : "0";
   }
 
   private void writeValue(TagValue tv) {
-    GPIO.write(dos[tv.midx], !tv.value.equals("0"));
+    GPIO.write(dos[tv.id.midx], !tv.value.equals("0"));
   }
 
   public String getValue(TagAddr ta) {
     if (!loaded) return "0";
     synchronized(arrayLock) {
       int mid = mids.get(ta.member);
-      TagID id = new TagID(ta.idx, mid, ta.midx);
+      TagID id = new TagID(0, ta.idx, mid, ta.midx);
       TagValue tv = values.get(id);
       if (tv == null) {
-        tv = new TagValue();
-        tv.idx = ta.idx;
+        tv = new TagValue(id);
         readValue(tv);
         values.put(id, tv);
       }
@@ -109,11 +108,10 @@ public class IOTag extends MonitoredTag {
   public void setValue(TagAddr ta, String value) {
     synchronized(arrayLock) {
       int mid = mids.get(ta.member);
-      TagID id = new TagID(ta.idx, mid, ta.midx);
+      TagID id = new TagID(0, ta.idx, mid, ta.midx);
       TagValue tv = values.get(id);
       if (tv == null) {
-        tv = new TagValue();
-        tv.idx = ta.idx;
+        tv = new TagValue(id);
         writeValue(tv);
         values.put(id, tv);
       }

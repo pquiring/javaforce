@@ -6,8 +6,12 @@ package jfcontrols.tags;
  */
 
 public class TagValue {
-  public int idx, mid, midx;
+  public TagValue(TagID id) {
+    this.id = id;
+  }
+  public TagID id;
   public boolean dirty;
   public String value;
+  public String oldValue;
   public boolean insert;
 }

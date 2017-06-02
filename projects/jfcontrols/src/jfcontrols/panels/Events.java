@@ -124,7 +124,7 @@ public class Events {
         break;
       }
       case "jfc_config_save": {
-        int uid = SQLService.uid_io;
+        int uid = IDs.uid_io;
         int idx = ((ComboBox)client.getPanel().getComponent("config_type")).getSelectedIndex();
         switch (idx) {
           case 0:  //none
@@ -160,18 +160,18 @@ public class Events {
       }
       case "jfc_udts_new": {
         synchronized(lock) {
-          int uid = SQLService.uid_user;
+          int uid = IDs.uid_user;
           do {
-            String inuse = sql.select1value("select id from udts where uid=" + uid + " or name='udt" + (uid-SQLService.uid_user+1) + "'");
+            String inuse = sql.select1value("select id from udts where uid=" + uid + " or name='udt" + (uid-IDs.uid_user+1) + "'");
             if (inuse == null) break;
             uid++;
-            if (uid == SQLService.uid_user_end) {
+            if (uid == IDs.uid_user_end) {
               JFLog.log("Error:Too many UDTs");
               break;
             }
           } while (true);
-          if (uid == SQLService.uid_user_end) break;
-          sql.execute("insert into udts (name, uid) values ('udt" + (uid-SQLService.uid_user+1) + "', " + uid + ")");
+          if (uid == IDs.uid_user_end) break;
+          sql.execute("insert into udts (name, uid) values ('udt" + (uid-IDs.uid_user+1) + "', " + uid + ")");
         }
         client.setPanel(Panels.getPanel("jfc_udts", client));
         break;

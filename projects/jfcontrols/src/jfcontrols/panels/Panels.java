@@ -65,7 +65,7 @@ public class Panels {
     TagAddr ta = new TagAddr();
     ta.name = "alarms";
     TagBase tag = TagsService.getTag(ta);
-    context.addListener(ta, tag, alarms, (_tag, _idx, _value, _cmp) -> {
+    context.addListener(ta, tag, alarms, (_tag, _idx, _oldValue, _newValue, _cmp) -> {
       updateAlarmCount(alarms);
     });
     updateAlarmCount(alarms);
@@ -136,10 +136,10 @@ public class Panels {
       if (cellTag != null) {
         c.setProperty("tag", cellTag);
         TagAddr ta = TagAddr.decode(cellTag);
-        context.addListener(ta, (MonitoredTag)TagsService.getTag(ta), c, (tag, idx, value, cmp) -> {
+        context.addListener(ta, (MonitoredTag)TagsService.getTag(ta), c, (tag, idx, oldValue, newValue, cmp) -> {
           if (cmp instanceof Label) {
             Label lbl = (Label)cmp;
-            lbl.setText(value);
+            lbl.setText(newValue);
           }
         });
       }
@@ -495,7 +495,7 @@ public class Panels {
         break;
       }
       case "jfc_udts": {
-        String data[][] = sql.select("select id,uid,name from udts where uid >= " + SQLService.uid_user);
+        String data[][] = sql.select("select id,uid,name from udts where uid >= " + IDs.uid_user);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_str_" + data[a][0], null, null, null));
@@ -520,7 +520,7 @@ public class Panels {
         break;
       }
       case "jfc_sdts": {
-        String data[][] = sql.select("select id,uid,name from udts where uid < " + SQLService.uid_user);
+        String data[][] = sql.select("select id,uid,name from udts where uid < " + IDs.uid_user);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_str_" + data[a][0], null, null, "readonly"));
@@ -673,7 +673,7 @@ public class Panels {
       }
       case "jfc_alarm_editor": {
         String tid = sql.select1value("select id from tags where name='alarms'");
-        String data[][] = sql.select("select id,tid,idx,value from tagvalues where mid=0 and tid=" + tid);
+        String data[][] = sql.select("select id,tid,idx,value from tagvalues where mid=" + IDs.alarm_mid_name + " and tid=" + tid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           cells.add(createCell("", 0, a, 2, 1, "label", null, data[a][2], null, null, null, null));
@@ -684,8 +684,8 @@ public class Panels {
       }
       case "jfc_alarm": {
         String tid = sql.select1value("select id from tags where name='alarms'");
-        String alarmname = sql.select1value("select value from tagvalues where mid=0 and tid=" + tid + " and idx=" + arg);
-        String alarmack = sql.select1value("select value from tagvalues where mid=2 and tid=" + tid + " and idx=" + arg);
+        String alarmname = sql.select1value("select value from tagvalues where mid=" + IDs.alarm_mid_name + " and tid=" + tid + " and idx=" + arg);
+        String alarmack = sql.select1value("select value from tagvalues where mid=" + IDs.alarm_mid_ack + " and tid=" + tid + " and idx=" + arg);
         if (alarmack == null) alarmack = "0";
         cells.add(createCell("", 2, 0, 2, 1, "label", null, alarmack.equals("1") ? "X" : "", null, null, null, null));
         cells.add(createCell("", 4, 0, 10, 1, "label", null, arg + ":" + alarmname, null, null, null, null));
@@ -766,7 +766,7 @@ public class Panels {
         TagAddr ta = new TagAddr();
         ta.name = "alarms";
         TagBase tag = TagsService.getTag(ta);
-        context.addListener(ta, tag, panel, (_tag, _idx, _value, _cmp) -> {
+        context.addListener(ta, tag, panel, (_tag, _idx, _oldValue, _newValue, _cmp) -> {
           updateAlarms(panel, panel.getClient());
         });
         break;
@@ -779,7 +779,7 @@ public class Panels {
         TagAddr ta = new TagAddr();
         ta.name = "alarms";
         TagBase tag = TagsService.getTag(ta);
-        context.addListener(ta, tag, panel, (_tag, _idx, _value, _cmp) -> {
+        context.addListener(ta, tag, panel, (_tag, _idx, _oldValue, _newValue, _cmp) -> {
           updateAlarmHistory(panel, panel.getClient());
         });
         client.setProperty("history", panel);
