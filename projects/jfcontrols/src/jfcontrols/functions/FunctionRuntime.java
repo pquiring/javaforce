@@ -9,6 +9,6 @@ import javaforce.*;
 
 import jfcontrols.tags.*;
 
-public class FunctionRuntime {
+public class FunctionRuntime extends TagsCache {
   public IndexTags it = new IndexTags();
 }

@@ -76,7 +76,7 @@ input {
 }
 
 .valigncenter {
-  align-items: center;
+  vertical-align: middle;
 }
 
 .row {
