@@ -12,15 +12,13 @@ import javaforce.controls.*;
 import jfcontrols.sql.SQLService;
 
 public abstract class TagBase {
-  protected int cid;
   protected int type;
   protected boolean unsigned;
   protected boolean array;
   protected boolean dirty;
   protected boolean udt;
 
-  public TagBase(int cid, int type, boolean unsigned, boolean array) {
-    this.cid = cid;
+  public TagBase(int type, boolean unsigned, boolean array) {
     this.type = type;
     this.unsigned = unsigned;
     this.array = array;

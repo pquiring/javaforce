@@ -18,8 +18,8 @@ public class LocalTag extends MonitoredTag {
   private HashMap<TagID, TagValue> values;
   private HashMap<String, Integer> mids;
 
-  public LocalTag(int cid, String name, int type, boolean unsigned, boolean array, SQL sql) {
-    super(cid, type, unsigned, array);
+  public LocalTag(String name, int type, boolean unsigned, boolean array, SQL sql) {
+    super(type, unsigned, array);
     tid = Integer.valueOf(sql.select1value("select id from tags where cid=0 and name=" + SQL.quote(name)));
     if (udt) {
       mids = new HashMap<>();

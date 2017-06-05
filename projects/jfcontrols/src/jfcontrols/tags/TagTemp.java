@@ -5,11 +5,13 @@ package jfcontrols.tags;
  * @author pquiring
  */
 
+import javaforce.controls.*;
+
 public class TagTemp extends TagBase {
   private String value;
 
   public TagTemp(String initValue) {
-    super(0, 0, false, false);
+    super(TagType.unknown, false, false);
     this.value = initValue;
   }
 

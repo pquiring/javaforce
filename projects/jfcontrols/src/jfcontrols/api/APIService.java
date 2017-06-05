@@ -200,7 +200,7 @@ public class APIService extends Thread {
             if (size != TagBase.getSize(type)) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
             q.sizes[a] = size;
             if (len < size) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
-            q.values[a] = TagBase.decode(type, tag.isArray(), data, pos); pos += size; len -= size;
+            q.values[a] = TagBase.decode(type, tag.isUnsigned(), data, pos); pos += size; len -= size;
           }
           //build query to function service
           FunctionService.addWriteQuery(q);

@@ -20,8 +20,8 @@ public class IOTag extends MonitoredTag {
   private int dis[];
   private int dos[];
 
-  public IOTag(int cid, String name, int type, boolean unsigned, boolean array, SQL sql) {
-    super(cid, type, unsigned, array);
+  public IOTag(String name, int type, boolean unsigned, boolean array, SQL sql) {
+    super(type, unsigned, array);
     mids = new HashMap<>();
     String data[][] = sql.select("select name,mid from udtmems where uid=" + type);
     for(int a=0;a<data.length;a++) {

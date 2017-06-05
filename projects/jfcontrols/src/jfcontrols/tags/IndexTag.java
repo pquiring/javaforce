@@ -12,7 +12,7 @@ public class IndexTag extends TagBase {
   private int idx;
 
   public IndexTag(IndexTags tags, int idx) {
-    super(0, TagType.int32, false, false);
+    super(TagType.int32, false, false);
     this.tags = tags;
     this.idx = idx;
   }

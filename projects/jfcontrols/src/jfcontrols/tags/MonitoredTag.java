@@ -14,8 +14,8 @@ public abstract class MonitoredTag extends TagBase {
   private ArrayList<TagBaseListener> listeners = new ArrayList<>();
   private Object lock = new Object();
 
-  public MonitoredTag(int cid, int type, boolean unsigned, boolean array) {
-    super(cid, type, unsigned, array);
+  public MonitoredTag(int type, boolean unsigned, boolean array) {
+    super(type, unsigned, array);
   }
 
   public abstract void updateRead(SQL sql);
