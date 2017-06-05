@@ -17,7 +17,7 @@ public class SET extends Logic {
     return "set";
   }
 
-  public String getCode() {
+  public String getCode(int types[]) {
     return "if (enabled) tags[1].setBoolean(true);\r\n";
   }
 

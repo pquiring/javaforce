@@ -8,13 +8,16 @@ package jfcontrols.functions;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.controls.*;
 
 import jfcontrols.logic.*;
 import jfcontrols.panels.*;
+import jfcontrols.tags.*;
 
 public class FunctionCompiler {
   public static String error;
   public static String generateFunction(int fid, SQL sql) {
+    TagsCache tags = new TagsCache();
     error = null;
     StringBuilder sb = new StringBuilder();
     sb.append("import jfcontrols.tags.*;\r\n");
@@ -71,19 +74,28 @@ public class FunctionCompiler {
             };
             break;
           case '#': {
+            int types[] = new int[node.tags.length];
             for(int t=1;t<node.tags.length;t++) {
               String tag = node.tags[t];
               char type = tag.charAt(0);
-              String ag = tag.substring(1);
+              String value = tag.substring(1);
+              int tagType = node.blk.getTagType(t);
               switch (type) {
                 case 't':
-                  sb.append("tags[" + t + "] = getTag(\"" + ag + "\");\r\n");
+                  sb.append("tags[" + t + "] = getTag(\"" + value + "\");\r\n");
+                  if (tagType == TagType.any) {
+                    types[t] = tags.getTag(value).getType();
+                  } else {
+                    types[t] = tagType;
+                  }
                   break;
                 case 'i':
-                  sb.append("tags[" + t + "] = new TagTemp(\"" + ag + "\");");
+                  sb.append("tags[" + t + "] = new TagTemp(\"" + value + "\");");
+                  types[t] = tagType;
                   break;
                 case 'f':
-                  func = ag;
+                  func = value;
+                  types[t] = TagType.function;
                   break;
               }
             }
@@ -91,9 +103,9 @@ public class FunctionCompiler {
             if (node.blk.getName().equals("Call")) {
               sb.append(node.blk.getCode(func));
             } else {
-              sb.append(node.blk.getCode());
+              sb.append(node.blk.getCode(types));
             }
-            sb.append("  en[eidx] = enabled;\r\n");
+            sb.append("\r\n  en[eidx] = enabled;\r\n");
             break;
           }
         }

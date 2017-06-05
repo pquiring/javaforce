@@ -12,7 +12,7 @@ import jfcontrols.tags.*;
 public abstract class Logic {
   public abstract boolean isBlock();
   public abstract String getName();
-  public abstract String getCode();
+  public abstract String getCode(int tagTypes[]);
   public String getCode(String func) {return null;}
 
   public abstract int getTagsCount();

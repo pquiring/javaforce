@@ -12,6 +12,11 @@ import javaforce.JFLog;
 public class TagsCache {
   private IndexTags it = new IndexTags();
 
+  public TagBase getTag(String name) {
+    TagAddr ta = decode(name);
+    return getTag(ta);
+  }
+
   public TagBase getTag(TagAddr ta) {
     if (ta.name.startsWith("[@]")) {
       int idx = Integer.valueOf(ta.name.substring(1));

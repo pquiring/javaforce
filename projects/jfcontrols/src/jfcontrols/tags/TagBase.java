@@ -66,6 +66,18 @@ public abstract class TagBase {
     return unsigned;
   }
 
+  public boolean isLong() {
+    return type == TagType.int64;
+  }
+
+  public boolean isFloat() {
+    return type == TagType.float32;
+  }
+
+  public boolean isDouble() {
+    return type == TagType.float64;
+  }
+
   public static String decode(int type, boolean unsigned, byte in[], int pos) {
     switch (type & 0xff) {
       case TagType.bit:

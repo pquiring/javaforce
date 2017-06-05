@@ -27,19 +27,17 @@ public class CALL extends Logic {
     return "Call";
   }
 
-  public String getCode() {return null;}
+  public String getCode(int types[]) {return null;}
 
   public String getCode(String func) {
     return "  if (enabled) enabled = func_" + func + ".code(tags);";
   }
 
   public int getTagsCount() {
-    //return types.length;
     return 1;
   }
 
   public int getTagType(int idx) {
-    //return types[idx];
     return TagType.function;
   }
 }

@@ -23,4 +23,6 @@ public class TagType {
   public static final int function = 32;
 
   public static final int any = 64;
+  public static final int anyint = 65;
+  public static final int anyfloat = 65;
 }
