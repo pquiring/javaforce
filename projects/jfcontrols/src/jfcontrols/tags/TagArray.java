@@ -7,7 +7,7 @@ package jfcontrols.tags;
 
 import javaforce.*;
 
-public class TagArray extends TagBase {
+public class TagArray extends MonitoredTag {
   private TagBaseArray tag;
   private TagAddr addr;
   public TagArray(TagBase tag, TagBaseArray base, TagAddr addr) {
@@ -26,5 +26,11 @@ public class TagArray extends TagBase {
   public TagBase getIndex(TagAddr ta) {
     JFLog.log("Error:ArrayTag.getIndex() called");
     return null;
+  }
+
+  public void updateRead(SQL sql) {
+  }
+
+  public void updateWrite(SQL sql) {
   }
 }

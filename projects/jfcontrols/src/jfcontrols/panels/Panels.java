@@ -134,13 +134,15 @@ public class Panels {
       String cellTag = cells[a][TAG];
       if (cellTag != null) {
         c.setProperty("tag", cellTag);
-        TagAddr ta = context.decode(cellTag);
-        context.addListener(ta, (MonitoredTag)context.getTag(ta), c, (tag, idx, oldValue, newValue, cmp) -> {
-          if (cmp instanceof Label) {
-            Label lbl = (Label)cmp;
-            lbl.setText(newValue);
-          }
-        });
+        if (!cellTag.startsWith("jfc_")) {
+          TagAddr ta = context.decode(cellTag);
+          context.addListener(ta, (MonitoredTag)context.getTag(ta), c, (tag, idx, oldValue, newValue, cmp) -> {
+            if (cmp instanceof Label) {
+              Label lbl = (Label)cmp;
+              lbl.setText(newValue);
+            }
+          });
+        }
       }
       c.setProperty("func", cells[a][FUNC]);
       c.setProperty("arg", cells[a][ARG]);
@@ -634,13 +636,15 @@ public class Panels {
         cells.add(createCell("", 0, 0, 1, 1, "button", "xon", "!image:xon", null, "jfc_rung_editor_add", null, null));
         cells.add(createCell("", 1, 0, 1, 1, "button", "xoff", "!image:xoff", null, "jfc_rung_editor_add", null, null));
         cells.add(createCell("", 2, 0, 1, 1, "button", "coil", "!image:coil", null, "jfc_rung_editor_add", null, null));
-        cells.add(createCell("", 2, 0, 1, 1, "button", "set", "!image:set", null, "jfc_rung_editor_add", null, null));
-        cells.add(createCell("", 2, 0, 1, 1, "button", "reset", "!image:reset", null, "jfc_rung_editor_add", null, null));
+        cells.add(createCell("", 3, 0, 1, 1, "button", "set", "!image:set", null, "jfc_rung_editor_add", null, null));
+        cells.add(createCell("", 4, 0, 1, 1, "button", "reset", "!image:reset", null, "jfc_rung_editor_add", null, null));
         break;
       }
       case "jfc_rung_math": {
         cells.add(createCell("", 0, 0, 1, 1, "button", "add", "Add", null, "jfc_rung_editor_add", null, null));
         cells.add(createCell("", 1, 0, 1, 1, "button", "sub", "Sub", null, "jfc_rung_editor_add", null, null));
+        cells.add(createCell("", 2, 0, 1, 1, "button", "mul", "Mul", null, "jfc_rung_editor_add", null, null));
+        cells.add(createCell("", 3, 0, 1, 1, "button", "div", "Div", null, "jfc_rung_editor_add", null, null));
         break;
       }
       case "jfc_rung_func": {

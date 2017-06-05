@@ -25,6 +25,12 @@ public class TagsCache {
     }
     if (ta.cid == 0) {
       LocalTag tag = (LocalTag)TagsService.getLocalTag(ta.name);
+/*
+      if (tag == null) {
+        JFLog.log("Error:Unable to find local tag:" + ta.name);
+        return null;
+      }
+*/
       if (tag.isArray()) {
         return tag.getIndex(ta);
       } else {
