@@ -633,6 +633,7 @@ public class Events {
   }
   public static void edit(TextField tf) {
     WebUIClient client = tf.getClient();
+    ClientContext context = (ClientContext)client.getProperty("context");
     String red = (String)tf.getProperty("red");
     if (red != null) {
       tf.setBackColor("#fff");
@@ -656,11 +657,12 @@ public class Events {
       sql.execute(stmt);
       sql.close();
     } else {
-      TagsService.write(tag, tf.getText(), (IndexTags)client.getProperty("indextags"));
+      context.write(tag, tf.getText());
     }
   }
   public static void changed(ComboBox cb) {
     WebUIClient client = cb.getClient();
+    ClientContext context = (ClientContext)client.getProperty("context");
     String tag = (String)cb.getProperty("tag");
     if (tag == null) return;
     String value = cb.getSelectedValue();
@@ -678,11 +680,12 @@ public class Events {
       sql.execute("update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id);
       sql.close();
     } else {
-      TagsService.write(tag, value, (IndexTags)client.getProperty("indextags"));
+      context.write(tag, value);
     }
   }
   public static void changed(CheckBox cb) {
     WebUIClient client = cb.getClient();
+    ClientContext context = (ClientContext)client.getProperty("context");
     String tag = (String)cb.getProperty("tag");
     if (tag == null) return;
     boolean set = cb.isSelected();
@@ -700,7 +703,7 @@ public class Events {
       sql.execute("update " + table + " set " + col + "=" + (set ? "true" : "false") + " where id=" + id);
       sql.close();
     } else {
-      TagsService.write(tag, set ? "0" : "1", (IndexTags)client.getProperty("indextags"));
+      context.write(tag, set ? "0" : "1");
     }
   }
   public static void clickEvents(Component c) {
@@ -788,29 +791,29 @@ public class Events {
   }
   public static void doCommand(String cmd, String args[], WebUIClient client) {
     //TODO : these commands need to be processed by the FunctionService thread - in between scan cycles
-    JFLog.log("cmd=" + cmd);
+    ClientContext context = (ClientContext)client.getProperty("context");
     switch (cmd) {
       case "toggleBit": {
-        TagAddr ta = TagAddr.decode(args[0], (IndexTags)client.getProperty("indextags"));
-        TagBase tag = TagsService.getTag(ta, (IndexTags)client.getProperty("indextags"));
+        TagAddr ta = context.decode(args[0]);
+        TagBase tag = context.getTag(ta);
         if (tag != null) {
-          tag.setValue(ta, tag.getValue(ta).equals("0") ? "1" : "0");
+          tag.setValue(tag.getValue().equals("0") ? "1" : "0");
         }
         break;
       }
       case "setBit": {
-        TagAddr ta = TagAddr.decode(args[0], (IndexTags)client.getProperty("indextags"));
-        TagBase tag = TagsService.getTag(ta, (IndexTags)client.getProperty("indextags"));
+        TagAddr ta = context.decode(args[0]);
+        TagBase tag = context.getTag(ta);
         if (tag != null) {
-          tag.setValue(ta, "1");
+          tag.setValue("1");
         }
         break;
       }
       case "resetBit": {
-        TagAddr ta = TagAddr.decode(args[0], (IndexTags)client.getProperty("indextags"));
-        TagBase tag = TagsService.getTag(ta, (IndexTags)client.getProperty("indextags"));
+        TagAddr ta = context.decode(args[0]);
+        TagBase tag = context.getTag(ta);
         if (tag != null) {
-          tag.setValue(ta, "0");
+          tag.setValue("0");
         }
         break;
       }

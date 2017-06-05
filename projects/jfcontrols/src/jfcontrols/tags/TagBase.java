@@ -25,9 +25,11 @@ public abstract class TagBase {
     this.udt = type >= IDs.uid_sdt;
   }
 
-  public abstract String getValue(TagAddr addr);
+  public abstract String getValue();
 
-  public abstract void setValue(TagAddr addr, String value);
+  public abstract void setValue(String value);
+
+  public abstract TagBase getIndex(TagAddr ta);
 
   public int getSize() {
     return getSize(type);
@@ -119,5 +121,41 @@ public abstract class TagBase {
 
   public String toString() {
     return "Tag:" + type;
+  }
+
+  public void setBoolean(boolean value) {
+    setValue(value ? "1" : "0");
+  }
+
+  public int getInt() {
+    return Integer.valueOf(getValue());
+  }
+
+  public void setInt(int value) {
+    setValue(Integer.toString(value));
+  }
+
+  public long getLong() {
+    return Long.valueOf(getValue());
+  }
+
+  public void setLong(long value) {
+    setValue(Long.toString(value));
+  }
+
+  public float getFloat() {
+    return Float.valueOf(getValue());
+  }
+
+  public void setFloat(float value) {
+    setValue(Float.toString(value));
+  }
+
+  public double getDouble() {
+    return Double.valueOf(getValue());
+  }
+
+  public void setDouble(double value) {
+    setValue(Double.toString(value));
   }
 }

@@ -33,12 +33,16 @@ public class RemoteTag extends MonitoredTag {
     }
   }
 
-  public String getValue(TagAddr addr) {
+  public String getValue() {
     return value;
   }
 
-  public void setValue(TagAddr addr, String value) {
+  public void setValue(String value) {
     dirty = true;
     this.value = value;
+  }
+
+  public TagBase getIndex(TagAddr ta) {
+    return null;
   }
 }

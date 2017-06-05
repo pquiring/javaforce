@@ -69,6 +69,7 @@ public class APIService extends Thread {
     private OutputStream os;
     private Object writeLock = new Object();
     private ArrayList<String> subs = new ArrayList<String>();
+    private TagsCache tags = new TagsCache();
 
     private int clientVersion = 0x100;
 
@@ -149,8 +150,8 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            q.addr[a] = TagAddr.decode(tagName, null);
-            tag = TagsService.getTag(q.addr[a], null);
+            q.addr[a] = tags.decode(tagName);
+            tag = tags.getTag(q.addr[a]);
             q.tags[a] = tag;
             size += 4;  //type / size
             if (tag == null) {
@@ -191,8 +192,8 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            TagAddr ta = TagAddr.decode(tagName, null);
-            tag = TagsService.getTag(ta, null);
+            TagAddr ta = tags.decode(tagName);
+            tag = tags.getTag(ta);
             q.tags[a] = tag;
             if (len < 2) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
             type = LE.getuint16(data, pos); len -= 2; pos += 2;
@@ -221,8 +222,8 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            TagAddr ta = TagAddr.decode(tagName, null);
-            mtag = (MonitoredTag)TagsService.getTag(ta, null);
+            TagAddr ta = tags.decode(tagName);
+            mtag = (MonitoredTag)tags.getTag(ta);
             if (mtag == null) {
               if (!subs.contains(tagName)) {
                 mtag.addListener(this);
@@ -246,8 +247,8 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            TagAddr ta = TagAddr.decode(tagName, null);
-            mtag = (MonitoredTag)TagsService.getTag(ta, null);
+            TagAddr ta = tags.decode(tagName);
+            mtag = (MonitoredTag)tags.getTag(ta);
             if (mtag == null) {
               if (subs.contains(tagName)) {
                 mtag.removeListener(this);

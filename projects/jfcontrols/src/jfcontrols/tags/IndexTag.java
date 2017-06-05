@@ -5,6 +5,7 @@ package jfcontrols.tags;
  * @author pquiring
  */
 
+import javaforce.*;
 import javaforce.controls.*;
 
 public class IndexTag extends TagBase {
@@ -17,11 +18,16 @@ public class IndexTag extends TagBase {
     this.idx = idx;
   }
 
-  public String getValue(TagAddr addr) {
+  public String getValue() {
     return Integer.toString(tags.getIndex(idx));
   }
 
-  public void setValue(TagAddr addr, String value) {
+  public void setValue(String value) {
     tags.setIndex(idx, Integer.valueOf(value));
+  }
+
+  public TagBase getIndex(TagAddr ta) {
+    JFLog.log("Error:IndexTag.getIndex() called");
+    return null;
   }
 }

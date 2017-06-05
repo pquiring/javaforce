@@ -26,46 +26,27 @@ public class TagsService extends Thread {
   private HashMap<String, TagBase> localTags = new HashMap<>();
   private HashMap<String, TagBase> remoteTags = new HashMap<>();
 
-  public static String read(String tag, IndexTags it) {
-    TagAddr ta = TagAddr.decode(tag, it);
-    return getTag(ta, it).getValue(ta);
-  }
-
-  public static void write(String tag, String value, IndexTags it) {
-    TagAddr ta = TagAddr.decode(tag, it);
-    getTag(ta, it).setValue(ta, value);
-  }
-
-  public static TagBase getTag(TagAddr ta, IndexTags it) {
-    return service.findTag(ta, it);
-  }
-
-  private TagBase findTag(TagAddr ta, IndexTags it) {
-    if (ta.name.startsWith("[@]")) {
-      int idx = Integer.valueOf(ta.name.substring(1));
-      if (it == null) return null;
-      return it.getTag(idx);
-    }
-    if (ta.tempValue != null) {
-      return new TagTemp(ta.tempValue);
-    }
+  public static TagBase getLocalTag(String name) {
     synchronized(lock_tags) {
-      if (ta.cid == 0) {
-        return localTags.get(ta.name);
-      } else {
-        return remoteTags.get(ta.name);
-      }
+      return service.localTags.get(name);
+    }
+  }
+
+  public static TagBase getRemoteTag(String name) {
+    synchronized(lock_tags) {
+      return service.remoteTags.get(name);
     }
   }
 
   public static void main() {
+    TagsCache tags = new TagsCache();
     synchronized(lock_main) {
       new TagsService().start();
       try {lock_main.wait();} catch (Exception e) {}
     }
     //monitor alarms
-    TagAddr ta = TagAddr.decode("alarms", null);
-    MonitoredTag alarms = (MonitoredTag)TagsService.getTag(ta, null);
+    TagAddr ta = tags.decode("alarms");
+    MonitoredTag alarms = (MonitoredTag)tags.getTag(ta);
     alarms.addListener((tag, id, oldValue, newValue) -> {
       if (id.mid != IDs.alarm_mid_active) return;
       if (oldValue.equals("0") && newValue.equals("1")) {

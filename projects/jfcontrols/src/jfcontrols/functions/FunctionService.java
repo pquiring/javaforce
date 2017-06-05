@@ -30,6 +30,7 @@ public class FunctionService extends Thread {
   public void run() {
     SQL sql = SQLService.getSQL();
     Class mainCls, initCls;
+    TagsCache tags = new TagsCache();
     File mainFile = new File("work/class/func_1.class");
     boolean compile = false;
     if (!mainFile.exists()) {
@@ -77,8 +78,8 @@ public class FunctionService extends Thread {
       JFLog.log(e);
     }
     TagsService.doWrites();
-    TagAddr ta = TagAddr.decode("system.scantime", null);
-    TagBase tag = TagsService.getTag(ta, null);
+    TagAddr ta = tags.decode("system.scantime");
+    TagBase tag = tags.getTag(ta);
     while (active) {
       long begin = System.currentTimeMillis();
       TagsService.doReads();
@@ -100,7 +101,7 @@ public class FunctionService extends Thread {
       long end = System.currentTimeMillis();
       long scantime = end - begin;
       if (!Main.debug) {
-        tag.setValue(ta, Long.toString(scantime));
+        tag.setValue(Long.toString(scantime));
       }
 //      System.out.println("scantime=" + scantime);
     }
@@ -131,7 +132,7 @@ public class FunctionService extends Thread {
     synchronized(rapi) {
       try {rapi.wait(10 * 1000);} catch (Exception e) {return;}
       for(int a=0;a<q.count;a++) {
-        q.values[a] = q.tags[a].getValue(q.addr[a]);
+        q.values[a] = q.tags[a].getValue();
       }
     }
   }
@@ -140,7 +141,7 @@ public class FunctionService extends Thread {
     synchronized(wapi) {
       try {wapi.wait(10 * 1000);} catch (Exception e) {return;}
       for(int a=0;a<q.count;a++) {
-        q.tags[a].setValue(q.addr[a], q.values[a]);
+        q.tags[a].setValue(q.values[a]);
       }
     }
   }

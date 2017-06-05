@@ -10,7 +10,7 @@ import java.util.*;
 import javaforce.*;
 import jfcontrols.sql.SQLService;
 
-public class LocalTag extends MonitoredTag {
+public class LocalTag extends MonitoredTag implements TagBaseArray {
   private int tid;
   private Object arrayLock = new Object();
   private String value;
@@ -74,6 +74,14 @@ public class LocalTag extends MonitoredTag {
     tv.oldValue = value;
   }
 
+  public String getValue() {
+    if (array || udt) {
+      JFLog.log("Error:LocalTag array:must call getIndex()");
+      return null;
+    }
+    return getValue(null);
+  }
+
   public String getValue(TagAddr ta) {
     if (array || udt) {
       synchronized(arrayLock) {
@@ -93,6 +101,15 @@ public class LocalTag extends MonitoredTag {
     } else {
       return value;
     }
+  }
+
+  public void setValue(String value) {
+    if (array || udt) {
+      JFLog.log("Error:LocalTag array:must call getIndex()");
+      return;
+    }
+    this.value = value;
+    dirty = true;
   }
 
   public void setValue(TagAddr ta, String value) {
@@ -119,5 +136,9 @@ public class LocalTag extends MonitoredTag {
       this.value = value;
     }
     dirty = true;
+  }
+
+  public TagArray getIndex(TagAddr ta) {
+    return new TagArray(this, this, ta);
   }
 }

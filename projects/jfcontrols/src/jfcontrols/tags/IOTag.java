@@ -12,7 +12,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.pi.GPIO;
 
-public class IOTag extends MonitoredTag {
+public class IOTag extends MonitoredTag implements TagBaseArray {
   private Object arrayLock = new Object();
   private HashMap<TagID, TagValue> values;
   private HashMap<String, Integer> mids;
@@ -119,5 +119,16 @@ public class IOTag extends MonitoredTag {
       tv.value = value;
     }
     dirty = true;
+  }
+
+  public TagBase getIndex(TagAddr ta) {
+    return new TagArray(this, this, ta);
+  }
+
+  public String getValue() {
+    return null;
+  }
+
+  public void setValue(String value) {
   }
 }

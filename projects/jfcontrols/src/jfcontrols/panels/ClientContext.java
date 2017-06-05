@@ -18,6 +18,7 @@ public class ClientContext extends Thread {
   private volatile boolean active;
   private Object lock = new Object();
   private ArrayList<Monitor> stack = new ArrayList<>();
+  private TagsCache tags = new TagsCache();
 
   public HashMap<String, Component> alarms = new HashMap<>();
   public int lastAlarmID;
@@ -25,6 +26,28 @@ public class ClientContext extends Thread {
   public ClientContext(WebUIClient client) {
     this.client = client;
   }
+
+  public TagBase getTag(String name) {
+    TagAddr ta = tags.decode(name);
+    return tags.getTag(ta);
+  }
+
+  public TagBase getTag(TagAddr ta) {
+    return tags.getTag(ta);
+  }
+
+  public String read(String name) {
+    return tags.read(name);
+  }
+
+  public void write(String name, String value) {
+    tags.write(name, value);
+  }
+
+  public TagAddr decode(String name) {
+    return tags.decode(name);
+  }
+
   private static class Monitor implements TagBaseListener {
     public TagAddr ta;
     public MonitoredTag tag;
