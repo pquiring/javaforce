@@ -10,51 +10,52 @@ import javaforce.*;
 import jfcontrols.tags.*;
 
 public class FunctionRuntime {
-  public static String getValue(TagAddr addr) {
-    TagBase tag = TagsService.getTag(addr);
+  public IndexTags it = new IndexTags();
+  public String getValue(TagAddr addr) {
+    TagBase tag = TagsService.getTag(addr, it);
     return tag.getValue(addr);
   }
-  public static void setValue(TagAddr addr, String value) {
-    TagBase tag = TagsService.getTag(addr);
+  public void setValue(TagAddr addr, String value) {
+    TagBase tag = TagsService.getTag(addr, it);
     tag.setValue(addr, value);
   }
-  public static boolean getBoolean(TagAddr addr) {
+  public boolean getBoolean(TagAddr addr) {
     return !getValue(addr).equals("0");
   }
 
-  public static void setBoolean(TagAddr addr, boolean value) {
+  public void setBoolean(TagAddr addr, boolean value) {
     setValue(addr, value ? "1" : "0");
   }
 
-  public static int getInt(TagAddr addr) {
+  public int getInt(TagAddr addr) {
     return Integer.valueOf(getValue(addr));
   }
 
-  public static void setInt(TagAddr addr, int value) {
+  public void setInt(TagAddr addr, int value) {
     setValue(addr, Integer.toString(value));
   }
 
-  public static long getLong(TagAddr addr) {
+  public long getLong(TagAddr addr) {
     return Long.valueOf(getValue(addr));
   }
 
-  public static void setLong(TagAddr addr, long value) {
+  public void setLong(TagAddr addr, long value) {
     setValue(addr, Long.toString(value));
   }
 
-  public static float getFloat(TagAddr addr) {
+  public float getFloat(TagAddr addr) {
     return Float.valueOf(getValue(addr));
   }
 
-  public static void setFloat(TagAddr addr, float value) {
+  public void setFloat(TagAddr addr, float value) {
     setValue(addr, Float.toString(value));
   }
 
-  public static double getDouble(TagAddr addr) {
+  public double getDouble(TagAddr addr) {
     return Double.valueOf(getValue(addr));
   }
 
-  public static void setDouble(TagAddr addr, double value) {
+  public void setDouble(TagAddr addr, double value) {
     setValue(addr, Double.toString(value));
   }
 }

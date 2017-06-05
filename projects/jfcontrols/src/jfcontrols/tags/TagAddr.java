@@ -19,7 +19,7 @@ public class TagAddr {
     ta.tempValue = value;
     return ta;
   }
-  public static TagAddr decode(String addr) {
+  public static TagAddr decode(String addr, IndexTags it) {
     // addr = {c# '#'} name {[idx]} {. member {[idx]}}
     // {} = optional
     TagAddr ta = new TagAddr();
@@ -47,13 +47,23 @@ public class TagAddr {
     }
     idx = ta.name.indexOf('[');
     if (idx != -1) {
-      ta.idx = Integer.valueOf(ta.name.substring(idx+1, ta.name.length() - 1));
+      String tagidx = ta.name.substring(idx+1, ta.name.length() - 1);
+      if (tagidx.startsWith("[@]")) {
+        ta.idx = it.getIndex(Integer.valueOf(tagidx.substring(1)));
+      } else {
+        ta.idx = Integer.valueOf(tagidx);
+      }
       ta.name = ta.name.substring(0, idx);
     }
     if (ta.member != null) {
       idx = ta.member.indexOf('[');
       if (idx != -1) {
-        ta.midx = Integer.valueOf(ta.member.substring(idx+1, ta.member.length() - 1));
+        String tagidx = ta.member.substring(idx+1, ta.member.length() - 1);
+        if (tagidx.startsWith("[@]")) {
+          ta.midx = it.getIndex(Integer.valueOf(tagidx.substring(1)));
+        } else {
+          ta.midx = Integer.valueOf(tagidx);
+        }
         ta.member = ta.member.substring(0, idx);
       }
     }

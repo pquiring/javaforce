@@ -34,6 +34,7 @@ public class Panels {
   public static Panel getPanel(String pname, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
     context.clear();
+    client.setProperty("indextags", new IndexTags());
     return buildPanel(new Panel(), pname, client);
   }
   public static Panel buildPanel(Panel panel, String pname, WebUIClient client) {
@@ -64,7 +65,7 @@ public class Panels {
     ClientContext context = (ClientContext)client.getProperty("context");
     TagAddr ta = new TagAddr();
     ta.name = "alarms";
-    TagBase tag = TagsService.getTag(ta);
+    TagBase tag = TagsService.getTag(ta, null);
     context.addListener(ta, tag, alarms, (_tag, _idx, _oldValue, _newValue, _cmp) -> {
       updateAlarmCount(alarms);
     });
@@ -108,8 +109,8 @@ public class Panels {
       String compType = cells[a][COMP];
       String tagName = cells[a][TAG];
       if (tagName != null && !tagName.startsWith("jfc_") && tagName.length() > 0) {
-        TagAddr ta = TagAddr.decode(tagName);
-        jfcontrols.tags.TagBase tag = TagsService.getTag(ta);
+        TagAddr ta = TagAddr.decode(tagName, (IndexTags)client.getProperty("indextags"));
+        jfcontrols.tags.TagBase tag = TagsService.getTag(ta, (IndexTags)client.getProperty("indextags"));
         if (tag == null) {
           JFLog.log("Error:Tag not found:" + tagName);
         } else {
@@ -135,8 +136,8 @@ public class Panels {
       String cellTag = cells[a][TAG];
       if (cellTag != null) {
         c.setProperty("tag", cellTag);
-        TagAddr ta = TagAddr.decode(cellTag);
-        context.addListener(ta, (MonitoredTag)TagsService.getTag(ta), c, (tag, idx, oldValue, newValue, cmp) -> {
+        TagAddr ta = TagAddr.decode(cellTag, (IndexTags)client.getProperty("indextags"));
+        context.addListener(ta, (MonitoredTag)TagsService.getTag(ta, (IndexTags)client.getProperty("indextags")), c, (tag, idx, oldValue, newValue, cmp) -> {
           if (cmp instanceof Label) {
             Label lbl = (Label)cmp;
             lbl.setText(newValue);
@@ -210,9 +211,9 @@ public class Panels {
     switch (name) {
       case "label": return getLabel(v);
       case "button": return getButton(v);
-      case "textfield": return getTextField(v);
-      case "combobox": return getComboBox(v);
-      case "checkbox": return getCheckBox(v);
+      case "textfield": return getTextField(v, client);
+      case "combobox": return getComboBox(v, client);
+      case "checkbox": return getCheckBox(v, client);
       case "table": return getTable(v, container, r, client);
       case "overlay": return getOverlay(v);
       case "image": return getImage(v);
@@ -253,7 +254,7 @@ public class Panels {
     });
     return b;
   }
-  private static TextField getTextField(String v[]) {
+  private static TextField getTextField(String v[], WebUIClient client) {
     SQL sql = SQLService.getSQL();
     String tag = v[TAG];
     String text = v[TEXT];
@@ -270,7 +271,7 @@ public class Panels {
         }
         text = sql.select1value("select " + col + " from " + table + " where id=" + id);
       } else {
-        text = TagsService.read(tag);
+        text = TagsService.read(tag, (IndexTags)client.getProperty("indextags"));
       }
     }
     if (text == null) text = "";
@@ -281,7 +282,7 @@ public class Panels {
     sql.close();
     return b;
   }
-  private static ComboBox getComboBox(String v[]) {
+  private static ComboBox getComboBox(String v[], WebUIClient client) {
     ComboBox cb = new ComboBox();
     String name = v[NAME];
     String tag = v[TAG];
@@ -321,7 +322,7 @@ public class Panels {
         }
         value = sql.select1value("select " + col + " from " + table + " where id=" + id);
       } else {
-        value = TagsService.read(tag);
+        value = TagsService.read(tag, (IndexTags)client.getProperty("indextags"));
       }
     }
     sql.close();
@@ -347,7 +348,6 @@ public class Panels {
         case "group_type":
           cb.addChangedListener((c) -> {
             ComboBox groups = (ComboBox)c;
-            WebUIClient client = c.getClient();
             TabPanel tabs = (TabPanel)client.getProperty("groups");
             tabs.setTabIndex(groups.getSelectedIndex());
           });
@@ -355,7 +355,6 @@ public class Panels {
         case "jfc_function":
           cb.addChangedListener((c) -> {
             ComboBox funcs = (ComboBox)c;
-            WebUIClient client = c.getClient();
             Node node = (Node)c.getProperty("node");
             node.parent.tags[1] = funcs.getSelectedValue();
           });
@@ -364,7 +363,7 @@ public class Panels {
     }
     return cb;
   }
-  private static CheckBox getCheckBox(String v[]) {
+  private static CheckBox getCheckBox(String v[], WebUIClient client) {
     String tag = v[TAG];
     String text = v[TEXT];
     String value = "0";
@@ -385,7 +384,7 @@ public class Panels {
           value = value.equals("false") ? "0" : "1";
         }
       } else {
-        value = TagsService.read(tag);
+        value = TagsService.read(tag, (IndexTags)client.getProperty("indextags"));
       }
     }
     sql.close();
@@ -765,7 +764,7 @@ public class Panels {
         updateAlarms(panel, client);
         TagAddr ta = new TagAddr();
         ta.name = "alarms";
-        TagBase tag = TagsService.getTag(ta);
+        TagBase tag = TagsService.getTag(ta, (IndexTags)client.getProperty("indextags"));
         context.addListener(ta, tag, panel, (_tag, _idx, _oldValue, _newValue, _cmp) -> {
           updateAlarms(panel, panel.getClient());
         });
@@ -778,7 +777,7 @@ public class Panels {
         updateAlarmHistory(panel, client);
         TagAddr ta = new TagAddr();
         ta.name = "alarms";
-        TagBase tag = TagsService.getTag(ta);
+        TagBase tag = TagsService.getTag(ta, (IndexTags)client.getProperty("indextags"));
         context.addListener(ta, tag, panel, (_tag, _idx, _oldValue, _newValue, _cmp) -> {
           updateAlarmHistory(panel, panel.getClient());
         });

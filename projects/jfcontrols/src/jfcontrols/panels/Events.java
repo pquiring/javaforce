@@ -656,7 +656,7 @@ public class Events {
       sql.execute(stmt);
       sql.close();
     } else {
-      TagsService.write(tag, tf.getText());
+      TagsService.write(tag, tf.getText(), (IndexTags)client.getProperty("indextags"));
     }
   }
   public static void changed(ComboBox cb) {
@@ -678,7 +678,7 @@ public class Events {
       sql.execute("update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id);
       sql.close();
     } else {
-      TagsService.write(tag, value);
+      TagsService.write(tag, value, (IndexTags)client.getProperty("indextags"));
     }
   }
   public static void changed(CheckBox cb) {
@@ -700,7 +700,7 @@ public class Events {
       sql.execute("update " + table + " set " + col + "=" + (set ? "true" : "false") + " where id=" + id);
       sql.close();
     } else {
-      TagsService.write(tag, set ? "0" : "1");
+      TagsService.write(tag, set ? "0" : "1", (IndexTags)client.getProperty("indextags"));
     }
   }
   public static void clickEvents(Component c) {
@@ -729,7 +729,7 @@ public class Events {
       if (i1 == -1 || i2 == -1) continue;
       String cmd = cmd_args_.substring(0, i1);
       String args[] = cmd_args_.substring(i1+1, i2).split(",");
-      doCommand(cmd, args);
+      doCommand(cmd, args, c.getClient());
     }
   }
   public static void press(Component c) {
@@ -756,7 +756,7 @@ public class Events {
       int i2 = cmd_args_.indexOf(")");
       String cmd = cmd_args_.substring(0, i1);
       String args[] = cmd_args_.substring(i1+1, i2).split(",");
-      doCommand(cmd, args);
+      doCommand(cmd, args, c.getClient());
     }
   }
   public static void release(Component c) {
@@ -783,32 +783,32 @@ public class Events {
       int i2 = cmd_args_.indexOf(")");
       String cmd = cmd_args_.substring(0, i1);
       String args[] = cmd_args_.substring(i1+1, i2).split(",");
-      doCommand(cmd, args);
+      doCommand(cmd, args, c.getClient());
     }
   }
-  public static void doCommand(String cmd, String args[]) {
+  public static void doCommand(String cmd, String args[], WebUIClient client) {
     //TODO : these commands need to be processed by the FunctionService thread - in between scan cycles
     JFLog.log("cmd=" + cmd);
     switch (cmd) {
       case "toggleBit": {
-        TagAddr ta = TagAddr.decode(args[0]);
-        TagBase tag = TagsService.getTag(ta);
+        TagAddr ta = TagAddr.decode(args[0], (IndexTags)client.getProperty("indextags"));
+        TagBase tag = TagsService.getTag(ta, (IndexTags)client.getProperty("indextags"));
         if (tag != null) {
           tag.setValue(ta, tag.getValue(ta).equals("0") ? "1" : "0");
         }
         break;
       }
       case "setBit": {
-        TagAddr ta = TagAddr.decode(args[0]);
-        TagBase tag = TagsService.getTag(ta);
+        TagAddr ta = TagAddr.decode(args[0], (IndexTags)client.getProperty("indextags"));
+        TagBase tag = TagsService.getTag(ta, (IndexTags)client.getProperty("indextags"));
         if (tag != null) {
           tag.setValue(ta, "1");
         }
         break;
       }
       case "resetBit": {
-        TagAddr ta = TagAddr.decode(args[0]);
-        TagBase tag = TagsService.getTag(ta);
+        TagAddr ta = TagAddr.decode(args[0], (IndexTags)client.getProperty("indextags"));
+        TagBase tag = TagsService.getTag(ta, (IndexTags)client.getProperty("indextags"));
         if (tag != null) {
           tag.setValue(ta, "0");
         }

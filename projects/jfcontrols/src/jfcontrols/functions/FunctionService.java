@@ -77,8 +77,8 @@ public class FunctionService extends Thread {
       JFLog.log(e);
     }
     TagsService.doWrites();
-    TagAddr ta = TagAddr.decode("system.scantime");
-    TagBase tag = TagsService.getTag(ta);
+    TagAddr ta = TagAddr.decode("system.scantime", null);
+    TagBase tag = TagsService.getTag(ta, null);
     while (active) {
       long begin = System.currentTimeMillis();
       TagsService.doReads();
