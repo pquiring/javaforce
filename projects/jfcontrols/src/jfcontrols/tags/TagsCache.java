@@ -89,7 +89,13 @@ public class TagsCache {
       if (tagidx.startsWith("[@]")) {
         ta.idx = it.getIndex(Integer.valueOf(tagidx.substring(1)));
       } else {
-        ta.idx = Integer.valueOf(tagidx);
+        char ch = tagidx.charAt(0);
+        if (ch >= '0' && ch <= '9') {
+          ta.idx = Integer.valueOf(tagidx);
+        } else {
+          TagBase tag = getTag(tagidx);
+          ta.idx = tag.getInt();
+        }
       }
       ta.name = ta.name.substring(0, idx);
     }
@@ -100,7 +106,13 @@ public class TagsCache {
         if (tagidx.startsWith("[@]")) {
           ta.midx = it.getIndex(Integer.valueOf(tagidx.substring(1)));
         } else {
-          ta.midx = Integer.valueOf(tagidx);
+          char ch = tagidx.charAt(0);
+          if (ch >= '0' && ch <= '9') {
+            ta.midx = Integer.valueOf(tagidx);
+          } else {
+            TagBase tag = getTag(tagidx);
+            ta.midx = tag.getInt();
+          }
         }
         ta.member = ta.member.substring(0, idx);
       }
