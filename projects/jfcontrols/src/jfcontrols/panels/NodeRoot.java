@@ -8,11 +8,14 @@ package jfcontrols.panels;
 import javaforce.*;
 import javaforce.webui.*;
 
+import jfcontrols.tags.*;
+
 public class NodeRoot extends Node {
   public int fid;  //func id
   public int rid;  //rung id
   public boolean changed;
   public TextField comment;
+  public TagsCache tags = new TagsCache();
   public NodeRoot(int fid, int rid) {
     this.root = this;
     this.type = 'r'; //root node
@@ -56,7 +59,7 @@ public class NodeRoot extends Node {
             if (child.type == 'T') {
               TextField tf = (TextField)child.comp;
               String tag = tf.getText();
-              if (tag.length() == 0) {
+              if (tag.length() == 0 || tags.getTag(tag) == null) {
                 Component focus = (Component)client.getProperty("focus");
                 if (focus != null) {
                   focus.setBorder(false);
