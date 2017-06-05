@@ -5,6 +5,7 @@ import javaforce.JFLog;
 /** Tags cache
  *
  * Each function and panel has it's own tag cache.
+ * IndexTags @nnn are unique to each tag cache.
  *
  * @author pquiring
  */
@@ -25,19 +26,22 @@ public class TagsCache {
     }
     if (ta.cid == 0) {
       LocalTag tag = (LocalTag)TagsService.getLocalTag(ta.name);
-/*
       if (tag == null) {
         JFLog.log("Error:Unable to find local tag:" + ta.name);
         return null;
       }
-*/
       if (tag.isArray()) {
         return tag.getIndex(ta);
       } else {
         return tag;
       }
     } else {
-      return TagsService.getRemoteTag(ta.name);
+      TagBase tag = TagsService.getRemoteTag(ta.name);
+      if (tag == null) {
+        JFLog.log("Error:Unable to find remote tag:" + ta.name + ":cid=" + ta.cid);
+        return null;
+      }
+      return tag;
     }
   }
 

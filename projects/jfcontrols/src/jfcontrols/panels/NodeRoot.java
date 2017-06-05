@@ -38,6 +38,7 @@ public class NodeRoot extends Node {
           bid++;
           break;
       }
+      sb.append('|');
       node = node.next;
     }
     return sb.toString();

@@ -135,6 +135,10 @@ public abstract class TagBase {
     return "Tag:" + type;
   }
 
+  public boolean getBoolean() {
+    return !getValue().equals("0");
+  }
+
   public void setBoolean(boolean value) {
     setValue(value ? "1" : "0");
   }

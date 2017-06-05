@@ -30,7 +30,7 @@ public class CALL extends Logic {
   public String getCode(int types[]) {return null;}
 
   public String getCode(String func) {
-    return "  if (enabled) enabled = func_" + func + ".code(tags);";
+    return "  if (enabled) enabled = new func_" + func + "().code(tags);";
   }
 
   public int getTagsCount() {

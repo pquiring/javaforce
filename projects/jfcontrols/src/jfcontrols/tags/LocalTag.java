@@ -32,6 +32,7 @@ public class LocalTag extends MonitoredTag implements TagBaseArray {
       values = new HashMap<>();
     } else {
       value = sql.select1value("select value from tagvalues where idx=0 and mid=0 and midx=0 and tid=" + tid);
+      if (value == null) value = "0";
       oldValue = value;
     }
   }

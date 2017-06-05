@@ -64,8 +64,16 @@ public class FunctionService extends Thread {
     }
     Method main, init;
     try {
-      main = mainCls.getMethod("code", TagAddr[].class);
-      init = initCls.getMethod("code", TagAddr[].class);
+      main = mainCls.getMethod("code", TagBase[].class);
+      init = initCls.getMethod("code", TagBase[].class);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return;
+    }
+    Object mainObj, initObj;
+    try {
+      mainObj = mainCls.newInstance();
+      initObj = initCls.newInstance();
     } catch (Exception e) {
       JFLog.log(e);
       return;
@@ -73,7 +81,7 @@ public class FunctionService extends Thread {
     active = true;
     TagsService.doReads();
     try {
-      init.invoke(null, new Object[] {null});
+      init.invoke(initObj, new Object[] {null});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -90,7 +98,10 @@ public class FunctionService extends Thread {
         fapi.notifyAll();
       }
       try {
-        main.invoke(null, new Object[] {null});
+        main.invoke(mainObj, new Object[] {null});
+      } catch (InvocationTargetException ite) {
+        Throwable e = ite.getTargetException();
+        JFLog.log(e);
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -158,7 +169,7 @@ public class FunctionService extends Thread {
       }
       Method main;
       try {
-        main = cls.getMethod("code", TagAddr[].class);
+        main = cls.getMethod("code", TagBase[].class);
       } catch (Exception e) {
         JFLog.log(e);
         return;
