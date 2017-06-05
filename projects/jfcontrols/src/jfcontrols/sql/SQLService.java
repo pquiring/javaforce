@@ -73,6 +73,7 @@ public class SQLService {
     sql.execute("create table listdata (id int not null generated always as identity (start with 1, increment by 1) primary key, lid int, value int, text varchar(128))");
     sql.execute("create table config (id varchar(32) unique, value varchar(512))");
     sql.execute("create table alarmhistory (id int not null generated always as identity (start with 1, increment by 1) primary key, idx int, when varchar(22))");
+    sql.execute("create table logics (id varchar(32) unique, gid varchar(32))");
 
     //create users
     sql.execute("insert into users (name, pass) values ('admin', 'admin')");
@@ -128,15 +129,23 @@ public class SQLService {
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",0,'label')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",1,'button')");
 
-    sql.execute("insert into lists (name) values ('jfc_rung_groups')");
-    id = sql.select1value("select id from lists where name='jfc_rung_groups'");
-    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",0,'bits')");
-    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",1,'math')");
-    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",2,'func')");
-    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",3,'prog')");
-
     //create local controller
     sql.execute("insert into ctrls (cid,ip,type,speed) values (0,'127.0.0.1',0,0)");
+
+    //create logic blocks
+    sql.execute("insert into logics (id,gid) values ('xon','bit')");
+    sql.execute("insert into logics (id,gid) values ('xoff','bit')");
+    sql.execute("insert into logics (id,gid) values ('coil','bit')");
+    sql.execute("insert into logics (id,gid) values ('set','bit')");
+    sql.execute("insert into logics (id,gid) values ('reset','bit')");
+
+    sql.execute("insert into logics (id,gid) values ('add','math')");
+    sql.execute("insert into logics (id,gid) values ('sub','math')");
+    sql.execute("insert into logics (id,gid) values ('mul','math')");
+    sql.execute("insert into logics (id,gid) values ('div','math')");
+
+    sql.execute("insert into logics (id,gid) values ('call','func')");
+    sql.execute("insert into logics (id,gid) values ('sleep','func')");
 
     //create SDTs
     int uid = IDs.uid_sys;
@@ -342,8 +351,8 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",3,1,1,1,'button','','!image:fork','jfc_rung_editor_fork')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,1,1,'button','','!image:save','jfc_rung_editor_save')");
 
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",7,1,3,1,'combobox','group_type','','jfc_rung_groups')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",11,1,16,1,'table','jfc_rung_groups')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",7,1,3,1,'combobox','group_type','','jfc_logic_groups')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",11,1,16,1,'table','jfc_logic_groups')");
 //    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,2,0,0,'table','jfc_rung_args')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,0,0,0,'autoscroll','jfc_rung_editor')");
 

@@ -293,6 +293,8 @@ public class Panels {
     String pairs[][];
     if (arg.equals("jfc_function")) {
       pairs = sql.select("select id, name from funcs");
+    } else if (arg.equals("jfc_logic_groups")) {
+      pairs = sql.select("select gid,gid from logics group by gid order by gid");
     } else if (arg.equals("jfc_tag_type_udt")) {
       arg = "jfc_tag_type";
       String lid = sql.select1value("select id from lists where name=" + SQL.quote(arg));
@@ -620,39 +622,27 @@ public class Panels {
         }
         break;
       }
-      case "jfc_rung_groups": {
+      case "jfc_logic_groups": {
         TabPanel tabs = new TabPanel();
         tabs.setTabsVisible(false);
         tabs.setBorders(false);
-        tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_bits", null, null, null, null, null), null, new Rectangle(r), client)), "");
-        tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_math", null, null, null, null, null), null, new Rectangle(r), client)), "");
-        tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_func", null, null, null, null, null), null, new Rectangle(r), client)), "");
-        tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_rung_prog", null, null, null, null, null), null, new Rectangle(r), client)), "");
+        String groups[] = sql.select1col("select gid from logics group by gid order by gid");
+        for(int a=0;a<groups.length;a++) {
+          tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_logics", null, null, null, groups[a], null), null, new Rectangle(r), client)), "");
+        }
         setCellSize(tabs, r);
         client.setProperty("groups", tabs);
         return tabs;
       }
-      case "jfc_rung_bits": {
-        cells.add(createCell("", 0, 0, 1, 1, "button", "xon", "!image:xon", null, "jfc_rung_editor_add", null, null));
-        cells.add(createCell("", 1, 0, 1, 1, "button", "xoff", "!image:xoff", null, "jfc_rung_editor_add", null, null));
-        cells.add(createCell("", 2, 0, 1, 1, "button", "coil", "!image:coil", null, "jfc_rung_editor_add", null, null));
-        cells.add(createCell("", 3, 0, 1, 1, "button", "set", "!image:set", null, "jfc_rung_editor_add", null, null));
-        cells.add(createCell("", 4, 0, 1, 1, "button", "reset", "!image:reset", null, "jfc_rung_editor_add", null, null));
-        break;
-      }
-      case "jfc_rung_math": {
-        cells.add(createCell("", 0, 0, 1, 1, "button", "add", "Add", null, "jfc_rung_editor_add", null, null));
-        cells.add(createCell("", 1, 0, 1, 1, "button", "sub", "Sub", null, "jfc_rung_editor_add", null, null));
-        cells.add(createCell("", 2, 0, 1, 1, "button", "mul", "Mul", null, "jfc_rung_editor_add", null, null));
-        cells.add(createCell("", 3, 0, 1, 1, "button", "div", "Div", null, "jfc_rung_editor_add", null, null));
-        break;
-      }
-      case "jfc_rung_func": {
-        cells.add(createCell("", 0, 0, 1, 1, "button", "call", "Call", null, "jfc_rung_editor_add", null, null));
-        break;
-      }
-      case "jfc_rung_prog": {
-        cells.add(createCell("", 0, 0, 1, 1, "button", "sleep", "Sleep", null, "jfc_rung_editor_add", null, null));
+      case "jfc_logics": {
+        String items[][] = sql.select("select id from logics where gid=" + SQL.quote(arg));
+        for(int a=0;a<items.length;a++) {
+          String desc = items[a][0];
+          if (Images.getImage(desc) != null) {
+            desc = "!image:" + desc;
+          }
+          cells.add(createCell("", a, 0, 1, 1, "button", items[a][0], desc, null, "jfc_rung_editor_add", null, null));
+        }
         break;
       }
       case "jfc_rung_viewer": {
