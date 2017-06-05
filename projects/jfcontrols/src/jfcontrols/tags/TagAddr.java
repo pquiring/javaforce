@@ -13,12 +13,6 @@ public class TagAddr {
   public int idx = -1;
   public String member;
   public int midx = -1;
-  public String tempValue;
-  public static TagAddr tempValue(String value) {
-    TagAddr ta = new TagAddr();
-    ta.tempValue = value;
-    return ta;
-  }
 
   public String toString() {
     if (member != null) {

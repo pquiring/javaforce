@@ -24,7 +24,7 @@ public class FunctionCompiler {
     sb.append("    boolean en[] = new boolean[256];\r\n");
     sb.append("    int eidx = 0;\r\n");
     sb.append("    en[eidx] = enabled;\r\n");
-    sb.append("    TagAddr tags[] = new TagAddr[33];\r\n");
+    sb.append("    TagBase tags[] = new TagBase[33];\r\n");
 
     //append code from rungs
     String rungs[][] = sql.select("select logic from rungs where fid=" + fid);
@@ -77,10 +77,10 @@ public class FunctionCompiler {
               String ag = tag.substring(1);
               switch (type) {
                 case 't':
-                  sb.append("tags[" + t + "] = TagAddr.decode(\"" + ag + "\");\r\n");
+                  sb.append("tags[" + t + "] = getTag(\"" + ag + "\");\r\n");
                   break;
                 case 'i':
-                  sb.append("tags[" + t + "] = TagAddr.tempValue(\"" + ag + "\");");
+                  sb.append("tags[" + t + "] = new TagTemp(\"" + ag + "\");");
                   break;
                 case 'f':
                   func = ag;

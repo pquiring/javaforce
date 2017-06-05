@@ -20,7 +20,7 @@ public class ADD extends Logic {
   }
 
   public String getCode() {
-    return "if (enabled) setInt(tag[3], getInt(tag[1]) + getInt(tag[2]) );\r\n";
+    return "if (enabled) tags[3].setInt(tags[1].getInt() + tags[2].getInt());\r\n";
   }
 
   public int getTagsCount() {
