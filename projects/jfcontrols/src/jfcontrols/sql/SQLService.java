@@ -139,6 +139,8 @@ public class SQLService {
     sql.execute("insert into logics (id,gid) values ('set','bit')");
     sql.execute("insert into logics (id,gid) values ('reset','bit')");
 
+    sql.execute("insert into logics (id,gid) values ('compare','cmp_eq')");
+
     sql.execute("insert into logics (id,gid) values ('add','math')");
     sql.execute("insert into logics (id,gid) values ('sub','math')");
     sql.execute("insert into logics (id,gid) values ('mul','math')");
@@ -146,6 +148,9 @@ public class SQLService {
 
     sql.execute("insert into logics (id,gid) values ('call','func')");
     sql.execute("insert into logics (id,gid) values ('sleep','func')");
+    sql.execute("insert into logics (id,gid) values ('do','func')");
+    sql.execute("insert into logics (id,gid) values ('break','func')");
+    sql.execute("insert into logics (id,gid) values ('while','func')");
 
     //create SDTs
     int uid = IDs.uid_sys;

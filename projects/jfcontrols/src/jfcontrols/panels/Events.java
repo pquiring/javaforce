@@ -452,6 +452,7 @@ public class Events {
         //insert rung before current one
         JFLog.log("rid=" + rid);
         sql.execute("update rungs set rid=rid+1 where fid=" + fid + " and rid>=" + rid);
+        sql.execute("update blocks set rid=rid+1 where fid=" + fid + " and rid>=" + rid);
         sql.execute("insert into rungs (fid,rid,comment,logic) values (" + fid + "," + rid + ",'Comment','h')");
         ArrayList<String[]> cells = new ArrayList<String[]>();
         ArrayList<Node> nodes = new ArrayList<Node>();

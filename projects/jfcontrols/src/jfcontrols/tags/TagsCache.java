@@ -24,6 +24,10 @@ public class TagsCache {
       if (it == null) return null;
       return it.getTag(idx);
     }
+    char ch = ta.name.charAt(0);
+    if ((ch >= '0' && ch <= '9') || ch == '-') {
+      return new TagTemp(ta.name);
+    }
     if (ta.cid == 0) {
       LocalTag tag = (LocalTag)TagsService.getLocalTag(ta.name);
       if (tag == null) {
