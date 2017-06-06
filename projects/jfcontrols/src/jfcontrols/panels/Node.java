@@ -312,6 +312,15 @@ public class Node {
     return 1;
   }
 
+  public boolean validInsert() {
+    if (parent != null) return false;
+    switch (type) {
+      case 'h':
+        return true;
+    }
+    return false;
+  }
+
   public boolean validFork() {
     if (parent != null) return false;
     switch (type) {
@@ -441,13 +450,16 @@ public class Node {
     }
 //    dest.insertNode('h', src.x + 1, src.y);
 
-    dest.insertLinkUpper(dest, 'd', dest.x, dest.y + 1);
+    Node end = dest.insertLinkUpper(dest, 'd', dest.x, dest.y + 1);
     if (dest.type == 'd') {
       dest.setType('b', "w_b");
     }
     dest.insertLinkUpper(src, 'c', src.x, src.y + 1);
     if (src.type == 'c') {
       src.setType('a', "w_a");
+    }
+    if (end.next == null || end.type != 'h') {
+      end.insertNode('h', end.x + 1, end.y);
     }
     client.setProperty("fork", null);
     node = dest.root;

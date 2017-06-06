@@ -516,6 +516,13 @@ public class Events {
           Panels.error(client, "Rung contains a solo component");
           break;
         }
+        while (node != null && !node.validInsert()) {
+          node = node.next;
+        }
+        if (node == null) {
+          JFLog.log("Error:no valid node found");
+          break;
+        }
         x = node.x + node.getDelta();
         y = node.y;
         String name = c.getName();
