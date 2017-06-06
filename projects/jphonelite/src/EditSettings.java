@@ -2228,7 +2228,7 @@ public class EditSettings extends javax.swing.JDialog {
   }//GEN-LAST:event_selectOutRingtoneActionPerformed
 
   private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
-    JF.openURL("http://javaforce.sourceforge.net/help.php");
+    JF.openURL("http://jphonelite.sourceforge.net/help.php");
   }//GEN-LAST:event_helpActionPerformed
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

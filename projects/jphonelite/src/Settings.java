@@ -100,6 +100,7 @@ public class Settings {
     try {
       current = new Settings();
       XML xml = new XML();
+      xml.setUseUniqueNames(false);
       xml.read(new FileInputStream(fn));
       xml.writeClass(current);
 
@@ -152,6 +153,7 @@ public class Settings {
     String fn = JF.getUserPath() + "/.jphone.xml";
     try {
       XML xml = new XML();
+      xml.setUseUniqueNames(false);
       xml.readClass("settings", current);
       xml.write(new FileOutputStream(fn));
     } catch (Exception e) {

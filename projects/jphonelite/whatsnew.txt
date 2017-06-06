@@ -1,4 +1,6 @@
 CHANGELOG:
+6-6-2017 : v1.12.0 released
+  - fix : online help URL has moved
 3-7-2017 : v1.11.0 released
   - updated ffmpeg support
 6-2-2015 : v1.10.0 released
