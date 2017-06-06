@@ -13,7 +13,7 @@ public class COIL extends Logic {
     return false;
   }
 
-  public String getName() {
+  public String getDesc() {
     return "Coil";
   }
 

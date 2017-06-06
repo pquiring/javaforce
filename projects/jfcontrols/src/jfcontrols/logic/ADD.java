@@ -13,7 +13,7 @@ public class ADD extends Logic {
     return true;
   }
 
-  public String getName() {
+  public String getDesc() {
     return "Add";
   }
 

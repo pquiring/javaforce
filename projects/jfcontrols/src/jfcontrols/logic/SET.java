@@ -13,7 +13,7 @@ public class SET extends Logic {
     return false;
   }
 
-  public String getName() {
+  public String getDesc() {
     return "set";
   }
 

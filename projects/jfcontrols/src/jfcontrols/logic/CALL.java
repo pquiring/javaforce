@@ -23,7 +23,7 @@ public class CALL extends Logic {
     return true;
   }
 
-  public String getName() {
+  public String getDesc() {
     return "Call";
   }
 

@@ -17,7 +17,7 @@ public class DO extends Logic {
     return false;
   }
 
-  public String getName() {
+  public String getDesc() {
     return "Do";
   }
 

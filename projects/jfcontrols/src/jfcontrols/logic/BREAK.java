@@ -17,7 +17,7 @@ public class BREAK extends Logic {
     return false;
   }
 
-  public String getName() {
+  public String getDesc() {
     return "Break";
   }
 

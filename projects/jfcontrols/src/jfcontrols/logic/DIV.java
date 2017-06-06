@@ -13,7 +13,7 @@ public class DIV extends Logic {
     return true;
   }
 
-  public String getName() {
+  public String getDesc() {
     return "Divide";
   }
 

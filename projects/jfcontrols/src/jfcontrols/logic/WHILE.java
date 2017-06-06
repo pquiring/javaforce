@@ -1,10 +1,10 @@
 package jfcontrols.logic;
 
-/** While
+/** While (cond) {
  *
- * Ends a looping block of code and jumps to last Do if enabled.
+ * Starts a looping block of code.
  *
- * See Do for starting block of code.
+ * See End_While for ending block of code.
  *
  * @author pquiring
  */
@@ -17,12 +17,12 @@ public class WHILE extends Logic {
     return false;
   }
 
-  public String getName() {
-    return "While";
+  public String getDesc() {
+    return "while () {";
   }
 
   public String getCode(int types[]) {
-    return "} while(enabled);";
+    return "while(enabled) {";
   }
 
   public int getTagsCount() {

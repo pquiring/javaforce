@@ -13,8 +13,8 @@ public class CMP_EQ extends Logic {
     return true;
   }
 
-  public String getName() {
-    return "Cmp_Eq";
+  public String getDesc() {
+    return "Cmp ==";
   }
 
   public String getCode(int types[]) {

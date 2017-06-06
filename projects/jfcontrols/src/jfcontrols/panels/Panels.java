@@ -177,6 +177,8 @@ public class Panels {
             c.setDisabled(true);
           } else if (styles[b].equals("disabled")) {
             c.setDisabled(true);
+          } else if (styles[b].equals("border")) {
+            c.setBorder(true);
           } else {
             String f[] = styles[b].split("=");
             if (f.length == 2) {
@@ -641,7 +643,7 @@ public class Panels {
           if (Images.getImage(desc) != null) {
             desc = "!image:" + desc;
           }
-          cells.add(createCell("", a, 0, 1, 1, "button", items[a][0], desc, null, "jfc_rung_editor_add", null, null));
+          cells.add(createCell("", a, 0, 1, 1, "button", items[a][0], desc, null, "jfc_rung_editor_add", null, "border"));
         }
         break;
       }
@@ -1405,7 +1407,7 @@ public class Panels {
             x++;
 
             if (create) {
-              newCells.add(createCell(null, x, y, 3, 1, "label", null, blk.getName(), null, null, null, null));
+              newCells.add(createCell(null, x, y, 3, 1, "label", null, blk.getDesc(), null, null, null, null));
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);

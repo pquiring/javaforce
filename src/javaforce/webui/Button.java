@@ -11,27 +11,22 @@ import javaforce.JFLog;
 
 public class Button extends Component {
   private String text;
-  private Image img;
+  private Resource img;
   public Button(String text) {
     this.text = text;
     setClass("button");
   }
   public Button(Resource res) {
-    JFLog.log("Button::res=" + res);
-    img = new Image(res);
+    img = res;
     setClass("button");
-    setStyle("border", "0px");
-    setStyle("padding", "0px");
   }
   public String html() {
+    if (img != null) {
+      return "<img" + getAttrs() +  " src='/static/" + img.id + "'>";
+    }
     StringBuilder sb = new StringBuilder();
     sb.append("<button" + getAttrs() + ">");
-    if (img != null) {
-      sb.append(img.html());
-    }
-    if (text != null) {
-      sb.append(text);
-    }
+    sb.append(text);
     sb.append("</button>");
     return sb.toString();
   }

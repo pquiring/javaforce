@@ -38,7 +38,7 @@ public class NodeRoot extends Node {
           sb.append('|');
           break;
         case '#':
-          sql.execute("insert into blocks (fid,rid,bid,name,tags) values (" + fid + "," + rid + "," + bid + ",'" + node.blk.getName().toUpperCase() + "'," + SQL.quote(node.getTags()) + ")");
+          sql.execute("insert into blocks (fid,rid,bid,name,tags) values (" + fid + "," + rid + "," + bid + ",'" + node.blk.getName() + "'," + SQL.quote(node.getTags()) + ")");
           sb.append(Integer.toString(bid));
           bid++;
           sb.append('|');
