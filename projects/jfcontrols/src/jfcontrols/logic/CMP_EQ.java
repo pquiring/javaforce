@@ -14,7 +14,7 @@ public class CMP_EQ extends Logic {
   }
 
   public String getDesc() {
-    return "Cmp ==";
+    return "Compare ==";
   }
 
   public String getCode(int types[]) {
