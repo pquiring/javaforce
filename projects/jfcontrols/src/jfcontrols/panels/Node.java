@@ -157,7 +157,7 @@ public class Node {
     node.blk = blk;
     node.tags = tags;
     for(int a=0;a<tags.length;a++) {
-      if (tags[a] == null) tags[a] = "";
+      if (tags[a] == null) tags[a] = "t";
     }
     return node;
   }

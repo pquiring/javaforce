@@ -101,4 +101,14 @@ public class NodeRoot extends Node {
     }
     return true;
   }
+  public boolean hasLast() {
+    Node node = this;
+    while (node != null) {
+      if (node.blk != null) {
+        if (node.blk.isLast()) return true;
+      }
+      node = node.next;
+    }
+    return false;
+  }
 }

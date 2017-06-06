@@ -61,6 +61,10 @@ public class Panels {
     alarms.setBorder(true);
     setCellSize(alarms, new Rectangle(1,0,1,1));
     table.add(alarms, 1, 0);
+    Label title = getLabel(new String[] {null, null, null, null, null, "label", "jfc_title", pname.startsWith("jfc_") ? pname.substring(4) : pname, null, null, null, null});
+    title.setName("jfc_title");
+    setCellSize(title, new Rectangle(2,0,16,1));
+    table.add(title, 2, 0, 16, 1);
     ClientContext context = (ClientContext)client.getProperty("context");
     TagAddr ta = new TagAddr();
     ta.name = "alarms";
@@ -1567,7 +1571,7 @@ public class Panels {
     logic.setTableSize(mx, my);
   }
   public static void error(WebUIClient client, String msg) {
-    Label lbl = (Label)client.getPanel().getComponent("jfc_error");
-    if (lbl != null) lbl.setText(msg);
+    Label lbl = (Label)client.getPanel().getComponent("jfc_title");
+    lbl.setText(msg);
   }
 }

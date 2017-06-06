@@ -540,6 +540,10 @@ public class Events {
             Panels.error(client, "That component must be last");
             break;
           }
+          if (root.hasLast()) {
+            Panels.error(client, "Rung already has a last component");
+            break;
+          }
         }
         if (node.type != 'h') {
           node = node.insertNode('h', x, y);

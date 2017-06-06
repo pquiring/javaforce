@@ -224,7 +224,6 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",8,1,2,1,'label','','Speed')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,1,3,1,'button','','New','jfc_ctrl_new')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,1,3,1,'button','','Save','jfc_ctrl_save')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",20,1,10,1,'label','jfc_error','')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_ctrls')");
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_config', false, true)");
@@ -242,7 +241,6 @@ public class SQLService {
       sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",4,3,3,1,'textfield','','jfc_config_value_str_ip_dns')");
     }
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,1,3,1,'button','','Save','jfc_config_save')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",20,1,10,1,'label','jfc_error','')");
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_alarm_editor', false, true)");
     id = sql.select1value("select id from panels where name='jfc_alarm_editor'");
@@ -342,7 +340,6 @@ public class SQLService {
     id = sql.select1value("select id from panels where name='jfc_funcs'");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,7,1,'label','','Name')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,1,3,1,'button','','New','jfc_funcs_new')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",20,1,10,1,'label','jfc_error','')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_funcs')");
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_func_editor', false, true)");
