@@ -8,6 +8,6 @@ package jfcontrols.panels;
 import javaforce.webui.*;
 
 public class Rung {
-  public Node root;
+  public NodeRoot root;
   public Table table;
 }

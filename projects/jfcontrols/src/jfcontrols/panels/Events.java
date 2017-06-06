@@ -487,6 +487,7 @@ public class Events {
         }
         if (rid == -1) break;
         client.setProperty("rung", Integer.toString(rid));
+        client.setProperty("focus", null);
         client.setPanel(Panels.getPanel("jfc_rung_editor", client));
         break;
       }
@@ -581,11 +582,10 @@ public class Events {
       }
 
       case "jfc_rung_editor_save": {
-        Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor_table");
         String fid = (String)client.getProperty("func");
         String rid = (String)client.getProperty("rung");
-        Component comp = logic.get(0, 0, false);
-        NodeRoot root = ((Node)comp.getProperty("node")).root;
+        Rung rung = (Rung)client.getProperty("rungObj");
+        NodeRoot root = rung.root;
         if (!root.isValid(client)) {
           break;
         }

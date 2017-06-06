@@ -653,6 +653,8 @@ public class Node {
     if (upper != null) sb.append(":upper=" + upper.type);
     if (lower != null) sb.append(":lower=" + lower.type);
     if (parent != null) sb.append(":parent=" + parent.type);
+    sb.append("@");
+    sb.append(Integer.toHexString(hashCode()));
     return sb.toString();
   }
 }

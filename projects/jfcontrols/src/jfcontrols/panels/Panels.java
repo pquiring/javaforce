@@ -658,13 +658,6 @@ public class Panels {
         nodes.add(new NodeRoot(fid, -1));
         break;
       }
-      case "jfc_rung_editor": {
-        int fid = Integer.valueOf((String)client.getProperty("func"));
-        int rid = Integer.valueOf((String)client.getProperty("rung"));
-        String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
-        buildRung(data, cells, nodes, sql, false, fid);
-        break;
-      }
       case "jfc_alarm_editor": {
         String tid = sql.select1value("select id from tags where name='alarms'");
         String data[][] = sql.select("select id,tid,idx,value from tagvalues where mid=" + IDs.alarm_mid_name + " and tid=" + tid);
@@ -746,7 +739,8 @@ public class Panels {
         ArrayList<String[]> cells = new ArrayList<String[]>();
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
         ArrayList<Node> nodes = new ArrayList<Node>();
-        buildRung(data, cells, nodes, sql, false, fid);
+        Rung rung = buildRung(data, cells, nodes, sql, false, fid);
+        client.setProperty("rungObj", rung);
         Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, nodes.toArray(new Node[nodes.size()]), sql);
         table.setName(name + "_table");
         panel.add(table);
@@ -1031,6 +1025,7 @@ public class Panels {
     String blocks[][] = sql.select("select bid,name,tags from blocks where fid=" + fid + " and rid=" + rid);
     ArrayList<Node> nodes = new ArrayList<Node>();
     NodeRoot root = new NodeRoot(fid, rid);
+    JFLog.log("new NodeRoot() " + root);
 
     //add rung title / comment
     String style = readonly ? "readonly" : null;
@@ -1046,6 +1041,7 @@ public class Panels {
     Node node = root;
     for(int p=0;p<parts.length;p++) {
       String part = parts[p];
+      if (part.length() == 0) continue;
       switch (part) {
         case "t": {
           nodes.add(node = node.insertNode('t', x, y));
@@ -1170,7 +1166,7 @@ public class Panels {
     int x = 0;
     int y = 1;
     Node node = root.next;
-    JFLog.log("buildNodes");
+    JFLog.log("buildNodes:" + root);
     boolean create;
     String style = readonly ? "readonly" : null;
     String textfield = readonly ? "label" : "textfield";

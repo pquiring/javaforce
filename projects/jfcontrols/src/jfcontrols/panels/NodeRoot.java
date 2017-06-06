@@ -23,6 +23,7 @@ public class NodeRoot extends Node {
     this.rid = rid;
   }
   public String saveLogic(SQL sql) {
+    JFLog.log("NodeRoot.saveLogic() " + this);
     int bid = 0;
     StringBuilder sb = new StringBuilder();
     Node node = next, child;
@@ -34,15 +35,19 @@ public class NodeRoot extends Node {
         case 'c':
         case 'd':
           sb.append(node.type);
+          sb.append('|');
           break;
         case '#':
           sql.execute("insert into blocks (fid,rid,bid,name,tags) values (" + fid + "," + rid + "," + bid + ",'" + node.blk.getName().toUpperCase() + "'," + SQL.quote(node.getTags()) + ")");
           sb.append(Integer.toString(bid));
           bid++;
+          sb.append('|');
           break;
       }
-      sb.append('|');
       node = node.next;
+    }
+    if (sb.length() == 0) {
+      sb.append('h');
     }
     return sb.toString();
   }
