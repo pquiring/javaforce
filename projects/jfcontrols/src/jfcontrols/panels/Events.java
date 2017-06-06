@@ -592,11 +592,21 @@ public class Events {
         sql.execute("delete from blocks where fid=" + fid + " and rid=" + rid);
         String str = root.saveLogic(sql);
         JFLog.log("logic=" + str);
+        if (str == null) {
+          Panels.error(client, "Failed to save!");
+          break;
+        }
         sql.execute("update rungs set logic='" + str + "' where rid=" + rid + " and fid=" + fid);
-        //recompile logic
-        FunctionService.generateFunction(Integer.valueOf(fid), sql);
-        FunctionService.compileProgram(sql);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
+        break;
+      }
+
+      case "jfc_func_editor_compile": {
+        String fid = (String)client.getProperty("func");
+        FunctionService.generateFunction(Integer.valueOf(fid), sql);
+        if (!FunctionService.compileProgram(sql)) {
+          Panels.error(client, "Compile failed!");
+        }
         break;
       }
 

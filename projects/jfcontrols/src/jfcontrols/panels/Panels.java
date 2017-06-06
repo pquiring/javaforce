@@ -1570,6 +1570,6 @@ public class Panels {
   }
   public static void error(WebUIClient client, String msg) {
     Label lbl = (Label)client.getPanel().getComponent("jfc_error");
-    lbl.setText(msg);
+    if (lbl != null) lbl.setText(msg);
   }
 }
