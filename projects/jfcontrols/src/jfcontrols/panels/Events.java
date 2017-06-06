@@ -149,11 +149,12 @@ public class Events {
         synchronized(lock) {
           int id = 1;
           do {
-            String inuse = sql.select1value("select name from panels where name='panel" + id + "'");
-            if (inuse == null) break;
+            String inuse1 = sql.select1value("select name from panels where name='panel" + id + "'");
+            String inuse2 = sql.select1value("select display from panels where display='panel" + id + "'");
+            if (inuse1 == null && inuse2 == null) break;
             id++;
           } while (true);
-          sql.execute("insert into panels (name, popup, builtin) values ('panel" + id + "', false, false)");
+          sql.execute("insert into panels (name, display, popup, builtin) values ('panel" + id + "', 'panel" + id + "', false, false)");
         }
         client.setPanel(Panels.getPanel("jfc_panels", client));
         break;

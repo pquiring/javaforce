@@ -43,6 +43,7 @@ public class Panels {
       JFLog.log("Error:Unable to find panel:" + pname);
       return null;
     }
+    String display = sql.select1value("select display from panels where name=" + SQL.quote(pname));
     String popup = sql.select1value("select popup from panels where id=" + pid);
     String cells[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style,events from cells where pid=" + pid);
     sql.close();
@@ -61,7 +62,7 @@ public class Panels {
     alarms.setBorder(true);
     setCellSize(alarms, new Rectangle(1,0,1,1));
     table.add(alarms, 1, 0);
-    Label title = getLabel(new String[] {null, null, null, null, null, "label", "jfc_title", pname.startsWith("jfc_") ? pname.substring(4) : pname, null, null, null, null});
+    Label title = getLabel(new String[] {null, null, null, null, null, "label", "jfc_title", display, null, null, null, null});
     title.setName("jfc_title");
     setCellSize(title, new Rectangle(2,0,16,1));
     table.add(title, 2, 0, 16, 1);
@@ -555,7 +556,7 @@ public class Panels {
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           String style = data[a][1].equals("main") ? "disabled" : null;
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_panels_name_str_" + data[a][0], null, null, style));
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_panels_display_str_" + data[a][0], null, null, style));
           cells.add(createCell("", 7, a, 2, 1, "button", null, "Edit", null, "jfc_panels_edit", data[a][0], null));
           if (style == null) {
             cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_panels_delete", data[a][0], null));
