@@ -60,6 +60,8 @@ public class Node {
   public boolean highlight;  //possible fork dest
   public ArrayList<Node> childs = new ArrayList<Node>();
   public boolean moved;
+  public boolean solo;
+  public boolean last;
 
   public Node addChild(char type, int x, int y) {
     JFLog.log("addChild:" + type);
@@ -370,7 +372,7 @@ public class Node {
         node = node.prev;
       }
       while (node != null && node.parent != null) {
-        node = node.prev;
+        node = node.parent;
       }
     }
     if (node == null) return;
@@ -381,6 +383,7 @@ public class Node {
     int cnt = 0;
     boolean last = false;
     while (node != null) {
+      if (node.blk != null && node.blk.isLast()) break;
       if (node.validFork()) {
         node.setHighlight(true);
         cnt++;

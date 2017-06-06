@@ -510,6 +510,11 @@ public class Events {
         if (node.parent != null) {
           node = node.parent;
         }
+        NodeRoot root = node.root;
+        if (root.hasSolo()) {
+          Panels.error(client, "Rung contains a solo component");
+          break;
+        }
         x = node.x + node.getDelta();
         y = node.y;
         String name = c.getName();
@@ -524,13 +529,22 @@ public class Events {
           JFLog.log("Error:Logic not found:" + name);
           break;
         }
+        if (blk.isSolo()) {
+          if (!root.isEmpty()) {
+            Panels.error(client, "Rung must be empty to add that component");
+            break;
+          }
+        }
+        if (blk.isLast()) {
+          if (node.next != null) {
+            Panels.error(client, "That component must be last");
+            break;
+          }
+        }
         if (node.type != 'h') {
           node = node.insertNode('h', x, y);
         }
         String tags[] = new String[blk.getTagsCount() + 1];
-        for(int a=0;a<tags.length;a++) {
-          tags[a] = "0";
-        }
         node = node.insertLogic('#', x, y, blk, tags);
         if (node.next == null || !node.next.validFork()) {
           node = node.insertNode('h', x, y);
@@ -576,6 +590,10 @@ public class Events {
         }
         if (node.parent != null) {
           node = node.parent;
+        }
+        if (node.root.hasSolo()) {
+          Panels.error(client, "Can not fork with solo component");
+          break;
         }
         node.forkSource(client);
         break;

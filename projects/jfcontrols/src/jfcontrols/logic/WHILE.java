@@ -32,4 +32,8 @@ public class WHILE extends Logic {
   public int getTagType(int idx) {
     return -1;
   }
+
+  public boolean isSolo() {
+    return true;
+  }
 }

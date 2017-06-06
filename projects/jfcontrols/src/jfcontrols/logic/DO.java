@@ -4,7 +4,7 @@ package jfcontrols.logic;
  *
  * Starts a looping block of code.
  *
- * See WHILE for ending block of code.
+ * See DO_END for ending block of code.
  *
  * @author pquiring
  */
@@ -31,5 +31,9 @@ public class DO extends Logic {
 
   public int getTagType(int idx) {
     return -1;
+  }
+
+  public boolean isSolo() {
+    return true;
   }
 }

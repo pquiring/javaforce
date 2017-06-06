@@ -81,4 +81,24 @@ public class NodeRoot extends Node {
     }
     return true;
   }
+  public boolean hasSolo() {
+    Node node = this;
+    while (node != null) {
+      if (node.blk != null) {
+        if (node.blk.isSolo()) return true;
+      }
+      node = node.next;
+    }
+    return false;
+  }
+  public boolean isEmpty() {
+    Node node = this;
+    while (node != null) {
+      if (node.type != 'h' && node.type != 'r') {
+        return false;
+      }
+      node = node.next;
+    }
+    return true;
+  }
 }

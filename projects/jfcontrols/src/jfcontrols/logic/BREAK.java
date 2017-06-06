@@ -32,4 +32,8 @@ public class BREAK extends Logic {
   public int getTagType(int idx) {
     return -1;
   }
+
+  public boolean isLast() {
+    return true;
+  }
 }
