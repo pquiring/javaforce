@@ -20,4 +20,7 @@ public class IndexTags {
   public TagBase getTag(int idx) {
     return new IndexTag(this, idx);
   }
+  public void clear() {
+    map.clear();
+  }
 }

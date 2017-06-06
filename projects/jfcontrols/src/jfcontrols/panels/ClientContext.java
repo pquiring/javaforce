@@ -88,6 +88,7 @@ public class ClientContext extends Thread {
       Monitor monitor = listeners.remove(0);
       monitor.tag.removeListener(monitor);
     }
+    tags.clear();
   }
 
   public void run() {

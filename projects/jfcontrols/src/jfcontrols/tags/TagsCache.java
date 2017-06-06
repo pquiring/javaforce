@@ -123,4 +123,9 @@ public class TagsCache {
     }
     return ta;
   }
+
+  /** Clears Index Tags. */
+  public void clear() {
+    it.clear();
+  }
 }
