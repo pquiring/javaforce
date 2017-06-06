@@ -60,8 +60,6 @@ public class Node {
   public boolean highlight;  //possible fork dest
   public ArrayList<Node> childs = new ArrayList<Node>();
   public boolean moved;
-  public boolean solo;
-  public boolean last;
 
   public Node addChild(char type, int x, int y) {
     JFLog.log("addChild:" + type);

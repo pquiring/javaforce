@@ -627,6 +627,9 @@ public class Events {
           break;
         }
         sql.execute("update rungs set logic='" + str + "' where rid=" + rid + " and fid=" + fid);
+        TextField tf = (TextField)client.getPanel().getComponent("comment" + rid);
+        String cmt = tf.getText();
+        sql.execute("update rungs set comment=" + SQL.quote(cmt) + " where rid=" + rid + " and fid=" + fid);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
