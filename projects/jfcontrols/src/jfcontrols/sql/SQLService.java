@@ -123,6 +123,7 @@ public class SQLService {
     sql.execute("insert into listdata (lid,value,text) values (" +  id + "," + TagType.float64 + ",'float64')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + "," + TagType.char8 + ",'char8')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + "," + TagType.char16 + ",'char16')");
+//    sql.execute("insert into listdata (lid,value,text) values (" +  id + "," + TagType.string + ",'string')");
 
     sql.execute("insert into lists (name) values ('jfc_panel_type')");
     id = sql.select1value("select id from lists where name='jfc_panel_type'");
@@ -199,13 +200,13 @@ public class SQLService {
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_confirm', true, true)");
     id = sql.select1value("select id from panels where name='jfc_confirm'");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,7,1,'label','jfc_confirm_msg','msg')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,4,3,1,'button','','Ok','jfc_confirm_ok')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,4,3,1,'button','','Cancel','jfc_confirm_cancel')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,1,3,1,'button','','Ok','jfc_confirm_ok')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,1,3,1,'button','','Cancel','jfc_confirm_cancel')");
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_error', true, true)");
     id = sql.select1value("select id from panels where name='jfc_error'");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,7,1,'label','jfc_error_msg','msg')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,4,3,1,'button','','Ok','jfc_error_ok')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,1,3,1,'button','','Ok','jfc_error_ok')");
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_error_textarea', true, true)");
     id = sql.select1value("select id from panels where name='jfc_error_textarea'");

@@ -51,8 +51,37 @@ public class Events {
         PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_confirm");
         panel.setVisible(false);
         String action = (String)client.getProperty("action");
+        arg = (String)client.getProperty("arg");
         switch (action) {
-          //TODO
+          case "jfc_ctrl_delete": {
+            sql.execute("delete from ctrls where cid=" + arg);
+            client.setPanel(Panels.getPanel("jfc_controllers", client));
+            break;
+          }
+          case "jfc_funcs_delete": {
+            sql.execute("delete from funcs where id=" + arg);
+            sql.execute("delete from rungs where fid=" + arg);
+            sql.execute("delete from blocks where fid=" + arg);
+            client.setPanel(Panels.getPanel("jfc_funcs", client));
+            break;
+          }
+          case "jfc_panels_delete": {
+            sql.execute("delete from panels where id=" + arg);
+            client.setPanel(Panels.getPanel("jfc_panels", client));
+            break;
+          }
+          case "jfc_tags_delete": {
+            String cid = (String)client.getProperty("ctrl");
+            sql.execute("delete from tags where id=" + arg);
+            client.setPanel(Panels.getPanel("jfc_tags", client));
+            break;
+          }
+          case "jfc_udts_delete": {
+            sql.execute("delete from udts where id=" + arg);
+            sql.execute("delete from udtmems where uid=" + arg);
+            client.setPanel(Panels.getPanel("jfc_udts", client));
+            break;
+          }
         }
         break;
       }
@@ -86,7 +115,9 @@ public class Events {
           lbl.setText("Invalid username or password!");
           break;
         }
-        //no break
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_login");
+        panel.setVisible(false);
+        break;
       }
       case "jfc_login_cancel": {
         PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_login");
@@ -108,18 +139,17 @@ public class Events {
         break;
       }
       case "jfc_ctrl_delete": {
-        //TODO : check if in use
         String inuse = sql.select1value("select count(tags) from blocks where tags like '%,c" + arg + "#%'");
         if (!inuse.equals("0")) {
           Panels.showError(client, "Can not delete controller that is in use!");
           break;
         }
-        sql.execute("delete from ctrls where cid=" + arg);
-        client.setPanel(Panels.getPanel("jfc_controllers", client));
+        client.setProperty("arg", arg);
+        Panels.confirm(client, "Delete controller?", "jfc_ctrl_delete");
         break;
       }
       case "jfc_ctrl_save": {
-        //TODO : force a reload of config options
+        Main.restart();
         break;
       }
       case "jfc_ctrl_tags": {
@@ -142,9 +172,24 @@ public class Events {
         break;
       }
       case "jfc_tags_delete": {
+        String cid = (String)client.getProperty("ctrl");
+        String query;
+        if (cid.equals("0")) {
+          query = "select count(tags) from blocks where tags like '%,c0#" + arg + ",%' or tags like '%," + arg + ",%'";
+        } else {
+          query = "select count(tags) from blocks where tags like '%,c" + cid + "#" + arg + ",%'";
+        }
+        String inuse = sql.select1value(query);
+        if (!inuse.equals("0")) {
+          Panels.showError(client, "Can not delete tag that is in use!");
+          break;
+        }
+        client.setProperty("arg", arg);
+        Panels.confirm(client, "Delete tag?", "jfc_tags_delete");
         break;
       }
       case "jfc_tags_save": {
+        Main.restart();
         break;
       }
       case "jfc_config_save": {
@@ -202,7 +247,13 @@ public class Events {
         break;
       }
       case "jfc_udts_delete": {
-        //TODO : check if in use
+        String inuse = sql.select1value("select count(id) from tags where type=" + arg);
+        if (!inuse.equals("0")) {
+          Panels.showError(client, "Can not delete UDT that is in use!");
+          break;
+        }
+        client.setProperty("arg", arg);
+        Panels.confirm(client, "Delete UDT?", "jfc_udts_delete");
         break;
       }
       case "jfc_udts_edit": {
@@ -227,7 +278,14 @@ public class Events {
       }
 
       case "jfc_udt_editor_delete": {
-        //TODO : check if in use
+        String uid = sql.select1value("select uid from udtmems where id=" + arg);
+        String inuse = sql.select1value("select count(id) from tags where type=" + uid);
+        if (!inuse.equals("0")) {
+          Panels.showError(client, "Can not delete member that is in use!");
+          break;
+        }
+        sql.execute("delete from udtmems where mid=" + arg);
+        client.setPanel(Panels.getPanel("jfc_udt_editor", client));
         break;
       }
 
@@ -244,6 +302,8 @@ public class Events {
         break;
       }
       case "jfc_panels_delete": {
+        client.setProperty("arg", arg);
+        Panels.confirm(client, "Delete panel?", "jfc_panels_delete");
         break;
       }
       case "jfc_panel_editor_add": {
@@ -446,11 +506,7 @@ public class Events {
           Panels.showError(client, "Can not delete function that is in use");
           break;
         }
-        //TODO : confirm action
-        sql.execute("delete from funcs where id=" + arg);
-        sql.execute("delete from rungs where fid=" + arg);
-        sql.execute("delete from blocks where fid=" + arg);
-        client.setPanel(Panels.getPanel("jfc_funcs", client));
+        Panels.confirm(client, "Delete function?", "jfc_funcs_delete");
         break;
       }
 
@@ -927,8 +983,5 @@ public class Events {
     tf.setFocus();
     tf.setBackColor("#c00");
     tf.setProperty("red", "true");
-  }
-  public static void actionConfirmed(WebUIClient client, String action) {
-
   }
 }
