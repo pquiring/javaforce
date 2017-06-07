@@ -138,6 +138,8 @@ public class SQLService {
     sql.execute("insert into logics (id,gid) values ('coil','bit')");
     sql.execute("insert into logics (id,gid) values ('set','bit')");
     sql.execute("insert into logics (id,gid) values ('reset','bit')");
+    sql.execute("insert into logics (id,gid) values ('pos','bit')");
+    sql.execute("insert into logics (id,gid) values ('neg','bit')");
 
     sql.execute("insert into logics (id,gid) values ('cmp_eq','compare')");
     sql.execute("insert into logics (id,gid) values ('cmp_ne','compare')");
