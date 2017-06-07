@@ -45,4 +45,7 @@ public class TitleBar extends Container {
     button.setWidth(h);
     button.setHeight(h);
   }
+  public void setText(String title) {
+    label.setText(title);
+  }
 }

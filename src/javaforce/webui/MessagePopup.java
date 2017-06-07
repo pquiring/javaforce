@@ -2,7 +2,9 @@ package javaforce.webui;
 
 /** Message Popup
  *
- *  Shows a popup message with OK / Cancel buttons.
+ * Shows a popup message with OK / Cancel buttons.
+ *
+ * Use addActionListener() to respond to OK button.
  *
  * @author pquiring
  */
@@ -32,4 +34,7 @@ public class MessagePopup extends PopupPanel {
   }
   private Label lbl;
   private Button ok, cancel;
+  public void setText(String msg) {
+    lbl.setText(msg);
+  }
 }

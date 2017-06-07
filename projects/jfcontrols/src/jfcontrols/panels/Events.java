@@ -37,6 +37,30 @@ public class Events {
         }
         break;
       }
+      case "jfc_error_ok": {
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_error");
+        panel.setVisible(false);
+        break;
+      }
+      case "jfc_error_textarea_ok": {
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_error_textarea");
+        panel.setVisible(false);
+        break;
+      }
+      case "jfc_confirm_ok": {
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_confirm");
+        panel.setVisible(false);
+        String action = (String)client.getProperty("action");
+        switch (action) {
+          //TODO
+        }
+        break;
+      }
+      case "jfc_confirm_cancel": {
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_confirm");
+        panel.setVisible(false);
+        break;
+      }
       case "jfc_logout": {
         client.setProperty("user", null);
         PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_menu");
@@ -87,7 +111,7 @@ public class Events {
         //TODO : check if in use
         String inuse = sql.select1value("select count(tags) from blocks where tags like '%,c" + arg + "#%'");
         if (!inuse.equals("0")) {
-          Panels.error(client, "Can not delete controller that is in use!");
+          Panels.showError(client, "Can not delete controller that is in use!");
           break;
         }
         sql.execute("delete from ctrls where cid=" + arg);
@@ -419,7 +443,7 @@ public class Events {
       case "jfc_funcs_delete": {
         String inuse = sql.select1value("select count(id) from blocks where name='CALL' and tags='," + arg + ",'");
         if (!inuse.equals("0")) {
-          Panels.error(client, "Can not delete function that is in use");
+          Panels.showError(client, "Can not delete function that is in use");
           break;
         }
         //TODO : confirm action
@@ -513,7 +537,7 @@ public class Events {
         }
         NodeRoot root = node.root;
         if (root.hasSolo()) {
-          Panels.error(client, "Rung contains a solo component");
+          Panels.showError(client, "Rung contains a solo component");
           break;
         }
         while (node != null && !node.validInsert()) {
@@ -539,17 +563,17 @@ public class Events {
         }
         if (blk.isSolo()) {
           if (!root.isEmpty()) {
-            Panels.error(client, "Rung must be empty to add that component");
+            Panels.showError(client, "Rung must be empty to add that component");
             break;
           }
         }
         if (blk.isLast()) {
           if (node.next != null) {
-            Panels.error(client, "That component must be last");
+            Panels.showError(client, "That component must be last");
             break;
           }
           if (root.hasLast()) {
-            Panels.error(client, "Rung already has a last component");
+            Panels.showError(client, "Rung already has a last component");
             break;
           }
         }
@@ -604,7 +628,7 @@ public class Events {
           node = node.parent;
         }
         if (node.root.hasSolo()) {
-          Panels.error(client, "Can not fork with solo component");
+          Panels.showError(client, "Can not fork with solo component");
           break;
         }
         node.forkSource(client);
@@ -623,7 +647,7 @@ public class Events {
         String str = root.saveLogic(sql);
         JFLog.log("logic=" + str);
         if (str == null) {
-          Panels.error(client, "Failed to save!");
+          Panels.showError(client, "Failed to save!");
           break;
         }
         sql.execute("update rungs set logic='" + str + "' where rid=" + rid + " and fid=" + fid);
@@ -636,12 +660,16 @@ public class Events {
 
       case "jfc_func_editor_compile": {
         String fid = (String)client.getProperty("func");
-        if (!FunctionService.generateFunction(Integer.valueOf(fid), sql)) {
-          Panels.error(client, "Compile failed!");
-          break;
-        }
-        if (!FunctionService.compileProgram(sql)) {
-          Panels.error(client, "Compile failed!");
+        synchronized(lock) {
+          if (!FunctionService.generateFunction(Integer.valueOf(fid), sql)) {
+            Panels.showErrorText(client, "Compile failed!", FunctionCompiler.error);
+            FunctionCompiler.error = null;
+            break;
+          }
+          if (!FunctionService.compileProgram(sql)) {
+            Panels.showErrorText(client, "Compile failed!", FunctionService.error);
+            FunctionService.error = null;
+          }
         }
         break;
       }
@@ -705,6 +733,35 @@ public class Events {
       sql.close();
     } else {
       context.write(tag, tf.getText());
+    }
+  }
+  public static void edit(TextArea ta) {
+    WebUIClient client = ta.getClient();
+    ClientContext context = (ClientContext)client.getProperty("context");
+    String red = (String)ta.getProperty("red");
+    if (red != null) {
+      ta.setBackColor("#fff");
+      ta.setProperty("red", null);
+    }
+    String tag = (String)ta.getProperty("tag");
+    if (tag == null) return;
+    String value = ta.getText();
+    if (tag.startsWith("jfc_")) {
+      String f[] = tag.split("_", 5);
+      //jfc_table_col_id
+      String table = f[1];
+      String col = f[2];
+      String type = f[3];
+      String id = f[4];
+      if (table.equals("config")) {
+        id = "\'" + id + "\'";
+      }
+      SQL sql = SQLService.getSQL();
+      String stmt = "update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id;
+      sql.execute(stmt);
+      sql.close();
+    } else {
+      context.write(tag, ta.getText());
     }
   }
   public static void changed(ComboBox cb) {
@@ -870,5 +927,8 @@ public class Events {
     tf.setFocus();
     tf.setBackColor("#c00");
     tf.setProperty("red", "true");
+  }
+  public static void actionConfirmed(WebUIClient client, String action) {
+
   }
 }

@@ -25,7 +25,7 @@ public class FunctionCompiler {
     sb.append("  public boolean code(TagBase args[]) {\r\n");
     sb.append("    boolean enabled = true;\r\n");
     sb.append("    boolean en[] = new boolean[256];\r\n");
-    sb.append("    int eidx = 0;\r\n");
+    sb.append("    int_ eidx = 0;\r\n");
     sb.append("    en[eidx] = enabled;\r\n");
     sb.append("    TagBase tags[] = new TagBase[33];\r\n");
 
@@ -38,6 +38,7 @@ public class FunctionCompiler {
       String logic[] = rung[0].split("[|]");
       String blocks[][] = sql.select("select bid,name,tags from blocks where fid=" + fid + " and rid=" + rid + " order by bid");
       NodeRoot root = buildNodes(fid, rid, logic, blocks, sql);
+      if (root == null) return null;
       Node node = root, upper;
       String func = null;
       int cnt;
@@ -79,12 +80,12 @@ public class FunctionCompiler {
               String name = node.blk.getName();
               if (name.endsWith("_END")) {
                 if (stack.size() == 0) {
-                  JFLog.log("Error:" + name + " without starting block");
+                  error = "Error:" + name + " without starting block";
                   return null;
                 }
                 String start = stack.remove(stack.size() - 1);
                 if (!node.blk.canClose(start)) {
-                  JFLog.log("Error:" + name + " unmatching block");
+                  error = "Error:" + name + " unmatching block";
                   return null;
                 }
               } else {
@@ -131,7 +132,7 @@ public class FunctionCompiler {
     }
 
     if (stack.size() > 0) {
-      JFLog.log("Error:Unclosed block:" + stack.get(stack.size() - 1));
+      error = "Error:Unclosed block:" + stack.get(stack.size() - 1);
       return null;
     }
 
@@ -168,7 +169,7 @@ public class FunctionCompiler {
           //a can only be under t,a
           Node upper = Node.findFirstOpenNode(nodes, "ta");
           if (upper == null) {
-            JFLog.log("Error:corrupt logic");
+            error = "Error:corrupt logic";
             return null;
           }
           x = upper.x;
@@ -180,7 +181,7 @@ public class FunctionCompiler {
           //b can only be under t,b
           Node upper = Node.findLastOpenNode(nodes, "tb");
           if (upper == null) {
-            JFLog.log("Error:corrupt logic");
+            error = "Error:corrupt logic";
             return null;
           }
           if (upper.x < x) upper.x = x;
@@ -192,7 +193,7 @@ public class FunctionCompiler {
           //c can only be under t,a
           Node upper = Node.findFirstOpenNode(nodes, "ta");
           if (upper == null) {
-            JFLog.log("Error:corrupt logic");
+            error = "Error:corrupt logic";
             return null;
           }
           x = upper.x;
@@ -204,7 +205,7 @@ public class FunctionCompiler {
           //d can only be under t,b
           Node upper = Node.findFirstOpenNode(nodes, "tb");
           if (upper == null) {
-            JFLog.log("Error:corrupt logic");
+            error = "Error:corrupt logic";
             return null;
           }
           if (upper.x < x) upper.x = x;
@@ -223,8 +224,8 @@ public class FunctionCompiler {
             }
           }
           if (name == null) {
-            JFLog.log("Error:Block not found:rid=" + rid + ":bid=" + part + ":name=");
-            continue;
+            error = "Error:Block not found:rid=" + rid + ":bid=" + part;
+            return null;
           }
           Logic blk = null;
           try {
@@ -234,8 +235,8 @@ public class FunctionCompiler {
             JFLog.log(e);
           }
           if (blk == null) {
-            JFLog.log("Error:Block not found:rid=" + rid + ":bid=" + part);
-            continue;
+            error = "Error:Block not found:rid=" + rid + ":bid=" + part;
+            return null;
           }
           nodes.add(node = node.insertLogic('#', x, y, blk, tags.split(",")));
           x+=3;

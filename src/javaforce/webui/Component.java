@@ -275,6 +275,11 @@ public abstract class Component {
     }
   }
 
+  public void setDisplay(String display) {
+    this.display = display;
+    sendEvent("display", new String[] {"val=" + display});
+  }
+
   public void setPosition(int x, int y) {
     sendEvent("setpos", new String[] {"x=" + x, "y=" + y});
     this.x = x;

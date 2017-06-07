@@ -184,6 +184,7 @@ public class FunctionService extends Thread {
 
   public static boolean generateFunction(int fid, SQL sql) {
     String code = FunctionCompiler.generateFunction(fid, sql);
+    if (code == null) return false;
     new File("work/java").mkdirs();
     new File("work/class").mkdirs();
     String java_file = "work/java/func_" + fid + ".java";
@@ -199,14 +200,16 @@ public class FunctionService extends Thread {
       return false;
     }
   }
+  public static String error;
   public static boolean compileProgram(SQL sql) {
     try {
       ShellProcess sp = new ShellProcess();
       sp.keepOutput(true);
-      String output = sp.run(new String[] {"javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", "work/java/*.java", "-d", "work/class"}, true);
-      JFLog.log("compiler=" + output);
-      restart();
-      return output.length() == 0;
+      error = sp.run(new String[] {"javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", "work/java/*.java", "-d", "work/class"}, true);
+      if (error.length() == 0) {
+        restart();
+      }
+      return error.length() == 0;
     } catch (Exception e) {
       JFLog.log(e);
       return false;

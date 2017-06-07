@@ -196,6 +196,23 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,4,3,1,'button','','Login','jfc_login_ok')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,4,3,1,'button','','Cancel','jfc_login_cancel')");
 
+    sql.execute("insert into panels (name, popup, builtin) values ('jfc_confirm', true, true)");
+    id = sql.select1value("select id from panels where name='jfc_confirm'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,7,1,'label','jfc_confirm_msg','msg')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,4,3,1,'button','','Ok','jfc_confirm_ok')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,4,3,1,'button','','Cancel','jfc_confirm_cancel')");
+
+    sql.execute("insert into panels (name, popup, builtin) values ('jfc_error', true, true)");
+    id = sql.select1value("select id from panels where name='jfc_error'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,7,1,'label','jfc_error_msg','msg')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,4,3,1,'button','','Ok','jfc_error_ok')");
+
+    sql.execute("insert into panels (name, popup, builtin) values ('jfc_error_textarea', true, true)");
+    id = sql.select1value("select id from panels where name='jfc_error_textarea'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,7,1,'label','jfc_error_textarea_msg','msg')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,1,14,7,'textarea','jfc_error_textarea_textarea','msg')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,8,3,1,'button','','Ok','jfc_error_textarea_ok')");
+
     sql.execute("insert into panels (name, display, popup, builtin) values ('main', 'Main', false, false)");
     id = sql.select1value("select id from panels where name='main'");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,1,7,1,'label','','Welcome to jfControls!')");

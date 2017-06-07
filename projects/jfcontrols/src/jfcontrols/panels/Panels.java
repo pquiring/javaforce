@@ -76,6 +76,9 @@ public class Panels {
     updateAlarmCount(alarms);
     panel.add(getPopupPanel(client, "Login", "jfc_login"));
     panel.add(getPopupPanel(client, "Menu", "jfc_menu"));
+    panel.add(getPopupPanel(client, "Confirm", "jfc_confirm"));
+    panel.add(getPopupPanel(client, "Error", "jfc_error"));
+    panel.add(getPopupPanel(client, "Error", "jfc_error_textarea"));
     if (pname.equals("jfc_panel_editor")) {
       panel.add(getPopupPanel(client, "Properties", "jfc_panel_props"));
     }
@@ -219,6 +222,7 @@ public class Panels {
       case "label": return getLabel(v);
       case "button": return getButton(v);
       case "textfield": return getTextField(v, client);
+      case "textarea": return getTextArea(v, client);
       case "combobox": return getComboBox(v, client);
       case "checkbox": return getCheckBox(v, client);
       case "table": return getTable(v, container, r, client);
@@ -289,6 +293,35 @@ public class Panels {
     });
     sql.close();
     return b;
+  }
+  private static TextArea getTextArea(String v[], WebUIClient client) {
+    SQL sql = SQLService.getSQL();
+    String tag = v[TAG];
+    String text = v[TEXT];
+    ClientContext context = (ClientContext)client.getProperty("context");
+    if (tag != null) {
+      if (tag.startsWith("jfc_")) {
+        String f[] = tag.split("_", 5);
+        //jfc_table_col_id
+        String table = f[1];
+        String col = f[2];
+        String type = f[3];
+        String id = f[4];
+        if (table.equals("config")) {
+          id = "\'" + id + "\'";
+        }
+        text = sql.select1value("select " + col + " from " + table + " where id=" + id);
+      } else {
+        text = context.read(tag);
+      }
+    }
+    if (text == null) text = "";
+    TextArea ta = new TextArea(text);
+    ta.addChangedListener((c) -> {
+      Events.edit((TextArea)c);
+    });
+    sql.close();
+    return ta;
   }
   private static ComboBox getComboBox(String v[], WebUIClient client) {
     ComboBox cb = new ComboBox();
@@ -1571,8 +1604,25 @@ public class Panels {
     }
     logic.setTableSize(mx, my);
   }
-  public static void error(WebUIClient client, String msg) {
-    Label lbl = (Label)client.getPanel().getComponent("jfc_title");
+  public static void showError(WebUIClient client, String msg) {
+    Label lbl = (Label)client.getPanel().getComponent("jfc_error_msg");
     lbl.setText(msg);
+    PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_error");
+    panel.setVisible(true);
+  }
+  public static void showErrorText(WebUIClient client, String msg, String text) {
+    Label lbl = (Label)client.getPanel().getComponent("jfc_error_textarea_msg");
+    lbl.setText(msg);
+    TextArea ta = (TextArea)client.getPanel().getComponent("jfc_error_textarea_textarea");
+    ta.setText(text);
+    PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_error_textarea");
+    panel.setVisible(true);
+  }
+  public static void confirm(WebUIClient client, String msg, String action) {
+    Label lbl = (Label)client.getPanel().getComponent("jfc_confirm_msg");
+    lbl.setText(msg);
+    PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_confirm");
+    panel.setVisible(true);
+    client.setProperty("action", action);
   }
 }
