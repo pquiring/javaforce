@@ -636,7 +636,10 @@ public class Events {
 
       case "jfc_func_editor_compile": {
         String fid = (String)client.getProperty("func");
-        FunctionService.generateFunction(Integer.valueOf(fid), sql);
+        if (!FunctionService.generateFunction(Integer.valueOf(fid), sql)) {
+          Panels.error(client, "Compile failed!");
+          break;
+        }
         if (!FunctionService.compileProgram(sql)) {
           Panels.error(client, "Compile failed!");
         }

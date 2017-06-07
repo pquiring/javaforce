@@ -36,4 +36,8 @@ public class WHILE extends Logic {
   public boolean isSolo() {
     return true;
   }
+
+  public boolean isFlowControl() {
+    return true;
+  }
 }

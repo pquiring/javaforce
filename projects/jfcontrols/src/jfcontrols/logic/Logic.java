@@ -20,6 +20,11 @@ public abstract class Logic {
   /** Block must end a rung (no forking under it either)*/
   public boolean isLast() {return false;}
 
+  /** Indicates block controls function flow and must be paired with an _END block. */
+  public boolean isFlowControl() {return false;}
+  /** Indicates block can end start block */
+  public boolean canClose(String start) {return false;}
+
   /** Returns text for Block's only (not used for inline code) */
   public abstract String getDesc();
   public abstract String getCode(int tagTypes[]);

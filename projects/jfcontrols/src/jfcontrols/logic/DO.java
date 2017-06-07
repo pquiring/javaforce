@@ -36,4 +36,8 @@ public class DO extends Logic {
   public boolean isSolo() {
     return true;
   }
+
+  public boolean isFlowControl() {
+    return true;
+  }
 }

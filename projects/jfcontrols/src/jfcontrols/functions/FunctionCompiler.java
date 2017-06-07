@@ -32,6 +32,7 @@ public class FunctionCompiler {
     //append code from rungs
     String rungs[][] = sql.select("select logic from rungs where fid=" + fid);
     int norungs = rungs.length;
+    ArrayList<String> stack = new ArrayList<>();
     for(int rid=0;rid<norungs;rid++) {
       String rung[] = rungs[rid];
       String logic[] = rung[0].split("[|]");
@@ -74,6 +75,22 @@ public class FunctionCompiler {
             };
             break;
           case '#': {
+            if (node.blk.isFlowControl()) {
+              String name = node.blk.getName();
+              if (name.endsWith("_END")) {
+                if (stack.size() == 0) {
+                  JFLog.log("Error:" + name + " without starting block");
+                  return null;
+                }
+                String start = stack.remove(stack.size() - 1);
+                if (!node.blk.canClose(start)) {
+                  JFLog.log("Error:" + name + " unmatching block");
+                  return null;
+                }
+              } else {
+                stack.add(name);
+              }
+            }
             int types[] = new int[node.tags.length];
             for(int t=1;t<node.tags.length;t++) {
               String tag = node.tags[t];
@@ -100,7 +117,7 @@ public class FunctionCompiler {
               }
             }
             sb.append("  enabled = en[eidx];\r\n");
-            if (node.blk.getName().equals("Call")) {
+            if (node.blk.getName().equals("CALL")) {
               sb.append(node.blk.getCode(func));
             } else {
               sb.append(node.blk.getCode(types));
@@ -111,6 +128,11 @@ public class FunctionCompiler {
         }
         node = node.next;
       }
+    }
+
+    if (stack.size() > 0) {
+      JFLog.log("Error:Unclosed block:" + stack.get(stack.size() - 1));
+      return null;
     }
 
     sb.append("    return en[eidx];\r\n");

@@ -36,4 +36,12 @@ public class WHILE_END extends Logic {
   public boolean isLast() {
     return true;
   }
+
+  public boolean isFlowControl() {
+    return true;
+  }
+
+  public boolean canClose(String name) {
+    return name.equals("IF") || name.equals("WHILE");
+  }
 }

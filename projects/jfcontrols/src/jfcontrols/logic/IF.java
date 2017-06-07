@@ -36,4 +36,8 @@ public class IF extends Logic {
   public boolean isLast() {
     return true;
   }
+
+  public boolean isFlowControl() {
+    return true;
+  }
 }
