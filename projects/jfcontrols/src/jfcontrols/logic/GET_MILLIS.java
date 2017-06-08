@@ -16,7 +16,7 @@ public class GET_MILLIS extends Logic {
   }
 
   public String getDesc() {
-    return "GetMilliSeconds";
+    return "GetMillis";
   }
 
   public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
