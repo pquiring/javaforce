@@ -164,6 +164,7 @@ public class SQLService {
     sql.execute("insert into logics (id,gid) values ('if','func')");
     sql.execute("insert into logics (id,gid) values ('if_end','func')");
     sql.execute("insert into logics (id,gid) values ('break','func')");
+    sql.execute("insert into logics (id,gid) values ('ret','func')");
 
     //create SDTs
     int uid = IDs.uid_sys;
