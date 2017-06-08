@@ -1,15 +1,15 @@
 package jfcontrols.logic;
 
-/** Get Time
+/** Get Time Stamp
+ *
+ * Returns milliseconds since epoch.
  *
  * @author pquiring
  */
 
 import javaforce.controls.*;
 
-import jfcontrols.tags.*;
-
-public class GET_TIME extends Logic {
+public class GET_TIME_STAMP extends Logic {
 
   public boolean isBlock() {
     return true;
@@ -20,7 +20,7 @@ public class GET_TIME extends Logic {
   }
 
   public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "gettime(tags[1]);";
+    return "if (enabled) tags[1].setLong(System.currentTimeMillis());";
   }
 
   public int getTagsCount() {
@@ -28,6 +28,6 @@ public class GET_TIME extends Logic {
   }
 
   public int getTagType(int idx) {
-    return IDs.uid_time;
+    return TagType.int64;
   }
 }

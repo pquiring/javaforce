@@ -82,12 +82,11 @@ public class FunctionRuntime extends TagsCache {
     tags[2].setValue(len);
   }
 
-  public void getdate(TagBase tags[]) {
+  public void getdate(TagBase tag) {
     Calendar cal = Calendar.getInstance();
     int year = cal.get(Calendar.YEAR);
     int month = cal.get(Calendar.MONTH) + 1;
     int day = cal.get(Calendar.DAY_OF_MONTH);
-    TagBase tag = tags[1];
     if (tag.getType() != IDs.uid_date) {
       JFLog.log("Error:GET_DATE:wrong tag type");
       return;
@@ -110,13 +109,12 @@ public class FunctionRuntime extends TagsCache {
     tagday.setInt(day);
   }
 
-  public void gettime(TagBase tags[]) {
+  public void gettime(TagBase tag) {
     Calendar cal = Calendar.getInstance();
     int hour = cal.get(Calendar.HOUR_OF_DAY);
     int minute = cal.get(Calendar.MINUTE);
     int second = cal.get(Calendar.SECOND);
     int milli = cal.get(Calendar.MILLISECOND);
-    TagBase tag = tags[1];
     if (tag.getType() != IDs.uid_time) {
       JFLog.log("Error:GET_TIME:wrong tag type");
       return;

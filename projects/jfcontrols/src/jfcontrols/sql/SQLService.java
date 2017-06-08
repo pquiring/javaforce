@@ -190,6 +190,7 @@ public class SQLService {
 
     sql.execute("insert into logics (name,gid) values ('get_date','system')");
     sql.execute("insert into logics (name,gid) values ('get_time','system')");
+    sql.execute("insert into logics (name,gid) values ('get_time_stamp','system')");
 
     //create SDTs
     int uid = IDs.uid_sys;
