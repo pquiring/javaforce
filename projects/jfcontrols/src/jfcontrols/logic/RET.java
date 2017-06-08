@@ -18,7 +18,7 @@ public class RET extends Logic {
   }
 
   public String getCode(int types[]) {
-    return "return tags[1].getBoolean();\r\n";
+    return "if (enabled) return tags[1].getBoolean();\r\n";
   }
 
   public int getTagsCount() {
