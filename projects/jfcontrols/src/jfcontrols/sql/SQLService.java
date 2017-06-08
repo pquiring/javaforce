@@ -160,17 +160,30 @@ public class SQLService {
     sql.execute("insert into logics (id,gid) values ('sub','math')");
     sql.execute("insert into logics (id,gid) values ('mul','math')");
     sql.execute("insert into logics (id,gid) values ('div','math')");
+    sql.execute("insert into logics (id,gid) values ('mod','math')");
+    sql.execute("insert into logics (id,gid) values ('abs','math')");
+    sql.execute("insert into logics (id,gid) values ('sqrt','math')");
+    sql.execute("insert into logics (id,gid) values ('round','math')");
+    sql.execute("insert into logics (id,gid) values ('floor','math')");
+    sql.execute("insert into logics (id,gid) values ('ceil','math')");
 
-    sql.execute("insert into logics (id,gid) values ('call','func')");
-    sql.execute("insert into logics (id,gid) values ('sleep','func')");
-    sql.execute("insert into logics (id,gid) values ('do','func')");
-    sql.execute("insert into logics (id,gid) values ('do_end','func')");
-    sql.execute("insert into logics (id,gid) values ('while','func')");
-    sql.execute("insert into logics (id,gid) values ('while_end','func')");
-    sql.execute("insert into logics (id,gid) values ('if','func')");
-    sql.execute("insert into logics (id,gid) values ('if_end','func')");
-    sql.execute("insert into logics (id,gid) values ('break','func')");
-    sql.execute("insert into logics (id,gid) values ('ret','func')");
+    sql.execute("insert into logics (id,gid) values ('sin','math')");
+    sql.execute("insert into logics (id,gid) values ('cos','math')");
+    sql.execute("insert into logics (id,gid) values ('tan','math')");
+    sql.execute("insert into logics (id,gid) values ('asin','math')");
+    sql.execute("insert into logics (id,gid) values ('acos','math')");
+    sql.execute("insert into logics (id,gid) values ('atan','math')");
+
+    sql.execute("insert into logics (id,gid) values ('call','function')");
+    sql.execute("insert into logics (id,gid) values ('sleep','function')");
+    sql.execute("insert into logics (id,gid) values ('do','function')");
+    sql.execute("insert into logics (id,gid) values ('do_end','function')");
+    sql.execute("insert into logics (id,gid) values ('while','function')");
+    sql.execute("insert into logics (id,gid) values ('while_end','function')");
+    sql.execute("insert into logics (id,gid) values ('if','function')");
+    sql.execute("insert into logics (id,gid) values ('if_end','function')");
+    sql.execute("insert into logics (id,gid) values ('break','function')");
+    sql.execute("insert into logics (id,gid) values ('ret','function')");
 
     //create SDTs
     int uid = IDs.uid_sys;
@@ -392,7 +405,7 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,1,1,'button','','!image:save','jfc_rung_editor_save')");
 
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",7,1,3,1,'combobox','group_type','','jfc_logic_groups')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",11,1,16,1,'table','jfc_logic_groups')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",11,1,24,1,'table','jfc_logic_groups')");
 //    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,2,0,0,'table','jfc_rung_args')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,0,0,0,'autoscroll','jfc_rung_editor')");
 

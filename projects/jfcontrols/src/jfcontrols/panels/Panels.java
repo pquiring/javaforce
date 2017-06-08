@@ -187,6 +187,8 @@ public class Panels {
             c.setDisabled(true);
           } else if (styles[b].equals("border")) {
             c.setBorder(true);
+          } else if (styles[b].equals("smallfont")) {
+            c.setStyle("font-size", "8pt");
           } else {
             String f[] = styles[b].split("=");
             if (f.length == 2) {
@@ -679,14 +681,15 @@ public class Panels {
         int p = 0, w;
         for(int a=0;a<items.length;a++) {
           String desc = items[a][0];
+          String style = "border";
           if (Images.getImage(desc) != null) {
             desc = "!image:" + desc;
-            w = 1;
           } else {
-            if (desc.length() > 3) w = 2; else w = 1;
+            if (desc.length() > 3) {
+              style += ";smallfont";
+            }
           }
-          cells.add(createCell("", p, 0, w, 1, "button", items[a][0], desc, null, "jfc_rung_editor_add", null, "border"));
-          p += w;
+          cells.add(createCell("", a, 0, 1, 1, "button", items[a][0], desc, null, "jfc_rung_editor_add", null, style));
         }
         break;
       }
