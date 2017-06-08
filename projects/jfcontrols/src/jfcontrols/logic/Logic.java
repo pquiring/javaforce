@@ -27,7 +27,7 @@ public abstract class Logic {
 
   /** Returns text for Block's only (not used for inline code) */
   public abstract String getDesc();
-  public abstract String getCode(int tagTypes[]);
+  public abstract String getCode(int[] tagTypes, boolean[] array, boolean[] unsigned);
   public String getCode(String func) {return null;}
 
   /** Returns number of tags logic needs.

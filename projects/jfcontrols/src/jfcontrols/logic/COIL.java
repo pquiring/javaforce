@@ -17,7 +17,7 @@ public class COIL extends Logic {
     return "Coil";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "    tags[1].setBoolean(enabled);\r\n";
   }
 

@@ -93,6 +93,8 @@ public class FunctionCompiler {
               }
             }
             int types[] = new int[node.tags.length];
+            boolean array[] = new boolean[node.tags.length];
+            boolean unsigned[] = new boolean[node.tags.length];
             for(int t=1;t<node.tags.length;t++) {
               String tag = node.tags[t];
               char type = tag.charAt(0);
@@ -101,11 +103,14 @@ public class FunctionCompiler {
               switch (type) {
                 case 't':
                   sb.append("tags[" + t + "] = getTag(\"" + value + "\");\r\n");
-                  if (tagType == TagType.any) {
-                    types[t] = tags.getTag(value).getType();
+                  TagBase tagbase = tags.getTag(value);
+                  if (tagType >= TagType.any) {
+                    types[t] = tagbase.getType();
                   } else {
                     types[t] = tagType;
                   }
+                  array[t] = tagbase.isArray();
+                  unsigned[t] = tagbase.isUnsigned();
                   break;
                 case 'i':
                   sb.append("tags[" + t + "] = new TagTemp(\"" + value + "\");");
@@ -121,7 +126,7 @@ public class FunctionCompiler {
             if (node.blk.getName().equals("CALL")) {
               sb.append(node.blk.getCode(func));
             } else {
-              sb.append(node.blk.getCode(types));
+              sb.append(node.blk.getCode(types, array, unsigned));
             }
             sb.append("\r\n  en[eidx] = enabled;\r\n");
             break;

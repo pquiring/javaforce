@@ -17,7 +17,7 @@ public class MUL extends Logic {
     return "Multiply";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     if (types[3] == TagType.float32) return "if (enabled) tags[3].setFloat(tags[1].getFloat() * tags[2].getFloat());\r\n";
     if (types[3] == TagType.float64) return "if (enabled) tags[3].setDouble(tags[1].getDouble() * tags[2].getDouble());\r\n";
     if (types[3] == TagType.int64) return "if (enabled) tags[3].setLong(tags[1].getLong() * tags[2].getLong());\r\n";

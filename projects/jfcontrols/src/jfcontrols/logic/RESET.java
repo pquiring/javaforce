@@ -17,7 +17,7 @@ public class RESET extends Logic {
     return "Reset";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "if (enabled) tags[1].setBoolean(false);\r\n";
   }
 

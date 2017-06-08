@@ -21,7 +21,7 @@ public class WHILE extends Logic {
     return "while () {";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "while(enabled) {";
   }
 

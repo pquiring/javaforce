@@ -17,7 +17,7 @@ public class XON extends Logic {
     return "xon";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "enabled &= tags[1].getBoolean();\r\n";
   }
 

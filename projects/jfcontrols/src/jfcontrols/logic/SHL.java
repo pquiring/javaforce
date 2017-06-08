@@ -1,31 +1,27 @@
 package jfcontrols.logic;
 
-/** Add
- *
- * @author pquiring
- */
-
 import javaforce.controls.*;
 
-public class SLEEP extends Logic {
+public class SHL extends Logic {
 
   public boolean isBlock() {
     return true;
   }
 
   public String getDesc() {
-    return "Sleep";
+    return "SHL";
   }
 
   public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) javaforce.JF.sleep(tags[1].getInt());\r\n";
+    if (types[1] == TagType.int64) return "if (enabled) tags[1].setLong(tags[1].getLong() << tags[2].getInt());\r\n";
+    return "if (enabled) tags[1].setInt(tags[1].getInt() << tags[2].getInt());\r\n";
   }
 
   public int getTagsCount() {
-    return 1;
+    return 2;
   }
 
   public int getTagType(int idx) {
-    return TagType.int32;
+    return TagType.anyint;
   }
 }

@@ -27,7 +27,7 @@ public class CALL extends Logic {
     return "Call";
   }
 
-  public String getCode(int types[]) {return null;}
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {return null;}
 
   public String getCode(String func) {
     return "  if (enabled) enabled = new func_" + func + "().code(tags);";

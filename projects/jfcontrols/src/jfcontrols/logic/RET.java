@@ -17,7 +17,7 @@ public class RET extends Logic {
     return "Return";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "if (enabled) return tags[1].getBoolean();\r\n";
   }
 

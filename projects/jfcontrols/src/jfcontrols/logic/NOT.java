@@ -17,7 +17,7 @@ public class NOT extends Logic {
     return "not";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "enabled = !enabled;\r\n";
   }
 

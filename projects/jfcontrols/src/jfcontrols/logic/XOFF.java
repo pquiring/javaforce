@@ -17,7 +17,7 @@ public class XOFF extends Logic {
     return "xoff";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "enabled &= !tags[1].getBoolean();\r\n";
   }
 

@@ -21,7 +21,7 @@ public class WHILE_END extends Logic {
     return "}";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "}";
   }
 

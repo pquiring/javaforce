@@ -17,7 +17,7 @@ public class POS extends Logic {
     return "pos";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "if (enabled) {if (tags[1].getBoolean()) enabled = false; else tags[1].setBoolean(true);} else {if (tags[1].getBoolean()) tags[1].setBoolean(false);}";
   }
 

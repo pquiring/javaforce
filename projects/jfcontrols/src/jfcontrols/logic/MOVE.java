@@ -17,7 +17,7 @@ public class MOVE extends Logic {
     return "Move";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     StringBuilder sb = new StringBuilder();
     sb.append("if (enabled) {");
 

@@ -21,7 +21,7 @@ public class BREAK extends Logic {
     return "Break";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "if (enabled) break;";
   }
 

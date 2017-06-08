@@ -21,7 +21,7 @@ public class IF extends Logic {
     return "if";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "if (enabled) {";
   }
 

@@ -21,7 +21,7 @@ public class DO extends Logic {
     return "Do";
   }
 
-  public String getCode(int types[]) {
+  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
     return "do {";
   }
 
