@@ -9,14 +9,14 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class GET_TIME_STAMP extends Logic {
+public class GET_MILLIS extends Logic {
 
   public boolean isBlock() {
     return true;
   }
 
   public String getDesc() {
-    return "GetTime";
+    return "GetMilliSeconds";
   }
 
   public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
