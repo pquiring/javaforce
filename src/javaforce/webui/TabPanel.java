@@ -55,8 +55,17 @@ public class TabPanel extends Column {
     }
   }
   public void setTabIndex(int idx) {
+    if (idx == this.idx) return;
+//    sendEvent("settab", new String[] {"tabs=" + tabs.id, "row=" + row.id, "idx=" + idx});
+    Label currentLbl = (Label)row.get(this.idx);
+    currentLbl.setClass("tabinactive");
+    Label newLbl = (Label)row.get(idx);
+    newLbl.setClass("tabactive");
+    Panel currentPanel = (Panel)tabs.get(this.idx);
+    currentPanel.setClass("tabcontenthidden");
+    Panel newPanel = (Panel)tabs.get(idx);
+    newPanel.setClass("tabcontentshown");
     this.idx = idx;
-    sendEvent("settab", new String[] {"tabs=" + tabs.id, "row=" + row.id, "idx=" + idx});
   }
   public int getTabIndex() {
     return idx;

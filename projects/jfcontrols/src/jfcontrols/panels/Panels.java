@@ -337,6 +337,7 @@ public class Panels {
       pairs = sql.select("select id, name from funcs");
     } else if (arg.equals("jfc_logic_groups")) {
       pairs = sql.select("select gid,gid from logics group by gid order by gid");
+      value = "bit";
     } else if (arg.equals("jfc_tag_type_udt")) {
       arg = "jfc_tag_type";
       String lid = sql.select1value("select id from lists where name=" + SQL.quote(arg));
@@ -669,16 +670,18 @@ public class Panels {
         tabs.setTabsVisible(false);
         tabs.setBorders(false);
         String groups[] = sql.select1col("select gid from logics group by gid order by gid");
+        int idx = -1;
         for(int a=0;a<groups.length;a++) {
           tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_logics", null, null, null, groups[a], null), null, new Rectangle(r), client)), "");
+          if (groups[a].equals("bit")) idx = a;
         }
+        if (idx != -1) tabs.setTabIndex(idx);
         setCellSize(tabs, r);
         client.setProperty("groups", tabs);
         return tabs;
       }
       case "jfc_logics": {
-        String items[][] = sql.select("select id from logics where gid=" + SQL.quote(arg));
-        int p = 0, w;
+        String items[][] = sql.select("select name from logics where gid=" + SQL.quote(arg));
         for(int a=0;a<items.length;a++) {
           String desc = items[a][0];
           String style = "border";
@@ -688,6 +691,7 @@ public class Panels {
             if (desc.length() > 3) {
               style += ";smallfont";
             }
+            desc = desc.replaceAll("_", "<br/>");
           }
           cells.add(createCell("", a, 0, 1, 1, "button", items[a][0], desc, null, "jfc_rung_editor_add", null, style));
         }

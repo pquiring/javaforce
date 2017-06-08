@@ -28,6 +28,10 @@ public class TagArray extends MonitoredTag {
     return null;
   }
 
+  public TagAddr getAddr() {
+    return addr;
+  }
+
   public void updateRead(SQL sql) {
   }
 

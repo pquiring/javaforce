@@ -86,11 +86,13 @@ public class LocalTag extends MonitoredTag implements TagBaseArray {
   public String getValue(TagAddr ta) {
     if (array || udt) {
       synchronized(arrayLock) {
-        int mid = 0;
+        TagID id;
         if (udt) {
-          mid = mids.get(ta.member);
+          int mid = mids.get(ta.member);
+          id = new TagID(tid, ta.idx, mid, ta.midx);
+        } else {
+          id = new TagID(tid, ta.idx, 0, 0);
         }
-        TagID id = new TagID(tid, ta.idx, mid, ta.midx);
         TagValue tv = values.get(id);
         if (tv == null) {
           tv = new TagValue(id);
@@ -116,11 +118,13 @@ public class LocalTag extends MonitoredTag implements TagBaseArray {
   public void setValue(TagAddr ta, String value) {
     if (array || udt) {
       synchronized(arrayLock) {
-        int mid = 0;
+        TagID id;
         if (udt) {
-          mid = mids.get(ta.member);
+          int mid = mids.get(ta.member);
+          id = new TagID(tid, ta.idx, mid, ta.midx);
+        } else {
+          id = new TagID(tid, ta.idx, 0, 0);
         }
-        TagID id = new TagID(tid, ta.idx, mid, ta.midx);
         TagValue tv = values.get(id);
         if (tv == null) {
           tv = new TagValue(id);

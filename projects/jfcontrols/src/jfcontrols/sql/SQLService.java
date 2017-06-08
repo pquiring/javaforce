@@ -73,7 +73,7 @@ public class SQLService {
     sql.execute("create table listdata (id int not null generated always as identity (start with 1, increment by 1) primary key, lid int, value int, text varchar(128))");
     sql.execute("create table config (id varchar(32) unique, value varchar(512))");
     sql.execute("create table alarmhistory (id int not null generated always as identity (start with 1, increment by 1) primary key, idx int, when varchar(22))");
-    sql.execute("create table logics (id varchar(32) unique, gid varchar(32))");
+    sql.execute("create table logics (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, gid varchar(32), seq varchar(32))");
 
     //create users
     sql.execute("insert into users (name, pass) values ('admin', 'admin')");
@@ -134,56 +134,59 @@ public class SQLService {
     sql.execute("insert into ctrls (cid,ip,type,speed) values (0,'127.0.0.1',0,0)");
 
     //create logic blocks
-    sql.execute("insert into logics (id,gid) values ('xon','bit')");
-    sql.execute("insert into logics (id,gid) values ('xoff','bit')");
-    sql.execute("insert into logics (id,gid) values ('coil','bit')");
-    sql.execute("insert into logics (id,gid) values ('set','bit')");
-    sql.execute("insert into logics (id,gid) values ('reset','bit')");
-    sql.execute("insert into logics (id,gid) values ('pos','bit')");
-    sql.execute("insert into logics (id,gid) values ('neg','bit')");
-    sql.execute("insert into logics (id,gid) values ('not','bit')");
-    sql.execute("insert into logics (id,gid) values ('shl','bit')");
-    sql.execute("insert into logics (id,gid) values ('shr','bit')");
-    sql.execute("insert into logics (id,gid) values ('or','bit')");
-    sql.execute("insert into logics (id,gid) values ('and','bit')");
-    sql.execute("insert into logics (id,gid) values ('xor','bit')");
+    sql.execute("insert into logics (name,gid) values ('xon','bit')");
+    sql.execute("insert into logics (name,gid) values ('xoff','bit')");
+    sql.execute("insert into logics (name,gid) values ('coil','bit')");
+    sql.execute("insert into logics (name,gid) values ('set','bit')");
+    sql.execute("insert into logics (name,gid) values ('reset','bit')");
+    sql.execute("insert into logics (name,gid) values ('pos','bit')");
+    sql.execute("insert into logics (name,gid) values ('neg','bit')");
+    sql.execute("insert into logics (name,gid) values ('not','bit')");
+    sql.execute("insert into logics (name,gid) values ('shl','bit')");
+    sql.execute("insert into logics (name,gid) values ('shr','bit')");
+    sql.execute("insert into logics (name,gid) values ('or','bit')");
+    sql.execute("insert into logics (name,gid) values ('and','bit')");
+    sql.execute("insert into logics (name,gid) values ('xor','bit')");
 
-    sql.execute("insert into logics (id,gid) values ('cmp_eq','compare')");
-    sql.execute("insert into logics (id,gid) values ('cmp_ne','compare')");
-    sql.execute("insert into logics (id,gid) values ('cmp_gt','compare')");
-    sql.execute("insert into logics (id,gid) values ('cmp_ge','compare')");
-    sql.execute("insert into logics (id,gid) values ('cmp_lt','compare')");
-    sql.execute("insert into logics (id,gid) values ('cmp_le','compare')");
+    sql.execute("insert into logics (name,gid) values ('cmp_eq','compare')");
+    sql.execute("insert into logics (name,gid) values ('cmp_ne','compare')");
+    sql.execute("insert into logics (name,gid) values ('cmp_gt','compare')");
+    sql.execute("insert into logics (name,gid) values ('cmp_ge','compare')");
+    sql.execute("insert into logics (name,gid) values ('cmp_lt','compare')");
+    sql.execute("insert into logics (name,gid) values ('cmp_le','compare')");
 
-    sql.execute("insert into logics (id,gid) values ('move','math')");
-    sql.execute("insert into logics (id,gid) values ('add','math')");
-    sql.execute("insert into logics (id,gid) values ('sub','math')");
-    sql.execute("insert into logics (id,gid) values ('mul','math')");
-    sql.execute("insert into logics (id,gid) values ('div','math')");
-    sql.execute("insert into logics (id,gid) values ('mod','math')");
-    sql.execute("insert into logics (id,gid) values ('abs','math')");
-    sql.execute("insert into logics (id,gid) values ('sqrt','math')");
-    sql.execute("insert into logics (id,gid) values ('round','math')");
-    sql.execute("insert into logics (id,gid) values ('floor','math')");
-    sql.execute("insert into logics (id,gid) values ('ceil','math')");
+    sql.execute("insert into logics (name,gid) values ('move','math')");
+    sql.execute("insert into logics (name,gid) values ('add','math')");
+    sql.execute("insert into logics (name,gid) values ('sub','math')");
+    sql.execute("insert into logics (name,gid) values ('mul','math')");
+    sql.execute("insert into logics (name,gid) values ('div','math')");
+    sql.execute("insert into logics (name,gid) values ('mod','math')");
+    sql.execute("insert into logics (name,gid) values ('abs','math')");
+    sql.execute("insert into logics (name,gid) values ('sqrt','math')");
+    sql.execute("insert into logics (name,gid) values ('round','math')");
+    sql.execute("insert into logics (name,gid) values ('floor','math')");
+    sql.execute("insert into logics (name,gid) values ('ceil','math')");
 
-    sql.execute("insert into logics (id,gid) values ('sin','math')");
-    sql.execute("insert into logics (id,gid) values ('cos','math')");
-    sql.execute("insert into logics (id,gid) values ('tan','math')");
-    sql.execute("insert into logics (id,gid) values ('asin','math')");
-    sql.execute("insert into logics (id,gid) values ('acos','math')");
-    sql.execute("insert into logics (id,gid) values ('atan','math')");
+    sql.execute("insert into logics (name,gid) values ('sin','math')");
+    sql.execute("insert into logics (name,gid) values ('cos','math')");
+    sql.execute("insert into logics (name,gid) values ('tan','math')");
+    sql.execute("insert into logics (name,gid) values ('asin','math')");
+    sql.execute("insert into logics (name,gid) values ('acos','math')");
+    sql.execute("insert into logics (name,gid) values ('atan','math')");
 
-    sql.execute("insert into logics (id,gid) values ('call','function')");
-    sql.execute("insert into logics (id,gid) values ('sleep','function')");
-    sql.execute("insert into logics (id,gid) values ('do','function')");
-    sql.execute("insert into logics (id,gid) values ('do_end','function')");
-    sql.execute("insert into logics (id,gid) values ('while','function')");
-    sql.execute("insert into logics (id,gid) values ('while_end','function')");
-    sql.execute("insert into logics (id,gid) values ('if','function')");
-    sql.execute("insert into logics (id,gid) values ('if_end','function')");
-    sql.execute("insert into logics (id,gid) values ('break','function')");
-    sql.execute("insert into logics (id,gid) values ('ret','function')");
+    sql.execute("insert into logics (name,gid) values ('call','function')");
+    sql.execute("insert into logics (name,gid) values ('sleep','function')");
+    sql.execute("insert into logics (name,gid) values ('do','function')");
+    sql.execute("insert into logics (name,gid) values ('do_end','function')");
+    sql.execute("insert into logics (name,gid) values ('while','function')");
+    sql.execute("insert into logics (name,gid) values ('while_end','function')");
+    sql.execute("insert into logics (name,gid) values ('if','function')");
+    sql.execute("insert into logics (name,gid) values ('if_end','function')");
+    sql.execute("insert into logics (name,gid) values ('break','function')");
+    sql.execute("insert into logics (name,gid) values ('ret','function')");
+
+    sql.execute("insert into logics (name,gid) values ('array_copy','array')");
+    sql.execute("insert into logics (name,gid) values ('array_length','array')");
 
     //create SDTs
     int uid = IDs.uid_sys;

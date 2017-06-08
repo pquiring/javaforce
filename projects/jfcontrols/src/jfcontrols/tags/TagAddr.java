@@ -14,6 +14,15 @@ public class TagAddr {
   public String member;
   public int midx = -1;
 
+  public TagAddr() {}
+  public TagAddr(TagAddr copy) {
+    cid = copy.cid;
+    name = copy.name;
+    idx = copy.idx;
+    member = copy.member;
+    midx = copy.midx;
+  }
+
   public String toString() {
     if (member != null) {
       return "TagAddr:" + name + "[" + idx + "]." + member;
