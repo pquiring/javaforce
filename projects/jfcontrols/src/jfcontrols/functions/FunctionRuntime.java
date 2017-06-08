@@ -5,6 +5,7 @@ package jfcontrols.functions;
  * @author pquiring
  */
 
+import java.util.Calendar;
 import javaforce.*;
 
 import jfcontrols.sql.*;
@@ -79,5 +80,65 @@ public class FunctionRuntime extends TagsCache {
     if (len == null) len = "0";
     sql.close();
     tags[2].setValue(len);
+  }
+
+  public void getdate(TagBase tags[]) {
+    Calendar cal = Calendar.getInstance();
+    int year = cal.get(Calendar.YEAR);
+    int month = cal.get(Calendar.MONTH) + 1;
+    int day = cal.get(Calendar.DAY_OF_MONTH);
+    TagBase tag = tags[1];
+    if (tag.getType() != IDs.uid_date) {
+      JFLog.log("Error:GET_DATE:wrong tag type");
+      return;
+    }
+    int idx = -1;
+    if (tag instanceof TagArray) {
+      TagAddr org = ((TagArray)tag).getAddr();
+      idx = org.idx;
+    }
+    TagAddr ta = new TagAddr();
+    ta.idx = idx;
+    ta.member = "year";
+    TagArray tagyear = (TagArray)tag.getIndex(ta);
+    tagyear.setInt(year);
+    ta.member = "month";
+    TagArray tagmonth = (TagArray)tag.getIndex(ta);
+    tagmonth.setInt(month);
+    ta.member = "day";
+    TagArray tagday = (TagArray)tag.getIndex(ta);
+    tagday.setInt(day);
+  }
+
+  public void gettime(TagBase tags[]) {
+    Calendar cal = Calendar.getInstance();
+    int hour = cal.get(Calendar.HOUR_OF_DAY);
+    int minute = cal.get(Calendar.MINUTE);
+    int second = cal.get(Calendar.SECOND);
+    int milli = cal.get(Calendar.MILLISECOND);
+    TagBase tag = tags[1];
+    if (tag.getType() != IDs.uid_time) {
+      JFLog.log("Error:GET_TIME:wrong tag type");
+      return;
+    }
+    int idx = -1;
+    if (tag instanceof TagArray) {
+      TagAddr org = ((TagArray)tag).getAddr();
+      idx = org.idx;
+    }
+    TagAddr ta = new TagAddr();
+    ta.idx = idx;
+    ta.member = "hour";
+    TagArray taghour = (TagArray)tag.getIndex(ta);
+    taghour.setInt(hour);
+    ta.member = "minute";
+    TagArray tagminute = (TagArray)tag.getIndex(ta);
+    tagminute.setInt(minute);
+    ta.member = "second";
+    TagArray tagsecond = (TagArray)tag.getIndex(ta);
+    tagsecond.setInt(second);
+    ta.member = "milli";
+    TagArray tagmilli = (TagArray)tag.getIndex(ta);
+    tagmilli.setInt(milli);
   }
 }

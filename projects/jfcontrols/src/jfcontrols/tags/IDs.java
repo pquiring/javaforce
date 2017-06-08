@@ -12,6 +12,8 @@ public class IDs {
   public static final int uid_sdt = 0x100;
   public static final int uid_sys = 0x100;
   public static final int uid_io = 0x101;
+  public static final int uid_date = 0x102;
+  public static final int uid_time = 0x103;
   //0x1000 - 0x11ff = user data types
   public static final int uid_user = 0x1000;
   public static final int uid_alarms = 0x1000;

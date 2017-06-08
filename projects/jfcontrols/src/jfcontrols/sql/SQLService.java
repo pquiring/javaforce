@@ -188,6 +188,9 @@ public class SQLService {
     sql.execute("insert into logics (name,gid) values ('array_copy','array')");
     sql.execute("insert into logics (name,gid) values ('array_length','array')");
 
+    sql.execute("insert into logics (name,gid) values ('get_date','system')");
+    sql.execute("insert into logics (name,gid) values ('get_time','system')");
+
     //create SDTs
     int uid = IDs.uid_sys;
     sql.execute("insert into udts (uid,name) values (" + uid + ",'system')");
@@ -196,6 +199,17 @@ public class SQLService {
     uid = IDs.uid_io;
     sql.execute("insert into udts (uid,name) values (" + uid + ",'io')");
     //udtmems are created in hardware config panel
+    uid = IDs.uid_date;
+    sql.execute("insert into udts (uid,name) values (" + uid + ",'date')");  //yyyy mm dd
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'year'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'month'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'day'," + TagType.int32 + ",false,false,true)");
+    uid = IDs.uid_time;
+    sql.execute("insert into udts (uid,name) values (" + uid + ",'time')");  //hh MM ss mm
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'hour'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'minute'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'second'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'milli'," + TagType.int32 + ",false,false,true)");
 
     //create default UDTs
     uid = IDs.uid_alarms;

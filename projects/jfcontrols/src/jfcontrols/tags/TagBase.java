@@ -79,7 +79,7 @@ public abstract class TagBase {
   }
 
   public static String decode(int type, boolean unsigned, byte in[], int pos) {
-    switch (type & 0xff) {
+    switch (type) {
       case TagType.bit:
         return in[pos] == 0 ? "0" : "1";
       case TagType.int8:
@@ -109,7 +109,7 @@ public abstract class TagBase {
   }
 
   public static void encode(int type, boolean unsigned, String in, byte out[], int pos) {
-    switch (type & 0xff) {
+    switch (type) {
       case TagType.bit:
         out[pos] = (byte)(in.equals("0") ? 0 : 1);
         break;
