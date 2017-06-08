@@ -25,7 +25,7 @@ public class FunctionCompiler {
     sb.append("  public boolean code(TagBase args[]) {\r\n");
     sb.append("    boolean enabled = true;\r\n");
     sb.append("    boolean en[] = new boolean[256];\r\n");
-    sb.append("    int_ eidx = 0;\r\n");
+    sb.append("    int eidx = 0;\r\n");
     sb.append("    en[eidx] = enabled;\r\n");
     sb.append("    TagBase tags[] = new TagBase[33];\r\n");
 

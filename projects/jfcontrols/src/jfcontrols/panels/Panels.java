@@ -676,12 +676,17 @@ public class Panels {
       }
       case "jfc_logics": {
         String items[][] = sql.select("select id from logics where gid=" + SQL.quote(arg));
+        int p = 0, w;
         for(int a=0;a<items.length;a++) {
           String desc = items[a][0];
           if (Images.getImage(desc) != null) {
             desc = "!image:" + desc;
+            w = 1;
+          } else {
+            if (desc.length() > 3) w = 2; else w = 1;
           }
-          cells.add(createCell("", a, 0, 1, 1, "button", items[a][0], desc, null, "jfc_rung_editor_add", null, "border"));
+          cells.add(createCell("", p, 0, w, 1, "button", items[a][0], desc, null, "jfc_rung_editor_add", null, "border"));
+          p += w;
         }
         break;
       }
