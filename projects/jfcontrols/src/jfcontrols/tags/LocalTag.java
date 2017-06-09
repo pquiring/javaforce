@@ -161,7 +161,7 @@ public class LocalTag extends MonitoredTag {
     return 0;
   }
 
-  public class Index extends TagBase {
+  public class Index extends MonitoredTag {
     private int idx;
 
     public Index(TagBase _this, int idx) {
@@ -208,13 +208,27 @@ public class LocalTag extends MonitoredTag {
     public int getMemberIndex() {
       return 0;
     }
+
+    public void addListener(TagBaseListener listener) {
+      LocalTag.this.addListener(listener);
+    }
+
+    public void removeListener(TagBaseListener listener) {
+      LocalTag.this.removeListener(listener);
+    }
+
+    public void updateRead(SQL sql) {
+    }
+
+    public void updateWrite(SQL sql) {
+    }
   }
 
   public TagBase getIndex(int idx) {
     return new Index(this, idx);
   }
 
-  public class MemberIndex extends TagBase {
+  public class MemberIndex extends MonitoredTag {
     private int idx, mid, midx;
 
     public MemberIndex(TagBase _this, int idx, int mid, int midx) {
@@ -261,9 +275,23 @@ public class LocalTag extends MonitoredTag {
     public int getMemberIndex() {
       return midx;
     }
+
+    public void addListener(TagBaseListener listener) {
+      LocalTag.this.addListener(listener);
+    }
+
+    public void removeListener(TagBaseListener listener) {
+      LocalTag.this.removeListener(listener);
+    }
+
+    public void updateRead(SQL sql) {
+    }
+
+    public void updateWrite(SQL sql) {
+    }
   }
 
-  public class Member extends TagBase {
+  public class Member extends MonitoredTag {
     private int idx, mid;
 
     public Member(TagBase _this, int idx, int mid) {
@@ -310,6 +338,20 @@ public class LocalTag extends MonitoredTag {
 
     public int getMemberIndex() {
       return 0;
+    }
+
+    public void addListener(TagBaseListener listener) {
+      LocalTag.this.addListener(listener);
+    }
+
+    public void removeListener(TagBaseListener listener) {
+      LocalTag.this.removeListener(listener);
+    }
+
+    public void updateRead(SQL sql) {
+    }
+
+    public void updateWrite(SQL sql) {
     }
   }
 

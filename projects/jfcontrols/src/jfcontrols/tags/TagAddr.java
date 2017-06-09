@@ -5,8 +5,6 @@ package jfcontrols.tags;
  * @author pquiring
  */
 
-import javaforce.*;
-
 public class TagAddr {
   public int cid = 0;
   public String name;

@@ -119,7 +119,7 @@ public class IOTag extends MonitoredTag {
     return null;
   }
 
-  public class Member extends TagBase {
+  public class Member extends MonitoredTag {
     private int mid;
     public Member(IOTag _this, int mid) {
       super(_this.getType(), _this.isUnsigned(), _this.isArray());
@@ -165,9 +165,23 @@ public class IOTag extends MonitoredTag {
     public int getMemberIndex() {
       return 0;
     }
+
+    public void addListener(TagBaseListener listener) {
+      IOTag.this.addListener(listener);
+    }
+
+    public void removeListener(TagBaseListener listener) {
+      IOTag.this.removeListener(listener);
+    }
+
+    public void updateRead(SQL sql) {
+    }
+
+    public void updateWrite(SQL sql) {
+    }
   }
 
-  public class MemberIndex extends TagBase {
+  public class MemberIndex extends MonitoredTag {
     private int mid, midx;
     public MemberIndex(IOTag _this, int mid, int midx) {
       super(_this.getType(), _this.isUnsigned(), _this.isArray());
@@ -213,6 +227,20 @@ public class IOTag extends MonitoredTag {
 
     public int getMemberIndex() {
       return 0;
+    }
+
+    public void addListener(TagBaseListener listener) {
+      IOTag.this.addListener(listener);
+    }
+
+    public void removeListener(TagBaseListener listener) {
+      IOTag.this.removeListener(listener);
+    }
+
+    public void updateRead(SQL sql) {
+    }
+
+    public void updateWrite(SQL sql) {
     }
   }
 

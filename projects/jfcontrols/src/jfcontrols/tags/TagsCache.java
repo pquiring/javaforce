@@ -37,12 +37,12 @@ public class TagsCache {
       if (tag.isArray()) {
         tag = tag.getIndex(ta.idx);
       }
-      if (tag.isUDT()) {
+      if (tag.isUDT() && ta.member != null) {
         int mid = tag.getMember(ta.member);
         tag = tag.getMember(mid);
-      }
-      if (tag.isArray()) {
-        tag = tag.getIndex(ta.midx);
+        if (tag.isArray() && ta.midx != -1) {
+          tag = tag.getIndex(ta.midx);
+        }
       }
       return tag;
     } else {
