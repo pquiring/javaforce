@@ -34,6 +34,7 @@ public class FunctionCompiler {
     int norungs = rungs.length;
     ArrayList<String> stack = new ArrayList<>();
     for(int rid=0;rid<norungs;rid++) {
+      int pos = sb.length();
       String rung[] = rungs[rid];
       String logic[] = rung[0].split("[|]");
       String blocks[][] = sql.select("select bid,name,tags from blocks where fid=" + fid + " and rid=" + rid + " order by bid");
@@ -127,6 +128,10 @@ public class FunctionCompiler {
               sb.append(node.blk.getCode(func));
             } else {
               sb.append(node.blk.getCode(types, array, unsigned));
+              String preCode = node.blk.getPreCode();
+              if (preCode != null) {
+                sb.insert(pos, preCode);
+              }
             }
             sb.append("\r\n  en[eidx] = enabled;\r\n");
             break;
