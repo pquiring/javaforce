@@ -37,7 +37,7 @@ public class WHILE extends Logic {
     return -1;
   }
 
-  public boolean isSolo() {
+  public boolean isLast() {
     return true;
   }
 
