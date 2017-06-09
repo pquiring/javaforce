@@ -29,7 +29,17 @@ public abstract class TagBase {
 
   public abstract void setValue(String value);
 
-  public abstract TagBase getIndex(TagAddr ta);
+  public abstract TagBase getIndex(int idx);
+
+  public abstract TagBase getMember(int mid);
+
+  public abstract int getMember(String member);
+
+  public abstract int getTagID();
+  public abstract int getIndex();
+  public abstract boolean isMember();
+  public abstract int getMember();
+  public abstract int getMemberIndex();
 
   public int getSize() {
     return getSize(type);
@@ -64,6 +74,10 @@ public abstract class TagBase {
 
   public boolean isUnsigned() {
     return unsigned;
+  }
+
+  public boolean isUDT() {
+    return udt;
   }
 
   public boolean isLong() {

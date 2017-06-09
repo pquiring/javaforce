@@ -22,7 +22,21 @@ public class IDs {
   //mids
   public static final int system_mid_scantime = 0;
 
+  public static final int io_mid_di = 0;
+  public static final int io_mid_do = 1;
+  public static final int io_mid_ai = 2;
+  public static final int io_mid_ao = 3;
+
   public static final int alarm_mid_name = 0;
   public static final int alarm_mid_active = 1;
   public static final int alarm_mid_ack = 2;
+
+  public static final int date_mid_year = 0;
+  public static final int date_mid_month = 1;
+  public static final int date_mid_day = 2;
+
+  public static final int time_mid_hour = 0;
+  public static final int time_mid_minute = 1;
+  public static final int time_mid_second = 2;
+  public static final int time_mid_milli = 3;
 }

@@ -26,8 +26,38 @@ public class IndexTag extends TagBase {
     tags.setIndex(idx, Integer.valueOf(value));
   }
 
-  public TagBase getIndex(TagAddr ta) {
+  public TagBase getIndex(int idx) {
     JFLog.log("Error:IndexTag.getIndex() called");
     return null;
+  }
+
+  public TagBase getMember(int idx) {
+    JFLog.log("Error:IndexTag.getMember() called");
+    return null;
+  }
+
+  public int getMember(String name) {
+    JFLog.log("Error:IndexTag.getMember() called");
+    return -1;
+  }
+
+  public int getTagID() {
+    return -1;
+  }
+
+  public int getIndex() {
+    return idx;
+  }
+
+  public boolean isMember() {
+    return false;
+  }
+
+  public int getMember() {
+    return -1;
+  }
+
+  public int getMemberIndex() {
+    return -1;
   }
 }

@@ -29,16 +29,22 @@ public class TagsCache {
       return new TagTemp(ta.name);
     }
     if (ta.cid == 0) {
-      LocalTag tag = (LocalTag)TagsService.getLocalTag(ta.name);
+      TagBase tag = TagsService.getLocalTag(ta.name);
       if (tag == null) {
         JFLog.log("Error:Unable to find local tag:" + ta.name);
         return null;
       }
       if (tag.isArray()) {
-        return tag.getIndex(ta);
-      } else {
-        return tag;
+        tag = tag.getIndex(ta.idx);
       }
+      if (tag.isUDT()) {
+        int mid = tag.getMember(ta.member);
+        tag = tag.getMember(mid);
+      }
+      if (tag.isArray()) {
+        tag = tag.getIndex(ta.midx);
+      }
+      return tag;
     } else {
       TagBase tag = TagsService.getRemoteTag(ta.name);
       if (tag == null) {

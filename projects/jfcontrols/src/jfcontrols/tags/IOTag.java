@@ -12,7 +12,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.pi.GPIO;
 
-public class IOTag extends MonitoredTag implements TagBaseArray {
+public class IOTag extends MonitoredTag {
   private Object arrayLock = new Object();
   private HashMap<TagID, TagValue> values;
   private HashMap<String, Integer> mids;
@@ -38,22 +38,17 @@ public class IOTag extends MonitoredTag implements TagBaseArray {
     }
     String dimap[] = sql.select1value("select hw_di").split(",");
     dis = new int[dimap.length];
-    TagAddr ta = new TagAddr();
-    ta.member = "di";
     for(int a=0;a<dis.length;a++) {
       dis[a] = Integer.valueOf(dimap[a]);
       GPIO.configInput(dis[a]);
-      ta.midx = a;
-      getValue(ta);
+      getValue(0, IDs.io_mid_di, a);
     }
     String domap[] = sql.select1value("select hw_do").split(",");
     dos = new int[domap.length];
-    ta.member = "do";
     for(int a=8;a<16;a++) {
       dos[a] = Integer.valueOf(domap[a]);
       GPIO.configOutput(dos[a]);
-      ta.midx = a;
-      setValue(ta, "0");
+      setValue("0", 0, IDs.io_mid_do, a);
     }
   }
 
@@ -90,11 +85,10 @@ public class IOTag extends MonitoredTag implements TagBaseArray {
     GPIO.write(dos[tv.id.midx], !tv.value.equals("0"));
   }
 
-  public String getValue(TagAddr ta) {
+  public String getValue(int idx, int mid, int midx) {
     if (!loaded) return "0";
     synchronized(arrayLock) {
-      int mid = mids.get(ta.member);
-      TagID id = new TagID(0, ta.idx, mid, ta.midx);
+      TagID id = new TagID(0, idx, mid, midx);
       TagValue tv = values.get(id);
       if (tv == null) {
         tv = new TagValue(id);
@@ -105,10 +99,9 @@ public class IOTag extends MonitoredTag implements TagBaseArray {
     }
   }
 
-  public void setValue(TagAddr ta, String value) {
+  public void setValue(String value, int idx, int mid, int midx) {
     synchronized(arrayLock) {
-      int mid = mids.get(ta.member);
-      TagID id = new TagID(0, ta.idx, mid, ta.midx);
+      TagID id = new TagID(0, idx, mid, midx);
       TagValue tv = values.get(id);
       if (tv == null) {
         tv = new TagValue(id);
@@ -121,8 +114,110 @@ public class IOTag extends MonitoredTag implements TagBaseArray {
     dirty = true;
   }
 
-  public TagBase getIndex(TagAddr ta) {
-    return new TagArray(this, this, ta);
+  public TagBase getIndex(int idx) {
+    JFLog.log("Error:IOTag.getIndex(int) is invalid");
+    return null;
+  }
+
+  public class Member extends TagBase {
+    private int mid;
+    public Member(IOTag _this, int mid) {
+      super(_this.getType(), _this.isUnsigned(), _this.isArray());
+      this.mid = mid;
+    }
+
+    public String getValue() {
+      return IOTag.this.getValue(0, mid, 0);
+    }
+
+    public void setValue(String value) {
+      IOTag.this.setValue(value, 0, mid, 0);
+    }
+
+    public TagBase getIndex(int midx) {
+      return new MemberIndex(IOTag.this, mid, midx);
+    }
+
+    public TagBase getMember(int mid) {
+      return null;
+    }
+
+    public int getMember(String member) {
+      return -1;
+    }
+
+    public int getTagID() {
+      return IOTag.this.getTagID();
+    }
+
+    public int getIndex() {
+      return 0;
+    }
+
+    public boolean isMember() {
+      return true;
+    }
+
+    public int getMember() {
+      return mid;
+    }
+
+    public int getMemberIndex() {
+      return 0;
+    }
+  }
+
+  public class MemberIndex extends TagBase {
+    private int mid, midx;
+    public MemberIndex(IOTag _this, int mid, int midx) {
+      super(_this.getType(), _this.isUnsigned(), _this.isArray());
+      this.mid = mid;
+      this.midx = midx;
+    }
+
+    public String getValue() {
+      return IOTag.this.getValue(0, mid, midx);
+    }
+
+    public void setValue(String value) {
+      IOTag.this.setValue(value, 0, mid, midx);
+    }
+
+    public TagBase getIndex(int midx) {
+      return null;
+    }
+
+    public TagBase getMember(int mid) {
+      return null;
+    }
+
+    public int getMember(String member) {
+      return -1;
+    }
+
+    public int getTagID() {
+      return IOTag.this.getTagID();
+    }
+
+    public int getIndex() {
+      return 0;
+    }
+
+    public boolean isMember() {
+      return true;
+    }
+
+    public int getMember() {
+      return mid;
+    }
+
+    public int getMemberIndex() {
+      return 0;
+    }
+  }
+
+  public TagBase getMember(int mid) {
+    return new Member(this, mid);
   }
 
   public String getValue() {
@@ -130,5 +225,29 @@ public class IOTag extends MonitoredTag implements TagBaseArray {
   }
 
   public void setValue(String value) {
+  }
+
+  public int getMember(String name) {
+    return mids.get(name);
+  }
+
+  public int getTagID() {
+    return -1;  //???
+  }
+
+  public int getIndex() {
+    return 0;
+  }
+
+  public boolean isMember() {
+    return false;
+  }
+
+  public int getMember() {
+    return 0;
+  }
+
+  public int getMemberIndex() {
+    return 0;
   }
 }

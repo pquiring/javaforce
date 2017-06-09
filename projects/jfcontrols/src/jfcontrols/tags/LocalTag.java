@@ -10,7 +10,7 @@ import java.util.*;
 import javaforce.*;
 import jfcontrols.sql.SQLService;
 
-public class LocalTag extends MonitoredTag implements TagBaseArray {
+public class LocalTag extends MonitoredTag {
   private int tid;
   private Object arrayLock = new Object();
   private String value;
@@ -77,21 +77,20 @@ public class LocalTag extends MonitoredTag implements TagBaseArray {
 
   public String getValue() {
     if (array || udt) {
-      JFLog.log("Error:LocalTag array:must call getIndex()");
+      JFLog.log("Error:LocalTag array:must call getIndex() or getMember()");
       return null;
     }
-    return getValue(null);
+    return getValue(0, 0, 0);
   }
 
-  public String getValue(TagAddr ta) {
+  public String getValue(int idx, int mid, int midx) {
     if (array || udt) {
       synchronized(arrayLock) {
         TagID id;
         if (udt) {
-          int mid = mids.get(ta.member);
-          id = new TagID(tid, ta.idx, mid, ta.midx);
+          id = new TagID(tid, idx, mid, midx);
         } else {
-          id = new TagID(tid, ta.idx, 0, 0);
+          id = new TagID(tid, idx, 0, 0);
         }
         TagValue tv = values.get(id);
         if (tv == null) {
@@ -115,15 +114,14 @@ public class LocalTag extends MonitoredTag implements TagBaseArray {
     dirty = true;
   }
 
-  public void setValue(TagAddr ta, String value) {
+  public void setValue(String value, int idx, int mid, int midx) {
     if (array || udt) {
       synchronized(arrayLock) {
         TagID id;
         if (udt) {
-          int mid = mids.get(ta.member);
-          id = new TagID(tid, ta.idx, mid, ta.midx);
+          id = new TagID(tid, idx, mid, midx);
         } else {
-          id = new TagID(tid, ta.idx, 0, 0);
+          id = new TagID(tid, idx, 0, 0);
         }
         TagValue tv = values.get(id);
         if (tv == null) {
@@ -143,7 +141,183 @@ public class LocalTag extends MonitoredTag implements TagBaseArray {
     dirty = true;
   }
 
-  public TagArray getIndex(TagAddr ta) {
-    return new TagArray(this, this, ta);
+  public int getTagID() {
+    return tid;
+  }
+
+  public int getIndex() {
+    return 0;
+  }
+
+  public boolean isMember() {
+    return false;
+  }
+
+  public int getMember() {
+    return 0;
+  }
+
+  public int getMemberIndex() {
+    return 0;
+  }
+
+  public class Index extends TagBase {
+    private int idx;
+
+    public Index(TagBase _this, int idx) {
+      super(_this.getType(), _this.isUnsigned(), false);
+      this.idx = idx;
+    }
+
+    public String getValue() {
+      return LocalTag.this.getValue(idx, 0, 0);
+    }
+
+    public void setValue(String value) {
+      LocalTag.this.setValue(value, idx, 0, 0);
+    }
+
+    public TagBase getIndex(int idx) {
+      return LocalTag.this.getIndex(idx);
+    }
+
+    public TagBase getMember(int mid) {
+      return LocalTag.this.getMember(idx);
+    }
+
+    public int getMember(String member) {
+      return LocalTag.this.getMember(member);
+    }
+
+    public int getTagID() {
+      return tid;
+    }
+
+    public int getIndex() {
+      return idx;
+    }
+
+    public boolean isMember() {
+      return false;
+    }
+
+    public int getMember() {
+      return 0;
+    }
+
+    public int getMemberIndex() {
+      return 0;
+    }
+  }
+
+  public TagBase getIndex(int idx) {
+    return new Index(this, idx);
+  }
+
+  public class MemberIndex extends TagBase {
+    private int idx, mid, midx;
+
+    public MemberIndex(TagBase _this, int idx, int mid, int midx) {
+      super(_this.getType(), _this.isUnsigned(), _this.isArray());
+      this.mid = mid;
+    }
+
+    public String getValue() {
+      return LocalTag.this.getValue(idx, mid, midx);
+    }
+
+    public void setValue(String value) {
+      LocalTag.this.setValue(value, idx, mid, midx);
+    }
+
+    public TagBase getIndex(int idx) {
+      return null;
+    }
+
+    public TagBase getMember(int mid) {
+      return null;
+    }
+
+    public int getMember(String member) {
+      return LocalTag.this.getMember(member);
+    }
+
+    public int getTagID() {
+      return tid;
+    }
+
+    public int getIndex() {
+      return idx;
+    }
+
+    public boolean isMember() {
+      return true;
+    }
+
+    public int getMember() {
+      return mid;
+    }
+
+    public int getMemberIndex() {
+      return midx;
+    }
+  }
+
+  public class Member extends TagBase {
+    private int idx, mid;
+
+    public Member(TagBase _this, int idx, int mid) {
+      super(_this.getType(), _this.isUnsigned(), _this.isArray());
+      this.idx = idx;
+      this.mid = mid;
+    }
+
+    public String getValue() {
+      return LocalTag.this.getValue(idx, mid, 0);
+    }
+
+    public void setValue(String value) {
+      LocalTag.this.setValue(value, idx, mid, 0);
+    }
+
+    public TagBase getIndex(int midx) {
+      return new MemberIndex(this, idx, mid, midx);
+    }
+
+    public TagBase getMember(int mid) {
+      return LocalTag.this.getMember(mid);
+    }
+
+    public int getMember(String member) {
+      return LocalTag.this.getMember(member);
+    }
+
+    public int getTagID() {
+      return tid;
+    }
+
+    public int getIndex() {
+      return idx;
+    }
+
+    public boolean isMember() {
+      return true;
+    }
+
+    public int getMember() {
+      return mid;
+    }
+
+    public int getMemberIndex() {
+      return 0;
+    }
+  }
+
+  public TagBase getMember(int mid) {
+    return new Member(this, -1, mid);
+  }
+
+  public int getMember(String name) {
+    return mids.get(name);
   }
 }
