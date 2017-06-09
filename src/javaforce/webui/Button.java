@@ -11,6 +11,7 @@ import javaforce.JFLog;
 
 public class Button extends Component {
   private String text;
+  private String url;
   private Resource img;
   public Button(String text) {
     this.text = text;
@@ -33,5 +34,9 @@ public class Button extends Component {
   public void setText(String text) {
     this.text = text;
     sendEvent("settext", new String[] {"text=" + text});
+  }
+  public void setURL(String url) {
+    addEvent("onclick", "window.open(\"" + url + "\");");
+    this.url = url;
   }
 }

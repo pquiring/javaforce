@@ -53,6 +53,9 @@ function wsevent(event) {
     case "redir":
       load();
       break;
+    case "openurl":
+      window.open(msg.url);
+      break;
     case "display":
       element.style.display = msg.val;
       break;

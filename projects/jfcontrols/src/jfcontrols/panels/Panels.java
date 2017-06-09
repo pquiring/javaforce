@@ -223,6 +223,7 @@ public class Panels {
     switch (name) {
       case "label": return getLabel(v);
       case "button": return getButton(v);
+      case "link": return getLink(v);
       case "textfield": return getTextField(v, client);
       case "textarea": return getTextArea(v, client);
       case "combobox": return getComboBox(v, client);
@@ -265,6 +266,17 @@ public class Panels {
     b.addMouseUpListener((c) -> {
       Events.release(c);
     });
+    return b;
+  }
+  private static Button getLink(String v[]) {
+    String text = v[TEXT];
+    Button b = null;
+    if (text.startsWith("!image:")) {
+      b = new Button(Images.getImage(text.substring(7)));
+    } else {
+      b = new Button(v[TEXT]);
+    }
+    b.setURL("http://jfcontrols.sourceforge.net/help_" + v[ARG] + ".php");
     return b;
   }
   private static TextField getTextField(String v[], WebUIClient client) {
