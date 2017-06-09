@@ -183,6 +183,7 @@ public class SQLService {
     sql.execute("insert into logics (name,gid) values ('if','function')");
     sql.execute("insert into logics (name,gid) values ('if_end','function')");
     sql.execute("insert into logics (name,gid) values ('break','function')");
+    sql.execute("insert into logics (name,gid) values ('continue','function')");
     sql.execute("insert into logics (name,gid) values ('ret','function')");
 
     sql.execute("insert into logics (name,gid) values ('array_copy','array')");
