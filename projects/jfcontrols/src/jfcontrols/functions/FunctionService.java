@@ -89,7 +89,7 @@ public class FunctionService extends Thread {
     TagAddr ta = tags.decode("system.scantime");
     TagBase tag = tags.getTag(ta);
     while (active) {
-      long begin = System.currentTimeMillis();
+      FunctionRuntime.now = System.currentTimeMillis();
       TagsService.doReads();
       synchronized(rapi) {
         rapi.notifyAll();
@@ -110,7 +110,7 @@ public class FunctionService extends Thread {
       }
       TagsService.doWrites();
       long end = System.currentTimeMillis();
-      long scantime = end - begin;
+      long scantime = end - FunctionRuntime.now;
       if (!Main.debug) {
         tag.setValue(Long.toString(scantime));
       }

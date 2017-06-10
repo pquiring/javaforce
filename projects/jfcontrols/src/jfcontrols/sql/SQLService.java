@@ -73,7 +73,7 @@ public class SQLService {
     sql.execute("create table listdata (id int not null generated always as identity (start with 1, increment by 1) primary key, lid int, value int, text varchar(128))");
     sql.execute("create table config (id varchar(32) unique, value varchar(512))");
     sql.execute("create table alarmhistory (id int not null generated always as identity (start with 1, increment by 1) primary key, idx int, when varchar(22))");
-    sql.execute("create table logics (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, gid varchar(32), seq varchar(32))");
+    sql.execute("create table logics (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, shortname varchar(32), gid varchar(32))");
 
     //create users
     sql.execute("insert into users (name, pass) values ('admin', 'admin')");
@@ -193,6 +193,9 @@ public class SQLService {
     sql.execute("insert into logics (name,gid) values ('get_time','system')");
     sql.execute("insert into logics (name,gid) values ('get_millis','system')");
 
+    sql.execute("insert into logics (shortname,name,gid) values ('on_delay','timer_on_delay','timer')");
+    sql.execute("insert into logics (shortname,name,gid) values ('off_delay','timer_off_delay','timer')");
+
     //create SDTs
     int uid = IDs.uid_sys;
     sql.execute("insert into udts (uid,name) values (" + uid + ",'system')");
@@ -204,14 +207,21 @@ public class SQLService {
     uid = IDs.uid_date;
     sql.execute("insert into udts (uid,name) values (" + uid + ",'date')");  //yyyy mm dd
     sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'year'," + TagType.int32 + ",false,false,true)");
-    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'month'," + TagType.int32 + ",false,false,true)");
-    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'day'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",1,'month'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",2,'day'," + TagType.int32 + ",false,false,true)");
     uid = IDs.uid_time;
     sql.execute("insert into udts (uid,name) values (" + uid + ",'time')");  //hh MM ss mm
     sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'hour'," + TagType.int32 + ",false,false,true)");
-    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'minute'," + TagType.int32 + ",false,false,true)");
-    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'second'," + TagType.int32 + ",false,false,true)");
-    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'milli'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",1,'minute'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",2,'second'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",3,'milli'," + TagType.int32 + ",false,false,true)");
+    uid = IDs.uid_timer;
+    sql.execute("insert into udts (uid,name) values (" + uid + ",'timer')");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'time'," + TagType.int64 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",1,'last'," + TagType.int64 + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",2,'run'," + TagType.bit + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",3,'done'," + TagType.bit + ",false,false,true)");
+    sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",4,'enabled'," + TagType.bit + ",false,false,true)");
 
     //create default UDTs
     uid = IDs.uid_alarms;

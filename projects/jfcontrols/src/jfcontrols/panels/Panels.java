@@ -693,9 +693,13 @@ public class Panels {
         return tabs;
       }
       case "jfc_logics": {
-        String items[][] = sql.select("select name from logics where gid=" + SQL.quote(arg));
+        String items[][] = sql.select("select name,shortname from logics where gid=" + SQL.quote(arg));
         for(int a=0;a<items.length;a++) {
           String desc = items[a][0];
+          String shortname = items[a][1];
+          if (shortname != null) {
+            desc = shortname;
+          }
           String style = "border";
           if (Images.getImage(desc) != null) {
             desc = "!image:" + desc;

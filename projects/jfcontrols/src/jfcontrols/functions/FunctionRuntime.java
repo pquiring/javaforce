@@ -12,6 +12,7 @@ import jfcontrols.sql.*;
 import jfcontrols.tags.*;
 
 public class FunctionRuntime extends TagsCache {
+  public static long now;
   public IndexTags it = new IndexTags();
   public void arraycopy(TagBase tags[]) {
     //tags = src srcOff dst dstOff length
@@ -88,5 +89,98 @@ public class FunctionRuntime extends TagsCache {
     tag.getMember(IDs.time_mid_minute).setInt(minute);
     tag.getMember(IDs.time_mid_second).setInt(second);
     tag.getMember(IDs.time_mid_milli).setInt(milli);
+  }
+
+  public boolean timer_on_delay(boolean enabled, TagBase tags[]) {
+    TagBase timer = tags[1];
+    long timeout = tags[2].getLong();
+    TagBase leftTag = timer.getMember(IDs.timer_mid_time_left);
+    long left = leftTag.getLong();
+    TagBase lastTag = timer.getMember(IDs.timer_mid_time_last);
+    long last = lastTag.getLong();
+    TagBase runTag = timer.getMember(IDs.timer_mid_run);
+    boolean run = runTag.getBoolean();
+    TagBase doneTag = timer.getMember(IDs.timer_mid_done);
+    boolean done = doneTag.getBoolean();
+    TagBase enTag = timer.getMember(IDs.timer_mid_enabled);
+    boolean en = doneTag.getBoolean();
+    if (en != enabled) {
+      enTag.setBoolean(enabled);
+    }
+    if (enabled) {
+      if (!done) {
+        if (!run) {
+          //start timer
+          last = now;
+          left = timeout;
+          run = true;
+          runTag.setBoolean(run);
+        } else {
+          long delta = now - last;
+          left -= delta;
+          if (left < 0) left = 0;
+        }
+        leftTag.setLong(left);
+        lastTag.setLong(now);
+        if (left == 0) {
+          done = true;
+          doneTag.setBoolean(done);
+          run = false;
+          runTag.setBoolean(run);
+        }
+      }
+    } else {
+      if (run) {
+        run = false;
+        runTag.setBoolean(run);
+      }
+      if (done) {
+        done = false;
+        doneTag.setBoolean(done);
+      }
+    }
+    return done;
+  }
+
+  public boolean timer_off_delay(boolean enabled, TagBase tags[]) {
+    TagBase timer = tags[1];
+    long timeout = tags[2].getLong();
+    TagBase leftTag = timer.getMember(IDs.timer_mid_time_left);
+    long left = leftTag.getLong();
+    TagBase lastTag = timer.getMember(IDs.timer_mid_time_last);
+    long last = lastTag.getLong();
+    TagBase runTag = timer.getMember(IDs.timer_mid_run);
+    boolean run = runTag.getBoolean();
+    TagBase doneTag = timer.getMember(IDs.timer_mid_done);
+    boolean done = doneTag.getBoolean();
+    TagBase enTag = timer.getMember(IDs.timer_mid_enabled);
+    boolean en = doneTag.getBoolean();
+    if (enabled) {
+      if (!en) {
+        //(re)start timer
+        last = now;
+        left = timeout;
+        run = true;
+        runTag.setBoolean(run);
+      }
+    }
+    if (left > 0) {
+      long delta = now - last;
+      left -= delta;
+      if (left < 0) left = 0;
+    }
+    leftTag.setLong(left);
+    lastTag.setLong(now);
+    if (left == 0 && run) {
+      done = true;
+      doneTag.setBoolean(done);
+      run = false;
+      runTag.setBoolean(run);
+    }
+    if (en != enabled) {
+      en = enabled;
+      enTag.setBoolean(en);
+    }
+    return run;
   }
 }

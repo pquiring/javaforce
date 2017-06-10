@@ -14,6 +14,7 @@ public class IDs {
   public static final int uid_io = 0x101;
   public static final int uid_date = 0x102;
   public static final int uid_time = 0x103;
+  public static final int uid_timer = 0x104;
   //0x1000 - 0x11ff = user data types
   public static final int uid_user = 0x1000;
   public static final int uid_alarms = 0x1000;
@@ -39,4 +40,10 @@ public class IDs {
   public static final int time_mid_minute = 1;
   public static final int time_mid_second = 2;
   public static final int time_mid_milli = 3;
+
+  public static final int timer_mid_time_left = 0;
+  public static final int timer_mid_time_last = 1;
+  public static final int timer_mid_run = 2;
+  public static final int timer_mid_done = 3;
+  public static final int timer_mid_enabled = 4;
 }
