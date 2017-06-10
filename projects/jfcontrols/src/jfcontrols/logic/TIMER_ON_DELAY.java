@@ -19,7 +19,7 @@ public class TIMER_ON_DELAY extends Logic {
   }
 
   public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "timer_on_delay(tags);";
+    return "enabled = timer_on_delay(enabled, tags);";
   }
 
   public int getTagsCount() {

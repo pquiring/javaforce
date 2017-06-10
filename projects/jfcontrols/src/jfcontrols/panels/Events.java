@@ -247,13 +247,19 @@ public class Events {
         break;
       }
       case "jfc_udts_delete": {
-        String inuse = sql.select1value("select count(id) from tags where type=" + arg);
+        int uid = Integer.valueOf(sql.select1value("select uid from udts where id=" + arg));
+        String name = sql.select1value("select name from udts where id=" + arg);
+        if (uid == IDs.uid_alarms) {
+          Panels.showError(client, "Can not delete alarms type");
+          break;
+        }
+        String inuse = sql.select1value("select count(id) from tags where type=" + uid);
         if (!inuse.equals("0")) {
           Panels.showError(client, "Can not delete UDT that is in use!");
           break;
         }
         client.setProperty("arg", arg);
-        Panels.confirm(client, "Delete UDT?", "jfc_udts_delete");
+        Panels.confirm(client, "Delete UDT " + name + "?", "jfc_udts_delete");
         break;
       }
       case "jfc_udts_edit": {

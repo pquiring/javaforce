@@ -234,7 +234,7 @@ public class SQLService {
 
     //create default user tags
     uid = IDs.uid_alarms;
-    sql.execute("insert into tags (cid,name,type,array,unsigned,builtin) values (0,'alarms'," + uid + ",true,false,false)");
+    sql.execute("insert into tags (cid,name,type,array,unsigned,builtin) values (0,'alarms'," + uid + ",true,false,true)");
 
     //create panels
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_login', true, true)");
