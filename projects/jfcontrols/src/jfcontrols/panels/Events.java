@@ -789,9 +789,20 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
+      if (type.equals("tag")) {
+        if (!TagsService.validTagName(value)) {
+          tf.setBackColor("#c00");
+          tf.setProperty("red", "true");
+          return;
+        }
+      }
       SQL sql = SQLService.getSQL();
       String stmt = "update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id;
       sql.execute(stmt);
+      if (sql.lastException != null) {
+        String org = sql.select1value("select " + col + " from " + table + " where id=" + id);
+        tf.setText(org);
+      }
       sql.close();
     } else {
       context.write(tag, tf.getText());

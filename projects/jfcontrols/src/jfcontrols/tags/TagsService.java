@@ -152,4 +152,21 @@ public class TagsService extends Thread {
       lock_signal.notify();
     }
   }
+  public static boolean validTagName(String tag) {
+    //first letter must be a-z or A-Z
+    //other chars : 0-9 _
+    tag = tag.toLowerCase();
+    if (tag.length() == 0) return false;
+    char ch = tag.charAt(0);
+    if ((ch < 'a' || ch > 'z') && (ch != '_')) return false;
+    char ca[] = tag.toCharArray();
+    for(int a=0;a<ca.length;a++) {
+      ch = ca[a];
+      if (ch >= 'a' && ch <= 'z') continue;
+      if (ch == '_') continue;
+      if (ch >= '0' && ch <= '9') continue;
+      return false;
+    }
+    return true;
+  }
 }

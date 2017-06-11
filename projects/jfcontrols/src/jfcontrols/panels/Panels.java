@@ -543,7 +543,7 @@ public class Panels {
           } else {
             style = null;
           }
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_tags_name_str_" + data[a][0], null, null, style));
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_tags_name_tag_" + data[a][0], null, null, style));
           cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, tag_types, style));
           cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_tags_unsigned_boolean_" + data[a][0], null, null, style));
           if (cid.equals("0")) {
@@ -557,7 +557,7 @@ public class Panels {
         String data[][] = sql.select("select id,uid,name from udts where uid >= " + IDs.uid_user);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_str_" + data[a][0], null, null, null));
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tag_" + data[a][0], null, null, null));
           cells.add(createCell("", 8, a, 2, 1, "button", null, "Edit", null, "jfc_udts_edit", data[a][1], null));
           cells.add(createCell("", 11, a, 2, 1, "button", null, "Delete", null, "jfc_udts_delete", data[a][0], null));
         }
@@ -568,7 +568,7 @@ public class Panels {
         String data[][] = sql.select("select id,uid,name,type,mid,builtin from udtmems where uid=" + uid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_str_" + data[a][0], null, null, null));
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tag_" + data[a][0], null, null, null));
           cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", null));
           cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, null));
           cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_udtmems_array_boolean_" + data[a][0], null, null, null));
@@ -582,7 +582,7 @@ public class Panels {
         String data[][] = sql.select("select id,uid,name from udts where uid < " + IDs.uid_user);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_str_" + data[a][0], null, null, "readonly"));
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tag_" + data[a][0], null, null, "readonly"));
           cells.add(createCell("", 8, a, 2, 1, "button", null, "View", null, "jfc_sdts_edit", data[a][1], null));
         }
         break;
@@ -592,7 +592,7 @@ public class Panels {
         String data[][] = sql.select("select id,uid,name,type,mid from udtmems where uid=" + uid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_str_" + data[a][0], null, null, "readonly"));
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tag_" + data[a][0], null, null, "readonly"));
           cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", "readonly"));
           cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, "readonly"));
           cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_udtmems_array_boolean_" + data[a][0], null, null, "readonly"));
@@ -658,7 +658,7 @@ public class Panels {
           String fid = data[a][0];
           String funcname = data[a][1];
           String style = funcname.equals("main") || funcname.equals("init") ? "disabled" : null;
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_funcs_name_str_" + fid, null, null, style));
+          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_funcs_name_tag_" + fid, null, null, style));
           cells.add(createCell("", 7, a, 2, 1, "button", null, "Edit", null, "jfc_funcs_edit", fid, null));
           if (style == null) {
             cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_funcs_delete", fid, null));

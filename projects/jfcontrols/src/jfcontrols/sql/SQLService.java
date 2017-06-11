@@ -447,7 +447,7 @@ public class SQLService {
   }
 
   public static String quote(String value, String type) {
-    if (type.equals("str")) {
+    if (type.equals("str") || type.equals("tag")) {
       return SQL.quote(value);
     } else {
       return value;
