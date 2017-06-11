@@ -789,7 +789,7 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      if (type.equals("tag")) {
+      if (type.equals("tagid")) {
         if (!TagsService.validTagName(value)) {
           tf.setBackColor("#c00");
           tf.setProperty("red", "true");
