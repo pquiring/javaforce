@@ -796,6 +796,13 @@ public class Events {
           return;
         }
       }
+      if (type.equals("tag")) {
+        if (context.decode(value) == null) {
+          tf.setBackColor("#c00");
+          tf.setProperty("red", "true");
+          return;
+        }
+      }
       SQL sql = SQLService.getSQL();
       String stmt = "update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id;
       sql.execute(stmt);

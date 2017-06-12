@@ -72,13 +72,20 @@ public class TagsCache {
     // {} = optional
     TagAddr ta = new TagAddr();
     int idx;
+    char ch;
     idx = addr.indexOf('#');
+    if (idx == 0) {
+      idx = -1;
+      addr = addr.substring(1);
+    }
     if (idx != -1) {
       if (addr.charAt(0) != 'c') {
         JFLog.log("Error:Invalid Tag:" + addr);
         return null;
       }
-      ta.cid = Integer.valueOf(addr.substring(1, idx));
+      String cid = addr.substring(1, idx);
+      if (cid.length() == 0) return null;
+      ta.cid = Integer.valueOf(cid);
       addr = addr.substring(idx+1);
       if (ta.cid > 0) {
         //TODO : support remote arrays if type=JFC
@@ -86,7 +93,18 @@ public class TagsCache {
         return ta;
       }
     }
-    idx = addr.indexOf('.');
+    idx = -1;
+    int len = addr.length();
+    if (len == 0) return null;
+    boolean inidx = false;
+    for(int a=0;a<len;a++) {
+      ch = addr.charAt(a);
+      switch (ch) {
+        case '[': if (inidx) return null; inidx = true; break;
+        case ']': if (!inidx) return null; inidx = false; break;
+        case '.': if (!inidx) {if (idx != -1) return null; idx = a;} break;
+      }
+    }
     if (idx != -1) {
       ta.name = addr.substring(0, idx);
       ta.member = addr.substring(idx + 1);
@@ -95,15 +113,20 @@ public class TagsCache {
     }
     idx = ta.name.indexOf('[');
     if (idx != -1) {
+      if (ta.name.charAt(ta.name.length() - 1) != ']') {
+        return null;
+      }
       String tagidx = ta.name.substring(idx+1, ta.name.length() - 1);
-      if (tagidx.startsWith("[@]")) {
+      if (tagidx.length() == 0) return null;
+      if (tagidx.charAt(0) == '@') {
         ta.idx = it.getIndex(Integer.valueOf(tagidx.substring(1)));
       } else {
-        char ch = tagidx.charAt(0);
+        ch = tagidx.charAt(0);
         if (ch >= '0' && ch <= '9') {
           ta.idx = Integer.valueOf(tagidx);
         } else {
           TagBase tag = getTag(tagidx);
+          if (tag == null) return null;
           ta.idx = tag.getInt();
         }
       }
@@ -112,20 +135,34 @@ public class TagsCache {
     if (ta.member != null) {
       idx = ta.member.indexOf('[');
       if (idx != -1) {
+        if (ta.member.charAt(ta.member.length() - 1) != ']') {
+          return null;
+        }
         String tagidx = ta.member.substring(idx+1, ta.member.length() - 1);
-        if (tagidx.startsWith("[@]")) {
+        if (tagidx.length() == 0) return null;
+        if (tagidx.charAt(0) == '@') {
           ta.midx = it.getIndex(Integer.valueOf(tagidx.substring(1)));
         } else {
-          char ch = tagidx.charAt(0);
+          ch = tagidx.charAt(0);
           if (ch >= '0' && ch <= '9') {
             ta.midx = Integer.valueOf(tagidx);
           } else {
             TagBase tag = getTag(tagidx);
+            if (tag == null) return null;
             ta.midx = tag.getInt();
           }
         }
         ta.member = ta.member.substring(0, idx);
       }
+    }
+    //validate tag
+    if (ta.name.length() == 0) return null;
+    ch = Character.toLowerCase(ta.name.charAt(0));
+    if ((ch < 'a' || ch > 'z') && (ch != '_')) return null;
+    if (ta.member != null) {
+      if (ta.member.length() == 0) return null;
+      ch = Character.toLowerCase(ta.member.charAt(0));
+      if ((ch < 'a' || ch > 'z') && (ch != '_')) return null;
     }
     return ta;
   }
