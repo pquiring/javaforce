@@ -24,4 +24,13 @@ public class SHL extends Logic {
   public int getTagType(int idx) {
     return TagType.anyint;
   }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "val";
+      case 2: return "pos";
+      case 3: return "res";
+      default: return null;
+    }
+  }
 }

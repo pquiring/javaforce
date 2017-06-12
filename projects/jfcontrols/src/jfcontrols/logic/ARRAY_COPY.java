@@ -36,4 +36,15 @@ public class ARRAY_COPY extends Logic {
     }
     return TagType.unknown;
   }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "src";
+      case 2: return "sOff";
+      case 3: return "dst";
+      case 4: return "dOff";
+      case 5: return "len";
+      default: return null;
+    }
+  }
 }

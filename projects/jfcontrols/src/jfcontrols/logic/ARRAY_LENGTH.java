@@ -31,4 +31,12 @@ public class ARRAY_LENGTH extends Logic {
     }
     return TagType.unknown;
   }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "array";
+      case 2: return "len";
+      default: return null;
+    }
+  }
 }

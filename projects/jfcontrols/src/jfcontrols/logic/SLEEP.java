@@ -28,4 +28,11 @@ public class SLEEP extends Logic {
   public int getTagType(int idx) {
     return TagType.int32;
   }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "ms";
+      default: return null;
+    }
+  }
 }

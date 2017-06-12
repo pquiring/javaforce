@@ -34,4 +34,12 @@ public class ROUND extends Logic {
     }
     return TagType.unknown;
   }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "x";
+      case 2: return "res";
+      default: return null;
+    }
+  }
 }

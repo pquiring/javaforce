@@ -30,4 +30,11 @@ public class GET_DATE extends Logic {
   public int getTagType(int idx) {
     return IDs.uid_date;
   }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "date";
+      default: return null;
+    }
+  }
 }

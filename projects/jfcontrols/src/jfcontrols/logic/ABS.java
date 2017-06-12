@@ -14,7 +14,7 @@ public class ABS extends Logic {
   }
 
   public String getDesc() {
-    return "Mod";
+    return "Abs";
   }
 
   public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
@@ -30,5 +30,13 @@ public class ABS extends Logic {
 
   public int getTagType(int idx) {
     return TagType.any;
+  }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "x";
+      case 2: return "res";
+      default: return null;
+    }
   }
 }

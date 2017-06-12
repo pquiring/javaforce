@@ -30,4 +30,11 @@ public class GET_TIME extends Logic {
   public int getTagType(int idx) {
     return IDs.uid_time;
   }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "time";
+      default: return null;
+    }
+  }
 }

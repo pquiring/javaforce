@@ -31,4 +31,13 @@ public class DIV extends Logic {
   public int getTagType(int idx) {
     return TagType.any;
   }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "x";
+      case 2: return "y";
+      case 3: return "res";
+      default: return null;
+    }
+  }
 }

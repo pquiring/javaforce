@@ -1447,7 +1447,7 @@ public class Panels {
             }
             x++;
 
-            for(int a=0;a<3;a++) {
+            for(int a=0;a<4;a++) {
               if (create) {
                 newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b8", null));
                 newNodes.add(node.addChild('x', x, y));
@@ -1461,7 +1461,7 @@ public class Panels {
             }
 
             //skip b9 (do it last)
-            x -= 4;
+            x -= 5;
             y++;
 
             if (create) {
@@ -1476,15 +1476,15 @@ public class Panels {
             x++;
 
             if (create) {
-              newCells.add(createCell(null, x, y, 3, 1, "label", null, blk.getDesc(), null, null, null, null));
+              newCells.add(createCell(null, x, y, 4, 1, "label", null, blk.getDesc(), null, null, null, null));
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);
               if (child.x != x || child.y != y || child.moved) {
-                moveNode(logic, child, x, y, 3);
+                moveNode(logic, child, x, y, 4);
               }
             }
-            x += 3;
+            x += 4;
 
             if (create) {
               newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b6", null));
@@ -1495,13 +1495,26 @@ public class Panels {
                 moveNode(logic, child, x, y, 1);
               }
             }
-            x -= 4; y++;
+            x -= 5; y++;
 
             //output tags
             int tagcnt = blk.getTagsCount();
             for(int a=0;a<tagcnt;a++) {
               if (create) {
                 newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
+                newNodes.add(node.addChild('x', x, y));
+              } else {
+                child = node.childs.get(childIdx++);
+                if (child.x != x || child.y != y || child.moved) {
+                  moveNode(logic, child, x, y, 1);
+                }
+              }
+              x++;
+
+              if (create) {
+                String name = blk.getTagName(a + 1);
+                if (name == null) name = "";
+                newCells.add(createCell(null, x, y, 1, 1, "label", null, name, null, null, null, name.length() > 3 ? "smallfont" : null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1540,7 +1553,7 @@ public class Panels {
                   moveNode(logic, child, x, y, 1);
                 }
               }
-              x -= 4; y++;
+              x -= 5; y++;
             }
 
             if (create) {
@@ -1554,7 +1567,7 @@ public class Panels {
             }
             x++;
 
-            for(int a=0;a<3;a++) {
+            for(int a=0;a<4;a++) {
               if (create) {
                 newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b2", null));
                 newNodes.add(node.addChild('x', x, y));

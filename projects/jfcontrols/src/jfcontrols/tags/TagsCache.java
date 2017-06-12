@@ -19,12 +19,12 @@ public class TagsCache {
   }
 
   public TagBase getTag(TagAddr ta) {
-    if (ta.name.startsWith("[@]")) {
+    char ch = ta.name.charAt(0);
+    if (ch == '@') {
       int idx = Integer.valueOf(ta.name.substring(1));
       if (it == null) return null;
       return it.getTag(idx);
     }
-    char ch = ta.name.charAt(0);
     if ((ch >= '0' && ch <= '9') || ch == '-') {
       return new TagTemp(ta.name);
     }
@@ -65,6 +65,32 @@ public class TagsCache {
     TagAddr ta = decode(name);
     TagBase tag = getTag(ta);
     tag.setValue(value);
+  }
+
+  private boolean isFloat(String str) {
+    int len = str.length();
+    boolean dot = false;
+    for(int a=0;a<len;a++) {
+      char ch = str.charAt(a);
+      if (a == 0 && ch == '-') continue;
+      if (ch == '.') {
+        if (dot) return false;
+        dot = true;
+        continue;
+      }
+      if (ch < '0' || ch > '9') return false;
+    }
+    return true;
+  }
+
+  private boolean isInteger(String str) {
+    int len = str.length();
+    for(int a=0;a<len;a++) {
+      char ch = str.charAt(a);
+      if (a == 0 && ch == '-') continue;
+      if (ch < '0' || ch > '9') return false;
+    }
+    return true;
   }
 
   public TagAddr decode(String addr) {
@@ -158,11 +184,19 @@ public class TagsCache {
     //validate tag
     if (ta.name.length() == 0) return null;
     ch = Character.toLowerCase(ta.name.charAt(0));
-    if ((ch < 'a' || ch > 'z') && (ch != '_')) return null;
+/*
+    if ((ch < 'a' || ch > 'z') && (ch != '_')) {
+      return null;
+    }
+*/
     if (ta.member != null) {
       if (ta.member.length() == 0) return null;
       ch = Character.toLowerCase(ta.member.charAt(0));
-      if ((ch < 'a' || ch > 'z') && (ch != '_')) return null;
+/*
+      if ((ch < 'a' || ch > 'z') && (ch != '_')) {
+        return null;
+      }
+*/
     }
     return ta;
   }

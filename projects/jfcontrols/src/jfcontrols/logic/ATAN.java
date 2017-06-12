@@ -30,4 +30,12 @@ public class ATAN extends Logic {
   public int getTagType(int idx) {
     return TagType.anyfloat;
   }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "x";
+      case 2: return "res";
+      default: return null;
+    }
+  }
 }

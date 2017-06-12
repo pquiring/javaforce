@@ -33,4 +33,12 @@ public class TIMER_ON_DELAY extends Logic {
     }
     return TagType.unknown;
   }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "timer";
+      case 2: return "ms";
+      default: return null;
+    }
+  }
 }

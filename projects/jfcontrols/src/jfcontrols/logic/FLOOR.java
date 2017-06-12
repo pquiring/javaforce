@@ -34,4 +34,12 @@ public class FLOOR extends Logic {
     }
     return TagType.unknown;
   }
+
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "x";
+      case 3: return "res";
+      default: return null;
+    }
+  }
 }
