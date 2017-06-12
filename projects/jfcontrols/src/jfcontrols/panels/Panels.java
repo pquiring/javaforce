@@ -163,6 +163,7 @@ public class Panels {
 //          WebUIClient client = comp.getClient();
           Component focus = (Component)client.getProperty("focus");
           if (focus != null) {
+            focus.setBorderColor("#eee");
             focus.setBorder(false);
           }
           Node node = (Node)comp.getProperty("node");

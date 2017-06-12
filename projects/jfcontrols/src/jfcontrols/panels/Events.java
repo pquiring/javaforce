@@ -65,6 +65,10 @@ public class Events {
             client.setPanel(Panels.getPanel("jfc_funcs", client));
             break;
           }
+          case "jfc_rung_editor_cancel": {
+            client.setPanel(Panels.getPanel("jfc_func_editor", client));
+            break;
+          }
           case "jfc_panels_delete": {
             sql.execute("delete from panels where id=" + arg);
             client.setPanel(Panels.getPanel("jfc_panels", client));
@@ -694,6 +698,11 @@ public class Events {
           break;
         }
         node.forkSource(client);
+        break;
+      }
+
+      case "jfc_rung_editor_cancel": {
+        Panels.confirm(client, "Discard changes?", "jfc_rung_editor_cancel");
         break;
       }
 

@@ -430,12 +430,13 @@ public class SQLService {
 
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_rung_editor', 'Rung Editor', false, true)");
     id = sql.select1value("select id from panels where name='jfc_rung_editor'");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",1,1,1,1,'button','','!image:delete','jfc_rung_editor_del')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",3,1,1,1,'button','','!image:fork','jfc_rung_editor_fork')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,1,1,'button','','!image:save','jfc_rung_editor_save')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,1,1,1,'button','','!image:cancel','jfc_rung_editor_cancel')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",2,1,1,1,'button','','!image:delete','jfc_rung_editor_del')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,1,1,1,'button','','!image:fork','jfc_rung_editor_fork')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",6,1,1,1,'button','','!image:save','jfc_rung_editor_save')");
 
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",7,1,3,1,'combobox','group_type','','jfc_logic_groups')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",11,1,24,1,'table','jfc_logic_groups')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",8,1,3,1,'combobox','group_type','','jfc_logic_groups')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",12,1,24,1,'table','jfc_logic_groups')");
 //    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,2,0,0,'table','jfc_rung_args')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,0,0,0,'autoscroll','jfc_rung_editor')");
 
