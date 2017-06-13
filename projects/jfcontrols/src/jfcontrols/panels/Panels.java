@@ -37,7 +37,8 @@ public class Panels {
     return buildPanel(new Panel(), pname, client);
   }
   public static Panel buildPanel(Panel panel, String pname, WebUIClient client) {
-    SQL sql = SQLService.getSQL();
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String pid = sql.select1value("select id from panels where name=" + SQL.quote(pname));
     if (pid == null) {
       JFLog.log("Error:Unable to find panel:" + pname);
@@ -46,7 +47,6 @@ public class Panels {
     String display = sql.select1value("select display from panels where name=" + SQL.quote(pname));
     String popup = sql.select1value("select popup from panels where id=" + pid);
     String cells[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style,events from cells where pid=" + pid);
-    sql.close();
     Table table = new Table(cellWidth,cellHeight,1,1);
     panel.add(table);
     buildTable(table, panel, cells, client, -1, -1, null, sql);
@@ -66,14 +66,13 @@ public class Panels {
     title.setName("jfc_title");
     setCellSize(title, new Rectangle(2,0,16,1));
     table.add(title, 2, 0, 16, 1);
-    ClientContext context = (ClientContext)client.getProperty("context");
     TagAddr ta = new TagAddr();
     ta.name = "alarms";
     TagBase tag = context.getTag(ta);
     context.addListener(ta, tag, alarms, (_tag, _idx, _oldValue, _newValue, _cmp) -> {
-      updateAlarmCount(alarms);
+      updateAlarmCount(alarms, client);
     });
-    updateAlarmCount(alarms);
+    updateAlarmCount(alarms, client);
     panel.add(getPopupPanel(client, "Login", "jfc_login"));
     panel.add(getPopupPanel(client, "Menu", "jfc_menu"));
     panel.add(getPopupPanel(client, "Confirm", "jfc_confirm"));
@@ -281,10 +280,10 @@ public class Panels {
     return b;
   }
   private static TextField getTextField(String v[], WebUIClient client) {
-    SQL sql = SQLService.getSQL();
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String tag = v[TAG];
     String text = v[TEXT];
-    ClientContext context = (ClientContext)client.getProperty("context");
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
         String f[] = tag.split("_", 5);
@@ -306,14 +305,13 @@ public class Panels {
     b.addChangedListener((c) -> {
       Events.edit((TextField)c);
     });
-    sql.close();
     return b;
   }
   private static TextArea getTextArea(String v[], WebUIClient client) {
-    SQL sql = SQLService.getSQL();
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String tag = v[TAG];
     String text = v[TEXT];
-    ClientContext context = (ClientContext)client.getProperty("context");
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
         String f[] = tag.split("_", 5);
@@ -335,16 +333,16 @@ public class Panels {
     ta.addChangedListener((c) -> {
       Events.edit((TextArea)c);
     });
-    sql.close();
     return ta;
   }
   private static ComboBox getComboBox(String v[], WebUIClient client) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     ComboBox cb = new ComboBox();
     String name = v[NAME];
     String tag = v[TAG];
     String arg = v[ARG];
     String value = v[TEXT];
-    SQL sql = SQLService.getSQL();
     String pairs[][];
     if (arg.equals("jfc_function")) {
       pairs = sql.select("select id, name from funcs");
@@ -368,7 +366,6 @@ public class Panels {
       String lid = sql.select1value("select id from lists where name=" + SQL.quote(arg));
       pairs = sql.select("select value, text from listdata where lid=" + lid);
     }
-    ClientContext context = (ClientContext)client.getProperty("context");
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
         String f[] = tag.split("_", 5);
@@ -385,7 +382,6 @@ public class Panels {
         value = context.read(tag);
       }
     }
-    sql.close();
     int selidx = -1;
     if (pairs != null) {
       for(int a=0;a<pairs.length;a++) {
@@ -424,11 +420,11 @@ public class Panels {
     return cb;
   }
   private static CheckBox getCheckBox(String v[], WebUIClient client) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String tag = v[TAG];
     String text = v[TEXT];
     String value = "0";
-    SQL sql = SQLService.getSQL();
-    ClientContext context = (ClientContext)client.getProperty("context");
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
         String f[] = tag.split("_", 5);
@@ -448,7 +444,6 @@ public class Panels {
         value = context.read(tag);
       }
     }
-    sql.close();
     if (text == null) text = "???";
     if (value == null) value = "0";
     CheckBox cb = new CheckBox(text);
@@ -503,9 +498,10 @@ public class Panels {
   }
 //   cells[][] = "id,x,y,w,h,comp,name,text,tag,func,arg,style"
   private static Component getTable(String v[], Container container, Rectangle r, WebUIClient client) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String name = v[NAME];
     String arg = v[ARG];
-    SQL sql = SQLService.getSQL();
     ArrayList<String[]> cells = new ArrayList<String[]>();
     ArrayList<Node> nodes = new ArrayList<Node>();
     Table table;
@@ -619,7 +615,6 @@ public class Panels {
       case "jfc_panel_editor": {
         String pid = (String)client.getProperty("panel");
         String data[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style,events from cells where pid=" + pid);
-        sql.close();
         for(int a=0;a<data.length;a++) {
           cells.add(data[a]);
         }
@@ -763,7 +758,6 @@ public class Panels {
         JFLog.log("Unknown table:" + name);
       }
     }
-    sql.close();
     table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, nodes.toArray(new Node[nodes.size()]), sql);
     r.width = table.getColumns();
     r.height = table.getRows();
@@ -778,6 +772,8 @@ public class Panels {
   }
   private static Component getAutoScroll(String v[], Container container, WebUIClient client) {
     //auto scroll components are placed below the main table
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String name = v[NAME];
     AutoScrollPanel panel = new AutoScrollPanel();
     JFLog.log("client.height=" + client.getHeight());
@@ -785,7 +781,6 @@ public class Panels {
     client.addResizedListener((cmp, width, height) -> {
       panel.setHeight(client.getHeight() - (cellHeight * 2));
     });
-    SQL sql = SQLService.getSQL();
     switch (name) {
       case "jfc_rungs_viewer": {
         String fid = (String)client.getProperty("func");
@@ -820,7 +815,6 @@ public class Panels {
       }
       case "jfc_alarms": {
         //view current alarms
-        ClientContext context = (ClientContext)client.getProperty("context");
         context.alarms.clear();
         updateAlarms(panel, client);
         TagAddr ta = new TagAddr();
@@ -833,7 +827,6 @@ public class Panels {
       }
       case "jfc_alarm_history": {
         //view alarm history
-        ClientContext context = (ClientContext)client.getProperty("context");
         context.lastAlarmID = 0;
         updateAlarmHistory(panel, client);
         TagAddr ta = new TagAddr();
@@ -846,11 +839,11 @@ public class Panels {
         break;
       }
     }
-    sql.close();
     return panel;
   }
-  private static void updateAlarmCount(Label label) {
-    SQL sql = SQLService.getSQL();
+  private static void updateAlarmCount(Label label, WebUIClient client) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String tid = sql.select1value("select id from tags where name='alarms'");
     String count = sql.select1value("select count(idx) from tagvalues where tid=" + tid + " and mid=1 and value='1'");
     label.setText(count);
@@ -859,11 +852,10 @@ public class Panels {
     } else {
       label.setBackColor("#f00");
     }
-    sql.close();
   }
   private static void updateAlarms(Panel panel, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = SQLService.getSQL();
+    SQL sql = context.sql;
     String tid = sql.select1value("select id from tags where name='alarms'");
     String data[][] = sql.select("select id,idx,value,mid from tagvalues where mid=1 and tid=" + tid + " order by idx,mid");
     if (data == null) data = new String[0][0];
@@ -885,11 +877,10 @@ public class Panels {
       panel.add(table);
       context.alarms.put(idx, table);
     }
-    sql.close();
   }
   private static void updateAlarmHistory(Panel panel, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = SQLService.getSQL();
+    SQL sql = context.sql;
     Calendar cal = Calendar.getInstance();
     int year = cal.get(Calendar.YEAR);
     int month = cal.get(Calendar.MONTH + 1);
@@ -906,7 +897,6 @@ public class Panels {
       Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), panel.getClient(), -1, -1, null, sql);
       panel.add(table);
     }
-    sql.close();
   }
   private static Component getOverlay(String v[]) {
     Block div = new Block();

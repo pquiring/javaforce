@@ -22,17 +22,18 @@ public class FunctionService extends Thread {
   public static Object wapi = new Object();
   public static Object fapi = new Object();
   public static FunctionLoader loader = new FunctionLoader();
+  public static SQL sql;
 
   public static void main() {
     new FunctionService().start();
   }
 
   public void run() {
-    SQL sql = SQLService.getSQL();
     Class mainCls, initCls;
     TagsCache tags = new TagsCache();
     File mainFile = new File("work/class/func_1.class");
     boolean compile = false;
+    sql = SQLService.getSQL();
     if (!mainFile.exists()) {
       FunctionService.generateFunction(1, sql);
       compile = true;
@@ -45,14 +46,14 @@ public class FunctionService extends Thread {
     if (compile) {
       FunctionService.compileProgram(sql);
     }
-    sql.close();
-    sql = null;
     if (!mainFile.exists()) {
       JFLog.log("main function not compiled");
+      sql.close();
       return;
     }
     if (!initFile.exists()) {
       JFLog.log("init function not compiled");
+      sql.close();
       return;
     }
     try {
@@ -60,6 +61,7 @@ public class FunctionService extends Thread {
       initCls = loader.loadClass("func_2");
     } catch (Exception e) {
       JFLog.log(e);
+      sql.close();
       return;
     }
     Method main, init;
@@ -68,6 +70,7 @@ public class FunctionService extends Thread {
       init = initCls.getMethod("code", TagBase[].class);
     } catch (Exception e) {
       JFLog.log(e);
+      sql.close();
       return;
     }
     Object mainObj, initObj;
@@ -76,6 +79,7 @@ public class FunctionService extends Thread {
       initObj = initCls.newInstance();
     } catch (Exception e) {
       JFLog.log(e);
+      sql.close();
       return;
     }
     active = true;
@@ -116,6 +120,8 @@ public class FunctionService extends Thread {
       }
 //      System.out.println("scantime=" + scantime);
     }
+    sql.close();
+    sql = null;
     synchronized(done) {
       done.notify();
     }

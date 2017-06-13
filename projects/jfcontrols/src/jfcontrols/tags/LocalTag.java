@@ -64,9 +64,7 @@ public class LocalTag extends MonitoredTag {
   }
 
   private void readValue(TagValue tv) {
-    SQL sql = SQLService.getSQL();
-    String value = sql.select1value("select value from tagvalues where tid=" + tid + " and idx=" + tv.id.idx + " and mid=" + tv.id.mid + " and midx=" + tv.id.midx);
-    sql.close();
+    String value = TagsService.sql.select1value("select value from tagvalues where tid=" + tid + " and idx=" + tv.id.idx + " and mid=" + tv.id.mid + " and midx=" + tv.id.midx);
     if (value == null) {
       tv.insert = true;
       value = "0";

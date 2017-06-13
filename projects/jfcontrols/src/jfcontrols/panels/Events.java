@@ -20,12 +20,13 @@ public class Events {
   private static final Object lock = new Object();
   public static void click(Component c) {
     WebUIClient client = c.getClient();
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String func = (String)c.getProperty("func");
     String arg = (String)c.getProperty("arg");
     JFLog.log("click:" + c + ":func=" + func + ":arg=" + arg);
     clickEvents(c);
     if (func == null) return;
-    SQL sql = SQLService.getSQL();
     switch (func) {
       case "showMenu": {
         if (client.getProperty("user") == null) {
@@ -775,11 +776,11 @@ public class Events {
         JFLog.log("Unknown event:" + func);
         break;
     }
-    sql.close();
   }
   public static void edit(TextField tf) {
     WebUIClient client = tf.getClient();
     ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String red = (String)tf.getProperty("red");
     if (red != null) {
       tf.setBackColor("#fff");
@@ -812,14 +813,12 @@ public class Events {
           return;
         }
       }
-      SQL sql = SQLService.getSQL();
       String stmt = "update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id;
       sql.execute(stmt);
       if (sql.lastException != null) {
         String org = sql.select1value("select " + col + " from " + table + " where id=" + id);
         tf.setText(org);
       }
-      sql.close();
     } else {
       context.write(tag, tf.getText());
     }
@@ -827,6 +826,7 @@ public class Events {
   public static void edit(TextArea ta) {
     WebUIClient client = ta.getClient();
     ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String red = (String)ta.getProperty("red");
     if (red != null) {
       ta.setBackColor("#fff");
@@ -845,10 +845,8 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      SQL sql = SQLService.getSQL();
       String stmt = "update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id;
       sql.execute(stmt);
-      sql.close();
     } else {
       context.write(tag, ta.getText());
     }
@@ -856,6 +854,7 @@ public class Events {
   public static void changed(ComboBox cb) {
     WebUIClient client = cb.getClient();
     ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String tag = (String)cb.getProperty("tag");
     if (tag == null) return;
     String value = cb.getSelectedValue();
@@ -869,9 +868,7 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      SQL sql = SQLService.getSQL();
       sql.execute("update " + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id);
-      sql.close();
     } else {
       context.write(tag, value);
     }
@@ -879,6 +876,7 @@ public class Events {
   public static void changed(CheckBox cb) {
     WebUIClient client = cb.getClient();
     ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String tag = (String)cb.getProperty("tag");
     if (tag == null) return;
     boolean set = cb.isSelected();
@@ -892,9 +890,7 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      SQL sql = SQLService.getSQL();
       sql.execute("update " + table + " set " + col + "=" + (set ? "true" : "false") + " where id=" + id);
-      sql.close();
     } else {
       context.write(tag, set ? "0" : "1");
     }

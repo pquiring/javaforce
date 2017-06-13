@@ -6,10 +6,11 @@ package jfcontrols.panels;
  */
 
 import java.util.*;
-import javaforce.JF;
 
+import javaforce.*;
 import javaforce.webui.*;
 
+import jfcontrols.sql.*;
 import jfcontrols.tags.*;
 
 public class ClientContext extends Thread {
@@ -20,11 +21,13 @@ public class ClientContext extends Thread {
   private ArrayList<Monitor> stack = new ArrayList<>();
   private TagsCache tags = new TagsCache();
 
+  public SQL sql;
   public HashMap<String, Component> alarms = new HashMap<>();
   public int lastAlarmID;
 
   public ClientContext(WebUIClient client) {
     this.client = client;
+    sql = SQLService.getSQL();
   }
 
   public TagBase getTag(String name) {
@@ -114,5 +117,7 @@ public class ClientContext extends Thread {
     synchronized(lock) {
       lock.notify();
     }
+    sql.close();
+    sql = null;
   }
 }

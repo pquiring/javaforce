@@ -48,16 +48,14 @@ public class FunctionRuntime extends TagsCache {
     TagBase tag = tags[1];
     boolean isMember = tag.isMember();
     String len;
-    SQL sql = SQLService.getSQL();
     int tid = tag.getTagID();
     if (!isMember) {
-      len = sql.select1value("select max(idx) from tagvalues where tid=" + tid);
+      len = FunctionService.sql.select1value("select max(idx) from tagvalues where tid=" + tid);
     } else {
       int mid = tag.getMember();
-      len = sql.select1value("select max(midx) from tagvalues where tid=" + tid + " and mid=" + mid);
+      len = FunctionService.sql.select1value("select max(midx) from tagvalues where tid=" + tid + " and mid=" + mid);
     }
     if (len == null) len = "0";
-    sql.close();
     tags[2].setValue(len);
   }
 

@@ -8,9 +8,9 @@ package jfcontrols.tags;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.controls.TagType;
 
 import jfcontrols.sql.*;
+import jfcontrols.functions.*;
 
 public class TagsService extends Thread {
   private static Object lock_main = new Object();
@@ -22,6 +22,7 @@ public class TagsService extends Thread {
   private static volatile boolean active;
   private static volatile boolean doReads;
   private static volatile boolean doWrites;
+  public static SQL sql;
 
   private HashMap<String, TagBase> localTags = new HashMap<>();
   private HashMap<String, TagBase> remoteTags = new HashMap<>();
@@ -51,7 +52,6 @@ public class TagsService extends Thread {
       if (id.mid != IDs.alarm_mid_active) return;
       if (oldValue.equals("0") && newValue.equals("1")) {
         //new alarm
-        SQL sql = SQLService.getSQL();
         Calendar cal = Calendar.getInstance();
         int year = cal.get(Calendar.YEAR);
         int month = cal.get(Calendar.MONTH) + 1;
@@ -62,14 +62,13 @@ public class TagsService extends Thread {
         int millisecond = cal.get(Calendar.MILLISECOND);
         String when = String.format("%04d/%02d/%02d %02d:%02d:%02d.%02d", year, month, day, hour, minute, second, millisecond);
         sql.execute("insert into alarmhistory (idx,when) values (" + id.idx + ",'" + when + "')");
-        sql.close();
       }
     });
   }
 
   public void run() {
     service = this;
-    SQL sql = SQLService.getSQL();
+    sql = SQLService.getSQL();
     String tags[][] = sql.select("select name,type,cid,unsigned,array from tags");
     for(int a=0;a<tags.length;a++) {
       if (tags[a][2].equals("0")) {
@@ -99,6 +98,7 @@ public class TagsService extends Thread {
     }
     service = null;
     sql.close();
+    sql = null;
   }
   private void processReads(SQL sql) {
     MonitoredTag localtags[] = (MonitoredTag[])localTags.values().toArray(new MonitoredTag[0]);

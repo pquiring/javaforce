@@ -70,6 +70,7 @@ public class APIService extends Thread {
     private Object writeLock = new Object();
     private ArrayList<String> subs = new ArrayList<String>();
     private TagsCache tags = new TagsCache();
+    private SQL sql;
 
     private int clientVersion = 0x100;
 
@@ -82,6 +83,7 @@ public class APIService extends Thread {
       try {
         is = s.getInputStream();
         os = s.getOutputStream();
+        sql = SQLService.getSQL();
         while (s.isConnected()) {
           int read = is.read(header, size, 8 - size);
           if (read > 0) {
@@ -109,6 +111,8 @@ public class APIService extends Thread {
       } catch (Exception e) {
         JFLog.log(e);
       }
+      sql.close();
+      sql = null;
       try {s.close();} catch (Exception e) {}
     }
     private void doCommand(int cmd, int id, byte data[]) throws Exception {
@@ -268,9 +272,7 @@ public class APIService extends Thread {
           len -= strlen;
           pos += strlen;
           String funcName = new String(str);
-          SQL sql = SQLService.getSQL();
           String sfid = sql.select1value("select fid from funcs where name=" + SQL.quote(funcName));
-          sql.close();
           if (sfid == null) {
             reply = new byte[10];
             setupError(reply, cmd, id, ERR_FUNC_NOT_FOUND);
