@@ -222,7 +222,17 @@ public class FunctionService extends Thread {
     }
   }
   public static boolean[][] getDebugFlags(int fid) {
-    //TODO
-    return null;
+    File clsFile = new File("work/class/func_" + fid + ".class");
+    if (!clsFile.exists()) return null;
+    Class cls;
+    try {
+      cls = loader.loadClass("func_" + fid);
+      Field fld = cls.getField("debug");
+      boolean flags[][] = (boolean[][])fld.get(null);
+      return flags;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
   }
 }

@@ -22,6 +22,10 @@ public class DebugContext extends Thread {
   }
   public void run() {
     boolean debug[][] = FunctionService.getDebugFlags(fid);
+    if (debug == null) {
+      active = false;
+      return;
+    }
     while (active) {
       JF.sleep(100);
       int cnt = debug.length;
@@ -36,6 +40,7 @@ public class DebugContext extends Thread {
     }
   }
   public void cancel() {
+    if (active == false) return;
     active = false;
     synchronized(lock) {
       active = false;
