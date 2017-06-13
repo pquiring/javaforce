@@ -58,6 +58,9 @@ public abstract class Container extends Component {
     }
     return null;
   }
+  public Component[] getAll() {
+    return components.toArray(new Component[count()]);
+  }
   public void set(int idx, Component c) {
     components.set(idx, c);
   }

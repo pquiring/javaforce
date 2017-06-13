@@ -22,6 +22,8 @@ public class FunctionCompiler {
     StringBuilder sb = new StringBuilder();
     sb.append("import jfcontrols.tags.*;\r\n");
     sb.append("public class func_" + fid + " extends jfcontrols.functions.FunctionRuntime {\r\n");
+    String blks[][] = sql.select("select rid,bid from blocks where fid=" + fid);
+    sb.append("  public static boolean debug[][] = new boolean[" + blks.length + "][2];\r\n");
     sb.append("  public boolean code(TagBase args[]) {\r\n");
     sb.append("    boolean enabled = true;\r\n");
     sb.append("    boolean en[] = new boolean[256];\r\n");
@@ -33,6 +35,7 @@ public class FunctionCompiler {
     String rungs[][] = sql.select("select logic from rungs where fid=" + fid);
     int norungs = rungs.length;
     ArrayList<String> stack = new ArrayList<>();
+    int debugpos = 0;
     for(int rid=0;rid<norungs;rid++) {
       int pos = sb.length();
       String rung[] = rungs[rid];
@@ -124,6 +127,7 @@ public class FunctionCompiler {
               }
             }
             sb.append("  enabled = en[eidx];\r\n");
+            sb.append("  debug[" + debugpos + "][0]=enabled;\r\n");
             if (node.blk.getName().equals("CALL")) {
               sb.append(node.blk.getCode(func));
             } else {
@@ -133,6 +137,8 @@ public class FunctionCompiler {
                 sb.insert(pos, preCode);
               }
             }
+            sb.append("  debug[" + debugpos + "][1]=enabled;\r\n");
+            debugpos++;
             sb.append("\r\n  en[eidx] = enabled;\r\n");
             break;
           }

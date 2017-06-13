@@ -50,12 +50,10 @@ public class Table extends Container {
     StringBuffer sb = new StringBuffer();
     //using an actualy <table> proved to be too difficult once spans where implemented
     sb.append("<div" + getAttrs() + ">");
-    for(int y=0;y<rows;y++) {
-      for(int x=0;x<cols;x++) {
-        Cell cell = getCell(x,y,false);
-        if (cell == null) continue;
-        sb.append(cell.html());
-      }
+    Component cells[] = getAll();
+    for(int a=0;a<cells.length;a++) {
+      Cell cell = (Cell)cells[a];
+      sb.append(cell.html());
     }
     sb.append("</div>");
     return sb.toString();
