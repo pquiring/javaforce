@@ -20,10 +20,12 @@ public class ClientContext extends Thread {
   private Object lock = new Object();
   private ArrayList<Monitor> stack = new ArrayList<>();
   private TagsCache tags = new TagsCache();
+  private DebugContext debug;
 
   public SQL sql;
   public HashMap<String, Component> alarms = new HashMap<>();
   public int lastAlarmID;
+  public int debugIdx;
 
   public ClientContext(WebUIClient client) {
     this.client = client;
@@ -52,15 +54,13 @@ public class ClientContext extends Thread {
   }
 
   private static class Monitor implements TagBaseListener {
-    public TagAddr ta;
     public MonitoredTag tag;
     public ClientContext ctx;
     public String oldValue, newValue;
     public Component cmp;
     public TagID id;
     public TagAction action;
-    public Monitor(TagAddr ta, MonitoredTag tag, Component cmp, TagAction action, ClientContext ctx) {
-      this.ta = ta;
+    public Monitor(MonitoredTag tag, Component cmp, TagAction action, ClientContext ctx) {
       this.tag = tag;
       this.cmp = cmp;
       this.action = action;
@@ -78,10 +78,10 @@ public class ClientContext extends Thread {
     }
   }
 
-  public void addListener(TagAddr ta, TagBase tag, Component cmp, TagAction action) {
+  public void addListener(TagBase tag, Component cmp, TagAction action) {
     if (tag == null) return;
     MonitoredTag mtag = (MonitoredTag)tag;
-    Monitor monitor = new Monitor(ta, mtag, cmp, action, this);
+    Monitor monitor = new Monitor(mtag, cmp, action, this);
     listeners.add(monitor);
     mtag.addListener(monitor);
   }
@@ -108,7 +108,7 @@ public class ClientContext extends Thread {
         monitor = stack.remove(0);
       }
       if (monitor == null) continue;
-      monitor.action.tagChanged(monitor.tag, monitor.id, monitor.oldValue, monitor.newValue, monitor.cmp);
+      monitor.action.tagChanged(monitor.tag, monitor.oldValue, monitor.newValue, monitor.cmp);
     }
   }
 
@@ -116,6 +116,10 @@ public class ClientContext extends Thread {
     active = false;
     synchronized(lock) {
       lock.notify();
+    }
+    if (debug != null) {
+      debug.cancel();
+      debug = null;
     }
     sql.close();
     sql = null;

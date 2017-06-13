@@ -221,4 +221,8 @@ public class FunctionService extends Thread {
       return false;
     }
   }
+  public static boolean[][] getDebugFlags(int fid) {
+    //TODO
+    return null;
+  }
 }

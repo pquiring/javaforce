@@ -410,9 +410,11 @@ public class Node {
     client.setProperty("fork", src);
   }
 
-  public void forkDest(WebUIClient client, Table table, Node src, SQL sql) {
+  public void forkDest(WebUIClient client, Table table, Node src) {
     //src = fork source
     //dest = fork destination
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     Node dest = this, node;
     if (dest.parent != null) dest = dest.parent;
     if (!dest.highlight) return;
@@ -467,7 +469,7 @@ public class Node {
       node = node.next;
     }
     try {
-      Panels.layoutNodes(dest.root, table, sql);
+      Panels.layoutNodes(dest.root, table, client);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -538,7 +540,7 @@ public class Node {
     }
   }
 
-  public void delete(Table logic, SQL sql) {
+  public void delete(Table logic, WebUIClient client) {
     if (prev == root) return;
     switch (type) {
       case 'a':
@@ -632,7 +634,7 @@ public class Node {
       }
       node = node.next;
     }
-    Panels.layoutNodes(root, logic, sql);
+    Panels.layoutNodes(root, logic, client);
   }
 
   public void setType(char type, String imagename) {

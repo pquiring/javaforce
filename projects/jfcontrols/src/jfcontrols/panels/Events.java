@@ -458,36 +458,36 @@ public class Events {
         break;
       }
       case "jfc_panel_editor_move_u": {
-        Panels.moveCell(client, 0, -1, sql);
+        Panels.moveCell(client, 0, -1);
         break;
       }
       case "jfc_panel_editor_move_d": {
-        Panels.moveCell(client, 0, +1, sql);
+        Panels.moveCell(client, 0, +1);
         break;
       }
       case "jfc_panel_editor_move_l": {
-        Panels.moveCell(client, -1, 0, sql);
+        Panels.moveCell(client, -1, 0);
         break;
       }
       case "jfc_panel_editor_move_r": {
-        Panels.moveCell(client, +1, 0, sql);
+        Panels.moveCell(client, +1, 0);
         break;
       }
 
       case "jfc_panel_editor_size_w_inc": {
-        Panels.resizeCell(client, +1, 0, sql);
+        Panels.resizeCell(client, +1, 0);
         break;
       }
       case "jfc_panel_editor_size_w_dec": {
-        Panels.resizeCell(client, -1, 0, sql);
+        Panels.resizeCell(client, -1, 0);
         break;
       }
       case "jfc_panel_editor_size_h_inc": {
-        Panels.resizeCell(client, 0, +1, sql);
+        Panels.resizeCell(client, 0, +1);
         break;
       }
       case "jfc_panel_editor_size_h_dec": {
-        Panels.resizeCell(client, 0, -1, sql);
+        Panels.resizeCell(client, 0, -1);
         break;
       }
 
@@ -549,9 +549,9 @@ public class Events {
         ArrayList<String[]> cells = new ArrayList<String[]>();
         ArrayList<Node> nodes = new ArrayList<Node>();
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
-        Rung rung = Panels.buildRung(data, cells, nodes, sql, true, fid);
+        Rung rung = Panels.buildRung(data, cells, nodes, client, true, fid);
         rungs.rungs.add(rid, rung);
-        Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, nodes.toArray(new Node[0]), sql);
+        Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, nodes.toArray(new Node[0]));
         rungs.panel.add(rid, table);
         rung.table = table;
         int cnt = rungs.rungs.size();
@@ -653,7 +653,7 @@ public class Events {
           node = node.insertNode('h', x, y);
         }
         Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor_table");
-        Panels.layoutNodes(node.root, logic, sql);
+        Panels.layoutNodes(node.root, logic, client);
         break;
       }
 
@@ -671,8 +671,8 @@ public class Events {
           node = node.parent;
         }
         Table logic = (Table)client.getPanel().getComponent("jfc_rung_editor_table");
-        node.delete(logic, sql);
-        Panels.layoutNodes(node.root, logic, sql);
+        node.delete(logic, client);
+        Panels.layoutNodes(node.root, logic, client);
         break;
       }
 

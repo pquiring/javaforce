@@ -49,7 +49,7 @@ public class Panels {
     String cells[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style,events from cells where pid=" + pid);
     Table table = new Table(cellWidth,cellHeight,1,1);
     panel.add(table);
-    buildTable(table, panel, cells, client, -1, -1, null, sql);
+    buildTable(table, panel, cells, client, -1, -1, null);
     if (popup.equals("true")) return panel;
     //add top components
     Button menu = getButton(new String[] {null, null, null, null, null, "button", null, "!image:menu", null, "showMenu", null, null});
@@ -69,7 +69,7 @@ public class Panels {
     TagAddr ta = new TagAddr();
     ta.name = "alarms";
     TagBase tag = context.getTag(ta);
-    context.addListener(ta, tag, alarms, (_tag, _idx, _oldValue, _newValue, _cmp) -> {
+    context.addListener(tag, alarms, (_tag, _oldValue, _newValue, _cmp) -> {
       updateAlarmCount(alarms, client);
     });
     updateAlarmCount(alarms, client);
@@ -97,14 +97,15 @@ public class Panels {
   private final static int ARG = 10;
   private final static int STYLE = 11;
   private final static int EVENTS = 12;
-  public static Table buildTable(Table table, Container container, String cells[][], WebUIClient client, int ix, int iy, Node nodes[], SQL sql) {
+  public static Table buildTable(Table table, Container container, String cells[][], WebUIClient client, int ix, int iy, Node nodes[]) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     int mx = table.getColumns();
     if (ix != -1) mx = ix;
     int my = table.getRows();
     if (iy != -1) my = iy;
     Component cs[] = new Component[cells.length];
     Rectangle rs[] = new Rectangle[cells.length];
-    ClientContext context = (ClientContext)client.getProperty("context");
     for(int a=0;a<cells.length;a++) {
       Rectangle r = new Rectangle();
       rs[a] = r;
@@ -143,7 +144,7 @@ public class Panels {
         c.setProperty("tag", cellTag);
         if (!cellTag.startsWith("jfc_")) {
           TagAddr ta = context.decode(cellTag);
-          context.addListener(ta, (MonitoredTag)context.getTag(ta), c, (tag, idx, oldValue, newValue, cmp) -> {
+          context.addListener((MonitoredTag)context.getTag(ta), c, (tag, oldValue, newValue, cmp) -> {
             if (cmp instanceof Label) {
               Label lbl = (Label)cmp;
               lbl.setText(newValue);
@@ -172,7 +173,7 @@ public class Panels {
           client.setProperty("focus", comp);
           Node src = (Node)client.getProperty("fork");
           if (src != null) {
-            node.forkDest(client, table, src, sql);
+            node.forkDest(client, table, src);
           }
         });
       }
@@ -619,7 +620,7 @@ public class Panels {
           cells.add(data[a]);
         }
         LayersPanel layers = new LayersPanel();
-        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null, sql);
+        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null);
         table.setName("t1");
         r.width = table.getColumns();
         r.height = table.getRows();
@@ -645,7 +646,7 @@ public class Panels {
             }
           }
         }
-        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null, sql);
+        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null);
         table.setName("t2");
         layers.add(table);
         return layers;
@@ -716,7 +717,7 @@ public class Panels {
         int fid = Integer.valueOf((String)client.getProperty("func"));
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + arg);
         Rungs rungs = (Rungs)client.getProperty("rungs");
-        rungs.rungs.add(buildRung(data, cells, nodes, sql, true, fid));
+        rungs.rungs.add(buildRung(data, cells, nodes, client, true, fid));
         break;
       }
       case "jfc_rung_viewer_end": {
@@ -758,7 +759,7 @@ public class Panels {
         JFLog.log("Unknown table:" + name);
       }
     }
-    table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, nodes.toArray(new Node[nodes.size()]), sql);
+    table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, nodes.toArray(new Node[nodes.size()]));
     r.width = table.getColumns();
     r.height = table.getRows();
     switch (name) {
@@ -786,15 +787,16 @@ public class Panels {
         String fid = (String)client.getProperty("func");
         String data[][] = sql.select("select rid,logic,comment from rungs where fid=" + fid + " order by rid");
         client.setProperty("rungs", new Rungs());
+        context.debugIdx = 0;
         for(int rung=0;rung<data.length;rung++) {
           ArrayList<String[]> cells = new ArrayList<String[]>();
           cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], null));
-          Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null, sql);
+          Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null);
           panel.add(table);
         }
         ArrayList<String[]> cells = new ArrayList<String[]>();
         cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer_end", null, null, null, null, null));
-        Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null, sql);
+        Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null);
         panel.add(table);
         Rungs rungs = (Rungs)client.getProperty("rungs");
         rungs.panel = panel;
@@ -806,9 +808,9 @@ public class Panels {
         ArrayList<String[]> cells = new ArrayList<String[]>();
         String data[] = sql.select1row("select rid,logic,comment from rungs where fid=" + fid + " and rid=" + rid);
         ArrayList<Node> nodes = new ArrayList<Node>();
-        Rung rung = buildRung(data, cells, nodes, sql, false, fid);
+        Rung rung = buildRung(data, cells, nodes, client, false, fid);
         client.setProperty("rungObj", rung);
-        Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, nodes.toArray(new Node[nodes.size()]), sql);
+        Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, nodes.toArray(new Node[nodes.size()]));
         table.setName(name + "_table");
         panel.add(table);
         break;
@@ -820,7 +822,7 @@ public class Panels {
         TagAddr ta = new TagAddr();
         ta.name = "alarms";
         TagBase tag = context.getTag(ta);
-        context.addListener(ta, tag, panel, (_tag, _idx, _oldValue, _newValue, _cmp) -> {
+        context.addListener(tag, panel, (_tag, _oldValue, _newValue, _cmp) -> {
           updateAlarms(panel, panel.getClient());
         });
         break;
@@ -832,7 +834,7 @@ public class Panels {
         TagAddr ta = new TagAddr();
         ta.name = "alarms";
         TagBase tag = context.getTag(ta);
-        context.addListener(ta, tag, panel, (_tag, _idx, _oldValue, _newValue, _cmp) -> {
+        context.addListener(tag, panel, (_tag, _oldValue, _newValue, _cmp) -> {
           updateAlarmHistory(panel, panel.getClient());
         });
         client.setProperty("history", panel);
@@ -873,7 +875,7 @@ public class Panels {
       if (context.alarms.containsKey(idx)) continue;
       ArrayList<String[]> cells = new ArrayList<String[]>();
       cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_alarm", null, null, null, data[a][1], null));
-      Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, -1, -1, null, sql);
+      Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, -1, -1, null);
       panel.add(table);
       context.alarms.put(idx, table);
     }
@@ -894,7 +896,7 @@ public class Panels {
       context.lastAlarmID = id;
       ArrayList<String[]> cells = new ArrayList<String[]>();
       cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_alarm_history", null, null, null, data[a][0], null));
-      Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), panel.getClient(), -1, -1, null, sql);
+      Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), panel.getClient(), -1, -1, null);
       panel.add(table);
     }
   }
@@ -924,7 +926,9 @@ public class Panels {
     p.add(comp);
     return p;
   }
-  public static void moveCell(WebUIClient client, int deltax, int deltay, SQL sql) {
+  public static void moveCell(WebUIClient client, int deltax, int deltay) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     Block focus = (Block)client.getProperty("focus");
     if (focus == null) {
       JFLog.log("Error:no focus");
@@ -1001,7 +1005,9 @@ public class Panels {
       }
     }
   }
-  public static void resizeCell(WebUIClient client, int deltax, int deltay, SQL sql) {
+  public static void resizeCell(WebUIClient client, int deltax, int deltay) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     Block focus = (Block)client.getProperty("focus");
     if (focus == null) {
       JFLog.log("Error:no focus");
@@ -1076,7 +1082,9 @@ public class Panels {
       }
     }
   }
-  public static Rung buildRung(String data[], ArrayList<String[]> cells, ArrayList<Node> objs, SQL sql, boolean readonly, int fid) {
+  public static Rung buildRung(String data[], ArrayList<String[]> cells, ArrayList<Node> objs, WebUIClient client, boolean readonly, int fid) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     int x = 0;
     int y = 0;
     int rid = Integer.valueOf(data[0]);
@@ -1205,7 +1213,7 @@ public class Panels {
       nodes.add(node = node.insertNode('h', x, y));
     }
     rung.root = root;
-    buildNodes(root, null, cells, objs, sql, rid, readonly);
+    buildNodes(root, null, cells, objs, client, rid, readonly);
     return rung;
   }
   private static void moveNode(Table logic, Node node, int x, int y, int spanx) {
@@ -1224,7 +1232,9 @@ public class Panels {
     node.moved = false;
     node.root.changed = true;
   }
-  public static void buildNodes(NodeRoot root, Table logic, ArrayList<String[]> newCells, ArrayList<Node> newNodes, SQL sql, int rid, boolean readonly) {
+  public static void buildNodes(NodeRoot root, Table logic, ArrayList<String[]> newCells, ArrayList<Node> newNodes, WebUIClient client, int rid, boolean readonly) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     int x = 0;
     int y = 1;
     Node node = root.next;
@@ -1369,7 +1379,7 @@ public class Panels {
           int tagIdx = 1;
           if (!blk.isBlock()) {
             if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+              newCells.add(createCell(null, x, y, 1, 1, "image", "en_0_" + context.debugIdx++, null, null, null, "w_h", null));
               newNodes.add(node.addChild('h', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1399,7 +1409,7 @@ public class Panels {
             x++;
 
             if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+              newCells.add(createCell(null, x, y, 1, 1, "image", "en_1_" + context.debugIdx++, null, null, null, "w_h", null));
               newNodes.add(node.addChild('h', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1428,7 +1438,7 @@ public class Panels {
             int by = y;
             //draw a box the size of the logic block
             if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b7", null));
+              newCells.add(createCell(null, x, y, 1, 1, "image", "en_0_" + context.debugIdx++, null, null, null, "b7", null));
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1586,7 +1596,7 @@ public class Panels {
             if (create) {
               node.x = x;
               node.y = y;
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b9", null));
+              newCells.add(createCell(null, x, y, 1, 1, "image", "en_1_" + context.debugIdx++, null, null, null, "b9", null));
               newNodes.add(node);
             } else {
               if (node.x != x || node.y != y || node.moved) {
@@ -1606,7 +1616,7 @@ public class Panels {
     }
   }
 
-  public static void layoutNodes(NodeRoot root, Table logic, SQL sql) {
+  public static void layoutNodes(NodeRoot root, Table logic, WebUIClient client) {
     if (logic == null) {
       JFLog.log("Error:unable to find logic table");
       return;
@@ -1619,8 +1629,8 @@ public class Panels {
       root.changed = false;
       ArrayList<String[]> newCells = new ArrayList<String[]>();
       ArrayList<Node> newNodes = new ArrayList<Node>();
-      buildNodes(root, logic, newCells, newNodes, sql, root.rid, false);
-      buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), logic.getClient(), -1, -1, newNodes.toArray(new Node[newNodes.size()]), sql);
+      buildNodes(root, logic, newCells, newNodes, client, root.rid, false);
+      buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), logic.getClient(), -1, -1, newNodes.toArray(new Node[newNodes.size()]));
     } while (root.changed);
     //calc max table size
     Node node = root;
