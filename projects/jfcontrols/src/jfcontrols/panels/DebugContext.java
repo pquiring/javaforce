@@ -26,6 +26,7 @@ public class DebugContext extends Thread {
       active = false;
       return;
     }
+    JF.sleep(250);
     while (active) {
       JF.sleep(100);
       int cnt = debug.length;

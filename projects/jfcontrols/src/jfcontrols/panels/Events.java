@@ -499,7 +499,7 @@ public class Events {
             if (inuse == null) break;
             id++;
           } while (true);
-          sql.execute("insert into funcs (name) values ('func" + id + "')");
+          sql.execute("insert into funcs (name, revision) values ('func" + id + "', 1)");
         }
         client.setPanel(Panels.getPanel("jfc_funcs", client));
         break;
@@ -726,6 +726,9 @@ public class Events {
         TextField tf = (TextField)client.getPanel().getComponent("comment" + rid);
         String cmt = tf.getText();
         sql.execute("update rungs set comment=" + SQL.quote(cmt) + " where rid=" + rid + " and fid=" + fid);
+        long revision = Long.valueOf(sql.select1value("select revision from rungs where fid=" + fid));
+        revision++;
+        sql.execute("update rungs set revision=" + revision + " where fid=" + fid);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }

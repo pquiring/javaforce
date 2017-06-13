@@ -11,6 +11,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.webui.*;
 import javaforce.controls.*;
+import jfcontrols.functions.FunctionService;
 
 import jfcontrols.sql.*;
 import jfcontrols.tags.*;
@@ -800,6 +801,11 @@ public class Panels {
         panel.add(table);
         Rungs rungs = (Rungs)client.getProperty("rungs");
         rungs.panel = panel;
+        long revision = Long.valueOf(sql.select1value("select revision from rungs where fid=" + fid));
+        if (FunctionService.functionUpToDate(Integer.valueOf(fid), revision)) {
+          context.debug = new DebugContext(client, Integer.valueOf(fid));
+          context.debug.start();
+        }
         break;
       }
       case "jfc_rung_editor": {

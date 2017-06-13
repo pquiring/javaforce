@@ -235,4 +235,18 @@ public class FunctionService extends Thread {
       return null;
     }
   }
+  public static boolean functionUpToDate(int fid, long revision) {
+    File clsFile = new File("work/class/func_" + fid + ".class");
+    if (!clsFile.exists()) return false;
+    Class cls;
+    try {
+      cls = loader.loadClass("func_" + fid);
+      Field fld = cls.getField("revision");
+      long rev = (long)fld.get(null);
+      return rev == revision;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
 }

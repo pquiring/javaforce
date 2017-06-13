@@ -20,12 +20,12 @@ public class ClientContext extends Thread {
   private Object lock = new Object();
   private ArrayList<Monitor> stack = new ArrayList<>();
   private TagsCache tags = new TagsCache();
-  private DebugContext debug;
 
   public SQL sql;
   public HashMap<String, Component> alarms = new HashMap<>();
   public int lastAlarmID;
   public int debugIdx;
+  public DebugContext debug;
 
   public ClientContext(WebUIClient client) {
     this.client = client;

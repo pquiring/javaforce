@@ -65,7 +65,7 @@ public class SQLService {
     sql.execute("create table udtmems (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, mid int, name varchar(32), type int, array boolean, unsigned boolean, builtin boolean)");
     sql.execute("create table panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, display varchar(32), popup boolean, builtin boolean)");
     sql.execute("create table cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int,comp  varchar(32), name varchar(32), text varchar(512), tag varchar(32), func varchar(32), arg varchar(32), style varchar(512), events varchar(1024))");
-    sql.execute("create table funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32) unique, comment varchar(8192))");
+    sql.execute("create table funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32) unique, revision bigint, comment varchar(8192))");
     sql.execute("create table rungs (id int not null generated always as identity (start with 1, increment by 1) primary key, fid int, rid int, comment varchar(512), logic varchar(16384))");
     sql.execute("create table blocks (id int not null generated always as identity (start with 1, increment by 1) primary key, fid int, rid int, bid int, name varchar(32), tags varchar(512))");
     sql.execute("create table users (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, pass varchar(32))");
@@ -441,8 +441,8 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,0,0,0,'autoscroll','jfc_rung_editor')");
 
     //insert system funcs
-    sql.execute("insert into funcs (name) values ('main')");
-    sql.execute("insert into funcs (name) values ('init')");
+    sql.execute("insert into funcs (name, revision) values ('main', 0)");
+    sql.execute("insert into funcs (name, revision) values ('init', 0)");
 
     sql.close();
   }

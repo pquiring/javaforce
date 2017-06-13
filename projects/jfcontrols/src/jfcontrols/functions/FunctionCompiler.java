@@ -20,10 +20,12 @@ public class FunctionCompiler {
     TagsCache tags = new TagsCache();
     error = null;
     StringBuilder sb = new StringBuilder();
+    String revision = sql.select1value("select revision from funcs where fid=" + fid);
     sb.append("import jfcontrols.tags.*;\r\n");
     sb.append("public class func_" + fid + " extends jfcontrols.functions.FunctionRuntime {\r\n");
     String blks[][] = sql.select("select rid,bid from blocks where fid=" + fid);
     sb.append("  public static boolean debug[][] = new boolean[" + blks.length + "][2];\r\n");
+    sb.append("  public static long revision = " + revision + ";\r\n");
     sb.append("  public boolean code(TagBase args[]) {\r\n");
     sb.append("    boolean enabled = true;\r\n");
     sb.append("    boolean en[] = new boolean[256];\r\n");
