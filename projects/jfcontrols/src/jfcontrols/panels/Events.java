@@ -86,6 +86,9 @@ public class Events {
             sql.execute("delete from blocks where fid=" + fid + " and rid=" + rid);
             sql.execute("update rungs set rid=rid-1 where fid=" + fid + " and rid>" + rid);
             sql.execute("update blocks set rid=rid-1 where fid=" + fid + " and rid>" + rid);
+            long revision = Long.valueOf(sql.select1value("select revision from funcs where id=" + fid));
+            revision++;
+            sql.execute("update funcs set revision=" + revision + " where id=" + fid);
             client.setPanel(Panels.getPanel("jfc_func_editor", client));
             break;
           }
