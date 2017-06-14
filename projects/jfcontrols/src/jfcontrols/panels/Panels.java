@@ -801,11 +801,6 @@ public class Panels {
         panel.add(table);
         Rungs rungs = (Rungs)client.getProperty("rungs");
         rungs.panel = panel;
-        long revision = Long.valueOf(sql.select1value("select revision from rungs where fid=" + fid));
-        if (FunctionService.functionUpToDate(Integer.valueOf(fid), revision)) {
-          context.debug = new DebugContext(client, Integer.valueOf(fid));
-          context.debug.start();
-        }
         break;
       }
       case "jfc_rung_editor": {
@@ -1385,7 +1380,7 @@ public class Panels {
           int tagIdx = 1;
           if (!blk.isBlock()) {
             if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", "en_0_" + context.debugIdx++, null, null, null, "w_h", null));
+              newCells.add(createCell(null, x, y, 1, 1, "image", "en_0_" + context.debugIdx, null, null, null, "w_h", null));
               newNodes.add(node.addChild('h', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1444,7 +1439,7 @@ public class Panels {
             int by = y;
             //draw a box the size of the logic block
             if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", "en_0_" + context.debugIdx++, null, null, null, "b7", null));
+              newCells.add(createCell(null, x, y, 1, 1, "image", "en_0_" + context.debugIdx, null, null, null, "b7", null));
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);

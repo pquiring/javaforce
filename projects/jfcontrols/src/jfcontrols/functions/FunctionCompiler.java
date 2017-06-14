@@ -20,7 +20,7 @@ public class FunctionCompiler {
     TagsCache tags = new TagsCache();
     error = null;
     StringBuilder sb = new StringBuilder();
-    String revision = sql.select1value("select revision from funcs where fid=" + fid);
+    String revision = sql.select1value("select revision from funcs where id=" + fid);
     sb.append("import jfcontrols.tags.*;\r\n");
     sb.append("public class func_" + fid + " extends jfcontrols.functions.FunctionRuntime {\r\n");
     String blks[][] = sql.select("select rid,bid from blocks where fid=" + fid);
@@ -30,7 +30,6 @@ public class FunctionCompiler {
     sb.append("    boolean enabled = true;\r\n");
     sb.append("    boolean en[] = new boolean[256];\r\n");
     sb.append("    int eidx = 0;\r\n");
-    sb.append("    en[eidx] = enabled;\r\n");
     sb.append("    TagBase tags[] = new TagBase[33];\r\n");
 
     //append code from rungs
@@ -39,6 +38,9 @@ public class FunctionCompiler {
     ArrayList<String> stack = new ArrayList<>();
     int debugpos = 0;
     for(int rid=0;rid<norungs;rid++) {
+      sb.append("    enabled = true;\r\n");
+      sb.append("    eidx = 0;\r\n");
+      sb.append("    en[eidx] = enabled;\r\n");
       int pos = sb.length();
       String rung[] = rungs[rid];
       String logic[] = rung[0].split("[|]");
@@ -55,7 +57,7 @@ public class FunctionCompiler {
               case 'a':
               case 'c':
                 sb.append("en[eidx+1] = en[eidx];\r\n");
-                sb.append("eidx++");
+                sb.append("eidx++;\r\n");
                 break;
             }
             break;
@@ -68,7 +70,7 @@ public class FunctionCompiler {
               upper = upper.upper;
             }
             sb.append("en[eidx+1] = en[eidx-" + cnt + "];\r\n");
-            sb.append("eidx++");
+            sb.append("eidx++;\r\n");
             break;
           case 'b':
             //nothing
@@ -119,7 +121,7 @@ public class FunctionCompiler {
                   unsigned[t] = tagbase.isUnsigned();
                   break;
                 case 'i':
-                  sb.append("tags[" + t + "] = new TagTemp(\"" + value + "\");");
+                  sb.append("tags[" + t + "] = new TagTemp(\"" + value + "\");\r\n");
                   types[t] = tagType;
                   break;
                 case 'f':

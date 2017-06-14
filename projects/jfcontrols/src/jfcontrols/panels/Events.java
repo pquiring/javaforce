@@ -726,9 +726,9 @@ public class Events {
         TextField tf = (TextField)client.getPanel().getComponent("comment" + rid);
         String cmt = tf.getText();
         sql.execute("update rungs set comment=" + SQL.quote(cmt) + " where rid=" + rid + " and fid=" + fid);
-        long revision = Long.valueOf(sql.select1value("select revision from rungs where fid=" + fid));
+        long revision = Long.valueOf(sql.select1value("select revision from funcs where id=" + fid));
         revision++;
-        sql.execute("update rungs set revision=" + revision + " where fid=" + fid);
+        sql.execute("update funcs set revision=" + revision + " where id=" + fid);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
@@ -745,6 +745,26 @@ public class Events {
             Panels.showErrorText(client, "Compile failed!", FunctionService.error);
             FunctionService.error = null;
           }
+        }
+        break;
+      }
+
+      case "jfc_func_editor_debug": {
+        Button b = (Button)c;
+        if (context.debug != null) {
+          context.debug.cancel();
+          context.debug = null;
+          b.setText("Debug");
+          break;
+        }
+        String fid = (String)client.getProperty("func");
+        long revision = Long.valueOf(sql.select1value("select revision from funcs where id=" + fid));
+        if (FunctionService.functionUpToDate(Integer.valueOf(fid), revision)) {
+          context.debug = new DebugContext(client, Integer.valueOf(fid));
+          context.debug.start();
+          b.setText("Stop");
+        } else {
+          Panels.showError(client, "Function needs to be compiled!");
         }
         break;
       }
