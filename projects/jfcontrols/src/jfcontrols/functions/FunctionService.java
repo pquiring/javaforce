@@ -21,7 +21,7 @@ public class FunctionService extends Thread {
   public static Object rapi = new Object();
   public static Object wapi = new Object();
   public static Object fapi = new Object();
-  public static FunctionLoader loader = new FunctionLoader();
+  public static FunctionLoader loader;
   public static SQL sql;
 
   public static void main() {
@@ -56,6 +56,7 @@ public class FunctionService extends Thread {
       sql.close();
       return;
     }
+    loader = new FunctionLoader();
     try {
       mainCls = loader.loadClass("func_1");
       initCls = loader.loadClass("func_2");
@@ -132,12 +133,14 @@ public class FunctionService extends Thread {
       active = false;
       try {done.wait();} catch (Exception e) {}
     }
+    loader = null;
   }
 
   private static void restart() {
     if (isActive()) {
       cancel();
     }
+    System.gc();
     main();
   }
 
