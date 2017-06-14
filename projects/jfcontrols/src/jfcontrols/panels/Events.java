@@ -66,6 +66,29 @@ public class Events {
             client.setPanel(Panels.getPanel("jfc_funcs", client));
             break;
           }
+          case "jfc_func_editor_del_rung": {
+            String fid = (String)client.getProperty("func");
+            Component focus = (Component)client.getProperty("focus");
+            int rid = -1;
+            Node node = null;
+            if (focus != null) {
+              node = (Node)focus.getProperty("node");
+            }
+            if (node != null) {
+              if (node.parent == null) {
+                rid = node.root.rid;
+              } else {
+                rid = node.parent.root.rid;
+              }
+            }
+            if (rid == -1) break;
+            sql.execute("delete from rungs where fid=" + fid + " and rid=" + rid);
+            sql.execute("delete from blocks where fid=" + fid + " and rid=" + rid);
+            sql.execute("update rungs set rid=rid-1 where fid=" + fid + " and rid>" + rid);
+            sql.execute("update blocks set rid=rid-1 where fid=" + fid + " and rid>" + rid);
+            client.setPanel(Panels.getPanel("jfc_func_editor", client));
+            break;
+          }
           case "jfc_rung_editor_cancel": {
             client.setPanel(Panels.getPanel("jfc_func_editor", client));
             break;
@@ -560,6 +583,14 @@ public class Events {
           Label lbl = (Label)r.table.get(0, 0, false);
           lbl.setText("Rung " + (a+1));
         }
+        long revision = Long.valueOf(sql.select1value("select revision from funcs where id=" + fid));
+        revision++;
+        sql.execute("update funcs set revision=" + revision + " where id=" + fid);
+        break;
+      }
+
+      case "jfc_func_editor_del_rung": {
+        Panels.confirm(client, "Delete rung?", "jfc_func_editor_del_rung");
         break;
       }
 
