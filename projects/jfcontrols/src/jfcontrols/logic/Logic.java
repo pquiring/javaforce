@@ -45,5 +45,12 @@ public abstract class Logic {
   }
 
   //box members
-  public String getTagName(int idx) {return null;}
+  public String getTagName(int idx) {
+    switch (idx) {
+      case 1: return "x";
+      case 2: return "y";
+      case 3: return "z";
+    }
+    return "?";
+  }
 }
