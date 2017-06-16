@@ -19,6 +19,8 @@ public class IOTag extends MonitoredTag {
   private boolean loaded;
   private int dis[];
   private int dos[];
+  private String disComments[];
+  private String dosComments[];
 
   public IOTag(String name, int type, boolean unsigned, boolean array, SQL sql) {
     super(type, unsigned, array);
@@ -43,6 +45,7 @@ public class IOTag extends MonitoredTag {
       GPIO.configInput(dis[a]);
       getValue(0, IDs.io_mid_di, a);
     }
+    disComments = sql.select1col("select comment from iocomments where mid=" + IDs.io_mid_di + " order by idx");
     String domap[] = sql.select1value("select hw_do").split(",");
     dos = new int[domap.length];
     for(int a=8;a<16;a++) {
@@ -50,6 +53,7 @@ public class IOTag extends MonitoredTag {
       GPIO.configOutput(dos[a]);
       setValue("0", 0, IDs.io_mid_do, a);
     }
+    dosComments = sql.select1col("select comment from iocomments where mid=" + IDs.io_mid_do + " order by idx");
   }
 
   public void updateRead(SQL sql) {
@@ -241,6 +245,14 @@ public class IOTag extends MonitoredTag {
     }
 
     public void updateWrite(SQL sql) {
+    }
+
+    public String getComment() {
+      switch (mid) {
+        case IDs.io_mid_di: return disComments[midx];
+        case IDs.io_mid_do: return dosComments[midx];
+      }
+      return null;
     }
   }
 
