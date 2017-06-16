@@ -47,23 +47,23 @@ public class Panels {
     }
     String display = sql.select1value("select display from panels where name=" + SQL.quote(pname));
     String popup = sql.select1value("select popup from panels where id=" + pid);
-    String cells[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style,events from cells where pid=" + pid);
+    String cells[][] = sql.select("select x,y,w,h,comp,name,text,tag,func,arg,style,events from cells where pid=" + pid);
     Table table = new Table(cellWidth,cellHeight,1,1);
     panel.add(table);
     buildTable(table, panel, cells, client, -1, -1, null);
     if (popup.equals("true")) return panel;
     //add top components
-    Button menu = getButton(new String[] {null, null, null, null, null, "button", null, "!image:menu", null, "showMenu", null, null});
+    Button menu = getButton(new String[] {null, null, null, null, "button", null, "!image:menu", null, "showMenu", null, null});
     menu.setProperty("func", "showMenu");
     setCellSize(menu, new Rectangle(0,0,1,1));
     table.add(menu, 0, 0);
-    Label alarms = getLabel(new String[] {null, null, null, null, null, "label", null, "0", null, "setPanel", "jfc_alarms", null});
+    Label alarms = getLabel(new String[] {null, null, null, null, "label", null, "0", null, "setPanel", "jfc_alarms", null});
     alarms.setProperty("func", "setPanel");
     alarms.setProperty("arg", "jfc_alarms");
     alarms.setBorder(true);
     setCellSize(alarms, new Rectangle(1,0,1,1));
     table.add(alarms, 1, 0);
-    Label title = getLabel(new String[] {null, null, null, null, null, "label", "jfc_title", display, null, null, null, null});
+    Label title = getLabel(new String[] {null, null, null, null, "label", "jfc_title", display, null, null, null, null});
     title.setName("jfc_title");
     setCellSize(title, new Rectangle(2,0,16,1));
     table.add(title, 2, 0, 16, 1);
@@ -84,20 +84,19 @@ public class Panels {
     }
     return panel;
   }
-  //id,x,y,w,h,name,text,tag,func,arg,style
-  private final static int ID = 0;
-  private final static int X = 1;
-  private final static int Y = 2;
-  private final static int W = 3;
-  private final static int H = 4;
-  private final static int COMP = 5;
-  private final static int NAME = 6;
-  private final static int TEXT = 7;
-  private final static int TAG = 8;
-  private final static int FUNC = 9;
-  private final static int ARG = 10;
-  private final static int STYLE = 11;
-  private final static int EVENTS = 12;
+  //x,y,w,h,comp,name,text,tag,func,arg,style,events
+  private final static int X = 0;
+  private final static int Y = 1;
+  private final static int W = 2;
+  private final static int H = 3;
+  private final static int COMP = 4;
+  private final static int NAME = 5;
+  private final static int TEXT = 6;
+  private final static int TAG = 7;
+  private final static int FUNC = 8;
+  private final static int ARG = 9;
+  private final static int STYLE = 10;
+  private final static int EVENTS = 11;
   public static Table buildTable(Table table, Container container, String cells[][], WebUIClient client, int ix, int iy, Node nodes[]) {
     ClientContext context = (ClientContext)client.getProperty("context");
     SQL sql = context.sql;
@@ -139,7 +138,6 @@ public class Panels {
         my = y2;
       }
       setCellSize(c, rs[a]);
-      c.setProperty("id", cells[a][ID]);
       String cellTag = cells[a][TAG];
       if (cellTag != null) {
         c.setProperty("tag", cellTag);
@@ -477,20 +475,20 @@ public class Panels {
     });
     return img;
   }
-  private static String[] createCell(String id, int x, int y, int w, int h, String comp, String name, String text, String tag, String func, String arg, String style) {
-    String cell[] = new String[13];
-    cell[0] = id;
-    cell[1] = Integer.toString(x);
-    cell[2] = Integer.toString(y);
-    cell[3] = Integer.toString(w);
-    cell[4] = Integer.toString(h);
-    cell[5] = comp;
-    cell[6] = name;
-    cell[7] = text;
-    cell[8] = tag;
-    cell[9] = func;
-    cell[10] = arg;
-    cell[11] = style;
+  private static String[] createCell(int x, int y, int w, int h, String comp, String name, String text, String tag, String func, String arg, String style /*, String events */) {
+    String cell[] = new String[12];
+    cell[0] = Integer.toString(x);
+    cell[1] = Integer.toString(y);
+    cell[2] = Integer.toString(w);
+    cell[3] = Integer.toString(h);
+    cell[4] = comp;
+    cell[5] = name;
+    cell[6] = text;
+    cell[7] = tag;
+    cell[8] = func;
+    cell[9] = arg;
+    cell[10] = style;
+    //cell[11] = events;
     return cell;
   }
   private static boolean empty(String [][] cells, int cx, int cy) {
@@ -522,13 +520,13 @@ public class Panels {
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           String style = data[a][1].equals("0") ? "disabled" : null;
-          cells.add(createCell("", 0, a, 1, 1, "textfield", null, data[a][1], "jfc_ctrls_cid_int_" + data[a][0], null, null, style));
-          cells.add(createCell("", 1, a, 3, 1, "textfield", null, data[a][2], "jfc_ctrls_ip_str_" + data[a][0], null, null, style));
-          cells.add(createCell("", 4, a, 2, 1, "combobox", null, null, "jfc_ctrls_type_int_" + data[a][0], null, "jfc_ctrl_type", style));
-          cells.add(createCell("", 6, a, 2, 1, "combobox", null, null, "jfc_ctrls_speed_int_" + data[a][0], null, "jfc_ctrl_speed", style));
-          cells.add(createCell("", 9, a, 2, 1, "button", null, "Tags", null, "jfc_ctrl_tags", data[a][1], null));
+          cells.add(createCell(0, a, 1, 1, "textfield", null, data[a][1], "jfc_ctrls_cid_int_" + data[a][0], null, null, style));
+          cells.add(createCell(1, a, 3, 1, "textfield", null, data[a][2], "jfc_ctrls_ip_str_" + data[a][0], null, null, style));
+          cells.add(createCell(4, a, 2, 1, "combobox", null, null, "jfc_ctrls_type_int_" + data[a][0], null, "jfc_ctrl_type", style));
+          cells.add(createCell(6, a, 2, 1, "combobox", null, null, "jfc_ctrls_speed_int_" + data[a][0], null, "jfc_ctrl_speed", style));
+          cells.add(createCell(9, a, 2, 1, "button", null, "Tags", null, "jfc_ctrl_tags", data[a][1], null));
           if (style == null) {
-            cells.add(createCell("", 12, a, 2, 1, "button", null, "Delete", null, "jfc_ctrl_delete", data[a][0], null));
+            cells.add(createCell(12, a, 2, 1, "button", null, "Delete", null, "jfc_ctrl_delete", data[a][0], null));
           }
         }
         break;
@@ -554,13 +552,13 @@ public class Panels {
           } else {
             style = null;
           }
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_tags_name_" + tag_type + "_" + data[a][0], null, null, style));
-          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, tag_types, style));
-          cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_tags_unsigned_boolean_" + data[a][0], null, null, style));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_tags_name_" + tag_type + "_" + data[a][0], null, null, style));
+          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, tag_types, style));
+          cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_tags_unsigned_boolean_" + data[a][0], null, null, style));
           if (cid.equals("0")) {
-            cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, style));
+            cells.add(createCell(14, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, style));
           }
-          cells.add(createCell("", 17, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], style));
+          cells.add(createCell(17, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], style));
         }
         break;
       }
@@ -568,9 +566,9 @@ public class Panels {
         String data[][] = sql.select("select id,uid,name from udts where uid >= " + IDs.uid_user);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a][0], null, null, null));
-          cells.add(createCell("", 8, a, 2, 1, "button", null, "Edit", null, "jfc_udts_edit", data[a][1], null));
-          cells.add(createCell("", 11, a, 2, 1, "button", null, "Delete", null, "jfc_udts_delete", data[a][0], null));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a][0], null, null, null));
+          cells.add(createCell(8, a, 2, 1, "button", null, "Edit", null, "jfc_udts_edit", data[a][1], null));
+          cells.add(createCell(11, a, 2, 1, "button", null, "Delete", null, "jfc_udts_delete", data[a][0], null));
         }
         break;
       }
@@ -579,12 +577,12 @@ public class Panels {
         String data[][] = sql.select("select id,uid,name,type,mid,builtin from udtmems where uid=" + uid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a][0], null, null, null));
-          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", null));
-          cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, null));
-          cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_udtmems_array_boolean_" + data[a][0], null, null, null));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a][0], null, null, null));
+          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", null));
+          cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, null));
+          cells.add(createCell(14, a, 3, 1, "checkbox", null, "Array", "jfc_udtmems_array_boolean_" + data[a][0], null, null, null));
           if (data[a][5].equals("0")) {
-            cells.add(createCell("", 17, a, 2, 1, "button", null, "Delete", null, "jfc_udts_editor_delete", data[a][0], null));
+            cells.add(createCell(17, a, 2, 1, "button", null, "Delete", null, "jfc_udts_editor_delete", data[a][0], null));
           }
         }
         break;
@@ -593,8 +591,8 @@ public class Panels {
         String data[][] = sql.select("select id,uid,name from udts where uid < " + IDs.uid_user);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a][0], null, null, "readonly"));
-          cells.add(createCell("", 8, a, 2, 1, "button", null, "View", null, "jfc_sdts_edit", data[a][1], null));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a][0], null, null, "readonly"));
+          cells.add(createCell(8, a, 2, 1, "button", null, "View", null, "jfc_sdts_edit", data[a][1], null));
         }
         break;
       }
@@ -603,10 +601,10 @@ public class Panels {
         String data[][] = sql.select("select id,uid,name,type,mid from udtmems where uid=" + uid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a][0], null, null, "readonly"));
-          cells.add(createCell("", 6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", "readonly"));
-          cells.add(createCell("", 10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, "readonly"));
-          cells.add(createCell("", 14, a, 3, 1, "checkbox", null, "Array", "jfc_udtmems_array_boolean_" + data[a][0], null, null, "readonly"));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a][0], null, null, "readonly"));
+          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", "readonly"));
+          cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, "readonly"));
+          cells.add(createCell(14, a, 3, 1, "checkbox", null, "Array", "jfc_udtmems_array_boolean_" + data[a][0], null, null, "readonly"));
         }
         break;
       }
@@ -615,17 +613,17 @@ public class Panels {
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           String style = data[a][1].equals("main") ? "disabled" : null;
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_panels_display_str_" + data[a][0], null, null, style));
-          cells.add(createCell("", 7, a, 2, 1, "button", null, "Edit", null, "jfc_panels_edit", data[a][0], null));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_panels_display_str_" + data[a][0], null, null, style));
+          cells.add(createCell(7, a, 2, 1, "button", null, "Edit", null, "jfc_panels_edit", data[a][0], null));
           if (style == null) {
-            cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_panels_delete", data[a][0], null));
+            cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_panels_delete", data[a][0], null));
           }
         }
         break;
       }
       case "jfc_panel_editor": {
         String pid = (String)client.getProperty("panel");
-        String data[][] = sql.select("select id,x,y,w,h,comp,name,text,tag,func,arg,style,events from cells where pid=" + pid);
+        String data[][] = sql.select("select x,y,w,h,comp,name,text,tag,func,arg,style,events from cells where pid=" + pid);
         for(int a=0;a<data.length;a++) {
           cells.add(data[a]);
         }
@@ -638,7 +636,6 @@ public class Panels {
         cells.clear();
         for(int a=0;a<data.length;a++) {
           String cell[] = data[a];
-          cell[ID] = null;
           cell[COMP] = "overlay";
           cell[NAME] = "";
           cell[TEXT] = "";
@@ -652,7 +649,7 @@ public class Panels {
         for(int x=0;x<64;x++) {
           for(int y=0;y<64;y++) {
             if (empty(cellsArray,x,y)) {
-              cells.add(createCell("", x, y, 1, 1, "overlay", null, null, null, null, null, null));
+              cells.add(createCell(x, y, 1, 1, "overlay", null, null, null, null, null, null));
             }
           }
         }
@@ -668,22 +665,22 @@ public class Panels {
           String fid = data[a][0];
           String funcname = data[a][1];
           String style = funcname.equals("main") || funcname.equals("init") ? "disabled" : null;
-          cells.add(createCell("", 0, a, 6, 1, "textfield", null, null, "jfc_funcs_name_tagid_" + fid, null, null, style));
-          cells.add(createCell("", 7, a, 2, 1, "button", null, "Edit", null, "jfc_funcs_edit", fid, null));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_funcs_name_tagid_" + fid, null, null, style));
+          cells.add(createCell(7, a, 2, 1, "button", null, "Edit", null, "jfc_funcs_edit", fid, null));
           if (style == null) {
-            cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_funcs_delete", fid, null));
+            cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_funcs_delete", fid, null));
           }
         }
         break;
       }
       case "jfc_rung_args": {
-        cells.add(createCell("", 0, 0, 1, 1, "button", null, "UP", null, "jfc_rung_args_up", null, null));
-        cells.add(createCell("", 0, 1, 1, 1, "button", null, "+", null, "jfc_rung_args_add", null, null));
-        cells.add(createCell("", 0, 2, 1, 1, "button", null, "-", null, "jfc_rung_args_del", null, null));
-        cells.add(createCell("", 0, 3, 1, 1, "button", null, "DN", null, "jfc_rung_args_dn", null, null));
+        cells.add(createCell(0, 0, 1, 1, "button", null, "UP", null, "jfc_rung_args_up", null, null));
+        cells.add(createCell(0, 1, 1, 1, "button", null, "+", null, "jfc_rung_args_add", null, null));
+        cells.add(createCell(0, 2, 1, 1, "button", null, "-", null, "jfc_rung_args_del", null, null));
+        cells.add(createCell(0, 3, 1, 1, "button", null, "DN", null, "jfc_rung_args_dn", null, null));
         for(int a=0;a<4;a++) {
-          cells.add(createCell("", 1, a, 6, 1, "textfield", null, null, null, null, null, null));
-          cells.add(createCell("", 7, a, 3, 1, "combobox", null, null, null, null, "jfc_tag_type_udt", null));
+          cells.add(createCell(1, a, 6, 1, "textfield", null, null, null, null, null, null));
+          cells.add(createCell(7, a, 3, 1, "combobox", null, null, null, null, "jfc_tag_type_udt", null));
         }
         break;
       }
@@ -694,7 +691,7 @@ public class Panels {
         String groups[] = sql.select1col("select gid from logics group by gid order by gid");
         int idx = -1;
         for(int a=0;a<groups.length;a++) {
-          tabs.add(wrapPanel(getTable(createCell(null, r.x, r.y, r.width, r.height, "table", "jfc_logics", null, null, null, groups[a], null), null, new Rectangle(r), client)), "");
+          tabs.add(wrapPanel(getTable(createCell(r.x, r.y, r.width, r.height, "table", "jfc_logics", null, null, null, groups[a], null), null, new Rectangle(r), client)), "");
           if (groups[a].equals("bit")) idx = a;
         }
         if (idx != -1) tabs.setTabIndex(idx);
@@ -719,7 +716,7 @@ public class Panels {
             }
             desc = desc.replaceAll("_", "<br/>");
           }
-          cells.add(createCell("", a, 0, 1, 1, "button", items[a][0], desc, null, "jfc_rung_editor_add", null, style));
+          cells.add(createCell(a, 0, 1, 1, "button", items[a][0], desc, null, "jfc_rung_editor_add", null, style));
         }
         break;
       }
@@ -732,7 +729,7 @@ public class Panels {
       }
       case "jfc_rung_viewer_end": {
         int fid = Integer.valueOf((String)client.getProperty("func"));
-        cells.add(createCell("", 0, 0, 5, 1, "label", null, "End of Function", null, null, null, null));
+        cells.add(createCell(0, 0, 5, 1, "label", null, "End of Function", null, null, null, null));
         nodes.add(new NodeRoot(fid, -1));
         break;
       }
@@ -741,9 +738,9 @@ public class Panels {
         String data[][] = sql.select("select id,tid,idx,value from tagvalues where mid=" + IDs.alarm_mid_name + " and tid=" + tid);
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 0, a, 2, 1, "label", null, data[a][2], null, null, null, null));
-          cells.add(createCell("", 2, a, 6, 1, "textfield", null, null, "jfc_tagvalues_value_str_" + data[a][0], null, null, null));
-          cells.add(createCell("", 10, a, 2, 1, "button", null, "Delete", null, "jfc_alarms_editor_delete", data[a][2], null));
+          cells.add(createCell(0, a, 2, 1, "label", null, data[a][2], null, null, null, null));
+          cells.add(createCell(2, a, 6, 1, "textfield", null, null, "jfc_tagvalues_value_str_" + data[a][0], null, null, null));
+          cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_alarms_editor_delete", data[a][2], null));
         }
         break;
       }
@@ -752,16 +749,16 @@ public class Panels {
         String alarmname = sql.select1value("select value from tagvalues where mid=" + IDs.alarm_mid_name + " and tid=" + tid + " and idx=" + arg);
         String alarmack = sql.select1value("select value from tagvalues where mid=" + IDs.alarm_mid_ack + " and tid=" + tid + " and idx=" + arg);
         if (alarmack == null) alarmack = "0";
-        cells.add(createCell("", 2, 0, 2, 1, "label", null, alarmack.equals("1") ? "X" : "", null, null, null, null));
-        cells.add(createCell("", 4, 0, 10, 1, "label", null, arg + ":" + alarmname, null, null, null, null));
+        cells.add(createCell(2, 0, 2, 1, "label", null, alarmack.equals("1") ? "X" : "", null, null, null, null));
+        cells.add(createCell(4, 0, 10, 1, "label", null, arg + ":" + alarmname, null, null, null, null));
         break;
       }
       case "jfc_alarm_history": {
         String data[][] = sql.select("select id,idx,when from alarmhistory where id=" + arg);
         if (data == null) data = new String[0][];
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell("", 2, a, 4, 1, "label", null, data[a][2], null, null, null, null));  //when
-          cells.add(createCell("", 6, a, 10, 1, "label", null, arg + ":" + data[a][1], null, null, null, null));  //name
+          cells.add(createCell(2, a, 4, 1, "label", null, data[a][2], null, null, null, null));  //when
+          cells.add(createCell(6, a, 10, 1, "label", null, arg + ":" + data[a][1], null, null, null, null));  //name
         }
         break;
       }
@@ -800,12 +797,12 @@ public class Panels {
         context.debugIdx = 0;
         for(int rung=0;rung<data.length;rung++) {
           ArrayList<String[]> cells = new ArrayList<String[]>();
-          cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], null));
+          cells.add(createCell(0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], null));
           Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null);
           panel.add(table);
         }
         ArrayList<String[]> cells = new ArrayList<String[]>();
-        cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_rung_viewer_end", null, null, null, null, null));
+        cells.add(createCell(0, 0, 1, 1, "table", "jfc_rung_viewer_end", null, null, null, null, null));
         Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null);
         panel.add(table);
         Rungs rungs = (Rungs)client.getProperty("rungs");
@@ -884,7 +881,7 @@ public class Panels {
       }
       if (context.alarms.containsKey(idx)) continue;
       ArrayList<String[]> cells = new ArrayList<String[]>();
-      cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_alarm", null, null, null, data[a][1], null));
+      cells.add(createCell(0, 0, 1, 1, "table", "jfc_alarm", null, null, null, data[a][1], null));
       Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, -1, -1, null);
       panel.add(table);
       context.alarms.put(idx, table);
@@ -905,7 +902,7 @@ public class Panels {
       if (id < context.lastAlarmID) continue;
       context.lastAlarmID = id;
       ArrayList<String[]> cells = new ArrayList<String[]>();
-      cells.add(createCell(null, 0, 0, 1, 1, "table", "jfc_alarm_history", null, null, null, data[a][0], null));
+      cells.add(createCell(0, 0, 1, 1, "table", "jfc_alarm_history", null, null, null, data[a][0], null));
       Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), panel.getClient(), -1, -1, null);
       panel.add(table);
     }
@@ -1110,10 +1107,10 @@ public class Panels {
     //add rung title / comment
     String style = readonly ? "readonly" : null;
     String field = readonly ? "label" : "textfield";
-    cells.add(createCell(null, x, y, 3, 1, "label", null, "Rung " + (rid+1), null, null, null, null));
+    cells.add(createCell(x, y, 3, 1, "label", null, "Rung " + (rid+1), null, null, null, null));
     objs.add(root);
     x += 3;
-    cells.add(createCell(null, x, y, 12, 1, field, "comment" + rid, comment, null, null, null, style));
+    cells.add(createCell(x, y, 12, 1, field, "comment" + rid, comment, null, null, null, style));
     objs.add(root);
     x = 0;
     y++;
@@ -1270,7 +1267,7 @@ public class Panels {
           if (create) {
             node.x = x;
             node.y = y;
-            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_h", null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y || node.moved) {
@@ -1293,14 +1290,14 @@ public class Panels {
             y++;
           }
           while (y < y2) {
-            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_v", null));
             newNodes.add(node.addChild('v', x, y));
             y++;
           }
           if (create) {
             node.x = x;
             node.y = y;
-            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y || node.moved) {
@@ -1318,7 +1315,7 @@ public class Panels {
             }
           }
           while (x < x2) {
-            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_h", null));
             newNodes.add(node.insertPreNode('h', x, y));
             x++;
           }
@@ -1328,7 +1325,7 @@ public class Panels {
           if (create) {
             node.x = x;
             node.y = y;
-            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y || node.moved) {
@@ -1345,7 +1342,7 @@ public class Panels {
             y--;
           }
           while (y > node.upper.y) {
-            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_v", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_v", null));
             newNodes.add(node.addChildLower('v', x, y));
             y--;
           }
@@ -1365,14 +1362,14 @@ public class Panels {
             x2 = node.lower.x;
           }
           while (x < x2) {
-            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_h", null));
             newNodes.add(node.insertPreNode('h', x, y));
             x++;
           }
           if (create) {
             node.x = x;
             node.y = y;
-            newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "w_t", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_t", null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y || node.moved) {
@@ -1389,7 +1386,7 @@ public class Panels {
           int tagIdx = 1;
           if (!blk.isBlock()) {
             if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", "en_0_" + context.debugIdx, null, null, null, "w_h", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_0_" + context.debugIdx, null, null, null, "w_h", null));
               newNodes.add(node.addChild('h', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1405,7 +1402,7 @@ public class Panels {
               x--;
               y++;
               if (create) {
-                newCells.add(createCell(null, x, y, 3, 1, textfield, null, tag, null, null, null, style));
+                newCells.add(createCell(x, y, 3, 1, textfield, null, tag, null, null, null, style));
                 newNodes.add(node.addChild('T', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1417,7 +1414,7 @@ public class Panels {
               //show tag comment/value
               y++;
               if (create) {
-                newCells.add(createCell(null, x, y, 3, 1, "dual", null, tag, null, null, null, style));
+                newCells.add(createCell(x, y, 3, 1, "dual", null, tag, null, null, null, style));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1434,7 +1431,7 @@ public class Panels {
             x++;
 
             if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", "en_1_" + context.debugIdx++, null, null, null, "w_h", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_1_" + context.debugIdx++, null, null, null, "w_h", null));
               newNodes.add(node.addChild('h', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1448,7 +1445,7 @@ public class Panels {
             if (create) {
               node.x = x;
               node.y = y;
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, blk.getImage(), null));
+              newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, blk.getImage(), null));
               newNodes.add(node);
             } else {
               if (node.x != x || node.y != y || node.moved) {
@@ -1463,7 +1460,7 @@ public class Panels {
             int by = y;
             //draw a box the size of the logic block
             if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", "en_0_" + context.debugIdx, null, null, null, "b7", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_0_" + context.debugIdx, null, null, null, "b7", null));
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1474,7 +1471,7 @@ public class Panels {
             x++;
 
             if (create) {
-              newCells.add(createCell(null, x, y, 3, 1, "label", null, blk.getDesc(), null, null, null, null));
+              newCells.add(createCell(x, y, 3, 1, "label", null, blk.getDesc(), null, null, null, null));
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1485,7 +1482,7 @@ public class Panels {
 
             for(int a=0;a<3;a++) {
               if (create) {
-                newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b8", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b8", null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1504,7 +1501,7 @@ public class Panels {
             int tagcnt = blk.getTagsCount();
             for(int a=0;a<tagcnt;a++) {
               if (create) {
-                newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b4", null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1515,7 +1512,7 @@ public class Panels {
               y++;
 
               if (create) {
-                newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b4", null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1528,7 +1525,7 @@ public class Panels {
               if (create) {
                 String name = blk.getTagName(a + 1);
                 if (name == null) name = "";
-                newCells.add(createCell(null, x, y, 1, 1, "label", null, name, null, null, null, name.length() > 3 ? "smallfont" : null));
+                newCells.add(createCell(x, y, 1, 1, "label", null, name, null, null, null, name.length() > 3 ? "smallfont" : null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1544,10 +1541,10 @@ public class Panels {
                   if (readonly) {
                     tag = sql.select1value("select name from funcs where id=" + tag);
                   }
-                  newCells.add(createCell(null, x, y, 3, 1, combobox, "jfc_function", tag, null, null, "jfc_function", style));
+                  newCells.add(createCell(x, y, 3, 1, combobox, "jfc_function", tag, null, null, "jfc_function", style));
                   newNodes.add(node.addChild('C', x, y));
                 } else {
-                  newCells.add(createCell(null, x, y, 3, 1, textfield, null, tag, null, null, null, style));
+                  newCells.add(createCell(x, y, 3, 1, textfield, null, tag, null, null, null, style));
                   newNodes.add(node.addChild('T', x, y));
                 }
               } else {
@@ -1560,7 +1557,7 @@ public class Panels {
 
               if (blk.getTagType(a) != TagType.function) {
                 if (create) {
-                  newCells.add(createCell(null, x, y, 3, 1, "dual", null, tag, null, null, null, style));
+                  newCells.add(createCell(x, y, 3, 1, "dual", null, tag, null, null, null, style));
                   newNodes.add(node.addChild('x', x, y));
                 } else {
                   child = node.childs.get(childIdx++);
@@ -1574,7 +1571,7 @@ public class Panels {
               tagIdx++;
 
               if (create) {
-                newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b6", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b6", null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1585,7 +1582,7 @@ public class Panels {
               y++;
 
               if (create) {
-                newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b6", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b6", null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1597,7 +1594,7 @@ public class Panels {
             }
 
             if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b1", null));
+              newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b1", null));
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1609,7 +1606,7 @@ public class Panels {
 
             for(int a=0;a<3;a++) {
               if (create) {
-                newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b2", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b2", null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1622,7 +1619,7 @@ public class Panels {
             }
 
             if (create) {
-              newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b3", null));
+              newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b3", null));
               newNodes.add(node.addChild('x', x, y));
             } else {
                 child = node.childs.get(childIdx++);
@@ -1635,7 +1632,7 @@ public class Panels {
             if (create) {
               node.x = x;
               node.y = y;
-              newCells.add(createCell(null, x, y, 1, 1, "image", "en_1_" + context.debugIdx++, null, null, null, "b9", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_1_" + context.debugIdx++, null, null, null, "b9", null));
               newNodes.add(node);
             } else {
               if (node.x != x || node.y != y || node.moved) {
