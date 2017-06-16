@@ -33,7 +33,7 @@ public class FunctionCompiler {
     sb.append("    TagBase tags[] = new TagBase[33];\r\n");
 
     //append code from rungs
-    String rungs[][] = sql.select("select logic from rungs where fid=" + fid);
+    String rungs[][] = sql.select("select logic from rungs where fid=" + fid + " order by rid");
     int norungs = rungs.length;
     ArrayList<String> stack = new ArrayList<>();
     int debugpos = 0;
@@ -170,6 +170,7 @@ public class FunctionCompiler {
     Node node = root;
     for(int p=0;p<logic.length;p++) {
       String part = logic[p];
+      JFLog.log("buildNodes:" + fid + "," + rid + "," + part);
       switch (part) {
         case "t": {
           nodes.add(node = node.insertNode('t', x, y));
