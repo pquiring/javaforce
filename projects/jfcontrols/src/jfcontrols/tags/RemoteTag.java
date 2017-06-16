@@ -11,10 +11,12 @@ public class RemoteTag extends MonitoredTag {
   private int tid;
   private javaforce.controls.Tag remoteTag;
   private String value = "0";
+  private String comment;
 
   public RemoteTag(int cid, String name, int type, boolean unsigned, boolean array_not_supported, SQL sql) {
     super(type, unsigned, array_not_supported);
     tid = Integer.valueOf(sql.select1value("select id from tags where cid=" + cid + " and name=" + SQL.quote(name)));
+    comment = sql.select1value("select comment from tags where cid=" + cid + " and id=" + tid);
     remoteTag = RemoteControllers.getTag(cid, name, type, sql);
   }
 
@@ -76,5 +78,9 @@ public class RemoteTag extends MonitoredTag {
 
   public int getMemberIndex() {
     return 0;
+  }
+
+  public String getComment() {
+    return comment;
   }
 }

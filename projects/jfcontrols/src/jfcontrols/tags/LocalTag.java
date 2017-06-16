@@ -17,15 +17,20 @@ public class LocalTag extends MonitoredTag {
   private String oldValue;
   private HashMap<TagID, TagValue> values;
   private HashMap<String, Integer> mids;
+  private String memberComments[];
+  private String comment;
 
   public LocalTag(String name, int type, boolean unsigned, boolean array, SQL sql) {
     super(type, unsigned, array);
     tid = Integer.valueOf(sql.select1value("select id from tags where cid=0 and name=" + SQL.quote(name)));
+    comment = sql.select1value("select comment from tags where cid=0 and id=" + tid);
     if (udt) {
       mids = new HashMap<>();
-      String data[][] = sql.select("select name,mid from udtmems where uid=" + type);
+      String data[][] = sql.select("select name,mid,comment from udtmems where uid=" + type + " order by mid");
+      memberComments = new String[data.length];
       for(int a=0;a<data.length;a++) {
         mids.put(data[a][0], Integer.valueOf(data[a][1]));
+        memberComments[a] = data[a][2];
       }
     }
     if (array || udt) {
@@ -220,6 +225,10 @@ public class LocalTag extends MonitoredTag {
 
     public void updateWrite(SQL sql) {
     }
+
+    public String getComment() {
+      return LocalTag.this.getComment();
+    }
   }
 
   public TagBase getIndex(int idx) {
@@ -287,6 +296,10 @@ public class LocalTag extends MonitoredTag {
 
     public void updateWrite(SQL sql) {
     }
+
+    public String getComment() {
+      return memberComments[mid];
+    }
   }
 
   public class Member extends MonitoredTag {
@@ -351,6 +364,10 @@ public class LocalTag extends MonitoredTag {
 
     public void updateWrite(SQL sql) {
     }
+
+    public String getComment() {
+      return memberComments[mid];
+    }
   }
 
   public TagBase getMember(int mid) {
@@ -359,5 +376,9 @@ public class LocalTag extends MonitoredTag {
 
   public int getMember(String name) {
     return mids.get(name);
+  }
+
+  public String getComment() {
+    return comment;
   }
 }

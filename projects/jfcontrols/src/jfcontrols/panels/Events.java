@@ -231,12 +231,17 @@ public class Events {
             sql.execute("delete from udtmems where uid=" + uid);
             sql.execute("update config set value='' where id='hw_di'");
             sql.execute("update config set value='' where id='hw_do'");
+            sql.execute("delete from iocomments");
             break;
           case 1:  //di8 do8
             sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'di',1,true,false,false)");
             sql.execute("insert into udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",1,'do',1,true,false,false)");
             sql.execute("update config set value='0,1,2,3,4,5,6,7' where id='hw_di'");
             sql.execute("update config set value='8,9,10,11,12,13,14,15' where id='hw_do'");
+            for(int a=0;a<8;a++) {
+              sql.execute("insert into iocomments (mid, idx, comment) values (" + IDs.io_mid_di + "," + a + ", '')");
+              sql.execute("insert into iocomments (mid, idx, comment) values (" + IDs.io_mid_do + "," + a + ", '')");
+            }
             break;
         }
         if (!JF.isWindows()) {

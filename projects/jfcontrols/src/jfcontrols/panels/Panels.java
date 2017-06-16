@@ -225,7 +225,7 @@ public class Panels {
       case "button": return getButton(v);
       case "link": return getLink(v);
       case "textfield": return getTextField(v, client);
-      case "dual": return getDual(v);
+      case "dual": return getDual(v, client);
       case "textarea": return getTextArea(v, client);
       case "combobox": return getComboBox(v, client);
       case "checkbox": return getCheckBox(v, client);
@@ -280,11 +280,13 @@ public class Panels {
     b.setURL("http://jfcontrols.sourceforge.net/help_" + v[ARG] + ".php");
     return b;
   }
-  private static Component getDual(String v[]) {
+  private static Component getDual(String v[], WebUIClient client) {
+    ClientContext context = (ClientContext)client.getProperty("context");
     Table table = new Table(cellWidth, cellHeight/2, 3, 2);
-    Label comment = new Label("comment");
+    TagBase tag = context.getTag(context.decode(v[TAG]));
+    Label comment = new Label(tag.getComment());
     table.add(comment, 0, 0, 3, 1);
-    Label value = new Label("value");
+    Label value = new Label("");
     table.add(value, 0, 1, 3, 1);
     return table;
   }
@@ -555,10 +557,11 @@ public class Panels {
           cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_tags_name_" + tag_type + "_" + data[a][0], null, null, style));
           cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, tag_types, style));
           cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_tags_unsigned_boolean_" + data[a][0], null, null, style));
+          cells.add(createCell(14, a, 6, 1, "textfield", null, null, "jfc_tags_comment_str_" + data[a][0], null, null, style));
           if (cid.equals("0")) {
-            cells.add(createCell(14, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, style));
+            cells.add(createCell(21, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, style));
           }
-          cells.add(createCell(17, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], style));
+          cells.add(createCell(25, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], style));
         }
         break;
       }
@@ -581,8 +584,9 @@ public class Panels {
           cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", null));
           cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, null));
           cells.add(createCell(14, a, 3, 1, "checkbox", null, "Array", "jfc_udtmems_array_boolean_" + data[a][0], null, null, null));
+          cells.add(createCell(18, a, 6, 1, "textfield", null, null, "jfc_udtmems_comment_str_" + data[a][0], null, null, null));
           if (data[a][5].equals("0")) {
-            cells.add(createCell(17, a, 2, 1, "button", null, "Delete", null, "jfc_udts_editor_delete", data[a][0], null));
+            cells.add(createCell(25, a, 2, 1, "button", null, "Delete", null, "jfc_udts_editor_delete", data[a][0], null));
           }
         }
         break;
@@ -731,6 +735,25 @@ public class Panels {
         int fid = Integer.valueOf((String)client.getProperty("func"));
         cells.add(createCell(0, 0, 5, 1, "label", null, "End of Function", null, null, null, null));
         nodes.add(new NodeRoot(fid, -1));
+        break;
+      }
+      case "jfc_config_iocomments": {
+        String data[][] = sql.select("select id,mid,idx,comment from iocomments order by mid,idx");
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          int mid = Integer.valueOf(data[a][1]);
+          String idx = data[a][2];
+          String comment = data[a][3];
+          String io = null;
+          switch (mid) {
+            case IDs.io_mid_di: io = "di"; break;
+            case IDs.io_mid_do: io = "do"; break;
+            case IDs.io_mid_ai: io = "ai"; break;
+            case IDs.io_mid_ao: io = "ao"; break;
+          }
+          cells.add(createCell(0, a, 4, 1, "label", null, "io." + io + "[" + idx + "]", null, null, null, null));
+          cells.add(createCell(4, a, 6, 1, "textfield", null, comment, "jfc_iocomments_comment_str_" + data[a][0], null, null, null));
+        }
         break;
       }
       case "jfc_alarm_editor": {

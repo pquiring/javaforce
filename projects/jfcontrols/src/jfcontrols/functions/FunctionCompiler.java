@@ -170,7 +170,6 @@ public class FunctionCompiler {
     Node node = root;
     for(int p=0;p<logic.length;p++) {
       String part = logic[p];
-      JFLog.log("buildNodes:" + fid + "," + rid + "," + part);
       switch (part) {
         case "t": {
           nodes.add(node = node.insertNode('t', x, y));

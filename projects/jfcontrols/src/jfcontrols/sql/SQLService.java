@@ -59,10 +59,11 @@ public class SQLService {
     sql.connect(derbyURI + ";create=true");
     //create tables
     sql.execute("create table ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int unique, ip varchar(32), type int, speed int)");
-    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), type int, array boolean, unsigned boolean, builtin boolean, unique (cid, name))");
+    sql.execute("create table tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), type int, array boolean, unsigned boolean, comment varchar(64), builtin boolean, unique (cid, name))");
     sql.execute("create table tagvalues (id int not null generated always as identity (start with 1, increment by 1) primary key, tid int, idx int, mid int, midx int, value varchar(128))");
+    sql.execute("create table iocomments (id int not null generated always as identity (start with 1, increment by 1) primary key, mid int, idx int, comment varchar(64), unique (mid, idx))");
     sql.execute("create table udts (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, name varchar(32) unique)");
-    sql.execute("create table udtmems (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, mid int, name varchar(32), type int, array boolean, unsigned boolean, builtin boolean)");
+    sql.execute("create table udtmems (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, mid int, name varchar(32), type int, array boolean, unsigned boolean, comment varchar(64), builtin boolean)");
     sql.execute("create table panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, display varchar(32), popup boolean, builtin boolean)");
     sql.execute("create table cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int,comp  varchar(32), name varchar(32), text varchar(512), tag varchar(32), func varchar(32), arg varchar(32), style varchar(512), events varchar(1024))");
     sql.execute("create table funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32) unique, revision bigint, comment varchar(8192))");
@@ -306,7 +307,10 @@ public class SQLService {
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_config', 'Config', false, true)");
     id = sql.select1value("select id from panels where name='jfc_config'");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,2,4,1,'label','','Hardware Config')");
+//    if (JF.isPI()) {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,arg,tag) values (" + id + ",5,2,5,1,'combobox','config_type','','jfc_config_type', 'jfc_config_value_str_hwid')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",11,2,3,1,'button','','Comments','setPanel', 'jfc_config_iocomments')");
+//    }
     if (!JF.isWindows()) {
       sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,2,1,'label','','IP Addr')");
       sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",4,3,3,1,'textfield','','jfc_config_value_str_ip_addr')");
@@ -318,6 +322,10 @@ public class SQLService {
       sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",4,3,3,1,'textfield','','jfc_config_value_str_ip_dns')");
     }
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,1,3,1,'button','','Save','jfc_config_save')");
+
+    sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_config_iocomments', 'I/O Comments', false, true)");
+    id = sql.select1value("select id from panels where name='jfc_config_iocomments'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",1,1,1,1,'table','jfc_config_iocomments')");
 
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_alarm_editor', 'Alarm Editor', false, true)");
     id = sql.select1value("select id from panels where name='jfc_alarm_editor'");

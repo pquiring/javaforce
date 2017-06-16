@@ -9,7 +9,6 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.controls.*;
-import jfcontrols.sql.SQLService;
 
 public abstract class TagBase {
   protected int type;
@@ -34,6 +33,10 @@ public abstract class TagBase {
   public abstract TagBase getMember(int mid);
 
   public abstract int getMember(String member);
+
+  public String getComment() {
+    return "";
+  }
 
   public abstract int getTagID();
   public abstract int getIndex();
