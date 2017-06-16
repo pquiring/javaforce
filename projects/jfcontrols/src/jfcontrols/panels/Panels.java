@@ -227,6 +227,7 @@ public class Panels {
       case "button": return getButton(v);
       case "link": return getLink(v);
       case "textfield": return getTextField(v, client);
+      case "dual": return getDual(v);
       case "textarea": return getTextArea(v, client);
       case "combobox": return getComboBox(v, client);
       case "checkbox": return getCheckBox(v, client);
@@ -280,6 +281,14 @@ public class Panels {
     }
     b.setURL("http://jfcontrols.sourceforge.net/help_" + v[ARG] + ".php");
     return b;
+  }
+  private static Component getDual(String v[]) {
+    Table table = new Table(cellWidth, cellHeight/2, 3, 2);
+    Label comment = new Label("comment");
+    table.add(comment, 0, 0, 3, 1);
+    Label value = new Label("value");
+    table.add(value, 0, 1, 3, 1);
+    return table;
   }
   private static TextField getTextField(String v[], WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
@@ -1391,11 +1400,12 @@ public class Panels {
             x++;
 
             if (blk.getTagsCount() == 1) {
+              String tag = node.tags[tagIdx++].substring(1);
               //show tag
               x--;
               y++;
               if (create) {
-                newCells.add(createCell(null, x, y, 3, 1, textfield, null, node.tags[tagIdx++].substring(1), null, null, null, style));
+                newCells.add(createCell(null, x, y, 3, 1, textfield, null, tag, null, null, null, style));
                 newNodes.add(node.addChild('T', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1403,7 +1413,21 @@ public class Panels {
                   moveNode(logic, child, x, y, 3);
                 }
               }
-              y--;
+
+              //show tag comment/value
+              y++;
+              if (create) {
+                newCells.add(createCell(null, x, y, 3, 1, "dual", null, tag, null, null, null, style));
+                newNodes.add(node.addChild('x', x, y));
+              } else {
+                child = node.childs.get(childIdx++);
+                if (child.x != x || child.y != y || child.moved) {
+                  moveNode(logic, child, x, y, 3);
+                }
+              }
+              tagIdx++;
+
+              y -= 2;
               x++;
             }
 
@@ -1511,6 +1535,18 @@ public class Panels {
                   moveNode(logic, child, x, y, 1);
                 }
               }
+              y++;
+
+              if (create) {
+                newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b4", null));
+                newNodes.add(node.addChild('x', x, y));
+              } else {
+                child = node.childs.get(childIdx++);
+                if (child.x != x || child.y != y || child.moved) {
+                  moveNode(logic, child, x, y, 1);
+                }
+              }
+              y--;
               x++;
 
               if (create) {
@@ -1526,16 +1562,16 @@ public class Panels {
               }
               x++;
 
+              String tag = node.tags[tagIdx].substring(1);
               if (create) {
                 if (blk.getTagType(a) == TagType.function) {
-                  String txt = node.tags[tagIdx++].substring(1);
                   if (readonly) {
-                    txt = sql.select1value("select name from funcs where id=" + txt);
+                    tag = sql.select1value("select name from funcs where id=" + tag);
                   }
-                  newCells.add(createCell(null, x, y, 3, 1, combobox, "jfc_function", txt, null, null, "jfc_function", style));
+                  newCells.add(createCell(null, x, y, 3, 1, combobox, "jfc_function", tag, null, null, "jfc_function", style));
                   newNodes.add(node.addChild('C', x, y));
                 } else {
-                  newCells.add(createCell(null, x, y, 3, 1, textfield, null, node.tags[tagIdx++].substring(1), null, null, null, style));
+                  newCells.add(createCell(null, x, y, 3, 1, textfield, null, tag, null, null, null, style));
                   newNodes.add(node.addChild('T', x, y));
                 }
               } else {
@@ -1544,7 +1580,33 @@ public class Panels {
                   moveNode(logic, child, x, y, 3);
                 }
               }
+              y++;
+
+              if (blk.getTagType(a) != TagType.function) {
+                if (create) {
+                  newCells.add(createCell(null, x, y, 3, 1, "dual", null, tag, null, null, null, style));
+                  newNodes.add(node.addChild('x', x, y));
+                } else {
+                  child = node.childs.get(childIdx++);
+                  if (child.x != x || child.y != y || child.moved) {
+                    moveNode(logic, child, x, y, 3);
+                  }
+                }
+              }
+              y--;
               x += 3;
+              tagIdx++;
+
+              if (create) {
+                newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b6", null));
+                newNodes.add(node.addChild('x', x, y));
+              } else {
+                child = node.childs.get(childIdx++);
+                if (child.x != x || child.y != y || child.moved) {
+                  moveNode(logic, child, x, y, 1);
+                }
+              }
+              y++;
 
               if (create) {
                 newCells.add(createCell(null, x, y, 1, 1, "image", null, null, null, null, "b6", null));

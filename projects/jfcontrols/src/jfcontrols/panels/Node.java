@@ -302,9 +302,9 @@ public class Node {
   public int getHeight() {
     if (blk != null) {
       if (blk.isBlock()) {
-        return 3 + blk.getTagsCount();
+        return 3 + blk.getTagsCount() * 2;
       } else {
-        if (blk.getTagsCount() == 1) return 2;
+        if (blk.getTagsCount() == 1) return 3;
       }
     }
     return 1;
