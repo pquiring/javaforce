@@ -26,49 +26,54 @@ public class DebugContext extends Thread {
   public void run() {
     ClientContext context = (ClientContext)client.getProperty("context");
     Panel panel = client.getPanel();
-    boolean debug[][] = FunctionService.getDebugFlags(fid);
-    if (debug == null) {
+    boolean debug_en[][] = FunctionService.getDebugEnabled(fid);
+    if (debug_en == null) {
       active = false;
       return;
     }
-    boolean state[][] = new boolean[debug.length][2];
-    Component cmp[][] = new Component[debug.length][2];
-    for(int a=0;a<debug.length;a++) {
+    boolean state[][] = new boolean[debug_en.length][2];
+    Component cmp[][] = new Component[debug_en.length][2];
+    for(int a=0;a<debug_en.length;a++) {
       cmp[a][0] = panel.getComponent("en_0_" + a);
       cmp[a][1] = panel.getComponent("en_1_" + a);
     }
-    TagBase tags[] = context.taglist.toArray(new TagBase[context.taglist.size()]);
-    Label tv[] = new Label[tags.length];
-    for(int a=0;a<tags.length;a++) {
+
+    String debug_tv[] = FunctionService.getDebugTagValues(fid);
+    if (debug_tv == null) {
+      active = false;
+      return;
+    }
+    Label tv[] = new Label[debug_tv.length];
+    for(int a=0;a<debug_tv.length;a++) {
       tv[a] = (Label)panel.getComponent("tv_" + a);
     }
     boolean first = true;
 
-    int cnt = debug.length;
+    int cnt = debug_en.length;
     try {
       while (active) {
         JF.sleep(100);
         //update enables
         for(int a=0;a<cnt && active;a++) {
-          if (first || state[a][0] != debug[a][0]) {
-            client.sendEvent(cmp[a][0].id, "setbackclr", new String[] {"clr=" + (debug[a][0] ? "#0c0" : "#ccc")});
-            state[a][0] = debug[a][0];
+          if (first || state[a][0] != debug_en[a][0]) {
+            client.sendEvent(cmp[a][0].id, "setbackclr", new String[] {"clr=" + (debug_en[a][0] ? "#0c0" : "#ccc")});
+            state[a][0] = debug_en[a][0];
           }
-          if (first || state[a][1] != debug[a][1]) {
-            client.sendEvent(cmp[a][1].id, "setbackclr", new String[] {"clr=" + (debug[a][1] ? "#0c0" : "#ccc")});
-            state[a][1] = debug[a][1];
+          if (first || state[a][1] != debug_en[a][1]) {
+            client.sendEvent(cmp[a][1].id, "setbackclr", new String[] {"clr=" + (debug_en[a][1] ? "#0c0" : "#ccc")});
+            state[a][1] = debug_en[a][1];
           }
         }
         //update tag values
-        for(int a=0;a<tags.length;a++) {
-          TagBase tag = tags[a];
-          if (tag == null) continue;
+        for(int a=0;a<debug_tv.length;a++) {
           Label lbl = tv[a];
           if (lbl == null) continue;
           String cv = lbl.getText();
-          String nv = tag.getValue();
+          String nv = debug_tv[a];
           if (nv == null) continue;
-          lbl.setText(nv);
+          if (!nv.equals(cv)) {
+            lbl.setText(nv);
+          }
         }
         //TODO : ping/pong client to ensure it's up-to-date
         first = false;

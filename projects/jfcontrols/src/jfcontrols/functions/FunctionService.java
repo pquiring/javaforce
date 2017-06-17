@@ -224,14 +224,28 @@ public class FunctionService extends Thread {
       return false;
     }
   }
-  public static boolean[][] getDebugFlags(int fid) {
+  public static boolean[][] getDebugEnabled(int fid) {
     File clsFile = new File("work/class/func_" + fid + ".class");
     if (!clsFile.exists()) return null;
     Class cls;
     try {
       cls = loader.loadClass("func_" + fid);
-      Field fld = cls.getField("debug");
+      Field fld = cls.getField("debug_en");
       boolean flags[][] = (boolean[][])fld.get(null);
+      return flags;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+  public static String[] getDebugTagValues(int fid) {
+    File clsFile = new File("work/class/func_" + fid + ".class");
+    if (!clsFile.exists()) return null;
+    Class cls;
+    try {
+      cls = loader.loadClass("func_" + fid);
+      Field fld = cls.getField("debug_tv");
+      String flags[] = (String[])fld.get(null);
       return flags;
     } catch (Exception e) {
       JFLog.log(e);

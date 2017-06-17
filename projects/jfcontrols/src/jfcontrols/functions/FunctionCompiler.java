@@ -23,8 +23,13 @@ public class FunctionCompiler {
     String revision = sql.select1value("select revision from funcs where id=" + fid);
     sb.append("import jfcontrols.tags.*;\r\n");
     sb.append("public class func_" + fid + " extends jfcontrols.functions.FunctionRuntime {\r\n");
-    String blks[][] = sql.select("select rid,bid from blocks where fid=" + fid);
-    sb.append("  public static boolean debug[][] = new boolean[" + blks.length + "][2];\r\n");
+    String blks[][] = sql.select("select rid,bid,tags from blocks where fid=" + fid);
+    sb.append("  public static boolean debug_en[][] = new boolean[" + blks.length + "][2];\r\n");
+    int tagcount = 0;
+    for(int a=0;a<blks.length;a++) {
+      tagcount += blks[a][2].split(",").length + 1;
+    }
+    sb.append("  public static String debug_tv[] = new boolean[" + tagcount + "];\r\n");
     sb.append("  public static long revision = " + revision + ";\r\n");
     sb.append("  public boolean code(TagBase args[]) {\r\n");
     sb.append("    boolean enabled = true;\r\n");
@@ -36,7 +41,8 @@ public class FunctionCompiler {
     String rungs[][] = sql.select("select logic from rungs where fid=" + fid + " order by rid");
     int norungs = rungs.length;
     ArrayList<String> stack = new ArrayList<>();
-    int debugpos = 0;
+    int debug_en = 0;
+    int debug_tv = 0;
     for(int rid=0;rid<norungs;rid++) {
       sb.append("    enabled = true;\r\n");
       sb.append("    eidx = 0;\r\n");
@@ -131,7 +137,7 @@ public class FunctionCompiler {
               }
             }
             sb.append("  enabled = en[eidx];\r\n");
-            sb.append("  debug[" + debugpos + "][0]=enabled;\r\n");
+            sb.append("  debug[" + debug_en + "][0]=enabled;\r\n");
             if (node.blk.getName().equals("CALL")) {
               sb.append(node.blk.getCode(func));
             } else {
@@ -141,8 +147,11 @@ public class FunctionCompiler {
                 sb.insert(pos, preCode);
               }
             }
-            sb.append("  debug[" + debugpos + "][1]=enabled;\r\n");
-            debugpos++;
+            for(int a=0;a<node.tags.length;a++) {
+              sb.append("  debug_tv[" + debug_tv++ + "]=tags[" + a + "].getValue();\r\n");
+            }
+            sb.append("  debug_en[" + debug_en + "][1]=enabled;\r\n");
+            debug_en++;
             sb.append("\r\n  en[eidx] = enabled;\r\n");
             break;
           }

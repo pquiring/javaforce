@@ -285,12 +285,11 @@ public class Panels {
     Table table = new Table(cellWidth, cellHeight/2, 3, 2);
     TagBase tag = context.getTag(context.decode(v[TAG]));
     Label comment = new Label(tag.getComment());
-    comment.setName("tc_" + context.tagIdx);
+    comment.setName("tc_" + context.debug_tv_idx);
     table.add(comment, 0, 0, 3, 1);
     Label value = new Label("");
-    value.setName("tv_" + context.tagIdx);
-    context.tagIdx++;
-    context.taglist.add(tag);
+    value.setName("tv_" + context.debug_tv_idx);
+    context.debug_tv_idx++;
     table.add(value, 0, 1, 3, 1);
     return table;
   }
@@ -821,9 +820,8 @@ public class Panels {
         String fid = (String)client.getProperty("func");
         String data[][] = sql.select("select rid,logic,comment from rungs where fid=" + fid + " order by rid");
         client.setProperty("rungs", new Rungs());
-        context.debugIdx = 0;
-        context.tagIdx = 0;
-        context.taglist.clear();
+        context.debug_en_idx = 0;
+        context.debug_tv_idx = 0;
         for(int rung=0;rung<data.length;rung++) {
           ArrayList<String[]> cells = new ArrayList<String[]>();
           cells.add(createCell(0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], null));
@@ -1415,7 +1413,7 @@ public class Panels {
           int tagIdx = 1;
           if (!blk.isBlock()) {
             if (create) {
-              newCells.add(createCell(x, y, 1, 1, "image", "en_0_" + context.debugIdx, null, null, null, "w_h", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_0_" + context.debug_en_idx, null, null, null, "w_h", null));
               newNodes.add(node.addChild('h', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1431,7 +1429,7 @@ public class Panels {
               x--;
               y++;
               if (create) {
-                newCells.add(createCell(x, y, 3, 1, textfield, "tag_" + context.tagIdx, tag, null, null, null, style));
+                newCells.add(createCell(x, y, 3, 1, textfield, "tag_" + context.debug_tv_idx, tag, null, null, null, style));
                 newNodes.add(node.addChild('T', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1460,7 +1458,7 @@ public class Panels {
             x++;
 
             if (create) {
-              newCells.add(createCell(x, y, 1, 1, "image", "en_1_" + context.debugIdx++, null, null, null, "w_h", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_1_" + context.debug_en_idx++, null, null, null, "w_h", null));
               newNodes.add(node.addChild('h', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1489,7 +1487,7 @@ public class Panels {
             int by = y;
             //draw a box the size of the logic block
             if (create) {
-              newCells.add(createCell(x, y, 1, 1, "image", "en_0_" + context.debugIdx, null, null, null, "b7", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_0_" + context.debug_en_idx, null, null, null, "b7", null));
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1573,7 +1571,7 @@ public class Panels {
                   newCells.add(createCell(x, y, 3, 1, combobox, "jfc_function", tag, null, null, "jfc_function", style));
                   newNodes.add(node.addChild('C', x, y));
                 } else {
-                  newCells.add(createCell(x, y, 3, 1, textfield, "tag_" + context.tagIdx, tag, null, null, null, style));
+                  newCells.add(createCell(x, y, 3, 1, textfield, "tag_" + context.debug_tv_idx, tag, null, null, null, style));
                   newNodes.add(node.addChild('T', x, y));
                 }
               } else {
@@ -1661,7 +1659,7 @@ public class Panels {
             if (create) {
               node.x = x;
               node.y = y;
-              newCells.add(createCell(x, y, 1, 1, "image", "en_1_" + context.debugIdx++, null, null, null, "b9", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_1_" + context.debug_en_idx++, null, null, null, "b9", null));
               newNodes.add(node);
             } else {
               if (node.x != x || node.y != y || node.moved) {

@@ -24,9 +24,8 @@ public class ClientContext extends Thread {
   public SQL sql;
   public HashMap<String, Component> alarms = new HashMap<>();
   public int lastAlarmID;
-  public int debugIdx;
-  public int tagIdx;
-  public ArrayList<TagBase> taglist = new ArrayList<>();
+  public int debug_en_idx;
+  public int debug_tv_idx;
   public DebugContext debug;
 
   public ClientContext(WebUIClient client) {
