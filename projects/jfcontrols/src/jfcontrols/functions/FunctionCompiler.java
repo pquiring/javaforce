@@ -27,7 +27,7 @@ public class FunctionCompiler {
     sb.append("  public static boolean debug_en[][] = new boolean[" + blks.length + "][2];\r\n");
     int tagcount = 0;
     for(int a=0;a<blks.length;a++) {
-      tagcount += blks[a][2].split(",").length + 1;
+      tagcount += blks[a][2].split(",").length;
     }
     sb.append("  public static String debug_tv[] = new boolean[" + tagcount + "];\r\n");
     sb.append("  public static long revision = " + revision + ";\r\n");
@@ -147,7 +147,7 @@ public class FunctionCompiler {
                 sb.insert(pos, preCode);
               }
             }
-            for(int a=0;a<node.tags.length;a++) {
+            for(int a=1;a<node.tags.length;a++) {
               sb.append("  debug_tv[" + debug_tv++ + "]=tags[" + a + "].getValue();\r\n");
             }
             sb.append("  debug_en[" + debug_en + "][1]=enabled;\r\n");
