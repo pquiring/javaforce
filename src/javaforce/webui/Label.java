@@ -23,4 +23,7 @@ public class Label extends Component {
     text = txt;
     sendEvent("settext", new String[] {"text=" + text});
   }
+  public String getText() {
+    return text;
+  }
 }

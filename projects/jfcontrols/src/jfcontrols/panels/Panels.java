@@ -285,8 +285,12 @@ public class Panels {
     Table table = new Table(cellWidth, cellHeight/2, 3, 2);
     TagBase tag = context.getTag(context.decode(v[TAG]));
     Label comment = new Label(tag.getComment());
+    comment.setName("tc_" + context.tagIdx);
     table.add(comment, 0, 0, 3, 1);
     Label value = new Label("");
+    value.setName("tv_" + context.tagIdx);
+    context.tagIdx++;
+    context.taglist.add(tag);
     table.add(value, 0, 1, 3, 1);
     return table;
   }
@@ -818,6 +822,8 @@ public class Panels {
         String data[][] = sql.select("select rid,logic,comment from rungs where fid=" + fid + " order by rid");
         client.setProperty("rungs", new Rungs());
         context.debugIdx = 0;
+        context.tagIdx = 0;
+        context.taglist.clear();
         for(int rung=0;rung<data.length;rung++) {
           ArrayList<String[]> cells = new ArrayList<String[]>();
           cells.add(createCell(0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], null));
@@ -1425,7 +1431,7 @@ public class Panels {
               x--;
               y++;
               if (create) {
-                newCells.add(createCell(x, y, 3, 1, textfield, null, tag, null, null, null, style));
+                newCells.add(createCell(x, y, 3, 1, textfield, "tag_" + context.tagIdx, tag, null, null, null, style));
                 newNodes.add(node.addChild('T', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1567,7 +1573,7 @@ public class Panels {
                   newCells.add(createCell(x, y, 3, 1, combobox, "jfc_function", tag, null, null, "jfc_function", style));
                   newNodes.add(node.addChild('C', x, y));
                 } else {
-                  newCells.add(createCell(x, y, 3, 1, textfield, null, tag, null, null, null, style));
+                  newCells.add(createCell(x, y, 3, 1, textfield, "tag_" + context.tagIdx, tag, null, null, null, style));
                   newNodes.add(node.addChild('T', x, y));
                 }
               } else {

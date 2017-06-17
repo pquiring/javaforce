@@ -25,6 +25,8 @@ public class ClientContext extends Thread {
   public HashMap<String, Component> alarms = new HashMap<>();
   public int lastAlarmID;
   public int debugIdx;
+  public int tagIdx;
+  public ArrayList<TagBase> taglist = new ArrayList<>();
   public DebugContext debug;
 
   public ClientContext(WebUIClient client) {
