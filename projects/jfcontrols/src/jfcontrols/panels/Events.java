@@ -129,6 +129,7 @@ public class Events {
         client.setProperty("user", null);
         PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_menu");
         panel.setVisible(false);
+        client.setPanel(Panels.getPanel("main", client));
         break;
       }
       case "jfc_login_ok": {
