@@ -29,7 +29,7 @@ public class FunctionCompiler {
     for(int a=0;a<blks.length;a++) {
       tagcount += blks[a][2].split(",").length;
     }
-    sb.append("  public static String debug_tv[] = new boolean[" + tagcount + "];\r\n");
+    sb.append("  public static String debug_tv[] = new String[" + tagcount + "];\r\n");
     sb.append("  public static long revision = " + revision + ";\r\n");
     sb.append("  public boolean code(TagBase args[]) {\r\n");
     sb.append("    boolean enabled = true;\r\n");
@@ -137,7 +137,7 @@ public class FunctionCompiler {
               }
             }
             sb.append("  enabled = en[eidx];\r\n");
-            sb.append("  debug[" + debug_en + "][0]=enabled;\r\n");
+            sb.append("  debug_en[" + debug_en + "][0]=enabled;\r\n");
             if (node.blk.getName().equals("CALL")) {
               sb.append(node.blk.getCode(func));
             } else {

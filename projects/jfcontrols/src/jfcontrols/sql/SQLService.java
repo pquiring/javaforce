@@ -350,11 +350,18 @@ public class SQLService {
 
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_tags', 'Tags', false, true)");
     id = sql.select1value("select id from panels where name='jfc_tags'");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,7,1,'label','','Name')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",9,1,2,1,'label','','Type')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,6,1,'label','','Name')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",8,1,3,1,'label','','Type')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,1,3,1,'button','','New','jfc_tags_new')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,1,3,1,'button','','Save','jfc_tags_save')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",20,1,6,1,'label','','Comment')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_tags')");
+
+    sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_xref', 'Cross Reference', false, true)");
+    id = sql.select1value("select id from panels where name='jfc_xref'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,6,1,'label','','Func')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",8,1,3,1,'label','','Rung')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_xref')");
 
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_udts', 'User Data Types', false, true)");
     id = sql.select1value("select id from panels where name='jfc_udts'");

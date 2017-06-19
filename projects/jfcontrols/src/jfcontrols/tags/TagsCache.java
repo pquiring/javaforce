@@ -19,6 +19,7 @@ public class TagsCache {
   }
 
   public TagBase getTag(TagAddr ta) {
+    if (ta == null) return null;
     char ch = ta.name.charAt(0);
     if (ch == '@') {
       int idx = Integer.valueOf(ta.name.substring(1));
@@ -96,6 +97,7 @@ public class TagsCache {
   public TagAddr decode(String addr) {
     // addr = {c# '#'} name {[idx]} {. member {[idx]}}
     // {} = optional
+    if (addr == null) return null;
     TagAddr ta = new TagAddr();
     int idx;
     char ch;

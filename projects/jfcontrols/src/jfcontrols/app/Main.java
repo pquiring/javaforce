@@ -64,7 +64,7 @@ public class Main implements WebUIHandler {
     FunctionService.cancel();
     TagsService.cancel();
     System.gc();
-    FunctionService.main();
     TagsService.main();
+    FunctionService.main();
   }
 }

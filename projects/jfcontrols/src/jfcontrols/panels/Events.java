@@ -102,7 +102,6 @@ public class Events {
             break;
           }
           case "jfc_tags_delete": {
-            String cid = (String)client.getProperty("ctrl");
             sql.execute("delete from tags where id=" + arg);
             client.setPanel(Panels.getPanel("jfc_tags", client));
             break;
@@ -221,6 +220,17 @@ public class Events {
       }
       case "jfc_tags_save": {
         Main.restart();
+        JFLog.log("Restart complete");
+        break;
+      }
+      case "jfc_tags_xref": {
+        client.setProperty("xref", arg);
+        client.setPanel(Panels.getPanel("jfc_xref", client));
+        break;
+      }
+      case "jfc_xref_view_func": {
+        client.setProperty("func", arg);
+        client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
       case "jfc_config_save": {

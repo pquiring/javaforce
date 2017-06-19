@@ -53,20 +53,37 @@ public class Panels {
     buildTable(table, panel, cells, client, -1, -1, null);
     if (popup.equals("true")) return panel;
     //add top components
+    int x = 0;
+
     Button menu = getButton(new String[] {null, null, null, null, "button", null, "!image:menu", null, "showMenu", null, null});
     menu.setProperty("func", "showMenu");
-    setCellSize(menu, new Rectangle(0,0,1,1));
-    table.add(menu, 0, 0);
+    setCellSize(menu, new Rectangle(x,0,1,1));
+    table.add(menu, x, 0);
+    x++;
+
     Label alarms = getLabel(new String[] {null, null, null, null, "label", null, "0", null, "setPanel", "jfc_alarms", null});
     alarms.setProperty("func", "setPanel");
     alarms.setProperty("arg", "jfc_alarms");
     alarms.setBorder(true);
-    setCellSize(alarms, new Rectangle(1,0,1,1));
-    table.add(alarms, 1, 0);
+    setCellSize(alarms, new Rectangle(x,0,1,1));
+    table.add(alarms, x, 0);
+    x++;
+
+    String xref = (String)client.getProperty("xref");
+    if (xref != null) {
+      Button xrefBtn = getButton(new String[] {null, null, null, null, "button", null, "!image:ret_xref", null, "setPanel", "jfc_xref", null});
+      xrefBtn.setProperty("func", "setPanel");
+      xrefBtn.setProperty("arg", "jfc_xref");
+      setCellSize(xrefBtn, new Rectangle(x,0,1,1));
+      table.add(xrefBtn, x, 0);
+      x++;
+    }
+
     Label title = getLabel(new String[] {null, null, null, null, "label", "jfc_title", display, null, null, null, null});
     title.setName("jfc_title");
-    setCellSize(title, new Rectangle(2,0,16,1));
-    table.add(title, 2, 0, 16, 1);
+    setCellSize(title, new Rectangle(x,0,16,1));
+    table.add(title, x, 0, 16, 1);
+
     TagAddr ta = new TagAddr();
     ta.name = "alarms";
     TagBase tag = context.getTag(ta);
@@ -74,6 +91,7 @@ public class Panels {
       updateAlarmCount(alarms, client);
     });
     updateAlarmCount(alarms, client);
+
     panel.add(getPopupPanel(client, "Login", "jfc_login"));
     panel.add(getPopupPanel(client, "Menu", "jfc_menu"));
     panel.add(getPopupPanel(client, "Confirm", "jfc_confirm"));
@@ -284,7 +302,9 @@ public class Panels {
     ClientContext context = (ClientContext)client.getProperty("context");
     Table table = new Table(cellWidth, cellHeight/2, 3, 2);
     TagBase tag = context.getTag(context.decode(v[TAG]));
-    Label comment = new Label(tag.getComment());
+    String tagcomment = "";
+    if (tag != null) tagcomment = tag.getComment();
+    Label comment = new Label(tagcomment);
     comment.setName("tc_" + context.debug_tv_idx);
     table.add(comment, 0, 0, 3, 1);
     Label value = new Label("");
@@ -560,11 +580,26 @@ public class Panels {
           cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_tags_name_" + tag_type + "_" + data[a][0], null, null, style));
           cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, tag_types, style));
           cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_tags_unsigned_boolean_" + data[a][0], null, null, style));
-          cells.add(createCell(14, a, 6, 1, "textfield", null, null, "jfc_tags_comment_str_" + data[a][0], null, null, style));
           if (cid.equals("0")) {
-            cells.add(createCell(21, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, style));
+            cells.add(createCell(14, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, style));
           }
+          cells.add(createCell(18, a, 6, 1, "textfield", null, null, "jfc_tags_comment_str_" + data[a][0], null, null, style));
           cells.add(createCell(25, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], style));
+          cells.add(createCell(28, a, 2, 1, "button", null, "XRef", null, "jfc_tags_xref", data[a][0], null));
+        }
+        break;
+      }
+      case "jfc_xref": {
+        String xref = (String)client.getProperty("xref");
+        String tag = sql.select1value("select name from tags where id=" + xref);
+        String data[][] = sql.select("select fid,rid from blocks where tags like '%,t" + tag + ",%'");
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          String func = sql.select1value("select name from funcs where id=" + data[a][0]);
+          int rid = Integer.valueOf(data[a][1]);
+          cells.add(createCell(0, a, 6, 1, "label", null, func, null, null, null, null));
+          cells.add(createCell(6, a, 3, 1, "label", null, "Rung " + (rid+1), null, null, null, null));
+          cells.add(createCell(10, a, 2, 1, "button", null, "View", null, "jfc_xref_view_func", data[a][0], null));
         }
         break;
       }

@@ -129,6 +129,7 @@ public class FunctionService extends Thread {
   }
 
   public static void cancel() {
+    if (!active) return;
     synchronized(done) {
       active = false;
       try {done.wait();} catch (Exception e) {}
