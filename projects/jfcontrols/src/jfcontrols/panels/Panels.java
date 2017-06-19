@@ -592,7 +592,7 @@ public class Panels {
       case "jfc_xref": {
         String xref = (String)client.getProperty("xref");
         String tag = sql.select1value("select name from tags where id=" + xref);
-        String data[][] = sql.select("select fid,rid from blocks where tags like '%,t" + tag + ",%'");
+        String data[][] = sql.select("select fid,rid from blocks where tags like '%,t" + tag + ",%' or tags like '%,t" + tag + "[%' or tags like '%,t" + tag + ".%'");
         if (data == null) data = new String[0][0];
         for(int a=0;a<data.length;a++) {
           String func = sql.select1value("select name from funcs where id=" + data[a][0]);
