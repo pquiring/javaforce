@@ -27,6 +27,7 @@ public class ClientContext extends Thread {
   public int debug_en_idx;
   public int debug_tv_idx;
   public DebugContext debug;
+  public WatchContext watch;
 
   public ClientContext(WebUIClient client) {
     this.client = client;
@@ -93,6 +94,14 @@ public class ClientContext extends Thread {
       monitor.tag.removeListener(monitor);
     }
     tags.clear();
+    if (debug != null) {
+      debug.cancel();
+      debug = null;
+    }
+    if (watch != null) {
+      watch.cancel();
+      watch = null;
+    }
   }
 
   public void run() {

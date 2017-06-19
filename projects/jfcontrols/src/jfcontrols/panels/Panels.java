@@ -11,9 +11,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.webui.*;
 import javaforce.controls.*;
-import jfcontrols.functions.FunctionService;
 
-import jfcontrols.sql.*;
 import jfcontrols.tags.*;
 import jfcontrols.images.*;
 
@@ -600,6 +598,27 @@ public class Panels {
           cells.add(createCell(0, a, 6, 1, "label", null, func, null, null, null, null));
           cells.add(createCell(6, a, 3, 1, "label", null, "Rung " + (rid+1), null, null, null, null));
           cells.add(createCell(10, a, 2, 1, "button", null, "View", null, "jfc_xref_view_func", data[a][0], null));
+        }
+        break;
+      }
+      case "jfc_watch": {
+        String data[][] = sql.select("select id,name from watch");
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_watch_name_str_" + data[a][0], null, null, null));
+          cells.add(createCell(7, a, 2, 1, "button", null, "Edit", null, "jfc_watch_edit", data[a][0], null));
+          cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_watch_delete", data[a][0], null));
+        }
+        break;
+      }
+      case "jfc_watch_tags": {
+        String wid = (String)client.getProperty("watch");
+        String data[][] = sql.select("select id,tag from watchtags where wid=" + wid + " order by id");
+        if (data == null) data = new String[0][0];
+        for(int a=0;a<data.length;a++) {
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_watchtags_tag_tagid_" + data[a][0], null, null, null));
+          cells.add(createCell(7, a, 6, 1, "label", "tag_" + a, "", null, null, null, null));
+          cells.add(createCell(14, a, 2, 1, "button", null, "Delete", null, "jfc_watch_tag_delete", data[a][0], null));
         }
         break;
       }

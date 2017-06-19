@@ -106,6 +106,11 @@ public class Events {
             client.setPanel(Panels.getPanel("jfc_tags", client));
             break;
           }
+          case "jfc_watch_delete": {
+            sql.execute("delete from watch where id=" + arg);
+            client.setPanel(Panels.getPanel("jfc_tags", client));
+            break;
+          }
           case "jfc_udts_delete": {
             sql.execute("delete from udts where id=" + arg);
             sql.execute("delete from udtmems where uid=" + arg);
@@ -231,6 +236,68 @@ public class Events {
       case "jfc_xref_view_func": {
         client.setProperty("func", arg);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
+        break;
+      }
+      case "jfc_watch_new": {
+        synchronized(lock) {
+          int id = 1;
+          do {
+            String inuse = sql.select1value("select name from watch where name='watch" + id + "'");
+            if (inuse == null) break;
+            id++;
+          } while (true);
+          sql.execute("insert into watch (name) values ('watch" + id + "')");
+          client.setPanel(Panels.getPanel("jfc_watch", client));
+        }
+        break;
+      }
+      case "jfc_watch_delete": {
+        client.setProperty("arg", arg);
+        Panels.confirm(client, "Delete watch table?", "jfc_watch_delete");
+        break;
+      }
+      case "jfc_watch_edit": {
+        client.setProperty("watch", arg);
+        client.setPanel(Panels.getPanel("jfc_watch_tags", client));
+        break;
+      }
+      case "jfc_watch_tags_new": {
+        if (context.watch != null) break;
+        String wid = (String)client.getProperty("watch");
+        synchronized(lock) {
+          int id = 1;
+          do {
+            String inuse = sql.select1value("select tag from watchtags where tag='tag" + id + "' and wid=" + wid);
+            if (inuse == null) break;
+            id++;
+          } while (true);
+          sql.execute("insert into watchtags (wid, tag) values (" + wid + ",'tag" + id + "')");
+          client.setPanel(Panels.getPanel("jfc_watch_tags", client));
+        }
+        break;
+      }
+      case "jfc_watch_tags_start": {
+        if (context.watch != null) {
+          context.watch.cancel();
+          context.watch = null;
+          Button btn = (Button)c;
+          btn.setText("Start");
+        } else {
+          context.watch = new WatchContext();
+          if (!context.watch.init(client)) {
+            context.watch = null;
+            break;
+          }
+          context.watch.start();
+          Button btn = (Button)c;
+          btn.setText("Stop");
+        }
+        break;
+      }
+      case "jfc_watch_tags_delete": {
+        if (context.watch != null) break;
+        sql.execute("delete from watchtags where id=" + arg);
+        client.setPanel(Panels.getPanel("jfc_watch_tags", client));
         break;
       }
       case "jfc_config_save": {
