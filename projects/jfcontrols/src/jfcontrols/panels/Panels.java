@@ -590,14 +590,38 @@ public class Panels {
       case "jfc_xref": {
         String xref = (String)client.getProperty("xref");
         String tag = sql.select1value("select name from tags where id=" + xref);
+        int y = 0;
+        cells.add(createCell(0,y++,6,1, "label", null, "Tag:" + tag, null, null, null, null));
         String data[][] = sql.select("select fid,rid from blocks where tags like '%,t" + tag + ",%' or tags like '%,t" + tag + "[%' or tags like '%,t" + tag + ".%'");
         if (data == null) data = new String[0][0];
+        if (data.length > 0) {
+          cells.add(createCell(0, y, 6, 1, "label", null, "Function", null, null, null, null));
+          cells.add(createCell(6, y, 3, 1, "label", null, "Rung", null, null, null, null));
+        } else {
+          cells.add(createCell(0, y, 6, 1, "label", null, "No Functions", null, null, null, null));
+        }
+        y++;
         for(int a=0;a<data.length;a++) {
           String func = sql.select1value("select name from funcs where id=" + data[a][0]);
           int rid = Integer.valueOf(data[a][1]);
-          cells.add(createCell(0, a, 6, 1, "label", null, func, null, null, null, null));
-          cells.add(createCell(6, a, 3, 1, "label", null, "Rung " + (rid+1), null, null, null, null));
-          cells.add(createCell(10, a, 2, 1, "button", null, "View", null, "jfc_xref_view_func", data[a][0], null));
+          cells.add(createCell(0, y, 6, 1, "label", null, func, null, null, null, null));
+          cells.add(createCell(6, y, 3, 1, "label", null, "Rung " + (rid+1), null, null, null, null));
+          cells.add(createCell(10, y, 2, 1, "button", null, "View", null, "jfc_xref_view_func", data[a][0], null));
+          y++;
+        }
+        data = sql.select("select pid,tag from cells where tag='" + tag + "' or tag like '" + tag + "[%' or tag like '" + tag + ".%'");
+        if (data == null) data = new String[0][0];
+        if (data.length > 0) {
+          cells.add(createCell(0, y, 6, 1, "label", null, "Panel", null, null, null, null));
+        } else {
+          cells.add(createCell(0, y, 6, 1, "label", null, "No Panels", null, null, null, null));
+        }
+        y++;
+        for(int a=0;a<data.length;a++) {
+          String panel = sql.select1value("select name from panels where id=" + data[a][0]);
+          cells.add(createCell(0, y, 6, 1, "label", null, panel, null, null, null, null));
+          cells.add(createCell(10, y, 2, 1, "button", null, "View", null, "jfc_xref_view_panel", data[a][0], null));
+          y++;
         }
         break;
       }

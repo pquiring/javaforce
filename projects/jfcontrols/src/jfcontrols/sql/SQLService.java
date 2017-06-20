@@ -363,9 +363,7 @@ public class SQLService {
 
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_xref', 'Cross Reference', false, true)");
     id = sql.select1value("select id from panels where name='jfc_xref'");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,6,1,'label','','Func')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",8,1,3,1,'label','','Rung')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_xref')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" +  id + ",1,1,0,0,'table','jfc_xref')");
 
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_watch', 'Watch Tables', false, true)");
     id = sql.select1value("select id from panels where name='jfc_watch'");

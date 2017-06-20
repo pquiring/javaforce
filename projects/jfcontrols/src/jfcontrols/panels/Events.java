@@ -239,6 +239,11 @@ public class Events {
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
+      case "jfc_xref_view_panel": {
+        client.setProperty("panel", arg);
+        client.setPanel(Panels.getPanel("jfc_panel_editor", client));
+        break;
+      }
       case "jfc_watch_new": {
         synchronized(lock) {
           int id = 1;
