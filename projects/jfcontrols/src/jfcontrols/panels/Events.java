@@ -347,6 +347,15 @@ public class Events {
         lbl.setText("System running");
         break;
       }
+      case "jfc_config_backup": {
+        String msg = SQLService.backup();
+        Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
+        lbl.setText(msg);
+        break;
+      }
+      case "jfc_config_restore": {
+        break;
+      }
       case "jfc_panels_new": {
         synchronized(lock) {
           int id = 1;

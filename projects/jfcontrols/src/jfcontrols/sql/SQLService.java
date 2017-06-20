@@ -6,6 +6,7 @@ package jfcontrols.sql;
  */
 
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
 import javaforce.controls.*;
@@ -15,10 +16,12 @@ import jfcontrols.tags.*;
 
 public class SQLService {
   public static String dataPath;
-  public static String databaseName = "jfcontrols";
+  public static String backupPath;
+  public static String databaseName = "database";
   public static String logsPath;
   public static String derbyURI;
   public static String dbVersion = "0.0.1";
+  public static boolean running;
 
   public static SQL getSQL() {
     SQL sql = new SQL();
@@ -33,11 +36,13 @@ public class SQLService {
       dataPath = "/var/jfcontrols";
     }
     logsPath = dataPath + "/logs";
-    derbyURI = "jdbc:derby:jfcontrols";
+    backupPath = dataPath + "/backup";
+    derbyURI = "jdbc:derby:database";
     System.setProperty("derby.system.home", dataPath);
     SQL.initClass(SQL.derbySQL);
 
     new File(logsPath).mkdirs();
+    new File(backupPath).mkdirs();
     JFLog.append(logsPath + "/service.log", true);
     if (!new File(dataPath + "/" + databaseName + "/service.properties").exists()) {
       //create database
@@ -52,6 +57,7 @@ public class SQLService {
       }
       sql.close();
     }
+    running = true;
   }
   private static void createDB() {
     String id;
@@ -330,7 +336,9 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,8,3,1,'label','','Database')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,8,2,1,'button','','Shutdown','jfc_config_shutdown')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",7,8,2,1,'button','','Restart','jfc_config_restart')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",10,8,10,1,'label','jfc_config_status','')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",10,8,2,1,'button','','Backup','jfc_config_backup')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",13,8,2,1,'button','','Restore','jfc_config_restore')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,9,10,1,'label','jfc_config_status','')");
 
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_config_iocomments', 'I/O Comments', false, true)");
     id = sql.select1value("select id from panels where name='jfc_config_iocomments'");
@@ -500,8 +508,42 @@ public class SQLService {
     JFLog.log("Shutting down database...");
     sql.connect("jdbc:derby:;shutdown=true");
     JFLog.log("Shutdown complete!");
+    running = false;
   }
   public static void restart() {
     SQL.initClass(SQL.derbySQL);
+    running = true;
+  }
+  public static String backup() {
+    try {
+      if (!running) throw new Exception("Database not running");
+      Calendar now = Calendar.getInstance();
+      String date = String.format("%04d%02d%02d", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH));
+      String time = String.format("%02d%02d%02d", now.get(Calendar.HOUR), now.get(Calendar.MINUTE), now.get(Calendar.SECOND));
+      String tempPath = backupPath + "/" + date + "-" + time;
+      new File(tempPath).mkdirs();
+      SQL sql = getSQL();
+      sql.execute("CALL SYSCS_UTIL.SYSCS_BACKUP_DATABASE('" + tempPath + "')");
+      File props = new File(tempPath + "/jfcontrols.properties");
+      FileOutputStream fos = new FileOutputStream(props);
+      StringBuilder sb = new StringBuilder();
+      sb.append("type=backup\r\n");
+      sb.append("date=" + date + "\r\n");
+      sb.append("time=" + time + "\r\n");
+      fos.write(sb.toString().getBytes());
+      fos.close();
+      //zip temp folder
+      JF.zipPath(tempPath, backupPath + "/backup-" + date + "-" + time + ".zip");
+      //delete temp folder
+      JF.deletePathEx(tempPath);
+      restart();
+      return "Backup Complete";
+    } catch (Exception e) {
+      JFLog.log(e);
+      return e.toString();
+    }
+  }
+  public static void restore(String filename) {
+
   }
 }

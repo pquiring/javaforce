@@ -3,7 +3,7 @@ package javaforce;
 import java.net.*;
 import java.io.*;
 import java.util.*;
-import java.lang.reflect.Array;
+import java.util.zip.*;
 import javax.net.ssl.*;
 
 //remove these for Android
@@ -1488,5 +1488,67 @@ public class JF {
   public static String getPath(String filename) {
     File file = new File(filename);
     return file.getParent();
+  }
+
+  /** Deletes a folder and all sub-files and folders. */
+  public static void deletePathEx(String path) {
+    try {
+      File folder = new File(path);
+      if (!folder.isDirectory()) return;
+      File files[] = new File(path).listFiles();
+      if (files == null) return;
+      for(int a=0;a<files.length;a++) {
+        File file = files[a];
+        if (file.isDirectory()) {
+          deletePathEx(file.getAbsolutePath());
+        } else {
+          file.delete();
+        }
+      }
+      folder.delete();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  private static void zipPath(ZipOutputStream zos, String path, String base) throws Exception {
+    File files[] = new File(path).listFiles();
+    for(int a=0;a<files.length;a++) {
+      File file = files[a];
+      String name = file.getName();
+      String full;
+      if (base.length() == 0) {
+        full = name;
+      } else {
+        full = base + "/" + name;
+      }
+      if (file.isDirectory()) {
+        zipPath(zos, file.getAbsolutePath(), full);
+      } else {
+        ZipEntry ze = new ZipEntry(full);
+        zos.putNextEntry(ze);
+        FileInputStream fis = new FileInputStream(file);
+        copyAll(fis, zos);
+        fis.close();
+        zos.closeEntry();
+      }
+    }
+  }
+
+  /** Zips path into zip file. */
+  public static void zipPath(String path, String zip) {
+    try {
+      File folder = new File(path);
+      if (!folder.isDirectory()) {
+        JFLog.log("Error:path to be zipped not found");
+        return;
+      }
+      ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip));
+      zipPath(zos, path, "");
+      zos.finish();
+      zos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 }
