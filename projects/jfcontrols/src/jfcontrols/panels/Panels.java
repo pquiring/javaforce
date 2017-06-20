@@ -590,9 +590,17 @@ public class Panels {
       case "jfc_xref": {
         String xref = (String)client.getProperty("xref");
         String tag = sql.select1value("select name from tags where id=" + xref);
+        String cid = sql.select1value("select cid from tags where id=" + xref);
+        if (!cid.equals("0")) {
+          tag = "c" + cid + "#" + tag;
+        }
+        String data[][];
         int y = 0;
         cells.add(createCell(0,y++,6,1, "label", null, "Tag:" + tag, null, null, null, null));
-        String data[][] = sql.select("select fid,rid from blocks where tags like '%,t" + tag + ",%' or tags like '%,t" + tag + "[%' or tags like '%,t" + tag + ".%'");
+        if (cid.equals("0"))
+          data = sql.select("select fid,rid from blocks where tags like '%,t" + tag + ",%' or tags like '%,t" + tag + "[%' or tags like '%,t" + tag + ".%' or tags like '%,tc0#" + tag + ",%' or tags like '%,tc0#" + tag + "[%' or tags like '%,tc0#" + tag + ".%'");
+        else
+          data = sql.select("select fid,rid from blocks where tags like '%,t" + tag + ",%' or tags like '%,t" + tag + "[%' or tags like '%,t" + tag + ".%'");
         if (data == null) data = new String[0][0];
         if (data.length > 0) {
           cells.add(createCell(0, y, 6, 1, "label", null, "Function", null, null, null, null));
@@ -609,7 +617,10 @@ public class Panels {
           cells.add(createCell(10, y, 2, 1, "button", null, "View", null, "jfc_xref_view_func", data[a][0], null));
           y++;
         }
-        data = sql.select("select pid,tag from cells where tag='" + tag + "' or tag like '" + tag + "[%' or tag like '" + tag + ".%'");
+        if (cid.equals("0"))
+          data = sql.select("select pid,tag from cells where tag='" + tag + "' or tag like '" + tag + "[%' or tag like '" + tag + ".%' or tag='c0#" + tag + "' or tag like 'c0#" + tag + "[%' or tag like 'c0#" + tag + ".%'");
+        else
+          data = sql.select("select pid,tag from cells where tag='" + tag + "' or tag like '" + tag + "[%' or tag like '" + tag + ".%'");
         if (data == null) data = new String[0][0];
         if (data.length > 0) {
           cells.add(createCell(0, y, 6, 1, "label", null, "Panel", null, null, null, null));
