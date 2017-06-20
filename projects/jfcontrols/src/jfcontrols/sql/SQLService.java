@@ -34,10 +34,11 @@ public class SQLService {
     }
     logsPath = dataPath + "/logs";
     derbyURI = "jdbc:derby:jfcontrols";
+    System.setProperty("derby.system.home", dataPath);
+    SQL.initClass(SQL.derbySQL);
 
     new File(logsPath).mkdirs();
     JFLog.append(logsPath + "/service.log", true);
-    System.setProperty("derby.system.home", dataPath);
     if (!new File(dataPath + "/" + databaseName + "/service.properties").exists()) {
       //create database
       createDB();
@@ -310,6 +311,7 @@ public class SQLService {
 
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_config', 'Config', false, true)");
     id = sql.select1value("select id from panels where name='jfc_config'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,1,3,1,'button','','Save','jfc_config_save')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,2,4,1,'label','','Hardware Config')");
 //    if (JF.isPI()) {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,arg,tag) values (" + id + ",5,2,5,1,'combobox','config_type','','jfc_config_type', 'jfc_config_value_str_hwid')");
@@ -318,14 +320,17 @@ public class SQLService {
     if (!JF.isWindows()) {
       sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,2,1,'label','','IP Addr')");
       sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",4,3,3,1,'textfield','','jfc_config_value_str_ip_addr')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,2,1,'label','','IP Mask')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",4,3,3,1,'textfield','','jfc_config_value_str_ip_mask')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,2,1,'label','','IP GW')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",4,3,3,1,'textfield','','jfc_config_value_str_ip_gateway')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,2,1,'label','','IP DNS')");
-      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",4,3,3,1,'textfield','','jfc_config_value_str_ip_dns')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,4,2,1,'label','','IP Mask')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",4,4,3,1,'textfield','','jfc_config_value_str_ip_mask')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,5,2,1,'label','','IP GW')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",4,5,3,1,'textfield','','jfc_config_value_str_ip_gateway')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,6,2,1,'label','','IP DNS')");
+      sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",4,6,3,1,'textfield','','jfc_config_value_str_ip_dns')");
     }
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,1,3,1,'button','','Save','jfc_config_save')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,8,3,1,'label','','Database')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,8,2,1,'button','','Shutdown','jfc_config_shutdown')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",7,8,2,1,'button','','Restart','jfc_config_restart')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",10,8,10,1,'label','jfc_config_status','')");
 
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_config_iocomments', 'I/O Comments', false, true)");
     id = sql.select1value("select id from panels where name='jfc_config_iocomments'");
@@ -491,6 +496,12 @@ public class SQLService {
     initDB();
   }
   public static void stop() {
-    //TODO
+    SQL sql = new SQL();
+    JFLog.log("Shutting down database...");
+    sql.connect("jdbc:derby:;shutdown=true");
+    JFLog.log("Shutdown complete!");
+  }
+  public static void restart() {
+    SQL.initClass(SQL.derbySQL);
   }
 }

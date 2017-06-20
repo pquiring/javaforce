@@ -333,6 +333,20 @@ public class Events {
         Main.restart();
         break;
       }
+      case "jfc_config_shutdown": {
+        Main.stop();
+        SQLService.stop();
+        Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
+        lbl.setText("Database Shutdown");
+        break;
+      }
+      case "jfc_config_restart": {
+        SQLService.restart();
+        Main.restart();
+        Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
+        lbl.setText("System running");
+        break;
+      }
       case "jfc_panels_new": {
         synchronized(lock) {
           int id = 1;

@@ -67,4 +67,10 @@ public class Main implements WebUIHandler {
     TagsService.main();
     FunctionService.main();
   }
+
+  public static void stop() {
+    FunctionService.cancel();
+    TagsService.cancel();
+    System.gc();
+  }
 }
