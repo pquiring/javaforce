@@ -76,6 +76,11 @@ public class WebUIClient {
         case "ack":
           root.dispatchEvent(event, args);
           break;
+        case "pong":
+          synchronized(pingLock) {
+            pingLock.notify();
+          }
+          break;
       }
     } else {
       Component c = root.get(id);
@@ -84,6 +89,14 @@ public class WebUIClient {
       } else {
         JFLog.log("Error:Component not found:" + id);
       }
+    }
+  }
+  private Object pingLock = new Object();
+  /** Pings the client and waits for a reply (with a timeout). */
+  public void ping(int ms) {
+    synchronized(pingLock) {
+      sendEvent("body", "ping", null);
+      try {pingLock.wait(ms);} catch (Exception e) {}
     }
   }
   private String stringify(String in) {

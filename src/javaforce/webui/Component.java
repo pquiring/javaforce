@@ -190,6 +190,15 @@ public abstract class Component {
     }
     return sb.toString();
   }
+  public void requestPos() {
+    sendEvent("getpos", null);
+  }
+  public void requestPosSize() {
+    sendEvent("getpossize", null);
+  }
+  public void requestSize() {
+    sendEvent("getsize", null);
+  }
   public void setSize(int width, int height) {
     this.width = width;
     this.height = height;
@@ -426,7 +435,13 @@ public abstract class Component {
     }
   }
 
-  public void onLoaded(String args[]) {}
+  protected void onLoaded(String args[]) {
+    if (loaded != null) loaded.loaded(this);
+  }
+  private Loaded loaded;
+  public void addLoadedListener(Loaded handler) {
+    this.loaded = handler;
+  }
 
   protected void onClick(MouseEvent me, String args[]) {
     if (click != null) click.onClick(me, this);

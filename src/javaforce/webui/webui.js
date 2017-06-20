@@ -152,8 +152,19 @@ function wsevent(event) {
     case "setselected":
       element.selected = msg.state;
       break;
+    case "ping":
+      sendPong(id);
+      break;
   }
 };
+
+function sendPong(id) {
+  var msg = {
+    event: "pong",
+    id: id
+  };
+  ws.send(JSON.stringify(msg));
+}
 
 function sendAck(id) {
   var msg = {

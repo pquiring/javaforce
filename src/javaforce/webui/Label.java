@@ -7,8 +7,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class Label extends Component {
-  public String text;
+public class Label extends TextComponent {
   public Label(String text) {
     this.text = text;
     addEvent("onclick", "onClick(event, this);");
@@ -19,11 +18,7 @@ public class Label extends Component {
   public String html() {
     return "<label" + getAttrs() + ">" + text + "</label>";
   }
-  public void setText(String txt) {
-    text = txt;
+  public void updateText(String txt) {
     sendEvent("settext", new String[] {"text=" + text});
-  }
-  public String getText() {
-    return text;
   }
 }

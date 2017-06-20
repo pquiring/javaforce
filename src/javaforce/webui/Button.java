@@ -9,8 +9,7 @@ import javaforce.JFLog;
  * @author pquiring
  */
 
-public class Button extends Component {
-  private String text;
+public class Button extends TextComponent {
   private String url;
   private Resource img;
   public Button(String text) {
@@ -31,8 +30,7 @@ public class Button extends Component {
     sb.append("</button>");
     return sb.toString();
   }
-  public void setText(String text) {
-    this.text = text;
+  public void updateText(String text) {
     sendEvent("settext", new String[] {"text=" + text});
   }
   public void setURL(String url) {

@@ -5,8 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class TextArea extends Component {
-  public String text;
+public class TextArea extends TextComponent {
   public TextArea(String text) {
     this.text = text;
     addEvent("onchange", "onTextChange(event, this);");
@@ -15,14 +14,9 @@ public class TextArea extends Component {
   public String html() {
     return "<textarea" + getAttrs() + ">" + text + "</textarea>";
   }
-  public void setText(String txt) {
-    text = txt;
+  public void updateText(String txt) {
     sendEvent("settext", new String[] {"text=" + text});
   }
-  public String getText() {
-    return text;
-  }
-
   public void onChanged(String args[]) {
     int idx = args[0].indexOf("=");
     text = args[0].substring(idx+1);

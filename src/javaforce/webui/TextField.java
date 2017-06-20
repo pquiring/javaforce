@@ -5,8 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class TextField extends Component {
-  public String text;
+public class TextField extends TextComponent {
   public boolean password;
   public TextField(String text) {
     this.text = text;
@@ -16,12 +15,8 @@ public class TextField extends Component {
   public String html() {
     return "<input" + getAttrs() + " value='" + text + "'>";
   }
-  public void setText(String txt) {
-    text = txt;
+  public void updateText(String txt) {
     sendEvent("setvalue", new String[] {"value=" + text});
-  }
-  public String getText() {
-    return text;
   }
   public void setPassword(boolean state) {
     if (state)
@@ -29,7 +24,6 @@ public class TextField extends Component {
     else
       removeAttr("type");
   }
-
   public void onChanged(String args[]) {
     int idx = args[0].indexOf("=");
     text = args[0].substring(idx+1);
