@@ -12,10 +12,10 @@ public class KeyPad extends PopupPanel implements Click {
   private Table table;
 
   private static String cols[][] = {
-    {"<", "/", "*", null},
-    {"7", "8", "9", "-"},
-    {"4", "5", "6", "+"},
-    {"3", "2", "1", "Ent"},
+    {"<", "/", "*", "-"},
+    {"7", "8", "9", "+"},
+    {"4", "5", "6",null},
+    {"1", "2", "3","Ent"},
     {"0",null, ".",null},
   };
 
@@ -31,15 +31,19 @@ public class KeyPad extends PopupPanel implements Click {
         if (key == null) continue;
         Button b = new Button(rowchs[row]);
         b.addClickListener(this);
-        if (key.equals("0")) {
-          b.setSize(px*2, px);
-          table.add(b, row, col, 2, 1);
-        } else if (key.equals("Ent")) {
-          b.setSize(px, px*2);
-          table.add(b, row, col, 1, 2);
-        } else {
-          b.setSize(px, px);
-          table.add(b, row, col);
+        switch (key) {
+          case "0":
+            b.setSize(px*2, px);
+            table.add(b, row, col, 2, 1);
+            break;
+          case "Ent":
+          case "+":
+            b.setSize(px, px*2);
+            table.add(b, row, col, 1, 2);
+            break;
+          default:
+            b.setSize(px, px);
+            table.add(b, row, col);
         }
       }
     }
