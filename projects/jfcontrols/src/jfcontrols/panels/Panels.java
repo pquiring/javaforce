@@ -95,6 +95,9 @@ public class Panels {
     panel.add(getPopupPanel(client, "Confirm", "jfc_confirm"));
     panel.add(getPopupPanel(client, "Error", "jfc_error"));
     panel.add(getPopupPanel(client, "Error", "jfc_error_textarea"));
+    KeyPad keypad = new KeyPad("KeyPad", cellWidth);
+    keypad.setName("keypad");
+    panel.add(keypad);
     if (pname.equals("jfc_panel_editor")) {
       panel.add(getPopupPanel(client, "Properties", "jfc_panel_props"));
     }
@@ -333,11 +336,15 @@ public class Panels {
       }
     }
     if (text == null) text = "";
-    TextField b = new TextField(text);
-    b.addChangedListener((c) -> {
+    TextField tf = new TextField(text);
+    tf.addChangedListener((c) -> {
       Events.edit((TextField)c);
     });
-    return b;
+    tf.addClickListener((me, comp) -> {
+      KeyPad keypad = (KeyPad)comp.getClient().getPanel().getComponent("keypad");
+      keypad.show((TextField)comp);
+    });
+    return tf;
   }
   private static TextArea getTextArea(String v[], WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");

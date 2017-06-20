@@ -11,28 +11,30 @@ public class KeyPad extends PopupPanel implements Click {
   private TextComponent field;
   private Table table;
 
-  private static char[][] cols = {
-    {'7', '8', '9', '-'},
-    {'4', '5', '6', '+'},
-    {'3', '2', '1', 'E'},
-    {'0',   0, '.',   0},
+  private static String cols[][] = {
+    {"<", "/", "*", null},
+    {"7", "8", "9", "-"},
+    {"4", "5", "6", "+"},
+    {"3", "2", "1", "Ent"},
+    {"0",null, ".",null},
   };
 
   public KeyPad(String title, int px) {
     super(title);
-    table = new Table(px, px, 4, 4);
+    table = new Table(px, px, 4, 5);
+    setTitleBarSize(px);
     add(table);
     for(int col=0;col<cols.length;col++) {
-      char rowchs[] = cols[col];
+      String rowchs[] = cols[col];
       for(int row=0;row<rowchs.length;row++) {
-        char ch = rowchs[row];
-        if (ch == 0) continue;
-        Button b = new Button(Character.toString(rowchs[row]));
+        String key = rowchs[row];
+        if (key == null) continue;
+        Button b = new Button(rowchs[row]);
         b.addClickListener(this);
-        if (ch == '0') {
+        if (key.equals("0")) {
           b.setSize(px*2, px);
           table.add(b, row, col, 2, 1);
-        } else if (ch == 'E') {
+        } else if (key.equals("Ent")) {
           b.setSize(px, px*2);
           table.add(b, row, col, 1, 2);
         } else {
@@ -55,8 +57,15 @@ public class KeyPad extends PopupPanel implements Click {
   public void onClick(MouseEvent e, Component c) {
     Button b = (Button)c;
     String txt = b.getText();
-    if (txt.equals("E")) {
+    if (txt.equals("Ent")) {
       setVisible(false);
+      return;
+    }
+    if (txt.equals("<")) {
+      String oldtxt = field.getText();
+      if (oldtxt.length() == 0) return;
+      field.setText(oldtxt.substring(0, oldtxt.length() - 1));
+      return;
     }
     String newtxt = field.getText() + txt;
     field.setText(newtxt);

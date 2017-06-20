@@ -11,7 +11,8 @@ public abstract class TextComponent extends Component {
   public void setText(String text) {
     this.text = text;
     updateText(text);
-  }
+    onChanged(new String[] {"text=" + text});
+ }
   public String getText() {
     return text;
   }
