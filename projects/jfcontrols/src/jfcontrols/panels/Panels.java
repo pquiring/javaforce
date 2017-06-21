@@ -95,6 +95,9 @@ public class Panels {
     panel.add(getPopupPanel(client, "Confirm", "jfc_confirm"));
     panel.add(getPopupPanel(client, "Error", "jfc_error"));
     panel.add(getPopupPanel(client, "Error", "jfc_error_textarea"));
+    if (pname.equals("jfc_config")) {
+      panel.add(getPopupPanel(client, "Change Password", "jfc_change_password"));
+    }
     KeyPad keypad = new KeyPad("KeyPad", cellWidth);
     keypad.setName("keypad");
     panel.add(keypad);
@@ -243,7 +246,8 @@ public class Panels {
       case "label": return getLabel(v);
       case "button": return getButton(v);
       case "link": return getLink(v);
-      case "textfield": return getTextField(v, client);
+      case "textfield": return getTextField(v, client, false);
+      case "password": return getTextField(v, client, true);
       case "dual": return getDual(v, client);
       case "textarea": return getTextArea(v, client);
       case "combobox": return getComboBox(v, client);
@@ -314,7 +318,7 @@ public class Panels {
     table.add(value, 0, 1, 3, 1);
     return table;
   }
-  private static TextField getTextField(String v[], WebUIClient client) {
+  private static TextField getTextField(String v[], WebUIClient client, boolean password) {
     ClientContext context = (ClientContext)client.getProperty("context");
     SQL sql = context.sql;
     String tag = v[TAG];
@@ -340,10 +344,14 @@ public class Panels {
     tf.addChangedListener((c) -> {
       Events.edit((TextField)c);
     });
-    tf.addClickListener((me, comp) -> {
-      KeyPad keypad = (KeyPad)comp.getClient().getPanel().getComponent("keypad");
-      keypad.show((TextField)comp);
-    });
+    if (password) {
+      tf.setPassword(true);
+    } else {
+      tf.addClickListener((me, comp) -> {
+        KeyPad keypad = (KeyPad)comp.getClient().getPanel().getComponent("keypad");
+        keypad.show((TextField)comp);
+      });
+    }
     return tf;
   }
   private static TextArea getTextArea(String v[], WebUIClient client) {

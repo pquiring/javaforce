@@ -157,6 +157,8 @@ public class Events {
       }
       case "jfc_login_cancel": {
         PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_login");
+        ((TextField)panel.getComponent("user")).setText("");
+        ((TextField)panel.getComponent("pass")).setText("");
         panel.setVisible(false);
         break;
       }
@@ -331,6 +333,42 @@ public class Events {
           //TODO:save IP config
         }
         Main.restart();
+        break;
+      }
+      case "jfc_config_password": {
+        Panel panel = client.getPanel();
+        ((TextField)panel.getComponent("jfc_password_old")).setText("");
+        ((TextField)panel.getComponent("jfc_password_new")).setText("");
+        ((TextField)panel.getComponent("jfc_password_confirm")).setText("");
+        panel.getComponent("jfc_change_password").setVisible(true);
+        break;
+      }
+      case "jfc_change_password_ok": {
+        Panel panel = client.getPanel();
+        panel.getComponent("jfc_change_password").setVisible(false);
+        String old = ((TextField)panel.getComponent("jfc_password_old")).getText();
+        String newpw = ((TextField)panel.getComponent("jfc_password_new")).getText();
+        String cfmpw = ((TextField)panel.getComponent("jfc_password_confirm")).getText();
+        String curpw = sql.select1value("select pass from users where name='admin'");
+        if (!curpw.equals(old)) {
+          Panels.showError(client, "Wrong current password");
+          break;
+        }
+        if (!newpw.equals(cfmpw)) {
+          Panels.showError(client, "Passwords do not match");
+          break;
+        }
+        if (newpw.length() < 4) {
+          Panels.showError(client, "Password too short");
+          break;
+        }
+        sql.execute("update users set pass='" + newpw + "' where name='admin'");
+        Panels.showError(client, "Password changed!");
+        break;
+      }
+      case "jfc_change_password_cancel": {
+        Panel panel = client.getPanel();
+        panel.getComponent("jfc_change_password").setVisible(false);
         break;
       }
       case "jfc_config_shutdown": {

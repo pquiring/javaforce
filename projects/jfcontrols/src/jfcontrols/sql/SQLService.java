@@ -252,7 +252,7 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,3,1,'label','','Username:')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,0,3,1,'textfield','user','')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,2,3,1,'label','','Password:')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,2,3,1,'textfield','pass','')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,2,3,1,'password','pass','')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,3,8,1,'label','errmsg','')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,4,3,1,'button','','Login','jfc_login_ok')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,4,3,1,'button','','Cancel','jfc_login_cancel')");
@@ -262,6 +262,18 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,7,1,'label','jfc_confirm_msg','msg')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,1,3,1,'button','','Ok','jfc_confirm_ok')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,1,3,1,'button','','Cancel','jfc_confirm_cancel')");
+
+    sql.execute("insert into panels (name, popup, builtin) values ('jfc_change_password', true, true)");
+    id = sql.select1value("select id from panels where name='jfc_change_password'");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,7,1,'label','','Change Password')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,1,4,1,'label','','Old Password')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,1,4,1,'password','jfc_password_old','')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,2,4,1,'label','','New Password')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,2,4,1,'password','jfc_password_new','')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,3,4,1,'label','','Confirm Password')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,3,4,1,'password','jfc_password_confirm','')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,4,3,1,'button','','Ok','jfc_change_password_ok')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,4,3,1,'button','','Cancel','jfc_change_password_cancel')");
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_error', true, true)");
     id = sql.select1value("select id from panels where name='jfc_error'");
@@ -317,12 +329,13 @@ public class SQLService {
 
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_config', 'Config', false, true)");
     id = sql.select1value("select id from panels where name='jfc_config'");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,1,3,1,'button','','Save','jfc_config_save')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,2,4,1,'label','','Hardware Config')");
 //    if (JF.isPI()) {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,arg,tag) values (" + id + ",5,2,5,1,'combobox','config_type','','jfc_config_type', 'jfc_config_value_str_hwid')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",11,2,3,1,'button','','Comments','setPanel', 'jfc_config_iocomments')");
 //    }
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,2,3,1,'button','','Save','jfc_config_save')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",20,2,4,1,'button','','Change Password','jfc_config_password')");
     if (!JF.isWindows()) {
       sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,2,1,'label','','IP Addr')");
       sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",4,3,3,1,'textfield','','jfc_config_value_str_ip_addr')");
