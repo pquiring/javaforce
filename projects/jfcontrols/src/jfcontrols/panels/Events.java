@@ -135,7 +135,6 @@ public class Events {
       case "jfc_login_ok": {
         String user = ((TextField)client.getPanel().getComponent("user")).getText();
         String pass = ((TextField)client.getPanel().getComponent("pass")).getText();
-        JFLog.log("user/pass=" + user + "," + pass);
         String data[][] = sql.select("select name,pass from users");
         boolean ok = false;
         for(int a=0;a<data.length;a++) {
@@ -344,12 +343,13 @@ public class Events {
         break;
       }
       case "jfc_change_password_ok": {
+        String user = (String)client.getProperty("user");
         Panel panel = client.getPanel();
         panel.getComponent("jfc_change_password").setVisible(false);
         String old = ((TextField)panel.getComponent("jfc_password_old")).getText();
         String newpw = ((TextField)panel.getComponent("jfc_password_new")).getText();
         String cfmpw = ((TextField)panel.getComponent("jfc_password_confirm")).getText();
-        String curpw = sql.select1value("select pass from users where name='admin'");
+        String curpw = sql.select1value("select pass from users where name='" + user + "'");
         if (!curpw.equals(old)) {
           Panels.showError(client, "Wrong current password");
           break;
@@ -362,7 +362,7 @@ public class Events {
           Panels.showError(client, "Password too short");
           break;
         }
-        sql.execute("update users set pass='" + newpw + "' where name='admin'");
+        sql.execute("update users set pass='" + newpw + "' where name='" + user + "'");
         Panels.showError(client, "Password changed!");
         break;
       }
