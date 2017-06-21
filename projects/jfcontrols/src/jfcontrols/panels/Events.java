@@ -392,6 +392,11 @@ public class Events {
         break;
       }
       case "jfc_config_restore": {
+        ComboBox cb = (ComboBox)client.getPanel().getComponent("backups");
+        String filename = cb.getSelectedText();
+        String msg = SQLService.restore(SQLService.backupPath + "/" + filename);
+        Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
+        lbl.setText(msg);
         break;
       }
       case "jfc_panels_new": {

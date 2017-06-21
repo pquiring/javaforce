@@ -597,10 +597,8 @@ public class JF {
 
   public static boolean copyAll(InputStream is, OutputStream os) {
     try {
-      int len = is.available();
       byte buf[] = new byte[1024];
-      int copied = 0;
-      while (copied < len) {
+      while (is.available() > 0) {
         int read = is.read(buf);
         if (read == 0) {
           continue;
@@ -609,7 +607,6 @@ public class JF {
           return false;
         }
         os.write(buf, 0, read);
-        copied += read;
       }
       return true;
     } catch (Exception e) {
@@ -1547,6 +1544,42 @@ public class JF {
       zipPath(zos, path, "");
       zos.finish();
       zos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  /** Unzips zip file into path. */
+  public static void unzip(String zip, String path) {
+    JFLog.log("unzip:" + zip + " to " + path);
+    try {
+      File folder = new File(path);
+      if (folder.exists() && !folder.isDirectory()) {
+        JFLog.log("Error:target path is a file");
+        return;
+      }
+      if (!folder.exists()) {
+        folder.mkdirs();
+      }
+      ZipInputStream zis = new ZipInputStream(new FileInputStream(zip));
+      ZipEntry ze;
+      while ((ze = zis.getNextEntry()) != null) {
+        String name = ze.getName();
+        if (ze.isDirectory()) {
+          new File(path + "/" + name).mkdirs();
+          continue;
+        }
+        String full = path + "/" + name;
+        int idx = full.lastIndexOf("/");
+        if (idx != -1) {
+          String epath = full.substring(0, idx);
+          new File(epath).mkdirs();
+        }
+        FileOutputStream fos = new FileOutputStream(full);
+        copyAll(zis, fos);
+        fos.close();
+      }
+      zis.close();
     } catch (Exception e) {
       JFLog.log(e);
     }

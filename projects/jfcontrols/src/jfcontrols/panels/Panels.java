@@ -5,7 +5,7 @@ package jfcontrols.panels;
  * @author pquiring
  */
 
-import jfcontrols.logic.Logic;
+import java.io.*;
 import java.util.*;
 
 import javaforce.*;
@@ -14,6 +14,8 @@ import javaforce.controls.*;
 
 import jfcontrols.tags.*;
 import jfcontrols.images.*;
+import jfcontrols.sql.*;
+import jfcontrols.logic.*;
 
 public class Panels {
   public static int cellWidth = 32;
@@ -393,6 +395,16 @@ public class Panels {
     String pairs[][];
     if (arg.equals("jfc_function")) {
       pairs = sql.select("select id, name from funcs");
+    } else if (arg.equals("jfc_config_backups")) {
+      File files[] = new File(SQLService.backupPath).listFiles();
+      if (files == null) files = new File[0];
+      JFLog.log("# backups=" + files.length);
+      pairs = new String[files.length][2];
+      for(int a=0;a<files.length;a++) {
+        String filename = files[a].getName();
+        pairs[a][0] = filename;
+        pairs[a][1] = filename;
+      }
     } else if (arg.equals("jfc_logic_groups")) {
       pairs = sql.select("select gid,gid from logics group by gid order by gid");
       value = "bit";
