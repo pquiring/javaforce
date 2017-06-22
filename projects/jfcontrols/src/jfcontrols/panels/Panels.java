@@ -84,13 +84,15 @@ public class Panels {
     setCellSize(title, new Rectangle(x,0,16,1));
     table.add(title, x, 0, 16, 1);
 
+    String audio_init = (String)client.getProperty("audio-init");
+
     TagAddr ta = new TagAddr();
     ta.name = "alarms";
     TagBase tag = context.getTag(ta);
     context.addListener(tag, alarms, (_tag, _oldValue, _newValue, _cmp) -> {
-      updateAlarmCount(alarms, client);
+      updateAlarmCount(alarms, client, true);
     });
-    updateAlarmCount(alarms, client);
+    updateAlarmCount(alarms, client, false);
 
     panel.add(getPopupPanel(client, "Login", "jfc_login"));
     panel.add(getPopupPanel(client, "Menu", "jfc_menu"));
@@ -105,6 +107,15 @@ public class Panels {
     panel.add(keypad);
     if (pname.equals("jfc_panel_editor")) {
       panel.add(getPopupPanel(client, "Properties", "jfc_panel_props"));
+    }
+    if (pname.equals("main")) {
+      if (audio_init == null) {
+        panel.addLoadedListener((cmp) -> {
+          client.sendEvent("body", "audio-init", null);
+          updateAlarmCount(alarms, client, true);
+        });
+        client.setProperty("audio-init", "true");
+      }
     }
     return panel;
   }
@@ -993,7 +1004,7 @@ public class Panels {
     }
     return panel;
   }
-  private static void updateAlarmCount(Label label, WebUIClient client) {
+  private static void updateAlarmCount(Label label, WebUIClient client, boolean postEvent) {
     ClientContext context = (ClientContext)client.getProperty("context");
     SQL sql = context.sql;
     String tid = sql.select1value("select id from tags where name='alarms'");
@@ -1001,8 +1012,10 @@ public class Panels {
     label.setText(count);
     if (count.equals("0")) {
       label.setBackColor("#fff");
+      if (postEvent) client.sendEvent("body", "audio-alarm-stop", null);
     } else {
       label.setBackColor("#f00");
+      if (postEvent) client.sendEvent("body", "audio-alarm-start", null);
     }
   }
   private static void updateAlarms(Panel panel, WebUIClient client) {

@@ -8,6 +8,21 @@ var temp = document.createElement('div');
 
 var delay = 500;
 
+var audioCtx;
+var audioOscillator;
+var audioOscillatorFreq;
+
+function alarm() {
+  if (audioOscillator === null) return;
+  if (audioOscillatorFreq === 440) {
+    audioOscillatorFreq = 660;
+  } else {
+    audioOscillatorFreq = 440;
+  }
+  audioOscillator.frequency.value = audioOscillatorFreq;
+  setTimeout(alarm, 1000);
+}
+
 function wsopen(event) {
   sendSize('body');
   var msg = {
@@ -22,7 +37,7 @@ function wsclose(event) {
 }
 
 function connect() {
-  ws = new WebSocket("ws://" + location.host + "/webui")
+  ws = new WebSocket("ws://" + location.host + "/webui");
   //WebSocket binaryType default is Blob but converting it to TypedArray is very SLOW, so ask to get data in ArrayBuffer format instead
   ws.binaryType = "arraybuffer";
   ws.onopen = wsopen;
@@ -38,7 +53,7 @@ function wsevent(event) {
   var msg = JSON.parse(event.data);
   console.log("event:" + msg.event);
   var element = document.getElementById(msg.id);
-  if (element == null) {
+  if (element === null) {
     console.log("element not found:" + msg.id);
     return;
   }
@@ -153,7 +168,23 @@ function wsevent(event) {
       element.selected = msg.state;
       break;
     case "ping":
-      sendPong(id);
+      sendPong(msg.id);
+      break;
+    case "audio-init":
+      audioCtx = new AudioContext();
+      break;
+    case "audio-alarm-play":
+      audioOscillator = audioCtx.createOscillator();
+      audioOscillator.type = 'square';
+      audioOscillatorFreq = 440;
+      audioOscillator.frequency.value = audioOscillatorFreq;
+      audioOscillator.connect(audioCtx.destination);
+      audioOscillator.start();
+      setTimeout(alarm, 1000);
+      break;
+    case "audio-alarm-stop":
+      audioOscillator.stop();
+      audioOscillator = null;
       break;
   }
 };
@@ -306,7 +337,7 @@ function openTab(event, idx, tabsid, rowid) {
     }
   }
 
-  if (rowid == null) return;
+  if (rowid === null) return;
 
   var tabs2 = document.getElementById(rowid);
   var nodes2 = tabs2.childNodes;

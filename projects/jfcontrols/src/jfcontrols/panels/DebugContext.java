@@ -75,7 +75,7 @@ public class DebugContext extends Thread {
             lbl.setText(nv);
           }
         }
-        //TODO : ping/pong client to ensure it's up-to-date
+        client.ping(1000);
         first = false;
       }
       for(int a=0;a<cnt;a++) {
