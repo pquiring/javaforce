@@ -201,7 +201,6 @@ public class TagsCache {
       }
 */
     }
-    JFLog.log("tag=" + ta.name + "[" + ta.idx + "]." + ta.member + "[" + ta.midx + "]");
     return ta;
   }
 

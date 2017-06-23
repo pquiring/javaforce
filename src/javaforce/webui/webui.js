@@ -173,7 +173,7 @@ function wsevent(event) {
     case "audio-init":
       audioCtx = new AudioContext();
       break;
-    case "audio-alarm-play":
+    case "audio-alarm-start":
       audioOscillator = audioCtx.createOscillator();
       audioOscillator.type = 'square';
       audioOscillatorFreq = 440;
