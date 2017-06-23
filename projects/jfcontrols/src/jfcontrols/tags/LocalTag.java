@@ -118,6 +118,13 @@ public class LocalTag extends MonitoredTag {
   }
 
   public void setValue(String value, int idx, int mid, int midx) {
+    if (idx == -1) {
+      try {
+        throw new Exception("-1");
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
     if (array || udt) {
       synchronized(arrayLock) {
         TagID id;
@@ -185,7 +192,7 @@ public class LocalTag extends MonitoredTag {
     }
 
     public TagBase getMember(int mid) {
-      return LocalTag.this.getMember(idx);
+      return LocalTag.this.getMember(idx, mid);
     }
 
     public int getMember(String member) {
@@ -372,6 +379,10 @@ public class LocalTag extends MonitoredTag {
 
   public TagBase getMember(int mid) {
     return new Member(this, -1, mid);
+  }
+
+  public TagBase getMember(int idx, int mid) {
+    return new Member(this, idx, mid);
   }
 
   public int getMember(String name) {

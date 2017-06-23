@@ -31,21 +31,22 @@ public class TagsCache {
     }
     if (ta.cid == 0) {
       TagBase tag = TagsService.getLocalTag(ta.name);
+      TagBase ret = tag;
       if (tag == null) {
         JFLog.log("Error:Unable to find local tag:" + ta.name);
         return null;
       }
-      if (tag.isArray()) {
-        tag = tag.getIndex(ta.idx);
+      if (tag.isArray() && ta.idx != -1) {
+        ret = tag.getIndex(ta.idx);
       }
       if (tag.isUDT() && ta.member != null) {
         int mid = tag.getMember(ta.member);
-        tag = tag.getMember(mid);
+        ret = ret.getMember(mid);
         if (tag.isArray() && ta.midx != -1) {
-          tag = tag.getIndex(ta.midx);
+          ret = ret.getIndex(ta.midx);
         }
       }
-      return tag;
+      return ret;
     } else {
       TagBase tag = TagsService.getRemoteTag(ta.name);
       if (tag == null) {
@@ -200,6 +201,7 @@ public class TagsCache {
       }
 */
     }
+    JFLog.log("tag=" + ta.name + "[" + ta.idx + "]." + ta.member + "[" + ta.midx + "]");
     return ta;
   }
 
