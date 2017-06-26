@@ -208,6 +208,10 @@ public class SQLService {
     sql.execute("insert into logics (shortname,name,gid) values ('on_delay','timer_on_delay','timer')");
     sql.execute("insert into logics (shortname,name,gid) values ('off_delay','timer_off_delay','timer')");
 
+    sql.execute("insert into logics (name,gid) values ('alarm_active','alarms')");
+    sql.execute("insert into logics (name,gid) values ('alarm_not_ack','alarms')");
+    sql.execute("insert into logics (name,gid) values ('alarm_ack_all','alarms')");
+
     //create SDTs
     int uid = IDs.uid_sys;
     sql.execute("insert into udts (uid,name) values (" + uid + ",'system')");

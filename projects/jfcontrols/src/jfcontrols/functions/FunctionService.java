@@ -34,6 +34,7 @@ public class FunctionService extends Thread {
     File mainFile = new File("work/class/func_1.class");
     boolean compile = false;
     sql = SQLService.getSQL();
+    FunctionRuntime.sql = sql;
     if (!mainFile.exists()) {
       FunctionService.generateFunction(1, sql);
       compile = true;
@@ -95,6 +96,7 @@ public class FunctionService extends Thread {
     TagBase tag = tags.getTag(ta);
     while (active) {
       FunctionRuntime.now = System.currentTimeMillis();
+      FunctionRuntime.alarm_clear_ack();
       TagsService.doReads();
       synchronized(rapi) {
         rapi.notifyAll();
@@ -123,6 +125,7 @@ public class FunctionService extends Thread {
     }
     sql.close();
     sql = null;
+    FunctionService.sql = null;
     synchronized(done) {
       done.notify();
     }

@@ -8,11 +8,11 @@ package jfcontrols.functions;
 import java.util.Calendar;
 import javaforce.*;
 
-import jfcontrols.sql.*;
 import jfcontrols.tags.*;
 
 public class FunctionRuntime extends TagsCache {
   public static long now;
+  public static SQL sql;
   public IndexTags it = new IndexTags();
   public void arraycopy(TagBase tags[]) {
     //tags = src srcOff dst dstOff length
@@ -50,10 +50,10 @@ public class FunctionRuntime extends TagsCache {
     String len;
     int tid = tag.getTagID();
     if (!isMember) {
-      len = FunctionService.sql.select1value("select max(idx) from tagvalues where tid=" + tid);
+      len = sql.select1value("select max(idx) from tagvalues where tid=" + tid);
     } else {
       int mid = tag.getMember();
-      len = FunctionService.sql.select1value("select max(midx) from tagvalues where tid=" + tid + " and mid=" + mid);
+      len = sql.select1value("select max(midx) from tagvalues where tid=" + tid + " and mid=" + mid);
     }
     if (len == null) len = "0";
     tags[2].setValue(len);
@@ -180,5 +180,56 @@ public class FunctionRuntime extends TagsCache {
       enTag.setBoolean(en);
     }
     return run;
+  }
+  public static void alarm_clear_ack() {
+    //clear ack bit for inactive alarms (run once per scan)
+    String tid = sql.select1value("select id from tags where name='alarms'");
+    String active[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='0'");
+    String ack[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and value='1'");
+    for(int a=0;a<active.length;a++) {
+      String idx = active[a];
+      for(int b=0;b<ack.length;b++) {
+        if (ack[b].equals(idx)) {
+          sql.execute("update tagvalues set value='0' where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and idx=" + idx);
+          break;
+        }
+      }
+    }
+  }
+  public boolean alarm_active() {
+    String tid = sql.select1value("select id from tags where name='alarms'");
+    String count = sql.select1value("select count(idx) from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
+    return !count.equals("0");
+  }
+  public boolean alarm_not_ack() {
+    String tid = sql.select1value("select id from tags where name='alarms'");
+    String active[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
+    String ack[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and value='1'");
+    for(int a=0;a<active.length;a++) {
+      String idx = active[a];
+      for(int b=0;b<ack.length;b++) {
+        if (ack[b].equals(idx)) {idx = null; break;}
+      }
+      if (idx != null) return true;
+    }
+    return false;
+  }
+  public void alarm_ack_all() {
+    String tid = sql.select1value("select id from tags where name='alarms'");
+    String active[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
+    String ack[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack);
+    for(int a=0;a<active.length;a++) {
+      String idx = active[a];
+      for(int b=0;b<ack.length;b++) {
+        if (ack[b].equals(idx)) {idx = null; break;}
+      }
+      if (idx == null) {
+        //update
+        sql.execute("update tagvalues set value='1' where idx=" + idx + " and tid=" + tid + " and mid=" + IDs.alarm_mid_ack);
+      } else {
+        //insert
+        sql.execute("insert into tagvalues values (value, idx, tid, mid) values('1'," + idx + "," + tid + "," + IDs.alarm_mid_ack + ")");
+      }
+    }
   }
 }

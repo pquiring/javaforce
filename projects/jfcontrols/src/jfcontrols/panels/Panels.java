@@ -222,6 +222,8 @@ public class Panels {
             c.setDisabled(true);
           } else if (styles[b].equals("border")) {
             c.setBorder(true);
+          } else if (styles[b].equals("xsmallfont")) {
+            c.setStyle("font-size", "6pt");
           } else if (styles[b].equals("smallfont")) {
             c.setStyle("font-size", "8pt");
           } else {
@@ -845,7 +847,11 @@ public class Panels {
           if (Images.getImage(desc) != null) {
             desc = "!image:" + desc;
           } else {
-            if (desc.length() > 3) {
+            String lns[] = desc.split("_");
+            if (lns.length > 2) {
+              style += ";xsmallfont";
+            }
+            else if (desc.length() > 3) {
               style += ";smallfont";
             }
             desc = desc.replaceAll("_", "<br/>");
