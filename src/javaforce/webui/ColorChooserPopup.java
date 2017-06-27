@@ -29,6 +29,7 @@ public class ColorChooserPopup extends PopupPanel {
     col.add(r);
     rv = new Label("0");
     rv.setAlign(CENTER);
+    rv.setSize(32 * 3, 32);
     col.add(rv);
 
     col = new Column();
@@ -44,6 +45,7 @@ public class ColorChooserPopup extends PopupPanel {
     col.add(g);
     gv = new Label("0");
     gv.setAlign(CENTER);
+    gv.setSize(32 * 3, 32);
     col.add(gv);
 
     col = new Column();
@@ -59,24 +61,17 @@ public class ColorChooserPopup extends PopupPanel {
     col.add(b);
     bv = new Label("0");
     bv.setAlign(CENTER);
+    bv.setSize(32 * 3, 32);
     col.add(bv);
 
     row = new Row();
     add(row);
-    row.add(new Pad());
     ok = new Button("OK");
     row.add(ok);
     cancel = new Button("Cancel");
     row.add(cancel);
-    row.add(new Pad());
-
-    row = new Row();
-    add(row);
-    row.add(new Pad());
-    clr = new Block();
-    clr.setSize(64, 64);
+    clr = new Button("-");
     row.add(clr);
-    row.add(new Pad());
 
     ok.addClickListener((e, c) -> {
       setVisible(false);
@@ -97,7 +92,8 @@ public class ColorChooserPopup extends PopupPanel {
     g.setPos(_g);
     bv.setText(Integer.toString(_b));
     b.setPos(_b);
-    clr.setBackColor(String.format("#%06x", rgb));
+    clr.setColor(rgb);
+    clr.setBackColor(rgb);
   }
   public int getValue() {
     int rgb = 0;
@@ -106,11 +102,16 @@ public class ColorChooserPopup extends PopupPanel {
     rgb |= b.getPos();
     return rgb;
   }
+  public void setComponentsSize(int width, int height) {
+    ok.setSize(width, height);
+    cancel.setSize(width*2, height);
+    clr.setSize(width, height);
+  }
   private void setClr() {
-    clr.setBackColor(String.format("#%06x", getValue()));
+    clr.setBackColor(getValue());
   }
   private Label rv, gv, bv;
   private Slider r, g, b;
   private Button ok, cancel;
-  private Block clr;
+  private Button clr;
 }

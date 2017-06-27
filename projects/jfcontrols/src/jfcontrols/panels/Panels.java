@@ -99,6 +99,18 @@ public class Panels {
     panel.add(getPopupPanel(client, "Confirm", "jfc_confirm"));
     panel.add(getPopupPanel(client, "Error", "jfc_error"));
     panel.add(getPopupPanel(client, "Error", "jfc_error_textarea"));
+    ColorChooserPopup color = new ColorChooserPopup();
+    color.setName("colorpanel");
+    color.setTitleBarSize(cellHeight);
+    color.setComponentsSize(cellWidth, cellHeight);
+    color.addActionListener((cmpnt) -> {
+      ColorChooserPopup cp = (ColorChooserPopup)cmpnt;
+      Light light = (Light)cmpnt.getClient().getProperty("light");
+      int clr = cp.getValue();
+      JFLog.log("color=" + clr);
+      light.setBackColor(cp.getValue());
+    });
+    panel.add(color);
     if (pname.equals("jfc_config")) {
       panel.add(getPopupPanel(client, "Change Password", "jfc_change_password"));
     }
@@ -183,6 +195,10 @@ public class Panels {
               Label lbl = (Label)cmp;
               lbl.setText(newValue);
             }
+            if (cmp instanceof Light) {
+              Light l = (Light)cmp;
+              l.setColor(!newValue.equals("0"));
+            }
           });
         }
       }
@@ -197,12 +213,12 @@ public class Panels {
 //          WebUIClient client = comp.getClient();
           Component focus = (Component)client.getProperty("focus");
           if (focus != null) {
-            focus.setBorderColor("#eee");
+            focus.setBorderColor(Color.grey);
             focus.setBorder(false);
           }
           Node node = (Node)comp.getProperty("node");
           JFLog.log("node=" + node);
-          comp.setBorderColor("#000");
+          comp.setBorderColor(Color.black);
           comp.setBorder(true);
           client.setProperty("focus", comp);
           Node src = (Node)client.getProperty("fork");
@@ -271,6 +287,7 @@ public class Panels {
       case "overlay": return getOverlay(v);
       case "image": return getImage(v);
       case "autoscroll": return getAutoScroll(v, container, client);
+      case "light": return getLight(v);
       default: JFLog.log("Unknown component:" + name); break;
     }
     return null;
@@ -1010,6 +1027,35 @@ public class Panels {
     }
     return panel;
   }
+  private static Component getLight(String v[]) {
+    String style = v[STYLE];
+    if (style == null) style = "";
+    String ss[] = style.split(";");
+    String c0 = "ff0000";
+    String c1 = "00ff00";
+    for(int a=0;a<ss.length;a++) {
+      String s = ss[a];
+      int idx = s.indexOf("=");
+      if (idx == -1) continue;
+      String key = s.substring(0, idx);
+      String value = s.substring(idx + 1);
+      switch (key) {
+        case "0": c0 = value; break;
+        case "1": c1 = value; break;
+      }
+    }
+    Light light = new Light(Integer.valueOf(c0, 16),Integer.valueOf(c1, 16));
+    light.addClickListener((me, c) -> {
+      Events.click(c);
+    });
+    light.addMouseDownListener((c) -> {
+      Events.press(c);
+    });
+    light.addMouseUpListener((c) -> {
+      Events.release(c);
+    });
+    return light;
+  }
   private static void updateAlarmCount(Label label, WebUIClient client, boolean postEvent) {
     ClientContext context = (ClientContext)client.getProperty("context");
     SQL sql = context.sql;
@@ -1017,10 +1063,10 @@ public class Panels {
     String count = sql.select1value("select count(idx) from tagvalues where tid=" + tid + " and mid=1 and value='1'");
     label.setText(count);
     if (count.equals("0")) {
-      label.setBackColor("#fff");
+      label.setBackColor(Color.white);
       if (postEvent) client.sendEvent("body", "audio-alarm-stop", null);
     } else {
-      label.setBackColor("#f00");
+      label.setBackColor(Color.red);
       if (postEvent) client.sendEvent("body", "audio-alarm-start", null);
     }
   }
@@ -1072,14 +1118,14 @@ public class Panels {
   private static Component getOverlay(String v[]) {
     Block div = new Block();
     div.setBorder(true);
-    div.setBorderColor("#000000");
+    div.setBorderColor(Color.black);
     div.addClickListener((me, comp) -> {
       WebUIClient client = comp.getClient();
       Block focus = (Block)client.getProperty("focus");
       if (focus != null) {
-        focus.setBorderColor("#000000");
+        focus.setBorderColor(Color.black);
       }
-      comp.setBorderColor("#00ff00");
+      comp.setBorderColor(Color.green);
       client.setProperty("focus", comp);
     });
     return div;

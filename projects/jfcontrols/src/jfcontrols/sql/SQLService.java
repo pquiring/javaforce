@@ -10,10 +10,8 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.controls.*;
-import javaforce.webui.*;
 
 import jfcontrols.app.*;
-import jfcontrols.panels.Panels;
 import jfcontrols.tags.*;
 
 public class SQLService {
@@ -141,6 +139,7 @@ public class SQLService {
     id = sql.select1value("select id from lists where name='jfc_panel_type'");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",0,'label')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",1,'button')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",2,'light')");
 
     //create local controller
     sql.execute("insert into ctrls (cid,ip,type,speed) values (0,'127.0.0.1',0,0)");
@@ -464,8 +463,15 @@ public class SQLService {
 
     sql.execute("insert into panels (name, popup, builtin) values ('jfc_panel_props', true, true)");
     id = sql.select1value("select id from panels where name='jfc_panel_props'");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + id + ",0,0,2,1,'label','Text')");
+
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,2,1,'label','textLbl','Text')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",3,0,5,1,'textfield','text')");
+
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,2,1,'label','c0Lbl','0')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,func) values (" + id + ",2,0,1,1,'light','c0','jfc_panel_props_c0')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",3,0,2,1,'label','c1Lbl','1')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,func) values (" + id + ",5,0,1,1,'light','c1','jfc_panel_props_c1')");
+
     sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + id + ",0,1,2,1,'label','Tag')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",3,1,5,1,'textfield','tag')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + id + ",0,2,2,1,'label','Press')");

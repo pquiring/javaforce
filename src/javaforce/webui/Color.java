@@ -7,6 +7,15 @@ package javaforce.webui;
 
 public class Color {
   public int r,g,b;  //0-255
+
+  public static int white = 0xffffff;
+  public static int grey = 0xcccccc;
+  public static int black = 0x000000;
+
+  public static int red = 0xcc0000;
+  public static int green = 0x00cc00;
+  public static int blue = 0x0000cc;
+
   public Color(int rgb) {
     setRGB(rgb);
   }

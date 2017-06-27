@@ -16,7 +16,7 @@ public class TitleBar extends Container {
     label = new Label(title);
     label.addClass("defaultcursor");
     label.addClass("noselect");
-    label.setColor("white");
+    label.setColor(Color.white);
     add(label);
     pad = new Pad();
     add(pad);

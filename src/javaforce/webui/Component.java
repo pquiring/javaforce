@@ -18,6 +18,7 @@ public abstract class Component {
   public HashMap<String, String> attrs = new HashMap<String, String>();
   public HashMap<String, String> styles = new HashMap<String, String>();
   public int x,y,width,height;  //position and size (updated with mouseenter event)
+  public int clr = 0, backclr = 0xcccccc, borderclr = 0;
 
   private static class OnEvent {
     public String event;
@@ -136,6 +137,9 @@ public abstract class Component {
   public void removeStyle(String style) {
     styles.remove(style);
   }
+  public String getStyle(String style) {
+    return styles.get(style);
+  }
 
   public void setFontSize(int size) {
     setStyle("font-size", size + "pt");
@@ -222,17 +226,32 @@ public abstract class Component {
     setStyle("height", height + "px");
     sendEvent("setheight", new String[] {"h=" + height});
   }
-  public void setColor(String clr) {
-    setStyle("color", clr);
-    sendEvent("setclr", new String[] {"clr=" + clr});
+  public void setColor(int clr) {
+    this.clr = clr;
+    String style = String.format("#%06x", clr);
+    setStyle("color", style);
+    sendEvent("setclr", new String[] {"clr=" + style});
   }
-  public void setBackColor(String clr) {
-    setStyle("background-color", clr);
-    sendEvent("setbackclr", new String[] {"clr=" + clr});
+  public int getColor() {
+    return clr;
   }
-  public void setBorderColor(String clr) {
-    setStyle("border-color", clr);
-    sendEvent("setborderclr", new String[] {"clr=" + clr});
+  public void setBackColor(int clr) {
+    this.backclr = clr;
+    String style = String.format("#%06x", clr);
+    setStyle("background-color", style);
+    sendEvent("setbackclr", new String[] {"clr=" + style});
+  }
+  public int getBackColor() {
+    return backclr;
+  }
+  public void setBorderColor(int clr) {
+    this.borderclr = clr;
+    String style = String.format("#%06x", clr);
+    setStyle("border-color", style);
+    sendEvent("setborderclr", new String[] {"clr=" + style});
+  }
+  public int getBorderColor() {
+    return borderclr;
   }
   /** Returns all attributes defined for a component (id, attrs, class, styles) */
   public String getAttrs() {
@@ -272,13 +291,16 @@ public abstract class Component {
     return sb.toString();
   }
 
-  public String display = "inline-block";
+  private String display = "inline-block";
 
   public void setVisible(boolean state) {
-    if (state)
+    if (state) {
       sendEvent("display", new String[] {"val=" + display});
-    else
+      setStyle("display", display);
+    } else {
       sendEvent("display", new String[] {"val=none"});
+      setStyle("display", "none");
+    }
     if (visible != null) {
       visible.onVisible(this, state);
     }
@@ -286,7 +308,12 @@ public abstract class Component {
 
   public void setDisplay(String display) {
     this.display = display;
+    setStyle("display", display);
     sendEvent("display", new String[] {"val=" + display});
+  }
+
+  public String getDisplay() {
+    return display;
   }
 
   public void setPosition(int x, int y) {

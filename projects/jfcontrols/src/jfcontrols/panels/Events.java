@@ -507,16 +507,18 @@ public class Events {
         Table t1 = (Table)client.getPanel().getComponent("t1");  //components
         if (t1.get(r.x, r.y, false) != null) break;  //something already there
         Component nc = null;
-        String text = null;
+        String text = "";
+        String style = "";
         switch (type) {
           case "label": text = "label"; nc = new Label(text); break;
           case "button": text = "button"; nc = new Button(text); break;
+          case "light": style = "0=ff0000;1=00ff00"; nc = new Light(Color.red,Color.green); break;
         }
         if (nc == null) break;
         Panels.setCellSize(nc, nr);
         t1.add(nc, r.x, r.y);
         String pid = (String)client.getProperty("panel");
-        sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + pid + "," + r.x + "," + r.y + ",1,1," + SQL.quote(type) + "," + SQL.quote(text) + ")");
+        sql.execute("insert into cells (pid,x,y,w,h,comp,text,style) values (" + pid + "," + r.x + "," + r.y + ",1,1," + SQL.quote(type) + "," + SQL.quote(text) + "," + SQL.quote(style) + ")");
         break;
       }
       case "jfc_panel_editor_del": {
@@ -546,18 +548,33 @@ public class Events {
         Component focus = (Component)client.getProperty("focus");
         if (focus == null) break;
         Rectangle r = (Rectangle)focus.getProperty("rect");
+        Table t1 = (Table)client.getPanel().getComponent("t1");  //components
+        Component comp = t1.get(r.x, r.y, false);
+        if (comp == null) break;
+        String type = getComponentType(comp);
         String pid = (String)client.getProperty("panel");
         String events = sql.select1value("select events from cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
         String tag = sql.select1value("select tag from cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
         if (tag == null) tag = "";
         String text = sql.select1value("select text from cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
         if (text == null) text = "";
-        TextField textTF = (TextField)client.getPanel().getComponent("text");
-        TextField tagTF = (TextField)client.getPanel().getComponent("tag");
-        TextField pressTF = (TextField)client.getPanel().getComponent("press");
-        TextField releaseTF = (TextField)client.getPanel().getComponent("release");
-        TextField clickTF = (TextField)client.getPanel().getComponent("click");
+        String style = sql.select1value("select style from cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+        if (style == null) style = "";
+        Panel panel = client.getPanel();
+
+        Label textLbl = (Label)panel.getComponent("textLbl");
+        TextField textTF = (TextField)panel.getComponent("text");
+        Label c0Lbl = (Label)panel.getComponent("c0Lbl");
+        Light c0L = (Light)panel.getComponent("c0");
+        Label c1Lbl = (Label)panel.getComponent("c1Lbl");
+        Light c1L = (Light)panel.getComponent("c1");
+
+        TextField tagTF = (TextField)panel.getComponent("tag");
+        TextField pressTF = (TextField)panel.getComponent("press");
+        TextField releaseTF = (TextField)panel.getComponent("release");
+        TextField clickTF = (TextField)panel.getComponent("click");
         String press = "", release = "", click = "";
+        String c0 = "", c1 = "";
         if (events != null) {
           String parts[] = events.split("[|]");
           for(int a=0;a<parts.length;a++) {
@@ -573,63 +590,120 @@ public class Events {
             }
           }
         }
+        if (style != null) {
+          String parts[] = style.split(";");
+          for(int a=0;a<parts.length;a++) {
+            String part = parts[a];
+            int idx = part.indexOf("=");
+            if (idx == -1) continue;
+            String key = part.substring(0, idx);
+            String value = part.substring(idx + 1);
+            switch (key) {
+              case "0": c0 = value; break;
+              case "1": c1 = value; break;
+            }
+          }
+        }
         textTF.setText(text);
         tagTF.setText(tag);
         pressTF.setText(press);
         releaseTF.setText(release);
         clickTF.setText(click);
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
-        panel.setVisible(true);
+        c0L.setBackColor(Integer.valueOf(c0,16));
+        c1L.setBackColor(Integer.valueOf(c1,16));
+        switch (type) {
+          case "button":
+          case "label":
+            textTF.setVisible(true);
+            textLbl.setVisible(true);
+            c0L.setVisible(false);
+            c0Lbl.setVisible(false);
+            c1L.setVisible(false);
+            c1Lbl.setVisible(false);
+            break;
+          case "light":
+            textTF.setVisible(false);
+            textLbl.setVisible(false);
+            c0L.setVisible(true);
+            c0Lbl.setVisible(true);
+            c1L.setVisible(true);
+            c1Lbl.setVisible(true);
+            break;
+        }
+        PopupPanel props = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
+        props.setVisible(true);
+        break;
+      }
+      case "jfc_panel_props_c0": {
+        Light light = (Light)client.getPanel().getComponent("c0");
+        client.setProperty("light", light);
+        ColorChooserPopup color = (ColorChooserPopup)client.getPanel().getComponent("colorpanel");
+        color.setValue(light.getBackColor());
+        color.setVisible(true);
+        break;
+      }
+      case "jfc_panel_props_c1": {
+        Light light = (Light)client.getPanel().getComponent("c1");
+        client.setProperty("light", light);
+        ColorChooserPopup color = (ColorChooserPopup)client.getPanel().getComponent("colorpanel");
+        color.setValue(light.getBackColor());
+        color.setVisible(true);
         break;
       }
       case "jfc_panel_props_ok": {
+        Panel panel = client.getPanel();
         Component focus = (Component)client.getProperty("focus");
         if (focus != null) {
-          TextField textTF = (TextField)client.getPanel().getComponent("text");
+          TextField textTF = (TextField)panel.getComponent("text");
           String text = textTF.getText();
           if (text.indexOf("|") != -1) {
             setFocus(textTF);
             break;
           }
-          TextField tagTF = (TextField)client.getPanel().getComponent("tag");
+          TextField tagTF = (TextField)panel.getComponent("tag");
           String tag = tagTF.getText();
           if (tag.indexOf("|") != -1) {
             setFocus(tagTF);
             break;
           }
-          TextField pressTF = (TextField)client.getPanel().getComponent("press");
+          TextField pressTF = (TextField)panel.getComponent("press");
           String press = pressTF.getText();
           if (press.indexOf("|") != -1) {
             setFocus(pressTF);
             break;
           }
-          TextField releaseTF = (TextField)client.getPanel().getComponent("release");
+          TextField releaseTF = (TextField)panel.getComponent("release");
           String release = releaseTF.getText();
           if (release.indexOf("|") != -1) {
             setFocus(releaseTF);
             break;
           }
-          TextField clickTF = (TextField)client.getPanel().getComponent("click");
+          TextField clickTF = (TextField)panel.getComponent("click");
           String click = clickTF.getText();
           if (click.indexOf("|") != -1) {
             setFocus(clickTF);
             break;
           }
+          Light c0L = (Light)panel.getComponent("c0");
+          String c0 = Integer.toString(c0L.getBackColor(), 16);
+          Light c1L = (Light)panel.getComponent("c1");
+          String c1 = Integer.toString(c1L.getBackColor(), 16);
           Rectangle r = (Rectangle)focus.getProperty("rect");
           Table t1 = (Table)client.getPanel().getComponent("t1");  //components
           Component comp = t1.get(r.x, r.y, false);
-          if (comp instanceof Button) {
-            ((Button)comp).setText(text);
-          }
-          if (comp instanceof Label) {
-            ((Label)comp).setText(text);
+          String type = getComponentType(comp);
+          String style = "";
+          switch (type) {
+            case "button": ((Button)comp).setText(text); break;
+            case "label": ((Label)comp).setText(text); break;
+            case "light": ((Light)comp).setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16)); style = "0=" + c0 + ";1=" + c1; break;
           }
           String events = "press=" + press + "|release=" + release + "|click=" + click;
           String pid = (String)client.getProperty("panel");
-          sql.execute("update cells set events=" + SQL.quote(events) + ",tag=" + SQL.quote(tag) + ",text=" + SQL.quote(text) + " where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+          sql.execute("update cells set events=" + SQL.quote(events) + ",tag=" + SQL.quote(tag) + ",text=" + SQL.quote(text) + ",style=" + SQL.quote(style) + " where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
         }
-        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
-        panel.setVisible(false);
+        PopupPanel props = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
+        props.setVisible(false);
         break;
       }
       case "jfc_panel_props_cancel": {
@@ -994,7 +1068,7 @@ public class Events {
     SQL sql = context.sql;
     String red = (String)tf.getProperty("red");
     if (red != null) {
-      tf.setBackColor("#fff");
+      tf.setBackColor(Color.white);
       tf.setProperty("red", null);
     }
     String tag = (String)tf.getProperty("tag");
@@ -1012,14 +1086,14 @@ public class Events {
       }
       if (type.equals("tagid")) {
         if (!TagsService.validTagName(value)) {
-          tf.setBackColor("#c00");
+          tf.setBackColor(Color.red);
           tf.setProperty("red", "true");
           return;
         }
       }
       if (type.equals("tag")) {
         if (context.decode(value) == null) {
-          tf.setBackColor("#c00");
+          tf.setBackColor(Color.red);
           tf.setProperty("red", "true");
           return;
         }
@@ -1040,7 +1114,7 @@ public class Events {
     SQL sql = context.sql;
     String red = (String)ta.getProperty("red");
     if (red != null) {
-      ta.setBackColor("#fff");
+      ta.setBackColor(Color.white);
       ta.setProperty("red", null);
     }
     String tag = (String)ta.getProperty("tag");
@@ -1221,7 +1295,13 @@ public class Events {
   }
   public static void setFocus(TextField tf) {
     tf.setFocus();
-    tf.setBackColor("#c00");
+    tf.setBackColor(Color.red);
     tf.setProperty("red", "true");
+  }
+  public static String getComponentType(Component comp) {
+    if (comp instanceof Button) return "button";
+    if (comp instanceof Label) return "label";
+    if (comp instanceof Light) return "light";
+    return "unknown";
   }
 }

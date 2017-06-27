@@ -13,7 +13,8 @@ public class PopupPanel extends Panel {
     titleBar = new TitleBar(title, this);
     add(titleBar);
     setClass("popuppanel");
-    display = "inline";
+    setDisplay("inline");
+    super.setVisible(false);
     modal = false;
     block = new Block();
     block.setClass("modal");

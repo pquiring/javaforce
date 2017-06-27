@@ -364,7 +364,7 @@ public class Node {
   }
 
   public void setHighlight(boolean state) {
-    if (state) comp.setBorderColor("#0f0");
+    if (state) comp.setBorderColor(Color.green);
     comp.setBorder(state);
     highlight = state;
   }

@@ -81,9 +81,11 @@ input {
 }
 
 .row {
+  display: block;
 }
 
 .column {
+  display: inline-block;
 }
 
 .pad {

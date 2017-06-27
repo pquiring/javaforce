@@ -114,6 +114,9 @@ function wsevent(event) {
     case "removeoption":
       element.remove(msg.idx);
       break;
+    case "setsliderpos":
+      element.value = msg.pos;
+      break;
     case "setpos":
       element.style.left = msg.x;
       element.style.top = msg.y;

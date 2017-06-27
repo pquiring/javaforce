@@ -26,7 +26,7 @@ public class Main implements WebUIHandler {
     if (args != null && args[0].equals("debug")) {
       debug = true;
     }
-    if (debug) SQL.debug = true;
+//    if (debug) SQL.debug = true;
     //start database
     SQLService.start();
     //start tags server

@@ -39,7 +39,7 @@ public class SplitPanel extends Container {
     top.add(get(0));  //left/top component
     div = new Block();
     div.setWidth(5);
-    div.setBackColor("grey");
+    div.setBackColor(Color.grey);
     top.add(div);
     top.add(get(1));  //right/bottom component
     get(1).addClass("pad");

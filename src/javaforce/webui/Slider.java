@@ -36,7 +36,7 @@ public class Slider extends Component {
     if (pos < min) pos = min;
     if (pos > max) pos = max;
     this.pos = pos;
-    sendEvent("setpos", new String[] {"pos=" + pos});
+    sendEvent("setsliderpos", new String[] {"pos=" + pos});
   }
   public int getPos() {
     return pos;
@@ -61,5 +61,6 @@ public class Slider extends Component {
   public void onChanged(String args[]) {
     int idx = args[0].indexOf("=");
     pos = Integer.valueOf(args[0].substring(idx+1));
+    super.onChanged(args);
   }
 }
