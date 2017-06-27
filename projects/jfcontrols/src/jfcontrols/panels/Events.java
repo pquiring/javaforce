@@ -513,6 +513,7 @@ public class Events {
           case "label": text = "label"; nc = new Label(text); break;
           case "button": text = "button"; nc = new Button(text); break;
           case "light": style = "0=ff0000;1=00ff00"; nc = new Light(Color.red,Color.green); break;
+          case "light3": style = "0=ff0000;1=00ff00;n=333333"; nc = new Light3(Color.red,Color.green,0x333333); break;
         }
         if (nc == null) break;
         Panels.setCellSize(nc, nr);
@@ -568,13 +569,15 @@ public class Events {
         Light c0L = (Light)panel.getComponent("c0");
         Label c1Lbl = (Label)panel.getComponent("c1Lbl");
         Light c1L = (Light)panel.getComponent("c1");
+        Label cnLbl = (Label)panel.getComponent("cnLbl");
+        Light cnL = (Light)panel.getComponent("cn");
 
         TextField tagTF = (TextField)panel.getComponent("tag");
         TextField pressTF = (TextField)panel.getComponent("press");
         TextField releaseTF = (TextField)panel.getComponent("release");
         TextField clickTF = (TextField)panel.getComponent("click");
         String press = "", release = "", click = "";
-        String c0 = "", c1 = "";
+        String c0 = "", c1 = "", cn = "";
         if (events != null) {
           String parts[] = events.split("[|]");
           for(int a=0;a<parts.length;a++) {
@@ -601,6 +604,7 @@ public class Events {
             switch (key) {
               case "0": c0 = value; break;
               case "1": c1 = value; break;
+              case "n": cn = value; break;
             }
           }
         }
@@ -609,8 +613,9 @@ public class Events {
         pressTF.setText(press);
         releaseTF.setText(release);
         clickTF.setText(click);
-        c0L.setBackColor(Integer.valueOf(c0,16));
-        c1L.setBackColor(Integer.valueOf(c1,16));
+        if (c0.length() > 0) c0L.setBackColor(Integer.valueOf(c0,16));
+        if (c1.length() > 0) c1L.setBackColor(Integer.valueOf(c1,16));
+        if (cn.length() > 0) cnL.setBackColor(Integer.valueOf(cn,16));
         switch (type) {
           case "button":
           case "label":
@@ -620,6 +625,8 @@ public class Events {
             c0Lbl.setVisible(false);
             c1L.setVisible(false);
             c1Lbl.setVisible(false);
+            cnL.setVisible(false);
+            cnLbl.setVisible(false);
             break;
           case "light":
             textTF.setVisible(false);
@@ -628,6 +635,18 @@ public class Events {
             c0Lbl.setVisible(true);
             c1L.setVisible(true);
             c1Lbl.setVisible(true);
+            cnL.setVisible(false);
+            cnLbl.setVisible(false);
+            break;
+          case "light3":
+            textTF.setVisible(false);
+            textLbl.setVisible(false);
+            c0L.setVisible(true);
+            c0Lbl.setVisible(true);
+            c1L.setVisible(true);
+            c1Lbl.setVisible(true);
+            cnL.setVisible(true);
+            cnLbl.setVisible(true);
             break;
         }
         PopupPanel props = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
@@ -644,6 +663,14 @@ public class Events {
       }
       case "jfc_panel_props_c1": {
         Light light = (Light)client.getPanel().getComponent("c1");
+        client.setProperty("light", light);
+        ColorChooserPopup color = (ColorChooserPopup)client.getPanel().getComponent("colorpanel");
+        color.setValue(light.getBackColor());
+        color.setVisible(true);
+        break;
+      }
+      case "jfc_panel_props_cn": {
+        Light light = (Light)client.getPanel().getComponent("cn");
         client.setProperty("light", light);
         ColorChooserPopup color = (ColorChooserPopup)client.getPanel().getComponent("colorpanel");
         color.setValue(light.getBackColor());
@@ -688,6 +715,8 @@ public class Events {
           String c0 = Integer.toString(c0L.getBackColor(), 16);
           Light c1L = (Light)panel.getComponent("c1");
           String c1 = Integer.toString(c1L.getBackColor(), 16);
+          Light cnL = (Light)panel.getComponent("cn");
+          String cn = Integer.toString(cnL.getBackColor(), 16);
           Rectangle r = (Rectangle)focus.getProperty("rect");
           Table t1 = (Table)client.getPanel().getComponent("t1");  //components
           Component comp = t1.get(r.x, r.y, false);
@@ -697,6 +726,7 @@ public class Events {
             case "button": ((Button)comp).setText(text); break;
             case "label": ((Label)comp).setText(text); break;
             case "light": ((Light)comp).setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16)); style = "0=" + c0 + ";1=" + c1; break;
+            case "light3": ((Light3)comp).setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16), Integer.valueOf(cn, 16)); style = "0=" + c0 + ";1=" + c1 + ";n=" + cn; break;
           }
           String events = "press=" + press + "|release=" + release + "|click=" + click;
           String pid = (String)client.getProperty("panel");
@@ -1302,6 +1332,7 @@ public class Events {
     if (comp instanceof Button) return "button";
     if (comp instanceof Label) return "label";
     if (comp instanceof Light) return "light";
+    if (comp instanceof Light3) return "light3";
     return "unknown";
   }
 }

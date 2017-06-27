@@ -107,7 +107,6 @@ public class Panels {
       ColorChooserPopup cp = (ColorChooserPopup)cmpnt;
       Light light = (Light)cmpnt.getClient().getProperty("light");
       int clr = cp.getValue();
-      JFLog.log("color=" + clr);
       light.setBackColor(cp.getValue());
     });
     panel.add(color);
@@ -199,6 +198,10 @@ public class Panels {
               Light l = (Light)cmp;
               l.setColor(!newValue.equals("0"));
             }
+            if (cmp instanceof Light3) {
+              Light3 l = (Light3)cmp;
+              l.setColor(Integer.valueOf(newValue));
+            }
           });
         }
       }
@@ -288,6 +291,7 @@ public class Panels {
       case "image": return getImage(v);
       case "autoscroll": return getAutoScroll(v, container, client);
       case "light": return getLight(v);
+      case "light3": return getLight3(v);
       default: JFLog.log("Unknown component:" + name); break;
     }
     return null;
@@ -1045,6 +1049,37 @@ public class Panels {
       }
     }
     Light light = new Light(Integer.valueOf(c0, 16),Integer.valueOf(c1, 16));
+    light.addClickListener((me, c) -> {
+      Events.click(c);
+    });
+    light.addMouseDownListener((c) -> {
+      Events.press(c);
+    });
+    light.addMouseUpListener((c) -> {
+      Events.release(c);
+    });
+    return light;
+  }
+  private static Component getLight3(String v[]) {
+    String style = v[STYLE];
+    if (style == null) style = "";
+    String ss[] = style.split(";");
+    String c0 = "ff0000";
+    String c1 = "00ff00";
+    String cn = "333333";
+    for(int a=0;a<ss.length;a++) {
+      String s = ss[a];
+      int idx = s.indexOf("=");
+      if (idx == -1) continue;
+      String key = s.substring(0, idx);
+      String value = s.substring(idx + 1);
+      switch (key) {
+        case "0": c0 = value; break;
+        case "1": c1 = value; break;
+        case "n": cn = value; break;
+      }
+    }
+    Light3 light = new Light3(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16), Integer.valueOf(cn, 16));
     light.addClickListener((me, c) -> {
       Events.click(c);
     });
