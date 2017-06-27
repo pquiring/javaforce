@@ -89,7 +89,7 @@ public class EditTagPopup extends PopupPanel {
     label = new Label("Color");
     row.add(label);
     color = new Button("Select...");
-    color.setColor("#ffffff");
+    color.setColor(Color.white);
     row.add(color);
 
     row = new Row();
@@ -114,8 +114,7 @@ public class EditTagPopup extends PopupPanel {
     });
     ccp.addActionListener((c) -> {
       rgb = ccp.getValue();
-      System.out.println("rgb=" + rgb);
-      color.setBackColor(String.format("#%06x" , rgb, 16));
+      color.setBackColor(rgb);
     });
   }
   public ComboBox type;
@@ -147,7 +146,7 @@ public class EditTagPopup extends PopupPanel {
     max.setText(Integer.toString(intag.max));
     min.setText(Integer.toString(intag.min));
     rgb = intag.color;
-    color.setBackColor(String.format("#%06x" , intag.color, 16));
+    color.setBackColor(intag.color);
     setVisible(true);
   }
   public void newTag() {
@@ -159,7 +158,7 @@ public class EditTagPopup extends PopupPanel {
     max.setText("1");
     min.setText("0");
     rgb = 0;
-    color.setBackColor("#000000");
+    color.setBackColor(Color.black);
     setVisible(true);
   }
   public int str2int(String in) {
