@@ -9,12 +9,18 @@ public class Color {
   public int r,g,b;  //0-255
 
   public static int white = 0xffffff;
+  public static int darkGrey = 0xeeeeee;
   public static int grey = 0xcccccc;
+  public static int lightGrey = 0xaaaaaa;
   public static int black = 0x000000;
 
-  public static int red = 0xcc0000;
-  public static int green = 0x00cc00;
-  public static int blue = 0x0000cc;
+  public static int red = 0xff0000;
+  public static int green = 0x00ff00;
+  public static int blue = 0x0000ff;
+
+  public static int darkRed = 0xcc0000;
+  public static int darkGreen = 0x00cc00;
+  public static int darkBlue = 0x0000cc;
 
   public Color(int rgb) {
     setRGB(rgb);

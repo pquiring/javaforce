@@ -507,13 +507,14 @@ public class Events {
         Table t1 = (Table)client.getPanel().getComponent("t1");  //components
         if (t1.get(r.x, r.y, false) != null) break;  //something already there
         Component nc = null;
-        String text = "";
+        String text = "new";
         String style = "";
         switch (type) {
           case "label": text = "label"; nc = new Label(text); break;
           case "button": text = "button"; nc = new Button(text); break;
           case "light": style = "0=ff0000;1=00ff00"; nc = new Light(Color.red,Color.green); break;
-          case "light3": style = "0=ff0000;1=00ff00;n=333333"; nc = new Light3(Color.red,Color.green,0x333333); break;
+          case "light3": style = "0=ff0000;1=00ff00;n=333333"; nc = new Light3(Color.red, Color.green, Color.lightGrey); break;
+          case "togglebutton": style = "0=ff0000;1=00ff00"; nc = new ToggleButton(text, Color.red, Color.green); break;
         }
         if (nc == null) break;
         Panels.setCellSize(nc, nr);
@@ -635,6 +636,7 @@ public class Events {
             c0Lbl.setVisible(true);
             c1L.setVisible(true);
             c1Lbl.setVisible(true);
+            c1Lbl.setText("1");
             cnL.setVisible(false);
             cnLbl.setVisible(false);
             break;
@@ -645,8 +647,21 @@ public class Events {
             c0Lbl.setVisible(true);
             c1L.setVisible(true);
             c1Lbl.setVisible(true);
+            c1Lbl.setText("+");
             cnL.setVisible(true);
             cnLbl.setVisible(true);
+            cnLbl.setText("-");
+            break;
+          case "togglebutton":
+            textTF.setVisible(true);
+            textLbl.setVisible(true);
+            c0L.setVisible(true);
+            c0Lbl.setVisible(true);
+            c1L.setVisible(true);
+            c1Lbl.setVisible(true);
+            c1Lbl.setText("1");
+            cnL.setVisible(false);
+            cnLbl.setVisible(false);
             break;
         }
         PopupPanel props = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
@@ -727,6 +742,12 @@ public class Events {
             case "label": ((Label)comp).setText(text); break;
             case "light": ((Light)comp).setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16)); style = "0=" + c0 + ";1=" + c1; break;
             case "light3": ((Light3)comp).setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16), Integer.valueOf(cn, 16)); style = "0=" + c0 + ";1=" + c1 + ";n=" + cn; break;
+            case "togglebutton":
+              ToggleButton tb = (ToggleButton)comp;
+              tb.setText(text);
+              tb.setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16));
+              style = "0=" + c0 + ";1=" + c1;
+              break;
           }
           String events = "press=" + press + "|release=" + release + "|click=" + click;
           String pid = (String)client.getProperty("panel");
@@ -1333,6 +1354,7 @@ public class Events {
     if (comp instanceof Label) return "label";
     if (comp instanceof Light) return "light";
     if (comp instanceof Light3) return "light3";
+    if (comp instanceof ToggleButton) return "togglebutton";
     return "unknown";
   }
 }

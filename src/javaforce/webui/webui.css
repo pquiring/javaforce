@@ -266,14 +266,6 @@ input {
   background-color: rgba(0,0,0,0.5);
 }
 
-.toggle_on {
-  background-color: #ddd;
-}
-
-.toggle_off {
-  background-color: #777;
-}
-
 .width100 {
   width: 100%;
 }

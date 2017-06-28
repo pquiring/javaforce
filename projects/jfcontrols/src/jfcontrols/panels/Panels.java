@@ -190,17 +190,24 @@ public class Panels {
         if (!cellTag.startsWith("jfc_")) {
           TagAddr ta = context.decode(cellTag);
           context.addListener((MonitoredTag)context.getTag(ta), c, (tag, oldValue, newValue, cmp) -> {
-            if (cmp instanceof Label) {
-              Label lbl = (Label)cmp;
-              lbl.setText(newValue);
-            }
-            if (cmp instanceof Light) {
-              Light l = (Light)cmp;
-              l.setColor(!newValue.equals("0"));
-            }
-            if (cmp instanceof Light3) {
-              Light3 l = (Light3)cmp;
-              l.setColor(Integer.valueOf(newValue));
+            String type = Events.getComponentType(cmp);
+            switch (type) {
+              case "label":
+                Label lbl = (Label)cmp;
+                lbl.setText(newValue);
+                break;
+              case "light":
+                Light l = (Light)cmp;
+                l.setColor(!newValue.equals("0"));
+                break;
+              case "light3":
+                Light3 l3 = (Light3)cmp;
+                l3.setColor(Integer.valueOf(newValue));
+                break;
+              case "togglebutton":
+                ToggleButton tb = (ToggleButton)cmp;
+                tb.setSelected(!newValue.equals("0"));
+                break;
             }
           });
         }
@@ -279,6 +286,7 @@ public class Panels {
     switch (name) {
       case "label": return getLabel(v);
       case "button": return getButton(v);
+      case "togglebutton": return getToggleButton(v);
       case "link": return getLink(v);
       case "textfield": return getTextField(v, client, false);
       case "password": return getTextField(v, client, true);
@@ -317,6 +325,36 @@ public class Panels {
     } else {
       b = new Button(v[TEXT]);
     }
+    b.addClickListener((me, c) -> {
+      Events.click(c);
+    });
+    b.addMouseDownListener((c) -> {
+      Events.press(c);
+    });
+    b.addMouseUpListener((c) -> {
+      Events.release(c);
+    });
+    return b;
+  }
+  private static Component getToggleButton(String v[]) {
+    String text = v[TEXT];
+    String style = v[STYLE];
+    if (style == null) style = "";
+    String ss[] = style.split(";");
+    String off = "ff0000";
+    String on = "00ff00";
+    for(int a=0;a<ss.length;a++) {
+      String s = ss[a];
+      int idx = s.indexOf("=");
+      if (idx == -1) continue;
+      String key = s.substring(0, idx);
+      String value = s.substring(idx + 1);
+      switch (key) {
+        case "0": off = value; break;
+        case "1": on = value; break;
+      }
+    }
+    ToggleButton b = new ToggleButton(v[TEXT], Integer.valueOf(off, 16), Integer.valueOf(on, 16));
     b.addClickListener((me, c) -> {
       Events.click(c);
     });
