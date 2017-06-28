@@ -287,7 +287,7 @@ public class Panels {
     switch (name) {
       case "label": return getLabel(v);
       case "button": return getButton(v);
-      case "togglebutton": return getToggleButton(v);
+      case "togglebutton": return getToggleButton(v, client);
       case "link": return getLink(v);
       case "textfield": return getTextField(v, client, false);
       case "password": return getTextField(v, client, true);
@@ -337,7 +337,9 @@ public class Panels {
     });
     return b;
   }
-  private static Component getToggleButton(String v[]) {
+  private static Component getToggleButton(String v[], WebUIClient client) {
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
     String text = v[TEXT];
     String style = v[STYLE];
     if (style == null) style = "";
@@ -365,6 +367,25 @@ public class Panels {
     b.addMouseUpListener((c) -> {
       Events.release(c);
     });
+    String tag = v[TAG];
+    if (tag != null) {
+      if (tag.startsWith("jfc_")) {
+        String f[] = tag.split("_", 5);
+        //jfc_table_col_id
+        String table = f[1];
+        String col = f[2];
+        String type = f[3];
+        String id = f[4];
+        if (table.equals("config")) {
+          id = "\'" + id + "\'";
+        }
+        text = sql.select1value("select " + col + " from " + table + " where id=" + id);
+      } else {
+        text = context.read(tag);
+      }
+    }
+    if (text == null) text = "0";
+    b.setSelected(!text.equals("0"));
     return b;
   }
   private static Button getLink(String v[]) {
