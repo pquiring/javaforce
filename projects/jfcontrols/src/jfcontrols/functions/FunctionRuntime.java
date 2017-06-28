@@ -227,12 +227,12 @@ public class FunctionRuntime extends TagsCache {
       }
     }
   }
-  public boolean alarm_active() {
+  public static boolean alarm_active() {
     String tid = sql.select1value("select id from tags where name='alarms'");
     String count = sql.select1value("select count(idx) from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
     return !count.equals("0");
   }
-  public boolean alarm_not_ack() {
+  public static boolean alarm_not_ack() {
     String tid = sql.select1value("select id from tags where name='alarms'");
     String active[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
     String ack[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and value='1'");

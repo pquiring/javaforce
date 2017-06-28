@@ -11,6 +11,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.webui.*;
 import javaforce.controls.*;
+import jfcontrols.functions.FunctionRuntime;
 
 import jfcontrols.tags.*;
 import jfcontrols.images.*;
@@ -1137,10 +1138,20 @@ public class Panels {
     label.setText(count);
     if (count.equals("0")) {
       label.setBackColor(Color.white);
-      if (postEvent) client.sendEvent("body", "audio-alarm-stop", null);
     } else {
       label.setBackColor(Color.red);
-      if (postEvent) client.sendEvent("body", "audio-alarm-start", null);
+    }
+    boolean unack = FunctionRuntime.alarm_not_ack();
+    if (!count.equals("0") && unack) {
+      if (postEvent && !context.alarmActive) {
+        client.sendEvent("body", "audio-alarm-start", null);
+        context.alarmActive = true;
+      }
+    } else {
+      if (postEvent && context.alarmActive) {
+        client.sendEvent("body", "audio-alarm-stop", null);
+        context.alarmActive = false;
+      }
     }
   }
   private static void updateAlarms(Panel panel, WebUIClient client) {

@@ -28,6 +28,7 @@ public class ClientContext extends Thread {
   public int debug_tv_idx;
   public DebugContext debug;
   public WatchContext watch;
+  public boolean alarmActive;
 
   public ClientContext(WebUIClient client) {
     this.client = client;
