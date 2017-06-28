@@ -55,8 +55,39 @@ public class FunctionRuntime extends TagsCache {
       int mid = tag.getMember();
       len = sql.select1value("select max(midx) from tagvalues where tid=" + tid + " and mid=" + mid);
     }
+    if (len == null) {
+      tags[2].setInt(0);
+    } else {
+      tags[2].setInt(Integer.valueOf(len) + 1);
+    }
+  }
+  public void arraysize(TagBase tags[]) {
+    TagBase tag = tags[1];
+    boolean isMember = tag.isMember();
+    String len;
+    int tid = tag.getTagID();
+    if (!isMember) {
+      len = sql.select1value("select count(idx) from tagvalues where tid=" + tid);
+    } else {
+      int mid = tag.getMember();
+      len = sql.select1value("select count(midx) from tagvalues where tid=" + tid + " and mid=" + mid);
+    }
     if (len == null) len = "0";
-    tags[2].setValue(len);
+    tags[2].setInt(Integer.valueOf(len));
+  }
+  public void arrayremove(TagBase tags[]) {
+    TagBase tag = tags[1];
+    boolean isMember = tag.isMember();
+    int tid = tag.getTagID();
+    if (!isMember) {
+      int idx = tags[2].getInt();
+      sql.execute("delete from tagvalues where tid=" + tid + " and idx=" + idx);
+    } else {
+      int mid = tag.getMember();
+      int idx = tag.getIndex();
+      int midx = tags[2].getInt();
+      sql.execute("delete from tagvalues where tid=" + tid + " and idx=" + idx + " and mid=" + mid + " and midx=" + midx);
+    }
   }
 
   public void getdate(TagBase tag) {

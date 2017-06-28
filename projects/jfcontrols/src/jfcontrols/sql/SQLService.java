@@ -201,6 +201,8 @@ public class SQLService {
 
     sql.execute("insert into logics (name,gid) values ('array_copy','array')");
     sql.execute("insert into logics (name,gid) values ('array_length','array')");
+    sql.execute("insert into logics (name,gid) values ('array_size','array')");
+    sql.execute("insert into logics (name,gid) values ('array_remove','array')");
 
     sql.execute("insert into logics (name,gid) values ('get_date','system')");
     sql.execute("insert into logics (name,gid) values ('get_time','system')");
