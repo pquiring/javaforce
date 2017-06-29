@@ -66,31 +66,32 @@ public class SQLService {
     sql.connect(derbyURI + ";create=true");
     //create tables
     sql.execute("create table jfc_ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int unique, ip varchar(32), type int, speed int)");
-    sql.execute("create table jfc_tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32), type int, array boolean, unsigned boolean, comment varchar(64), builtin boolean, unique (cid, name))");
+    sql.execute("create table jfc_tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(64), type int, array boolean, unsigned boolean, comment varchar(64), builtin boolean, unique (cid, name))");
     sql.execute("create table jfc_tagvalues (id int not null generated always as identity (start with 1, increment by 1) primary key, tid int, idx int, mid int, midx int, value varchar(128))");
     sql.execute("create table jfc_iocomments (id int not null generated always as identity (start with 1, increment by 1) primary key, mid int, idx int, comment varchar(64), unique (mid, idx))");
-    sql.execute("create table jfc_udts (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, name varchar(32) unique)");
-    sql.execute("create table jfc_udtmems (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, mid int, name varchar(32), type int, array boolean, unsigned boolean, comment varchar(64), builtin boolean)");
-    sql.execute("create table jfc_panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, display varchar(32), popup boolean, builtin boolean)");
-    sql.execute("create table jfc_cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int,comp  varchar(32), name varchar(32), text varchar(512), tag varchar(32), func varchar(32), arg varchar(32), style varchar(512), events varchar(1024))");
-    sql.execute("create table jfc_funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(32) unique, revision bigint, comment varchar(8192))");
+    sql.execute("create table jfc_udts (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, name varchar(64) unique)");
+    sql.execute("create table jfc_udtmems (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, mid int, name varchar(64), type int, array boolean, unsigned boolean, comment varchar(64), builtin boolean)");
+    sql.execute("create table jfc_panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(64) unique, display varchar(64), popup boolean, builtin boolean)");
+    sql.execute("create table jfc_cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int,comp varchar(64), name varchar(64), text varchar(512), tag varchar(64), func varchar(64), arg varchar(64), style varchar(512), events varchar(1024))");
+    sql.execute("create table jfc_funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(64) unique, revision bigint, comment varchar(8192))");
     sql.execute("create table jfc_rungs (id int not null generated always as identity (start with 1, increment by 1) primary key, fid int, rid int, comment varchar(512), logic varchar(16384))");
-    sql.execute("create table jfc_blocks (id int not null generated always as identity (start with 1, increment by 1) primary key, fid int, rid int, bid int, name varchar(32), tags varchar(512))");
-    sql.execute("create table jfc_users (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, pass varchar(32))");
-    sql.execute("create table jfc_lists (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique)");
+    sql.execute("create table jfc_blocks (id int not null generated always as identity (start with 1, increment by 1) primary key, fid int, rid int, bid int, name varchar(64), tags varchar(512))");
+    sql.execute("create table jfc_users (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(64) unique, pass varchar(64))");
+    sql.execute("create table jfc_lists (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(64) unique)");
     sql.execute("create table jfc_listdata (id int not null generated always as identity (start with 1, increment by 1) primary key, lid int, value int, text varchar(128))");
-    sql.execute("create table jfc_config (id varchar(32) unique, value varchar(512))");
+    sql.execute("create table jfc_config (id varchar(64) unique, value varchar(512))");
     sql.execute("create table jfc_alarmhistory (id int not null generated always as identity (start with 1, increment by 1) primary key, idx int, when varchar(22))");
-    sql.execute("create table jfc_logics (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique, shortname varchar(32), gid varchar(32))");
-    sql.execute("create table jfc_watch (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(32) unique)");
-    sql.execute("create table jfc_watchtags (id int not null generated always as identity (start with 1, increment by 1) primary key, wid int, tag varchar(32))");
+    sql.execute("create table jfc_logics (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(64) unique, shortname varchar(64), gid varchar(64))");
+    sql.execute("create table jfc_watch (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(64) unique)");
+    sql.execute("create table jfc_watchtags (id int not null generated always as identity (start with 1, increment by 1) primary key, wid int, tag varchar(64))");
 
     //create users
     sql.execute("insert into jfc_users (name, pass) values ('admin','admin')");
     sql.execute("insert into jfc_users (name, pass) values ('oper','oper')");
     //create default config
     sql.execute("insert into jfc_config (id, value) values ('version','" + dbVersion + "')");
-    sql.execute("insert into jfc_config (id, value) values ('hw_active','0')");
+    sql.execute("insert into jfc_config (id, value) values ('strict_tags','false')");
+    sql.execute("insert into jfc_config (id, value) values ('hw_active','false')");
     sql.execute("insert into jfc_config (id, value) values ('hw_di','')");
     sql.execute("insert into jfc_config (id, value) values ('hw_do','')");
     sql.execute("insert into jfc_config (id, value) values ('hw_ai','')");
@@ -336,6 +337,7 @@ public class SQLService {
     id = sql.select1value("select id from jfc_panels where name='jfc_config'");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",1,1,3,1,'button','','Save','jfc_config_save')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,4,1,'button','','Change Password','jfc_config_password')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",10,1,4,1,'togglebutton','','Strict Tag Checking','jfc_config_value_boolean_strict_tags')");
     if (!JF.isWindows()) {
       sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,2,1,'label','','IP Addr')");
       sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,tag) values (" + id + ",4,3,3,1,'textfield','','jfc_config_value_str_ip_addr')");
@@ -355,8 +357,8 @@ public class SQLService {
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,9,20,1,'label','jfc_config_status','')");
 
 //    if (JF.isPI()) {
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,10,4,1,'label','','GPIO Hardware Config')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",5,11,2,1,'togglebutton','','Enable','jfc_config_value_str_hw_active')");
+      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,10,6,1,'label','','GPIO Hardware Config')");
+      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",5,11,2,1,'togglebutton','','Enable','jfc_config_value_boolean_hw_active')");
       sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",8,11,3,1,'button','','Comments','setPanel','jfc_config_iocomments')");
       sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,12,2,1,'label','','DI:')");
       sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,tag) values (" + id + ",4,12,6,1,'textfield','','jfc_config_value_str_hw_di')");

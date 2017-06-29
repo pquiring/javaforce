@@ -793,8 +793,7 @@ public class Events {
         ToggleButton hTB = (ToggleButton)panel.getComponent("h");
         ToggleButton vTB = (ToggleButton)panel.getComponent("v");
         boolean state = hTB.isSelected();
-        hTB.setSelected(!state);
-        vTB.setSelected(state);
+        vTB.setSelected(!state);
         break;
       }
       case "jfc_panel_props_v": {
@@ -802,8 +801,7 @@ public class Events {
         ToggleButton hTB = (ToggleButton)panel.getComponent("h");
         ToggleButton vTB = (ToggleButton)panel.getComponent("v");
         boolean state = vTB.isSelected();
-        vTB.setSelected(!state);
-        hTB.setSelected(state);
+        hTB.setSelected(!state);
         break;
       }
       case "jfc_panel_props_ok": {
@@ -1344,8 +1342,8 @@ public class Events {
     SQL sql = context.sql;
     String tag = (String)cb.getProperty("tag");
     if (tag == null) return;
-    boolean set = cb.isSelected();
     if (tag.startsWith("jfc_")) {
+      String value = cb.isSelected() ? "true" : "false";
       String f[] = tag.split("_", 5);
       //jfc_table_col_id
       String table = f[1];
@@ -1355,9 +1353,33 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      sql.execute("update jfc_" + table + " set " + col + "=" + (set ? "true" : "false") + " where id=" + id);
+      sql.execute("update jfc_" + table + " set " + col + "=" + value + " where id=" + id);
     } else {
-      context.write(tag, set ? "0" : "1");
+      String value = cb.isSelected() ? "1" : "0";
+      context.write(tag, value);
+    }
+  }
+  public static void changed(ToggleButton tb) {
+    WebUIClient client = tb.getClient();
+    ClientContext context = (ClientContext)client.getProperty("context");
+    SQL sql = context.sql;
+    String tag = (String)tb.getProperty("tag");
+    if (tag == null) return;
+    if (tag.startsWith("jfc_")) {
+      String value = tb.isSelected() ? "true" : "false";
+      String f[] = tag.split("_", 5);
+      //jfc_table_col_id
+      String table = f[1];
+      String col = f[2];
+      String type = f[3];
+      String id = f[4];
+      if (table.equals("config")) {
+        id = "\'" + id + "\'";
+      }
+      sql.execute("update jfc_" + table + " set " + col + "=" + value + " where id=" + id);
+    } else {
+      String value = tb.isSelected() ? "1" : "0";
+      context.write(tag, value);
     }
   }
   public static void clickEvents(Component c) {

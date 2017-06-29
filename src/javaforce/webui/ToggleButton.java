@@ -7,6 +7,8 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import javaforce.webui.event.*;
+
 public class ToggleButton extends Component {
   private String text;
   private boolean state;
@@ -26,9 +28,10 @@ public class ToggleButton extends Component {
   private void setColor() {
     setBackColor(state ? clrOn : clrOff);
   }
-  public void onClick(String args[]) {
+  public void onClick(MouseEvent me, String args[]) {
     state = !state;
     setColor();
+    onChanged(args);
   }
   public String html() {
     return "<button" + getAttrs() + ">" + text + "</button>";

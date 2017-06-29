@@ -366,6 +366,9 @@ public class Panels {
     b.addClickListener((me, c) -> {
       Events.click(c);
     });
+    b.addChangedListener((c) -> {
+      Events.changed((ToggleButton)c);
+    });
     b.addMouseDownListener((c) -> {
       Events.press(c);
     });
@@ -385,12 +388,14 @@ public class Panels {
           id = "\'" + id + "\'";
         }
         text = sql.select1value("select " + col + " from jfc_" + table + " where id=" + id);
+        if (text == null) text = "false";
+        b.setSelected(!text.equals("false"));
       } else {
         text = context.read(tag);
+        if (text == null) text = "0";
+        b.setSelected(!text.equals("0"));
       }
     }
-    if (text == null) text = "0";
-    b.setSelected(!text.equals("0"));
     return b;
   }
   private static Button getLink(String v[]) {
