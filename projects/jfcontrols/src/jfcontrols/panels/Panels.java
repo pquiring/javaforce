@@ -452,6 +452,12 @@ public class Panels {
         KeyPad keypad = (KeyPad)comp.getClient().getPanel().getComponent("keypad");
         keypad.show((TextField)comp);
       });
+      tf.addKeyDownListener((ke, comp) -> {
+        KeyPad keypad = (KeyPad)comp.getClient().getPanel().getComponent("keypad");
+        if (keypad.isVisible()) {
+          keypad.setVisible(false);
+        }
+      });
     }
     return tf;
   }

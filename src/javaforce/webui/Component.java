@@ -292,8 +292,10 @@ public abstract class Component {
   }
 
   private String display = "inline-block";
+  private boolean isVisible = true;
 
   public void setVisible(boolean state) {
+    isVisible = state;
     if (state) {
       sendEvent("display", new String[] {"val=" + display});
       setStyle("display", display);
@@ -304,6 +306,10 @@ public abstract class Component {
     if (visible != null) {
       visible.onVisible(this, state);
     }
+  }
+
+  public boolean isVisible() {
+    return isVisible;
   }
 
   public void setDisplay(String display) {
