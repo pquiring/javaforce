@@ -50,10 +50,10 @@ public class FunctionRuntime extends TagsCache {
     String len;
     int tid = tag.getTagID();
     if (!isMember) {
-      len = sql.select1value("select max(idx) from tagvalues where tid=" + tid);
+      len = sql.select1value("select max(idx) from jfc_tagvalues where tid=" + tid);
     } else {
       int mid = tag.getMember();
-      len = sql.select1value("select max(midx) from tagvalues where tid=" + tid + " and mid=" + mid);
+      len = sql.select1value("select max(midx) from jfc_tagvalues where tid=" + tid + " and mid=" + mid);
     }
     if (len == null) {
       tags[2].setInt(0);
@@ -67,10 +67,10 @@ public class FunctionRuntime extends TagsCache {
     String len;
     int tid = tag.getTagID();
     if (!isMember) {
-      len = sql.select1value("select count(idx) from tagvalues where tid=" + tid);
+      len = sql.select1value("select count(idx) from jfc_tagvalues where tid=" + tid);
     } else {
       int mid = tag.getMember();
-      len = sql.select1value("select count(midx) from tagvalues where tid=" + tid + " and mid=" + mid);
+      len = sql.select1value("select count(midx) from jfc_tagvalues where tid=" + tid + " and mid=" + mid);
     }
     if (len == null) len = "0";
     tags[2].setInt(Integer.valueOf(len));
@@ -81,12 +81,12 @@ public class FunctionRuntime extends TagsCache {
     int tid = tag.getTagID();
     if (!isMember) {
       int idx = tags[2].getInt();
-      sql.execute("delete from tagvalues where tid=" + tid + " and idx=" + idx);
+      sql.execute("delete from jfc_tagvalues where tid=" + tid + " and idx=" + idx);
     } else {
       int mid = tag.getMember();
       int idx = tag.getIndex();
       int midx = tags[2].getInt();
-      sql.execute("delete from tagvalues where tid=" + tid + " and idx=" + idx + " and mid=" + mid + " and midx=" + midx);
+      sql.execute("delete from jfc_tagvalues where tid=" + tid + " and idx=" + idx + " and mid=" + mid + " and midx=" + midx);
     }
   }
 
@@ -214,28 +214,28 @@ public class FunctionRuntime extends TagsCache {
   }
   public static void alarm_clear_ack() {
     //clear ack bit for inactive alarms (run once per scan)
-    String tid = sql.select1value("select id from tags where name='alarms'");
-    String active[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='0'");
-    String ack[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and value='1'");
+    String tid = sql.select1value("select id from jfc_tags where name='alarms'");
+    String active[] = sql.select1col("select idx from jfc_tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='0'");
+    String ack[] = sql.select1col("select idx from jfc_tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and value='1'");
     for(int a=0;a<active.length;a++) {
       String idx = active[a];
       for(int b=0;b<ack.length;b++) {
         if (ack[b].equals(idx)) {
-          sql.execute("update tagvalues set value='0' where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and idx=" + idx);
+          sql.execute("update jfc_tagvalues set value='0' where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and idx=" + idx);
           break;
         }
       }
     }
   }
   public static boolean alarm_active() {
-    String tid = sql.select1value("select id from tags where name='alarms'");
-    String count = sql.select1value("select count(idx) from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
+    String tid = sql.select1value("select id from jfc_tags where name='alarms'");
+    String count = sql.select1value("select count(idx) from jfc_tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
     return !count.equals("0");
   }
   public static boolean alarm_not_ack() {
-    String tid = sql.select1value("select id from tags where name='alarms'");
-    String active[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
-    String ack[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and value='1'");
+    String tid = sql.select1value("select id from jfc_tags where name='alarms'");
+    String active[] = sql.select1col("select idx from jfc_tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
+    String ack[] = sql.select1col("select idx from jfc_tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and value='1'");
     for(int a=0;a<active.length;a++) {
       String idx = active[a];
       for(int b=0;b<ack.length;b++) {
@@ -246,9 +246,9 @@ public class FunctionRuntime extends TagsCache {
     return false;
   }
   public void alarm_ack_all() {
-    String tid = sql.select1value("select id from tags where name='alarms'");
-    String active[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
-    String ack[] = sql.select1col("select idx from tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack);
+    String tid = sql.select1value("select id from jfc_tags where name='alarms'");
+    String active[] = sql.select1col("select idx from jfc_tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
+    String ack[] = sql.select1col("select idx from jfc_tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack);
     for(int a=0;a<active.length;a++) {
       String idx = active[a];
       for(int b=0;b<ack.length;b++) {
@@ -256,10 +256,10 @@ public class FunctionRuntime extends TagsCache {
       }
       if (idx == null) {
         //update
-        sql.execute("update tagvalues set value='1' where idx=" + idx + " and tid=" + tid + " and mid=" + IDs.alarm_mid_ack);
+        sql.execute("update jfc_tagvalues set value='1' where idx=" + idx + " and tid=" + tid + " and mid=" + IDs.alarm_mid_ack);
       } else {
         //insert
-        sql.execute("insert into tagvalues values (value, idx, tid, mid) values('1'," + idx + "," + tid + "," + IDs.alarm_mid_ack + ")");
+        sql.execute("insert into jfc_tagvalues values (value, idx, tid, mid) values('1'," + idx + "," + tid + "," + IDs.alarm_mid_ack + ")");
       }
     }
   }

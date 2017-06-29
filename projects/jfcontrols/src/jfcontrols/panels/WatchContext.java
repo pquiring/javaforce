@@ -20,7 +20,7 @@ public class WatchContext extends Thread {
     ClientContext context = (ClientContext)client.getProperty("context");
     SQL sql = context.sql;
     String wid = (String)client.getProperty("watch");
-    String data[][] = sql.select("select id,tag from watchtags where wid=" + wid + " order by id");
+    String data[][] = sql.select("select id,tag from jfc_watchtags where wid=" + wid + " order by id");
     if (data == null) return false;
     int cnt = data.length;
     tags = new TagBase[cnt];

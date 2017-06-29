@@ -25,7 +25,7 @@ public class RemoteControllers {
     synchronized(lock) {
       RemoteController ctrl = map.get(cid);
       if (ctrl == null) {
-        String info[] = sql.select1row("select type,ip,speed from ctrls where cid=" + cid);
+        String info[] = sql.select1row("select type,ip,speed from jfc_ctrls where cid=" + cid);
         JFLog.log("cid = " + cid);
         ctrl = new RemoteController(cid, Integer.valueOf(info[0]), info[1], Integer.valueOf(info[2]));
         map.put(cid, ctrl);

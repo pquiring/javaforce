@@ -20,10 +20,10 @@ public class FunctionCompiler {
     TagsCache tags = new TagsCache();
     error = null;
     StringBuilder sb = new StringBuilder();
-    String revision = sql.select1value("select revision from funcs where id=" + fid);
+    String revision = sql.select1value("select revision from jfc_funcs where id=" + fid);
     sb.append("import jfcontrols.tags.*;\r\n");
     sb.append("public class func_" + fid + " extends jfcontrols.functions.FunctionRuntime {\r\n");
-    String blks[][] = sql.select("select rid,bid,tags from blocks where fid=" + fid);
+    String blks[][] = sql.select("select rid,bid,tags from jfc_blocks where fid=" + fid);
     sb.append("  public static boolean debug_en[][] = new boolean[" + blks.length + "][2];\r\n");
     int tagcount = 0;
     for(int a=0;a<blks.length;a++) {
@@ -37,8 +37,8 @@ public class FunctionCompiler {
     sb.append("    int eidx = 0;\r\n");
     sb.append("    TagBase tags[] = new TagBase[33];\r\n");
 
-    //append code from rungs
-    String rungs[][] = sql.select("select logic from rungs where fid=" + fid + " order by rid");
+    //append code from jfc_rungs
+    String rungs[][] = sql.select("select logic from jfc_rungs where fid=" + fid + " order by rid");
     int norungs = rungs.length;
     ArrayList<String> stack = new ArrayList<>();
     int debug_en = 0;
@@ -50,7 +50,7 @@ public class FunctionCompiler {
       int pos = sb.length();
       String rung[] = rungs[rid];
       String logic[] = rung[0].split("[|]");
-      String blocks[][] = sql.select("select bid,name,tags from blocks where fid=" + fid + " and rid=" + rid + " order by bid");
+      String blocks[][] = sql.select("select bid,name,tags from jfc_blocks where fid=" + fid + " and rid=" + rid + " order by bid");
       NodeRoot root = buildNodes(fid, rid, logic, blocks, sql);
       if (root == null) return null;
       Node node = root, upper;

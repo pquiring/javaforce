@@ -272,7 +272,7 @@ public class APIService extends Thread {
           len -= strlen;
           pos += strlen;
           String funcName = new String(str);
-          String sfid = sql.select1value("select fid from funcs where name=" + SQL.quote(funcName));
+          String sfid = sql.select1value("select fid from jfc_funcs where name=" + SQL.quote(funcName));
           if (sfid == null) {
             reply = new byte[10];
             setupError(reply, cmd, id, ERR_FUNC_NOT_FOUND);

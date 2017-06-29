@@ -25,7 +25,7 @@ public class IOTag extends MonitoredTag {
   public IOTag(String name, int type, boolean unsigned, boolean array, SQL sql) {
     super(type, unsigned, array);
     mids = new HashMap<>();
-    String data[][] = sql.select("select name,mid from udtmems where uid=" + type);
+    String data[][] = sql.select("select name,mid from jfc_udtmems where uid=" + type);
     for(int a=0;a<data.length;a++) {
       mids.put(data[a][0], Integer.valueOf(data[a][1]));
     }
@@ -38,22 +38,22 @@ public class IOTag extends MonitoredTag {
       JFLog.log("Error:Failed to init GPIO");
       return;
     }
-    String dimap[] = sql.select1value("select hw_di").split(",");
+    String dimap[] = sql.select1value("select value from jfc_config where id='hw_di'").split(",");
     dis = new int[dimap.length];
     for(int a=0;a<dis.length;a++) {
       dis[a] = Integer.valueOf(dimap[a]);
       GPIO.configInput(dis[a]);
       getValue(0, IDs.io_mid_di, a);
     }
-    disComments = sql.select1col("select comment from iocomments where mid=" + IDs.io_mid_di + " order by idx");
-    String domap[] = sql.select1value("select hw_do").split(",");
+    disComments = sql.select1col("select comment from jfc_iocomments where mid=" + IDs.io_mid_di + " order by idx");
+    String domap[] = sql.select1value("select value from jfc_config where id='hw_do'").split(",");
     dos = new int[domap.length];
     for(int a=8;a<16;a++) {
       dos[a] = Integer.valueOf(domap[a]);
       GPIO.configOutput(dos[a]);
       setValue("0", 0, IDs.io_mid_do, a);
     }
-    dosComments = sql.select1col("select comment from iocomments where mid=" + IDs.io_mid_do + " order by idx");
+    dosComments = sql.select1col("select comment from jfc_iocomments where mid=" + IDs.io_mid_do + " order by idx");
   }
 
   public void updateRead(SQL sql) {

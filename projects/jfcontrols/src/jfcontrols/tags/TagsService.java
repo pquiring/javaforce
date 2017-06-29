@@ -10,7 +10,6 @@ import java.util.*;
 import javaforce.*;
 
 import jfcontrols.sql.*;
-import jfcontrols.functions.*;
 
 public class TagsService extends Thread {
   private static Object lock_main = new Object();
@@ -61,7 +60,7 @@ public class TagsService extends Thread {
         int second = cal.get(Calendar.SECOND);
         int millisecond = cal.get(Calendar.MILLISECOND);
         String when = String.format("%04d/%02d/%02d %02d:%02d:%02d.%02d", year, month, day, hour, minute, second, millisecond);
-        sql.execute("insert into alarmhistory (idx,when) values (" + id.idx + ",'" + when + "')");
+        sql.execute("insert into jfc_alarmhistory (idx,when) values (" + id.idx + ",'" + when + "')");
       }
     });
   }
@@ -69,7 +68,7 @@ public class TagsService extends Thread {
   public void run() {
     service = this;
     sql = SQLService.getSQL();
-    String tags[][] = sql.select("select name,type,cid,unsigned,array from tags");
+    String tags[][] = sql.select("select name,type,cid,unsigned,array from jfc_tags");
     for(int a=0;a<tags.length;a++) {
       if (tags[a][2].equals("0")) {
         int type = Integer.valueOf(tags[a][1]);
