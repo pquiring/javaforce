@@ -1,6 +1,6 @@
 package jfcontrols.panels;
 
-/** Events.
+/** Events
  *
  * @author pquiring
  */
@@ -518,6 +518,7 @@ public class Events {
           case "light": style = "0=ff0000;1=00ff00"; nc = new Light(Color.red,Color.green); break;
           case "light3": style = "0=ff0000;1=00ff00;n=333333"; nc = new Light3(Color.red, Color.green, Color.lightGrey); break;
           case "togglebutton": style = "0=ff0000;1=00ff00"; nc = new ToggleButton(text, Color.red, Color.green); break;
+          case "progressbar": style = "o=h;0=ff0000;1=ffff00;2=00ff00;v0=5;v1=10;max=100.0"; nc = new ProgressBar(ProgressBar.HORIZONTAL, 100.0f); break;
         }
         if (nc == null) break;
         Panels.setCellSize(nc, nr);
@@ -576,12 +577,25 @@ public class Events {
         Label cnLbl = (Label)panel.getComponent("cnLbl");
         Light cnL = (Light)panel.getComponent("cn");
 
+        Label v0Lbl = (Label)panel.getComponent("v0Lbl");
+        TextField v0TF = (TextField)panel.getComponent("v0");
+        Label v1Lbl = (Label)panel.getComponent("v1Lbl");
+        TextField v1TF = (TextField)panel.getComponent("v1");
+        Label v2Lbl = (Label)panel.getComponent("v2Lbl");
+        TextField v2TF = (TextField)panel.getComponent("v2");
+
+        Label dir = (Label)panel.getComponent("dir");
+        ToggleButton h = (ToggleButton)panel.getComponent("h");
+        ToggleButton v = (ToggleButton)panel.getComponent("v");
+
         TextField tagTF = (TextField)panel.getComponent("tag");
         TextField pressTF = (TextField)panel.getComponent("press");
         TextField releaseTF = (TextField)panel.getComponent("release");
         TextField clickTF = (TextField)panel.getComponent("click");
         String press = "", release = "", click = "";
         String c0 = "", c1 = "", cn = "";
+        String o = "";
+        String v0 = "", v1 = "", v2 = "";
         if (events != null) {
           String parts[] = events.split("[|]");
           for(int a=0;a<parts.length;a++) {
@@ -609,6 +623,11 @@ public class Events {
               case "0": c0 = value; break;
               case "1": c1 = value; break;
               case "n": cn = value; break;
+              case "2": cn = value; break;
+              case "o": o = value; break;
+              case "v0": v0 = value; break;
+              case "v1": v1 = value; break;
+              case "v2": v2 = value; break;
             }
           }
         }
@@ -620,6 +639,18 @@ public class Events {
         if (c0.length() > 0) c0L.setBackColor(Integer.valueOf(c0,16));
         if (c1.length() > 0) c1L.setBackColor(Integer.valueOf(c1,16));
         if (cn.length() > 0) cnL.setBackColor(Integer.valueOf(cn,16));
+        if (o.length() > 0) {
+          if (o.equals("h")) {
+            h.setSelected(true);
+            v.setSelected(false);
+          } else {
+            v.setSelected(true);
+            h.setSelected(false);
+          }
+        }
+        if (v0.length() > 0) v0TF.setText(v0);
+        if (v1.length() > 0) v1TF.setText(v1);
+        if (v2.length() > 0) v2TF.setText(v2);
         switch (type) {
           case "button":
           case "label":
@@ -627,44 +658,106 @@ public class Events {
             textLbl.setVisible(true);
             c0L.setVisible(false);
             c0Lbl.setVisible(false);
+            c0Lbl.setText("0");
             c1L.setVisible(false);
             c1Lbl.setVisible(false);
             cnL.setVisible(false);
             cnLbl.setVisible(false);
+            v0Lbl.setVisible(false);
+            v0TF.setVisible(false);
+            v1Lbl.setVisible(false);
+            v1TF.setVisible(false);
+            v2Lbl.setVisible(false);
+            v2TF.setVisible(false);
+            dir.setVisible(false);
+            h.setVisible(false);
+            v.setVisible(false);
             break;
           case "light":
             textTF.setVisible(false);
             textLbl.setVisible(false);
             c0L.setVisible(true);
             c0Lbl.setVisible(true);
+            c0Lbl.setText("0");
             c1L.setVisible(true);
             c1Lbl.setVisible(true);
             c1Lbl.setText("1");
             cnL.setVisible(false);
             cnLbl.setVisible(false);
+            v0Lbl.setVisible(false);
+            v0TF.setVisible(false);
+            v1Lbl.setVisible(false);
+            v1TF.setVisible(false);
+            v2Lbl.setVisible(false);
+            v2TF.setVisible(false);
+            dir.setVisible(false);
+            h.setVisible(false);
+            v.setVisible(false);
             break;
           case "light3":
             textTF.setVisible(false);
             textLbl.setVisible(false);
             c0L.setVisible(true);
             c0Lbl.setVisible(true);
+            c0Lbl.setText("0");
             c1L.setVisible(true);
             c1Lbl.setVisible(true);
             c1Lbl.setText("+");
             cnL.setVisible(true);
             cnLbl.setVisible(true);
             cnLbl.setText("-");
+            v0Lbl.setVisible(false);
+            v0TF.setVisible(false);
+            v1Lbl.setVisible(false);
+            v1TF.setVisible(false);
+            v2Lbl.setVisible(false);
+            v2TF.setVisible(false);
+            dir.setVisible(false);
+            h.setVisible(false);
+            v.setVisible(false);
             break;
           case "togglebutton":
             textTF.setVisible(true);
             textLbl.setVisible(true);
             c0L.setVisible(true);
             c0Lbl.setVisible(true);
+            c0Lbl.setText("0");
             c1L.setVisible(true);
             c1Lbl.setVisible(true);
             c1Lbl.setText("1");
             cnL.setVisible(false);
             cnLbl.setVisible(false);
+            v0Lbl.setVisible(false);
+            v0TF.setVisible(false);
+            v1Lbl.setVisible(false);
+            v1TF.setVisible(false);
+            v2Lbl.setVisible(false);
+            v2TF.setVisible(false);
+            dir.setVisible(false);
+            h.setVisible(false);
+            v.setVisible(false);
+            break;
+          case "progressbar":
+            textTF.setVisible(false);
+            textLbl.setVisible(false);
+            c0L.setVisible(true);
+            c0Lbl.setVisible(true);
+            c0Lbl.setText("Low");
+            c1L.setVisible(true);
+            c1Lbl.setVisible(true);
+            c1Lbl.setText("Mid");
+            cnL.setVisible(true);
+            cnLbl.setVisible(true);
+            cnLbl.setText("High");
+            v0Lbl.setVisible(true);
+            v0TF.setVisible(true);
+            v1Lbl.setVisible(true);
+            v1TF.setVisible(true);
+            v2Lbl.setVisible(true);
+            v2TF.setVisible(true);
+            dir.setVisible(true);
+            h.setVisible(true);
+            v.setVisible(true);
             break;
         }
         PopupPanel props = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
@@ -693,6 +786,24 @@ public class Events {
         ColorChooserPopup color = (ColorChooserPopup)client.getPanel().getComponent("colorpanel");
         color.setValue(light.getBackColor());
         color.setVisible(true);
+        break;
+      }
+      case "jfc_panel_props_h": {
+        Panel panel = client.getPanel();
+        ToggleButton hTB = (ToggleButton)panel.getComponent("h");
+        ToggleButton vTB = (ToggleButton)panel.getComponent("v");
+        boolean state = hTB.isSelected();
+        hTB.setSelected(!state);
+        vTB.setSelected(state);
+        break;
+      }
+      case "jfc_panel_props_v": {
+        Panel panel = client.getPanel();
+        ToggleButton hTB = (ToggleButton)panel.getComponent("h");
+        ToggleButton vTB = (ToggleButton)panel.getComponent("v");
+        boolean state = vTB.isSelected();
+        vTB.setSelected(!state);
+        hTB.setSelected(state);
         break;
       }
       case "jfc_panel_props_ok": {
@@ -729,12 +840,20 @@ public class Events {
             setFocus(clickTF);
             break;
           }
+          TextField v0TF = (TextField)panel.getComponent("v0");
+          TextField v1TF = (TextField)panel.getComponent("v1");
+          TextField v2TF = (TextField)panel.getComponent("v2");
+          ToggleButton hTB = (ToggleButton)panel.getComponent("h");
+          ToggleButton vTB = (ToggleButton)panel.getComponent("v");
           Light c0L = (Light)panel.getComponent("c0");
           String c0 = Integer.toString(c0L.getBackColor(), 16);
           Light c1L = (Light)panel.getComponent("c1");
           String c1 = Integer.toString(c1L.getBackColor(), 16);
           Light cnL = (Light)panel.getComponent("cn");
           String cn = Integer.toString(cnL.getBackColor(), 16);
+          String v0 = v0TF.getText();
+          String v1 = v1TF.getText();
+          String v2 = v2TF.getText();
           Rectangle r = (Rectangle)focus.getProperty("rect");
           Table t1 = (Table)client.getPanel().getComponent("t1");  //components
           Component comp = t1.get(r.x, r.y, false);
@@ -750,6 +869,13 @@ public class Events {
               tb.setText(text);
               tb.setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16));
               style = "0=" + c0 + ";1=" + c1;
+              break;
+            case "progressbar":
+              ProgressBar pb = (ProgressBar)comp;
+              pb.setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16), Integer.valueOf(cn, 16));
+              pb.setLevels(Float.valueOf(v0), Float.valueOf(v1), Float.valueOf(v2));
+              pb.setDir(hTB.isSelected() ? ProgressBar.HORIZONTAL : ProgressBar.VERTICAL);
+              style = "0=" + c0 + ";1=" + c1 + ";2=" + cn + ";v0=" + v0 + ";v1=" + v1 + ";v2=" + v2 + "o=" + (hTB.isSelected() ? "h" : "v");
               break;
           }
           String events = "press=" + press + "|release=" + release + "|click=" + click;
@@ -1353,11 +1479,8 @@ public class Events {
     tf.setProperty("red", "true");
   }
   public static String getComponentType(Component comp) {
-    if (comp instanceof Button) return "button";
-    if (comp instanceof Label) return "label";
-    if (comp instanceof Light) return "light";
-    if (comp instanceof Light3) return "light3";
-    if (comp instanceof ToggleButton) return "togglebutton";
-    return "unknown";
+    String type = comp.getClass().getName().toLowerCase();
+    int idx = type.lastIndexOf(".");
+    return type.substring(idx+1);
   }
 }

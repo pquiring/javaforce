@@ -428,6 +428,41 @@ function onMouseDown(event, element) {
   ws.send(JSON.stringify(msg));
 }
 
+function onMouseUp(event, element) {
+  var msg = {
+    event: "mouseup",
+    id: element.id,
+    p: event.clientX + "," + event.clientY
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function onKeyDown(event, element) {
+  var msg = {
+    event: "keydown",
+    id: element.id,
+    ck: event.ctrlKey,
+    ak: event.altKey,
+    sk: event.shiftKey,
+    keyCode: event.keyCode,
+    charCode: event.charCode
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function onKeyUp(event, element) {
+  var msg = {
+    event: "keyup",
+    id: element.id,
+    ck: event.ctrlKey,
+    ak: event.altKey,
+    sk: event.shiftKey,
+    keyCode: event.keyCode,
+    charCode: event.charCode
+  };
+  ws.send(JSON.stringify(msg));
+}
+
 function onSliderMove(event, element) {
   var msg = {
     event: "changed",

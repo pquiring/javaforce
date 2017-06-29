@@ -17,10 +17,12 @@ public class Color {
   public static int red = 0xff0000;
   public static int green = 0x00ff00;
   public static int blue = 0x0000ff;
+  public static int yellow = 0xffff00;
 
   public static int darkRed = 0xcc0000;
   public static int darkGreen = 0x00cc00;
   public static int darkBlue = 0x0000cc;
+
 
   public Color(int rgb) {
     setRGB(rgb);

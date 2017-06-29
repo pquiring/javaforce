@@ -146,16 +146,12 @@ input {
   left: 0;
 }
 
-.vslider {
+.rotate {
   transform: rotate(-90deg);
   transform-origin: 16px 50%;
 }
 
-.hslider {
-
-}
-
-.cslider {
+.container {
   overflow: hidden;
   display: inline-block;
 }

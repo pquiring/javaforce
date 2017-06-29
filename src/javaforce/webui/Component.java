@@ -367,15 +367,19 @@ public abstract class Component {
   /** Dispatches event. */
   public void dispatchEvent(String event, String args[]) {
     MouseEvent me = new MouseEvent();
+    KeyEvent ke = new KeyEvent();
     for(int a=0;a<args.length;a++) {
       if (args[a].equals("ck=true")) {
         me.ctrlKey = true;
+        ke.ctrlKey = true;
       }
       if (args[a].equals("ak=true")) {
         me.altKey = true;
+        ke.altKey = true;
       }
       if (args[a].equals("sk=true")) {
         me.shiftKey = true;
+        ke.shiftKey = true;
       }
     }
     switch (event) {
@@ -400,6 +404,14 @@ public abstract class Component {
       case "mouseenter":
         onMouseEnter(args);
         if (mouseEnter != null) mouseEnter.onMouseEnter(this);
+        break;
+      case "keydown":
+        onKeyDown(args);
+        if (keyDown != null) keyDown.onKeyDown(ke, this);
+        break;
+      case "keyup":
+        onKeyUp(args);
+        if (keyUp != null) keyUp.onKeyUp(ke, this);
         break;
       case "possize":
         onPosSize(args);
@@ -501,6 +513,20 @@ public abstract class Component {
   private MouseEnter mouseEnter;
   public void addMouseEnterListener(MouseEnter handler) {
     mouseEnter = handler;
+  }
+
+  protected void onKeyUp(String args[]) {}
+  private KeyUp keyUp;
+  public void addKeyUpListener(KeyUp handler) {
+    addEvent("onkeyup", "onKeyUp(event, this);");
+    keyUp = handler;
+  }
+
+  protected void onKeyDown(String args[]) {}
+  private KeyDown keyDown;
+  public void addKeyDownListener(KeyDown handler) {
+    addEvent("onkeydown", "onKeyDown(event, this);");
+    keyDown = handler;
   }
 
   protected void onChanged(String args[]) {

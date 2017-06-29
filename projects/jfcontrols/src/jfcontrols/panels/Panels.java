@@ -209,6 +209,10 @@ public class Panels {
                 ToggleButton tb = (ToggleButton)cmp;
                 tb.setSelected(!newValue.equals("0"));
                 break;
+              case "progressbar":
+                ProgressBar pb = (ProgressBar)cmp;
+                pb.setValue(Float.valueOf(newValue));
+                break;
             }
           });
         }
@@ -301,6 +305,7 @@ public class Panels {
       case "autoscroll": return getAutoScroll(v, container, client);
       case "light": return getLight(v);
       case "light3": return getLight3(v);
+      case "progressbar": return getProgressBar(v);
       default: JFLog.log("Unknown component:" + name); break;
     }
     return null;
@@ -1150,6 +1155,39 @@ public class Panels {
       Events.release(c);
     });
     return light;
+  }
+  private static Component getProgressBar(String v[]) {
+    String style = v[STYLE];
+    if (style == null) style = "";
+    String ss[] = style.split(";");
+    String c0 = "ff0000";
+    String c1 = "00ff00";
+    String c2 = "333333";
+    String or = "h";
+    String v0 = "5";
+    String v1 = "10";
+    String v2 = "100.0";
+    for(int a=0;a<ss.length;a++) {
+      String s = ss[a];
+      int idx = s.indexOf("=");
+      if (idx == -1) continue;
+      String key = s.substring(0, idx);
+      String value = s.substring(idx + 1);
+      switch (key) {
+        case "0": c0 = value; break;
+        case "1": c1 = value; break;
+        case "2": c2 = value; break;
+        case "o": or = value; break;
+        case "v0": v0 = value; break;
+        case "v1": v1 = value; break;
+        case "v2": v2 = value; break;
+      }
+    }
+    int dir = or.equals("h") ? ProgressBar.HORIZONTAL : ProgressBar.VERTICAL;
+    ProgressBar pb = new ProgressBar(dir, Float.valueOf(v2));
+    pb.setLevels(Float.valueOf(v0), Float.valueOf(v1), Float.valueOf(v2));
+    pb.setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16), Integer.valueOf(c2, 16));
+    return pb;
   }
   private static void updateAlarmCount(Label label, WebUIClient client, boolean postEvent) {
     ClientContext context = (ClientContext)client.getProperty("context");

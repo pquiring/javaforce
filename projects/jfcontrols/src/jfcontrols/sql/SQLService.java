@@ -137,6 +137,7 @@ public class SQLService {
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",2,'togglebutton')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",3,'light')");
     sql.execute("insert into listdata (lid,value,text) values (" +  id + ",4,'light3')");
+    sql.execute("insert into listdata (lid,value,text) values (" +  id + ",5,'progressbar')");
 
     //create local controller
     sql.execute("insert into ctrls (cid,ip,type,speed) values (0,'127.0.0.1',0,0)");
@@ -478,16 +479,27 @@ public class SQLService {
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,1,1,1,'label','cnLbl','-1')");
     sql.execute("insert into cells (pid,x,y,w,h,comp,name,func) values (" + id + ",5,1,1,1,'light','cn','jfc_panel_props_cn')");
 
-    sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + id + ",0,2,2,1,'label','Tag')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",3,2,5,1,'textfield','tag')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + id + ",0,3,2,1,'label','Press')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",3,3,5,1,'textfield','press')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + id + ",0,4,2,1,'label','Release')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",3,4,5,1,'textfield','release')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + id + ",0,5,2,1,'label','Click')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",3,5,5,1,'textfield','click')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,6,2,1,'button','','OK','jfc_panel_props_ok')");
-    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",3,6,2,1,'button','','Cancel','jfc_panel_props_cancel')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,2,1,1,'label','v0Lbl','Low')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",1,2,1,1,'textfield','v0')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,2,1,1,'label','v1Lbl','Mid')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",3,2,1,1,'textfield','v1')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,2,1,1,'label','v2Lbl','Max')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",5,2,1,1,'textfield','v2')");
+
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,3,2,1,'label','dir','Dir')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",2,3,2,1,'togglebutton','h','Horz','jfc_panel_props_h')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,3,2,1,'togglebutton','v','Vert','jfc_panel_props_v')");
+
+    sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + id + ",0,4,2,1,'label','Tag')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",3,4,5,1,'textfield','tag')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + id + ",0,5,2,1,'label','Press')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",3,5,5,1,'textfield','press')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + id + ",0,6,2,1,'label','Release')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",3,6,5,1,'textfield','release')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,text) values (" + id + ",0,7,2,1,'label','Click')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name) values (" + id + ",3,7,5,1,'textfield','click')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,8,2,1,'button','','OK','jfc_panel_props_ok')");
+    sql.execute("insert into cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",3,8,2,1,'button','','Cancel','jfc_panel_props_cancel')");
 
     sql.execute("insert into panels (name, display, popup, builtin) values ('jfc_funcs','Functions', false, true)");
     id = sql.select1value("select id from panels where name='jfc_funcs'");

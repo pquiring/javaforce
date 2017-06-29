@@ -216,7 +216,7 @@ public class Test implements WebUIHandler {
     Slider hslider = new Slider(Slider.HORIZONTAL, 0, 100, 5);
     row5.add(hslider);
 
-    ProgressBar bar = new ProgressBar(100);
+    ProgressBar bar = new ProgressBar(ProgressBar.HORIZONTAL, 100);
     bar.setValue(50);
     row5.add(bar);
     client.setProperty("bar", bar);

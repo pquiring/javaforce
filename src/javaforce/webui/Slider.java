@@ -23,11 +23,10 @@ public class Slider extends Component {
     setSize(delta + 32, 32);
     switch (dir) {
       case VERTICAL:
-        setClass("vslider");
-        this.setStyle("margin-top", delta + "px");
+        setClass("rotate");
+        setStyle("margin-top", delta + "px");
         break;
       case HORIZONTAL:
-        setClass("hslider");
         break;
     }
     addEvent("onchange", "onSliderMove(event, this);");
@@ -43,7 +42,7 @@ public class Slider extends Component {
   }
   public String html() {
     StringBuilder sb = new StringBuilder();
-    sb.append("<div class=cslider");  //slider container
+    sb.append("<div class=container");
     int delta = max - min;
     delta += 32;
     switch (dir) {
