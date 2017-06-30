@@ -21,7 +21,7 @@ import javax.swing.text.*;
 
 public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener, ActionListener {
 
-  private String getVersion() { return "0.12"; }
+  private String getVersion() { return "0.14"; }
 
   /** Creates new form jfedit */
   public JEdit() {
@@ -766,6 +766,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
         txt.setTabSize(settings.tabSize);
         txt.setLineWrap(settings.bLineWrap);
       }
+      return;
     }
     if ((f1 == KeyEvent.VK_F4) && (f2 == 0)) {
       idx = getidx();
@@ -792,12 +793,42 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       JOptionPane.showMessageDialog(this, info.toString(), "Info", JOptionPane.INFORMATION_MESSAGE);
       return;
     }
-    if ((f1 == KeyEvent.VK_F5) && (f2 == 0)) { shift_left(' '); }
-    if ((f1 == KeyEvent.VK_F6) && (f2 == 0)) { shift_right(' '); }
-    if ((f1 == KeyEvent.VK_F7) && (f2 == 0)) { shift_left('\t'); }
-    if ((f1 == KeyEvent.VK_F8) && (f2 == 0)) { shift_right('\t'); }
-    if ((f1 == KeyEvent.VK_F9) && (f2 == 0)) { lowercase(); }
-    if ((f1 == KeyEvent.VK_F10) && (f2 == 0)) { uppercase(); evt.consume(); }
+    if ((f1 == KeyEvent.VK_TAB) && (f2 == 0)) {
+      idx = getidx();
+      page pg = pages.get(idx);
+      txt = pg.txt;
+      int start = txt.getSelectionStart();
+      int end = txt.getSelectionEnd();
+      if (start != -1) {
+        for(int a=0;a<settings.tabSize;a++) {
+          shift_right(' ');
+        }
+        evt.consume();
+      }
+      return;
+    }
+    if ((f1 == KeyEvent.VK_TAB) && (f2 == KeyEvent.SHIFT_MASK)) {
+      idx = getidx();
+      page pg = pages.get(idx);
+      txt = pg.txt;
+      int start = txt.getSelectionStart();
+      int end = txt.getSelectionEnd();
+      if (start != -1) {
+        for(int a=0;a<settings.tabSize;a++) {
+          shift_left(' ');
+        }
+        evt.consume();
+      }
+      return;
+    }
+    if ((f1 == KeyEvent.VK_F5) && (f2 == 0)) { shift_left(' '); return; }
+    if ((f1 == KeyEvent.VK_F6) && (f2 == 0)) { shift_right(' '); return; }
+    if ((f1 == KeyEvent.VK_F7) && (f2 == 0)) { shift_left('\t'); return; }
+    if ((f1 == KeyEvent.VK_F8) && (f2 == 0)) { shift_right('\t'); return; }
+    if ((f1 == KeyEvent.VK_F9) && (f2 == 0)) { lowercase(); return; }
+    if ((f1 == KeyEvent.VK_F10) && (f2 == 0)) { uppercase(); evt.consume(); return; }
+    if ((f1 == KeyEvent.VK_PAGE_UP) && (f2 == KeyEvent.CTRL_MASK)) { prevtab(); return; }
+    if ((f1 == KeyEvent.VK_PAGE_DOWN) && (f2 == KeyEvent.CTRL_MASK)) { nexttab(); return; }
     if ((f1 == KeyEvent.VK_N) && (f2 == KeyEvent.CTRL_MASK)) { addpage("untitled"); return; }
     if ((f1 == KeyEvent.VK_S) && (f2 == KeyEvent.CTRL_MASK)) { savepage(); return; }
     if ((f1 == KeyEvent.VK_Q) && (f2 == KeyEvent.CTRL_MASK)) { savepageas(); return; }
@@ -819,6 +850,20 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     }
     if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_MINUS)) tabs.setSelectedIndex(10);
     if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_EQUALS)) tabs.setSelectedIndex(11);
+  }
+
+  private void prevtab() {
+    int idx = tabs.getSelectedIndex();
+    idx--;
+    if (idx == -1) idx = pages.size() - 1;
+    tabs.setSelectedIndex(idx);
+  }
+
+  private void nexttab() {
+    int idx = tabs.getSelectedIndex();
+    idx++;
+    if (idx == pages.size()) idx = 0;
+    tabs.setSelectedIndex(idx);
   }
 
   private enum Section {None, Folders, Files};
