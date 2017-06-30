@@ -44,6 +44,9 @@ public class Main implements WebUIHandler {
     ClientContext context = new ClientContext(client);
     client.setProperty("context", context);
     context.start();
+    if (debug) {
+      client.setProperty("user", "admin");
+    }
     return Panels.getPanel("main", client);
   }
 

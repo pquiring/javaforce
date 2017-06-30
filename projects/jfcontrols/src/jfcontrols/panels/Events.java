@@ -109,7 +109,7 @@ public class Events {
           }
           case "jfc_watch_delete": {
             sql.execute("delete from jfc_watch where id=" + arg);
-            client.setPanel(Panels.getPanel("jfc_tags", client));
+            client.setPanel(Panels.getPanel("jfc_watch", client));
             break;
           }
           case "jfc_udts_delete": {
@@ -920,6 +920,7 @@ public class Events {
           Panels.showError(client, "Can not delete function that is in use");
           break;
         }
+        client.setProperty("arg", arg);
         Panels.confirm(client, "Delete function?", "jfc_funcs_delete");
         break;
       }

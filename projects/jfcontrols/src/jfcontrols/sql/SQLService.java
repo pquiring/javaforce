@@ -271,18 +271,6 @@ public class SQLService {
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,1,7,1,'label','','Welcome to jfControls!')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,12,1,'label','','Click on the Menu Icon in the top left corner to get started.')");
 
-    if (Main.debug) {
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,5,3,1,'button','','Panels','setPanel','jfc_panels')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,7,3,1,'button','','Funcs','setPanel','jfc_funcs')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,9,3,1,'button','','Controllers','setPanel','jfc_controllers')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,11,3,1,'button','','Tags','jfc_ctrl_tags','0')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,13,3,1,'button','','UDT','setPanel','jfc_udts')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,15,3,1,'button','','SDT','setPanel','jfc_sdts')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,17,3,1,'button','','Config','setPanel','jfc_config')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,19,3,1,'button','','Alarms','setPanel','jfc_alarm_editor')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",1,21,3,1,'button','','Watch','setPanel','jfc_watch')");
-    }
-
     sql.execute("insert into jfc_panels (name, popup, builtin) values ('jfc_menu', true, true)");
     id = sql.select1value("select id from jfc_panels where name='jfc_menu'");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",0,0,3,1,'button','','Main Panel','setPanel','main')");
