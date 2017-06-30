@@ -56,7 +56,7 @@ public class RTPJPEG {
     }
     int jpegLength = rtp.length - 12 - 8;
     int partialLength = partial.length;
-    partial = JF.copyOf(partial, partial.length + jpegLength);
+    partial = Arrays.copyOf(partial, partial.length + jpegLength);
     System.arraycopy(rtp, 12+8, partial, partialLength, jpegLength);
     if ((rtp[1] & 0x80) == 0x80) {  //check for marker
       byte[] full = partial;

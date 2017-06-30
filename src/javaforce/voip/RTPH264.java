@@ -112,7 +112,7 @@ public class RTPH264 {
     if (type >= 1 && type <= 23) {
       //a full packet
       int partialLength = partial.length;
-      partial = JF.copyOf(partial, partial.length + 4 + h264Length);
+      partial = Arrays.copyOf(partial, partial.length + 4 + h264Length);
       partial[partialLength + 3] = 1;  //0,0,0,1
       System.arraycopy(rtp, 12, partial, partialLength + 4, h264Length);
     } else if (type == 28) {
@@ -121,7 +121,7 @@ public class RTPH264 {
         //first NAL packet (restore first byte)
         int nri = rtp[12] & 0x60;
         type = rtp[13] & 0x1f;
-        partial = JF.copyOf(partial, partial.length + 5);
+        partial = Arrays.copyOf(partial, partial.length + 5);
         partial[partial.length-2] = 1;  //0,0,0,1
         partial[partial.length-1] = (byte)(nri + type);  //NRI TYPE (first byte)
         lastseqnum = RTPChannel.getseqnum(rtp, 0);
@@ -141,7 +141,7 @@ public class RTPH264 {
       }
       int partialLength = partial.length;
       h264Length -= 2;
-      partial = JF.copyOf(partial, partial.length + h264Length);
+      partial = Arrays.copyOf(partial, partial.length + h264Length);
       System.arraycopy(rtp, 12+2, partial, partialLength, h264Length);
     } else {
       JFLog.log("H264:Unsupported packet type:" + type);

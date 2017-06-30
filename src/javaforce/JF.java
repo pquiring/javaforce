@@ -1058,14 +1058,6 @@ public class JF {
     return newArray;
   }
 
-  //java5 doesn't provide this function (required for Android)
-
-  public static byte[] copyOf(byte data[], int newLength) {
-    byte array[] = new byte[newLength];
-    System.arraycopy(data, 0, array, 0, newLength < data.length ? newLength : data.length);
-    return array;
-  }
-
   /** This allows connections to untrusted hosts when using https:// with URLConnection. */
   public static void initHttps() {
     TrustManager[] trustAllCerts = new TrustManager[] {

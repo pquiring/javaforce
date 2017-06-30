@@ -76,7 +76,7 @@ public class RTPH263_1998 {
     int h263Length = rtp.length - 12 - 2;
     boolean P = (rtp[12] & 0x04) == 0x04;
     int partialLength = partial.length;
-    partial = JF.copyOf(partial, partial.length + (P ? 2 : 0) + h263Length);
+    partial = Arrays.copyOf(partial, partial.length + (P ? 2 : 0) + h263Length);
     //if P is true a 0,0 is left between last packet and this packet
     System.arraycopy(rtp, 12 + 2, partial, partialLength + (P ? 2 : 0), h263Length);
     if ((rtp[1] & 0x80) == 0x80) {  //RTP.M flag
