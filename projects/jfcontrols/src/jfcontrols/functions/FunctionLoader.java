@@ -8,6 +8,7 @@ package jfcontrols.functions;
 import java.io.*;
 
 import javaforce.*;
+import jfcontrols.app.*;
 
 public class FunctionLoader extends ClassLoader {
   public Class findClass(String cls) throws ClassNotFoundException {
@@ -19,7 +20,7 @@ public class FunctionLoader extends ClassLoader {
   private byte[] loadClassData(String cls) {
     //cls = work/class/*.class
     try {
-      String fn = "work/class/" + cls + ".class";
+      String fn = Paths.dataPath + "/work/class/" + cls + ".class";
       FileInputStream fis = new FileInputStream(fn);
       byte data[] = JF.readAll(fis);
       fis.close();

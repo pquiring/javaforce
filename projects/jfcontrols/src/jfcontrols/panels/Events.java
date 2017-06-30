@@ -55,11 +55,12 @@ public class Events {
         arg = (String)client.getProperty("arg");
         switch (action) {
           case "jfc_ctrl_delete": {
-            sql.execute("delete from jfc_ctrls where cid=" + arg);
+            sql.execute("delete from jfc_ctrls where id=" + arg);
             client.setPanel(Panels.getPanel("jfc_controllers", client));
             break;
           }
           case "jfc_funcs_delete": {
+            JFLog.log("id=" + arg);
             sql.execute("delete from jfc_funcs where id=" + arg);
             sql.execute("delete from jfc_rungs where fid=" + arg);
             sql.execute("delete from jfc_blocks where fid=" + arg);
