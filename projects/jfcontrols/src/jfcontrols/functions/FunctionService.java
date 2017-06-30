@@ -9,6 +9,7 @@ import java.io.*;
 import java.lang.reflect.*;
 
 import javaforce.*;
+import javaforce.jni.*;
 
 import jfcontrols.app.*;
 import jfcontrols.api.*;
@@ -23,6 +24,20 @@ public class FunctionService extends Thread {
   public static Object fapi = new Object();
   public static FunctionLoader loader;
   public static SQL sql;
+
+  private static String jdk;
+
+  static {
+    if (JF.isWindows()) {
+      jdk = WinNative.findJDKHome();
+      if (jdk == null) {
+        jdk = "c:\\Program Files\\Java\\JDK8";
+      }
+    } else {
+      jdk = "/usr/bin";
+    }
+    JFLog.log("JDK=" + jdk);
+  }
 
   public static void main() {
     new FunctionService().start();
@@ -218,7 +233,7 @@ public class FunctionService extends Thread {
     try {
       ShellProcess sp = new ShellProcess();
       sp.keepOutput(true);
-      error = sp.run(new String[] {"javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", "work/java/*.java", "-d", "work/class"}, true);
+      error = sp.run(new String[] {jdk + "/bin/javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", "work/java/*.java", "-d", "work/class"}, true);
       if (error.length() == 0) {
         restart();
       }

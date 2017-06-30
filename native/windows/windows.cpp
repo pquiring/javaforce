@@ -714,6 +714,50 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_impersonateUser
   return ok ? JNI_TRUE : JNI_FALSE;
 }
 
+//find JDK Home
+
+JNIEXPORT jstring Java_javaforce_jni_WinNative_findJDKHome(JNIEnv *e, jclass c) {
+  //try to find JDK in Registry
+  HKEY key, subkey;
+  int type;
+  int size;
+  char version[MAX_PATH];
+  char path[MAX_PATH];
+
+  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Development Kit", 0, KEY_READ, &key) != 0) {
+    return NULL;
+  }
+
+  size = 0;
+  if (RegQueryValueEx(key, "CurrentVersion", 0, (LPDWORD)&type, 0, (LPDWORD)&size) != 0 || (type != REG_SZ) || (size > MAX_PATH)) {
+    return NULL;
+  }
+
+  size = MAX_PATH;
+  if (RegQueryValueEx(key, "CurrentVersion", 0, 0, (LPBYTE)version, (LPDWORD)&size) != 0) {
+    return NULL;
+  }
+
+  if (RegOpenKeyEx(key, version, 0, KEY_READ, &subkey) != 0) {
+    return NULL;
+  }
+
+  size = 0;
+  if (RegQueryValueEx(subkey, "JavaHome", 0, (LPDWORD)&type, 0, (LPDWORD)&size) != 0 || (type != REG_SZ) || (size > MAX_PATH)) {
+    return NULL;
+  }
+
+  size = MAX_PATH;
+  if (RegQueryValueEx(subkey, "JavaHome", 0, 0, (LPBYTE)path, (LPDWORD)&size) != 0) {
+    return NULL;
+  }
+
+  RegCloseKey(key);
+  RegCloseKey(subkey);
+  return e->NewStringUTF(path);
+}
+
+
 #include "../common/library.h"
 
 #include "../common/ffmpeg.cpp"

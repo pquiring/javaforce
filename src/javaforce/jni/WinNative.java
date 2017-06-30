@@ -28,7 +28,10 @@ public class WinNative {
   public static native void peAddIcon(long handle, byte data[]);
   public static native void peAddString(long handle, int name, int idx, byte data[]);
   public static native void peEnd(long handle);
-  
+
   //Impersonate User
   public static native boolean impersonateUser(String domain, String user, String passwd);
+
+  //JDK
+  public static native String findJDKHome();
 }
