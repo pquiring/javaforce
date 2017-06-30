@@ -307,36 +307,6 @@ public class Events {
         client.setPanel(Panels.getPanel("jfc_watch_tags", client));
         break;
       }
-      case "jfc_config_save": {
-        int uid = IDs.uid_io;
-        if (!JF.isWindows()) {
-          //TODO:save IP config
-        }
-        String distr = sql.select1value("select value from jfc_config where id='hw_di'");
-        if (distr == null || distr.length() == 0) {
-          sql.execute("delete from jfc_udtmems where name='di' and uid=" + uid);
-          sql.execute("delete from jfc_iocomments where midx=" + IDs.io_mid_di);
-        } else {
-          String dis[] = distr.split(",");
-          sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'di',1,true,false,false)");
-          for(int a=0;a<dis.length;a++) {
-            sql.execute("insert into jfc_iocomments (mid, idx, comment) values (" + IDs.io_mid_di + "," + a + ", '')");
-          }
-        }
-        String dostr = sql.select1value("select value from jfc_config where id='hw_di'");
-        if (dostr == null || dostr.length() == 0) {
-          sql.execute("delete from jfc_udtmems where name='do' and uid=" + uid);
-          sql.execute("delete from jfc_iocomments where midx=" + IDs.io_mid_do);
-        } else {
-          String dos[] = dostr.split(",");
-          sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'do',1,true,false,false)");
-          for(int a=0;a<dos.length;a++) {
-            sql.execute("insert into jfc_iocomments (mid, idx, comment) values (" + IDs.io_mid_do + "," + a + ", '')");
-          }
-        }
-        Main.restart();
-        break;
-      }
       case "jfc_config_password": {
         Panel panel = client.getPanel();
         ((TextField)panel.getComponent("jfc_password_old")).setText("");

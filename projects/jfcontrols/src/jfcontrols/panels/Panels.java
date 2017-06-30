@@ -970,25 +970,6 @@ public class Panels {
         nodes.add(new NodeRoot(fid, -1));
         break;
       }
-      case "jfc_config_iocomments": {
-        String data[][] = sql.select("select id,mid,idx,comment from jfc_iocomments order by mid,idx");
-        if (data == null) data = new String[0][0];
-        for(int a=0;a<data.length;a++) {
-          int mid = Integer.valueOf(data[a][1]);
-          String idx = data[a][2];
-          String comment = data[a][3];
-          String io = null;
-          switch (mid) {
-            case IDs.io_mid_di: io = "di"; break;
-            case IDs.io_mid_do: io = "do"; break;
-            case IDs.io_mid_ai: io = "ai"; break;
-            case IDs.io_mid_ao: io = "ao"; break;
-          }
-          cells.add(createCell(0, a, 4, 1, "label", null, "io." + io + "[" + idx + "]", null, null, null, null));
-          cells.add(createCell(4, a, 6, 1, "textfield", null, comment, "jfc_iocomments_comment_str_" + data[a][0], null, null, null));
-        }
-        break;
-      }
       case "jfc_alarm_editor": {
         String tid = sql.select1value("select id from jfc_tags where name='alarms'");
         String data[][] = sql.select("select id,tid,idx,value from jfc_tagvalues where mid=" + IDs.alarm_mid_name + " and tid=" + tid);

@@ -91,17 +91,6 @@ public class SQLService {
     //create default config
     sql.execute("insert into jfc_config (id, value) values ('version','" + dbVersion + "')");
     sql.execute("insert into jfc_config (id, value) values ('strict_tags','false')");
-    sql.execute("insert into jfc_config (id, value) values ('hw_active','false')");
-    sql.execute("insert into jfc_config (id, value) values ('hw_di','')");
-    sql.execute("insert into jfc_config (id, value) values ('hw_do','')");
-    sql.execute("insert into jfc_config (id, value) values ('hw_ai','')");
-    sql.execute("insert into jfc_config (id, value) values ('hw_ao','')");
-    if (!JF.isWindows()) {
-      sql.execute("insert into jfc_config (id, value) values ('ip_addr','10.1.1.10')");
-      sql.execute("insert into jfc_config (id, value) values ('ip_mask','255.255.255.0')");
-      sql.execute("insert into jfc_config (id, value) values ('ip_gateway','10.1.1.1')");
-      sql.execute("insert into jfc_config (id, value) values ('ip_dns','8.8.8.8')");
-    }
     //create lists
     sql.execute("insert into jfc_lists (name) values ('jfc_ctrl_type')");
     id = sql.select1value("select id from jfc_lists where name='jfc_ctrl_type'");
@@ -217,8 +206,6 @@ public class SQLService {
     sql.execute("insert into jfc_udts (uid,name) values (" + uid + ",'system')");
     sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'scantime'," + TagType.int32 + ",false,false,true)");
     sql.execute("insert into jfc_tags (cid,name,type,array,unsigned,builtin) values (0,'system'," + uid + ",false,false,true)");
-    uid = IDs.uid_io;
-    sql.execute("insert into jfc_udts (uid,name) values (" + uid + ",'io')");
     //udtmems are created in hardware config panel
     uid = IDs.uid_date;
     sql.execute("insert into jfc_udts (uid,name) values (" + uid + ",'date')");  //yyyy mm dd
@@ -335,19 +322,8 @@ public class SQLService {
 
     sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('jfc_config','Config', false, true)");
     id = sql.select1value("select id from jfc_panels where name='jfc_config'");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",1,1,3,1,'button','','Save','jfc_config_save')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,4,1,'button','','Change Password','jfc_config_password')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",10,1,4,1,'togglebutton','','Strict Tag Checking','jfc_config_value_boolean_strict_tags')");
-    if (!JF.isWindows()) {
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,2,1,'label','','IP Addr')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,tag) values (" + id + ",4,3,3,1,'textfield','','jfc_config_value_str_ip_addr')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,4,2,1,'label','','IP Mask')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,tag) values (" + id + ",4,4,3,1,'textfield','','jfc_config_value_str_ip_mask')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,5,2,1,'label','','IP GW')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,tag) values (" + id + ",4,5,3,1,'textfield','','jfc_config_value_str_ip_gateway')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,6,2,1,'label','','IP DNS')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,tag) values (" + id + ",4,6,3,1,'textfield','','jfc_config_value_str_ip_dns')");
-    }
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,8,3,1,'label','','Database')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,8,2,1,'button','','Shutdown','jfc_config_shutdown')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",7,8,2,1,'button','','Restart','jfc_config_restart')");
@@ -355,20 +331,6 @@ public class SQLService {
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",13,8,2,1,'button','','Restore','jfc_config_restore')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",16,8,7,1,'combobox','backups','','jfc_config_backups')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,9,20,1,'label','jfc_config_status','')");
-
-//    if (JF.isPI()) {
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,10,6,1,'label','','GPIO Hardware Config')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",5,11,2,1,'togglebutton','','Enable','jfc_config_value_boolean_hw_active')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,arg) values (" + id + ",8,11,3,1,'button','','Comments','setPanel','jfc_config_iocomments')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,12,2,1,'label','','DI:')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,tag) values (" + id + ",4,12,6,1,'textfield','','jfc_config_value_str_hw_di')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,13,2,1,'label','','DO:')");
-      sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,tag) values (" + id + ",4,13,6,1,'textfield','','jfc_config_value_str_hw_do')");
-//    }
-
-    sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('jfc_config_iocomments','I/O Comments', false, true)");
-    id = sql.select1value("select id from jfc_panels where name='jfc_config_iocomments'");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name) values (" + id + ",1,1,1,1,'table','jfc_config_iocomments')");
 
     sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('jfc_alarm_editor','Alarm Editor', false, true)");
     id = sql.select1value("select id from jfc_panels where name='jfc_alarm_editor'");
