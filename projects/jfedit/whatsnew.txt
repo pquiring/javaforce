@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+6-30-2017 : v0.14
+  - tab/shift+tab now indent/unindent selection
+  - ctrl+pg_up/ctrl+pg_down cycle thru tabs
+
 3-18-2017 : v0.12
   - added popup context menu for clipboard functions
 
