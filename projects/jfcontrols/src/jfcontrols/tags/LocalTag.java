@@ -117,13 +117,6 @@ public class LocalTag extends MonitoredTag {
   }
 
   public void setValue(String value, int idx, int mid, int midx) {
-    if (idx == -1) {
-      try {
-        throw new Exception("-1");
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-    }
     if (array || udt) {
       synchronized(arrayLock) {
         TagID id;

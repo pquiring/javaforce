@@ -5,6 +5,7 @@ package jfcontrols.app;
  * @author pquiring
  */
 
+import javaforce.*;
 import javaforce.webui.*;
 
 import jfcontrols.api.*;
@@ -20,7 +21,7 @@ public class Main implements WebUIHandler {
   public static boolean debug = false;
 
   public static void main(String args[]) {
-    if (args != null && args[0].equals("debug")) {
+    if (args != null && args.length > 0 && args[0].equals("debug")) {
       debug = true;
     }
 //    if (debug) SQL.debug = true;
