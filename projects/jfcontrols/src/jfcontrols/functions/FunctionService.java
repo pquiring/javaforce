@@ -28,14 +28,21 @@ public class FunctionService extends Thread {
   private static String jdk;
 
   static {
+    String ext = null;
     if (JF.isWindows()) {
       jdk = WinNative.findJDKHome();
       if (jdk == null) {
         jdk = "c:\\Program Files\\Java\\JDK8";
       }
       JFLog.log("java.app.home=" + System.getProperty("java.app.home"));
+      ext = ".exe";
     } else {
       jdk = "/usr/bin";
+      ext = "";
+    }
+    File javac = new File(jdk + "/bin/javac" + ext);
+    if (!javac.exists()) {
+      Main.addMessage("Unable to find javac");
     }
     JFLog.log("JDK=" + jdk);
   }

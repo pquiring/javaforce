@@ -19,6 +19,7 @@ public class Main implements WebUIHandler {
   public static String version = "0.1B";
   public static ClassLoader loader;
   public static boolean debug = false;
+  public static String msgs = "";
 
   public static void main(String args[]) {
     if (args != null && args.length > 0 && args[0].equals("debug")) {
@@ -74,6 +75,12 @@ public class Main implements WebUIHandler {
     FunctionService.cancel();
     TagsService.cancel();
     System.gc();
+  }
+
+  /** Adds error message shown in config (restart is needed to clear them) */
+  public static void addMessage(String msg) {
+    msgs += msg;
+    msgs += "\r\n";
   }
 
   public static void serviceStart(String args[]) {

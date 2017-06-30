@@ -999,6 +999,10 @@ public class Panels {
         }
         break;
       }
+      case "jfc_config_errors": {
+        cells.add(createCell(0, 0, 20, 4, "textarea", null, Main.msgs, null, null, null, "readonly"));
+        break;
+      }
       default: {
         JFLog.log("Unknown table:" + name);
       }

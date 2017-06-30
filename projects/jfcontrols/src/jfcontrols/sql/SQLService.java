@@ -299,13 +299,14 @@ public class SQLService {
     id = sql.select1value("select id from jfc_panels where name='jfc_config'");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,4,1,'button','','Change Password','jfc_config_password')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,tag) values (" + id + ",10,1,4,1,'togglebutton','','Strict Tag Checking','jfc_config_value_boolean_strict_tags')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,8,3,1,'label','','Database')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,8,2,1,'button','','Shutdown','jfc_config_shutdown')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",7,8,2,1,'button','','Restart','jfc_config_restart')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",10,8,2,1,'button','','Backup','jfc_config_backup')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",13,8,2,1,'button','','Restore','jfc_config_restore')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",16,8,7,1,'combobox','backups','','jfc_config_backups')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,9,20,1,'label','jfc_config_status','')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,2,3,1,'label','','Database')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,2,2,1,'button','','Shutdown','jfc_config_shutdown')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",7,2,2,1,'button','','Restart','jfc_config_restart')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",10,2,2,1,'button','','Backup','jfc_config_backup')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",13,2,2,1,'button','','Restore','jfc_config_restore')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",16,2,7,1,'combobox','backups','','jfc_config_backups')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,20,1,'label','jfc_config_status', '')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name) values (" + id + ",1,4,1,1,'table','jfc_config_errors')");
 
     sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('jfc_alarm_editor','Alarm Editor', false, true)");
     id = sql.select1value("select id from jfc_panels where name='jfc_alarm_editor'");
