@@ -9,6 +9,7 @@ import javaforce.*;
 import javaforce.webui.*;
 
 import jfcontrols.tags.*;
+import jfcontrols.logic.*;
 
 public class NodeRoot extends Node {
   public int fid;  //func id
@@ -51,20 +52,35 @@ public class NodeRoot extends Node {
     }
     return sb.toString();
   }
-  public boolean isValid(WebUIClient client) {
+  public boolean isValid(WebUIClient client, SQL sql) {
     int bid = 0;
     Node node = next, child;
+    String strictstr = sql.select1value("select value from jfc_config where id='strict_tags'");
+    if (strictstr == null) strictstr = "false";
+    boolean strict = strictstr.equals("true");
     while (node != null) {
       switch (node.type) {
         case '#':
+          Logic blk = node.blk;
           //check all tags are valid
           int cnt = node.childs.size();
+          int tagidx = 0;
           for(int a=0;a<cnt;a++) {
             child = node.childs.get(a);
             if (child.type == 'T') {
+              tagidx++;
               TextField tf = (TextField)child.comp;
-              String tag = tf.getText();
-              if (tag.length() == 0 || tags.getTag(tag) == null) {
+              try {
+                String tagstr = tf.getText();
+                if (tagstr.length() == 0) throw new Exception("no tag specified");
+                TagBase tag = tags.getTag(tagstr);
+                if (tag == null) throw new Exception("unknown tag");
+                if (strict) {
+                  int tagType = tag.getType();
+                  int blkType = blk.getTagType(tagidx);
+                  if (tagType != blkType) throw new Exception("tag mismatch");
+                }
+              } catch (Exception e) {
                 Component focus = (Component)client.getProperty("focus");
                 if (focus != null) {
                   focus.setBorder(false);

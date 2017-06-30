@@ -1122,7 +1122,7 @@ public class Events {
         String rid = (String)client.getProperty("rung");
         Rung rung = (Rung)client.getProperty("rungObj");
         NodeRoot root = rung.root;
-        if (!root.isValid(client)) {
+        if (!root.isValid(client, sql)) {
           break;
         }
         sql.execute("delete from jfc_blocks where fid=" + fid + " and rid=" + rid);
