@@ -72,12 +72,8 @@ input {
 }
 
 .label {
-  display: inline-block;
+  display: table-cell;
   box-sizing: border-box;
-}
-
-.valigncenter {
-  vertical-align: middle;
 }
 
 .row {

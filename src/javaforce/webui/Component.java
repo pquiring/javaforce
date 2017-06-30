@@ -20,6 +20,17 @@ public abstract class Component {
   public int x,y,width,height;  //position and size (updated with mouseenter event)
   public int clr = 0, backclr = 0xcccccc, borderclr = 0;
 
+  //define constants
+  public static final int VERTICAL = 1;
+  public static final int HORIZONTAL = 2;
+
+  public static final int LEFT = 1;
+  public static final int CENTER = 2;
+  public static final int RIGHT = 3;
+  public static final int TOP = 4;
+  public static final int BOTTOM = 5;
+
+
   private static class OnEvent {
     public String event;
     public String js;
@@ -144,9 +155,7 @@ public abstract class Component {
   public void setFontSize(int size) {
     setStyle("font-size", size + "pt");
   }
-  public final static int LEFT = 0;
-  public final static int CENTER = 1;
-  public final static int RIGHT = 2;
+
   public void setAlign(int align) {
     switch (align) {
       case LEFT:
@@ -157,6 +166,20 @@ public abstract class Component {
         break;
       case RIGHT:
         setStyle("text-align", "right");
+        break;
+    }
+  }
+
+  public void setVerticalAlign(int align) {
+    switch (align) {
+      case LEFT:
+        setStyle("vertical-align", "left");
+        break;
+      case CENTER:
+        setStyle("vertical-align", "middle");
+        break;
+      case RIGHT:
+        setStyle("vertical-align", "right");
         break;
     }
   }

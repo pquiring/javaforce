@@ -8,8 +8,6 @@ package javaforce.webui;
  */
 
 public class Slider extends Component {
-  public static final int VERTICAL = 1;
-  public static final int HORIZONTAL = 2;
   private int dir, min, max, step, pos;
   public Slider(int dir, int min, int max, int step) {
     this.dir = dir;

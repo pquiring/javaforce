@@ -6,8 +6,6 @@ package javaforce.webui;
  */
 
 public class ProgressBar extends Component {
-  public static final int VERTICAL = 1;
-  public static final int HORIZONTAL = 2;
   public int clr0, clr1, clr2;
   public float lvl0, lvl1;
   private int dir;
