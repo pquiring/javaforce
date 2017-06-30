@@ -33,6 +33,7 @@ public class FunctionService extends Thread {
       if (jdk == null) {
         jdk = "c:\\Program Files\\Java\\JDK8";
       }
+      JFLog.log("java.app.home=" + System.getProperty("java.app.home"));
     } else {
       jdk = "/usr/bin";
     }
@@ -46,15 +47,17 @@ public class FunctionService extends Thread {
   public void run() {
     Class mainCls, initCls;
     TagsCache tags = new TagsCache();
-    File mainFile = new File("work/class/func_1.class");
+    File mainFile = new File(Paths.dataPath + "/work/class/func_1.class");
     boolean compile = false;
-    sql = SQLService.getSQL();
-    FunctionRuntime.sql = sql;
+    if (sql == null) {
+      sql = SQLService.getSQL();
+      FunctionRuntime.sql = sql;
+    }
     if (!mainFile.exists()) {
       FunctionService.generateFunction(1, sql);
       compile = true;
     }
-    File initFile = new File("work/class/func_2.class");
+    File initFile = new File(Paths.dataPath + "/work/class/func_2.class");
     if (!initFile.exists()) {
       FunctionService.generateFunction(2, sql);
       compile = true;
@@ -64,12 +67,10 @@ public class FunctionService extends Thread {
     }
     if (!mainFile.exists()) {
       JFLog.log("main function not compiled");
-      sql.close();
       return;
     }
     if (!initFile.exists()) {
       JFLog.log("init function not compiled");
-      sql.close();
       return;
     }
     loader = new FunctionLoader();
@@ -78,7 +79,6 @@ public class FunctionService extends Thread {
       initCls = loader.loadClass("func_2");
     } catch (Exception e) {
       JFLog.log(e);
-      sql.close();
       return;
     }
     Method main, init;
@@ -87,7 +87,6 @@ public class FunctionService extends Thread {
       init = initCls.getMethod("code", TagBase[].class);
     } catch (Exception e) {
       JFLog.log(e);
-      sql.close();
       return;
     }
     Object mainObj, initObj;
@@ -96,7 +95,6 @@ public class FunctionService extends Thread {
       initObj = initCls.newInstance();
     } catch (Exception e) {
       JFLog.log(e);
-      sql.close();
       return;
     }
     active = true;
@@ -144,6 +142,7 @@ public class FunctionService extends Thread {
     synchronized(done) {
       done.notify();
     }
+    active = false;
   }
 
   public static void cancel() {
@@ -213,10 +212,10 @@ public class FunctionService extends Thread {
   public static boolean generateFunction(int fid, SQL sql) {
     String code = FunctionCompiler.generateFunction(fid, sql);
     if (code == null) return false;
-    new File("work/java").mkdirs();
-    new File("work/class").mkdirs();
-    String java_file = "work/java/func_" + fid + ".java";
-    String class_file = "work/class/func_" + fid + ".class";
+    new File(Paths.dataPath + "/work/java").mkdirs();
+    new File(Paths.dataPath + "/work/class").mkdirs();
+    String java_file = Paths.dataPath + "/work/java/func_" + fid + ".java";
+    String class_file = Paths.dataPath + "/work/class/func_" + fid + ".class";
     try {
       FileOutputStream fos = new FileOutputStream(java_file);
       fos.write(code.getBytes());
@@ -233,7 +232,7 @@ public class FunctionService extends Thread {
     try {
       ShellProcess sp = new ShellProcess();
       sp.keepOutput(true);
-      error = sp.run(new String[] {jdk + "/bin/javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", "work/java/*.java", "-d", "work/class"}, true);
+      error = sp.run(new String[] {jdk + "/bin/javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", Paths.dataPath + "/work/java/*.java", "-d", Paths.dataPath + "/work/class"}, true);
       if (error.length() == 0) {
         restart();
       }
@@ -244,7 +243,7 @@ public class FunctionService extends Thread {
     }
   }
   public static boolean[][] getDebugEnabled(int fid) {
-    File clsFile = new File("work/class/func_" + fid + ".class");
+    File clsFile = new File(Paths.dataPath + "/work/class/func_" + fid + ".class");
     if (!clsFile.exists()) return null;
     Class cls;
     try {
@@ -258,7 +257,7 @@ public class FunctionService extends Thread {
     }
   }
   public static String[] getDebugTagValues(int fid) {
-    File clsFile = new File("work/class/func_" + fid + ".class");
+    File clsFile = new File(Paths.dataPath + "/work/class/func_" + fid + ".class");
     if (!clsFile.exists()) return null;
     Class cls;
     try {
@@ -272,7 +271,7 @@ public class FunctionService extends Thread {
     }
   }
   public static boolean functionUpToDate(int fid, long revision) {
-    File clsFile = new File("work/class/func_" + fid + ".class");
+    File clsFile = new File(Paths.dataPath + "/work/class/func_" + fid + ".class");
     if (!clsFile.exists()) return false;
     Class cls;
     try {
@@ -285,4 +284,5 @@ public class FunctionService extends Thread {
       return false;
     }
   }
+
 }

@@ -11,11 +11,11 @@ import java.util.*;
 import javaforce.*;
 import javaforce.webui.*;
 import javaforce.controls.*;
-import jfcontrols.functions.FunctionRuntime;
 
 import jfcontrols.tags.*;
 import jfcontrols.images.*;
-import jfcontrols.sql.*;
+import jfcontrols.app.*;
+import jfcontrols.functions.*;
 import jfcontrols.logic.*;
 
 public class Panels {
@@ -506,7 +506,7 @@ public class Panels {
     if (arg.equals("jfc_function")) {
       pairs = sql.select("select id, name from jfc_funcs");
     } else if (arg.equals("jfc_config_backups")) {
-      File files[] = new File(SQLService.backupPath).listFiles();
+      File files[] = new File(Paths.backupPath).listFiles();
       if (files == null) files = new File[0];
       JFLog.log("# backups=" + files.length);
       pairs = new String[files.length][2];
@@ -1192,6 +1192,7 @@ public class Panels {
     } else {
       label.setBackColor(Color.red);
     }
+    if (!FunctionService.isActive()) return;
     boolean unack = FunctionRuntime.alarm_not_ack();
     if (!count.equals("0") && unack) {
       if (postEvent && !context.alarmActive) {

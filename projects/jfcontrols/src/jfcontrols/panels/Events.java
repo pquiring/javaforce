@@ -367,7 +367,7 @@ public class Events {
       case "jfc_config_restore": {
         ComboBox cb = (ComboBox)client.getPanel().getComponent("backups");
         String filename = cb.getSelectedText();
-        String msg = SQLService.restore(SQLService.backupPath + "/" + filename);
+        String msg = SQLService.restore(Paths.backupPath + "/" + filename);
         Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
         lbl.setText(msg);
         break;

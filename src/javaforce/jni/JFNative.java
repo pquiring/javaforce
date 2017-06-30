@@ -21,7 +21,10 @@ public class JFNative {
         bits = "32";
       if (JF.isWindows()) {
         ext = ".dll";
-        path = System.getenv("appdata") + "/javaforce";
+        path = System.getProperty("java.app.home");
+        if (path == null) {
+          path = System.getenv("windir");
+        }
       } else if (JF.isMac()) {
         ext = ".dylib";
         path = "/usr/lib";

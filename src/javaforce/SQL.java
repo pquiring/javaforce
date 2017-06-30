@@ -33,6 +33,7 @@ public class SQL {
       Class.forName(jdbcClass).newInstance();
       return true;
     } catch (Exception e) {
+      JFLog.log("Error:Unable to find class:" + jdbcClass);
       return false;
     }
   }
@@ -42,6 +43,7 @@ public class SQL {
     try {
       conn = DriverManager.getConnection(connectionURL);
       if ( conn == null ) {
+        JFLog.log("Error:Unable to connect to database:" + connectionURL);
         return false;
       }
       return true;

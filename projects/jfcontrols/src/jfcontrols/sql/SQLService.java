@@ -15,11 +15,8 @@ import jfcontrols.app.*;
 import jfcontrols.tags.*;
 
 public class SQLService {
-  public static String dataPath;
-  public static String backupPath;
-  public static String databaseName = "database";
-  public static String logsPath;
   public static String derbyURI;
+  public static String databaseName = "database";
   public static String dbVersion = "0.0.1";
   public static boolean running;
 
@@ -30,21 +27,11 @@ public class SQLService {
   }
 
   private static void initDB() {
-    if (JF.isWindows()) {
-      dataPath = System.getenv("ProgramData") + "/jfcontrols";
-    } else {
-      dataPath = "/var/jfcontrols";
-    }
-    logsPath = dataPath + "/logs";
-    backupPath = dataPath + "/backups";
     derbyURI = "jdbc:derby:database";
-    System.setProperty("derby.system.home", dataPath);
+    System.setProperty("derby.system.home", Paths.dataPath);
     SQL.initClass(SQL.derbySQL);
 
-    new File(logsPath).mkdirs();
-    new File(backupPath).mkdirs();
-    JFLog.append(logsPath + "/service.log", true);
-    if (!new File(dataPath + "/" + databaseName + "/service.properties").exists()) {
+    if (!new File(Paths.dataPath + "/" + databaseName + "/service.properties").exists()) {
       //create database
       createDB();
     } else {
@@ -528,7 +515,7 @@ public class SQLService {
       Calendar now = Calendar.getInstance();
       String date = String.format("%04d%02d%02d", now.get(Calendar.YEAR), now.get(Calendar.MONTH) + 1, now.get(Calendar.DAY_OF_MONTH));
       String time = String.format("%02d%02d%02d", now.get(Calendar.HOUR), now.get(Calendar.MINUTE), now.get(Calendar.SECOND));
-      String tempPath = backupPath + "/" + date + "-" + time;
+      String tempPath = Paths.backupPath + "/" + date + "-" + time;
       new File(tempPath).mkdirs();
       SQL sql = getSQL();
       sql.execute("CALL SYSCS_UTIL.SYSCS_BACKUP_DATABASE('" + tempPath + "')");
@@ -541,7 +528,7 @@ public class SQLService {
       fos.write(sb.toString().getBytes());
       fos.close();
       //zip temp folder
-      JF.zipPath(tempPath, backupPath + "/backup-" + date + "-" + time + ".zip");
+      JF.zipPath(tempPath, Paths.backupPath + "/backup-" + date + "-" + time + ".zip");
       //delete temp folder
       JF.deletePathEx(tempPath);
       restart();
@@ -552,22 +539,22 @@ public class SQLService {
     }
   }
   public static String restore(String zip) {
-    JF.deletePathEx(dataPath + "/restore");
-    JF.unzip(zip, dataPath + "/restore");
+    JF.deletePathEx(Paths.dataPath + "/restore");
+    JF.unzip(zip, Paths.dataPath + "/restore");
     try {
       Properties props = new Properties();
-      FileInputStream fis = new FileInputStream(dataPath + "/restore/jfcontrols.properties");
+      FileInputStream fis = new FileInputStream(Paths.dataPath + "/restore/jfcontrols.properties");
       props.load(fis);
       fis.close();
       String type = props.getProperty("type");
       if (type == null || !type.equals("backup")) throw new Exception("not a valid backup");
       Main.stop();
       stop();
-      JF.deletePathEx(dataPath + "/database");
-      File src = new File(dataPath + "/restore/database");
-      File dst = new File(dataPath + "/database");
+      JF.deletePathEx(Paths.dataPath + "/database");
+      File src = new File(Paths.dataPath + "/restore/database");
+      File dst = new File(Paths.dataPath + "/database");
       src.renameTo(dst);
-      JF.deletePathEx(dataPath + "/restore");
+      JF.deletePathEx(Paths.dataPath + "/restore");
       initDB();  //upgrade if needed
       Main.restart();
       return "Restore complete!";

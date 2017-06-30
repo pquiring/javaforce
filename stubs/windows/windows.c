@@ -1,11 +1,12 @@
 //Java Launcher Win32/64
 
-// version 1.5
+// version 1.6
 // - supports passing command line options to java main()
 // - loads CLASSPATH and MAINCLASS from PE-EXE resource
 // - globbs arguments (see ExpandStringArray())
 // - supports console apps (type "c")
 // - supports windows services (type "s")
+// - define java.app.home to find exe/dll files
 
 #include <windows.h>
 #include <io.h>
@@ -132,6 +133,16 @@ char *CreateClassPath() {
   return ExpandedClassPath;
 }
 
+char *DOption2 = "-Djava.app.home=";
+
+char *DefineAppHome() {
+  int sl = strlen(DOption2) + strlen(exepath);
+  char *option = malloc(sl + 1);
+  strcpy(option, DOption2);
+  strcat(option, exepath);
+  return option;
+}
+
 void printException(JNIEnv *env) {
   jthrowable exc;
   exc = (*env)->ExceptionOccurred(env);
@@ -163,11 +174,13 @@ int InvokeMethod(char *_method, jobjectArray args, char *sign) {
 JavaVMInitArgs *BuildArgs() {
   JavaVMInitArgs *args;
   JavaVMOption *options;
-  int nOpts = 1;
+  int nOpts = 2;
   char *opts[64];
   int idx;
 
   opts[0] = CreateClassPath();
+  opts[1] = DefineAppHome();
+
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
     while (x != NULL) {
@@ -187,7 +200,6 @@ JavaVMInitArgs *BuildArgs() {
 
   for(idx=0;idx<nOpts;idx++) {
     options[idx].optionString = opts[idx];
-//    printf("[] = %s\n", opts[idx]);  //debug
   }
 
   args->version = JNI_VERSION_1_2;
