@@ -5,9 +5,6 @@ package jfcontrols.app;
  * @author pquiring
  */
 
-import java.io.*;
-
-import javaforce.*;
 import javaforce.webui.*;
 
 import jfcontrols.api.*;
@@ -71,6 +68,17 @@ public class Main implements WebUIHandler {
   public static void stop() {
     FunctionService.cancel();
     TagsService.cancel();
+    System.gc();
+  }
+
+  public static void serviceStart(String args[]) {
+    main(args);
+  }
+
+  public static void serviceStop() {
+    stop();
+    SQLService.stop();
+    loader = null;
     System.gc();
   }
 }
