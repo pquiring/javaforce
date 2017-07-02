@@ -35,13 +35,15 @@ public class EditSettings extends javax.swing.JDialog {
     bCancel = new javax.swing.JButton();
     sFontSize = new javax.swing.JSpinner();
     jLabel1 = new javax.swing.JLabel();
-    cbUnix = new javax.swing.JCheckBox();
     cbClean = new javax.swing.JCheckBox();
     jLabel2 = new javax.swing.JLabel();
     sTabSize = new javax.swing.JSpinner();
     cbAutoIndent = new javax.swing.JCheckBox();
     cbLineWrap = new javax.swing.JCheckBox();
     cbPreserve = new javax.swing.JCheckBox();
+    eol = new javax.swing.JComboBox<>();
+    jLabel3 = new javax.swing.JLabel();
+    jLabel4 = new javax.swing.JLabel();
 
     FormListener formListener = new FormListener();
 
@@ -63,11 +65,6 @@ public class EditSettings extends javax.swing.JDialog {
     sFontSize.addKeyListener(formListener);
 
     jLabel1.setText("Font Size");
-
-    cbUnix.setText("Create new files in Unix format (LF)");
-    cbUnix.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
-    cbUnix.setMargin(new java.awt.Insets(0, 0, 0, 0));
-    cbUnix.addKeyListener(formListener);
 
     cbClean.setText("Trim trailing spaces when saving");
     cbClean.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -92,6 +89,12 @@ public class EditSettings extends javax.swing.JDialog {
     cbPreserve.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
     cbPreserve.setMargin(new java.awt.Insets(0, 0, 0, 0));
 
+    eol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "CRLF", "LF" }));
+
+    jLabel3.setText("Create new files in");
+
+    jLabel4.setText("EOL format.");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -112,11 +115,16 @@ public class EditSettings extends javax.swing.JDialog {
               .addComponent(sTabSize)
               .addComponent(sFontSize, javax.swing.GroupLayout.DEFAULT_SIZE, 42, Short.MAX_VALUE)))
           .addComponent(cbClean)
-          .addComponent(cbUnix)
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel3)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(eol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel4))
           .addComponent(cbAutoIndent)
           .addComponent(cbLineWrap)
           .addComponent(cbPreserve))
-        .addContainerGap(55, Short.MAX_VALUE))
+        .addContainerGap(199, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -132,14 +140,17 @@ public class EditSettings extends javax.swing.JDialog {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(cbPreserve)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(cbUnix)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(eol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel3)
+          .addComponent(jLabel4))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(cbClean)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(cbAutoIndent)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(cbLineWrap)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(bOk)
           .addComponent(bCancel))
@@ -173,9 +184,6 @@ public class EditSettings extends javax.swing.JDialog {
         EditSettings.this.anykey(evt);
       }
       else if (evt.getSource() == sFontSize) {
-        EditSettings.this.anykey(evt);
-      }
-      else if (evt.getSource() == cbUnix) {
         EditSettings.this.anykey(evt);
       }
       else if (evt.getSource() == cbClean) {
@@ -244,9 +252,11 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox cbClean;
   private javax.swing.JCheckBox cbLineWrap;
   private javax.swing.JCheckBox cbPreserve;
-  private javax.swing.JCheckBox cbUnix;
+  private javax.swing.JComboBox<String> eol;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
+  private javax.swing.JLabel jLabel4;
   private javax.swing.JSpinner sFontSize;
   private javax.swing.JSpinner sTabSize;
   // End of variables declaration//GEN-END:variables
@@ -265,7 +275,7 @@ public class EditSettings extends javax.swing.JDialog {
   private void load() {
     sFontSize.setValue(settings.fontSize);
     cbPreserve.setSelected(settings.bPreserve);
-    cbUnix.setSelected(settings.bUnix);
+    eol.setSelectedIndex(settings.bUnix ? 1 : 0);
     cbClean.setSelected(settings.bClean);
     sTabSize.setValue(settings.tabSize);
     cbAutoIndent.setSelected(settings.bAutoIndent);
@@ -275,7 +285,7 @@ public class EditSettings extends javax.swing.JDialog {
   private void save() {
     settings.fontSize = ((Integer)sFontSize.getValue()).intValue();
     settings.bPreserve = cbPreserve.isSelected();
-    settings.bUnix = cbUnix.isSelected();
+    settings.bUnix = eol.getSelectedIndex() == 1;
     settings.bClean = cbClean.isSelected();
     settings.tabSize = ((Integer)sTabSize.getValue()).intValue();
     settings.bAutoIndent = cbAutoIndent.isSelected();

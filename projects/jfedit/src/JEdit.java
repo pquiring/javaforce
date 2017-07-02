@@ -784,13 +784,20 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       }
       px++;
       py++;
-      StringBuilder info = new StringBuilder();
-      info.append("File : " + pg.filename + "\n");
-      info.append("Lines : " + txt.getLineCount() + "\n");
-      info.append("Current Position : " + px + "," + py + "\n");
-      info.append("Line Endings : " + (bUnix ? "LF" : "CRLF") + "\n");
-//      info.append("JVM : " + System.getProperty("java.version"));
-      JOptionPane.showMessageDialog(this, info.toString(), "Info", JOptionPane.INFORMATION_MESSAGE);
+      if (false) {
+        StringBuilder info = new StringBuilder();
+        info.append("File : " + pg.filename + "\n");
+        info.append("Lines : " + txt.getLineCount() + "\n");
+        info.append("Current Position : " + px + "," + py + "\n");
+        info.append("Line Endings : " + (bUnix ? "LF" : "CRLF") + "\n");
+        JOptionPane.showMessageDialog(this, info.toString(), "Info", JOptionPane.INFORMATION_MESSAGE);
+      } else {
+        EditDocInfo info = new EditDocInfo(null, true, pg.filename.getAbsolutePath(), txt.getLineCount(), px, py, bUnix);
+        info.setVisible(true);
+        if (info.accepted) {
+          pg.bUnix = info.getUnix();
+        }
+      }
       return;
     }
     if ((f1 == KeyEvent.VK_TAB) && (f2 == 0)) {

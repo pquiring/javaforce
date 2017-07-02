@@ -47,12 +47,18 @@
                       </Group>
                   </Group>
                   <Component id="cbClean" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="cbUnix" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="eol" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <Component id="cbAutoIndent" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="cbLineWrap" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="cbPreserve" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="55" max="32767" attributes="0"/>
+              <EmptySpace pref="199" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -72,14 +78,18 @@
               <EmptySpace max="-2" attributes="0"/>
               <Component id="cbPreserve" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="cbUnix" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="eol" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="cbClean" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="cbAutoIndent" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="cbLineWrap" min="-2" max="-2" attributes="0"/>
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace pref="67" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="bOk" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="bCancel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -120,22 +130,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Font Size"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JCheckBox" name="cbUnix">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Create new files in Unix format (LF)"/>
-        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-          <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
-            <EmptyBorder bottom="0" left="0" right="0" top="0"/>
-          </Border>
-        </Property>
-        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-          <Insets value="[0, 0, 0, 0]"/>
-        </Property>
-      </Properties>
-      <Events>
-        <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="anykey"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JCheckBox" name="cbClean">
       <Properties>
@@ -204,6 +198,29 @@
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[0, 0, 0, 0]"/>
         </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="eol">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="2">
+            <StringItem index="0" value="CRLF"/>
+            <StringItem index="1" value="LF"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel3">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Create new files in"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="jLabel4">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="EOL format."/>
       </Properties>
     </Component>
   </SubComponents>
