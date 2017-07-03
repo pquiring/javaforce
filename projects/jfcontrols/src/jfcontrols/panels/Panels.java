@@ -90,6 +90,7 @@ public class Panels {
     title.setName("jfc_title");
     title.setStyle("background-color", "blue");
     title.setStyle("color", "white");
+    title.setStyle("padding-left", "16px");
     title.setAlign(Component.LEFT);
     setCellSize(title, new Rectangle(x,0,width / cellWidth,1));
     table.add(title, x, 0, width / cellWidth, 1);
