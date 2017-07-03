@@ -18,6 +18,7 @@ public class TabPanel extends Column {
     add(row);
     tabs = new Column();
     add(tabs);
+    setAlign(Component.LEFT);
   }
   /** Creates borders on added tabs. */
   public void setBorders(boolean state) {
