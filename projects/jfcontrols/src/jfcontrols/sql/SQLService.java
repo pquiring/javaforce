@@ -270,7 +270,7 @@ public class SQLService {
     sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('main','Main', false, false)");
     id = sql.select1value("select id from jfc_panels where name='main'");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,2,7,1,'label','','Welcome to jfControls!','left')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,4,16,1,'label','','Click on the Menu Icon in the top left corner to get started.','left')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,4,16,1,'label','','Use the Menu Icon in the top left corner to get started.','left')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,6,16,1,'label','','License : LPGL : This programs comes with no warranty.','left')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,8,24,1,'label','','This program has completed minimal testing and is not recommended for production environments.','left')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,10,16,1,'label','','This program should NEVER be used for safety or life support systems!','left')");
