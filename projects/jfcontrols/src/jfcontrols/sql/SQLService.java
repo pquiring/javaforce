@@ -115,6 +115,7 @@ public class SQLService {
     sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + ",3,'light')");
     sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + ",4,'light3')");
     sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + ",5,'progressbar')");
+    sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + ",6,'image')");
 
     //create local controller
     sql.execute("insert into jfc_ctrls (cid,ip,type,speed) values (0,'127.0.0.1',0,0)");
@@ -270,6 +271,8 @@ public class SQLService {
     id = sql.select1value("select id from jfc_panels where name='main'");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,1,7,1,'label','','Welcome to jfControls!')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,12,1,'label','','Click on the Menu Icon in the top left corner to get started.')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,5,1,1,'image','','detroit')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,5,7,1,'label','','Built in Detroit,MI,USA')");
 
     sql.execute("insert into jfc_panels (name, popup, builtin) values ('jfc_menu', true, true)");
     id = sql.select1value("select id from jfc_panels where name='jfc_menu'");

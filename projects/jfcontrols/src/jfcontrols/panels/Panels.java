@@ -311,7 +311,13 @@ public class Panels {
     return null;
   }
   private static Label getLabel(String v[]) {
-    Label lbl = new Label(v[TEXT]);
+    String text = v[TEXT];
+    Label lbl;
+    if (text.startsWith("!image:")) {
+      lbl = new Label(Images.getImage(text.substring(7)));
+    } else {
+      lbl = new Label(text);
+    }
     lbl.addClickListener((me, c) -> {
       Events.click(c);
     });
@@ -623,7 +629,7 @@ public class Panels {
     return cb;
   }
   private static Image getImage(String v[]) {
-    Image img = new Image(Images.getImage(v[ARG]));
+    Image img = new Image(Images.getImage(v[TEXT]));
     img.addClickListener((me, c) -> {
       Events.click(c);
     });
@@ -1615,7 +1621,7 @@ public class Panels {
           if (create) {
             node.x = x;
             node.y = y;
-            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, "w_h", null, null, null, null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y || node.moved) {
@@ -1638,14 +1644,14 @@ public class Panels {
             y++;
           }
           while (y < y2) {
-            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_v", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, "w_v", null, null, null, null));
             newNodes.add(node.addChild('v', x, y));
             y++;
           }
           if (create) {
             node.x = x;
             node.y = y;
-            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, "w_" + node.type, null, null, null, null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y || node.moved) {
@@ -1663,7 +1669,7 @@ public class Panels {
             }
           }
           while (x < x2) {
-            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, "w_h", null, null, null, null));
             newNodes.add(node.insertPreNode('h', x, y));
             x++;
           }
@@ -1673,7 +1679,7 @@ public class Panels {
           if (create) {
             node.x = x;
             node.y = y;
-            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_" + node.type, null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, "w_" + node.type, null, null, null, null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y || node.moved) {
@@ -1690,7 +1696,7 @@ public class Panels {
             y--;
           }
           while (y > node.upper.y) {
-            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_v", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, "w_v", null, null, null, null));
             newNodes.add(node.addChildLower('v', x, y));
             y--;
           }
@@ -1710,14 +1716,14 @@ public class Panels {
             x2 = node.lower.x;
           }
           while (x < x2) {
-            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_h", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, "w_h", null, null, null, null));
             newNodes.add(node.insertPreNode('h', x, y));
             x++;
           }
           if (create) {
             node.x = x;
             node.y = y;
-            newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "w_t", null));
+            newCells.add(createCell(x, y, 1, 1, "image", null, "w_t", null, null, null, null));
             newNodes.add(node);
           } else {
             if (node.x != x || node.y != y || node.moved) {
@@ -1734,7 +1740,7 @@ public class Panels {
           int tagIdx = 1;
           if (!blk.isBlock()) {
             if (create) {
-              newCells.add(createCell(x, y, 1, 1, "image", "en_0_" + context.debug_en_idx, null, null, null, "w_h", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_0_" + context.debug_en_idx, "w_h", null, null, null, null));
               newNodes.add(node.addChild('h', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1779,7 +1785,7 @@ public class Panels {
             x++;
 
             if (create) {
-              newCells.add(createCell(x, y, 1, 1, "image", "en_1_" + context.debug_en_idx++, null, null, null, "w_h", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_1_" + context.debug_en_idx++, "w_h", null, null, null, null));
               newNodes.add(node.addChild('h', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1793,7 +1799,7 @@ public class Panels {
             if (create) {
               node.x = x;
               node.y = y;
-              newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, blk.getImage(), null));
+              newCells.add(createCell(x, y, 1, 1, "image", null, blk.getImage(), null, null, null, null));
               newNodes.add(node);
             } else {
               if (node.x != x || node.y != y || node.moved) {
@@ -1808,7 +1814,7 @@ public class Panels {
             int by = y;
             //draw a box the size of the logic block
             if (create) {
-              newCells.add(createCell(x, y, 1, 1, "image", "en_0_" + context.debug_en_idx, null, null, null, "b7", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_0_" + context.debug_en_idx, "b7", null, null, null, null));
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1830,7 +1836,7 @@ public class Panels {
 
             for(int a=0;a<3;a++) {
               if (create) {
-                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b8", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, "b8", null, null, null, null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1849,7 +1855,7 @@ public class Panels {
             int tagcnt = blk.getTagsCount();
             for(int a=0;a<tagcnt;a++) {
               if (create) {
-                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b4", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, "b4", null, null, null, null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1860,7 +1866,7 @@ public class Panels {
               y++;
 
               if (create) {
-                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b4", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, "b4", null, null, null, null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1919,7 +1925,7 @@ public class Panels {
               tagIdx++;
 
               if (create) {
-                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b6", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, "b6", null, null, null, null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1930,7 +1936,7 @@ public class Panels {
               y++;
 
               if (create) {
-                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b6", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, "b6", null, null, null, null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1942,7 +1948,7 @@ public class Panels {
             }
 
             if (create) {
-              newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b1", null));
+              newCells.add(createCell(x, y, 1, 1, "image", null, "b1", null, null, null, null));
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);
@@ -1954,7 +1960,7 @@ public class Panels {
 
             for(int a=0;a<3;a++) {
               if (create) {
-                newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b2", null));
+                newCells.add(createCell(x, y, 1, 1, "image", null, "b2", null, null, null, null));
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
@@ -1967,7 +1973,7 @@ public class Panels {
             }
 
             if (create) {
-              newCells.add(createCell(x, y, 1, 1, "image", null, null, null, null, "b3", null));
+              newCells.add(createCell(x, y, 1, 1, "image", null, "b3", null, null, null, null));
               newNodes.add(node.addChild('x', x, y));
             } else {
                 child = node.childs.get(childIdx++);
@@ -1980,7 +1986,7 @@ public class Panels {
             if (create) {
               node.x = x;
               node.y = y;
-              newCells.add(createCell(x, y, 1, 1, "image", "en_1_" + context.debug_en_idx++, null, null, null, "b9", null));
+              newCells.add(createCell(x, y, 1, 1, "image", "en_1_" + context.debug_en_idx++, "b9", null, null, null, null));
               newNodes.add(node);
             } else {
               if (node.x != x || node.y != y || node.moved) {

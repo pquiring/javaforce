@@ -12,6 +12,7 @@ import javaforce.webui.*;
 
 import jfcontrols.app.*;
 import jfcontrols.functions.*;
+import jfcontrols.images.*;
 import jfcontrols.sql.*;
 import jfcontrols.tags.*;
 import jfcontrols.logic.*;
@@ -490,6 +491,7 @@ public class Events {
           case "light3": style = "0=ff0000;1=00ff00;n=333333"; nc = new Light3(Color.red, Color.green, Color.lightGrey); break;
           case "togglebutton": style = "0=ff0000;1=00ff00"; nc = new ToggleButton(text, Color.red, Color.green); break;
           case "progressbar": style = "o=h;0=ff0000;1=ffff00;2=00ff00;v0=5;v1=10;max=100.0"; nc = new ProgressBar(ProgressBar.HORIZONTAL, 100.0f); break;
+          case "image": text = "image"; nc = new Image(Images.getImage(text)); break;
         }
         if (nc == null) break;
         Panels.setCellSize(nc, nr);
@@ -622,6 +624,7 @@ public class Events {
         if (v0.length() > 0) v0TF.setText(v0);
         if (v1.length() > 0) v1TF.setText(v1);
         if (v2.length() > 0) v2TF.setText(v2);
+        textLbl.setText("text");
         switch (type) {
           case "button":
           case "label":
@@ -729,6 +732,26 @@ public class Events {
             dir.setVisible(true);
             h.setVisible(true);
             v.setVisible(true);
+            break;
+          case "image":
+            textLbl.setText("image");  //TODO : create a combobox
+            textTF.setVisible(true);
+            textLbl.setVisible(true);
+            c0L.setVisible(false);
+            c0Lbl.setVisible(false);
+            c1L.setVisible(false);
+            c1Lbl.setVisible(false);
+            cnL.setVisible(false);
+            cnLbl.setVisible(false);
+            v0Lbl.setVisible(false);
+            v0TF.setVisible(false);
+            v1Lbl.setVisible(false);
+            v1TF.setVisible(false);
+            v2Lbl.setVisible(false);
+            v2TF.setVisible(false);
+            dir.setVisible(false);
+            h.setVisible(false);
+            v.setVisible(false);
             break;
         }
         PopupPanel props = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
@@ -845,6 +868,10 @@ public class Events {
               pb.setLevels(Float.valueOf(v0), Float.valueOf(v1), Float.valueOf(v2));
               pb.setDir(hTB.isSelected() ? ProgressBar.HORIZONTAL : ProgressBar.VERTICAL);
               style = "0=" + c0 + ";1=" + c1 + ";2=" + cn + ";v0=" + v0 + ";v1=" + v1 + ";v2=" + v2 + "o=" + (hTB.isSelected() ? "h" : "v");
+              break;
+            case "image":
+              Image img = (Image)comp;
+              img.setImage(Images.getImage(text));
               break;
           }
           String events = "press=" + press + "|release=" + release + "|click=" + click;

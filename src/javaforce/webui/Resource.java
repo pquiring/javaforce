@@ -46,6 +46,10 @@ public class Resource {
     try {is.close();} catch (Exception e) {}
     return registerResource(data, mime);
   }
+  public static Resource readStream(InputStream is, String mime) {
+    byte data[] = JF.readAll(is);
+    return registerResource(data, mime);
+  }
   public static Resource getResource(String id) {
     return resList.get(id);
   }

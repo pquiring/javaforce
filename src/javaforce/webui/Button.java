@@ -37,4 +37,8 @@ public class Button extends TextComponent {
     addEvent("onclick", "window.open(\"" + url + "\");");
     this.url = url;
   }
+  public void setImage(Resource img) {
+    this.img = img;
+    sendEvent("setsrc", new String[] {"src=/static/" + img.id});
+  }
 }
