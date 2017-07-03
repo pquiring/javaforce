@@ -1223,7 +1223,12 @@ public class Events {
         break;
       }
 
-      case "jfc_alarm_editor_del": {
+      case "jfc_alarm_editor_delete": {
+        synchronized(lock) {
+          String tid = sql.select1value("select id from jfc_tags where name='alarms'");
+          sql.execute("delete from jfc_tagvalues where tid=" + tid + " and idx=" + arg);
+        }
+        client.setPanel(Panels.getPanel("jfc_alarm_editor", client));
         break;
       }
 
