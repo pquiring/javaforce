@@ -42,9 +42,6 @@ public class Main implements WebUIHandler {
 
   public Panel getRootPanel(WebUIClient client) {
     System.out.println("getRootPanel()");
-    ClientContext context = new ClientContext(client);
-    client.setProperty("context", context);
-    context.start();
     if (debug) {
       client.setProperty("user", "admin");
     }
@@ -56,11 +53,18 @@ public class Main implements WebUIHandler {
     return null;
   }
 
+  public void clientConnected(WebUIClient client) {
+    ClientContext context = new ClientContext(client);
+    client.setProperty("context", context);
+    context.start();
+  }
+
   public void clientDisconnected(WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
     if (context != null) {
       context.cancel();
     }
+    client.setProperty("context", null);
   }
 
   public static void restart() {

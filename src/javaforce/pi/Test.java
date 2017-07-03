@@ -29,8 +29,8 @@ public class Test implements WebUIHandler {
     worker.start();
   }
 
-  public void clientDisconnected(WebUIClient client) {
-  }
+  public void clientConnected(WebUIClient client) {}
+  public void clientDisconnected(WebUIClient client) {}
 
   public class TestPanel extends Panel {
     public Label il[] = new Label[8];

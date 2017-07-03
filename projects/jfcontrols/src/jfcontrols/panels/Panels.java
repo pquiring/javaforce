@@ -55,12 +55,17 @@ public class Panels {
     if (popup.equals("true")) return panel;
     //add top components
     int x = 0;
+    int width = client.getWidth();
+    JFLog.log("width=" + width);
+    if (width < 16) {
+      width = 16;
+    }
 
     Button menu = getButton(new String[] {null, null, null, null, "button", null, "!image:menu", null, "showMenu", null, null});
     menu.setProperty("func", "showMenu");
     setCellSize(menu, new Rectangle(x,0,1,1));
     table.add(menu, x, 0);
-    x++;
+    x++; width -= cellWidth;
 
     Label alarms = getLabel(new String[] {null, null, null, null, "label", null, "0", null, "setPanel", "jfc_alarms", null});
     alarms.setProperty("func", "setPanel");
@@ -68,7 +73,7 @@ public class Panels {
     alarms.setBorder(true);
     setCellSize(alarms, new Rectangle(x,0,1,1));
     table.add(alarms, x, 0);
-    x++;
+    x++; width -= cellWidth;
 
     String xref = (String)client.getProperty("xref");
     if (xref != null) {
@@ -77,13 +82,17 @@ public class Panels {
       xrefBtn.setProperty("arg", "jfc_xref");
       setCellSize(xrefBtn, new Rectangle(x,0,1,1));
       table.add(xrefBtn, x, 0);
-      x++;
+      x++; width -= cellWidth;
+      client.setProperty("xref", null);
     }
 
     Label title = getLabel(new String[] {null, null, null, null, "label", "jfc_title", display, null, null, null, null});
     title.setName("jfc_title");
-    setCellSize(title, new Rectangle(x,0,16,1));
-    table.add(title, x, 0, 16, 1);
+    title.setStyle("background-color", "blue");
+    title.setStyle("color", "white");
+    title.setAlign(Component.LEFT);
+    setCellSize(title, new Rectangle(x,0,width / cellWidth,1));
+    table.add(title, x, 0, width / cellWidth, 1);
 
     String audio_init = (String)client.getProperty("audio-init");
 
@@ -262,7 +271,7 @@ public class Panels {
           } else if (styles[b].equals("right")) {
             c.setAlign(Component.RIGHT);
           } else {
-            String f[] = styles[b].split("=");
+            String f[] = styles[b].split(":");
             if (f.length == 2) {
               c.setStyle(f[0], f[1]);
             }
@@ -1202,7 +1211,7 @@ public class Panels {
     String count = sql.select1value("select count(idx) from jfc_tagvalues where tid=" + tid + " and mid=1 and value='1'");
     label.setText(count);
     if (count.equals("0")) {
-      label.setBackColor(Color.white);
+      label.setBackColor(Color.green);
     } else {
       label.setBackColor(Color.red);
     }

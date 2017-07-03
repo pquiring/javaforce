@@ -25,7 +25,11 @@ public class WebUIClient {
   public boolean popupMenuMouseDown;
   public PopupMenu topPopupMenu;
 
-  public WebUIClient() {
+  private WebUIHandler handler;
+
+  public WebUIClient(WebSocket socket, WebUIHandler handler) {
+    this.socket = socket;
+    this.handler = handler;
     hash = Integer.toString(this.hashCode(), 16);
   }
 
@@ -41,15 +45,13 @@ public class WebUIClient {
   }
   public void setPanel(Panel root) {
     this.root = root;
-    if (socket != null) {
-      initPanel();
-      dispatchEvent("", "load", null);
-    }
+    initPanel();
+    dispatchEvent("", "load", null);
   }
   public void refresh() {
     sendEvent("body", "redir", null);
   }
-  public void initPanel() {
+  private void initPanel() {
     root.setClient(this);
     root.init();
   }
@@ -57,6 +59,10 @@ public class WebUIClient {
     if (id.length() == 0 || id.equals("body")) {
       switch (event) {
         case "load":
+          if (root == null) {
+            root = handler.getRootPanel(this);
+            initPanel();
+          }
           isReady = true;
           String html = root.html();
           sendEvent("body", "sethtml", new String[] {"html=" + html});
@@ -121,7 +127,7 @@ public class WebUIClient {
     socket.write(data, WebSocket.TYPE_BINARY);
   }
   public synchronized void sendEvent(String id, String event, String args[]) {
-    if (socket == null) return;
+    if (!isReady) return;
     StringBuffer sb = new StringBuffer();
     StringBuffer log = new StringBuffer();
     String str;

@@ -133,11 +133,9 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
 
   public boolean doWebSocketConnect(WebSocket sock) {
     try {
-      WebUIClient client = new WebUIClient();
-      client.setPanel(handler.getRootPanel(client));
-      client.setSocket(sock);
-      client.initPanel();
+      WebUIClient client = new WebUIClient(sock, handler);
       clients.add(client);
+      handler.clientConnected(client);
       return true;
     } catch (Exception e) {
       JFLog.log(e);
