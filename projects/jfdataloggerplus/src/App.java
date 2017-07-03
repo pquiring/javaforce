@@ -31,7 +31,7 @@ public class App implements WebUIHandler {
     return null;
   }
 
-  public void clientDisconnected(WebUIClient client) {
-  }
+  public void clientConnected(WebUIClient client) {}
+  public void clientDisconnected(WebUIClient client) {}
 
 }
