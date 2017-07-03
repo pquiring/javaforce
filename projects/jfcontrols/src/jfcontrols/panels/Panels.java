@@ -257,6 +257,10 @@ public class Panels {
             c.setStyle("font-size", "6pt");
           } else if (styles[b].equals("smallfont")) {
             c.setStyle("font-size", "8pt");
+          } else if (styles[b].equals("left")) {
+            c.setAlign(Component.LEFT);
+          } else if (styles[b].equals("right")) {
+            c.setAlign(Component.RIGHT);
           } else {
             String f[] = styles[b].split("=");
             if (f.length == 2) {

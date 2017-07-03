@@ -269,10 +269,14 @@ public class SQLService {
 
     sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('main','Main', false, false)");
     id = sql.select1value("select id from jfc_panels where name='main'");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,2,7,1,'label','','Welcome to jfControls!')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,4,12,1,'label','','Click on the Menu Icon in the top left corner to get started.')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,6,1,1,'image','','detroit')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,6,6,1,'label','','Built in Detroit,MI,USA')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,2,7,1,'label','','Welcome to jfControls!','left')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,4,16,1,'label','','Click on the Menu Icon in the top left corner to get started.','left')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,6,16,1,'label','','License : LPGL : This programs comes with no warranty.','left')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,8,20,1,'label','','This program has completed minimal testing and is not recommended for production environments.','left')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,10,16,1,'label','','This program should NEVER be used for safety of life support systems!','left')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",1,12,16,1,'label','','Please test your logic extensively!','left')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,16,1,1,'image','','detroit')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,16,6,1,'label','','Built in Detroit,MI,USA')");
 
     sql.execute("insert into jfc_panels (name, popup, builtin) values ('jfc_menu', true, true)");
     id = sql.select1value("select id from jfc_panels where name='jfc_menu'");
