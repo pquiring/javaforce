@@ -44,6 +44,7 @@ public class FunctionCompiler {
     int debug_en = 0;
     int debug_tv = 0;
     for(int rid=0;rid<norungs;rid++) {
+      sb.append("//Rung #" + (rid+1) + "\r\n");
       sb.append("    enabled = true;\r\n");
       sb.append("    eidx = 0;\r\n");
       sb.append("    en[eidx] = enabled;\r\n");
@@ -62,8 +63,8 @@ public class FunctionCompiler {
             switch (node.next.type) {
               case 'a':
               case 'c':
-                sb.append("en[eidx+1] = en[eidx];\r\n");
-                sb.append("eidx++;\r\n");
+                sb.append("    en[eidx+1] = en[eidx];\r\n");
+                sb.append("    eidx++;\r\n");
                 break;
             }
             break;
@@ -75,8 +76,8 @@ public class FunctionCompiler {
               cnt++;
               upper = upper.upper;
             }
-            sb.append("en[eidx+1] = en[eidx-" + cnt + "];\r\n");
-            sb.append("eidx++;\r\n");
+            sb.append("    en[eidx+1] = en[eidx-" + cnt + "];\r\n");
+            sb.append("    eidx++;\r\n");
             break;
           case 'b':
             //nothing
@@ -84,8 +85,8 @@ public class FunctionCompiler {
           case 'd':
             upper = node.upper;
             while (upper != null) {
-              sb.append("  en[eidx-1] |= en[eidx];\r\n");
-              sb.append("  eidx--;\r\n");
+              sb.append("    en[eidx-1] |= en[eidx];\r\n");
+              sb.append("    eidx--;\r\n");
               upper = upper.upper;
             };
             break;
@@ -116,7 +117,7 @@ public class FunctionCompiler {
               int tagType = node.blk.getTagType(t);
               switch (type) {
                 case 't':
-                  sb.append("tags[" + t + "] = getTag(\"" + value + "\");\r\n");
+                  sb.append("    tags[" + t + "] = getTag(\"" + value + "\");\r\n");
                   TagBase tagbase = tags.getTag(value);
                   if (tagType >= TagType.any) {
                     types[t] = tagbase.getType();
@@ -127,7 +128,7 @@ public class FunctionCompiler {
                   unsigned[t] = tagbase.isUnsigned();
                   break;
                 case 'i':
-                  sb.append("tags[" + t + "] = new TagTemp(\"" + value + "\");\r\n");
+                  sb.append("    tags[" + t + "] = new TagTemp(\"" + value + "\");\r\n");
                   types[t] = tagType;
                   break;
                 case 'f':
@@ -136,8 +137,8 @@ public class FunctionCompiler {
                   break;
               }
             }
-            sb.append("  enabled = en[eidx];\r\n");
-            sb.append("  debug_en[" + debug_en + "][0]=enabled;\r\n");
+            sb.append("    enabled = en[eidx];\r\n");
+            sb.append("    debug_en[" + debug_en + "][0]=enabled;\r\n");
             if (node.blk.getName().equals("CALL")) {
               sb.append(node.blk.getCode(func));
             } else {
@@ -148,11 +149,11 @@ public class FunctionCompiler {
               }
             }
             for(int a=1;a<node.tags.length;a++) {
-              sb.append("  debug_tv[" + debug_tv++ + "]=tags[" + a + "].getValue();\r\n");
+              sb.append("    debug_tv[" + debug_tv++ + "]=tags[" + a + "].getValue();\r\n");
             }
-            sb.append("  debug_en[" + debug_en + "][1]=enabled;\r\n");
+            sb.append("    debug_en[" + debug_en + "][1]=enabled;\r\n");
             debug_en++;
-            sb.append("\r\n  en[eidx] = enabled;\r\n");
+            sb.append("    en[eidx] = enabled;\r\n");
             break;
           }
         }

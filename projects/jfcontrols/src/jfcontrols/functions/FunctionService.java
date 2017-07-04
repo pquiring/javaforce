@@ -52,6 +52,11 @@ public class FunctionService extends Thread {
   }
 
   public void run() {
+    if (active) {
+      JFLog.log("Error:FunctionService already running");
+      Main.trace();
+      return;
+    }
     Class mainCls, initCls;
     TagsCache tags = new TagsCache();
     File mainFile = new File(Paths.dataPath + "/work/class/func_1.class");
@@ -114,6 +119,7 @@ public class FunctionService extends Thread {
     TagsService.doWrites();
     TagAddr ta = tags.decode("system.scantime");
     TagBase tag = tags.getTag(ta);
+    JFLog.log("Function.Service starting...");
     while (active) {
       FunctionRuntime.now = System.currentTimeMillis();
       FunctionRuntime.alarm_clear_ack();
@@ -143,6 +149,7 @@ public class FunctionService extends Thread {
       }
 //      System.out.println("scantime=" + scantime);
     }
+    JFLog.log("Function.Service stopping...");
     sql.close();
     sql = null;
     FunctionService.sql = null;
