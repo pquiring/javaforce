@@ -1592,19 +1592,11 @@ public class Panels {
     return rung;
   }
   private static void moveNode(Table logic, Node node, int x, int y, int spanx) {
-    if (!node.moved) logic.remove(node.x, node.y);
+//    JFLog.log("moveNode:" + node.x + "," + node.y + " to " + x + "," + y);
+    logic.remove(node.comp);
     node.x = x;
     node.y = y;
-    for(int a=0;a<spanx;a++) {
-      int xa = x + a;
-      Component cmp = logic.remove(xa, y);
-      if (cmp != null) {
-        Node cmpNode = (Node)cmp.getProperty("node");
-        cmpNode.moved = true;
-      }
-    }
     logic.add(node.comp, x, y, spanx, 1);
-    node.moved = false;
     node.root.changed = true;
   }
   public static void buildNodes(NodeRoot root, Table logic, ArrayList<String[]> newCells, ArrayList<Node> newNodes, WebUIClient client, int rid, boolean readonly) {
@@ -1613,7 +1605,7 @@ public class Panels {
     int x = 0;
     int y = 1;
     Node node = root.next;
-    JFLog.log("buildNodes:" + root);
+    JFLog.log("buildNodes");
     boolean create;
     String style = readonly ? "readonly" : null;
     String textfield = readonly ? "label" : "textfield";
@@ -1638,7 +1630,7 @@ public class Panels {
             newCells.add(createCell(x, y, 1, 1, "image", null, "w_h", null, null, null, null));
             newNodes.add(node);
           } else {
-            if (node.x != x || node.y != y || node.moved) {
+            if (node.x != x || node.y != y) {
               moveNode(logic, node, x, y, 1);
             }
           }
@@ -1652,7 +1644,7 @@ public class Panels {
           cnt = node.childs.size();
           for(int a=0;a<cnt;a++) {
             child = node.childs.get(a);
-            if (child.x != x || child.y != y || child.moved) {
+            if (child.x != x || child.y != y) {
               moveNode(logic, child, x, y, 1);
             }
             y++;
@@ -1668,7 +1660,7 @@ public class Panels {
             newCells.add(createCell(x, y, 1, 1, "image", null, "w_" + node.type, null, null, null, null));
             newNodes.add(node);
           } else {
-            if (node.x != x || node.y != y || node.moved) {
+            if (node.x != x || node.y != y) {
               moveNode(logic, node, x, y, 1);
             }
           }
@@ -1696,7 +1688,7 @@ public class Panels {
             newCells.add(createCell(x, y, 1, 1, "image", null, "w_" + node.type, null, null, null, null));
             newNodes.add(node);
           } else {
-            if (node.x != x || node.y != y || node.moved) {
+            if (node.x != x || node.y != y) {
               moveNode(logic, node, x, y, 1);
             }
           }
@@ -1704,7 +1696,7 @@ public class Panels {
           cnt = node.childs.size();
           for(int a=0;a<cnt;a++) {
             child = node.childs.get(a);
-            if (child.x != x || child.y != y || child.moved) {
+            if (child.x != x || child.y != y) {
               moveNode(logic, child, x, y, 1);
             }
             y--;
@@ -1740,7 +1732,7 @@ public class Panels {
             newCells.add(createCell(x, y, 1, 1, "image", null, "w_t", null, null, null, null));
             newNodes.add(node);
           } else {
-            if (node.x != x || node.y != y || node.moved) {
+            if (node.x != x || node.y != y) {
               moveNode(logic, node, x, y, 1);
             }
           }
@@ -1758,7 +1750,7 @@ public class Panels {
               newNodes.add(node.addChild('h', x, y));
             } else {
               child = node.childs.get(childIdx++);
-              if (child.x != x || child.y != y || child.moved) {
+              if (child.x != x || child.y != y) {
                 moveNode(logic, child, x, y, 1);
               }
             }
@@ -1774,7 +1766,7 @@ public class Panels {
                 newNodes.add(node.addChild('T', x, y));
               } else {
                 child = node.childs.get(childIdx++);
-                if (child.x != x || child.y != y || child.moved) {
+                if (child.x != x || child.y != y) {
                   moveNode(logic, child, x, y, 3);
                 }
               }
@@ -1786,7 +1778,7 @@ public class Panels {
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
-                if (child.x != x || child.y != y || child.moved) {
+                if (child.x != x || child.y != y) {
                   moveNode(logic, child, x, y, 3);
                 }
               }
@@ -1803,7 +1795,7 @@ public class Panels {
               newNodes.add(node.addChild('h', x, y));
             } else {
               child = node.childs.get(childIdx++);
-              if (child.x != x || child.y != y || child.moved) {
+              if (child.x != x || child.y != y) {
                 moveNode(logic, child, x, y, 1);
               }
             }
@@ -1816,7 +1808,7 @@ public class Panels {
               newCells.add(createCell(x, y, 1, 1, "image", null, blk.getImage(), null, null, null, null));
               newNodes.add(node);
             } else {
-              if (node.x != x || node.y != y || node.moved) {
+              if (node.x != x || node.y != y) {
                 moveNode(logic, node, x, y, 1);
               }
             }
@@ -1832,7 +1824,7 @@ public class Panels {
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);
-              if (child.x != x || child.y != y || child.moved) {
+              if (child.x != x || child.y != y) {
                 moveNode(logic, child, x, y, 1);
               }
             }
@@ -1843,7 +1835,7 @@ public class Panels {
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);
-              if (child.x != x || child.y != y || child.moved) {
+              if (child.x != x || child.y != y) {
                 moveNode(logic, child, x, y, 3);
               }
             }
@@ -1854,7 +1846,7 @@ public class Panels {
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
-                if (child.x != x || child.y != y || child.moved) {
+                if (child.x != x || child.y != y) {
                   moveNode(logic, child, x, y, 1);
                 }
               }
@@ -1873,7 +1865,7 @@ public class Panels {
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
-                if (child.x != x || child.y != y || child.moved) {
+                if (child.x != x || child.y != y) {
                   moveNode(logic, child, x, y, 1);
                 }
               }
@@ -1884,7 +1876,7 @@ public class Panels {
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
-                if (child.x != x || child.y != y || child.moved) {
+                if (child.x != x || child.y != y) {
                   moveNode(logic, child, x, y, 1);
                 }
               }
@@ -1897,7 +1889,7 @@ public class Panels {
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
-                if (child.x != x || child.y != y || child.moved) {
+                if (child.x != x || child.y != y) {
                   moveNode(logic, child, x, y, 1);
                 }
               }
@@ -1917,7 +1909,7 @@ public class Panels {
                 }
               } else {
                 child = node.childs.get(childIdx++);
-                if (child.x != x || child.y != y || child.moved) {
+                if (child.x != x || child.y != y) {
                   moveNode(logic, child, x, y, 3);
                 }
               }
@@ -1929,7 +1921,7 @@ public class Panels {
                   newNodes.add(node.addChild('x', x, y));
                 } else {
                   child = node.childs.get(childIdx++);
-                  if (child.x != x || child.y != y || child.moved) {
+                  if (child.x != x || child.y != y) {
                     moveNode(logic, child, x, y, 3);
                   }
                 }
@@ -1943,7 +1935,7 @@ public class Panels {
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
-                if (child.x != x || child.y != y || child.moved) {
+                if (child.x != x || child.y != y) {
                   moveNode(logic, child, x, y, 1);
                 }
               }
@@ -1954,7 +1946,7 @@ public class Panels {
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
-                if (child.x != x || child.y != y || child.moved) {
+                if (child.x != x || child.y != y) {
                   moveNode(logic, child, x, y, 1);
                 }
               }
@@ -1966,7 +1958,7 @@ public class Panels {
               newNodes.add(node.addChild('x', x, y));
             } else {
               child = node.childs.get(childIdx++);
-              if (child.x != x || child.y != y || child.moved) {
+              if (child.x != x || child.y != y) {
                 moveNode(logic, child, x, y, 1);
               }
             }
@@ -1978,7 +1970,7 @@ public class Panels {
                 newNodes.add(node.addChild('x', x, y));
               } else {
                 child = node.childs.get(childIdx++);
-                if (child.x != x || child.y != y || child.moved) {
+                if (child.x != x || child.y != y) {
                   moveNode(logic, child, x, y, 1);
                 }
                 child = child.next;
@@ -1991,7 +1983,7 @@ public class Panels {
               newNodes.add(node.addChild('x', x, y));
             } else {
                 child = node.childs.get(childIdx++);
-              if (child.x != x || child.y != y || child.moved) {
+              if (child.x != x || child.y != y) {
                 moveNode(logic, child, x, y, 1);
               }
             }
@@ -2003,7 +1995,7 @@ public class Panels {
               newCells.add(createCell(x, y, 1, 1, "image", "en_1_" + context.debug_en_idx++, "b9", null, null, null, null));
               newNodes.add(node);
             } else {
-              if (node.x != x || node.y != y || node.moved) {
+              if (node.x != x || node.y != y) {
                 moveNode(logic, node, x, y, 1);
               }
             }
@@ -2029,6 +2021,7 @@ public class Panels {
       JFLog.log("Error:unable to find root node");
       return;
     }
+    JFLog.log("layoutNodes");
     do {
       root.changed = false;
       ArrayList<String[]> newCells = new ArrayList<String[]>();

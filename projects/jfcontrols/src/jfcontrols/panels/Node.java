@@ -59,10 +59,8 @@ public class Node {
   public NodeRoot root;
   public boolean highlight;  //possible fork dest
   public ArrayList<Node> childs = new ArrayList<Node>();
-  public boolean moved;
 
   public Node addChild(char type, int x, int y) {
-    JFLog.log("addChild:" + type);
     Node node = new Node();
     node.root = root;
 

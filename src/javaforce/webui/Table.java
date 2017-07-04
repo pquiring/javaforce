@@ -84,10 +84,22 @@ public class Table extends Container {
     this.rows = rows;
     setSize();
   }
+  public void remove(Component c) {
+    //find cell with c
+    int cnt = count();
+    for(int a=0;a<cnt;a++) {
+      Cell cell = (Cell)get(a);
+      if (cell.get(0) == c) {
+        super.remove(cell);
+        sendEvent("remove", new String[] {"child=" + cell.id});
+        return;
+      }
+    }
+  }
   public Component remove(int x,int y) {
     Cell cell = getCell(x,y,false);
     if (cell != null) {
-      remove(cell);
+      super.remove(cell);
       sendEvent("remove", new String[] {"child=" + cell.id});
       return cell.get(0);
     }

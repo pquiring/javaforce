@@ -1,0 +1,6 @@
+[Unit]
+Description=jfControls
+
+[Service]
+ExecStart=/usr/bin/jfcontrols
+Restart=always
