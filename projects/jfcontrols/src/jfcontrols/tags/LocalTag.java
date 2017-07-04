@@ -9,6 +9,8 @@ import java.util.*;
 
 import javaforce.*;
 
+import jfcontrols.app.*;
+
 public class LocalTag extends MonitoredTag {
   private int tid;
   private Object arrayLock = new Object();
@@ -18,9 +20,12 @@ public class LocalTag extends MonitoredTag {
   private HashMap<String, Integer> mids;
   private String memberComments[];
   private String comment;
+  private String name;
+  private String udtname;
 
   public LocalTag(String name, int type, boolean unsigned, boolean array, SQL sql) {
     super(type, unsigned, array);
+    this.name = name;
     tid = Integer.valueOf(sql.select1value("select id from jfc_tags where cid=0 and name=" + SQL.quote(name)));
     comment = sql.select1value("select comment from jfc_tags where cid=0 and id=" + tid);
     if (udt) {
@@ -31,6 +36,7 @@ public class LocalTag extends MonitoredTag {
         mids.put(data[a][0], Integer.valueOf(data[a][1]));
         memberComments[a] = data[a][2];
       }
+      udtname = sql.select1value("select name from jfc_udts where uid=" + type);
     }
     if (array || udt) {
       values = new HashMap<>();
@@ -78,9 +84,11 @@ public class LocalTag extends MonitoredTag {
   }
 
   public String getValue() {
-    if (array || udt) {
-      JFLog.log("Error:LocalTag array:must call getIndex() or getMember()");
-      return null;
+    if (array) {
+      return name + "[]";
+    }
+    if (udt) {
+      return udtname;
     }
     return getValue(0, 0, 0);
   }

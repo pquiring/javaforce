@@ -87,6 +87,10 @@ public class Main implements WebUIHandler {
     msgs += "\r\n";
   }
 
+  public static void trace() {
+    try { throw new Exception(); } catch (Exception e) { JFLog.log(e); }
+  }
+
   public static void serviceStart(String args[]) {
     main(args);
   }
