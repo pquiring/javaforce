@@ -953,6 +953,12 @@ public class Events {
       }
 
       case "jfc_func_editor_add_rung": {
+        if (context.debug != null) {
+          context.debug.cancel();
+          context.debug = null;
+          Button debug = (Button)client.getPanel().getComponent("jfc_debug");
+          debug.setText("Debug");
+        }
         int fid = Integer.valueOf((String)client.getProperty("func"));
         Component focus = (Component)client.getProperty("focus");
         int rid = 0;
@@ -998,11 +1004,23 @@ public class Events {
       }
 
       case "jfc_func_editor_del_rung": {
+        if (context.debug != null) {
+          context.debug.cancel();
+          context.debug = null;
+          Button debug = (Button)client.getPanel().getComponent("jfc_debug");
+          debug.setText("Debug");
+        }
         Panels.confirm(client, "Delete rung?", "jfc_func_editor_del_rung");
         break;
       }
 
       case "jfc_func_editor_edit_rung": {
+        if (context.debug != null) {
+          context.debug.cancel();
+          context.debug = null;
+          Button debug = (Button)client.getPanel().getComponent("jfc_debug");
+          debug.setText("Debug");
+        }
         Component focus = (Component)client.getProperty("focus");
         int rid = 0;
         Node node = null;
@@ -1173,6 +1191,12 @@ public class Events {
       }
 
       case "jfc_func_editor_compile": {
+        if (context.debug != null) {
+          context.debug.cancel();
+          context.debug = null;
+          Button debug = (Button)client.getPanel().getComponent("jfc_debug");
+          debug.setText("Debug");
+        }
         String fid = (String)client.getProperty("func");
         synchronized(lock) {
           if (!FunctionService.generateFunction(Integer.valueOf(fid), sql)) {
