@@ -28,7 +28,8 @@ public class AND extends Logic {
   public String getTagName(int idx) {
     switch (idx) {
       case 1: return "x";
-      case 2: return "res";
+      case 2: return "y";
+      case 3: return "res";
       default: return null;
     }
   }
