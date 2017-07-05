@@ -1,7 +1,5 @@
 package jfcontrols.tags;
 
-import javaforce.JFLog;
-
 /** Tags cache
  *
  * Each function and panel has it's own tag cache.
@@ -9,6 +7,9 @@ import javaforce.JFLog;
  *
  * @author pquiring
  */
+
+import javaforce.*;
+import javaforce.controls.*;
 
 public class TagsCache {
   private IndexTags it = new IndexTags();
@@ -27,7 +28,10 @@ public class TagsCache {
       return it.getTag(idx);
     }
     if ((ch >= '0' && ch <= '9') || ch == '-') {
-      return new TagTemp(ta.name);
+      if (ta.name.indexOf(".") == -1)
+        return new TagTemp(TagType.int32, ta.name);
+      else
+        return new TagTemp(TagType.float32, ta.name);
     }
     if (ta.cid == 0) {
       TagBase tag = TagsService.getLocalTag(ta.name);

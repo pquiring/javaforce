@@ -11,8 +11,8 @@ import javaforce.controls.*;
 public class TagTemp extends TagBase {
   private String value;
 
-  public TagTemp(String initValue) {
-    super(TagType.unknown, false, false);
+  public TagTemp(int type, String initValue) {
+    super(type, false, false);
     this.value = initValue;
   }
 

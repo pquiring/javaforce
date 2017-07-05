@@ -128,7 +128,11 @@ public class FunctionCompiler {
                   unsigned[t] = tagbase.isUnsigned();
                   break;
                 case 'i':
-                  sb.append("    tags[" + t + "] = new TagTemp(\"" + value + "\");\r\n");
+                  if (value.indexOf(".") == -1)
+                    tagType = TagType.int32;
+                  else
+                    tagType = TagType.float32;
+                  sb.append("    tags[" + t + "] = new TagTemp(" + tagType + ",\"" + value + "\");\r\n");
                   types[t] = tagType;
                   break;
                 case 'f':
