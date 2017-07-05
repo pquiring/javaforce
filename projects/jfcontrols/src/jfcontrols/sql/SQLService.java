@@ -316,7 +316,8 @@ public class SQLService {
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",13,2,2,1,'button','','Restore','jfc_config_restore')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",16,2,7,1,'combobox','backups','','jfc_config_backups')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,3,20,1,'label','jfc_config_status', '')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name) values (" + id + ",1,4,1,1,'table','jfc_config_errors')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",1,4,3,1,'label','','ErrorLog')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name) values (" + id + ",1,5,1,1,'table','jfc_config_errors')");
 
     sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('jfc_alarm_editor','Alarm Editor', false, true)");
     id = sql.select1value("select id from jfc_panels where name='jfc_alarm_editor'");
