@@ -77,6 +77,9 @@ function wsevent(event) {
     case "gettext":
       sendText(msg.id, element.innerHTML);
       break;
+    case "settitle":
+      document.title = msg.title;
+      break;
     case "sethtml":
       element.innerHTML = msg.html;
       sendAck(msg.id);

@@ -45,6 +45,7 @@ public class Main implements WebUIHandler {
     if (debug) {
       client.setProperty("user", "admin");
     }
+    client.setTitle("jfControls");
     return Panels.getPanel("main", client);
   }
 

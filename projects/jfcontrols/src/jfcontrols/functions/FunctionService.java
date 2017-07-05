@@ -224,6 +224,8 @@ public class FunctionService extends Thread {
   }
 
   public static boolean generateFunction(int fid, SQL sql) {
+    String name = sql.select1value("select name from jfc_funcs where id=" + fid);
+    JFLog.log("Compiling func:" + fid + ":" + name);
     String code = FunctionCompiler.generateFunction(fid, sql);
     if (code == null) return false;
     new File(Paths.dataPath + "/work/java").mkdirs();

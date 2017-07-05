@@ -42,4 +42,17 @@ public class Images {
       return res;
     }
   }
+
+  public static boolean exists(String name) {
+    synchronized(images) {
+      Resource res = images.get(name);
+      if (res != null) return true;
+      File file = new File(Paths.imagesPath + "/" + name);
+      if (file.exists()) return true;
+      InputStream is = Images.class.getResourceAsStream("jfcontrols/images/" + name + ".png");
+      if (is == null) return false;
+      try {is.close();} catch (Exception e) {}
+      return true;
+    }
+  }
 }

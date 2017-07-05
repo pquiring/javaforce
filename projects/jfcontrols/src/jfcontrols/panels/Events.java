@@ -1440,6 +1440,7 @@ public class Events {
     }
   }
   public static void press(Component c) {
+    JFLog.log("press:" + c);
     String events = (String)c.getProperty("events");
     if (events == null) return;
     String parts[] = events.split("[|]");
@@ -1467,6 +1468,7 @@ public class Events {
     }
   }
   public static void release(Component c) {
+    JFLog.log("release:" + c);
     String events = (String)c.getProperty("events");
     if (events == null) return;
     String parts[] = events.split("[|]");
@@ -1496,6 +1498,7 @@ public class Events {
   public static void doCommand(String cmd, String args[], WebUIClient client) {
     //TODO : these commands need to be processed by the FunctionService thread - in between scan cycles
     ClientContext context = (ClientContext)client.getProperty("context");
+    JFLog.log("doCommand:" + cmd);
     switch (cmd) {
       case "toggleBit": {
         TagAddr ta = context.decode(args[0]);

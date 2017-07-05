@@ -523,18 +523,21 @@ public abstract class Component {
   protected void onMouseUp(String args[]) {}
   private MouseUp mouseUp;
   public void addMouseUpListener(MouseUp handler) {
+    addEvent("onmouseup", "onMouseUp(event, this);");
     mouseUp = handler;
   }
 
   protected void onMouseDown(String args[]) {}
   private MouseDown mouseDown;
   public void addMouseDownListener(MouseDown handler) {
+    addEvent("onmousedown", "onMouseDown(event, this);");
     mouseDown = handler;
   }
 
   protected void onMouseMove(String args[]) {}
   private MouseMove mouseMove;
   public void addMouseMoveListener(MouseMove handler) {
+    addEvent("onmousemove", "onMouseMove(event, this);");
     mouseMove = handler;
   }
 

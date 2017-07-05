@@ -197,6 +197,9 @@ public class WebUIClient {
   public boolean isReady() {
     return isReady;
   }
+  public void setTitle(String title) {
+    sendEvent("body", "settitle", new String[] {"title=" + title});
+  }
 
   private Resized resized;
   public void addResizedListener(Resized handler) {
