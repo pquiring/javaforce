@@ -100,7 +100,7 @@ public class Panels {
     TagAddr ta = new TagAddr();
     ta.name = "alarms";
     TagBase tag = context.getTag(ta);
-    context.addListener(tag, alarms, (_tag, _oldValue, _newValue, _cmp) -> {
+    context.addListener(tag, alarms, true, (_tag, _oldValue, _newValue, _cmp) -> {
       updateAlarmCount(alarms, client);
     });
     updateAlarmCount(alarms, client);
@@ -190,7 +190,7 @@ public class Panels {
         c.setProperty("tag", tagName);
         if (!tagName.startsWith("jfc_")) {
           TagAddr ta = context.decode(tagName);
-          context.addListener((MonitoredTag)context.getTag(ta), c, (tag, oldValue, newValue, cmp) -> {
+          context.addListener((MonitoredTag)context.getTag(ta), c, false, (tag, oldValue, newValue, cmp) -> {
 //            JFLog.log("update:" + tag + ":" + newValue + ":" + cmp);
             String type = Events.getComponentType(cmp);
             switch (type) {
@@ -1086,7 +1086,7 @@ public class Panels {
         TagAddr ta = new TagAddr();
         ta.name = "alarms";
         TagBase tag = context.getTag(ta);
-        context.addListener(tag, panel, (_tag, _oldValue, _newValue, _cmp) -> {
+        context.addListener(tag, panel, false, (_tag, _oldValue, _newValue, _cmp) -> {
           updateAlarms(panel, panel.getClient());
         });
         break;
@@ -1098,7 +1098,7 @@ public class Panels {
         TagAddr ta = new TagAddr();
         ta.name = "alarms";
         TagBase tag = context.getTag(ta);
-        context.addListener(tag, panel, (_tag, _oldValue, _newValue, _cmp) -> {
+        context.addListener(tag, panel, false, (_tag, _oldValue, _newValue, _cmp) -> {
           updateAlarmHistory(panel, panel.getClient());
         });
         client.setProperty("history", panel);

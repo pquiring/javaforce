@@ -62,6 +62,8 @@ public class ClientContext extends Thread {
     public String oldValue, newValue;
     public Component cmp;
     public TagAction action;
+    public boolean anyChange;
+
     public Monitor(MonitoredTag tag, Component cmp, TagAction action, ClientContext ctx) {
 //      JFLog.log("addListener2:" + tag.getTagID() + "," + tag.getIndex() + "," + tag.getMember() + "," + tag.getMemberIndex() + ":" + this);
       this.tag = tag;
@@ -72,9 +74,11 @@ public class ClientContext extends Thread {
     public void tagChanged(TagBase tagBase, TagID id, String oldValue, String newValue) {
       //NOTE : this function is running in FunctionService - it must return asap
       synchronized(ctx.lock) {
-        if (id.tid != tag.getTagID()) return;
-        if (id.mid != tag.getMember()) return;
-        if (id.midx != tag.getMemberIndex()) return;
+        if (!anyChange) {
+          if (id.tid != tag.getTagID()) return;
+          if (id.mid != tag.getMember()) return;
+          if (id.midx != tag.getMemberIndex()) return;
+        }
 //        JFLog.log("tagChanged:" + tag + ":" + id + ":" + oldValue + ":" + newValue + ":" + this);
         this.oldValue = oldValue;
         this.newValue = newValue;
@@ -84,10 +88,11 @@ public class ClientContext extends Thread {
     }
   }
 
-  public void addListener(TagBase tag, Component cmp, TagAction action) {
+  public void addListener(TagBase tag, Component cmp, boolean anyChange, TagAction action) {
     if (tag == null) return;
     MonitoredTag mtag = (MonitoredTag)tag;
     Monitor monitor = new Monitor(mtag, cmp, action, this);
+    monitor.anyChange = anyChange;
     listeners.add(monitor);
     mtag.addListener(monitor);
   }
