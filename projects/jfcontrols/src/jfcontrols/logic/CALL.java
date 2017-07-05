@@ -37,6 +37,10 @@ public class CALL extends Logic {
     return 1;
   }
 
+  public String getTagName(int idx) {
+    return "func";
+  }
+
   public int getTagType(int idx) {
     return TagType.function;
   }
