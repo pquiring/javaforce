@@ -207,15 +207,17 @@ public class FunctionRuntime extends TagsCache {
     TagBase enTag = timer.getMember(IDs.timer_mid_enabled);
     boolean en = doneTag.getBoolean();
     if (enabled) {
-      if (!en) {
-        //(re)start timer
-        last = now;
-        left = timeout;
+      last = now;
+      left = timeout;
+      if (run == false) {
         run = true;
         runTag.setBoolean(run);
       }
-    }
-    if (left > 0) {
+      if (done == true) {
+        done = false;
+        doneTag.setBoolean(done);
+      }
+    } else if (left > 0) {
       long delta = now - last;
       left -= delta;
       if (left < 0) left = 0;
