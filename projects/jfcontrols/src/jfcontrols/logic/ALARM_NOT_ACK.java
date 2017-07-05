@@ -17,7 +17,7 @@ public class ALARM_NOT_ACK extends Logic {
   }
 
   public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "enabled &= alarm_not_active();";
+    return "enabled &= alarm_not_ack();";
   }
 
   public int getTagsCount() {
