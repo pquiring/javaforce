@@ -20,7 +20,7 @@ public class GET_TIME extends Logic {
   }
 
   public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "gettime(tags[1]);";
+    return "if (enabled) gettime(tags[1]);";
   }
 
   public int getTagsCount() {

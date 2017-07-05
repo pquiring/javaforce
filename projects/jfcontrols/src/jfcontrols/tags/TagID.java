@@ -30,4 +30,8 @@ public class TagID {
   public int hashCode() {
     return idx + mid + midx;
   }
+
+  public String toString() {
+    return "TagID{" + tid + "," + idx + "," + mid + "," + midx + "}";
+  }
 }

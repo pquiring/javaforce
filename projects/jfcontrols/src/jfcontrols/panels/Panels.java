@@ -195,17 +195,21 @@ public class Panels {
         my = y2;
       }
       setCellSize(c, rs[a]);
-      String cellTag = cells[a][TAG];
-      if (cellTag != null) {
-        c.setProperty("tag", cellTag);
-        if (!cellTag.startsWith("jfc_")) {
-          TagAddr ta = context.decode(cellTag);
+      if (tagName != null) {
+        c.setProperty("tag", tagName);
+        if (!tagName.startsWith("jfc_")) {
+          TagAddr ta = context.decode(tagName);
           context.addListener((MonitoredTag)context.getTag(ta), c, (tag, oldValue, newValue, cmp) -> {
+//            JFLog.log("update:" + tag + ":" + newValue + ":" + cmp);
             String type = Events.getComponentType(cmp);
             switch (type) {
               case "label":
                 Label lbl = (Label)cmp;
                 lbl.setText(newValue);
+                break;
+              case "button":
+                Button b = (Button)cmp;
+                b.setText(newValue);
                 break;
               case "light":
                 Light l = (Light)cmp;

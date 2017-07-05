@@ -50,25 +50,31 @@ public class LocalTag extends MonitoredTag {
         insert = false;
       }
       oldValue = value;
+      id = new TagID(tid, 0, 0, 0);
     }
   }
 
   public void updateRead(SQL sql) {
   }
 
+  private TagID id;
+
   public void updateWrite(SQL sql) {
     if (dirty) {
       if (array || udt) {
-        TagValue tvs[] = values.values().toArray(new TagValue[0]);
+        TagValue tvs[] = values.values().toArray(new TagValue[values.size()]);
         for(int a=0;a<tvs.length;a++) {
           TagValue tv = tvs[a];
-          if (tv.insert) {
-            sql.execute("insert into jfc_tagvalues (tid,idx,mid,midx,value) values (" + tid + "," + tv.id.idx + "," + tv.id.mid + "," + tv.id.midx + "," + SQL.quote(tv.value) + ")");
-            tv.insert = false;
-          } else {
-            sql.execute("update jfc_tagvalues set value=" + SQL.quote(tv.value) + " where idx=" + tv.id.idx + " and mid=" + tv.id.mid + " and midx=" + tv.id.midx + " and tid=" + tid);
+          if (tv.dirty) {
+            if (tv.insert) {
+              sql.execute("insert into jfc_tagvalues (tid,idx,mid,midx,value) values (" + tid + "," + tv.id.idx + "," + tv.id.mid + "," + tv.id.midx + "," + SQL.quote(tv.value) + ")");
+              tv.insert = false;
+            } else {
+              sql.execute("update jfc_tagvalues set value=" + SQL.quote(tv.value) + " where idx=" + tv.id.idx + " and mid=" + tv.id.mid + " and midx=" + tv.id.midx + " and tid=" + tid);
+            }
+            tagChanged(tv.id, tv.value, tv.oldValue);
+            tv.dirty = false;
           }
-          tagChanged(tv.id, tv.value, tv.oldValue);
         }
       } else {
         if (insert) {
@@ -77,7 +83,7 @@ public class LocalTag extends MonitoredTag {
         } else {
           sql.execute("update jfc_tagvalues set value=" + SQL.quote(value) + " where idx=0 and mid=0 and midx=0 and tid=" + tid);
         }
-        tagChanged(null, oldValue, value);
+        tagChanged(id, oldValue, value);
         oldValue = value;
       }
       dirty = false;
@@ -127,6 +133,7 @@ public class LocalTag extends MonitoredTag {
   }
 
   public void setValue(String value) {
+//    JFLog.log("setValue:" + tid + "=" + value);
     if (array || udt) {
       JFLog.log("Error:LocalTag array:must call getIndex()");
       return;
@@ -136,6 +143,7 @@ public class LocalTag extends MonitoredTag {
   }
 
   public void setValue(String value, int idx, int mid, int midx) {
+//    JFLog.log("setValue:" + tid + ":" + idx + "," + mid + "," + midx + "=" + value + ":" + udt + ":" + this);
     if (array || udt) {
       synchronized(arrayLock) {
         TagID id;
@@ -144,6 +152,7 @@ public class LocalTag extends MonitoredTag {
         } else {
           id = new TagID(tid, idx, 0, 0);
         }
+//        JFLog.log("setValue:id=" + id);
         TagValue tv = values.get(id);
         if (tv == null) {
           tv = new TagValue(id);
@@ -389,7 +398,7 @@ public class LocalTag extends MonitoredTag {
   }
 
   public TagBase getMember(int mid) {
-    return new Member(this, -1, mid);
+    return new Member(this, 0, mid);
   }
 
   public TagBase getMember(int idx, int mid) {
@@ -397,7 +406,12 @@ public class LocalTag extends MonitoredTag {
   }
 
   public int getMember(String name) {
-    return mids.get(name);
+    Integer mid = mids.get(name);
+    if (mid == null) {
+      JFLog.log("Error:member not found:" + name);
+      return -1;
+    }
+    return mid.intValue();
   }
 
   public String getComment() {

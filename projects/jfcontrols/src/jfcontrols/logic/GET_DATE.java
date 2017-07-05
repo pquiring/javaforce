@@ -20,7 +20,7 @@ public class GET_DATE extends Logic {
   }
 
   public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "getdate(tags[1]);";
+    return "if (enabled) getdate(tags[1]);";
   }
 
   public int getTagsCount() {

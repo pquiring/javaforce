@@ -149,7 +149,7 @@ public abstract class TagBase {
   }
 
   public String toString() {
-    return "Tag:" + type;
+    return "Tag{" + getTagID() + "," + getIndex() + "," + getMember() + "," + getMemberIndex() + "}";
   }
 
   public boolean getBoolean() {

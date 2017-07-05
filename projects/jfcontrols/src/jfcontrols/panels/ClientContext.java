@@ -61,20 +61,23 @@ public class ClientContext extends Thread {
     public ClientContext ctx;
     public String oldValue, newValue;
     public Component cmp;
-    public TagID id;
     public TagAction action;
     public Monitor(MonitoredTag tag, Component cmp, TagAction action, ClientContext ctx) {
+//      JFLog.log("addListener2:" + tag.getTagID() + "," + tag.getIndex() + "," + tag.getMember() + "," + tag.getMemberIndex() + ":" + this);
       this.tag = tag;
       this.cmp = cmp;
       this.action = action;
       this.ctx = ctx;
     }
-    public void tagChanged(TagBase tag, TagID id, String oldValue, String newValue) {
-      //NOTE : this function is running in FuntionService - it must return asap
+    public void tagChanged(TagBase tagBase, TagID id, String oldValue, String newValue) {
+      //NOTE : this function is running in FunctionService - it must return asap
       synchronized(ctx.lock) {
+        if (id.tid != tag.getTagID()) return;
+        if (id.mid != tag.getMember()) return;
+        if (id.midx != tag.getMemberIndex()) return;
+//        JFLog.log("tagChanged:" + tag + ":" + id + ":" + oldValue + ":" + newValue + ":" + this);
         this.oldValue = oldValue;
         this.newValue = newValue;
-        this.id = id;
         ctx.stack.add(this);
         ctx.lock.notify();
       }
@@ -119,6 +122,7 @@ public class ClientContext extends Thread {
         monitor = stack.remove(0);
       }
       if (monitor == null) continue;
+//      JFLog.log("tagChanged:" + monitor.tag + ":" + monitor.oldValue + ":" + monitor.newValue);
       monitor.action.tagChanged(monitor.tag, monitor.oldValue, monitor.newValue, monitor.cmp);
     }
   }

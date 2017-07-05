@@ -41,6 +41,7 @@ public class TagsCache {
       }
       if (tag.isUDT() && ta.member != null) {
         int mid = tag.getMember(ta.member);
+        if (mid == -1) return null;
         ret = ret.getMember(mid);
         if (tag.isArray() && ta.midx != -1) {
           ret = ret.getIndex(ta.midx);
