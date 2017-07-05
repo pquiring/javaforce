@@ -89,6 +89,28 @@ public class FunctionRuntime extends TagsCache {
       sql.execute("delete from jfc_tagvalues where tid=" + tid + " and idx=" + idx + " and mid=" + mid + " and midx=" + midx);
     }
   }
+  public void arrayshift(TagBase tags[]) {
+    TagBase tag = tags[1];
+    boolean isMember = tag.isMember();
+    int tid = tag.getTagID();
+    if (!isMember) {
+      int cnt = tags[2].getInt();
+      for(int a=0;a<cnt;a++) {
+        String zero = sql.select1value("select value from jfc_tagvalues where tid=" + tid + " and idx=0");
+        if (zero != null) break;
+        sql.execute("update jfc_tagvalues set idx=idx-1 where tid=" + tid);
+      }
+    } else {
+      int mid = tag.getMember();
+      int idx = tag.getIndex();
+      int cnt = tags[2].getInt();
+      for(int a=0;a<cnt;a++) {
+        String zero = sql.select1value("select value from jfc_tagvalues where tid=" + tid + " and idx=" + idx + " and mid=" + mid + " and midx=0");
+        if (zero != null) break;
+        sql.execute("update jfc_tagvalues set midx=midx-1 where tid=" + tid + " and idx=" + idx + " and mid=" + mid);
+      }
+    }
+  }
 
   public void getdate(TagBase tag) {
     if (tag.getType() != IDs.uid_date) {

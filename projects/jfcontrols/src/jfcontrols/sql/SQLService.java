@@ -177,6 +177,7 @@ public class SQLService {
     sql.execute("insert into jfc_logics (name,gid) values ('array_length','array')");
     sql.execute("insert into jfc_logics (name,gid) values ('array_size','array')");
     sql.execute("insert into jfc_logics (name,gid) values ('array_remove','array')");
+    sql.execute("insert into jfc_logics (name,gid) values ('array_shift','array')");
 
     sql.execute("insert into jfc_logics (name,gid) values ('get_date','system')");
     sql.execute("insert into jfc_logics (name,gid) values ('get_time','system')");
