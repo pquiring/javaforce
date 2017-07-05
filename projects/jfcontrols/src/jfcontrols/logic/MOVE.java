@@ -32,7 +32,7 @@ public class MOVE extends Logic {
         break;
       case TagType.float64:
         switch (types[2]) {
-          case TagType.float32: sb.append("tags[2].setFloat((float)tags[1].getDouble())"); break;
+          case TagType.float32: sb.append("tags[2].setFloat((float)tags[1].getDouble());"); break;
           case TagType.float64: sb.append("tags[2].setDouble(tags[1].getDouble());"); break;
           case TagType.int64: sb.append("tags[2].setLong((long)tags[1].getDouble());"); break;
           default: sb.append("tags[2].setInt((int)tags[1].getDouble());"); break;
@@ -40,7 +40,7 @@ public class MOVE extends Logic {
         break;
       case TagType.int64:
         switch (types[2]) {
-          case TagType.float32: sb.append("tags[2].setFloat((float)tags[1].getLong())"); break;
+          case TagType.float32: sb.append("tags[2].setFloat((float)tags[1].getLong());"); break;
           case TagType.float64: sb.append("tags[2].setDouble((double)tags[1].getLong());"); break;
           case TagType.int64: sb.append("tags[2].setLong((long)tags[1].getLong());"); break;
           default: sb.append("tags[2].setInt((int)tags[1].getLong());"); break;
@@ -48,7 +48,7 @@ public class MOVE extends Logic {
         break;
       default:
         switch (types[2]) {
-          case TagType.float32: sb.append("tags[2].setFloat((float)tags[1].getInt())"); break;
+          case TagType.float32: sb.append("tags[2].setFloat((float)tags[1].getInt());"); break;
           case TagType.float64: sb.append("tags[2].setDouble((double)tags[1].getInt());"); break;
           case TagType.int64: sb.append("tags[2].setLong((long)tags[1].getInt());"); break;
           default: sb.append("tags[2].setInt(tags[1].getInt());"); break;
