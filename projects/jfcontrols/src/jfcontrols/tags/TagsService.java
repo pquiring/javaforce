@@ -59,7 +59,7 @@ public class TagsService extends Thread {
         int minute = cal.get(Calendar.MINUTE);
         int second = cal.get(Calendar.SECOND);
         int millisecond = cal.get(Calendar.MILLISECOND);
-        String when = String.format("%04d/%02d/%02d %02d:%02d:%02d.%02d", year, month, day, hour, minute, second, millisecond);
+        String when = String.format("%04d/%02d/%02d %02d:%02d:%02d.%03d", year, month, day, hour, minute, second, millisecond);
         sql.execute("insert into jfc_alarmhistory (idx,when) values (" + id.idx + ",'" + when + "')");
       }
     });

@@ -272,13 +272,15 @@ public class FunctionRuntime extends TagsCache {
   public void alarm_ack_all() {
     String tid = sql.select1value("select id from jfc_tags where name='alarms'");
     String active[] = sql.select1col("select idx from jfc_tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_active + " and value='1'");
-    String ack[] = sql.select1col("select idx from jfc_tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack);
+    String ack[] = sql.select1col("select idx from jfc_tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and value='1'");
     for(int a=0;a<active.length;a++) {
       String idx = active[a];
       for(int b=0;b<ack.length;b++) {
         if (ack[b].equals(idx)) {idx = null; break;}
       }
-      if (idx == null) {
+      if (idx == null) continue;
+      String value = sql.select1value("select value from jfc_tagvalues where tid=" + tid + " and mid=" + IDs.alarm_mid_ack + " and idx=" + idx);
+      if (value != null) {
         //update
         sql.execute("update jfc_tagvalues set value='1' where idx=" + idx + " and tid=" + tid + " and mid=" + IDs.alarm_mid_ack);
       } else {

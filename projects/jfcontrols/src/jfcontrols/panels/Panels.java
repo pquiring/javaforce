@@ -101,9 +101,9 @@ public class Panels {
     ta.name = "alarms";
     TagBase tag = context.getTag(ta);
     context.addListener(tag, alarms, (_tag, _oldValue, _newValue, _cmp) -> {
-      updateAlarmCount(alarms, client, true);
+      updateAlarmCount(alarms, client);
     });
-    updateAlarmCount(alarms, client, false);
+    updateAlarmCount(alarms, client);
 
     panel.add(getPopupPanel(client, "Login", "jfc_login"));
     panel.add(getPopupPanel(client, "Menu", "jfc_menu"));
@@ -129,15 +129,6 @@ public class Panels {
     panel.add(keypad);
     if (pname.equals("jfc_panel_editor")) {
       panel.add(getPopupPanel(client, "Properties", "jfc_panel_props"));
-    }
-    if (pname.equals("main")) {
-      if (audio_init == null) {
-        panel.addLoadedListener((cmp) -> {
-          client.sendEvent("body", "audio-init", null);
-          updateAlarmCount(alarms, client, true);
-        });
-        client.setProperty("audio-init", "true");
-      }
     }
     return panel;
   }
@@ -1209,7 +1200,7 @@ public class Panels {
     pb.setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16), Integer.valueOf(c2, 16));
     return pb;
   }
-  private static void updateAlarmCount(Label label, WebUIClient client, boolean postEvent) {
+  private static void updateAlarmCount(Label label, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
     SQL sql = context.sql;
     String tid = sql.select1value("select id from jfc_tags where name='alarms'");
@@ -1223,12 +1214,12 @@ public class Panels {
     if (!FunctionService.isActive()) return;
     boolean unack = FunctionRuntime.alarm_not_ack();
     if (!count.equals("0") && unack) {
-      if (postEvent && !context.alarmActive) {
+      if (!context.alarmActive) {
         client.sendEvent("body", "audio-alarm-start", null);
         context.alarmActive = true;
       }
     } else {
-      if (postEvent && context.alarmActive) {
+      if (context.alarmActive) {
         client.sendEvent("body", "audio-alarm-stop", null);
         context.alarmActive = false;
       }

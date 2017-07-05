@@ -8,7 +8,7 @@ var temp = document.createElement('div');
 
 var delay = 500;
 
-var audioCtx;
+var audioCtx = new AudioContext();
 var audioOscillator;
 var audioOscillatorFreq;
 
@@ -175,9 +175,6 @@ function wsevent(event) {
       break;
     case "ping":
       sendPong(msg.id);
-      break;
-    case "audio-init":
-      audioCtx = new AudioContext();
       break;
     case "audio-alarm-start":
       audioOscillator = audioCtx.createOscillator();

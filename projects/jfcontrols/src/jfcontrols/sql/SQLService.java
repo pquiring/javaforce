@@ -67,7 +67,7 @@ public class SQLService {
     sql.execute("create table jfc_lists (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(64) unique)");
     sql.execute("create table jfc_listdata (id int not null generated always as identity (start with 1, increment by 1) primary key, lid int, value int, text varchar(128))");
     sql.execute("create table jfc_config (id varchar(64) unique, value varchar(512))");
-    sql.execute("create table jfc_alarmhistory (id int not null generated always as identity (start with 1, increment by 1) primary key, idx int, when varchar(22))");
+    sql.execute("create table jfc_alarmhistory (id int not null generated always as identity (start with 1, increment by 1) primary key, idx int, when varchar(23))");
     sql.execute("create table jfc_logics (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(64) unique, shortname varchar(64), gid varchar(64))");
     sql.execute("create table jfc_watch (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(64) unique)");
     sql.execute("create table jfc_watchtags (id int not null generated always as identity (start with 1, increment by 1) primary key, wid int, tag varchar(64))");
