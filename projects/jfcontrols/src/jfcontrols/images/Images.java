@@ -20,7 +20,7 @@ public class Images {
     synchronized(images) {
       Resource res = images.get(name);
       if (res == null) {
-        File file = new File(Paths.imagesPath + "/" + name);
+        File file = new File(Paths.imagesPath + "/" + name + ".png");
         if (file.exists()) {
           try {
             FileInputStream fis = new FileInputStream(file);
@@ -43,15 +43,17 @@ public class Images {
     }
   }
 
+  //not working ???
   public static boolean exists(String name) {
     synchronized(images) {
       Resource res = images.get(name);
       if (res != null) return true;
-      File file = new File(Paths.imagesPath + "/" + name);
+      File file = new File(Paths.imagesPath + "/" + name + ".png");
       if (file.exists()) return true;
-      InputStream is = Images.class.getResourceAsStream("jfcontrols/images/" + name + ".png");
-      if (is == null) return false;
-      try {is.close();} catch (Exception e) {}
+      if (Images.class.getResource("jfcontrols/images/" + name + ".png") == null) {
+        JFLog.log("Image not found:" + name);
+        return false;
+      }
       return true;
     }
   }

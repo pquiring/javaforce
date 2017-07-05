@@ -961,7 +961,7 @@ public class Panels {
             desc = shortname;
           }
           String style = "border";
-          if (Images.exists(desc)) {
+          if (Images.getImage(desc) != null) {
             desc = "!image:" + desc;
           } else {
             String lns[] = desc.split("_");

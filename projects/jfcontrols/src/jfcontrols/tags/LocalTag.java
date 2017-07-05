@@ -22,6 +22,7 @@ public class LocalTag extends MonitoredTag {
   private String comment;
   private String name;
   private String udtname;
+  private boolean insert;
 
   public LocalTag(String name, int type, boolean unsigned, boolean array, SQL sql) {
     super(type, unsigned, array);
@@ -42,7 +43,12 @@ public class LocalTag extends MonitoredTag {
       values = new HashMap<>();
     } else {
       value = sql.select1value("select value from jfc_tagvalues where idx=0 and mid=0 and midx=0 and tid=" + tid);
-      if (value == null) value = "0";
+      if (value == null) {
+        value = "0";
+        insert = true;
+      } else {
+        insert = false;
+      }
       oldValue = value;
     }
   }
@@ -65,7 +71,12 @@ public class LocalTag extends MonitoredTag {
           tagChanged(tv.id, tv.value, tv.oldValue);
         }
       } else {
-        sql.execute("update jfc_tagvalues set value=" + SQL.quote(value) + " where idx=0 and mid=0 and midx=0 and tid=" + tid);
+        if (insert) {
+          sql.execute("insert into jfc_tagvalues (tid,value,idx,mid,midx) values(" + tid + "," + SQL.quote(value) + ",0,0,0)");
+          insert = false;
+        } else {
+          sql.execute("update jfc_tagvalues set value=" + SQL.quote(value) + " where idx=0 and mid=0 and midx=0 and tid=" + tid);
+        }
         tagChanged(null, oldValue, value);
         oldValue = value;
       }
