@@ -55,7 +55,6 @@ public class MOVE extends Logic {
         }
         break;
     }
-
     sb.append("}\r\n");
     return sb.toString();
   }

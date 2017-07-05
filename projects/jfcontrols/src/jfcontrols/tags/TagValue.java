@@ -13,5 +13,4 @@ public class TagValue {
   public boolean dirty;
   public String value;
   public String oldValue;
-  public boolean insert;
 }

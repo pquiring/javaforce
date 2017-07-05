@@ -22,7 +22,6 @@ public class LocalTag extends MonitoredTag {
   private String comment;
   private String name;
   private String udtname;
-  private boolean insert;
 
   public LocalTag(String name, int type, boolean unsigned, boolean array, SQL sql) {
     super(type, unsigned, array);
@@ -45,9 +44,6 @@ public class LocalTag extends MonitoredTag {
       value = sql.select1value("select value from jfc_tagvalues where idx=0 and mid=0 and midx=0 and tid=" + tid);
       if (value == null) {
         value = "0";
-        insert = true;
-      } else {
-        insert = false;
       }
       oldValue = value;
       id = new TagID(tid, 0, 0, 0);
@@ -66,9 +62,9 @@ public class LocalTag extends MonitoredTag {
         for(int a=0;a<tvs.length;a++) {
           TagValue tv = tvs[a];
           if (tv.dirty) {
-            if (tv.insert) {
+            String curValue = sql.select1value("select value from jfc_tagvalues where idx=" + tv.id.idx + " and mid=" + tv.id.mid + " and midx=" + tv.id.midx + " and tid=" + tid);
+            if (curValue == null) {
               sql.execute("insert into jfc_tagvalues (tid,idx,mid,midx,value) values (" + tid + "," + tv.id.idx + "," + tv.id.mid + "," + tv.id.midx + "," + SQL.quote(tv.value) + ")");
-              tv.insert = false;
             } else {
               sql.execute("update jfc_tagvalues set value=" + SQL.quote(tv.value) + " where idx=" + tv.id.idx + " and mid=" + tv.id.mid + " and midx=" + tv.id.midx + " and tid=" + tid);
             }
@@ -77,9 +73,9 @@ public class LocalTag extends MonitoredTag {
           }
         }
       } else {
-        if (insert) {
+        String curValue = sql.select1value("select value from jfc_tagvalues where idx=0 and mid=0 and midx=0 and tid=" + tid);
+        if (curValue == null) {
           sql.execute("insert into jfc_tagvalues (tid,value,idx,mid,midx) values(" + tid + "," + SQL.quote(value) + ",0,0,0)");
-          insert = false;
         } else {
           sql.execute("update jfc_tagvalues set value=" + SQL.quote(value) + " where idx=0 and mid=0 and midx=0 and tid=" + tid);
         }
@@ -93,7 +89,6 @@ public class LocalTag extends MonitoredTag {
   private void readValue(TagValue tv) {
     String value = TagsService.sql.select1value("select value from jfc_tagvalues where tid=" + tid + " and idx=" + tv.id.idx + " and mid=" + tv.id.mid + " and midx=" + tv.id.midx);
     if (value == null) {
-      tv.insert = true;
       value = "0";
     }
     tv.value = value;
