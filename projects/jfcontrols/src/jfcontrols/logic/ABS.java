@@ -18,10 +18,10 @@ public class ABS extends Logic {
   }
 
   public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    if (types[1] == TagType.float32) return "if (enabled) tags[2].setFloat(Main.abs(tags[1].getFloat()));\r\n";
-    if (types[1] == TagType.float64) return "if (enabled) tags[2].setDouble(Main.abs(tags[1].getDouble()));\r\n";
-    if (types[1] == TagType.int64) return "if (enabled) tags[2].setLong(Main.abs(tags[1].getLong()));\r\n";
-    return "if (enabled) tags[2].setInt(Main.abs(tags[1].getInt()));\r\n";
+    if (types[1] == TagType.float32) return "if (enabled) tags[2].setFloat(Math.abs(tags[1].getFloat()));\r\n";
+    if (types[1] == TagType.float64) return "if (enabled) tags[2].setDouble(Math.abs(tags[1].getDouble()));\r\n";
+    if (types[1] == TagType.int64) return "if (enabled) tags[2].setLong(Math.abs(tags[1].getLong()));\r\n";
+    return "if (enabled) tags[2].setInt(Math.abs(tags[1].getInt()));\r\n";
   }
 
   public int getTagsCount() {
