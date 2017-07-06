@@ -21,13 +21,17 @@ public class ConfigPanel extends CenteredPanel {
     loadTags();
 
     add = new Button("Add");
+    add.setFontSize(24);
     add(add);
     edit = new Button("Edit");
+    edit.setFontSize(24);
     add(edit);
     delete = new Button("Delete");
+    delete.setFontSize(24);
     add(delete);
 
     back = new Button("Back");
+    back.setFontSize(24);
     add(back);
 
     confirmDelete = new MessagePopup("Delete Tag?", "Are you sure?", true);
