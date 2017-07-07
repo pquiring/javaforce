@@ -411,20 +411,20 @@ public class SQLService {
     sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('jfc_panel_editor','Panel Editor', false, true)");
     id = sql.select1value("select id from jfc_panels where name='jfc_panel_editor'");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",1,1,3,1,'combobox','panel_type','','jfc_panel_type')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,2,1,'button','','Add','jfc_panel_editor_add')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",8,1,2,1,'button','','Delete','jfc_panel_editor_del')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",11,1,2,1,'button','','Props','jfc_panel_editor_props')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",14,1,1,1,'label','','Move:','smallfont')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",15,1,1,1,'button','','!image:m_u','jfc_panel_editor_move_u','border')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",16,1,1,1,'button','','!image:m_d','jfc_panel_editor_move_d','border')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",17,1,1,1,'button','','!image:m_l','jfc_panel_editor_move_l','border')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",18,1,1,1,'button','','!image:m_r','jfc_panel_editor_move_r','border')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",20,1,1,1,'label','','Size:','smallfont')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",21,1,1,1,'button','','!image:s_w_i','jfc_panel_editor_size_w_inc','border')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",22,1,1,1,'button','','!image:s_w_d','jfc_panel_editor_size_w_dec','border')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",23,1,1,1,'button','','!image:s_h_i','jfc_panel_editor_size_h_inc','border')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",24,1,1,1,'button','','!image:s_h_d','jfc_panel_editor_size_h_dec','border')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",26,1,2,1,'link','','Help','panel_editor')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,1,1,'button','','!image:add','jfc_panel_editor_add')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",7,1,1,1,'button','','!image:minus','jfc_panel_editor_del')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",9,1,2,1,'button','','Props','jfc_panel_editor_props')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",12,1,1,1,'label','','Move:','smallfont')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",13,1,1,1,'button','','!image:m_u','jfc_panel_editor_move_u','border')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",14,1,1,1,'button','','!image:m_d','jfc_panel_editor_move_d','border')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",15,1,1,1,'button','','!image:m_l','jfc_panel_editor_move_l','border')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",16,1,1,1,'button','','!image:m_r','jfc_panel_editor_move_r','border')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,style) values (" + id + ",18,1,1,1,'label','','Size:','smallfont')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",19,1,1,1,'button','','!image:s_w_i','jfc_panel_editor_size_w_inc','border')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",20,1,1,1,'button','','!image:s_w_d','jfc_panel_editor_size_w_dec','border')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",21,1,1,1,'button','','!image:s_h_i','jfc_panel_editor_size_h_inc','border')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func,style) values (" + id + ",22,1,1,1,'button','','!image:s_h_d','jfc_panel_editor_size_h_dec','border')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",24,1,2,1,'link','','Help','panel_editor')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name) values (" +  id + ",0,2,1,1,'table','jfc_panel_editor')");
 
     sql.execute("insert into jfc_panels (name, popup, builtin) values ('jfc_panel_props', true, true)");
@@ -471,8 +471,8 @@ public class SQLService {
 
     sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('jfc_func_editor','Function Editor', false, true)");
     id = sql.select1value("select id from jfc_panels where name='jfc_func_editor'");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",1,1,1,1,'button','','+','jfc_func_editor_add_rung')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",3,1,1,1,'button','','-','jfc_func_editor_del_rung')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",1,1,1,1,'button','','!image:add','jfc_func_editor_add_rung')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",3,1,1,1,'button','','!image:minus','jfc_func_editor_del_rung')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",5,1,2,1,'button','','Edit','jfc_func_editor_edit_rung')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",8,1,2,1,'button','','Compile','jfc_func_editor_compile')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",11,1,2,1,'button','jfc_debug','Debug','jfc_func_editor_debug')");

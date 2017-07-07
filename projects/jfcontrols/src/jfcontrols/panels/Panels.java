@@ -343,6 +343,7 @@ public class Panels {
     Button b = null;
     if (text.startsWith("!image:")) {
       b = new Button(Images.getImage(text.substring(7)));
+      b.setBorder(true);
     } else {
       b = new Button(v[TEXT]);
     }

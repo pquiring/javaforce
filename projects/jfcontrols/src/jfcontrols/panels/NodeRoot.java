@@ -27,6 +27,7 @@ public class NodeRoot extends Node {
     JFLog.log("NodeRoot.saveLogic() " + this);
     int bid = 0;
     StringBuilder sb = new StringBuilder();
+    sb.append("h|");
     Node node = next, child;
     while (node != null) {
       switch (node.type) {
