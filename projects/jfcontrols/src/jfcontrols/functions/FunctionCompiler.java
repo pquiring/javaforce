@@ -60,27 +60,22 @@ public class FunctionCompiler {
       while (node != null) {
         switch (node.type) {
           case 't':
-            switch (node.next.type) {
-              case 'a':
-              case 'c':
-                sb.append("    en[eidx+1] = en[eidx];\r\n");
-                sb.append("    eidx++;\r\n");
-                break;
-            }
+            sb.append("    en[eidx+1] = en[eidx];\r\n");
+            sb.append("    eidx++;\r\n");
             break;
           case 'a':
           case 'c':
-            cnt = 0;
+            cnt = 1;
             upper = node.upper;
             while (upper != null) {
               cnt++;
               upper = upper.upper;
             }
-            sb.append("    en[eidx+1] = en[eidx-" + cnt + "];\r\n");
-            sb.append("    eidx++;\r\n");
+            sb.append("    en[eidx] = en[eidx-" + cnt + "];\r\n");
             break;
           case 'b':
-            //nothing
+            sb.append("    en[eidx+1] = en[eidx];\r\n");
+            sb.append("    eidx++;\r\n");
             break;
           case 'd':
             upper = node.upper;
@@ -89,6 +84,8 @@ public class FunctionCompiler {
               sb.append("    eidx--;\r\n");
               upper = upper.upper;
             };
+            sb.append("    en[eidx-1] = en[eidx];\r\n");
+            sb.append("    eidx--;\r\n");
             break;
           case '#': {
             if (node.blk.isFlowControl()) {
