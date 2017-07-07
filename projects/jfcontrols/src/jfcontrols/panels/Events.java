@@ -1460,6 +1460,7 @@ public class Events {
     String cmds[] = press.split(";");
     for(int a=0;a<cmds.length;a++) {
       String cmd_args_ = cmds[a].trim();
+      if (cmd_args_.length() == 0) continue;
       int i1 = cmd_args_.indexOf("(");
       int i2 = cmd_args_.indexOf(")");
       String cmd = cmd_args_.substring(0, i1);
