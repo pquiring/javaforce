@@ -46,8 +46,7 @@ public class FunctionCompiler {
     for(int rid=0;rid<norungs;rid++) {
       sb.append("//Rung #" + (rid+1) + "\r\n");
       sb.append("    enabled = true;\r\n");
-      sb.append("    eidx = 0;\r\n");
-      sb.append("    en[eidx] = enabled;\r\n");
+      sb.append("    en[0] = enabled;\r\n");
       int pos = sb.length();
       String rung[] = rungs[rid];
       String logic[] = rung[0].split("[|]");
@@ -57,11 +56,13 @@ public class FunctionCompiler {
       Node node = root, upper;
       String func = null;
       int cnt;
+      int eidx = 0;
       while (node != null) {
+        node.eidx = eidx;
         switch (node.type) {
           case 't':
-            sb.append("    en[eidx+1] = en[eidx];\r\n");
-            sb.append("    eidx++;\r\n");
+            sb.append("    en[" + (eidx+1) + "] = en[" + eidx + "];\r\n");
+            eidx++;
             break;
           case 'a':
           case 'c':
@@ -71,21 +72,21 @@ public class FunctionCompiler {
               cnt++;
               upper = upper.upper;
             }
-            sb.append("    en[eidx] = en[eidx-" + cnt + "];\r\n");
+            sb.append("    en[" + eidx + "] = en[" + (eidx-cnt) + "];\r\n");
             break;
           case 'b':
-            sb.append("    en[eidx+1] = en[eidx];\r\n");
-            sb.append("    eidx++;\r\n");
+            sb.append("    en[" + (eidx+1) + "] = en[" + eidx + "];\r\n");
+            eidx++;
             break;
           case 'd':
             upper = node.upper;
             while (upper != null) {
-              sb.append("    en[eidx-1] |= en[eidx];\r\n");
-              sb.append("    eidx--;\r\n");
+              sb.append("    en[" + upper.eidx + "] |= en[" + eidx + "];\r\n");
+              eidx = upper.eidx;
               upper = upper.upper;
             };
-            sb.append("    en[eidx-1] = en[eidx];\r\n");
-            sb.append("    eidx--;\r\n");
+            sb.append("    en[" + (eidx-1) + "] = en[" + eidx + "];\r\n");
+            eidx--;
             break;
           case '#': {
             if (node.blk.isFlowControl()) {
@@ -138,7 +139,7 @@ public class FunctionCompiler {
                   break;
               }
             }
-            sb.append("    enabled = en[eidx];\r\n");
+            sb.append("    enabled = en[" + eidx + "];\r\n");
             sb.append("    debug_en[" + debug_en + "][0]=enabled;\r\n");
             if (node.blk.getName().equals("CALL")) {
               sb.append(node.blk.getCode(func));
@@ -154,7 +155,7 @@ public class FunctionCompiler {
             }
             sb.append("    debug_en[" + debug_en + "][1]=enabled;\r\n");
             debug_en++;
-            sb.append("    en[eidx] = enabled;\r\n");
+            sb.append("    en[" + eidx + "] = enabled;\r\n");
             break;
           }
         }
@@ -167,7 +168,7 @@ public class FunctionCompiler {
       return null;
     }
 
-    sb.append("    return en[eidx];\r\n");
+    sb.append("    return en[0];\r\n");
     sb.append("  }\r\n");
     sb.append("}\r\n");
     return sb.toString();
@@ -210,7 +211,7 @@ public class FunctionCompiler {
         }
         case "b": {
           //b can only be under t,b
-          Node upper = Node.findLastOpenNode(nodes, "tb");
+          Node upper = Node.findFirstOpenNode(nodes, "tb");
           if (upper == null) {
             error = "Error:corrupt logic";
             return null;

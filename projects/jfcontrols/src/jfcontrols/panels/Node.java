@@ -59,6 +59,7 @@ public class Node {
   public NodeRoot root;
   public boolean highlight;  //possible fork dest
   public ArrayList<Node> childs = new ArrayList<Node>();
+  public int eidx;
 
   public Node addChild(char type, int x, int y) {
     Node node = new Node();

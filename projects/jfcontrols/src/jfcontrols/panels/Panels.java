@@ -974,9 +974,15 @@ public class Panels {
       }
       case "jfc_rung_viewer": {
         int fid = Integer.valueOf((String)client.getProperty("func"));
-        String data[] = sql.select1row("select rid,logic,comment from jfc_rungs where fid=" + fid + " and rid=" + arg);
+        int rid = Integer.valueOf(arg);
+        String data[] = sql.select1row("select rid,logic,comment from jfc_rungs where fid=" + fid + " and rid=" + rid);
         Rungs rungs = (Rungs)client.getProperty("rungs");
-        rungs.rungs.add(buildRung(data, cells, nodes, client, true, fid));
+        Rung rung = buildRung(data, cells, nodes, client, true, fid);
+        if (rung == null) {
+          rung = new Rung();
+          rung.root = new NodeRoot(fid, rid);
+        }
+        rungs.rungs.add(rung);
         break;
       }
       case "jfc_rung_viewer_end": {
@@ -1029,6 +1035,7 @@ public class Panels {
       case "jfc_rung_viewer": {
         Rungs rungs = (Rungs)client.getProperty("rungs");
         rungs.rungs.get(rungs.rungs.size() - 1).table = table;
+        layoutNodes(rungs.rungs.get(rungs.rungs.size()-1).root, table, client);
         break;
       }
     }
@@ -1073,8 +1080,13 @@ public class Panels {
         String data[] = sql.select1row("select rid,logic,comment from jfc_rungs where fid=" + fid + " and rid=" + rid);
         ArrayList<Node> nodes = new ArrayList<Node>();
         Rung rung = buildRung(data, cells, nodes, client, false, fid);
+        if (rung == null) {
+          rung = new Rung();
+          rung.root = new NodeRoot(fid, rid);
+        }
         client.setProperty("rungObj", rung);
         Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, nodes.toArray(new Node[nodes.size()]));
+        layoutNodes(rung.root, table, client);
         table.setName(name + "_table");
         panel.add(table);
         break;
@@ -1501,7 +1513,7 @@ public class Panels {
           //a can only be under t,a
           Node upper = Node.findFirstOpenNode(nodes, "ta");
           if (upper == null) {
-            JFLog.log("Error:corrupt logic");
+            JFLog.log("Error:corrupt logic (a)");
             return null;
           }
           x = upper.x;
@@ -1511,9 +1523,9 @@ public class Panels {
         }
         case "b": {
           //b can only be under t,b
-          Node upper = Node.findLastOpenNode(nodes, "tb");
+          Node upper = Node.findFirstOpenNode(nodes, "tb");
           if (upper == null) {
-            JFLog.log("Error:corrupt logic");
+            JFLog.log("Error:corrupt logic (b)");
             return null;
           }
           if (upper.x < x) upper.x = x;
@@ -1525,7 +1537,7 @@ public class Panels {
           //c can only be under t,a
           Node upper = Node.findFirstOpenNode(nodes, "ta");
           if (upper == null) {
-            JFLog.log("Error:corrupt logic");
+            JFLog.log("Error:corrupt logic (c)");
             return null;
           }
           x = upper.x;
@@ -1537,7 +1549,7 @@ public class Panels {
           //d can only be under t,b
           Node upper = Node.findFirstOpenNode(nodes, "tb");
           if (upper == null) {
-            JFLog.log("Error:corrupt logic");
+            JFLog.log("Error:corrupt logic (d)");
             return null;
           }
           if (upper.x < x) upper.x = x;
@@ -2022,7 +2034,7 @@ public class Panels {
       ArrayList<String[]> newCells = new ArrayList<String[]>();
       ArrayList<Node> newNodes = new ArrayList<Node>();
       buildNodes(root, logic, newCells, newNodes, client, root.rid, false);
-      buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), logic.getClient(), -1, -1, newNodes.toArray(new Node[newNodes.size()]));
+      buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), client, -1, -1, newNodes.toArray(new Node[newNodes.size()]));
     } while (root.changed);
     //calc max table size
     Node node = root;
