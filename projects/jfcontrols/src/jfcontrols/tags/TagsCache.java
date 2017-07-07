@@ -53,7 +53,7 @@ public class TagsCache {
       }
       return ret;
     } else {
-      TagBase tag = TagsService.getRemoteTag(ta.name);
+      TagBase tag = TagsService.getRemoteTag("c" + ta.cid + "#" + ta.name);
       if (tag == null) {
         JFLog.log("Error:Unable to find remote tag:" + ta.name + ":cid=" + ta.cid);
         return null;
@@ -118,7 +118,10 @@ public class TagsCache {
         return null;
       }
       String cid = addr.substring(1, idx);
-      if (cid.length() == 0) return null;
+      if (cid.length() == 0) {
+        JFLog.log("Error:Invalid Tag:" + addr);
+        return null;
+      }
       ta.cid = Integer.valueOf(cid);
       addr = addr.substring(idx+1);
       if (ta.cid > 0) {
