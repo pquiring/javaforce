@@ -66,11 +66,13 @@ span {
 
 select {
   margin: 0px;
+  vertical-align: top;
 }
 
 button {
   margin: 0px;
   box-sizing: border-box;
+  vertical-align: top;
 }
 
 img {
@@ -79,6 +81,7 @@ img {
 
 input {
   box-sizing: border-box;
+  vertical-align: top;
 }
 
 .border {

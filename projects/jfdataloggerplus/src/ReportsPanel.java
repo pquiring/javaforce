@@ -25,34 +25,34 @@ public class ReportsPanel extends Panel {
     Row row = new Row();
     add(row);
 
-    back = new Button("Back");
+    back = getButton("Back", 2);
     back.addClickListener((m, comp) -> {
       comp.getClient().setPanel(new MainPanel());
     });
     row.add(back);
 
-    row.add(new Label("Tag"));
+    row.add(getLabel("Tag", 1));
     tags = new ComboBox();
-    tags.setWidth(200);
+    tags.setSize(200, cellHeight);
     row.add(tags);
 
-    row.add(new Label("Start Date"));
-    date_start = new TextField(date);
+    row.add(getLabel("Start Date",2));
+    date_start = getTextField(date, 3);
     row.add(date_start);
 
-    row.add(new Label("Start Time"));
-    time_start = new TextField("00:00:00");
+    row.add(getLabel("Start Time",2));
+    time_start = getTextField("00:00:00", 3);
     row.add(time_start);
 
-    row.add(new Label("End Date"));
-    date_end = new TextField(date);
+    row.add(getLabel("End Date", 2));
+    date_end = getTextField(date, 3);
     row.add(date_end);
 
-    row.add(new Label("End Time"));
-    time_end = new TextField(time);
+    row.add(getLabel("End Time", 2));
+    time_end = getTextField(time, 3);
     row.add(time_end);
 
-    execute = new Button("View Report");
+    execute = getButton("View Report", 3);
     execute.addClickListener((m, comp) -> {
       update();
     });
@@ -80,6 +80,38 @@ public class ReportsPanel extends Panel {
       }
     }
     return "?tag.id=" + id;
+  }
+
+  public void init() {
+    layout();
+    getClient().addResizedListener((cmpnt, i, i1) -> {
+      layout();
+    });
+  }
+
+  private void layout() {
+    WebUIClient client = getClient();
+    report.setSize(client.getWidth(), client.getHeight() - cellHeight);
+  }
+
+  private static final int cellWidth = 32;
+  private static final int cellHeight = 32;
+  private int nx = 0;
+  private Label getLabel(String text, int width) {
+    Label lbl = new Label(text);
+    lbl.setSize(width * cellWidth, cellHeight);
+    lbl.setVerticalAlign(Component.CENTER);
+    return lbl;
+  }
+  private TextField getTextField(String text, int width) {
+    TextField tf = new TextField(text);
+    tf.setSize(width * cellWidth, cellHeight);
+    return tf;
+  }
+  private Button getButton(String text, int width) {
+    Button b = new Button(text);
+    b.setSize(width * cellWidth, cellHeight);
+    return b;
   }
 
   private void update() {

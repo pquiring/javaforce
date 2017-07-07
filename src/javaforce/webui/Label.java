@@ -27,7 +27,7 @@ public class Label extends TextComponent {
     if (img != null) {
       return "<img" + getAttrs() +  " src='/static/" + img.id + "'>";
     }
-    return "<div style='display:inline-block;'><div" + getAttrs() + ">" + text + "</div></div>";
+    return "<div style='display:inline-table;'><div" + getAttrs() + ">" + text + "</div></div>";
   }
   public void updateText(String txt) {
     sendEvent("settext", new String[] {"text=" + text});
