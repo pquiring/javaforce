@@ -17,7 +17,7 @@ import jfcontrols.tags.*;
 public class SQLService {
   public static String derbyURI;
   public static String databaseName = "database";
-  public static String dbVersion = "0.0.1";
+  public static String dbVersion = "0.1";
   public static boolean running;
 
   public static SQL getSQL() {
