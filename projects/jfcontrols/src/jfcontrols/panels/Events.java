@@ -1526,6 +1526,9 @@ public class Events {
         }
         break;
       }
+      case "setPanel": {
+        client.setPanel(Panels.getPanel(args[0], client));
+      }
     }
   }
   public static void setFocus(TextField tf) {
