@@ -5,6 +5,9 @@ package jfcontrols.app;
  * @author pquiring
  */
 
+import java.io.*;
+import java.lang.reflect.*;
+
 import javaforce.*;
 import javaforce.webui.*;
 
@@ -22,8 +25,10 @@ public class Main implements WebUIHandler {
   public static String msgs = "";
 
   public static void main(String args[]) {
-    if (args != null && args.length > 0 && args[0].equals("debug")) {
-      debug = true;
+    if (args != null && args.length > 0) {
+      if (args[0].equals("debug")) {
+        debug = true;
+      }
     }
 //    if (debug) SQL.debug = true;
     Paths.init();

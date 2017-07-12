@@ -26,6 +26,7 @@
         <File Id="jfcontrols.jar" Source="jfcontrols.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="derby.jar" Source="derby.jar"/>
+        <File Id="tools.jar" Source="tools.jar"/>
         <File Id="jfnative32.dll" Source="jfnative32.dll"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"

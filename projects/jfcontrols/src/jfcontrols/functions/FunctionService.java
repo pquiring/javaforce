@@ -31,9 +31,6 @@ public class FunctionService extends Thread {
     String ext = null;
     if (JF.isWindows()) {
       jdk = WinNative.findJDKHome();
-      if (jdk == null) {
-        jdk = "c:\\Program Files\\Java\\JDK8";
-      }
       JFLog.log("java.app.home=" + System.getProperty("java.app.home"));
       ext = ".exe";
     } else {
@@ -248,7 +245,12 @@ public class FunctionService extends Thread {
     try {
       ShellProcess sp = new ShellProcess();
       sp.keepOutput(true);
-      error = sp.run(new String[] {jdk + "/bin/javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", Paths.dataPath + "/work/java/*.java", "-d", Paths.dataPath + "/work/class"}, true);
+      if (jdk != null) {
+        error = sp.run(new String[] {jdk + "/bin/javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", Paths.dataPath + "/work/java/*.java", "-d", Paths.dataPath + "/work/class"}, true);
+      } else {
+        String apphome = System.getProperty("java.app.home");
+        error = sp.run(new String[] {apphome + "/jfcompile" + (JF.isWindows() ? ".exe" : ""), "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", Paths.dataPath + "/work/java/*.java", "-d", Paths.dataPath + "/work/class"}, true);
+      }
       if (error.length() == 0) {
         restart();
       }
