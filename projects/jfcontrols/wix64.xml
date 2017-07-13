@@ -27,7 +27,6 @@
         <File Id="jfcompile.exe" Source="jfcompile.exe"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="derby.jar" Source="derby.jar"/>
-        <File Id="tools.jar" Source="tools.jar"/>
         <File Id="jfnative64.dll" Source="jfnative64.dll"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"
