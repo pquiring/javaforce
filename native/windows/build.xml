@@ -16,17 +16,19 @@
     </javah>
   </target>
 
+  <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
+
   <!-- Requires cygwin/mingw in PATH -->
   <target name="windows" depends="javah" description="create windows native dll">
-    <exec command="i686-w64-mingw32-gcc -g -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -I '${env.FFMPEG_HOME}' -D__WINDOWS_32BIT__ windows.cpp -c -Wl,-subsystem,windows -o win32.obj -Wl,--kill-at"/>
-    <exec command="i686-w64-mingw32-gcc -g -I'../glfw/include' glfw.c -c -Wl,-subsystem,windows -o glfw32.obj -Wl,--kill-at"/>
+    <exec command="i686-w64-mingw32-gcc ${opt} -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -I '${env.FFMPEG_HOME}' -D__WINDOWS_32BIT__ windows.cpp -c -Wl,-subsystem,windows -o win32.obj -Wl,--kill-at"/>
+    <exec command="i686-w64-mingw32-gcc ${opt} -I'../glfw/include' glfw.c -c -Wl,-subsystem,windows -o glfw32.obj -Wl,--kill-at"/>
     <exec command="i686-w64-mingw32-gcc -shared -static -static-libstdc++ win32.obj glfw32.obj -lgdi32 -lole32 -loleaut32 -lstrmiids -lopengl32 -lstdc++ -o ../jfnative32.dll -Wl,--kill-at"/>
     <delete>
       <fileset dir="." includes="*.obj"/>
     </delete>
 
-    <exec command="x86_64-w64-mingw32-gcc -g -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -I '${env.FFMPEG_HOME}' windows.cpp -c -Wl,-subsystem,windows -o win64.obj"/>
-    <exec command="x86_64-w64-mingw32-gcc -g -I'../glfw/include' glfw.c -c -Wl,-subsystem,windows -o glfw64.obj -Wl,--kill-at"/>
+    <exec command="x86_64-w64-mingw32-gcc ${opt} -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -I '${env.FFMPEG_HOME}' windows.cpp -c -Wl,-subsystem,windows -o win64.obj"/>
+    <exec command="x86_64-w64-mingw32-gcc ${opt} -I'../glfw/include' glfw.c -c -Wl,-subsystem,windows -o glfw64.obj -Wl,--kill-at"/>
     <exec command="x86_64-w64-mingw32-gcc -shared -static -static-libstdc++ win64.obj glfw64.obj -lgdi32 -lole32 -loleaut32 -lstrmiids -lopengl32 -lstdc++ -o ../jfnative64.dll"/>
     <delete>
       <fileset dir="." includes="*.obj"/>

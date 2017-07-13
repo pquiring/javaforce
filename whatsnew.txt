@@ -1,5 +1,9 @@
 What's new...
 
+Jul 14/2017 : JF 16.1.0 released
+  - jfControls/0.2
+    - added support for including Java9 with MSI package (including compiler)
+
 Jul 7/2017 : JF 16.0.0 released
   - new : jfControls
     - a software PLC with ladder logic and panels
