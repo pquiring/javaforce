@@ -120,7 +120,7 @@ public class ProgressDialog extends javax.swing.JDialog {
     }
     cancel.setEnabled(false);
     close.setEnabled(true);
-    JF.assignHotKey(this, close, KeyEvent.VK_ENTER);
+    JFAWT.assignHotKey(this, close, KeyEvent.VK_ENTER);
   }
 
   /**

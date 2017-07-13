@@ -14,7 +14,7 @@ public class ViewLog extends javax.swing.JFrame {
    */
   public ViewLog(String file) {
     initComponents();
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
     try {
       FileInputStream fis = new FileInputStream(file);
       byte txt[] = JF.readAll(fis);

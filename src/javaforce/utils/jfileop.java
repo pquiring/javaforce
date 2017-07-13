@@ -17,7 +17,7 @@ public class jfileop extends javax.swing.JFrame {
    */
   public jfileop() {
     initComponents();
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
   }
 
   /**
@@ -338,7 +338,7 @@ public class jfileop extends javax.swing.JFrame {
         try { if (fos != null) fos.close(); } catch (Exception e2) {}
         destFile.delete();
         if (abort) return;
-        if (JF.showConfirm("Copy Error", "Failed to copy:" + src + "\nRetry?")) {
+        if (JFAWT.showConfirm("Copy Error", "Failed to copy:" + src + "\nRetry?")) {
           ops.add(new Op(src, destFolder));
           amtComplete = amtBefore;
         } else {
@@ -353,7 +353,7 @@ public class jfileop extends javax.swing.JFrame {
       File destFolder = new File(dest);
       while ((!destFolder.exists()) && !destFolder.mkdir()) {
         if (abort) return;
-        if (!JF.showConfirm("Copy Error", "Failed to create folder:" + destFolder.getAbsolutePath() + "\nRetry?")) {
+        if (!JFAWT.showConfirm("Copy Error", "Failed to create folder:" + destFolder.getAbsolutePath() + "\nRetry?")) {
           return;
         }
       }
@@ -384,7 +384,7 @@ public class jfileop extends javax.swing.JFrame {
       File srcFile = new File(src);
       File destFile = new File(dest, srcFile.getName());
       while (!srcFile.renameTo(destFile)) {
-        if (!JF.showConfirm("Move Error", "Failed to move:" + src + "\nRetry?")) {
+        if (!JFAWT.showConfirm("Move Error", "Failed to move:" + src + "\nRetry?")) {
           return;
         }
       }
@@ -399,7 +399,7 @@ public class jfileop extends javax.swing.JFrame {
         removeDirectory(name);
       } else {
         while (!file.delete()) {
-          if (!JF.showConfirm("Delete Error", "Failed to delete:" + name + "\nRetry?")) {
+          if (!JFAWT.showConfirm("Delete Error", "Failed to delete:" + name + "\nRetry?")) {
             return;
           }
         }
@@ -417,7 +417,7 @@ public class jfileop extends javax.swing.JFrame {
       }
       File dir = new File(name);
       while (!dir.delete()) {
-        if (!JF.showConfirm("Delete Error", "Failed to delete:" + name + "\nRetry?")) {
+        if (!JFAWT.showConfirm("Delete Error", "Failed to delete:" + name + "\nRetry?")) {
           return;
         }
       }

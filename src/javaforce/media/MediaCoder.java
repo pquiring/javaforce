@@ -117,13 +117,13 @@ public class MediaCoder {
   /** Downloads the codec pack for Windows (supports .zip or .7z) */
   public static boolean download() {
     if (!JF.isWindows()) {
-      JF.showError("Notice", "This application requires the codecpack which was not detected.\n"
+      JFAWT.showError("Notice", "This application requires the codecpack which was not detected.\n"
         + "Please visit http://pquiring.github.io/javaforce/codecpack.html for more info.\n"
         + "Press OK to visit this page now");
       JF.openURL("http://pquiring.github.io/javaforce/codecpack.html");
       return false;
     }
-    if (!JF.showConfirm("Notice", "This application requires the codecpack which was not detected.\n"
+    if (!JFAWT.showConfirm("Notice", "This application requires the codecpack which was not detected.\n"
       + "Please visit http://pquiring.github.io/javaforce/codecpack.html for more info.\n"
       + "Press OK to download and install now.\n"
       + "Press CANCEL to visit website now.\n"))
@@ -173,7 +173,7 @@ public class MediaCoder {
             int i2 = url.lastIndexOf(".");
             filename = url.substring(i1,i2);
           } else {
-            JF.showError("Error", "Unsupported file type");
+            JFAWT.showError("Error", "Unsupported file type");
             return false;
           }
           {

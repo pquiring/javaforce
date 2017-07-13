@@ -63,7 +63,7 @@ public class JProcess implements Runnable {
       }
       return process;
     } catch (Exception e) {
-      JF.showError("error", e.toString());
+      JFAWT.showError("error", e.toString());
       return null;
     }
   }

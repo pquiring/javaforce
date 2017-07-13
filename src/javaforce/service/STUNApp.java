@@ -33,7 +33,7 @@ public class STUNApp extends javax.swing.JFrame {
         busClient.call(STUN.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
@@ -122,7 +122,7 @@ public class STUNApp extends javax.swing.JFrame {
   private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
     writeConfig();
     restart();
-    JF.showMessage("Notice", "Settings saved!");
+    JFAWT.showMessage("Notice", "Settings saved!");
   }//GEN-LAST:event_saveActionPerformed
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

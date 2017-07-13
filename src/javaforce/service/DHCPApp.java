@@ -34,7 +34,7 @@ public class DHCPApp extends javax.swing.JFrame {
         busClient.call(DHCP.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
@@ -123,7 +123,7 @@ public class DHCPApp extends javax.swing.JFrame {
   private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
     writeConfig();
     restart();
-    JF.showMessage("Notice", "Settings saved!");
+    JFAWT.showMessage("Notice", "Settings saved!");
   }//GEN-LAST:event_saveActionPerformed
 
   private void viewLogActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewLogActionPerformed
@@ -195,10 +195,10 @@ public class DHCPApp extends javax.swing.JFrame {
       d = new byte[1024];
       p = new DatagramPacket(d, d.length);
       s.receive(p);
-      JF.showMessage("IP", DHCP.IP4toString(d, 16));
+      JFAWT.showMessage("IP", DHCP.IP4toString(d, 16));
       s.close();
     } catch (Exception e) {
-      JF.showError("Error", e.toString());
+      JFAWT.showError("Error", e.toString());
     }
   }
 
