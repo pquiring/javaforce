@@ -24,6 +24,7 @@
       <Component Id="appfiles" Guid="{65D798EE-42EA-488A-B3C0-0C8C6C420F34}">
         <File Id="jfcontrols.exe" Source="jfcontrols.exe" KeyPath="yes"/>
         <File Id="jfcontrols.jar" Source="jfcontrols.jar"/>
+        <File Id="jfcompile.exe" Source="jfcompile.exe"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="derby.jar" Source="derby.jar"/>
         <File Id="tools.jar" Source="tools.jar"/>
