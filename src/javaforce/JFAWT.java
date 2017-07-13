@@ -1,6 +1,6 @@
 package javaforce;
 
-/** AWT Based functions moved from JF
+/** Deprecated AWT/Swing functions
  *
  * @author pquiring
  */
@@ -14,8 +14,6 @@ import javax.swing.*;
 import javax.swing.filechooser.*;
 
 public class JFAWT {
-
-//GUI functions (remove for Android)
 
   public static JFrame createJFrame(String title, int x, int y, int w, int h, LayoutManager lm) {
     //NOTE : When you add components, you must validate() the frame
@@ -129,8 +127,6 @@ public class JFAWT {
     ret[2] = fm.getDescent();
     return ret;
   }
-
-//JOptionPane quickies (remove for Android)
 
   public static void showMessage(String title, String msg) {
     JOptionPane.showMessageDialog(null, msg, title, JOptionPane.INFORMATION_MESSAGE);
