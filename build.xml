@@ -119,14 +119,21 @@
   </target>
 
   <target name="jre-base-desktop" description="build JRE for bundled JRE builds with desktop (swing) support">
-    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.desktop --output jre_base_desktop"/>
+    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.desktop,java.sql --output jre_base_desktop"/>
     <delete>
       <fileset dir="jre_base_desktop/bin" includes="java**.exe"/>
     </delete>
   </target>
 
   <target name="jre-base" description="build JRE for bundled JRE builds with only base">
-    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base --output jre_base"/>
+    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.sql --output jre_base"/>
+    <delete>
+      <fileset dir="jre_base/bin" includes="java**.exe"/>
+    </delete>
+  </target>
+
+  <target name="jre-base-javac" description="build JRE for bundled JRE builds with base and Java compiler">
+    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.sql,jdk.compiler --output jre_base_javac"/>
     <delete>
       <fileset dir="jre_base/bin" includes="java**.exe"/>
     </delete>

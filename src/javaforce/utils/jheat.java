@@ -5,8 +5,6 @@ package javaforce.utils;
  *
  * Builds Wix files like heat does.
  *
- * Work in progress, not complete.
- *
  * @author pquiring
  */
 
@@ -15,7 +13,7 @@ import java.util.*;
 
 public class jheat {
   private static void usage() {
-    System.out.println("Usage:jheat JAVA_HOME");
+    System.out.println("Usage:jheat JAVA_HOME [win32|win64]");
     System.exit(1);
   }
 
@@ -48,6 +46,7 @@ public class jheat {
     for(int a=0;a<files.length;a++) {
       String name = files[a].getName();
       if (files[a].isDirectory()) {
+        if (files[a].getName().equals("legal")) continue;  //skip legal folder
         addFolder(path, path + "/" + name);
       } else {
 //        System.out.println("File:" + path + ":" + name);
