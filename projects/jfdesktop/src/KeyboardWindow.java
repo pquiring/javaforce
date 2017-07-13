@@ -358,7 +358,7 @@ public class KeyboardWindow extends javax.swing.JWindow implements ActionListene
 
   public void setPosition(int keyboadHeight, int dockHeight) {
     if (keyboadHeight == 0) keyboadHeight = 1;
-    Rectangle s = JF.getMaximumBounds();
+    Rectangle s = JFAWT.getMaximumBounds();
     setBounds(0, s.height - dockHeight - keyboadHeight, s.width, keyboadHeight);
   }
 

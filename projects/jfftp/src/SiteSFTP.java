@@ -62,7 +62,7 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
       remote_ls();
       setStatus(null);
     } catch (Exception e) {
-      JF.showMessage("Error", "Error:" + e);
+      JFAWT.showMessage("Error", "Error:" + e);
       JFLog.log(e);
       closeSite();
       return false;

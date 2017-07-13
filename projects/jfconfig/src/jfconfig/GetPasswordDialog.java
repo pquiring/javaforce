@@ -105,11 +105,11 @@ public class GetPasswordDialog extends javax.swing.JDialog {
     String p1 = getPassWord();
     String p2 = getPassWord2();
     if (p1.length() < 3) {
-      JF.showError("Error", "Password too short");
+      JFAWT.showError("Error", "Password too short");
       return;
     }
     if (!p1.equals(p2)) {
-      JF.showError("Error", "Passwords do not match");
+      JFAWT.showError("Error", "Passwords do not match");
       return;
     }
     dispose();

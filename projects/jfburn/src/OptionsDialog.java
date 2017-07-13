@@ -285,9 +285,9 @@ public class OptionsDialog extends javax.swing.JDialog {
     String cmd[] = {"geteltorito", "-o", filename, dev};
     String output = sp.run(cmd, false);
     if (output==null) {
-      JF.showError("Error", "Error occured");
+      JFAWT.showError("Error", "Error occured");
     } else {
-      JF.showMessage("Notice", "Boot Image extracted");
+      JFAWT.showMessage("Notice", "Boot Image extracted");
     }
   }
 
@@ -313,9 +313,9 @@ public class OptionsDialog extends javax.swing.JDialog {
     String cmd[] = {"geteltorito", "-o", filename, image};
     String output = sp.run(cmd, false);
     if (output==null) {
-      JF.showError("Error", "Error occured");
+      JFAWT.showError("Error", "Error occured");
     } else {
-      JF.showMessage("Notice", "Boot Image extracted");
+      JFAWT.showMessage("Notice", "Boot Image extracted");
     }
   }
   private void setPosition() {

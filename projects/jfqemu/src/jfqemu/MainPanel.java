@@ -363,7 +363,7 @@ public class MainPanel extends javax.swing.JPanel {
       }
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to create VM");
+      JFAWT.showError("Error", "Failed to create VM");
     }
     listVMs();
   }
@@ -391,7 +391,7 @@ public class MainPanel extends javax.swing.JPanel {
       }
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to edit VM");
+      JFAWT.showError("Error", "Failed to edit VM");
     }
     listVMs();
   }
@@ -407,7 +407,7 @@ public class MainPanel extends javax.swing.JPanel {
       System.exit(0);
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to start VM");
+      JFAWT.showError("Error", "Failed to start VM");
     }
   }
 
@@ -444,7 +444,7 @@ public class MainPanel extends javax.swing.JPanel {
       Runtime.getRuntime().exec(cmd);
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to start as service");
+      JFAWT.showError("Error", "Failed to start as service");
     }
   }
 

@@ -143,8 +143,8 @@ public class JDNSPanel extends javax.swing.JPanel {
 
   private void restartServer() {
     if (Linux.restartService("jdns"))
-      JF.showMessage("Notice", "DNS Service Restarted");
+      JFAWT.showMessage("Notice", "DNS Service Restarted");
     else
-      JF.showError("Error", "Failed to Restart DNS Service");
+      JFAWT.showError("Error", "Failed to Restart DNS Service");
   }
 }

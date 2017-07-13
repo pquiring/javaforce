@@ -413,9 +413,9 @@ public class NetworkDialog extends javax.swing.JDialog {
       ShellProcess sp = new ShellProcess();
       String output = sp.run(new String[] {"sudo", file.getAbsolutePath()}, true);
       file.delete();
-      JF.showMessage("Notice", "Bridge added, please goto Network Manager and config/enable the bridge adapter");
+      JFAWT.showMessage("Notice", "Bridge added, please goto Network Manager and config/enable the bridge adapter");
     } catch (Exception e) {
-      JF.showError("Error", "Exception : " + e);
+      JFAWT.showError("Error", "Exception : " + e);
       JFLog.log(e);
     }
     listBRs();
@@ -437,9 +437,9 @@ public class NetworkDialog extends javax.swing.JDialog {
       ShellProcess sp = new ShellProcess();
       String output = sp.run(new String[] {"sudo", file.getAbsolutePath()}, true);
       file.delete();
-      JF.showMessage("Notice", "TAP added, please goto Network Manager and config/enable the TAP adapter");
+      JFAWT.showMessage("Notice", "TAP added, please goto Network Manager and config/enable the TAP adapter");
     } catch (Exception e) {
-      JF.showError("Error", "Exception : " + e);
+      JFAWT.showError("Error", "Exception : " + e);
       JFLog.log(e);
     }
     listTAPs();
@@ -460,9 +460,9 @@ public class NetworkDialog extends javax.swing.JDialog {
       ShellProcess sp = new ShellProcess();
       String output = sp.run(new String[] {"sudo", file.getAbsolutePath()}, true);
       file.delete();
-      JF.showMessage("Notice", "Bridge deleted!");
+      JFAWT.showMessage("Notice", "Bridge deleted!");
     } catch (Exception e) {
-      JF.showError("Error", "Exception : " + e);
+      JFAWT.showError("Error", "Exception : " + e);
       JFLog.log(e);
     }
     listBRs();
@@ -483,9 +483,9 @@ public class NetworkDialog extends javax.swing.JDialog {
       ShellProcess sp = new ShellProcess();
       String output = sp.run(new String[] {"sudo", file.getAbsolutePath()}, true);
 //      file.delete();
-      JF.showMessage("Notice", "TAP deleted!");
+      JFAWT.showMessage("Notice", "TAP deleted!");
     } catch (Exception e) {
-      JF.showError("Error", "Exception : " + e);
+      JFAWT.showError("Error", "Exception : " + e);
       JFLog.log(e);
     }
     listTAPs();

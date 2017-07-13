@@ -1042,7 +1042,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     }
     File folder = new File(wd);
     if (!folder.exists() || !folder.isDirectory()) {
-      JF.showError("Error", "Can not find:" + wd);
+      JFAWT.showError("Error", "Can not find:" + wd);
       localDir.setText(localBrowser.getPath());
       return;
     }
@@ -1099,7 +1099,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     }
     File folder = new File(remoteRoot + wd);
     if (!folder.exists() || !folder.isDirectory()) {
-      JF.showError("Error", "Can not find:" + wd);
+      JFAWT.showError("Error", "Can not find:" + wd);
       remoteDir.setText(remoteBrowser.getPath());
       return;
     }
@@ -1148,7 +1148,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
       local_ls();
     } catch (Exception e) {
       FileApp.inDialog = true;
-      JF.showError("Error", "Create folder failed:" + e);
+      JFAWT.showError("Error", "Create folder failed:" + e);
       FileApp.inDialog = false;
     }
   }
@@ -1187,14 +1187,14 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
       remote_ls();
     } catch (Exception e) {
       FileApp.inDialog = true;
-      JF.showError("Error", "Create folder failed:" + e);
+      JFAWT.showError("Error", "Create folder failed:" + e);
       FileApp.inDialog = false;
     }
   }
 
   public void local_delete() {
     FileApp.inDialog = true;
-    if (!JF.showConfirm("Delete", "Are you sure you want to delete file(s)?")) {
+    if (!JFAWT.showConfirm("Delete", "Are you sure you want to delete file(s)?")) {
       FileApp.inDialog = false;
       return;
     }
@@ -1210,7 +1210,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
 
   public void remote_delete() {
     FileApp.inDialog = true;
-    if (!JF.showConfirm("Delete", "Are you sure you want to delete file(s)?")) {
+    if (!JFAWT.showConfirm("Delete", "Are you sure you want to delete file(s)?")) {
       FileApp.inDialog = false;
       return;
     }

@@ -29,7 +29,7 @@ public class SiteFTPS extends SiteFTP {
       }
       setStatus(null);
     } catch (Exception e) {
-      JF.showMessage("Error", "Error:" + e);
+      JFAWT.showMessage("Error", "Error:" + e);
       JFLog.log(e);
       closeSite();
       return false;

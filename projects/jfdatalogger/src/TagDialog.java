@@ -18,11 +18,11 @@ public class TagDialog extends javax.swing.JDialog {
   public TagDialog(java.awt.Frame parent, boolean modal) {
     super(parent, modal);
     initComponents();
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
     color.setBackground(Color.black);
     clr = 0x000000;
-    JF.assignHotKey(this, ok, java.awt.event.KeyEvent.VK_ENTER);
-    JF.assignHotKey(this, cancel, java.awt.event.KeyEvent.VK_ESCAPE);
+    JFAWT.assignHotKey(this, ok, java.awt.event.KeyEvent.VK_ENTER);
+    JFAWT.assignHotKey(this, cancel, java.awt.event.KeyEvent.VK_ESCAPE);
   }
 
   /**

@@ -83,14 +83,14 @@ public class InstallTypes extends IPanel {
     Data.getPartitions();  //required to find uninit devices
     for(int idx=0;idx<Data.devices.size();idx++) {
       if (Data.devices.get(idx).uninit) {
-        if (JF.showConfirm("Warning", "Device " + Data.devices.get(idx).dev + " needs a partition table.\rCreate it now?")) {
+        if (JFAWT.showConfirm("Warning", "Device " + Data.devices.get(idx).dev + " needs a partition table.\rCreate it now?")) {
           Data.createPartTable(Data.devices.get(idx).dev);
           return null;
         }
       }
     }
     if (Data.devices.size() == 0) {
-      JF.showError("Error", "No devices found to install Linux onto.");
+      JFAWT.showError("Error", "No devices found to install Linux onto.");
       return null;
     }
     if (custom.isSelected()) {

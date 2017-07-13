@@ -41,7 +41,7 @@ public class Server extends javax.swing.JFrame implements ActionListener {
     //start service
     JF.initHttps();
     readConfig();
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
     if (sslValid()) {
       service = new Service();
       service.start(webPassword.getText(), rdpPassword.getText(), (Integer)maxUsers.getValue(), viewOnly.isSelected());
@@ -152,7 +152,7 @@ public class Server extends javax.swing.JFrame implements ActionListener {
             return;
           }
           if (!dialog.getPassword().equals(adminPassword.getText())) {
-            JF.showError("Error", "Incorrect password");
+            JFAWT.showError("Error", "Incorrect password");
             continue;
           } else {
             break;
@@ -328,7 +328,7 @@ public class Server extends javax.swing.JFrame implements ActionListener {
   }//GEN-LAST:event_generateSSLActionPerformed
 
   private void donateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_donateActionPerformed
-    JF.donate();
+    JFAWT.donate();
   }//GEN-LAST:event_donateActionPerformed
 
   /**

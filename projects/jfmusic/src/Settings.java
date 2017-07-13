@@ -46,7 +46,7 @@ public class Settings {
       xml.readClass("settings", current);
       xml.write(new FileOutputStream(fn));
     } catch (Exception e) {
-      JF.showError("Error", "Save failed : " + e);
+      JFAWT.showError("Error", "Save failed : " + e);
     }
   }
 }

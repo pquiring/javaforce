@@ -159,7 +159,7 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
     Object o = e.getSource();
     if (o == exit) {
       if (panel.dirty) {
-        switch (JF.showConfirm3("Confirm", "Save first?")) {
+        switch (JFAWT.showConfirm3("Confirm", "Save first?")) {
           case JF.YES: panel.saveSafe(); break;
           case JF.NO: break;
           case JF.CANCEL: return;
@@ -182,7 +182,7 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
         String password = GetPassword.getPassword(this);
         if (password == null) return;
         if (!password.equals(MainPanel.password)) {
-          JF.showMessage("Error", "Wrong Password");
+          JFAWT.showMessage("Error", "Wrong Password");
           return;
         }
       }

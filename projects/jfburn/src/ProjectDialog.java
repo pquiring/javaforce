@@ -28,7 +28,7 @@ public class ProjectDialog extends javax.swing.JDialog {
       XML.XMLTag typeTag = xml.getTag(new String[] {"jfburn", "options", "type"});
       XML.XMLTag nameTag = xml.getTag(new String[] {"jfburn", "options", "name"});
       if ((xmlFiles == null) || (xmlOptions == null) || (typeTag == null)) {
-        JF.showError("Error", "Invalid Project File");
+        JFAWT.showError("Error", "Invalid Project File");
         dispose();
         return;
       }
@@ -37,7 +37,7 @@ public class ProjectDialog extends javax.swing.JDialog {
       if (typeTag.content.equals("data")) type = Type.data;
       if (typeTag.content.equals("video")) type = Type.video;
       if (type == Type.unknown) {
-        JF.showError("Error", "Invalid Project File");
+        JFAWT.showError("Error", "Invalid Project File");
         dispose();
         return;
       }
@@ -345,7 +345,7 @@ public class ProjectDialog extends javax.swing.JDialog {
       tmpImage = File.createTempFile("jfburn-image", ".iso");
       if (!saveImage(tmpImage.getAbsolutePath(), true)) return;
     } catch (Exception e) {
-      JF.showError("Error", "Exception:" + e);
+      JFAWT.showError("Error", "Exception:" + e);
       return;
     }
     this.setVisible(false);
@@ -374,7 +374,7 @@ public class ProjectDialog extends javax.swing.JDialog {
       tmpImage = File.createTempFile("jfburn-image", ".iso");
       saveImage(tmpImage.getAbsolutePath(), true);
     } catch (Exception e) {
-      JF.showError("Error", "Exception:" + e);
+      JFAWT.showError("Error", "Exception:" + e);
       return;
     }
     this.setVisible(false);
@@ -515,7 +515,7 @@ public class ProjectDialog extends javax.swing.JDialog {
       tmpFile.delete();
       return task.getStatus();
     } catch (Exception e) {
-      JF.showError("Error", "Exception:" + e);
+      JFAWT.showError("Error", "Exception:" + e);
       return false;
     }
   }
@@ -546,7 +546,7 @@ public class ProjectDialog extends javax.swing.JDialog {
       xml.write(fos);
       fos.close();
     } catch (Exception e) {
-      JF.showError("Error", "Failed to save project");
+      JFAWT.showError("Error", "Failed to save project");
     }
   }
 
@@ -556,7 +556,7 @@ public class ProjectDialog extends javax.swing.JDialog {
       xml.read(fis);
       fis.close();
     } catch (Exception e) {
-      JF.showError("Error", "Failed to load project");
+      JFAWT.showError("Error", "Failed to load project");
     }
   }
 

@@ -65,7 +65,7 @@ public class TableCell extends JComponent {
   }
   static {
     fnt = new Font("Lucida Console", 0, 12);
-    metrics = JF.getFontMetrics(fnt);  //width,ascent,descent
+    metrics = JFAWT.getFontMetrics(fnt);  //width,ascent,descent
     fx = metrics[0];
     fy = metrics[1] + metrics[2];
   }

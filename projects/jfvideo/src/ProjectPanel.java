@@ -435,7 +435,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
 
   private void playActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playActionPerformed
     if (renderFile == null || !new File(renderFile).exists()) {
-      JF.showError("Error", "Please render first");
+      JFAWT.showError("Error", "Please render first");
       return;
     }
     try {
@@ -782,7 +782,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
     for(int a=1;a<tracks.getComponentCount();a++) {
       TrackPanel track = (TrackPanel)tracks.getComponent(a);
       if (track.selected) {
-        if (JF.showConfirm("Confirm", "Delete this track with " + track.list.size() + " elements?")) {
+        if (JFAWT.showConfirm("Confirm", "Delete this track with " + track.list.size() + " elements?")) {
           tracks.remove(track);
           resizeTracks();
           tracks.revalidate();
@@ -1000,7 +1000,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
     }
   }
   private void addElement() {
-    if (selectedTrack == null || !(selectedTrack instanceof TrackPanel)) {JF.showError("Error", "Select a track first"); return;}
+    if (selectedTrack == null || !(selectedTrack instanceof TrackPanel)) {JFAWT.showError("Error", "Select a track first"); return;}
     addElement(getFiles(true));
   }
 
@@ -1059,7 +1059,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
 
   public void render() {
     if (tracks.getComponentCount() == 1) {
-      JF.showError("Error", "Please add some tracks first");
+      JFAWT.showError("Error", "Please add some tracks first");
       return;
     }
     JFileChooser chooser = new JFileChooser();
@@ -1096,7 +1096,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
       raf.setLength(0);  //truncate file if exists
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Unable to create output file");
+      JFAWT.showError("Error", "Unable to create output file");
       return;
     }
     JFTask task = new JFTask() {

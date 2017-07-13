@@ -27,7 +27,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     initComponents();
     Linux.detectDistro();
     if (Linux.distro == Linux.DistroTypes.Unknown) {
-      JF.showError("Error", "Unknown distro");
+      JFAWT.showError("Error", "Unknown distro");
       System.exit(0);
     }
     initMap();
@@ -762,7 +762,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   private void ubuntu_applyRepo() {
     if (selIdx == -1) {
-      JF.showError("Error", "Please select a site first");
+      JFAWT.showError("Error", "Please select a site first");
       return;
     }
     try {
@@ -799,7 +799,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       fos.write(list.getBytes());
       fos.close();
       if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/apt/sources.list")) {
-        JF.showError("Error", "Failed to apply repo");
+        JFAWT.showError("Error", "Failed to apply repo");
         return;
       }
       tmpFile.delete();
@@ -811,7 +811,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 
   private void fedora_applyRepo() {
     if (selIdx == -1) {
-      JF.showError("Error", "Please select a site first");
+      JFAWT.showError("Error", "Please select a site first");
       return;
     }
     try {
@@ -858,7 +858,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         "cp " + tmpFile2.getAbsolutePath() + " /etc/yum.repo.d/fedora-updates.repo",
         "cp " + tmpFile3.getAbsolutePath() + " /etc/yum.repo.d/fedora-updates-testing.repo"
       })) {
-        JF.showError("Error", "Failed to apply repo");
+        JFAWT.showError("Error", "Failed to apply repo");
         ok = false;
       }
       tmpFile1.delete();

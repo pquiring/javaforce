@@ -397,7 +397,7 @@ public class Backend implements KeyEventDispatcher {
 
   public void about() {
     inDialog = true;
-    JF.showMessage("About", "jfcalc/" + CalculatorApp.version + "\n");
+    JFAWT.showMessage("About", "jfcalc/" + CalculatorApp.version + "\n");
     inDialog = false;
   }
 

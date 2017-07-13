@@ -22,8 +22,8 @@ public class EditContact extends javax.swing.JDialog {
     super(parent, modal);
     initComponents();
     setPosition();
-    JF.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
-    JF.assignHotKey(this, save, KeyEvent.VK_ENTER);
+    JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
+    JFAWT.assignHotKey(this, save, KeyEvent.VK_ENTER);
   }
 
   /** This method is called from within the constructor to

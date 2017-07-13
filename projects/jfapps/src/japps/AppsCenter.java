@@ -84,10 +84,10 @@ public class AppsCenter extends javax.swing.JFrame {
       tool = "rpm";
     }
     if (tool == null) {
-      JF.showError("Error", "That file is an unknown package type.");
+      JFAWT.showError("Error", "That file is an unknown package type.");
       return;
     }
-    if (!JF.showConfirm("Confirm", "Are you sure you want to install '" + file + "' ?")) {
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to install '" + file + "' ?")) {
       return;
     }
     cmd = new String[] {"sudo", "-E", tool, "-i", file};

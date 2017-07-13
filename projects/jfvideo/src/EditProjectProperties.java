@@ -242,7 +242,7 @@ public class EditProjectProperties extends javax.swing.JDialog {
       project.config.videoBitRate = videoBitRates[vBitRate.getSelectedIndex()];
       project.config.audioBitRate = audioBitRates[aBitRate.getSelectedIndex()];
     } catch (Exception e) {
-      JF.showError("Error", "Exception:" + e);
+      JFAWT.showError("Error", "Exception:" + e);
       return;
     }
     dispose();

@@ -18,7 +18,7 @@ public class PhoneApp extends JFrame implements WindowListener, WindowController
 
   private PhoneApp() {
     if (!BasePhone.lockFile()) {
-      JF.showError("Error", "Another instance of jPhoneLite is already running!");
+      JFAWT.showError("Error", "Another instance of jPhoneLite is already running!");
       System.exit(0);
     }
     panel = new PhonePanel(this, false);

@@ -387,7 +387,7 @@ public class PrintersAddDialog extends javax.swing.JDialog {
     }
     if (sp.getErrorLevel() != 0) {
       JFLog.log("cmd=" + sp.command);
-      JF.showError("Error", "Unable to add printer:\n"+output);
+      JFAWT.showError("Error", "Unable to add printer:\n"+output);
     }
     dispose();
   }
@@ -396,7 +396,7 @@ public class PrintersAddDialog extends javax.swing.JDialog {
     String ip = ipAddr.getText();
     if (ip.length() == 0) return;
     if (ppdList.isEmpty()) {
-      JF.showError("Error", "Must specify a printer make/model");
+      JFAWT.showError("Error", "Must specify a printer make/model");
       return;
     }
     String uri = "socket://" + ip;
@@ -404,13 +404,13 @@ public class PrintersAddDialog extends javax.swing.JDialog {
     ShellProcess sp = new ShellProcess();
     String ppd = getPPD();
     if (ppd.equals("Auto")) {
-      JF.showError("Error", "Must specify a printer make/model");
+      JFAWT.showError("Error", "Must specify a printer make/model");
       return;
     }
     String output = sp.run(new String[] {"sudo", "lpadmin", "-E", "-p", name, "-v", uri, "-m", ppd}, false);
     if (sp.getErrorLevel() != 0) {
       JFLog.log("cmd=" + sp.command);
-      JF.showError("Error", "Unable to add printer:\n"+output);
+      JFAWT.showError("Error", "Unable to add printer:\n"+output);
     }
     dispose();
   }
@@ -419,7 +419,7 @@ public class PrintersAddDialog extends javax.swing.JDialog {
     String ip = ipAddr.getText();
     if (ip.length() == 0) return;
     if (ppdList.isEmpty()) {
-      JF.showError("Error", "Must specify a printer make/model");
+      JFAWT.showError("Error", "Must specify a printer make/model");
       return;
     }
     String uri = "smb://" + user.getText();
@@ -430,13 +430,13 @@ public class PrintersAddDialog extends javax.swing.JDialog {
     ShellProcess sp = new ShellProcess();
     String ppd = getPPD();
     if (ppd.equals("Auto")) {
-      JF.showError("Error", "Must specify a printer make/model");
+      JFAWT.showError("Error", "Must specify a printer make/model");
       return;
     }
     String output = sp.run(new String[] {"sudo", "lpadmin", "-E", "-p", name, "-v", uri, "-m", ppd}, false);
     if (sp.getErrorLevel() != 0) {
       JFLog.log("cmd=" + sp.command);
-      JF.showError("Error", "Unable to add printer:\n"+output);
+      JFAWT.showError("Error", "Unable to add printer:\n"+output);
     }
     dispose();
   }

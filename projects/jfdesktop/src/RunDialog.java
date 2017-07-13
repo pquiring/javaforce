@@ -129,7 +129,7 @@ public class RunDialog extends javax.swing.JDialog {
   }
 
   private void setPosition() {
-    Rectangle s = JF.getMaximumBounds();
+    Rectangle s = JFAWT.getMaximumBounds();
     Dimension d = getPreferredSize();
     setLocation(s.width/2 - d.width/2, s.height/2 - (d.height/2));
   }

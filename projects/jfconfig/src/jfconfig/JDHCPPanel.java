@@ -143,8 +143,8 @@ public class JDHCPPanel extends javax.swing.JPanel {
 
   private void restartServer() {
     if (Linux.restartService("jdhcp"))
-      JF.showMessage("Notice", "DHCP Service Restarted");
+      JFAWT.showMessage("Notice", "DHCP Service Restarted");
     else
-      JF.showError("Error", "Failed to Restart DHCP Service");
+      JFAWT.showError("Error", "Failed to Restart DHCP Service");
   }
 }

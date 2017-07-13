@@ -38,7 +38,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     processArgs();
     lockFile = new JFLockFile();
     if (!lockFile.lock(JF.getUserPath() + "/jfbroadcast" + cfgSuffix + ".lck")) {
-      JF.showError("Error", "Another instance of jfBroadcast is already running!");
+      JFAWT.showError("Error", "Another instance of jfBroadcast is already running!");
       System.exit(0);
     }
     dbPath = null;
@@ -1344,7 +1344,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
         return;
       }
       if (state == states.STOPPING) {
-        if (JF.showConfirm("Warning", "Are you sure you want to force stop?")) {
+        if (JFAWT.showConfirm("Warning", "Are you sure you want to force stop?")) {
           forceStopCalling();
         }
         return;
@@ -1427,7 +1427,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   }//GEN-LAST:event_human_vm_detectActionPerformed
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-    JF.donate();
+    JFAWT.donate();
   }//GEN-LAST:event_jButton1ActionPerformed
 
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing

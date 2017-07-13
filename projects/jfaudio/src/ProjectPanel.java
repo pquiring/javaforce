@@ -228,7 +228,7 @@ public class ProjectPanel extends javax.swing.JPanel {
       transcoderOutFile.delete();
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Import failed");
+      JFAWT.showError("Error", "Import failed");
     }
   }
 
@@ -250,7 +250,7 @@ public class ProjectPanel extends javax.swing.JPanel {
       tempFile.delete();
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Import failed");
+      JFAWT.showError("Error", "Import failed");
     }
   }
 
@@ -259,7 +259,7 @@ public class ProjectPanel extends javax.swing.JPanel {
     int tid = genTrackID();
     Wav wav = new Wav();
     if (!wav.load(fn)) {
-      JF.showError("Error", wav.errmsg);
+      JFAWT.showError("Error", wav.errmsg);
       return;
     }
     String trackPath = path + "/" + tid;
@@ -475,7 +475,7 @@ public class ProjectPanel extends javax.swing.JPanel {
         try {
           Paths.deleteFolderEx(path + "/" + track.tid);
         } catch (Exception e) {
-          JF.showError("Error", "Failed to delete track from project data folder");
+          JFAWT.showError("Error", "Failed to delete track from project data folder");
           JFLog.log(e);
           return;
         }
@@ -548,7 +548,7 @@ public class ProjectPanel extends javax.swing.JPanel {
         return;
       }
     }
-    JF.showError("Error", "Select a track to export");
+    JFAWT.showError("Error", "Select a track to export");
   }
   public TrackPanel getSelectedTrack() {
     for(int a=0;a<list.size();a++) {
@@ -557,7 +557,7 @@ public class ProjectPanel extends javax.swing.JPanel {
         return track;
       }
     }
-    JF.showError("Error", "Select a track");
+    JFAWT.showError("Error", "Select a track");
     return null;
   }
   public void deleteUndo() {
@@ -624,7 +624,7 @@ public class ProjectPanel extends javax.swing.JPanel {
 
   public void mixTracks() {
     if (list.size() < 2) {
-      JF.showError("Error", "Require at least two tracks to mix");
+      JFAWT.showError("Error", "Require at least two tracks to mix");
       return;
     }
     MixTracks dialog = new MixTracks(null, true, this, list);

@@ -487,7 +487,7 @@ public class FirewallRuleDialog extends javax.swing.JDialog implements KeyListen
     cmd.add("ifconfig");
     String output = sp.run(cmd, false);
     if (output == null) {
-      JF.showError("Error", "Failed to exec ifconfig.");
+      JFAWT.showError("Error", "Failed to exec ifconfig.");
       return;
     }
     String lns[] = output.split("\n");

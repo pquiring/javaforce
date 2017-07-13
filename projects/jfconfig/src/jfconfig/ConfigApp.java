@@ -51,7 +51,7 @@ public class ConfigApp extends javax.swing.JFrame {
       case Fedora: break;
       default:
         if (!test) {
-          JF.showError("Error", "Unsupported Distro");
+          JFAWT.showError("Error", "Unsupported Distro");
           System.exit(0);
         }
     }

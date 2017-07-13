@@ -536,7 +536,7 @@ public class MainPanel extends javax.swing.JPanel {
     if (urlStr.startsWith("http://")) http = true;
     if (urlStr.startsWith("https://")) https = true;
     if (!http && !https) {
-      JF.showError("Error", "Unsupported URL");
+      JFAWT.showError("Error", "Unsupported URL");
       return;
     }
     try {
@@ -577,10 +577,10 @@ public class MainPanel extends javax.swing.JPanel {
       ProgressDialog dialog = new ProgressDialog(null, true, task);
       dialog.setVisible(true);
       if (errmsg != null) {
-        JF.showError("Error", "Exception:" + errmsg);
+        JFAWT.showError("Error", "Exception:" + errmsg);
       }
     } catch (Exception e) {
-      JF.showError("Error", "Exception:" + e);
+      JFAWT.showError("Error", "Exception:" + e);
     }
 
     JFileChooser chooser = new JFileChooser();

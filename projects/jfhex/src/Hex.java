@@ -44,7 +44,7 @@ public class Hex extends JComponent implements KeyListener {
   private final int INF = 0x7fff;
 
   public static void changeFont(Font newFont) {
-    int metrics[] = JF.getFontMetrics(Settings.fnt);
+    int metrics[] = JFAWT.getFontMetrics(Settings.fnt);
     fx = metrics[0];
     fy = metrics[1] + metrics[2];
     baseline = metrics[2];

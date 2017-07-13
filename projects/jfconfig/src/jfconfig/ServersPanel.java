@@ -580,10 +580,10 @@ public class ServersPanel extends javax.swing.JPanel implements ActionListener {
   private void install(String pkg, String name) {
     ShellProcess.logPrompt = true;  //testing
     if (Linux.isInstalled(pkg)) {
-      if (!JF.showConfirm("Warning", "Are you sure you want to remove '" + name + "'?")) return;
+      if (!JFAWT.showConfirm("Warning", "Are you sure you want to remove '" + name + "'?")) return;
       Linux.removePackage(pkg, name);
     } else {
-      if (!JF.showConfirm("Warning", "Are you sure you want to install '" + name + "'?")) return;
+      if (!JFAWT.showConfirm("Warning", "Are you sure you want to install '" + name + "'?")) return;
       Linux.installPackage(pkg, name);
     }
     ShellProcess.logPrompt = false;

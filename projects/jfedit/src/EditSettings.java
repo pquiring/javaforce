@@ -19,8 +19,8 @@ public class EditSettings extends javax.swing.JDialog {
     setComponentOrientation(((parent == null) ? javax.swing.JOptionPane.getRootFrame() : parent).getComponentOrientation());
     if (parent != null) setLocationRelativeTo(parent);
     load();
-    JF.assignHotKey(this, bOk, java.awt.event.KeyEvent.VK_ENTER);
-    JF.assignHotKey(this, bCancel, java.awt.event.KeyEvent.VK_ESCAPE);
+    JFAWT.assignHotKey(this, bOk, java.awt.event.KeyEvent.VK_ENTER);
+    JFAWT.assignHotKey(this, bCancel, java.awt.event.KeyEvent.VK_ESCAPE);
   }
 
   /** This method is called from within the constructor to

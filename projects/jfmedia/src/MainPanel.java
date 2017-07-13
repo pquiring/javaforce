@@ -658,7 +658,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
           if (!copyFile(
             new File(files[a]),
             new File(path + artist[a] + "/" + album[a] + "/" + names[a] + ".wav"))) {
-              JF.showError("Error", "Extract failed for track " + (a+1));
+              JFAWT.showError("Error", "Extract failed for track " + (a+1));
               break;
           }
           model.setValueAt(icon_ripped, a, 0);
@@ -855,9 +855,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
               break;
           }
         }
-        if (err != null) JF.showError("Error", err);
+        if (err != null) JFAWT.showError("Error", err);
       } catch (Exception e) {
-        JF.showError("Error", e.toString());
+        JFAWT.showError("Error", e.toString());
         JFLog.log(e);
       }
       try {

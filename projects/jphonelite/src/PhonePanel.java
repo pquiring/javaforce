@@ -918,7 +918,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
         public void run() {
         java.awt.EventQueue.invokeLater(new Runnable() {
           public void run() {
-            JF.showMessage("Welcome", "Welcome to jPhoneLite!\nPlease press CFG button to configure your options.");
+            JFAWT.showMessage("Welcome", "Welcome to jPhoneLite!\nPlease press CFG button to configure your options.");
           }
         });
         }

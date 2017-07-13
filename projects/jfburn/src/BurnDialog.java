@@ -21,7 +21,7 @@ public class BurnDialog extends javax.swing.JDialog {
     this.tracks = tracks;
     listDevices();
     if (devs.size() == 0) {
-      JF.showError("Error", "No Compatible Burner found!");
+      JFAWT.showError("Error", "No Compatible Burner found!");
       burn.setEnabled(false);
     }
     setPosition();

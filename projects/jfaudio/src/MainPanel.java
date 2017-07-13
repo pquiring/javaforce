@@ -386,7 +386,7 @@ public class MainPanel extends javax.swing.JPanel {
       try {
         Paths.moveFolder(project.path, newPath);
       } catch (Exception e) {
-        JF.showError("Error", "Failed to move project data files");
+        JFAWT.showError("Error", "Failed to move project data files");
         project.filename = null;
         return;
       }

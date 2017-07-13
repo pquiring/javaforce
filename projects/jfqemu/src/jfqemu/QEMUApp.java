@@ -22,7 +22,7 @@ public class QEMUApp extends javax.swing.JFrame {
     setPosition();
     if (JF.isUnix()) {
       if (!Linux.isMemberOf(System.getenv("USER"), "kvm")) {
-        JF.showMessage("Notice", "You are not a member of the 'kvm' group.\nPlease add yourself and re-logon for optimal performance.");
+        JFAWT.showMessage("Notice", "You are not a member of the 'kvm' group.\nPlease add yourself and re-logon for optimal performance.");
       }
     }
   }

@@ -258,7 +258,7 @@ public class PrintersPanel extends javax.swing.JPanel {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"sudo", "lpadmin", "-x", pname}, false);
     if (sp.getErrorLevel() != 0) {
-      JF.showError("Error", "Unable to delete printer:\n"+output);
+      JFAWT.showError("Error", "Unable to delete printer:\n"+output);
     }
     listPrinters();
   }
@@ -270,7 +270,7 @@ public class PrintersPanel extends javax.swing.JPanel {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"lpadmin", "-d", pname}, false);
     if (sp.getErrorLevel() != 0) {
-      JF.showError("Error", "Unable to set default printer:\n"+output);
+      JFAWT.showError("Error", "Unable to set default printer:\n"+output);
     }
     listPrinters();
   }

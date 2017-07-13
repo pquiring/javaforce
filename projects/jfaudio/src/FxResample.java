@@ -17,7 +17,7 @@ public class FxResample extends javax.swing.JDialog {
   public FxResample(java.awt.Frame parent, boolean modal, TrackPanel track) {
     super(parent, modal);
     initComponents();
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
     this.track = track;
     freq.setSelectedItem("" + track.rate);
   }

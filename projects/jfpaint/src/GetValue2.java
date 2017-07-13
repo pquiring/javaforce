@@ -30,8 +30,8 @@ public class GetValue2 extends javax.swing.JDialog {
     slider2.setMaximum(max2);
     slider2.setValue(value2);
     setPosition();
-    JF.assignHotKey(this, ok, KeyEvent.VK_ENTER);
-    JF.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
+    JFAWT.assignHotKey(this, ok, KeyEvent.VK_ENTER);
+    JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
   }
 
   /**

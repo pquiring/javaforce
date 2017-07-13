@@ -24,7 +24,7 @@ public class RepoApp extends javax.swing.JFrame {
     setContentPane(panel);
     setTitle("jfrepo/" + version);
     pack();
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
   }
 
   /**

@@ -599,12 +599,12 @@ public class JFileProperties extends javax.swing.JFrame {
   }
 
   private void badChar() {
-    JF.showError("Error", "Name can not contain special characters:\n\t\t/\\:*?<>|");
+    JFAWT.showError("Error", "Name can not contain special characters:\n\t\t/\\:*?<>|");
   }
 
   private boolean saveShortcut() {
     String newName = iconName.getText().trim();
-    if (newName.length() == 0) {JF.showError("Error", "Name must not be empty"); return false;}
+    if (newName.length() == 0) {JFAWT.showError("Error", "Name must not be empty"); return false;}
     if (newName.indexOf("/") != -1) {badChar(); return false;}
     if (newName.indexOf("\\") != -1) {badChar(); return false;}
     if (newName.indexOf(":") != -1) {badChar(); return false;}
@@ -619,7 +619,7 @@ public class JFileProperties extends javax.swing.JFrame {
       String newfn = entry.file.substring(0, idx+1) + newName + ".desktop";
       if (!entry.file.equals(newfn)) {
         if (new File(newfn).exists()) {
-          JF.showError("Error", "A shortcut with the name already exists");
+          JFAWT.showError("Error", "A shortcut with the name already exists");
           return false;
         }
         new File(entry.file).delete();

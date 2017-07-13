@@ -135,7 +135,7 @@ public class ExtractDialog extends javax.swing.JDialog implements ShellProcessLi
     String cmd[] = {"dd", "if=" + dev, "of=" + filename};
     String output = sp.run(cmd, false);
     //TODO - handle errors?
-    JF.showMessage("Notice", "CD-Image Extracted");
+    JFAWT.showMessage("Notice", "CD-Image Extracted");
     dispose();
   }
 

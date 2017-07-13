@@ -363,7 +363,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
   }
 
   public void failed(String msg) {
-    JF.showError("Error", msg);
+    JFAWT.showError("Error", msg);
     setState(true);
     working = false;
   }

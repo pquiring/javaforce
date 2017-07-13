@@ -37,9 +37,11 @@ public class FunctionService extends Thread {
       jdk = "/usr/bin";
       ext = "";
     }
-    File javac = new File(jdk + "/bin/javac" + ext);
-    if (!javac.exists()) {
-      Main.addMessage("Unable to find javac");
+    if (jdk != null) {
+      File javac = new File(jdk + "/bin/javac" + ext);
+      if (!javac.exists()) {
+        Main.addMessage("Unable to find javac");
+      }
     }
     JFLog.log("JDK=" + jdk);
   }

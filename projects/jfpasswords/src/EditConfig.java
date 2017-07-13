@@ -19,8 +19,8 @@ public class EditConfig extends javax.swing.JDialog {
   public EditConfig(java.awt.Frame parent, boolean modal) {
     super(parent, modal);
     initComponents();
-    JF.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
-    JF.assignHotKey(this, ok, KeyEvent.VK_ENTER);
+    JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
+    JFAWT.assignHotKey(this, ok, KeyEvent.VK_ENTER);
     setPosition();
     passLength.setValue(MainPanel.config.passwordGeneratorLength);
     syms.setSelected(MainPanel.config.passwordGeneratorSymbols);

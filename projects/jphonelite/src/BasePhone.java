@@ -1062,7 +1062,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       JFLog.log("newer version is available : " + line);
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
-          JF.showMessage("Upgrade available", "A newer version of jphonelite is available! (v" + line + ")\r\nPlease goto http://jphonelite.sourceforge.net to download it");
+          JFAWT.showMessage("Upgrade available", "A newer version of jphonelite is available! (v" + line + ")\r\nPlease goto http://jphonelite.sourceforge.net to download it");
         }
       });
     } catch (Exception e) {

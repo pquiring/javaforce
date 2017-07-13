@@ -197,7 +197,7 @@ public class MainPanel extends javax.swing.JPanel {
         tarType = 'j';
         ok = true;
       }
-      if (!ok) {JF.showError("Error", "Unknown archive type"); return;}
+      if (!ok) {JFAWT.showError("Error", "Unknown archive type"); return;}
       type = "tar";
     }
     archive = chooser.getSelectedFile();
@@ -270,7 +270,7 @@ public class MainPanel extends javax.swing.JPanel {
       }
     }
     if (!archive.exists() || typeNotSupported) {
-      JF.showError("Error", "That file doesn't exist");
+      JFAWT.showError("Error", "That file doesn't exist");
       archive = null;
       return;
     }

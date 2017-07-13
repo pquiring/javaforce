@@ -264,7 +264,7 @@ public class Desktop extends javax.swing.JWindow {
   }//GEN-LAST:event_newFolderActionPerformed
 
   private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
-    if (!JF.showConfirm("Confirm", "Delete?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Delete?")) return;
     try {
       JMenuItem mi = (JMenuItem)evt.getSource();
       JPopupMenu pm = (JPopupMenu)mi.getParent();
@@ -349,7 +349,7 @@ public class Desktop extends javax.swing.JWindow {
   private boolean ready = false;
 
   public void setPosition() {
-    Rectangle s = JF.getMaximumBounds();
+    Rectangle s = JFAWT.getMaximumBounds();
     sx = s.width;
     sy = s.height;
     setLocation(0, 0);

@@ -70,7 +70,7 @@ public class Settings {
     //save back to xml
     saveSettings();
     FileApp.inDialog = true;
-    JF.showMessage("Import", "Imported " + cnt + " entries.");
+    JFAWT.showMessage("Import", "Imported " + cnt + " entries.");
     FileApp.inDialog = false;
   }
   private static void importTag(XML.XMLTag tag, Folder folder) {
@@ -151,7 +151,7 @@ public class Settings {
     if (chooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) return;
 */
     FileApp.inDialog = true;
-    JF.showMessage("TODO", "Not implemented yet");
+    JFAWT.showMessage("TODO", "Not implemented yet");
     FileApp.inDialog = false;
     //TODO
  }

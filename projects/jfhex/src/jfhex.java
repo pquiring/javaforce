@@ -194,7 +194,7 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     }
     if ((f1 == KeyEvent.VK_F2) && (f2 == 0)) {
       EditSettings.editSettings(this);
-      Settings.fnt = JF.getMonospacedFont(0, Settings.fontSize);
+      Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
       Hex.changeFont(Settings.fnt);
       int cnt = pages.size();
       for(int a=0;a<cnt;a++) {
@@ -283,7 +283,7 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     if (!xml.read(filename)) return;  //bad cfg
     if (!xml.root.name.equals("jfhex")) return;  //bad cfg
     xml.writeClass(xml.root, new Settings());
-    Settings.fnt = JF.getMonospacedFont(0, Settings.fontSize);
+    Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
   }
   public void savecfg() {
     XML xml = new XML();
@@ -349,7 +349,7 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   private page addpage(String title, String txt) {
     page pg = new page();
-    pg.panel = JF.createJPanel(new GridLayout(), null);
+    pg.panel = JFAWT.createJPanel(new GridLayout(), null);
     pg.hex = new Hex(this);
     pg.hex.addKeyListener(new java.awt.event.KeyAdapter() {
       public void keyPressed(java.awt.event.KeyEvent evt) {

@@ -33,7 +33,7 @@ public class Service implements WebHandler {
     this.viewOnly = viewOnly;
     web = new Web();
     if (!web.start(this, 33001, true)) {
-      JF.showError("Error", "Failed to start Web Server");
+      JFAWT.showError("Error", "Failed to start Web Server");
       return;
     }
   }

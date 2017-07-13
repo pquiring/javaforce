@@ -139,7 +139,7 @@ public class ShareDialog extends javax.swing.JDialog {
         if (sp.getErrorLevel() != 0) {
           int idx = output.indexOf("NetShare");
           if (idx == -1) idx = 0;
-          JF.showError("Error", output.substring(idx));
+          JFAWT.showError("Error", output.substring(idx));
           return;
         }
         NetworkShares.addShare(shareName.getText(), folderName.getText());
@@ -152,7 +152,7 @@ public class ShareDialog extends javax.swing.JDialog {
         if (output.indexOf("failed") != -1) {
           int idx = output.indexOf("NetShare");
           if (idx == -1) idx = 0;
-          JF.showError("Error", output.substring(idx));
+          JFAWT.showError("Error", output.substring(idx));
           return;
         }
         NetworkShares.delShare(shareName.getText());

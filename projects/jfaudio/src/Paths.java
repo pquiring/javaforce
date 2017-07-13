@@ -73,7 +73,7 @@ public class Paths {
       }
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Unable to find temporary folders.");
+      JFAWT.showError("Error", "Unable to find temporary folders.");
       return false;
     }
   }

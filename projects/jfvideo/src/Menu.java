@@ -114,7 +114,7 @@ public class Menu {
     item = new JMenuItem("About");
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        JF.showMessage("About", "jfVideo Creator/" + VideoApp.version + "\nWebSite : http://jfvideo.sourceforge.net");
+        JFAWT.showMessage("About", "jfVideo Creator/" + VideoApp.version + "\nWebSite : http://jfvideo.sourceforge.net");
       }
     });
     menu.add(item);

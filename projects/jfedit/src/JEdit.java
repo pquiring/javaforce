@@ -213,7 +213,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     if (!xml.read(filename)) return;  //bad cfg
     if (!xml.root.name.equals("jfedit")) return;  //bad cfg
     xml.writeClass(xml.root, settings);
-    settings.fnt = JF.getMonospacedFont(0, settings.fontSize);
+    settings.fnt = JFAWT.getMonospacedFont(0, settings.fontSize);
   }
   public void savecfg() {
     XML xml = new XML();
@@ -276,7 +276,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private page addpage(String title) {
     page pg = new page();
     pg.bUnix = settings.bUnix;
-    pg.panel = JF.createJPanel(new GridLayout(), null);
+    pg.panel = JFAWT.createJPanel(new GridLayout(), null);
     pg.txt = createJFTextArea();
     pg.scroll = new JScrollPane(pg.txt);
     pg.panel.add(pg.scroll);
@@ -407,7 +407,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       FileInputStream fis = new FileInputStream(file);
       int size = fis.available();
       if (size > 1024 * 1024) {
-        if (!JF.showConfirm("Warning", "File is > 1MB, load anyways?")) {
+        if (!JFAWT.showConfirm("Warning", "File is > 1MB, load anyways?")) {
           closepage(idx);
           return;
         }
@@ -758,7 +758,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     }
     if ((f1 == KeyEvent.VK_F2) && (f2 == 0)) {
       EditSettings.editSettings(this, settings);
-      settings.fnt = JF.getMonospacedFont(0, settings.fontSize);
+      settings.fnt = JFAWT.getMonospacedFont(0, settings.fontSize);
       int cnt = pages.size();
       for(int a=0;a<cnt;a++) {
         txt = pages.get(a).txt;

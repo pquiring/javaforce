@@ -23,7 +23,7 @@ public class CaptureApp {
       }
       Runtime.getRuntime().exec(cmd.toArray(new String[0]));
       if (!tmpFile.exists()) {
-        JF.showError("Error", "Capture failed!");
+        JFAWT.showError("Error", "Capture failed!");
         return;
       }
       java.awt.EventQueue.invokeLater(new Runnable() {

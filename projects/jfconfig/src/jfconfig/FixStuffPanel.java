@@ -202,7 +202,7 @@ public class FixStuffPanel extends javax.swing.JPanel {
       case Ubuntu:
         if (!Linux.isInstalled("libcap2-bin")) {
           if (!Linux.installPackage("libcap2-bin", "setcap tool")) {
-            JF.showError("Error", "Failed to install required tool");
+            JFAWT.showError("Error", "Failed to install required tool");
             return;
           }
         }
@@ -210,13 +210,13 @@ public class FixStuffPanel extends javax.swing.JPanel {
       case Fedora:
         if (!Linux.isInstalled("libcap")) {
           if (!Linux.installPackage("libcap", "setcap tool")) {
-            JF.showError("Error", "Failed to install required tool");
+            JFAWT.showError("Error", "Failed to install required tool");
             return;
           }
         }
         break;
       default:
-        JF.showError("Error", "Unsupported distro");
+        JFAWT.showError("Error", "Unsupported distro");
         return;
     }
     String javabin = "";
@@ -225,7 +225,7 @@ public class FixStuffPanel extends javax.swing.JPanel {
       javabin = file.getCanonicalPath();  //resolves symlinks
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to find java binary");
+      JFAWT.showError("Error", "Failed to find java binary");
       return;
     }
     ShellProcess sp = new ShellProcess();
@@ -237,10 +237,10 @@ public class FixStuffPanel extends javax.swing.JPanel {
     String output = sp.run(cmd, false);
     if (output == null) {
       JFLog.log("Failed to exec setcap");
-      JF.showError("Error", "Failed to exec setcap.");
+      JFAWT.showError("Error", "Failed to exec setcap.");
       return;
     }
-    JF.showMessage("Notice", "Privledges granted.  You will have to do this again if the Java package is upgraded.");
+    JFAWT.showMessage("Notice", "Privledges granted.  You will have to do this again if the Java package is upgraded.");
   }//GEN-LAST:event_fixTomcatActionPerformed
 
   private void fixSSHslowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fixSSHslowActionPerformed
@@ -267,10 +267,10 @@ public class FixStuffPanel extends javax.swing.JPanel {
       //copy tmpFile back to /etc/ssh/ssh_config
       if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/ssh/ssh_config"))
         throw new Exception("file copy error");
-      JF.showMessage("Notice", "SSH Config has been fixed.");
+      JFAWT.showMessage("Notice", "SSH Config has been fixed.");
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to apply settings.");
+      JFAWT.showError("Error", "Failed to apply settings.");
     }
   }//GEN-LAST:event_fixSSHslowActionPerformed
 
@@ -306,10 +306,10 @@ public class FixStuffPanel extends javax.swing.JPanel {
       //copy tmpFile back to /etc/sudoers
       if (!Linux.copyFile(tmpFile_new.getAbsolutePath(), "/etc/sudoers"))
         throw new Exception("file copy error");
-      JF.showMessage("Notice", "sudoers has been patched.");
+      JFAWT.showMessage("Notice", "sudoers has been patched.");
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to apply settings.");
+      JFAWT.showError("Error", "Failed to apply settings.");
     }
   }//GEN-LAST:event_nopasswdActionPerformed
 
@@ -321,9 +321,9 @@ public class FixStuffPanel extends javax.swing.JPanel {
     if (!Linux.runScript(new String[] {
       "grub-mkconfig --output=/boot/grub/grub.cfg"
     })) {
-      JF.showError("Error", "Failed to recreate boot options");
+      JFAWT.showError("Error", "Failed to recreate boot options");
     } else {
-      JF.showMessage("Notice", "Boot Options reconfigured");
+      JFAWT.showMessage("Notice", "Boot Options reconfigured");
     }
   }//GEN-LAST:event_grub_mkconfigActionPerformed
 
@@ -331,9 +331,9 @@ public class FixStuffPanel extends javax.swing.JPanel {
     if (!Linux.runScript(new String[] {
       "update-initramfs -u"
     })) {
-      JF.showError("Error", "Failed to recreate initramfs");
+      JFAWT.showError("Error", "Failed to recreate initramfs");
     } else {
-      JF.showMessage("Notice", "Boot Image recreated");
+      JFAWT.showMessage("Notice", "Boot Image recreated");
     }
   }//GEN-LAST:event_initramfsActionPerformed
 
@@ -381,10 +381,10 @@ public class FixStuffPanel extends javax.swing.JPanel {
       //copy tmpFile back to /etc/nsswitch.conf
       if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/nsswitch.conf"))
         throw new Exception("file copy error");
-      if (!quiet) JF.showMessage("Notice", "Configuration patched successfully!");
+      if (!quiet) JFAWT.showMessage("Notice", "Configuration patched successfully!");
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to fix /etc/nsswitch.conf");
+      JFAWT.showError("Error", "Failed to fix /etc/nsswitch.conf");
     }
   }
 

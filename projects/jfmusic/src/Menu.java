@@ -148,7 +148,7 @@ public class Menu {
     item.setMnemonic('a');
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        JF.showMessage("About", "jfMusic/" + MusicApp.version + "\nWebSite : http://jfmusic.sourceforge.net");
+        JFAWT.showMessage("About", "jfMusic/" + MusicApp.version + "\nWebSite : http://jfmusic.sourceforge.net");
       }
     });
     menu.add(item);

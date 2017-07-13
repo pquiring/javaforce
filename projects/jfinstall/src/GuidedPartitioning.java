@@ -149,7 +149,7 @@ public class GuidedPartitioning extends IPanel {
     Data.swap = Data.findPartition(device, "4GB", "swap");
     if (Data.swap == null) {
       error = true;
-      JF.showError("Error", "Unable to find space for a swap partition.\nPlease use Custom Partitioning.");
+      JFAWT.showError("Error", "Unable to find space for a swap partition.\nPlease use Custom Partitioning.");
       return;
     }
     Data.swap.mount = "swap";
@@ -159,7 +159,7 @@ public class GuidedPartitioning extends IPanel {
     Data.root = Data.findPartition(device, null, "ext4");
     if (Data.root == null) {
       error = true;
-      JF.showError("Error", "Unable to find space for the root partition.\nPlease use Custom Partitioning.");
+      JFAWT.showError("Error", "Unable to find space for the root partition.\nPlease use Custom Partitioning.");
       return;
     }
     Data.root.mount = "/";
@@ -197,7 +197,7 @@ public class GuidedPartitioning extends IPanel {
     ArrayList<String> cmd;
     String output;
     if ((Data.swap == null) || (Data.root == null) || error) {
-      JF.showError("Error", "An error occured, please go back and try again.");
+      JFAWT.showError("Error", "An error occured, please go back and try again.");
       return null;
     }
     return new Install();

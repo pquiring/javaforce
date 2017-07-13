@@ -536,7 +536,7 @@ public class TomcatPanel extends javax.swing.JPanel {
     if (name.length() == 0) return;
     for(int a=0;a<config.service.length;a++) {
       if (config.service[a].name.equalsIgnoreCase(name)) {
-        JF.showError("Error", "That name already exists");
+        JFAWT.showError("Error", "That name already exists");
         return;
       }
     }
@@ -552,9 +552,9 @@ public class TomcatPanel extends javax.swing.JPanel {
   }
 
   private void delService(int idx) {
-    if (idx == 0) {JF.showError("Error", "Can not delete 'Default' service"); return;}
+    if (idx == 0) {JFAWT.showError("Error", "Can not delete 'Default' service"); return;}
     Service service = config.service[idx];
-    if (!JF.showConfirm("Confirm", "Are you sure you want to delete '" + service.name + "'?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to delete '" + service.name + "'?")) return;
     int len = config.service.length;
     Service newList[] = new Service[len-1];
     for(int a=0;a<idx;a++) {
@@ -610,7 +610,7 @@ public class TomcatPanel extends javax.swing.JPanel {
     Service service = config.service[currentServiceIdx];
     for(int a=0;a<service.host.length;a++) {
       if (service.host[a].name.equalsIgnoreCase(name)) {
-        JF.showError("Error", "That name already exists");
+        JFAWT.showError("Error", "That name already exists");
         return;
       }
     }
@@ -625,10 +625,10 @@ public class TomcatPanel extends javax.swing.JPanel {
   }
 
   private void delHost(int idx) {
-    if (idx == 0) {JF.showError("Error", "Can not delete 'Default' host"); return;}
+    if (idx == 0) {JFAWT.showError("Error", "Can not delete 'Default' host"); return;}
     Service service = config.service[currentServiceIdx];
     Host host = service.host[idx];
-    if (!JF.showConfirm("Confirm", "Are you sure you want to delete '" + host.name + "'?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to delete '" + host.name + "'?")) return;
     int len = service.host.length;
     Host newList[] = new Host[len-1];
     System.arraycopy(service.host, 0, newList, 0, idx);
@@ -720,7 +720,7 @@ public class TomcatPanel extends javax.swing.JPanel {
         throw new Exception("file io error");
       }
       tmpFile.delete();
-      JF.showMessage("Notice", "Please restart server to make changes effective.");
+      JFAWT.showMessage("Notice", "Please restart server to make changes effective.");
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -728,8 +728,8 @@ public class TomcatPanel extends javax.swing.JPanel {
 
   private void restart() {
     if (Linux.restartService("tomcat7"))
-      JF.showMessage("Notice", "Tomcat Service Restarted");
+      JFAWT.showMessage("Notice", "Tomcat Service Restarted");
     else
-      JF.showError("Error", "Failed to Restart Tomcat Service");
+      JFAWT.showError("Error", "Failed to Restart Tomcat Service");
   }
 }

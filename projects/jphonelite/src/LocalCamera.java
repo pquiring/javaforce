@@ -69,12 +69,12 @@ public class LocalCamera extends Thread implements MediaIO {
       camera = new Camera();
       //      try { raf = new RandomAccessFile("media_local." + codec.name, "rw"); } catch (Exception e) {}
       if (!camera.init()) {
-        JF.showError("Error", "Failed to init camera");
+        JFAWT.showError("Error", "Failed to init camera");
         return;
       }
       String[] devices = camera.listDevices();
       if (devices == null || devices.length == 0) {
-        JF.showError("Error", "Failed to find a camera");
+        JFAWT.showError("Error", "Failed to find a camera");
         return;
       }
       int idx = 0;
@@ -85,7 +85,7 @@ public class LocalCamera extends Thread implements MediaIO {
         }
       }
       if (!camera.start(idx, PhonePanel.vx, PhonePanel.vy)) {
-        JF.showError("Error", "Failed to start camera");
+        JFAWT.showError("Error", "Failed to start camera");
         main_done = true;
         return;
       }

@@ -198,11 +198,11 @@ public class UserAddDialog extends javax.swing.JDialog {
   public boolean valid() {
     fullName.setText(allChars(fullName.getText()));
     userName.setText(loginChars(userName.getText()));
-    if (fullName.getText().length() < 3) {JF.showError("Error", "Full name too short"); return false;}
-    if (userName.getText().length() < 3) {JF.showError("Error", "Username too short"); return false;}
-    if (reserved(userName.getText())) {JF.showError("Error", "That login name is reserved"); return false;}
-    if (new String(passwd1.getPassword()).length() < 5) {JF.showError("Error", "Password too short"); return false;}
-    if (!(new String(passwd1.getPassword())).equals(new String(passwd2.getPassword()))) {JF.showError("Error", "Passwords do not match"); return false;}
+    if (fullName.getText().length() < 3) {JFAWT.showError("Error", "Full name too short"); return false;}
+    if (userName.getText().length() < 3) {JFAWT.showError("Error", "Username too short"); return false;}
+    if (reserved(userName.getText())) {JFAWT.showError("Error", "That login name is reserved"); return false;}
+    if (new String(passwd1.getPassword()).length() < 5) {JFAWT.showError("Error", "Password too short"); return false;}
+    if (!(new String(passwd1.getPassword())).equals(new String(passwd2.getPassword()))) {JFAWT.showError("Error", "Passwords do not match"); return false;}
     return true;
   }
 

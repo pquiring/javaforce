@@ -40,7 +40,7 @@ public class App extends javax.swing.JFrame {
     list.setModel(listModel);
     newProject();
     setTitle("jfDataLogger/" + version);
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
     setExtendedState(JFrame.MAXIMIZED_BOTH);
   }
 
@@ -394,7 +394,7 @@ public class App extends javax.swing.JFrame {
   public static String csv_filters[][] = new String[][] { {"CSV Files (*.csv)", "csv"} };
 
   public void load() {
-    String filename = JF.getOpenFile(JF.getUserPath(), dl_filters);
+    String filename = JFAWT.getOpenFile(JF.getUserPath(), dl_filters);
     if (filename == null) return;
     newProject();
     projectFile = filename;
@@ -445,9 +445,9 @@ public class App extends javax.swing.JFrame {
   public void save() {
     String filename;
     if (projectFile != null) {
-      filename = JF.getSaveFile(projectFile, dl_filters);
+      filename = JFAWT.getSaveFile(projectFile, dl_filters);
     } else {
-      filename = JF.getSaveAsFile(JF.getUserPath(), dl_filters);
+      filename = JFAWT.getSaveAsFile(JF.getUserPath(), dl_filters);
     }
     if (filename == null) return;
     if (!filename.toLowerCase().endsWith(".dl")) {
@@ -466,7 +466,7 @@ public class App extends javax.swing.JFrame {
 
   public void logFile() {
     if (logFile == null) {
-      logFile = JF.getSaveAsFile(JF.getUserPath(), csv_filters);
+      logFile = JFAWT.getSaveAsFile(JF.getUserPath(), csv_filters);
       if (logFile == null) return;
       if (!logFile.toLowerCase().endsWith(".csv")) {
         logFile += ".csv";
@@ -512,7 +512,7 @@ public class App extends javax.swing.JFrame {
   public void run() {
     if (worker == null) {
       if (tags.size() == 0) {
-        JF.showError("Error", "No tags defined");
+        JFAWT.showError("Error", "No tags defined");
         return;
       }
       setState(true);

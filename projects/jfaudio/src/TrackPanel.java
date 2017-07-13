@@ -309,7 +309,7 @@ public class TrackPanel extends javax.swing.JPanel {
           repaint();
         } catch (Exception e) {
           JFLog.log(e);
-          JF.showError("Error", e.toString());
+          JFAWT.showError("Error", e.toString());
         }
         return true;
       }
@@ -694,7 +694,7 @@ public class TrackPanel extends javax.swing.JPanel {
         input.listDevices();
         if (!input.start(Settings.current.channels, Settings.current.freq, bits, recBufSize, Settings.getInput())) {
           MainPanel.main.stop();
-          JF.showError("Error", "Failed to open recording device.");
+          JFAWT.showError("Error", "Failed to open recording device.");
           return;
         }
         byte samples[] = new byte[recBufSize];
@@ -1037,7 +1037,7 @@ public class TrackPanel extends javax.swing.JPanel {
   public int transcoderBitRate;
   public void exportFile(String fn, boolean selection) {
     if (fn.toLowerCase().endsWith(".wav")) {
-      if (exportWav(fn, selection)) JF.showMessage("Notice", "Export complete");
+      if (exportWav(fn, selection)) JFAWT.showMessage("Notice", "Export complete");
     } else {
       //export to Wav to temp file and then convert using CodecPack
       transcoderCodec = null;
@@ -1061,7 +1061,7 @@ public class TrackPanel extends javax.swing.JPanel {
         transcoderCodec = "mp3";
       }
       if (transcoderCodec == null) {
-        JF.showError("Error", "Unsupported codec");
+        JFAWT.showError("Error", "Unsupported codec");
         return;
       }
       try {
@@ -1085,12 +1085,12 @@ public class TrackPanel extends javax.swing.JPanel {
         dialog.setVisible(true);
 //        transcoderInFile.delete();  //test
         if (transcoderSuccess)
-          JF.showMessage("Notice", "Export complete");
+          JFAWT.showMessage("Notice", "Export complete");
         else
-          JF.showError("Error", "Export failed");
+          JFAWT.showError("Error", "Export failed");
       } catch (Exception e) {
         JFLog.log(e);
-        JF.showError("Error", "Export failed");
+        JFAWT.showError("Error", "Export failed");
       }
     }
   }
@@ -1115,7 +1115,7 @@ public class TrackPanel extends javax.swing.JPanel {
     long offset = 0;
     if (selection) {
       if (selectStart == selectStop) {
-        JF.showError("Error", "No selection to export");
+        JFAWT.showError("Error", "No selection to export");
         return false;
       }
       if (selectStop < selectStart) {
@@ -1133,7 +1133,7 @@ public class TrackPanel extends javax.swing.JPanel {
       length = totalLength;
     }
     if (dataSize > Integer.MAX_VALUE) {
-      JF.showError("Error", "Output too large for WAV file");
+      JFAWT.showError("Error", "Output too large for WAV file");
       return false;
     }
     try {
@@ -1178,7 +1178,7 @@ public class TrackPanel extends javax.swing.JPanel {
       return true;
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Export Failed");
+      JFAWT.showError("Error", "Export Failed");
       return false;
     }
   }
@@ -1224,15 +1224,15 @@ public class TrackPanel extends javax.swing.JPanel {
       fis.close();
       if (clip.length == 0) {JFLog.log("clip is empty"); return;}
       if (clip.bits != bits) {
-        JF.showError("Error", "Clipboard bits doesn't match this track");
+        JFAWT.showError("Error", "Clipboard bits doesn't match this track");
         return;
       }
       if (clip.channels != channels) {
-        JF.showError("Error", "Clipboard channels doesn't match this track");
+        JFAWT.showError("Error", "Clipboard channels doesn't match this track");
         return;
       }
       if (clip.rate != rate) {
-        if (!JF.showConfirm("Warning", "Clipboard sample rate doesn't match this track, use anyways?")) {
+        if (!JFAWT.showConfirm("Warning", "Clipboard sample rate doesn't match this track, use anyways?")) {
           return;
         }
       }
@@ -1719,7 +1719,7 @@ public class TrackPanel extends javax.swing.JPanel {
     String info = "Length:" + totalLength + " (samples)\n";
     info += "Freq:" + rate + "\n";
     info += "Bits:" + bits + "\n";
-    JF.showMessage("Track Info", info);
+    JFAWT.showMessage("Track Info", info);
   }
 
   public void fxAmplify() {

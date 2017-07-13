@@ -196,11 +196,11 @@ public class DateTimePanel extends javax.swing.JPanel {
       tzPanel.applyTimeZone();
       ConfigApp.jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "timeAdjusted", "");
     } catch (Exception e) {
-      JF.showError("Error", "Unable to set clock");
+      JFAWT.showError("Error", "Unable to set clock");
       JFLog.log(e);
       return;
     }
-    JF.showError("Notice", "Clock set");
+    JFAWT.showError("Notice", "Clock set");
   }//GEN-LAST:event_setActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables

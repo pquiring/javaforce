@@ -31,7 +31,7 @@ public class SiteSMB extends Site {
       if (!remote_ls()) throw new Exception("Connection failed");
       setStatus(null);
     } catch (Exception e) {
-      JF.showMessage("Error", "Error:" + e);
+      JFAWT.showMessage("Error", "Error:" + e);
       JFLog.log(e);
       closeSite();
       return false;
@@ -345,7 +345,7 @@ public class SiteSMB extends Site {
   @Override
   public void remote_delete() {
     remoteFolderStack = new ArrayList<String>();
-    if (!JF.showConfirm("Delete", "Are you sure you want to delete file(s)?")) return;
+    if (!JFAWT.showConfirm("Delete", "Are you sure you want to delete file(s)?")) return;
     aborted = false;
     setStatus("Deleting");
     new Thread() {

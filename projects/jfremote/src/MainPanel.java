@@ -184,7 +184,7 @@ public class MainPanel extends javax.swing.JPanel {
     try {
       InetAddress ip = InetAddress.getByName(host);
     } catch (Exception e) {
-      JF.showError("Error", "That host doesn't exist");
+      JFAWT.showError("Error", "That host doesn't exist");
       return;
     }
     addHost();
@@ -256,7 +256,7 @@ public class MainPanel extends javax.swing.JPanel {
       cmd.add((String)computer.getSelectedItem());
       Runtime.getRuntime().exec(cmd.toArray(new String[0]));
     } catch (Exception e) {
-      JF.showError("Error", "Failed to execute rdesktop");
+      JFAWT.showError("Error", "Failed to execute rdesktop");
     }
   }
 
@@ -268,7 +268,7 @@ public class MainPanel extends javax.swing.JPanel {
       String cmd[] = {"jvnc", host};
       Runtime.getRuntime().exec(cmd);
     } catch (Exception e) {
-      JF.showError("Error", "Failed to execute jvnc");
+      JFAWT.showError("Error", "Failed to execute jvnc");
     }
   }
 

@@ -257,7 +257,7 @@ public class TimeZonePanel extends javax.swing.JPanel implements MouseListener, 
       return true;
     } catch (Exception e) {
       file.delete();
-      JF.showError("Error", "Unable to set timezone");
+      JFAWT.showError("Error", "Unable to set timezone");
       JFLog.log(e);
       return false;
     }

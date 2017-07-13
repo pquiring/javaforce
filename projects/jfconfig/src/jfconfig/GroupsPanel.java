@@ -185,7 +185,7 @@ public class GroupsPanel extends javax.swing.JPanel {
     cmd.add(userName);
     String output = sp.run(cmd, false);
     if (output == null) {
-      JF.showError("Error", "Failed to add user to group.");
+      JFAWT.showError("Error", "Failed to add user to group.");
       return;
     }
     loadGroups();
@@ -206,7 +206,7 @@ public class GroupsPanel extends javax.swing.JPanel {
     cmd.add(userName);
     String output = sp.run(cmd, false);
     if (output == null) {
-      JF.showError("Error", "Failed to remove user from group.");
+      JFAWT.showError("Error", "Failed to remove user from group.");
       return;
     }
     loadGroups();
@@ -343,7 +343,7 @@ public class GroupsPanel extends javax.swing.JPanel {
     cmd.add(name);
     String output = sp.run(cmd, false);
     if (output == null) {
-      JF.showError("Error", "Failed to exec groupadd.");
+      JFAWT.showError("Error", "Failed to exec groupadd.");
     }
     loadGroups();
   }
@@ -352,7 +352,7 @@ public class GroupsPanel extends javax.swing.JPanel {
     int idx = groups.getSelectedIndex();
     if (idx == -1) return;
     String name = (String)groupsModel.getElementAt(idx);
-    if (!JF.showConfirm("Confirm", "Are you sure you want to delete group '" + name + "'?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to delete group '" + name + "'?")) return;
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<String>();
     cmd.add("sudo");
@@ -360,7 +360,7 @@ public class GroupsPanel extends javax.swing.JPanel {
     cmd.add(name);
     String output = sp.run(cmd, false);
     if (output == null) {
-      JF.showError("Error", "Failed to exec groupdel.");
+      JFAWT.showError("Error", "Failed to exec groupdel.");
     }
     loadGroups();
   }

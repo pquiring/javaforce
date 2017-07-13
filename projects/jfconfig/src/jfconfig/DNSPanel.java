@@ -418,9 +418,9 @@ public class DNSPanel extends javax.swing.JPanel {
 
   private void restart() {
     if (Linux.restartService("bind9"))
-      JF.showMessage("Notice", "DNS Service Restarted");
+      JFAWT.showMessage("Notice", "DNS Service Restarted");
     else
-      JF.showError("Error", "Failed to Restart DNS Service");
+      JFAWT.showError("Error", "Failed to Restart DNS Service");
   }
 
   private void addZone() {
@@ -451,7 +451,7 @@ public class DNSPanel extends javax.swing.JPanel {
 
   private void delZone(int idx) {
     Zone zone = config.zone[idx];
-    if (!JF.showConfirm("Confirm", "Are you sure you want to delete '" + zone.name + "'?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to delete '" + zone.name + "'?")) return;
     int len = config.zone.length;
     Zone newList[] = new Zone[len-1];
     System.arraycopy(config.zone, 0, newList, 0, idx);
@@ -494,7 +494,7 @@ public class DNSPanel extends javax.swing.JPanel {
     int zidx = zones.getSelectedIndex();
     if (zidx == -1) return;
     Entry entry = config.zone[zidx].entry[idx];
-    if (!JF.showConfirm("Confirm", "Are you sure you want to delete '" + entry.name + "'?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to delete '" + entry.name + "'?")) return;
     int len = config.zone[zidx].entry.length;
     Entry newList[] = new Entry[len-1];
     System.arraycopy(config.zone[zidx].entry, 0, newList, 0, idx);
@@ -571,10 +571,10 @@ public class DNSPanel extends javax.swing.JPanel {
       //copy tmpFile to /etc/bind/named.conf.local
       if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/bind/named.conf.local"))
         throw new Exception("file copy error");
-      JF.showMessage("Notice", "Settings have been applied, please restart server.");
+      JFAWT.showMessage("Notice", "Settings have been applied, please restart server.");
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to apply settings.");
+      JFAWT.showError("Error", "Failed to apply settings.");
     }
   }
 }

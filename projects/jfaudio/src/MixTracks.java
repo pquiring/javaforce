@@ -136,22 +136,22 @@ public class MixTracks extends javax.swing.JDialog implements ActionListener {
       }
     }
     if (cnt != 2) {
-      JF.showError("Error", "Must select exactly two tracks");
+      JFAWT.showError("Error", "Must select exactly two tracks");
       return;
     }
     TrackPanel t1, t2, tmp;
     t1 = trackList.get(idx[0]);
     t2 = trackList.get(idx[1]);
     if (t1.bits != t2.bits) {
-      JF.showError("Error", "Samples bit sizes do not match");
+      JFAWT.showError("Error", "Samples bit sizes do not match");
       return;
     }
     if (t1.channels != t2.channels) {
-      JF.showError("Error", "Number of channels do not match");
+      JFAWT.showError("Error", "Number of channels do not match");
       return;
     }
     if (t1.rate != t2.rate) {
-      if (!JF.showConfirm("Warning", "Frequecy rates do not match, continue anyways?")) {
+      if (!JFAWT.showConfirm("Warning", "Frequecy rates do not match, continue anyways?")) {
         return;
       }
     }

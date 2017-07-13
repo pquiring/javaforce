@@ -250,7 +250,7 @@ public class MidiKeyboard extends javax.swing.JDialog implements Receiver {
       return true;
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "No devices found");
+      JFAWT.showError("Error", "No devices found");
       if (exit) System.exit(0); else dispose();
       return false;
     }
@@ -344,7 +344,7 @@ public class MidiKeyboard extends javax.swing.JDialog implements Receiver {
     } catch (Exception e) {
       JFLog.log(e);
       midi.close();
-      JF.showError("Error", "Failed to open device");
+      JFAWT.showError("Error", "Failed to open device");
     }
   }
 

@@ -27,7 +27,7 @@ public class MainPanel extends javax.swing.JPanel {
     switch (Linux.distro) {
       case Ubuntu: distroIdx = 2; break;
       case Fedora: distroIdx = 3; break;
-      default: JF.showError("Error", "unsupported distro"); System.exit(0);
+      default: JFAWT.showError("Error", "unsupported distro"); System.exit(0);
     }
   }
 

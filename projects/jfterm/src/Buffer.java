@@ -246,7 +246,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
 
   public static void changeFont() {
     {
-      int metrics[] = JF.getFontMetrics(Settings.fnt);
+      int metrics[] = JFAWT.getFontMetrics(Settings.fnt);
       //[0] = width
       //[1] = ascent
       //[2] = descent

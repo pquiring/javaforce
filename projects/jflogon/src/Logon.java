@@ -62,7 +62,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       network.setText("");
       network.setIcon(icon);
       pack();
-      JF.centerWindow(this);
+      JFAWT.centerWindow(this);
       //connect to JBus
       if (jbusClient == null) {
         jbusClient = new JBusClient("org.jflinux.jflogon", new JBusMethods());
@@ -241,7 +241,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private void RebootActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebootActionPerformed
     setVisible(false);
-    if (!JF.showConfirm("Confirm", "Are you sure you want to reboot?")) {
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to reboot?")) {
       setVisible(true);
       return;
     }
@@ -250,7 +250,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private void ShutdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShutdownActionPerformed
     setVisible(false);
-    if (!JF.showConfirm("Confirm", "Are you sure you want to shutdown?")) {
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to shutdown?")) {
       setVisible(true);
       return;
     }
@@ -459,7 +459,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         try {
           Startup.runSession(user, "/usr/bin/jfdesktop", env_names, env_values, domainLogon);
         } catch (Exception e) {
-          JF.showError("Session Failed", e.toString());
+          JFAWT.showError("Session Failed", e.toString());
         }
         Linux.x11_rr_reset("800x600");
         java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
@@ -472,7 +472,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private void showError(String msg) {
     setVisible(false);
     setEnabled(false);
-    JF.showError("Error", msg);
+    JFAWT.showError("Error", msg);
     setVisible(true);
     setEnabled(true);
   }
@@ -666,7 +666,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   private void showNetworkFailed() {
-    JF.showError("Error", "Connection failed!");
+    JFAWT.showError("Error", "Connection failed!");
   }
 
   private void disconnectVPN(String name) {

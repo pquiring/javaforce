@@ -50,7 +50,7 @@ public class EditElementProperties extends javax.swing.JDialog {
     }
     pack();  //calls setSize()
     JF.sleep(100);  //JVM Bug - setSize() and setLocation() need a small delay inbetween
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
 //    if (gl != null) gl.init();  //crashes
   }
 

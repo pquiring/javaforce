@@ -20,7 +20,7 @@ public class EditSettings extends javax.swing.JDialog {
     channels.setSelectedIndex(Settings.current.channels - 1);
     listInputDevices();
     listOutputDevices();
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
   }
 
   /**

@@ -17,9 +17,9 @@ public class QuickConnect extends javax.swing.JDialog {
   public QuickConnect(java.awt.Frame parent, boolean modal) {
     super(parent, modal);
     initComponents();
-    JF.centerWindow(this);
-    JF.assignHotKey(this, ok, KeyEvent.VK_ENTER);
-    JF.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
+    JFAWT.centerWindow(this);
+    JFAWT.assignHotKey(this, ok, KeyEvent.VK_ENTER);
+    JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
   }
 
   /**

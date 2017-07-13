@@ -22,7 +22,7 @@ public class MainPanel extends javax.swing.JPanel {
     initComponents();
     Linux.detectDistro();
     if (Linux.distro == Linux.DistroTypes.Unknown) {
-      JF.showError("Error", "Unsupported distro");
+      JFAWT.showError("Error", "Unsupported distro");
       System.exit(0);
     }
     if (Linux.distro == Linux.DistroTypes.Fedora) {
@@ -315,7 +315,7 @@ public class MainPanel extends javax.swing.JPanel {
     sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");
     String output = sp.run(new String[] {"sudo", "-E", "apt-get", "--yes", "update"}, true);
     if (output == null) {
-      JF.showError("Error", "Failed to exec apt-get");
+      JFAWT.showError("Error", "Failed to exec apt-get");
       check.setEnabled(true);
       upgrade.setEnabled(true);
     } else {
@@ -330,7 +330,7 @@ public class MainPanel extends javax.swing.JPanel {
     sp.removeEnvironmentVariable("TERM");
     String output = sp.run(new String[] {"sudo", "-E", "yum", "-y", "check-update", null}, false);
     if (output == null) {
-      JF.showError("Error", "Failed to exec yum");
+      JFAWT.showError("Error", "Failed to exec yum");
       check.setEnabled(true);
       upgrade.setEnabled(true);
     } else {
@@ -366,12 +366,12 @@ public class MainPanel extends javax.swing.JPanel {
         case NA:
           break;
         case SHOULD:
-          if (JF.showConfirm("Notice", "An important package was upgraded, you SHOULD reboot now.  Close all other apps before accepted")) {
+          if (JFAWT.showConfirm("Notice", "An important package was upgraded, you SHOULD reboot now.  Close all other apps before accepted")) {
             sp.run(new String[] {"sudo", "reboot"}, false);
           }
           break;
         case MUST:
-          JF.showMessage("Notice", "A critical package was upgraded, you MUST reboot now.  Close all other apps and press OK");
+          JFAWT.showMessage("Notice", "A critical package was upgraded, you MUST reboot now.  Close all other apps and press OK");
           sp.run(new String[] {"sudo", "reboot"}, false);
       }
     }
@@ -385,7 +385,7 @@ public class MainPanel extends javax.swing.JPanel {
     sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");
     sp.run(new String[] {"sudo", "-E", "apt-get", "--yes", (upgradeAll.isSelected() ? "dist-upgrade" : "upgrade")}, true);
     if (sp.getErrorLevel() != 0) {
-      JF.showError("Error", "Failed to exec apt-get");
+      JFAWT.showError("Error", "Failed to exec apt-get");
       check.setEnabled(true);
       upgrade.setEnabled(true);
       return false;
@@ -405,7 +405,7 @@ public class MainPanel extends javax.swing.JPanel {
 /*
     //TODO - get status code ??? assume ok for now
         if (sp.getErrorLevel() != 0) {
-      JF.showError("Error", "Failed to exec yum");
+      JFAWT.showError("Error", "Failed to exec yum");
       check.setEnabled(true);
       upgrade.setEnabled(true);
       return false;

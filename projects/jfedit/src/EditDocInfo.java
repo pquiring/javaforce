@@ -19,9 +19,9 @@ public class EditDocInfo extends javax.swing.JDialog {
     this.lines.setText(Integer.toString(lines));
     this.position.setText(String.format("Col:%d Row:%d",y,x));
     this.eol.setSelectedIndex(unix ? 1 : 0);
-    JF.assignHotKey(this, ok, KeyEvent.VK_ENTER);
-    JF.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
-    JF.centerWindow(this);
+    JFAWT.assignHotKey(this, ok, KeyEvent.VK_ENTER);
+    JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
+    JFAWT.centerWindow(this);
   }
 
   /**

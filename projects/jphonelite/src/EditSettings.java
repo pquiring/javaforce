@@ -28,8 +28,8 @@ public class EditSettings extends javax.swing.JDialog {
   private EditSettings(java.awt.Frame parent, boolean modal) {
     super(parent, modal);
     initComponents();
-    JF.assignHotKey(this, bCancel, KeyEvent.VK_ESCAPE);
-    JF.assignHotKey(this, bSave, KeyEvent.VK_ENTER);
+    JFAWT.assignHotKey(this, bCancel, KeyEvent.VK_ESCAPE);
+    JFAWT.assignHotKey(this, bSave, KeyEvent.VK_ENTER);
     setPosition();
     byte data[] = null;
     try {
@@ -2232,7 +2232,7 @@ public class EditSettings extends javax.swing.JDialog {
   }//GEN-LAST:event_helpActionPerformed
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-    JF.donate();
+    JFAWT.donate();
   }//GEN-LAST:event_jButton1ActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -2515,7 +2515,7 @@ public class EditSettings extends javax.swing.JDialog {
 
   private boolean validFields() {
     if (getAudioCodecs() == null) {
-      JF.showError("Error", "Must enable at least one audio codec");
+      JFAWT.showError("Error", "Must enable at least one audio codec");
       return false;
     }
     //check if port ranges are valid
@@ -2523,11 +2523,11 @@ public class EditSettings extends javax.swing.JDialog {
     int smax = JF.atoi(sipmax.getText());
     if (sipRange.isSelected()) {
       if ((smin <= 0) || (smax <= 0) || (smin > 65535) || (smax > 65535) || (smin > smax) || (smax-smin < 32)) {
-        JF.showError("Error", "SIP Port Range must include at least 32 ports");
+        JFAWT.showError("Error", "SIP Port Range must include at least 32 ports");
         return false;
       }
       if (Settings.isLinux && smin < 1024) {
-        JF.showError("Error", "SIP Port Range must be > 1024 for Linux");
+        JFAWT.showError("Error", "SIP Port Range must be > 1024 for Linux");
         return false;
       }
     }
@@ -2535,15 +2535,15 @@ public class EditSettings extends javax.swing.JDialog {
     int rmax = JF.atoi(rtpmax.getText());
     if (rtpRange.isSelected()) {
       if ((rmin <= 0) || (rmax <= 0) || (rmin > 65535) || (rmax > 65535) || (rmin > rmax) || (rmax-rmin < 128)) {
-        JF.showError("Error", "RTP Port Range must include at least 128 ports");
+        JFAWT.showError("Error", "RTP Port Range must include at least 128 ports");
         return false;
       }
       if ((rmin & 0x1) == 0x1) {
-        JF.showError("Error", "RTP Port Range must start on an even port");
+        JFAWT.showError("Error", "RTP Port Range must start on an even port");
         return false;
       }
       if (Settings.isLinux && rmin < 1024) {
-        JF.showError("Error", "RTP Port Range must be > 1024 for Linux");
+        JFAWT.showError("Error", "RTP Port Range must be > 1024 for Linux");
         return false;
       }
     }
@@ -2553,13 +2553,13 @@ public class EditSettings extends javax.swing.JDialog {
         (smax >= rmin && smax <= rmax) ||
         (smin <= rmin && smax >= rmax)
       ) {
-        JF.showError("Error", "SIP and RTP Port Ranges must not overlap");
+        JFAWT.showError("Error", "SIP and RTP Port Ranges must not overlap");
         return false;
       }
     }
     int sipexpires = JF.atoi(sipExpires.getText());
     if (sipexpires < 60 || sipexpires > 3600) {
-      JF.showError("Error", "SIP Expires must be 60 to 3600 seconds.");
+      JFAWT.showError("Error", "SIP Expires must be 60 to 3600 seconds.");
       return false;
     }
     return true;

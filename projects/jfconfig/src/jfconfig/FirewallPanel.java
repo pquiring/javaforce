@@ -206,7 +206,7 @@ public class FirewallPanel extends javax.swing.JPanel {
 
   private void previewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_previewActionPerformed
     String str = previewRules();
-    JF.showMessage("Preview", str);
+    JFAWT.showMessage("Preview", str);
   }//GEN-LAST:event_previewActionPerformed
 
   private void upActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upActionPerformed
@@ -351,7 +351,7 @@ public class FirewallPanel extends javax.swing.JPanel {
 
   private void delRule(int idx) {
     Rule rule = config.rule[idx];
-    if (!JF.showConfirm("Confirm", "Are you sure you want to delete '" + rule.name + "'?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to delete '" + rule.name + "'?")) return;
     int len = config.rule.length;
     Rule newList[] = new Rule[len-1];
     System.arraycopy(config.rule, 0, newList, 0, idx);
@@ -393,7 +393,7 @@ public class FirewallPanel extends javax.swing.JPanel {
       tmpFile.delete();
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to save rules to /etc/jconfig.d/firewall.sh");
+      JFAWT.showError("Error", "Failed to save rules to /etc/jconfig.d/firewall.sh");
       return;
     }
     //exec /etc/jconfig.d/firewall.sh to apply now
@@ -403,7 +403,7 @@ public class FirewallPanel extends javax.swing.JPanel {
       sp.run(cmd, false);
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to exec /etc/jconfig.d/firewall.sh");
+      JFAWT.showError("Error", "Failed to exec /etc/jconfig.d/firewall.sh");
       return;
     }
     //add /etc/jconfig.d/firewall.sh to /etc/rc.local for next reboot
@@ -442,7 +442,7 @@ public class FirewallPanel extends javax.swing.JPanel {
       tmpFile.delete();
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to add firewall.sh to /etc/rc.local");
+      JFAWT.showError("Error", "Failed to add firewall.sh to /etc/rc.local");
     }
   }
 
@@ -496,7 +496,7 @@ public class FirewallPanel extends javax.swing.JPanel {
           //iptables -A FORWARD -i $LAN -o $WAN -j ACCEPT
           enable_ip_forwarding = true;
           if (nat) {
-            JF.showError("Warning", "You have more than one NAT rule");
+            JFAWT.showError("Warning", "You have more than one NAT rule");
           }
           nat = true;
           str.append("iptables -t nat -A POSTROUTING -o ");
@@ -519,7 +519,7 @@ public class FirewallPanel extends javax.swing.JPanel {
           enable_ip_forwarding = true;
           if ((dmz) && (!warned)) {
             warned = true;
-            JF.showError("Warning", "You have a port forwarding rule after your DMZ rule.\nYou must move the DMZ after all port forwarding rules, or they will not work.");
+            JFAWT.showError("Warning", "You have a port forwarding rule after your DMZ rule.\nYou must move the DMZ after all port forwarding rules, or they will not work.");
           }
           str.append("iptables -t nat -A PREROUTING -p tcp -i ");
           str.append(getOpt("wan", opts));

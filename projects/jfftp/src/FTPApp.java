@@ -21,7 +21,7 @@ public class FTPApp extends javax.swing.JFrame {
   public FTPApp() {
     initComponents();
     setTitle("jfFTP/" + version);
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
     JFLog.init(JF.getUserPath() + "/.jfftp.log", true);
     Site.loadIcons(this.getClass());
     JFImage icon = new JFImage();
@@ -159,7 +159,7 @@ public class FTPApp extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-      JF.showMessage("About", "jfftp/" + version + "\nFTP/SMB Client\nWebsite : http://jfftp.sourceforge.net\nBy : Peter Quiring(pquiring@gmail.com)");
+      JFAWT.showMessage("About", "jfftp/" + version + "\nFTP/SMB Client\nWebsite : http://jfftp.sourceforge.net\nBy : Peter Quiring(pquiring@gmail.com)");
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void jMenuItem5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem5ActionPerformed

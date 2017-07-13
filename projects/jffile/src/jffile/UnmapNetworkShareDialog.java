@@ -114,7 +114,7 @@ public class UnmapNetworkShareDialog extends javax.swing.JDialog implements Acti
       String output = sp.run(new String[] {"rm", wineDrive}, true);
       if (sp.getErrorLevel() != 0) {
         FileApp.inDialog = true;
-        JF.showError("Warning", "Failed to disconnect wine drive link");
+        JFAWT.showError("Warning", "Failed to disconnect wine drive link");
         FileApp.inDialog = false;
       }
     }

@@ -321,7 +321,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     jToolBar4.add(jButton8);
     jToolBar4.add(filler1);
 
-    tableView.setFont(JF.getMonospacedFont(0, 12));
+    tableView.setFont(JFAWT.getMonospacedFont(0, 12));
     tableView.setModel(tableModel);
     tableView.setCellSelectionEnabled(true);
     tableView.getTableHeader().setReorderingAllowed(false);
@@ -757,7 +757,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
   }//GEN-LAST:event_tableViewKeyTyped
 
   private void removePatternActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removePatternActionPerformed
-    if (!JF.showConfirm("Delete Pattern?", "Are you sure?")) return;
+    if (!JFAWT.showConfirm("Delete Pattern?", "Are you sure?")) return;
     music.removePattern(currentPatternIdx);
     if (music.song.patterns.size() == 0) {
       music.addPattern(4);
@@ -773,11 +773,11 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
   private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
     int col = tableView.getSelectedColumn();
     if (col == -1) {
-      JF.showError("Notice", "Select a track to delete");
+      JFAWT.showError("Notice", "Select a track to delete");
       return;
     }
     if (col == 0) return;
-    if (!JF.showConfirm("Delete Track?", "Are you sure?")) return;
+    if (!JFAWT.showConfirm("Delete Track?", "Are you sure?")) return;
     music.removeTrack(currentPatternIdx, col - 1);
     updatePattern();
   }//GEN-LAST:event_jButton8ActionPerformed
@@ -792,10 +792,10 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
   private void seqRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_seqRemoveActionPerformed
     int idx = sequence.getSelectedIndex();
     if (idx == -1) {
-      JF.showError("Notice", "Select a sequence to delete");
+      JFAWT.showError("Notice", "Select a sequence to delete");
       return;
     }
-//    if (!JF.showConfirm("Delete Sequence?", "Are you sure?")) return;
+//    if (!JFAWT.showConfirm("Delete Sequence?", "Are you sure?")) return;
     music.song.sequence.remove(idx);
     updateSequenceList();
   }//GEN-LAST:event_seqRemoveActionPerformed
@@ -982,7 +982,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     music.addInstrument(name);
     music.addRegion(iidx, 0, 0x7f, 0x3c, sidx);
     if (!music.addSamples(name + "_" + 0, chooser.getSelectedFile().getAbsolutePath(), -1, -1, -1, -1, 0.0f)) {
-      JF.showError("Error", "Failed to load wav file");
+      JFAWT.showError("Error", "Failed to load wav file");
       return;
     }
     updateSamples();
@@ -1006,7 +1006,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
         music.addInstrument(name);
         music.addRegion(iidx, 0, 0x7f, 0x3c, sidx);
         if (!music.addSamples(name + "_" + 0, entry.fullPath, -1, -1, -1, -1, 0.0f)) {
-          JF.showError("Error", "Failed to load wav file");
+          JFAWT.showError("Error", "Failed to load wav file");
           break;
         }
         break;
@@ -1026,7 +1026,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
           music.addRegion(iidx, region.keyMin, region.keyMax, region.unityNote, sidx + a);
           float attenuation = 0.0f;  //region.attenuation;  //TODO???
           if (!music.addSamples(name + " " + (sidx+a), i.samples, -1, -1, susStart, susEnd, attenuation)) {
-            JF.showError("Error", "Failed to load wav file");
+            JFAWT.showError("Error", "Failed to load wav file");
             break;
           }
         }
@@ -1042,7 +1042,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
 
   private void iRemoveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_iRemoveActionPerformed
     if (currentInstrumentIdx == -1) return;
-    if (!JF.showConfirm("Delete Instrument?", "Are you sure?")) return;
+    if (!JFAWT.showConfirm("Delete Instrument?", "Are you sure?")) return;
     music.removeInstrument(currentInstrumentIdx);
     currentInstrumentIdx = -1;
     updateInstruments();
@@ -1221,7 +1221,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
   private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
     if (currentInstrumentIdx == -1) return;
     if (currentRegionIdx == -1) return;
-    if (!JF.showConfirm("Delete Region?", "Are you sure?")) return;
+    if (!JFAWT.showConfirm("Delete Region?", "Are you sure?")) return;
     music.song.instruments.get(currentInstrumentIdx).regions.remove(currentRegionIdx);
     updateInstrument();
   }//GEN-LAST:event_jButton15ActionPerformed
@@ -1237,7 +1237,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
 
   private void jButton18ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton18ActionPerformed
     if (currentSampleIdx == -1) return;
-    if (!JF.showConfirm("Delete Sample?", "Are you sure?")) return;
+    if (!JFAWT.showConfirm("Delete Sample?", "Are you sure?")) return;
     music.removeSamples(currentSampleIdx);
     updateSamples();
     updateSample();
@@ -1258,7 +1258,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
       name = name.substring(0, name.length() - 4);
     }
     if (!music.addSamples(name, file.getAbsolutePath(), -1, -1, -1, -1, 0.0f)) {
-      JF.showError("Error", "Failed to load wav file");
+      JFAWT.showError("Error", "Failed to load wav file");
       return;
     }
     updateSamples();
@@ -2250,7 +2250,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
       exportFile = new RandomAccessFile(file, "rw");
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to create export file");
+      JFAWT.showError("Error", "Failed to create export file");
       return;
     }
     exporting = true;

@@ -25,8 +25,8 @@ public class EditEntry extends javax.swing.JDialog {
   public EditEntry(java.awt.Frame parent, boolean modal, XML.XMLTag entry, DefaultTableModel table, int row) {
     super(parent, modal);
     initComponents();
-    JF.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
-//    JF.assignHotKey(this, ok, KeyEvent.VK_ENTER);  //need to type into
+    JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
+//    JFAWT.assignHotKey(this, ok, KeyEvent.VK_ENTER);  //need to type into
     setPosition();
     orgEchoChar = password.getEchoChar();
     this.table = table;
@@ -233,7 +233,7 @@ public class EditEntry extends javax.swing.JDialog {
     String pass1 = new String(password.getPassword());
     String pass2 = new String(confirm.getPassword());
     if (!pass1.equals(pass2)) {
-      JF.showError("Error", "Passwords do not match");
+      JFAWT.showError("Error", "Passwords do not match");
       return;
     }
     String thisTitle = title.getText();
@@ -243,7 +243,7 @@ public class EditEntry extends javax.swing.JDialog {
       if (a == row) continue;
       String otherTitle = (String)table.getValueAt(a, 0);
       if (thisTitle.equals(otherTitle)) {
-        JF.showError("Error", "That title already exists");
+        JFAWT.showError("Error", "That title already exists");
         return;
       }
     }

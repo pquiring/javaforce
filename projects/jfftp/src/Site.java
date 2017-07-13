@@ -1172,7 +1172,7 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
       localFolders.addSetTag(localTag, fn, "", "");
       local_chdir(".");  //refresh
     } catch (Exception e) {
-      JF.showError("Error", "Create folder failed:" + e);
+      JFAWT.showError("Error", "Create folder failed:" + e);
     }
   }
 
@@ -1182,7 +1182,7 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
   }
 
   public void local_delete() {
-    if (!JF.showConfirm("Delete", "Are you sure you want to delete file(s)?")) {
+    if (!JFAWT.showConfirm("Delete", "Are you sure you want to delete file(s)?")) {
       return;
     }
     aborted = false;

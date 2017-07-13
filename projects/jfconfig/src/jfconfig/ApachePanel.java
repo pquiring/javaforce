@@ -368,11 +368,11 @@ public class ApachePanel extends javax.swing.JPanel {
     Host host = config.host[idx];
     switch (wizards.getSelectedIndex()) {
       case 0:  //install WordPress
-        if (!JF.showConfirm("Warning", "You are about to install WordPress CMS")) {
+        if (!JFAWT.showConfirm("Warning", "You are about to install WordPress CMS")) {
           return;
         }
         if (!Linux.installPackage("wordpress", "WordPress")) {
-          JF.showError("Error", "Failed to install WordPress");
+          JFAWT.showError("Error", "Failed to install WordPress");
           return;
         }
         if (wizardsDest.getSelectedIndex() == 0) {
@@ -382,11 +382,11 @@ public class ApachePanel extends javax.swing.JPanel {
         }
         break;
       case 1:  //install Drupal
-        if (!JF.showConfirm("Warning", "You are about to install Drupal CMS")) {
+        if (!JFAWT.showConfirm("Warning", "You are about to install Drupal CMS")) {
           return;
         }
         if (!Linux.installPackage("drupal6", "Drupal")) {
-          JF.showError("Error", "Failed to install WordPress");
+          JFAWT.showError("Error", "Failed to install WordPress");
           return;
         }
         if (wizardsDest.getSelectedIndex() == 0) {
@@ -403,11 +403,11 @@ public class ApachePanel extends javax.swing.JPanel {
         }
         break;
       case 2:  //install myPHPAdmin
-        if (!JF.showConfirm("Warning", "You are about to install myPHPAdmin")) {
+        if (!JFAWT.showConfirm("Warning", "You are about to install myPHPAdmin")) {
           return;
         }
         if (!Linux.installPackage("myphpadmin", "myPHPAdmin")) {
-          JF.showError("Error", "Failed to install myPHPAdmin");
+          JFAWT.showError("Error", "Failed to install myPHPAdmin");
           return;
         }
         if (wizardsDest.getSelectedIndex() == 0) {
@@ -427,14 +427,14 @@ public class ApachePanel extends javax.swing.JPanel {
   }//GEN-LAST:event_runWizardActionPerformed
 
   private void manageFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageFilesActionPerformed
-    JF.showError("Note", "Not implemented yet");  //pending jfile
+    JFAWT.showError("Note", "Not implemented yet");  //pending jfile
   }//GEN-LAST:event_manageFilesActionPerformed
 
   private void enableSSLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enableSSLActionPerformed
     if (!Linux.runScript(new String[] {"a2enmod", "ssl"})) {
-      JF.showError("Error", "Failed to enable mod_ssl");
+      JFAWT.showError("Error", "Failed to enable mod_ssl");
     } else {
-      JF.showMessage("Notice", "Enabled mod_ssl");
+      JFAWT.showMessage("Notice", "Enabled mod_ssl");
     }
   }//GEN-LAST:event_enableSSLActionPerformed
 
@@ -574,7 +574,7 @@ public class ApachePanel extends javax.swing.JPanel {
     if (name.length() == 0) return;
     for(int a=0;a<config.host.length;a++) {
       if (config.host[a].name.equalsIgnoreCase(name)) {
-        JF.showError("Error", "That name already exists");
+        JFAWT.showError("Error", "That name already exists");
         return;
       }
     }
@@ -592,9 +592,9 @@ public class ApachePanel extends javax.swing.JPanel {
   }
 
   private void delHost(int idx) {
-    if (idx <= 1) {JF.showError("Error", "Can not delete 'Default' host"); return;}
+    if (idx <= 1) {JFAWT.showError("Error", "Can not delete 'Default' host"); return;}
     Host host = config.host[idx];
-    if (!JF.showConfirm("Confirm", "Are you sure you want to delete '" + host.name + "'?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to delete '" + host.name + "'?")) return;
     int len = config.host.length;
     Host newList[] = new Host[len-1];
     System.arraycopy(config.host, 0, newList, 0, idx);
@@ -667,7 +667,7 @@ public class ApachePanel extends javax.swing.JPanel {
           Linux.deleteFile("/etc/apache2/sites-enabled/" + host.name);
         }
       }
-      JF.showMessage("Notice", "Please restart server to make changes effective.");
+      JFAWT.showMessage("Notice", "Please restart server to make changes effective.");
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -675,8 +675,8 @@ public class ApachePanel extends javax.swing.JPanel {
 
   private void restart() {
     if (Linux.restartService("apache2"))
-      JF.showMessage("Notice", "Apache Service Restarted");
+      JFAWT.showMessage("Notice", "Apache Service Restarted");
     else
-      JF.showError("Error", "Failed to Restart Apache Service");
+      JFAWT.showError("Error", "Failed to Restart Apache Service");
   }
 }

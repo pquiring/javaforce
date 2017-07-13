@@ -320,7 +320,7 @@ public class DHCPPanel extends javax.swing.JPanel {
 
   private void delPool(int idx) {
     Pool pool = config.pool[idx];
-    if (!JF.showConfirm("Confirm", "Are you sure you want to delete '" + pool.ip + "'?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to delete '" + pool.ip + "'?")) return;
     int len = config.pool.length;
     Pool newList[] = new Pool[len-1];
     System.arraycopy(config.pool, 0, newList, 0, idx);
@@ -331,9 +331,9 @@ public class DHCPPanel extends javax.swing.JPanel {
 
   private void restart() {
     if (Linux.restartService("isc-dhcp-server"))
-      JF.showMessage("Notice", "DHCP Service Restarted");
+      JFAWT.showMessage("Notice", "DHCP Service Restarted");
     else
-      JF.showError("Error", "Failed to Restart DHCP Service");
+      JFAWT.showError("Error", "Failed to Restart DHCP Service");
   }
 
  /*subnet <ip> netmask <mask> {
@@ -374,10 +374,10 @@ public class DHCPPanel extends javax.swing.JPanel {
       //copy tmpFile to /etc/dhcp/dhcpd.conf
       if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/dhcp/dhcpd.conf"))
         throw new Exception("file copy error");
-      JF.showMessage("Notice", "Settings have been applied, please restart server.");
+      JFAWT.showMessage("Notice", "Settings have been applied, please restart server.");
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to apply settings.");
+      JFAWT.showError("Error", "Failed to apply settings.");
     }
   }
 }

@@ -577,7 +577,7 @@ public class MainPanel extends javax.swing.JPanel {
       loaded = true;
       return true;
     } catch (Exception e) {
-      JF.showError("Error", "Wrong Password");
+      JFAWT.showError("Error", "Wrong Password");
       safe.deleteAll();
       password = null;
       timestamp = -1;
@@ -634,7 +634,7 @@ public class MainPanel extends javax.swing.JPanel {
       String pass1 = GetPassword.getPassword(null, "Create Password");
       String pass2 = GetPassword.getPassword(null, "Confirm Password");
       if (!pass1.equals(pass2)) {
-        JF.showError("Error", "Passwords do not match");
+        JFAWT.showError("Error", "Passwords do not match");
         return false;
       }
       password = pass1;
@@ -654,7 +654,7 @@ public class MainPanel extends javax.swing.JPanel {
       loaded = true;
       return true;
     } catch (Exception e) {
-      JF.showError("Error", "Failed to save safe!\nError:" + e.toString());
+      JFAWT.showError("Error", "Failed to save safe!\nError:" + e.toString());
       JFLog.log(e);
       return false;
     }
@@ -662,7 +662,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void openSafe() {
     if (dirty) {
-      switch (JF.showConfirm3("Confirm", "Save first?")) {
+      switch (JFAWT.showConfirm3("Confirm", "Save first?")) {
         case JF.YES: saveSafe(); break;
         case JF.NO: break;
         case JF.CANCEL: return;
@@ -692,7 +692,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void newSafe() {
     if (dirty) {
-      switch (JF.showConfirm3("Confirm", "Save first?")) {
+      switch (JFAWT.showConfirm3("Confirm", "Save first?")) {
         case JF.YES: saveSafe(); break;
         case JF.NO: break;
         case JF.CANCEL: return;
@@ -738,7 +738,7 @@ public class MainPanel extends javax.swing.JPanel {
     XML.XMLTag selTag;
     if (path == null) return;
     selTag = safe.getTag(path);
-    if (!JF.showConfirm("Confirm", "Are you sure?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure?")) return;
     safe.deleteTag(selTag);
     copyGroups();
     dirty = true;
@@ -847,7 +847,7 @@ public class MainPanel extends javax.swing.JPanel {
       child = null;
     }
     if (child == null) return;
-    if (!JF.showConfirm("Confirm", "Are you sure?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure?")) return;
     safe.deleteTag(child);
     listEntries();
     dirty = true;
@@ -921,7 +921,7 @@ public class MainPanel extends javax.swing.JPanel {
       }
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Import failed");
+      JFAWT.showError("Error", "Import failed");
     }
   }
 
@@ -947,7 +947,7 @@ public class MainPanel extends javax.swing.JPanel {
       copyGroups();
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Import failed");
+      JFAWT.showError("Error", "Import failed");
     }
   }
 
@@ -1022,7 +1022,7 @@ public class MainPanel extends javax.swing.JPanel {
       copyGroups();
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Import failed");
+      JFAWT.showError("Error", "Import failed");
     }
   }
 
@@ -1052,7 +1052,7 @@ public class MainPanel extends javax.swing.JPanel {
       fos.close();
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Export failed");
+      JFAWT.showError("Error", "Export failed");
     }
   }
 
@@ -1169,11 +1169,11 @@ public class MainPanel extends javax.swing.JPanel {
     long newtimestamp = file.lastModified();
     if (newtimestamp != timestamp) {
       if (dirty) {
-        if (!JF.showConfirm("Reload", "Database file has changed with unsaved changes!\nReload?")) {
+        if (!JFAWT.showConfirm("Reload", "Database file has changed with unsaved changes!\nReload?")) {
           return;
         }
       } else {
-        if (!JF.showConfirm("Reload", "Database file has changed!\nReload?")) {
+        if (!JFAWT.showConfirm("Reload", "Database file has changed!\nReload?")) {
           return;
         }
       }

@@ -64,7 +64,7 @@ public class Settings {
     folder = null;
     //save back to xml
     xml.write(fn);
-    JF.showMessage("Import", "Imported " + cnt + " entries.");
+    JFAWT.showMessage("Import", "Imported " + cnt + " entries.");
   }
   private static ArrayList<String> folder;
   private static void importTag(XML.XMLTag tag, XML xml) {
@@ -146,7 +146,7 @@ public class Settings {
     chooser.setCurrentDirectory(new File(JF.getCurrentPath()));
     if (chooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) return;
 */
-    JF.showMessage("TODO", "Not implemented yet");
+    JFAWT.showMessage("TODO", "Not implemented yet");
     //TODO
  }
 }

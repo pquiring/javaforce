@@ -33,7 +33,7 @@ public class Installer extends javax.swing.JFrame {
     JFLog.init("/tmp/install.log", true);
     Linux.detectDistro();
     if (Linux.distro == Linux.DistroTypes.Unknown) {
-      JF.showError("Error", "Unsupported Distro, Install can not continue.");
+      JFAWT.showError("Error", "Unsupported Distro, Install can not continue.");
       System.exit(0);
     }
     installer = this;

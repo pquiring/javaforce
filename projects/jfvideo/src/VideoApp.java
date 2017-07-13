@@ -89,7 +89,7 @@ public class VideoApp extends javax.swing.JFrame {
       String line = reader.readLine();
       if (line.equals(version)) {JFLog.log("version is up-to-date"); return;}
       JFLog.log("newer version is available : " + line);
-      JF.showMessage("Info",
+      JFAWT.showMessage("Info",
         "A newer version of jfVideo is available! (v" + line + ")\r\nPlease goto http://jfvideo.sourceforge.net to download it"
       );
     } catch (Exception e) {

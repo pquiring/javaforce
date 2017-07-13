@@ -143,8 +143,8 @@ public class JProxyPanel extends javax.swing.JPanel {
 
   private void restartServer() {
     if (Linux.restartService("jproxy"))
-      JF.showMessage("Notice", "Proyx Service Restarted");
+      JFAWT.showMessage("Notice", "Proyx Service Restarted");
     else
-      JF.showError("Error", "Failed to Restart Proxy Service");
+      JFAWT.showError("Error", "Failed to Restart Proxy Service");
   }
 }

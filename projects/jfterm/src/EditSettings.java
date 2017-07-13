@@ -532,15 +532,15 @@ public class EditSettings extends javax.swing.JDialog {
   public final static int MIN = 16;
   public final static int MAX = 256;
   private boolean validFields() {
-    if (!validFieldHexNumber(tBackColor.getText())) {JF.showError("Invalid field", "Back Color is not valid"); return false;}
-    if (!validFieldHexNumber(tForeColor.getText())) {JF.showError("Invalid field", "Fore Color is not valid"); return false;}
-    if (!validFieldHexNumber(tCursorColor.getText())) {JF.showError("Invalid field", "Cursor Color is not valid"); return false;}
-    if (!validFieldHexNumber(tSelectColor.getText())) {JF.showError("Invalid field", "Select Color is not valid"); return false;}
-    if (!validFieldNumber(tScrollBack.getText(), 0, 65535)) {JF.showError("Invalid field", "ScrollBack must be >=0 and <=65535"); return false;}
-    if (!validFieldNumber(tTabStops.getText(), 1, 8)) {JF.showError("Invalid field", "TabStops must be >=1 and <=8"); return false;}
-    if (!validFieldNumber(tX.getText(), MIN, MAX)) {JF.showError("Invalid field", "cols must be >=16 and <=255"); return false;}
-    if (!validFieldNumber(tY.getText(), MIN, MAX)) {JF.showError("Invalid field", "rows must be >=16 and <=255"); return false;}
-    if (!validField(tTermType.getText())) {JF.showError("Invalid field", "TermType must not be empty"); return false;}
+    if (!validFieldHexNumber(tBackColor.getText())) {JFAWT.showError("Invalid field", "Back Color is not valid"); return false;}
+    if (!validFieldHexNumber(tForeColor.getText())) {JFAWT.showError("Invalid field", "Fore Color is not valid"); return false;}
+    if (!validFieldHexNumber(tCursorColor.getText())) {JFAWT.showError("Invalid field", "Cursor Color is not valid"); return false;}
+    if (!validFieldHexNumber(tSelectColor.getText())) {JFAWT.showError("Invalid field", "Select Color is not valid"); return false;}
+    if (!validFieldNumber(tScrollBack.getText(), 0, 65535)) {JFAWT.showError("Invalid field", "ScrollBack must be >=0 and <=65535"); return false;}
+    if (!validFieldNumber(tTabStops.getText(), 1, 8)) {JFAWT.showError("Invalid field", "TabStops must be >=1 and <=8"); return false;}
+    if (!validFieldNumber(tX.getText(), MIN, MAX)) {JFAWT.showError("Invalid field", "cols must be >=16 and <=255"); return false;}
+    if (!validFieldNumber(tY.getText(), MIN, MAX)) {JFAWT.showError("Invalid field", "rows must be >=16 and <=255"); return false;}
+    if (!validField(tTermType.getText())) {JFAWT.showError("Invalid field", "TermType must not be empty"); return false;}
     return true;
   }
 

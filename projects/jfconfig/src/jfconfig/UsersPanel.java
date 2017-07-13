@@ -258,7 +258,7 @@ public class UsersPanel extends javax.swing.JPanel {
     cmd.add(dialog.getUserName());
     String output = sp.run(cmd, false);
     if (output == null) {
-      JF.showError("Error", "Failed to create new user.");
+      JFAWT.showError("Error", "Failed to create new user.");
       return;
     }
     sp = new ShellProcess();
@@ -266,7 +266,7 @@ public class UsersPanel extends javax.swing.JPanel {
     sp.addResponse("Retype new UNIX password:", dialog.getPassWord() + "\n", true);
     output = sp.run(new String[] {"sudo", "passwd", dialog.getUserName()}, true);
     if ((output == null) || (output.indexOf("passwd: Authentication token manipulation error") != -1)) {
-      JF.showError("Error", "Failed to set new password.");
+      JFAWT.showError("Error", "Failed to set new password.");
     }
     sp.log = false;
     loadUsers();
@@ -279,14 +279,14 @@ public class UsersPanel extends javax.swing.JPanel {
     String userName = usersModel.fields.get(idx)[0];
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<String>();
-    if (!JF.showConfirm("Confirm", "Are you sure you want to delete user '" + userName + "'?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to delete user '" + userName + "'?")) return;
     cmd.add("sudo");
     cmd.add("userdel");
     cmd.add("-r");  //remove files
     cmd.add(userName);
     String output = sp.run(cmd, false);
     if (output == null) {
-      JF.showError("Error", "Failed to delete user.");
+      JFAWT.showError("Error", "Failed to delete user.");
     }
     loadUsers();
   }//GEN-LAST:event_deleteUserActionPerformed
@@ -303,7 +303,7 @@ public class UsersPanel extends javax.swing.JPanel {
     sp.addResponse("Retype new UNIX password:", dialog.getPassWord() + "\n", true);
     String output = sp.run(new String[] {"sudo" ,"passwd", userName}, true);
     if ((output == null) || (output.indexOf("passwd: Authentication token manipulation error") != -1)) {
-      JF.showError("Error", "Failed to set new password.");
+      JFAWT.showError("Error", "Failed to set new password.");
     }
     loadUsers();
   }//GEN-LAST:event_resetPasswdActionPerformed
@@ -323,7 +323,7 @@ public class UsersPanel extends javax.swing.JPanel {
     cmd.add(userName);
     String output = sp.run(cmd, false);
     if (output == null) {
-      JF.showError("Error", "Failed to add user to group.");
+      JFAWT.showError("Error", "Failed to add user to group.");
       return;
     }
     loadGroups(idx);
@@ -344,7 +344,7 @@ public class UsersPanel extends javax.swing.JPanel {
     cmd.add(userName);
     String output = sp.run(cmd, false);
     if (output == null) {
-      JF.showError("Error", "Failed to add user to group.");
+      JFAWT.showError("Error", "Failed to add user to group.");
       return;
     }
     loadGroups(idx);

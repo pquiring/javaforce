@@ -154,7 +154,7 @@ public class Menu {
         Buffer buffer = (Buffer)((JComponent)tabs.getSelectedComponent()).getClientProperty("buffer");;
         if (buffer == null) return;
         if (buffer.script != null) {
-          JF.showError("Error", "Another script is already running");
+          JFAWT.showError("Error", "Another script is already running");
           return;
         }
         buffer.script = Script.load(buffer);
@@ -182,7 +182,7 @@ public class Menu {
     item.setMnemonic('K');
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        JF.showMessage("Keyboard",
+        JFAWT.showMessage("Keyboard",
           "CTRL-W = Close Tab\n" +
           "CTRL-A = Select All\n" +
           "F5/PAUSE = Break\n" +
@@ -201,7 +201,7 @@ public class Menu {
     item.setMnemonic('A');
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        JF.showMessage("About", "jfTerm/" + TermApp.version + "\nWebSite : jfterm.sourceforge.net\nAuthor : Peter Quiring");
+        JFAWT.showMessage("About", "jfTerm/" + TermApp.version + "\nWebSite : jfterm.sourceforge.net\nAuthor : Peter Quiring");
         System.gc();
       }
     });

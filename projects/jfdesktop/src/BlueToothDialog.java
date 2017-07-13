@@ -171,7 +171,7 @@ public class BlueToothDialog extends javax.swing.JFrame {
   private int deviceIdx = -1;
 
   private void setPosition() {
-    Rectangle s = JF.getMaximumBounds();
+    Rectangle s = JFAWT.getMaximumBounds();
     Dimension d = getPreferredSize();
     setSize(d.width, d.height);
     setLocation(s.width/2 - d.width/2, s.height/2 - (d.height/2));
@@ -278,7 +278,7 @@ public class BlueToothDialog extends javax.swing.JFrame {
   public void devices(String list) {
     if (list.length() == 0) {
       //this should NOT happen
-      JF.showError("Error", "No BlueTooth controllers found");
+      JFAWT.showError("Error", "No BlueTooth controllers found");
       dispose();
       return;
     }

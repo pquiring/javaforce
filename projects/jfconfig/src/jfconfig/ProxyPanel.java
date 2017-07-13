@@ -349,7 +349,7 @@ http_access allow [<url_name>] <src_name>
 
   private void delRule(int idx) {
     Rule rule = config.rule[idx];
-    if (!JF.showConfirm("Confirm", "Are you sure you want to delete '" + rule.ip + "'?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to delete '" + rule.ip + "'?")) return;
     int len = config.rule.length;
     Rule newList[] = new Rule[len-1];
     System.arraycopy(config.rule, 0, newList, 0, idx);
@@ -421,25 +421,25 @@ http_access allow [<url_name>] <src_name>
       fis.close();
       if (inRules) {
         tmpFile.delete();
-        JF.showError("Error", "Squid config is corrupt, can not apply settings");
+        JFAWT.showError("Error", "Squid config is corrupt, can not apply settings");
         return;
       }
       //copy tmpFile back to /etc/squid3/squid.conf
       if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/squid3/squid.conf"))
         throw new Exception("file copy error");
       tmpFile.delete();
-      JF.showMessage("Notice", "Settings have been applied, please restart server.");
+      JFAWT.showMessage("Notice", "Settings have been applied, please restart server.");
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to apply settings.");
+      JFAWT.showError("Error", "Failed to apply settings.");
     }
   }
 
   private void restart() {
     if (Linux.restartService("squid3"))
-      JF.showMessage("Notice", "Squid Service Restarted");
+      JFAWT.showMessage("Notice", "Squid Service Restarted");
     else
-      JF.showError("Error", "Failed to Restart Squid Service");
+      JFAWT.showError("Error", "Failed to Restart Squid Service");
   }
 
 }

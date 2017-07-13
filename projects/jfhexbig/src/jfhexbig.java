@@ -274,7 +274,7 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
     }
     if ((f1 == KeyEvent.VK_F2) && (f2 == 0)) {
       EditSettings.editSettings(this);
-      Settings.fnt = JF.getMonospacedFont(0, Settings.fontSize);
+      Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
       Hex.changeFont(Settings.fnt);
       int cnt = pages.size();
       for(int a=0;a<cnt;a++) {
@@ -385,7 +385,7 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
     if (!xml.read(filename)) return;  //bad cfg
     if (!xml.root.name.equals("jhex")) return;  //bad cfg
     xml.writeClass(xml.root, new Settings());
-    Settings.fnt = JF.getMonospacedFont(0, Settings.fontSize);
+    Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
   }
   public void savecfg() {
     XML xml = new XML();
@@ -451,7 +451,7 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
   }
   private Page addpage(String title, byte data[]) {
     Page page = new Page();
-    page.panel = JF.createJPanel(new GridLayout(), null);
+    page.panel = JFAWT.createJPanel(new GridLayout(), null);
 /*
     page.panel.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mouseClicked(java.awt.event.MouseEvent evt) {

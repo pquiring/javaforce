@@ -41,7 +41,7 @@ public class Settings {
     }
   }
 
-  public static Font fnt = JF.getMonospacedFont(0, 12);
+  public static Font fnt = JFAWT.getMonospacedFont(0, 12);
   public int cols = 80;
   public int rows = 24;
   public int scrollBack = 1000;
@@ -70,7 +70,7 @@ public class Settings {
     XML.XMLTag tag = xml.getTag(new Object[] {"jfterm", "settings"});
     if (tag == null) return;  //no settings found
     xml.writeClass(tag, settings);
-    fnt = JF.getMonospacedFont(0, settings.fontSize);
+    fnt = JFAWT.getMonospacedFont(0, settings.fontSize);
   }
 
   public static void saveSettings() {
@@ -80,7 +80,7 @@ public class Settings {
     XML.XMLTag tag = xml.addTag(xml.root, "settings", "", "");
     xml.readClass(tag, settings);
     xml.write(fn);
-    fnt = JF.getMonospacedFont(0, settings.fontSize);
+    fnt = JFAWT.getMonospacedFont(0, settings.fontSize);
   }
 
   static {

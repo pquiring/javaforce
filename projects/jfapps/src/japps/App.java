@@ -165,7 +165,7 @@ public class App extends javax.swing.JPanel {
       }
     }
     if (url == null) {
-      JF.showError("Error", "That package can't be found for your platform");
+      JFAWT.showError("Error", "That package can't be found for your platform");
       return;
     }
     //download URL to /tmp and run it as root
@@ -259,10 +259,10 @@ public class App extends javax.swing.JPanel {
       ProgressDialog dialog = new ProgressDialog(null, true, task);
       dialog.setVisible(true);
       if (errmsg != null) {
-        JF.showError("Error", "Exception:" + errmsg);
+        JFAWT.showError("Error", "Exception:" + errmsg);
       }
     } catch (Exception e) {
-      JF.showError("Error", "Exception:" + e);
+      JFAWT.showError("Error", "Exception:" + e);
     }
   }
 }

@@ -408,7 +408,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
       fos.write(cnf.getBytes());
       fos.close();
     } catch (Exception e) {
-      JF.showError("Error", "Exception:" + e);
+      JFAWT.showError("Error", "Exception:" + e);
       return false;
     }
     return true;
@@ -443,7 +443,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
     String output = sp.run(cmd.toArray(new String[0]), true);
     new File(cfgFolder + "/" + "openssl.cnf").delete();
     if (sp.getErrorLevel() != 0) {
-      JF.showError("Error", "Output=" + output);
+      JFAWT.showError("Error", "Output=" + output);
       return;
     }
     //create index and serial files
@@ -455,7 +455,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
       serial.close();
     } catch (Exception e) {
       e.printStackTrace();
-      JF.showError("Error", "Failed to generate index/serial files for Cert Authority");
+      JFAWT.showError("Error", "Failed to generate index/serial files for Cert Authority");
     }
     listCAs();
     status();
@@ -480,7 +480,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
     //openssl req -days 3650 -nodes -new -keyout %1.key -out %1.csr -config openssl.cnf
     Config config = new Config();
     if (ca.getSelectedIndex() == -1) {
-      JF.showError("Error", "Please select a Cert Authority first");
+      JFAWT.showError("Error", "Please select a Cert Authority first");
       return;
     }
     config.caName = (String)ca.getSelectedItem();
@@ -512,7 +512,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
     String output = sp.run(cmd.toArray(new String[0]), true);
     new File(cfgFolder + "/" + "openssl.cnf").delete();
     if (sp.getErrorLevel() != 0) {
-      JF.showError("Error", "Output=" + output);
+      JFAWT.showError("Error", "Output=" + output);
       return;
     }
     listKeys();
@@ -523,7 +523,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
     //openssl ca -days 3650 -out $1.crt -in $1.csr -config openssl.cnf
     Config config = new Config();
     if (ca.getSelectedIndex() == -1) {
-      JF.showError("Error", "Please select a Cert Authority first");
+      JFAWT.showError("Error", "Please select a Cert Authority first");
       return;
     }
     config.caName = (String)ca.getSelectedItem();
@@ -546,7 +546,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
     sp.addRegexResponse(".+certificate requests certified[,] commit.+", "y\n", false);
     String output = sp.run(cmd.toArray(new String[0]), true);
     if (sp.getErrorLevel() != 0) {
-      JF.showError("Error", "Output=" + output);
+      JFAWT.showError("Error", "Output=" + output);
       return;
     }
     new File(cfgFolder + "/" + "openssl.cnf").delete();
@@ -569,7 +569,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"cp", keysFolder + "/" + keyName + ".csr", file}, true);
     if (sp.getErrorLevel() != 0) {
-      JF.showError("Error", "Output=" + output);
+      JFAWT.showError("Error", "Output=" + output);
       return;
     }
     listKeys();
@@ -604,10 +604,10 @@ public class OpenSSLPanel extends javax.swing.JPanel {
       , "-d", "sql:" + System.getenv("HOME") + "/.pki/nssdb/"
     }, true);
     if (sp.getErrorLevel() == 0) {
-      JF.showMessage("Notice", "Import successful");
+      JFAWT.showMessage("Notice", "Import successful");
     } else {
       JFLog.log(output);
-      JF.showError("Error", "Import failed");
+      JFAWT.showError("Error", "Import failed");
     }
   }
 
@@ -626,10 +626,10 @@ public class OpenSSLPanel extends javax.swing.JPanel {
         "cp " + keysFolder + "/" + keyName + ".key " + serverFolder + "/" + "private.key"
       });
       if (!ok) {
-        JF.showError("Error", "Failed to apply cert/key");
+        JFAWT.showError("Error", "Failed to apply cert/key");
         return;
       }
-      JF.showMessage("Notice", "Apply complete!");
+      JFAWT.showMessage("Notice", "Apply complete!");
     } else if (serverType.equals("tomcat")) {
       //convert key/crt to DER format and import into a keystore
 
@@ -651,7 +651,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
       ShellProcess sp = new ShellProcess();
       String output = sp.run(cmd.toArray(new String[0]), true);
       if (sp.getErrorLevel() != 0) {
-        JF.showError("Error", "Output=" + output);
+        JFAWT.showError("Error", "Output=" + output);
         return;
       }
       //Convert public cert
@@ -670,7 +670,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
       sp = new ShellProcess();
       output = sp.run(cmd.toArray(new String[0]), true);
       if (sp.getErrorLevel() != 0) {
-        JF.showError("Error", "Output=" + output);
+        JFAWT.showError("Error", "Output=" + output);
         return;
       }
       try {
@@ -688,16 +688,16 @@ public class OpenSSLPanel extends javax.swing.JPanel {
         });
         tmpFile.delete();
         if (!ok) {
-          JF.showError("Error", "Failed to copy keystore file");
+          JFAWT.showError("Error", "Failed to copy keystore file");
           return;
         }
       } catch (Exception e) {
-        JF.showError("Error", "Exception:" + e);
+        JFAWT.showError("Error", "Exception:" + e);
         return;
       }
-      JF.showMessage("Notice", "Apply complete!");
+      JFAWT.showMessage("Notice", "Apply complete!");
     } else {
-      JF.showError("Error", "Unknown server type");
+      JFAWT.showError("Error", "Unknown server type");
     }
   }
 }

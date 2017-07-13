@@ -286,6 +286,6 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
     } catch (Exception e) {
       JFLog.log(e);
     }
-    JF.showMessage("Notice", "Please reboot for changes to take effect");
+    JFAWT.showMessage("Notice", "Please reboot for changes to take effect");
   }
 }

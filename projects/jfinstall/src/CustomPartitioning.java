@@ -49,11 +49,11 @@ public class CustomPartitioning extends PartitionEditorPanel {
     }
 
     if (Data.root == null) {
-      JF.showError("Error", "You must define a root partition.");
+      JFAWT.showError("Error", "You must define a root partition.");
       return null;
     }
     if (Data.swap == null) {
-      if (!JF.showConfirm("Warning", "You have not defined a swap partition.\nAre you sure you do NOT want one?")) return null;
+      if (!JFAWT.showConfirm("Warning", "You have not defined a swap partition.\nAre you sure you do NOT want one?")) return null;
     }
     return new Install();
   }

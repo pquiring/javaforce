@@ -340,20 +340,20 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   }//GEN-LAST:event_EmptyTrashActionPerformed
 
   private void LogoffActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogoffActionPerformed
-    if (!JF.showConfirm("Confirm", "Are you sure you want to logoff?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to logoff?")) return;
     closeAllApps();
     System.exit(0);
   }//GEN-LAST:event_LogoffActionPerformed
 
   private void RebootActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RebootActionPerformed
-    if (!JF.showConfirm("Confirm", "Are you sure you want to reboot?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to reboot?")) return;
     jbusClient.call("org.jflinux.jfsystemmgr", "reboot", "");
     closeAllApps();
     System.exit(0);
   }//GEN-LAST:event_RebootActionPerformed
 
   private void ShutdownActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ShutdownActionPerformed
-    if (!JF.showConfirm("Confirm", "Are you sure you want to shutdown?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to shutdown?")) return;
     jbusClient.call("org.jflinux.jfsystemmgr", "shutdown", "");
     closeAllApps();
     System.exit(0);
@@ -1004,7 +1004,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
         }
       }
       if ((name == null) || (icon == null)) {
-        JF.showError("Error", "Unable to add app:" + file);
+        JFAWT.showError("Error", "Unable to add app:" + file);
         return null;
       }
       if (idx == -1) idx = appIdx++; else appIdx++;
@@ -2356,7 +2356,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   }
 
   private void showNetworkFailed() {
-    JF.showError("Error", "Connection failed!");
+    JFAWT.showError("Error", "Connection failed!");
   }
 
   private void showWelcome() {

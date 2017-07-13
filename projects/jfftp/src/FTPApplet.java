@@ -140,7 +140,7 @@ public class FTPApplet extends javax.swing.JApplet {
 }//GEN-LAST:event_jMenuItem6ActionPerformed
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-      JF.showMessage("About", "jfftp/" + FTPApp.version + "\nFTP/SMB Client\nWebsite:http://jfftp.sourceforge.net\nBy:Peter Quiring(pquiring@gmail.com)");
+      JFAWT.showMessage("About", "jfftp/" + FTPApp.version + "\nFTP/SMB Client\nWebsite:http://jfftp.sourceforge.net\nBy:Peter Quiring(pquiring@gmail.com)");
 }//GEN-LAST:event_jMenuItem4ActionPerformed
 
 

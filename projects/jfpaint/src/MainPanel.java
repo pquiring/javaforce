@@ -1062,7 +1062,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     if (!emptyFile && !loadImage(pc, filename)) {
       closeTab(false);
       if (tabs.getTabCount() == 0) addTab("untitled");
-      JF.showError("Error", "Failed to load file");
+      JFAWT.showError("Error", "Failed to load file");
       return;
     }
     pc.grabFocus();
@@ -1140,7 +1140,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         pc.setImageLayer(0);
         result = true;
       } catch (Exception e) {
-        JF.showError("Error", e.toString());
+        JFAWT.showError("Error", e.toString());
         result = false;
       }
     }
@@ -1216,7 +1216,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     int idx = getidx();
     if (tabs.getTabCount() == 0) return true;
     if (imageTabs.get(idx).pc.dirty) {
-      switch (JF.showConfirm3("Save?", "Save first?")) {
+      switch (JFAWT.showConfirm3("Save?", "Save first?")) {
         case JF.YES:
           if (!saveTab()) return false;
         case JF.CANCEL:
@@ -1265,12 +1265,12 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         fos.close();
         return true;
       } catch (Exception e) {
-        JF.showError("Error", e.toString());
+        JFAWT.showError("Error", e.toString());
         return false;
       }
     } else {
       if (pc.getImageLayers() > 1) {
-        if (!JF.showConfirm("Combine Layers?", "Saving in this format will combine all layers, are you sure?")) return false;
+        if (!JFAWT.showConfirm("Combine Layers?", "Saving in this format will combine all layers, are you sure?")) return false;
       }
       JFImage img = pc.combineImageLayers();
       if (format.equals("bmp"))

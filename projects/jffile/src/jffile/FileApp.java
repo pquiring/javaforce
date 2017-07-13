@@ -457,7 +457,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
 
     private void aboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutActionPerformed
       inDialog = true;
-      JF.showMessage("About", "jfile/" + version + "\nFile manager.\nBy : Peter Quiring(pquiring@jflinux.org)");
+      JFAWT.showMessage("About", "jfile/" + version + "\nFile manager.\nBy : Peter Quiring(pquiring@jflinux.org)");
       inDialog = false;
     }//GEN-LAST:event_aboutActionPerformed
 
@@ -652,7 +652,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
   public static void main(String args[]) {
     if (System.getenv("JID") == null && !JF.isWindows()) {
       //avoid future headaches
-      JF.showError("Error", "Failed to connect to JBus");
+      JFAWT.showError("Error", "Failed to connect to JBus");
       return;
     }
     if (args == null) args = new String[0];
@@ -721,7 +721,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
   public void connect(SiteDetails sd) {
     File localDir = new File(sd.localDir);
     if (!localDir.exists() || !localDir.isDirectory()) {
-      JF.showError("Error", "Can not find:" + sd.localDir);
+      JFAWT.showError("Error", "Can not find:" + sd.localDir);
       return;
     }
     Site site = null;
@@ -741,7 +741,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
           public void run() {
             if (!site.connect(sd)) {
               closeSite(site);
-              JF.showError("Error", "Failed to connect");
+              JFAWT.showError("Error", "Failed to connect");
             }
           }
         });

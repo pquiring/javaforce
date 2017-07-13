@@ -79,7 +79,7 @@ public class Script {
       str = str.replaceAll("\r", "");  //get rid of Windows junk
       ret.script = str.split("\n");
     } catch (Exception e) {
-      JF.showError("File Error", "Unable to open script file");
+      JFAWT.showError("File Error", "Unable to open script file");
       return null;
     }
 
@@ -167,7 +167,7 @@ public class Script {
             default: buffer.output(new char[] {(char)keyCode});
           }
         } catch (Exception e) {
-          JF.showError("Bad Script", "HitKey : " + arg);
+          JFAWT.showError("Bad Script", "HitKey : " + arg);
         }
       }
     }

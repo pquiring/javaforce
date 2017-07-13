@@ -101,7 +101,7 @@ public class MainPanel extends javax.swing.JPanel {
     try {
       Runtime.getRuntime().exec(new String[] {"cp", png, filename});
     } catch (Exception e) {
-      JF.showError("Error", "Failed to copy file");
+      JFAWT.showError("Error", "Failed to copy file");
     }
     edit.setEnabled(true);
   }//GEN-LAST:event_saveActionPerformed
@@ -110,7 +110,7 @@ public class MainPanel extends javax.swing.JPanel {
     try {
       Runtime.getRuntime().exec(new String[] {"jpaint", filename});
     } catch (Exception e) {
-      JF.showError("Error", "Failed to edit file");
+      JFAWT.showError("Error", "Failed to edit file");
     }
   }//GEN-LAST:event_editActionPerformed
 

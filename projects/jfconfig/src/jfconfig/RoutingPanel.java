@@ -376,7 +376,7 @@ public class RoutingPanel extends javax.swing.JPanel {
       }
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to exec 'route'");
+      JFAWT.showError("Error", "Failed to exec 'route'");
     }
   }
 
@@ -413,7 +413,7 @@ public class RoutingPanel extends javax.swing.JPanel {
   }
 
   private void delRoute(int idx) {
-    if (!JF.showConfirm("Confirm", "Are you sure you want to delete?")) return;
+    if (!JFAWT.showConfirm("Confirm", "Are you sure you want to delete?")) return;
     int len = config.route.length;
     Route newList[] = new Route[len-1];
     System.arraycopy(config.route, 0, newList, 0, idx);
@@ -438,7 +438,7 @@ public class RoutingPanel extends javax.swing.JPanel {
       if (sp.getErrorLevel() != 0) throw new Exception("failed to exec route");
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to exec 'route'");
+      JFAWT.showError("Error", "Failed to exec 'route'");
     }
     showActiveRoutes();
   }
@@ -483,7 +483,7 @@ public class RoutingPanel extends javax.swing.JPanel {
       }
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to save rules to /etc/jconfig.d/routing.sh");
+      JFAWT.showError("Error", "Failed to save rules to /etc/jconfig.d/routing.sh");
       return;
     }
     //exec /etc/jconfig.d/routing.sh to apply now
@@ -493,7 +493,7 @@ public class RoutingPanel extends javax.swing.JPanel {
       if (sp.getErrorLevel() != 0) throw new Exception("routing failed");
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to exec /etc/jconfig.d/routing.sh");
+      JFAWT.showError("Error", "Failed to exec /etc/jconfig.d/routing.sh");
       return;
     }
     //add /etc/jconfig.d/routing.sh to /etc/rc.local for next reboot
@@ -507,7 +507,7 @@ public class RoutingPanel extends javax.swing.JPanel {
         if (lns[a].startsWith("exit ")) exitIdx = a;
         if (lns[a].indexOf("/etc/jconfig.d/routing.sh") != -1) {
           //already done
-          JF.showMessage("Notice", "Routing table updated!");
+          JFAWT.showMessage("Notice", "Routing table updated!");
           return;
         }
       }
@@ -535,9 +535,9 @@ public class RoutingPanel extends javax.swing.JPanel {
       tmpFile.delete();
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Failed to add routing.sh to /etc/rc.local");
+      JFAWT.showError("Error", "Failed to add routing.sh to /etc/rc.local");
       return;
     }
-    JF.showMessage("Notice", "Routing table updated!");
+    JFAWT.showMessage("Notice", "Routing table updated!");
   }
 }

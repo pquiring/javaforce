@@ -17,7 +17,7 @@ public class GenSilence extends javax.swing.JDialog {
   public GenSilence(java.awt.Frame parent, boolean modal, TrackPanel track) {
     super(parent, modal);
     initComponents();
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
     this.track = track;
     if (track.selectStart != track.selectStop) {
       timeField.setEnabled(false);

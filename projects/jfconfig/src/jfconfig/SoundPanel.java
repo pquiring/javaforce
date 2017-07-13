@@ -485,7 +485,7 @@ public class SoundPanel extends javax.swing.JPanel {
           ShellProcess sp = new ShellProcess();
           String output = sp.run(new String[] {"pactl","set-sink-port","" + sidx, port}, true);
           if (sp.getErrorLevel() != 0) {
-            JF.showError("Error", output);
+            JFAWT.showError("Error", output);
           }
         } catch (Exception e) {
           JFLog.log(e);
@@ -504,7 +504,7 @@ public class SoundPanel extends javax.swing.JPanel {
           ShellProcess sp = new ShellProcess();
           String output = sp.run(new String[] {"pactl","set-source-port","" + sidx, port}, true);
           if (sp.getErrorLevel() != 0) {
-            JF.showError("Error", output);
+            JFAWT.showError("Error", output);
           }
         } catch (Exception e) {
           JFLog.log(e);
@@ -523,7 +523,7 @@ public class SoundPanel extends javax.swing.JPanel {
           ShellProcess sp = new ShellProcess();
           String output = sp.run(new String[] {"pactl","set-card-profile","" + cidx, profile}, true);
           if (sp.getErrorLevel() != 0) {
-            JF.showError("Error", output);
+            JFAWT.showError("Error", output);
           }
         } catch (Exception e) {
           JFLog.log(e);

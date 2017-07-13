@@ -355,7 +355,7 @@ public class VPNServerPanel extends javax.swing.JPanel {
         "cp " + tmpFile4.getAbsolutePath() + " /etc/sysctl.conf",
       })) {
         ok = false;
-        JF.showError("Error", "Failed to apply configuration");
+        JFAWT.showError("Error", "Failed to apply configuration");
       }
       tmpFile1.delete();
       tmpFile2.delete();
@@ -363,16 +363,16 @@ public class VPNServerPanel extends javax.swing.JPanel {
       tmpFile4.delete();
     } catch (Exception e) {
       JFLog.log(e);
-      JF.showError("Error", "Exception:" + e);
+      JFAWT.showError("Error", "Exception:" + e);
       return;
     }
-    if (ok) JF.showMessage("Notice", "Apply successful!\nPlease restart server for settings to take effect");
+    if (ok) JFAWT.showMessage("Notice", "Apply successful!\nPlease restart server for settings to take effect");
   }
 
   private void restart() {
     if (Linux.restartService("pptpd"))
-      JF.showMessage("Notice", "VPN Server Restarted");
+      JFAWT.showMessage("Notice", "VPN Server Restarted");
     else
-      JF.showError("Error", "Failed to Restart VPN Server");
+      JFAWT.showError("Error", "Failed to Restart VPN Server");
   }
 }

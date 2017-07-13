@@ -151,13 +151,13 @@ public class Element implements MediaIO {
         try {
           raf = new RandomAccessFile(JF.getUserPath() + "/" + path[0], "r");
         } catch (Exception e) {
-          JF.showError("Error", "Failed to open file:" + path[0]);
+          JFAWT.showError("Error", "Failed to open file:" + path[0]);
           JFLog.log(e);
           return false;
         }
         ff = new MediaDecoder();
         if (!ff.start(this, config.width, config.height, config.audioChannels, config.audioRate, true)) {
-          JF.showError("Error", "Failed to decode file:" + path[0]);
+          JFAWT.showError("Error", "Failed to decode file:" + path[0]);
           return false;
         }
         if (type == TYPE_VIDEO) {
@@ -615,7 +615,7 @@ public class Element implements MediaIO {
     g.setColor(new Color(clr));
     int px = 0;
     int py = 0;
-    int metrics[] = JF.getFontMetrics(font, "sample");
+    int metrics[] = JFAWT.getFontMetrics(font, "sample");
     int fsy = metrics[1] * 2;  //height
     switch (valign) {
       case 0:
@@ -633,7 +633,7 @@ public class Element implements MediaIO {
     }
     for(int a=0;a<text.length;a++) {
       String ln = text[a];
-      metrics = JF.getFontMetrics(font, ln);
+      metrics = JFAWT.getFontMetrics(font, ln);
       int fsx = metrics[0];
       switch (halign) {
         case 0:

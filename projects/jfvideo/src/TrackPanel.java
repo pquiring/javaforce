@@ -179,7 +179,7 @@ public class TrackPanel extends javax.swing.JPanel {
     for(int a=0;a<len;a++) {
       e = list.get(a);
       if (e.offset == selectedOffset) {
-        if (!JF.showConfirm("Warning", "Replace element?")) return;
+        if (!JFAWT.showConfirm("Warning", "Replace element?")) return;
         list.remove(a);
         break;
       }
@@ -207,7 +207,7 @@ public class TrackPanel extends javax.swing.JPanel {
       JFLog.log("length = " + e.length);
     }
     if (used(e.offset, e.length)) {
-      JF.showError("Error", "That will overlap another element, try another track");
+      JFAWT.showError("Error", "That will overlap another element, try another track");
       return;
     }
     list.add(e);

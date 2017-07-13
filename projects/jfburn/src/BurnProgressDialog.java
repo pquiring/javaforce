@@ -116,7 +116,7 @@ public class BurnProgressDialog extends javax.swing.JDialog implements ShellProc
     }// </editor-fold>//GEN-END:initComponents
 
   private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
-    if (JF.showConfirm("Confim", "Stop burning disc?")) {
+    if (JFAWT.showConfirm("Confim", "Stop burning disc?")) {
       abort = true;
       status.setText("Aborting...");
       sp.destroy();

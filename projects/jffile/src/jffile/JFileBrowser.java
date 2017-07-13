@@ -1157,9 +1157,9 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
         if (file.exists()) {
           //access denied
           if (file.isDirectory()) {
-            JF.showError("Error", "Can not delete folder");
+            JFAWT.showError("Error", "Can not delete folder");
           } else {
-            JF.showError("Error", "Can not delete file");
+            JFAWT.showError("Error", "Can not delete file");
           }
           return;
         }

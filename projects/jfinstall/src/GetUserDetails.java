@@ -199,13 +199,13 @@ public class GetUserDetails extends IPanel {
     loginName.setText(loginChars(loginName.getText()));
     localhost.setText(loginChars(localhost.getText()));
     localdomain.setText(domainChars(localdomain.getText()));
-    if (fullName.getText().length() < 3) {JF.showError("Error", "Full name too short"); return false;}
-    if (loginName.getText().length() < 3) {JF.showError("Error", "Login name too short"); return false;}
-    if (reserved(loginName.getText())) {JF.showError("Error", "That login name is reserved"); return false;}
-    if (new String(passwd1.getPassword()).length() < 5) {JF.showError("Error", "Password too short"); return false;}
-    if (!(new String(passwd1.getPassword())).equals(new String(passwd2.getPassword()))) {JF.showError("Error", "Passwords do not match"); return false;}
-    if (localhost.getText().length() < 3) {JF.showError("Error", "Computer Name too short"); return false;}
-    if (localdomain.getText().length() < 3) {JF.showError("Error", "Domain too short"); return false;}
+    if (fullName.getText().length() < 3) {JFAWT.showError("Error", "Full name too short"); return false;}
+    if (loginName.getText().length() < 3) {JFAWT.showError("Error", "Login name too short"); return false;}
+    if (reserved(loginName.getText())) {JFAWT.showError("Error", "That login name is reserved"); return false;}
+    if (new String(passwd1.getPassword()).length() < 5) {JFAWT.showError("Error", "Password too short"); return false;}
+    if (!(new String(passwd1.getPassword())).equals(new String(passwd2.getPassword()))) {JFAWT.showError("Error", "Passwords do not match"); return false;}
+    if (localhost.getText().length() < 3) {JFAWT.showError("Error", "Computer Name too short"); return false;}
+    if (localdomain.getText().length() < 3) {JFAWT.showError("Error", "Domain too short"); return false;}
     return true;
   }
 

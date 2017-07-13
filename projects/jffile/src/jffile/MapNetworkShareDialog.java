@@ -28,8 +28,8 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
     jbusClient = new JBusClient("org.jflinux.jfile." + Math.abs(new Random().nextInt())
       , new JBusMethods());
     jbusClient.start();
-    JF.assignHotKey(this, accept, KeyEvent.VK_ENTER);
-    JF.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
+    JFAWT.assignHotKey(this, accept, KeyEvent.VK_ENTER);
+    JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
   }
 
   /**
@@ -391,7 +391,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
         System.out.println("Failed");
         System.exit(0);
       } else {
-        JF.showError("Error", "Failed to connect to share");
+        JFAWT.showError("Error", "Failed to connect to share");
         dialog.setState(true);
       }
     }

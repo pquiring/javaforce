@@ -418,7 +418,7 @@ public class SambaPanel extends javax.swing.JPanel {
         throw new Exception("file io error");
       }
       tmpFile.delete();
-      JF.showMessage("Notice", "Please restart server to make changes effective.");
+      JFAWT.showMessage("Notice", "Please restart server to make changes effective.");
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -461,7 +461,7 @@ public class SambaPanel extends javax.swing.JPanel {
       ShellProcess sp = new ShellProcess();
       String output = sp.run(cmd, false);
       if (sp.getErrorLevel() != 0) {
-        JF.showError("Error", "Join Failed: Command=" + sp.command + "\n" + "Output=" + output);
+        JFAWT.showError("Error", "Join Failed: Command=" + sp.command + "\n" + "Output=" + output);
         return;
       }
       JFLog.log("Samba:Join Output=" + output);
@@ -483,13 +483,13 @@ public class SambaPanel extends javax.swing.JPanel {
         fos.write(lst.getBytes());
         fos.close();
         if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/domains.lst")) {
-          JF.showError("Error", "Join Successful but failed to update /etc/domains.lst");
+          JFAWT.showError("Error", "Join Successful but failed to update /etc/domains.lst");
           return;
         }
       }
       FixStuffPanel.fixSamba(true);
       tmpFile.delete();
-      JF.showMessage("Notice", "Join Successful!");
+      JFAWT.showMessage("Notice", "Join Successful!");
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -517,7 +517,7 @@ public class SambaPanel extends javax.swing.JPanel {
       ShellProcess sp = new ShellProcess();
       String output = sp.run(cmd, false);
       if (sp.getErrorLevel() != 0) {
-        JF.showError("Error", "UnJoin Failed:" + output);
+        JFAWT.showError("Error", "UnJoin Failed:" + output);
         return;
       }
       //remove domain from /etc/domains.lst
@@ -542,10 +542,10 @@ public class SambaPanel extends javax.swing.JPanel {
       fos.write(lst.getBytes());
       fos.close();
       if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/domains.lst")) {
-        JF.showError("Error", "UnJoin Successful but failed to update /etc/domains.lst");
+        JFAWT.showError("Error", "UnJoin Successful but failed to update /etc/domains.lst");
         return;
       }
-      JF.showMessage("Notice", "UnJoin Successful");
+      JFAWT.showMessage("Notice", "UnJoin Successful");
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -554,13 +554,13 @@ public class SambaPanel extends javax.swing.JPanel {
   private void restart() {
     boolean ok = true;
     if (!Linux.restartService("smbd")) {
-      JF.showError("Error", "Failed to Restart smbd");
+      JFAWT.showError("Error", "Failed to Restart smbd");
       ok = false;
     }
     if (!Linux.restartService("nmbd")) {
-      JF.showError("Error", "Failed to Restart nmbd");
+      JFAWT.showError("Error", "Failed to Restart nmbd");
       ok = false;
     }
-    if (ok) JF.showMessage("Notice", "Samba restarted");
+    if (ok) JFAWT.showMessage("Notice", "Samba restarted");
   }
 }

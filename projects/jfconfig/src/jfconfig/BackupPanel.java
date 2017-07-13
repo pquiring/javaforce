@@ -132,7 +132,7 @@ public class BackupPanel extends javax.swing.JPanel {
   private void personalBackupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_personalBackupActionPerformed
     BackupDialog dialog = new BackupDialog(null, true, true);
     if (dialog.nodest) {
-      JF.showError("Error", "No media to backup to was detected!\nPlease insert a removable storage unit and try again.");
+      JFAWT.showError("Error", "No media to backup to was detected!\nPlease insert a removable storage unit and try again.");
       return;
     }
     dialog.setVisible(true);
@@ -183,7 +183,7 @@ public class BackupPanel extends javax.swing.JPanel {
   private void backupSystemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_backupSystemActionPerformed
     BackupDialog dialog = new BackupDialog(null, true, false);
     if (dialog.nodest) {
-      JF.showError("Error", "No media to backup to was detected!\nPlease insert a removable storage unit and try again.");
+      JFAWT.showError("Error", "No media to backup to was detected!\nPlease insert a removable storage unit and try again.");
       return;
     }
     dialog.setVisible(true);
@@ -239,7 +239,7 @@ public class BackupPanel extends javax.swing.JPanel {
   private void personalRestoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_personalRestoreActionPerformed
     RestoreDialog dialog = new RestoreDialog(null, true, true, getBackupName(true));
     if (dialog.nosrc) {
-      JF.showError("Error", "No media to restore from was detected!\nPlease insert a removable storage unit and try again.");
+      JFAWT.showError("Error", "No media to restore from was detected!\nPlease insert a removable storage unit and try again.");
       return;
     }
     dialog.setVisible(true);
@@ -277,7 +277,7 @@ public class BackupPanel extends javax.swing.JPanel {
   private void restoreSystemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_restoreSystemActionPerformed
     RestoreDialog dialog = new RestoreDialog(null, true, false, getBackupName(false));
     if (dialog.nosrc) {
-      JF.showError("Error", "No media to restore from was detected!\nPlease insert a removable storage unit and try again.");
+      JFAWT.showError("Error", "No media to restore from was detected!\nPlease insert a removable storage unit and try again.");
       return;
     }
     dialog.setVisible(true);

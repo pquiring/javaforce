@@ -22,7 +22,7 @@ public class Client extends javax.swing.JFrame {
     JFImage img = new JFImage();
     img.load(getClass().getResourceAsStream("/jfrdp.png"));
     setIconImage(img.getImage());
-    JF.centerWindow(this);
+    JFAWT.centerWindow(this);
     readConfig();
   }
 
@@ -165,7 +165,7 @@ public class Client extends javax.swing.JFrame {
       if (errmsg == null) errmsg = "Connection Failed";
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
-          JF.showError("Error", errmsg);
+          JFAWT.showError("Error", errmsg);
           host.setEnabled(true);
           connect.setEnabled(true);
           webPassword.setEnabled(true);

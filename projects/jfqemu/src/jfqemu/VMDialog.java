@@ -887,7 +887,7 @@ public class VMDialog extends javax.swing.JDialog {
       folderFile.mkdirs();
       Runtime.getRuntime().exec(cmd);
     } catch(Exception e) {
-      JF.showError("Error", "Failed to execute qemu-img");
+      JFAWT.showError("Error", "Failed to execute qemu-img");
       JFLog.log(e);
     }
     hd.setText(dialog.getFilename());

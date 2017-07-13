@@ -204,7 +204,7 @@ public class PartitionEditorPanel extends IPanel {
     Data.getDevices();
     for(int idx=0;idx<Data.devices.size();idx++) {
       if (Data.devices.get(idx).uninit) {
-        if (JF.showConfirm("Warning", "Device " + Data.devices.get(idx).dev + " needs a partition table.\rCreate it now?")) {
+        if (JFAWT.showConfirm("Warning", "Device " + Data.devices.get(idx).dev + " needs a partition table.\rCreate it now?")) {
           Data.createPartTable(Data.devices.get(idx).dev);
           showPartitions();
         }
@@ -294,7 +294,7 @@ public class PartitionEditorPanel extends IPanel {
     dialog.setVisible(true);
     if (!dialog.accepted) return;
     if (!Data.createPart(part.device, dialog.gettype(), dialog.getfilesys(), dialog.getstart(), dialog.getend())) {
-      JF.showError("Error", "Failed to create Partition");
+      JFAWT.showError("Error", "Failed to create Partition");
     }
     String mount = dialog.getmount();
     if (mount.equals("none")) mount = "";
@@ -306,7 +306,7 @@ public class PartitionEditorPanel extends IPanel {
         if (part2.number == -1) continue;
         if (part2.mount.length() == 0) continue;
         if (part2.mount.equals(mount)) {
-          JF.showError("Warning", "That mount point is already in use");
+          JFAWT.showError("Warning", "That mount point is already in use");
           mount = "";
         }
       }
@@ -318,7 +318,7 @@ public class PartitionEditorPanel extends IPanel {
       formatPart(part, orgMountPoint);
     }
     if (mountNow) {
-      if (!mount(orgMountPoint, part)) JF.showError("Warning", "Failed to update mount point");
+      if (!mount(orgMountPoint, part)) JFAWT.showError("Warning", "Failed to update mount point");
     }
     showPartitions();  //rescan
     if (mountNow) {
@@ -349,14 +349,14 @@ public class PartitionEditorPanel extends IPanel {
     Data.Partition part = (Data.Partition)obj;
     if (part.number == -1) return;  //can not delete
     if ((mountNow) && (part.mount.length() > 0)) {
-      JF.showError("Error", "Unmount partition first");
+      JFAWT.showError("Error", "Unmount partition first");
       return;
     }
-    if (!JF.showConfirm("Confirm",
+    if (!JFAWT.showConfirm("Confirm",
       "Are you sure you want to delete '" + part.device.dev + part.number  + "' ?"
       + "\nThis action will be performed now and can not be undone.")) return;
     if (!Data.deletePart(part)) {
-      JF.showError("Error", "Failed to delete Partition");
+      JFAWT.showError("Error", "Failed to delete Partition");
     }
     showPartitions();  //rescan
   }
@@ -382,7 +382,7 @@ public class PartitionEditorPanel extends IPanel {
         if (part2.number == -1) continue;
         if (part2.mount.length() == 0) continue;
         if (part2.mount.equals(mount)) {
-          JF.showError("Warning", "That mount point is already in use");
+          JFAWT.showError("Warning", "That mount point is already in use");
           mount = "";
         }
       }
@@ -394,7 +394,7 @@ public class PartitionEditorPanel extends IPanel {
       formatPart(part, orgMountPoint);
     }
     if (mountNow) {
-      if (!mount(orgMountPoint, part)) JF.showError("Warning", "Failed to update mount point");
+      if (!mount(orgMountPoint, part)) JFAWT.showError("Warning", "Failed to update mount point");
     }
     showPartitions();  //rescan
     if (mountNow) {
@@ -430,11 +430,11 @@ public class PartitionEditorPanel extends IPanel {
     ProgressDialog dialog = new ProgressDialog(null, true, task);
     dialog.setVisible(true);
     if (!dialog.getStatus()) {
-      JF.showError("Error", "Failed to format partition");
+      JFAWT.showError("Error", "Failed to format partition");
       return;
     }
     if (mountNow) {
-      if (!mount(orgMountPoint, part)) JF.showError("Warning", "Failed to update mount point");
+      if (!mount(orgMountPoint, part)) JFAWT.showError("Warning", "Failed to update mount point");
     }
   }
 
