@@ -34,4 +34,7 @@ public class WinNative {
 
   //JDK
   public static native String findJDKHome();
+
+  //test
+  public static native int add(int x, int y);
 }

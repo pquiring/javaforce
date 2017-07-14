@@ -5,6 +5,8 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import java.util.*;
+
 import javaforce.*;
 import javaforce.gl.*;
 
@@ -16,15 +18,21 @@ public class TestGLCube implements WebUIHandler {
     new WebUIServer().start(new TestGLCube(), 8080, false);
   }
 
-  public void clientConnected(WebUIClient client) {}
-  public void clientDisconnected(WebUIClient client) {}
+  public void clientConnected(WebUIClient client) {
+    Context context = new Context(client);
+    client.setProperty("context", context);
+  }
+  public void clientDisconnected(WebUIClient client) {
+    Context context = (Context)client.getProperty("context");
+    context.close();
+  }
 
   public byte[] getResource(String url) {
     //TODO : return static images, etc needed by webpage
     return null;
   }
 
-  private String vs =
+  private static String vs =
 "  attribute vec3 aVertexPosition;\n" +
 "  attribute vec2 aTextureCoord;\n" +
 "\n" +
@@ -38,7 +46,7 @@ public class TestGLCube implements WebUIHandler {
 "    vTextureCoord = aTextureCoord;\n" +
 "  }\n";
 
-  private String fs =
+  private static String fs =
 "  varying highp vec2 vTextureCoord;\n" +
 "\n" +
 "  uniform sampler2D uSampler;" +
@@ -47,7 +55,7 @@ public class TestGLCube implements WebUIHandler {
 "    gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));\n" +
 "  }\n";
 
-  private float[] vertices =
+  private static float[] vertices =
   {
      1.0f,-1.0f, 0.0f,
     -1.0f,-1.0f, 0.0f,
@@ -55,7 +63,7 @@ public class TestGLCube implements WebUIHandler {
     -1.0f, 1.0f, 0.0f,
   };
 
-  private float[] textCoords =
+  private static float[] textCoords =
   {  // Front
     1.0f, 1.0f,
     0.0f, 1.0f,
@@ -88,7 +96,7 @@ public class TestGLCube implements WebUIHandler {
     0.0f, 1.0f
   };
 
-  public byte[] convertFloatArray(float m[]) {
+  public static byte[] convertFloatArray(float m[]) {
     byte data[] = new byte[m.length * 4];
     int off = 0;
     for(int a=0;a<m.length;a++) {
@@ -98,7 +106,7 @@ public class TestGLCube implements WebUIHandler {
     return data;
   }
 
-  public byte[] convertIntArray(int i[]) {
+  public static byte[] convertIntArray(int i[]) {
     byte data[] = new byte[i.length * 4];
     int offset = 0;
     for(int a=0;a<i.length;a++) {
@@ -118,39 +126,8 @@ public class TestGLCube implements WebUIHandler {
   public Panel getRootPanel(WebUIClient client) {
     Panel panel = new Panel() {
       public void onLoaded(String args[]) {
-        GLMatrix pMatrix = new GLMatrix();
-        pMatrix.perspective(45f, 640.0f/480.0f, 0.1f, 100.0f);
-        GLMatrix mMatrix = new GLMatrix();
-        mMatrix.addTranslate(0, 0, -4.0f);
-        Canvas canvas = (Canvas)getProperty("canvas");
-        //init gl resources
-        canvas.sendEvent("initwebgl", null);
-        canvas.sendEvent("loadvs", new String[] {"src=" + vs});
-        canvas.sendEvent("loadfs", new String[] {"src=" + fs});
-        canvas.sendEvent("link", null);
-        canvas.sendEvent("getuniform", new String[] {"idx=0", "name=uPMatrix"});
-        canvas.sendEvent("getuniform", new String[] {"idx=1", "name=uMVMatrix"});
-        canvas.sendEvent("getattrib", new String[] {"idx=0", "name=aVertexPosition"});
-        canvas.sendEvent("getattrib", new String[] {"idx=1", "name=aTextureCoord"});
-        canvas.sendData(convertFloatArray(pMatrix.m));
-        canvas.sendEvent("matrix", new String[] {"idx=0"});
-        canvas.sendData(convertFloatArray(mMatrix.m));
-        canvas.sendEvent("matrix", new String[] {"idx=1"});
-        canvas.sendData(convertFloatArray(vertices));
-        canvas.sendEvent("buffer", new String[] {"idx=0"});
-        canvas.sendData(convertFloatArray(textCoords));
-        canvas.sendEvent("buffer", new String[] {"idx=1"});
-        JFImage img = new JFImage();
-        img.loadPNG("data\\opengl.png");
-        canvas.sendData(convertIntArray(img.getBuffer()));
-        canvas.sendEvent("loadt", new String[] {"idx=0", "x=" + img.getWidth(), "y=" + img.getHeight()});
-        //setup rendering pipeline
-        canvas.sendEvent("r_matrix", new String[] {"idx=0", "uidx=0", "midx=0"});
-        canvas.sendEvent("r_matrix", new String[] {"idx=1", "uidx=1", "midx=1"});
-        canvas.sendEvent("r_attrib", new String[] {"idx=2", "aidx=0", "bufidx=0", "cnt=3"});
-        canvas.sendEvent("r_attrib", new String[] {"idx=3", "aidx=1", "bufidx=1", "cnt=2"});
-        canvas.sendEvent("r_bindt", new String[] {"idx=4", "tidx=0"});
-        canvas.sendEvent("r_drawArrays", new String[] {"idx=5", "type=" + GL.GL_TRIANGLE_STRIP, "cnt=4"});
+        Context context = (Context)client.getProperty("context");
+        context.send();
       }
     };
 
@@ -158,8 +135,67 @@ public class TestGLCube implements WebUIHandler {
     canvas.setSize(640, 480);
     panel.add(canvas);
 
-    panel.setProperty("canvas", canvas);
+    client.setProperty("canvas", canvas);
 
     return panel;
+  }
+  public static class Context extends TimerTask {
+    public WebUIClient client;
+    public GLMatrix pMatrix, mMatrix;
+    public Timer timer;
+    public Canvas canvas;
+
+    public Context(WebUIClient client) {
+      this.client = client;
+    }
+    public void run() {
+      Canvas canvas = (Canvas)client.getProperty("canvas");
+      mMatrix.addRotate(1, 1, 0, 0);
+      canvas.sendData(convertFloatArray(mMatrix.m));
+      canvas.sendEvent("matrix", new String[] {"idx=1"});
+    }
+    public void send() {
+      pMatrix = new GLMatrix();
+      pMatrix.perspective(45f, 640.0f/480.0f, 0.1f, 100.0f);
+      mMatrix = new GLMatrix();
+      mMatrix.addTranslate(0, 0, -4.0f);
+      canvas = (Canvas)client.getProperty("canvas");
+      //init gl resources
+      canvas.sendEvent("initwebgl", null);
+      canvas.sendEvent("loadvs", new String[] {"src=" + vs});
+      canvas.sendEvent("loadfs", new String[] {"src=" + fs});
+      canvas.sendEvent("link", null);
+      canvas.sendEvent("getuniform", new String[] {"idx=0", "name=uPMatrix"});
+      canvas.sendEvent("getuniform", new String[] {"idx=1", "name=uMVMatrix"});
+      canvas.sendEvent("getattrib", new String[] {"idx=0", "name=aVertexPosition"});
+      canvas.sendEvent("getattrib", new String[] {"idx=1", "name=aTextureCoord"});
+      canvas.sendData(convertFloatArray(pMatrix.m));
+      canvas.sendEvent("matrix", new String[] {"idx=0"});
+      canvas.sendData(convertFloatArray(mMatrix.m));
+      canvas.sendEvent("matrix", new String[] {"idx=1"});
+      canvas.sendData(convertFloatArray(vertices));
+      canvas.sendEvent("buffer", new String[] {"idx=0"});
+      canvas.sendData(convertFloatArray(textCoords));
+      canvas.sendEvent("buffer", new String[] {"idx=1"});
+      JFImage img = new JFImage();
+      img.loadPNG("data\\opengl.png");
+      canvas.sendData(convertIntArray(img.getBuffer()));
+      canvas.sendEvent("loadt", new String[] {"idx=0", "x=" + img.getWidth(), "y=" + img.getHeight()});
+      //setup rendering pipeline
+      canvas.sendEvent("array", new String[] {"idx=0"});
+      canvas.sendEvent("array", new String[] {"idx=1"});
+      canvas.sendEvent("array", new String[] {"idx=2"});
+      canvas.sendEvent("r_matrix", new String[] {"idx=0", "uidx=0", "midx=0"});
+      canvas.sendEvent("r_matrix", new String[] {"idx=0", "uidx=1", "midx=1"});
+      canvas.sendEvent("r_attrib", new String[] {"idx=0", "aidx=0", "bufidx=0", "cnt=3"});
+      canvas.sendEvent("r_attrib", new String[] {"idx=1", "aidx=1", "bufidx=1", "cnt=2"});
+      canvas.sendEvent("r_bindt", new String[] {"idx=2", "tidx=0"});
+      canvas.sendEvent("r_drawArrays", new String[] {"idx=2", "type=" + GL.GL_TRIANGLE_STRIP, "cnt=4"});
+      timer = new Timer();
+      timer.schedule(this, 100, 100);  //10fps
+    }
+    public void close() {
+      timer.cancel();
+    }
   }
 }

@@ -757,6 +757,12 @@ JNIEXPORT jstring Java_javaforce_jni_WinNative_findJDKHome(JNIEnv *e, jclass c) 
   return e->NewStringUTF(path);
 }
 
+JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_add
+  (JNIEnv *e, jclass c, jint x, jint y)
+{
+  return x+y;
+}
+
 
 #include "../common/library.h"
 

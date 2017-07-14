@@ -21,13 +21,17 @@ function gl_render(canvas) {
   var gl = canvas.gl;
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   console.log('render:' + gl);
-  var idx = 0;
+  var i1 = 0;
   while (true) {
-    var func = canvas.render[idx];
-    var args = canvas.args[idx];
-    if (!func) return;
-    func(canvas, gl, args);
-    idx++;
+    var i2 = 0;
+    while (true) {
+      var func = canvas.render[i1][i2];
+      if (!func) break;
+      var args = canvas.args[i1][i2];
+      func(canvas, gl, args);
+      i2++;
+    }
+    i1++;
   }
 }
 
@@ -87,25 +91,37 @@ function gl_message(msg, canvas) {
       gl.enableVertexAttribArray(attrib);
       canvas.attribs[msg.idx] = attrib;
       break;
+    case "array":
+      var idx = msg.idx;
+      canvas.render[idx] = [];
+      canvas.args[idx] = [];
+      break;
+    case "delete":
+      var idx = msg.idx;
+      var start = msg.start;
+      var cnt = msg.cnt;
+      canvas.render[idx].splice(start, cnt);
+      canvas.args[idx].splice(start, cnt);
+      break;
     case "r_matrix":
       var idx = msg.idx;
-      canvas.render[idx] = r_matrix;
-      canvas.args[idx] = {uidx:msg.uidx, midx:msg.midx};
+      canvas.render[idx].push(r_matrix);
+      canvas.args[idx].push({uidx:msg.uidx, midx:msg.midx});
       break;
     case "r_attrib":
       var idx = msg.idx;
-      canvas.render[idx] = r_attrib;
-      canvas.args[idx] = {aidx:msg.aidx, bufidx:msg.bufidx, cnt:msg.cnt};
+      canvas.render[idx].push(r_attrib);
+      canvas.args[idx].push({aidx:msg.aidx, bufidx:msg.bufidx, cnt:msg.cnt});
       break;
     case "r_bindt":
       var idx = msg.idx;
-      canvas.render[idx] = r_bindt;
-      canvas.args[idx] = {tidx:msg.tidx};
+      canvas.render[idx].push(r_bindt);
+      canvas.args[idx].push({tidx:msg.tidx});
       break;
     case "r_drawArrays":
       var idx = msg.idx;
-      canvas.render[idx] = r_drawArrays;
-      canvas.args[idx] = {type:msg.type, cnt:msg.cnt};
+      canvas.render[idx].push(r_drawArrays);
+      canvas.args[idx].push({type:msg.type, cnt:msg.cnt});
       break;
   }
 }

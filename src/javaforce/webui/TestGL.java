@@ -95,11 +95,12 @@ public class TestGL implements WebUIHandler {
         canvas.sendData(convertFloatArray(colors));
         canvas.sendEvent("buffer", new String[] {"idx=1"});
         //setup rendering pipeline
+        canvas.sendEvent("array", new String[] {"idx=0"});
         canvas.sendEvent("r_matrix", new String[] {"idx=0", "uidx=0", "midx=0"});
-        canvas.sendEvent("r_matrix", new String[] {"idx=1", "uidx=1", "midx=1"});
-        canvas.sendEvent("r_attrib", new String[] {"idx=2", "aidx=0", "bufidx=0", "cnt=3"});
-        canvas.sendEvent("r_attrib", new String[] {"idx=3", "aidx=1", "bufidx=1", "cnt=4"});
-        canvas.sendEvent("r_drawArrays", new String[] {"idx=4", "type=" + GL.GL_TRIANGLE_STRIP, "cnt=4"});
+        canvas.sendEvent("r_matrix", new String[] {"idx=0", "uidx=1", "midx=1"});
+        canvas.sendEvent("r_attrib", new String[] {"idx=0", "aidx=0", "bufidx=0", "cnt=3"});
+        canvas.sendEvent("r_attrib", new String[] {"idx=0", "aidx=1", "bufidx=1", "cnt=4"});
+        canvas.sendEvent("r_drawArrays", new String[] {"idx=0", "type=" + GL.GL_TRIANGLE_STRIP, "cnt=4"});
       }
     };
 
