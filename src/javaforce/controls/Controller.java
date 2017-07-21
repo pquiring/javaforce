@@ -49,6 +49,10 @@ public class Controller {
   public boolean connect(String url) {
     System.out.println("Info:" + System.currentTimeMillis() + ":Controller.connect():" + url);
     connected = false;
+    if (url == null) {
+      System.out.println("Error:url == null");
+      return false;
+    }
     if (url.startsWith("S7:")) {
       plc = ControllerType.S7;
       String host = url.substring(3);

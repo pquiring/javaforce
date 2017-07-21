@@ -123,6 +123,7 @@ public class Tag {
       case ControllerType.MB: return "MB:" + host;
       case ControllerType.NI: return "NI:" + host;
     }
+    JFLog.log("Tag:Error:type unknown");
     return null;
   }
 

@@ -21,6 +21,7 @@ public class TagDialog extends javax.swing.JDialog {
     JFAWT.centerWindow(this);
     color.setBackground(Color.black);
     clr = 0x000000;
+    setMinMax();
     JFAWT.assignHotKey(this, ok, java.awt.event.KeyEvent.VK_ENTER);
     JFAWT.assignHotKey(this, cancel, java.awt.event.KeyEvent.VK_ESCAPE);
   }

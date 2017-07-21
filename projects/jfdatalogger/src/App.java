@@ -14,14 +14,14 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.14";
+  public static String version = "0.15";
 
   public static int delays[] = new int[] {
-    25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
+    5, 10, 25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
   };
 
   public static int ticks[] = new int[] {
-    40, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10
+    40, 40, 40, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10
   };
 
   /**
@@ -42,6 +42,7 @@ public class App extends javax.swing.JFrame {
     setTitle("jfDataLogger/" + version);
     JFAWT.centerWindow(this);
     setExtendedState(JFrame.MAXIMIZED_BOTH);
+    speed.setSelectedIndex(2);
   }
 
   /**
@@ -418,6 +419,7 @@ public class App extends javax.swing.JFrame {
       case "AB": tag.type = ControllerType.AB; break;
       case "MB": tag.type = ControllerType.MB; break;
       case "NI": tag.type = ControllerType.NI; break;
+      default: JFLog.log("Unknown Tag Type:" + f[1]);
     }
     tag.tag = f[2];
     switch (f[3]) {
@@ -427,6 +429,7 @@ public class App extends javax.swing.JFrame {
       case "int32": tag.size = TagType.int32; break;
       case "float32": tag.size = TagType.float32; break;
       case "float64": tag.size = TagType.float64; break;
+      default: JFLog.log("Unknown size:" + f[3]);
     }
     if (tag.isFloat()) {
       tag.fmin = Float.valueOf(f[4]);
@@ -439,7 +442,25 @@ public class App extends javax.swing.JFrame {
   }
 
   public String tag_save(Tag tag) {
-    return tag.host + "|" + tag.type + "|" + tag + "|" + tag.size + "|" + tag.getmin() + "|" + tag.getmax() + "|" + Integer.toUnsignedString(tag.color, 16);
+    String ctrl = "";
+    switch (tag.type) {
+      case ControllerType.S7: ctrl = "S7"; break;
+      case ControllerType.AB: ctrl = "S7"; break;
+      case ControllerType.MB: ctrl = "S7"; break;
+      case ControllerType.NI: ctrl = "S7"; break;
+      case ControllerType.JF: ctrl = "S7"; break;
+    }
+    String size = "";
+    switch (tag.size) {
+      case TagType.bit: size = "bit"; break;
+      case TagType.int8: size = "int8"; break;
+      case TagType.int16: size = "int16"; break;
+      case TagType.int32: size = "int32"; break;
+      case TagType.int64: size = "int64"; break;
+      case TagType.float32: size = "float32"; break;
+      case TagType.float64: size = "float64"; break;
+    }
+    return tag.host + "|" + ctrl + "|" + tag + "|" + size + "|" + tag.getmin() + "|" + tag.getmax() + "|" + Integer.toUnsignedString(tag.color, 16);
   }
 
   public void save() {
