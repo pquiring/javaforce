@@ -1,12 +1,12 @@
 
-import javaforce.JF;
-
 /** Dialog to edit settings.
  *
  * Created on September 20, 2007, 7:17 PM
  *
  * @author  pquiring
  */
+
+import javaforce.*;
 
 public class EditSettings extends javax.swing.JDialog {
 

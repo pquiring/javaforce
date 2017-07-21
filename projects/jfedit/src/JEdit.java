@@ -21,7 +21,7 @@ import javax.swing.text.*;
 
 public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener, ActionListener {
 
-  private String getVersion() { return "0.14"; }
+  private String getVersion() { return "0.15"; }
 
   /** Creates new form jfedit */
   public JEdit() {
@@ -806,13 +806,13 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       txt = pg.txt;
       int start = txt.getSelectionStart();
       int end = txt.getSelectionEnd();
-      if (start != -1) {
+      if (start != end) {
         for(int a=0;a<settings.tabSize;a++) {
           shift_right(' ');
         }
         evt.consume();
+        return;
       }
-      return;
     }
     if ((f1 == KeyEvent.VK_TAB) && (f2 == KeyEvent.SHIFT_MASK)) {
       idx = getidx();
@@ -820,13 +820,13 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       txt = pg.txt;
       int start = txt.getSelectionStart();
       int end = txt.getSelectionEnd();
-      if (start != -1) {
+      if (start != end) {
         for(int a=0;a<settings.tabSize;a++) {
           shift_left(' ');
         }
         evt.consume();
+        return;
       }
-      return;
     }
     if ((f1 == KeyEvent.VK_F5) && (f2 == 0)) { shift_left(' '); return; }
     if ((f1 == KeyEvent.VK_F6) && (f2 == 0)) { shift_right(' '); return; }
