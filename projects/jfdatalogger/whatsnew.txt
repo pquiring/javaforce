@@ -1,3 +1,6 @@
+July 21/2017 : v0.15 released
+  - fix : save/load were corrupted
+
 May 25/2017 : v0.14 released
   - new : bits are printed like a dotted line now with an offset 0-100
 

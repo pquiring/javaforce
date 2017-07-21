@@ -1,6 +1,6 @@
 What's new...
 
-Jul 17/2017 : JF 16.1.0 released
+Jul 21/2017 : JF 16.1.0 released
   - jfControls/0.2
     - added support for including Java9 with MSI package (including compiler)
   - jfDataLogger/0.15

@@ -1,5 +1,8 @@
 ChangeLog
 =========
 
+July 21,2017 : v0.2 released
+  - support Java9
+
 Jul 7,2017 : version 0.1 released!
   - init version released to the public
