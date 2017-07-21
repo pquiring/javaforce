@@ -10,7 +10,7 @@
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base_javac"/>
-  <property name="version" value="0.1"/>
+  <property name="version" value="0.2"/>
 
   <import file="../../base.xml"/>
 
