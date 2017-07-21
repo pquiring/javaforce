@@ -133,7 +133,7 @@
   </target>
 
   <target name="jre-base-javac" description="build JRE for bundled JRE builds with base and Java compiler">
-    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.sql,jdk.compiler --output jre_base_javac"/>
+    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.sql,jdk.compiler,jdk.jartool,jdk.zipfs --output jre_base_javac"/>
     <delete>
       <fileset dir="jre_base/bin" includes="java**.exe"/>
     </delete>

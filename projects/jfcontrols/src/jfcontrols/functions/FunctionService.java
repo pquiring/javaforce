@@ -247,10 +247,11 @@ public class FunctionService extends Thread {
     try {
       ShellProcess sp = new ShellProcess();
       sp.keepOutput(true);
+      String apphome = System.getProperty("java.app.home");
+      sp.setFolder(new File(apphome));
       if (jdk != null) {
         error = sp.run(new String[] {jdk + "/bin/javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", Paths.dataPath + "/work/java/*.java", "-d", Paths.dataPath + "/work/class"}, true);
       } else {
-        String apphome = System.getProperty("java.app.home");
         error = sp.run(new String[] {apphome + "/jfcompile" + (JF.isWindows() ? ".exe" : ""), "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", Paths.dataPath + "/work/java/*.java", "-d", Paths.dataPath + "/work/class"}, true);
       }
       if (error.length() == 0) {
