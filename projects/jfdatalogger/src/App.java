@@ -419,6 +419,7 @@ public class App extends javax.swing.JFrame {
       case "AB": tag.type = ControllerType.AB; break;
       case "MB": tag.type = ControllerType.MB; break;
       case "NI": tag.type = ControllerType.NI; break;
+      case "JF": tag.type = ControllerType.JF; break;
       default: JFLog.log("Unknown Tag Type:" + f[1]);
     }
     tag.tag = f[2];
@@ -427,6 +428,7 @@ public class App extends javax.swing.JFrame {
       case "int8": tag.size = TagType.int8; break;
       case "int16": tag.size = TagType.int16; break;
       case "int32": tag.size = TagType.int32; break;
+      case "int64": tag.size = TagType.int64; break;
       case "float32": tag.size = TagType.float32; break;
       case "float64": tag.size = TagType.float64; break;
       default: JFLog.log("Unknown size:" + f[3]);
@@ -445,10 +447,10 @@ public class App extends javax.swing.JFrame {
     String ctrl = "";
     switch (tag.type) {
       case ControllerType.S7: ctrl = "S7"; break;
-      case ControllerType.AB: ctrl = "S7"; break;
-      case ControllerType.MB: ctrl = "S7"; break;
-      case ControllerType.NI: ctrl = "S7"; break;
-      case ControllerType.JF: ctrl = "S7"; break;
+      case ControllerType.AB: ctrl = "AB"; break;
+      case ControllerType.MB: ctrl = "MB"; break;
+      case ControllerType.NI: ctrl = "NI"; break;
+      case ControllerType.JF: ctrl = "JF"; break;
     }
     String size = "";
     switch (tag.size) {
