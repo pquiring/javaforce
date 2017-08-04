@@ -13,7 +13,7 @@
     <copy file="../../jars/javaforce.jar" todir="."/>
   </target>
 
-  <target name="jar" description="jar">
+  <target name="jar" depends="depjars" description="jar">
   </target>
 
   <target name="release-bin" depends="" description="create release zip file">
