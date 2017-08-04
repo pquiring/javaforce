@@ -1,7 +1,7 @@
 What's new...
 
 Aug 4/2017 : JF 16.3.0 released
-  - jfDNS/0.6, jfDHCP/0.8, jfProxy/0.7, jfSTUN servers
+  - jfDNS/0.6, jfDHCP/0.8, jfProxy/0.7, jfSTUN/0.4 servers
     - fixed configuration not updated
   - jfDNS server
     - fixed forwarding dns requests
