@@ -754,9 +754,9 @@ public class DHCP extends Thread {
   private JBusClient busClient;
   private String config;
 
-  public class JBusMethods {
+  public static class JBusMethods {
     public void getConfig(String pack) {
-      busClient.call(pack, "getConfig", busClient.quote(busClient.encodeString(config)));
+      dhcp.busClient.call(pack, "getConfig", dhcp.busClient.quote(dhcp.busClient.encodeString(dhcp.config)));
     }
     public void setConfig(String cfg) {
       //write new file

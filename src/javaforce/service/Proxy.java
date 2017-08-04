@@ -666,9 +666,9 @@ public class Proxy extends Thread {
   private JBusClient busClient;
   private String config;
 
-  public class JBusMethods {
+  public static class JBusMethods {
     public void getConfig(String pack) {
-      busClient.call(pack, "getConfig", busClient.quote(busClient.encodeString(config)));
+      proxy.busClient.call(pack, "getConfig", proxy.busClient.quote(proxy.busClient.encodeString(proxy.config)));
     }
     public void setConfig(String cfg) {
       //write new file

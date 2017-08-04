@@ -822,9 +822,9 @@ public class STUN {
   private JBusClient busClient;
   private String config;
 
-  public class JBusMethods {
+  public static class JBusMethods {
     public void getConfig(String pack) {
-      busClient.call(pack, "getConfig", busClient.quote(busClient.encodeString(config)));
+      stun.busClient.call(pack, "getConfig", stun.busClient.quote(stun.busClient.encodeString(stun.config)));
     }
     public void setConfig(String cfg) {
       //write new file

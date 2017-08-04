@@ -35,6 +35,8 @@ public class DNS extends Thread {
   private static int maxmtu = 512;  //standard
   private String uplink;
   private ArrayList<String> records = new ArrayList<String>();
+  private ArrayList<String> allows = new ArrayList<String>();
+  private ArrayList<String> denies = new ArrayList<String>();
 
   public void run() {
     JFLog.append(getLogFile(), false);
@@ -87,6 +89,7 @@ public class DNS extends Thread {
     + "#www.mydomain.com,aaaa,3600,1234:1234:1234:1234:1234:1234:1234:1234\n";
 
   private void loadConfig() {
+    JFLog.log("loadConfig");
     Section section = Section.None;
     try {
       BufferedReader br = new BufferedReader(new FileReader(getConfigFile()));
@@ -113,15 +116,23 @@ public class DNS extends Thread {
             if (ln.startsWith("uplink=")) {
               uplink = ln.substring(7);
             }
+            if (ln.startsWith("allow=")) {
+              allows.add(ln.substring(6));
+            }
+            if (ln.startsWith("deny=")) {
+              denies.add(ln.substring(5));
+            }
             break;
           case Records:
             records.add(ln);
             break;
         }
       }
+      br.close();
       config = cfg.toString();
     } catch (FileNotFoundException e) {
       //create default config
+      JFLog.log("config not found, creating defaults.");
       uplink = "8.8.8.8";
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
@@ -164,6 +175,7 @@ public class DNS extends Thread {
   private class Worker extends Thread {
     private DatagramPacket packet;
     private byte data[];
+    private int dataLength;
     private int nameLength;  //bytes used decoding name
 
     private byte reply[];
@@ -180,6 +192,7 @@ public class DNS extends Thread {
     public void run() {
       try {
         data = packet.getData();
+        dataLength = packet.getLength();
         bb = ByteBuffer.wrap(data);
         bb.order(ByteOrder.BIG_ENDIAN);
         id = bb.getShort(0);
@@ -233,7 +246,7 @@ public class DNS extends Thread {
           continue;
         }
         if (queryLocal(domain, type, id)) continue;
-        queryRemote(domain, type);
+        queryRemote(domain, type, id);
       }
     }
 
@@ -301,7 +314,7 @@ public class DNS extends Thread {
       for(int a=0;a<rc;a++) {
         String record = records.get(a);
         if (record.startsWith(match)) {
-          //type,name,ttl,values...
+          //name,type,ttl,values...
           sendReply(domain, record, type, id);
           return true;
         }
@@ -309,11 +322,39 @@ public class DNS extends Thread {
       return false;
     }
 
-    private void queryRemote(String domain, int type) {
+    private boolean isAllowed(String domain) {
+      int cnt = allows.size();
+      for(int a=0;a<cnt;a++) {
+        if (domain.matches(allows.get(a))) return true;
+      }
+      cnt = denies.size();
+      for(int a=0;a<cnt;a++) {
+        if (domain.matches(denies.get(a))) return false;
+      }
+      return true;
+    }
+
+    private String typeToString(int type) {
+      switch (type) {
+        case A: return "A";
+        case CNAME: return "CNAME";
+        case MX: return "MX";
+        case AAAA: return "AAAA";
+        case SOA: return "SOA";
+        case PTR: return "PTR";
+      }
+      return "A";
+    }
+
+    private void queryRemote(String domain, int type, int id) {
       //query remote DNS server and simple relay the reply "as is"
       //TODO : need to actually remove AA flag if present and fill in other sections as needed
+      if (!isAllowed(domain)) {
+        sendReply(domain, domain + "," + typeToString(type) + ",3600,93.184.216.34", type, id);  //example.com which will give a 404 error
+        return;
+      }
       try {
-        DatagramPacket out = new DatagramPacket(data, data.length);
+        DatagramPacket out = new DatagramPacket(data, dataLength);
         out.setAddress(InetAddress.getByName(uplink));
         out.setPort(53);
         DatagramSocket sock = new DatagramSocket();  //bind to anything
@@ -428,12 +469,13 @@ public class DNS extends Thread {
   private JBusClient busClient;
   private String config;
 
-  public class JBusMethods {
+  public static class JBusMethods {
     public void getConfig(String pack) {
-      busClient.call(pack, "getConfig", busClient.quote(busClient.encodeString(config)));
+      dns.busClient.call(pack, "getConfig", dns.busClient.quote(dns.busClient.encodeString(dns.config)));
     }
     public void setConfig(String cfg) {
       //write new file
+      JFLog.log("setConfig");
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
         fos.write(JBusClient.decodeString(cfg).getBytes());
@@ -443,6 +485,7 @@ public class DNS extends Thread {
       }
     }
     public void restart() {
+      JFLog.log("restart");
       dns.close();
       dns = new DNS();
       dns.start();
