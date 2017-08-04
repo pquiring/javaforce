@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
-  <Product Id="*" UpgradeCode="{0595AC71-0C0B-4F51-9AF6-1355755D944D}" Version="0.7" Language="1033" Name="jfDHCP" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{0595AC71-0C0B-4F51-9AF6-1355755D944D}" Version="0.8" Language="1033" Name="jfDHCP" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
