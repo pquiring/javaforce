@@ -663,9 +663,9 @@ public class MainPanel extends javax.swing.JPanel {
   private void openSafe() {
     if (dirty) {
       switch (JFAWT.showConfirm3("Confirm", "Save first?")) {
-        case JF.YES: saveSafe(); break;
-        case JF.NO: break;
-        case JF.CANCEL: return;
+        case JFAWT.YES: saveSafe(); break;
+        case JFAWT.NO: break;
+        case JFAWT.CANCEL: return;
       }
     }
     JFileChooser chooser = new JFileChooser();
@@ -693,9 +693,9 @@ public class MainPanel extends javax.swing.JPanel {
   private void newSafe() {
     if (dirty) {
       switch (JFAWT.showConfirm3("Confirm", "Save first?")) {
-        case JF.YES: saveSafe(); break;
-        case JF.NO: break;
-        case JF.CANCEL: return;
+        case JFAWT.YES: saveSafe(); break;
+        case JFAWT.NO: break;
+        case JFAWT.CANCEL: return;
       }
     }
     safe.deleteAll();
@@ -719,7 +719,7 @@ public class MainPanel extends javax.swing.JPanel {
   }
 
   private void addGroup() {
-    String name = JF.getString("Enter Group Name:", "");
+    String name = JFAWT.getString("Enter Group Name:", "");
     if (name == null) return;
     TreePath path = groups.getSelectionPath();
     XML.XMLTag selTag;
@@ -749,7 +749,7 @@ public class MainPanel extends javax.swing.JPanel {
     XML.XMLTag selTag;
     if (path == null) return;
     selTag = safe.getTag(path);
-    String newName = JF.getString("Enter new name", selTag.getArg("name"));
+    String newName = JFAWT.getString("Enter new name", selTag.getArg("name"));
     if ((newName == null) || (newName.length() == 0)) return;
     selTag.setArg("name", newName);
     copyGroups();

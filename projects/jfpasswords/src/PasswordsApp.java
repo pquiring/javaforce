@@ -160,9 +160,9 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
     if (o == exit) {
       if (panel.dirty) {
         switch (JFAWT.showConfirm3("Confirm", "Save first?")) {
-          case JF.YES: panel.saveSafe(); break;
-          case JF.NO: break;
-          case JF.CANCEL: return;
+          case JFAWT.YES: panel.saveSafe(); break;
+          case JFAWT.NO: break;
+          case JFAWT.CANCEL: return;
         }
       }
       System.exit(0);

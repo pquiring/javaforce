@@ -148,7 +148,7 @@ public class XML implements TreeModelListener {
         return uname;
       } else {
         return name;
-      }  
+      }
     }
 
     /**
@@ -259,7 +259,7 @@ public class XML implements TreeModelListener {
   private byte buf[];
 
   private XMLTagPart readtag() {
-    boolean quote = false, isAttrs = false;
+    boolean quote2 = false, quote1 = false, isAttrs = false;
     char ch;
     XMLTagPart tag = new XMLTagPart();
 
@@ -271,10 +271,13 @@ public class XML implements TreeModelListener {
         case XML_OPEN:
         case XML_CLOSE:
         case XML_SINGLE:
-          if (ch == '\"') {
-            quote = !quote;
+          if (ch == '\"' && !quote1) {
+            quote2 = !quote2;
           }
-          if (!quote) {
+          if (ch == '\'' && !quote2) {
+            quote1 = !quote1;
+          }
+          if (!quote1 && !quote2) {
             if (ch == '/') {
               if (tag.content.length() == 0) {
                 type = XML_CLOSE;
@@ -297,7 +300,7 @@ public class XML implements TreeModelListener {
           }
           continue;
         case XML_DATA:
-          if ((ch == '<') && (!quote)) {
+          if ((ch == '<') && (!quote2 && !quote1)) {
             if (tag.content.length() > 0) {
               pos--;
               break;
@@ -305,12 +308,11 @@ public class XML implements TreeModelListener {
             type = XML_OPEN;
             continue;
           }
-          if (ch == '\"') {
-            if (quote) {
-              quote = false;
-            } else {
-              quote = true;
-            }
+          if (ch == '\"' && !quote1) {
+            quote2 = !quote2;
+          }
+          if (ch == '\'' && !quote2) {
+            quote1 = !quote1;
           }
           tag.content += ch;
           continue;

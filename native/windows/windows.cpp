@@ -724,7 +724,7 @@ JNIEXPORT jstring Java_javaforce_jni_WinNative_findJDKHome(JNIEnv *e, jclass c) 
   char version[MAX_PATH];
   char path[MAX_PATH];
 
-  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Development Kit", 0, KEY_READ, &key) != 0) {
+  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\JDK", 0, KEY_READ, &key) != 0) {
     return NULL;
   }
 

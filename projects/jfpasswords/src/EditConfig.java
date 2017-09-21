@@ -4,6 +4,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import javaforce.JF;
+import javaforce.JFAWT;
 
 /**
  * Created : Jun 9, 2012

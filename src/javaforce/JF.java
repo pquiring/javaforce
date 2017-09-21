@@ -1176,4 +1176,50 @@ public class JF {
       JFLog.log(e);
     }
   }
+
+  public static String[] splitQuoted(String in, char token) {
+    ArrayList<String> s = new ArrayList<String>();
+    char ca[] = in.toCharArray();
+    int off = 0;
+    boolean quote1 = false;
+    boolean quote2 = false;
+    int cnt = 0;
+    for(int a=0;a<ca.length;a++) {
+      char ch = ca[a];
+      if (ch == '\'' && !quote2) quote1 = !quote1;
+      if (ch == '\"' && !quote1) quote2 = !quote2;
+      if (!quote1 && !quote2 && ch == token) {
+        String str = new String(ca, off, cnt);
+        s.add(str);
+        off = a + 1;
+        cnt = 0;
+      } else {
+        cnt++;
+      }
+    }
+    if (cnt > 0) {
+      String str = new String(ca, off, cnt);
+      s.add(str);
+    }
+    return s.toArray(new String[0]);
+  }
+
+  public static String readLineQuoted(InputStream is) {
+    StringBuilder sb = new StringBuilder();
+    boolean quote1 = false;
+    boolean quote2 = false;
+    try {
+      while (is.available() > 0) {
+        char ch = (char)is.read();
+        if (ch == '\'' && !quote2) quote1 = !quote1;
+        if (ch == '\"' && !quote1) quote2 = !quote2;
+        if (!quote1 && !quote2) {
+          if (ch == '\r') continue;
+          if (ch == '\n') break;
+        }
+        sb.append(ch);
+      }
+    } catch (Exception e) {}
+    return sb.toString();
+  }
 }
