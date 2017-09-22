@@ -275,7 +275,7 @@ public class XML implements TreeModelListener {
             quote2 = !quote2;
           }
           if (ch == '\'' && !quote2) {
-            quote1 = !quote1;
+//            quote1 = !quote1;
           }
           if (!quote1 && !quote2) {
             if (ch == '/') {
@@ -312,7 +312,7 @@ public class XML implements TreeModelListener {
             quote2 = !quote2;
           }
           if (ch == '\'' && !quote2) {
-            quote1 = !quote1;
+//            quote1 = !quote1;
           }
           tag.content += ch;
           continue;
