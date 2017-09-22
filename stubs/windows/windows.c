@@ -371,7 +371,9 @@ int findJavaHomeAppDataFolder() {
 int findJavaHomeRegistry() {
   //try to find JRE in Registry
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\JRE", 0, KEY_READ, &key) != 0) {
-    return 0;
+    if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Runtime Environment", 0, KEY_READ, &key) != 0) {
+      return 0;
+    }
   }
 
   size = 0;
