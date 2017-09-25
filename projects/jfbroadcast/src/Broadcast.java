@@ -2348,6 +2348,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     int postwait = 0;
     int quietcount = 0;  //wait till we hear quiet after hello (answering machine detection)
     int noresponse = 0;
+    int repeatcount = 0;
     boolean voicemail = false;
   }
 
@@ -2474,6 +2475,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
         lines[a].repeat = false;
         lines[a].number = number;
         lines[a].quietcount = 0;
+        lines[a].repeatcount = 0;
         lines[a].voicemail = false;
         lines[a].survey = "";
         lines[a].multi = "";
@@ -2848,6 +2850,12 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
                     nextMessage(lines[a]);
                   } else {
                     //repeat message
+                    lines[a].repeatcount++;
+                    if (lines[a].repeatcount == 3) {
+                        sip.bye(lines[a].callid);
+                        endCall(lines[a], "ok");
+                        continue;
+                    }
                     lines[a].repeat = true;  //allow immediate response
                     lines[a].wavpos = 0;
                     lines[a].postwait = 0;
@@ -2856,6 +2864,12 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
                   }
                 } else if (questions.action[lines[a].msgidx] == A_GOTOUSER) {
                   //repeat message
+                  lines[a].repeatcount++;
+                  if (lines[a].repeatcount == 3) {
+                      sip.bye(lines[a].callid);
+                      endCall(lines[a], "ok");
+                      continue;
+                  }
                   lines[a].repeat = true;  //allow immediate response
                   lines[a].wavpos = 0;
                   lines[a].postwait = 0;
@@ -3054,6 +3068,7 @@ JFLog.log("connected : number=" + lines[a].number);
           case A_MULTI:
             if (c == '#') {
               lines[a].survey += "(" + lines[a].multi + ")";
+              lines[a].repeatcount = 0;
               nextMessage(lines[a]);
             } else {
               lines[a].multi += c;
@@ -3067,6 +3082,7 @@ JFLog.log("connected : number=" + lines[a].number);
             if ((newidx < 1) || (newidx > 99)) return;  //bad input
             lines[a].survey += c;  //see bug # 2 @ jfbroadcast.sf.net
             lines[a].msgidx = newidx - 1 - 1;  //-1 for zero based, -1 for nextMessage()
+            lines[a].repeatcount = 0;
             nextMessage(lines[a]);
             break;
         }
