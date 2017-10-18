@@ -67,6 +67,15 @@ void error(char *msg) {
 #endif
 }
 
+void printException(JNIEnv *env) {
+  jthrowable exc;
+  exc = (*env)->ExceptionOccurred(env);
+  if (exc == NULL) return;
+  jclass newExcCls;
+  (*env)->ExceptionDescribe(env);
+  (*env)->ExceptionClear(env);
+}
+
 /** Converts array of C strings into array of Java strings */
 jobjectArray
 ConvertStringArray(JNIEnv *env, int strc, char **strv)
@@ -77,6 +86,11 @@ ConvertStringArray(JNIEnv *env, int strc, char **strv)
   int i;
 
   cls = (*env)->FindClass(env, "java/lang/String");
+  if (cls == 0) {
+    printException(g_env);
+    error("Unable to find String class");
+    return 0;
+  }
   outArray = (*env)->NewObjectArray(env, strc, cls, 0);
   for (i = 0; i < strc; i++) {
     str = (*env)->NewStringUTF(env, *strv++);
@@ -96,7 +110,17 @@ ExpandStringArray(JNIEnv *env, jobjectArray inArray) {
   jarray outArray;
 
   cls = (*env)->FindClass(env, "javaforce/JF");
+  if (cls == 0) {
+    printException(g_env);
+    error("Unable to find javaforce.JF class");
+    return 0;
+  }
   mid = (*env)->GetStaticMethodID(env, cls, "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;");
+  if (mid == 0) {
+    printException(g_env);
+    error("Unable to find javaforce.JF.expandArgs method");
+    return 0;
+  }
   outArray = (*env)->CallStaticObjectMethod(env, cls, mid, inArray);
   (*env)->DeleteLocalRef(env, inArray);
   return outArray;
@@ -141,15 +165,6 @@ char *DefineAppHome() {
   strcpy(option, DOption2);
   strcat(option, exepath);
   return option;
-}
-
-void printException(JNIEnv *env) {
-  jthrowable exc;
-  exc = (*env)->ExceptionOccurred(env);
-  if (exc == NULL) return;
-  jclass newExcCls;
-  (*env)->ExceptionDescribe(env);
-  (*env)->ExceptionClear(env);
 }
 
 int InvokeMethod(char *_method, jobjectArray args, char *sign) {

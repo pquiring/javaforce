@@ -12,7 +12,7 @@ import javaforce.media.*;
 
 public class AudioApp extends javax.swing.JFrame implements KeyEventDispatcher {
 
-  public static String version = "0.16";
+  public static String version = "0.17";
 
   /**
    * Creates new form AudioApp

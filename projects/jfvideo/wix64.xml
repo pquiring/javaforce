@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{6AF99921-3E43-4042-A825-61EBF9145366}" Version="0.20" Language="1033" Name="jfVideo" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{6AF99921-3E43-4042-A825-61EBF9145366}" Version="0.21" Language="1033" Name="jfVideo" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
