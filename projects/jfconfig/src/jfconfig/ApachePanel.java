@@ -326,7 +326,7 @@ public class ApachePanel extends javax.swing.JPanel {
   }//GEN-LAST:event_hostsValueChanged
 
   private void addvhostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addvhostActionPerformed
-    String name = JF.getString("Enter Virtual Host Name", "");
+    String name = JFAWT.getString("Enter Virtual Host Name", "");
     if (name == null) return;
     addHost(name);
   }//GEN-LAST:event_addvhostActionPerformed
@@ -393,7 +393,7 @@ public class ApachePanel extends javax.swing.JPanel {
           host.docPath = "/usr/share/drupal6";
         } else {
           //create virtual folder (link)
-          String folder = JF.getString("Enter virtual name", "");
+          String folder = JFAWT.getString("Enter virtual name", "");
           if ((folder == null) || (folder.length() == 0)) {
             break;
           }
@@ -414,7 +414,7 @@ public class ApachePanel extends javax.swing.JPanel {
           host.docPath = "/usr/share/myphpadmin";
         } else {
           //create virtual folder (link)
-          String folder = JF.getString("Enter virtual name", "");
+          String folder = JFAWT.getString("Enter virtual name", "");
           if ((folder == null) || (folder.length() == 0)) {
             break;
           }

@@ -10,7 +10,7 @@ public class Main {
     //convert arg "host[:port]" into "HOST" host "PORT" port
     String connString;
     if (args.length != 1) {
-      connString = JF.getString("Enter VNC Server host[:port]", null);
+      connString = JFAWT.getString("Enter VNC Server host[:port]", null);
       if (connString == null) return;
     } else {
       connString = args[0];

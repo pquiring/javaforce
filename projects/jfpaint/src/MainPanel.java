@@ -2583,7 +2583,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     PaintCanvas pc = imageTabs.get(idx).pc;
     if (pc == null) return;
     int layer = pc.getImageLayer();
-    String newName = JF.getString("Edit layer name", pc.name[layer]);
+    String newName = JFAWT.getString("Edit layer name", pc.name[layer]);
     if (newName == null) return;
     pc.name[layer] = newName;
   }

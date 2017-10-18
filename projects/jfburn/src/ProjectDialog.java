@@ -310,7 +310,7 @@ public class ProjectDialog extends javax.swing.JDialog {
   private void createFolder() {
     TreePath sel = files.getSelectionPath();
     if (sel == null) return;
-    String name = JF.getString("Enter folder name", "");
+    String name = JFAWT.getString("Enter folder name", "");
     if ((name == null) || (name.length() == 0)) return;
     XML.XMLTag tag = xml.getTag(sel);
     xml.addTag(tag, name, "", name);
@@ -320,7 +320,7 @@ public class ProjectDialog extends javax.swing.JDialog {
     TreePath sel = files.getSelectionPath();
     if (sel == null) return;
     XML.XMLTag tag = xml.getTag(sel);
-    String newName = JF.getString("Enter new name", tag.getName());
+    String newName = JFAWT.getString("Enter new name", tag.getName());
     if (newName == null) return;
     if (tag == xmlFiles) {
       tag.content = newName;

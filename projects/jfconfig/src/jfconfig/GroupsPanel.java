@@ -333,7 +333,7 @@ public class GroupsPanel extends javax.swing.JPanel {
   }
 
   private void addGroup() {
-    String name = JF.getString("Enter group name", "");
+    String name = JFAWT.getString("Enter group name", "");
     if ((name == null) || (name.trim().length() == 0)) return;
     name = name.trim();
     ShellProcess sp = new ShellProcess();

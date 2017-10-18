@@ -529,7 +529,7 @@ public class MainPanel extends javax.swing.JPanel {
   }
 
   private void addURL() {
-    String urlStr = JF.getString("Enter HTTP[S] URL:", "");
+    String urlStr = JFAWT.getString("Enter HTTP[S] URL:", "");
     if (urlStr == null) return;
     boolean http = false;
     boolean https = false;

@@ -1116,7 +1116,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
 
   private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
     if (currentPatternIdx == -1) return;
-    String newName = JF.getString("Edit Name", (String)pattern.getSelectedItem());
+    String newName = JFAWT.getString("Edit Name", (String)pattern.getSelectedItem());
     if (newName == null) return;
     music.song.patterns.get(currentPatternIdx).name = newName;
     int idx = currentPatternIdx;
@@ -1128,7 +1128,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
 
   private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
     if (currentInstrumentIdx == -1) return;
-    String newName = JF.getString("Edit Name", (String)instrument.getSelectedItem());
+    String newName = JFAWT.getString("Edit Name", (String)instrument.getSelectedItem());
     if (newName == null) return;
     music.song.instruments.get(currentInstrumentIdx).name = newName;
     int idx = currentInstrumentIdx;
@@ -1228,7 +1228,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
 
   private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
     if (currentSampleIdx == -1) return;
-    String newName = JF.getString("Edit Name", music.song.samples.get(currentSampleIdx).name);
+    String newName = JFAWT.getString("Edit Name", music.song.samples.get(currentSampleIdx).name);
     if (newName == null) return;
     music.song.samples.get(currentSampleIdx).name = newName;
     updateSamples();
@@ -2256,7 +2256,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     exporting = true;
     ffmpeg = new MediaEncoder();
     if (ext.equals("mp3")) {
-      String bitRate = JF.getString("Enter bitrate (32-512)", "128");
+      String bitRate = JFAWT.getString("Enter bitrate (32-512)", "128");
       if (bitRate == null) bitRate = "128";
       int bits = JF.atoi(bitRate);
       if (bits < 32) bits = 32;

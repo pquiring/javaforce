@@ -2237,9 +2237,9 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     } else {
       String key = "";
       if (encType.equals("WEP")) {
-        key = JF.getString("Enter WEP encryption key (26 or 10 hex digits)", "");
+        key = JFAWT.getString("Enter WEP encryption key (26 or 10 hex digits)", "");
       } else if (encType.equals("WPA")) {
-        key = JF.getString("Enter WPA pass phrase", "");
+        key = JFAWT.getString("Enter WPA pass phrase", "");
       }
       startNetworkTimer("cancelWAP");
       jbusClient.call("org.jflinux.jnetworkmgr", "connectWAP",

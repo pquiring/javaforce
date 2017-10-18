@@ -376,7 +376,7 @@ public class PrintersAddDialog extends javax.swing.JDialog {
     int idx = localPrinters.getSelectedIndex();
     if (idx == -1) return;
     String uri = (String)localPrinters.getSelectedItem();
-    String name = JF.getString("Enter Printer Name", getPrinterName(uri));
+    String name = JFAWT.getString("Enter Printer Name", getPrinterName(uri));
     ShellProcess sp = new ShellProcess();
     String output = null;
     if (ppdList.isEmpty() || ppdList.get(model.getSelectedIndex()).equals("Auto")) {
@@ -400,7 +400,7 @@ public class PrintersAddDialog extends javax.swing.JDialog {
       return;
     }
     String uri = "socket://" + ip;
-    String name = JF.getString("Enter Printer Name", getPrinterName(""));
+    String name = JFAWT.getString("Enter Printer Name", getPrinterName(""));
     ShellProcess sp = new ShellProcess();
     String ppd = getPPD();
     if (ppd.equals("Auto")) {
@@ -426,7 +426,7 @@ public class PrintersAddDialog extends javax.swing.JDialog {
     String password = new String(pass.getPassword());
     if (password.length() > 0) uri += ":" + password;
     uri += "@" + server.getText() + "/" + share.getText();
-    String name = JF.getString("Enter Printer Name", getPrinterName(""));
+    String name = JFAWT.getString("Enter Printer Name", getPrinterName(""));
     ShellProcess sp = new ShellProcess();
     String ppd = getPPD();
     if (ppd.equals("Auto")) {

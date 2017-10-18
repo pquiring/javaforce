@@ -997,7 +997,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
 
   private void renameDevice(String name) {
     inDialog = true;
-    String newName = JF.getString("Enter a new name", name);
+    String newName = JFAWT.getString("Enter a new name", name);
     inDialog = false;
     if (newName == null) return;
     jbusClient.call("org.jflinux.jfsystemmgr", "renameDevice", "\"" + name + "\",\"" + newName + "\"");

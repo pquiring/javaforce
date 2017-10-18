@@ -1121,7 +1121,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
 
   public void local_mkdir() {
     FileApp.inDialog = true;
-    String fn = JF.getString("Enter new folder name", "");
+    String fn = JFAWT.getString("Enter new folder name", "");
     FileApp.inDialog = false;
     if ((fn == null) || (fn.length() == 0)) {
       return;
@@ -1160,7 +1160,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
 
   public void remote_mkdir() {
     FileApp.inDialog = true;
-    String fn = JF.getString("Enter new folder name", "");
+    String fn = JFAWT.getString("Enter new folder name", "");
     FileApp.inDialog = false;
     if ((fn == null) || (fn.length() == 0)) {
       return;
@@ -1258,7 +1258,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     }
     File localFile = new File(files[0].file);
     FileApp.inDialog = true;
-    String newName = JF.getString("Rename " + (localFile.isDirectory() ? "Folder" : "File"), files[0].name);
+    String newName = JFAWT.getString("Rename " + (localFile.isDirectory() ? "Folder" : "File"), files[0].name);
     FileApp.inDialog = false;
     if ((newName == null) || (newName.length() == 0)) {
       return;
@@ -1283,7 +1283,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     }
     File remoteFile = new File(files[0].file);
     FileApp.inDialog = true;
-    String newName = JF.getString("Rename " + (remoteFile.isDirectory() ? "Folder" : "File"), files[0].name);
+    String newName = JFAWT.getString("Rename " + (remoteFile.isDirectory() ? "Folder" : "File"), files[0].name);
     FileApp.inDialog = false;
     if ((newName == null) || (newName.length() == 0)) {
       return;

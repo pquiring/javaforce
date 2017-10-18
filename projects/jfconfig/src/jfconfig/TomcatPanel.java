@@ -333,7 +333,7 @@ public class TomcatPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_backActionPerformed
 
   private void addserviceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addserviceActionPerformed
-    String name = JF.getString("Enter Service Name", "");
+    String name = JFAWT.getString("Enter Service Name", "");
     if (name == null) return;
     addService(name);
   }//GEN-LAST:event_addserviceActionPerformed
@@ -371,7 +371,7 @@ public class TomcatPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_hostsValueChanged
 
   private void addHostActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addHostActionPerformed
-    String name = JF.getString("Enter Host Name", "");
+    String name = JFAWT.getString("Enter Host Name", "");
     if (name == null) return;
     addHost(name);
   }//GEN-LAST:event_addHostActionPerformed

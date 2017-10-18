@@ -254,7 +254,7 @@ public class Desktop extends javax.swing.JWindow {
 
   private void newFolderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newFolderActionPerformed
     try {
-      String fn = JF.getString("Enter Folder Name", "");
+      String fn = JFAWT.getString("Enter Folder Name", "");
       if (fn == null) return;
       String full = JF.getUserPath() + "/Desktop/" + fn;
       new File(full).mkdir();
