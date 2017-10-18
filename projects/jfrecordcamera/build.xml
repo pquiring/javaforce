@@ -6,7 +6,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
-  <property name="version" value="0.4"/>
+  <property name="version" value="0.5"/>
 
   <property name="debian.depends" value="ffmpeg"/>
   <property name="fedora.depends" value="ffmpeg"/>

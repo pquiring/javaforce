@@ -21,7 +21,7 @@ import javaforce.gl.*;
 
 public class MainPanel extends javax.swing.JPanel implements MouseListener, MouseMotionListener, KeyListener, KeyEventDispatcher, ActionListener {
 
-  public static String version = "0.21";
+  public static String version = "0.22";
 
   /**
    * Creates new form PaintPanel
@@ -1217,11 +1217,11 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     if (tabs.getTabCount() == 0) return true;
     if (imageTabs.get(idx).pc.dirty) {
       switch (JFAWT.showConfirm3("Save?", "Save first?")) {
-        case JF.YES:
+        case JFAWT.YES:
           if (!saveTab()) return false;
-        case JF.CANCEL:
+        case JFAWT.CANCEL:
           return false;
-        case JF.NO:
+        case JFAWT.NO:
           break;
       }
     }

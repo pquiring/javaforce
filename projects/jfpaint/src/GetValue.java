@@ -6,7 +6,7 @@
 import java.awt.*;
 import java.awt.event.*;
 
-import javaforce.JF;
+import javaforce.*;
 
 public class GetValue extends javax.swing.JDialog {
 

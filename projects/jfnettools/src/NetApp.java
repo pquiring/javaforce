@@ -11,7 +11,7 @@ import java.util.Arrays;
 
 public class NetApp extends javax.swing.JFrame {
 
-  public static String version = "0.3";
+  public static String version = "0.4";
 
   /**
    * Creates new form NetApp

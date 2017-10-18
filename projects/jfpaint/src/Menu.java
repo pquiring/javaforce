@@ -5,7 +5,7 @@
  * Created : Oct 11, 2013
  */
 
-import javaforce.JF;
+import javaforce.*;
 
 import java.awt.event.*;
 import javax.swing.*;
