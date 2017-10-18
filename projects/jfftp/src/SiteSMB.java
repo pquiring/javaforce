@@ -315,7 +315,7 @@ public class SiteSMB extends Site {
 
   @Override
   public void remote_mkdir() {
-    String fn = JF.getString("Enter new folder name", "");
+    String fn = JFAWT.getString("Enter new folder name", "");
     if ((fn == null) || (fn.length() == 0)) return;
     if (fn.indexOf(":") != -1) return;
     if (fn.indexOf("/") != -1) return;
@@ -440,7 +440,7 @@ public class SiteSMB extends Site {
     if ((rows == null) || (rows.length != 1)) return;
     SiteFile sf = (SiteFile)remoteFilesTableModel.getValueAt(rows[0], 0);
     String remoteFile = remoteDir.getText() + "/" + sf.getText();
-    String newName = JF.getString("Rename File", sf.getText());
+    String newName = JFAWT.getString("Rename File", sf.getText());
     if ((newName == null) || (newName.length() == 0)) return;
     File newFile = new File(remoteDir.getText() + "/" + newName);
     remote_rename(remoteFile, newName);

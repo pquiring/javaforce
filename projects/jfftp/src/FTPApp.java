@@ -13,7 +13,7 @@ import javaforce.*;
 
 public class FTPApp extends javax.swing.JFrame {
 
-  public static String version = "0.7";
+  public static String version = "0.8";
 
   /**
    * Creates new form JFftp

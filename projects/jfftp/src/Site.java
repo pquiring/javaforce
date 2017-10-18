@@ -1147,7 +1147,7 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
   }
 
   public void local_mkdir() {
-    String fn = JF.getString("Enter new folder name", "");
+    String fn = JFAWT.getString("Enter new folder name", "");
     if ((fn == null) || (fn.length() == 0)) {
       return;
     }
@@ -1261,7 +1261,7 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
     }
     SiteFile sf = (SiteFile) localFilesTableModel.getValueAt(rows[0], 0);
     File localFile = new File(localDir.getText() + "/" + sf.getText());
-    String newName = JF.getString("Rename " + (localFile.isDirectory() ? "Folder" : "File"), sf.getText());
+    String newName = JFAWT.getString("Rename " + (localFile.isDirectory() ? "Folder" : "File"), sf.getText());
     if ((newName == null) || (newName.length() == 0)) {
       return;
     }

@@ -1,6 +1,9 @@
 jfFTP
 =====
 
+Oct 18,2017 - version 0.8
+  - Java9 support
+
 Jul 9, 2015 - version 0.7
   - fix : progress bar was not reset for each download/upload via sftp
 
