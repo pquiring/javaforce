@@ -1052,7 +1052,7 @@ public class TrackPanel extends javax.swing.JPanel {
       }
       if (fn.toLowerCase().endsWith(".mp3")) {
         AudioApp.inDialog = true;
-        String bitRate = JF.getString("Enter MP3 BitRate (16-384)K", "128");
+        String bitRate = JFAWT.getString("Enter MP3 BitRate (16-384)K", "128");
         AudioApp.inDialog = false;
         if (bitRate == null) return;
         transcoderBitRate = JF.atoi(bitRate);
