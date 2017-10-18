@@ -5,7 +5,7 @@
  * Created : Oct 10, 2013
  */
 
-import javaforce.JF;
+import javaforce.*;
 import javax.swing.*;
 
 public class Menu {
