@@ -44,6 +44,7 @@ public class EditSettings extends javax.swing.JDialog {
     eol = new javax.swing.JComboBox<>();
     jLabel3 = new javax.swing.JLabel();
     jLabel4 = new javax.swing.JLabel();
+    cbTabToSpaces = new javax.swing.JCheckBox();
 
     FormListener formListener = new FormListener();
 
@@ -83,6 +84,7 @@ public class EditSettings extends javax.swing.JDialog {
     cbLineWrap.setText("Line wrap");
     cbLineWrap.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
     cbLineWrap.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    cbLineWrap.addActionListener(formListener);
     cbLineWrap.addKeyListener(formListener);
 
     cbPreserve.setText("Preserve line endings (CRLF or LF)");
@@ -94,6 +96,11 @@ public class EditSettings extends javax.swing.JDialog {
     jLabel3.setText("Create new files in");
 
     jLabel4.setText("EOL format.");
+
+    cbTabToSpaces.setText("Convert tabs to spaces");
+    cbTabToSpaces.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 0, 0, 0));
+    cbTabToSpaces.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    cbTabToSpaces.setPreferredSize(new java.awt.Dimension(131, 15));
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -122,8 +129,9 @@ public class EditSettings extends javax.swing.JDialog {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(jLabel4))
           .addComponent(cbAutoIndent)
+          .addComponent(cbPreserve)
           .addComponent(cbLineWrap)
-          .addComponent(cbPreserve))
+          .addComponent(cbTabToSpaces, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addContainerGap(199, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
@@ -150,7 +158,9 @@ public class EditSettings extends javax.swing.JDialog {
         .addComponent(cbAutoIndent)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(cbLineWrap)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 67, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(cbTabToSpaces, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(bOk)
           .addComponent(bCancel))
@@ -170,6 +180,9 @@ public class EditSettings extends javax.swing.JDialog {
       }
       else if (evt.getSource() == bCancel) {
         EditSettings.this.bCancelActionPerformed(evt);
+      }
+      else if (evt.getSource() == cbLineWrap) {
+        EditSettings.this.cbLineWrapActionPerformed(evt);
       }
     }
 
@@ -245,6 +258,10 @@ public class EditSettings extends javax.swing.JDialog {
     dispose();
   }//GEN-LAST:event_bOkActionPerformed
 
+  private void cbLineWrapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbLineWrapActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_cbLineWrapActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton bCancel;
   private javax.swing.JButton bOk;
@@ -252,6 +269,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox cbClean;
   private javax.swing.JCheckBox cbLineWrap;
   private javax.swing.JCheckBox cbPreserve;
+  private javax.swing.JCheckBox cbTabToSpaces;
   private javax.swing.JComboBox<String> eol;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
@@ -280,6 +298,7 @@ public class EditSettings extends javax.swing.JDialog {
     sTabSize.setValue(settings.tabSize);
     cbAutoIndent.setSelected(settings.bAutoIndent);
     cbLineWrap.setSelected(settings.bLineWrap);
+    cbTabToSpaces.setSelected(settings.bTabToSpaces);
   }
 
   private void save() {
@@ -290,6 +309,7 @@ public class EditSettings extends javax.swing.JDialog {
     settings.tabSize = ((Integer)sTabSize.getValue()).intValue();
     settings.bAutoIndent = cbAutoIndent.isSelected();
     settings.bLineWrap = cbLineWrap.isSelected();
+    settings.bTabToSpaces = cbTabToSpaces.isSelected();
   }
 
 }

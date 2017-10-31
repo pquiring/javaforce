@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+10-31-2017 : v0.16
+  - new : added Tab to Spaces option
+
 7-21-2017 : v0.15
   - fix : tab key was being ignored
 

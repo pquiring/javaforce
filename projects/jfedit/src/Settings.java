@@ -10,4 +10,5 @@ public class Settings {
   public boolean bAutoIndent = false;
   public boolean bLineWrap = false;
   public static java.awt.Font fnt;
+  public boolean bTabToSpaces = false;
 };

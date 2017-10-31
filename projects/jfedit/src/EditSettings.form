@@ -55,8 +55,9 @@
                       <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Component id="cbAutoIndent" alignment="0" min="-2" max="-2" attributes="0"/>
-                  <Component id="cbLineWrap" alignment="0" min="-2" max="-2" attributes="0"/>
                   <Component id="cbPreserve" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbLineWrap" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbTabToSpaces" alignment="0" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace pref="199" max="32767" attributes="0"/>
           </Group>
@@ -89,7 +90,9 @@
               <Component id="cbAutoIndent" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="cbLineWrap" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="67" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="cbTabToSpaces" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="46" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="bOk" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="bCancel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -184,6 +187,7 @@
         </Property>
       </Properties>
       <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cbLineWrapActionPerformed"/>
         <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="anykey"/>
       </Events>
     </Component>
@@ -221,6 +225,22 @@
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
         <Property name="text" type="java.lang.String" value="EOL format."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="cbTabToSpaces">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Convert tabs to spaces"/>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.EmptyBorderInfo">
+            <EmptyBorder bottom="0" left="0" right="0" top="0"/>
+          </Border>
+        </Property>
+        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+          <Insets value="[0, 0, 0, 0]"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[131, 15]"/>
+        </Property>
       </Properties>
     </Component>
   </SubComponents>

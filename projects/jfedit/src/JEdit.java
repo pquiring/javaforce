@@ -21,7 +21,7 @@ import javax.swing.text.*;
 
 public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener, ActionListener {
 
-  private String getVersion() { return "0.15"; }
+  private String getVersion() { return "0.16"; }
 
   /** Creates new form jfedit */
   public JEdit() {
@@ -810,6 +810,15 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
         for(int a=0;a<settings.tabSize;a++) {
           shift_right(' ');
         }
+        evt.consume();
+        return;
+      }
+      if (settings.bTabToSpaces) {
+        String spaces = "";
+        for(int a=0;a<settings.tabSize;a++) {
+          spaces += " ";
+        }
+        pg.txt.insert(spaces, pg.txt.getCaretPosition());
         evt.consume();
         return;
       }
