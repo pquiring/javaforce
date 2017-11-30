@@ -212,11 +212,15 @@ public class Tag {
   }
 
   public void disconnect() {
-    if (parent != null) return;
+    if (parent != null) {
+      parent = null;
+      return;
+    }
     if (c != null) {
       c.disconnect();
       c = null;
     }
+    children.clear();
   }
 
   private String value = "0";
