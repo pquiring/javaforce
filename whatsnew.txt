@@ -1,5 +1,9 @@
 What's new...
 
+Nov 30/2017 : JF 16.5.0 released
+  - fix DNS bug (IP6 issue)
+  - add missing files
+
 Oct 18/2017 : JF 16.4.0 released
   - added support for Java 9
     - Java 9 changes keys used in the registry therefore the native launcher could not find it
