@@ -347,10 +347,15 @@ public class DNS extends Thread {
     }
 
     private void queryRemote(String domain, int type, int id) {
+      JFLog.log("queryRemote:domain=" + domain + ",type=" + type);
       //query remote DNS server and simple relay the reply "as is"
       //TODO : need to actually remove AA flag if present and fill in other sections as needed
       if (!isAllowed(domain)) {
-        sendReply(domain, domain + "," + typeToString(type) + ",3600,93.184.216.34", type, id);  //example.com which will give a 404 error
+        //send "example.com" which will give a 404 error
+        if (type == AAAA)
+          sendReply(domain, domain + "," + typeToString(type) + ",3600,0:0:0:0:0:FFFF:5DB8:D822", type, id);
+        else
+          sendReply(domain, domain + "," + typeToString(type) + ",3600,93.184.216.34", type, id);
         return;
       }
       try {
@@ -380,6 +385,7 @@ public class DNS extends Thread {
     }
 
     private void sendReply(String query, String record, int type, int id) {
+      JFLog.log("sendReply:query=" + query + ",record=" + record + ",type=" + type);
       int rdataOffset, rdataLength;
       //record = type,name,ttl,value
       String f[] = record.split(",");
@@ -441,14 +447,24 @@ public class DNS extends Thread {
     }
 
     private void putIP4(String ip) {
-      String p[] = ip.split("[.]");
+      String p[] = ip.split("[.]", -1);
+/*
+      if (p.length != 4) {
+        p = new String[] {"0", "0", "0", "0"};
+      }
+*/
       for(int a=0;a<4;a++) {
         reply[replyOffset++] = (byte)JF.atoi(p[a]);
       }
     }
 
     private void putIP6(String ip) {
-      String p[] = ip.split(":");
+      String p[] = ip.split(":", -1);
+/*
+      if (p.length != 8) {
+        p = new String[] {"0", "0", "0", "0", "0", "0", "0", "0"};
+      }
+*/
       for(int a=0;a<8;a++) {
         putShort((short)JF.atox(p[a]));
       }

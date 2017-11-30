@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
-  <Product Id="*" UpgradeCode="{4A0F1642-9982-47FA-96C8-E5058B62CA7D}" Version="0.7" Language="1033" Name="jfDNS" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{4A0F1642-9982-47FA-96C8-E5058B62CA7D}" Version="0.8" Language="1033" Name="jfDNS" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />

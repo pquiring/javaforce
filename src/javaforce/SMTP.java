@@ -174,4 +174,54 @@ public class SMTP {
       }
     }
   }
+
+  private static String extractEmail(String in) {
+    int i1 = in.indexOf('<');
+    int i2 = in.indexOf('>');
+    return in.substring(i1+1, i2);
+  }
+
+  public static void main(String args[]) {
+    if (args.length != 2) {
+      System.out.println("Usage:SMTP server[:port] msg.txt");
+      System.out.println("msg.txt sample:\r\n");
+      System.out.println("From: \"First Last\" <bob@example.com>");
+      System.out.println("To: \"First Last\" <to@example.com>");
+      System.out.println("Cc: \"First Last\" <cc@example.com>");
+      System.out.println("Date: Tue, 15 Jan 2008 16:02:43 -0500");
+      System.out.println("Subject: Subject line\r\n");
+      System.out.println("Hello Bob, ...");
+      return;
+    }
+    SMTP smtp = new SMTP();
+    try {
+      String txt = new String(JF.readAll(new FileInputStream(args[1])));
+      txt = txt.replaceAll("\r", "");
+      String lns[] = txt.split("\n");
+      if (lns.length < 4) throw new Exception("file too short");
+      smtp.setLogging(true);
+      int port = 25;
+      String host = args[0];
+      int idx = host.indexOf(':');
+      if (idx != -1) {
+        host = host.substring(0, idx);
+        port = JF.atoi(host.substring(idx+1));
+      }
+      smtp.connect(host, port);
+      smtp.login();
+      smtp.from(extractEmail(lns[0]));
+      for(int a=1;a<lns.length;a++) {
+        String ln = lns[a].toLowerCase();
+        if (ln.startsWith("to:") || ln.startsWith("cc:") || ln.startsWith("bcc:")) {
+          smtp.to(extractEmail(lns[a]));
+        } else {
+          break;
+        }
+      }
+      smtp.data(txt);
+      smtp.disconnect();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 }
