@@ -3,7 +3,7 @@ What's new...
 Nov 30/2017 : JF 16.6.0 released
   - fix controller Tag connection issue
   - jfDataLogger/0.18
-  - jfDataLoggerPlus/0.?
+  - jfDataLoggerPlus/0.9
 
 Nov 30/2017 : JF 16.5.0 released
   - fix DNS bug (IP6 issue)
