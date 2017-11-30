@@ -1,3 +1,9 @@
+Nov 30/2017 : v0.18 released
+  - fix : connection issue
+
+Oct/18 2017 : v0.17 released
+  - add Java9 support
+
 July 31/2017 : v0.16 released
   - fix : another save/load issue
 

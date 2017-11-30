@@ -1,3 +1,9 @@
+Nov 30/2017 : v0.9 released
+  - fix : connection issue
+
+Oct/18 2017 : v0.8 released
+  - add Java9 support
+
 Apr 5/2017 : v0.7 released
   - fix : brought back S7 multi-tag reading (performance improvement)
 

@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 16.5.0
+Version 16.6.0
 
 What is it?
 ===========
