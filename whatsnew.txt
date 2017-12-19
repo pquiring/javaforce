@@ -1,5 +1,11 @@
 What's new...
 
+Dec 19/2017 : JF 16.7.0 released
+  - jfDNS/0.9
+    - added support for multiple uplink DNS servers
+  - jfControls/0.3
+    - for prev tag fixes
+
 Nov 30/2017 : JF 16.6.0 released
   - fix controller Tag connection issue
   - jfDataLogger/0.18

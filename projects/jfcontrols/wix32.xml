@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <Product Id="*" UpgradeCode="{8BE8B973-97BC-46D6-AC28-FA13C140FB0A}" Version="0.2" Language="1033" Name="jfControls" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{8BE8B973-97BC-46D6-AC28-FA13C140FB0A}" Version="0.3" Language="1033" Name="jfControls" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />

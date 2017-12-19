@@ -16,7 +16,7 @@ import javax.net.ssl.*;
 public class JF {
 
   public static String getVersion() {
-    return "16.6.0";
+    return "16.7.0";
   }
 
   public static void sleep(int milli) {
