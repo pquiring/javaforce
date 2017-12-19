@@ -33,10 +33,11 @@ public class DNS extends Thread {
 
   private DatagramSocket ds;
   private static int maxmtu = 512;  //standard
-  private String uplink;
+  private ArrayList<String> uplink = new ArrayList<String>();
   private ArrayList<String> records = new ArrayList<String>();
   private ArrayList<String> allows = new ArrayList<String>();
   private ArrayList<String> denies = new ArrayList<String>();
+  private int uplinktimeout = 2000;
 
   public void run() {
     JFLog.append(getLogFile(), false);
@@ -80,6 +81,8 @@ public class DNS extends Thread {
   private final static String defaultConfig
     = "[global]\n"
     + "uplink=8.8.8.8\n"
+    + "uplink=8.8.4.4\n"
+    + "uplinktimeout=1000\n"
     + "[records]\n"
     + "#name,type,ttl,value\n"
     + "#mydomain.com,cname,3600,www.mydomain.com\n"
@@ -114,7 +117,10 @@ public class DNS extends Thread {
         switch (section) {
           case Global:
             if (ln.startsWith("uplink=")) {
-              uplink = ln.substring(7);
+              uplink.add(ln.substring(7));
+            }
+            if (ln.startsWith("uplinktimeout=")) {
+              uplinktimeout = JF.atoi(ln.substring(14));
             }
             if (ln.startsWith("allow=")) {
               allows.add(ln.substring(6));
@@ -133,7 +139,7 @@ public class DNS extends Thread {
     } catch (FileNotFoundException e) {
       //create default config
       JFLog.log("config not found, creating defaults.");
-      uplink = "8.8.8.8";
+      uplink.add("8.8.8.8");
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
         fos.write(defaultConfig.getBytes());
@@ -358,19 +364,25 @@ public class DNS extends Thread {
           sendReply(domain, domain + "," + typeToString(type) + ",3600,93.184.216.34", type, id);
         return;
       }
-      try {
-        DatagramPacket out = new DatagramPacket(data, dataLength);
-        out.setAddress(InetAddress.getByName(uplink));
-        out.setPort(53);
-        DatagramSocket sock = new DatagramSocket();  //bind to anything
-        sock.send(out);
-        reply = new byte[maxmtu];
-        DatagramPacket in = new DatagramPacket(reply, reply.length);
-        sock.receive(in);
-        sendReply(reply, in.getLength());
-      } catch (Exception e) {
-        JFLog.log(e);
+      int cnt = uplink.size();
+      for(int idx=0;idx<cnt;idx++) {
+        try {
+          DatagramPacket out = new DatagramPacket(data, dataLength);
+          out.setAddress(InetAddress.getByName(uplink.get(idx)));
+          out.setPort(53);
+          DatagramSocket sock = new DatagramSocket();  //bind to anything
+          sock.setSoTimeout(uplinktimeout);
+          sock.send(out);
+          reply = new byte[maxmtu];
+          DatagramPacket in = new DatagramPacket(reply, reply.length);
+          sock.receive(in);
+          sendReply(reply, in.getLength());
+          return;
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
       }
+      JFLog.log("Query Remote failed for domain=" + domain);
     }
 
     private void sendReply(byte outData[], int outDataLength) {

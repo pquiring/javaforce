@@ -8,6 +8,8 @@ Sample config:
 
 [global]
 uplink=8.8.8.8
+uplink=8.8.4.4
+uplinktimeout=1000
 allow=.*[.]google[.]com
 deny=*
 [records]
