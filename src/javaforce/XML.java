@@ -385,7 +385,7 @@ public class XML implements TreeModelListener {
       }
       attr = new XMLAttr();
       attr.name = name;
-      attr.value = value;
+      attr.value = decodeSafe(value);
       tag.attrs.add(attr);
     }
   }
@@ -579,7 +579,7 @@ public class XML implements TreeModelListener {
     String str = "", tmp;
     for (int a = 0; a < size; a++) {
       attr = tag.attrs.get(a);
-      tmp = " " + attr.name + "=\"" + attr.value + "\"";
+      tmp = " " + attr.name + "=\"" + encodeSafe(attr.value) + "\"";
       str += tmp;
     }
     return str;
