@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+Dec 19, 2017 : v0.3 released
+  - fix tag connection issue
+
 July 21,2017 : v0.2 released
   - support Java9
 
