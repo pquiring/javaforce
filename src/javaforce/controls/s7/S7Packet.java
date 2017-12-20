@@ -126,7 +126,7 @@ public class S7Packet {
     S7Data data = new S7Data();
     if (addr.startsWith("DB")) {
       data.block_type = S7Types.DB;
-      int idx = addr.indexOf('.');
+      int idx = addr.indexOf('.');  //.DB?##[.#]
       data.block_number = Short.valueOf(addr.substring(2, idx));
       addr = addr.substring(idx+2);  //B?##[.#]
     } else if (addr.startsWith("M")) {
@@ -141,6 +141,7 @@ public class S7Packet {
     data.data_type = S7Types.getType(addr.charAt(1));
     short offset;
     int idx = addr.indexOf('.');
+    if (idx == -1) idx = addr.indexOf(' ');
     if (idx == -1) idx = addr.length();
     if (data.data_type == 0) {
       //no type present (assume bit)
@@ -151,10 +152,18 @@ public class S7Packet {
     }
     data.offset = (short)(offset << 3);
     if (data.data_type == S7Types.BIT) {
-      byte bit = Byte.valueOf(addr.substring(idx+1));
+      int idx2 = addr.indexOf(' ');
+      if (idx2 == -1) idx2 = addr.length();
+      byte bit = Byte.valueOf(addr.substring(idx+1, idx2));
       data.offset += bit;
     }
-    data.length = 1;  //S7Types.getTypeSize(data.data_type, (short)1);
+    idx = addr.indexOf(" BYTE ");
+    if (idx == -1) {
+      //S7Types.getTypeSize(data.data_type, (short)1);
+      data.length = 1;
+    } else {
+      data.length = Short.valueOf(addr.substring(idx+6));
+    }
     return data;
   }
 
