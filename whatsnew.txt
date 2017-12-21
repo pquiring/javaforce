@@ -1,5 +1,13 @@
 What's new...
 
+Dec 20/2017 : JF 16.8.0 released
+  - XML
+    - fix encoding attributes
+  - jfPassword/0.18
+    - XML fix will improve XML compatibility
+  - Controller.Tag
+    - add support for reading byte ranges (S7 only) (untested)
+
 Dec 19/2017 : JF 16.7.0 released
   - jfDNS/0.9
     - added support for multiple uplink DNS servers
