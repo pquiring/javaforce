@@ -35,7 +35,7 @@ public class S7Params {
     funcData[2] = 10;  //length of def
     funcData[3] = 0x10;  //S7ANY
     funcData[4] = s7.data_type;  //INT, BYTE, etc.
-    BE.setuint16(funcData, 5, 1);  //length (# of elements)
+    BE.setuint16(funcData, 5, s7.length);  //length (# of elements)
     BE.setuint16(funcData, 7, s7.block_number);  //DBxx
     funcData[9] = s7.block_type;  //DB, I, Q, etc.
     //BE.setuint24(data, 9, off);
