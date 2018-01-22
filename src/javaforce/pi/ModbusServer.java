@@ -210,7 +210,10 @@ public class ModbusServer extends Thread {
       //func : 5
       //request:short addr_coil; short value;  //0=off 0xff00=on
       //  reply:same
-      GPIO.write(outs[BE.getuint16(data, 8)], BE.getuint16(data, 10) == 0xff00);
+      int coil = BE.getuint16(data, 8);
+      boolean state = BE.getuint16(data, 10) == 0xff00;
+      GPIO.write(outs[coil], state);
+      coils[coil] = state;
     }
     public void writeCoilMulti() {
       //func : 15
@@ -226,7 +229,10 @@ public class ModbusServer extends Thread {
           bitPos = 0x01;
           bytePos++;
         }
-        GPIO.write(outs[coil_idx++], (data[bytePos] & bitPos) != 0);
+        boolean state = (data[bytePos] & bitPos) != 0;
+        GPIO.write(outs[coil_idx], state);
+        coils[coil_idx] = state;
+        coil_idx++;
         bitPos <<= 1;
       }
       setLength(6);
