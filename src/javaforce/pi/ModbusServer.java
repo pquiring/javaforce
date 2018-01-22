@@ -145,9 +145,10 @@ public class ModbusServer extends Thread {
       }
     }
     public void getLength() {
-      length = BE.getuint32(data, 4);
+      length = BE.getuint16(data, 4);
     }
     public void setLength(int length) {
+      this.length = length;
       BE.setuint16(data, 4, length);
     }
     public void reply() {
@@ -160,12 +161,13 @@ public class ModbusServer extends Thread {
     public void readCoils() {
       //func : 1
       //request:short start_addr; short num_coils;
-      //  reply:short start_addr; short num_coils; byte[] coils;
+      //  reply:byte num_bytes; byte[] coils;
       int coil_idx = BE.getuint16(data, 8);
       int num_coils = BE.getuint16(data, 10);
       int num_bytes = (num_coils + 7) >> 3;
-      length += num_bytes;
-      int bytePos = 12;
+      setLength(3 + num_bytes);
+      data[8] = (byte)num_bytes;
+      int bytePos = 9;
       int bitPos = 0x01;
       data[bytePos] = 0;
       for(int cnt = 0; cnt < num_coils; cnt++) {
@@ -183,12 +185,13 @@ public class ModbusServer extends Thread {
     public void readDiscreteInputs() {
       //func : 2
       //request:short start_addr; short num_inputs;
-      //  reply:short start_addr; short num_inputs; byte[] inputs;
+      //  reply:byte num_bytes; byte[] inputs;
       int coil_idx = BE.getuint16(data, 8);
       int num_coils = BE.getuint16(data, 10);
       int num_bytes = (num_coils + 7) >> 3;
-      setLength(length += num_bytes);
-      int bytePos = 12;
+      setLength(3 + num_bytes);
+      data[8] = (byte)num_bytes;
+      int bytePos = 9;
       int bitPos = 0x01;
       data[bytePos] = 0;
       for(int cnt = 0; cnt < num_coils; cnt++) {
@@ -207,7 +210,7 @@ public class ModbusServer extends Thread {
       //func : 5
       //request:short addr_coil; short value;  //0=off 0xff00=on
       //  reply:same
-      GPIO.write(outs[BE.getuint32(data, 8)], BE.getuint32(data, 10) == 0xff00);
+      GPIO.write(outs[BE.getuint16(data, 8)], BE.getuint16(data, 10) == 0xff00);
     }
     public void writeCoilMulti() {
       //func : 15
