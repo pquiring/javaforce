@@ -1,0 +1,30 @@
+<project name="jfModbusServer" default="jar" basedir=".">
+  <description>Modbus Server</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfModbusServer"/>
+  <property name="home" location="../.."/>
+  <property name="version" value="0.1"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars" description="jar">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+  </target>
+
+  <target name="jar" depends="depjars" description="jar">
+  </target>
+
+  <target name="release-bin" depends="" description="create release zip file">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+    <zip destfile="${app}-${version}.zip">
+      <fileset dir=".">
+        <include name="*.jar"/>
+        <include name="*.txt"/>
+        <include name="*.so"/>
+        <include name="run*.sh"/>
+      </fileset>
+      <fileset dir="../.." includes="license.txt"/>
+    </zip>
+    <move file="${app}-${version}.zip" todir="${home}/release"/>
+  </target>
+</project>

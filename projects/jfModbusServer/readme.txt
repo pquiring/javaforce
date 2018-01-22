@@ -5,6 +5,8 @@ Modbus Server for Raspberry PI 2/3
 
 Controls GPIO I/O pins remotely using Modbus TCP protocol.
 
+Includes pre-built native library for Raspberry PI Debian build.
+
 Modbus runs on port 502 so you should use sudo to run as root.
 
 modbus.cfg
@@ -31,4 +33,5 @@ Source : github.com/pquiring/javaforce (projects/jfmodbusserver)
 
 Version : 0.1
 
-Released : ? ? 2018
+Released : Jan 22, 2018
+
