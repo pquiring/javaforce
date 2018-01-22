@@ -22,9 +22,9 @@ public class ModbusServer extends Thread {
   public ServerSocket ss;
   //NOTE:Everything is 1 based (zero not used)
   public static int port = 502;
-  public static int outs[] = new int[41];
-  public static boolean coils[] = new boolean[41];
-  public static int ins[] = new int[41];
+  public static int outs[] = new int[40];
+  public static boolean coils[] = new boolean[40];
+  public static int ins[] = new int[40];
   public void run() {
     JFLog.log("jfModbusServer/" + version);
     //init GPIO
@@ -47,8 +47,8 @@ public class ModbusServer extends Thread {
     if (str != null) {
       port = JF.atoi(str);
     }
-    int inpos = 1;
-    int outpos = 1;
+    int inpos = 0;
+    int outpos = 0;
     for(int a=1;a<40;a++) {
       str = p.getProperty("GPIO" + a);
       if (str == null) continue;
@@ -57,13 +57,13 @@ public class ModbusServer extends Thread {
       switch (type) {
         case 'O':
         case 'o':
-          outs[outpos++] = a;
-          GPIO.configOutput(a);
+          outs[outpos++] = a+1;
+          GPIO.configOutput(a+1);
           break;
         case 'I':
         case 'i':
-          ins[inpos++] = a;
-          GPIO.configInput(a);
+          ins[inpos++] = a+1;
+          GPIO.configInput(a+1);
           break;
       }
     }
