@@ -25,6 +25,7 @@ public class ModbusServer extends Thread {
   public static int outs[] = new int[40];
   public static boolean coils[] = new boolean[40];
   public static int ins[] = new int[40];
+  public static boolean invert = false;
   public void run() {
     JFLog.log("jfModbusServer/" + version);
     //init GPIO
@@ -46,6 +47,12 @@ public class ModbusServer extends Thread {
     str = p.getProperty("port");
     if (str != null) {
       port = JF.atoi(str);
+    }
+    str = p.getProperty("invert");
+    if (str != null) {
+      if (str.equals("true")) {
+        invert = true;
+      }
     }
     int inpos = 0;
     int outpos = 0;
@@ -212,6 +219,7 @@ public class ModbusServer extends Thread {
       //  reply:same
       int coil = BE.getuint16(data, 8);
       boolean state = BE.getuint16(data, 10) == 0xff00;
+      if (invert) state = !state;
       GPIO.write(outs[coil], state);
       coils[coil] = state;
     }
@@ -230,6 +238,7 @@ public class ModbusServer extends Thread {
           bytePos++;
         }
         boolean state = (data[bytePos] & bitPos) != 0;
+        if (invert) state = !state;
         GPIO.write(outs[coil_idx], state);
         coils[coil_idx] = state;
         coil_idx++;
