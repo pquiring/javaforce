@@ -1,5 +1,9 @@
 What's new...
 
+Jan 23/2018 : JF 16.9.0 relaesed
+  - new : jfModbusServer
+    - a modbus server for Raspberry PI 2/3 to control GPIO remotely
+
 Dec 20/2017 : JF 16.8.0 released
   - XML
     - fix encoding attributes
