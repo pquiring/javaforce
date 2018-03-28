@@ -357,6 +357,7 @@ public class DNS extends Thread {
       //query remote DNS server and simple relay the reply "as is"
       //TODO : need to actually remove AA flag if present and fill in other sections as needed
       if (!isAllowed(domain)) {
+        JFLog.log("not allowed:" + domain);
         //send "example.com" which will give a 404 error
         if (type == AAAA)
           sendReply(domain, domain + "," + typeToString(type) + ",3600,0:0:0:0:0:FFFF:5DB8:D822", type, id);
@@ -376,7 +377,7 @@ public class DNS extends Thread {
           reply = new byte[maxmtu];
           DatagramPacket in = new DatagramPacket(reply, reply.length);
           sock.receive(in);
-          sendReply(reply, in.getLength());
+          sendReply(domain, reply, in.getLength());
           return;
         } catch (Exception e) {
           JFLog.log(e);
@@ -385,7 +386,8 @@ public class DNS extends Thread {
       JFLog.log("Query Remote failed for domain=" + domain);
     }
 
-    private void sendReply(byte outData[], int outDataLength) {
+    private void sendReply(String domain, byte outData[], int outDataLength) {
+      JFLog.log("sendReply:" + domain + " to " + packet.getAddress() + ":" + packet.getPort());
       try {
         DatagramPacket out = new DatagramPacket(outData, outDataLength);
         out.setAddress(packet.getAddress());
@@ -455,7 +457,7 @@ public class DNS extends Thread {
           putIP6(f[3]);  //Rdata
           break;
       }
-      sendReply(reply, replyOffset);
+      sendReply(query, reply, replyOffset);
     }
 
     private void putIP4(String ip) {
