@@ -16,11 +16,18 @@ public class List extends ScrollPanel implements Click {
     add(new Label(item));
   }
 
+  public void update(int idx, String text) {
+    Component c = get(idx);
+    if (!(c instanceof Label)) return;
+    Label lbl = (Label)c;
+    lbl.setText(text);
+  }
+
   public void add(Component item) {
-    super.add(item);
     item.addClass("width100");
     item.addClass("column-item");
     item.setProperty("selected", "false");
+    super.add(item);
   }
 
   public void init() {
@@ -75,6 +82,12 @@ public class List extends ScrollPanel implements Click {
       return l.text;
     }
     return c.toString();
+  }
+
+  public Component getSelectedComponent() {
+    int idx = getSelectedIndex();
+    if (idx == -1) return null;
+    return get(idx);
   }
 
   public void setSelectedIndex(int selidx) {
