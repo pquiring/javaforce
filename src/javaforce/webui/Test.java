@@ -5,18 +5,21 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import java.io.*;
+
+import javaforce.*;
 import javaforce.webui.event.*;
 
 public class Test implements WebUIHandler {
   public Resource img;
 
   public Test() {
-    try {
-      img = Resource.readResource("javaforce/webui/webui.png", Resource.PNG);
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
+    JFImage i = new JFImage(64,64);
+    i.line(0, 0, 63, 63, Color.red);
+    i.line(63, 0, 0, 63, Color.red);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    i.savePNG(baos);
+    img = Resource.registerResource(baos.toByteArray(), Resource.PNG);
   }
 
   public static void main(String args[]) {
@@ -24,7 +27,9 @@ public class Test implements WebUIHandler {
   }
 
   public void clientConnected(WebUIClient client) {}
-  public void clientDisconnected(WebUIClient client) {}
+  public void clientDisconnected(WebUIClient client) {
+    System.exit(0);
+  }
 
   public byte[] getResource(String url) {
     //TODO : return static images, etc needed by webpage
@@ -58,7 +63,6 @@ public class Test implements WebUIHandler {
     m2.add(m2c);
     Menu m3 = new Menu("More");
     m2.add(m3);
-
     MenuItem m3a = new MenuItem("X1");
     m3.add(m3a);
     MenuItem m3b = new MenuItem("X2");
@@ -80,9 +84,9 @@ public class Test implements WebUIHandler {
     //create event handler for button
     b.addClickListener((MouseEvent e, Component button) -> {
       Integer times = (Integer)client.getProperty("times");
-      if (times == null) times = new Integer(1);
+      if (times == null) times = 1;
       l.setText("You clicked it " + times + " times!");
-      client.setProperty("times", new Integer(times + 1));
+      client.setProperty("times", times + 1);
       ProgressBar bar = (ProgressBar)client.getProperty("bar");
       bar.setValue(++value);
     });
@@ -100,9 +104,6 @@ public class Test implements WebUIHandler {
     //add something to popup panel
     Label ppl1 = new Label("Popup Panel!");
     pp.add(ppl1);
-    //add : padding
-    Pad pad = new Pad();
-    row1.add(pad);
     //add : combobox
     ComboBox comboBox = new ComboBox();
     comboBox.add("option1", "Option #1");
@@ -191,29 +192,32 @@ public class Test implements WebUIHandler {
     row3.add(i);
 
     SplitPanel sp = new SplitPanel(SplitPanel.VERTICAL);
-    sp.setLeftComponent(new Label("AA"));
-    sp.setRightComponent(new Label("BB"));
+    sp.setLeftComponent(new Label("AA<br>aa"));
+    sp.setRightComponent(new Label("BB<br>bb"));
     row3.add(sp);
 
     //add forth row
     Row row4 = new Row();
     panel.add(row4);
 
+/*
     LayersPanel lp = new LayersPanel();
     Label layer1 = new Label("NO");
     lp.add(layer1);
     Label layer2 = new Label("-----YES");
     lp.add(layer2);
-
     row4.add(lp);
+*/
 
     //add fifth row
     Row row5 = new Row();
     panel.add(row5);
 
-    Slider vslider = new Slider(Slider.VERTICAL, 0, 100, 5);
+    Slider vslider = new Slider(Slider.VERTICAL, 0, 100, 0);
+    vslider.addChangedListener((Slider) -> {System.out.println("vslider=" + vslider.getPos());});
     row5.add(vslider);
-    Slider hslider = new Slider(Slider.HORIZONTAL, 0, 100, 5);
+    Slider hslider = new Slider(Slider.HORIZONTAL, 0, 100, 0);
+    hslider.addChangedListener((Slider) -> {System.out.println("hslider=" + hslider.getPos());});
     row5.add(hslider);
 
     ProgressBar bar = new ProgressBar(ProgressBar.HORIZONTAL, 100);

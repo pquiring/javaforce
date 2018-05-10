@@ -52,8 +52,13 @@ public class TabPanel extends Column {
     int cnt = row.count();
     for(int a=0;a<cnt;a++) {
       Component c = row.get(a);
-      c.addEvent("onclick", "openTab(event, " + a + ",\"" + tabs.id + "\",\"" + row.id + "\");");
+      c.addEvent("onclick", "openTab(event," + a + ",\"" + tabs.id + "\",\"" + row.id + "\");");
     }
+    addEvent("onresize", "onresizeTabPanel(event,\"" + tabs.id + "\");");
+  }
+  public void onLoaded(String args[]) {
+    super.onLoaded(args);
+    sendOnResize();
   }
   public void setTabIndex(int idx) {
     if (idx == this.idx) return;

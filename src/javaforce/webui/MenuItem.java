@@ -9,10 +9,10 @@ public class MenuItem extends Container {
   public String text;
   public MenuItem(String text) {
     this.text = text;
-    addEvent("onclick", "onClick(event, this);");
-    addEvent("onmousedown", "onMouseDown(event, this);");
     addClass("menuitem");
     addClass("noselect");
+    addEvent("onclick", "onClick(event, this);");
+    addEvent("onmousedown", "onMouseDown(event, this);");
   }
   public String html() {
     return "<div" + getAttrs() + ">" + text + "</div>";

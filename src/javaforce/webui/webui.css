@@ -71,6 +71,7 @@ select {
 
 button {
   margin: 0px;
+  padding: 0px;
   box-sizing: border-box;
   vertical-align: top;
 }
@@ -98,7 +99,7 @@ input {
 }
 
 .innerpanel {
-  display: inline;
+  display: flex;
 }
 
 .button {
@@ -108,26 +109,48 @@ input {
 }
 
 .label {
-  display: table-cell;
+  display: flex;
   box-sizing: border-box;
 }
 
 .row {
-  display: block;
+  display: flex;
+  flex-direction: row;
+}
+
+.row-item {
+  display: flex;
+  vertical-align: top;
+  padding: 0px;
+}
+
+.row-end {
+  flex-grow: 1;
 }
 
 .column {
-  display: inline-block;
+  display: flex;
+  flex-direction: column;
+}
+
+.column-item {
+  display: flex;
+}
+
+.column-end {
+  flex-grow: 1;
 }
 
 .pad {
-  display: inline;
+  display: flex;
+  flex-grow: 1;
 }
 
 .tab {
   margin: 0px;
   padding: 0px;
   overflow: hidden;
+  cursor: default;
 }
 
 .tabactive {
@@ -135,13 +158,15 @@ input {
   padding: 0px;
   overflow: hidden;
   background-color: #ccc;
+  cursor: default;
 }
 
 .tabinactive {
-  margin: 0;
-  padding: 0;
+  margin: 0px;
+  padding: 0px;
   overflow: hidden;
   background-color: #f1f1f1;
+  cursor: default;
 }
 
 .tabcontenthidden {
@@ -151,21 +176,27 @@ input {
 }
 
 .tabcontentshown {
-  display: block;
+  display: flex;
   padding: 0px;
   border-top: none;
 }
 
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none;   /* Chrome/Safari/Opera */
-  -khtml-user-select: none;    /* Konqueror */
-  -moz-user-select: none;      /* Firefox */
-  -ms-user-select: none;       /* Internet Explorer/Edge */
+  user-select: none;
 }
 
 .splitPanel {
   overflow: hidden;
+  display: flex;
+}
+
+.splitDivider {
+  display: flex;
+  cursor: default;
+}
+
+.slider {
+  cursor: default;
 }
 
 .layersPanel {
@@ -174,8 +205,8 @@ input {
 
 .layer {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 0px;
+  left: 0px;
 }
 
 .rotate {
@@ -185,22 +216,23 @@ input {
 
 .container {
   overflow: hidden;
-  display: inline-block;
+  display: flex;
 }
 
 .menubar {
   background-color: #ccc;
+  display: flex;
+  flex-direction: row;
 }
 
 .menu {
-  display: inline;
+  display: flex;
   background-color: #ccc;
   padding-right: 10px;
   cursor: default;
 }
 
 .menuitem {
-  display: block;
   background-color: #ccc;
   cursor: default;
 }
@@ -209,6 +241,8 @@ input {
   position: fixed;
   display: none;
   background-color: #ccc;
+  flex-direction: column;
+  z-index: 1;
 }
 
 .popuppanel {
@@ -224,6 +258,8 @@ input {
   background-color: #00e;
   width: 100%;
   cursor: default;
+  display: flex;
+  flex-direction: row;
 }
 
 .defaultcursor {

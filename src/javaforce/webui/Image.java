@@ -12,7 +12,8 @@ public class Image extends Component {
   }
 
   public String html() {
-    return "<img" + getAttrs() +  " src='/static/" + img.id + "'>";
+    String id = img == null ? "null" : img.id;
+    return "<img" + getAttrs() +  " src='/static/" + id + "'>";
   }
 
   public void setImage(Resource img) {

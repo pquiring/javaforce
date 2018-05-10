@@ -5,62 +5,68 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import javaforce.webui.event.*;
+
 public class Menu extends MenuItem {
-  public PopupMenu menu;
+  public PopupMenu popupMenu;
   private boolean inMenuBar;
   private boolean inMenu;
   public Menu(String text) {
     super(text);
     setClass("menu");
-    menu = new PopupMenu();
-    add(menu);
+    popupMenu = new PopupMenu();
+    add(popupMenu);
     addEvent("onmousemove", "onMouseMove(event, this);");
   }
   public void init() {
-    if (parent == null) return;
-    if (parent instanceof MenuBar) {
+    super.init();
+    if (parent == null) {
+      System.out.println("Error:Menu.parent == null");
+    }
+    else if (parent instanceof MenuBar) {
       inMenuBar = true;
     }
-    if (parent instanceof PopupMenu) {
+    else if (parent instanceof PopupMenu) {
       inMenu = true;
+    }
+    else {
+      System.out.println("Error:Menu.parent type unknown");
     }
   }
   public String html() {
     StringBuffer sb = new StringBuffer();
     sb.append(super.html());
-    sb.append(menu.html());
+    sb.append(popupMenu.html());
     return sb.toString();
   }
   public void add(MenuItem item) {
-    menu.add(item);
+    popupMenu.add(item);
   }
   public void onMouseDown(String args[]) {
 
   }
-  public void onClick(String args[]) {
+  public void onClick(String args[], MouseEvent me) {
     sendEvent("getpossize", null);
   }
   public void onPosSize(String args[]) {
     super.onPosSize(args);
     if (inMenuBar)
-      menu.setPosition(x, y + height);
+      popupMenu.setPosition(x, y + height);
     else
-      menu.setPosition(x + width, y);
-    menu.setVisible(true);
+      popupMenu.setPosition(x + width, y);
+    popupMenu.setVisible(true);
     if (inMenuBar) {
-      client.topPopupMenu = menu;
+      client.topPopupMenu = popupMenu;
     }
   }
   public void onMouseMove(String args[]) {
-    if (inMenu) {
-      onClick(null, args);
-    } else if (client.topPopupMenu != null && client.topPopupMenu != menu) {
+    if (!inMenu && client.topPopupMenu != null && client.topPopupMenu != popupMenu) {
       client.topPopupMenu.setVisible(false);
-      onClick(null, args);
     }
+    onClick(args, null);
   }
   public void closeMenu() {
-    menu.setVisible(false);
+    popupMenu.setVisible(false);
   }
   public static void onMouseDownBody(WebUIClient client, String args[]) {
     //args : p=x,y

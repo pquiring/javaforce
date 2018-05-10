@@ -11,16 +11,6 @@ public class LayersPanel extends Container {
   public LayersPanel() {
     addClass("layersPanel");
   }
-  public String html() {
-    StringBuffer sb = new StringBuffer();
-    sb.append("<div" + getAttrs() + ">");
-    int cnt = count();
-    for(int a=0;a<cnt;a++) {
-      sb.append(get(a).html());
-    }
-    sb.append("</div>");
-    return sb.toString();
-  }
   public void add(Component c) {
     super.add(c);
     c.addClass("layer");

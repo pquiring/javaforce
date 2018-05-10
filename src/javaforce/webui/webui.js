@@ -82,7 +82,7 @@ function wsevent(event) {
       break;
     case "sethtml":
       element.innerHTML = msg.html;
-      sendAck(msg.id);
+      sendOnLoaded(msg.id);
       break;
     case "setsrc":
       element.src = msg.src;
@@ -117,8 +117,11 @@ function wsevent(event) {
     case "removeoption":
       element.remove(msg.idx);
       break;
-    case "setsliderpos":
-      element.value = msg.pos;
+    case "setmarginleft":
+      element.style.marginLeft = msg.px + "px";
+      break;
+    case "setmargintop":
+      element.style.marginTop = msg.px + "px";
       break;
     case "setpos":
       element.style.left = msg.x;
@@ -143,14 +146,20 @@ function wsevent(event) {
     case "setheight":
       element.style.height = msg.h;
       break;
+    case "setwidthtoparent":
+      element.style.width = element.parentElement.offsetWidth;
+      break;
+    case "setheighttoparent":
+      element.style.height = element.parentElement.offsetHeight;
+      break;
     case "setclass":
       element.className = msg.cls;
       break;
     case "addclass":
-      element.className += " " + msg.cls;
+      element.classList.add(msg.cls);
       break;
     case "delclass":
-      element.className = element.className.replace(" " + msg.cls, "");
+      element.classList.remove(msg.cls);
       break;
     case "add":
       temp.innerHTML = msg.html;
@@ -176,6 +185,9 @@ function wsevent(event) {
     case "ping":
       sendPong(msg.id);
       break;
+    case "onresize":
+      element.onresize();
+      break;
     case "audio-alarm-start":
       audioOscillator = audioCtx.createOscillator();
       audioOscillator.type = 'square';
@@ -200,9 +212,9 @@ function sendPong(id) {
   ws.send(JSON.stringify(msg));
 }
 
-function sendAck(id) {
+function sendOnLoaded(id) {
   var msg = {
-    event: "ack",
+    event: "onloaded",
     id: id
   };
   ws.send(JSON.stringify(msg));
@@ -246,12 +258,35 @@ function sendPos(id) {
   ws.send(JSON.stringify(msg));
 }
 
+function sendSliderPos(id, pos) {
+  var msg = {
+    event: "sliderpos",
+    id: id,
+    pos: pos
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function sendMarginLeft(id) {
+  var element = document.getElementById(id);
+  var msg = {
+    event: "marginleft",
+    id: id,
+    m: Math.floor(element.style.marginleft)
+  };
+  ws.send(JSON.stringify(msg));
+}
+
 var splitDragging = null;
+var sliderDragging = null;
 var popupDragging = null;
 
 function onmouseupBody(event, element) {
   if (splitDragging) {
     splitDragging = null;
+  }
+  if (sliderDragging) {
+    sliderDragging = null;
   }
   if (popupDragging) {
     popupDragging = null;
@@ -262,13 +297,15 @@ function onmousemoveBody(event, element) {
   if (splitDragging) {
     onmousemoveSplitPanel(event, element);
   }
+  if (sliderDragging) {
+    onmousemoveSlider(event, element);
+  }
   if (popupDragging) {
     onmousemovePopupPanel(event, element);
   }
 }
 
 function onmousedownBody(event, element) {
-  console.log("mousedownBody:" + event.x + "," + event.y + "," + element.id);
   var msg = {
     event: "mousedown",
     id: element.id,
@@ -278,6 +315,7 @@ function onmousedownBody(event, element) {
 }
 
 function onresizeBody(event, element) {
+  if (ws == null) return;
   sendSize('body');
 }
 
@@ -332,29 +370,78 @@ function openTab(event, idx, tabsid, rowid) {
   var tabs = document.getElementById(tabsid);
   var nodes = tabs.childNodes;
   var cnt = nodes.length;
+  var node;
   for(i = 0;i < cnt;i++) {
+    node = nodes[i];
     if (i === idx) {
-      nodes[i].className = "tabcontentshown";
+      node.classList.add("tabcontentshown");
+      node.classList.remove("tabcontenthidden");
     } else {
-      nodes[i].className = "tabcontenthidden";
+      node.classList.add("tabcontenthidden");
+      node.classList.remove("tabcontentshown");
     }
   }
 
+  onresizeTabPanel(event, tabsid);
+
   if (rowid === null) return;
 
-  var tabs2 = document.getElementById(rowid);
-  var nodes2 = tabs2.childNodes;
-  var cnt2 = nodes2.length;
-  for(i = 0;i < cnt2;i++) {
+  var row = document.getElementById(rowid);
+  nodes = row.childNodes;
+  cnt = nodes.length;
+  for(i = 0;i < cnt;i++) {
+    node = nodes[i];
     if (i === idx) {
-      nodes2[i].className = "tabactive";
+      node.classList.add("tabactive");
+      node.classList.remove("tabinactive");
     } else {
-      nodes2[i].className = "tabinactive";
+      node.classList.add("tabinactive");
+      node.classList.remove("tabactive");
     }
   }
 }
 
+function onresizeTabPanel(event, tabsid) {
+  var tabs = document.getElementById(tabsid);
+  var nodes = tabs.childNodes;
+  var cnt = nodes.length;
+  var maxWidth = tabs.clientWidth;
+  var maxHeight = tabs.clientHeight;
+  var width, height;
+  for(i = 0;i < cnt;i++) {
+    width = nodes[i].clientWidth;
+    if (width > maxWidth) maxWidth = width;
+    height = nodes[i].clientHeight;
+    if (height > maxHeight) maxHeight = height;
+  }
+  tabs.style.width = maxWidth;
+  tabs.style.height = maxHeight;
+}
+
+function onresizeSplitDividerWidth(event, element, id1, id2, id3) {
+  var element1 = document.getElementById(id1);
+  var element2 = document.getElementById(id2);
+  var element3 = document.getElementById(id3);
+  var width1 = element1.clientWidth;
+  var width2 = element2.clientWidth;
+  var maxWidth = width1;
+  if (width2 > width1) maxWidth = width2;
+  element3.style.width = maxWidth + "px";
+}
+
+function onresizeSplitDividerHeight(event, element, id1, id2, id3) {
+  var element1 = document.getElementById(id1);
+  var element2 = document.getElementById(id2);
+  var element3 = document.getElementById(id3);
+  var height1 = element1.clientHeight;
+  var height2 = element2.clientHeight;
+  var maxHeight = height1;
+  if (height2 > height1) maxHeight = height2;
+  element3.style.height = maxHeight + "px";
+}
+
 function onmousedownSplitPanel(event, element, id1, id2) {
+  event.preventDefault();
   var element1 = document.getElementById(id1);
   var element2 = document.getElementById(id2);
   splitDragging = {
@@ -372,12 +459,47 @@ function onmousedownSplitPanel(event, element, id1, id2) {
 }
 
 function onmousemoveSplitPanel(event, element) {
-//  console.log("m=" + event.clientX + "," + event.clientY);
   var width = splitDragging.startX + (event.clientX - splitDragging.mouseX);
   splitDragging.element1.style.width = width + "px";
 }
 
+function onmousedownSlider(event, element, sliderid, dir, max) {
+  event.preventDefault();
+  sliderDragging = {
+    //mouse coords
+    mouseX: event.clientX,
+    mouseY: event.clientY,
+    //current size
+    startX: parseInt(element.style.marginLeft),
+    startY: parseInt(element.style.marginTop),
+    //direction
+    dir: dir,
+    //max
+    max: max,
+    //elements
+    element: element,
+    sliderid: sliderid
+  };
+}
+
+function onmousemoveSlider(event, element) {
+  var pos;
+  if (sliderDragging.dir == "h") {
+    pos = sliderDragging.startX + (event.clientX - sliderDragging.mouseX);
+    if (pos > sliderDragging.max) pos = sliderDragging.max;
+    if (pos < 0) pos = 0;
+    sliderDragging.element.style.marginLeft = pos + "px";
+  } else {
+    pos = sliderDragging.startY + (event.clientY - sliderDragging.mouseY);
+    if (pos > sliderDragging.max) pos = sliderDragging.max;
+    if (pos < 0) pos = 0;
+    sliderDragging.element.style.marginTop = pos + "px";
+  }
+  sendSliderPos(sliderDragging.sliderid, pos);
+}
+
 function onmousedownPopupPanel(event, element) {
+  event.preventDefault();
   var rect = element.getBoundingClientRect();
   popupDragging = {
     //mouse coords

@@ -19,6 +19,7 @@ public class List extends ScrollPanel implements Click {
   public void add(Component item) {
     super.add(item);
     item.addClass("width100");
+    item.addClass("column-item");
     item.setProperty("selected", "false");
   }
 
@@ -74,6 +75,24 @@ public class List extends ScrollPanel implements Click {
       return l.text;
     }
     return c.toString();
+  }
+
+  public void setSelectedIndex(int selidx) {
+    int cnt = count();
+    for(int idx=0;idx<cnt;idx++) {
+      Component c = get(idx);
+      if (idx == selidx) {
+        if (c.getProperty("selected").equals("false")) {
+          c.setProperty("selected", "true");
+          c.sendEvent("addclass", new String[] {"cls=selected"});
+        }
+      } else {
+        if (c.getProperty("selected").equals("true")) {
+          c.setProperty("selected", "false");
+          c.sendEvent("delclass", new String[] {"cls=selected"});
+        }
+      }
+    }
   }
 
   public void onClick(MouseEvent e, Component c) {

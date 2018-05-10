@@ -79,7 +79,7 @@ public class WebUIClient {
             resized.onResized(null, width, height);
           }
           break;
-        case "ack":
+        case "onloaded":
           root.dispatchEvent(event, args);
           break;
         case "pong":

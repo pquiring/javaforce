@@ -5,7 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class ProgressBar extends Component {
+public class ProgressBar extends Container {
   public int clr0, clr1, clr2;
   public float lvl0, lvl1;
   private int dir;
@@ -16,12 +16,12 @@ public class ProgressBar extends Component {
     value = 0;
     this.max = max;
     bar = new Block();
-    bar.setDisplay("inline-block");
+    add(bar);
     setBackColor(Color.grey);
     setDir(dir);
     switch (dir) {
-      case HORIZONTAL: setSize(100, 32); break;
-      case VERTICAL: setSize(32, 100); break;
+      case HORIZONTAL: setSize(100, 16); break;
+      case VERTICAL: setSize(16, 100); break;
     }
     setSize();
     clr0 = Color.red;
@@ -34,12 +34,12 @@ public class ProgressBar extends Component {
   private void setSize() {
     switch (dir) {
       case HORIZONTAL:
-        setSize(width, 32);
-        bar.setSize((int)(value / max * width), 32);
+        setSize(width, 16);
+        bar.setSize((int)(value / max * width), 16);
         break;
       case VERTICAL:
-        setSize(32, width);
-        bar.setSize(32, (int)(value / max * height));
+        setSize(16, width);
+        bar.setSize(16, (int)(value / max * height));
         break;
     }
   }
@@ -56,8 +56,11 @@ public class ProgressBar extends Component {
     setColor();
   }
   public void setValue(float value) {
+    if (value < 0) value = 0;
+    if (value > max) value = max;
     this.value = value;
     setSize();
+    setColor();
   }
   public float getValue() {
     return value;
@@ -83,8 +86,5 @@ public class ProgressBar extends Component {
         setStyle("margin-top", "0px");
         break;
     }
-  }
-  public String html() {
-    return "<dir" + getAttrs() + ">" + bar.html() + "</div>";
   }
 }

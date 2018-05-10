@@ -11,7 +11,6 @@ public class Label extends TextComponent {
   private Resource img;
   public Label(String text) {
     this.text = text;
-    setDisplay("table-cell");  //allows vertical-align (this is a block element so it needs to be placed in an inline-block div)
     setVerticalAlign(CENTER);
     addEvent("onclick", "onClick(event, this);");
     setClass("label");
@@ -27,7 +26,7 @@ public class Label extends TextComponent {
     if (img != null) {
       return "<img" + getAttrs() +  " src='/static/" + img.id + "'>";
     }
-    return "<div style='display:inline-table;'><div" + getAttrs() + ">" + text + "</div></div>";
+    return "<div" + getAttrs() + ">" + text + "</div>";
   }
   public void updateText(String txt) {
     sendEvent("settext", new String[] {"text=" + text});
