@@ -4,13 +4,10 @@
 
   <!-- Requires cygwin/mingw in PATH -->
   <target name="windows" description="create windows stubs">
-    <exec command="i686-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ windows.c -Wl,-subsystem,windows -lstdc++ -o ../win32.exe"/>
     <exec command="x86_64-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ windows.c -Wl,-subsystem,windows -lstdc++ -o ../win64.exe"/>
 
-    <exec command="i686-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ windows.c -Wl,-subsystem,console -lstdc++ -o ../win32c.exe"/>
     <exec command="x86_64-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ windows.c -Wl,-subsystem,console -lstdc++ -o ../win64c.exe"/>
 
-    <exec command="i686-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ -D_JF_SERVICE windows.c -Wl,-subsystem,console -lstdc++ -o ../win32s.exe"/>
     <exec command="x86_64-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ -D_JF_SERVICE windows.c -Wl,-subsystem,console -lstdc++ -o ../win64s.exe"/>
   </target>
 

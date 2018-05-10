@@ -100,16 +100,7 @@
     </sequential>
   </macrodef>
 
-  <target name="utils32" depends="jar" description="build exe for utils 32bit">
-    <utilsmacro app="jfr" bits="32"/>
-    <utilsmacro app="jfs" bits="32"/>
-    <utilsmacro app="jimgconvert" bits="32"/>
-    <utilsmacro app="pngalpha" bits="32"/>
-    <utilsmacro app="jfshare" bits="32"/>
-    <utilsmacro app="WinPE" bits="32"/>
-  </target>
-
-  <target name="utils64" depends="jar" description="build exe for utils 64bit">
+  <target name="utils" depends="jar" description="build exe for utils 64bit">
     <utilsmacro app="jfr" bits="64"/>
     <utilsmacro app="jfs" bits="64"/>
     <utilsmacro app="jimgconvert" bits="64"/>

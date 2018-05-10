@@ -76,15 +76,7 @@
     </sequential>
   </macrodef>
 
-  <target name="exe32" depends="jar,depjars,depnatives" description="create msi installer file 32bit">
-    <exemacro appx="${app}" apptypex="${apptype}" bits="32" ico="${ico}"/>
-    <exemacro appx="${app2}" apptypex="${apptype2}" bits="32" ico="${ico2}" unless:blank="${app2}"/>
-    <exemacro appx="${app3}" apptypex="${apptype3}" bits="32" ico="${ico3}" unless:blank="${app3}"/>
-    <exemacro appx="${app4}" apptypex="${apptype4}" bits="32" ico="${ico4}" unless:blank="${app4}"/>
-    <exemacro appx="${app5}" apptypex="${apptype5}" bits="32" ico="${ico5}" unless:blank="${app5}"/>
-  </target>
-
-  <target name="exe64" depends="jar,depjars,depnatives"  description="create msi installer file 64bit">
+  <target name="exe" depends="jar,depjars,depnatives"  description="create msi installer file 64bit">
     <exemacro appx="${app}" apptypex="${apptype}" bits="64" ico="${ico}"/>
     <exemacro appx="${app2}" apptypex="${apptype2}" bits="64" ico="${ico2}" unless:blank="${app2}"/>
     <exemacro appx="${app3}" apptypex="${apptype3}" bits="64" ico="${ico3}" unless:blank="${app3}"/>
@@ -92,11 +84,7 @@
     <exemacro appx="${app5}" apptypex="${apptype5}" bits="64" ico="${ico5}" unless:blank="${app5}"/>
   </target>
 
-  <target name="msi32" depends="exe32,jar,depjars" description="create msi installer file 32bit">
-    <msimacro xml="wix32" bits="32"/>
-  </target>
-
-  <target name="msi64" depends="exe64,jar,depjars"  description="create msi installer file 64bit">
+  <target name="msi" depends="exe,jar,depjars"  description="create msi installer file 64bit">
     <msimacro xml="wix64" bits="64"/>
   </target>
 
@@ -126,11 +114,7 @@
     </sequential>
   </macrodef>
 
-  <target name="jremsi32" depends="jar,depjars" description="create msi installer file 32bit">
-    <jremsimacro xml="wix32" bits="32"/>
-  </target>
-
-  <target name="jremsi64" depends="jar,depjars"  description="create msi installer file 64bit">
+  <target name="jremsi" depends="jar,depjars"  description="create msi installer file 64bit">
     <jremsimacro xml="wix64" bits="64"/>
   </target>
 
