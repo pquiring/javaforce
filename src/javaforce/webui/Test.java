@@ -220,7 +220,7 @@ public class Test implements WebUIHandler {
     hslider.addChangedListener((Slider) -> {System.out.println("hslider=" + hslider.getPos());});
     row5.add(hslider);
 
-    ProgressBar bar = new ProgressBar(ProgressBar.HORIZONTAL, 100);
+    ProgressBar bar = new ProgressBar(ProgressBar.HORIZONTAL, 100, 16);
     bar.setValue(50);
     row5.add(bar);
     client.setProperty("bar", bar);
