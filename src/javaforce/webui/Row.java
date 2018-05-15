@@ -6,12 +6,15 @@ package javaforce.webui;
  */
 
 public class Row extends Container {
+  public Pad end;
   public Row() {
     addClass("row");
+    end = new Pad();
+    end.addClass("row-end");
+    super.add(end);
   }
   public void add(Component comp) {
-    super.add(comp);
-    comp.addClass("row-item");
+    add(count() - 1, comp);
   }
   public void add(int idx, Component comp) {
     super.add(idx, comp);
@@ -21,13 +24,9 @@ public class Row extends Container {
     StringBuffer sb = new StringBuffer();
     sb.append("<div" + getAttrs() + ">");
     int cnt = count();
-    if (cnt == 0) {
-      sb.append("&nbsp;");
-    }
     for(int a=0;a<cnt;a++) {
       sb.append(get(a).html());
     }
-    sb.append("<div class='row-end'></div>");
     sb.append("</div>");
     return sb.toString();
   }

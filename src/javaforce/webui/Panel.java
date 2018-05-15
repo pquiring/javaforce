@@ -14,9 +14,6 @@ public class Panel extends Container {
     StringBuffer sb = new StringBuffer();
     sb.append("<div" + getAttrs() + ">");
     int cnt = count();
-    if (cnt == 0) {
-      sb.append("&nbsp;");
-    }
     for(int a=0;a<cnt;a++) {
       sb.append(get(a).html());
     }
