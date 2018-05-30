@@ -14,11 +14,11 @@ import javaforce.*;
 public class Tag {
   /** Host (usually IP Address) */
   public String host;
-  /** Type of host (S7, AB, MB, NI) */
+  /** Type of host (S7, AB, MB, NI) See ControllerType */
   public int type;
   /** Tag name. */
   public String tag;
-  /** Size of tag. */
+  /** Size of tag. See TagType */
   public int size;
   /** Color of tag (for reporting) */
   public int color;
@@ -47,6 +47,13 @@ public class Tag {
     this.tag = tag;
     this.size = size;
     this.delay = delay;
+  }
+
+  public boolean isValid() {
+    if (size == TagType.unknown) return false;
+    if (type == ControllerType.UNKNOWN) return false;
+    if (host == null || host.length() == 0) return false;
+    return true;
   }
 
   private Controller c;
@@ -110,6 +117,11 @@ public class Tag {
       case TagType.int8: return 1;
       case TagType.int16: return 2;
       case TagType.int32: return 4;
+      case TagType.int64: return 8;
+      case TagType.uint8: return 1;
+      case TagType.uint16: return 2;
+      case TagType.uint32: return 4;
+      case TagType.uint64: return 8;
       case TagType.float32: return 4;
       case TagType.float64: return 8;
     }
@@ -140,6 +152,7 @@ public class Tag {
   }
 
   public String toString() {
+    if (!isValid()) return "not set";
     if (type == ControllerType.NI) {
       return host;
     }
@@ -239,6 +252,11 @@ public class Tag {
         case TagType.int8: data = new byte[] {Byte.valueOf(value)}; break;
         case TagType.int16: data = new byte[2]; BE.setuint16(data, 0, Short.valueOf(value)); break;
         case TagType.int32: data = new byte[4]; BE.setuint32(data, 0, Integer.valueOf(value)); break;
+        case TagType.int64: data = new byte[8]; BE.setuint64(data, 0, Long.valueOf(value)); break;
+        case TagType.uint8: data = new byte[] {Byte.valueOf(value)}; break;
+        case TagType.uint16: data = new byte[2]; BE.setuint16(data, 0, Short.valueOf(value)); break;
+        case TagType.uint32: data = new byte[4]; BE.setuint32(data, 0, Integer.valueOf(value)); break;
+        case TagType.uint64: data = new byte[8]; BE.setuint64(data, 0, Long.valueOf(value)); break;
         case TagType.float32: data = new byte[4]; BE.setuint32(data, 0, Float.floatToIntBits(Float.valueOf(value))); break;
         case TagType.float64: data = new byte[4]; BE.setuint64(data, 0, Double.doubleToLongBits(Double.valueOf(value))); break;
       }
@@ -248,6 +266,11 @@ public class Tag {
         case TagType.int8: data = new byte[] {Byte.valueOf(value)}; break;
         case TagType.int16: data = new byte[2]; LE.setuint16(data, 0, Short.valueOf(value)); break;
         case TagType.int32: data = new byte[4]; LE.setuint32(data, 0, Integer.valueOf(value)); break;
+        case TagType.int64: data = new byte[8]; LE.setuint64(data, 0, Long.valueOf(value)); break;
+        case TagType.uint8: data = new byte[] {Byte.valueOf(value)}; break;
+        case TagType.uint16: data = new byte[2]; LE.setuint16(data, 0, Short.valueOf(value)); break;
+        case TagType.uint32: data = new byte[4]; LE.setuint32(data, 0, Integer.valueOf(value)); break;
+        case TagType.uint64: data = new byte[8]; LE.setuint64(data, 0, Long.valueOf(value)); break;
         case TagType.float32: data = new byte[4]; LE.setuint32(data, 0, Float.floatToIntBits(Float.valueOf(value))); break;
         case TagType.float64: data = new byte[4]; LE.setuint64(data, 0, Double.doubleToLongBits(Double.valueOf(value))); break;
       }
@@ -351,6 +374,11 @@ public class Tag {
             case TagType.int8: tag.value = Byte.toString(data[0]); break;
             case TagType.int16: tag.value = Short.toString((short)BE.getuint16(data, 0)); break;
             case TagType.int32: tag.value = Integer.toString(BE.getuint32(data, 0)); break;
+            case TagType.int64: tag.value = Long.toString(BE.getuint64(data, 0)); break;
+            case TagType.uint8: tag.value = Integer.toUnsignedString(data[0] & 0xff); break;
+            case TagType.uint16: tag.value = Integer.toUnsignedString(BE.getuint16(data, 0) & 0xffff); break;
+            case TagType.uint32: tag.value = Integer.toUnsignedString(BE.getuint32(data, 0)); break;
+            case TagType.uint64: tag.value = Long.toUnsignedString(BE.getuint64(data, 0)); break;
             case TagType.float32: tag.value = Float.toString(Float.intBitsToFloat(BE.getuint32(data, 0))); break;
             case TagType.float64: tag.value = Double.toString(Double.longBitsToDouble(BE.getuint64(data, 0))); break;
           }
@@ -360,6 +388,11 @@ public class Tag {
             case TagType.int8: tag.value = Byte.toString(data[0]); break;
             case TagType.int16: tag.value = Short.toString((short)LE.getuint16(data, 0)); break;
             case TagType.int32: tag.value = Integer.toString(LE.getuint32(data, 0)); break;
+            case TagType.int64: tag.value = Long.toString(LE.getuint64(data, 0)); break;
+            case TagType.uint8: tag.value = Integer.toUnsignedString(data[0] & 0xff); break;
+            case TagType.uint16: tag.value = Integer.toUnsignedString(LE.getuint16(data, 0) & 0xffff); break;
+            case TagType.uint32: tag.value = Integer.toUnsignedString(LE.getuint32(data, 0)); break;
+            case TagType.uint64: tag.value = Long.toUnsignedString(LE.getuint64(data, 0)); break;
             case TagType.float32: tag.value = Float.toString(Float.intBitsToFloat(LE.getuint32(data, 0))); break;
             case TagType.float64: tag.value = Double.toString(Double.longBitsToDouble(LE.getuint64(data, 0))); break;
           }

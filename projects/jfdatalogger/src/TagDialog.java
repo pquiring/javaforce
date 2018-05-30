@@ -290,6 +290,11 @@ public class TagDialog extends javax.swing.JDialog {
     clr = in.color;
   }
 
+  public void bitOnly() {
+    size.removeAllItems();
+    size.addItem("bit");
+  }
+
   public boolean save(Tag out) {
     try {
       switch (type.getSelectedIndex()) {

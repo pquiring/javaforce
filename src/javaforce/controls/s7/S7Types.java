@@ -48,7 +48,7 @@ public class S7Types {
     switch (type) {
       case 'X': return BIT;
       case 'B': return BYTE;
-      case 'D': return DINT;
+      case 'D': return DWORD;
       case 'W': return WORD;
       case 'I': return INT;
       case 'C': return CHAR;

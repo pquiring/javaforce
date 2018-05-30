@@ -22,6 +22,12 @@ public class TagType {
 
   public static final int function = 32;
 
+  public static final int unsigned_mask = 32;
+  public static final int uint8 = 34;
+  public static final int uint16 = 35;
+  public static final int uint32 = 36;
+  public static final int uint64 = 37;
+
   public static final int any = 64;
   public static final int anyint = 65;
   public static final int anyfloat = 66;

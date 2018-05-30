@@ -6,6 +6,7 @@ package javaforce.controls;
  */
 
 public class ControllerType {
+  public static final int UNKNOWN = 0;
   public static final int JF = 1;
   public static final int S7 = 2;
   public static final int AB = 3;

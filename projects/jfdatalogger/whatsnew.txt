@@ -1,3 +1,9 @@
+May 30/2018 : v0.19 released
+  - new : added capture duration (or continous)
+  - new : added .dat files (load/save captured data)
+  - new : added trigger bit (set at start / reset after time)
+  - new : added image save
+
 Nov 30/2017 : v0.18 released
   - fix : connection issue
 

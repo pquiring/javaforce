@@ -14,7 +14,7 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.18";
+  public static String version = "0.19";
 
   public static int delays[] = new int[] {
     5, 10, 25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
@@ -23,6 +23,8 @@ public class App extends javax.swing.JFrame {
   public static int ticks[] = new int[] {
     40, 40, 40, 20, 10, 10, 10, 10, 10, 10, 10, 10, 10
   };
+
+  public static String args[];
 
   /**
    * Creates new form App
@@ -33,16 +35,18 @@ public class App extends javax.swing.JFrame {
     JFImage icon = new JFImage();
     icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfdatalogger.png"));
     setIconImage(icon.getImage());
-    for(int a=0;a<delays.length;a++) {
-      speed.addItem(Integer.toString(delays[a]) + "ms");
-    }
     table.setModel(tableModel);
     list.setModel(listModel);
     newProject();
     setTitle("jfDataLogger/" + version);
     JFAWT.centerWindow(this);
     setExtendedState(JFrame.MAXIMIZED_BOTH);
-    speed.setSelectedIndex(2);
+    if (args != null) {
+      for(int a=0;a<args.length;a++) {
+        load_project(args[a]);
+      }
+    }
+    setScrollBarSize();
   }
 
   /**
@@ -53,30 +57,40 @@ public class App extends javax.swing.JFrame {
   private void initComponents() {
 
     jToolBar1 = new javax.swing.JToolBar();
+    jLabel1 = new javax.swing.JLabel();
     newProject = new javax.swing.JButton();
     jSeparator1 = new javax.swing.JToolBar.Separator();
     load = new javax.swing.JButton();
     save = new javax.swing.JButton();
     jSeparator2 = new javax.swing.JToolBar.Separator();
-    run = new javax.swing.JToggleButton();
+    run = new javax.swing.JButton();
+    jSeparator4 = new javax.swing.JToolBar.Separator();
+    settings = new javax.swing.JButton();
+    jSplitPane1 = new javax.swing.JSplitPane();
+    jPanel1 = new javax.swing.JPanel();
+    jScrollPane2 = new javax.swing.JScrollPane();
+    table = new javax.swing.JTable();
+    jToolBar3 = new javax.swing.JToolBar();
+    jLabel2 = new javax.swing.JLabel();
+    load_data = new javax.swing.JButton();
+    save_data = new javax.swing.JButton();
+    jSeparator5 = new javax.swing.JToolBar.Separator();
     clear = new javax.swing.JButton();
     jSeparator3 = new javax.swing.JToolBar.Separator();
     logBtn = new javax.swing.JButton();
-    jSeparator4 = new javax.swing.JToolBar.Separator();
-    jLabel1 = new javax.swing.JLabel();
-    speed = new javax.swing.JComboBox<>();
-    jSplitPane1 = new javax.swing.JSplitPane();
-    jPanel1 = new javax.swing.JPanel();
+    jSeparator6 = new javax.swing.JToolBar.Separator();
+    jLabel4 = new javax.swing.JLabel();
+    saveImage = new javax.swing.JButton();
     img = new javax.swing.JLabel() {
       public void paint(Graphics g) {
         if (logImage == null) return;
         drawImage(g);
       }
     };
-    jScrollPane2 = new javax.swing.JScrollPane();
-    table = new javax.swing.JTable();
+    scrollbar = new javax.swing.JScrollBar();
     jPanel2 = new javax.swing.JPanel();
     jToolBar2 = new javax.swing.JToolBar();
+    jLabel3 = new javax.swing.JLabel();
     add = new javax.swing.JButton();
     edit = new javax.swing.JButton();
     delete = new javax.swing.JButton();
@@ -85,6 +99,11 @@ public class App extends javax.swing.JFrame {
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     setTitle("jfDataLogger");
+    addComponentListener(new java.awt.event.ComponentAdapter() {
+      public void componentResized(java.awt.event.ComponentEvent evt) {
+        formComponentResized(evt);
+      }
+    });
     addWindowListener(new java.awt.event.WindowAdapter() {
       public void windowClosing(java.awt.event.WindowEvent evt) {
         formWindowClosing(evt);
@@ -93,6 +112,9 @@ public class App extends javax.swing.JFrame {
 
     jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
+
+    jLabel1.setText("Project:");
+    jToolBar1.add(jLabel1);
 
     newProject.setText("New");
     newProject.setFocusable(false);
@@ -139,41 +161,20 @@ public class App extends javax.swing.JFrame {
       }
     });
     jToolBar1.add(run);
-
-    clear.setText("Clear");
-    clear.setFocusable(false);
-    clear.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    clear.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    clear.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        clearActionPerformed(evt);
-      }
-    });
-    jToolBar1.add(clear);
-    jToolBar1.add(jSeparator3);
-
-    logBtn.setText("LogFile");
-    logBtn.setFocusable(false);
-    logBtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    logBtn.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    logBtn.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        logBtnActionPerformed(evt);
-      }
-    });
-    jToolBar1.add(logBtn);
     jToolBar1.add(jSeparator4);
 
-    jLabel1.setText("Speed");
-    jToolBar1.add(jLabel1);
-
-    speed.setMaximumSize(new java.awt.Dimension(100, 32767));
-    jToolBar1.add(speed);
+    settings.setText("Settings");
+    settings.setFocusable(false);
+    settings.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    settings.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    settings.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        settingsActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(settings);
 
     jSplitPane1.setDividerLocation(250);
-
-    img.setMaximumSize(new java.awt.Dimension(32768, 100));
-    img.setMinimumSize(new java.awt.Dimension(0, 100));
 
     table.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][] {
@@ -188,25 +189,110 @@ public class App extends javax.swing.JFrame {
     ));
     jScrollPane2.setViewportView(table);
 
+    jToolBar3.setRollover(true);
+
+    jLabel2.setText("Data:");
+    jToolBar3.add(jLabel2);
+
+    load_data.setText("Load");
+    load_data.setFocusable(false);
+    load_data.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    load_data.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    load_data.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        load_dataActionPerformed(evt);
+      }
+    });
+    jToolBar3.add(load_data);
+
+    save_data.setText("Save");
+    save_data.setFocusable(false);
+    save_data.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    save_data.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    save_data.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        save_dataActionPerformed(evt);
+      }
+    });
+    jToolBar3.add(save_data);
+    jToolBar3.add(jSeparator5);
+
+    clear.setText("Clear");
+    clear.setFocusable(false);
+    clear.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    clear.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    clear.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        clearActionPerformed(evt);
+      }
+    });
+    jToolBar3.add(clear);
+    jToolBar3.add(jSeparator3);
+
+    logBtn.setText("LogFile");
+    logBtn.setFocusable(false);
+    logBtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    logBtn.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    logBtn.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        logBtnActionPerformed(evt);
+      }
+    });
+    jToolBar3.add(logBtn);
+    jToolBar3.add(jSeparator6);
+
+    jLabel4.setText("Image:");
+    jToolBar3.add(jLabel4);
+
+    saveImage.setText("Save");
+    saveImage.setFocusable(false);
+    saveImage.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    saveImage.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    saveImage.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        saveImageActionPerformed(evt);
+      }
+    });
+    jToolBar3.add(saveImage);
+
+    img.setMaximumSize(new java.awt.Dimension(32768, 100));
+    img.setMinimumSize(new java.awt.Dimension(0, 100));
+
+    scrollbar.setOrientation(javax.swing.JScrollBar.HORIZONTAL);
+    scrollbar.addAdjustmentListener(new java.awt.event.AdjustmentListener() {
+      public void adjustmentValueChanged(java.awt.event.AdjustmentEvent evt) {
+        scrollbarAdjustmentValueChanged(evt);
+      }
+    });
+
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 824, Short.MAX_VALUE)
+      .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+      .addComponent(scrollbar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
       .addComponent(img, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-      .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 792, Short.MAX_VALUE)
     );
     jPanel1Layout.setVerticalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-        .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 240, Short.MAX_VALUE)
+        .addComponent(jToolBar3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(img, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 178, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addComponent(img, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(scrollbar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
     );
 
     jSplitPane1.setRightComponent(jPanel1);
 
     jToolBar2.setFloatable(false);
     jToolBar2.setRollover(true);
+
+    jLabel3.setText("Tags:");
+    jToolBar2.add(jLabel3);
 
     add.setText("Add");
     add.setFocusable(false);
@@ -255,7 +341,7 @@ public class App extends javax.swing.JFrame {
       .addGroup(jPanel2Layout.createSequentialGroup()
         .addComponent(jToolBar2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 725, Short.MAX_VALUE))
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 766, Short.MAX_VALUE))
     );
 
     jSplitPane1.setLeftComponent(jPanel2);
@@ -286,20 +372,16 @@ public class App extends javax.swing.JFrame {
     delete();
   }//GEN-LAST:event_deleteActionPerformed
 
-  private void runActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runActionPerformed
-    run();
-  }//GEN-LAST:event_runActionPerformed
-
   private void clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearActionPerformed
     clear();
   }//GEN-LAST:event_clearActionPerformed
 
   private void loadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadActionPerformed
-    load();
+    load_project();
   }//GEN-LAST:event_loadActionPerformed
 
   private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
-    save();
+    save_project();
   }//GEN-LAST:event_saveActionPerformed
 
   private void newProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newProjectActionPerformed
@@ -320,10 +402,39 @@ public class App extends javax.swing.JFrame {
     logFile();
   }//GEN-LAST:event_logBtnActionPerformed
 
+  private void load_dataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_dataActionPerformed
+    load_data();
+  }//GEN-LAST:event_load_dataActionPerformed
+
+  private void save_dataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_save_dataActionPerformed
+    save_data();
+  }//GEN-LAST:event_save_dataActionPerformed
+
+  private void settingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_settingsActionPerformed
+    show_settings();
+  }//GEN-LAST:event_settingsActionPerformed
+
+  private void runActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runActionPerformed
+    run();
+  }//GEN-LAST:event_runActionPerformed
+
+  private void scrollbarAdjustmentValueChanged(java.awt.event.AdjustmentEvent evt) {//GEN-FIRST:event_scrollbarAdjustmentValueChanged
+    img.repaint();
+  }//GEN-LAST:event_scrollbarAdjustmentValueChanged
+
+  private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
+    setScrollBarSize();
+  }//GEN-LAST:event_formComponentResized
+
+  private void saveImageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveImageActionPerformed
+    save_image();
+  }//GEN-LAST:event_saveImageActionPerformed
+
   /**
    * @param args the command line arguments
    */
   public static void main(String args[]) {
+    App.args = args;
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
@@ -339,6 +450,9 @@ public class App extends javax.swing.JFrame {
   private javax.swing.JButton edit;
   private javax.swing.JLabel img;
   private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
+  private javax.swing.JLabel jLabel4;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JScrollPane jScrollPane1;
@@ -347,16 +461,23 @@ public class App extends javax.swing.JFrame {
   private javax.swing.JToolBar.Separator jSeparator2;
   private javax.swing.JToolBar.Separator jSeparator3;
   private javax.swing.JToolBar.Separator jSeparator4;
+  private javax.swing.JToolBar.Separator jSeparator5;
+  private javax.swing.JToolBar.Separator jSeparator6;
   private javax.swing.JSplitPane jSplitPane1;
   private javax.swing.JToolBar jToolBar1;
   private javax.swing.JToolBar jToolBar2;
+  private javax.swing.JToolBar jToolBar3;
   private javax.swing.JList<String> list;
   private javax.swing.JButton load;
+  private javax.swing.JButton load_data;
   private javax.swing.JButton logBtn;
   private javax.swing.JButton newProject;
-  private javax.swing.JToggleButton run;
+  private javax.swing.JButton run;
   private javax.swing.JButton save;
-  private javax.swing.JComboBox<String> speed;
+  private javax.swing.JButton saveImage;
+  private javax.swing.JButton save_data;
+  private javax.swing.JScrollBar scrollbar;
+  private javax.swing.JButton settings;
   private javax.swing.JTable table;
   // End of variables declaration//GEN-END:variables
 
@@ -367,13 +488,19 @@ public class App extends javax.swing.JFrame {
   public static JFImage logImage = new JFImage(1, 510);
   public static Worker worker;
   public static Task task;
-  public static int speedIdx;
   public static int delay;
   public static int tickCounter;
   public static FileOutputStream logger;
   public String projectFile;
+  public String dataFile;
   public String logFile;
   public static boolean active;
+  public static int duration = -1;  //seconds (1-60) (-1 = continuous)
+  public static int speed = 2;  //index into delay array
+  public static int samplesLeft;
+  public static Tag trigger = new Tag();
+  public static int triggerReset = 250;
+  private static boolean triggerValid;
 
   public void newProject() {
     tags.clear();
@@ -381,6 +508,9 @@ public class App extends javax.swing.JFrame {
     list.removeAll();
     clear();
     projectFile = null;
+    dataFile = null;
+    trigger = new Tag();
+    triggerReset = 250;
   }
 
   public void clear() {
@@ -393,10 +523,16 @@ public class App extends javax.swing.JFrame {
 
   public static String dl_filters[][] = new String[][] { {"Data Logger Files (*.dl)", "dl"} };
   public static String csv_filters[][] = new String[][] { {"CSV Files (*.csv)", "csv"} };
+  public static String data_filters[][] = new String[][] { {"Data Files (*.dat)", "dat"} };
+  public static String img_filters[][] = new String[][] { {"Image Files (*.png)", "png"} };
 
-  public void load() {
+  public void load_project() {
     String filename = JFAWT.getOpenFile(JF.getCurrentPath(), dl_filters);
     if (filename == null) return;
+    load_project(filename);
+  }
+
+  public void load_project(String filename) {
     newProject();
     projectFile = filename;
     XML xml = new XML();
@@ -404,10 +540,43 @@ public class App extends javax.swing.JFrame {
     int cnt = xml.root.getChildCount();
     for(int a=0;a<cnt;a++) {
       XML.XMLTag xmltag = xml.root.getChildAt(a);
-      Tag tag = new Tag();
-      tag_load(tag, xmltag.content);
-      tags.add(tag);
-      listModel.addElement(tag.toString());
+      String type = xmltag.getName();
+      if (type.startsWith("tag")) type = "tag";
+      switch (type) {
+        case "tag":
+          Tag tag = new Tag();
+          tag_load(tag, xmltag.content);
+          tags.add(tag);
+          listModel.addElement(tag.toString());
+          break;
+        case "config":
+          int ccnt = xmltag.getChildCount();
+          for(int b=0;b<ccnt;b++) {
+            XML.XMLTag cfg = xmltag.getChildAt(b);
+            String ctype = cfg.getName();
+            String cdata = cfg.content;
+            switch (ctype) {
+              case "duration":
+                duration = Integer.valueOf(cdata);
+                if (duration < -1) duration = -1;
+                if (duration > 5*60) duration = 5*60;  //5min max
+                break;
+              case "speed":
+                speed = Integer.valueOf(cdata);
+                if (speed < 0) speed = 0;
+                if (speed > delays.length-1) speed = delays.length-1;
+                break;
+              case "triggerTag":
+                trigger = new Tag();
+                tag_load(trigger, cdata);
+                break;
+              case "triggerReset":
+                triggerReset = Integer.valueOf(cdata);
+                break;
+            }
+          }
+          break;
+      }
     }
   }
 
@@ -443,6 +612,28 @@ public class App extends javax.swing.JFrame {
     tag.color = Integer.valueOf(f[6], 16);
   }
 
+  public String tag_save_short(Tag tag) {
+    String ctrl = "";
+    switch (tag.type) {
+      case ControllerType.S7: ctrl = "S7"; break;
+      case ControllerType.AB: ctrl = "AB"; break;
+      case ControllerType.MB: ctrl = "MB"; break;
+      case ControllerType.NI: ctrl = "NI"; break;
+      case ControllerType.JF: ctrl = "JF"; break;
+    }
+    String size = "";
+    switch (tag.size) {
+      case TagType.bit: size = "bit"; break;
+      case TagType.int8: size = "int8"; break;
+      case TagType.int16: size = "int16"; break;
+      case TagType.int32: size = "int32"; break;
+      case TagType.int64: size = "int64"; break;
+      case TagType.float32: size = "float32"; break;
+      case TagType.float64: size = "float64"; break;
+    }
+    return tag.host + "|" + ctrl + "|" + tag + "|" + size;
+  }
+
   public String tag_save(Tag tag) {
     String ctrl = "";
     switch (tag.type) {
@@ -465,7 +656,7 @@ public class App extends javax.swing.JFrame {
     return tag.host + "|" + ctrl + "|" + tag + "|" + size + "|" + tag.getmin() + "|" + tag.getmax() + "|" + Integer.toUnsignedString(tag.color, 16);
   }
 
-  public void save() {
+  public void save_project() {
     String filename;
     if (projectFile != null) {
       filename = JFAWT.getSaveFile(projectFile, dl_filters);
@@ -483,8 +674,234 @@ public class App extends javax.swing.JFrame {
       Tag tag = tags.get(a);
       xml.addTag(xml.root, "tag", "", tag_save(tag));
     }
+    XML.XMLTag config = xml.addTag(xml.root, "config", "", "");
+    xml.addTag(config, "speed", "", Integer.toString(speed));
+    xml.addTag(config, "duration", "", Integer.toString(duration));
+    xml.addTag(config, "triggerTag", "", tag_save(trigger));
+    xml.addTag(config, "triggerReset", "", Integer.toString(triggerReset));
     xml.write(filename);
     projectFile = filename;
+  }
+
+  public void load_data() {
+    if (projectFile == null) {
+      JFAWT.showError("Error", "No project loaded");
+      return;
+    }
+    if (tags.size() == 0) {
+      JFAWT.showError("Error", "No tags defined");
+      return;
+    }
+    if (duration == -1) {
+      JFAWT.showError("Error", "Load/Save data not support with continuous opertion");
+      return;
+    }
+    String filename = JFAWT.getOpenFile(JF.getCurrentPath(), data_filters);
+    if (filename == null) return;
+    try {
+      FileInputStream fis = new FileInputStream(filename);
+      byte buf[] = JF.readAll(fis);
+      Data data = Data.load(buf);
+      fis.close();
+      //validate tags
+      int tagCount = tags.size();
+      if (data.tagCount != tagCount) throw new Exception("wrong data file");
+      for(int a=0;a<tagCount;a++) {
+        String tag = tag_save_short(tags.get(a));
+        if (!tag.equals(data.tags[a])) throw new Exception("invalid tag");
+      }
+      //load data
+      int rowCount = data.rowCount;
+      tableModel.setRowCount(0);
+      tableModel.setColumnCount(0);
+      tableModel.addColumn("timestamp");
+      for(int a=0;a<tagCount;a++) {
+        tableModel.addColumn(tags.get(a).toString());
+      }
+      for(int a=0;a<rowCount;a++) {
+        tableModel.addRow(data.data[a]);
+      }
+      updateFullImage();
+      img.repaint();
+    } catch (Exception e) {
+      JFLog.log(e);
+      JFAWT.showError("Error", "Invalid data file");
+    }
+  }
+
+  public static int scaleInt(Tag tag, int value) {
+    if (value < tag.min) return 0;
+    if (value > tag.max) return 100;
+    float delta = tag.max - tag.min;
+    return (int)((value - tag.min) / delta * 100.0);
+  }
+  public static int scaleFloat(Tag tag, float value) {
+    if (value < tag.fmin) return 0;
+    if (value > tag.fmax) return 100;
+    float delta = tag.fmax - tag.fmin;
+    float fval = value;
+    float fmin = tag.fmin;
+    return (int)((fval - fmin) / delta * 100.0);
+  }
+  public static int scaleDouble(Tag tag, double value) {
+    if (value < tag.fmin) return 0;
+    if (value > tag.fmax) return 100;
+    double delta = tag.fmax - tag.fmin;
+    double fval = value;
+    double fmin = tag.fmin;
+    return (int)((fval - fmin) / delta * 100.0);
+  }
+
+  public int getValue(Tag tag, String value) {
+    if (value == null) value = "0";
+    int iv;
+    float fv;
+    double dv;
+    if (tag.isFloat()) {
+      if (tag.getSize() == 8) {
+        dv = Double.valueOf(value);
+        return scaleDouble(tag, dv);
+      } else {
+        fv = Float.valueOf(value);
+        return scaleFloat(tag, fv);
+      }
+    } else {
+      if (tag.size == TagType.bit) {
+        return value.equals("0") ? 0 : tag.min;
+      } else {
+        iv = Integer.valueOf(value);
+        return scaleInt(tag, iv);
+      }
+    }
+  }
+
+  public void setScrollBarSize() {
+    int viewWidth = img.getWidth();
+    int logWidth = logImage.getWidth();
+    scrollbar.setMinimum(0);
+    if (viewWidth >= logWidth) {
+      scrollbar.setMaximum(0);
+    } else {
+      scrollbar.setMaximum(logWidth - viewWidth);
+    }
+    scrollbar.setValue(0);
+  }
+
+  public void updateFullImage() {
+    int rows = tableModel.getRowCount();
+    int tickCounter = 0;
+    int sv = 0;
+    int lsv = 0;
+    int tagCount = tags.size();
+    logImage.setSize(rows, 510);
+    logImage.fill(0, 0, rows, 510, 0xffffffff);
+    for(int tagIdx=0;tagIdx<tagCount;tagIdx++) {
+      Tag tag = tags.get(tagIdx);
+      tickCounter = ticks[speed];
+      lsv = 0;
+      for(int x=0;x<rows;x++) {
+        String value = (String)tableModel.getValueAt(x, tagIdx+1);
+        sv = getValue(tag, value);
+        int y = 5 + 500 - (sv * 5);
+        int ly = 5 + 500 - (lsv * 5);
+        if (tag.size == TagType.bit) {
+          if (!value.equals("0")) {
+            logImage.putPixel(x, y, tag.color);
+          }
+        } else {
+          logImage.line(x-1, ly, x, y, tag.color);
+        }
+        lsv = sv;
+        tickCounter--;
+        if (tickCounter == 0) {
+          tickCounter = ticks[speed];
+          logImage.line(x, 0, x, 4, 0x000000);
+          logImage.line(x, 505, x, 509, 0x000000);
+        }
+      }
+    }
+    setScrollBarSize();
+    repaint();
+  }
+
+  public void save_data() {
+    if (projectFile == null) {
+      JFAWT.showError("Error", "No project loaded");
+      return;
+    }
+    if (tags.size() == 0) {
+      JFAWT.showError("Error", "No tags defined");
+      return;
+    }
+    if (duration == -1) {
+      JFAWT.showError("Error", "Load/Save data not support with continuous opertion");
+      return;
+    }
+    String filename;
+    if (dataFile != null) {
+      filename = JFAWT.getSaveFile(dataFile, data_filters);
+    } else {
+      filename = JFAWT.getSaveAsFile(JF.getCurrentPath(), data_filters);
+    }
+    if (filename == null) return;
+    if (!filename.toLowerCase().endsWith(".dat")) {
+      filename += ".dat";
+    }
+    //save header
+    Data header = new Data();
+    int tagCount = tags.size();
+    header.tagCount = tagCount;
+    header.tags = new String[tagCount];
+    for(int a=0;a<tags.size();a++) {
+      header.tags[a] = tag_save_short(tags.get(a));
+    }
+    int rows = tableModel.getRowCount();
+    header.rowCount = rows;
+    header.data = new String[rows][];
+    int cols = tableModel.getColumnCount();
+    for(int a=0;a<rows;a++) {
+      String row[] = new String[cols];
+      for(int b=0;b<tagCount+1;b++) {
+        row[b] = (String)tableModel.getValueAt(a, b);
+      }
+      header.data[a] = row;
+    }
+    try {
+      byte data[] = header.save();
+      FileOutputStream fos = new FileOutputStream(filename);
+      fos.write(data);
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    dataFile = filename;
+  }
+
+  public void save_image() {
+    if (projectFile == null) {
+      JFAWT.showError("Error", "No project loaded");
+      return;
+    }
+    if (tags.size() == 0) {
+      JFAWT.showError("Error", "No tags defined");
+      return;
+    }
+    if (duration == -1) {
+      JFAWT.showError("Error", "Load/Save data not support with continuous opertion");
+      return;
+    }
+    String filename = JFAWT.getSaveAsFile(JF.getCurrentPath(), img_filters);
+    if (filename == null) return;
+    if (!filename.toLowerCase().endsWith(".png")) {
+      filename += ".png";
+    }
+    logImage.savePNG(filename);
+  }
+
+  public void show_settings() {
+    SettingsDialog dialog = new SettingsDialog(this, true);
+    JFAWT.centerWindow(dialog);
+    dialog.setVisible(true);
   }
 
   public void logFile() {
@@ -532,16 +949,42 @@ public class App extends javax.swing.JFrame {
     clear();
   }
 
+  private boolean hasNITag() {
+    int cnt = tags.size();
+    for(int a=0;a<cnt;a++) {
+      if (tags.get(a).type == ControllerType.NI) return true;
+    }
+    return false;
+  }
+
   public void run() {
     if (worker == null) {
       if (tags.size() == 0) {
         JFAWT.showError("Error", "No tags defined");
         return;
       }
+      if (hasNITag() && !javaforce.controls.ni.DAQmx.loaded) {
+        JFAWT.showError("Error", "Project contains NI Tags but NI DLL not found.");
+        return;
+      }
       setState(true);
-      speedIdx = speed.getSelectedIndex();
-      delay = delays[speedIdx];
-      tickCounter = ticks[speedIdx];
+      delay = delays[speed];
+      tickCounter = ticks[speed];
+      if (duration == -1) {
+        logImage.setSize(img.getWidth(), 510);
+        samplesLeft = -1;
+      } else {
+        if (delay <= 1000) {
+          samplesLeft = duration * (1000 / delay);
+        } else {
+          samplesLeft = (duration * 1000) / delay;
+        }
+        logImage.setSize(samplesLeft, 510);
+      }
+      setScrollBarSize();
+      if (duration != -1) {
+        scrollbar.setValue(scrollbar.getMaximum());
+      }
       clear();
       if (logFile != null) {
         try {
@@ -573,30 +1016,27 @@ public class App extends javax.swing.JFrame {
     edit.setEnabled(!running);
     delete.setEnabled(!running);
     logBtn.setEnabled(!running);
-    speed.setEnabled(!running);
+    settings.setEnabled(!running);
   }
 
+  private JFImage tmp = new JFImage(1,1);
+  private int tmpw = -1, tmph = -1;
+
   public void drawImage(Graphics g) {
-    if (logImage.getWidth() != img.getWidth()) {
-      int ow = logImage.getWidth();
-      int nw = img.getWidth();
-      int diff = nw - ow;
-      if (diff > 0) {
-        //expanding image
-        int px[] = logImage.getPixels();
-        logImage.setSize(img.getWidth(), 510);
-        logImage.fill(0, 0, logImage.getWidth(), logImage.getHeight(), 0xffffffff);
-        logImage.putPixels(px, diff, 0, ow, 510, 0);
-      } else {
-        //shrinking image
-        diff *= -1;
-        int px[] = logImage.getPixels(diff, 0, nw, 510);
-        logImage.setSize(img.getWidth(), 510);
-        logImage.fill(0, 0, logImage.getWidth(), logImage.getHeight(), 0xffffffff);
-        logImage.putPixels(px, 0, 0, nw, 510, 0);
-      }
+    int imgWidth = img.getWidth();
+    int logWidth = logImage.getWidth();
+    int w = imgWidth;
+    int h = 510;
+    int pos = scrollbar.getValue();
+    if (w > logWidth) w = logWidth;
+    int px[] = logImage.getPixels(pos, 0, w, h);
+    if (w != tmpw || h != tmph) {
+      tmp.setSize(w, h);
+      tmpw = w;
+      tmph = h;
     }
-    g.drawImage(logImage.getImage(), 0, 0, null);
+    tmp.putPixels(px, 0, 0, w, h, 0);
+    g.drawImage(tmp.getImage(), 0, 0, null);
   }
 
   public static void gui(Runnable task) {
@@ -608,6 +1048,7 @@ public class App extends javax.swing.JFrame {
   }
 
   public static java.util.Timer timer;
+  public static java.util.Timer triggerTimer;
   public static boolean running;
 
   public static class Worker extends Thread {
@@ -622,6 +1063,11 @@ public class App extends javax.swing.JFrame {
       System.out.println("rate=" + Controller.rate);
       System.gc();  //ensure all prev connections are closed
       int cnt = tags.size();
+      triggerValid = trigger.isValid();
+      if (triggerValid) {
+        trigger.start();
+        trigger.connect();
+      }
       //start tag timers
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
@@ -636,10 +1082,20 @@ public class App extends javax.swing.JFrame {
         tag.start(parent);
         tableModel.addColumn(tag.toString());
       }
+      //send trigger
+      if (triggerValid) {
+        JFLog.log("TriggerSet:" + trigger.toString());
+        trigger.setValue("1");
+      }
       //start timer
       timer = new java.util.Timer();
       task = new Task();
       timer.scheduleAtFixedRate(task, delay, delay);
+      triggerTimer = new java.util.Timer();
+      triggerTimer.schedule(new Task() {public void run() {
+        JFLog.log("TriggerReset:" + trigger.toString());
+        trigger.setValue("0");
+      }}, triggerReset);
       JFLog.log("running...");
       running = true;
     }
@@ -659,6 +1115,9 @@ public class App extends javax.swing.JFrame {
         Tag tag = tags.get(a);
         tag.stop();
       }
+      if (triggerValid) {
+        trigger.disconnect();
+      }
       app.run.setText("Run");
       app.setState(false);
       running = false;
@@ -672,6 +1131,7 @@ public class App extends javax.swing.JFrame {
     public long start = -1;
     public void run() {
       try {
+        if (samplesLeft == 0) return;
         int cnt = tags.size();
         row = new String[cnt+1];
         if (start == -1) {
@@ -700,7 +1160,7 @@ public class App extends javax.swing.JFrame {
         }
         gui(() -> {
           tableModel.addRow(row);
-          if (tableModel.getRowCount() > 10) {
+          if (duration == -1 && tableModel.getRowCount() > 10) {
             tableModel.removeRow(0);
           }
         });
@@ -708,35 +1168,22 @@ public class App extends javax.swing.JFrame {
         delaycount += delay;
         if (delaycount >= 100) {
           gui( () -> {
+            //repaint image
             app.img.repaint();
           });
           delaycount = 0;
         }
+        if (duration != -1) {
+          samplesLeft--;
+          if (samplesLeft == 0) {
+            gui( () -> {
+              App.app.run();
+            });
+          }
+        }
       } catch (Exception e) {
         e.printStackTrace();
       }
-    }
-    public int scaleInt(Tag tag, int value) {
-      if (value < tag.min) return 0;
-      if (value > tag.max) return 100;
-      float delta = tag.max - tag.min;
-      return (int)((value - tag.min) / delta * 100.0);
-    }
-    public int scaleFloat(Tag tag, float value) {
-      if (value < tag.fmin) return 0;
-      if (value > tag.fmax) return 100;
-      float delta = tag.fmax - tag.fmin;
-      float fval = value;
-      float fmin = tag.fmin;
-      return (int)((fval - fmin) / delta * 100.0);
-    }
-    public int scaleDouble(Tag tag, double value) {
-      if (value < tag.fmin) return 0;
-      if (value > tag.fmax) return 100;
-      double delta = tag.fmax - tag.fmin;
-      double fval = value;
-      double fmin = tag.fmin;
-      return (int)((fval - fmin) / delta * 100.0);
     }
     public int sv, lsv;
     public void getValues(Tag tag) {
@@ -790,7 +1237,7 @@ public class App extends javax.swing.JFrame {
       }
       tickCounter--;
       if (tickCounter == 0) {
-        tickCounter = ticks[speedIdx];
+        tickCounter = ticks[speed];
         logImage.line(x2, 0, x2, 4, 0x000000);
         logImage.line(x2, 505, x2, 509, 0x000000);
       }
