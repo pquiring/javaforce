@@ -139,18 +139,18 @@ public class S7Packet {
       return null;
     }
     data.data_type = S7Types.getType(addr.charAt(1));
-    short offset;
+    int offset;
     int idx = addr.indexOf('.');
     if (idx == -1) idx = addr.indexOf(' ');
     if (idx == -1) idx = addr.length();
     if (data.data_type == 0) {
       //no type present (assume bit)
-      offset = Short.valueOf(addr.substring(1, idx));
+      offset = Integer.valueOf(addr.substring(1, idx));
       data.data_type = S7Types.BIT;
     } else {
-      offset = Short.valueOf(addr.substring(2, idx));
+      offset = Integer.valueOf(addr.substring(2, idx));
     }
-    data.offset = (short)(offset << 3);
+    data.offset = offset << 3;
     if (data.data_type == S7Types.BIT) {
       int idx2 = addr.indexOf(' ');
       if (idx2 == -1) idx2 = addr.length();
