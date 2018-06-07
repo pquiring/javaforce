@@ -14,7 +14,7 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.19";
+  public static String version = "0.20";
 
   public static int delays[] = new int[] {
     5, 10, 25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
@@ -257,6 +257,11 @@ public class App extends javax.swing.JFrame {
 
     img.setMaximumSize(new java.awt.Dimension(32768, 100));
     img.setMinimumSize(new java.awt.Dimension(0, 100));
+    img.addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mousePressed(java.awt.event.MouseEvent evt) {
+        imgMousePressed(evt);
+      }
+    });
 
     scrollbar.setOrientation(javax.swing.JScrollBar.HORIZONTAL);
     scrollbar.addAdjustmentListener(new java.awt.event.AdjustmentListener() {
@@ -430,6 +435,10 @@ public class App extends javax.swing.JFrame {
     save_image();
   }//GEN-LAST:event_saveImageActionPerformed
 
+  private void imgMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imgMousePressed
+    update_position(evt.getX());
+  }//GEN-LAST:event_imgMousePressed
+
   /**
    * @param args the command line arguments
    */
@@ -501,6 +510,7 @@ public class App extends javax.swing.JFrame {
   public static Tag trigger = new Tag();
   public static int triggerReset = 250;
   private static boolean triggerValid;
+  private int span;  //data not in use yet
 
   public void newProject() {
     tags.clear();
@@ -981,6 +991,7 @@ public class App extends javax.swing.JFrame {
         }
         logImage.setSize(samplesLeft, 510);
       }
+      span = logImage.getWidth();
       setScrollBarSize();
       if (duration != -1) {
         scrollbar.setValue(scrollbar.getMaximum());
@@ -1037,6 +1048,13 @@ public class App extends javax.swing.JFrame {
     }
     tmp.putPixels(px, 0, 0, w, h, 0);
     g.drawImage(tmp.getImage(), 0, 0, null);
+  }
+
+  public void update_position(int mx) {
+    int x = scrollbar.getValue() + mx - span;
+    if (x < 0) return;
+    table.setRowSelectionInterval(x, x);
+    table.scrollRectToVisible(new Rectangle(table.getCellRect(x, 0, true)));
   }
 
   public static void gui(Runnable task) {
@@ -1159,8 +1177,9 @@ public class App extends javax.swing.JFrame {
           logger.write(ln.getBytes());
         }
         gui(() -> {
+          if (app.span > 0) app.span--;
           tableModel.addRow(row);
-          if (duration == -1 && tableModel.getRowCount() > 10) {
+          if (duration == -1 && (tableModel.getRowCount() > app.logImage.getWidth())) {
             tableModel.removeRow(0);
           }
         });
