@@ -512,9 +512,9 @@ public class JFImage extends JComponent implements Icon {
 
   /** Returns an area of this image as a new JFImage. */
   public JFImage getJFImage(int x, int y, int w, int h) {
-    JFImage ret = new JFImage();
-    ret.bi = bi.getSubimage(x, y, w, h);
-    ret.init();
+    JFImage ret = new JFImage(w,h);
+    int px[] = getPixels(x,y,w,h);
+    ret.putPixels(px, x, y, w, h, 0);
     return ret;
   }
 

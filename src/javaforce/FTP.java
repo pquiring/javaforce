@@ -242,7 +242,9 @@ public class FTP {
     cmd("stor " + filename);
     putData(is);
     wait4Response();
-    getLastResponse();
+    if (!getLastResponse().startsWith("226")) {
+      throw new Exception("bad listing");
+    }
   }
 
   public void put(String in, String filename) throws Exception {
@@ -252,11 +254,13 @@ public class FTP {
     putData(fis);
     fis.close();
     wait4Response();
-    getLastResponse();
+    if (!getLastResponse().startsWith("226")) {
+      throw new Exception("bad listing");
+    }
   }
 
   public void put(File local, File remote) throws Exception {
-    put(local.getAbsolutePath(), remote.getAbsolutePath());
+    put(local.getAbsolutePath(), remote.getName());
   }
 
 
@@ -357,23 +361,22 @@ public class FTP {
       ss = new ServerSocket();
       int hi = ss.getLocalPort() >> 8;
       int lo = ss.getLocalPort() & 0xff;
-      cmd(s.getLocalAddress().getHostAddress().replaceAll("[.]", ",") + "," + hi + "," + lo);
+      cmd("port " + s.getLocalAddress().getHostAddress().replaceAll("[.]", ",") + "," + hi + "," + lo);
       wait4Response();
       String str = getLastResponse();
       if (!str.startsWith("200")) {
         throw new Exception("port failed");
       }
     }
-  }
-
-  private InputStream getData() throws Exception {
-    aborted = false;
     if (passive) {
-      JFLog.log("FTP:connect:" + host + ":" + pasvport);
       ds = new Socket(host, pasvport);
     } else {
       ds = ss.accept();
     }
+  }
+
+  private InputStream getData() throws Exception {
+    aborted = false;
     InputStream dis = ds.getInputStream();
     wait4Response();
     if (!getLastResponse().startsWith("150")) {
@@ -384,12 +387,6 @@ public class FTP {
 
   private void getData(OutputStream os) throws Exception {
     aborted = false;
-    if (passive) {
-      JFLog.log("FTP:connect:" + host + ":" + pasvport);
-      ds = new Socket(host, pasvport);
-    } else {
-      ds = ss.accept();
-    }
     byte data[] = new byte[BUFSIZ];
     InputStream dis = ds.getInputStream();
     wait4Response();
@@ -432,12 +429,6 @@ public class FTP {
 
   private OutputStream putData() throws Exception {
     aborted = false;
-    if (passive) {
-      JFLog.log("FTP:connect:" + host + ":" + pasvport);
-      ds = new Socket(host, pasvport);
-    } else {
-      ds = ss.accept();
-    }
     OutputStream dos = ds.getOutputStream();
     wait4Response();
     if (!getLastResponse().startsWith("150")) {
@@ -448,12 +439,6 @@ public class FTP {
 
   private void putData(InputStream is) throws Exception {
     aborted = false;
-    if (passive) {
-      JFLog.log("FTP:connect:" + host + ":" + pasvport);
-      ds = new Socket(host, pasvport);
-    } else {
-      ds = ss.accept();
-    }
     byte data[] = new byte[BUFSIZ];
     OutputStream dos = ds.getOutputStream();
     wait4Response();

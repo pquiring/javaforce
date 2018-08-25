@@ -405,4 +405,17 @@ public class JFAWT {
     }
   }
 
+  /** Java9+ treats the right Alt as AltGr.  This function will remove this 'bug'. */
+  public static void removeAltGraph() {
+    KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
+      public boolean dispatchKeyEvent(KeyEvent e) {
+        int mods = e.getModifiers();
+        if ((mods & KeyEvent.ALT_GRAPH_MASK) != 0) {
+          mods &= ~KeyEvent.ALT_GRAPH_MASK;
+          e.setModifiers(mods);
+        }
+        return false;
+      }
+    });
+  }
 }

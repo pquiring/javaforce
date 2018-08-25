@@ -34,6 +34,10 @@ public class LE {
     return ret;
   }
 
+  public static float getfloat(byte[] data, int offset) {
+    return Float.intBitsToFloat(getuint32(data, offset));
+  }
+
   public static long getuint64(byte[] data, int offset) {
     long ret;
     ret  = (long)data[offset] & 0xff;
@@ -45,6 +49,10 @@ public class LE {
     ret += ((long)data[offset+6] & 0xff) << 48;
     ret += ((long)data[offset+7] & 0xff) << 56;
     return ret;
+  }
+
+  public static double getdouble(byte[] data, int offset) {
+    return Double.longBitsToDouble(getuint64(data, offset));
   }
 
   public static String getString(byte[] data, int offset, int len) {
@@ -77,6 +85,10 @@ public class LE {
     data[offset+3] = (byte)(num & 0xff);
   }
 
+  public static void setfloat(byte[] data, int offset, float num) {
+    setuint32(data, offset, Float.floatToIntBits(num));
+  }
+
   public static void setuint64(byte[] data, int offset, long num) {
     data[offset+0] = (byte)(num & 0xff);
     num >>= 8;
@@ -93,6 +105,10 @@ public class LE {
     data[offset+6] = (byte)(num & 0xff);
     num >>= 8;
     data[offset+7] = (byte)(num & 0xff);
+  }
+
+  public static void setdouble(byte[] data, int offset, double num) {
+    setuint64(data, offset, Double.doubleToLongBits(num));
   }
 
   public static void setString(byte[] data, int offset, int len, String str) {
