@@ -1,6 +1,6 @@
 //Java Launcher Win32/64
 
-// version 1.6
+// version 1.7
 // - supports passing command line options to java main()
 // - loads CLASSPATH and MAINCLASS from PE-EXE resource
 // - globbs arguments (see ExpandStringArray())
@@ -30,7 +30,6 @@ char javahome[MAX_PATH];
 char dll[MAX_PATH];
 char crt[MAX_PATH];
 int size = MAX_PATH;
-HMODULE crt_dll;
 HMODULE jvm_dll;
 int (*CreateJavaVM)(void*,void*,void*);
 HANDLE thread_handle;
@@ -59,7 +58,7 @@ int loadProperties();
 /** Displays the error message in a dialog box. */
 void error(char *msg) {
   char fullmsg[1024];
-  sprintf(fullmsg, "Failed to start Java\nPlease visit www.java.com and install Java\nError(%d):%s", sizeof(void*) * 8, msg);
+  sprintf(fullmsg, "Failed to start Java\nPlease visit www.java.com and install Java\nError:%s", msg);
 #ifndef _JF_SERVICE
   MessageBox(NULL, fullmsg, "Java Virtual Machine Launcher", (MB_OK | MB_ICONSTOP | MB_APPLMODAL));
 #else
@@ -151,7 +150,9 @@ char *CreateClassPath() {
   strcat(ExpandedClassPath, DOption);
   for(a=0;a<cnt;a++) {
     if (a > 0) strcat(ExpandedClassPath, ";");
-    strcat(ExpandedClassPath, exepath);
+    if (strchr(jar[a], '/') == NULL && strchr(jar[a], '\\') == NULL) {
+      strcat(ExpandedClassPath, exepath);
+    }
     strcat(ExpandedClassPath, jar[a]);
   }
   return ExpandedClassPath;
@@ -488,17 +489,22 @@ int main(int argc, char **argv) {
     }
   }
 
+  //JRE10
+  strcpy(crt, javahome);
+  strcat(crt, "\\bin\\msvcp120.dll");
+  LoadLibrary(crt);
+  strcpy(crt, javahome);
+  strcat(crt, "\\bin\\msvcr120.dll");
+  LoadLibrary(crt);
   //JRE7/8
   strcpy(crt, javahome);
   strcat(crt, "\\bin\\msvcr100.dll");
-  if ((crt_dll = LoadLibrary(crt)) == 0) {
-    //older JRE5/6 version
-    strcpy(crt, javahome);
-    strcat(crt, "\\bin\\msvcr71.dll");
-    if ((crt_dll = LoadLibrary(crt)) == 0) {
-      //could be a much older version (JRE5???) which just uses msvcrt.dll
-    }
-  }
+  LoadLibrary(crt);
+  //older JRE5/6 version
+  strcpy(crt, javahome);
+  strcat(crt, "\\bin\\msvcr71.dll");
+  LoadLibrary(crt);
+  //could be a much older version (JRE5???) which just uses msvcrt.dll
 
   strcpy(dll, javahome);
   strcat(dll, "\\bin\\server\\jvm.dll");

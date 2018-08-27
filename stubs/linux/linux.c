@@ -1,6 +1,6 @@
 //Java Launcher Linux
 
-// version 1.5
+// version 1.7
 // supports passing command line options to java main()
 // now loads CLASSPATH and MAINCLASS from embedded resource file (*.cfg)
 // now globbs arguments (see ExpandStringArray())
@@ -129,7 +129,9 @@ char *CreateClassPath() {
   strcat(ExpandedClassPath, DOption);
   for(a=0;a<cnt;a++) {
     if (a > 0) strcat(ExpandedClassPath, ":");
-    strcat(ExpandedClassPath, "/usr/share/java/");
+    if (strchr(jar[a], '/') == NULL) {
+      strcat(ExpandedClassPath, "/usr/share/java/");
+    }
     strcat(ExpandedClassPath, jar[a]);
   }
   return ExpandedClassPath;
