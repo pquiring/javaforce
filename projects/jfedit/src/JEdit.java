@@ -10,7 +10,6 @@
  * @author  pquiring
  */
 
-import javaforce.*;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
@@ -18,6 +17,8 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
+
+import javaforce.*;
 
 public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener, ActionListener {
 
@@ -154,6 +155,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
    */
   public static String args[];
   public static void main(String args[]) {
+    JFAWT.removeAltGraph();
     JEdit.args = args;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {

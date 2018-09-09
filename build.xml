@@ -113,6 +113,8 @@
     <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.desktop,java.sql --output jre_base_desktop"/>
     <delete>
       <fileset dir="jre_base_desktop/bin" includes="java**.exe"/>
+      <fileset dir="jre_base_desktop/legal" includes="**/*"/>
+      <fileset dir="jre_base_desktop/include" includes="**/*"/>
     </delete>
   </target>
 
@@ -120,13 +122,17 @@
     <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.sql --output jre_base"/>
     <delete>
       <fileset dir="jre_base/bin" includes="java**.exe"/>
+      <fileset dir="jre_base/legal" includes="**/*"/>
+      <fileset dir="jre_base/include" includes="**/*"/>
     </delete>
   </target>
 
   <target name="jre-base-javac" description="build JRE for bundled JRE builds with base and Java compiler">
     <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.sql,jdk.compiler,jdk.jartool,jdk.zipfs --output jre_base_javac"/>
     <delete>
-      <fileset dir="jre_base/bin" includes="java**.exe"/>
+      <fileset dir="jre_base_javac/bin" includes="java**.exe"/>
+      <fileset dir="jre_base_javac/legal" includes="**/*"/>
+      <fileset dir="jre_base_javac/include" includes="**/*"/>
     </delete>
   </target>
 

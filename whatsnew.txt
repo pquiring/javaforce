@@ -1,5 +1,22 @@
 What's new...
 
+? ?/2018 : JF 17.0.0 released
+  - new : JFAWT.removeAltGraph()
+    - removes AltGraph modifier which was added in Java9
+    - the right Alt and AltGraph use the same scancode
+  - new : remove support for 32bit binaries since Java9+ no longer supports it
+  - new : jfDataLogger/0.19
+    - added duration
+    - added trigger tag
+  - new : jfControls/0.4
+    - tags are now stored in files for faster load/save and are stored in plain java objects
+  - new : VoIP
+    - added proper support for RFC 5764 (DTLS-SRTP) which is now included in Java9
+  - new : jfPhone (formerly jPhoneLite)
+    - new VoIP support
+  - new : jfPBX (formerly jPBXlite)
+    - new VoIP support
+
 Jan 23/2018 : JF 16.9.0 relaesed
   - new : jfModbusServer
     - a modbus server for Raspberry PI 2/3 to control GPIO remotely

@@ -606,7 +606,7 @@ static int open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, int type
     }
     ctx->codec_ctx = (*_avcodec_alloc_context3)(codec);
     (*_avcodec_parameters_to_context)(ctx->codec_ctx, stream->codecpar);
-    ctx->codec_ctx->flags |= CODEC_FLAG_LOW_DELAY;
+//    ctx->codec_ctx->flags |= CODEC_FLAG_LOW_DELAY;
     if ((ret = (*_avcodec_open2)(ctx->codec_ctx, codec, NULL)) < 0) {
       return ret;
     }
@@ -1303,7 +1303,7 @@ static jboolean add_stream(FFContext *ctx, int codec_id) {
   }
 
   if ((ctx->out_fmt->flags & AVFMT_GLOBALHEADER) != 0) {
-    codec_ctx->flags |= CODEC_FLAG_GLOBAL_HEADER;
+//    codec_ctx->flags |= CODEC_FLAG_GLOBAL_HEADER;
   }
 
   return JNI_TRUE;
@@ -1362,7 +1362,7 @@ static jboolean open_audio(FFContext *ctx) {
   ctx->audio_frame->sample_rate = ctx->freq;
   ctx->audio_frame->channel_layout = ctx->audio_codec_ctx->channel_layout;
   ctx->audio_frame_size = ctx->audio_codec_ctx->frame_size * ctx->chs;  //max samples that encoder will accept
-  ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities & CODEC_CAP_VARIABLE_FRAME_SIZE) != 0;
+  ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities /*& CODEC_CAP_VARIABLE_FRAME_SIZE*/) != 0;
   ctx->audio_frame->nb_samples = ctx->audio_codec_ctx->frame_size;
   ret = (*_av_frame_get_buffer)(ctx->audio_frame, 0);
   if (ret < 0) {
