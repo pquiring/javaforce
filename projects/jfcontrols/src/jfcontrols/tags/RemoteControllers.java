@@ -21,16 +21,16 @@ public class RemoteControllers {
     map.clear();
   }
 
-  public static javaforce.controls.Tag getTag(int cid, String name, int type, SQL sql) {
+  public static javaforce.controls.Tag getTag(TagBase tag, SQL sql) {
     synchronized(lock) {
-      RemoteController ctrl = map.get(cid);
+      RemoteController ctrl = map.get(tag.cid);
       if (ctrl == null) {
-        String info[] = sql.select1row("select type,ip,speed from jfc_ctrls where cid=" + cid);
-        JFLog.log("cid = " + cid);
-        ctrl = new RemoteController(cid, Integer.valueOf(info[0]), info[1], Integer.valueOf(info[2]));
-        map.put(cid, ctrl);
+        String info[] = sql.select1row("select type,ip,speed from jfc_ctrls where cid=" + tag.cid);
+        JFLog.log("cid = " + tag.cid);
+        ctrl = new RemoteController(tag.cid, Integer.valueOf(info[0]), info[1], Integer.valueOf(info[2]));
+        map.put(tag.cid, ctrl);
       }
-      return ctrl.getTag(name, type);
+      return ctrl.getTag(tag.name, tag.type);
     }
   }
 }

@@ -69,7 +69,6 @@ public class APIService extends Thread {
     private OutputStream os;
     private Object writeLock = new Object();
     private ArrayList<String> subs = new ArrayList<String>();
-    private TagsCache tags = new TagsCache();
     private SQL sql;
 
     private int clientVersion = 0x100;
@@ -121,7 +120,6 @@ public class APIService extends Thread {
       int cnt, pos = 0, size = 0, type;
       String tagName;
       TagBase tag;
-      MonitoredTag mtag;
       TagsQuery q;
       switch (cmd) {
         default:
@@ -154,8 +152,7 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            q.addr[a] = tags.decode(tagName);
-            tag = tags.getTag(q.addr[a]);
+            tag = TagsService.getTag(tagName);
             q.tags[a] = tag;
             size += 4;  //type / size
             if (tag == null) {
@@ -196,8 +193,7 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            TagAddr ta = tags.decode(tagName);
-            tag = tags.getTag(ta);
+            tag = TagsService.getTag(tagName);
             q.tags[a] = tag;
             if (len < 2) throw new APIException(cmd, id, ERR_DATA_SHORT, "Error:API:data short");
             type = LE.getuint16(data, pos); len -= 2; pos += 2;
@@ -226,11 +222,10 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            TagAddr ta = tags.decode(tagName);
-            mtag = (MonitoredTag)tags.getTag(ta);
-            if (mtag == null) {
+            tag = TagsService.getTag(tagName);
+            if (tag != null) {
               if (!subs.contains(tagName)) {
-                mtag.addListener(this);
+                tag.addListener(this);
                 subs.add(tagName);
               }
             }
@@ -251,11 +246,10 @@ public class APIService extends Thread {
             len -= strlen;
             pos += strlen;
             tagName = new String(str);
-            TagAddr ta = tags.decode(tagName);
-            mtag = (MonitoredTag)tags.getTag(ta);
-            if (mtag == null) {
+            tag = TagsService.getTag(tagName);
+            if (tag != null) {
               if (subs.contains(tagName)) {
-                mtag.removeListener(this);
+                tag.removeListener(this);
                 subs.remove(tagName);
               }
             }
@@ -303,7 +297,7 @@ public class APIService extends Thread {
       LE.setuint16(reply, 8, error);
     }
 
-    public void tagChanged(TagBase tag, TagID id, String oldValue, String newValue) {
+    public void tagChanged(TagBase tag, String oldValue, String newValue) {
       int size = tag.getSize();
       int type = tag.getType();
       byte reply[] = new byte[8 + 2 + 2 + size];

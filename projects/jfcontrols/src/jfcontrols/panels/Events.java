@@ -9,6 +9,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.webui.*;
+import javaforce.controls.*;
 
 import jfcontrols.app.*;
 import jfcontrols.functions.*;
@@ -198,15 +199,93 @@ public class Events {
         break;
       }
       case "jfc_tags_new": {
+        int cid = Integer.valueOf(client.getProperty("ctrl").toString());
+        if (cid == 0) {
+          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag_udt");
+          panel.setVisible(true);
+        } else {
+          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag");
+          panel.setVisible(true);
+        }
+        break;
+      }
+      case "jfc_tag_new_ok_udt":
+      case "jfc_tag_new_ok":
+      {
         synchronized(lock) {
-          int id = 1;
-          do {
-            String inuse = sql.select1value("select name from jfc_tags where name='tag" + id + "' and cid=" + client.getProperty("ctrl"));
-            if (inuse == null) break;
-            id++;
-          } while (true);
-          sql.execute("insert into jfc_tags (cid,name,type,unsigned,array,builtin) values (" + client.getProperty("ctrl") + ",'tag" + id + "',1,false,false,false)");
-          client.setPanel(Panels.getPanel("jfc_tags", client));
+          int cid = Integer.valueOf(client.getProperty("ctrl").toString());
+          int type = 0;
+          int idx = 0;
+          int arraysize = 0;
+          String name = null;
+          if (cid == 0) {
+            ComboBox cbType = (ComboBox)client.getPanel().getComponent("tag_udt_type");
+            idx = cbType.getSelectedIndex();
+            TextField array = (TextField)client.getPanel().getComponent("tag_udt_arraysize");
+            arraysize = Integer.valueOf(array.getText());
+            name = ((TextField)client.getPanel().getComponent("tag_udt_name")).getText();
+          } else {
+            ComboBox cbType = (ComboBox)client.getPanel().getComponent("tag_type");
+            idx = cbType.getSelectedIndex();
+            TextField array = (TextField)client.getPanel().getComponent("tag_arraysize");
+            arraysize = Integer.valueOf(array.getText());
+            name = ((TextField)client.getPanel().getComponent("tag_name")).getText();
+          }
+          if (name.length() == 0) {
+            //TODO : check if tag name is valid (no bad chars, etc.)
+            //TODO : show error msg
+            break;
+          }
+          String exists = sql.select1value("select id from jfc_tags where name='" + name + "'");
+          if (exists != null) {
+            //TODO : show error msg
+            break;
+          }
+          if (cid == 0) {
+            PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag_udt");
+            panel.setVisible(false);
+          } else {
+            PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag");
+            panel.setVisible(false);
+          }
+          if (idx > 12) {
+            type = 0x100 + idx - 12;
+          } else {
+            switch (idx) {
+              case 0: type = TagType.bit; break;
+              case 1: type = TagType.int8; break;
+              case 2: type = TagType.int16; break;
+              case 3: type = TagType.int32; break;
+              case 4: type = TagType.int64; break;
+              case 5: type = TagType.uint8; break;
+              case 6: type = TagType.uint16; break;
+              case 7: type = TagType.uint32; break;
+              case 8: type = TagType.uint64; break;
+              case 9: type = TagType.float32; break;
+              case 10: type = TagType.float64; break;
+              case 11: type = TagType.char8; break;
+              case 12: type = TagType.char16; break;
+            }
+          }
+          String comment = "";  //edit later
+          sql.execute("insert into jfc_tags (cid,name,type,arraysize,builtin) values (" + cid + ",'" + name + "'," + type + "," + arraysize + ",false)");
+          int id = Integer.valueOf(sql.select1value("select id from jfc_tags where name='" + name + "'"));
+          TagBase tag = TagsService.createTag(cid, id, type, arraysize, name, comment, sql);
+          TagsService.addTag(tag);
+          client.setPanel(Panels.getPanel("jfc_tags", client));  //force update
+        }
+        break;
+      }
+      case "jfc_tag_new_cancel":
+      case "jfc_tag_new_cancel_udt":
+      {
+        int cid = Integer.valueOf(client.getProperty("ctrl").toString());
+        if (cid == 0) {
+          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag_udt");
+          panel.setVisible(false);
+        } else {
+          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag");
+          panel.setVisible(false);
         }
         break;
       }
@@ -437,7 +516,7 @@ public class Events {
             if (inuse == null) break;
             mid++;
           } while (true);
-          sql.execute("insert into jfc_udtmems (name,uid,mid,type,unsigned,array,builtin) values ('member" + (mid+1) + "'," + uid + "," + mid + ",1,false,false,false)");
+          sql.execute("insert into jfc_udtmems (name,uid,mid,type,array,builtin) values ('member" + (mid+1) + "'," + uid + "," + mid + ",1,false,false,false)");
         }
         client.setPanel(Panels.getPanel("jfc_udt_editor", client));
         break;
@@ -490,7 +569,7 @@ public class Events {
           case "light": style = "0=ff0000;1=00ff00"; nc = new Light(Color.red,Color.green); break;
           case "light3": style = "0=ff0000;1=00ff00;n=333333"; nc = new Light3(Color.red, Color.green, Color.lightGrey); break;
           case "togglebutton": style = "0=ff0000;1=00ff00"; nc = new ToggleButton(text, Color.red, Color.green); break;
-          case "progressbar": style = "o=h;0=ff0000;1=ffff00;2=00ff00;v0=5;v1=10;max=100.0"; nc = new ProgressBar(ProgressBar.HORIZONTAL, 100.0f); break;
+          case "progressbar": style = "o=h;0=ff0000;1=ffff00;2=00ff00;v0=5;v1=10;max=100.0"; nc = new ProgressBar(ProgressBar.HORIZONTAL, 100.0f, 32); break;
           case "image": text = "image"; nc = new Image(Images.getImage(text)); break;
         }
         if (nc == null) break;
@@ -1234,14 +1313,7 @@ public class Events {
 
       case "jfc_alarm_editor_new": {
         synchronized(lock) {
-          String tid = sql.select1value("select id from jfc_tags where name='alarms'");
-          int idx = 0;
-          do {
-            String inuse = sql.select1value("select value from jfc_tagvalues where tid=" + tid + " and idx=" + idx);
-            if (inuse == null) break;
-            idx++;
-          } while (true);
-          sql.execute("insert into jfc_tagvalues (tid,idx,mid,midx,value) values (" + tid + "," + idx + ",0,0,'alarm" + idx + "')");
+          //TODO
         }
         client.setPanel(Panels.getPanel("jfc_alarm_editor", client));
         break;
@@ -1249,8 +1321,7 @@ public class Events {
 
       case "jfc_alarm_editor_delete": {
         synchronized(lock) {
-          String tid = sql.select1value("select id from jfc_tags where name='alarms'");
-          sql.execute("delete from jfc_tagvalues where tid=" + tid + " and idx=" + arg);
+          //TODO
         }
         client.setPanel(Panels.getPanel("jfc_alarm_editor", client));
         break;
@@ -1260,6 +1331,8 @@ public class Events {
         Panel panel = Panels.getPanel(arg, client);
         if (panel != null) {
           client.setPanel(panel);
+        } else {
+          JFLog.log("Error:Panel not found:" + arg);
         }
         break;
       default:
@@ -1503,24 +1576,21 @@ public class Events {
     JFLog.log("doCommand:" + cmd);
     switch (cmd) {
       case "toggleBit": {
-        TagAddr ta = context.decode(args[0]);
-        TagBase tag = context.getTag(ta);
+        TagBase tag = context.getTag(args[0]);
         if (tag != null) {
           tag.setValue(tag.getValue().equals("0") ? "1" : "0");
         }
         break;
       }
       case "setBit": {
-        TagAddr ta = context.decode(args[0]);
-        TagBase tag = context.getTag(ta);
+        TagBase tag = context.getTag(args[0]);
         if (tag != null) {
           tag.setValue("1");
         }
         break;
       }
       case "resetBit": {
-        TagAddr ta = context.decode(args[0]);
-        TagBase tag = context.getTag(ta);
+        TagBase tag = context.getTag(args[0]);
         if (tag != null) {
           tag.setValue("0");
         }

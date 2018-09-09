@@ -57,7 +57,6 @@ public class FunctionService extends Thread {
       return;
     }
     Class mainCls, initCls;
-    TagsCache tags = new TagsCache();
     File mainFile = new File(Paths.dataPath + "/work/class/func_1.class");
     boolean compile = false;
     if (sql == null) {
@@ -116,8 +115,7 @@ public class FunctionService extends Thread {
       JFLog.log(e);
     }
     TagsService.doWrites();
-    TagAddr ta = tags.decode("system.scantime");
-    TagBase tag = tags.getTag(ta);
+    TagBase tag = TagsService.getTag("system.scantime");
     JFLog.log("Function.Service starting...");
     while (active) {
       FunctionRuntime.now = System.currentTimeMillis();

@@ -17,7 +17,6 @@ import jfcontrols.tags.*;
 public class FunctionCompiler {
   public static String error;
   public static String generateFunction(int fid, SQL sql) {
-    TagsCache tags = new TagsCache();
     error = null;
     StringBuilder sb = new StringBuilder();
     String revision = sql.select1value("select revision from jfc_funcs where id=" + fid);
@@ -115,8 +114,8 @@ public class FunctionCompiler {
               int tagType = node.blk.getTagType(t);
               switch (type) {
                 case 't':
-                  sb.append("    tags[" + t + "] = getTag(\"" + value + "\");\r\n");
-                  TagBase tagbase = tags.getTag(value);
+                  sb.append("    tags[" + t + "] = TagsService.getTag(\"" + value + "\");\r\n");
+                  TagBase tagbase = TagsService.getTag(value);
                   if (tagType >= TagType.any) {
                     types[t] = tagbase.getType();
                   } else {
@@ -126,11 +125,13 @@ public class FunctionCompiler {
                   unsigned[t] = tagbase.isUnsigned();
                   break;
                 case 'i':
-                  if (value.indexOf(".") == -1)
+                  if (value.indexOf(".") == -1) {
                     tagType = TagType.int32;
-                  else
+                    sb.append("    tags[" + t + "] = new TagInt(\"" + value + "\");\r\n");
+                  } else {
                     tagType = TagType.float32;
-                  sb.append("    tags[" + t + "] = new TagTemp(" + tagType + ",\"" + value + "\");\r\n");
+                    sb.append("    tags[" + t + "] = new TagFloat(\"" + value + "\");\r\n");
+                  }
                   types[t] = tagType;
                   break;
                 case 'f':

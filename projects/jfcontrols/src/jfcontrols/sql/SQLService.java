@@ -53,11 +53,10 @@ public class SQLService {
     sql.connect(derbyURI + ";create=true");
     //create tables
     sql.execute("create table jfc_ctrls (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int unique, ip varchar(32), type int, speed int)");
-    sql.execute("create table jfc_tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(64), type int, array boolean, unsigned boolean, comment varchar(64), builtin boolean, unique (cid, name))");
-    sql.execute("create table jfc_tagvalues (id int not null generated always as identity (start with 1, increment by 1) primary key, tid int, idx int, mid int, midx int, value varchar(128))");
+    sql.execute("create table jfc_tags (id int not null generated always as identity (start with 1, increment by 1) primary key, cid int, name varchar(64), type int, arraysize int, comment varchar(64), builtin boolean, unique (cid, name))");
     sql.execute("create table jfc_iocomments (id int not null generated always as identity (start with 1, increment by 1) primary key, mid int, idx int, comment varchar(64), unique (mid, idx))");
     sql.execute("create table jfc_udts (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, name varchar(64) unique)");
-    sql.execute("create table jfc_udtmems (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, mid int, name varchar(64), type int, array boolean, unsigned boolean, comment varchar(64), builtin boolean)");
+    sql.execute("create table jfc_udtmems (id int not null generated always as identity (start with 1, increment by 1) primary key, uid int, mid int, name varchar(64), type int, arraysize int, comment varchar(64), builtin boolean)");
     sql.execute("create table jfc_panels (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(64) unique, display varchar(64), popup boolean, builtin boolean)");
     sql.execute("create table jfc_cells (id int not null generated always as identity (start with 1, increment by 1) primary key, pid int, x int, y int, w int, h int,comp varchar(64), name varchar(64), text varchar(512), tag varchar(64), func varchar(64), arg varchar(64), style varchar(512), events varchar(1024))");
     sql.execute("create table jfc_funcs (id int not null generated always as identity (start with 1, increment by 1) primary key, name varchar(64) unique, revision bigint, comment varchar(8192))");
@@ -101,11 +100,15 @@ public class SQLService {
     sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.int16 + ",'int16')");
     sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.int32 + ",'int32')");
     sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.int64 + ",'int64')");
+    sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.uint8 + ",'uint8')");
+    sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.uint16 + ",'uint16')");
+    sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.uint32 + ",'uint32')");
+    sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.uint64 + ",'uint64')");
     sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.float32 + ",'float32')");
     sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.float64 + ",'float64')");
     sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.char8 + ",'char8')");
     sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.char16 + ",'char16')");
-//    sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.string + ",'string')");
+    sql.execute("insert into jfc_listdata (lid,value,text) values (" +  id + "," + TagType.string + ",'string')");
 
     sql.execute("insert into jfc_lists (name) values ('jfc_panel_type')");
     id = sql.select1value("select id from jfc_lists where name='jfc_panel_type'");
@@ -193,40 +196,40 @@ public class SQLService {
     //create SDTs
     int uid = IDs.uid_sys;
     sql.execute("insert into jfc_udts (uid,name) values (" + uid + ",'system')");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'scantime'," + TagType.int32 + ",false,false,true)");
-    sql.execute("insert into jfc_tags (cid,name,type,array,unsigned,builtin) values (0,'system'," + uid + ",false,false,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",0,'scantime'," + TagType.int32 + ",0,true)");
+    sql.execute("insert into jfc_tags (cid,name,type,arraysize,builtin) values (0,'system'," + uid + ",0,true)");
     //udtmems are created in hardware config panel
     uid = IDs.uid_date;
     sql.execute("insert into jfc_udts (uid,name) values (" + uid + ",'date')");  //yyyy mm dd
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'year'," + TagType.int32 + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",1,'month'," + TagType.int32 + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",2,'day'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",0,'year'," + TagType.int32 + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",1,'month'," + TagType.int32 + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",2,'day'," + TagType.int32 + ",0,true)");
     uid = IDs.uid_time;
     sql.execute("insert into jfc_udts (uid,name) values (" + uid + ",'time')");  //hh MM ss mm
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'hour'," + TagType.int32 + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",1,'minute'," + TagType.int32 + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",2,'second'," + TagType.int32 + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",3,'milli'," + TagType.int32 + ",false,false,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",0,'hour'," + TagType.int32 + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",1,'minute'," + TagType.int32 + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",2,'second'," + TagType.int32 + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",3,'milli'," + TagType.int32 + ",0,true)");
     uid = IDs.uid_timer;
     sql.execute("insert into jfc_udts (uid,name) values (" + uid + ",'timer')");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'time'," + TagType.int64 + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",1,'last'," + TagType.int64 + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",2,'run'," + TagType.bit + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",3,'done'," + TagType.bit + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",4,'enabled'," + TagType.bit + ",false,false,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",0,'time'," + TagType.int64 + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",1,'last'," + TagType.int64 + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",2,'run'," + TagType.bit + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",3,'done'," + TagType.bit + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",4,'enabled'," + TagType.bit + ",0,true)");
 
     //create default UDTs
     uid = IDs.uid_alarms;
     sql.execute("insert into jfc_udts (uid,name) values (" + uid + ",'alarms')");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",0,'text'," + TagType.string + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",1,'active'," + TagType.bit + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",2,'ack'," + TagType.bit + ",false,false,true)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",3,'stop'," + TagType.bit + ",false,false,false)");
-    sql.execute("insert into jfc_udtmems (uid,mid,name,type,array,unsigned,builtin) values (" + uid + ",4,'audio'," + TagType.int32 + ",false,false,false)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",0,'text'," + TagType.string + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",1,'active'," + TagType.bit + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",2,'ack'," + TagType.bit + ",0,true)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",3,'stop'," + TagType.bit + ",0,false)");
+    sql.execute("insert into jfc_udtmems (uid,mid,name,type,arraysize,builtin) values (" + uid + ",4,'audio'," + TagType.int32 + ",0,false)");
 
     //create default user tags
     uid = IDs.uid_alarms;
-    sql.execute("insert into jfc_tags (cid,name,type,array,unsigned,builtin) values (0,'alarms'," + uid + ",true,false,true)");
+    sql.execute("insert into jfc_tags (cid,name,type,arraysize,builtin) values (0,'alarms'," + uid + ",256,true)");
 
     //create panels
     sql.execute("insert into jfc_panels (name, popup, builtin) values ('jfc_login', true, true)");
@@ -325,7 +328,7 @@ public class SQLService {
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,1,8,1,'label','','Name')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,1,3,1,'button','','New','jfc_alarm_editor_new')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",16,1,2,1,'link','','Help','alarms')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_alarm_editor')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_alarm_editor_table')");
 
     //display active alarms
     sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('jfc_alarms','Alarms', false, true)");
@@ -345,11 +348,32 @@ public class SQLService {
     id = sql.select1value("select id from jfc_panels where name='jfc_tags'");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",2,1,6,1,'label','','Name')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",8,1,3,1,'label','','Type')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",12,1,3,1,'button','','New','jfc_tags_new')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",16,1,3,1,'button','','Save','jfc_tags_save')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",20,1,6,1,'label','','Comment')");
-    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",27,1,2,1,'link','','Help','tags')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",11,1,3,1,'label','','ArraySize')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",14,1,6,1,'label','','Comment')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",21,1,3,1,'button','','New','jfc_tags_new')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",26,1,2,1,'link','','Help','tags')");
     sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name) values (" +  id + ",2,2,0,0,'table','jfc_tags')");
+
+    sql.execute("insert into jfc_panels (name, popup, builtin) values ('jfc_new_tag', true, true)");
+    id = sql.select1value("select id from jfc_panels where name='jfc_new_tag'");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,3,1,'label','','Name:')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,0,3,1,'textfield','tag_name','')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,2,3,1,'label','','Type:')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",4,2,3,1,'combobox','tag_type','','jfc_tag_type')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,3,3,1,'textfield','tag_arraysize','0')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,4,3,1,'button','','Ok','jfc_tag_new_ok')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,4,3,1,'button','','Cancel','jfc_tag_new_cancel')");
+
+    sql.execute("insert into jfc_panels (name, popup, builtin) values ('jfc_new_tag_udt', true, true)");
+    id = sql.select1value("select id from jfc_panels where name='jfc_new_tag_udt'");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,0,3,1,'label','','Name:')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,0,3,1,'textfield','tag_udt_name','')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,2,3,1,'label','','Type:')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,arg) values (" + id + ",4,2,3,1,'combobox','tag_udt_type','','jfc_tag_type_udt')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",0,3,3,1,'label','','ArraySize:')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text) values (" + id + ",4,3,3,1,'textfield','tag_udt_arraysize','0')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",0,4,3,1,'button','','Ok','jfc_tag_new_ok_udt')");
+    sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,name,text,func) values (" + id + ",4,4,3,1,'button','','Cancel','jfc_tag_new_cancel_udt')");
 
     sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('jfc_xref','Cross Reference', false, true)");
     id = sql.select1value("select id from jfc_panels where name='jfc_xref'");

@@ -16,7 +16,6 @@ public class NodeRoot extends Node {
   public int rid;  //rung id
   public boolean changed;
   public TextField comment;
-  public TagsCache tags = new TagsCache();
   public NodeRoot(int fid, int rid) {
     this.root = this;
     this.type = 'r'; //root node
@@ -74,7 +73,7 @@ public class NodeRoot extends Node {
               try {
                 String tagstr = tf.getText();
                 if (tagstr.length() == 0) throw new Exception("no tag specified");
-                TagBase tag = tags.getTag(tagstr);
+                TagBase tag = TagsService.getTag(tagstr);
                 if (tag == null) throw new Exception("unknown tag");
                 if (strict) {
                   int tagType = tag.getType();

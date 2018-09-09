@@ -1,8 +1,8 @@
 package jfcontrols.tags;
 
-/** Tag
+/**
  *
- * @author pquiring
+ * @author User
  */
 
 import java.util.*;
@@ -11,184 +11,245 @@ import javaforce.*;
 import javaforce.controls.*;
 
 public abstract class TagBase {
-  protected int type;
-  protected boolean unsigned;
-  protected boolean array;
-  protected boolean dirty;
-  protected boolean udt;
+  public static final long serialVersionUID = 1;
+  public int cid, tid;
+  public String name;
+  public String comment;
+  public int type;
+  public boolean unsigned;
+  public boolean isArray;
+  public transient boolean dirty;  //local tag usage only
+  public transient Tag remoteTag;  //if cid > 0
 
-  public TagBase(int type, boolean unsigned, boolean array) {
-    this.type = type;
-    this.unsigned = unsigned;
-    this.array = array;
-    this.udt = type >= IDs.uid_sdt;
+  public final boolean isArray() {return isArray;}
+  public final boolean isUnsigned() {return unsigned;}
+  public int getType() {
+    return type;
   }
-
-  public abstract String getValue();
-
-  public abstract void setValue(String value);
-
-  public abstract TagBase getIndex(int idx);
-
-  public abstract TagBase getMember(int mid);
-
-  public abstract int getMember(String member);
-
-  public String getComment() {
-    return "";
-  }
-
-  public abstract int getTagID();
-  public abstract int getIndex();
-  public abstract boolean isMember();
-  public abstract int getMember();
-  public abstract int getMemberIndex();
-
   public int getSize() {
     return getSize(type);
   }
 
   public static int getSize(int type) {
     switch (type) {
-      default:
       case TagType.bit:
       case TagType.int8:
-      case TagType.char8:
         return 1;
       case TagType.int16:
-      case TagType.char16:
         return 2;
       case TagType.int32:
-      case TagType.float32:
         return 4;
       case TagType.int64:
+        return 8;
+      case TagType.float32:
+        return 4;
       case TagType.float64:
         return 8;
+      case TagType.char8:
+        return 1;
+      case TagType.char16:
+        return 2;
     }
+    return -1;
   }
-
-  public int getType() {
-    return type;
-  }
-
-  public boolean isArray() {
-    return array;
-  }
-
-  public boolean isUnsigned() {
-    return unsigned;
-  }
-
-  public boolean isUDT() {
-    return udt;
-  }
-
-  public boolean isLong() {
-    return type == TagType.int64;
-  }
-
-  public boolean isFloat() {
-    return type == TagType.float32;
-  }
-
-  public boolean isDouble() {
-    return type == TagType.float64;
-  }
-
-  public static String decode(int type, boolean unsigned, byte in[], int pos) {
+  public String getString8(int idx) {
+    if (!isArray) return null;
     switch (type) {
-      case TagType.bit:
-        return in[pos] == 0 ? "0" : "1";
-      case TagType.int8:
-        if (unsigned) {
-          return Integer.toString(Byte.toUnsignedInt(in[pos]));
-        } else {
-          return Byte.toString(in[pos]);
-        }
-      case TagType.int16:
-        if (unsigned) {
-          return Integer.toUnsignedString(LE.getuint16(in, pos));
-        } else {
-          return Integer.toString(LE.getuint16(in, pos));
-        }
-      case TagType.int32:
-        if (unsigned) {
-          return Integer.toUnsignedString(LE.getuint32(in, pos));
-        } else {
-          return Integer.toString(LE.getuint32(in, pos));
-        }
-      case TagType.float32:
-        return Float.toString(Float.intBitsToFloat(LE.getuint32(in, pos)));
-      case TagType.float64:
-        return Double.toString(Double.longBitsToDouble(LE.getuint64(in, pos)));
+      case TagType.string: return ((TagString)this).getString8();
+      case TagType.char8: return ((TagChar8)this).getString8();
+      case TagType.char16: return ((TagChar16)this).getString16();
     }
     return null;
   }
-
-  public static void encode(int type, boolean unsigned, String in, byte out[], int pos) {
+  public String getString16(int idx) {
+    if (type != TagType.char16) return null;
+    if (!isArray) return null;
+    return ((TagChar16)this).getString16();
+  }
+  public static void encode(int type, boolean unsigned, String value, byte data[], int pos) {
     switch (type) {
       case TagType.bit:
-        out[pos] = (byte)(in.equals("0") ? 0 : 1);
-        break;
       case TagType.int8:
-        out[pos] = Byte.valueOf(in);
+        LE.setuint8(data, pos, Integer.valueOf(value));
         break;
       case TagType.int16:
-        LE.setuint16(out, pos, Short.valueOf(in));
+        LE.setuint16(data, pos, Integer.valueOf(value));
         break;
       case TagType.int32:
-        LE.setuint32(out, pos, Integer.valueOf(in));
+        LE.setuint32(data, pos, Integer.valueOf(value));
         break;
       case TagType.float32:
-        LE.setuint32(out, pos, Float.floatToIntBits(Float.valueOf(in)));
+        LE.setuint32(data, pos, Float.floatToIntBits(Float.valueOf(value)));
         break;
       case TagType.float64:
-        LE.setuint64(out, pos, Double.doubleToLongBits(Double.valueOf(in)));
+        LE.setuint64(data, pos, Double.doubleToLongBits(Double.valueOf(value)));
+        break;
+      case TagType.char8:
+        LE.setuint8(data, pos, value.charAt(0));
+        break;
+      case TagType.char16:
+        LE.setuint16(data, pos, value.charAt(0));
         break;
     }
   }
 
-  public String toString() {
-    return "Tag{" + getTagID() + "," + getIndex() + "," + getMember() + "," + getMemberIndex() + "}";
+  public static String decode(int type, boolean unsigned, byte data[], int pos) {
+    switch (type) {
+      case TagType.bit:
+      case TagType.int8:
+        if (unsigned)
+          return Integer.toUnsignedString(LE.getuint8(data, pos));
+        else
+          return Integer.toString(LE.getuint8(data, pos));
+      case TagType.int16:
+        if (unsigned)
+          return Integer.toUnsignedString(LE.getuint16(data, pos));
+        else
+          return Integer.toString(LE.getuint16(data, pos));
+      case TagType.int32:
+        if (unsigned)
+          return Integer.toUnsignedString(LE.getuint32(data, pos));
+        else
+          return Integer.toString(LE.getuint32(data, pos));
+      case TagType.float32:
+        return Float.toString(Float.intBitsToFloat(LE.getuint32(data, pos)));
+      case TagType.float64:
+        return Double.toString(Double.longBitsToDouble(LE.getuint64(data, pos)));
+      case TagType.char8:
+        return "" + (char)LE.getuint8(data, pos);
+      case TagType.char16:
+        return "" + (char)LE.getuint16(data, pos);
+    }
+    return null;
+  }
+  public String getValue() {
+    return toString();
   }
 
+  public String getValue(int idx) {
+    return toString(idx);
+  }
+
+/*
+  public String getValue(String name) {
+    try {
+      return value.member(name);
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public String getValue(String name, int idx) {
+    try {
+      return value.member(name).toString();
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+*/
+
+  public void setValue(String newValue) {
+    switch (type) {
+      case TagType.bit: setBoolean(0, newValue.equals("1"));
+      case TagType.int8:
+      case TagType.int16:
+      case TagType.int32: setInt(0, Integer.valueOf(newValue)); break;
+      case TagType.int64: setLong(0, Long.valueOf(newValue)); break;
+      case TagType.float32: setInt(0, Float.floatToIntBits(Float.valueOf(newValue)));
+      case TagType.float64: setLong(0, Double.doubleToLongBits(Double.valueOf(newValue)));
+    }
+  }
+
+  public void setValue(String newValue, int idx) {
+    switch (type) {
+      case TagType.bit: setBoolean(idx, newValue.equals("1"));
+      case TagType.int8:
+      case TagType.int16:
+      case TagType.int32: setInt(idx, Integer.valueOf(newValue)); break;
+      case TagType.int64: setLong(idx, Long.valueOf(newValue)); break;
+      case TagType.float32: setInt(idx, Float.floatToIntBits(Float.valueOf(newValue)));
+      case TagType.float64: setLong(idx, Double.doubleToLongBits(Double.valueOf(newValue)));
+    }
+  }
+
+  public String getComment() {
+    return comment;
+  }
+
+  public void setComment(String comment) {
+    this.comment = comment;
+  }
+
+  private transient ArrayList<TagBaseListener> listeners = new ArrayList<>();
+  private transient Object lock = new Object();
+
+  public void addListener(TagBaseListener listener) {
+    synchronized(lock) {
+      listeners.add(listener);
+    }
+  }
+
+  public void removeListener(TagBaseListener listener) {
+    synchronized(lock) {
+      listeners.remove(listener);
+    }
+  }
+
+  public void tagChanged(TagBase tag, String oldValue, String newValue) {
+    synchronized(lock) {
+      int cnt = listeners.size();
+      for(int a=0;a<cnt;a++) {
+        listeners.get(a).tagChanged(this, oldValue, newValue);
+      }
+    }
+  }
+  public String toString() {return toString(0);}
+
+  public abstract String toString(int idx);
+  public abstract int getLength();
+  public abstract boolean getBoolean(int idx);
   public boolean getBoolean() {
-    return !getValue().equals("0");
+    return getBoolean(0);
   }
-
+  public abstract void setBoolean(int idx, boolean value);
   public void setBoolean(boolean value) {
-    setValue(value ? "1" : "0");
+    setBoolean(0, value);
   }
-
+  public abstract int getInt(int idx);
   public int getInt() {
-    return Integer.valueOf(getValue());
+    return getInt(0);
   }
-
+  public abstract void setInt(int idx, int value);
   public void setInt(int value) {
-    setValue(Integer.toString(value));
+    setInt(0, value);
   }
-
+  public abstract long getLong(int idx);
   public long getLong() {
-    return Long.valueOf(getValue());
+    return getLong(0);
   }
-
+  public abstract void setLong(int idx, long value);
   public void setLong(long value) {
-    setValue(Long.toString(value));
+    setLong(0, value);
   }
-
+  public abstract float getFloat(int idx);
   public float getFloat() {
-    return Float.valueOf(getValue());
+    return getFloat(0);
   }
-
+  public abstract void setFloat(int idx, float value);
   public void setFloat(float value) {
-    setValue(Float.toString(value));
+    setFloat(0, value);
   }
-
+  public abstract double getDouble(int idx);
   public double getDouble() {
-    return Double.valueOf(getValue());
+    return getDouble(0);
   }
-
+  public abstract void setDouble(int idx, double value);
   public void setDouble(double value) {
-    setValue(Double.toString(value));
+    setDouble(0, value);
   }
+  public TagBase[] getFields() {return null;}
+  public TagBase[] getFields(int idx) {return null;}
+  public TagBase getField(int idx, String name) {return null;}
 }

@@ -5,6 +5,7 @@ package jfcontrols.panels;
  * @author pquiring
  */
 
+import jfcontrols.tags.TagBase;
 import java.io.*;
 import java.util.*;
 
@@ -36,6 +37,7 @@ public class Panels {
   public static Panel getPanel(String pname, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
     context.clear();
+    JFLog.log("getPanel:" + pname);
     return buildPanel(new Panel(), pname, client);
   }
   public static Panel buildPanel(Panel panel, String pname, WebUIClient client) {
@@ -97,9 +99,7 @@ public class Panels {
 
     String audio_init = (String)client.getProperty("audio-init");
 
-    TagAddr ta = new TagAddr();
-    ta.name = "alarms";
-    TagBase tag = context.getTag(ta);
+    TagBase tag = context.getTag("alarms");
     context.addListener(tag, alarms, true, (_tag, _oldValue, _newValue, _cmp) -> {
       updateAlarmCount(alarms, client);
     });
@@ -110,6 +110,8 @@ public class Panels {
     panel.add(getPopupPanel(client, "Confirm", "jfc_confirm"));
     panel.add(getPopupPanel(client, "Error", "jfc_error"));
     panel.add(getPopupPanel(client, "Error", "jfc_error_textarea"));
+    panel.add(getPopupPanel(client, "NewTag", "jfc_new_tag"));
+    panel.add(getPopupPanel(client, "NewTag", "jfc_new_tag_udt"));
     ColorChooserPopup color = new ColorChooserPopup();
     color.setName("colorpanel");
     color.setTitleBarSize(cellHeight);
@@ -189,8 +191,8 @@ public class Panels {
       if (tagName != null) {
         c.setProperty("tag", tagName);
         if (!tagName.startsWith("jfc_")) {
-          TagAddr ta = context.decode(tagName);
-          context.addListener((MonitoredTag)context.getTag(ta), c, false, (tag, oldValue, newValue, cmp) -> {
+          TagBase tag = context.decode(tagName);
+          context.addListener(tag, c, false, (_tag, oldValue, newValue, cmp) -> {
 //            JFLog.log("update:" + tag + ":" + newValue + ":" + cmp);
             String type = Events.getComponentType(cmp);
             switch (type) {
@@ -322,6 +324,9 @@ public class Panels {
   private static Label getLabel(String v[]) {
     String text = v[TEXT];
     Label lbl;
+    if (text == null) {
+      JFLog.log("Label.text == null:" + v[NAME]);
+    }
     if (text.startsWith("!image:")) {
       lbl = new Label(Images.getImage(text.substring(7)));
     } else {
@@ -428,7 +433,7 @@ public class Panels {
   private static Component getDual(String v[], WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
     Table table = new Table(cellWidth, cellHeight/2, 3, 2);
-    TagBase tag = context.getTag(context.decode(v[TAG]));
+    TagBase tag = context.getTag(v[TAG]);
     String tagcomment = "";
     if (tag != null) tagcomment = tag.getComment();
     Label comment = new Label(tagcomment);
@@ -690,6 +695,7 @@ public class Panels {
     ArrayList<String[]> cells = new ArrayList<String[]>();
     ArrayList<Node> nodes = new ArrayList<Node>();
     Table table;
+    JFLog.log("getTable:" + name);
     switch (name) {
       case "jfc_ctrls" : {
         String data[][] = sql.select("select id,cid,ip,type from jfc_ctrls");
@@ -729,14 +735,13 @@ public class Panels {
             style = null;
           }
           cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_tags_name_" + tag_type + "_" + data[a][0], null, null, style));
-          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, tag_types, style));
-          cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_tags_unsigned_boolean_" + data[a][0], null, null, style));
+          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, tag_types, "readonly"));
           if (cid.equals("0")) {
-            cells.add(createCell(14, a, 3, 1, "checkbox", null, "Array", "jfc_tags_array_boolean_" + data[a][0], null, null, style));
+            cells.add(createCell(9, a, 3, 1, "textfield", null, null, "jfc_tags_arraysize_int_" + data[a][0], null, null, "readonly"));
           }
-          cells.add(createCell(18, a, 6, 1, "textfield", null, null, "jfc_tags_comment_str_" + data[a][0], null, null, style));
-          cells.add(createCell(25, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], style));
-          cells.add(createCell(28, a, 2, 1, "button", null, "XRef", null, "jfc_tags_xref", data[a][0], null));
+          cells.add(createCell(12, a, 6, 1, "textfield", null, null, "jfc_tags_comment_str_" + data[a][0], null, null, style));
+          cells.add(createCell(19, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], style));
+          cells.add(createCell(22, a, 2, 1, "button", null, "XRef", null, "jfc_tags_xref", data[a][0], null));
         }
         break;
       }
@@ -827,8 +832,6 @@ public class Panels {
         for(int a=0;a<data.length;a++) {
           cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a][0], null, null, null));
           cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", null));
-          cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, null));
-          cells.add(createCell(14, a, 3, 1, "checkbox", null, "Array", "jfc_udtmems_array_boolean_" + data[a][0], null, null, null));
           cells.add(createCell(18, a, 6, 1, "textfield", null, null, "jfc_udtmems_comment_str_" + data[a][0], null, null, null));
           if (data[a][5].equals("0")) {
             cells.add(createCell(25, a, 2, 1, "button", null, "Delete", null, "jfc_udts_editor_delete", data[a][0], null));
@@ -853,7 +856,6 @@ public class Panels {
           cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a][0], null, null, "readonly"));
           cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", "readonly"));
           cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, "readonly"));
-          cells.add(createCell(14, a, 3, 1, "checkbox", null, "Array", "jfc_udtmems_array_boolean_" + data[a][0], null, null, "readonly"));
         }
         break;
       }
@@ -992,24 +994,31 @@ public class Panels {
         nodes.add(new NodeRoot(fid, -1));
         break;
       }
-      case "jfc_alarm_editor": {
-        String tid = sql.select1value("select id from jfc_tags where name='alarms'");
-        String data[][] = sql.select("select id,tid,idx,value from jfc_tagvalues where mid=" + IDs.alarm_mid_name + " and tid=" + tid);
-        if (data == null) data = new String[0][0];
-        for(int a=0;a<data.length;a++) {
-          cells.add(createCell(0, a, 2, 1, "label", null, data[a][2], null, null, null, null));
-          cells.add(createCell(2, a, 6, 1, "textfield", null, null, "jfc_tagvalues_value_str_" + data[a][0], null, null, null));
-          cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_alarm_editor_delete", data[a][2], null));
+      case "jfc_alarm_editor_table": {
+        TagBase alarms = TagsService.getTag("alarms");
+        int length = alarms.getLength();
+        for(int a=0;a<length;a++) {
+          TagBase fields[] = alarms.getFields(a);
+          TagBase field = fields[0];
+          String alarmText = field.getString8(0);
+                  //createCell(int x, int y, int w, int h, String comp, String name, String text, String tag, String func, String arg, String style /*, String events */) {
+          cells.add(createCell(0, a, 2, 1, "label", null, Integer.toString(a), null, null, null, null));
+          cells.add(createCell(2, a, 6, 1, "textfield", null, alarmText, "alarms[" + a + "].text" , null, null, null));
+          //HERE!!
+          cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_alarm_editor_delete", Integer.toString(a), null));
         }
         break;
       }
       case "jfc_alarm": {
-        String tid = sql.select1value("select id from jfc_tags where name='alarms'");
-        String alarmname = sql.select1value("select value from jfc_tagvalues where mid=" + IDs.alarm_mid_name + " and tid=" + tid + " and idx=" + arg);
-        String alarmack = sql.select1value("select value from jfc_tagvalues where mid=" + IDs.alarm_mid_ack + " and tid=" + tid + " and idx=" + arg);
-        if (alarmack == null) alarmack = "0";
-        cells.add(createCell(2, 0, 2, 1, "label", null, alarmack.equals("1") ? "X" : "", null, null, null, null));
-        cells.add(createCell(4, 0, 10, 1, "label", null, arg + ":" + alarmname, null, null, null, null));
+        TagUDT alarms = (TagUDT)TagsService.getTag("alarms");
+        int idx = 0;  //TODO
+        TagUDT timer_udt = (TagUDT)alarms;
+        TagBase[] timer = timer_udt.fields[0];
+        TagBase fields[] = alarms.getFields(idx);
+        String alarmName = fields[0].getString8(0);
+        boolean alarmAck = fields[1].getBoolean(0);
+        cells.add(createCell(2, 0, 2, 1, "label", null, alarmAck ? "X" : "", null, null, null, null));
+        cells.add(createCell(4, 0, 10, 1, "label", null, arg + ":" + alarmName, null, null, null, null));
         break;
       }
       case "jfc_alarm_history": {
@@ -1096,9 +1105,7 @@ public class Panels {
         //view current alarms
         context.alarms.clear();
         updateAlarms(panel, client);
-        TagAddr ta = new TagAddr();
-        ta.name = "alarms";
-        TagBase tag = context.getTag(ta);
+        TagBase tag = context.getTag("alarms");
         context.addListener(tag, panel, false, (_tag, _oldValue, _newValue, _cmp) -> {
           updateAlarms(panel, panel.getClient());
         });
@@ -1108,9 +1115,7 @@ public class Panels {
         //view alarm history
         context.lastAlarmID = 0;
         updateAlarmHistory(panel, client);
-        TagAddr ta = new TagAddr();
-        ta.name = "alarms";
-        TagBase tag = context.getTag(ta);
+        TagBase tag = context.getTag("alarms");
         context.addListener(tag, panel, false, (_tag, _oldValue, _newValue, _cmp) -> {
           updateAlarmHistory(panel, panel.getClient());
         });
@@ -1208,16 +1213,15 @@ public class Panels {
       }
     }
     int dir = or.equals("h") ? ProgressBar.HORIZONTAL : ProgressBar.VERTICAL;
-    ProgressBar pb = new ProgressBar(dir, Float.valueOf(v2));
+    ProgressBar pb = new ProgressBar(dir, Float.valueOf(v2), 32);
     pb.setLevels(Float.valueOf(v0), Float.valueOf(v1), Float.valueOf(v2));
     pb.setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16), Integer.valueOf(c2, 16));
     return pb;
   }
   private static void updateAlarmCount(Label label, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
-    String tid = sql.select1value("select id from jfc_tags where name='alarms'");
-    String count = sql.select1value("select count(idx) from jfc_tagvalues where tid=" + tid + " and mid=1 and value='1'");
+    TagBase alarms = TagsService.getTag("alarms");
+    String count = Integer.toString(alarms.getLength());
     label.setText(count);
     if (count.equals("0")) {
       label.setBackColor(Color.green);
@@ -1240,13 +1244,12 @@ public class Panels {
   }
   private static void updateAlarms(Panel panel, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
-    String tid = sql.select1value("select id from jfc_tags where name='alarms'");
-    String data[][] = sql.select("select id,idx,value,mid from jfc_tagvalues where mid=1 and tid=" + tid + " order by idx,mid");
-    if (data == null) data = new String[0][0];
-    for(int a=0;a<data.length;a++) {
-      String idx = data[a][1];
-      if (data[a][2].equals("0")) {
+    TagBase alarms = TagsService.getTag("alarms");
+    int length = alarms.getLength();
+    for(int idx=0;idx<length;idx++) {
+      TagBase fields[] = alarms.getFields(idx);
+      boolean alarmActive = fields[1].getBoolean(0);  //TODO : correct index??? active
+      if (!alarmActive) {
         //not active
         if (context.alarms.containsKey(idx)) {
           //remove inactived alarm
@@ -1257,10 +1260,10 @@ public class Panels {
       }
       if (context.alarms.containsKey(idx)) continue;
       ArrayList<String[]> cells = new ArrayList<String[]>();
-      cells.add(createCell(0, 0, 1, 1, "table", "jfc_alarm", null, null, null, data[a][1], null));
+      cells.add(createCell(0, 0, 1, 1, "table", "jfc_alarm", null, null, null, Integer.toString(idx), null));
       Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, -1, -1, null);
       panel.add(table);
-      context.alarms.put(idx, table);
+      context.alarms.put(Integer.toString(idx), table);
     }
   }
   private static void updateAlarmHistory(Panel panel, WebUIClient client) {

@@ -19,7 +19,6 @@ public class ClientContext extends Thread {
   private volatile boolean active;
   private Object lock = new Object();
   private ArrayList<Monitor> stack = new ArrayList<>();
-  private TagsCache tags = new TagsCache();
 
   public SQL sql;
   public HashMap<String, Component> alarms = new HashMap<>();
@@ -36,49 +35,41 @@ public class ClientContext extends Thread {
   }
 
   public TagBase getTag(String name) {
-    TagAddr ta = tags.decode(name);
-    return tags.getTag(ta);
-  }
-
-  public TagBase getTag(TagAddr ta) {
-    return tags.getTag(ta);
+    return TagsService.getTag(name);
   }
 
   public String read(String name) {
-    return tags.read(name);
+    TagBase tag = getTag(name);
+    return tag.getValue();
   }
 
   public void write(String name, String value) {
-    tags.write(name, value);
+    TagBase tag = getTag(name);
+    tag.setValue(value);
   }
 
-  public TagAddr decode(String name) {
-    return tags.decode(name);
+  public TagBase decode(String name) {
+    return getTag(name);
   }
 
   private static class Monitor implements TagBaseListener {
-    public MonitoredTag tag;
+    public TagBase tag;
     public ClientContext ctx;
     public String oldValue, newValue;
     public Component cmp;
     public TagAction action;
     public boolean anyChange;
 
-    public Monitor(MonitoredTag tag, Component cmp, TagAction action, ClientContext ctx) {
+    public Monitor(TagBase tag, Component cmp, TagAction action, ClientContext ctx) {
 //      JFLog.log("addListener2:" + tag.getTagID() + "," + tag.getIndex() + "," + tag.getMember() + "," + tag.getMemberIndex() + ":" + this);
       this.tag = tag;
       this.cmp = cmp;
       this.action = action;
       this.ctx = ctx;
     }
-    public void tagChanged(TagBase tagBase, TagID id, String oldValue, String newValue) {
+    public void tagChanged(TagBase tagBase, String oldValue, String newValue) {
       //NOTE : this function is running in FunctionService - it must return asap
       synchronized(ctx.lock) {
-        if (!anyChange) {
-          if (id.tid != tag.getTagID()) return;
-          if (id.mid != tag.getMember()) return;
-          if (id.midx != tag.getMemberIndex()) return;
-        }
 //        JFLog.log("tagChanged:" + tag + ":" + id + ":" + oldValue + ":" + newValue + ":" + this);
         this.oldValue = oldValue;
         this.newValue = newValue;
@@ -90,11 +81,10 @@ public class ClientContext extends Thread {
 
   public void addListener(TagBase tag, Component cmp, boolean anyChange, TagAction action) {
     if (tag == null) return;
-    MonitoredTag mtag = (MonitoredTag)tag;
-    Monitor monitor = new Monitor(mtag, cmp, action, this);
+    Monitor monitor = new Monitor(tag, cmp, action, this);
     monitor.anyChange = anyChange;
     listeners.add(monitor);
-    mtag.addListener(monitor);
+    tag.addListener(monitor);
   }
 
   public void clear() {
@@ -102,7 +92,7 @@ public class ClientContext extends Thread {
       Monitor monitor = listeners.remove(0);
       monitor.tag.removeListener(monitor);
     }
-    tags.clear();
+//    tags.clear();  //TODO
     if (debug != null) {
       debug.cancel();
       debug = null;
