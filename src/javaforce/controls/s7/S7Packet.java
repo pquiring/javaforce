@@ -159,8 +159,7 @@ public class S7Packet {
     }
     idx = addr.indexOf(" BYTE ");
     if (idx == -1) {
-      //S7Types.getTypeSize(data.data_type, (short)1);
-      data.length = 1;
+      data.length = S7Types.getTypeSize(data.data_type, (short)1);
     } else {
       data.length = Short.valueOf(addr.substring(idx+6));
     }

@@ -73,4 +73,6 @@ public class VideoBuffer {
   public void clear() {
     tail = head;
   }
+
+  public static native boolean compareFrames(int frame1[], int frame2[], int width, int height, int threshold);
 }

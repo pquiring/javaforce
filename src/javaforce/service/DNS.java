@@ -123,7 +123,10 @@ public class DNS extends Thread {
               uplinktimeout = JF.atoi(ln.substring(14));
             }
             if (ln.startsWith("allow=")) {
-              allows.add(ln.substring(6));
+              String dns = ln.substring(6);
+              if (!allows.contains(dns)) {
+                allows.add(dns);
+              }
             }
             if (ln.startsWith("deny=")) {
               denies.add(ln.substring(5));

@@ -19,7 +19,8 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   private String user;  //acct name (usually a phone number)
   private String auth;  //auth name (usually same as user)
   private String pass;  //password
-  private SIPClientInterface iface;
+  private SIPClientInterface sipiface;
+  private RTSPClientInterface rtspiface;
   private String localhost;
   private int localport, rport = -1;
   private static boolean use_received = true;
@@ -65,7 +66,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   }
 
   /**
-   * Initialize this instance.<br>
+   * Initialize this instance for SIP.<br>
    *
    * @param remotehost,remoteport is the SIP Server/Proxy address.<br>
    * @param localport is the UDP port to bind to locally.<br>
@@ -73,7 +74,47 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    * to.<br>
    */
   public boolean init(String remotehost, int remoteport, int localport, SIPClientInterface iface, Transport type) {
-    this.iface = iface;
+    protocol = "SIP/2.0";
+    this.sipiface = iface;
+    this.localport = localport;
+    this.remoteport = remoteport;
+    this.remotehost = remotehost;
+    this.remoteip = resolve(remotehost);
+    cdlist = new Hashtable<String, CallDetails>();
+    try {
+      this.remoteaddr = InetAddress.getByName(remoteip);
+      if (nat == NAT.STUN || nat == NAT.ICE) {
+        if (!startSTUN()) return false;
+      }
+      findlocalhost();
+      JFLog.log("localhost = " + localhost + " for remotehost = " + remotehost);
+      if (this.remotehost.equals("127.0.0.1")) {
+        this.remotehost = localhost;
+        remoteip = resolve(this.remotehost);
+        JFLog.log("changed 127.0.0.1 to " + this.remotehost + " " + this.remoteip);
+      }
+      if (nat == NAT.STUN || nat == NAT.ICE) {
+        stopSTUN();
+      }
+      return super.init(localport, this, false, type);
+    } catch (Exception e) {
+      if (stun != null) stopSTUN();
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  /**
+   * Initialize this instance for RTSP.<br>
+   *
+   * @param remotehost,remoteport is the RTSP Server/Proxy address.<br>
+   * @param localport is the UDP port to bind to locally.<br>
+   * @param iface must be a RTSPClientInterface where RTSP events are dispatched
+   * to.<br>
+   */
+  public boolean init(String remotehost, int remoteport, int localport, RTSPClientInterface iface, Transport type) {
+    protocol = "RTSP/1.0";
+    this.rtspiface = iface;
     this.localport = localport;
     this.remoteport = remoteport;
     this.remotehost = remotehost;
@@ -420,8 +461,8 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     if (cd.uri == null) {
       cd.uri = "sip:" + user + "@" + remotehost;
     }
-    req.append(cmd + " " + cd.uri + " SIP/2.0\r\n");
-    req.append("Via: SIP/2.0/" + transport.getName() + " " + cd.localhost + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
+    req.append(cmd + " " + cd.uri + " " + protocol + "\r\n");
+    req.append("Via: " + protocol + "/" + transport.getName() + " " + cd.localhost + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
     req.append("Max-Forwards: 70\r\n");
     if (cdsd.routelist != null) {
       for (int a = cdsd.routelist.length-1; a >=0; a--) {
@@ -450,7 +491,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     if ((cd.sdp != null) && (sdp)) {
       if (cd.sdp.startsWith("<?xml")) {
         req.append("Content-Type: application/pidf+xml\r\n");
-      } else if (cd.sdp.startsWith("SIP/2.0")) {
+      } else if (cd.sdp.startsWith(protocol)) {
         req.append("Content-Type: message/sipfrag;version=2.0\r\n");
       } else {
         req.append("Content-Type: application/sdp\r\n");
@@ -470,7 +511,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     JFLog.log("callid:" + cd.callid + "\r\nissue reply : " + code + " to : " + remotehost);
     CallDetails.SideDetails cdsd = (src ? cd.src : cd.dst);
     StringBuilder req = new StringBuilder();
-    req.append("SIP/2.0 " + code + " " + msg + "\r\n");
+    req.append(protocol + " " + code + " " + msg + "\r\n");
     if (cdsd.vialist != null) {
       for (int a = 0; a < cdsd.vialist.length; a++) {
         req.append(cdsd.vialist[a]);
@@ -478,7 +519,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       }
     }
     if ((cdsd.vialist == null) || (cdsd.vialist.length == 0)) {
-      req.append("Via: SIP/2.0/" + transport.getName() + " " + cd.localhost + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
+      req.append("Via: " + protocol + "/" + transport.getName() + " " + cd.localhost + ":" + getlocalport() + ";branch=" + cdsd.branch + (use_rport ? ";rport" : "") + "\r\n");
     }
     if (cdsd.routelist != null) {
       for (int a = cdsd.routelist.length-1; a >=0; a--) {
@@ -700,6 +741,49 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     return true;
   }
 
+  /*
+   * Set user/pass used for RTSP only.
+   */
+  public void setUserPass(String user, String pass) {
+    this.user = user;
+    this.pass = pass;
+  }
+
+  /**
+   * Send OPTIONS request to server.
+   */
+  public boolean options(String url) {
+    return true;
+  }
+
+  /**
+   * Send DESCRIBE request to server.
+   */
+  public boolean describe(String url) {
+    return true;
+  }
+
+  /**
+   * Send SETUP request to server (RTSP).
+   */
+  public boolean setup(String url) {
+    return true;
+  }
+
+  /**
+   * Send PLAY request to server (RTSP).
+   */
+  public boolean play(String url) {
+    return true;
+  }
+
+  /**
+   * Send TEARDOWN request to server (RTSP).
+   */
+  public boolean teardown(String url) {
+    return true;
+  }
+
   /**
    * Processes SIP messages sent from the SIP server.
    */
@@ -808,7 +892,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             cd.dst.o1 = geto(msg, 1) + 1;
             cd.dst.o2 = geto(msg, 2) + 1;
             cd.dst.sdp = getSDP(msg);
-            switch (iface.onInvite(this, callid, cd.dst.from[0], cd.dst.from[1], cd.dst.sdp)) {
+            switch (sipiface.onInvite(this, callid, cd.dst.from[0], cd.dst.from[1], cd.dst.sdp)) {
               case 180:  //this is the normal return
                 reply(cd, cmd, 180, "RINGING", false, false);
                 break;
@@ -826,7 +910,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             break;
           }
           if (req.equals("CANCEL")) {
-            iface.onCancel(this, callid, 0);
+            sipiface.onCancel(this, callid, 0);
             reply(cd, cmd, 200, "OK", false, false);
             reply(cd, "INVITE", 487, "CANCELLED", false, false);
             //then should receive ACK
@@ -835,12 +919,8 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           }
           if (req.equals("BYE")) {
             reply(cd, cmd, 200, "OK", false, false);
-            iface.onBye(this, callid);
+            sipiface.onBye(this, callid);
 //            setCallDetails(callid, null);  //need to wait for ACK
-            break;
-          }
-          if (req.equals("OPTIONS")) {
-            reply(cd, cmd, 405, "Method Not Allowed", false, false);
             break;
           }
           if (req.equals("NOTIFY")) {
@@ -856,7 +936,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
                 }
                 String event = getHeader("Event:", msg);
                 if (event == null) event = getHeader("o:", msg);
-                iface.onNotify(this, callid, event, content);
+                sipiface.onNotify(this, callid, event, content);
                 break;
               }
             }
@@ -867,18 +947,19 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             if (cd.dst.sdp == null) {
               cd.dst.sdp = sdp;
             }
-            iface.onAck(this, callid, sdp);
+            sipiface.onAck(this, callid, sdp);
             if (cmd.equals("BYE")) {
               setCallDetails(callid, null);
             }
             break;
           }
+          reply(cd, cmd, 405, "Method Not Allowed", false, false);
           break;
         case 100:
-          iface.onTrying(this, callid);
+          sipiface.onTrying(this, callid);
           break;
         case 180:
-          iface.onRinging(this, callid);
+          sipiface.onRinging(this, callid);
           break;
         case 181:
           //call if being forwarded
@@ -895,7 +976,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
                 break;
               }
               registered = true;
-              iface.onRegister(this, true);
+              sipiface.onRegister(this, true);
             } else {
               registered = false;
               //iface.onRegister() ???
@@ -907,16 +988,26 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             cd.src.epass = null;
             cd.src.routelist = cd.dst.routelist;  //RFC 2543 6.29
             if (type == 200) issue(cd, "ACK", false, true);
-            iface.onSuccess(this, callid, cd.dst.sdp, type == 200);
+            sipiface.onSuccess(this, callid, cd.dst.sdp, type == 200);
           } else if (cmd.equals("BYE")) {
             if (type == 183) break;  //not used in BYE command
             //call leg ended
             setCallDetails(callid, null);
+          } else if (cmd.equals("OPTIONS")) {
+            rtspiface.onOptions(this);
+          } else if (cmd.equals("DESCRIBE")) {
+            rtspiface.onDescribe(this, getSDP(msg));
+          } else if (cmd.equals("SETUP")) {
+            rtspiface.onSetup(this);
+          } else if (cmd.equals("PLAY")) {
+            rtspiface.onPlay(this);
+          } else if (cmd.equals("TEARDOWN")) {
+            rtspiface.onTeardown(this);
           }
           break;
         case 202:
           if (cmd.equals("REFER")) {
-            iface.onRefer(this, callid);
+            sipiface.onRefer(this, callid);
           }
           break;
         case 401:
@@ -926,7 +1017,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           } else {
             String src_to[] = cd.src.to;
             cd.src.to = cd.dst.to;  //update to (tag may have been added)
-            issue(cd, "ACK", false, true);
+            if (sipiface != null) issue(cd, "ACK", false, true);
             cd.src.to = src_to;
             cd.authstr = getHeader("WWW-Authenticate:", msg);
             if (cd.authstr == null) {
@@ -954,9 +1045,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           issue(cd, "ACK", false, true);
           if (cmd.equals("REGISTER")) {
             //bad password
-            iface.onRegister(this, false);
+            sipiface.onRegister(this, false);
           } else {
-            iface.onCancel(this, callid, type);
+            sipiface.onCancel(this, callid, type);
           }
           break;
         case 404:  //no one there
@@ -965,7 +1056,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           cd.src.epass = null;
           cd.src.cseq = cd.dst.cseq;
           issue(cd, "ACK", false, true);
-          iface.onCancel(this, callid, type);
+          sipiface.onCancel(this, callid, type);
           setCallDetails(callid, null);
           break;
         default:
@@ -974,7 +1065,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           cd.src.epass = null;
           cd.src.cseq = cd.dst.cseq;
           issue(cd, "ACK", false, true);
-          iface.onCancel(this, callid, type);
+          sipiface.onCancel(this, callid, type);
 //          setCallDetails(callid, null);  //might not be done
           break;
       }

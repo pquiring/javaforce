@@ -38,7 +38,7 @@ public class RTP implements STUN.Listener {
   public final static Codec CODEC_GSM = new Codec("GSM", 3);  //patent expired
   public final static Codec CODEC_G711a = new Codec("PCMA", 8);  //patent expired
   public final static Codec CODEC_G722 = new Codec("G722", 9);  //patent expired
-  public final static Codec CODEC_G729a = new Codec("G729", 18);  //patent encumbered
+  public final static Codec CODEC_G729a = new Codec("G729", 18);  //patent expired (Jan 1/2017)
   public final static Codec CODEC_JPEG = new Codec("JPEG", 26);  //public domain
   public final static Codec CODEC_H263 = new Codec("H263", 34);  //patent expired
   //dynamic ids (96-127)

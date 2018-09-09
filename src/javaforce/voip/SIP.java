@@ -31,6 +31,7 @@ public abstract class SIP {
   private String tupleid;
   private Random r = new Random();
   private boolean server;
+  protected String protocol = "SIP/2.0";  //SIP/2.0 or RTSP/1.0
   protected SIPTransport transport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
 
@@ -759,7 +760,7 @@ public abstract class SIP {
     if (msg[0].length() < 11) {
       return -1;  //bad msg
     }
-    if (!msg[0].regionMatches(true, 0, "SIP/2.0 ", 0, 8)) {
+    if (!msg[0].regionMatches(true, 0, protocol + " ", 0, 8)) {
       return -1;  //not a response
     }    //SIP/2.0 ### ...
     return Integer.valueOf(msg[0].substring(8, 11));

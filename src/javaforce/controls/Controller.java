@@ -12,11 +12,13 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import javaforce.*;
 import javaforce.controls.s7.*;
 import javaforce.controls.mod.*;
 import javaforce.controls.ab.*;
 import javaforce.controls.ni.*;
 import javaforce.controls.jfc.*;
+import javaforce.media.*;
 
 public class Controller {
   private boolean connected;
@@ -27,6 +29,9 @@ public class Controller {
   private DAQmx daq;
   private Object lock = new Object();  //read/write lock
   private static Object s7_connect_lock = new Object();
+  private AudioInput mic;
+  private int micBufferSize;
+  private short micBuffer[];
 
   private ABContext ab_context;
 
@@ -44,6 +49,7 @@ public class Controller {
    * url = "MODBUS:host"
    * url = "AB:host"
    * url = "NI:device/options"
+   * url = "MIC:name"  (int16 data type , <default> will use default mic)
    *
    */
   public boolean connect(String url) {
@@ -158,6 +164,14 @@ public class Controller {
       }
       return connected;
     }
+    if (url.startsWith("MIC:")) {
+      plc = ControllerType.MIC;
+      mic = new AudioInput();
+      micBufferSize = (int)(44100.0 / (1000.0 / rate));
+      micBuffer = new short[micBufferSize];
+      connected = mic.start(1, 44100, 16, micBufferSize, url.substring(4));
+      return connected;
+    }
     return false;
   }
 
@@ -184,6 +198,10 @@ public class Controller {
           daq.close();
           daq = null;
         }
+        break;
+      case ControllerType.MIC:
+        mic.stop();
+        mic = null;
         break;
     }
     connected = false;
@@ -282,6 +300,10 @@ public class Controller {
         }
         case ControllerType.NI: {
           System.out.println("NI write() not implemented");
+          return false;
+        }
+        case ControllerType.MIC: {
+          System.out.println("MIC write() not implemented");
           return false;
         }
       }
@@ -393,6 +415,18 @@ public class Controller {
         }
         case ControllerType.NI: {
           return daq.read();
+        }
+        case ControllerType.MIC: {
+          byte ret[] = new byte[2];
+          if (!mic.read(micBuffer)) return null;
+          int max = 0;
+          for(int a=0;a<micBufferSize;a++) {
+            short sam = micBuffer[a];
+            if (sam < 0) sam *= -1;
+            if (sam > max) max = sam;
+          }
+          LE.setuint16(ret, 0, max);
+          return ret;
         }
       }
       return null;
@@ -530,6 +564,7 @@ public class Controller {
         case ControllerType.JF:
           return socket.isConnected();
         case ControllerType.NI:
+        case ControllerType.MIC:
         default:
           return connected;
       }

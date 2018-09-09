@@ -14,7 +14,7 @@ import javaforce.*;
 public class Tag {
   /** Host (usually IP Address) */
   public String host;
-  /** Type of host (S7, AB, MB, NI) See ControllerType */
+  /** Type of host (S7, AB, MB, NI, MIC) See ControllerType */
   public int type;
   /** Tag name. */
   public String tag;
@@ -82,6 +82,7 @@ public class Tag {
       case ControllerType.AB: return false;
       case ControllerType.MB: return true;
       case ControllerType.NI: return true;
+      case ControllerType.MIC: return false;
       default: return true;
     }
   }
@@ -134,6 +135,7 @@ public class Tag {
       case ControllerType.AB: return "AB:" + host;
       case ControllerType.MB: return "MB:" + host;
       case ControllerType.NI: return "NI:" + host;
+      case ControllerType.MIC: return "MIC:" + host;
     }
     JFLog.log("Tag:Error:type unknown");
     return null;
@@ -155,6 +157,9 @@ public class Tag {
     if (!isValid()) return "not set";
     if (type == ControllerType.NI) {
       return host;
+    }
+    if (type == ControllerType.MIC) {
+      return "MIC:" + host;
     }
     return tag;
   }

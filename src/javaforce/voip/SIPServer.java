@@ -62,8 +62,8 @@ public class SIPServer extends SIP implements SIPInterface {
     CallDetails.SideDetails cdsd = (src ? cd.pbxsrc : cd.pbxdst);
     JFLog.log("callid:" + cd.callid + "\r\nissue command : " + cd.cmd + " from : " + cd.user + " to : " + cdsd.host + ":" + cdsd.port);
     StringBuffer req = new StringBuffer();
-    req.append(cd.cmd + " " + cd.uri + " SIP/2.0\r\n");
-    req.append("Via: SIP/2.0/UDP " + cd.localhost + ":" + localport + ";branch=" + cdsd.branch + "\r\n");
+    req.append(cd.cmd + " " + cd.uri + " " + protocol + "\r\n");
+    req.append("Via: " + protocol + "/UDP " + cd.localhost + ":" + localport + ";branch=" + cdsd.branch + "\r\n");
     req.append("Max-Forwards: 70\r\n");
     req.append("Contact: " + cdsd.contact + "\r\n");
     req.append("To: " + join(cdsd.to) + "\r\n");
@@ -97,7 +97,7 @@ public class SIPServer extends SIP implements SIPInterface {
     CallDetails.SideDetails cdsd = (src ? cd.pbxsrc : cd.pbxdst);
     JFLog.log("callid:" + cd.callid + "\r\nissue reply : " + code + " to : " + cdsd.host + ":" + cdsd.port);
     StringBuffer req = new StringBuffer();
-    req.append("SIP/2.0 " + code + " " + msg + "\r\n");
+    req.append(protocol + " " + code + " " + msg + "\r\n");
     if (cdsd.vialist != null) {
       for (int a = 0; a < cdsd.vialist.length; a++) {
         if (a == 0) {
