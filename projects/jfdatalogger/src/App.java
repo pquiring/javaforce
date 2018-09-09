@@ -14,7 +14,7 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.20";
+  public static String version = "0.21";
 
   public static int delays[] = new int[] {
     5, 10, 25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
@@ -599,6 +599,7 @@ public class App extends javax.swing.JFrame {
       case "MB": tag.type = ControllerType.MB; break;
       case "NI": tag.type = ControllerType.NI; break;
       case "JF": tag.type = ControllerType.JF; break;
+      case "MIC": tag.type = ControllerType.MIC; break;
       default: JFLog.log("Unknown Tag Type:" + f[1]);
     }
     tag.tag = f[2];
@@ -630,6 +631,7 @@ public class App extends javax.swing.JFrame {
       case ControllerType.MB: ctrl = "MB"; break;
       case ControllerType.NI: ctrl = "NI"; break;
       case ControllerType.JF: ctrl = "JF"; break;
+      case ControllerType.MIC: ctrl = "MIC"; break;
     }
     String size = "";
     switch (tag.size) {
@@ -652,6 +654,7 @@ public class App extends javax.swing.JFrame {
       case ControllerType.MB: ctrl = "MB"; break;
       case ControllerType.NI: ctrl = "NI"; break;
       case ControllerType.JF: ctrl = "JF"; break;
+      case ControllerType.MIC: ctrl = "MIC"; break;
     }
     String size = "";
     switch (tag.size) {

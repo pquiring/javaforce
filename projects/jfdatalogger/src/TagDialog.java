@@ -56,7 +56,7 @@ public class TagDialog extends javax.swing.JDialog {
 
     jLabel1.setText("Type");
 
-    type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Siemens", "AllenBradley", "ModBus", "NI" }));
+    type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Siemens", "AllenBradley", "ModBus", "NI", "MIC" }));
     type.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         typeItemStateChanged(evt);
@@ -225,9 +225,13 @@ public class TagDialog extends javax.swing.JDialog {
   }//GEN-LAST:event_colorActionPerformed
 
   private void typeItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_typeItemStateChanged
-    if (type.getSelectedIndex() == 3) {
+    if (type.getSelectedIndex() == 3 || type.getSelectedIndex() == 4) {
       tag.setEnabled(false);
       tag.setText("");
+      if (type.getSelectedIndex() == 4) {
+        host.setText("<default>");
+        size.setSelectedIndex(2);
+      }
     } else {
       tag.setEnabled(true);
     }
@@ -266,6 +270,7 @@ public class TagDialog extends javax.swing.JDialog {
       case ControllerType.AB: type.setSelectedIndex(1); break;
       case ControllerType.MB: type.setSelectedIndex(2); break;
       case ControllerType.NI: type.setSelectedIndex(3); break;
+      case ControllerType.MIC: type.setSelectedIndex(4); break;
     }
     host.setText(in.host);
     tag.setText(in.tag);
@@ -302,6 +307,7 @@ public class TagDialog extends javax.swing.JDialog {
         case 1: out.type = ControllerType.AB; break;
         case 2: out.type = ControllerType.MB; break;
         case 3: out.type = ControllerType.NI; break;
+        case 4: out.type = ControllerType.MIC; break;
       }
       out.host = host.getText();
       out.tag = tag.getText();

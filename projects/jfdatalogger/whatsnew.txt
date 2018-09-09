@@ -1,3 +1,6 @@
+Aug 1/2018 : v0.21 released
+  - new : can now record from microphone
+
 Jun 7/2018 : v0.20 released
   - fix : s7 addressing bug
   - new : click on image to select row in data table

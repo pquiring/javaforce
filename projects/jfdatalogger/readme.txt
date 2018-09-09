@@ -8,6 +8,7 @@ Supports:
  - AllenBradley
  - ModBus IP protocol
  - National Instruments DAQmx systems
+ - Microphones (dB level)
 
 Has the option to save to a csv file.
 
