@@ -11,7 +11,7 @@ import javaforce.webui.*;
 import jfcontrols.api.*;
 import jfcontrols.panels.*;
 import jfcontrols.functions.*;
-import jfcontrols.sql.*;
+import jfcontrols.db.*;
 import jfcontrols.tags.*;
 
 public class Main implements WebUIHandler {
@@ -30,7 +30,7 @@ public class Main implements WebUIHandler {
 //    if (debug) SQL.debug = true;
     Paths.init();
     //start database
-    SQLService.start();
+    Database.start();
     //start tags server
     TagsService.main();
     //start logic server
@@ -44,6 +44,7 @@ public class Main implements WebUIHandler {
 
   public Panel getRootPanel(WebUIClient client) {
     System.out.println("getRootPanel()");
+    client.setProperty("xref", "-1");
     if (debug) {
       client.setProperty("user", "admin");
     }
@@ -100,7 +101,7 @@ public class Main implements WebUIHandler {
 
   public static void serviceStop() {
     stop();
-    SQLService.stop();
+//    Database.stop();
     loader = null;
     System.gc();
   }

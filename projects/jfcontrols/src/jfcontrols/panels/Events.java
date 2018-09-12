@@ -14,7 +14,7 @@ import javaforce.controls.*;
 import jfcontrols.app.*;
 import jfcontrols.functions.*;
 import jfcontrols.images.*;
-import jfcontrols.sql.*;
+import jfcontrols.db.*;
 import jfcontrols.tags.*;
 import jfcontrols.logic.*;
 
@@ -23,7 +23,6 @@ public class Events {
   public static void click(Component c) {
     WebUIClient client = c.getClient();
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     String func = (String)c.getProperty("func");
     String arg = (String)c.getProperty("arg");
     JFLog.log("click:" + c + ":func=" + func + ":arg=" + arg);
@@ -57,20 +56,21 @@ public class Events {
         arg = (String)client.getProperty("arg");
         switch (action) {
           case "jfc_ctrl_delete": {
-            sql.execute("delete from jfc_ctrls where id=" + arg);
+            int id = Integer.valueOf(arg);
+            Database.deleteControllerById(id);
             client.setPanel(Panels.getPanel("jfc_controllers", client));
             break;
           }
           case "jfc_funcs_delete": {
-            JFLog.log("id=" + arg);
-            sql.execute("delete from jfc_funcs where id=" + arg);
-            sql.execute("delete from jfc_rungs where fid=" + arg);
-            sql.execute("delete from jfc_blocks where fid=" + arg);
+            int id = Integer.valueOf(arg);
+            Database.deleteFunctionById(id);
+            Database.deleteRungsById(id);
+            Database.deleteBlocksById(id);
             client.setPanel(Panels.getPanel("jfc_funcs", client));
             break;
           }
           case "jfc_func_editor_del_rung": {
-            String fid = (String)client.getProperty("func");
+            int fid = (Integer)client.getProperty("func");
             Component focus = (Component)client.getProperty("focus");
             int rid = -1;
             Node node = null;
@@ -85,13 +85,11 @@ public class Events {
               }
             }
             if (rid == -1) break;
-            sql.execute("delete from jfc_rungs where fid=" + fid + " and rid=" + rid);
-            sql.execute("delete from jfc_blocks where fid=" + fid + " and rid=" + rid);
-            sql.execute("update jfc_rungs set rid=rid-1 where fid=" + fid + " and rid>" + rid);
-            sql.execute("update jfc_blocks set rid=rid-1 where fid=" + fid + " and rid>" + rid);
-            long revision = Long.valueOf(sql.select1value("select revision from jfc_funcs where id=" + fid));
-            revision++;
-            sql.execute("update jfc_funcs set revision=" + revision + " where id=" + fid);
+            Database.deleteRungById(fid, rid);
+            Database.deleteRungBlocksById(fid, rid);
+            FunctionRow fnc = Database.getFunctionById(fid);
+            fnc.revision++;
+            Database.funcs.save();
             client.setPanel(Panels.getPanel("jfc_func_editor", client));
             break;
           }
@@ -100,23 +98,25 @@ public class Events {
             break;
           }
           case "jfc_panels_delete": {
-            sql.execute("delete from jfc_panels where id=" + arg);
+            //sql.execute("delete from jfc_panels where id=" + arg);
+            Database.deletePanelById(Integer.valueOf(arg));
             client.setPanel(Panels.getPanel("jfc_panels", client));
             break;
           }
           case "jfc_tags_delete": {
-            sql.execute("delete from jfc_tags where id=" + arg);
+            TagsService.deleteTag(Integer.valueOf(arg));
             client.setPanel(Panels.getPanel("jfc_tags", client));
             break;
           }
           case "jfc_watch_delete": {
-            sql.execute("delete from jfc_watch where id=" + arg);
+            int wid = (Integer)client.getProperty("watch");
+            Database.deleteWatchTagById(wid, Integer.valueOf(arg));
             client.setPanel(Panels.getPanel("jfc_watch", client));
             break;
           }
           case "jfc_udts_delete": {
-            sql.execute("delete from jfc_udts where id=" + arg);
-            sql.execute("delete from jfc_udtmems where uid=" + arg);
+            Database.deleteUDTById(Integer.valueOf(arg));
+            Database.deleteUDTMembersById(Integer.valueOf(arg));
             client.setPanel(Panels.getPanel("jfc_udts", client));
             break;
           }
@@ -138,11 +138,10 @@ public class Events {
       case "jfc_login_ok": {
         String user = ((TextField)client.getPanel().getComponent("user")).getText();
         String pass = ((TextField)client.getPanel().getComponent("pass")).getText();
-        String data[][] = sql.select("select name,pass from jfc_users");
+        UserRow data[] = Database.users.getRows().toArray(new UserRow[0]);
         boolean ok = false;
         for(int a=0;a<data.length;a++) {
-          JFLog.log("user/pass=" + data[a][0] + "," + data[a][1]);
-          if (user.equals(data[a][0]) && pass.equals(data[a][1])) {
+          if (user.equals(data[a].name) && pass.equals(data[a].pass)) {
             client.setProperty("user", user);
             ok = true;
             break;
@@ -166,21 +165,22 @@ public class Events {
       }
       case "jfc_ctrl_new": {
         //find available ctrl id
+        ControllerRow[] ctrls = Database.controllers.getRows().toArray(new ControllerRow[0]);
         synchronized(lock) {
-          int id = 1;
-          do {
-            String inuse = sql.select1value("select cid from jfc_ctrls where cid=" + id);
-            if (inuse == null) break;
-            id++;
-          } while (true);
-          sql.execute("insert into jfc_ctrls (cid,ip,type,speed) values (" + id + ",'',0,0)");
+          int cid = 1;
+          for(int a=0;a<ctrls.length;a++) {
+            if (ctrls[a].cid == cid) {
+              cid++;
+              a = -1;
+            }
+          }
+          Database.addController(cid, "", 0, 0);
           client.setPanel(Panels.getPanel("jfc_controllers", client));
         }
         break;
       }
       case "jfc_ctrl_delete": {
-        String inuse = sql.select1value("select count(tags) from jfc_blocks where tags like '%,c" + arg + "#%'");
-        if (!inuse.equals("0")) {
+        if (Database.isControllerInUse(Integer.valueOf(arg))) {
           Panels.showError(client, "Can not delete controller that is in use!");
           break;
         }
@@ -194,7 +194,7 @@ public class Events {
       }
       case "jfc_ctrl_tags": {
         //load tags for controller
-        client.setProperty("ctrl", arg);
+        client.setProperty("ctrl", Integer.valueOf(arg));
         client.setPanel(Panels.getPanel("jfc_tags", client));
         break;
       }
@@ -236,7 +236,7 @@ public class Events {
             //TODO : show error msg
             break;
           }
-          String exists = sql.select1value("select id from jfc_tags where name='" + name + "'");
+          TagRow exists = Database.getTagByName(name);
           if (exists != null) {
             //TODO : show error msg
             break;
@@ -268,9 +268,8 @@ public class Events {
             }
           }
           String comment = "";  //edit later
-          sql.execute("insert into jfc_tags (cid,name,type,arraysize,builtin) values (" + cid + ",'" + name + "'," + type + "," + arraysize + ",false)");
-          int id = Integer.valueOf(sql.select1value("select id from jfc_tags where name='" + name + "'"));
-          TagBase tag = TagsService.createTag(cid, id, type, arraysize, name, comment, sql);
+          int id = Database.addTag(cid, name, type, arraysize, false);
+          TagBase tag = TagsService.createTag(cid, id, type, arraysize, name, comment);
           TagsService.addTag(tag);
           client.setPanel(Panels.getPanel("jfc_tags", client));  //force update
         }
@@ -290,15 +289,8 @@ public class Events {
         break;
       }
       case "jfc_tags_delete": {
-        String cid = (String)client.getProperty("ctrl");
-        String query;
-        if (cid.equals("0")) {
-          query = "select count(tags) from jfc_blocks where tags like '%,c0#" + arg + ",%' or tags like '%," + arg + ",%'";
-        } else {
-          query = "select count(tags) from jfc_blocks where tags like '%,c" + cid + "#" + arg + ",%'";
-        }
-        String inuse = sql.select1value(query);
-        if (!inuse.equals("0")) {
+        int cid = (Integer)client.getProperty("ctrl");
+        if (Database.isTagInUse(cid, arg)) {
           Panels.showError(client, "Can not delete tag that is in use!");
           break;
         }
@@ -312,31 +304,23 @@ public class Events {
         break;
       }
       case "jfc_tags_xref": {
-        client.setProperty("xref", arg);
+        client.setProperty("xref", Integer.valueOf(arg));
         client.setPanel(Panels.getPanel("jfc_xref", client));
         break;
       }
       case "jfc_xref_view_func": {
-        client.setProperty("func", arg);
+        client.setProperty("func", Integer.valueOf(arg));
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
       case "jfc_xref_view_panel": {
-        client.setProperty("panel", arg);
+        client.setProperty("panel", Integer.valueOf(arg));
         client.setPanel(Panels.getPanel("jfc_panel_editor", client));
         break;
       }
       case "jfc_watch_new": {
-        synchronized(lock) {
-          int id = 1;
-          do {
-            String inuse = sql.select1value("select name from jfc_watch where name='watch" + id + "'");
-            if (inuse == null) break;
-            id++;
-          } while (true);
-          sql.execute("insert into jfc_watch (name) values ('watch" + id + "')");
-          client.setPanel(Panels.getPanel("jfc_watch", client));
-        }
+        Database.addWatchTable("New Watch Table");
+        client.setPanel(Panels.getPanel("jfc_watch", client));
         break;
       }
       case "jfc_watch_delete": {
@@ -345,23 +329,15 @@ public class Events {
         break;
       }
       case "jfc_watch_edit": {
-        client.setProperty("watch", arg);
+        client.setProperty("watch", Integer.valueOf(arg));
         client.setPanel(Panels.getPanel("jfc_watch_tags", client));
         break;
       }
       case "jfc_watch_tags_new": {
         if (context.watch != null) break;
-        String wid = (String)client.getProperty("watch");
-        synchronized(lock) {
-          int id = 1;
-          do {
-            String inuse = sql.select1value("select tag from jfc_watchtags where tag='tag" + id + "' and wid=" + wid);
-            if (inuse == null) break;
-            id++;
-          } while (true);
-          sql.execute("insert into jfc_watchtags (wid, tag) values (" + wid + ",'tag" + id + "')");
-          client.setPanel(Panels.getPanel("jfc_watch_tags", client));
-        }
+        int wid = (Integer)client.getProperty("watch");
+        Database.addWatchTag(wid, arg);
+        client.setPanel(Panels.getPanel("jfc_watch_tags", client));
         break;
       }
       case "jfc_watch_tags_start": {
@@ -384,7 +360,8 @@ public class Events {
       }
       case "jfc_watch_tags_delete": {
         if (context.watch != null) break;
-        sql.execute("delete from jfc_watchtags where id=" + arg);
+        int wid = (Integer)client.getProperty("watch");
+        Database.deleteWatchTagById(wid, Integer.valueOf(arg));
         client.setPanel(Panels.getPanel("jfc_watch_tags", client));
         break;
       }
@@ -403,8 +380,8 @@ public class Events {
         String old = ((TextField)panel.getComponent("jfc_password_old")).getText();
         String newpw = ((TextField)panel.getComponent("jfc_password_new")).getText();
         String cfmpw = ((TextField)panel.getComponent("jfc_password_confirm")).getText();
-        String curpw = sql.select1value("select pass from jfc_users where name='" + user + "'");
-        if (!curpw.equals(old)) {
+        UserRow userobj = Database.getUser(user);
+        if (!userobj.pass.equals(old)) {
           Panels.showError(client, "Wrong current password");
           break;
         }
@@ -416,7 +393,8 @@ public class Events {
           Panels.showError(client, "Password too short");
           break;
         }
-        sql.execute("update jfc_users set pass='" + newpw + "' where name='" + user + "'");
+        userobj.pass = newpw;
+        Database.users.save();
         Panels.showError(client, "Password changed!");
         break;
       }
@@ -427,20 +405,20 @@ public class Events {
       }
       case "jfc_config_shutdown": {
         Main.stop();
-        SQLService.stop();
+        Database.stop();
         Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
         lbl.setText("Database Shutdown");
         break;
       }
       case "jfc_config_restart": {
-        SQLService.restart();
+        Database.restart();
         Main.restart();
         Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
         lbl.setText("System running");
         break;
       }
       case "jfc_config_backup": {
-        String msg = SQLService.backup();
+        String msg = Database.backup();
         Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
         lbl.setText(msg);
         break;
@@ -448,100 +426,81 @@ public class Events {
       case "jfc_config_restore": {
         ComboBox cb = (ComboBox)client.getPanel().getComponent("backups");
         String filename = cb.getSelectedText();
-        String msg = SQLService.restore(Paths.backupPath + "/" + filename);
+        String msg = Database.restore(Paths.backupPath + "/" + filename);
         Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
         lbl.setText(msg);
         break;
       }
       case "jfc_panels_new": {
         synchronized(lock) {
-          int id = 1;
-          do {
-            String inuse1 = sql.select1value("select name from jfc_panels where name='panel" + id + "'");
-            String inuse2 = sql.select1value("select display from jfc_panels where display='panel" + id + "'");
-            if (inuse1 == null && inuse2 == null) break;
-            id++;
-          } while (true);
-          sql.execute("insert into jfc_panels (name, display, popup, builtin) values ('panel" + id + "', 'panel" + id + "', false, false)");
+          Database.addPanel("New Panel", false, false);
         }
         client.setPanel(Panels.getPanel("jfc_panels", client));
         break;
       }
       case "jfc_udts_new": {
         synchronized(lock) {
-          int uid = IDs.uid_user;
-          do {
-            String inuse = sql.select1value("select id from jfc_udts where uid=" + uid + " or name='udt" + (uid-IDs.uid_user+1) + "'");
-            if (inuse == null) break;
-            uid++;
-            if (uid == IDs.uid_user_end) {
-              JFLog.log("Error:Too many UDTs");
-              break;
-            }
-          } while (true);
-          if (uid == IDs.uid_user_end) break;
-          sql.execute("insert into jfc_udts (name, uid) values ('udt" + (uid-IDs.uid_user+1) + "', " + uid + ")");
+          Database.addUDT("New UDT");
         }
         client.setPanel(Panels.getPanel("jfc_udts", client));
         break;
       }
       case "jfc_udts_delete": {
-        int uid = Integer.valueOf(sql.select1value("select uid from jfc_udts where id=" + arg));
-        String name = sql.select1value("select name from jfc_udts where id=" + arg);
+        int uid = Integer.valueOf(arg);
         if (uid == IDs.uid_alarms) {
           Panels.showError(client, "Can not delete alarms type");
           break;
         }
-        String inuse = sql.select1value("select count(id) from jfc_tags where type=" + uid);
-        if (!inuse.equals("0")) {
+        if (Database.isUDTInUse(uid)) {
           Panels.showError(client, "Can not delete UDT that is in use!");
           break;
         }
         client.setProperty("arg", arg);
-        Panels.confirm(client, "Delete UDT " + name + "?", "jfc_udts_delete");
+        UDT udt = Database.getUDTById(uid);
+        Panels.confirm(client, "Delete UDT " + udt.name + "?", "jfc_udts_delete");
         break;
       }
       case "jfc_udts_edit": {
-        client.setProperty("udt", arg);
+        client.setProperty("udt", Integer.valueOf(arg));
         client.setPanel(Panels.getPanel("jfc_udt_editor", client));
         break;
       }
 
       case "jfc_udt_editor_new": {
-        String uid = (String)client.getProperty("udt");
+        int uid = (Integer)client.getProperty("udt");
         synchronized(lock) {
           int mid = 0;
           do {
-            String inuse = sql.select1value("select name from jfc_udtmems where uid=" + uid + " and mid=" + mid);
-            if (inuse == null) break;
+            UDTMember member = Database.getUDTMemberById(uid, mid);
+            if (member == null) break;
             mid++;
           } while (true);
-          sql.execute("insert into jfc_udtmems (name,uid,mid,type,array,builtin) values ('member" + (mid+1) + "'," + uid + "," + mid + ",1,false,false,false)");
+          Database.addUDTMember(uid, mid, "NewMember" + (mid+1), 0, 0, false);
         }
         client.setPanel(Panels.getPanel("jfc_udt_editor", client));
         break;
       }
 
       case "jfc_udt_editor_delete": {
-        String uid = sql.select1value("select uid from jfc_udtmems where id=" + arg);
-        String inuse = sql.select1value("select count(id) from jfc_tags where type=" + uid);
-        if (!inuse.equals("0")) {
+        int uid = (Integer)client.getProperty("udt");
+        int mid = Integer.valueOf(arg);
+        if (Database.isUDTMemberInUse(uid, mid)) {
           Panels.showError(client, "Can not delete member that is in use!");
           break;
         }
-        sql.execute("delete from jfc_udtmems where mid=" + arg);
+        Database.deleteUDTMemberById(uid, mid);
         client.setPanel(Panels.getPanel("jfc_udt_editor", client));
         break;
       }
 
       case "jfc_sdts_edit": {
-        client.setProperty("udt", arg);
+        client.setProperty("udt", Integer.valueOf(arg));
         client.setPanel(Panels.getPanel("jfc_sdt_editor", client));
         break;
       }
 
       case "jfc_panels_edit": {
-        client.setProperty("panel", arg);
+        client.setProperty("panel", Integer.valueOf(arg));
         client.setProperty("focus", null);
         client.setPanel(Panels.getPanel("jfc_panel_editor", client));
         break;
@@ -575,8 +534,9 @@ public class Events {
         if (nc == null) break;
         Panels.setCellSize(nc, nr);
         t1.add(nc, r.x, r.y);
-        String pid = (String)client.getProperty("panel");
-        sql.execute("insert into jfc_cells (pid,x,y,w,h,comp,text,style) values (" + pid + "," + r.x + "," + r.y + ",1,1," + SQL.quote(type) + "," + SQL.quote(text) + "," + SQL.quote(style) + ")");
+        int pid = (Integer)client.getProperty("panel");
+        javaforce.db.Table celltable = Database.getCellTable(Database.getPanelById(pid).name);
+        celltable.add(new CellRow(pid,r.x,r.y,1,1,type,text,"").setStyle(style));
         break;
       }
       case "jfc_panel_editor_del": {
@@ -587,8 +547,8 @@ public class Events {
         Component comp = t1.get(r.x, r.y, false);
         if (comp == null) break;
         t1.remove(r.x, r.y);
-        String pid = (String)client.getProperty("panel");
-        sql.execute("delete from jfc_cells where pid=" + pid + " and x=" + r.x + " and y=" + r.y);
+        int pid = (Integer)client.getProperty("panel");
+        Database.deleteCell(pid, r.x, r.y);
         if (r.width > 1 || r.height > 1) {
           Table t2 = (Table)client.getPanel().getComponent("t2");  //overlays
           t2.remove(r.x, r.y);
@@ -610,13 +570,14 @@ public class Events {
         Component comp = t1.get(r.x, r.y, false);
         if (comp == null) break;
         String type = getComponentType(comp);
-        String pid = (String)client.getProperty("panel");
-        String events = sql.select1value("select events from jfc_cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
-        String tag = sql.select1value("select tag from jfc_cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+        int pid = (Integer)client.getProperty("panel");
+        CellRow cell = Database.getCell(pid, r.x, r.y);
+        String events = cell.events;
+        String tag = cell.tag;
         if (tag == null) tag = "";
-        String text = sql.select1value("select text from jfc_cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+        String text = cell.text;
         if (text == null) text = "";
-        String style = sql.select1value("select style from jfc_cells where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+        String style = cell.style;
         if (style == null) style = "";
         Panel panel = client.getPanel();
 
@@ -954,8 +915,13 @@ public class Events {
               break;
           }
           String events = "press=" + press + "|release=" + release + "|click=" + click;
-          String pid = (String)client.getProperty("panel");
-          sql.execute("update jfc_cells set events=" + SQL.quote(events) + ",tag=" + SQL.quote(tag) + ",text=" + SQL.quote(text) + ",style=" + SQL.quote(style) + " where x=" + r.x + " and y=" + r.y + " and pid=" + pid);
+          int pid = (Integer)client.getProperty("panel");
+          CellRow cell = Database.getCell(pid, r.x, r.y);
+          cell.events = events;
+          cell.tag = tag;
+          cell.text = text;
+          cell.style = style;
+          Database.saveCellTable(Database.getPanelById(pid).name);
         }
         PopupPanel props = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");
         props.setVisible(false);
@@ -1002,27 +968,20 @@ public class Events {
 
       case "jfc_funcs_new": {
         synchronized(lock) {
-          int id = 1;
-          do {
-            String inuse = sql.select1value("select name from jfc_funcs where name='func" + id + "'");
-            if (inuse == null) break;
-            id++;
-          } while (true);
-          sql.execute("insert into jfc_funcs (name, revision) values ('func" + id + "', 1)");
+          Database.addFunction("New Function", 1);
         }
         client.setPanel(Panels.getPanel("jfc_funcs", client));
         break;
       }
       case "jfc_funcs_edit": {
         JFLog.log("func=" + arg);
-        client.setProperty("func", arg);
+        client.setProperty("func", Integer.valueOf(arg));
         client.setProperty("focus", null);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
       case "jfc_funcs_delete": {
-        String inuse = sql.select1value("select count(id) from jfc_blocks where name='CALL' and tags='," + arg + ",'");
-        if (!inuse.equals("0")) {
+        if (Database.isFunctionInUse(Integer.valueOf(arg))) {
           Panels.showError(client, "Can not delete function that is in use");
           break;
         }
@@ -1038,7 +997,7 @@ public class Events {
           Button debug = (Button)client.getPanel().getComponent("jfc_debug");
           debug.setText("Debug");
         }
-        int fid = Integer.valueOf((String)client.getProperty("func"));
+        int fid = (Integer)client.getProperty("func");
         Component focus = (Component)client.getProperty("focus");
         int rid = 0;
         Node node = null;
@@ -1059,15 +1018,13 @@ public class Events {
         }
         //insert rung before current one
         JFLog.log("rid=" + rid);
-        sql.execute("update jfc_rungs set rid=rid+1 where fid=" + fid + " and rid>=" + rid);
-        sql.execute("update jfc_blocks set rid=rid+1 where fid=" + fid + " and rid>=" + rid);
-        sql.execute("insert into jfc_rungs (fid,rid,comment,logic) values (" + fid + "," + rid + ",'Comment','h')");
-        ArrayList<String[]> cells = new ArrayList<String[]>();
+        Database.addRung(fid, rid, "h", "Comment");
+        ArrayList<CellRow> cells = new ArrayList<CellRow>();
         ArrayList<Node> nodes = new ArrayList<Node>();
-        String data[] = sql.select1row("select rid,logic,comment from jfc_rungs where fid=" + fid + " and rid=" + rid);
+        RungRow data = Database.getRungById(fid, rid);
         Rung rung = Panels.buildRung(data, cells, nodes, client, true, fid);
         rungs.rungs.add(rid, rung);
-        Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 0, 0, nodes.toArray(new Node[0]));
+        Table table = Panels.buildTable(new Table(Panels.cellWidth, Panels.cellHeight, 1, 1), null, cells.toArray(new CellRow[cells.size()]), client, 0, 0, nodes.toArray(new Node[0]));
         rungs.panel.add(rid, table);
         rung.table = table;
         int cnt = rungs.rungs.size();
@@ -1076,9 +1033,9 @@ public class Events {
           Label lbl = (Label)r.table.get(0, 0, false);
           lbl.setText("Rung " + (a+1));
         }
-        long revision = Long.valueOf(sql.select1value("select revision from jfc_funcs where id=" + fid));
-        revision++;
-        sql.execute("update jfc_funcs set revision=" + revision + " where id=" + fid);
+        FunctionRow fnc = Database.getFunctionById(fid);
+        fnc.revision++;
+        Database.funcs.save();
         break;
       }
 
@@ -1114,7 +1071,7 @@ public class Events {
           }
         }
         if (rid == -1) break;
-        client.setProperty("rung", Integer.toString(rid));
+        client.setProperty("rung", rid);
         client.setProperty("focus", null);
         client.setPanel(Panels.getPanel("jfc_rung_editor", client));
         break;
@@ -1244,27 +1201,33 @@ public class Events {
       }
 
       case "jfc_rung_editor_save": {
-        String fid = (String)client.getProperty("func");
-        String rid = (String)client.getProperty("rung");
+        int fid = (Integer)client.getProperty("func");
+        int rid = (Integer)client.getProperty("rung");
         Rung rung = (Rung)client.getProperty("rungObj");
         NodeRoot root = rung.root;
-        if (!root.isValid(client, sql)) {
+        if (!root.isValid(client)) {
           break;
         }
-        sql.execute("delete from jfc_blocks where fid=" + fid + " and rid=" + rid);
-        String str = root.saveLogic(sql);
+        //sql.execute("delete from jfc_blocks where fid=" + fid + " and rid=" + rid);
+        Database.deleteBlocksById(fid);
+        String str = root.saveLogic();
         JFLog.log("logic=" + str);
         if (str == null) {
           Panels.showError(client, "Failed to save!");
           break;
         }
-        sql.execute("update jfc_rungs set logic='" + str + "' where rid=" + rid + " and fid=" + fid);
+        RungRow rungobj = Database.getRungById(fid, rid);
+        //sql.execute("update jfc_rungs set logic='" + str + "' where rid=" + rid + " and fid=" + fid);
+        rungobj.logic = str;
         TextField tf = (TextField)client.getPanel().getComponent("comment" + rid);
         String cmt = tf.getText();
-        sql.execute("update jfc_rungs set comment=" + SQL.quote(cmt) + " where rid=" + rid + " and fid=" + fid);
-        long revision = Long.valueOf(sql.select1value("select revision from jfc_funcs where id=" + fid));
-        revision++;
-        sql.execute("update jfc_funcs set revision=" + revision + " where id=" + fid);
+        rungobj.comment = cmt;
+        Database.saveRungById(fid, rid);
+
+        FunctionRow fnc = Database.getFunctionById(fid);
+        fnc.revision++;
+        Database.funcs.save();
+
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
@@ -1276,14 +1239,14 @@ public class Events {
           Button debug = (Button)client.getPanel().getComponent("jfc_debug");
           debug.setText("Debug");
         }
-        String fid = (String)client.getProperty("func");
+        int fid = (Integer)client.getProperty("func");
         synchronized(lock) {
-          if (!FunctionService.generateFunction(Integer.valueOf(fid), sql)) {
+          if (!FunctionService.generateFunction(fid)) {
             Panels.showErrorText(client, "Compile failed!", FunctionCompiler.error);
             FunctionCompiler.error = null;
             break;
           }
-          if (!FunctionService.compileProgram(sql)) {
+          if (!FunctionService.compileProgram()) {
             Panels.showErrorText(client, "Compile failed!", FunctionService.error);
             FunctionService.error = null;
           }
@@ -1299,10 +1262,11 @@ public class Events {
           b.setText("Debug");
           break;
         }
-        String fid = (String)client.getProperty("func");
-        long revision = Long.valueOf(sql.select1value("select revision from jfc_funcs where id=" + fid));
-        if (FunctionService.functionUpToDate(Integer.valueOf(fid), revision)) {
-          context.debug = new DebugContext(client, Integer.valueOf(fid));
+        int fid = (Integer)client.getProperty("func");
+        FunctionRow fnc = Database.getFunctionById(fid);
+        long revision = fnc.revision;
+        if (FunctionService.functionUpToDate(fid, revision)) {
+          context.debug = new DebugContext(client, fid);
           context.debug.start();
           b.setText("Stop");
         } else {
@@ -1344,7 +1308,6 @@ public class Events {
   public static void edit(TextField tf) {
     WebUIClient client = tf.getClient();
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     String red = (String)tf.getProperty("red");
     if (red != null) {
       tf.setBackColor(Color.white);
@@ -1377,10 +1340,8 @@ public class Events {
           return;
         }
       }
-      String stmt = "update jfc_" + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id;
-      sql.execute(stmt);
-      if (sql.lastException != null) {
-        String org = sql.select1value("select " + col + " from jfc_" + table + " where id=" + id);
+      if (!Database.update("jfc_" + table, Integer.valueOf(id), col, value, type)) {
+        String org = Database.select(table, Integer.valueOf(id), col, type);
         tf.setText(org);
       }
     } else {
@@ -1390,7 +1351,6 @@ public class Events {
   public static void edit(TextArea ta) {
     WebUIClient client = ta.getClient();
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     String red = (String)ta.getProperty("red");
     if (red != null) {
       ta.setBackColor(Color.white);
@@ -1409,8 +1369,7 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      String stmt = "update jfc_" + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id;
-      sql.execute(stmt);
+      Database.update("jfc_" + table, Integer.valueOf(id), col, value, type);
     } else {
       context.write(tag, ta.getText());
     }
@@ -1418,7 +1377,6 @@ public class Events {
   public static void changed(ComboBox cb) {
     WebUIClient client = cb.getClient();
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     String tag = (String)cb.getProperty("tag");
     if (tag == null) return;
     String value = cb.getSelectedValue();
@@ -1432,7 +1390,7 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      sql.execute("update jfc_" + table + " set " + col + "=" + SQLService.quote(value, type) + " where id=" + id);
+      Database.update("jfc_" + table, Integer.valueOf(id), col, value, type);
     } else {
       context.write(tag, value);
     }
@@ -1440,7 +1398,6 @@ public class Events {
   public static void changed(CheckBox cb) {
     WebUIClient client = cb.getClient();
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     String tag = (String)cb.getProperty("tag");
     if (tag == null) return;
     if (tag.startsWith("jfc_")) {
@@ -1454,7 +1411,7 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      sql.execute("update jfc_" + table + " set " + col + "=" + value + " where id=" + id);
+      Database.update("jfc_" + table, Integer.valueOf(id), col, value, type);
     } else {
       String value = cb.isSelected() ? "1" : "0";
       context.write(tag, value);
@@ -1463,7 +1420,6 @@ public class Events {
   public static void changed(ToggleButton tb) {
     WebUIClient client = tb.getClient();
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     String tag = (String)tb.getProperty("tag");
     if (tag == null) return;
     if (tag.startsWith("jfc_")) {
@@ -1477,7 +1433,7 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      sql.execute("update jfc_" + table + " set " + col + "=" + value + " where id=" + id);
+      Database.update("jfc_" + table, Integer.valueOf(id), col, value, type);
     } else {
       String value = tb.isSelected() ? "1" : "0";
       context.write(tag, value);

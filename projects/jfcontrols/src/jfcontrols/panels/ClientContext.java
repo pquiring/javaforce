@@ -10,7 +10,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.webui.*;
 
-import jfcontrols.sql.*;
+import jfcontrols.db.*;
 import jfcontrols.tags.*;
 
 public class ClientContext extends Thread {
@@ -20,7 +20,6 @@ public class ClientContext extends Thread {
   private Object lock = new Object();
   private ArrayList<Monitor> stack = new ArrayList<>();
 
-  public SQL sql;
   public HashMap<String, Component> alarms = new HashMap<>();
   public int lastAlarmID;
   public int debug_en_idx;
@@ -31,7 +30,6 @@ public class ClientContext extends Thread {
 
   public ClientContext(WebUIClient client) {
     this.client = client;
-    sql = SQLService.getSQL();
   }
 
   public TagBase getTag(String name) {
@@ -131,7 +129,5 @@ public class ClientContext extends Thread {
       debug.cancel();
       debug = null;
     }
-    sql.close();
-    sql = null;
   }
 }

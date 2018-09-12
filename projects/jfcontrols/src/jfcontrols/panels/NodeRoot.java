@@ -10,6 +10,7 @@ import javaforce.webui.*;
 
 import jfcontrols.tags.*;
 import jfcontrols.logic.*;
+import jfcontrols.db.*;
 
 public class NodeRoot extends Node {
   public int fid;  //func id
@@ -22,7 +23,7 @@ public class NodeRoot extends Node {
     this.fid = fid;
     this.rid = rid;
   }
-  public String saveLogic(SQL sql) {
+  public String saveLogic() {
     JFLog.log("NodeRoot.saveLogic() " + this);
     int bid = 0;
     StringBuilder sb = new StringBuilder();
@@ -39,7 +40,7 @@ public class NodeRoot extends Node {
           sb.append('|');
           break;
         case '#':
-          sql.execute("insert into jfc_blocks (fid,rid,bid,name,tags) values (" + fid + "," + rid + "," + bid + ",'" + node.blk.getName() + "'," + SQL.quote(node.getTags()) + ")");
+          Database.addBlock(fid,rid,bid,node.blk.getName(),node.getTags());
           sb.append(Integer.toString(bid));
           bid++;
           sb.append('|');
@@ -52,12 +53,12 @@ public class NodeRoot extends Node {
     }
     return sb.toString();
   }
-  public boolean isValid(WebUIClient client, SQL sql) {
+  public boolean isValid(WebUIClient client) {
     int bid = 0;
     Node node = next, child;
-    String strictstr = sql.select1value("select value from jfc_config where id='strict_tags'");
-    if (strictstr == null) strictstr = "false";
-    boolean strict = strictstr.equals("true");
+    String strictValue = Database.getConfig("strict_tags");
+    if (strictValue == null) strictValue = "false";
+    boolean strict = strictValue.equals("true");
     while (node != null) {
       switch (node.type) {
         case '#':

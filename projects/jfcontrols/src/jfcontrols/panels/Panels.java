@@ -18,6 +18,7 @@ import jfcontrols.images.*;
 import jfcontrols.app.*;
 import jfcontrols.functions.*;
 import jfcontrols.logic.*;
+import jfcontrols.db.*;
 
 public class Panels {
   public static int cellWidth = 32;
@@ -42,19 +43,16 @@ public class Panels {
   }
   public static Panel buildPanel(Panel panel, String pname, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
-    String pid = sql.select1value("select id from jfc_panels where name=" + SQL.quote(pname));
-    if (pid == null) {
+    PanelRow pnl = Database.getPanelByName(pname);
+    if (pnl == null) {
       JFLog.log("Error:Unable to find panel:" + pname);
       return null;
     }
-    String display = sql.select1value("select display from jfc_panels where name=" + SQL.quote(pname));
-    String popup = sql.select1value("select popup from jfc_panels where id=" + pid);
-    String cells[][] = sql.select("select x,y,w,h,comp,name,text,tag,func,arg,style,events from jfc_cells where pid=" + pid);
+    CellRow cells[] = Database.getCells(pnl.name);
     Table table = new Table(cellWidth,cellHeight,1,1);
     panel.add(table);
     buildTable(table, panel, cells, client, -1, -1, null);
-    if (popup.equals("true")) return panel;
+    if (pnl.popup) return panel;
     //add top components
     int x = 0;
     int width = client.getWidth();
@@ -63,13 +61,13 @@ public class Panels {
       width = 16;
     }
 
-    Button menu = getButton(new String[] {null, null, null, null, "button", null, "!image:menu", null, "showMenu", null, null});
+    Button menu = getButton(createCell(0, 0, 0, 0, "button", null, "!image:menu", null, "showMenu", null, null));
     menu.setProperty("func", "showMenu");
     setCellSize(menu, new Rectangle(x,0,1,1));
     table.add(menu, x, 0);
     x++; width -= cellWidth;
 
-    Label alarms = getLabel(new String[] {null, null, null, null, "label", null, "0", null, "setPanel", "jfc_alarms", null});
+    Label alarms = getLabel(createCell(0, 0, 0, 0, "label", null, "0", null, "setPanel", "jfc_alarms", null));
     alarms.setProperty("func", "setPanel");
     alarms.setProperty("arg", "jfc_alarms");
     alarms.setBorder(true);
@@ -77,18 +75,18 @@ public class Panels {
     table.add(alarms, x, 0);
     x++; width -= cellWidth;
 
-    String xref = (String)client.getProperty("xref");
-    if (xref != null) {
-      Button xrefBtn = getButton(new String[] {null, null, null, null, "button", null, "!image:ret_xref", null, "setPanel", "jfc_xref", null});
+    int xref = (Integer)client.getProperty("xref");
+    if (xref != -1) {
+      Button xrefBtn = getButton(createCell(0, 0, 0, 0, "button", null, "!image:ret_xref", null, "setPanel", "jfc_xref", null));
       xrefBtn.setProperty("func", "setPanel");
       xrefBtn.setProperty("arg", "jfc_xref");
       setCellSize(xrefBtn, new Rectangle(x,0,1,1));
       table.add(xrefBtn, x, 0);
       x++; width -= cellWidth;
-      client.setProperty("xref", null);
+      client.setProperty("xref", "-1");
     }
 
-    Label title = getLabel(new String[] {null, null, null, null, "label", "jfc_title", display, null, null, null, null});
+    Label title = getLabel(createCell(0, 0, 0, 0, "label", "jfc_title", pnl.display, null, null, null, null));
     title.setName("jfc_title");
     title.setStyle("background-color", "blue");
     title.setStyle("color", "white");
@@ -97,7 +95,7 @@ public class Panels {
     setCellSize(title, new Rectangle(x,0,width / cellWidth,1));
     table.add(title, x, 0, width / cellWidth, 1);
 
-    String audio_init = (String)client.getProperty("audio-init");
+    int audio_init = (Integer)client.getProperty("audio-init");
 
     TagBase tag = context.getTag("alarms");
     context.addListener(tag, alarms, true, (_tag, _oldValue, _newValue, _cmp) -> {
@@ -135,21 +133,8 @@ public class Panels {
     return panel;
   }
   //x,y,w,h,comp,name,text,tag,func,arg,style,events
-  private final static int X = 0;
-  private final static int Y = 1;
-  private final static int W = 2;
-  private final static int H = 3;
-  private final static int COMP = 4;
-  private final static int NAME = 5;
-  private final static int TEXT = 6;
-  private final static int TAG = 7;
-  private final static int FUNC = 8;
-  private final static int ARG = 9;
-  private final static int STYLE = 10;
-  private final static int EVENTS = 11;
-  public static Table buildTable(Table table, Container container, String cells[][], WebUIClient client, int ix, int iy, Node nodes[]) {
+  public static Table buildTable(Table table, Container container, CellRow cells[], WebUIClient client, int ix, int iy, Node nodes[]) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     int mx = table.getColumns();
     if (ix != -1) mx = ix;
     int my = table.getRows();
@@ -159,18 +144,18 @@ public class Panels {
     for(int a=0;a<cells.length;a++) {
       Rectangle r = new Rectangle();
       rs[a] = r;
-      r.x = Integer.valueOf(cells[a][X]);
-      r.y = Integer.valueOf(cells[a][Y]);
-      r.width = Integer.valueOf(cells[a][W]);
-      r.height = Integer.valueOf(cells[a][H]);
-      String compType = cells[a][COMP];
-      String tagName = cells[a][TAG];
+      r.x = cells[a].x;
+      r.y = cells[a].y;
+      r.width = cells[a].w;
+      r.height = cells[a].h;
+      String compType = cells[a].comp;
+      String tagName = cells[a].tag;
       if (tagName != null && !tagName.startsWith("jfc_") && tagName.length() > 0) {
         TagBase tag = context.getTag(tagName);
         if (tag == null) {
           JFLog.log("Error:Tag not found:" + tagName);
         } else {
-          cells[a][TEXT] = tag.getValue();
+          cells[a].text = tag.getValue();
         }
       }
       Component c = getCell(compType, container, cells[a], rs[a], client);
@@ -224,10 +209,10 @@ public class Panels {
           });
         }
       }
-      c.setProperty("func", cells[a][FUNC]);
-      c.setProperty("arg", cells[a][ARG]);
-      c.setProperty("events", cells[a][EVENTS]);
-      c.setName(cells[a][NAME]);
+      c.setProperty("func", cells[a].func);
+      c.setProperty("arg", cells[a].arg);
+      c.setProperty("events", cells[a].events);
+      c.setName(cells[a].name);
       if (nodes != null && nodes.length > a) {
         c.setProperty("node", nodes[a]);
         nodes[a].comp = c;
@@ -249,7 +234,7 @@ public class Panels {
           }
         });
       }
-      String style = cells[a][STYLE];
+      String style = cells[a].style;
       if (style != null) {
         String styles[] = style.split(";");
         for(int b=0;b<styles.length;b++) {
@@ -298,7 +283,7 @@ public class Panels {
     c.setProperty("rect", r);
     return c;
   }
-  public static Component getCell(String name, Container container, String v[], Rectangle r, WebUIClient client) {
+  public static Component getCell(String name, Container container, CellRow v, Rectangle r, WebUIClient client) {
     switch (name) {
       case "label": return getLabel(v);
       case "button": return getButton(v);
@@ -321,11 +306,11 @@ public class Panels {
     }
     return null;
   }
-  private static Label getLabel(String v[]) {
-    String text = v[TEXT];
+  private static Label getLabel(CellRow v) {
+    String text = v.text;
     Label lbl;
     if (text == null) {
-      JFLog.log("Label.text == null:" + v[NAME]);
+      JFLog.log("Label.text == null:" + v.name);
     }
     if (text.startsWith("!image:")) {
       lbl = new Label(Images.getImage(text.substring(7)));
@@ -343,14 +328,14 @@ public class Panels {
     });
     return lbl;
   }
-  private static Button getButton(String v[]) {
-    String text = v[TEXT];
+  private static Button getButton(CellRow v) {
+    String text = v.text;
     Button b = null;
     if (text.startsWith("!image:")) {
       b = new Button(Images.getImage(text.substring(7)));
       b.setBorder(true);
     } else {
-      b = new Button(v[TEXT]);
+      b = new Button(v.text);
     }
     b.addClickListener((me, c) -> {
       Events.click(c);
@@ -363,11 +348,10 @@ public class Panels {
     });
     return b;
   }
-  private static Component getToggleButton(String v[], WebUIClient client) {
+  private static Component getToggleButton(CellRow v, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
-    String text = v[TEXT];
-    String style = v[STYLE];
+    String text = v.text;
+    String style = v.style;
     if (style == null) style = "";
     String ss[] = style.split(";");
     String off = "ff0000";
@@ -383,7 +367,7 @@ public class Panels {
         case "1": on = value; break;
       }
     }
-    ToggleButton b = new ToggleButton(v[TEXT], Integer.valueOf(off, 16), Integer.valueOf(on, 16));
+    ToggleButton b = new ToggleButton(v.text, Integer.valueOf(off, 16), Integer.valueOf(on, 16));
     b.addClickListener((me, c) -> {
       Events.click(c);
     });
@@ -396,7 +380,7 @@ public class Panels {
     b.addMouseUpListener((c) -> {
       Events.release(c);
     });
-    String tag = v[TAG];
+    String tag = v.tag;
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
         String f[] = tag.split("_", 5);
@@ -408,7 +392,7 @@ public class Panels {
         if (table.equals("config")) {
           id = "\'" + id + "\'";
         }
-        text = sql.select1value("select " + col + " from jfc_" + table + " where id=" + id);
+        text = Database.select("jfc_" + table, Integer.valueOf(id), col, type);
         if (text == null) text = "false";
         b.setSelected(!text.equals("false"));
       } else {
@@ -419,21 +403,21 @@ public class Panels {
     }
     return b;
   }
-  private static Button getLink(String v[]) {
-    String text = v[TEXT];
+  private static Button getLink(CellRow v) {
+    String text = v.text;
     Button b = null;
     if (text.startsWith("!image:")) {
       b = new Button(Images.getImage(text.substring(7)));
     } else {
-      b = new Button(v[TEXT]);
+      b = new Button(v.text);
     }
-    b.setURL("http://jfcontrols.sourceforge.net/help_" + v[ARG] + ".php");
+    b.setURL("http://jfcontrols.sourceforge.net/help_" + v.arg + ".php");
     return b;
   }
-  private static Component getDual(String v[], WebUIClient client) {
+  private static Component getDual(CellRow v, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
     Table table = new Table(cellWidth, cellHeight/2, 3, 2);
-    TagBase tag = context.getTag(v[TAG]);
+    TagBase tag = context.getTag(v.tag);
     String tagcomment = "";
     if (tag != null) tagcomment = tag.getComment();
     Label comment = new Label(tagcomment);
@@ -445,11 +429,10 @@ public class Panels {
     table.add(value, 0, 1, 3, 1);
     return table;
   }
-  private static TextField getTextField(String v[], WebUIClient client, boolean password) {
+  private static TextField getTextField(CellRow v, WebUIClient client, boolean password) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
-    String tag = v[TAG];
-    String text = v[TEXT];
+    String tag = v.tag;
+    String text = v.text;
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
         String f[] = tag.split("_", 5);
@@ -461,7 +444,7 @@ public class Panels {
         if (table.equals("config")) {
           id = "\'" + id + "\'";
         }
-        text = sql.select1value("select " + col + " from jfc_" + table + " where id=" + id);
+        text = Database.select("jfc_" + table, Integer.valueOf(id), col, type);
       } else {
         text = context.read(tag);
       }
@@ -487,11 +470,10 @@ public class Panels {
     }
     return tf;
   }
-  private static TextArea getTextArea(String v[], WebUIClient client) {
+  private static TextArea getTextArea(CellRow v, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
-    String tag = v[TAG];
-    String text = v[TEXT];
+    String tag = v.tag;
+    String text = v.text;
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
         String f[] = tag.split("_", 5);
@@ -503,7 +485,7 @@ public class Panels {
         if (table.equals("config")) {
           id = "\'" + id + "\'";
         }
-        text = sql.select1value("select " + col + " from jfc_" + table + " where id=" + id);
+        text = Database.select("jfc_" + table, Integer.valueOf(id), col, type);
       } else {
         text = context.read(tag);
       }
@@ -515,17 +497,21 @@ public class Panels {
     });
     return ta;
   }
-  private static ComboBox getComboBox(String v[], WebUIClient client) {
+  private static ComboBox getComboBox(CellRow v, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     ComboBox cb = new ComboBox();
-    String name = v[NAME];
-    String tag = v[TAG];
-    String arg = v[ARG];
-    String value = v[TEXT];
+    String name = v.name;
+    String tag = v.tag;
+    String arg = v.arg;
+    String value = v.text;
     String pairs[][];
     if (arg.equals("jfc_function")) {
-      pairs = sql.select("select id, name from jfc_funcs");
+      FunctionRow funcs[] = Database.funcs.getRows().toArray(new FunctionRow[0]);
+      pairs = new String[funcs.length][];
+      for(int a=0;a<funcs.length;a++) {
+        pairs[a][0] = Integer.toString(funcs[a].id);
+        pairs[a][1] = funcs[a].name;
+      }
     } else if (arg.equals("jfc_config_backups")) {
       File files[] = new File(Paths.backupPath).listFiles();
       if (files == null) files = new File[0];
@@ -537,13 +523,30 @@ public class Panels {
         pairs[a][1] = filename;
       }
     } else if (arg.equals("jfc_logic_groups")) {
-      pairs = sql.select("select gid,gid from jfc_logics group by gid order by gid");
+      String groups[] = Database.getLogicGroups();
+      pairs = new String[groups.length][2];
+      for(int a=0;a<groups.length;a++) {
+        pairs[a][0] = groups[a];
+        pairs[a][1] = groups[a];
+      }
       value = "bit";
     } else if (arg.equals("jfc_tag_type_udt")) {
       arg = "jfc_tag_type";
-      String lid = sql.select1value("select id from jfc_lists where name=" + SQL.quote(arg));
-      String basic[][] = sql.select("select value, text from jfc_listdata where lid=" + lid);
-      String udts[][] = sql.select("select uid, name from jfc_udts");
+      javaforce.db.Table listTable = Database.getList("jfc_tag_type");
+      ListRow basicTypes[] = listTable.getRows().toArray(new ListRow[0]);
+      String basic[][] = new String[basicTypes.length][];
+      for(int a=0;a<basicTypes.length;a++) {
+        basic[a] = new String[2];
+        basic[a][0] = Integer.toString(basicTypes[a].idx);
+        basic[a][1] = basicTypes[a].value;
+      }
+      UDT udtTypes[] = Database.udts.getRows().toArray(new UDT[0]);
+      String udts[][] = new String[udtTypes.length][];
+      for(int a=0;a<udtTypes.length;a++) {
+        basic[a] = new String[2];
+        basic[a][0] = Integer.toString(udtTypes[a].id);
+        basic[a][1] = udtTypes[a].name;
+      }
       pairs = new String[basic.length + udts.length][];
       int pos = 0;
       for(int a=0;a<basic.length;a++) {
@@ -553,8 +556,14 @@ public class Panels {
         pairs[pos++] = udts[a];
       }
     } else {
-      String lid = sql.select1value("select id from jfc_lists where name=" + SQL.quote(arg));
-      pairs = sql.select("select value, text from jfc_listdata where lid=" + lid);
+      javaforce.db.Table listTable = Database.getList(arg);
+      ListRow data[] = listTable.getRows().toArray(new ListRow[0]);
+      pairs = new String[data.length][];
+      for(int a=0;a<data.length;a++) {
+        pairs[a] = new String[2];
+        pairs[a][0] = Integer.toString(data[a].idx);
+        pairs[a][1] = data[a].value;
+      }
     }
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
@@ -567,7 +576,7 @@ public class Panels {
         if (table.equals("config")) {
           id = "\'" + id + "\'";
         }
-        value = sql.select1value("select " + col + " from jfc_" + table + " where id=" + id);
+        value = Database.select("jfc_" + table, Integer.valueOf(id), col, type);
       } else {
         value = context.read(tag);
       }
@@ -609,11 +618,10 @@ public class Panels {
     }
     return cb;
   }
-  private static CheckBox getCheckBox(String v[], WebUIClient client) {
+  private static CheckBox getCheckBox(CellRow v, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
-    String tag = v[TAG];
-    String text = v[TEXT];
+    String tag = v.tag;
+    String text = v.text;
     String value = "0";
     if (tag != null) {
       if (tag.startsWith("jfc_")) {
@@ -626,7 +634,7 @@ public class Panels {
         if (table.equals("config")) {
           id = "\'" + id + "\'";
         }
-        value = sql.select1value("select " + col + " from jfc_" + table + " where id=" + id);
+        value = Database.select("jfc_" + table, Integer.valueOf(id), col, type);
         if (value != null) {
           value = value.equals("false") ? "0" : "1";
         }
@@ -643,8 +651,8 @@ public class Panels {
     });
     return cb;
   }
-  private static Image getImage(String v[]) {
-    Image img = new Image(Images.getImage(v[TEXT]));
+  private static Image getImage(CellRow v) {
+    Image img = new Image(Images.getImage(v.text));
     img.addClickListener((me, c) -> {
       Events.click(c);
     });
@@ -656,30 +664,22 @@ public class Panels {
     });
     return img;
   }
-  private static String[] createCell(int x, int y, int w, int h, String comp, String name, String text, String tag, String func, String arg, String style /*, String events */) {
-    String cell[] = new String[12];
-    cell[0] = Integer.toString(x);
-    cell[1] = Integer.toString(y);
-    cell[2] = Integer.toString(w);
-    cell[3] = Integer.toString(h);
-    cell[4] = comp;
-    cell[5] = name;
-    cell[6] = text;
-    cell[7] = tag;
-    cell[8] = func;
-    cell[9] = arg;
-    cell[10] = style;
-    //cell[11] = events;
+  private static CellRow createCell(int x, int y, int w, int h, String comp, String name, String text, String tag, String func, String arg, String style /*, String events */) {
+    CellRow cell = new CellRow(-1,x,y,w,h,comp,name,text);
+    cell.setTag(tag);
+    cell.setFuncArg(func, arg);
+    cell.setStyle(style);
+//    cell.setEvents(events);
     return cell;
   }
-  private static boolean empty(String [][] cells, int cx, int cy) {
+  private static boolean empty(CellRow[] cells, int cx, int cy) {
     int cnt = cells.length;
     for(int a=0;a<cnt;a++) {
-      String cell[] = cells[a];
-      int x = Integer.valueOf(cell[X]);
-      int y = Integer.valueOf(cell[Y]);
-      int w = Integer.valueOf(cell[W]) - 1;
-      int h = Integer.valueOf(cell[H]) - 1;
+      CellRow cell = cells[a];
+      int x = Integer.valueOf(cell.x);
+      int y = Integer.valueOf(cell.y);
+      int w = Integer.valueOf(cell.w) - 1;
+      int h = Integer.valueOf(cell.h) - 1;
       if ( (cx >= x && cx <= x + w) && (cy >= y && cy <= y + h) ) {
         return false;
       }
@@ -687,37 +687,36 @@ public class Panels {
     return true;
   }
 //   cells[][] = "id,x,y,w,h,comp,name,text,tag,func,arg,style"
-  private static Component getTable(String v[], Container container, Rectangle r, WebUIClient client) {
+  private static Component getTable(CellRow v, Container container, Rectangle r, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
-    String name = v[NAME];
-    String arg = v[ARG];
-    ArrayList<String[]> cells = new ArrayList<String[]>();
+    String name = v.name;
+    String arg = v.arg;
+    ArrayList<CellRow> cells = new ArrayList<CellRow>();
     ArrayList<Node> nodes = new ArrayList<Node>();
     Table table;
     JFLog.log("getTable:" + name);
     switch (name) {
       case "jfc_ctrls" : {
-        String data[][] = sql.select("select id,cid,ip,type from jfc_ctrls");
-        if (data == null) data = new String[0][0];
-        for(int a=0;a<data.length;a++) {
-          String style = data[a][1].equals("0") ? "disabled" : null;
-          cells.add(createCell(0, a, 1, 1, "textfield", null, data[a][1], "jfc_ctrls_cid_int_" + data[a][0], null, null, style));
-          cells.add(createCell(1, a, 3, 1, "textfield", null, data[a][2], "jfc_ctrls_ip_str_" + data[a][0], null, null, style));
-          cells.add(createCell(4, a, 2, 1, "combobox", null, null, "jfc_ctrls_type_int_" + data[a][0], null, "jfc_ctrl_type", style));
-          cells.add(createCell(6, a, 2, 1, "combobox", null, null, "jfc_ctrls_speed_int_" + data[a][0], null, "jfc_ctrl_speed", style));
-          cells.add(createCell(9, a, 2, 1, "button", null, "Tags", null, "jfc_ctrl_tags", data[a][1], null));
+        ControllerRow[] ctrls = Database.controllers.getRows().toArray(new ControllerRow[0]);
+        for(int a=0;a<ctrls.length;a++) {
+          String style = ctrls[a].id == 0 ? "disabled" : null;
+          String cid = Integer.toString(ctrls[a].id);
+          cells.add(createCell(0, a, 1, 1, "textfield", null, cid, "jfc_ctrls_cid_int_" + cid, null, null, style));
+          cells.add(createCell(1, a, 3, 1, "textfield", null, ctrls[a].ip, "jfc_ctrls_ip_str_" + cid, null, null, style));
+          cells.add(createCell(4, a, 2, 1, "combobox", null, null, "jfc_ctrls_type_int_" + cid, null, "jfc_ctrl_type", style));
+          cells.add(createCell(6, a, 2, 1, "combobox", null, null, "jfc_ctrls_speed_int_" + cid, null, "jfc_ctrl_speed", style));
+          cells.add(createCell(9, a, 2, 1, "button", null, "Tags", null, "jfc_ctrl_tags", cid, null));
           if (style == null) {
-            cells.add(createCell(12, a, 2, 1, "button", null, "Delete", null, "jfc_ctrl_delete", data[a][0], null));
+            cells.add(createCell(12, a, 2, 1, "button", null, "Delete", null, "jfc_ctrl_delete", cid, null));
           }
         }
         break;
       }
       case "jfc_tags": {
-        String cid = (String)client.getProperty("ctrl");
+        int cid = (Integer)client.getProperty("ctrl");
         String tag_types;
         String tag_type;
-        if (cid.equals("0")) {
+        if (cid == 0) {
           tag_types = "jfc_tag_type_udt";
           tag_type = "tagid";
         } else {
@@ -725,41 +724,36 @@ public class Panels {
           tag_types = "jfc_tag_type";
           tag_type = "tag";
         }
-        String data[][] = sql.select("select id,cid,name,type,builtin from jfc_tags where cid=" + cid);
-        if (data == null) data = new String[0][0];
+        TagRow tags[] = Database.getTagsByCid(Integer.valueOf(cid));
         String style;
-        for(int a=0;a<data.length;a++) {
-          if (data[a][4].equals("true")) {
+        for(int a=0;a<tags.length;a++) {
+          if (tags[a].builtin) {
             style = "readonly";
           } else {
             style = null;
           }
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_tags_name_" + tag_type + "_" + data[a][0], null, null, style));
-          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + data[a][0], null, tag_types, "readonly"));
-          if (cid.equals("0")) {
-            cells.add(createCell(9, a, 3, 1, "textfield", null, null, "jfc_tags_arraysize_int_" + data[a][0], null, null, "readonly"));
+          String tagid = Integer.toString(tags[a].id);
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_tags_name_" + tag_type + "_" + tagid, null, null, style));
+          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_tags_type_int_" + tagid, null, tag_types, "readonly"));
+          if (cid == 0) {
+            cells.add(createCell(9, a, 3, 1, "textfield", null, null, "jfc_tags_arraysize_int_" + tagid, null, null, "readonly"));
           }
-          cells.add(createCell(12, a, 6, 1, "textfield", null, null, "jfc_tags_comment_str_" + data[a][0], null, null, style));
-          cells.add(createCell(19, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", data[a][0], style));
-          cells.add(createCell(22, a, 2, 1, "button", null, "XRef", null, "jfc_tags_xref", data[a][0], null));
+          cells.add(createCell(12, a, 6, 1, "textfield", null, null, "jfc_tags_comment_str_" + tagid, null, null, style));
+          cells.add(createCell(19, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", tagid, style));
+          cells.add(createCell(22, a, 2, 1, "button", null, "XRef", null, "jfc_tags_xref", tagid, null));
         }
         break;
       }
       case "jfc_xref": {
-        String xref = (String)client.getProperty("xref");
-        String tag = sql.select1value("select name from jfc_tags where id=" + xref);
-        String cid = sql.select1value("select cid from jfc_tags where id=" + xref);
-        if (!cid.equals("0")) {
-          tag = "c" + cid + "#" + tag;
+        int xref = (Integer)client.getProperty("xref");
+        TagRow tagrow = Database.getTagById(xref);
+        String tag = tagrow.name;
+        if (tagrow.cid > 0) {
+          tag = "c" + tagrow.cid + "#" + tag;
         }
-        String data[][];
         int y = 0;
         cells.add(createCell(0,y++,6,1, "label", null, "Tag:" + tag, null, null, null, null));
-        if (cid.equals("0"))
-          data = sql.select("select fid,rid from jfc_blocks where tags like '%,t" + tag + ",%' or tags like '%,t" + tag + "[%' or tags like '%,t" + tag + ".%' or tags like '%,tc0#" + tag + ",%' or tags like '%,tc0#" + tag + "[%' or tags like '%,tc0#" + tag + ".%'");
-        else
-          data = sql.select("select fid,rid from jfc_blocks where tags like '%,t" + tag + ",%' or tags like '%,t" + tag + "[%' or tags like '%,t" + tag + ".%'");
-        if (data == null) data = new String[0][0];
+        BlockRow data[] = Database.getBlocksUsingTagId(tagrow.id);
         if (data.length > 0) {
           cells.add(createCell(0, y, 6, 1, "label", null, "Function", null, null, null, null));
           cells.add(createCell(6, y, 3, 1, "label", null, "Rung", null, null, null, null));
@@ -768,135 +762,126 @@ public class Panels {
         }
         y++;
         for(int a=0;a<data.length;a++) {
-          String func = sql.select1value("select name from jfc_funcs where id=" + data[a][0]);
-          int rid = Integer.valueOf(data[a][1]);
-          cells.add(createCell(0, y, 6, 1, "label", null, func, null, null, null, null));
-          cells.add(createCell(6, y, 3, 1, "label", null, "Rung " + (rid+1), null, null, null, null));
-          cells.add(createCell(10, y, 2, 1, "button", null, "View", null, "jfc_xref_view_func", data[a][0], null));
+          FunctionRow func = Database.getFunctionById(data[0].fid);
+          cells.add(createCell(0, y, 6, 1, "label", null, func.name, null, null, null, null));
+          cells.add(createCell(6, y, 3, 1, "label", null, "Rung " + (data[0].rid+1), null, null, null, null));
+          cells.add(createCell(10, y, 2, 1, "button", null, "View", null, "jfc_xref_view_func", Integer.toString(data[a].id), null));
           y++;
         }
-        if (cid.equals("0"))
-          data = sql.select("select pid,tag from jfc_cells where tag='" + tag + "' or tag like '" + tag + "[%' or tag like '" + tag + ".%' or tag='c0#" + tag + "' or tag like 'c0#" + tag + "[%' or tag like 'c0#" + tag + ".%'");
-        else
-          data = sql.select("select pid,tag from jfc_cells where tag='" + tag + "' or tag like '" + tag + "[%' or tag like '" + tag + ".%'");
-        if (data == null) data = new String[0][0];
-        if (data.length > 0) {
+        PanelRow panels[] = Database.getPanelsUsingTagId(tagrow.id);
+        if (panels.length > 0) {
           cells.add(createCell(0, y, 6, 1, "label", null, "Panel", null, null, null, null));
         } else {
           cells.add(createCell(0, y, 6, 1, "label", null, "No Panels", null, null, null, null));
         }
         y++;
-        for(int a=0;a<data.length;a++) {
-          String panel = sql.select1value("select name from jfc_panels where id=" + data[a][0]);
-          cells.add(createCell(0, y, 6, 1, "label", null, panel, null, null, null, null));
-          cells.add(createCell(10, y, 2, 1, "button", null, "View", null, "jfc_xref_view_panel", data[a][0], null));
+        for(int a=0;a<panels.length;a++) {
+          cells.add(createCell(0, y, 6, 1, "label", null, panels[a].name, null, null, null, null));
+          cells.add(createCell(10, y, 2, 1, "button", null, "View", null, "jfc_xref_view_panel", Integer.toString(panels[a].id), null));
           y++;
         }
         break;
       }
       case "jfc_watch": {
-        String data[][] = sql.select("select id,name from jfc_watch");
-        if (data == null) data = new String[0][0];
+        javaforce.db.Table data[] = Database.watches.getTables().toArray(new javaforce.db.Table[0]);
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_watch_name_str_" + data[a][0], null, null, null));
-          cells.add(createCell(7, a, 2, 1, "button", null, "Edit", null, "jfc_watch_edit", data[a][0], null));
-          cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_watch_delete", data[a][0], null));
+          String wid = Integer.toString(data[a].id);
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_watch_name_str_" + data[a].id, null, null, null));
+          cells.add(createCell(7, a, 2, 1, "button", null, "Edit", null, "jfc_watch_edit", wid, null));
+          cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_watch_delete", wid, null));
         }
         break;
       }
       case "jfc_watch_tags": {
-        String wid = (String)client.getProperty("watch");
-        String data[][] = sql.select("select id,tag from jfc_watchtags where wid=" + wid + " order by id");
-        if (data == null) data = new String[0][0];
+        int wid = (Integer)client.getProperty("watch");
+        WatchRow data[] = Database.getWatchTagsById(wid);
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_watchtags_tag_tagid_" + data[a][0], null, null, null));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_watchtags_tag_tagid_" + data[a].id, null, null, null));
           cells.add(createCell(7, a, 6, 1, "label", "tag_" + a, "", null, null, null, null));
-          cells.add(createCell(14, a, 2, 1, "button", null, "Delete", null, "jfc_watch_tag_delete", data[a][0], null));
+          cells.add(createCell(14, a, 2, 1, "button", null, "Delete", null, "jfc_watch_tag_delete", Integer.toString(data[a].id), null));
         }
         break;
       }
       case "jfc_udts": {
-        String data[][] = sql.select("select id,uid,name from jfc_udts where uid >= " + IDs.uid_user);
-        if (data == null) data = new String[0][0];
+        UDT data[] = Database.udts.getRows().toArray(new UDT[0]);
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a][0], null, null, null));
-          cells.add(createCell(8, a, 2, 1, "button", null, "Edit", null, "jfc_udts_edit", data[a][1], null));
-          cells.add(createCell(11, a, 2, 1, "button", null, "Delete", null, "jfc_udts_delete", data[a][0], null));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a].id, null, null, null));
+          cells.add(createCell(8, a, 2, 1, "button", null, "Edit", null, "jfc_udts_edit", data[a].name, null));
+          cells.add(createCell(11, a, 2, 1, "button", null, "Delete", null, "jfc_udts_delete", Integer.toString(data[a].id), null));
         }
         break;
       }
       case "jfc_udt_editor": {
-        String uid = (String)client.getProperty("udt");
-        String data[][] = sql.select("select id,uid,name,type,mid,builtin from jfc_udtmems where uid=" + uid);
-        if (data == null) data = new String[0][0];
+        int uid = (Integer)client.getProperty("udt");
+        UDTMember data[] = Database.getUDTMembersById(uid);
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a][0], null, null, null));
-          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", null));
-          cells.add(createCell(18, a, 6, 1, "textfield", null, null, "jfc_udtmems_comment_str_" + data[a][0], null, null, null));
-          if (data[a][5].equals("0")) {
-            cells.add(createCell(25, a, 2, 1, "button", null, "Delete", null, "jfc_udts_editor_delete", data[a][0], null));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a].id, null, null, null));
+          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a].id, null, "jfc_tag_type", null));
+          cells.add(createCell(18, a, 6, 1, "textfield", null, null, "jfc_udtmems_comment_str_" + data[a].id, null, null, null));
+          if (!data[a].builtin) {
+            cells.add(createCell(25, a, 2, 1, "button", null, "Delete", null, "jfc_udts_editor_delete", Integer.toString(data[a].id), null));
           }
         }
         break;
       }
       case "jfc_sdts": {
-        String data[][] = sql.select("select id,uid,name from jfc_udts where uid < " + IDs.uid_user);
-        if (data == null) data = new String[0][0];
+        UDT data[] = Database.udts.getRows().toArray(new UDT[0]);
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a][0], null, null, "readonly"));
-          cells.add(createCell(8, a, 2, 1, "button", null, "View", null, "jfc_sdts_edit", data[a][1], null));
+          if (data[a].id >= IDs.uid_user) continue;
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a].id, null, null, "readonly"));
+          cells.add(createCell(8, a, 2, 1, "button", null, "View", null, "jfc_sdts_edit", Integer.toString(data[a].id), null));
         }
         break;
       }
       case "jfc_sdt_editor": {
-        String uid = (String)client.getProperty("udt");
-        String data[][] = sql.select("select id,uid,name,type,mid from jfc_udtmems where uid=" + uid);
-        if (data == null) data = new String[0][0];
+        int uid = (Integer)client.getProperty("udt");
+        UDTMember data[] = Database.getUDTMembersById(uid);
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a][0], null, null, "readonly"));
-          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a][0], null, "jfc_tag_type", "readonly"));
-          cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a][0], null, null, "readonly"));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a].id, null, null, "readonly"));
+          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a].id, null, "jfc_tag_type", "readonly"));
+          cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a].id, null, null, "readonly"));
         }
         break;
       }
       case "jfc_panels": {
-        String data[][] = sql.select("select id,name from jfc_panels where builtin=false");
-        if (data == null) data = new String[0][0];
+        PanelRow data[] = Database.panels.getRows().toArray(new PanelRow[0]);
         for(int a=0;a<data.length;a++) {
-          String style = data[a][1].equals("main") ? "disabled" : null;
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_panels_display_str_" + data[a][0], null, null, style));
-          cells.add(createCell(7, a, 2, 1, "button", null, "Edit", null, "jfc_panels_edit", data[a][0], null));
+          if (data[a].builtin) continue;
+          String id = Integer.toString(data[a].id);
+          String style = data[a].name.equals("main") ? "disabled" : null;
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_panels_display_str_" + data[a].id, null, null, style));
+          cells.add(createCell(7, a, 2, 1, "button", null, "Edit", null, "jfc_panels_edit", id, null));
           if (style == null) {
-            cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_panels_delete", data[a][0], null));
+            cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_panels_delete", id, null));
           }
         }
         break;
       }
       case "jfc_panel_editor": {
-        String pid = (String)client.getProperty("panel");
-        String data[][] = sql.select("select x,y,w,h,comp,name,text,tag,func,arg,style,events from jfc_cells where pid=" + pid);
+        int pid = (Integer)client.getProperty("panel");
+        CellRow data[] = Database.getCells(Database.getPanelById(pid).name);
         for(int a=0;a<data.length;a++) {
           cells.add(data[a]);
         }
         LayersPanel layers = new LayersPanel();
-        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null);
+        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new CellRow[cells.size()]), client, 64, 64, null);
         table.setName("t1");
         r.width = table.getColumns();
         r.height = table.getRows();
         layers.add(table);
         cells.clear();
         for(int a=0;a<data.length;a++) {
-          String cell[] = data[a];
-          cell[COMP] = "overlay";
-          cell[NAME] = "";
-          cell[TEXT] = "";
-          cell[TAG] = null;
-          cell[FUNC] = null;
-          cell[ARG] = null;
-          cell[STYLE] = null;
+          CellRow cell = data[a];
+          cell.comp = "overlay";
+          cell.name = "";
+          cell.text = "";
+          cell.tag = null;
+          cell.func = null;
+          cell.arg = null;
+          cell.style = null;
           cells.add(data[a]);
         }
-        String cellsArray[][] = cells.toArray(new String[cells.size()][]);
+        CellRow cellsArray[] = cells.toArray(new CellRow[cells.size()]);
         for(int x=0;x<64;x++) {
           for(int y=0;y<64;y++) {
             if (empty(cellsArray,x,y)) {
@@ -904,17 +889,16 @@ public class Panels {
             }
           }
         }
-        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, 64, 64, null);
+        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new CellRow[cells.size()]), client, 64, 64, null);
         table.setName("t2");
         layers.add(table);
         return layers;
       }
       case "jfc_funcs": {
-        String data[][] = sql.select("select id,name from jfc_funcs");
-        if (data == null) data = new String[0][0];
+        FunctionRow data[] = Database.funcs.getRows().toArray(new FunctionRow[0]);
         for(int a=0;a<data.length;a++) {
-          String fid = data[a][0];
-          String funcname = data[a][1];
+          String fid = Integer.toString(data[a].id);
+          String funcname = data[a].name;
           String style = funcname.equals("main") || funcname.equals("init") ? "disabled" : null;
           cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_funcs_name_tagid_" + fid, null, null, style));
           cells.add(createCell(7, a, 2, 1, "button", null, "Edit", null, "jfc_funcs_edit", fid, null));
@@ -939,7 +923,7 @@ public class Panels {
         TabPanel tabs = new TabPanel();
         tabs.setTabsVisible(false);
         tabs.setBorders(false);
-        String groups[] = sql.select1col("select gid from jfc_logics group by gid order by gid");
+        String groups[] = Database.getLogicGroups();
         int idx = -1;
         for(int a=0;a<groups.length;a++) {
           tabs.add(wrapPanel(getTable(createCell(r.x, r.y, r.width, r.height, "table", "jfc_logics", null, null, null, groups[a], null), null, new Rectangle(r), client)), "");
@@ -951,10 +935,10 @@ public class Panels {
         return tabs;
       }
       case "jfc_logics": {
-        String items[][] = sql.select("select name,shortname from jfc_logics where gid=" + SQL.quote(arg));
+        LogicRow items[] = Database.getLogicsByGroupId(arg);
         for(int a=0;a<items.length;a++) {
-          String desc = items[a][0];
-          String shortname = items[a][1];
+          String desc = items[a].name;
+          String shortname = items[a].shortname;
           if (shortname != null) {
             desc = shortname;
           }
@@ -971,14 +955,14 @@ public class Panels {
             }
             desc = desc.replaceAll("_", "<br/>");
           }
-          cells.add(createCell(a, 0, 1, 1, "button", items[a][0], desc, null, "jfc_rung_editor_add", null, style));
+          cells.add(createCell(a, 0, 1, 1, "button", items[a].name, desc, null, "jfc_rung_editor_add", null, style));
         }
         break;
       }
       case "jfc_rung_viewer": {
-        int fid = Integer.valueOf((String)client.getProperty("func"));
+        int fid = (Integer)client.getProperty("func");
         int rid = Integer.valueOf(arg);
-        String data[] = sql.select1row("select rid,logic,comment from jfc_rungs where fid=" + fid + " and rid=" + rid);
+        RungRow data = Database.getRungById(fid, rid);
         Rungs rungs = (Rungs)client.getProperty("rungs");
         Rung rung = buildRung(data, cells, nodes, client, true, fid);
         if (rung == null) {
@@ -989,7 +973,7 @@ public class Panels {
         break;
       }
       case "jfc_rung_viewer_end": {
-        int fid = Integer.valueOf((String)client.getProperty("func"));
+        int fid = (Integer)client.getProperty("func");
         cells.add(createCell(0, 0, 5, 1, "label", null, "End of Function", null, null, null, null));
         nodes.add(new NodeRoot(fid, -1));
         break;
@@ -1022,11 +1006,12 @@ public class Panels {
         break;
       }
       case "jfc_alarm_history": {
-        String data[][] = sql.select("select id,idx,when from jfc_alarmhistory where id=" + arg);
-        if (data == null) data = new String[0][];
+        long start = Long.valueOf(arg);
+        long end = start + ms_per_day;
+        AlarmRow data[] = Database.getAlarms(start, end);
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell(2, a, 4, 1, "label", null, data[a][2], null, null, null, null));  //when
-          cells.add(createCell(6, a, 10, 1, "label", null, arg + ":" + data[a][1], null, null, null, null));  //name
+          cells.add(createCell(2, a, 4, 1, "label", null, Long.toString(data[a].timestamp), null, null, null, null));  //when
+          cells.add(createCell(6, a, 10, 1, "label", null, arg + ":" + data[a], null, null, null, null));  //name
         }
         break;
       }
@@ -1038,7 +1023,7 @@ public class Panels {
         JFLog.log("Unknown table:" + name);
       }
     }
-    table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, nodes.toArray(new Node[nodes.size()]));
+    table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new CellRow[cells.size()]), client, -1, -1, nodes.toArray(new Node[nodes.size()]));
     r.width = table.getColumns();
     r.height = table.getRows();
     switch (name) {
@@ -1051,11 +1036,10 @@ public class Panels {
     }
     return table;
   }
-  private static Component getAutoScroll(String v[], Container container, WebUIClient client) {
+  private static Component getAutoScroll(CellRow v, Container container, WebUIClient client) {
     //auto scroll components are placed below the main table
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
-    String name = v[NAME];
+    String name = v.name;
     AutoScrollPanel panel = new AutoScrollPanel();
     JFLog.log("client.height=" + client.getHeight());
     panel.setHeight(client.getHeight() - (cellHeight * 2));
@@ -1064,30 +1048,30 @@ public class Panels {
     });
     switch (name) {
       case "jfc_rungs_viewer": {
-        String fid = (String)client.getProperty("func");
-        String data[][] = sql.select("select rid,logic,comment from jfc_rungs where fid=" + fid + " order by rid");
+        int fid = (Integer)client.getProperty("func");
+        RungRow data[] = Database.getRungsById(fid);
         client.setProperty("rungs", new Rungs());
         context.debug_en_idx = 0;
         context.debug_tv_idx = 0;
         for(int rung=0;rung<data.length;rung++) {
-          ArrayList<String[]> cells = new ArrayList<String[]>();
-          cells.add(createCell(0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, data[rung][0], null));
-          Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null);
+          ArrayList<CellRow> cells = new ArrayList<CellRow>();
+          cells.add(createCell(0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, Integer.toString(data[rung].id), null));
+          Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new CellRow[cells.size()]), client, -1, -1, null);
           panel.add(table);
         }
-        ArrayList<String[]> cells = new ArrayList<String[]>();
+        ArrayList<CellRow> cells = new ArrayList<CellRow>();
         cells.add(createCell(0, 0, 1, 1, "table", "jfc_rung_viewer_end", null, null, null, null, null));
-        Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, null);
+        Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new CellRow[cells.size()]), client, -1, -1, null);
         panel.add(table);
         Rungs rungs = (Rungs)client.getProperty("rungs");
         rungs.panel = panel;
         break;
       }
       case "jfc_rung_editor": {
-        int fid = Integer.valueOf((String)client.getProperty("func"));
-        int rid = Integer.valueOf((String)client.getProperty("rung"));
-        ArrayList<String[]> cells = new ArrayList<String[]>();
-        String data[] = sql.select1row("select rid,logic,comment from jfc_rungs where fid=" + fid + " and rid=" + rid);
+        int fid = (Integer)client.getProperty("func");
+        int rid = (Integer)client.getProperty("rung");
+        ArrayList<CellRow> cells = new ArrayList<CellRow>();
+        RungRow data = Database.getRungById(fid, rid);
         ArrayList<Node> nodes = new ArrayList<Node>();
         Rung rung = buildRung(data, cells, nodes, client, false, fid);
         if (rung == null) {
@@ -1095,7 +1079,7 @@ public class Panels {
           rung.root = new NodeRoot(fid, rid);
         }
         client.setProperty("rungObj", rung);
-        Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new String[cells.size()][]), client, -1, -1, nodes.toArray(new Node[nodes.size()]));
+        Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new CellRow[cells.size()]), client, -1, -1, nodes.toArray(new Node[nodes.size()]));
         layoutNodes(rung.root, table, client);
         table.setName(name + "_table");
         panel.add(table);
@@ -1125,8 +1109,8 @@ public class Panels {
     }
     return panel;
   }
-  private static Component getLight(String v[]) {
-    String style = v[STYLE];
+  private static Component getLight(CellRow v) {
+    String style = v.style;
     if (style == null) style = "";
     String ss[] = style.split(";");
     String c0 = "ff0000";
@@ -1154,8 +1138,8 @@ public class Panels {
     });
     return light;
   }
-  private static Component getLight3(String v[]) {
-    String style = v[STYLE];
+  private static Component getLight3(CellRow v) {
+    String style = v.style;
     if (style == null) style = "";
     String ss[] = style.split(";");
     String c0 = "ff0000";
@@ -1185,8 +1169,8 @@ public class Panels {
     });
     return light;
   }
-  private static Component getProgressBar(String v[]) {
-    String style = v[STYLE];
+  private static Component getProgressBar(CellRow v) {
+    String style = v.style;
     if (style == null) style = "";
     String ss[] = style.split(";");
     String c0 = "ff0000";
@@ -1259,34 +1243,35 @@ public class Panels {
         continue;
       }
       if (context.alarms.containsKey(idx)) continue;
-      ArrayList<String[]> cells = new ArrayList<String[]>();
+      ArrayList<CellRow> cells = new ArrayList<CellRow>();
       cells.add(createCell(0, 0, 1, 1, "table", "jfc_alarm", null, null, null, Integer.toString(idx), null));
-      Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), client, -1, -1, null);
+      Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new CellRow[cells.size()]), client, -1, -1, null);
       panel.add(table);
       context.alarms.put(Integer.toString(idx), table);
     }
   }
+  private static final long ms_per_day = 24 * 60 * 60 * 1000;
   private static void updateAlarmHistory(Panel panel, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     Calendar cal = Calendar.getInstance();
-    int year = cal.get(Calendar.YEAR);
-    int month = cal.get(Calendar.MONTH + 1);
-    int day = cal.get(Calendar.DAY_OF_MONTH);
-    String today = String.format("%04d/%02d/%02d%%", year, month, day);
-    String data[][] = sql.select("select id,idx,when from jfc_alarmhistory where when like '" + today + "' order by when");
-    if (data == null) data = new String[0][0];
+    cal.set(Calendar.HOUR_OF_DAY, 0);
+    cal.set(Calendar.MINUTE, 0);
+    cal.set(Calendar.SECOND, 0);
+    cal.set(Calendar.MILLISECOND, 0);
+    long start = cal.getTimeInMillis();
+    long end = start + ms_per_day;
+    AlarmRow data[] = Database.getAlarms(start, end);
     for(int a=0;a<data.length;a++) {
-      int id = Integer.valueOf(data[a][0]);
+      int id = Integer.valueOf(data[a].id);
       if (id < context.lastAlarmID) continue;
       context.lastAlarmID = id;
-      ArrayList<String[]> cells = new ArrayList<String[]>();
-      cells.add(createCell(0, 0, 1, 1, "table", "jfc_alarm_history", null, null, null, data[a][0], null));
-      Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new String[cells.size()][]), panel.getClient(), -1, -1, null);
+      ArrayList<CellRow> cells = new ArrayList<CellRow>();
+      cells.add(createCell(0, 0, 1, 1, "table", "jfc_alarm_history", null, null, null, Integer.toString(data[a].id), null));
+      Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new CellRow[cells.size()]), panel.getClient(), -1, -1, null);
       panel.add(table);
     }
   }
-  private static Component getOverlay(String v[]) {
+  private static Component getOverlay(CellRow v) {
     Block div = new Block();
     div.setBorder(true);
     div.setBorderColor(Color.black);
@@ -1314,7 +1299,6 @@ public class Panels {
   }
   public static void moveCell(WebUIClient client, int deltax, int deltay) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     Block focus = (Block)client.getProperty("focus");
     if (focus == null) {
       JFLog.log("Error:no focus");
@@ -1344,8 +1328,11 @@ public class Panels {
         return;
       }
     }
-    String pid = (String)client.getProperty("panel");
-    sql.execute("update jfc_cells set x=" + (fr.x + deltax) + ",y=" + (fr.y + deltay) + " where x=" + fr.x + " and y=" + fr.y + " and pid=" + pid);
+    int pid = (Integer)client.getProperty("panel");
+    CellRow cell = Database.getCell(pid, fr.x, fr.y);
+    cell.x = fr.x + deltax;
+    cell.y = fr.y + deltay;
+    Database.saveCellTable(Database.getPanelById(pid).name);
     moveComponent(t1, fr.x, fr.y, x1, y1, false);
     moveComponent(t2, fr.x, fr.y, x1, y1, true);
   }
@@ -1393,7 +1380,6 @@ public class Panels {
   }
   public static void resizeCell(WebUIClient client, int deltax, int deltay) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     Block focus = (Block)client.getProperty("focus");
     if (focus == null) {
       JFLog.log("Error:no focus");
@@ -1424,8 +1410,11 @@ public class Panels {
         return;
       }
     }
-    String pid = (String)client.getProperty("panel");
-    sql.execute("update jfc_cells set w=" + (fr.width + deltax) + ",h=" + (fr.height + deltay) + " where x=" + fr.x + " and y=" + fr.y + " and pid=" + pid);
+    int pid = (Integer)client.getProperty("panel");
+    CellRow cell = Database.getCell(pid, fr.x, fr.y);
+    cell.w = fr.width + deltax;
+    cell.h = fr.height + deltay;
+    Database.saveCellTable(Database.getPanelById(pid).name);
     resizeComponent(t1, fr.x, fr.y, deltax, deltay, false);
     resizeComponent(t2, fr.x, fr.y, deltax, deltay, true);
   }
@@ -1468,17 +1457,16 @@ public class Panels {
       }
     }
   }
-  public static Rung buildRung(String data[], ArrayList<String[]> cells, ArrayList<Node> objs, WebUIClient client, boolean readonly, int fid) {
+  public static Rung buildRung(RungRow rungobj, ArrayList<CellRow> cells, ArrayList<Node> objs, WebUIClient client, boolean readonly, int fid) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     int x = 0;
     int y = 0;
-    int rid = Integer.valueOf(data[0]);
+    int rid = rungobj.id;
     Rung rung = new Rung();
-    String logic = data[1];
-    String comment = data[2];
+    String logic = rungobj.logic;
+    String comment = rungobj.comment;
     String parts[] = logic.split("[|]");
-    String blocks[][] = sql.select("select bid,name,tags from jfc_blocks where fid=" + fid + " and rid=" + rid);
+    BlockRow blocks[] = Database.getRungBlocksById(fid, rid);
     ArrayList<Node> nodes = new ArrayList<Node>();
     NodeRoot root = new NodeRoot(fid, rid);
     JFLog.log("new NodeRoot() " + root);
@@ -1567,9 +1555,9 @@ public class Panels {
           String name = null;
           String tags = null;
           for(int a=0;a<blocks.length;a++) {
-            if (blocks[a][0].equals(part)) {
-              name = blocks[a][1];
-              tags = blocks[a][2];
+            if (blocks[a].name.equals(part)) {
+              name = blocks[a].name;
+              tags = blocks[a].tags;
               break;
             }
           }
@@ -1610,9 +1598,8 @@ public class Panels {
     logic.add(node.comp, x, y, spanx, 1);
     node.root.changed = true;
   }
-  public static void buildNodes(NodeRoot root, Table logic, ArrayList<String[]> newCells, ArrayList<Node> newNodes, WebUIClient client, int rid, boolean readonly) {
+  public static void buildNodes(NodeRoot root, Table logic, ArrayList<CellRow> newCells, ArrayList<Node> newNodes, WebUIClient client, int rid, boolean readonly) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     int x = 0;
     int y = 1;
     Node node = root.next;
@@ -1910,7 +1897,8 @@ public class Panels {
               if (create) {
                 if (blk.getTagType(a) == TagType.function) {
                   if (readonly) {
-                    tag = sql.select1value("select name from jfc_funcs where id=" + tag);
+                    FunctionRow fnc = Database.getFunctionById(Integer.valueOf(tag));
+                    tag = fnc.name;
                   }
                   newCells.add(createCell(x, y, 3, 1, combobox, "jfc_function", tag, null, null, "jfc_function", style));
                   newNodes.add(node.addChild('C', x, y));
@@ -2035,10 +2023,10 @@ public class Panels {
     JFLog.log("layoutNodes");
     do {
       root.changed = false;
-      ArrayList<String[]> newCells = new ArrayList<String[]>();
+      ArrayList<CellRow> newCells = new ArrayList<CellRow>();
       ArrayList<Node> newNodes = new ArrayList<Node>();
       buildNodes(root, logic, newCells, newNodes, client, root.rid, false);
-      buildTable(logic, null, newCells.toArray(new String[newCells.size()][]), client, -1, -1, newNodes.toArray(new Node[newNodes.size()]));
+      buildTable(logic, null, newCells.toArray(new CellRow[newCells.size()]), client, -1, -1, newNodes.toArray(new Node[newNodes.size()]));
     } while (root.changed);
     //calc max table size
     Node node = root;

@@ -13,7 +13,7 @@ import javaforce.jni.*;
 
 import jfcontrols.app.*;
 import jfcontrols.api.*;
-import jfcontrols.sql.*;
+import jfcontrols.db.*;
 import jfcontrols.tags.*;
 
 public class FunctionService extends Thread {
@@ -59,21 +59,17 @@ public class FunctionService extends Thread {
     Class mainCls, initCls;
     File mainFile = new File(Paths.dataPath + "/work/class/func_1.class");
     boolean compile = false;
-    if (sql == null) {
-      sql = SQLService.getSQL();
-      FunctionRuntime.sql = sql;
-    }
     if (!mainFile.exists()) {
-      FunctionService.generateFunction(1, sql);
+      FunctionService.generateFunction(1);
       compile = true;
     }
     File initFile = new File(Paths.dataPath + "/work/class/func_2.class");
     if (!initFile.exists()) {
-      FunctionService.generateFunction(2, sql);
+      FunctionService.generateFunction(2);
       compile = true;
     }
     if (compile) {
-      FunctionService.compileProgram(sql);
+      FunctionService.compileProgram();
     }
     if (!mainFile.exists()) {
       JFLog.log("main function not compiled");
@@ -220,7 +216,7 @@ public class FunctionService extends Thread {
     }
   }
 
-  public static boolean generateFunction(int fid, SQL sql) {
+  public static boolean generateFunction(int fid) {
     String name = sql.select1value("select name from jfc_funcs where id=" + fid);
     JFLog.log("Compiling func:" + fid + ":" + name);
     String code = FunctionCompiler.generateFunction(fid, sql);
@@ -241,7 +237,7 @@ public class FunctionService extends Thread {
     }
   }
   public static String error;
-  public static boolean compileProgram(SQL sql) {
+  public static boolean compileProgram() {
     try {
       ShellProcess sp = new ShellProcess();
       sp.keepOutput(true);

@@ -11,7 +11,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.controls.*;
 
-import jfcontrols.sql.*;
+import jfcontrols.db.*;
 
 public class TagsService extends Thread {
   private static Object lock_main = new Object();
@@ -23,7 +23,6 @@ public class TagsService extends Thread {
   private static volatile boolean active;
   private static volatile boolean doReads;
   private static volatile boolean doWrites;
-  public static SQL sql;
 
   public static final int MAX_TAGS = 4096;
   public static TagBase tags[] = new TagBase[MAX_TAGS];
@@ -75,18 +74,7 @@ public class TagsService extends Thread {
     TagBase alarms = getTag("alarms");
     alarms.addListener((tag, oldValue, newValue) -> {
       if (oldValue.equals("0") && newValue.equals("1")) {
-        //new alarm
-        Calendar cal = Calendar.getInstance();
-        int year = cal.get(Calendar.YEAR);
-        int month = cal.get(Calendar.MONTH) + 1;
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        int minute = cal.get(Calendar.MINUTE);
-        int second = cal.get(Calendar.SECOND);
-        int millisecond = cal.get(Calendar.MILLISECOND);
-        int idx = Integer.valueOf(sql.select1value("select max(idx) from jfc_alarmhistory")) + 1;  //BUG : will overflow
-        String when = String.format("%04d/%02d/%02d %02d:%02d:%02d.%03d", year, month, day, hour, minute, second, millisecond);
-        sql.execute("insert into jfc_alarmhistory (idx,when) values (" + idx + ",'" + when + "')");
+        Database.logAlarm(-1);  //BUG : need alarm id ???
       }
     });
   }
@@ -110,7 +98,7 @@ public class TagsService extends Thread {
     try {
       String filename = "tags/" + tid + ".dat";
       File file = new File(filename);
-      if (!file.exists()) return null;      
+      if (!file.exists()) return null;
       RandomAccessFile raf = new RandomAccessFile(filename, "rw");
       int size = raf.readInt();
       if (size > 4 * 1024 * 1024) throw new Exception("tag too large");
@@ -132,22 +120,23 @@ public class TagsService extends Thread {
     }
   }
 
-  public static TagBase createTag(int cid, int id, int type, int length, String name, String comment, SQL sql) {
+  public static TagBase createTag(int cid, int id, int type, int length, String name, String comment) {
 //    JFLog.log("createTag:" + cid + "," + id + "," + type + "," + length + "," + name + "," + comment);
     TagBase tag = null;
     if (type > 0xff) {
-      String fields[][] = sql.select("select type, arraysize, name, comment from jfc_udtmems where uid=" + type);
+      //String fields[][] = sql.select("select type, arraysize, name, comment from jfc_udtmems where uid=" + type);
+      UDTMember fields[] = Database.getUDTMembersById(type);
       tag = new TagUDT(cid, id, type, length, fields.length);
       //create fields
       if (length == 0) length = 1;
       for(int idx=0;idx<length;idx++) {
         TagBase tagFields[] = tag.getFields(idx);
         for(int fidx=0;fidx<fields.length;fidx++) {
-          int ftype = Integer.valueOf(fields[fidx][0]);
-          int flength = Integer.valueOf(fields[fidx][1]);
-          String fname = fields[fidx][2];
-          String fcomment = fields[fidx][3];
-          tagFields[fidx] = createTag(cid, -1, ftype, flength, fname, fcomment, null);
+          int ftype = fields[fidx].type;
+          int flength = fields[fidx].length;
+          String fname = fields[fidx].name;
+          String fcomment = fields[fidx].comment;
+          tagFields[fidx] = createTag(cid, -1, ftype, flength, fname, fcomment);
         }
       }
     } else {
@@ -177,9 +166,7 @@ public class TagsService extends Thread {
 
   public static void addTag(TagBase tag) {
     if (tag.cid > 0) {
-      SQL sql = SQLService.getSQL();
-      tag.remoteTag = RemoteControllers.getTag(tag, sql);
-      sql.close();
+      tag.remoteTag = RemoteControllers.getTag(tag);
     }
     tags[tag.tid] = tag;
     map.put(tag.name, tag);
@@ -193,18 +180,18 @@ public class TagsService extends Thread {
 
   public void run() {
     service = this;
-    sql = SQLService.getSQL();
-    String tagList[][] = sql.select("select id,cid,type,arraysize,name,comment from jfc_tags");
+//    String tagList[][] = sql.select("select id,cid,type,arraysize,name,comment from jfc_tags");
+    TagRow tagList[] = Database.getTags();
     for(int a=0;a<tagList.length;a++) {
-      int tid = Integer.valueOf(tagList[a][0]);
-      int cid = Integer.valueOf(tagList[a][1]);
-      int type = Integer.valueOf(tagList[a][2]);
-      int arraysize = Integer.valueOf(tagList[a][3]);
-      String name = tagList[a][4];
-      String comment = tagList[a][5];
+      int tid = tagList[a].id;
+      int cid = tagList[a].cid;
+      int type = tagList[a].type;
+      int length = tagList[a].length;
+      String name = tagList[a].name;
+      String comment = tagList[a].comment;
       TagBase tag = loadTag(tid);
       if (tag == null) {
-        tag = createTag(cid, tid, type, arraysize, name, comment, sql);
+        tag = createTag(cid, tid, type, length, name, comment);
       }
       tags[tid] = tag;
       map.put(tag.name, tag);
@@ -217,19 +204,17 @@ public class TagsService extends Thread {
       while (active) {
         try {lock_signal.wait();} catch (Exception e) {}
         if (doReads) {
-          processReads(sql);
+          processReads();
         }
         if (doWrites) {
-          processWrites(sql);
+          processWrites();
         }
         processSaves();
       }
     }
     service = null;
-    sql.close();
-    sql = null;
   }
-  private void processReads(SQL sql) {
+  private void processReads() {
     for(int a=0;a<tags.length;a++) {
       TagBase tag = tags[a];
       if (tag == null) continue;
@@ -242,7 +227,7 @@ public class TagsService extends Thread {
       lock_done_reads.notify();
     }
   }
-  private void processWrites(SQL sql) {
+  private void processWrites() {
     for(int a=0;a<tags.length;a++) {
       TagBase tag = tags[a];
       if (tag == null) continue;

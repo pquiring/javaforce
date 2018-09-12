@@ -9,6 +9,7 @@ import javaforce.*;
 import javaforce.webui.*;
 
 import jfcontrols.tags.*;
+import jfcontrols.db.*;
 
 public class WatchContext extends Thread {
   private volatile boolean active;
@@ -18,16 +19,15 @@ public class WatchContext extends Thread {
 
   public boolean init(WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     String wid = (String)client.getProperty("watch");
-    String data[][] = sql.select("select id,tag from jfc_watchtags where wid=" + wid + " order by id");
+    WatchRow data[] = Database.getWatchTagsById(Integer.valueOf(wid));
     if (data == null) return false;
     int cnt = data.length;
     tags = new TagBase[cnt];
     tv = new Label[cnt];
     Panel panel = client.getPanel();
     for(int a=0;a<cnt;a++) {
-      tags[a] = context.getTag(data[a][1]);
+      tags[a] = context.getTag(data[a].tag);
       tv[a] = (Label)panel.getComponent("tag_" + a);
     }
     return true;

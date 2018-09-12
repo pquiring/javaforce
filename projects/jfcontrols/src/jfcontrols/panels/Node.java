@@ -413,7 +413,6 @@ public class Node {
     //src = fork source
     //dest = fork destination
     ClientContext context = (ClientContext)client.getProperty("context");
-    SQL sql = context.sql;
     Node dest = this, node;
     if (dest.parent != null) dest = dest.parent;
     if (!dest.highlight) return;
