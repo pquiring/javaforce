@@ -22,7 +22,6 @@ public class RTP implements STUN.Listener {
   protected boolean rawMode;
   public Vector<RTPChannel> channels = new Vector<RTPChannel>();
   public static long now = 0;  //this is copied into each RTPChannel as it receives packets
-  private static boolean hasBouncyCastle;
 
   //TURN related data
   protected static boolean useTURN = false;
@@ -47,16 +46,6 @@ public class RTP implements STUN.Listener {
   public final static Codec CODEC_H263_1998 = new Codec("H263-1998", 98);  //patent expired
   public final static Codec CODEC_H263_2000 = new Codec("H263-2000", 99);  //patent expired
   public final static Codec CODEC_RFC2833 = new Codec("telephone-event", 100);
-
-  static {
-    try {
-      Class.forName("org.bouncycastle.crypto.tls.TlsServer");
-      hasBouncyCastle = true;
-    } catch (Exception e) {
-//      JFLog.log(e);
-      JFLog.log("Warning:BouncyCastle not found, SRTP/DTLS not available");
-    }
-  }
 
   public static void enableTURN(String host, String user, String pass) {
     useTURN = true;
@@ -308,14 +297,14 @@ public class RTP implements STUN.Listener {
   /**
    * Create a new RTP channel with a random ssrc id.
    */
-  public RTPChannel createChannel(SDP.Stream stream) {
-    return createChannel(-1, stream);
+  public RTPChannel createChannel(SDP.Stream stream, boolean server) {
+    return createChannel(-1, stream, server);
   }
 
   /**
    * Create a new RTP channel with a specified ssrc id.
    */
-  public RTPChannel createChannel(int ssrc, SDP.Stream stream) {
+  public RTPChannel createChannel(int ssrc, SDP.Stream stream, boolean server) {
     JFLog.log("RTP.createChannel()" + stream.getIP() + ":" + stream.port);
     RTPChannel channel = null;
     switch (stream.profile) {
@@ -325,11 +314,7 @@ public class RTP implements STUN.Listener {
         break;
       case SAVP:
       case SAVPF:
-        if (!hasBouncyCastle) {
-          JFLog.log("RTP:Couldn't create SRTPChannel");
-          return null;
-        }
-        channel = new SRTPChannel(this, ssrc, stream);
+        channel = new SRTPChannel(this, ssrc, stream, server);
         break;
       case UNKNOWN:
         JFLog.log("RTP:Can not create unknown profile");

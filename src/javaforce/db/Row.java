@@ -6,6 +6,9 @@ public class Row implements java.io.Serializable {
   /** auto-increment id */
   public int id;
   
+  /** insert timestamp */
+  public long timestamp;
+  
   /** Override this method to sort your rows. 
    *  @return 0=equal -1=this is lower +1=other is lower
    */

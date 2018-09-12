@@ -16,7 +16,6 @@ public class SDP implements Cloneable {
   public static enum Type {audio, video, other};
   public static enum Mode {sendonly, recvonly, sendrecv, inactive};
   public static enum Profile {AVP, SAVP, AVPF, SAVPF, UNKNOWN};
-  public static enum KeyExchange {NONE, SDP, DTLS};
   public class Key {
     public String crypto;
     public byte key[];
@@ -31,8 +30,6 @@ public class SDP implements Cloneable {
     public String content;
     public SDP sdp;
     public Profile profile = Profile.AVP;
-    public KeyExchange keyExchange = KeyExchange.NONE;
-    public Key[] keys;  //if KeyExchange == SDP
 
     public String getType() {
       switch (type) {
@@ -82,31 +79,6 @@ public class SDP implements Cloneable {
     }
     public boolean isSecure() {
       return profile == Profile.SAVP || profile == Profile.SAVPF;
-    }
-    /**
-     * Used to add SRTP keys to SDP (obsoleted by DTLS method)
-     * Must set KeyExchange to SDP.
-     *
-     * @param crypto = AES_CM_128_HMAC_SHA1_80, etc.
-     * @param key = 16 byte key
-     * @param salt = 14 byte salt
-     */
-    public void addKey(String crypto, byte key[], byte salt[]) {
-      Key newkey = new Key();
-      newkey.crypto = crypto;
-      newkey.key = key;
-      newkey.salt = salt;
-      if (keys == null) keys = new Key[0];
-      Key newKeys[] = new Key[keys.length + 1];
-      newKeys[keys.length] = newkey;
-      keys = newKeys;
-    }
-    public Key getKey(String crypto) {
-      if (keys == null) return null;
-      for(int a=0;a<keys.length;a++) {
-        if (keys[a].crypto.equals(crypto)) return keys[a];
-      }
-      return null;
     }
   }
   public String ip;  //global connection
