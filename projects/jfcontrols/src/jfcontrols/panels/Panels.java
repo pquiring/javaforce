@@ -83,7 +83,7 @@ public class Panels {
       setCellSize(xrefBtn, new Rectangle(x,0,1,1));
       table.add(xrefBtn, x, 0);
       x++; width -= cellWidth;
-      client.setProperty("xref", "-1");
+      client.setProperty("xref", -1);
     }
 
     Label title = getLabel(createCell(0, 0, 0, 0, "label", "jfc_title", pnl.display, null, null, null, null));
@@ -507,7 +507,7 @@ public class Panels {
     String pairs[][];
     if (arg.equals("jfc_function")) {
       FunctionRow funcs[] = Database.funcs.getRows().toArray(new FunctionRow[0]);
-      pairs = new String[funcs.length][];
+      pairs = new String[funcs.length][2];
       for(int a=0;a<funcs.length;a++) {
         pairs[a][0] = Integer.toString(funcs[a].id);
         pairs[a][1] = funcs[a].name;
@@ -534,20 +534,18 @@ public class Panels {
       arg = "jfc_tag_type";
       javaforce.db.Table listTable = Database.getList("jfc_tag_type");
       ListRow basicTypes[] = listTable.getRows().toArray(new ListRow[0]);
-      String basic[][] = new String[basicTypes.length][];
+      String basic[][] = new String[basicTypes.length][2];
       for(int a=0;a<basicTypes.length;a++) {
-        basic[a] = new String[2];
         basic[a][0] = Integer.toString(basicTypes[a].idx);
         basic[a][1] = basicTypes[a].value;
       }
       UDT udtTypes[] = Database.udts.getRows().toArray(new UDT[0]);
-      String udts[][] = new String[udtTypes.length][];
+      String udts[][] = new String[udtTypes.length][2];
       for(int a=0;a<udtTypes.length;a++) {
-        basic[a] = new String[2];
-        basic[a][0] = Integer.toString(udtTypes[a].id);
-        basic[a][1] = udtTypes[a].name;
+        udts[a][0] = Integer.toString(udtTypes[a].id);
+        udts[a][1] = udtTypes[a].name;
       }
-      pairs = new String[basic.length + udts.length][];
+      pairs = new String[basic.length + udts.length][2];
       int pos = 0;
       for(int a=0;a<basic.length;a++) {
         pairs[pos++] = basic[a];
@@ -556,6 +554,7 @@ public class Panels {
         pairs[pos++] = udts[a];
       }
     } else {
+      JFLog.log("list=" + arg);
       javaforce.db.Table listTable = Database.getList(arg);
       ListRow data[] = listTable.getRows().toArray(new ListRow[0]);
       pairs = new String[data.length][];

@@ -968,7 +968,7 @@ public class Events {
 
       case "jfc_funcs_new": {
         synchronized(lock) {
-          Database.addFunction("New Function", 1);
+          Database.addFunction("New Function");
         }
         client.setPanel(Panels.getPanel("jfc_funcs", client));
         break;

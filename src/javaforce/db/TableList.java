@@ -43,6 +43,7 @@ public class TableList implements java.io.Serializable {
       FileInputStream fis = new FileInputStream(folder + "/0.dat");
       ObjectInputStream ois = new ObjectInputStream(fis);
       list = (TableList)ois.readObject();
+      list.tables = new ArrayList<Table>();
       fis.close();
       list.loadTables();
       return list;
@@ -66,6 +67,7 @@ public class TableList implements java.io.Serializable {
       Table table = tables.get(a);
       if (table.name.equals(name)) return table;
     }
+    JFLog.log("Error:Table not found:" + name);
     return null;
   }
   public void save(int id) {
@@ -76,6 +78,7 @@ public class TableList implements java.io.Serializable {
   }
   private void save() {
     try {
+      new File(folder).mkdirs();
       FileOutputStream fos = new FileOutputStream(folder + "/0.dat");
       ObjectOutputStream oos = new ObjectOutputStream(fos);
       oos.writeObject(this);
@@ -90,6 +93,8 @@ public class TableList implements java.io.Serializable {
       JFLog.log("Warning:TableList:next id reset to start");
       nextid = minid;
     }
+    table.filename = folder + "/" + table.id + ".dat";
+    tables.add(table);
     save();
   }
   public ArrayList<Table> getTables() {

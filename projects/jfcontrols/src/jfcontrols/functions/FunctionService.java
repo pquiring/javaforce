@@ -23,7 +23,6 @@ public class FunctionService extends Thread {
   public static Object wapi = new Object();
   public static Object fapi = new Object();
   public static FunctionLoader loader;
-  public static SQL sql;
 
   private static String jdk;
 
@@ -143,9 +142,6 @@ public class FunctionService extends Thread {
 //      System.out.println("scantime=" + scantime);
     }
     JFLog.log("Function.Service stopping...");
-    sql.close();
-    sql = null;
-    FunctionService.sql = null;
     synchronized(done) {
       done.notify();
     }
@@ -217,9 +213,9 @@ public class FunctionService extends Thread {
   }
 
   public static boolean generateFunction(int fid) {
-    String name = sql.select1value("select name from jfc_funcs where id=" + fid);
-    JFLog.log("Compiling func:" + fid + ":" + name);
-    String code = FunctionCompiler.generateFunction(fid, sql);
+    FunctionRow func = Database.getFunctionById(fid);
+    JFLog.log("Compiling func:" + fid + ":" + func.name);
+    String code = FunctionCompiler.generateFunction(fid);
     if (code == null) return false;
     new File(Paths.dataPath + "/work/java").mkdirs();
     new File(Paths.dataPath + "/work/class").mkdirs();

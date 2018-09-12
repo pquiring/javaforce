@@ -24,7 +24,7 @@ public class Table implements java.io.Serializable {
 
   public int xid;  //user defined xref table id
 
-  private transient String filename;
+  protected transient String filename;
 
   public static Table load(String filename) {
     if (!new File(filename).exists()) {
@@ -64,24 +64,28 @@ public class Table implements java.io.Serializable {
     int min = 0;
     int idx = cnt / 2;
     int max = cnt;
-    int tmp;
+    int tmp, delta;
     while (true) {
+      if (idx == cnt) return idx;
       Row r = rows.get(idx);
-      int c = r.compare(row);
-      switch (c) {
+      switch (r.compare(row)) {
         case 0: return idx;
         case -1:
           //r is lower : move towards max
           if (idx == max) return idx;
           tmp = idx;
-          idx += ((max - idx) / 2);
+          delta = ((max - idx) / 2);
+          if (delta == 0) delta++;
+          idx += delta;
           min = tmp;
           break;
         case 1:
           //r is higher : move towards min
           if (idx == min) return idx;
           tmp = idx;
-          idx -= ((idx - min) / 2);
+          delta = ((idx - min) / 2);
+          if (delta == 0) delta++;
+          idx -= delta;
           max = tmp;
           break;
       }

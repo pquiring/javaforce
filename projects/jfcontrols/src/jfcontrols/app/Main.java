@@ -44,7 +44,8 @@ public class Main implements WebUIHandler {
 
   public Panel getRootPanel(WebUIClient client) {
     System.out.println("getRootPanel()");
-    client.setProperty("xref", "-1");
+    client.setProperty("xref", -1);
+    client.setProperty("audio-init", 0);
     if (debug) {
       client.setProperty("user", "admin");
     }

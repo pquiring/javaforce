@@ -13,23 +13,24 @@ import javaforce.controls.*;
 import jfcontrols.logic.*;
 import jfcontrols.panels.*;
 import jfcontrols.tags.*;
+import jfcontrols.db.*;
 
 public class FunctionCompiler {
   public static String error;
-  public static String generateFunction(int fid, SQL sql) {
+  public static String generateFunction(int fid) {
     error = null;
     StringBuilder sb = new StringBuilder();
-    String revision = sql.select1value("select revision from jfc_funcs where id=" + fid);
+    FunctionRow fnc = Database.getFunctionById(fid);
     sb.append("import jfcontrols.tags.*;\r\n");
     sb.append("public class func_" + fid + " extends jfcontrols.functions.FunctionRuntime {\r\n");
-    String blks[][] = sql.select("select rid,bid,tags from jfc_blocks where fid=" + fid);
+    BlockRow blks[] = Database.getBlocksById(fid);
     sb.append("  public static boolean debug_en[][] = new boolean[" + blks.length + "][2];\r\n");
     int tagcount = 0;
     for(int a=0;a<blks.length;a++) {
-      tagcount += blks[a][2].split(",").length;
+      tagcount += blks[a].tags.split(",").length;
     }
     sb.append("  public static String debug_tv[] = new String[" + tagcount + "];\r\n");
-    sb.append("  public static long revision = " + revision + ";\r\n");
+    sb.append("  public static long revision = " + fnc.revision + ";\r\n");
     sb.append("  public boolean code(TagBase args[]) {\r\n");
     sb.append("    boolean enabled = true;\r\n");
     sb.append("    boolean en[] = new boolean[256];\r\n");
@@ -37,7 +38,7 @@ public class FunctionCompiler {
     sb.append("    TagBase tags[] = new TagBase[33];\r\n");
 
     //append code from jfc_rungs
-    String rungs[][] = sql.select("select logic from jfc_rungs where fid=" + fid + " order by rid");
+    RungRow rungs[] = Database.getRungsById(fid);
     int norungs = rungs.length;
     ArrayList<String> stack = new ArrayList<>();
     int debug_en = 0;
@@ -47,10 +48,9 @@ public class FunctionCompiler {
       sb.append("    enabled = true;\r\n");
       sb.append("    en[0] = enabled;\r\n");
       int pos = sb.length();
-      String rung[] = rungs[rid];
-      String logic[] = rung[0].split("[|]");
-      String blocks[][] = sql.select("select bid,name,tags from jfc_blocks where fid=" + fid + " and rid=" + rid + " order by bid");
-      NodeRoot root = buildNodes(fid, rid, logic, blocks, sql);
+      String logic[] = rungs[rid].logic.split("[|]");
+      BlockRow blocks[] = Database.getRungBlocksById(fid, rid);
+      NodeRoot root = buildNodes(fid, rid, logic, blocks);
       if (root == null) return null;
       Node node = root, upper;
       String func = null;
@@ -174,7 +174,7 @@ public class FunctionCompiler {
     sb.append("}\r\n");
     return sb.toString();
   }
-  public static NodeRoot buildNodes(int fid, int rid, String logic[], String blocks[][], SQL sql) {
+  public static NodeRoot buildNodes(int fid, int rid, String logic[], BlockRow blocks[]) {
     int x = 0;
     int y = 0;
     ArrayList<Node> nodes = new ArrayList<Node>();
@@ -249,10 +249,11 @@ public class FunctionCompiler {
         default: {
           String name = null;
           String tags = null;
+          int bid = Integer.valueOf(part);
           for(int a=0;a<blocks.length;a++) {
-            if (blocks[a][0].equals(part)) {
-              name = blocks[a][1];
-              tags = blocks[a][2];
+            if (blocks[a].bid == bid) {
+              name = blocks[a].name;
+              tags = blocks[a].tags;
               break;
             }
           }

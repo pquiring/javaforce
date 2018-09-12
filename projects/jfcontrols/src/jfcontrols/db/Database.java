@@ -37,8 +37,8 @@ public class Database {
   public static String Version = "1.0";
 
   public static void start() {
-    JFLog.log("DB init...");
-    String id;
+    JFLog.log("Database starting...");
+
     //create/load tables
     config = Table.load(Paths.dataPath + "/config/config.dat");
     alarms = new TableLog(Paths.logsPath);
@@ -59,9 +59,10 @@ public class Database {
 
     String version = getConfig("version");
     if (version == null) version = "0.0";
+    JFLog.log("Database version=" + version);
     switch (version) {
       case "1.0": return;
-      case "0.0": create(); break;
+      default: create(); break;
     }
   }
 
@@ -91,6 +92,7 @@ public class Database {
   }
 
   private static void create() {
+    JFLog.log("Database create...");
     Table list;
     addUser("admin", "admin");
     addUser("oper", "oper");
@@ -104,12 +106,14 @@ public class Database {
     list.add(new ListRow(2, "AB"));
     list.add(new ListRow(3, "MB"));
     list.add(new ListRow(4, "NI"));
+    list.save();
 
     list = addList("jfc_ctrl_speed");
     list.add(new ListRow(0, "Auto"));
     list.add(new ListRow(1, "1ms"));
     list.add(new ListRow(2, "100ms"));
     list.add(new ListRow(3, "10ms"));
+    list.save();
 
     list = addList("jfc_tag_type");
     list.add(new ListRow(TagType.bit, "bit"));
@@ -126,6 +130,7 @@ public class Database {
     list.add(new ListRow(TagType.char8, "char8"));
     list.add(new ListRow(TagType.char16, "char16"));
     list.add(new ListRow(TagType.string, "string"));
+    list.save();
 
     list = addList("jfc_panel_type");
     list.add(new ListRow(0, "label"));
@@ -135,6 +140,7 @@ public class Database {
     list.add(new ListRow(4, "light3"));
     list.add(new ListRow(5, "progressbar"));
     list.add(new ListRow(6, "image"));
+    list.save();
 
     //create local controller
     addController(0, "127.0.0.1", 0, 0);
@@ -568,8 +574,8 @@ public class Database {
     celltable.save();
 
     //insert system funcs
-    addFunction("main", 0);
-    addFunction("init", 0);
+    addFunction("main");
+    addFunction("init");
   }
 
   public static String quote(String value, String type) {
@@ -1017,12 +1023,13 @@ public class Database {
     }
   }
 
-  public static void addFunction(String name, long revision) {
+  public static void addFunction(String name) {
     FunctionRow func = new FunctionRow();
     func.name = name;
-    func.revision = revision;
+    func.revision = 1;
     func.comment = "";
     funcs.add(func);
+    JFLog.log("Added function:" + func.name + ":" + func.id);
     Table rungsTable = new Table();
     rungsTable.xid = func.id;
     rungs.add(rungsTable);
@@ -1050,6 +1057,7 @@ public class Database {
         return func;
       }
     }
+    JFLog.log("Function not found:" + id);
     return null;
   }
   public static boolean isFunctionInUse(int id) {
@@ -1159,6 +1167,14 @@ public class Database {
       if (table.xid == fid) return table.id;
     }
     return -1;
+  }
+  public static BlockRow[] getBlocksById(int fid) {
+    ArrayList<Table> tables = blocks.getTables();
+    for(int t=0;t<tables.size();t++) {
+      Table table = tables.get(t);
+      if (table.xid == fid) return table.getRows().toArray(new BlockRow[0]);
+    }
+    return null;
   }
   public static void addBlock(int fid, int rid, int bid, String name, String tags) {
     int xid = getBlockId(fid);
