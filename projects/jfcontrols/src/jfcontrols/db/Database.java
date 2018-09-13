@@ -1,6 +1,6 @@
 package jfcontrols.db;
 
-/** SQL Service
+/** Database Service
  *
  * @author pquiring
  */
@@ -832,10 +832,6 @@ public class Database {
       }
     }
   }
-  public static boolean isUDTMemberInUse(int uid, int mid) {
-    //TODO
-    return true;
-  }
 
   public static int addTag(int cid, String name, int type, int length, boolean builtin) {
     TagRow tag = new TagRow();
@@ -1322,13 +1318,511 @@ public class Database {
   }
 
 
-  public static boolean update(String table, int id, String col, String value, String type) {
-    //TODO
+  public static boolean update(String tableName, String id, String col, String value, String type) {
+    Table table = null;
+    TableList tablelist = null;
+    switch (tableName) {
+      case "config": {
+        table = config;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        for(int a=0;a<cnt;a++) {
+          ConfigRow row = (ConfigRow)rows.get(a);
+          if (row.name.equals(id)) {
+            row.value = value;
+            table.save();
+            return true;
+          }
+        }
+        break;
+      }
+      case "ctrls": {
+        table = controllers;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "cid": {
+            for(int a=0;a<cnt;a++) {
+              ControllerRow row = (ControllerRow)rows.get(a);
+              if (row.id == rowid) {
+                row.cid = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "ip": {
+            for(int a=0;a<cnt;a++) {
+              ControllerRow row = (ControllerRow)rows.get(a);
+              if (row.id == rowid) {
+                row.ip = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "type": {
+            for(int a=0;a<cnt;a++) {
+              ControllerRow row = (ControllerRow)rows.get(a);
+              if (row.id == rowid) {
+                row.type = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "speed": {
+            for(int a=0;a<cnt;a++) {
+              ControllerRow row = (ControllerRow)rows.get(a);
+              if (row.id == rowid) {
+                row.speed = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "tags": {
+        table = tags;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              TagRow row = (TagRow)rows.get(a);
+              if (row.id == rowid) {
+                row.name = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "type": {
+            for(int a=0;a<cnt;a++) {
+              TagRow row = (TagRow)rows.get(a);
+              if (row.id == rowid) {
+                row.type = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "arraysize": {
+            for(int a=0;a<cnt;a++) {
+              TagRow row = (TagRow)rows.get(a);
+              if (row.id == rowid) {
+                row.length = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "comment": {
+            for(int a=0;a<cnt;a++) {
+              TagRow row = (TagRow)rows.get(a);
+              if (row.id == rowid) {
+                row.comment = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "watch": {
+        tablelist = watches;
+        ArrayList<Table> tables = tablelist.getTables();
+        int cnt = tables.size();
+        int tableid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              table = tables.get(a);
+              if (table.id == tableid) {
+                table.name = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "watchtag": {
+        tablelist = watches;
+        ArrayList<Table> tables = tablelist.getTables();
+        int cnt = tables.size();
+        int tableid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              table = tables.get(a);
+              if (table.id == tableid) {
+                //TODO ???
+                //return true;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "udts": {
+        table = udts;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              UDT row = (UDT)rows.get(a);
+              if (row.id == rowid) {
+                row.name = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+        }
+      }
+      case "udtmems": {
+        table = udtmembers;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              UDTMember row = (UDTMember)rows.get(a);
+              if (row.id == rowid) {
+                row.name = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "type": {
+            for(int a=0;a<cnt;a++) {
+              UDTMember row = (UDTMember)rows.get(a);
+              if (row.id == rowid) {
+                row.type = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "comment": {
+            for(int a=0;a<cnt;a++) {
+              UDTMember row = (UDTMember)rows.get(a);
+              if (row.id == rowid) {
+                row.comment = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "panels": {
+        table = panels;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "display": {
+            for(int a=0;a<cnt;a++) {
+              PanelRow row = (PanelRow)rows.get(a);
+              if (row.id == rowid) {
+                row.display = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+        }
+      }
+      case "funcs": {
+        table = funcs;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              FunctionRow row = (FunctionRow)rows.get(a);
+              if (row.id == rowid) {
+                row.name = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+        }
+      }
+      default: {
+        JFLog.log("Error:Database.update():unknown table:" + table);
+        return false;
+      }
+    }
+    JFLog.log("Error:Database.update() failed for table:" + table + ":col=" + col + ":id=" + id);
     return false;
   }
 
-  public static String select(String table, int id, String col, String type) {
-    //TODO
+  public static String select(String tableName, String id, String col, String type) {
+    Table table = null;
+    TableList tablelist = null;
+    switch (tableName) {
+      case "jfc_config": {
+        table = Database.config;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        for(int a=0;a<cnt;a++) {
+          ConfigRow row = (ConfigRow)rows.get(a);
+          if (row.name.equals(id)) {
+            return row.value;
+          }
+        }
+        break;
+      }
+      case "ctrls": {
+        table = controllers;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "cid": {
+            for(int a=0;a<cnt;a++) {
+              ControllerRow row = (ControllerRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.cid);
+              }
+            }
+            break;
+          }
+          case "ip": {
+            for(int a=0;a<cnt;a++) {
+              ControllerRow row = (ControllerRow)rows.get(a);
+              if (row.id == rowid) {
+                return row.ip;
+              }
+            }
+            break;
+          }
+          case "type": {
+            for(int a=0;a<cnt;a++) {
+              ControllerRow row = (ControllerRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.type);
+              }
+            }
+            break;
+          }
+          case "speed": {
+            for(int a=0;a<cnt;a++) {
+              ControllerRow row = (ControllerRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.speed);
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "tags": {
+        table = tags;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              TagRow row = (TagRow)rows.get(a);
+              if (row.id == rowid) {
+                return row.name;
+              }
+            }
+            break;
+          }
+          case "type": {
+            for(int a=0;a<cnt;a++) {
+              TagRow row = (TagRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.type);
+              }
+            }
+            break;
+          }
+          case "arraysize": {
+            for(int a=0;a<cnt;a++) {
+              TagRow row = (TagRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.length);
+              }
+            }
+            break;
+          }
+          case "comment": {
+            for(int a=0;a<cnt;a++) {
+              TagRow row = (TagRow)rows.get(a);
+              if (row.id == rowid) {
+                return row.comment;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "watch": {
+        tablelist = watches;
+        ArrayList<Table> tables = tablelist.getTables();
+        int cnt = tables.size();
+        int tableid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              table = tables.get(a);
+              if (table.id == tableid) {
+                return table.name;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "watchtag": {
+        tablelist = watches;
+        ArrayList<Table> tables = tablelist.getTables();
+        int cnt = tables.size();
+        int tableid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              table = tables.get(a);
+              if (table.id == tableid) {
+                //TODO ???
+                //return null;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "udts": {
+        table = udts;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              UDT row = (UDT)rows.get(a);
+              if (row.id == rowid) {
+                return row.name;
+              }
+            }
+            break;
+          }
+        }
+      }
+      case "udtmems": {
+        table = udtmembers;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              UDTMember row = (UDTMember)rows.get(a);
+              if (row.id == rowid) {
+                return row.name;
+              }
+            }
+            break;
+          }
+          case "type": {
+            for(int a=0;a<cnt;a++) {
+              UDTMember row = (UDTMember)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.type);
+              }
+            }
+            break;
+          }
+          case "comment": {
+            for(int a=0;a<cnt;a++) {
+              UDTMember row = (UDTMember)rows.get(a);
+              if (row.id == rowid) {
+                return row.comment;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "panels": {
+        table = panels;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "display": {
+            for(int a=0;a<cnt;a++) {
+              PanelRow row = (PanelRow)rows.get(a);
+              if (row.id == rowid) {
+                return row.display;
+              }
+            }
+            break;
+          }
+        }
+      }
+      case "funcs": {
+        table = funcs;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              FunctionRow row = (FunctionRow)rows.get(a);
+              if (row.id == rowid) {
+                return row.name;
+              }
+            }
+            break;
+          }
+        }
+      }
+      default: {
+        JFLog.log("Error:Database.select():unknown table:" + table);
+      }
+    }
     return null;
   }
 }

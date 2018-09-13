@@ -389,10 +389,7 @@ public class Panels {
         String col = f[2];
         String type = f[3];
         String id = f[4];
-        if (table.equals("config")) {
-          id = "\'" + id + "\'";
-        }
-        text = Database.select("jfc_" + table, Integer.valueOf(id), col, type);
+        text = Database.select(table, id, col, type);
         if (text == null) text = "false";
         b.setSelected(!text.equals("false"));
       } else {
@@ -444,7 +441,7 @@ public class Panels {
         if (table.equals("config")) {
           id = "\'" + id + "\'";
         }
-        text = Database.select("jfc_" + table, Integer.valueOf(id), col, type);
+        text = Database.select(table, id, col, type);
       } else {
         text = context.read(tag);
       }
@@ -485,7 +482,7 @@ public class Panels {
         if (table.equals("config")) {
           id = "\'" + id + "\'";
         }
-        text = Database.select("jfc_" + table, Integer.valueOf(id), col, type);
+        text = Database.select(table, id, col, type);
       } else {
         text = context.read(tag);
       }
@@ -575,7 +572,7 @@ public class Panels {
         if (table.equals("config")) {
           id = "\'" + id + "\'";
         }
-        value = Database.select("jfc_" + table, Integer.valueOf(id), col, type);
+        value = Database.select(table, id, col, type);
       } else {
         value = context.read(tag);
       }
@@ -633,7 +630,7 @@ public class Panels {
         if (table.equals("config")) {
           id = "\'" + id + "\'";
         }
-        value = Database.select("jfc_" + table, Integer.valueOf(id), col, type);
+        value = Database.select(table, id, col, type);
         if (value != null) {
           value = value.equals("false") ? "0" : "1";
         }
@@ -838,7 +835,6 @@ public class Panels {
         for(int a=0;a<data.length;a++) {
           cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a].id, null, null, "readonly"));
           cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a].id, null, "jfc_tag_type", "readonly"));
-          cells.add(createCell(10, a, 3, 1, "checkbox", null, "Unsigned", "jfc_udtmems_unsigned_boolean_" + data[a].id, null, null, "readonly"));
         }
         break;
       }

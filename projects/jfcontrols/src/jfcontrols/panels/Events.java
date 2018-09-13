@@ -484,7 +484,7 @@ public class Events {
       case "jfc_udt_editor_delete": {
         int uid = (Integer)client.getProperty("udt");
         int mid = Integer.valueOf(arg);
-        if (Database.isUDTMemberInUse(uid, mid)) {
+        if (Database.isUDTInUse(uid)) {
           Panels.showError(client, "Can not delete member that is in use!");
           break;
         }
@@ -1318,14 +1318,11 @@ public class Events {
     String value = tf.getText();
     if (tag.startsWith("jfc_")) {
       String f[] = tag.split("_", 5);
-      //jfc_table_col_id
+      //jfc_table_col_type_id
       String table = f[1];
       String col = f[2];
       String type = f[3];
       String id = f[4];
-      if (table.equals("config")) {
-        id = "\'" + id + "\'";
-      }
       if (type.equals("tagid")) {
         if (!TagsService.validTagName(value)) {
           tf.setBackColor(Color.red);
@@ -1340,8 +1337,8 @@ public class Events {
           return;
         }
       }
-      if (!Database.update("jfc_" + table, Integer.valueOf(id), col, value, type)) {
-        String org = Database.select(table, Integer.valueOf(id), col, type);
+      if (!Database.update(table, id, col, value, type)) {
+        String org = Database.select(table, id, col, type);
         tf.setText(org);
       }
     } else {
@@ -1361,7 +1358,7 @@ public class Events {
     String value = ta.getText();
     if (tag.startsWith("jfc_")) {
       String f[] = tag.split("_", 5);
-      //jfc_table_col_id
+      //jfc_table_col_type_id
       String table = f[1];
       String col = f[2];
       String type = f[3];
@@ -1369,7 +1366,7 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      Database.update("jfc_" + table, Integer.valueOf(id), col, value, type);
+      Database.update(table, id, col, value, type);
     } else {
       context.write(tag, ta.getText());
     }
@@ -1382,7 +1379,7 @@ public class Events {
     String value = cb.getSelectedValue();
     if (tag.startsWith("jfc_")) {
       String f[] = tag.split("_", 5);
-      //jfc_table_col_id
+      //jfc_table_col_type_id
       String table = f[1];
       String col = f[2];
       String type = f[3];
@@ -1390,7 +1387,7 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      Database.update("jfc_" + table, Integer.valueOf(id), col, value, type);
+      Database.update(table, id, col, value, type);
     } else {
       context.write(tag, value);
     }
@@ -1403,7 +1400,7 @@ public class Events {
     if (tag.startsWith("jfc_")) {
       String value = cb.isSelected() ? "true" : "false";
       String f[] = tag.split("_", 5);
-      //jfc_table_col_id
+      //jfc_table_col_type_id
       String table = f[1];
       String col = f[2];
       String type = f[3];
@@ -1411,7 +1408,7 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      Database.update("jfc_" + table, Integer.valueOf(id), col, value, type);
+      Database.update(table, id, col, value, type);
     } else {
       String value = cb.isSelected() ? "1" : "0";
       context.write(tag, value);
@@ -1425,7 +1422,7 @@ public class Events {
     if (tag.startsWith("jfc_")) {
       String value = tb.isSelected() ? "true" : "false";
       String f[] = tag.split("_", 5);
-      //jfc_table_col_id
+      //jfc_table_col_type_id
       String table = f[1];
       String col = f[2];
       String type = f[3];
@@ -1433,7 +1430,7 @@ public class Events {
       if (table.equals("config")) {
         id = "\'" + id + "\'";
       }
-      Database.update("jfc_" + table, Integer.valueOf(id), col, value, type);
+      Database.update(table, id, col, value, type);
     } else {
       String value = tb.isSelected() ? "1" : "0";
       context.write(tag, value);
