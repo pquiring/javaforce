@@ -1337,6 +1337,8 @@ public class Events {
           return;
         }
       }
+      String current = Database.select(table, id, col, type);
+      if (current.equals(value)) return;
       if (!Database.update(table, id, col, value, type)) {
         String org = Database.select(table, id, col, type);
         tf.setText(org);

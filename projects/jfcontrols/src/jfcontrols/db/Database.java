@@ -1343,15 +1343,21 @@ public class Database {
         int rowid = Integer.valueOf(id);
         switch (col) {
           case "cid": {
+            int newcid = Integer.valueOf(value);
+            if (newcid == 0) return false;
+            int rowidx = -1;
             for(int a=0;a<cnt;a++) {
               ControllerRow row = (ControllerRow)rows.get(a);
+              if (row.cid == newcid) return false; //already in use
               if (row.id == rowid) {
-                row.cid = Integer.valueOf(value);
-                table.save();
-                return true;
+                rowidx = a;
               }
             }
-            break;
+            if (rowidx == -1) return false;  //not found
+            ControllerRow row = (ControllerRow)rows.get(rowidx);
+            row.cid = newcid;
+            table.save();
+            return true;
           }
           case "ip": {
             for(int a=0;a<cnt;a++) {

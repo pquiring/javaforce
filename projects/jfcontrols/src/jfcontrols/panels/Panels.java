@@ -695,7 +695,7 @@ public class Panels {
       case "jfc_ctrls" : {
         ControllerRow[] ctrls = Database.controllers.getRows().toArray(new ControllerRow[0]);
         for(int a=0;a<ctrls.length;a++) {
-          String style = ctrls[a].id == 0 ? "disabled" : null;
+          String style = ctrls[a].cid == 0 ? "disabled" : null;
           String cid = Integer.toString(ctrls[a].id);
           cells.add(createCell(0, a, 1, 1, "textfield", null, cid, "jfc_ctrls_cid_int_" + cid, null, null, style));
           cells.add(createCell(1, a, 3, 1, "textfield", null, ctrls[a].ip, "jfc_ctrls_ip_str_" + cid, null, null, style));
