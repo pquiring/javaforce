@@ -220,6 +220,7 @@ public class TagsService extends Thread {
       TagBase tag = tags[a];
       if (tag == null) continue;
       if (tag.cid > 0) {
+        if (tag.remoteTag == null) continue;
         tag.setValue(tag.remoteTag.getValue());
       }
     }
@@ -233,6 +234,7 @@ public class TagsService extends Thread {
       TagBase tag = tags[a];
       if (tag == null) continue;
       if (tag.cid > 0) {
+        if (tag.remoteTag == null) continue;
         tag.remoteTag.setValue(tag.getValue());
       }
     }
