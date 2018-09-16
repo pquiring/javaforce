@@ -551,7 +551,6 @@ public class Panels {
         pairs[pos++] = udts[a];
       }
     } else {
-      JFLog.log("list=" + arg);
       javaforce.db.Table listTable = Database.getList(arg);
       ListRow data[] = listTable.getRows().toArray(new ListRow[0]);
       pairs = new String[data.length][];
@@ -709,7 +708,8 @@ public class Panels {
         break;
       }
       case "jfc_tags": {
-        int cid = (Integer)client.getProperty("ctrl");
+        int id = (Integer)client.getProperty("ctrl");
+        int cid = Database.getControllerCID(id);
         String tag_types;
         String tag_type;
         if (cid == 0) {

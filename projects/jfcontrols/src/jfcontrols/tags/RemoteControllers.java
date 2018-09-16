@@ -28,7 +28,6 @@ public class RemoteControllers {
       RemoteController ctrl = map.get(tag.cid);
       if (ctrl == null) {
         ControllerRow cc = Database.getControllerById(tag.cid);
-        JFLog.log("cid = " + tag.cid);
         ctrl = new RemoteController(tag.cid, cc.type, cc.ip, cc.speed);
         map.put(tag.cid, ctrl);
       }

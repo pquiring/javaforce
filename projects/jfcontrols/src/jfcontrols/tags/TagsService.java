@@ -26,9 +26,10 @@ public class TagsService extends Thread {
 
   public static final int MAX_TAGS = 4096;
   public static TagBase tags[] = new TagBase[MAX_TAGS];
-  public static HashMap<String, TagBase> map = new HashMap<String, TagBase>();
+  private static HashMap<String, TagBase> map = new HashMap<String, TagBase>();
 
   public static TagBase getTag(String name) {
+    //TODO : c# // controller #
     int tagidx = 0;
     int fieldidx = 0;
     String field = null;

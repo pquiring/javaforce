@@ -403,6 +403,7 @@ public class Database {
     celltable.add(new CellRow(id,4,0,3,1,"textfield","tag_name",""));
     celltable.add(new CellRow(id,0,2,3,1,"label","","Type:"));
     celltable.add(new CellRow(id,4,2,3,1,"combobox","tag_type","").setArg("jfc_tag_type"));
+    celltable.add(new CellRow(id,0,3,3,1,"checkbox","tag_array","ArraySize:"));
     celltable.add(new CellRow(id,4,3,3,1,"textfield","tag_arraysize","0"));
     celltable.add(new CellRow(id,0,4,3,1,"button","","Ok").setFunc("jfc_tag_new_ok"));
     celltable.add(new CellRow(id,4,4,3,1,"button","","Cancel").setFunc("jfc_tag_new_cancel"));
@@ -414,7 +415,7 @@ public class Database {
     celltable.add(new CellRow(id,4,0,3,1,"textfield","tag_udt_name",""));
     celltable.add(new CellRow(id,0,2,3,1,"label","","Type:"));
     celltable.add(new CellRow(id,4,2,3,1,"combobox","tag_udt_type","").setArg("jfc_tag_type_udt"));
-    celltable.add(new CellRow(id,0,3,3,1,"label","","ArraySize:"));
+    celltable.add(new CellRow(id,0,3,3,1,"checkbox","tag_udt_array","ArraySize:"));
     celltable.add(new CellRow(id,4,3,3,1,"textfield","tag_udt_arraysize","0"));
     celltable.add(new CellRow(id,0,4,3,1,"button","","Ok").setFunc("jfc_tag_new_ok_udt"));
     celltable.add(new CellRow(id,4,4,3,1,"button","","Cancel").setFunc("jfc_tag_new_cancel_udt"));
@@ -679,6 +680,18 @@ public class Database {
     controllers.add(c);
     controllers.save();
   }
+  public static int getControllerCID(int id) {
+    ArrayList<Row> rows = controllers.getRows();
+    int cnt = rows.size();
+    for(int a=0;a<cnt;a++) {
+      ControllerRow ctrl = (ControllerRow)rows.get(a);
+      if (ctrl.id == id) {
+        return ctrl.cid;
+      }
+    }
+    JFLog.log("Error:Controller not found:id==" + id);
+    return -1;
+  }
   public static ControllerRow getControllerById(int cid) {
     ArrayList<Row> rows = controllers.getRows();
     int cnt = rows.size();
@@ -688,6 +701,7 @@ public class Database {
         return ctrl;
       }
     }
+    JFLog.log("Error:Controller not found:cid==" + cid);
     return null;
   }
   public static void deleteControllerById(int cid) {
@@ -844,11 +858,11 @@ public class Database {
     tags.save();
     return tag.id;
   }
-  public static TagRow getTagByName(String name) {
+  public static TagRow getTagByName(int cid, String name) {
     ArrayList<Row> rows = tags.getRows();
     for(int r=0;r<rows.size();r++) {
       TagRow tag = (TagRow)rows.get(r);
-      if (tag.name.equals(name)) {
+      if (tag.cid == cid && tag.name.equals(name)) {
         return tag;
       }
     }
@@ -884,7 +898,7 @@ public class Database {
         if (cid == 0 && row.tags.contains(match2)) return true;
       }
     }
-    return true;
+    return false;
   }
 
   public static int addPanel(String name, boolean popup, boolean builtin) {

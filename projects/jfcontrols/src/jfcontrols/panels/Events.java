@@ -194,52 +194,60 @@ public class Events {
       }
       case "jfc_ctrl_tags": {
         //load tags for controller
+        JFLog.log("controller id=" + arg);
         client.setProperty("ctrl", Integer.valueOf(arg));
         client.setPanel(Panels.getPanel("jfc_tags", client));
         break;
       }
       case "jfc_tags_new": {
-        int cid = Integer.valueOf(client.getProperty("ctrl").toString());
-        if (cid == 0) {
-          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag_udt");
-          panel.setVisible(true);
-        } else {
-          PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag");
-          panel.setVisible(true);
-        }
+        int id = Integer.valueOf(client.getProperty("ctrl").toString());
+        int cid = Database.getControllerCID(id);
+        String tag_type = cid == 0 ? "tag_udt" : "tag";
+        ComboBox cbType = (ComboBox)client.getPanel().getComponent(tag_type + "_type");
+        clear(cbType, 0);
+        CheckBox array = (CheckBox)client.getPanel().getComponent(tag_type + "_array");
+        clear(array, false);
+        TextField arraysize = (TextField)client.getPanel().getComponent(tag_type + "_arraysize");
+        clear(arraysize, "0");
+        TextField name = (TextField)client.getPanel().getComponent(tag_type + "_name");
+        clear(name, "");
+        PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_" + tag_type);
+        panel.setVisible(true);
         break;
       }
       case "jfc_tag_new_ok_udt":
       case "jfc_tag_new_ok":
       {
         synchronized(lock) {
-          int cid = Integer.valueOf(client.getProperty("ctrl").toString());
+          int id = Integer.valueOf(client.getProperty("ctrl").toString());
+          int cid = Database.getControllerCID(id);
           int type = 0;
           int idx = 0;
-          int arraysize = 0;
-          String name = null;
-          if (cid == 0) {
-            ComboBox cbType = (ComboBox)client.getPanel().getComponent("tag_udt_type");
-            idx = cbType.getSelectedIndex();
-            TextField array = (TextField)client.getPanel().getComponent("tag_udt_arraysize");
-            arraysize = Integer.valueOf(array.getText());
-            name = ((TextField)client.getPanel().getComponent("tag_udt_name")).getText();
-          } else {
-            ComboBox cbType = (ComboBox)client.getPanel().getComponent("tag_type");
-            idx = cbType.getSelectedIndex();
-            TextField array = (TextField)client.getPanel().getComponent("tag_arraysize");
-            arraysize = Integer.valueOf(array.getText());
-            name = ((TextField)client.getPanel().getComponent("tag_name")).getText();
+          String tag_type = cid == 0 ? "tag_udt" : "tag";
+          ComboBox cbType = (ComboBox)client.getPanel().getComponent(tag_type + "_type");
+          idx = cbType.getSelectedIndex();
+          CheckBox isarray = (CheckBox)client.getPanel().getComponent(tag_type + "_array");
+          boolean is_array = isarray.isSelected();
+          TextField arraysize = (TextField)client.getPanel().getComponent(tag_type + "_arraysize");
+          int array_size = Integer.valueOf(arraysize.getText());
+          TextField name = (TextField)client.getPanel().getComponent(tag_type + "_name");
+          String tag_name = name.getText();
+          clearError(name);
+          if (!TagsService.validTagName(tag_name)) {
+            setError(name);
+            return;
           }
-          if (name.length() == 0) {
-            //TODO : check if tag name is valid (no bad chars, etc.)
-            //TODO : show error msg
-            break;
-          }
-          TagRow exists = Database.getTagByName(name);
+          TagRow exists = Database.getTagByName(cid, tag_name);
           if (exists != null) {
-            //TODO : show error msg
-            break;
+            setError(name);
+            return;
+          }
+          clearError(arraysize);
+          if (is_array) {
+            if (array_size < 1 || array_size > 65536) {
+              setError(arraysize);
+              return;
+            }
           }
           if (cid == 0) {
             PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag_udt");
@@ -268,8 +276,8 @@ public class Events {
             }
           }
           String comment = "";  //edit later
-          int id = Database.addTag(cid, name, type, arraysize, false);
-          TagBase tag = TagsService.createTag(cid, id, type, arraysize, name, comment);
+          Database.addTag(cid, tag_name, type, array_size, false);
+          TagBase tag = TagsService.createTag(cid, id, type, is_array ? array_size : 0, tag_name, comment);
           TagsService.addTag(tag);
           client.setPanel(Panels.getPanel("jfc_tags", client));  //force update
         }
@@ -278,7 +286,8 @@ public class Events {
       case "jfc_tag_new_cancel":
       case "jfc_tag_new_cancel_udt":
       {
-        int cid = Integer.valueOf(client.getProperty("ctrl").toString());
+        int id = Integer.valueOf(client.getProperty("ctrl").toString());
+        int cid = Database.getControllerCID(id);
         if (cid == 0) {
           PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag_udt");
           panel.setVisible(false);
@@ -289,7 +298,8 @@ public class Events {
         break;
       }
       case "jfc_tags_delete": {
-        int cid = (Integer)client.getProperty("ctrl");
+        int id = Integer.valueOf(client.getProperty("ctrl").toString());
+        int cid = Database.getControllerCID(id);
         if (Database.isTagInUse(cid, arg)) {
           Panels.showError(client, "Can not delete tag that is in use!");
           break;
@@ -845,31 +855,31 @@ public class Events {
           TextField textTF = (TextField)panel.getComponent("text");
           String text = textTF.getText();
           if (text.indexOf("|") != -1) {
-            setFocus(textTF);
+            setError(textTF);
             break;
           }
           TextField tagTF = (TextField)panel.getComponent("tag");
           String tag = tagTF.getText();
           if (tag.indexOf("|") != -1) {
-            setFocus(tagTF);
+            setError(tagTF);
             break;
           }
           TextField pressTF = (TextField)panel.getComponent("press");
           String press = pressTF.getText();
           if (press.indexOf("|") != -1) {
-            setFocus(pressTF);
+            setError(pressTF);
             break;
           }
           TextField releaseTF = (TextField)panel.getComponent("release");
           String release = releaseTF.getText();
           if (release.indexOf("|") != -1) {
-            setFocus(releaseTF);
+            setError(releaseTF);
             break;
           }
           TextField clickTF = (TextField)panel.getComponent("click");
           String click = clickTF.getText();
           if (click.indexOf("|") != -1) {
-            setFocus(clickTF);
+            setError(clickTF);
             break;
           }
           TextField v0TF = (TextField)panel.getComponent("v0");
@@ -1331,7 +1341,8 @@ public class Events {
         }
       }
       if (type.equals("tag")) {
-        if (context.decode(value) == null) {
+        if (context.decode(value) != null) {
+          //duplicate tag name
           tf.setBackColor(Color.red);
           tf.setProperty("red", "true");
           return;
@@ -1556,10 +1567,29 @@ public class Events {
       }
     }
   }
-  public static void setFocus(TextField tf) {
+  public static void setError(TextField tf) {
     tf.setFocus();
     tf.setBackColor(Color.red);
     tf.setProperty("red", "true");
+  }
+  public static void clearError(Component c) {
+    String red = (String)c.getProperty("red");
+    if (red != null) {
+      c.setBackColor(Color.white);
+      c.setProperty("red", null);
+    }
+  }
+  public static void clear(ComboBox cb, int initIndex) {
+    clearError((Component)cb);
+    cb.setSelectedIndex(initIndex);
+  }
+  public static void clear(TextField tf, String initText) {
+    clearError((Component)tf);
+    tf.setText(initText);
+  }
+  public static void clear(CheckBox cb, boolean initState) {
+    clearError((Component)cb);
+    cb.setSelected(initState);
   }
   public static String getComponentType(Component comp) {
     String type = comp.getClass().getName().toLowerCase();

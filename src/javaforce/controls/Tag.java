@@ -131,13 +131,14 @@ public class Tag {
 
   public String getURL() {
     switch (type) {
+      case ControllerType.JF: return "JF:" + host;
       case ControllerType.S7: return "S7:" + host;
       case ControllerType.AB: return "AB:" + host;
       case ControllerType.MB: return "MB:" + host;
       case ControllerType.NI: return "NI:" + host;
       case ControllerType.MIC: return "MIC:" + host;
     }
-    JFLog.log("Tag:Error:type unknown");
+    JFLog.log("Tag:Error:type unknown:" + type);
     return null;
   }
 

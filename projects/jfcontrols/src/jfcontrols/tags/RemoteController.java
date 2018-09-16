@@ -10,7 +10,6 @@ import java.util.*;
 import javaforce.*;
 import javaforce.controls.*;
 
-
 public class RemoteController {
   private int cid;
   private Object lock = new Object();
@@ -55,22 +54,28 @@ public class RemoteController {
           case TagType.int8: tag.size = TagType.int8; break;
           case TagType.int16: tag.size = TagType.int16; break;
           case TagType.int32: tag.size = TagType.int32; break;
-//          case TagType.LONG: tag.size = TagType.int64; break;
+          case TagType.int64: tag.size = TagType.int64; break;
           case TagType.float32: tag.size = TagType.float32; break;
           case TagType.float64: tag.size = TagType.float64; break;
           default: JFLog.log("Error:TagType unknown:" + tagType); return null;
         }
         tag.tag = name;
-        JFLog.log("type=" + controllerType);
         switch (controllerType) {
           case 0: tag.type = ControllerType.JF; break;
           case 1: tag.type = ControllerType.S7; break;
           case 2: tag.type = ControllerType.AB; break;
           case 3: tag.type = ControllerType.MB; break;
           case 4: tag.type = ControllerType.NI; break;
+          default: JFLog.log("Error:Controller type unknown:" + controllerType);
         }
+//        map.put(?, tag);
+        if (ip.length() == 0) return tag;
         tag.start(first);
         if (first == null) first = tag;
+      } else {
+        if (tag.type == 0) {
+          JFLog.log("error:loaded tag with type==0");
+        }
       }
       return tag;
     }
