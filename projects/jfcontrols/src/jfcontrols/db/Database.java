@@ -322,7 +322,7 @@ public class Database {
 //    celltable.add(new Cell(id,2,16,6,1,"label", "", "Built in Detroit, MI, USA"));
     celltable.add(new CellRow(id,0,0,3,1,"button","","Main Panel").setFuncArg("setPanel","main"));
     celltable.add(new CellRow(id,0,1,3,1,"button","","Controllers").setFuncArg("setPanel","jfc_controllers"));
-    celltable.add(new CellRow(id,0,2,3,1,"button","","Tags").setFuncArg("jfc_ctrl_tags","0"));
+    celltable.add(new CellRow(id,0,2,3,1,"button","","Tags").setFuncArg("jfc_ctrl_tags","1"));
     celltable.add(new CellRow(id,0,3,3,1,"button","","UserDataTypes").setFuncArg("setPanel","jfc_udts"));
     celltable.add(new CellRow(id,0,4,3,1,"button","","SysDataTypes").setFuncArg("setPanel","jfc_sdts"));
     celltable.add(new CellRow(id,0,5,3,1,"button","","Panels").setFuncArg("setPanel","jfc_panels"));
