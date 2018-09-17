@@ -851,41 +851,32 @@ public class Panels {
       }
       case "jfc_panels": {
         PanelRow data[] = Database.panels.getRows().toArray(new PanelRow[0]);
+        int pos = 0;
         for(int a=0;a<data.length;a++) {
           if (data[a].builtin) continue;
           String id = Integer.toString(data[a].id);
           String style = data[a].name.equals("main") ? "disabled" : null;
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_panels_display_str_" + data[a].id, null, null, style));
-          cells.add(createCell(7, a, 2, 1, "button", null, "Edit", null, "jfc_panels_edit", id, null));
+          cells.add(createCell(0, pos, 6, 1, "textfield", null, null, "jfc_panels_display_str_" + data[a].id, null, null, style));
+          cells.add(createCell(7, pos, 2, 1, "button", null, "Edit", null, "jfc_panels_edit", id, null));
           if (style == null) {
-            cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_panels_delete", id, null));
+            cells.add(createCell(10, pos, 2, 1, "button", null, "Delete", null, "jfc_panels_delete", id, null));
           }
+          pos++;
         }
         break;
       }
       case "jfc_panel_editor": {
         int pid = (Integer)client.getProperty("panel");
         CellRow data[] = Database.getCells(Database.getPanelById(pid).name);
-        for(int a=0;a<data.length;a++) {
-          cells.add(data[a]);
-        }
         LayersPanel layers = new LayersPanel();
-        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, cells.toArray(new CellRow[cells.size()]), client, 64, 64, null);
+        table = buildTable(new Table(cellWidth, cellHeight, 1, 1), null, data, client, 64, 64, null);
         table.setName("t1");
         r.width = table.getColumns();
         r.height = table.getRows();
         layers.add(table);
-        cells.clear();
         for(int a=0;a<data.length;a++) {
           CellRow cell = data[a];
-          cell.comp = "overlay";
-          cell.name = "";
-          cell.text = "";
-          cell.tag = null;
-          cell.func = null;
-          cell.arg = null;
-          cell.style = null;
-          cells.add(data[a]);
+          cells.add(createCell(cell.x, cell.y, cell.w, cell.h, "overlay", null, null, null, null, null, null));
         }
         CellRow cellsArray[] = cells.toArray(new CellRow[cells.size()]);
         for(int x=0;x<64;x++) {

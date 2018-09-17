@@ -98,7 +98,6 @@ public class Events {
             break;
           }
           case "jfc_panels_delete": {
-            //sql.execute("delete from jfc_panels where id=" + arg);
             Database.deletePanelById(Integer.valueOf(arg));
             client.setPanel(Panels.getPanel("jfc_panels", client));
             break;
@@ -443,7 +442,8 @@ public class Events {
       }
       case "jfc_panels_new": {
         synchronized(lock) {
-          Database.addPanel("New Panel", false, false);
+          int pid = Database.addPanel("New Panel", false, false);
+          Database.addCellTable("New Panel", pid).save();
         }
         client.setPanel(Panels.getPanel("jfc_panels", client));
         break;
@@ -549,7 +549,7 @@ public class Events {
         Panels.setCellSize(nc, nr);
         t1.add(nc, r.x, r.y);
         int pid = (Integer)client.getProperty("panel");
-        javaforce.db.Table celltable = Database.getCellTable(Database.getPanelById(pid).name);
+        javaforce.db.Table celltable = Database.getCellTableById(pid);
         celltable.add(new CellRow(pid,r.x,r.y,1,1,type,text,"").setStyle(style));
         break;
       }
@@ -1353,7 +1353,7 @@ public class Events {
         }
       }
       String current = Database.select(table, id, col, type);
-      if (current.equals(value)) return;
+      if (current != null && current.equals(value)) return;
       if (!Database.update(table, id, col, value, type)) {
         String org = Database.select(table, id, col, type);
         tf.setText(org);
