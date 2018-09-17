@@ -502,6 +502,10 @@ public class Events {
         client.setPanel(Panels.getPanel("jfc_udt_editor", client));
         break;
       }
+      case "jfc_udt_editor_save": {
+        //TODO
+        break;
+      }
 
       case "jfc_sdts_edit": {
         client.setProperty("udt", Integer.valueOf(arg));

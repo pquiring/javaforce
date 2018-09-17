@@ -49,7 +49,6 @@ public class Database {
     lists = TableList.load(Paths.dataPath + "/config/lists");
     logics = Table.load(Paths.dataPath + "/config/logics.dat");
     udts = Table.load(Paths.dataPath + "/config/udts.dat");
-    udts.setMinId(IDs.uid_user);
     udtmembers = Table.load(Paths.dataPath + "/config/udtmembers.dat");
     tags = Table.load(Paths.dataPath + "/config/tags.dat");
     funcs = Table.load(Paths.dataPath + "/config/funcs.dat");
@@ -64,6 +63,7 @@ public class Database {
       case "1.0": return;
       default: create(); break;
     }
+    udts.setMinId(IDs.uid_user);
   }
 
   public static void stop() {

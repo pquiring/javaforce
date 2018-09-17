@@ -800,32 +800,43 @@ public class Panels {
       }
       case "jfc_udts": {
         UDT data[] = Database.udts.getRows().toArray(new UDT[0]);
+        int pos = 0;
+        String style = null;
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a].id, null, null, null));
-          cells.add(createCell(8, a, 2, 1, "button", null, "Edit", null, "jfc_udts_edit", data[a].name, null));
-          cells.add(createCell(11, a, 2, 1, "button", null, "Delete", null, "jfc_udts_delete", Integer.toString(data[a].id), null));
+          if (data[a].id < IDs.uid_user) continue;
+          if (data[a].id == IDs.uid_alarms) style = "readonly"; else style = null;
+          cells.add(createCell(0, pos, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a].id, null, null, style));
+          cells.add(createCell(8, pos, 2, 1, "button", null, "Edit", null, "jfc_udts_edit", Integer.toString(data[a].id), null));
+          if (data[a].id > IDs.uid_alarms) {
+            cells.add(createCell(11, pos, 2, 1, "button", null, "Delete", null, "jfc_udts_delete", Integer.toString(data[a].id), null));
+          }
+          pos++;
         }
         break;
       }
       case "jfc_udt_editor": {
         int uid = (Integer)client.getProperty("udt");
         UDTMember data[] = Database.getUDTMembersById(uid);
+        String style = null;
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a].id, null, null, null));
-          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a].id, null, "jfc_tag_type", null));
-          cells.add(createCell(18, a, 6, 1, "textfield", null, null, "jfc_udtmems_comment_str_" + data[a].id, null, null, null));
+          if (data[a].builtin) style = "readonly"; else style = null;
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udtmems_name_tagid_" + data[a].id, null, null, style));
+          cells.add(createCell(6, a, 3, 1, "combobox", null, null, "jfc_udtmems_type_int_" + data[a].id, null, "jfc_tag_type", style));
+          cells.add(createCell(18, a, 6, 1, "textfield", null, null, "jfc_udtmems_comment_str_" + data[a].id, null, null, style));
           if (!data[a].builtin) {
-            cells.add(createCell(25, a, 2, 1, "button", null, "Delete", null, "jfc_udts_editor_delete", Integer.toString(data[a].id), null));
+            cells.add(createCell(25, a, 2, 1, "button", null, "Delete", null, "jfc_udt_editor_delete", Integer.toString(data[a].id), null));
           }
         }
         break;
       }
       case "jfc_sdts": {
         UDT data[] = Database.udts.getRows().toArray(new UDT[0]);
+        int pos = 0;
         for(int a=0;a<data.length;a++) {
           if (data[a].id >= IDs.uid_user) continue;
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a].id, null, null, "readonly"));
-          cells.add(createCell(8, a, 2, 1, "button", null, "View", null, "jfc_sdts_edit", Integer.toString(data[a].id), null));
+          cells.add(createCell(0, pos, 6, 1, "textfield", null, null, "jfc_udts_name_tagid_" + data[a].id, null, null, "readonly"));
+          cells.add(createCell(8, pos, 2, 1, "button", null, "View", null, "jfc_sdts_edit", Integer.toString(data[a].id), null));
+          pos++;
         }
         break;
       }
