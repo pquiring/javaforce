@@ -12,6 +12,7 @@ import javaforce.*;
 import javaforce.controls.*;
 
 import jfcontrols.db.*;
+import jfcontrols.app.*;
 
 public class TagsService extends Thread {
   private static Object lock_main = new Object();
@@ -82,8 +83,10 @@ public class TagsService extends Thread {
   }
 
   private void saveTag(TagBase tag) {
+    JFLog.log("saveTag:" + tag.tid);
+    if (tag == null) return;
     try {
-      String filename = "tags/" + tag.tid + ".dat";
+      String filename = Paths.tagsPath + "/" + tag.tid + ".dat";
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       ObjectOutputStream oos = new ObjectOutputStream(baos);
       oos.writeObject(tag);
@@ -98,7 +101,7 @@ public class TagsService extends Thread {
 
   private TagBase loadTag(int tid) {
     try {
-      String filename = "tags/" + tid + ".dat";
+      String filename = Paths.tagsPath + "/" + tid + ".dat";
       File file = new File(filename);
       if (!file.exists()) return null;
       RandomAccessFile raf = new RandomAccessFile(filename, "rw");
@@ -115,6 +118,7 @@ public class TagsService extends Thread {
       raf.close();
       ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
       TagBase tag = (TagBase)ois.readObject();
+      tag.init(tag);
       return tag;
     } catch (Exception e) {
       JFLog.log(e);
@@ -122,7 +126,7 @@ public class TagsService extends Thread {
     }
   }
 
-  public static TagBase createTag(int cid, int id, int type, int length, String name, String comment) {
+  public static TagBase createTag(TagBase parent, int cid, int id, int type, int length, String name, String comment) {
 //    JFLog.log("createTag:" + cid + "," + id + "," + type + "," + length + "," + name + "," + comment);
     TagBase tag = null;
     if (type > 0xff) {
@@ -138,7 +142,7 @@ public class TagsService extends Thread {
           int flength = fields[fidx].length;
           String fname = fields[fidx].name;
           String fcomment = fields[fidx].comment;
-          tagFields[fidx] = createTag(cid, -1, ftype, flength, fname, fcomment);
+          tagFields[fidx] = createTag(tag, cid, -1, ftype, flength, fname, fcomment);
         }
       }
     } else {
@@ -163,6 +167,7 @@ public class TagsService extends Thread {
     tag.name = name;
     tag.comment = comment;
     tag.isArray = length > 0 || type == TagType.string;
+    tag.init(tag);
     return tag;
   }
 
@@ -182,7 +187,6 @@ public class TagsService extends Thread {
 
   public void run() {
     service = this;
-//    String tagList[][] = sql.select("select id,cid,type,arraysize,name,comment from jfc_tags");
     TagRow tagList[] = Database.getTags();
     for(int a=0;a<tagList.length;a++) {
       int tid = tagList[a].id;
@@ -193,7 +197,7 @@ public class TagsService extends Thread {
       String comment = tagList[a].comment;
       TagBase tag = loadTag(tid);
       if (tag == null) {
-        tag = createTag(cid, tid, type, length, name, comment);
+        tag = createTag(null, cid, tid, type, length, name, comment);
       }
       tags[tid] = tag;
       map.put(tag.name, tag);
@@ -248,6 +252,7 @@ public class TagsService extends Thread {
     for(int a=0;a<tags.length;a++) {
       TagBase tag = tags[a];
       if (tag == null) continue;
+//      if (tag.tid == 2) JFLog.log("check:" + tag.cid + ":" + tag.tid + ":" + tag.name + ":" + tag.type + ":" + tag.dirty);
       if (tag.dirty) {
         tag.dirty = false;
         saveTag(tag);

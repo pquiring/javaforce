@@ -10,7 +10,7 @@ import java.util.*;
 import javaforce.*;
 import javaforce.controls.*;
 
-public abstract class TagBase {
+public abstract class TagBase implements java.io.Serializable {
   public static final long serialVersionUID = 1;
   public int cid, tid;
   public String name;
@@ -20,6 +20,16 @@ public abstract class TagBase {
   public boolean isArray;
   public transient boolean dirty;  //local tag usage only
   public transient Tag remoteTag;  //if cid > 0
+  public transient TagBase parent;  //if field
+
+  private transient ArrayList<TagBaseListener> listeners;
+  private transient Object lock;
+
+  public void setDirty() {
+    JFLog.log("setDirty:" + cid + ":" + tid + ":" + name + ":" + type);
+    JFLog.log("setDirty:" + parent.cid + ":" + parent.tid + ":" + parent.name + ":" + parent.type);
+    parent.dirty = true;
+  }
 
   public final boolean isArray() {return isArray;}
   public final boolean isUnsigned() {return unsigned;}
@@ -65,6 +75,9 @@ public abstract class TagBase {
     if (type != TagType.char16) return null;
     if (!isArray) return null;
     return ((TagChar16)this).getString16();
+  }
+  public void setString8(int idx, String value) {
+    //see TagString.setString8() only
   }
   public static void encode(int type, boolean unsigned, String value, byte data[], int pos) {
     switch (type) {
@@ -159,7 +172,9 @@ public abstract class TagBase {
       case TagType.int64: setLong(0, Long.valueOf(newValue)); break;
       case TagType.float32: setInt(0, Float.floatToIntBits(Float.valueOf(newValue)));
       case TagType.float64: setLong(0, Double.doubleToLongBits(Double.valueOf(newValue)));
+      case TagType.string: setString8(0, newValue);
     }
+    setDirty();
   }
 
   public void setValue(String newValue, int idx) {
@@ -171,7 +186,9 @@ public abstract class TagBase {
       case TagType.int64: setLong(idx, Long.valueOf(newValue)); break;
       case TagType.float32: setInt(idx, Float.floatToIntBits(Float.valueOf(newValue)));
       case TagType.float64: setLong(idx, Double.doubleToLongBits(Double.valueOf(newValue)));
+      case TagType.string: setString8(idx, newValue);
     }
+    setDirty();
   }
 
   public String getComment() {
@@ -179,11 +196,15 @@ public abstract class TagBase {
   }
 
   public void setComment(String comment) {
+    setDirty();
     this.comment = comment;
   }
 
-  private transient ArrayList<TagBaseListener> listeners = new ArrayList<>();
-  private transient Object lock = new Object();
+  public void init(TagBase parent) {
+    this.parent = parent;
+    listeners = new ArrayList<>();
+    lock = new Object();
+  }
 
   public void addListener(TagBaseListener listener) {
     synchronized(lock) {

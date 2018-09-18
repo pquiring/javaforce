@@ -14,57 +14,56 @@ public class TagString extends TagBase {
     this.name = name;
     this.unsigned = unsigned;
     isArray = true;
-    values = new char[length];
+    if (length == 0) length = 1;
+    values = new char[length][0];
   }
-  public char[] values;
-  public String toString(int idx) {if (idx >= values.length) return ""; return Character.toString((char)(values[idx] & 0xff));}
-  public int getLength() {return values.length;}
+  public char[][] values;
+  public String toString(int idx) {return new String(values[idx]);}
+  public int getLength() {return values[0].length;}
   public boolean getBoolean(int idx) {
-    return values[idx] != 0;
+    return toString(idx).equals("true");
   }
 
   public void setBoolean(int idx, boolean value) {
-    values[idx] = (char)(value ? 1 : 0);
+    setString8(idx, value ? "true" : "false");
   }
 
   public int getInt(int idx) {
-    return values[idx];
+    return Integer.valueOf(toString(idx));
   }
 
   public void setInt(int idx, int value) {
-    values[idx] = (char)value;
+    setString8(idx, Integer.toString(value));
   }
 
   public long getLong(int idx) {
-    return values[idx];
+    return Long.valueOf(toString(idx));
   }
 
   public void setLong(int idx, long value) {
-    values[idx] = (char)value;
+    setString8(idx, Long.toString(value));
   }
 
   public float getFloat(int idx) {
-    return values[idx];
+    return Float.valueOf(toString(idx));
   }
 
   public void setFloat(int idx, float value) {
-    values[idx] = (char)value;
+    setString8(idx, Float.toString(value));
   }
 
   public double getDouble(int idx) {
-    return values[idx];
+    return Double.valueOf(toString(idx));
   }
 
   public void setDouble(int idx, double value) {
-    values[idx] = (char)value;
+    setString8(idx, Double.toString(value));
   }
 
   public String getString8() {
-    int len = 0;
-    for(int a=0;a<values.length;a++) {
-      if (values[a] == 0) break;
-      len++;
-    }
-    return new String(values, 0, len);
+    return toString(0);
+  }
+  public void setString8(int idx, String str) {
+    values[idx] = str.toCharArray();
   }
 }

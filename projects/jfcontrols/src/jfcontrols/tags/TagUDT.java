@@ -24,6 +24,17 @@ public class TagUDT extends TagBase {
     }
   }
   public TagBase fields[][];
+
+  public void init(TagBase parent) {
+    super.init(parent);
+    for(int a=0;a<fields.length;a++) {
+      TagBase row[] = fields[a];
+      for(int b=0;b<row.length;b++) {
+        row[b].init(this);
+      }
+    }
+  }
+
   public String toString() {return null;}
   public String toString(int idx) {return null;}
   public int getLength() {return fields.length;}

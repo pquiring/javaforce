@@ -276,7 +276,7 @@ public class Events {
           }
           String comment = "";  //edit later
           Database.addTag(cid, tag_name, type, array_size, false);
-          TagBase tag = TagsService.createTag(cid, id, type, is_array ? array_size : 0, tag_name, comment);
+          TagBase tag = TagsService.createTag(null, cid, id, type, is_array ? array_size : 0, tag_name, comment);
           TagsService.addTag(tag);
           client.setPanel(Panels.getPanel("jfc_tags", client));  //force update
         }
@@ -1359,6 +1359,7 @@ public class Events {
         tf.setText(org);
       }
     } else {
+      JFLog.log("setTag:" + tag + "=" + tf.getText());
       context.write(tag, tf.getText());
     }
   }

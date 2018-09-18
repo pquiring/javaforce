@@ -978,10 +978,8 @@ public class Panels {
           TagBase fields[] = alarms.getFields(a);
           TagBase field = fields[0];
           String alarmText = field.getString8(0);
-                  //createCell(int x, int y, int w, int h, String comp, String name, String text, String tag, String func, String arg, String style /*, String events */) {
           cells.add(createCell(0, a, 2, 1, "label", null, Integer.toString(a), null, null, null, null));
           cells.add(createCell(2, a, 6, 1, "textfield", null, alarmText, "alarms[" + a + "].text" , null, null, null));
-          //HERE!!
           cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_alarm_editor_delete", Integer.toString(a), null));
         }
         break;

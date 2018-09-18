@@ -55,6 +55,7 @@ public class FunctionService extends Thread {
       Main.trace();
       return;
     }
+    active = true;
     Class mainCls, initCls;
     File mainFile = new File(Paths.dataPath + "/work/class/func_1.class");
     boolean compile = false;
@@ -72,10 +73,12 @@ public class FunctionService extends Thread {
     }
     if (!mainFile.exists()) {
       JFLog.log("main function not compiled");
+      active = false;
       return;
     }
     if (!initFile.exists()) {
       JFLog.log("init function not compiled");
+      active = false;
       return;
     }
     loader = new FunctionLoader();
@@ -84,6 +87,7 @@ public class FunctionService extends Thread {
       initCls = loader.loadClass("func_2");
     } catch (Exception e) {
       JFLog.log(e);
+      active = false;
       return;
     }
     Method main, init;
@@ -92,6 +96,7 @@ public class FunctionService extends Thread {
       init = initCls.getMethod("code", TagBase[].class);
     } catch (Exception e) {
       JFLog.log(e);
+      active = false;
       return;
     }
     Object mainObj, initObj;
@@ -100,9 +105,9 @@ public class FunctionService extends Thread {
       initObj = initCls.newInstance();
     } catch (Exception e) {
       JFLog.log(e);
+      active = false;
       return;
     }
-    active = true;
     TagsService.doReads();
     try {
       init.invoke(initObj, new Object[] {null});
@@ -136,9 +141,9 @@ public class FunctionService extends Thread {
       TagsService.doWrites();
       long end = System.currentTimeMillis();
       long scantime = end - FunctionRuntime.now;
-//      if (!Main.debug) {
+      if (!Main.debug) {
         tag.setValue(Long.toString(scantime));
-//      }
+      }
 //      System.out.println("scantime=" + scantime);
     }
     JFLog.log("Function.Service stopping...");
