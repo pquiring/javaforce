@@ -1203,6 +1203,7 @@ public class Database {
     return table.getRows().toArray(new BlockRow[0]);
   }
   public static void addBlock(int fid, int rid, int bid, String name, String tags) {
+    JFLog.log("addBlock:" + fid + "," + rid + "," + bid);
     int xid = getBlockId(fid);
     BlockRow block = new BlockRow();
     block.fid = fid;

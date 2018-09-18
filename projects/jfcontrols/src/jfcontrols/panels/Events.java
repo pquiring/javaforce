@@ -1241,12 +1241,13 @@ public class Events {
           break;
         }
         RungRow rungobj = Database.getRungById(fid, rid);
-        //sql.execute("update jfc_rungs set logic='" + str + "' where rid=" + rid + " and fid=" + fid);
         rungobj.logic = str;
         TextField tf = (TextField)client.getPanel().getComponent("comment" + rid);
         String cmt = tf.getText();
         rungobj.comment = cmt;
         Database.saveRungById(fid, rid);
+        //TODO : save blocks
+
 
         FunctionRow fnc = Database.getFunctionById(fid);
         fnc.revision++;

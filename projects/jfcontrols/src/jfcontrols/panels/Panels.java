@@ -1543,15 +1543,16 @@ public class Panels {
           x++;
           String name = null;
           String tags = null;
+          int bid = Integer.valueOf(part);
           for(int a=0;a<blocks.length;a++) {
-            if (blocks[a].name.equals(part)) {
+            if (blocks[a].bid == bid) {
               name = blocks[a].name;
               tags = blocks[a].tags;
               break;
             }
           }
           if (name == null) {
-            JFLog.log("Error:Block not found:rid=" + rid + ":bid=" + part + ":name=");
+            JFLog.log("Error:Block not found:rid=" + rid + ":bid=" + part);
             continue;
           }
           JFLog.log("name=" + name + ",tags=" + tags);
