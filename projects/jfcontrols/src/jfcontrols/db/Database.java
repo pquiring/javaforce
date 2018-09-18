@@ -1188,22 +1188,23 @@ public class Database {
   }
   private static int getBlockId(int fid) {
     ArrayList<Table> tables = blocks.getTables();
+    JFLog.log("tables.size=" + tables.size());
     for(int t=0;t<tables.size();t++) {
       Table table = tables.get(t);
+      JFLog.log("compare:" + fid + " to " + table.xid);
       if (table.xid == fid) return table.id;
     }
+    JFLog.log("Error:getBlockId() : table not found for fid=" + fid);
     return -1;
   }
-  public static BlockRow[] getBlocksById(int fid) {
-    ArrayList<Table> tables = blocks.getTables();
-    for(int t=0;t<tables.size();t++) {
-      Table table = tables.get(t);
-      if (table.xid == fid) return table.getRows().toArray(new BlockRow[0]);
-    }
-    return null;
+  public static BlockRow[] getFunctionBlocksById(int fid) {
+    int xid = getBlockId(fid);
+    Table table = blocks.get(xid);
+    return table.getRows().toArray(new BlockRow[0]);
   }
   public static void addBlock(int fid, int rid, int bid, String name, String tags) {
     int xid = getBlockId(fid);
+    JFLog.log("addBlock:" + fid + "," + rid + "," + bid + "," + xid);
     BlockRow block = new BlockRow();
     block.fid = fid;
     block.rid = rid;
@@ -1298,6 +1299,12 @@ public class Database {
         break;
       }
     }
+  }
+  public static void clearBlocksById(int fid) {
+    int xid = getBlockId(fid);
+    Table table = blocks.get(xid);
+    table.clear();
+    table.save();
   }
   public static void deleteRungBlocksById(int fid, int rid) {
     int xid = getBlockId(fid);

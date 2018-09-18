@@ -23,7 +23,7 @@ public class FunctionCompiler {
     FunctionRow fnc = Database.getFunctionById(fid);
     sb.append("import jfcontrols.tags.*;\r\n");
     sb.append("public class func_" + fid + " extends jfcontrols.functions.FunctionRuntime {\r\n");
-    BlockRow blks[] = Database.getBlocksById(fid);
+    BlockRow blks[] = Database.getFunctionBlocksById(fid);
     sb.append("  public static boolean debug_en[][] = new boolean[" + blks.length + "][2];\r\n");
     int tagcount = 0;
     for(int a=0;a<blks.length;a++) {

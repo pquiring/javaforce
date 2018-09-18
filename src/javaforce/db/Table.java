@@ -139,6 +139,10 @@ public class Table implements java.io.Serializable {
     }
   }
 
+  public void clear() {
+    rows.clear();
+  }
+
   public ArrayList<Row> getRows() {
     return rows;
   }

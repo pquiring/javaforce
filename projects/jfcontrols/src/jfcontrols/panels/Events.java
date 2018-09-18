@@ -1226,8 +1226,7 @@ public class Events {
         if (!root.isValid(client)) {
           break;
         }
-        //sql.execute("delete from jfc_blocks where fid=" + fid + " and rid=" + rid);
-        Database.deleteBlocksById(fid);
+        Database.clearBlocksById(fid);
         String str = root.saveLogic();
         JFLog.log("logic=" + str);
         if (str == null) {
