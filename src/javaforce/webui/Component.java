@@ -522,7 +522,7 @@ public abstract class Component {
 
   protected void onLoaded(String args[]) {
     for(int a=0;a<loaded.length;a++) {
-      loaded[0].loaded(this);
+      loaded[a].loaded(this);
     }
   }
   private Loaded loaded[] = new Loaded[0];
@@ -533,7 +533,7 @@ public abstract class Component {
 
   protected void onClick(String args[], MouseEvent me) {
     for(int a=0;a<click.length;a++) {
-      click[0].onClick(me, this);
+      click[a].onClick(me, this);
     }
   }
   private Click click[] = new Click[0];
@@ -545,7 +545,7 @@ public abstract class Component {
 
   protected void onMouseUp(String args[]) {
     for(int a=0;a<mouseUp.length;a++) {
-      mouseUp[0].onMouseUp(this);
+      mouseUp[a].onMouseUp(this);
     }
   }
   private MouseUp mouseUp[] = new MouseUp[0];
@@ -557,7 +557,7 @@ public abstract class Component {
 
   protected void onMouseDown(String args[]) {
     for(int a=0;a<mouseDown.length;a++) {
-      mouseDown[0].onMouseDown(this);
+      mouseDown[a].onMouseDown(this);
     }
   }
   private MouseDown mouseDown[] = new MouseDown[0];
@@ -569,7 +569,7 @@ public abstract class Component {
 
   protected void onMouseMove(String args[]) {
     for(int a=0;a<mouseMove.length;a++) {
-      mouseMove[0].onMouseMove(this);
+      mouseMove[a].onMouseMove(this);
     }
   }
   private MouseMove mouseMove[] = new MouseMove[0];
@@ -581,7 +581,7 @@ public abstract class Component {
 
   protected void onMouseEnter(String args[]) {
     for(int a=0;a<mouseMove.length;a++) {
-      mouseMove[0].onMouseMove(this);
+      mouseMove[a].onMouseMove(this);
     }
   }
   private MouseEnter mouseEnter[] = new MouseEnter[0];
@@ -593,7 +593,7 @@ public abstract class Component {
 
   protected void onKeyUp(String args[], KeyEvent ke) {
     for(int a=0;a<keyUp.length;a++) {
-      keyUp[0].onKeyUp(ke, this);
+      keyUp[a].onKeyUp(ke, this);
     }
   }
   private KeyUp keyUp[] = new KeyUp[0];
@@ -605,7 +605,7 @@ public abstract class Component {
 
   protected void onKeyDown(String args[], KeyEvent ke) {
     for(int a=0;a<keyDown.length;a++) {
-      keyDown[0].onKeyDown(ke, this);
+      keyDown[a].onKeyDown(ke, this);
     }
   }
   private KeyDown keyDown[] = new KeyDown[0];
@@ -617,7 +617,7 @@ public abstract class Component {
 
   protected void onChanged(String args[]) {
     for(int a=0;a<changed.length;a++) {
-      changed[0].onChanged(this);
+      changed[a].onChanged(this);
     }
   }
   private Changed changed[] = new Changed[0];
@@ -651,7 +651,7 @@ public abstract class Component {
   }
   public void action() {
     for(int a=0;a<action.length;a++) {
-      action[0].action(this);
+      action[a].action(this);
     }
   }
 

@@ -25,7 +25,7 @@ public class Events {
     ClientContext context = (ClientContext)client.getProperty("context");
     String func = (String)c.getProperty("func");
     String arg = (String)c.getProperty("arg");
-    JFLog.log("click:" + c + ":func=" + func + ":arg=" + arg);
+    JFLog.log("click:" + c + ":func=" + func + ":arg=" + arg + ":" + c + ":" + c.hashCode());
     clickEvents(c);
     if (func == null) return;
     switch (func) {
@@ -1013,7 +1013,7 @@ public class Events {
         }
         int fid = (Integer)client.getProperty("func");
         Component focus = (Component)client.getProperty("focus");
-        int rid = 0;
+        int rid = -1;
         Node node = null;
         if (focus != null) {
           node = (Node)focus.getProperty("node");
@@ -1072,11 +1072,12 @@ public class Events {
           debug.setText("Debug");
         }
         Component focus = (Component)client.getProperty("focus");
-        int rid = 0;
+        int rid = -1;
         Node node = null;
         if (focus != null) {
           node = (Node)focus.getProperty("node");
         }
+        JFLog.log("node=" + node);
         if (node != null) {
           if (node.parent == null) {
             rid = node.root.rid;
@@ -1084,7 +1085,10 @@ public class Events {
             rid = node.parent.root.rid;
           }
         }
-        if (rid == -1) break;
+        if (rid == -1) {
+          JFLog.log("No rung selected to edit");
+          break;
+        }
         client.setProperty("rung", rid);
         client.setProperty("focus", null);
         client.setPanel(Panels.getPanel("jfc_rung_editor", client));

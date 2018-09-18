@@ -30,6 +30,7 @@ public class TagsService extends Thread {
 
   public static TagBase getTag(String name) {
     //TODO : c# // controller #
+    if (name == null) return null;
     int tagidx = 0;
     int fieldidx = 0;
     String field = null;

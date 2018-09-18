@@ -1052,7 +1052,7 @@ public class Panels {
         context.debug_tv_idx = 0;
         for(int rung=0;rung<data.length;rung++) {
           ArrayList<CellRow> cells = new ArrayList<CellRow>();
-          cells.add(createCell(0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, Integer.toString(data[rung].id), null));
+          cells.add(createCell(0, 0, 1, 1, "table", "jfc_rung_viewer", null, null, null, Integer.toString(data[rung].rid), null));
           Table table = buildTable(new Table(cellWidth, cellHeight, 1, 1), container, cells.toArray(new CellRow[cells.size()]), client, -1, -1, null);
           panel.add(table);
         }
@@ -1458,7 +1458,7 @@ public class Panels {
     ClientContext context = (ClientContext)client.getProperty("context");
     int x = 0;
     int y = 0;
-    int rid = rungobj.id;
+    int rid = rungobj.rid;
     Rung rung = new Rung();
     String logic = rungobj.logic;
     String comment = rungobj.comment;

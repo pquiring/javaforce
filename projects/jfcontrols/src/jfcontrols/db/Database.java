@@ -30,6 +30,7 @@ public class Database {
   public static Table udtmembers;
   public static Table tags;
   public static Table funcs;
+
   public static TableList rungs;
   public static TableList blocks;
   public static TableList watches;
@@ -1047,13 +1048,15 @@ public class Database {
     func.revision = 1;
     func.comment = "";
     funcs.add(func);
-    JFLog.log("Added function:" + func.name + ":" + func.id);
+    funcs.save();
     Table rungsTable = new Table();
     rungsTable.xid = func.id;
     rungs.add(rungsTable);
+    rungsTable.save();
     Table blocksTable = new Table();
     blocksTable.xid = func.id;
     blocks.add(blocksTable);
+    blocksTable.save();
   }
   public static int getFunctionIdByName(String name) {
     ArrayList<Row> rows = funcs.getRows();
@@ -1110,9 +1113,11 @@ public class Database {
       Table table = tables.get(t);
       if (table.xid == fid) return table.id;
     }
+    JFLog.log("Rung table not found for fid=" + fid);
     return -1;
   }
   public static void addRung(int fid, int rid, String logic, String comment) {
+    JFLog.log("addRung:" + fid + "," + rid);
     RungRow rung = new RungRow();
     rung.fid = fid;
     rung.rid = rid;
@@ -1124,13 +1129,16 @@ public class Database {
     table.save();
   }
   public static RungRow getRungById(int fid, int rid) {
+    JFLog.log("getRungById(" + fid + "," + rid + ")");
     int xid = getRungId(fid);
+    JFLog.log("xid=" + xid);
     Table table = rungs.get(xid);
     ArrayList<Row> rows = table.getRows();
     for(int r=0;r<rows.size();r++) {
       RungRow rung = (RungRow)rows.get(r);
       if (rung.rid == rid) return rung;
     }
+    JFLog.log("Rung not found:" + fid + ":" + rid);
     return null;
   }
   public static RungRow[] getRungsById(int fid) {
