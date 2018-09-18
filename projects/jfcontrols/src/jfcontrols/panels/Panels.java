@@ -82,7 +82,7 @@ public class Panels {
       setCellSize(xrefBtn, new Rectangle(x,0,1,1));
       table.add(xrefBtn, x, 0);
       x++; width -= cellWidth;
-      client.setProperty("xref", -1);
+      //client.setProperty("xref", -1);
     }
 
     Label title = getLabel(createCell(0, 0, 0, 0, "label", "jfc_title", pnl.display, null, null, null, null));
@@ -704,6 +704,7 @@ public class Panels {
         break;
       }
       case "jfc_tags": {
+        client.setProperty("xref", -1);
         int id = (Integer)client.getProperty("ctrl");
         int cid = Database.getControllerCID(id);
         String tag_types;
@@ -739,6 +740,10 @@ public class Panels {
       case "jfc_xref": {
         int xref = (Integer)client.getProperty("xref");
         TagRow tagrow = Database.getTagById(xref);
+        if (tagrow == null) {
+          JFLog.log("Error:xref not found:" + xref);
+          break;
+        }
         String tag = tagrow.name;
         if (tagrow.cid > 0) {
           tag = "c" + tagrow.cid + "#" + tag;
@@ -1555,7 +1560,6 @@ public class Panels {
             JFLog.log("Error:Block not found:rid=" + rid + ":bid=" + part);
             continue;
           }
-          JFLog.log("name=" + name + ",tags=" + tags);
           Logic blk = null;
           try {
             Class cls = Class.forName("jfcontrols.logic." + name.toUpperCase());

@@ -981,6 +981,7 @@ public class Database {
         CellRow row = (CellRow)cellRows.get(r);
         int pid = row.pid;
         if (pids.contains(pid)) break;
+        if (row.tag == null) continue;
         if (row.tag.equals(eq) || row.tag.startsWith(start1) || row.tag.startsWith(start2)) {
           pids.add(row.pid);
           break;
@@ -1203,7 +1204,6 @@ public class Database {
     return table.getRows().toArray(new BlockRow[0]);
   }
   public static void addBlock(int fid, int rid, int bid, String name, String tags) {
-    JFLog.log("addBlock:" + fid + "," + rid + "," + bid);
     int xid = getBlockId(fid);
     BlockRow block = new BlockRow();
     block.fid = fid;
