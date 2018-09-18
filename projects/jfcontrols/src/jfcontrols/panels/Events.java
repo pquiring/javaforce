@@ -988,7 +988,6 @@ public class Events {
         break;
       }
       case "jfc_funcs_edit": {
-        JFLog.log("func=" + arg);
         client.setProperty("func", Integer.valueOf(arg));
         client.setProperty("focus", null);
         client.setPanel(Panels.getPanel("jfc_func_editor", client));
@@ -1031,7 +1030,6 @@ public class Events {
           rid = rungs.rungs.size();
         }
         //insert rung before current one
-        JFLog.log("rid=" + rid);
         Database.addRung(fid, rid, "h", "Comment");
         ArrayList<CellRow> cells = new ArrayList<CellRow>();
         ArrayList<Node> nodes = new ArrayList<Node>();
@@ -1077,7 +1075,6 @@ public class Events {
         if (focus != null) {
           node = (Node)focus.getProperty("node");
         }
-        JFLog.log("node=" + node);
         if (node != null) {
           if (node.parent == null) {
             rid = node.root.rid;

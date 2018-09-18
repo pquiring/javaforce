@@ -56,7 +56,6 @@ public class Panels {
     //add top components
     int x = 0;
     int width = client.getWidth();
-    JFLog.log("width=" + width);
     if (width < 16) {
       width = 16;
     }
@@ -178,7 +177,6 @@ public class Panels {
         if (!tagName.startsWith("jfc_")) {
           TagBase tag = context.decode(tagName);
           context.addListener(tag, c, false, (_tag, oldValue, newValue, cmp) -> {
-//            JFLog.log("update:" + tag + ":" + newValue + ":" + cmp);
             String type = Events.getComponentType(cmp);
             switch (type) {
               case "label":
@@ -217,14 +215,12 @@ public class Panels {
         c.setProperty("node", nodes[a]);
         nodes[a].comp = c;
         c.addClickListener((me, comp) -> {
-//          WebUIClient client = comp.getClient();
           Component focus = (Component)client.getProperty("focus");
           if (focus != null) {
             focus.setBorderColor(Color.grey);
             focus.setBorder(false);
           }
           Node node = (Node)comp.getProperty("node");
-          JFLog.log("node=" + node);
           comp.setBorderColor(Color.black);
           comp.setBorder(true);
           client.setProperty("focus", comp);
@@ -1466,7 +1462,6 @@ public class Panels {
     BlockRow blocks[] = Database.getRungBlocksById(fid, rid);
     ArrayList<Node> nodes = new ArrayList<Node>();
     NodeRoot root = new NodeRoot(fid, rid);
-    JFLog.log("new NodeRoot() " + root);
 
     //add rung title / comment
     String style = readonly ? "readonly" : null;
@@ -1588,7 +1583,6 @@ public class Panels {
     return rung;
   }
   private static void moveNode(Table logic, Node node, int x, int y, int spanx) {
-//    JFLog.log("moveNode:" + node.x + "," + node.y + " to " + x + "," + y);
     logic.remove(node.comp);
     node.x = x;
     node.y = y;

@@ -690,7 +690,6 @@ public class Database {
         return ctrl.cid;
       }
     }
-    JFLog.log("Error:Controller not found:id==" + id);
     return -1;
   }
   public static ControllerRow getControllerById(int cid) {
@@ -702,7 +701,6 @@ public class Database {
         return ctrl;
       }
     }
-    JFLog.log("Error:Controller not found:cid==" + cid);
     return null;
   }
   public static void deleteControllerById(int cid) {
@@ -1078,7 +1076,6 @@ public class Database {
         return func;
       }
     }
-    JFLog.log("Function not found:" + id);
     return null;
   }
   public static boolean isFunctionInUse(int id) {
@@ -1113,11 +1110,9 @@ public class Database {
       Table table = tables.get(t);
       if (table.xid == fid) return table.id;
     }
-    JFLog.log("Rung table not found for fid=" + fid);
     return -1;
   }
   public static void addRung(int fid, int rid, String logic, String comment) {
-    JFLog.log("addRung:" + fid + "," + rid);
     RungRow rung = new RungRow();
     rung.fid = fid;
     rung.rid = rid;
@@ -1129,16 +1124,13 @@ public class Database {
     table.save();
   }
   public static RungRow getRungById(int fid, int rid) {
-    JFLog.log("getRungById(" + fid + "," + rid + ")");
     int xid = getRungId(fid);
-    JFLog.log("xid=" + xid);
     Table table = rungs.get(xid);
     ArrayList<Row> rows = table.getRows();
     for(int r=0;r<rows.size();r++) {
       RungRow rung = (RungRow)rows.get(r);
       if (rung.rid == rid) return rung;
     }
-    JFLog.log("Rung not found:" + fid + ":" + rid);
     return null;
   }
   public static RungRow[] getRungsById(int fid) {
@@ -1188,13 +1180,10 @@ public class Database {
   }
   private static int getBlockId(int fid) {
     ArrayList<Table> tables = blocks.getTables();
-    JFLog.log("tables.size=" + tables.size());
     for(int t=0;t<tables.size();t++) {
       Table table = tables.get(t);
-      JFLog.log("compare:" + fid + " to " + table.xid);
       if (table.xid == fid) return table.id;
     }
-    JFLog.log("Error:getBlockId() : table not found for fid=" + fid);
     return -1;
   }
   public static BlockRow[] getFunctionBlocksById(int fid) {
@@ -1204,7 +1193,6 @@ public class Database {
   }
   public static void addBlock(int fid, int rid, int bid, String name, String tags) {
     int xid = getBlockId(fid);
-    JFLog.log("addBlock:" + fid + "," + rid + "," + bid + "," + xid);
     BlockRow block = new BlockRow();
     block.fid = fid;
     block.rid = rid;
