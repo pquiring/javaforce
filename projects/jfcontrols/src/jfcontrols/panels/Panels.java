@@ -788,7 +788,7 @@ public class Panels {
         int wid = (Integer)client.getProperty("watch");
         WatchRow data[] = Database.getWatchTagsById(wid);
         for(int a=0;a<data.length;a++) {
-          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_watchtags_tag_tagid_" + data[a].id, null, null, null));
+          cells.add(createCell(0, a, 6, 1, "textfield", null, null, "jfc_watchtags_tag_tagid_" + wid + "_" + data[a].id, null, null, null));
           cells.add(createCell(7, a, 6, 1, "label", "tag_" + a, "", null, null, null, null));
           cells.add(createCell(14, a, 2, 1, "button", null, "Delete", null, "jfc_watch_tag_delete", Integer.toString(data[a].id), null));
         }

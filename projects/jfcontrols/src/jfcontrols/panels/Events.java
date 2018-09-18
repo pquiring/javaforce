@@ -349,6 +349,13 @@ public class Events {
         client.setPanel(Panels.getPanel("jfc_watch_tags", client));
         break;
       }
+      case "jfc_watch_tag_delete": {
+        if (context.watch != null) break;
+        int wid = (Integer)client.getProperty("watch");
+        Database.deleteWatchTagById(wid, Integer.valueOf(arg));
+        client.setPanel(Panels.getPanel("jfc_watch_tags", client));
+        break;
+      }
       case "jfc_watch_tags_start": {
         if (context.watch != null) {
           context.watch.cancel();

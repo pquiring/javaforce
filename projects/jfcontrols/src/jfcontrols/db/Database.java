@@ -1493,18 +1493,27 @@ public class Database {
         }
         break;
       }
-      case "watchtag": {
+      case "watchtags": {
         tablelist = watches;
         ArrayList<Table> tables = tablelist.getTables();
         int cnt = tables.size();
-        int tableid = Integer.valueOf(id);
+        String ids[] = id.split("_");
+        int tableid = Integer.valueOf(ids[0]);
+        int rowid = Integer.valueOf(ids[1]);
         switch (col) {
-          case "name": {
+          case "tag": {
             for(int a=0;a<cnt;a++) {
               table = tables.get(a);
               if (table.id == tableid) {
-                //TODO ???
-                //return true;
+                ArrayList<Row> rows = table.getRows();
+                for(int b=0;b<rows.size();b++) {
+                  WatchRow row = (WatchRow)rows.get(b);
+                  if (row.id == rowid) {
+                    row.tag = value;
+                    table.save();
+                    return true;
+                  }
+                }
               }
             }
             break;
@@ -1612,17 +1621,22 @@ public class Database {
         }
       }
       default: {
-        JFLog.log("Error:Database.update():unknown table:" + table);
+        JFLog.log("Error:Database.update():unknown table:" + tableName);
         return false;
       }
     }
-    JFLog.log("Error:Database.update() failed for table:" + table + ":col=" + col + ":id=" + id);
+    JFLog.log("Error:Database.update() failed for table:" + tableName + ":col=" + col + ":id=" + id);
     return false;
   }
 
   public static String select(String tableName, String id, String col, String type) {
     Table table = null;
     TableList tablelist = null;
+    if (tableName.equals("null")) {
+      JFLog.log("table == null");
+      Main.trace();
+      return null;
+    }
     switch (tableName) {
       case "jfc_config": {
         table = Database.config;
@@ -1744,18 +1758,25 @@ public class Database {
         }
         break;
       }
-      case "watchtag": {
+      case "watchtags": {
         tablelist = watches;
         ArrayList<Table> tables = tablelist.getTables();
         int cnt = tables.size();
-        int tableid = Integer.valueOf(id);
+        String ids[] = id.split("_");
+        int tableid = Integer.valueOf(ids[0]);
+        int rowid = Integer.valueOf(ids[1]);
         switch (col) {
-          case "name": {
+          case "tag": {
             for(int a=0;a<cnt;a++) {
               table = tables.get(a);
               if (table.id == tableid) {
-                //TODO ???
-                //return null;
+                ArrayList<Row> rows = table.getRows();
+                for(int b=0;b<rows.size();b++) {
+                  WatchRow row = (WatchRow)rows.get(b);
+                  if (row.id == rowid) {
+                    return row.tag;
+                  }
+                }
               }
             }
             break;
@@ -1851,7 +1872,7 @@ public class Database {
         }
       }
       default: {
-        JFLog.log("Error:Database.select():unknown table:" + table);
+        JFLog.log("Error:Database.select():unknown table:" + tableName);
       }
     }
     return null;
