@@ -976,7 +976,7 @@ public class Panels {
         int length = alarms.getLength();
         for(int a=0;a<length;a++) {
           TagBase fields[] = alarms.getFields(a);
-          TagBase field = fields[0];
+          TagBase field = fields[IDs.fid_alarm_text];
           String alarmText = field.getString8(0);
           cells.add(createCell(0, a, 2, 1, "label", null, Integer.toString(a), null, null, null, null));
           cells.add(createCell(2, a, 6, 1, "textfield", null, alarmText, "alarms[" + a + "].text" , null, null, null));
@@ -987,11 +987,11 @@ public class Panels {
       case "jfc_alarm": {
         TagUDT alarms = (TagUDT)TagsService.getTag("alarms");
         int idx = 0;  //TODO
-        TagUDT timer_udt = (TagUDT)alarms;
-        TagBase[] timer = timer_udt.fields[0];
+        //TagUDT timer_udt = (TagUDT)alarms;
+        //TagBase[] timer = timer_udt.fields[IDs.fid_alarm_text];
         TagBase fields[] = alarms.getFields(idx);
-        String alarmName = fields[0].getString8(0);
-        boolean alarmAck = fields[1].getBoolean(0);
+        String alarmName = fields[IDs.fid_alarm_text].getString8();
+        boolean alarmAck = fields[IDs.fid_alarm_ack].getBoolean();
         cells.add(createCell(2, 0, 2, 1, "label", null, alarmAck ? "X" : "", null, null, null, null));
         cells.add(createCell(4, 0, 10, 1, "label", null, arg + ":" + alarmName, null, null, null, null));
         break;
@@ -1195,8 +1195,7 @@ public class Panels {
   }
   private static void updateAlarmCount(Label label, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    TagBase alarms = TagsService.getTag("alarms");
-    String count = Integer.toString(alarms.getLength());
+    String count = Integer.toString(FunctionRuntime.alarm_active_count());
     label.setText(count);
     if (count.equals("0")) {
       label.setBackColor(Color.green);
@@ -1223,7 +1222,7 @@ public class Panels {
     int length = alarms.getLength();
     for(int idx=0;idx<length;idx++) {
       TagBase fields[] = alarms.getFields(idx);
-      boolean alarmActive = fields[1].getBoolean(0);  //TODO : correct index??? active
+      boolean alarmActive = fields[IDs.fid_alarm_active].getBoolean();
       if (!alarmActive) {
         //not active
         if (context.alarms.containsKey(idx)) {

@@ -17,4 +17,9 @@ public class IDs {
   public static final int uid_user = 0x1000;
   public static final int uid_alarms = 0x1000;
   public static final int uid_user_end = 0x1100;
+
+  //alarm fields
+  public static final int fid_alarm_text = 0;
+  public static final int fid_alarm_active = 1;
+  public static final int fid_alarm_ack = 2;
 }

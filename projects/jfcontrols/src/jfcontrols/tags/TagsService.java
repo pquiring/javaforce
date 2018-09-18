@@ -83,7 +83,7 @@ public class TagsService extends Thread {
   }
 
   private void saveTag(TagBase tag) {
-    JFLog.log("saveTag:" + tag.tid);
+//    JFLog.log("saveTag:" + tag.tid);
     if (tag == null) return;
     try {
       String filename = Paths.tagsPath + "/" + tag.tid + ".dat";

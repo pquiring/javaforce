@@ -26,8 +26,6 @@ public abstract class TagBase implements java.io.Serializable {
   private transient Object lock;
 
   public void setDirty() {
-    JFLog.log("setDirty:" + cid + ":" + tid + ":" + name + ":" + type);
-    JFLog.log("setDirty:" + parent.cid + ":" + parent.tid + ":" + parent.name + ":" + parent.type);
     parent.dirty = true;
   }
 
@@ -61,6 +59,9 @@ public abstract class TagBase implements java.io.Serializable {
         return 2;
     }
     return -1;
+  }
+  public String getString8() {
+    return toString(0);
   }
   public String getString8(int idx) {
     if (!isArray) return null;
@@ -174,7 +175,6 @@ public abstract class TagBase implements java.io.Serializable {
       case TagType.float64: setLong(0, Double.doubleToLongBits(Double.valueOf(newValue)));
       case TagType.string: setString8(0, newValue);
     }
-    setDirty();
   }
 
   public void setValue(String newValue, int idx) {
@@ -188,7 +188,6 @@ public abstract class TagBase implements java.io.Serializable {
       case TagType.float64: setLong(idx, Double.doubleToLongBits(Double.valueOf(newValue)));
       case TagType.string: setString8(idx, newValue);
     }
-    setDirty();
   }
 
   public String getComment() {

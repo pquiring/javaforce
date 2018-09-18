@@ -187,23 +187,57 @@ public class FunctionRuntime {
     }
     return run;
   }
+  public static int alarm_active_count() {
+    TagUDT alarms = (TagUDT)TagsService.getTag("alarms");
+    int length = alarms.getLength();
+    int count = 0;
+    for(int a=0;a<length;a++) {
+      TagBase fields[] = alarms.getFields(a);
+      if (fields[IDs.fid_alarm_active].getBoolean()) count++;
+    }
+    return count;
+  }
   public static void alarm_clear_ack() {
     TagBase alarms = TagsService.getTag("alarms");
     //clear ack bit for inactive alarms (run once per scan)
-    //TODO!
+    int length = alarms.getLength();
+    for(int a=0;a<length;a++) {
+      TagBase fields[] = alarms.getFields(a);
+      if (fields[IDs.fid_alarm_ack].getBoolean()) {
+        if (!fields[IDs.fid_alarm_active].getBoolean()) {
+          fields[IDs.fid_alarm_ack].setBoolean(false);
+        }
+      }
+    }
   }
   public static boolean alarm_active() {
-    TagBase alarms = TagsService.getTag("alarms");
-    //TODO!
+    TagUDT alarms = (TagUDT)TagsService.getTag("alarms");
+    int length = alarms.getLength();
+    for(int a=0;a<length;a++) {
+      TagBase fields[] = alarms.getFields(a);
+      if (fields[IDs.fid_alarm_active].getBoolean()) return true;
+    }
     return false;
   }
   public static boolean alarm_not_ack() {
-    TagBase alarms = TagsService.getTag("alarms");
-    //TODO!
+    TagUDT alarms = (TagUDT)TagsService.getTag("alarms");
+    int length = alarms.getLength();
+    for(int a=0;a<length;a++) {
+      TagBase fields[] = alarms.getFields(a);
+      if (fields[IDs.fid_alarm_active].getBoolean() && !fields[IDs.fid_alarm_ack].getBoolean()) return true;
+    }
     return false;
   }
   public void alarm_ack_all() {
-    TagBase alarms = TagsService.getTag("alarms");
-    //TODO!
+    TagUDT alarms = (TagUDT)TagsService.getTag("alarms");
+    int length = alarms.getLength();
+    for(int a=0;a<length;a++) {
+      TagBase fields[] = alarms.getFields(a);
+      if (fields[IDs.fid_alarm_active].getBoolean()) {
+        if (!fields[IDs.fid_alarm_ack].getBoolean()) {
+          fields[IDs.fid_alarm_ack].setBoolean(true);
+        }
+      }
+    }
   }
 }

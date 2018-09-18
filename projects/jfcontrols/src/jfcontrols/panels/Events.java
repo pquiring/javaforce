@@ -1359,7 +1359,7 @@ public class Events {
         tf.setText(org);
       }
     } else {
-      JFLog.log("setTag:" + tag + "=" + tf.getText());
+//      JFLog.log("setTag:" + tag + "=" + tf.getText());
       context.write(tag, tf.getText());
     }
   }

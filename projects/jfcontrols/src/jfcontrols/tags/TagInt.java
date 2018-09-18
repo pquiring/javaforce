@@ -36,6 +36,7 @@ public class TagInt extends TagBase {
   }
 
   public void setBoolean(int idx, boolean value) {
+    setDirty();
     values[idx] = (value ? 1 : 0);
   }
 
@@ -44,6 +45,7 @@ public class TagInt extends TagBase {
   }
 
   public void setInt(int idx, int value) {
+    setDirty();
     values[idx] = value;
   }
 
@@ -52,6 +54,7 @@ public class TagInt extends TagBase {
   }
 
   public void setLong(int idx, long value) {
+    setDirty();
     values[idx] = (int)value;
   }
 
@@ -60,6 +63,7 @@ public class TagInt extends TagBase {
   }
 
   public void setFloat(int idx, float value) {
+    setDirty();
     values[idx] = (int)value;
   }
 
@@ -68,6 +72,7 @@ public class TagInt extends TagBase {
   }
 
   public void setDouble(int idx, double value) {
+    setDirty();
     values[idx] = (int)value;
   }
 }
