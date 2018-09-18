@@ -72,17 +72,21 @@ public class Main implements WebUIHandler {
     client.setProperty("context", null);
   }
 
-  public static void restart() {
-    FunctionService.cancel();
-    TagsService.cancel();
-    System.gc();
+  public static void start() {
+    Database.start();
     TagsService.main();
     FunctionService.main();
+  }
+
+  public static void restart() {
+    stop();
+    start();
   }
 
   public static void stop() {
     FunctionService.cancel();
     TagsService.cancel();
+    Database.stop();
     System.gc();
   }
 

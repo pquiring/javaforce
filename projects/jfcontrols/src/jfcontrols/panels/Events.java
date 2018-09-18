@@ -427,14 +427,15 @@ public class Events {
         break;
       }
       case "jfc_config_restart": {
-        Database.restart();
         Main.restart();
         Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
         lbl.setText("System running");
         break;
       }
       case "jfc_config_backup": {
+        Main.stop();
         String msg = Database.backup();
+        Main.start();
         Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
         lbl.setText(msg);
         break;
@@ -442,7 +443,9 @@ public class Events {
       case "jfc_config_restore": {
         ComboBox cb = (ComboBox)client.getPanel().getComponent("backups");
         String filename = cb.getSelectedText();
+        Main.stop();
         String msg = Database.restore(Paths.backupPath + "/" + filename);
+        Main.start();
         Label lbl = (Label)client.getPanel().getComponent("jfc_config_status");
         lbl.setText(msg);
         break;

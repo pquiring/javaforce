@@ -590,7 +590,19 @@ public class Database {
 
   public static String backup() {
     try {
-      //TODO
+      Calendar c = Calendar.getInstance();
+      String filename = Paths.backupPath + "/"
+        + String.format("%04d-%02d-%02d %02d-%02d-%02d"
+          , c.get(Calendar.YEAR)
+          , c.get(Calendar.MONTH)+1
+          , c.get(Calendar.DAY_OF_MONTH)
+          , c.get(Calendar.HOUR_OF_DAY)
+          , c.get(Calendar.MINUTE)
+          , c.get(Calendar.SECOND)
+        )
+        + ".zip";
+      JFLog.log("filename=" + filename);
+      JF.zipPath(Paths.configPath, filename);
       return "Backup Complete";
     } catch (Exception e) {
       JFLog.log(e);
@@ -598,10 +610,9 @@ public class Database {
     }
   }
   public static String restore(String zip) {
-    JF.deletePathEx(Paths.dataPath + "/restore");
-    JF.unzip(zip, Paths.dataPath + "/restore");
     try {
-      //TODO
+      JF.deletePathEx(Paths.dataPath + "/config");
+      JF.unzip(zip, Paths.dataPath + "/config");
       return "Restore complete!";
     } catch (Exception e) {
       JFLog.log(e);
