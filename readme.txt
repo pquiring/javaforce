@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 16.9.0
+Version 17.0.0
 
 What is it?
 ===========
@@ -135,4 +135,4 @@ Web : pquiring.github.io/javaforce
 
 Git : github.com/pquiring/javaforce
 
-Released : Jan 23, 2018
+Released : Sept 19, 2018
