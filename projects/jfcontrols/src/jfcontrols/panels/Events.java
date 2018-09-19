@@ -102,7 +102,9 @@ public class Events {
             break;
           }
           case "jfc_tags_delete": {
-            TagsService.deleteTag(Integer.valueOf(arg));
+            int id = Integer.valueOf(arg);
+            TagsService.deleteTag(id);
+            Database.deleteTag(id);
             client.setPanel(Panels.getPanel("jfc_tags", client));
             break;
           }

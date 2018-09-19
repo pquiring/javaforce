@@ -910,6 +910,10 @@ public class Database {
     }
     return false;
   }
+  public static void deleteTag(int id) {
+    tags.remove(id);
+    tags.save();
+  }
 
   public static int addPanel(String name, boolean popup, boolean builtin) {
     PanelRow panel = new PanelRow();
