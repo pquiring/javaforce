@@ -61,7 +61,6 @@ public class TabPanel extends Column {
     sendOnResize();
   }
   public void setTabIndex(int idx) {
-    if (idx == this.idx) return;
 //    sendEvent("settab", new String[] {"tabs=" + tabs.id, "row=" + row.id, "idx=" + idx});
     Label currentLbl = (Label)row.get(this.idx);
     currentLbl.setClass("tabinactive");
