@@ -491,9 +491,6 @@ public abstract class Component {
   }
 
   public void onSize(String args[]) {
-    for(int a=0;a<resized.length;a++) {
-      resized[a].onResized(this, width, height);
-    }
     for(int c=0;c<args.length;c++) {
       String a = args[c];
       if (a.startsWith("w=")) {
@@ -503,12 +500,12 @@ public abstract class Component {
         height = Integer.valueOf(a.substring(2));
       }
     }
+    for(int a=0;a<resized.length;a++) {
+      resized[a].onResized(this, width, height);
+    }
   }
 
   public void onPos(String args[]) {
-    for(int a=0;a<moved.length;a++) {
-      moved[a].onMoved(this, x, y);
-    }
     for(int c=0;c<args.length;c++) {
       String a = args[c];
       if (a.startsWith("x=")) {
@@ -517,6 +514,9 @@ public abstract class Component {
       if (a.startsWith("y=")) {
         y = Integer.valueOf(a.substring(2));
       }
+    }
+    for(int a=0;a<moved.length;a++) {
+      moved[a].onMoved(this, x, y);
     }
   }
 
