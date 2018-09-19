@@ -16,11 +16,13 @@ public class WatchContext extends Thread {
   private Object lock = new Object();
   private TagBase tags[];
   private Label tv[];
+  private WebUIClient client;
 
   public boolean init(WebUIClient client) {
+    this.client = client;
     ClientContext context = (ClientContext)client.getProperty("context");
-    String wid = (String)client.getProperty("watch");
-    WatchRow data[] = Database.getWatchTagsById(Integer.valueOf(wid));
+    int wid = (Integer)client.getProperty("watch");
+    WatchRow data[] = Database.getWatchTagsById(wid);
     if (data == null) return false;
     int cnt = data.length;
     tags = new TagBase[cnt];
@@ -36,6 +38,7 @@ public class WatchContext extends Thread {
     active = true;
     int cnt = tags.length;
     while (active) {
+      if (!client.isConnected()) break;
       for(int a=0;a<cnt;a++) {
         TagBase tag = tags[a];
         if (tag == null) continue;

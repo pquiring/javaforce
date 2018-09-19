@@ -53,6 +53,15 @@ public class FunctionService extends Thread {
   }
 
   public void run() {
+    try {
+      try_run();
+    } catch (Exception e) {
+      JFLog.log(e);
+      active = false;
+    }
+  }
+
+  private void try_run() {
     if (active) {
       JFLog.log("Error:FunctionService already running");
       Main.trace();
@@ -91,6 +100,7 @@ public class FunctionService extends Thread {
     } catch (Exception e) {
       JFLog.log(e);
       active = false;
+      JFLog.log("Function.Service can not start, program not compiled!");
       return;
     }
     Method main, init;
@@ -100,6 +110,7 @@ public class FunctionService extends Thread {
     } catch (Exception e) {
       JFLog.log(e);
       active = false;
+      JFLog.log("Function.Service can not start, program not compiled!");
       return;
     }
     Object mainObj, initObj;
@@ -109,8 +120,10 @@ public class FunctionService extends Thread {
     } catch (Exception e) {
       JFLog.log(e);
       active = false;
+      JFLog.log("Function.Service can not start, program not compiled!");
       return;
     }
+    JFLog.log("Function.Service starting...");
     TagsService.doReads();
     try {
       init.invoke(initObj, new Object[] {null});
@@ -119,7 +132,6 @@ public class FunctionService extends Thread {
     }
     TagsService.doWrites();
     TagBase tag = TagsService.getTag("system.scantime");
-    JFLog.log("Function.Service starting...");
     while (active) {
       FunctionRuntime.now = System.currentTimeMillis();
       FunctionRuntime.alarm_clear_ack();

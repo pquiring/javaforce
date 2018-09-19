@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+Sept 19, 2018 : v0.4 released
+  - major performance improvements
+    - replaced Derby SQL database with a simple NoSQL database (jfDB)
+    - tags are now stored in simple objects instead of in SQL
+  - Java is included with MSI package so there is no need to install Java
+
 Dec 19, 2017 : v0.3 released
   - fix tag connection issue
 

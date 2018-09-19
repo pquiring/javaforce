@@ -15,6 +15,8 @@ public class WebSocket {
   protected OutputStream os;
   protected String url;
 
+  private boolean connected = true;
+
   public static final int TYPE_CONT = 0x0;  //do not use
   public static final int TYPE_TEXT = 0x1;
   public static final int TYPE_BINARY = 0x2;
@@ -78,7 +80,12 @@ public class WebSocket {
       }
       os.write(msg);
     } catch (Exception e) {
+      connected = false;
       JFLog.log(e);
     }
+  }
+
+  public boolean isConnected() {
+    return connected;
   }
 }

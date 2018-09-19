@@ -54,12 +54,12 @@ public class TagsService extends Thread {
       name = name.substring(0, idx);
     }
     TagBase tag = map.get(name);
+    if (tag == null) {
+      JFLog.log("Error:getTag(" + name + ") == null");
+    }
     if (field != null) {
       TagUDT udt = (TagUDT)tag;
       tag = udt.getField(tagidx, field);
-    }
-    if (tag == null) {
-      JFLog.log("Error:getTag(" + name + ") == null");
     }
     return tag;
   }
@@ -186,6 +186,7 @@ public class TagsService extends Thread {
   }
 
   public void run() {
+    JFLog.log("TagServer starting...");
     service = this;
     TagRow tagList[] = Database.getTags();
     for(int a=0;a<tagList.length;a++) {
