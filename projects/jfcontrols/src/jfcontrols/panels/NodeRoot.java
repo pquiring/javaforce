@@ -74,6 +74,7 @@ public class NodeRoot extends Node {
               try {
                 String tagstr = tf.getText();
                 if (tagstr.length() == 0) throw new Exception("no tag specified");
+                if (!isTag(tagstr)) continue;  //immediate value
                 TagBase tag = TagsService.getTag(tagstr);
                 if (tag == null) throw new Exception("unknown tag");
                 if (strict) {

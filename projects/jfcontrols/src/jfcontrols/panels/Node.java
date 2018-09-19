@@ -492,16 +492,21 @@ public class Node {
   }
 
   private String encodeTag(String tag, int tagType) {
-    char first = tag.toLowerCase().charAt(0);
     switch (tagType) {
       case TagType.function:
         return "f" + tag;
       default:
-        if ((first >= 'a' && first <= 'z') || first == '#') {
+        if (isTag(tag)) {
           return "t" + tag;
         }
         return "i" + tag;
     }
+  }
+
+  public boolean isTag(String tag) {
+    char first = tag.toLowerCase().charAt(0);
+    if ((first >= 'a' && first <= 'z') || first == '#') return true;
+    return false;
   }
 
   public String getTags() {
