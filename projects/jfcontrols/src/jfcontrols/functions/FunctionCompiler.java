@@ -127,10 +127,10 @@ public class FunctionCompiler {
                 case 'i':
                   if (value.indexOf(".") == -1) {
                     tagType = TagType.int32;
-                    sb.append("    tags[" + t + "] = new TagInt(\"" + value + "\");\r\n");
+                    sb.append("    tags[" + t + "] = new TagInt(" + value + ");\r\n");
                   } else {
                     tagType = TagType.float32;
-                    sb.append("    tags[" + t + "] = new TagFloat(\"" + value + "\");\r\n");
+                    sb.append("    tags[" + t + "] = new TagFloat(" + value + ");\r\n");
                   }
                   types[t] = tagType;
                   break;
