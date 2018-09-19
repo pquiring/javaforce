@@ -434,9 +434,6 @@ public class Panels {
         String col = f[2];
         String type = f[3];
         String id = f[4];
-        if (table.equals("config")) {
-          id = "\'" + id + "\'";
-        }
         text = Database.select(table, id, col, type);
       } else {
         text = context.read(tag);
@@ -475,9 +472,6 @@ public class Panels {
         String col = f[2];
         String type = f[3];
         String id = f[4];
-        if (table.equals("config")) {
-          id = "\'" + id + "\'";
-        }
         text = Database.select(table, id, col, type);
       } else {
         text = context.read(tag);
@@ -524,7 +518,6 @@ public class Panels {
       }
       value = "bit";
     } else if (arg.equals("jfc_tag_type_udt")) {
-      arg = "jfc_tag_type";
       javaforce.db.Table listTable = Database.getList("jfc_tag_type");
       ListRow basicTypes[] = listTable.getRows().toArray(new ListRow[0]);
       String basic[][] = new String[basicTypes.length][2];
@@ -564,9 +557,6 @@ public class Panels {
         String col = f[2];
         String type = f[3];
         String id = f[4];
-        if (table.equals("config")) {
-          id = "\'" + id + "\'";
-        }
         value = Database.select(table, id, col, type);
       } else {
         value = context.read(tag);
@@ -622,9 +612,6 @@ public class Panels {
         String col = f[2];
         String type = f[3];
         String id = f[4];
-        if (table.equals("config")) {
-          id = "\'" + id + "\'";
-        }
         value = Database.select(table, id, col, type);
         if (value != null) {
           value = value.equals("false") ? "0" : "1";
@@ -732,7 +719,9 @@ public class Panels {
             cells.add(createCell(9, a, 3, 1, "textfield", null, null, "jfc_tags_arraysize_int_" + tagid, null, null, "readonly"));
           }
           cells.add(createCell(12, a, 6, 1, "textfield", null, null, "jfc_tags_comment_str_" + tagid, null, null, style));
-          cells.add(createCell(19, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", tagid, style));
+          if (style == null) {
+            cells.add(createCell(19, a, 2, 1, "button", null, "Delete", null, "jfc_tags_delete", tagid, null));
+          }
           cells.add(createCell(22, a, 2, 1, "button", null, "XRef", null, "jfc_tags_xref", tagid, null));
         }
         break;

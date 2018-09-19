@@ -254,25 +254,7 @@ public class Events {
             PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_new_tag");
             panel.setVisible(false);
           }
-          if (idx > 12) {
-            type = 0x100 + idx - 12;
-          } else {
-            switch (idx) {
-              case 0: type = TagType.bit; break;
-              case 1: type = TagType.int8; break;
-              case 2: type = TagType.int16; break;
-              case 3: type = TagType.int32; break;
-              case 4: type = TagType.int64; break;
-              case 5: type = TagType.uint8; break;
-              case 6: type = TagType.uint16; break;
-              case 7: type = TagType.uint32; break;
-              case 8: type = TagType.uint64; break;
-              case 9: type = TagType.float32; break;
-              case 10: type = TagType.float64; break;
-              case 11: type = TagType.char8; break;
-              case 12: type = TagType.char16; break;
-            }
-          }
+          type = Integer.valueOf(cbType.getSelectedValue());
           String comment = "";  //edit later
           Database.addTag(cid, tag_name, type, array_size, false);
           TagBase tag = TagsService.createTag(null, cid, id, type, is_array ? array_size : 0, tag_name, comment);

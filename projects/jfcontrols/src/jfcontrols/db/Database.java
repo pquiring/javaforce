@@ -1409,7 +1409,6 @@ public class Database {
     return (AlarmRow[])alarms.get(start, end);
   }
 
-
   public static boolean update(String tableName, String id, String col, String value, String type) {
     Table table = null;
     TableList tablelist = null;
@@ -1606,6 +1605,7 @@ public class Database {
             break;
           }
         }
+        break;
       }
       case "udtmems": {
         table = udtmembers;
@@ -1667,6 +1667,7 @@ public class Database {
             break;
           }
         }
+        break;
       }
       case "funcs": {
         table = funcs;
@@ -1686,6 +1687,7 @@ public class Database {
             break;
           }
         }
+        break;
       }
       default: {
         JFLog.log("Error:Database.update():unknown table:" + tableName);
@@ -1705,7 +1707,7 @@ public class Database {
       return null;
     }
     switch (tableName) {
-      case "jfc_config": {
+      case "config": {
         table = Database.config;
         ArrayList<Row> rows = table.getRows();
         int cnt = rows.size();
@@ -1867,6 +1869,7 @@ public class Database {
             break;
           }
         }
+        break;
       }
       case "udtmems": {
         table = udtmembers;
@@ -1920,6 +1923,7 @@ public class Database {
             break;
           }
         }
+        break;
       }
       case "funcs": {
         table = funcs;
@@ -1937,11 +1941,13 @@ public class Database {
             break;
           }
         }
+        break;
       }
       default: {
         JFLog.log("Error:Database.select():unknown table:" + tableName);
       }
     }
+    JFLog.log("Error:Database.select():failed for table:" + tableName + ":col=" + col + ":id=" + id);
     return null;
   }
 }
