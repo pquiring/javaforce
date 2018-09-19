@@ -25,7 +25,7 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
       KeyMgmt key = new KeyMgmt();
       key.open(fis, password);
       fis.close();
-      crt = key.getCRT("jpbxlite").getEncoded();
+      crt = key.getCRT("jfpbx").getEncoded();
       fingerprintSHA256 = KeyMgmt.fingerprintSHA256(crt);
       ArrayList<byte[]> chain = new ArrayList<byte[]>();
       chain.add(crt);
@@ -33,8 +33,8 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
       if (root != null) {
         chain.add(root.getEncoded());
       }
-      privateKey = key.getKEY("jpbxlite", password).getEncoded();
-      SRTPChannel.initDTLS(chain, privateKey, false);
+      privateKey = key.getKEY("jfpbx", password).getEncoded();
+//      SRTPChannel.initDTLS(chain, privateKey, false);
       if (false) {
         //see bouncy castle DTLSClientTest
         RTP testRTP = new RTP();
@@ -45,7 +45,7 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
         stream.addCodec(RTP.CODEC_G711u);
         stream.ip = "10.1.1.2";
         stream.port = -1;
-        RTPChannel testCH = testRTP.createChannel(stream);
+        RTPChannel testCH = testRTP.createChannel(stream, true);
         testCH.start();
       }
     } catch (Exception e) {
@@ -85,7 +85,7 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
     StringBuilder html = new StringBuilder();
     html.append("<html>");
     html.append("<head>");
-    html.append("  <title>jPBXlite</title>");
+    html.append("  <title>jfPBX</title>");
     html.append("  <link rel=stylesheet href='/static/webrtc.css' type='text/css'>");
     html.append("  <script src='/static/adapter.js'></script>");
     html.append("  <script type='text/javascript' src='/static/webrtc1.js'></script>");
@@ -140,7 +140,7 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
     StringBuilder html = new StringBuilder();
     html.append("<html>");
     html.append("<head>");
-    html.append("  <title>jPBXlite</title>");
+    html.append("  <title>jfPBX</title>");
     html.append("  <link rel=stylesheet href='/static/webrtc.css' type='text/css'>");
     html.append("  <script src='/static/adapter.js'></script>");
     html.append("  <script type='text/javascript' src='/static/webrtc2.js'></script>");

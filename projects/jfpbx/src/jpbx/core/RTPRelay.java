@@ -72,7 +72,7 @@ public class RTPRelay implements RTPInterface {
     if (active_src) return true;
     active_src = true;
     rtp_src.start();
-    if (rtp_src.createChannel(stream) == null) return false;
+    if (rtp_src.createChannel(stream, true) == null) return false;
 /*
     if (stream.isSecure()) {
       SRTPChannel channel = (SRTPChannel)rtp_src.getDefaultChannel();
@@ -94,7 +94,7 @@ public class RTPRelay implements RTPInterface {
     if (active_dst) return true;
     active_dst = true;
     rtp_dst.start();
-    if (rtp_dst.createChannel(stream) == null) return false;
+    if (rtp_dst.createChannel(stream, false) == null) return false;
 /*
     if (stream.isSecure()) {
       SRTPChannel channel = (SRTPChannel)rtp_dst.getDefaultChannel();

@@ -1,7 +1,7 @@
 package jpbx.core;
 
 /**
- * WebConfig service for jPBXlite
+ * WebConfig service for jfPBX
  *
  * @author pquiring
  *
@@ -77,7 +77,7 @@ public class WebConfig implements WebHandler {
   public void doStatic(WebRequest req, WebResponse res) throws Exception {
     String url = req.getURL();
     if (url.equals("/favicon.ico")) {
-      url = "/static/jpbxlite.ico";
+      url = "/static/jfpbx.ico";
     }
     int idx = url.lastIndexOf('/');
     String file = url.substring(idx+1);
@@ -119,7 +119,7 @@ public class WebConfig implements WebHandler {
     StringBuilder html = new StringBuilder();
     html.append("<html>");
     html.append("<head>");
-    html.append("  <title>jPBXlite</title>");
+    html.append("  <title>jfPBX</title>");
     html.append("  <link rel=stylesheet href='/static/style.css' type='text/css'>");
     html.append("  <script type='text/javascript' src='/static/style.js'></script>");
     html.append("</head>");
@@ -1235,7 +1235,7 @@ public class WebConfig implements WebHandler {
     //NOTE : The -debug option is important to prevent KeyTool from executing System.exit()
     if (verb.equals("sslSelf")) {
       if (KeyMgmt.keytool(new String[] {
-        "-genkey", "-debug", "-alias", "jpbxlite", "-keypass", "password", "-storepass", "password",
+        "-genkey", "-debug", "-alias", "jfpbx", "-keypass", "password", "-storepass", "password",
         "-keystore", Paths.etc + "jpbx.key", "-validity", valid, "-dname", dname,
         "-keyalg" , "RSA", "-keysize", "2048"
       })) {
@@ -1292,7 +1292,7 @@ public class WebConfig implements WebHandler {
     html.append("Secure Web SSL Cerificate:<br><br>");
     html.append("Generate self-signed Key/Certificate Pair:<br>");
     html.append(form("core", "settings"));
-    html.append("dname:<input name=dname value='CN=" + req.getHost() + ", OU=jpbxlite, O=JavaForce, C=CA' size=50><br>");
+    html.append("dname:<input name=dname value='CN=" + req.getHost() + ", OU=jfpbx, O=JavaForce, C=CA' size=50><br>");
     html.append("valid(days):<input name=valid value='3650' size=10><br>");
     html.append("<input type=hidden name='verb' value='sslSelf'>");
     html.append("<input type=submit value='Generate'>");
@@ -1632,7 +1632,7 @@ public class WebConfig implements WebHandler {
 
     html.append("<div style='overflow: auto;'>");
     html.append("<table border=0 width=100% height=100% cellpadding=0 cellspacing=0>");
-    html.append("<tr height=64><td width=100% colspan=2><a href='http://jpbxlite.sourceforge.net'><img border=0 src=/static/img/logo.png></a>");
+    html.append("<tr height=64><td width=100% colspan=2><a href='http://jfpbx.sourceforge.net'><img border=0 src=/static/img/logo.png></a>");
     html.append("<a href='/logout' style='float:right;'>Logout</a></td></tr>");
     html.append("<tr><td style='width: 180px; vertical-align:top;'>");
     html.append(listPlugins(sql, id, plugin, pg));

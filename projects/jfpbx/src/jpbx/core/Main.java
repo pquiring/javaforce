@@ -73,7 +73,7 @@ public class Main {
     }
     //init log files
     JFLog.append(Paths.logs + "jpbx.log", true);
-    JFLog.log("jPBXlite/" + Service.getVersion() + " starting...");
+    JFLog.log("jfPBX/" + Service.getVersion() + " starting...");
 //    Service.test();
     service = new Service();
     service.init();

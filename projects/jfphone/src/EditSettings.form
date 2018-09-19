@@ -1278,13 +1278,8 @@
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l1sip" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="jLabel56" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="l1key" min="-2" max="-2" attributes="0"/>
-                                          </Group>
                                       </Group>
-                                      <EmptySpace min="0" pref="356" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="421" max="32767" attributes="0"/>
                                   </Group>
                                   <Group type="102" alignment="0" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
@@ -1345,12 +1340,7 @@
                                   <Component id="jLabel29" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l1sip" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
-                              <EmptySpace max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jLabel56" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="l1key" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
-                              <EmptySpace pref="189" max="32767" attributes="0"/>
+                              <EmptySpace pref="230" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1411,21 +1401,6 @@
                             <StringItem index="0" value="UDP"/>
                             <StringItem index="1" value="TCP"/>
                             <StringItem index="2" value="TLS"/>
-                          </StringArray>
-                        </Property>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JLabel" name="jLabel56">
-                      <Properties>
-                        <Property name="text" type="java.lang.String" value="Encryption Key Exchange"/>
-                      </Properties>
-                    </Component>
-                    <Component class="javax.swing.JComboBox" name="l1key">
-                      <Properties>
-                        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-                          <StringArray count="2">
-                            <StringItem index="0" value="SDP"/>
-                            <StringItem index="1" value="DTLS"/>
                           </StringArray>
                         </Property>
                       </Properties>

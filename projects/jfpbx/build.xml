@@ -1,7 +1,7 @@
-<project name="jpbx" default="jar" basedir=".">
-  <description>jpbx</description>
+<project name="jfpbx" default="jar" basedir=".">
+  <description>jfpbx</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jpbxlite"/>
+  <property name="app" value="jfpbx"/>
   <property name="apptype" value="s"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
@@ -20,7 +20,7 @@
       <manifest>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jpbxlite.sourceforge.net"/>
+        <attribute name="Codebase" value="jfpbx.sourceforge.net"/>
       </manifest>
     </jar>
     <jar destfile="derby.jar">
@@ -28,7 +28,7 @@
       <manifest>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jpbxlite.sourceforge.net"/>
+        <attribute name="Codebase" value="jfpbx.sourceforge.net"/>
       </manifest>
     </jar>
     <jar destfile="bouncycastle.jar">
@@ -38,7 +38,7 @@
       <manifest>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jpbxlite.sourceforge.net"/>
+        <attribute name="Codebase" value="jfpbx.sourceforge.net"/>
       </manifest>
     </jar>
   </target>
@@ -53,47 +53,47 @@
 
   <target name="core" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jpbxcore.jar" includes="jpbx/core/*.class" basedir="${build}">
+    <jar destfile="jfpbxcore.jar" includes="jfpbx/core/*.class" basedir="${build}">
       <fileset dir="static" includes="*"/>
       <fileset dir="." includes="*.png"/>
       <fileset dir="." includes="*.ico"/>
       <manifest>
-        <attribute name="Main-Class" value="jpbx.core.Main"/>
+        <attribute name="Main-Class" value="jfpbx.core.Main"/>
       </manifest>
     </jar>
   </target>
 
   <target name="plugins" depends="compile" description="build jar file">
     <!-- Build plugins jar files from class files -->
-    <jar destfile="plugins/extensions.jar" includes="jpbx/plugins/core/Extensions*.class" basedir="${build}"/>
-    <jar destfile="plugins/trunks.jar" includes="jpbx/plugins/core/Trunks*.class" basedir="${build}"/>
-    <jar destfile="plugins/voicemail.jar" includes="jpbx/plugins/core/VoiceMail*.class" basedir="${build}"/>
+    <jar destfile="plugins/extensions.jar" includes="jfpbx/plugins/core/Extensions*.class" basedir="${build}"/>
+    <jar destfile="plugins/trunks.jar" includes="jfpbx/plugins/core/Trunks*.class" basedir="${build}"/>
+    <jar destfile="plugins/voicemail.jar" includes="jfpbx/plugins/core/VoiceMail*.class" basedir="${build}"/>
     <jar destfile="plugins/ivrs.jar">
-      <fileset dir="${build}" includes="jpbx/plugins/core/IVR*.class"/>
-      <fileset dir="${build}" includes="jpbx/plugins/core/Conference*.class"/>
+      <fileset dir="${build}" includes="jfpbx/plugins/core/IVR*.class"/>
+      <fileset dir="${build}" includes="jfpbx/plugins/core/Conference*.class"/>
     </jar>
-    <jar destfile="plugins/queues.jar" includes="jpbx/plugins/core/Queues*.class" basedir="${build}"/>
+    <jar destfile="plugins/queues.jar" includes="jfpbx/plugins/core/Queues*.class" basedir="${build}"/>
   </target>
 
   <target name="jar" depends="core,plugins" description="build everything"/>
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <mkdir dir="/usr/share/java/jpbx"/>
-    <mkdir dir="/var/log/jpbx"/>
-    <mkdir dir="/var/lib/jpbx/voicemail"/>
-    <mkdir dir="/usr/share/java/jpbx/plugins"/>
-    <mkdir dir="/usr/share/sounds/jpbx/en"/>
+    <mkdir dir="/usr/share/java/jfpbx"/>
+    <mkdir dir="/var/log/jfpbx"/>
+    <mkdir dir="/var/lib/jfpbx/voicemail"/>
+    <mkdir dir="/usr/share/java/jfpbx/plugins"/>
+    <mkdir dir="/usr/share/sounds/jfpbx/en"/>
 
-    <copy file="jpbxlite.html" todir="/usr/share/jhelp"/>
+    <copy file="jfpbx.html" todir="/usr/share/jhelp"/>
     <copy file="${app}.service" todir="/lib/systemd/system"/>
-    <copy todir="/usr/share/java/jpbx">
+    <copy todir="/usr/share/java/jfpbx">
       <fileset file="*.jar"/>
     </copy>
-    <copy todir="/usr/share/java/jpbx/plugins">
+    <copy todir="/usr/share/java/jfpbx/plugins">
       <fileset file="plugins/*.jar"/>
     </copy>
-    <copy todir="/usr/share/sounds/jpbx/en">
+    <copy todir="/usr/share/sounds/jfpbx/en">
       <fileset file="sounds/en/*.wav"/>
     </copy>
   </target>
@@ -102,26 +102,26 @@
     <copy file="../../jars/javaforce.jar" todir="."/>
     <copy file="../../jars/bouncycastle.jar" todir="."/>
     <copy file="../../jars/derby.jar" todir="."/>
-    <zip destfile="jpbxlite-${version}.zip">
+    <zip destfile="jfpbx-${version}.zip">
       <fileset dir="..">
-        <include name="jpbxlite/**/*.jar"/>
-        <include name="jpbxlite/**/*.wav"/>
-        <exclude name="jpbxlite/**/moh-*.wav"/>
-        <include name="jpbxlite/readme.txt"/>
-        <include name="jpbxlite/whatsnew.txt"/>
-        <include name="jpbxlite/run.bat"/>
-        <include name="jpbxlite/install.bat"/>
-        <include name="jpbxlite/run.sh"/>
-        <include name="jpbxlite/install.sh"/>
-        <include name="jpbxlite/jpbx.key"/>
+        <include name="jfpbx/**/*.jar"/>
+        <include name="jfpbx/**/*.wav"/>
+        <exclude name="jfpbx/**/moh-*.wav"/>
+        <include name="jfpbx/readme.txt"/>
+        <include name="jfpbx/whatsnew.txt"/>
+        <include name="jfpbx/run.bat"/>
+        <include name="jfpbx/install.bat"/>
+        <include name="jfpbx/run.sh"/>
+        <include name="jfpbx/install.sh"/>
+        <include name="jfpbx/jfpbx.key"/>
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>
-    <move file="jpbxlite-${version}.zip" todir="${home}/release"/>
+    <move file="jfpbx-${version}.zip" todir="${home}/release"/>
   </target>
 
   <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jpbxlite-src-${version}.zip">
+    <zip destfile="jfpbx-src-${version}.zip">
       <fileset dir="../../..">
         <include name="jf/license.txt"/>
         <include name="jf/base.*"/>
@@ -132,20 +132,20 @@
 
         <include name="jf/stubs/*"/>
 
-        <include name="jf/projects/jpbxlite/**/*.java"/>
-        <include name="jf/projects/jpbxlite/*.txt"/>
-        <include name="jf/projects/jpbxlite/*.png"/>
-        <include name="jf/projects/jpbxlite/*.ico"/>
-        <include name="jf/projects/jpbxlite/**/*.xml"/>
-        <exclude name="jf/projects/jpbxlite/nbproject/private/*.xml"/>
-        <include name="jf/projects/jpbxlite/**/*.wav"/>
-        <exclude name="jf/projects/jpbxlite/**/moh-*.wav"/>
-        <include name="jf/projects/jpbxlite/run.*"/>
-        <include name="jf/projects/jpbxlite/install.*"/>
-        <include name="jf/projects/jpbxlite/static/*"/>
+        <include name="jf/projects/jfpbx/**/*.java"/>
+        <include name="jf/projects/jfpbx/*.txt"/>
+        <include name="jf/projects/jfpbx/*.png"/>
+        <include name="jf/projects/jfpbx/*.ico"/>
+        <include name="jf/projects/jfpbx/**/*.xml"/>
+        <exclude name="jf/projects/jfpbx/nbproject/private/*.xml"/>
+        <include name="jf/projects/jfpbx/**/*.wav"/>
+        <exclude name="jf/projects/jfpbx/**/moh-*.wav"/>
+        <include name="jf/projects/jfpbx/run.*"/>
+        <include name="jf/projects/jfpbx/install.*"/>
+        <include name="jf/projects/jfpbx/static/*"/>
       </fileset>
     </zip>
-    <move file="jpbxlite-src-${version}.zip" todir="${home}/release"/>
+    <move file="jfpbx-src-${version}.zip" todir="${home}/release"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

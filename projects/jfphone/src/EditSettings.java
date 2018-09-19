@@ -164,8 +164,6 @@ public class EditSettings extends javax.swing.JDialog {
     l1secure = new javax.swing.JCheckBox();
     jLabel29 = new javax.swing.JLabel();
     l1sip = new javax.swing.JComboBox();
-    jLabel56 = new javax.swing.JLabel();
-    l1key = new javax.swing.JComboBox();
     jLabel31 = new javax.swing.JLabel();
     l1name = new javax.swing.JTextField();
     l2 = new javax.swing.JPanel();
@@ -1046,10 +1044,6 @@ public class EditSettings extends javax.swing.JDialog {
 
     l1sip.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "UDP", "TCP", "TLS" }));
 
-    jLabel56.setText("Encryption Key Exchange");
-
-    l1key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
-
     jLabel31.setText("Display name");
     jLabel31.setToolTipText("Display Name (optional)");
 
@@ -1067,12 +1061,8 @@ public class EditSettings extends javax.swing.JDialog {
               .addGroup(l1Layout.createSequentialGroup()
                 .addComponent(jLabel29)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(l1sip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addGroup(l1Layout.createSequentialGroup()
-                .addComponent(jLabel56)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(l1key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 356, Short.MAX_VALUE))
+                .addComponent(l1sip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGap(0, 421, Short.MAX_VALUE))
           .addGroup(l1Layout.createSequentialGroup()
             .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel23)
@@ -1120,11 +1110,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel29)
           .addComponent(l1sip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel56)
-          .addComponent(l1key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(189, Short.MAX_VALUE))
+        .addContainerGap(230, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line1", l1);
@@ -2329,7 +2315,6 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel53;
   private javax.swing.JLabel jLabel54;
   private javax.swing.JLabel jLabel55;
-  private javax.swing.JLabel jLabel56;
   private javax.swing.JLabel jLabel57;
   private javax.swing.JLabel jLabel58;
   private javax.swing.JLabel jLabel59;
@@ -2370,7 +2355,6 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JTextField l1auth;
   private javax.swing.JCheckBox l1disableVideo;
   private javax.swing.JTextField l1host;
-  private javax.swing.JComboBox l1key;
   private javax.swing.JTextField l1name;
   private javax.swing.JPasswordField l1pass;
   private javax.swing.JCheckBox l1secure;
@@ -2584,7 +2568,7 @@ public class EditSettings extends javax.swing.JDialog {
     l1disableVideo.setSelected(Settings.current.lines[0].disableVideo);
     l1secure.setSelected(Settings.current.lines[0].srtp);
     l1sip.setSelectedIndex(Settings.current.lines[0].transport);
-    l1key.setSelectedIndex(Settings.current.lines[0].dtls ? 1 : 0);
+//    l1key.setSelectedIndex(Settings.current.lines[0].dtls ? 1 : 0);
 
     l2name.setText(Settings.current.lines[1].name);
     l2user.setText(Settings.current.lines[1].user);
@@ -2809,7 +2793,7 @@ public class EditSettings extends javax.swing.JDialog {
     Settings.current.lines[0].disableVideo = l1disableVideo.isSelected();
     Settings.current.lines[0].srtp = l1secure.isSelected();
     Settings.current.lines[0].transport = l1sip.getSelectedIndex();
-    Settings.current.lines[0].dtls = l1key.getSelectedIndex() == 1;
+//    Settings.current.lines[0].dtls = l1key.getSelectedIndex() == 1;
 
     Settings.current.lines[1].name = l2name.getText();
     Settings.current.lines[1].user = l2user.getText();

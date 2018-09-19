@@ -39,13 +39,13 @@ public class Service implements SIPServerInterface, PBXAPI {
           System.exit(1);
         }
       }
-      dbPath += "/jpbxlite/";
+      dbPath += "/jfpbx/";
     } else {
       dbPath = "/var/lib";
     }
     System.setProperty("derby.system.home", dbPath);
     if (JF.isUnix()) {
-      jbusClient = new JBusClient("org.jflinux.service.jpbxlite", new JBusMethods());
+      jbusClient = new JBusClient("org.jflinux.service.jfpbx", new JBusMethods());
       jbusClient.start();
     }
     SQL sql = new SQL();
@@ -669,7 +669,7 @@ public class Service implements SIPServerInterface, PBXAPI {
           host = host.substring(0, idx);
         }
 //        JFLog.log("Register Trunk:" + trunks[trunk]);
-        ss.register(user, pass, host, port, 120, did, host + "---jpbxlite---");
+        ss.register(user, pass, host, port, 120, did, host + "---jfpbx---");
       }
     } catch (Exception e) {
       JFLog.log(e);
@@ -733,7 +733,7 @@ public class Service implements SIPServerInterface, PBXAPI {
       System.exit(0);
     }
     public void status(String pack) {
-      jbusClient.call(pack, "serviceStatus", "\"jpbxlite running\"");
+      jbusClient.call(pack, "serviceStatus", "\"jfpbx running\"");
     }
   }
   /**
@@ -777,8 +777,6 @@ JFLog.log("connect:" + relayAudio +","+ relayVideo);
       }
       //copy SRTP-SDP details
       pbx_astream.profile = other_astream.profile;
-      pbx_astream.keyExchange = other_astream.keyExchange;
-      pbx_astream.keys = other_astream.keys;
       if (cd.src.sdp.hasVideo()) {
         other_vstream = cd.src.sdp.getFirstVideoStream();
         if (relayVideo) {
@@ -797,8 +795,6 @@ JFLog.log("connect:" + relayAudio +","+ relayVideo);
         }
         //copy SRTP-SDP details
         pbx_vstream.profile = other_vstream.profile;
-        pbx_vstream.keyExchange = other_vstream.keyExchange;
-        pbx_vstream.keys = other_vstream.keys;
       }
     }
     //copy dst -> pbxsrc
@@ -824,8 +820,6 @@ JFLog.log("connect:" + relayAudio +","+ relayVideo);
       }
       //copy SRTP-SDP details
       pbx_astream.profile = other_astream.profile;
-      pbx_astream.keyExchange = other_astream.keyExchange;
-      pbx_astream.keys = other_astream.keys;
       if (cd.dst.sdp.hasVideo()) {
         other_vstream = cd.dst.sdp.getFirstVideoStream();
         if (relayVideo) {
@@ -844,8 +838,6 @@ JFLog.log("connect:" + relayAudio +","+ relayVideo);
         }
         //copy SRTP-SDP details
         pbx_vstream.profile = other_vstream.profile;
-        pbx_vstream.keyExchange = other_vstream.keyExchange;
-        pbx_vstream.keys = other_vstream.keys;
       }
     }
 

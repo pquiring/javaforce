@@ -36,7 +36,7 @@ public class Paths {
           System.exit(1);
         }
       }
-      base += "/jpbxlite";
+      base += "/jfpbx";
       sounds = base + "/sounds/";
       plugins = base + "/plugins/";
       logs = base + "/logs/";

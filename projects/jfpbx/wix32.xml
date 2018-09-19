@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{511FB535-1B0D-4745-AC9D-0D0920AFFE46}" Version="0.26" Language="1033" Name="jfPBXLite" Manufacturer="Peter Quiring">
-    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
+  <Product Id="*" UpgradeCode="{511FB535-1B0D-4745-AC9D-0D0920AFFE46}" Version="0.26" Language="1033" Name="jfPBX" Manufacturer="Peter Quiring">
+    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
 
-    <Icon Id="icon.ico" SourceFile="jpbxlite.ico"/>
+    <Icon Id="icon.ico" SourceFile="jfpbx.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
 
     <!-- Step 1: Define the directory structure -->
     <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFiles64Folder">
-        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jpbxlite"/>
+      <Directory Id="ProgramFilesFolder">
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfpbx"/>
       </Directory>
       <Directory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
-<!--        <Directory Id="ApplicationProgramsFolder" Name="jfPBXLite"/> -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfPBX"/> -->
       </Directory>
       <Directory Id="CommonAppDataFolder">
-        <Directory Id="APPLICATIONDATADIRECTORY_JPBXLITE" Name="jpbxlite">
+        <Directory Id="APPLICATIONDATADIRECTORY_JFPBX" Name="jfpbx">
           <Directory Id="APPLICATIONDATADIRECTORY_SOUNDS" Name="sounds">
             <Directory Id="APPLICATIONDATADIRECTORY_SOUNDS_EN" Name="en"/>
           </Directory>
@@ -30,24 +30,24 @@
 
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
-      <Component Id="appfiles" Guid="{A1E62DA3-6388-437B-AADD-4FFCCC947D15}" Win64="yes">
-        <File Id="jpbxlite.exe" Source="jpbxlite.exe" KeyPath="yes"/>
+      <Component Id="appfiles" Guid="{A1E62DA3-6388-437B-AADD-4FFCCC947D15}">
+        <File Id="jfpbx.exe" Source="jfpbx.exe" KeyPath="yes"/>
         <File Id="jpbxcore.jar" Source="jpbxcore.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="bouncycastle.jar" Source="bouncycastle.jar"/>
         <File Id="derby.jar" Source="derby.jar"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"
-          Name="jPBXlite"
-          DisplayName="jPBXlite"
+          Name="jfPBX"
+          DisplayName="jfPBX"
           Description="jf PBX Server"
           Start="auto"
           ErrorControl="normal" />
-        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jPBXlite" Wait="yes" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfPBX" Wait="yes" />
       </Component>
     </DirectoryRef>
     <DirectoryRef Id="APPLICATIONDATADIRECTORY_PLUGINS">
-      <Component Id="pluginfiles" Guid="{A1E62DA3-6388-437B-AADD-4FFCCC947D16}" Win64="yes">
+      <Component Id="pluginfiles" Guid="{A1E62DA3-6388-437B-AADD-4FFCCC947D16}">
         <File Source="extensions.jar"/>
         <File Source="ivrs.jar"/>
         <File Source="trunks.jar"/>
