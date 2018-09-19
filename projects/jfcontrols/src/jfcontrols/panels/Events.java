@@ -672,6 +672,7 @@ public class Events {
         if (v1.length() > 0) v1TF.setText(v1);
         if (v2.length() > 0) v2TF.setText(v2);
         textLbl.setText("text");
+        JFLog.log("type=" + type);
         switch (type) {
           case "button":
           case "label":
@@ -799,6 +800,9 @@ public class Events {
             dir.setVisible(false);
             h.setVisible(false);
             v.setVisible(false);
+            break;
+          default:
+            JFLog.log("Error:unknown panel type:" + type);
             break;
         }
         PopupPanel props = (PopupPanel)client.getPanel().getComponent("jfc_panel_props");

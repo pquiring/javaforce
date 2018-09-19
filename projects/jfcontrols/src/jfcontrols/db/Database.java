@@ -61,10 +61,9 @@ public class Database {
     if (version == null) version = "0.0";
     JFLog.log("Database version=" + version);
     switch (version) {
-      case "1.0": return;
+      case "1.0": break;
       default: create(); break;
     }
-    udts.setMinId(IDs.uid_user);
   }
 
   public static void stop() {
@@ -530,13 +529,13 @@ public class Database {
     celltable.add(new CellRow(id,2,3,2,1,"togglebutton","h","Horz").setFunc("jfc_panel_props_h"));
     celltable.add(new CellRow(id,4,3,2,1,"togglebutton","v","Vert").setFunc("jfc_panel_props_v"));
 
-    celltable.add(new CellRow(id,0,4,2,1,"label","Tag", ""));
+    celltable.add(new CellRow(id,0,4,2,1,"label","", "Tag"));
     celltable.add(new CellRow(id,3,4,5,1,"textfield","tag", ""));
-    celltable.add(new CellRow(id,0,5,2,1,"label","Press", ""));
+    celltable.add(new CellRow(id,0,5,2,1,"label","", "Press"));
     celltable.add(new CellRow(id,3,5,5,1,"textfield","press", ""));
-    celltable.add(new CellRow(id,0,6,2,1,"label","Release", ""));
+    celltable.add(new CellRow(id,0,6,2,1,"label","", "Release"));
     celltable.add(new CellRow(id,3,6,5,1,"textfield","release", ""));
-    celltable.add(new CellRow(id,0,7,2,1,"label","Click", ""));
+    celltable.add(new CellRow(id,0,7,2,1,"label","", "Click"));
     celltable.add(new CellRow(id,3,7,5,1,"textfield","click", ""));
     celltable.add(new CellRow(id,0,8,2,1,"button","","OK").setFunc("jfc_panel_props_ok"));
     celltable.add(new CellRow(id,3,8,2,1,"button","","Cancel").setFunc("jfc_panel_props_cancel"));
@@ -578,6 +577,8 @@ public class Database {
     //insert system funcs
     addFunction("main");
     addFunction("init");
+
+    udts.setMinId(IDs.uid_user);
   }
 
   public static String quote(String value, String type) {

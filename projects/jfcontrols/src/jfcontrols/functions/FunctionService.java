@@ -147,7 +147,6 @@ public class FunctionService extends Thread {
       if (!Main.debug) {
         tag.setValue(Long.toString(scantime));
       }
-//      System.out.println("scantime=" + scantime);
     }
     JFLog.log("Function.Service stopping...");
     synchronized(done) {
