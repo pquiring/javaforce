@@ -1254,7 +1254,6 @@ public class Events {
           }
           if (!FunctionService.compileProgram()) {
             Panels.showErrorText(client, "Compile failed!", FunctionService.error);
-            FunctionService.error = null;
           }
         }
         break;

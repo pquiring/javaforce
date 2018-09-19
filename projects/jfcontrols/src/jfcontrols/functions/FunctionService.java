@@ -7,6 +7,9 @@ package jfcontrols.functions;
 
 import java.io.*;
 import java.lang.reflect.*;
+import java.util.*;
+
+import javax.tools.*;
 
 import javaforce.*;
 import javaforce.jni.*;
@@ -57,13 +60,13 @@ public class FunctionService extends Thread {
     }
     active = true;
     Class mainCls, initCls;
-    File mainFile = new File(Paths.dataPath + "/work/class/func_1.class");
+    File mainFile = new File(Paths.configPath + "/work/class/func_1.class");
     boolean compile = false;
     if (!mainFile.exists()) {
       FunctionService.generateFunction(1);
       compile = true;
     }
-    File initFile = new File(Paths.dataPath + "/work/class/func_2.class");
+    File initFile = new File(Paths.configPath + "/work/class/func_2.class");
     if (!initFile.exists()) {
       FunctionService.generateFunction(2);
       compile = true;
@@ -222,10 +225,10 @@ public class FunctionService extends Thread {
     JFLog.log("Compiling func:" + fid + ":" + func.name);
     String code = FunctionCompiler.generateFunction(fid);
     if (code == null) return false;
-    new File(Paths.dataPath + "/work/java").mkdirs();
-    new File(Paths.dataPath + "/work/class").mkdirs();
-    String java_file = Paths.dataPath + "/work/java/func_" + fid + ".java";
-    String class_file = Paths.dataPath + "/work/class/func_" + fid + ".class";
+    new File(Paths.configPath + "/work/java").mkdirs();
+    new File(Paths.configPath + "/work/class").mkdirs();
+    String java_file = Paths.configPath + "/work/java/func_" + fid + ".java";
+    String class_file = Paths.configPath + "/work/class/func_" + fid + ".class";
     try {
       FileOutputStream fos = new FileOutputStream(java_file);
       fos.write(code.getBytes());
@@ -239,27 +242,43 @@ public class FunctionService extends Thread {
   }
   public static String error;
   public static boolean compileProgram() {
+    JFLog.log("Compiling functions...");
     try {
-      ShellProcess sp = new ShellProcess();
-      sp.keepOutput(true);
-      String apphome = System.getProperty("java.app.home");
-      sp.setFolder(new File(apphome));
-      if (jdk != null) {
-        error = sp.run(new String[] {jdk + "/bin/javac", "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", Paths.dataPath + "/work/java/*.java", "-d", Paths.dataPath + "/work/class"}, true);
-      } else {
-        error = sp.run(new String[] {apphome + "/jfcompile" + (JF.isWindows() ? ".exe" : ""), "-cp", "jfcontrols.jar" + File.pathSeparator + "javaforce.jar", Paths.dataPath + "/work/java/*.java", "-d", Paths.dataPath + "/work/class"}, true);
-      }
-      if (error.length() == 0) {
+      File files[] = new File(Paths.configPath + "/work/java").listFiles(
+        new FilenameFilter() {
+           public boolean accept(File dir, String name) {
+             return name.endsWith(".java");
+           }
+        }
+      );
+      JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+      StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
+
+      Iterable<? extends JavaFileObject> compilationUnits1 = fileManager.getJavaFileObjectsFromFiles(Arrays.asList(files));
+      Iterable<String> options = Arrays.asList(new String[] {
+        "-cp", System.getProperty("java.class.path"),
+        "-d", Paths.configPath + "/work/class"
+      });
+      JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, options, null, compilationUnits1);
+
+      boolean success = task.call();
+
+      fileManager.close();
+
+      if (success) {
+        JFLog.log("Compilation successful!");
         restart();
+        return true;
       }
-      return error.length() == 0;
+      JFLog.log("Error:Compilation failed! See log output and try again.");
+      return false;
     } catch (Exception e) {
       JFLog.log(e);
       return false;
     }
   }
   public static boolean[][] getDebugEnabled(int fid) {
-    File clsFile = new File(Paths.dataPath + "/work/class/func_" + fid + ".class");
+    File clsFile = new File(Paths.configPath + "/work/class/func_" + fid + ".class");
     if (!clsFile.exists()) return null;
     Class cls;
     try {
@@ -273,7 +292,7 @@ public class FunctionService extends Thread {
     }
   }
   public static String[] getDebugTagValues(int fid) {
-    File clsFile = new File(Paths.dataPath + "/work/class/func_" + fid + ".class");
+    File clsFile = new File(Paths.configPath + "/work/class/func_" + fid + ".class");
     if (!clsFile.exists()) return null;
     Class cls;
     try {
@@ -287,7 +306,7 @@ public class FunctionService extends Thread {
     }
   }
   public static boolean functionUpToDate(int fid, long revision) {
-    File clsFile = new File(Paths.dataPath + "/work/class/func_" + fid + ".class");
+    File clsFile = new File(Paths.configPath + "/work/class/func_" + fid + ".class");
     if (!clsFile.exists()) return false;
     Class cls;
     try {
