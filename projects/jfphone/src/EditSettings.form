@@ -2895,8 +2895,11 @@
             </Component>
             <Component class="javax.swing.JTextField" name="dname">
               <Properties>
-                <Property name="text" type="java.lang.String" value="CN=jphonelite.sourceforge.net, OU=user, O=jphonelite, C=CA"/>
+                <Property name="text" type="java.lang.String" value="CN=jfphone.sourceforge.net, OU=user, O=jfphone, C=CA"/>
               </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dnameActionPerformed"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>

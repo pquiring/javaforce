@@ -965,13 +965,13 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   public void checkVersion() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(
-        new URL("http://jphonelite.sourceforge.net/version" + (version.indexOf("beta") == -1 ? "" : "beta") + ".php").openStream()));
+        new URL("http://jfphone.sourceforge.net/version" + (version.indexOf("beta") == -1 ? "" : "beta") + ".php").openStream()));
       final String line = reader.readLine();
       if (line.equals(version)) {JFLog.log("version is up-to-date"); return;}
       JFLog.log("newer version is available : " + line);
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
-          JFAWT.showMessage("Upgrade available", "A newer version of jphonelite is available! (v" + line + ")\r\nPlease goto http://jphonelite.sourceforge.net to download it");
+          JFAWT.showMessage("Upgrade available", "A newer version of jfPhone is available! (v" + line + ")\r\nPlease goto http://jfphone.sourceforge.net to download it");
         }
       });
     } catch (Exception e) {
@@ -1177,7 +1177,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     }
   }
 
-  /** SIPClientInterface.onInvite() : triggered when server send an INVITE to jphonelite. */
+  /** SIPClientInterface.onInvite() : triggered when server send an INVITE to jfPhone. */
 
   public int onInvite(SIPClient sip, String callid, String fromid, String fromnumber, SDP sdp) {
     //NOTE : onInvite() can not change codecs (use SIP.reaccept() to do that)
@@ -1336,7 +1336,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     JFLog.log("Warning : unknown NOTIFY type : " + event);
   }
 
-  /** SIPClientInterface.onAck() : triggered when server send an ACK to jphonelite. */
+  /** SIPClientInterface.onAck() : triggered when server send an ACK to jfPhone. */
 
   public void onAck(SIPClient sip, String callid, SDP sdp) {
     if (sdp == null) return;
@@ -1746,7 +1746,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       KeyMgmt key = new KeyMgmt();
       key.open(fis, password);
       fis.close();
-      crt = key.getCRT("jphonelite").getEncoded();
+      crt = key.getCRT("jfphone").getEncoded();
       fingerprintSHA256 = KeyMgmt.fingerprintSHA256(crt);
       ArrayList<byte[]> chain = new ArrayList<byte[]>();
       chain.add(crt);
@@ -1754,7 +1754,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       if (root != null) {
         chain.add(root.getEncoded());
       }
-      privateKey = key.getKEY("jphonelite", password).getEncoded();
+      privateKey = key.getKEY("jfphone", password).getEncoded();
 //      SRTPChannel.initDTLS(chain, privateKey, false);
     } catch(FileNotFoundException e) {
       //do nothing

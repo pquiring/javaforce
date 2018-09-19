@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javaforce.*;
 
-/** Entry point for jphonelite application. */
+/** Entry point for jfPhone application. */
 
 public class PhoneApp extends JFrame implements WindowListener, WindowController {
   public static void main(String args[]) {
@@ -18,7 +18,7 @@ public class PhoneApp extends JFrame implements WindowListener, WindowController
 
   private PhoneApp() {
     if (!BasePhone.lockFile()) {
-      JFAWT.showError("Error", "Another instance of jPhoneLite is already running!");
+      JFAWT.showError("Error", "Another instance of jfPhone is already running!");
       System.exit(0);
     }
     panel = new PhonePanel(this, false);
@@ -26,9 +26,9 @@ public class PhoneApp extends JFrame implements WindowListener, WindowController
     setResizable(false);
     setContentPane(panel);
     pack();
-    setTitle("jPhoneLite/" + PhonePanel.version);
+    setTitle("jfPhone/" + PhonePanel.version);
     JFImage icon = new JFImage();
-    icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jphonelite.png"));
+    icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfphone.png"));
     setIconImage(icon.getImage());
     setPosition();
   }

@@ -1926,7 +1926,12 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel64.setText("dname");
 
-    dname.setText("CN=jphonelite.sourceforge.net, OU=user, O=jphonelite, C=CA");
+    dname.setText("CN=jfphone.sourceforge.net, OU=user, O=jfphone, C=CA");
+    dname.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        dnameActionPerformed(evt);
+      }
+    });
 
     javax.swing.GroupLayout eKeyLayout = new javax.swing.GroupLayout(eKey);
     eKey.setLayout(eKeyLayout);
@@ -2228,12 +2233,16 @@ public class EditSettings extends javax.swing.JDialog {
   }//GEN-LAST:event_selectOutRingtoneActionPerformed
 
   private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
-    JF.openURL("http://jphonelite.sourceforge.net/help.php");
+    JF.openURL("http://jfphone.sourceforge.net/help.php");
   }//GEN-LAST:event_helpActionPerformed
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
     JFAWT.donate();
   }//GEN-LAST:event_jButton1ActionPerformed
+
+  private void dnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dnameActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_dnameActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextArea about;
@@ -3090,11 +3099,11 @@ public class EditSettings extends javax.swing.JDialog {
     KeyMgmt key = new KeyMgmt();
     try {
       key.open(new FileInputStream(fn), "password".toCharArray());
-      if (key.getCRT("jphonelite") == null) {
+      if (key.getCRT("jfphone") == null) {
         keyStatus.setText("missing certificate");
         return;
       }
-      if (key.getKEY("jphonelite", "password".toCharArray()) == null) {
+      if (key.getKEY("jfphone", "password".toCharArray()) == null) {
         keyStatus.setText("missing private key");
         return;
       }
@@ -3109,7 +3118,7 @@ public class EditSettings extends javax.swing.JDialog {
 
   private void genKeys() {
     if (KeyMgmt.keytool(new String[] {
-      "-genkey", "-debug", "-alias", "jphonelite", "-keypass", "password", "-storepass", "password",
+      "-genkey", "-debug", "-alias", "jfphone", "-keypass", "password", "-storepass", "password",
       "-keystore", JF.getUserPath() + "/.jphone.key", "-validity", "3650", "-dname", dname.getText(),
       "-keyalg" , "RSA", "-keysize", "2048"
     })) {

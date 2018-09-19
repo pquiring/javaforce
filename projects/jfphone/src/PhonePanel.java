@@ -16,7 +16,7 @@ import javaforce.*;
 import javaforce.jni.JFNative;
 import javaforce.voip.*;
 
-/** jphonelite Panel */
+/** jfPhone Panel */
 
 public class PhonePanel extends BasePhone implements MeterController, GUI, VideoController {
 
@@ -910,7 +910,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
   /** Init panel variables. */
 
   public void init() {
-    JFLog.log("jphonelite/" + version);
+    JFLog.log("jfphone/" + version);
     loadIcons();
     Settings.loadSettings();
     if (Settings.current.welcome) {
@@ -918,7 +918,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
         public void run() {
         java.awt.EventQueue.invokeLater(new Runnable() {
           public void run() {
-            JFAWT.showMessage("Welcome", "Welcome to jPhoneLite!\nPlease press CFG button to configure your options.");
+            JFAWT.showMessage("Welcome", "Welcome to jfPhone!\nPlease press CFG button to configure your options.");
           }
         });
         }
@@ -980,7 +980,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
             , (size.height - appicon.getIconHeight()) / 2
             , null);
         }
-        icon = new TrayIcon(scaled.getImage(), "jPhoneLite", popup);
+        icon = new TrayIcon(scaled.getImage(), "jfPhone", popup);
         icon.addActionListener(this);
         try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
       }

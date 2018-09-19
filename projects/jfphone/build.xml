@@ -1,7 +1,7 @@
-<project name="jphonelite" default="jar" basedir=".">
-  <description>jphonelite</description>
+<project name="jfphone" default="jar" basedir=".">
+  <description>jfphone</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jphonelite"/>
+  <property name="app" value="jfphone"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
@@ -15,7 +15,7 @@
       <manifest>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jphonelite.sourceforge.net"/>
+        <attribute name="Codebase" value="jfphone.sourceforge.net"/>
       </manifest>
     </jar>
     <jar destfile="bouncycastle.jar">
@@ -25,7 +25,7 @@
       <manifest>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jphonelite.sourceforge.net"/>
+        <attribute name="Codebase" value="jfphone.sourceforge.net"/>
       </manifest>
     </jar>
   </target>
@@ -42,7 +42,7 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jphonelite.jar" includes="*.class" basedir="${build}">
+    <jar destfile="jfphone.jar" includes="*.class" basedir="${build}">
       <fileset dir="image" includes="*.png"/>
       <fileset dir="." includes="*.wav"/>
       <fileset dir="." includes="*.crt"/>
@@ -51,7 +51,7 @@
         <attribute name="Main-Class" value="PhoneApp"/>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jphonelite.sourceforge.net"/>
+        <attribute name="Codebase" value="jfphone.sourceforge.net"/>
       </manifest>
     </jar>
   </target>
@@ -59,32 +59,32 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
 
-    <copy file="jphonelite.jar" todir="/usr/share/java"/>
-    <copy file="jphonelite.desktop" todir="/usr/share/applications"/>
-    <copy file="jphonelite.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jphonelite.html" todir="/usr/share/jhelp"/>
+    <copy file="jfphone.jar" todir="/usr/share/java"/>
+    <copy file="jfphone.desktop" todir="/usr/share/applications"/>
+    <copy file="jfphone.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
+    <copy file="jfphone.html" todir="/usr/share/jhelp"/>
   </target>
 
   <target name="release-bin" description="create release zip file">
-    <zip destfile="jphonelite-bin-${version}.zip">
+    <zip destfile="jfphone-bin-${version}.zip">
       <fileset dir="..">
-        <include name="jphonelite/*.jar"/>
-        <include name="jphonelite/*.html"/>
-        <include name="jphonelite/*.php"/>
-        <include name="jphonelite/*.js"/>
-        <include name="jphonelite/*.jnlp"/>
-        <include name="jphonelite/readme.txt"/>
-        <include name="jphonelite/jphonelite"/>
-        <include name="jphonelite/run.*"/>
-        <include name="jphonelite/jfnative*"/>
+        <include name="jfphone/*.jar"/>
+        <include name="jfphone/*.html"/>
+        <include name="jfphone/*.php"/>
+        <include name="jfphone/*.js"/>
+        <include name="jfphone/*.jnlp"/>
+        <include name="jfphone/readme.txt"/>
+        <include name="jfphone/jfphone"/>
+        <include name="jfphone/run.*"/>
+        <include name="jfphone/jfnative*"/>
       </fileset>
       <fileset dir="../.." includes="license.txt"/>
     </zip>
-    <move file="jphonelite-bin-${version}.zip" todir="${home}/release"/>
+    <move file="jfphone-bin-${version}.zip" todir="${home}/release"/>
   </target>
 
   <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jphonelite-src-${version}.zip">
+    <zip destfile="jfphone-src-${version}.zip">
       <fileset dir="../../..">
         <include name="jf/license.txt"/>
         <include name="jf/base.*"/>
@@ -95,28 +95,28 @@
         <include name="jf/jars/javaforce.jar"/>
         <include name="jf/jars/bouncycastle.jar"/>
 
-        <include name="jf/projects/jphonelite/src/*.java"/>
-        <include name="jf/projects/jphonelite/src/*.form"/>
-        <include name="jf/projects/jphonelite/*.cfg"/>
-        <include name="jf/projects/jphonelite/*.js"/>
-        <include name="jf/projects/jphonelite/*.form"/>
-        <include name="jf/projects/jphonelite/*.jnlp"/>
-        <include name="jf/projects/jphonelite/*.txt"/>
-        <include name="jf/projects/jphonelite/*.png"/>
-        <include name="jf/projects/jphonelite/*.wav"/>
-        <include name="jf/projects/jphonelite/image/*.png"/>
-        <include name="jf/projects/jphonelite/*.ico"/>
-        <include name="jf/projects/jphonelite/*.html"/>
-        <include name="jf/projects/jphonelite/*.php"/>
-        <include name="jf/projects/jphonelite/*.xml"/>
-        <include name="jf/projects/jphonelite/run.*"/>
-        <include name="jf/projects/jphonelite/jphonelite"/>
-        <include name="jf/projects/jphonelite/nbproject/*.xml"/>
+        <include name="jf/projects/jfphone/src/*.java"/>
+        <include name="jf/projects/jfphone/src/*.form"/>
+        <include name="jf/projects/jfphone/*.cfg"/>
+        <include name="jf/projects/jfphone/*.js"/>
+        <include name="jf/projects/jfphone/*.form"/>
+        <include name="jf/projects/jfphone/*.jnlp"/>
+        <include name="jf/projects/jfphone/*.txt"/>
+        <include name="jf/projects/jfphone/*.png"/>
+        <include name="jf/projects/jfphone/*.wav"/>
+        <include name="jf/projects/jfphone/image/*.png"/>
+        <include name="jf/projects/jfphone/*.ico"/>
+        <include name="jf/projects/jfphone/*.html"/>
+        <include name="jf/projects/jfphone/*.php"/>
+        <include name="jf/projects/jfphone/*.xml"/>
+        <include name="jf/projects/jfphone/run.*"/>
+        <include name="jf/projects/jfphone/jfphone"/>
+        <include name="jf/projects/jfphone/nbproject/*.xml"/>
 
         <include name="jf/stubs/*"/>
       </fileset>
     </zip>
-    <move file="jphonelite-src-${version}.zip" todir="${home}/release"/>
+    <move file="jfphone-src-${version}.zip" todir="${home}/release"/>
   </target>
 
   <target name="javadoc" description="generate java documentation">
