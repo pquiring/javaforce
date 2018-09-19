@@ -1452,7 +1452,7 @@ Line Colors:
           if (stream.canRecv()) {
             RTPChannel channel = rtp.getDefaultChannel();
             if (channel == null || !channel.stream.content.equals(stream.content)) {
-              channel = rtp.createChannel(stream);
+              channel = rtp.createChannel(stream, pl.sip.isCaller());
               channel.start();
             }
             addRemoteCamera(pl, channel);

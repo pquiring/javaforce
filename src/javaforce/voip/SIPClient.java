@@ -30,6 +30,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   private static NAT nat = NAT.None;
   private static boolean useNATOnPrivateNetwork = false;  //do not use NATing techniques on private network servers
   private static String stunHost, stunUser, stunPass;
+  private boolean caller;
 
   public Object rtmp;  //used by RTMP2SIPServer
   public Object userobj;  //user definable
@@ -554,6 +555,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    * @return unique Call-ID (not caller id)<br>
    */
   public String invite(String to, SDP sdp) {
+    caller = true;
     String callid = getcallid();
     CallDetails cd = getCallDetails(callid);  //new CallDetails
     cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
@@ -703,6 +705,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    * @param sdp : SDP (only stream types/modes/codecs are needed) (ip not needed)
    */
   public boolean accept(String callid, SDP sdp) {
+    caller = false;
     CallDetails cd = getCallDetails(callid);
     cd.src.sdp = sdp;
     buildsdp(cd, cd.src);
@@ -1096,5 +1099,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   public String[] getHeaders(String callid) {
     CallDetails cd = getCallDetails(callid);
     return cd.headers;
+  }
+
+  public boolean isCaller() {
+    return caller;
   }
 }
