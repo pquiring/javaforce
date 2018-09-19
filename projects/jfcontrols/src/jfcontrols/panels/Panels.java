@@ -1045,7 +1045,7 @@ public class Panels {
     switch (name) {
       case "jfc_rungs_viewer": {
         int fid = (Integer)client.getProperty("func");
-        RungRow data[] = Database.getRungsById(fid);
+        RungRow data[] = Database.getRungsById(fid, true);
         client.setProperty("rungs", new Rungs());
         context.debug_en_idx = 0;
         context.debug_tv_idx = 0;

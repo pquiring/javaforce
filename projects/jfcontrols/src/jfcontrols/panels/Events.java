@@ -86,7 +86,6 @@ public class Events {
             }
             if (rid == -1) break;
             Database.deleteRungById(fid, rid);
-            Database.deleteRungBlocksById(fid, rid);
             FunctionRow fnc = Database.getFunctionById(fid);
             fnc.revision++;
             Database.funcs.save();
@@ -1039,8 +1038,7 @@ public class Events {
           //insert at end
           rid = rungs.rungs.size();
         }
-        //insert rung before current one
-        Database.addRung(fid, rid, "h", "Comment");
+        Database.addRung(fid, rid, "h", "Comment");  //saves rung table
         ArrayList<CellRow> cells = new ArrayList<CellRow>();
         ArrayList<Node> nodes = new ArrayList<Node>();
         RungRow data = Database.getRungById(fid, rid);
@@ -1058,6 +1056,8 @@ public class Events {
         FunctionRow fnc = Database.getFunctionById(fid);
         fnc.revision++;
         Database.funcs.save();
+        //BUG:need to reload panel - node.rid are not incremented
+            client.setPanel(Panels.getPanel("jfc_func_editor", client));
         break;
       }
 
@@ -1233,7 +1233,7 @@ public class Events {
         if (!root.isValid(client)) {
           break;
         }
-        Database.clearBlocksById(fid);
+        Database.clearBlocksById(fid, rid);
         String str = root.saveLogic();
         JFLog.log("logic=" + str);
         if (str == null) {
@@ -1245,10 +1245,7 @@ public class Events {
         TextField tf = (TextField)client.getPanel().getComponent("comment" + rid);
         String cmt = tf.getText();
         rungobj.comment = cmt;
-        Database.saveRungById(fid, rid);
-        //TODO : save blocks
-
-
+        Database.saveRungsById(fid);
         FunctionRow fnc = Database.getFunctionById(fid);
         fnc.revision++;
         Database.funcs.save();

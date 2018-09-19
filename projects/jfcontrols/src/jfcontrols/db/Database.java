@@ -1125,6 +1125,18 @@ public class Database {
     return -1;
   }
   public static void addRung(int fid, int rid, String logic, String comment) {
+    RungRow rows[] = getRungsById(fid, false);  //reverse order
+    BlockRow blks[] = getBlocksById(fid);
+    for(int a=0;a<rows.length;a++) {
+      if (rows[a].rid >= rid) {
+        rows[a].rid++;
+      }
+    }
+    for(int b=0;b<blks.length;b++) {
+      if (blks[b].rid >= rid) {
+        blks[b].rid++;
+      }
+    }
     RungRow rung = new RungRow();
     rung.fid = fid;
     rung.rid = rid;
@@ -1134,6 +1146,7 @@ public class Database {
     Table table = rungs.get(xid);
     table.add(rung);
     table.save();
+    saveBlocksById(fid);
   }
   public static RungRow getRungById(int fid, int rid) {
     int xid = getRungId(fid);
@@ -1145,14 +1158,45 @@ public class Database {
     }
     return null;
   }
-  public static RungRow[] getRungsById(int fid) {
+  public static RungRow[] getRungsById(int fid, boolean forwardOrder) {
     int xid = getRungId(fid);
     Table table = rungs.get(xid);
-    return table.getRows().toArray(new RungRow[0]);
+    RungRow[] rows = table.getRows().toArray(new RungRow[0]);
+    //must sort by rid
+    RungRow tmp;
+    if (forwardOrder) {
+      for(int a=0;a<rows.length;a++) {
+        for(int b=a+1;b<rows.length;b++) {
+          if (rows[a].rid > rows[b].rid) {
+            //swap a,b
+            tmp = rows[a];
+            rows[a] = rows[b];
+            rows[b] = tmp;
+          }
+        }
+      }
+    } else {
+      for(int a=0;a<rows.length;a++) {
+        for(int b=a+1;b<rows.length;b++) {
+          if (rows[a].rid < rows[b].rid) {
+            //swap a,b
+            tmp = rows[a];
+            rows[a] = rows[b];
+            rows[b] = tmp;
+          }
+        }
+      }
+    }
+    return rows;
   }
-  public static void saveRungById(int fid, int rid) {
+  public static void saveRungsById(int fid) {
     int xid = getRungId(fid);
     Table table = rungs.get(xid);
+    table.save();
+  }
+  public static void saveBlocksById(int fid) {
+    int xid = getBlockId(fid);
+    Table table = blocks.get(xid);
     table.save();
   }
   public static void deleteRungsById(int fid) {
@@ -1178,15 +1222,18 @@ public class Database {
     }
     {
       Table table = blocks.get(xid);
-      int id = -1;
       ArrayList<Row> rows = table.getRows();
-      for(int r=0;r<rows.size();r++) {
+      for(int r=0;r<rows.size();) {
         BlockRow blk = (BlockRow)rows.get(r);
-        if (blk.rid > rid) {
-          blk.rid--;
+        if (blk.rid == rid) {
+          rows.remove(r);
+        } else {
+          if (blk.rid > rid) {
+            blk.rid--;
+          }
+          r++;
         }
       }
-      if (id != -1) table.remove(id);
       table.save();
     }
   }
@@ -1198,7 +1245,7 @@ public class Database {
     }
     return -1;
   }
-  public static BlockRow[] getFunctionBlocksById(int fid) {
+  public static BlockRow[] getBlocksById(int fid) {
     int xid = getBlockId(fid);
     Table table = blocks.get(xid);
     return table.getRows().toArray(new BlockRow[0]);
@@ -1300,10 +1347,18 @@ public class Database {
       }
     }
   }
-  public static void clearBlocksById(int fid) {
+  public static void clearBlocksById(int fid, int rid) {
     int xid = getBlockId(fid);
     Table table = blocks.get(xid);
-    table.clear();
+    ArrayList<Row> rows = table.getRows();
+    for(int a=0;a<rows.size();) {
+      BlockRow row = (BlockRow)rows.get(a);
+      if (row.rid == rid) {
+        rows.remove(a);
+      } else {
+        a++;
+      }
+    }
     table.save();
   }
   public static void deleteRungBlocksById(int fid, int rid) {
