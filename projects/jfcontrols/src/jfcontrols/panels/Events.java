@@ -137,7 +137,7 @@ public class Events {
       }
       case "jfc_login_ok": {
         String user = ((TextField)client.getPanel().getComponent("user")).getText();
-        String pass = ((TextField)client.getPanel().getComponent("pass")).getText();
+        String pass = ((TextField)client.getPanel().getComponent("password")).getText();
         UserRow data[] = Database.users.getRows().toArray(new UserRow[0]);
         boolean ok = false;
         for(int a=0;a<data.length;a++) {
