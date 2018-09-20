@@ -18,6 +18,16 @@
         <attribute name="Codebase" value="jfphone.sourceforge.net"/>
       </manifest>
     </jar>
+    <jar destfile="bouncycastle.jar">
+      <zipfileset src="../../jars/bouncycastle.jar">
+        <exclude name="META-INF/*"/>
+      </zipfileset>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="jphonelite.sourceforge.net"/>
+      </manifest>
+    </jar>
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
@@ -26,6 +36,7 @@
     <javac srcdir="${src}" destdir="${build}" deprecation="true" target="1.6" source="1.6" debug="true" includeantruntime="false">
 <!--      <compilerarg value="-Xlint:unchecked"/>  -->  <!-- generates lots of annoying warnings -->
       <classpath path="javaforce.jar"/>
+      <classpath path="bouncycastle.jar"/>
     </javac>
   </target>
 
@@ -82,6 +93,7 @@
         <include name="jf/keys/build.xml"/>
 
         <include name="jf/jars/javaforce.jar"/>
+        <include name="jf/jars/bouncycastle.jar"/>
 
         <include name="jf/projects/jfphone/src/*.java"/>
         <include name="jf/projects/jfphone/src/*.form"/>

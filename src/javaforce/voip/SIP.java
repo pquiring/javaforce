@@ -645,6 +645,30 @@ public abstract class SIP {
         else if (ln.startsWith("a=fingerprint:sha-256 ")) {
           sdp.fingerprint = ln.substring(22);
         }
+        else if (ln.startsWith("a=crypto:")) {
+          //SRTP Keys (replaced by DTLS method)
+          //a=crypto:1 AES_CM_128_HMAC_SHA1_80 inline:PS1uQCVeeCFCanVmcjkpPywjNWhcYD0mXXtxaVBR|2^20|1:32
+          //         # crypto                         base64_key_salt                          life mki
+          stream.keyExchange = SDP.KeyExchange.SDP;
+          String f[] = ln.split(" ");
+          if (!f[2].startsWith("inline:")) {
+            JFLog.log("a=crypto:bad keys(1)");
+            continue;
+          }
+          String base64 = f[2].substring(7);
+          int pipe = base64.indexOf("|");
+          if (pipe != -1) {
+            base64 = base64.substring(0, pipe);
+          }
+          byte keys[] = javaforce.Base64.decode(base64.getBytes());
+          if (keys == null || keys.length != 30) {
+            JFLog.log("a=crypto:bad keys(2)");
+            continue;
+          }
+          byte key[] = Arrays.copyOfRange(keys, 0, 16);
+          byte salt[] = Arrays.copyOfRange(keys, 16, 16 + 14);
+          stream.addKey(f[1], key, salt);
+        }
       }
     }
     if ((stream != null) && (stream.content == null)) {
@@ -1046,6 +1070,20 @@ public abstract class SIP {
         content.append(" " + rfc2833.id);
       }
       content.append("\r\n");
+      if (stream.keyExchange == SDP.KeyExchange.SDP && stream.keys != null) {
+        for(int c=0;c<stream.keys.length;c++) {
+          SDP.Key keys = stream.keys[c];
+          byte key_salt[] = new byte[16 + 14];
+          System.arraycopy(keys.key, 0, key_salt, 0, 16);
+          System.arraycopy(keys.salt, 0, key_salt, 16, 14);
+          String keystr = new String(javaforce.Base64.encode(key_salt));
+                                               //keys          | lifetime     | mki:length
+          String ln = keys.crypto + " inline:" + keystr; // + "|2^20";  // + "|1:32";
+          content.append("a=crypto:" + (c+1) + " ");
+          content.append(ln);
+          content.append("\r\n");
+        }
+      }
       if (stream.content != null) {
         content.append("a=content:" + stream.content + "\r\n");
       }
@@ -1092,6 +1130,10 @@ public abstract class SIP {
       }
       if (hasCodec(stream.codecs, RTP.CODEC_VP8)) {
         content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_VP8).id + " VP8/90000\r\n");
+      }
+      JFLog.log("keyexchange=" + stream.keyExchange);
+      if (stream.keyExchange == SDP.KeyExchange.DTLS) {
+        content.append("a=rtcp-mux");  //http://tools.ietf.org/html/rfc5761
       }
     }
     cd.sdp = content.toString();

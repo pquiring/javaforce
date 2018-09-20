@@ -164,6 +164,8 @@ public class EditSettings extends javax.swing.JDialog {
     l1secure = new javax.swing.JCheckBox();
     jLabel29 = new javax.swing.JLabel();
     l1sip = new javax.swing.JComboBox();
+    jLabel56 = new javax.swing.JLabel();
+    l1key = new javax.swing.JComboBox();
     jLabel31 = new javax.swing.JLabel();
     l1name = new javax.swing.JTextField();
     l2 = new javax.swing.JPanel();
@@ -1044,6 +1046,10 @@ public class EditSettings extends javax.swing.JDialog {
 
     l1sip.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "UDP", "TCP", "TLS" }));
 
+    jLabel56.setText("Encryption Key Exchange");
+
+    l1key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
+
     jLabel31.setText("Display name");
     jLabel31.setToolTipText("Display Name (optional)");
 
@@ -1061,8 +1067,12 @@ public class EditSettings extends javax.swing.JDialog {
               .addGroup(l1Layout.createSequentialGroup()
                 .addComponent(jLabel29)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(l1sip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-            .addGap(0, 421, Short.MAX_VALUE))
+                .addComponent(l1sip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addGroup(l1Layout.createSequentialGroup()
+                .addComponent(jLabel56)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(l1key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGap(0, 356, Short.MAX_VALUE))
           .addGroup(l1Layout.createSequentialGroup()
             .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel23)
@@ -1110,7 +1120,11 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel29)
           .addComponent(l1sip, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(230, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(l1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel56)
+          .addComponent(l1key, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(189, Short.MAX_VALUE))
     );
 
     jTabbedPane1.addTab("Line1", l1);
@@ -1912,12 +1926,7 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel64.setText("dname");
 
-    dname.setText("CN=jfphone.sourceforge.net, OU=user, O=jfphone, C=CA");
-    dname.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        dnameActionPerformed(evt);
-      }
-    });
+    dname.setText("CN=jphonelite.sourceforge.net, OU=user, O=jphonelite, C=CA");
 
     javax.swing.GroupLayout eKeyLayout = new javax.swing.GroupLayout(eKey);
     eKey.setLayout(eKeyLayout);
@@ -2219,16 +2228,12 @@ public class EditSettings extends javax.swing.JDialog {
   }//GEN-LAST:event_selectOutRingtoneActionPerformed
 
   private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
-    JF.openURL("http://jfphone.sourceforge.net/help.php");
+    JF.openURL("http://jphonelite.sourceforge.net/help.php");
   }//GEN-LAST:event_helpActionPerformed
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
     JFAWT.donate();
   }//GEN-LAST:event_jButton1ActionPerformed
-
-  private void dnameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dnameActionPerformed
-    // TODO add your handling code here:
-  }//GEN-LAST:event_dnameActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextArea about;
@@ -2315,6 +2320,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel53;
   private javax.swing.JLabel jLabel54;
   private javax.swing.JLabel jLabel55;
+  private javax.swing.JLabel jLabel56;
   private javax.swing.JLabel jLabel57;
   private javax.swing.JLabel jLabel58;
   private javax.swing.JLabel jLabel59;
@@ -2355,6 +2361,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JTextField l1auth;
   private javax.swing.JCheckBox l1disableVideo;
   private javax.swing.JTextField l1host;
+  private javax.swing.JComboBox l1key;
   private javax.swing.JTextField l1name;
   private javax.swing.JPasswordField l1pass;
   private javax.swing.JCheckBox l1secure;
@@ -2568,7 +2575,7 @@ public class EditSettings extends javax.swing.JDialog {
     l1disableVideo.setSelected(Settings.current.lines[0].disableVideo);
     l1secure.setSelected(Settings.current.lines[0].srtp);
     l1sip.setSelectedIndex(Settings.current.lines[0].transport);
-//    l1key.setSelectedIndex(Settings.current.lines[0].dtls ? 1 : 0);
+    l1key.setSelectedIndex(Settings.current.lines[0].dtls ? 1 : 0);
 
     l2name.setText(Settings.current.lines[1].name);
     l2user.setText(Settings.current.lines[1].user);
@@ -2793,7 +2800,7 @@ public class EditSettings extends javax.swing.JDialog {
     Settings.current.lines[0].disableVideo = l1disableVideo.isSelected();
     Settings.current.lines[0].srtp = l1secure.isSelected();
     Settings.current.lines[0].transport = l1sip.getSelectedIndex();
-//    Settings.current.lines[0].dtls = l1key.getSelectedIndex() == 1;
+    Settings.current.lines[0].dtls = l1key.getSelectedIndex() == 1;
 
     Settings.current.lines[1].name = l2name.getText();
     Settings.current.lines[1].user = l2user.getText();
@@ -3083,11 +3090,11 @@ public class EditSettings extends javax.swing.JDialog {
     KeyMgmt key = new KeyMgmt();
     try {
       key.open(new FileInputStream(fn), "password".toCharArray());
-      if (key.getCRT("jfphone") == null) {
+      if (key.getCRT("jphonelite") == null) {
         keyStatus.setText("missing certificate");
         return;
       }
-      if (key.getKEY("jfphone", "password".toCharArray()) == null) {
+      if (key.getKEY("jphonelite", "password".toCharArray()) == null) {
         keyStatus.setText("missing private key");
         return;
       }
@@ -3102,7 +3109,7 @@ public class EditSettings extends javax.swing.JDialog {
 
   private void genKeys() {
     if (KeyMgmt.keytool(new String[] {
-      "-genkey", "-debug", "-alias", "jfphone", "-keypass", "password", "-storepass", "password",
+      "-genkey", "-debug", "-alias", "jphonelite", "-keypass", "password", "-storepass", "password",
       "-keystore", JF.getUserPath() + "/.jphone.key", "-validity", "3650", "-dname", dname.getText(),
       "-keyalg" , "RSA", "-keysize", "2048"
     })) {

@@ -8,359 +8,453 @@ package javaforce.voip;
  *
  * RFCs:
  * http://tools.ietf.org/html/rfc3711 - SRTP
- * http://tools.ietf.org/html/rfc4568 - Using SDP to exchange keys for SRTP (old method before DTLS) (obsolete)
- * http://tools.ietf.org/html/rfc5795 - Using DTLS to exchange keys for SRTP (not supported anymore)
- * http://tools.ietf.org/html/rfc5764 - Using DTLS
+ * http://tools.ietf.org/html/rfc5764 - Using DTLS to exchange keys for SRTP
+ * http://tools.ietf.org/html/rfc4568 - Using SDP to exchange keys for SRTP (old method before DTLS)
  */
 
 import java.io.*;
 import java.net.*;
 import java.nio.*;
 import java.security.*;
-import java.security.cert.*;
 import java.util.*;
-import javax.crypto.*;
-import javax.net.ssl.*;
+import javax.crypto.Mac;
 
 import javaforce.*;
 
+import org.bouncycastle.crypto.tls.*;
+import org.bouncycastle.crypto.params.*;
+import org.bouncycastle.asn1.pkcs.*;
+import org.bouncycastle.crypto.util.*;
+
 public class SRTPChannel extends RTPChannel {
-  private boolean server;
-  public static String local_icepwd;  //TODO
-
-  protected SRTPChannel(RTP rtp, int ssrc, SDP.Stream stream, boolean server) {
+  protected SRTPChannel(RTP rtp, int ssrc, SDP.Stream stream) {
     super(rtp,ssrc,stream);
-    this.server = server;
   }
+  private boolean have_keys = false;
+  private boolean dtls = false;
+  private boolean dtlsServerMode = false;
+  private boolean stunReceived = false;
+  private boolean dtlsReady = false;
+  private SRTPContext srtp_in, srtp_out;
+  private int _tailIn, _tailOut;
+  private long _seqno = 0;  //must keep track of seqno beyond 16bits
 
-  public boolean start() {
-    JFLog.log("SRTPChannel.start()");
-    if (!super.start()) return false;
-    if (rtp.rawMode) return true;
-    new Thread() {
-      public void run() {
-        if (server) {
-          UdpServer svr = new UdpServer();
-          svr.start();
-        } else {
-          UdpClient clt = new UdpClient();
-          clt.start();
-        }
-      }
-    }.start();
-    return true;
-  }
+  private DatagramSocket dtlsSocket, rawSocket;
+  private DefaultTlsServer2 tlsServer;
+  private DefaultTlsClient2 tlsClient;
+  private DTLSTransport dtlsTransport;  //DTLS is actually never used to send/receive data (only key exchange)
+  private Worker worker;
+  private String local_iceufrag, local_icepwd;
 
-  public static void _log(String side, boolean client, String msg) {
-    JFLog.log(side + ":" + (client ? "client" : "server") + ":" + msg);
-  }
+  private static DTLSServerProtocol dtlsServer;
+  private static DTLSClientProtocol dtlsClient;
+  private static InetAddress localhost;
+  private static org.bouncycastle.crypto.tls.Certificate dtlsCertChain;
+  private static AsymmetricKeyParameter dtlsPrivateKey;
 
-  public static TrustManager[] trustAllCerts = new TrustManager[] {
-    new X509TrustManager() {
-      public X509Certificate[] getAcceptedIssuers() {
-        return null;
-      }
-      public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
-      public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
-    }
-  };
+  private static final int KEY_LENGTH = 16;
+  private static final int SALT_LENGTH = 14;
+
+  private byte[] sharedSecret;
+  private byte[] remoteKey = new byte[KEY_LENGTH], remoteSalt = new byte[SALT_LENGTH+2];
+  private byte[] localKey = new byte[KEY_LENGTH], localSalt = new byte[SALT_LENGTH+2];
 
   public void writeRTP(byte data[], int off, int len) {
-    synchronized(data_output) {
-      if (off == 0 && len == data.length) {
-        data_output.add(data);
-      } else {
-        data_output.add(Arrays.copyOfRange(data, off, off+len));
+    if (rtp.rawMode) {
+      super.writeRTP(data, off, len);
+      return;
+    }
+    if (srtp_out == null) {
+      if (!have_keys) return;  //not ready
+      try {
+        srtp_out = new SRTPContext();
+        srtp_out.setCrypto("AES_CM_128_HMAC_SHA1_80", localKey, localSalt);
+        _tailOut = srtp_out.getAuthTail();
+        srtp_out.deriveKeys(0);
+      } catch (Exception e) {
+        JFLog.log(e);
+        return;
       }
     }
-  }
-
-  protected void processRTP(byte data[], int off, int len) {
-    synchronized(data_input) {
-      if (off == 0 && len == data.length) {
-        data_input.add(data);
-      } else {
-        data_input.add(Arrays.copyOfRange(data, off, off+len));
-      }
-    }
-  }
-
-  private ArrayList<byte[]> data_input = new ArrayList<byte[]>();
-  private ArrayList<byte[]> data_output = new ArrayList<byte[]>();
-
-  public static void initCtx(SSLContext ctx) {
     try {
-      char[] passphrase = "password".toCharArray();
-      KeyStore ks = KeyStore.getInstance("JKS");
-      ks.load(new FileInputStream("dtls.key"), passphrase);
-      KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
-      kmf.init(ks, passphrase);
-      ctx.init(kmf.getKeyManagers(), trustAllCerts, new java.security.SecureRandom());
+      byte payload[] = Arrays.copyOfRange(data, off+12, off + len);
+      int ssrc = BE.getuint32(data, off + 8);
+//      int stamp = BE.getuint32(data, off + 4);
+      int seqno = BE.getuint16(data, off + 2);
+//      if (stream.keyExchange == SDP.KeyExchange.SDP) {
+//        srtp_out.deriveKeys(stamp);  //not used in RFC 5764 (RFC 3711:only needed if kdr != 0)
+//      }
+      _seqno &= 0xffff0000;
+      _seqno |= seqno;
+      encrypt(payload, ssrc, _seqno++);
+      byte packet[] = new byte[len + _tailOut];
+      System.arraycopy(data, off, packet, 0, 12);
+      System.arraycopy(payload, 0, packet, 12, payload.length);
+      appendAuth(packet, srtp_out, seqno);
+      super.writeRTP(packet, 0, packet.length);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
 
-  public class UdpHandshake extends Thread {
-    public SSLEngine ssl;
-    public boolean client;
-    public ByteBuffer intransfer, outtransfer, input, output;
-    public void log(String msg) {
-      _log("handshake", client, msg);
-    }
-    public void run() {
-      try {
-        SSLSession sess = ssl.getSession();
-        int maxAppSize = sess.getApplicationBufferSize();
-        int maxPackSize = sess.getPacketBufferSize();
-        input = ByteBuffer.allocate(maxAppSize + 50);
-        output = ByteBuffer.allocate(maxAppSize + 50);
-        intransfer = ByteBuffer.allocateDirect(maxPackSize * 2);
-        outtransfer = ByteBuffer.allocateDirect(maxPackSize * 2);
-        DatagramPacket dp;
-        SSLEngineResult res;
-        int consumed;
-        int produced;
-        while (true) {
-          log("status=" + ssl.getHandshakeStatus());
-          SSLEngineResult.HandshakeStatus status = ssl.getHandshakeStatus();
-          if (status == SSLEngineResult.HandshakeStatus.NOT_HANDSHAKING) {
-            if (client)
-              status = SSLEngineResult.HandshakeStatus.NEED_WRAP;
-            else
-              status = SSLEngineResult.HandshakeStatus.NEED_UNWRAP;
-          }
-          switch (status) {
-            case NEED_TASK:
-              Runnable runnable;
-              while ((runnable = ssl.getDelegatedTask()) != null) {
-                runnable.run();
-              }
-              break;
-            case NEED_WRAP:
-              res = ssl.wrap(output, outtransfer);
-              if (res.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.FINISHED) {
-                log("done");
-                return;
-              }
-              consumed = res.bytesConsumed();
-              produced = res.bytesProduced();
-              if (produced > 0) {
-                log("rawwrite:" + produced);
-                byte[] out = new byte[produced];
-                outtransfer.flip();
-                if (outtransfer.remaining() != produced) {
-                  throw new Exception("transfer.remaining() != produced");
-                }
-                outtransfer.get(out);
-                SRTPChannel.super.writeRTP(out, 0, out.length);
-              }
-              outtransfer.compact();
-              output.compact();
-              break;
-            case NEED_UNWRAP:
-              byte data[];
-              synchronized(data_input) {
-                if (data_input.size() == 0) break;
-                data = data_input.remove(0);
-              }
-              int length = data.length;
-              if (length > 0) {
-                log("rawread:" + length);
-                intransfer.put(data, 0, length);
-              }
-              intransfer.flip();
-              res = ssl.unwrap(intransfer, input);
-              if (res.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.FINISHED) {
-                log("done");
-                return;
-              }
-              consumed = res.bytesConsumed();
-              produced = res.bytesProduced();
-              intransfer.compact();
-              input.compact();
-              break;
-            case NEED_UNWRAP_AGAIN:
-              intransfer.limit(0);  //intransfer must be empty
-              res = ssl.unwrap(intransfer, input);
-              if (res.getHandshakeStatus() == SSLEngineResult.HandshakeStatus.FINISHED) {
-                log("done");
-                return;
-              }
-              consumed = res.bytesConsumed();
-              produced = res.bytesProduced();
-              intransfer.compact();
-              input.compact();
-              break;
-          }
-        }
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-    }
+  /** Sets keys found in SDP used on this side of SRTP (not used in DTLS mode) */
+  public void setLocalKeys(byte key[], byte salt[]) {
+    System.arraycopy(key, 0, localKey, 0, KEY_LENGTH);
+    System.arraycopy(salt, 0, localSalt, 0, SALT_LENGTH);
+    have_keys = true;
   }
 
-  public class UdpReader extends Thread {
-    public SSLEngine ssl;
-    public boolean client;
-    public ByteBuffer transfer, input;
-    public void log(String msg) {
-      _log("reader", client, msg);
-    }
-    public void run() {
-      try {
-        SSLSession sess = ssl.getSession();
-        int maxAppSize = sess.getApplicationBufferSize();
-        int maxPackSize = sess.getPacketBufferSize();
-        input = ByteBuffer.allocate(maxAppSize + 50);
-        transfer = ByteBuffer.allocateDirect(maxPackSize);
-        int total = 0;
-        DatagramPacket dp;
-        while (true) {
-          byte data[];
-          synchronized(data_input) {
-            if (data_input.size() == 0) break;
-            data = data_input.remove(0);
+  /** Sets keys found in SDP used on other side of SRTP (not used in DTLS mode) */
+  public void setRemoteKeys(byte key[], byte salt[]) {
+    System.arraycopy(key, 0, remoteKey, 0, KEY_LENGTH);
+    System.arraycopy(salt, 0, remoteSalt, 0, SALT_LENGTH);
+    have_keys = true;
+  }
+
+  /** Enables DTLS mode (otherwise you MUST call setServerKeys() AND setClientKeys() before calling start()). */
+  public void setDTLS(boolean server, String local_iceufrag, String local_icepwd) {
+    dtls = true;
+    dtlsServerMode = server;
+    this.local_iceufrag = local_iceufrag;
+    this.local_icepwd = local_icepwd;
+  }
+
+  public boolean start() {
+    JFLog.log("SRTPChannel.start:dtls=" + dtls);
+    if (!super.start()) return false;
+    if (rtp.rawMode) return true;
+    if (!dtls) return have_keys;
+    //create a thread to do STUN/DTLS requests
+    new Thread() {
+      public void run() {
+        while (rtp.active && !stunReceived) {
+          JF.sleep(500);
+          Random r = new Random();
+          byte request[] = new byte[1500];
+          ByteBuffer bb = ByteBuffer.wrap(request);
+          bb.order(ByteOrder.BIG_ENDIAN);
+          int offset = 0;
+          bb.putShort(offset, BINDING_REQUEST);
+          offset += 2;
+          int lengthOffset = offset;
+          bb.putShort(offset, (short)0);  //length (patch later)
+          offset += 2;
+          long id1;
+          id1 = 0x2112a442;  //magic cookie
+          id1 <<= 32;
+          id1 += Math.abs(r.nextInt());
+          bb.putLong(offset, id1);
+          offset += 8;
+          long id2 = r.nextLong();
+          bb.putLong(offset, id2);
+          offset += 8;
+
+          String user = stream.sdp.iceufrag + ":" + local_iceufrag;
+          int strlen = user.length();
+          bb.putShort(offset, USERNAME);
+          offset += 2;
+          bb.putShort(offset, (short)strlen);
+          offset += 2;
+          System.arraycopy(user.getBytes(), 0, request, offset, strlen);
+          offset += strlen;
+          if ((offset & 3) > 0) {
+            offset += 4 - (offset & 3);  //padding
           }
-          int length = data.length;
-          if (length > 0) {
-            int maxRead = transfer.remaining();
-            if (length > maxRead) length = maxRead;
-            log("rawread:" + length);
-            transfer.put(data, 0, length);
+
+          //ICE:PRIORITY (MUST)
+          bb.putShort(offset, PRIORITY);
+          offset += 2;
+          bb.putShort(offset, (short)4);
+          offset += 2;
+          bb.putInt(offset, Math.abs(r.nextInt()));  //TODO : calc this???
+          offset += 4;
+
+          //ICE:ICE_CONTROLLED (MUST)
+          bb.putShort(offset, ICE_CONTROLLED);
+          offset += 2;
+          bb.putShort(offset, (short)8);
+          offset += 2;
+          bb.putLong(offset, r.nextLong());  //random tie-breaker
+          offset += 8;
+
+          bb.putShort(lengthOffset, (short)(offset - 20 + 24));  //patch length (24=MSG_INT)
+
+          byte id[] = STUN.calcMsgIntegrity(request, offset, STUN.calcKey(stream.sdp.icepwd));
+          strlen = id.length;
+          bb.putShort(offset, MESSAGE_INTEGRITY);
+          offset += 2;
+          bb.putShort(offset, (short)strlen);
+          offset += 2;
+          System.arraycopy(id, 0, request, offset, strlen);
+          offset += strlen;
+          if ((offset & 3) > 0) {
+            offset += 4 - (offset & 3);  //padding
           }
-          transfer.flip();
-          SSLEngineResult res;
-          res = ssl.unwrap(transfer, input);
-          int consumed = res.bytesConsumed();
-          int produced = res.bytesProduced();
-          input.flip();
-          if (produced > 0) {
-            byte[] tmp = new byte[produced];
-            input.get(tmp);
-            //TODO : write tmp somewhere (check with client generated data)
-            total += produced;
-            if (total == 1024) break;
+
+          bb.putShort(lengthOffset, (short)(offset - 20 + 8));  //patch length (8=FINGERPRINT)
+
+          //fingerprint
+          bb.putShort(offset, FINGERPRINT);
+          offset += 2;
+          bb.putShort(offset, (short)4);
+          offset += 2;
+          bb.putInt(offset, STUN.calcFingerprint(request, offset - 4));
+          offset += 4;
+
+          bb.putShort(lengthOffset, (short)(offset - 20));  //patch length
+
+          try {
+            if (rtp.useTURN) {
+              rtp.stun1.sendData(turn1ch, request, 0, offset);
+            } else {
+              DatagramPacket dp = new DatagramPacket(request, 0, offset, InetAddress.getByName(stream.getIP()), stream.getPort());
+              rtp.sock1.send(dp);
+            }
+          } catch (Exception e) {
+            JFLog.log(e);
           }
-          transfer.compact();
-          input.compact();
-          if (total == 1024) break;
         }
-        log("done");
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-    }
-  }
-  public class UdpWriter extends Thread {
-    public SSLEngine ssl;
-    public boolean client;
-    public ByteBuffer output, transfer;
-    public UdpReader reader;
-    public void log(String msg) {
-      _log("writer", client, msg);
-    }
-    public void run() {
-      try {
-        SSLSession sess = ssl.getSession();
-        byte tmp[] = new byte[1024];
-        Random r = new Random();
-        r.nextBytes(tmp);
-        output = ByteBuffer.wrap(tmp);
-        transfer = ByteBuffer.allocateDirect(sess.getPacketBufferSize());
-        DatagramPacket dp;
-        int total = 0;
-        while (true) {
-          SSLEngineResult res = ssl.wrap(output, transfer);
-          int consumed = res.bytesConsumed();
-          int produced = res.bytesProduced();
-          if (consumed == 0 && produced == 0) {
-            JF.sleep(10);
-            continue;
-          }
-          transfer.flip();
-          if (produced > 0) {
-            byte[] out = new byte[produced];
-            transfer.get(out);
-            SRTPChannel.super.writeRTP(out, 0, out.length);
-          }
-          if (consumed > 0) {
-            total += consumed;
-            if (total == 1024) break;
-          }
-          output.flip();
-          output.compact();
-          transfer.compact();
+
+        //see https://github.com/bcgit/bc-java/tree/master/core/src/test/java/org/bouncycastle/crypto/tls/test
+
+        try {
+          localhost = InetAddress.getByName("localhost");
+          dtlsSocket = new DatagramSocket(RTP.getnextlocalrtpport());
+          rawSocket = new DatagramSocket(RTP.getnextlocalrtpport());
+          dtlsSocket.connect(localhost, rawSocket.getLocalPort());
+          rawSocket.connect(localhost, dtlsSocket.getLocalPort());
+        } catch (Exception e) {
+          JFLog.log(e);
+          return;
         }
-        log("done");
-      } catch (Exception e) {
-        JFLog.log(e);
+
+        worker = new Worker();
+        worker.start();
+
+        if (!dtlsServerMode) {
+          try {
+            dtlsClient = new DTLSClientProtocol(new SecureRandom());
+          } catch (Exception e) {
+            JFLog.log(e);
+            dtlsClient = null;
+            return;
+          }
+          tlsClient = new DefaultTlsClient2() {
+            protected TlsSession session;
+            public TlsSession getSessionToResume()
+            {
+              return this.session;
+            }
+
+            public ProtocolVersion getClientVersion() {
+              return ProtocolVersion.DTLSv12;
+            }
+
+            public ProtocolVersion getMinimumVersion() {
+              return ProtocolVersion.DTLSv10;
+            }
+
+            public Hashtable getClientExtensions() throws IOException {
+              //see : http://bouncy-castle.1462172.n4.nabble.com/DTLS-SRTP-with-bouncycastle-1-49-td4656286.html
+              Hashtable table = super.getClientExtensions();
+              if (table == null) table = new Hashtable();
+              int[] protectionProfiles = {
+                SRTPProtectionProfile.SRTP_AES128_CM_HMAC_SHA1_80  //this is the only one supported for now
+  //              SRTPProtectionProfile.SRTP_AES128_CM_HMAC_SHA1_32
+  //              SRTPProtectionProfile.SRTP_NULL_HMAC_SHA1_32
+  //              SRTPProtectionProfile.SRTP_NULL_HMAC_SHA1_80
+              };
+              byte mki[] = new byte[0];  //do not use mki
+              UseSRTPData srtpData = new UseSRTPData(protectionProfiles, mki);
+              TlsSRTPUtils.addUseSRTPExtension(table, srtpData);
+              return table;
+            }
+
+            public TlsAuthentication getAuthentication() throws IOException {
+              return new TlsAuthentication() {
+                public void notifyServerCertificate(org.bouncycastle.crypto.tls.Certificate serverCertificate)
+                    throws IOException
+                {
+                  //info only
+                }
+
+                public TlsCredentials getClientCredentials(CertificateRequest certificateRequest)
+                    throws IOException
+                {
+                  short[] certificateTypes = certificateRequest.getCertificateTypes();
+                  if (certificateTypes == null) return null;
+                  boolean ok = false;
+                  for(int a=0;a<certificateTypes.length;a++) {
+                    if (certificateTypes[a] == ClientCertificateType.rsa_sign) {
+                      ok = true;
+                      break;
+                    }
+                  }
+                  if (!ok) return null;
+
+                  SignatureAndHashAlgorithm signatureAndHashAlgorithm = null;
+                  Vector sigAlgs = certificateRequest.getSupportedSignatureAlgorithms();
+                  if (sigAlgs != null)
+                  {
+                    for (int i = 0; i < sigAlgs.size(); ++i)
+                    {
+                      SignatureAndHashAlgorithm sigAlg = (SignatureAndHashAlgorithm) sigAlgs.elementAt(i);
+                      if (sigAlg.getSignature() == SignatureAlgorithm.rsa)
+                      {
+                        signatureAndHashAlgorithm = sigAlg;
+                        break;
+                      }
+                    }
+
+                    if (signatureAndHashAlgorithm == null)
+                    {
+                      return null;
+                    }
+                  }
+
+                  return new DefaultTlsSignerCredentials(context, dtlsCertChain, dtlsPrivateKey, signatureAndHashAlgorithm);
+                }
+              };
+            }
+            public void notifyHandshakeComplete() throws IOException
+            {
+              JFLog.log("SRTPChannel:DTLS:Client:Handshake complete");
+              super.notifyHandshakeComplete();
+
+              TlsSession newSession = context.getResumableSession();
+              if (newSession != null)
+              {
+/*
+                byte[] newSessionID = newSession.getSessionID();
+                String hex = Hex.toHexString(newSessionID);
+
+                if (this.session != null && Arrays.areEqual(this.session.getSessionID(), newSessionID))
+                {
+                  System.out.println("Resumed session: " + hex);
+                }
+                else
+                {
+                  System.out.println("Established session: " + hex);
+                }
+*/
+                this.session = newSession;
+              }
+              getKeys();
+            }
+          };
+          new Thread() {
+            public void run() {
+              try {
+                JFLog.log("SRTPChannel:connecting to DTLS server");
+                dtlsTransport = dtlsClient.connect(tlsClient, new UDPTransport(dtlsSocket, 1500 - 20 - 8));
+              } catch (Exception e) {
+                JFLog.log(e);
+              }
+            }
+          }.start();
+        } else {
+          try {
+            dtlsServer = new DTLSServerProtocol(new SecureRandom());
+          } catch (Exception e) {
+            JFLog.log(e);
+            dtlsServer = null;
+            return;
+          }
+
+          try {
+            tlsServer = new DefaultTlsServer2() {
+              public void notifyClientCertificate(org.bouncycastle.crypto.tls.Certificate clientCertificate)
+                throws IOException
+              {
+                org.bouncycastle.asn1.x509.Certificate[] chain = clientCertificate.getCertificateList();
+    //            JFLog.log("Received client certificate chain of length " + chain.length);
+                for (int i = 0; i != chain.length; i++) {
+                  org.bouncycastle.asn1.x509.Certificate entry = chain[i];
+    //              JFLog.log("fingerprint:SHA-256 " + KeyMgmt.fingerprintSHA256(entry.getEncoded()) + " (" + entry.getSubject() + ")");
+    //              JFLog.log("cert length=" + entry.getEncoded().length);
+                }
+              }
+
+              protected ProtocolVersion getMaximumVersion() {
+                return ProtocolVersion.DTLSv12;
+              }
+
+              protected ProtocolVersion getMinimumVersion() {
+                return ProtocolVersion.DTLSv10;
+              }
+
+              protected TlsEncryptionCredentials getRSAEncryptionCredentials()
+                throws IOException
+              {
+                return new DefaultTlsEncryptionCredentials(context, dtlsCertChain, dtlsPrivateKey);
+              }
+
+              protected TlsSignerCredentials getRSASignerCredentials()
+                throws IOException
+              {
+                SignatureAndHashAlgorithm signatureAndHashAlgorithm = null;
+                Vector sigAlgs = supportedSignatureAlgorithms;
+                if (sigAlgs != null) {
+                  for (int i = 0; i < sigAlgs.size(); ++i) {
+                    SignatureAndHashAlgorithm sigAlg = (SignatureAndHashAlgorithm) sigAlgs.elementAt(i);
+                    if (sigAlg.getSignature() == SignatureAlgorithm.rsa) {
+                      signatureAndHashAlgorithm = sigAlg;
+                      break;
+                    }
+                  }
+
+                  if (signatureAndHashAlgorithm == null) {
+                    return null;
+                  }
+                }
+                return new DefaultTlsSignerCredentials(context, dtlsCertChain, dtlsPrivateKey, signatureAndHashAlgorithm);
+              }
+
+              public Hashtable getServerExtensions() throws IOException {
+                //see : http://bouncy-castle.1462172.n4.nabble.com/DTLS-SRTP-with-bouncycastle-1-49-td4656286.html
+                Hashtable table = super.getServerExtensions();
+                if (table == null) table = new Hashtable();
+                int[] protectionProfiles = {
+    // TODO : need to pick ONE that client offers
+                  SRTPProtectionProfile.SRTP_AES128_CM_HMAC_SHA1_80  //this is the only one supported for now
+    //              SRTPProtectionProfile.SRTP_AES128_CM_HMAC_SHA1_32
+    //              SRTPProtectionProfile.SRTP_NULL_HMAC_SHA1_32
+    //              SRTPProtectionProfile.SRTP_NULL_HMAC_SHA1_80
+                };
+                byte mki[] = new byte[0];  //should match client or use nothing
+                UseSRTPData srtpData = new UseSRTPData(protectionProfiles, mki);
+                TlsSRTPUtils.addUseSRTPExtension(table, srtpData);
+                return table;
+              }
+              public void notifyHandshakeComplete() throws IOException
+              {
+                JFLog.log("SRTPChannel:DTLS:Server:Handshake complete");
+                super.notifyHandshakeComplete();
+                getKeys();
+              }
+            };
+
+            new Thread() {
+              public void run() {
+                try {
+                  JFLog.log("SRTPChannel:accepting from DTLS client");
+                  dtlsTransport = dtlsServer.accept(tlsServer, new UDPTransport(dtlsSocket, 1500 - 20 - 8));
+                } catch (Exception e) {
+                  JFLog.log(e);
+                }
+              }
+            }.start();
+          } catch (Exception e) {
+            JFLog.log(e);
+            dtlsSocket = null;
+            rawSocket = null;
+            return;
+          }
+        }
+        dtlsReady = true;
       }
-    }
-  }
-  public class UdpServer extends Thread {
-    public SSLContext ctx;
-    public SSLSessionContext sessctx;
-    public SSLEngine ssl;
-    public void run() {
-      try {
-        JFLog.log("Server binding on port 1111");
-        ctx = SSLContext.getInstance("DTLS");
-        initCtx(ctx);
-        ssl = ctx.createSSLEngine();
-        ssl.setUseClientMode(false);
-        sessctx = ctx.getServerSessionContext();
-        UdpHandshake handshake = new UdpHandshake();
-        handshake.ssl = ssl;
-        handshake.client = false;
-        handshake.start();
-        handshake.join();
-        UdpReader reader = new UdpReader();
-        reader.ssl = ssl;
-        UdpWriter writer = new UdpWriter();
-        writer.ssl = ssl;
-        writer.reader = reader;
-        reader.start();
-        writer.start();
-        reader.join();
-        writer.join();
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-    }
-  }
-  public class UdpClient extends Thread {
-    public SSLContext ctx;
-    public SSLSessionContext sessctx;
-    public SSLEngine ssl;
-    public void run() {
-      try {
-        JFLog.log("Client binding on port 2222");
-        ctx = SSLContext.getInstance("DTLS");
-        ctx.init(null, trustAllCerts, new java.security.SecureRandom());
-        ssl = ctx.createSSLEngine("localhost", 2222);
-        ssl.setUseClientMode(true);
-        sessctx = ctx.getClientSessionContext();
-        UdpHandshake handshake = new UdpHandshake();
-        handshake.ssl = ssl;
-        handshake.client = true;
-        handshake.start();
-        handshake.join();
-        UdpReader reader = new UdpReader();
-        reader.ssl = ssl;
-        reader.client = true;
-        UdpWriter writer = new UdpWriter();
-        writer.ssl = ssl;
-        writer.client = true;
-        writer.reader = reader;
-        reader.start();
-        writer.start();
-        reader.join();
-        writer.join();
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-    }
+    }.start();
+    return true;
   }
 
   private final static short BINDING_REQUEST = 0x0001;
@@ -514,4 +608,343 @@ public class SRTPChannel extends RTPChannel {
     }
   }
 
+  public static boolean initDTLS(java.util.List<byte []> certChain, byte privateKey[], boolean pkRSA) {
+    try {
+      org.bouncycastle.asn1.x509.Certificate x509certs[] = new org.bouncycastle.asn1.x509.Certificate[certChain.size()];
+      for (int i = 0; i < certChain.size(); ++i) {
+        x509certs[i] = org.bouncycastle.asn1.x509.Certificate.getInstance(certChain.get(i));
+      }
+      dtlsCertChain = new org.bouncycastle.crypto.tls.Certificate(x509certs);
+      if (pkRSA) {
+        RSAPrivateKey rsa = RSAPrivateKey.getInstance(privateKey);
+        dtlsPrivateKey = new RSAPrivateCrtKeyParameters(rsa.getModulus(), rsa.getPublicExponent(),
+          rsa.getPrivateExponent(), rsa.getPrime1(), rsa.getPrime2(), rsa.getExponent1(),
+          rsa.getExponent2(), rsa.getCoefficient());
+      } else {
+        dtlsPrivateKey = PrivateKeyFactory.createKey(privateKey);
+      }
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  //the sharedSecret is the same on each side
+
+  private class DefaultTlsServer2 extends DefaultTlsServer {
+    public void getKeys() {
+      try {
+        sharedSecret = context.exportKeyingMaterial(ExporterLabel.dtls_srtp, null, (KEY_LENGTH + SALT_LENGTH) * 2);
+        if (sharedSecret == null) throw new Exception("null keys");
+      } catch (Exception e) {
+        JFLog.log(e);
+        return;
+      }
+//      printArray("keys", sharedSecret, 0, sharedSecret.length);
+      int offset = 0;
+      System.arraycopy(sharedSecret, offset, remoteKey, 0, KEY_LENGTH);
+      offset += KEY_LENGTH;
+      System.arraycopy(sharedSecret, offset, localKey, 0, KEY_LENGTH);
+      offset += KEY_LENGTH;
+      System.arraycopy(sharedSecret, offset, remoteSalt, 0, SALT_LENGTH);
+      offset += SALT_LENGTH;
+      System.arraycopy(sharedSecret, offset, localSalt, 0, SALT_LENGTH);
+      offset += SALT_LENGTH;
+      have_keys = true;
+    }
+  }
+
+  private abstract class DefaultTlsClient2 extends DefaultTlsClient {
+    public void getKeys() {
+      try {
+        sharedSecret = context.exportKeyingMaterial(ExporterLabel.dtls_srtp, null, (KEY_LENGTH + SALT_LENGTH) * 2);
+        if (sharedSecret == null) throw new Exception("null keys");
+      } catch (Exception e) {
+        JFLog.log(e);
+        return;
+      }
+//      printArray("keys", sharedSecret, 0, sharedSecret.length);
+      int offset = 0;
+      System.arraycopy(sharedSecret, offset, localKey, 0, KEY_LENGTH);
+      offset += KEY_LENGTH;
+      System.arraycopy(sharedSecret, offset, remoteKey, 0, KEY_LENGTH);
+      offset += KEY_LENGTH;
+      System.arraycopy(sharedSecret, offset, localSalt, 0, SALT_LENGTH);
+      offset += SALT_LENGTH;
+      System.arraycopy(sharedSecret, offset, remoteSalt, 0, SALT_LENGTH);
+      offset += SALT_LENGTH;
+      have_keys = true;
+    }
+  }
+
+  protected void processDTLS(byte data[], int off, int len) {
+    if (!dtlsReady) return;  //not ready
+    try {
+      rawSocket.send(new DatagramPacket(data, off, len, localhost, dtlsSocket.getLocalPort()));
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  /** Transfers DTLS packets from rawSocket to rtpSocket */
+  private class Worker extends Thread {
+    public void run() {
+      try {
+        byte data[] = new byte[1500];
+        while (active) {
+          DatagramPacket pack = new DatagramPacket(data, 1500);
+          rawSocket.receive(pack);
+          int len = pack.getLength();
+          int off = 0;
+          if (rtp.useTURN) {
+            rtp.stun1.sendData(turn1ch, data, off, len);
+          } else {
+            rtp.sock1.send(new DatagramPacket(data, off, len, InetAddress.getByName(stream.getIP()), stream.getPort()));
+          }
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+  }
+
+  protected void processRTP(byte data[], int off, int len) {
+    if (rtp.rawMode) {
+      rtp.iface.rtpPacket(this, data, off, len);
+      return;
+    }
+    int firstByte = ((int)data[off]) & 0xff;
+    //see http://tools.ietf.org/html/rfc5764#section-5
+    if (firstByte == 0) {
+      //STUN request
+      processSTUN(data, off, len);
+      return;
+    }
+    if (firstByte == 1) {
+      //STUN response (contents not used)
+      stunReceived = true;
+      return;
+    }
+    if (firstByte > 127 && firstByte < 192) {
+      //SRTP data
+      if (!have_keys) {
+        JFLog.log("SRTPChannel:warn:received SRTP data but keys undefined");
+        return;
+      }
+      if (srtp_in == null) {
+        try {
+          srtp_in = new SRTPContext();
+          srtp_in.setCrypto("AES_CM_128_HMAC_SHA1_80", remoteKey, remoteSalt);
+          _tailIn = srtp_in.getAuthTail();
+          srtp_in.deriveKeys(0);
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
+      }
+      int seqno = BE.getuint16(data, off + 2);
+      int ssrc = BE.getuint32(data, off + 8);
+      long index = getIndex(seqno);
+      updateCounters(seqno, index);
+      if (checkAuth(data, len)) return;
+      if (checkForReplay(index)) return;
+      byte payload[] = Arrays.copyOfRange(data, off + 12, off + len);
+      try {
+        decrypt(payload, ssrc, seqno, index);
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      System.arraycopy(payload, 0, data, off+12, payload.length);
+      super.processRTP(data, off, len - _tailIn);
+      return;
+    }
+    //raw DTLS data (handshaking)
+    if (dtls) processDTLS(data, off, len);
+  }
+
+  private void printArray(String msg, byte data[], int off, int len) {
+    StringBuilder sb = new StringBuilder();
+    int sum = 0;  //crc kinda
+    for(int a=0;a<len;a++) {
+      sb.append(",");
+      sb.append(Integer.toString(((int)data[off + a]) & 0xff, 16));
+      sum += data[off + a];
+    }
+    JFLog.log(msg + "(" + len + ")=" + sb.toString() + "=" + sum);
+  }
+
+  private ByteBuffer getPepper(int ssrc, long idx) {
+    //(SSRC * 2^64) XOR (i * 2^16)
+    ByteBuffer pepper = ByteBuffer.allocate(16);
+    pepper.putInt(4, ssrc);
+    long sindex = idx << 16;
+    pepper.putLong(8, sindex);
+
+    return pepper;
+  }
+
+  private void decrypt(byte[] payload, int ssrc, int seqno, long index) throws GeneralSecurityException {
+    ByteBuffer in = ByteBuffer.wrap(payload);
+    // aes likes the buffer a multiple of 32 and longer than the input.
+    int pl = (((payload.length / 32) + 2) * 32);
+    ByteBuffer out = ByteBuffer.allocate(pl);
+    ByteBuffer pepper = getPepper(ssrc, index);
+    srtp_in.decipher(in, out, pepper);
+    System.arraycopy(out.array(), 0, payload, 0, payload.length);
+  }
+
+  private void encrypt(byte[] payload, int ssrc, long idx) throws GeneralSecurityException {
+    ByteBuffer in = ByteBuffer.wrap(payload);
+    int pl = (((payload.length / 32) + 2) * 32);
+    ByteBuffer out = ByteBuffer.allocate(pl);
+    ByteBuffer pepper = getPepper(ssrc, idx);
+    srtp_out.decipher(in, out, pepper);
+    System.arraycopy(out.array(), 0, payload, 0, payload.length);
+  }
+
+  private void appendAuth(byte[] packet, SRTPContext sc, int seqno) {
+    try {
+      // strictly we might need to derive the keys here too -
+      // since we might be doing auth but no crypt.
+      // we don't support that so nach.
+      Mac mac = sc.getAuthMac();
+      int offs = packet.length - _tailOut;
+      ByteBuffer m = ByteBuffer.allocate(offs + 4);
+      m.put(packet, 0, offs);
+      int oroc = (int) (seqno >>> 16);
+      m.putInt(oroc);
+      m.position(0);
+      mac.update(m);
+      byte[] auth = mac.doFinal();
+      for (int i = 0; i < _tailOut; i++) {
+        packet[offs + i] = auth[i];
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  private final static int SRTPWINDOWSIZE = 64;
+  private long[] _replay = new long[SRTPWINDOWSIZE];
+  private long _windowLeadingEdge = 0;
+
+  private boolean checkForReplay(long _index) {
+    if (_index < _windowLeadingEdge) {
+      // old packet....
+      if ((_windowLeadingEdge - _index) > SRTPWINDOWSIZE) {
+        JFLog.log("SRTPChannel:Replay:packet too old");
+        return true;  //replay
+      }
+      // in window but .... is it a replay ?
+      int tidx = (int) (_index % SRTPWINDOWSIZE);
+      if (_replay[tidx] == _index) {
+        JFLog.log("SRTPChannel:Replay:seen that packet");
+        return true;  //replay
+      }
+    }
+    return false;
+  }
+
+  private boolean checkAuth(byte[] packet, int plen) {
+    try {
+      srtp_in.deriveKeys(0/*_index*/);
+
+      Mac hmac = srtp_in.getAuthMac();
+
+      int alen = _tailIn;
+      int offs = plen - alen;
+      ByteBuffer m = ByteBuffer.allocate(offs + 4);
+      m.put(packet, 0, offs);
+      m.putInt((int) _roc);
+
+      byte[] auth = new byte[alen];
+      System.arraycopy(packet, offs, auth, 0, alen);
+      int mlen = (plen - 12) - alen;
+      m.position(0);
+      hmac.update(m);
+      byte[] mac = hmac.doFinal();
+
+      for (int i = 0; i < alen; i++) {
+        if (auth[i] != mac[i]) {
+          throw new Exception("SRTPChannel:not authorized byte " + i + " does not match");
+        }
+      }
+      return false;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return true;
+    }
+  }
+
+  protected long _roc = 0; // only used for inbound we _know_ the answer for outbound.
+  //roc = rollover counter (counts everytime seqno(16bit) rolls over)
+  protected int _s_l = 0;  // only used for inbound we _know_ the answer for outbound.
+  //s_l = seqno last seen
+
+  long getIndex(int seqno) {
+    long v = _roc; // default assumption
+
+    // detect wrap(s)
+    int diff = seqno - _s_l; // normally we expect this to be 1
+    if (diff < Short.MIN_VALUE) {
+        // large negative offset so
+        v = _roc + 1; // if the old value is more than 2^15 smaller
+        // then we have wrapped
+    }
+    if (diff > Short.MAX_VALUE) {
+        // big positive offset
+        v = _roc - 1; // we  wrapped recently and this is an older packet.
+    }
+    if (v < 0) {
+        v = 0; // trap odd initial cases
+    }
+    /*
+    if (_s_l < 32768) {
+    v = ((seqno - _s_l) > 32768) ? (_roc - 1) % (1 << 32) : _roc;
+    } else {
+    v = ((_s_l - 32768) > seqno) ? (_roc + 1) % (1 << 32) : _roc;
+    }*/
+    long low = (long) seqno;
+    long high = ((long) v << 16);
+    long ret = low | high;
+    return ret;
+  }
+
+  void updateCounters(int seqno, long index) {
+    //SRTPProtocolImpl
+    // note that we have seen it.
+    int tidx = (int) (index % SRTPWINDOWSIZE);
+    _replay[tidx] = index;
+    // and update the leading edge if needed.
+    if (index > _windowLeadingEdge) {
+        _windowLeadingEdge = index;
+    }
+
+    //RTPProtocolImpl
+    // note that we have seen it.
+    int diff = seqno - _s_l; // normally we expect this to be 1
+    if (diff < Short.MIN_VALUE) {
+      // large negative offset so
+      _roc++; // if the old value is more than 2^15 smaller
+      // then we have wrapped
+    }
+    _s_l = seqno;
+  }
 }
+
+/*
+
+Data Flowcharts:
+
+RTP Flow (0x80):
+media <---> SRTPContext <---> rtpSocket
+
+STUN Flow (0x00 or 0x01):
+stun <---> rtpSocket
+
+DTLS Flow (*):
+dtlsSocket <---> rawSocket <---> rtpSocket
+
+NOTE:DTLS:caller=client callee=server
+
+*/

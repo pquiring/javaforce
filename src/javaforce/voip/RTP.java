@@ -22,6 +22,7 @@ public class RTP implements STUN.Listener {
   protected boolean rawMode;
   public Vector<RTPChannel> channels = new Vector<RTPChannel>();
   public static long now = 0;  //this is copied into each RTPChannel as it receives packets
+  private static boolean hasBouncyCastle;
 
   //TURN related data
   protected static boolean useTURN = false;
@@ -37,7 +38,7 @@ public class RTP implements STUN.Listener {
   public final static Codec CODEC_GSM = new Codec("GSM", 3);  //patent expired
   public final static Codec CODEC_G711a = new Codec("PCMA", 8);  //patent expired
   public final static Codec CODEC_G722 = new Codec("G722", 9);  //patent expired
-  public final static Codec CODEC_G729a = new Codec("G729", 18);  //patent expired (Jan 1/2017)
+  public final static Codec CODEC_G729a = new Codec("G729", 18);  //patent encumbered
   public final static Codec CODEC_JPEG = new Codec("JPEG", 26);  //public domain
   public final static Codec CODEC_H263 = new Codec("H263", 34);  //patent expired
   //dynamic ids (96-127)
@@ -46,6 +47,16 @@ public class RTP implements STUN.Listener {
   public final static Codec CODEC_H263_1998 = new Codec("H263-1998", 98);  //patent expired
   public final static Codec CODEC_H263_2000 = new Codec("H263-2000", 99);  //patent expired
   public final static Codec CODEC_RFC2833 = new Codec("telephone-event", 100);
+
+  static {
+    try {
+      Class.forName("org.bouncycastle.crypto.tls.TlsServer");
+      hasBouncyCastle = true;
+    } catch (Exception e) {
+//      JFLog.log(e);
+      JFLog.log("Warning:BouncyCastle not found, SRTP/DTLS not available");
+    }
+  }
 
   public static void enableTURN(String host, String user, String pass) {
     useTURN = true;
@@ -297,14 +308,14 @@ public class RTP implements STUN.Listener {
   /**
    * Create a new RTP channel with a random ssrc id.
    */
-  public RTPChannel createChannel(SDP.Stream stream, boolean server) {
-    return createChannel(-1, stream, server);
+  public RTPChannel createChannel(SDP.Stream stream) {
+    return createChannel(-1, stream);
   }
 
   /**
    * Create a new RTP channel with a specified ssrc id.
    */
-  public RTPChannel createChannel(int ssrc, SDP.Stream stream, boolean server) {
+  public RTPChannel createChannel(int ssrc, SDP.Stream stream) {
     JFLog.log("RTP.createChannel()" + stream.getIP() + ":" + stream.port);
     RTPChannel channel = null;
     switch (stream.profile) {
@@ -314,7 +325,11 @@ public class RTP implements STUN.Listener {
         break;
       case SAVP:
       case SAVPF:
-        channel = new SRTPChannel(this, ssrc, stream, server);
+        if (!hasBouncyCastle) {
+          JFLog.log("RTP:Couldn't create SRTPChannel");
+          return null;
+        }
+        channel = new SRTPChannel(this, ssrc, stream);
         break;
       case UNKNOWN:
         JFLog.log("RTP:Can not create unknown profile");

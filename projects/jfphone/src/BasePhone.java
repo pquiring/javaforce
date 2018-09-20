@@ -26,7 +26,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   public static String version = "1.14";
 
   public void initBasePhone(GUI gui, WindowController wc) {
-    JFLog.init(JF.getUserPath() + "/.jphone.log", true);
+    JFLog.init(JF.getUserPath() + "/.jfphone.log", true);
     this.gui = gui;
     this.wc = wc;
     setLAF();  //must do this before any GUI elements are created
@@ -452,6 +452,15 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     newVstream.addCodec(codec);
     if (pl.srtp) {
       newVstream.profile = SDP.Profile.SAVP;
+      if (vstream.keyExchange == SDP.KeyExchange.SDP) {
+        newVstream.keyExchange = SDP.KeyExchange.SDP;
+        newVstream.addKey("AES_CM_128_HMAC_SHA1_80", genKey(), genSalt());
+      } else {
+        newVstream.keyExchange = SDP.KeyExchange.DTLS;
+        newVstream.sdp.fingerprint = fingerprintSHA256;
+        newVstream.sdp.iceufrag = RTP.genIceufrag();
+        newVstream.sdp.icepwd = RTP.genIcepwd();
+      }
     }
   }
 
@@ -466,6 +475,15 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     newAstream.mode = complementMode(astream.mode);
     if (pl.srtp) {
       newAstream.profile = SDP.Profile.SAVP;
+      if (astream.keyExchange == SDP.KeyExchange.SDP) {
+        newAstream.keyExchange = SDP.KeyExchange.SDP;
+        newAstream.addKey("AES_CM_128_HMAC_SHA1_80", genKey(), genSalt());
+      } else {
+        newAstream.keyExchange = SDP.KeyExchange.DTLS;
+        newAstream.sdp.fingerprint = fingerprintSHA256;
+        newAstream.sdp.iceufrag = RTP.genIceufrag();
+        newAstream.sdp.icepwd = RTP.genIcepwd();
+      }
     }
     String enabledCodecs[] = Settings.current.getAudioCodecs();
     for(int a=0;a<enabledCodecs.length;a++) {
@@ -544,6 +562,15 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     stream.port = pl.audioRTP.getlocalrtpport();
     if (pl.srtp) {
       stream.profile = SDP.Profile.SAVP;
+      if (!pl.dtls) {
+        stream.keyExchange = SDP.KeyExchange.SDP;
+        stream.addKey("AES_CM_128_HMAC_SHA1_80", genKey(), genSalt());
+      } else {
+        stream.keyExchange = SDP.KeyExchange.DTLS;
+        stream.sdp.fingerprint = fingerprintSHA256;
+        stream.sdp.iceufrag = RTP.genIceufrag();
+        stream.sdp.icepwd = RTP.genIcepwd();
+      }
     }
     String enabledCodecs[] = Settings.current.getAudioCodecs();
     for(int a=0;a<enabledCodecs.length;a++) {
@@ -559,6 +586,15 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       stream.port = pl.videoRTP.getlocalrtpport();
       if (pl.srtp) {
         stream.profile = SDP.Profile.SAVP;
+        if (!pl.dtls) {
+          stream.keyExchange = SDP.KeyExchange.SDP;
+          stream.addKey("AES_CM_128_HMAC_SHA1_80", genKey(), genSalt());
+        } else {
+          stream.keyExchange = SDP.KeyExchange.DTLS;
+          stream.sdp.fingerprint = fingerprintSHA256;
+          stream.sdp.iceufrag = RTP.genIceufrag();
+          stream.sdp.icepwd = RTP.genIcepwd();
+        }
       }
       enabledCodecs = Settings.current.getVideoCodecs();
       for(int a=0;a<enabledCodecs.length;a++) {
@@ -605,11 +641,24 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       if (!pl.audioRTP.start()) {
         throw new Exception("RTP.start() failed");
       }
-      if (pl.audioRTP.createChannel(astream, pl.sip.isCaller()) == null) {
+      if (pl.audioRTP.createChannel(astream) == null) {
         throw new Exception("RTP.createChannel() failed");
       }
       if (pl.sdp.getFirstAudioStream().isSecure()) {
         SRTPChannel channel = (SRTPChannel)pl.audioRTP.getDefaultChannel();
+        if (pl.sdp.getFirstAudioStream().keyExchange == SDP.KeyExchange.SDP) {
+          SDP.Stream local = pl.localsdp.getFirstAudioStream();
+          SDP.Key localKey = local.getKey("AES_CM_128_HMAC_SHA1_80");
+          if (localKey == null) throw new Exception("Local SRTP keys not found");
+          channel.setLocalKeys(localKey.key, localKey.salt);
+          SDP.Stream remote = pl.sdp.getFirstAudioStream();
+          SDP.Key remoteKey = remote.getKey("AES_CM_128_HMAC_SHA1_80");
+          if (remoteKey == null) throw new Exception("Remote SRTP keys not found");
+          channel.setRemoteKeys(remoteKey.key, remoteKey.salt);
+        } else {
+          SDP.Stream local = pl.localsdp.getFirstAudioStream();
+          channel.setDTLS(true, local.sdp.iceufrag, local.sdp.icepwd);
+        }
       }
       if (!pl.audioRTP.getDefaultChannel().start()) {
         throw new Exception("RTPChannel.start() failed");
@@ -618,11 +667,24 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         throw new Exception("RTP.start() failed");
       }
       if (vstream != null) {
-        if (pl.videoRTP.createChannel(vstream, pl.sip.isCaller()) == null) {
+        if (pl.videoRTP.createChannel(vstream) == null) {
           throw new Exception("RTP.createChannel() failed");
         }
         if (pl.sdp.getFirstVideoStream().isSecure()) {
           SRTPChannel channel = (SRTPChannel)pl.videoRTP.getDefaultChannel();
+          if (pl.sdp.getFirstVideoStream().keyExchange == SDP.KeyExchange.SDP) {
+            SDP.Stream local = pl.localsdp.getFirstVideoStream();
+            SDP.Key localKey = local.getKey("AES_CM_128_HMAC_SHA1_80");
+            if (localKey == null) throw new Exception("Local SRTP keys not found");
+            channel.setLocalKeys(localKey.key, localKey.salt);
+            SDP.Stream remote = pl.sdp.getFirstVideoStream();
+            SDP.Key remoteKey = remote.getKey("AES_CM_128_HMAC_SHA1_80");
+            if (remoteKey == null) throw new Exception("Remote SRTP keys not found");
+            channel.setRemoteKeys(remoteKey.key, remoteKey.salt);
+          } else {
+            SDP.Stream local = pl.localsdp.getFirstVideoStream();
+            channel.setDTLS(true, local.sdp.iceufrag, local.sdp.icepwd);
+          }
         }
         if (!pl.videoRTP.getDefaultChannel().start()) {
           throw new Exception("RTPChannel.start() failed");
@@ -658,11 +720,24 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       if (!pl.audioRTP.start()) {
         throw new Exception("RTP.start() failed");
       }
-      if (pl.audioRTP.createChannel(astream, pl.sip.isCaller()) == null) {
+      if (pl.audioRTP.createChannel(astream) == null) {
         throw new Exception("RTP.createChannel() failed");
       }
       if (pl.sdp.getFirstAudioStream().isSecure()) {
         SRTPChannel channel = (SRTPChannel)pl.audioRTP.getDefaultChannel();
+        if (pl.sdp.getFirstAudioStream().keyExchange == SDP.KeyExchange.SDP) {
+          SDP.Stream local = pl.localsdp.getFirstAudioStream();
+          SDP.Key localKey = local.getKey("AES_CM_128_HMAC_SHA1_80");
+          if (localKey == null) throw new Exception("Local SRTP keys not found");
+          channel.setLocalKeys(localKey.key, localKey.salt);
+          SDP.Stream remote = pl.sdp.getFirstAudioStream();
+          SDP.Key remoteKey = remote.getKey("AES_CM_128_HMAC_SHA1_80");
+          if (remoteKey == null) throw new Exception("Remote SRTP keys not found");
+          channel.setRemoteKeys(remoteKey.key, remoteKey.salt);
+        } else {
+          SDP.Stream local = pl.localsdp.getFirstAudioStream();
+          channel.setDTLS(false, local.sdp.iceufrag, local.sdp.icepwd);
+        }
       }
       if (!pl.audioRTP.getDefaultChannel().start()) {
         throw new Exception("RTPChannel.start() failed");
@@ -671,8 +746,24 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         throw new Exception("RTP.start() failed");
       }
       if (vstream != null) {
-        if (pl.videoRTP.createChannel(vstream, pl.sip.isCaller()) == null) {
+        if (pl.videoRTP.createChannel(vstream) == null) {
           throw new Exception("RTP.createChannel() failed");
+        }
+        if (pl.sdp.getFirstVideoStream().isSecure()) {
+          SRTPChannel channel = (SRTPChannel)pl.videoRTP.getDefaultChannel();
+          if (pl.sdp.getFirstVideoStream().keyExchange == SDP.KeyExchange.SDP) {
+            SDP.Stream local = pl.localsdp.getFirstVideoStream();
+            SDP.Key localKey = local.getKey("AES_CM_128_HMAC_SHA1_80");
+            if (localKey == null) throw new Exception("Local SRTP keys not found");
+            channel.setLocalKeys(localKey.key, localKey.salt);
+            SDP.Stream remote = pl.sdp.getFirstVideoStream();
+            SDP.Key remoteKey = remote.getKey("AES_CM_128_HMAC_SHA1_80");
+            if (remoteKey == null) throw new Exception("Remote SRTP keys not found");
+            channel.setRemoteKeys(remoteKey.key, remoteKey.salt);
+          } else {
+            SDP.Stream local = pl.localsdp.getFirstVideoStream();
+            channel.setDTLS(false, local.sdp.iceufrag, local.sdp.icepwd);
+          }
         }
         if (!pl.videoRTP.getDefaultChannel().start()) {
           throw new Exception("RTPChannel.start() failed");
@@ -971,7 +1062,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       JFLog.log("newer version is available : " + line);
       java.awt.EventQueue.invokeLater(new Runnable() {
         public void run() {
-          JFAWT.showMessage("Upgrade available", "A newer version of jfPhone is available! (v" + line + ")\r\nPlease goto http://jfphone.sourceforge.net to download it");
+          JFAWT.showMessage("Upgrade available", "A newer version of jfphone is available! (v" + line + ")\r\nPlease goto http://jfphone.sourceforge.net to download it");
         }
       });
     } catch (Exception e) {
@@ -1177,7 +1268,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     }
   }
 
-  /** SIPClientInterface.onInvite() : triggered when server send an INVITE to jfPhone. */
+  /** SIPClientInterface.onInvite() : triggered when server send an INVITE to jfphone. */
 
   public int onInvite(SIPClient sip, String callid, String fromid, String fromnumber, SDP sdp) {
     //NOTE : onInvite() can not change codecs (use SIP.reaccept() to do that)
@@ -1336,7 +1427,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     JFLog.log("Warning : unknown NOTIFY type : " + event);
   }
 
-  /** SIPClientInterface.onAck() : triggered when server send an ACK to jfPhone. */
+  /** SIPClientInterface.onAck() : triggered when server send an ACK to jfphone. */
 
   public void onAck(SIPClient sip, String callid, SDP sdp) {
     if (sdp == null) return;
@@ -1698,9 +1789,14 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
           pl.videoRTP = new RTP();
           pl.videoRTP.start();
         }
-        RTPChannel channel = pl.videoRTP.createChannel(stream, pl.sip.isCaller());
+        RTPChannel channel = pl.videoRTP.createChannel(stream);
         if (channel == null) {
           JFLog.log("RTP.createChannel() failed");
+          continue;
+        }
+        if (stream.isSecure() && pl.sdp.getFirstVideoStream().keyExchange == SDP.KeyExchange.SDP) {
+          //TODO : add crypto keys
+          JFLog.log("Not implemented yet!");
           continue;
         }
         if (!channel.start()) {
@@ -1755,7 +1851,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         chain.add(root.getEncoded());
       }
       privateKey = key.getKEY("jfphone", password).getEncoded();
-//      SRTPChannel.initDTLS(chain, privateKey, false);
+      SRTPChannel.initDTLS(chain, privateKey, false);
     } catch(FileNotFoundException e) {
       //do nothing
     } catch(Exception e) {
