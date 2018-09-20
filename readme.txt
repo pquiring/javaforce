@@ -9,7 +9,7 @@ JavaForce is a Java library extending the capabilities of Java.
 
 The main library includes a VoIP stack and bindings for FFMPEG, OpenGL and Camera.
 
-Includes many apps built around the library such as jPhoneLite, jfVideo Creator, jfAudio, jfMusic, etc.
+Includes many apps built around the library such as jfPhone, jfVideo Creator, jfAudio, jfMusic, etc.
 
 JF is also the core library in the Java infused Linux Operating system : http://jfLinux.sourceforge.net
 
@@ -17,13 +17,13 @@ JF is also used to create jfCraft, a Minecraft clone : http://pquiring.github.io
 
 Projects
 ========
-jPhoneLite - Java VoIP soft phone
+jfPhone - Java VoIP soft phone
 
 jfVideo Creator - video production
 
 jfPaint - multi-tabbed image editor
 
-jPBXlite - Java VoIP PBX
+jfPBX - Java VoIP PBX
 
 jfBroadcast - VoIP Auto Dialer System
 
@@ -70,49 +70,6 @@ jremsi64 : build Windows msi file with JRE bundled (64bit)
 dmg : build Mac dmg file (mac only)
 genisodmg : build Mac dmg file (cygwin/linux/mac) (uncompressed)
 javadoc : create javadoc api help files (open ./javadoc/index.html)
-
-Bundled JRE
------------
-To bundle the JRE with packages you must:
-  - use Java 9 (project jigsaw)
-  - run "ant jre" in main folder
-
-Linux Repo
-----------
-To install the JavaForce repo for linux, follow these commands:
-
-ubuntu/debian:
-  #download JavaForce Repo file
-  ARCH=x86_64
-  cd /etc/apt/sources.list.d
-  if [ ! -f javaforce.list ]; then
-    echo Download javaforce.list
-    wget http://javaforce.sf.net/ubuntu/$ARCH/javaforce.list
-    chmod 644 javaforce.list
-  fi
-  cd /etc/apt/trusted.gpg.d
-  if [ ! -f javaforce.gpg ]; then
-    echo Download javaforce.gpg
-    wget http://javaforce.sf.net/ubuntu/$ARCH/javaforce.gpg
-    chmod 644 javaforce.gpg
-  fi
-  cd /
-
-fedora:
-  #download JavaForce Repo file
-  ARCH=x86_64
-  cd /etc/yum.repos.d
-  if [ ! -f javaforce.repo ]; then
-    echo Download javaforce.repo
-    wget http://javaforce.sf.net/fedora/$ARCH/javaforce.repo
-    chmod 644 javaforce.repo
-  fi
-
-arch:
-  #paste this into /etc/pacman/pacman.conf
-  [javaforce]
-  SigLevel = TrustAll
-  Server = http://javaforce.sourceforge.net/arch/$arch
 
 License
 =======
