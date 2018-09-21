@@ -566,6 +566,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         stream.keyExchange = SDP.KeyExchange.SDP;
         stream.addKey("AES_CM_128_HMAC_SHA1_80", genKey(), genSalt());
       } else {
+        JFLog.log("Using DTLS fingerprint=" + fingerprintSHA256);
         stream.keyExchange = SDP.KeyExchange.DTLS;
         stream.sdp.fingerprint = fingerprintSHA256;
         stream.sdp.iceufrag = RTP.genIceufrag();
@@ -1838,7 +1839,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   protected void initDTLS() {
     char password[] = "password".toCharArray();
     try {
-      FileInputStream fis = new FileInputStream(JF.getUserPath() + "/.jphone.key");
+      FileInputStream fis = new FileInputStream(JF.getUserPath() + "/.jfphone.key");
       KeyMgmt key = new KeyMgmt();
       key.open(fis, password);
       fis.close();

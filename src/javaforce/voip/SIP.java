@@ -551,7 +551,7 @@ public abstract class SIP {
           stream.ip = ip;
         }
       } else if (ln.startsWith("m=")) {
-        //m=audio <port> RTP/<profile> <codecs>
+        //m=audio <port> [UDP/TLS/]RTP/<profile> <codecs>
         if (stream != null) {
           if (stream.content == null) {
             switch (stream.type) {
@@ -572,6 +572,10 @@ public abstract class SIP {
         //parse static codecs
         String f[] = ln.split(" ");
         String p[] = f[2].split("/");
+        if (p[1].startsWith("UDP/TLS/")) {
+          stream.keyExchange = SDP.KeyExchange.DTLS;
+          p[1] = p[1].substring(8);
+        }
         if (p[1].equals("AVP")) {
           stream.profile = SDP.Profile.AVP;
         } else if (p[1].equals("AVPF")) {
@@ -1061,7 +1065,11 @@ public abstract class SIP {
       SDP.Stream stream = sdp.streams[a];
       if (stream.codecs.length == 0) continue;
       Codec rfc2833 = getCodec(stream.codecs, RTP.CODEC_RFC2833);
-      content.append("m=" + stream.getType() + " " + stream.port + " RTP/" + stream.profile);
+      content.append("m=" + stream.getType() + " " + stream.port + " ");
+      if (stream.keyExchange == SDP.KeyExchange.DTLS) {
+        content.append("UDP/TLS/");
+      }
+      content.append("RTP/" + stream.profile);
       for(int b=0;b<stream.codecs.length;b++) {
         content.append(" " + stream.codecs[b].id);
       }
@@ -1077,8 +1085,8 @@ public abstract class SIP {
           System.arraycopy(keys.key, 0, key_salt, 0, 16);
           System.arraycopy(keys.salt, 0, key_salt, 16, 14);
           String keystr = new String(javaforce.Base64.encode(key_salt));
-                                               //keys          | lifetime     | mki:length
-          String ln = keys.crypto + " inline:" + keystr; // + "|2^20";  // + "|1:32";
+                                               //keys      | lifetime| mki:length
+          String ln = keys.crypto + " inline:" + keystr + "|2^48" + "|1:32";
           content.append("a=crypto:" + (c+1) + " ");
           content.append(ln);
           content.append("\r\n");

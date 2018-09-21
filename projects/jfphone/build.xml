@@ -89,9 +89,6 @@
         <include name="jf/license.txt"/>
         <include name="jf/base.*"/>
 
-        <include name="jf/keys/readme.txt"/>
-        <include name="jf/keys/build.xml"/>
-
         <include name="jf/jars/javaforce.jar"/>
         <include name="jf/jars/bouncycastle.jar"/>
 

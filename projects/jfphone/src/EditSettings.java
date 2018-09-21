@@ -1926,7 +1926,7 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel64.setText("dname");
 
-    dname.setText("CN=jphonelite.sourceforge.net, OU=user, O=jphonelite, C=CA");
+    dname.setText("CN=jfphone.sourceforge.net, OU=user, O=jfphone, C=CA");
 
     javax.swing.GroupLayout eKeyLayout = new javax.swing.GroupLayout(eKey);
     eKey.setLayout(eKeyLayout);
@@ -2228,7 +2228,7 @@ public class EditSettings extends javax.swing.JDialog {
   }//GEN-LAST:event_selectOutRingtoneActionPerformed
 
   private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
-    JF.openURL("http://jphonelite.sourceforge.net/help.php");
+    JF.openURL("http://jfphone.sourceforge.net/help.php");
   }//GEN-LAST:event_helpActionPerformed
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -3081,7 +3081,7 @@ public class EditSettings extends javax.swing.JDialog {
   }
 
   private void updateKeyStatus() {
-    String fn = JF.getUserPath() + "/.jphone.key";
+    String fn = JF.getUserPath() + "/.jfphone.key";
     keyStatus.setText("???");
     if (!new File(fn).exists()) {
       keyStatus.setText("file not found");
@@ -3090,11 +3090,11 @@ public class EditSettings extends javax.swing.JDialog {
     KeyMgmt key = new KeyMgmt();
     try {
       key.open(new FileInputStream(fn), "password".toCharArray());
-      if (key.getCRT("jphonelite") == null) {
+      if (key.getCRT("jfphone") == null) {
         keyStatus.setText("missing certificate");
         return;
       }
-      if (key.getKEY("jphonelite", "password".toCharArray()) == null) {
+      if (key.getKEY("jfphone", "password".toCharArray()) == null) {
         keyStatus.setText("missing private key");
         return;
       }
@@ -3109,8 +3109,8 @@ public class EditSettings extends javax.swing.JDialog {
 
   private void genKeys() {
     if (KeyMgmt.keytool(new String[] {
-      "-genkey", "-debug", "-alias", "jphonelite", "-keypass", "password", "-storepass", "password",
-      "-keystore", JF.getUserPath() + "/.jphone.key", "-validity", "3650", "-dname", dname.getText(),
+      "-genkey", "-debug", "-alias", "jfphone", "-keypass", "password", "-storepass", "password",
+      "-keystore", JF.getUserPath() + "/.jfphone.key", "-validity", "3650", "-dname", dname.getText(),
       "-keyalg" , "RSA", "-keysize", "2048"
     })) {
       //"Generated self-signed SSL Certificate";
