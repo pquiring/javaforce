@@ -96,6 +96,7 @@
       <ComponentRef Id="appfiles" />
       <ComponentRef Id="pluginfiles" />
       <ComponentRef Id="soundfiles" />
+      <ComponentGroupRef Id="JRE" />
     </Feature>
   </Product>
 </Wix>
