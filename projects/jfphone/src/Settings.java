@@ -96,7 +96,7 @@ public class Settings {
   }
 
   public static void loadSettings() {
-    String fn = JF.getUserPath() + "/.jphone.xml";
+    String fn = JF.getUserPath() + "/.jfphone.xml";
     try {
       current = new Settings();
       XML xml = new XML();
@@ -150,7 +150,7 @@ public class Settings {
     }
   }
   public static void saveSettings() {
-    String fn = JF.getUserPath() + "/.jphone.xml";
+    String fn = JF.getUserPath() + "/.jfphone.xml";
     try {
       XML xml = new XML();
       xml.setUseUniqueNames(false);

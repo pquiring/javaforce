@@ -1,4 +1,4 @@
-jPhoneLite/1.14
+jPhoneLite/1.15
 
 Java VoIP Audio/Video SoftPhone (SIP)
 http://jphonelite.sourceforge.net

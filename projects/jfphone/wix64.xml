@@ -1,34 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{34b7ff5a-0b9d-4f4c-934c-a9ac08640c05}" Version="1.14" Language="1033" Name="jPhoneLite" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{34b7ff5a-0b9d-4f4c-934c-a9ac08640c05}" Version="1.15" Language="1033" Name="jfPhone" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
 
-    <Icon Id="icon.ico" SourceFile="jphonelite.ico"/>
+    <Icon Id="icon.ico" SourceFile="jfphone.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
 
     <!-- Step 1: Define the directory structure -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
-        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jphonelite"/>
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfphone"/>
       </Directory>
       <Directory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
-<!--        <Directory Id="ApplicationProgramsFolder" Name="jPhoneLite"/> -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfPhone"/> -->
       </Directory>
     </Directory>
 
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{65edc291-9a12-4f6c-844b-0e0258f29ee3}" Win64="yes">
-        <File Id="jphonelite.jar" Source="jphonelite.jar" KeyPath="yes"/>
+        <File Id="jfphone.jar" Source="jfphone.jar" KeyPath="yes"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="bouncycastle.jar" Source="bouncycastle.jar"/>
-        <File Id="jphonelite.exe" Source="jphonelite.exe"/>
+        <File Id="jfphone.exe" Source="jfphone.exe"/>
         <File Id="run.bat" Source="run.bat"/>
         <File Id="jfnative64.dll" Source="jfnative64.dll"/>
+        <File Id="avcodec57.dll" Source="avcodec-57.dll"/>
+        <File Id="avdevice57.dll" Source="avdevice-57.dll"/>
+        <File Id="avfilter6.dll" Source="avfilter-6.dll"/>
+        <File Id="avformat57.dll" Source="avformat-57.dll"/>
+        <File Id="avutil55.dll" Source="avutil-55.dll"/>
+        <File Id="postproc54.dll" Source="postproc-54.dll"/>
+        <File Id="swresample2.dll" Source="swresample-2.dll"/>
+        <File Id="swscale4.dll" Source="swscale-4.dll"/>
       </Component>
     </DirectoryRef>
 
@@ -36,11 +44,11 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{87bc46ee-4e99-449f-9748-f037877b4255}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jPhoneLite" Description="Java VoIP/SIP Phone" Target="[APPLICATIONROOTDIRECTORY]jphonelite.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfPhone" Description="Java VoIP/SIP Phone" Target="[APPLICATIONROOTDIRECTORY]jfphone.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jPhoneLite" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfPhone" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
 
@@ -48,6 +56,7 @@
     <Feature Id="MainApplication" Title="Main Application" Level="1">
       <ComponentRef Id="appfiles" />
       <ComponentRef Id="ApplicationShortcut" />
+      <ComponentGroupRef Id="JRE" />
     </Feature>
   </Product>
 </Wix>

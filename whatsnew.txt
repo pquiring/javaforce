@@ -1,5 +1,11 @@
 What's new...
 
+Sept 21/2018 : JF 17.1.0 released
+  - jfPhone/1.15 released!
+    - minor fixes
+  - jfPBX/0.27 released!
+    - minor fixes
+
 Sept 19/2018 : JF 17.0.0 released
   - new : JFAWT.removeAltGraph()
     - removes AltGraph modifier which was added in Java9

@@ -23,7 +23,7 @@ import javaforce.media.*;
 
 public abstract class BasePhone extends javax.swing.JPanel implements SIPClientInterface, RTPInterface, ActionListener, KeyEventDispatcher {
 
-  public static String version = "1.14";
+  public static String version = "1.15";
 
   public void initBasePhone(GUI gui, WindowController wc) {
     JFLog.init(JF.getUserPath() + "/.jfphone.log", true);
@@ -1871,7 +1871,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   private static JFLockFile lockFile = new JFLockFile();
 
   public static boolean lockFile() {
-    return lockFile.lock(JF.getUserPath() + "/.jphone.lck");
+    return lockFile.lock(JF.getUserPath() + "/.jfphone.lck");
   }
 
   public static void unlockFile() {

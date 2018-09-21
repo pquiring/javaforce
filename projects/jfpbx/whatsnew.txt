@@ -1,5 +1,7 @@
 CHANGELOG
 =========
+9-21-2018 : v0.27 released
+ - minor issues
 7-31-2015 : v0.24 released
  - improved localhost detection
 6-30-2015 : v0.23 released
