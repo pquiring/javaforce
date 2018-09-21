@@ -168,7 +168,7 @@ public class Extensions implements Plugin, DialChain {
           cd.cmd = "CANCEL";
           api.issue(cd, null, false, false);
           SQL sql = new SQL();
-          if (!sql.connect(Service.jdbc)) return;  //ohoh
+          if (!sql.connect(Paths.jdbc)) return;  //ohoh
           //check if ext has voicemail?
           String value = sql.select1value("SELECT value FROM extopts WHERE ext=" + sql.quote(cd.dialed) + " AND id='vm'");
           if ((value != null) && (value.equals("yes"))) {

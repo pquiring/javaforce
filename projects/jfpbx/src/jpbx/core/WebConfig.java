@@ -155,7 +155,7 @@ public class WebConfig implements WebHandler {
 
   public String ValidUser(String user, String passmd5) {
     SQL sql = new SQL();
-    if (!sql.connect(Service.jdbc)) return "Unable to connect to database";
+    if (!sql.connect(Paths.jdbc)) return "Unable to connect to database";
     String res = sql.select1value("SELECT passmd5 FROM users WHERE userid='" + user + "'");
     sql.close();
     if (res == null) return "Database not setup";
@@ -1613,7 +1613,7 @@ public class WebConfig implements WebHandler {
     }
     String args[] = req.getQueryString().split("&");
     SQL sql = new SQL();
-    if (!sql.connect(Service.jdbc)) {
+    if (!sql.connect(Paths.jdbc)) {
       res.write("SQL connection failed".getBytes());
       return;
     }

@@ -17,7 +17,7 @@ public class Main {
   private static String cfg[][];
   public static void shutdownService() {
     SQL sql = new SQL();
-    if (!sql.connect(Service.jdbc)) {
+    if (!sql.connect(Paths.jdbc)) {
       System.out.println("SQL init failed");
       return;
     }
@@ -42,10 +42,10 @@ public class Main {
   }
 
   public static boolean createDB() {
-    if (new File(Service.dbPath + "/jpbxDB/service.properties").exists()) return true;
+    if (new File(Paths.dbPath + "/jfpbx/service.properties").exists()) return true;
     JFLog.log("Creating database...");
     SQL sql = new SQL();
-    if (!sql.connect(Service.jdbc + ";create=true")) return false;
+    if (!sql.connect(Paths.jdbc + ";create=true")) return false;
     sql.execute("CREATE TABLE users (userid VARCHAR(16) PRIMARY KEY NOT NULL, passmd5 VARCHAR(32) NOT NULL)");
     sql.execute("INSERT INTO users (userid, passmd5) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3')");
     sql.close();

@@ -18,6 +18,8 @@ public class Paths {
   public static String logs;  //stores log files
   public static String lib;  //used to store voicemail
   public static String etc;  //used to store WebSecure key
+  public static String dbPath;
+  public static String jdbc = "jdbc:derby:jfpbx";
 
   //NOTE:SQL determines it's own path to use.
 
@@ -42,6 +44,7 @@ public class Paths {
       logs = base + "/logs/";
       lib = base + "/";
       etc = base + "/";
+      dbPath = base;
     } else {
       //Linux
       sounds = "/usr/share/sounds/jpbx/";
@@ -49,7 +52,9 @@ public class Paths {
       logs = "/var/log/jpbx/";
       lib = "/var/lib/jpbx/";
       etc = "/etc/";
+      dbPath = lib;
     }
+    System.setProperty("derby.system.home", dbPath);
     //ensure some folders exist
     new File(logs).mkdirs();
     new File(lib).mkdirs();

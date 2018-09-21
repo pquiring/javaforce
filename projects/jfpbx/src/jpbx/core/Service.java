@@ -11,8 +11,6 @@ import javaforce.jbus.*;
 
 public class Service implements SIPServerInterface, PBXAPI {
 
-  public static String dbPath;
-  public static String jdbc = "jdbc:derby:jpbxDB";
   public static String getVersion() {
     return "0.26";
   }
@@ -29,27 +27,12 @@ public class Service implements SIPServerInterface, PBXAPI {
   public static int sip_port;
 
   public boolean init() {
-    //setup derby.system.home
-    if (JF.isWindows()) {
-      dbPath = System.getenv("ProgramData");  //Win Vista/7/8
-      if (dbPath == null) {
-        dbPath = System.getenv("AllUsersProfile");  //Win 2000/XP/2003
-        if (dbPath == null) {
-          JFLog.log("Failed to find Program Data folder");
-          System.exit(1);
-        }
-      }
-      dbPath += "/jfpbx/";
-    } else {
-      dbPath = "/var/lib";
-    }
-    System.setProperty("derby.system.home", dbPath);
     if (JF.isUnix()) {
       jbusClient = new JBusClient("org.jflinux.service.jfpbx", new JBusMethods());
       jbusClient.start();
     }
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) {
+    if (!sql.connect(Paths.jdbc)) {
       JFLog.log("Failed to connect to database");
       return false;
     }
@@ -165,7 +148,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
   public String getPassword(String ext) {
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) return null;
+    if (!sql.connect(Paths.jdbc)) return null;
     String password = sql.select1value("SELECT pass FROM exts WHERE ext=" + sql.quote(ext));
     sql.close();
     return password;
@@ -179,7 +162,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
   public void onInvite(CallDetailsServer cd, boolean src) {
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) return;
+    if (!sql.connect(Paths.jdbc)) return;
     cd.pid = onInvite(cd, sql, src, cd.pid);
     sql.close();
   }
@@ -201,7 +184,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
   public void onCancel(CallDetailsServer cd, boolean src) {
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) return;
+    if (!sql.connect(Paths.jdbc)) return;
     onCancel(cd, sql, src, cd.pid);
     sql.close();
   }
@@ -217,7 +200,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
   public void onBye(CallDetailsServer cd, boolean src) {
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) return;
+    if (!sql.connect(Paths.jdbc)) return;
     onBye(cd, sql, src, cd.pid);
     sql.close();
   }
@@ -233,7 +216,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
   public void onSuccess(CallDetailsServer cd, boolean src) {
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) return;
+    if (!sql.connect(Paths.jdbc)) return;
     onSuccess(cd,sql,src,cd.pid);
     sql.close();
   }
@@ -249,7 +232,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
   public void onRinging(CallDetailsServer cd, boolean src) {
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) return;
+    if (!sql.connect(Paths.jdbc)) return;
     onRinging(cd, sql, src, cd.pid);
     sql.close();
   }
@@ -265,7 +248,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
   public void onError(CallDetailsServer cd, int code, boolean src) {
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) return;
+    if (!sql.connect(Paths.jdbc)) return;
     onError(cd, sql, code, src, cd.pid);
     sql.close();
   }
@@ -281,7 +264,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
   public void onTrying(CallDetailsServer cd, boolean src) {
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) return;
+    if (!sql.connect(Paths.jdbc)) return;
     onTrying(cd, sql, src, cd.pid);
     sql.close();
   }
@@ -297,7 +280,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
   public void onFeature(CallDetailsServer cd, String cmd, String cmddata, boolean src) {
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) return;
+    if (!sql.connect(Paths.jdbc)) return;
     onFeature(cd, sql, cmd, cmddata, src, cd.pid);
     sql.close();
   }
@@ -633,7 +616,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
   private void registerTrunks() {
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) {
+    if (!sql.connect(Paths.jdbc)) {
       JFLog.log("registerTrunks() SQL connect failed");
       return;
     }
@@ -678,7 +661,7 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
   public String getTrunkRegister(String ip) {
     SQL sql = new SQL();
-    if (!sql.connect(jdbc)) {
+    if (!sql.connect(Paths.jdbc)) {
       JFLog.log("registerTrunks() SQL connect failed");
       return null;
     }

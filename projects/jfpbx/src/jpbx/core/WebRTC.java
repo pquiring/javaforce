@@ -45,7 +45,7 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
         stream.addCodec(RTP.CODEC_G711u);
         stream.ip = "10.1.1.2";
         stream.port = -1;
-        RTPChannel testCH = testRTP.createChannel(stream, true);
+        RTPChannel testCH = testRTP.createChannel(stream);
         testCH.start();
       }
     } catch (Exception e) {

@@ -1,3 +1,3 @@
 @echo off
-java -cp javaforce.jar;bouncycastle.jar;derby.jar;jpbxcore.jar jpbx.core.Main %*
+java -cp javaforce.jar;bouncycastle.jar;derby.jar;jfpbxcore.jar jpbx.core.Main %*
 

@@ -53,7 +53,7 @@
 
   <target name="core" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jfpbxcore.jar" includes="jfpbx/core/*.class" basedir="${build}">
+    <jar destfile="jfpbxcore.jar" includes="jpbx/core/*.class" basedir="${build}">
       <fileset dir="static" includes="*"/>
       <fileset dir="." includes="*.png"/>
       <fileset dir="." includes="*.ico"/>
@@ -65,14 +65,14 @@
 
   <target name="plugins" depends="compile" description="build jar file">
     <!-- Build plugins jar files from class files -->
-    <jar destfile="plugins/extensions.jar" includes="jfpbx/plugins/core/Extensions*.class" basedir="${build}"/>
-    <jar destfile="plugins/trunks.jar" includes="jfpbx/plugins/core/Trunks*.class" basedir="${build}"/>
-    <jar destfile="plugins/voicemail.jar" includes="jfpbx/plugins/core/VoiceMail*.class" basedir="${build}"/>
+    <jar destfile="plugins/extensions.jar" includes="jpbx/plugins/core/Extensions*.class" basedir="${build}"/>
+    <jar destfile="plugins/trunks.jar" includes="jpbx/plugins/core/Trunks*.class" basedir="${build}"/>
+    <jar destfile="plugins/voicemail.jar" includes="jpbx/plugins/core/VoiceMail*.class" basedir="${build}"/>
     <jar destfile="plugins/ivrs.jar">
-      <fileset dir="${build}" includes="jfpbx/plugins/core/IVR*.class"/>
-      <fileset dir="${build}" includes="jfpbx/plugins/core/Conference*.class"/>
+      <fileset dir="${build}" includes="jpbx/plugins/core/IVR*.class"/>
+      <fileset dir="${build}" includes="jpbx/plugins/core/Conference*.class"/>
     </jar>
-    <jar destfile="plugins/queues.jar" includes="jfpbx/plugins/core/Queues*.class" basedir="${build}"/>
+    <jar destfile="plugins/queues.jar" includes="jpbx/plugins/core/Queues*.class" basedir="${build}"/>
   </target>
 
   <target name="jar" depends="core,plugins" description="build everything"/>

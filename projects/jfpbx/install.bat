@@ -1,6 +1,6 @@
 @echo off
 
-echo jPBXlite manual install.
+echo jfPBX manual install.
 echo This will place files into required folders.
 echo Continue?
 pause
@@ -18,21 +18,21 @@ set AppFolder=%ProgramFiles%
 echo AppFolder = %AppFolder%
 echo DataFolder = %DataFolder%
 
-md "%AppFolder%\jpbxlite"
-md "%DataFolder%\jpbxlite"
-md "%DataFolder%\jpbxlite\logs"
-md "%DataFolder%\jpbxlite\lib"
-md "%DataFolder%\jpbxlite\plugins"
-md "%DataFolder%\jpbxlite\sounds\en"
+md "%AppFolder%\jfpbx"
+md "%DataFolder%\jfpbx"
+md "%DataFolder%\jfpbx\logs"
+md "%DataFolder%\jfpbx\lib"
+md "%DataFolder%\jfpbx\plugins"
+md "%DataFolder%\jfpbx\sounds\en"
 
-copy *.jar "%AppFolder%\jpbxlite"
-copy run.bat "%AppFolder%\jpbxlite"
+copy *.jar "%AppFolder%\jfpbx"
+copy run.bat "%AppFolder%\jfpbx"
 	
-copy plugins\*.jar "%DataFolder%\jpbxlite\plugins"
+copy plugins\*.jar "%DataFolder%\jfpbx\plugins"
 
-copy sounds\en\*.wav "%DataFolder%\jpbxlite\sounds\en"
+copy sounds\en\*.wav "%DataFolder%\jfpbx\sounds\en"
 
-echo Install complete! Use "%AppFolder%\jpbxlite\run.bat" to start server.
+echo Install complete! Use "%AppFolder%\jfpbx\run.bat" to start server.
 
 set AppFolder=
 set DataFolder=
