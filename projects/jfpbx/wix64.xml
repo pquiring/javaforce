@@ -32,7 +32,7 @@
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{A1E62DA3-6388-437B-AADD-4FFCCC947D15}" Win64="yes">
         <File Id="jfpbx.exe" Source="jfpbx.exe" KeyPath="yes"/>
-        <File Id="jpbxcore.jar" Source="jpbxcore.jar"/>
+        <File Id="jfpbxcore.jar" Source="jfpbxcore.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="bouncycastle.jar" Source="bouncycastle.jar"/>
         <File Id="derby.jar" Source="derby.jar"/>

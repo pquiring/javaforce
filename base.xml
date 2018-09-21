@@ -114,7 +114,7 @@
     </sequential>
   </macrodef>
 
-  <target name="jremsi" depends="jar,depjars"  description="create msi installer file 64bit">
+  <target name="jremsi" depends="exe,jar,depjars"  description="create msi installer file 64bit">
     <jremsimacro xml="wix64" bits="64"/>
   </target>
 
