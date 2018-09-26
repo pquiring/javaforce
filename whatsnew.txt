@@ -1,5 +1,16 @@
 What's new...
 
+Sept 26/2018 : JF 17.2.0 released
+  - Java 11 support
+    - Since Oracle will no longer release a JRE I've made one available at javaforce.sourceforge.net
+      - basically just package the JDK without the mod files and create required registry keys
+  - jfPasswords/0.19
+    - add JRE to MSI package
+  - jfDataLogger/0.22
+    - new : added csv save function
+  - jfPhone/1.16
+    - fix : version checking function
+
 Sept 21/2018 : JF 17.1.0 released
   - jfPhone/1.15 released!
     - minor fixes
