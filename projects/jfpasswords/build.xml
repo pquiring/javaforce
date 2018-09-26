@@ -3,6 +3,7 @@
   <!-- set global properties for this build -->
   <property name="app" value="jfpasswords"/>
   <property name="home" location="../.."/>
+  <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>

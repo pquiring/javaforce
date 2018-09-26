@@ -254,15 +254,31 @@
                 </Component>
                 <Component class="javax.swing.JToolBar$Separator" name="jSeparator3">
                 </Component>
-                <Component class="javax.swing.JButton" name="logBtn">
+                <Component class="javax.swing.JLabel" name="jLabel5">
                   <Properties>
-                    <Property name="text" type="java.lang.String" value="LogFile"/>
+                    <Property name="text" type="java.lang.String" value="CSV:"/>
+                  </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="csv_log">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Log"/>
                     <Property name="focusable" type="boolean" value="false"/>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
                     <Property name="verticalTextPosition" type="int" value="3"/>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="logBtnActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="csv_logActionPerformed"/>
+                  </Events>
+                </Component>
+                <Component class="javax.swing.JButton" name="csv_save">
+                  <Properties>
+                    <Property name="text" type="java.lang.String" value="Save"/>
+                    <Property name="focusable" type="boolean" value="false"/>
+                    <Property name="horizontalTextPosition" type="int" value="0"/>
+                    <Property name="verticalTextPosition" type="int" value="3"/>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="csv_saveActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JToolBar$Separator" name="jSeparator6">

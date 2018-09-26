@@ -14,7 +14,7 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.21";
+  public static String version = "0.22";
 
   public static int delays[] = new int[] {
     5, 10, 25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
@@ -77,7 +77,9 @@ public class App extends javax.swing.JFrame {
     jSeparator5 = new javax.swing.JToolBar.Separator();
     clear = new javax.swing.JButton();
     jSeparator3 = new javax.swing.JToolBar.Separator();
-    logBtn = new javax.swing.JButton();
+    jLabel5 = new javax.swing.JLabel();
+    csv_log = new javax.swing.JButton();
+    csv_save = new javax.swing.JButton();
     jSeparator6 = new javax.swing.JToolBar.Separator();
     jLabel4 = new javax.swing.JLabel();
     saveImage = new javax.swing.JButton();
@@ -229,16 +231,30 @@ public class App extends javax.swing.JFrame {
     jToolBar3.add(clear);
     jToolBar3.add(jSeparator3);
 
-    logBtn.setText("LogFile");
-    logBtn.setFocusable(false);
-    logBtn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-    logBtn.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-    logBtn.addActionListener(new java.awt.event.ActionListener() {
+    jLabel5.setText("CSV:");
+    jToolBar3.add(jLabel5);
+
+    csv_log.setText("Log");
+    csv_log.setFocusable(false);
+    csv_log.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    csv_log.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    csv_log.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        logBtnActionPerformed(evt);
+        csv_logActionPerformed(evt);
       }
     });
-    jToolBar3.add(logBtn);
+    jToolBar3.add(csv_log);
+
+    csv_save.setText("Save");
+    csv_save.setFocusable(false);
+    csv_save.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    csv_save.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    csv_save.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        csv_saveActionPerformed(evt);
+      }
+    });
+    jToolBar3.add(csv_save);
     jToolBar3.add(jSeparator6);
 
     jLabel4.setText("Image:");
@@ -403,9 +419,9 @@ public class App extends javax.swing.JFrame {
     }
   }//GEN-LAST:event_formWindowClosing
 
-  private void logBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logBtnActionPerformed
-    logFile();
-  }//GEN-LAST:event_logBtnActionPerformed
+  private void csv_logActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csv_logActionPerformed
+    csv_log();
+  }//GEN-LAST:event_csv_logActionPerformed
 
   private void load_dataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_load_dataActionPerformed
     load_data();
@@ -439,6 +455,10 @@ public class App extends javax.swing.JFrame {
     update_position(evt.getX());
   }//GEN-LAST:event_imgMousePressed
 
+  private void csv_saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_csv_saveActionPerformed
+    csv_save();
+  }//GEN-LAST:event_csv_saveActionPerformed
+
   /**
    * @param args the command line arguments
    */
@@ -455,6 +475,8 @@ public class App extends javax.swing.JFrame {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton add;
   private javax.swing.JButton clear;
+  private javax.swing.JButton csv_log;
+  private javax.swing.JButton csv_save;
   private javax.swing.JButton delete;
   private javax.swing.JButton edit;
   private javax.swing.JLabel img;
@@ -462,6 +484,7 @@ public class App extends javax.swing.JFrame {
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JScrollPane jScrollPane1;
@@ -479,7 +502,6 @@ public class App extends javax.swing.JFrame {
   private javax.swing.JList<String> list;
   private javax.swing.JButton load;
   private javax.swing.JButton load_data;
-  private javax.swing.JButton logBtn;
   private javax.swing.JButton newProject;
   private javax.swing.JButton run;
   private javax.swing.JButton save;
@@ -917,14 +939,42 @@ public class App extends javax.swing.JFrame {
     dialog.setVisible(true);
   }
 
-  public void logFile() {
+  public void csv_log() {
     if (logFile == null) {
       logFile = JFAWT.getSaveAsFile(JF.getCurrentPath(), csv_filters);
       if (logFile == null) return;
       if (!logFile.toLowerCase().endsWith(".csv")) {
         logFile += ".csv";
       }
-      logBtn.setText("LogFile*");
+      csv_log.setText("Log*");
+    } else {
+      logFile = null;
+      csv_log.setText("Log");
+    }
+  }
+
+  public void csv_save() {
+    String file = JFAWT.getSaveAsFile(JF.getCurrentPath(), csv_filters);
+    if (file == null) return;
+    if (!file.toLowerCase().endsWith(".csv")) {
+      file += ".csv";
+    }
+    int rows = tableModel.getRowCount();
+    int cols = tableModel.getColumnCount();
+    StringBuilder sb = new StringBuilder();
+    for(int row=0;row<rows;row++) {
+      for(int col=0;col<cols;col++) {
+        if (col > 0) sb.append(",");
+        sb.append((String)tableModel.getValueAt(row, col));
+      }
+      sb.append("\r\n");
+    }
+    try {
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(sb.toString().getBytes("UTF-8"));
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
 
@@ -1016,7 +1066,7 @@ public class App extends javax.swing.JFrame {
     } else {
       worker.cancel();
       if (logFile != null) {
-        logBtn.setText("LogFile");
+        csv_log.setText("LogFile");
         logFile = null;
       }
     }
@@ -1029,7 +1079,7 @@ public class App extends javax.swing.JFrame {
     add.setEnabled(!running);
     edit.setEnabled(!running);
     delete.setEnabled(!running);
-    logBtn.setEnabled(!running);
+    csv_log.setEnabled(!running);
     settings.setEnabled(!running);
   }
 

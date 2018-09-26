@@ -1,3 +1,7 @@
+Sept 26/2018 : v0.22 released
+  - new : added CSV Save button
+    - log saves while running
+
 Aug 1/2018 : v0.21 released
   - new : can now record from microphone
 
