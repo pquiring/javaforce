@@ -13,7 +13,7 @@ import java.util.*;
 
 public class jheat {
   private static void usage() {
-    System.out.println("Usage:jheat JAVA_HOME [win32|win64]");
+    System.out.println("Usage:jheat JAVA_HOME [win32|win64] [--base=folder]");
     System.exit(1);
   }
 
@@ -26,6 +26,7 @@ public class jheat {
   private static ArrayList<String> wixfolders = new ArrayList<String>();
   private static ArrayList<Entry> wixfiles = new ArrayList<Entry>();
   private static boolean win64;
+  private static String base_folder = "jre";
 
   private static void outHeader() {
     out.append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
@@ -46,7 +47,7 @@ public class jheat {
     for(int a=0;a<files.length;a++) {
       String name = files[a].getName();
       if (files[a].isDirectory()) {
-        if (files[a].getName().equals("legal")) continue;  //skip legal folder
+        if (files[a].getName().equals("jmods")) continue;  //skip jmods folder
         addFolder(path, path + "/" + name);
       } else {
 //        System.out.println("File:" + path + ":" + name);
@@ -59,7 +60,7 @@ public class jheat {
   }
 
   private static void outFolder(String parent, String name, String path) {
-    if (name.equals("")) name = "jre";  //base folder
+    if (name.equals("")) name = base_folder;  //base folder
     String id = path.replaceAll("/", "_");
     String did = "dir_" + id;
     String pid = parent.replaceAll("/", "_");
@@ -121,8 +122,14 @@ public class jheat {
     //create jvm.xml
     out = new StringBuilder();
     java_home = args[0].replaceAll("\\\\", "/");
-    if (args.length > 1 && args[1].equals("win64")) {
-      win64 = true;
+    for(int a=1;a<args.length;a++) {
+      switch (args[a]) {
+        case "win64": win64 = true; break;
+      }
+      if (args[a].startsWith("--base=")) {
+        base_folder = args[a].substring(7).replaceAll("\\\\", "/");
+        System.out.println("jheat : base=" + base_folder);
+      }
     }
     if (!java_home.endsWith("/")) {
       java_home += "/";
