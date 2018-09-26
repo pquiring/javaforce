@@ -1,0 +1,8 @@
+REGEDIT4
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft\Java Runtime Environment]
+"CurrentVersion"="11"
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft\Java Runtime Environment\11]
+"JavaHome"="C:\\Program Files\\Java\\jdk-11"
+"RuntimeLib"="C:\\Program Files\\Java\\jdk-11\\bin\\server\\jvm.dll"

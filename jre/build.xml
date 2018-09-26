@@ -1,0 +1,35 @@
+<project name="jre" default="msi" basedir=".">
+  <description>jre</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jre"/>
+  <property name="home" location=".."/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property environment="env"/>
+  <property name="jre" location="${env.JAVA_HOME}"/>
+  <property name="version" value="11.0"/>
+  <property name="jheat" value="--base=."/>
+
+  <target name="depjars"></target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" target="1.8" source="1.8" debug="true" includeantruntime="false">
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
+      <manifest>
+        <attribute name="Main-Class" value="jre"/>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="javaforce.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <import file="../base.xml"/>
+</project>
