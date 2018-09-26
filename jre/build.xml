@@ -10,7 +10,16 @@
   <property name="version" value="11.0"/>
   <property name="jheat" value="--base=."/>
 
-  <target name="depjars"></target>
+  <target name="depjars">
+    <jar destfile="javaforce.jar">
+      <zipfileset src="../jars/javaforce.jar"/>
+      <manifest>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="javaforce.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
 
   <target name="compile" depends="depjars" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
