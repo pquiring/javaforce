@@ -18,7 +18,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <copy file="jfdmg" todir="/usr/bin"/>
-    <chmod file="/usr/bin/jfdmg" perm="+x"/>
+    <copy file="jfdmg" todir="/usr/local/bin"/>
+    <chmod file="/usr/local/bin/jfdmg" perm="+x"/>
   </target>
 </project>
