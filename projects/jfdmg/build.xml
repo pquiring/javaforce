@@ -12,6 +12,10 @@
 
   <target name="jar"/>
 
+  <target name="help">
+    <echo>Run 'sudo ant install' to install jfdmg.</echo>
+  </target>
+
   <!-- sudo ant install -->
   <target name="install" description="install files">
     <copy file="jfdmg" todir="/usr/bin"/>
