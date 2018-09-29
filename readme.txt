@@ -63,12 +63,13 @@ install : install files into proper folders (Linux only)
  - example : "sudo ant install -Dbits=32"
 deb : build Ubuntu deb file (after install)
 rpm : build Fedora rpm file (after install)
- - linux packaging requires files.lst
+ - linux packaging requires files.lst and linux stub (/stubs/linux)
 msi : build Windows msi file with JRE bundled (64bit)
 msinojre : build Windows msi file without JRE bundled (64bit)
  - msi creation requires 
   - wix64.xml file
   - jre prep for native packaging (see below)
+  - windows stub created (/stubs/windows)
 dmg : build Mac dmg file using hdiutil (mac only)
 genisodmg : build Mac dmg file using geniso (cygwin/linux/mac) (uncompressed)
  - dmg creation requires 
@@ -77,6 +78,7 @@ genisodmg : build Mac dmg file using geniso (cygwin/linux/mac) (uncompressed)
   - Info.plist, ${app}.icns and macfiles.lst
   - see projects/jfedit for only example
   - jimgconvert can convert images to .icns file format (mac icons)
+  - mac stub created (/stubs/mac)
 javadoc : create javadoc api help files (open ./javadoc/index.html)
 
 JavaForce Ant tasks:
