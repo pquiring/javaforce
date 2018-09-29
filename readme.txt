@@ -65,8 +65,13 @@ deb : build Ubuntu deb file (after install)
 rpm : build Fedora rpm file (after install)
 msi : build Windows msi file with JRE bundled (64bit)
 msinojre : build Windows msi file without JRE bundled (64bit)
-dmg : build Mac dmg file (mac only)
-genisodmg : build Mac dmg file (cygwin/linux/mac) (uncompressed)
+dmg : build Mac dmg file using hdiutil (mac only)
+genisodmg : build Mac dmg file using geniso (cygwin/linux/mac) (uncompressed)
+  - dmg generation requires 
+    - /projects/jfdmg installed (sudo ant install)
+    - Info.plist, ${app}.icns and macfiles.lst
+    - see projects/jfedit for only example
+    - jimgconvert can convert to .icns file format
 javadoc : create javadoc api help files (open ./javadoc/index.html)
 
 License
