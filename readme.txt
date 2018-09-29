@@ -63,16 +63,27 @@ install : install files into proper folders (Linux only)
  - example : "sudo ant install -Dbits=32"
 deb : build Ubuntu deb file (after install)
 rpm : build Fedora rpm file (after install)
+ - linux packaging requires files.lst
 msi : build Windows msi file with JRE bundled (64bit)
 msinojre : build Windows msi file without JRE bundled (64bit)
+ - msi creation requires 
+  - wix64.xml file
+  - jre prep for native packaging (see below)
 dmg : build Mac dmg file using hdiutil (mac only)
 genisodmg : build Mac dmg file using geniso (cygwin/linux/mac) (uncompressed)
-  - dmg generation requires 
-    - /projects/jfdmg installed (sudo ant install)
-    - Info.plist, ${app}.icns and macfiles.lst
-    - see projects/jfedit for only example
-    - jimgconvert can convert to .icns file format
+ - dmg creation requires 
+  - /projects/jfdmg installed (sudo ant install)
+  - jre prep for native packaging (see below)
+  - Info.plist, ${app}.icns and macfiles.lst
+  - see projects/jfedit for only example
+  - jimgconvert can convert images to .icns file format (mac icons)
 javadoc : create javadoc api help files (open ./javadoc/index.html)
+
+JavaForce Ant tasks:
+--------------------
+jre-base : prep JRE for creating native packages (msi, dmg)
+jre-base-desktop : prep JRE with desktop support
+jre-base-javac : prep JRE with java compiler support
 
 License
 =======
