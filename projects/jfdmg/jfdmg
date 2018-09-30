@@ -39,16 +39,15 @@ if [ ! -f $PLIST ]; then error "$PLIST not found"; fi
 if [ ! -f $ICNS ]; then error "$ICNS not found"; fi
 if [ ! -f $FILES ]; then error "$FILES not found"; fi
 
-#build folder layout
-tar cjf data.tar.bz2 -T $FILES $JRE
+ln -s $JRE ./jre
+tar cjf data.tar.bz2 -T $FILES jre
+rm ./jre
 mkdir -p /tmp/dmg.tmp/$1.app/Contents/Resources
 mkdir -p /tmp/dmg.tmp/$1.app/Contents/MacOS
 tar xjf data.tar.bz2 -C /tmp/dmg.tmp/$1.app/Contents/MacOS
 
 cp $PLIST /tmp/dmg.tmp/$1.app/Contents
 cp $ICNS /tmp/dmg.tmp/$1.app/Resources
-
-echo OUTPUT=%1
 
 #build $1
 if [ "$GENISO" = "false" ]; then
