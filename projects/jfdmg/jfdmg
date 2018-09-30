@@ -40,7 +40,7 @@ if [ ! -f $ICNS ]; then error "$ICNS not found"; fi
 if [ ! -f $FILES ]; then error "$FILES not found"; fi
 
 ln -s $JRE ./jre
-tar cjf data.tar.bz2 -T $FILES jre
+tar cjfh data.tar.bz2 -T $FILES jre
 rm ./jre
 mkdir -p /tmp/dmg.tmp/$1.app/Contents/Resources
 mkdir -p /tmp/dmg.tmp/$1.app/Contents/MacOS
