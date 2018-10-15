@@ -22,7 +22,7 @@
         <File Id="readme.txt" Source="readme.txt"/>
         <ProgId Id="jar" Description="Java Archive" Advertise="no">
           <Extension Id="jar" ContentType="archive/java">
-            <Verb Id="open" Command="Open" Argument='"%1"' TargetFile="javaw_exe" />
+            <Verb Id="open" Command="Open" Argument='-jar "%1"' TargetFile="javaw_exe" />
           </Extension>
         </ProgId>
 <!--        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\jar\shell\open" Name="FriendlyAppName" Value="Java Archive" Type="string" />  -->
