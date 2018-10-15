@@ -96,7 +96,12 @@ public class jheat {
       } else {
         src = e.path + "/" + e.file;
       }
-      out.append("<File Id=\"_" + fileid++ + "\" Source=\"" + src + "\" />\n");
+      String fid = "_" + fileid++;
+      switch (src) {
+        case "bin/java.exe": fid = "java_exe"; break;
+        case "bin/javaw.exe": fid = "javaw_exe"; break;
+      }
+      out.append("<File Id=\"" + fid + "\" Source=\"" + src + "\" />\n");
     }
     out.append("        </Component>\n");
     out.append("    </DirectoryRef>\n");

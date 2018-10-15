@@ -1,5 +1,8 @@
 What's new...
 
+Oct 15/2018 : JRE 11-2
+  - new : JRE-11 : added .jar file association to javaw.exe in wix config
+
 Sept 26/2018 : JF 17.2.0 released
   - Java 11 support
     - Since Oracle will no longer release a JRE I've made one available at javaforce.sourceforge.net

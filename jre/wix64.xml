@@ -20,6 +20,12 @@
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{1A3F6222-1236-4529-A270-0EFA2F14D182}" Win64="yes">
         <File Id="readme.txt" Source="readme.txt"/>
+        <ProgId Id="jar" Description="Java Archive" Advertise="no">
+          <Extension Id="jar" ContentType="archive/java">
+            <Verb Id="open" Command="Open" Argument='"%1"' TargetFile="javaw_exe" />
+          </Extension>
+        </ProgId>
+<!--        <RegistryValue Root="HKLM" Key="SOFTWARE\Classes\jar\shell\open" Name="FriendlyAppName" Value="Java Archive" Type="string" />  -->
       </Component>
     </DirectoryRef>
 
