@@ -1,6 +1,6 @@
 //Java Launcher Win32/64
 
-// version 1.7
+// version 1.8
 // - supports passing command line options to java main()
 // - loads CLASSPATH and MAINCLASS from PE-EXE resource
 // - globbs arguments (see ExpandStringArray())
@@ -388,7 +388,9 @@ int findJavaHomeRegistry() {
   //try to find JRE in Registry
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\JRE", 0, KEY_READ, &key) != 0) {
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Runtime Environment", 0, KEY_READ, &key) != 0) {
-      return 0;
+      if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\JDK", 0, KEY_READ, &key) != 0) {
+        return 0;
+      }
     }
   }
 
