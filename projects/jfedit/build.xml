@@ -93,11 +93,7 @@
     </sequential>
   </macrodef>
 
-  <target name="console32" depends="jar" description="build exe for utils 32bit">
-    <utilsmacro app="jfedit" bits="32"/>
-  </target>
-
-  <target name="console64" depends="jar" description="build exe for utils 32bit">
+  <target name="console" depends="jar" description="build exe for utils">
     <utilsmacro app="jfedit" bits="64"/>
   </target>
 
