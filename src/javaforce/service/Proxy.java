@@ -27,6 +27,8 @@ package javaforce.service;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import javax.net.ssl.*;
+import java.security.*;
 
 import javaforce.*;
 import javaforce.jbus.*;
@@ -48,12 +50,16 @@ public class Proxy extends Thread {
   }
 
   private ServerSocket ss;
-  private Vector<Session> list = new Vector<Session>();
-  private ArrayList<String> blockedDomain = new ArrayList<String>();
-  private ArrayList<URLChange> urlChanges = new ArrayList<URLChange>();
-  private ArrayList<Integer> allow_net = new ArrayList<Integer>();
-  private ArrayList<Integer> allow_mask = new ArrayList<Integer>();
-  private int port = 3128;
+  private static Vector<Session> list = new Vector<Session>();
+  private static ArrayList<String> blockedDomain = new ArrayList<String>();
+  private static ArrayList<URLChange> urlChanges = new ArrayList<URLChange>();
+  private static ArrayList<Integer> allow_net = new ArrayList<Integer>();
+  private static ArrayList<Integer> allow_mask = new ArrayList<Integer>();
+  private static int port = 3128;
+  private static int nextSSLport = 8081;
+  private static boolean filtersecure = false;
+  private static HashMap<String, SecureSite> secureSites = new HashMap<String,SecureSite>();
+  private static String keyPath = ".jfproxy.keys";
 
   public void close() {
     JFLog.logTrace("proxy.close()");
@@ -67,6 +73,25 @@ public class Proxy extends Thread {
       sess = list.get(0);
       sess.close();
     }
+    if (filtersecure) {
+      SecureSite ssList[] = secureSites.values().toArray(new SecureSite[0]);
+      for(int a=0;a<ssList.length;a++) {
+        ssList[a].close();
+      }
+      secureSites.clear();
+      deleteKeys();
+    }
+  }
+
+  public void deleteKeys() {
+    //delete all temp files in ~/.jfproxy.keys
+    File files[] = new File(keyPath).listFiles();
+    if (files != null) {
+      for(int a=0;a<files.length;a++) {
+        if (files[a].getName().startsWith("localhost.")) continue;
+        files[a].delete();
+      }
+    }
   }
 
   public void run() {
@@ -77,6 +102,49 @@ public class Proxy extends Thread {
     busClient = new JBusClient(busPack, new JBusMethods());
     busClient.setPort(getBusPort());
     busClient.start();
+    if (filtersecure) {
+      JFLog.log("Setting up secure server...");
+      keyPath = JF.getConfigPath() + "/jfproxy";
+      new File(keyPath).mkdir();
+      deleteKeys();
+      if (!new File(keyPath + "/localhost.key").exists()) {
+        keytool(new String[] {
+          "-genkeypair",
+          "-alias",
+          "localhost",
+          "-keystore",
+          "localhost.key",
+          "-storepass",
+          "password",
+          "-keypass",
+          "password",
+          "-keyalg",
+          "RSA",
+          "-dname",
+          "CN=localhost, OU=JavaForce, O=JavaForce, C=CA",
+          "-validity",
+          "3650",
+          "-ext",
+          "KeyUsage=digitalSignature,keyEncipherment,keyCertSign,codeSigning",
+          "-ext",
+          "ExtendedKeyUsage=serverAuth,clientAuth",
+          "-ext",
+          "BasicConstraints=ca:true,pathlen:3",
+        });
+        keytool(new String[] {
+          "-exportcert",
+          "-alias",
+          "localhost",
+          "-keystore",
+          "localhost.key",
+          "-storepass",
+          "password",
+          "-file",
+          "localhost.crt"
+        });
+      }
+//      initSSL();
+    }
     //try to bind to port 5 times (in case restart() takes a while)
     for(int a=0;a<5;a++) {
       try {
@@ -90,14 +158,34 @@ public class Proxy extends Thread {
     }
     try {
       JFLog.log("Starting proxy on port " + port);
-      //read newJS
       while (!ss.isClosed()) {
         s = ss.accept();
-        sess = new Session(s);
+        sess = new Session(s, false);
         sess.start();
       }
     } catch (Exception e) {
       JFLog.log(e);
+    }
+  }
+
+  /** Executes keytool directly */
+  public static boolean keytool(String args[]) {
+    ArrayList<String> cmd = new ArrayList<String>();
+    try {
+      if (JF.isWindows()) {
+        cmd.add(System.getProperty("java.home") + "\\bin\\keytool.exe");
+      } else {
+        cmd.add(System.getProperty("java.home") + "/bin/keytool");
+      }
+      for(int a=0;a<args.length;a++) {
+        cmd.add(args[a]);
+      }
+      Process p = Runtime.getRuntime().exec(cmd.toArray(new String[0]), null, new File(keyPath));
+      p.waitFor();
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
     }
   }
 
@@ -147,6 +235,9 @@ public class Proxy extends Thread {
             if (ln.startsWith("port=")) {
               port = JF.atoi(ln.substring(5));
             }
+            if (ln.startsWith("filtersecure=")) {
+              filtersecure = ln.substring(13).equals("true");
+            }
             if (ln.startsWith("allow=")) {
               String net_mask = ln.substring(6);
               idx = net_mask.indexOf("/");
@@ -190,7 +281,7 @@ public class Proxy extends Thread {
     }
   }
 
-  private int ba2int(byte ba[]) {
+  private static int ba2int(byte ba[]) {
     int ret = 0;
     for(int a=0;a<4;a++) {
       ret <<= 8;
@@ -199,7 +290,7 @@ public class Proxy extends Thread {
     return ret;
   }
 
-  private int getIP(String ip) {
+  private static int getIP(String ip) {
     String p[] = ip.split("[.]");
     byte o[] = new byte[4];
     for(int a=0;a<4;a++) {
@@ -220,13 +311,193 @@ public class Proxy extends Thread {
     return ret;
   }
 
-  private class Session extends Thread {
+  private static void initSSL() {
+    try {
+      TrustManager[] trustAllCerts = new TrustManager[] {
+        new X509TrustManager() {
+          public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+            return null;
+          }
+          public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+          public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+        }
+      };
+      // Let us create the factory where we can set some parameters for the connection
+      SSLContext gsc = SSLContext.getInstance("SSL");
+
+      KeyStore ks = KeyStore.getInstance("JKS");
+      ks.load(new FileInputStream(keyPath + "/localhost.key"), "password".toCharArray());
+      KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+      kmf.init(ks, "password".toCharArray());
+
+      gsc.init(kmf.getKeyManagers(), trustAllCerts, new java.security.SecureRandom());
+      SSLSocketFactory socketFactory = (SSLSocketFactory) gsc.getSocketFactory();  //this method will work with untrusted certs
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static int getSSLPort(String host) {
+    if (host.equals("localhost")) return -1;  //should not happen
+    if (host.equals("127.0.0.1")) return -1;  //should not happen
+    SecureSite secureSite;
+    synchronized(secureSites) {
+      secureSite = secureSites.get(host);
+      if (secureSite != null) {
+        return secureSite.port;
+      }
+      JFLog.log("Creating new SSL site:" + host);
+      secureSite = new SecureSite(host, nextSSLport++);
+      secureSites.put(host, secureSite);
+    }
+    synchronized(secureSite.lock) {
+      secureSite.start();
+      try {secureSite.lock.wait();} catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    return secureSite.port;
+  }
+
+  public static class SecureSite extends Thread {
+    public String domain;
+    public SSLContext sc;
+    public SSLServerSocketFactory serverSocketFactory;
+    public SSLServerSocket ss;
+    public int port;
+    public Object lock = new Object();
+    public SecureSite(String domain, int port) {
+      this.domain = domain;
+      this.port = port;
+    }
+    public void run() {
+      //create a cert for domain signed by localhost
+      keytool(new String[] {
+        "-genkeypair",
+        "-alias",
+        domain,
+        "-keystore",
+        domain + ".key",
+        "-storepass",
+        "password",
+        "-keypass",
+        "password",
+        "-keyalg",
+        "RSA",
+        "-dname",
+        "CN=" + domain + ", OU=JavaForce, O=JavaForce, C=CA",
+        "-validity",
+        "3650"
+      });
+      //create csr
+      keytool(new String[] {
+        "-certreq",
+        "-alias",
+        domain,
+        "-keystore",
+        domain + ".key",
+        "-file",
+        domain + ".csr",
+        "-storepass",
+        "password"
+      });
+      //sign key
+      keytool(new String[] {
+        "-gencert",
+        "-alias",
+        "localhost",
+        "-keystore",
+        "localhost.key",
+        "-storepass",
+        "password",
+        "-keyalg",
+        "RSA",
+        "-infile",
+        domain + ".csr",
+        "-outfile",
+        domain + ".crt",
+        "-validity",
+        "3650"
+      });
+      //import cert auth (optional ???)
+      keytool(new String[] {
+        "-import",
+        "-alias",
+        "root",
+        "-file",
+        "localhost.crt",
+        "-keystore",
+        domain + ".key",
+        "-storepass",
+        "password",
+        "-noprompt"
+      });
+      //import signed cert
+      keytool(new String[] {
+        "-import",
+        "-alias",
+        domain,
+        "-file",
+        domain + ".crt",
+        "-keystore",
+        domain + ".key",
+        "-storepass",
+        "password"
+      });
+      try {
+        TrustManager[] trustAllCerts = new TrustManager[] {
+          new X509TrustManager() {
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+              return null;
+            }
+            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+          }
+        };
+        // Let us create the factory where we can set some parameters for the connection
+        sc = SSLContext.getInstance("SSL");
+
+        KeyStore ks = KeyStore.getInstance("JKS");
+        ks.load(new FileInputStream(keyPath + "/" + domain + ".key"), "password".toCharArray());
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        kmf.init(ks, "password".toCharArray());
+
+        sc.init(kmf.getKeyManagers(), trustAllCerts, new java.security.SecureRandom());
+        serverSocketFactory = (SSLServerSocketFactory) sc.getServerSocketFactory();  //this method will work with untrusted certs
+
+        SSLSocket s;
+        Session sess;
+        ss = (SSLServerSocket) serverSocketFactory.createServerSocket(port);
+        synchronized(lock) {
+          lock.notify();
+        }
+        while (!ss.isClosed()) {
+          s = (SSLSocket)ss.accept();
+          sess = new Session(s, true);
+          sess.start();
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    public void close() {
+      try {
+        JFLog.log("Closing port:" + port);
+        ss.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+  }
+
+  private static class Session extends Thread {
     private Socket p, i;  //proxy, internet
     private InputStream pis, iis;
     private OutputStream pos, ios;
     private boolean disconn = false;
     private int client_port;
     private String client_ip;
+    private boolean secure;
     public synchronized void close() {
       try {
         if ((p!=null) && (p.isConnected())) p.close();
@@ -238,8 +509,9 @@ public class Proxy extends Thread {
       } catch (Exception e2) {}
       list.remove(this);
     }
-    public Session(Socket s) {
+    public Session(Socket s, boolean secure) {
       p = s;
+      this.secure = secure;
     }
     public String toString(int ip) {
       long ip64 = ((long)ip) & 0xffffffffL;
@@ -621,7 +893,11 @@ public class Proxy extends Thread {
           return;
         }
       }
-      connect(host, 443);
+      if (filtersecure) {
+        connect("localhost", getSSLPort(host));
+      } else {
+        connect(host, 443);
+      }
       pos.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
       pos.flush();
       ConnectRelay i2p = new ConnectRelay(iis, pos);
@@ -633,11 +909,13 @@ public class Proxy extends Thread {
       disconn = true;  //not HTTP/1.1 compatible?
     }
     private String removeHost(String req) throws Exception {
-      //older webserver don't like the host in the request line
-      //in fact I didn't even know that some would accept it
+      //GET URL HTTP/1.1
+      //remove host from URL if present
       String p[] = req.split(" ");
       if (p.length != 3) return req;
-      URL url = new URL(p[1]);
+      String urlstr = p[1];
+      if ((!urlstr.startsWith("http:")) && (!urlstr.startsWith("https:"))) return req;
+      URL url = new URL(urlstr);
       return p[0] + " " + url.getFile() + " " + p[2];
     }
     private class ConnectRelay extends Thread {
