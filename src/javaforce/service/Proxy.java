@@ -1,24 +1,7 @@
 package javaforce.service;
 
 /**
- * A simple Proxy Server
- *
- * Supports : SSL (CONNECT)
- *
- * jfproxy.cfg example:
- *   [global]
- *   port=3128
- *   allow=0.0.0.0/0
- *   [blockdomain]
- *   .*youtube[.]com
- *   [urlchange]
- *   url = newURL
- *
- * Note : in [blockdomain] section the domains are in Regular Expression format
- * see : http://docs.oracle.com/javase/7/docs/api/java/util/regex/Pattern.html
- *
- * Note : in [urlchange] section the url is a regular expression
- *   and the = MUST have a space before and after it.
+ * Web Proxy Server
  *
  * @author pquiring
  *
@@ -52,6 +35,7 @@ public class Proxy extends Thread {
   private ServerSocket ss;
   private static Vector<Session> list = new Vector<Session>();
   private static ArrayList<String> blockedDomain = new ArrayList<String>();
+  private static ArrayList<String> blockedURL = new ArrayList<String>();
   private static ArrayList<URLChange> urlChanges = new ArrayList<URLChange>();
   private static ArrayList<Integer> allow_net = new ArrayList<Integer>();
   private static ArrayList<Integer> allow_mask = new ArrayList<Integer>();
@@ -59,7 +43,8 @@ public class Proxy extends Thread {
   private static int nextSSLport = 8081;
   private static boolean filtersecure = false;
   private static HashMap<String, SecureSite> secureSites = new HashMap<String,SecureSite>();
-  private static String keyPath = ".jfproxy.keys";
+  private static String keyPath;
+  private static SSLSocketFactory sslSocketFactory;
 
   public void close() {
     JFLog.logTrace("proxy.close()");
@@ -143,7 +128,7 @@ public class Proxy extends Thread {
           "localhost.crt"
         });
       }
-//      initSSL();
+      initSSL();
     }
     //try to bind to port 5 times (in case restart() takes a while)
     for(int a=0;a<5;a++) {
@@ -189,7 +174,7 @@ public class Proxy extends Thread {
     }
   }
 
-  private static enum Section {None, Global, BlockDomain, URLChange};
+  private static enum Section {None, Global, BlockDomain, URLChange, BlockURL};
 
   private final static String defaultConfig
     = "[global]\n"
@@ -205,6 +190,7 @@ public class Proxy extends Thread {
     + "#www.example.com/test = www.google.com\n";
 
   private void loadConfig() {
+    filtersecure = false;
     Section section = Section.None;
     try {
       StringBuilder cfg = new StringBuilder();
@@ -228,6 +214,10 @@ public class Proxy extends Thread {
         }
         if (ln.equals("[urlchange]")) {
           section = Section.URLChange;
+          continue;
+        }
+        if (ln.equals("[blockurl]")) {
+          section = Section.BlockURL;
           continue;
         }
         switch (section) {
@@ -262,6 +252,9 @@ public class Proxy extends Thread {
             uc.url = ln.substring(0, eq);
             uc.newurl = ln.substring(eq+3);
             urlChanges.add(uc);
+            break;
+          case BlockURL:
+            blockedURL.add(ln);
             break;
         }
       }
@@ -331,7 +324,7 @@ public class Proxy extends Thread {
       kmf.init(ks, "password".toCharArray());
 
       gsc.init(kmf.getKeyManagers(), trustAllCerts, new java.security.SecureRandom());
-      SSLSocketFactory socketFactory = (SSLSocketFactory) gsc.getSocketFactory();  //this method will work with untrusted certs
+      sslSocketFactory = (SSLSocketFactory) gsc.getSocketFactory();  //this method will work with untrusted certs
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -607,7 +600,7 @@ public class Proxy extends Thread {
           port = 21;
         } else {
           proto = "http://";  //assume http
-          port = 80;
+          port = secure ? 443 : 80;
         }
         int portidx = hostln.indexOf(':');
         if (portidx != -1) {
@@ -620,6 +613,13 @@ public class Proxy extends Thread {
         host = host.trim().toLowerCase();
         for(int a=0;a<blockedDomain.size();a++) {
           if (host.matches(blockedDomain.get(a))) {
+            replyError(505, "Access Denied");
+            return;
+          }
+        }
+        //check if URL is blocked
+        for(int a=0;a<blockedURL.size();a++) {
+          if ((host + "/" + url).matches(blockedURL.get(a))) {
             replyError(505, "Access Denied");
             return;
           }
@@ -671,7 +671,11 @@ public class Proxy extends Thread {
     }
     private void connect(String host, int port) throws UnknownHostException, IOException {
       log("connect:" + host + ":" + port);
-      i = new Socket(host, port);
+      if (!secure) {
+        i = new Socket(host, port);
+      } else {
+        i = sslSocketFactory.createSocket(host, port);
+      }
       iis = i.getInputStream();
       ios = i.getOutputStream();
     }
