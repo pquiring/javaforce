@@ -66,13 +66,14 @@ rpm : build Fedora rpm file (after install)
  - linux packaging requires files.lst and linux stub (/stubs/linux)
 msi : build Windows msi file with JRE bundled (64bit)
 msinojre : build Windows msi file without JRE bundled (64bit)
- - msi creation requires 
+ - msi creation requires
+  - wixtoolset in path (http://wixtoolset.org/)
   - wix64.xml file
   - jre prep for native packaging (see below)
   - windows stub created (/stubs/windows)
 dmg : build Mac dmg file using hdiutil (mac only)
 genisodmg : build Mac dmg file using geniso (cygwin/linux/mac) (uncompressed)
- - dmg creation requires 
+ - dmg creation requires
   - /projects/jfdmg installed (sudo ant install)
   - jre prep for native packaging (see below)
   - Info.plist, ${app}.icns and macfiles.lst
@@ -86,6 +87,19 @@ JavaForce Ant tasks:
 jre-base : prep JRE for creating native packages (msi, dmg)
 jre-base-desktop : prep JRE with desktop support
 jre-base-javac : prep JRE with java compiler support
+
+Building stubs (native launchers)
+---------------------------------
+Building the stubs will requires gcc in your path.
+Windows:Please install cygwin and install mingw-gcc 64bit packages.
+Linux:Debian/Ubuntu:run 'deb' ant job to install required packages.
+Linux:RedHat/Fedora:run 'rpm' ant job to install required packages.
+
+Building native api (ffmpeg, OpenGL, Camera)
+--------------------------------------------
+Building the stubs will requires gcc in your path.
+Windows:Please install cygwin and install mingw-gcc 64bit packages.
+Linux:Requires gcc
 
 License
 =======
