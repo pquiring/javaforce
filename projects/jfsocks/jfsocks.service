@@ -1,0 +1,9 @@
+[Unit]
+Description=JavaForce Socks Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfsocks
+Restart=always
+
+[Install]
