@@ -54,11 +54,14 @@ public class MainPanel extends javax.swing.JPanel {
     importFile = new javax.swing.JButton();
     exportFile = new javax.swing.JButton();
     jSeparator3 = new javax.swing.JToolBar.Separator();
+    jButton2 = new javax.swing.JButton();
+    jSeparator5 = new javax.swing.JToolBar.Separator();
     progress = new javax.swing.JProgressBar();
     jSeparator4 = new javax.swing.JToolBar.Separator();
     jSplitPane1 = new javax.swing.JSplitPane();
     jPanel1 = new javax.swing.JPanel();
     jToolBar2 = new javax.swing.JToolBar();
+    jLabel1 = new javax.swing.JLabel();
     addGroup = new javax.swing.JButton();
     deleteGroup = new javax.swing.JButton();
     renameGroup = new javax.swing.JButton();
@@ -66,11 +69,13 @@ public class MainPanel extends javax.swing.JPanel {
     groups = new javax.swing.JTree();
     jPanel2 = new javax.swing.JPanel();
     jToolBar3 = new javax.swing.JToolBar();
+    jLabel2 = new javax.swing.JLabel();
     addEntry = new javax.swing.JButton();
     deleteEntry = new javax.swing.JButton();
     editEntry = new javax.swing.JButton();
     copyUsername = new javax.swing.JButton();
     copyPassword = new javax.swing.JButton();
+    jButton1 = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
     entries = new javax.swing.JTable();
 
@@ -156,6 +161,18 @@ public class MainPanel extends javax.swing.JPanel {
     });
     jToolBar1.add(exportFile);
     jToolBar1.add(jSeparator3);
+
+    jButton2.setText("Help");
+    jButton2.setFocusable(false);
+    jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    jButton2.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton2ActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(jButton2);
+    jToolBar1.add(jSeparator5);
     jToolBar1.add(progress);
     jToolBar1.add(jSeparator4);
 
@@ -164,6 +181,9 @@ public class MainPanel extends javax.swing.JPanel {
 
     jToolBar2.setFloatable(false);
     jToolBar2.setRollover(true);
+
+    jLabel1.setText("Groups:");
+    jToolBar2.add(jLabel1);
 
     addGroup.setText("Add");
     addGroup.setFocusable(false);
@@ -211,7 +231,7 @@ public class MainPanel extends javax.swing.JPanel {
     jPanel1.setLayout(jPanel1Layout);
     jPanel1Layout.setHorizontalGroup(
       jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 249, Short.MAX_VALUE)
+      .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 251, Short.MAX_VALUE)
       .addComponent(jScrollPane3)
     );
     jPanel1Layout.setVerticalGroup(
@@ -226,6 +246,9 @@ public class MainPanel extends javax.swing.JPanel {
 
     jToolBar3.setFloatable(false);
     jToolBar3.setRollover(true);
+
+    jLabel2.setText("Sites:");
+    jToolBar3.add(jLabel2);
 
     addEntry.setText("Add");
     addEntry.setFocusable(false);
@@ -284,6 +307,17 @@ public class MainPanel extends javax.swing.JPanel {
     });
     jToolBar3.add(copyPassword);
 
+    jButton1.setText("Open Site");
+    jButton1.setFocusable(false);
+    jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    jButton1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton1ActionPerformed(evt);
+      }
+    });
+    jToolBar3.add(jButton1);
+
     entries.setModel(new javax.swing.table.DefaultTableModel(
       new Object [][] {
 
@@ -327,7 +361,7 @@ public class MainPanel extends javax.swing.JPanel {
     jPanel2Layout.setHorizontalGroup(
       jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-      .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 375, Short.MAX_VALUE)
+      .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
     );
     jPanel2Layout.setVerticalGroup(
       jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -429,6 +463,7 @@ public class MainPanel extends javax.swing.JPanel {
     switch (cc) {
       case 'C': copyPassword(); evt.consume(); break;
       case 'Z': copyUsername(); evt.consume(); break;
+      case 'O': openSite(); evt.consume(); break;
     }
   }//GEN-LAST:event_entriesKeyPressed
 
@@ -457,6 +492,14 @@ public class MainPanel extends javax.swing.JPanel {
     copyUsername();
   }//GEN-LAST:event_copyUsernameActionPerformed
 
+  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    openSite();
+  }//GEN-LAST:event_jButton1ActionPerformed
+
+  private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    showHelp();
+  }//GEN-LAST:event_jButton2ActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton addEntry;
   private javax.swing.JButton addGroup;
@@ -470,6 +513,10 @@ public class MainPanel extends javax.swing.JPanel {
   private javax.swing.JButton exportFile;
   private javax.swing.JTree groups;
   private javax.swing.JButton importFile;
+  private javax.swing.JButton jButton1;
+  private javax.swing.JButton jButton2;
+  private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel2;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JScrollPane jScrollPane1;
@@ -478,6 +525,7 @@ public class MainPanel extends javax.swing.JPanel {
   private javax.swing.JToolBar.Separator jSeparator2;
   private javax.swing.JToolBar.Separator jSeparator3;
   private javax.swing.JToolBar.Separator jSeparator4;
+  private javax.swing.JToolBar.Separator jSeparator5;
   private javax.swing.JSplitPane jSplitPane1;
   private javax.swing.JToolBar jToolBar1;
   private javax.swing.JToolBar jToolBar2;
@@ -1130,6 +1178,47 @@ public class MainPanel extends javax.swing.JPanel {
     if (cb == null) return;
     cb.setContents(ss, ss);
     startTimer();
+  }
+
+  public void openSite() {
+    String url = null;
+    TreePath path = groups.getSelectionPath();
+    XML.XMLTag selTag;
+    if (path == null) return;
+    selTag = safe.getTag(path);
+    int row = entries.getSelectedRow();
+    if (row == -1) return;
+    String title = (String)entries.getValueAt(row, 0);
+    int cnt = selTag.getChildCount();
+    boolean ok = false;
+    XML.XMLTag child = null;
+    for(int a=0;a<cnt;a++) {
+      child = selTag.getChildAt(a);
+      if (child.getArg("name").equals(title)) {
+        ok = true;
+        break;
+      }
+    }
+    if (!ok) return;
+    int cntChild = child.getChildCount();
+    XML.XMLTag f;
+    for(int a=0;a<cntChild;a++) {
+      f = child.getChildAt(a);
+      if (f.name.equals("url")) {
+        url = f.getContent();
+        break;
+      }
+    }
+    if (url == null) return;
+    JFLog.log("Open Site:" + url);
+    if (!url.startsWith("http:") && !url.startsWith("https:")) {
+      url = "http://" + url;
+    }
+    JF.openURL(url);
+  }
+
+  public void showHelp() {
+    JFAWT.showMessage("Help", "Ctrl+C = Copy Password\nCtrl+Z = Copy Username\nCtrl+O = Open Site");
   }
 
   public void startTimer() {
