@@ -1,5 +1,9 @@
 What's new...
 
+Jan 24/2019 : JF 17.3.0 released
+  - new : jfsocks/0.1 : SOCKS4 server (something I needed at work)
+  - new : jfpasswords/0.20 : added OpenSite and Help buttons
+
 Oct 15/2018 : JRE 11-2
   - new : JRE-11 : added .jar file association to javaw.exe in wix config
 
