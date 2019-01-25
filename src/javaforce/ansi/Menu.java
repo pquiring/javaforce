@@ -2,7 +2,7 @@ package javaforce.ansi;
 
 /** Menu
  *
- * @author peterq.admin
+ * @author pquiring
  */
 
 import java.awt.event.KeyEvent;

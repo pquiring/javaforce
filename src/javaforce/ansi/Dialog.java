@@ -2,7 +2,7 @@ package javaforce.ansi;
 
 /** Dialog interface
  *
- * @author peterq.admin
+ * @author pquiring
  */
 
 public interface Dialog {

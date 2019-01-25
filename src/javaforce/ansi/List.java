@@ -2,7 +2,7 @@ package javaforce.ansi;
 
 /** List
  *
- * @author peterq.admin
+ * @author pquiring
  */
 
 import java.awt.event.KeyEvent;

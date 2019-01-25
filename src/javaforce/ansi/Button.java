@@ -2,7 +2,7 @@ package javaforce.ansi;
 
 /** Button
  *
- * @author peterq.admin
+ * @author pquiring
  */
 
 public class Button extends Field {

@@ -73,27 +73,6 @@ public class ANSI {
     return ch;
   }
 
-  public int __strlen(String str) {
-    int len = str.length();
-    int cnt = 0;
-    boolean inCode = false;
-    for(int pos=0;pos<len;pos++) {
-      char ch = str.charAt(pos);
-      if (inCode) {
-        if (Character.isAlphabetic(ch) || ch == '~') {
-          inCode = false;
-        }
-      } else {
-        if (ch == ESC) {
-          inCode = true;
-        } else {
-          cnt++;
-        }
-      }
-    }
-    return cnt;
-  }
-
   public void clrscr() {
     System.out.print(ESC + "[2J");
   }

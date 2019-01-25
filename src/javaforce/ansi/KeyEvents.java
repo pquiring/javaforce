@@ -2,7 +2,7 @@ package javaforce.ansi;
 
 /**
  *
- * @author peterq.admin
+ * @author pquiring
  */
 
 public interface KeyEvents {

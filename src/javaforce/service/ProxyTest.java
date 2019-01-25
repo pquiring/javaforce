@@ -2,7 +2,7 @@ package javaforce.service;
 
 /** ProxyTest
  *
- * @author peterq.admin
+ * @author pquiring
  */
 
 import java.io.*;
