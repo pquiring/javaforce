@@ -6,6 +6,7 @@
   <property name="apptype2" value="s"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.9"/>
+  <property name="jre" location="${home}/jre_base_desktop"/>
 
   <import file="../../base.xml"/>
 

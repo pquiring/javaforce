@@ -46,6 +46,8 @@ public class JFNative {
   }
   public static void load() {}  //ensure native library is loaded
   public static boolean loaded;
+  /** Specify if ffmpeg is needed? */
+  public static boolean load_ffmpeg = true;
 
   /** Find native libraries in folder (recursive). */
   public static boolean findLibraries(File folders[], Library libs[], String ext, int needed, boolean recursive) {

@@ -15,8 +15,6 @@
 #include "../glfw/src/x11_init.c"
 #include "../glfw/src/x11_monitor.c"
 #include "../glfw/src/posix_time.c"
-#include "../glfw/src/posix_tls.c"
-//#define translateKey translateKey2  //see https://github.com/glfw/glfw/issues/574
 #include "../glfw/src/x11_window.c"
 #include "../glfw/src/xkb_unicode.c"
 #include "../glfw/src/linux_joystick.c"

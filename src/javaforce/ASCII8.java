@@ -29,4 +29,7 @@ public class ASCII8 {
     if (ascii > 255) return ascii;
     return table[ascii-128];
   }
+  public static char convert(int ascii) {
+    return convert((char)ascii);
+  }
 }

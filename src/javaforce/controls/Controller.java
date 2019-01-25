@@ -64,7 +64,7 @@ public class Controller {
       String host = url.substring(3);
       synchronized(s7_connect_lock) {
         try {
-          socket = new Socket(host, 102);
+          connect(host, 102);
           socket.setSoTimeout(3000);
           os = socket.getOutputStream();
           is = socket.getInputStream();
@@ -109,7 +109,7 @@ public class Controller {
       plc = ControllerType.MB;
       String host = url.substring(7);
       try {
-        socket = new Socket(host, 502);
+        connect(host, 502);
         socket.setSoTimeout(3000);
         os = socket.getOutputStream();
         is = socket.getInputStream();
@@ -125,7 +125,7 @@ public class Controller {
       plc = ControllerType.AB;
       String host = url.substring(3);
       try {
-        socket = new Socket(host, 44818);
+        connect(host, 44818);
         socket.setSoTimeout(3000);
         os = socket.getOutputStream();
         is = socket.getInputStream();
@@ -173,6 +173,28 @@ public class Controller {
       return connected;
     }
     return false;
+  }
+
+  private String socks;
+
+  private void connect(String host, int port) throws Exception {
+    if (socks != null) {
+      socket = new Socket(socks, 1080);
+      if (!SOCKS.connect(socket, host, port)) {
+        throw new Exception("SOCKS connection failed");
+      }
+    } else {
+      socket = new Socket(host, port);
+    }
+  }
+
+  /** Connect to PLC via a SOCKS4 server.
+   * Must call this before calling connect(String url)
+   *
+   * @param host = IP4 address of SOCKS4 server.
+   */
+  public void setSOCKS(String host) {
+    socks = host;
   }
 
   /** Disconnects from PLC. */

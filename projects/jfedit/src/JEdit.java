@@ -129,21 +129,21 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }// </editor-fold>//GEN-END:initComponents
 
   private void formComponentMoved(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentMoved
-    if (settings.bWindowMax) return;
+    if (Settings.settings.bWindowMax) return;
     Point loc = getLocation();
-    settings.WindowXPos = loc.x;
-    settings.WindowYPos = loc.y;
+    Settings.settings.WindowXPos = loc.x;
+    Settings.settings.WindowYPos = loc.y;
   }//GEN-LAST:event_formComponentMoved
 
   private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-    if (settings.bWindowMax) return;
+    if (Settings.settings.bWindowMax) return;
     Dimension size = getSize();
-    settings.WindowXSize = size.width;
-    settings.WindowYSize = size.height;
+    Settings.settings.WindowXSize = size.width;
+    Settings.settings.WindowYSize = size.height;
   }//GEN-LAST:event_formComponentResized
 
   private void formWindowStateChanged(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowStateChanged
-    settings.bWindowMax = evt.getNewState() == MAXIMIZED_BOTH;
+    Settings.settings.bWindowMax = evt.getNewState() == MAXIMIZED_BOTH;
   }//GEN-LAST:event_formWindowStateChanged
 
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -155,6 +155,12 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
    */
   public static String args[];
   public static void main(String args[]) {
+    if (!JF.isWindows()) {
+      if (System.getenv("DISPLAY") == null) {
+        TEdit.main(args);
+        return;
+      }
+    }
     JFAWT.removeAltGraph();
     JEdit.args = args;
     java.awt.EventQueue.invokeLater(new Runnable() {
@@ -171,7 +177,6 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private javax.swing.JMenuItem paste;
   private javax.swing.JPopupMenu popup;
   // End of variables declaration//GEN-END:variables
-  private static Settings settings = new Settings();
 
   private class page {
     JPanel panel;
@@ -185,6 +190,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private boolean bLoading = false;
   private IndentBreakAction indentBreakAction = new IndentBreakAction();
   private JTabbedPane tabs;
+  private static java.awt.Font fnt;
 
   private void initApp() {
     tabs = new JTabbedPane();
@@ -196,10 +202,10 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     });
     setTitle("jfedit");
     pages = new Vector<page>();
-    loadcfg();
-    setSize(settings.WindowXSize, settings.WindowYSize);
-    setLocation(settings.WindowXPos, settings.WindowYPos);
-    if (settings.bWindowMax) setExtendedState(MAXIMIZED_BOTH);
+    loadcfg(true);
+    setSize(Settings.settings.WindowXSize, Settings.settings.WindowYSize);
+    setLocation(Settings.settings.WindowXPos, Settings.settings.WindowYPos);
+    if (Settings.settings.bWindowMax) setExtendedState(MAXIMIZED_BOTH);
     if (args != null) {
       for(int a=0;a<args.length;a++) loadpages(args[a]);
     }
@@ -207,21 +213,30 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     tabs.setSelectedIndex(0);
     pages.get(0).txt.grabFocus();
   }
-  public void loadcfg() {
+  public static void loadcfg(boolean gui) {
     XML xml = new XML();
     String filename = JF.getUserPath() + "/.jfedit.xml";
     File file = new File(filename);
-    if (!file.exists()) return;  //doesn't exist
-    if (!xml.read(filename)) return;  //bad cfg
-    if (!xml.root.name.equals("jfedit")) return;  //bad cfg
-    xml.writeClass(xml.root, settings);
-    settings.fnt = JFAWT.getMonospacedFont(0, settings.fontSize);
+    if (!file.exists()) {
+      System.err.println("Config not found");
+      return;
+    }
+    if (!xml.read(filename)) {
+      System.err.println("Failed to read config");
+      return;
+    }
+    if (!xml.root.name.equals("jfedit")) {
+      System.err.println("Invalid configuration");
+      return;
+    }
+    xml.writeClass(xml.root, Settings.settings);
+    if (gui) fnt = JFAWT.getMonospacedFont(0, Settings.settings.fontSize);
   }
   public void savecfg() {
     XML xml = new XML();
     XML.XMLTag tag;
     xml.root.name = "jfedit";
-    xml.readClass(xml.root, settings);
+    xml.readClass(xml.root, Settings.settings);
     String filename = JF.getUserPath() + "/.jfedit.xml";
     xml.write(filename);
   }
@@ -262,9 +277,9 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   private JFTextArea createJFTextArea() {
     JFTextArea txt = new JFTextArea();
-    txt.setFont(settings.fnt);
-    txt.setTabSize(settings.tabSize);
-    txt.setLineWrap(settings.bLineWrap);
+    txt.setFont(fnt);
+    txt.setTabSize(Settings.settings.tabSize);
+    txt.setLineWrap(Settings.settings.bLineWrap);
     txt.addKeyListener(new java.awt.event.KeyAdapter() {
       public void keyPressed(java.awt.event.KeyEvent evt) {
         tabsKeyPressed(evt);
@@ -277,7 +292,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   private page addpage(String title) {
     page pg = new page();
-    pg.bUnix = settings.bUnix;
+    pg.bUnix = Settings.settings.bUnix;
     pg.panel = JFAWT.createJPanel(new GridLayout(), null);
     pg.txt = createJFTextArea();
     pg.scroll = new JScrollPane(pg.txt);
@@ -299,7 +314,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     String tmp;
     try {
       tmp = pages.get(idx).txt.getText();
-      if (settings.bClean) {
+      if (Settings.settings.bClean) {
         boolean cleaned = false;
         while (tmp.indexOf(" \n") != -1) {tmp = tmp.replaceAll(" \n" ,"\n");cleaned = true;}
         if (cleaned) {
@@ -419,8 +434,8 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       fis.close();
       bLoading = true;
       String str = new String(txt, "UTF-8");
-      boolean bUnix = settings.bUnix;
-      if (settings.bPreserve) {
+      boolean bUnix = Settings.settings.bUnix;
+      if (Settings.settings.bPreserve) {
         int lf = str.indexOf("\n");
         if (lf > 0) {
           if (txt[lf-1] == '\r') bUnix = false;
@@ -654,7 +669,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
         //  When splitting the text include white space at start of line
         //  else do default processing
 
-        if ((selectionStart - start >= offset) && (settings.bAutoIndent))
+        if ((selectionStart - start >= offset) && (Settings.settings.bAutoIndent))
           target.replaceSelection("\n" + text.substring(0, offset) );
         else
           target.replaceSelection("\n");
@@ -759,14 +774,14 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       return;
     }
     if ((f1 == KeyEvent.VK_F2) && (f2 == 0)) {
-      EditSettings.editSettings(this, settings);
-      settings.fnt = JFAWT.getMonospacedFont(0, settings.fontSize);
+      EditSettings.editSettings(this, Settings.settings);
+      fnt = JFAWT.getMonospacedFont(0, Settings.settings.fontSize);
       int cnt = pages.size();
       for(int a=0;a<cnt;a++) {
         txt = pages.get(a).txt;
-        txt.setFont(settings.fnt);
-        txt.setTabSize(settings.tabSize);
-        txt.setLineWrap(settings.bLineWrap);
+        txt.setFont(fnt);
+        txt.setTabSize(Settings.settings.tabSize);
+        txt.setLineWrap(Settings.settings.bLineWrap);
       }
       return;
     }
@@ -809,15 +824,15 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       int start = txt.getSelectionStart();
       int end = txt.getSelectionEnd();
       if (start != end) {
-        for(int a=0;a<settings.tabSize;a++) {
+        for(int a=0;a<Settings.settings.tabSize;a++) {
           shift_right(' ');
         }
         evt.consume();
         return;
       }
-      if (settings.bTabToSpaces) {
+      if (Settings.settings.bTabToSpaces) {
         String spaces = "";
-        for(int a=0;a<settings.tabSize;a++) {
+        for(int a=0;a<Settings.settings.tabSize;a++) {
           spaces += " ";
         }
         pg.txt.insert(spaces, pg.txt.getCaretPosition());
@@ -832,7 +847,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       int start = txt.getSelectionStart();
       int end = txt.getSelectionEnd();
       if (start != end) {
-        for(int a=0;a<settings.tabSize;a++) {
+        for(int a=0;a<Settings.settings.tabSize;a++) {
           shift_left(' ');
         }
         evt.consume();

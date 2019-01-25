@@ -35,6 +35,12 @@ public class WinNative {
   //JDK
   public static native String findJDKHome();
 
+  //Console
+  public static native void enableConsoleMode();
+  public static native void disableConsoleMode();
+  public static native int[] getConsoleSize();
+  public static native char readConsole();
+
   //test
   public static native int add(int x, int y);
 }

@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <fcntl.h>  //open
 #include <termios.h>  //com ports
-#include <unistd.h>  //close
+#include <unistd.h>  //close select
+#include <stdio.h>
 #include <linux/videodev2.h>  //V4L2
 #include <sys/ioctl.h>  //ioctl
 #include <sys/mman.h>  //mmap
@@ -13,6 +14,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <security/pam_appl.h>
+#include <ncurses.h>  //wtimeout wgetch
 
 #include <jni.h>
 #include <jawt.h>
@@ -758,7 +760,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_ptyWrite
 {
   Pty *pty = (Pty*)ctx;
   jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-  write(pty->master, baptr, e->GetArrayLength(ba));
+  int res = write(pty->master, baptr, e->GetArrayLength(ba));
   e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
 }
 
@@ -1588,6 +1590,78 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_setenv
   setenv(cname, cvalue, 1);
   e->ReleaseStringUTFChars(name, cname);
   e->ReleaseStringUTFChars(value, cvalue);
+}
+
+JNIEXPORT jintArray JNICALL Java_javaforce_jni_LnxNative_getConsoleSize
+  (JNIEnv *e, jclass c)
+{
+  int xy[2];
+  struct winsize w;
+  ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+  xy[0] = w.ws_col;
+  xy[1] = w.ws_row;
+  jintArray ia = e->NewIntArray(2);
+  e->SetIntArrayRegion(ia, 0, 2, (const jint*)xy);
+  return ia;
+}
+
+static char console_buffer[8];
+
+static void StringCopy(char *dest, const char *src) {
+  while (*src != 0) {
+    *(dest++) = (*src++);
+  }
+  *dest = *src;
+}
+
+static struct termios oldt, newt;
+
+JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_enableConsoleMode
+  (JNIEnv *e, jclass c)
+{
+  console_buffer[0] = 0;
+  initscr();
+  cbreak();
+  noecho();
+  wtimeout(stdscr, 0);
+  wgetch(stdscr);  //first call to wgetch() clears the screen
+  wtimeout(stdscr, -1);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_disableConsoleMode
+  (JNIEnv *e, jclass c)
+{
+  endwin();
+}
+
+JNIEXPORT jchar JNICALL Java_javaforce_jni_LnxNative_readConsole
+  (JNIEnv *e, jclass c)
+{
+  if (console_buffer[0] != 0) {
+    char ret = console_buffer[0];
+    StringCopy(console_buffer, console_buffer+1);
+    return (jchar)ret;
+  }
+  wtimeout(stdscr, -1);
+  char ch = wgetch(stdscr);
+  if (ch == 0x1b) {
+    //is it Escape key or ANSI code???
+    wtimeout(stdscr, 100);
+    char ch2 = wgetch(stdscr);  //waits 100ms max
+    if (ch2 == ERR) {
+      StringCopy(console_buffer, "[1~");  //custom ansi code for esc
+    } else {
+      if (ch2 == 0x1b) {
+        ungetch(ch2);
+        StringCopy(console_buffer, "[1~");  //custom ansi code for esc
+      } else {
+        console_buffer[0] = ch2;
+        console_buffer[1] = 0;
+      }
+    }
+    wtimeout(stdscr, -1);
+  }
+  return (jchar)ch;
 }
 
 #include "../common/library.h"

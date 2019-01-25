@@ -1,4 +1,6 @@
 public class Settings {
+  public transient static Settings settings = new Settings();
+
   public boolean bPreserve = true;
   public boolean bUnix = true;
   public boolean bClean = false;
@@ -9,6 +11,10 @@ public class Settings {
   public int tabSize = 2;
   public boolean bAutoIndent = false;
   public boolean bLineWrap = false;
-  public static java.awt.Font fnt;
   public boolean bTabToSpaces = false;
+  //text mode settings
+  public int foreColor = 0xffffff;
+  public int backColor = 0x000000;
+  public int tabStops = 8;
+  public String termType = "ANSI";
 };

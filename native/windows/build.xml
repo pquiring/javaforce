@@ -2,7 +2,6 @@
   <description>native</description>
   <property environment="env"/>
 
-<!--
   <target name="javah">
     <javah destdir="." classpath="../../classes">
       <class name="javaforce.gl.GL"/>
@@ -16,7 +15,6 @@
       <class name="javaforce.controls.ni.DAQmx"/>
     </javah>
   </target>
--->
 
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 

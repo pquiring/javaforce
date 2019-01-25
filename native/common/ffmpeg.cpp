@@ -22,14 +22,14 @@ static jboolean loaded = JNI_FALSE;
 
 #define DEBUG_TRAP __asm("int $3");
 
-LIB_HANDLE codec = NULL;
-LIB_HANDLE device = NULL;
-LIB_HANDLE filter = NULL;
-LIB_HANDLE format = NULL;
-LIB_HANDLE util = NULL;
-LIB_HANDLE resample = NULL;
-LIB_HANDLE postproc = NULL;
-LIB_HANDLE scale = NULL;
+JF_LIB_HANDLE codec = NULL;
+JF_LIB_HANDLE device = NULL;
+JF_LIB_HANDLE ffilter = NULL;
+JF_LIB_HANDLE format = NULL;
+JF_LIB_HANDLE util = NULL;
+JF_LIB_HANDLE resample = NULL;
+JF_LIB_HANDLE postproc = NULL;
+JF_LIB_HANDLE scale = NULL;
 
 //avcodec functions
 void (*_avcodec_register_all)();
@@ -206,49 +206,49 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
 {
   //load libraries (order is important)
 
-  util = LIB_OPEN(utilFile LIB_OPTS);
+  util = JF_LIB_OPEN(utilFile JF_LIB_OPTS);
   if (util == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), utilFile);
     return JNI_FALSE;
   }
 
-  resample = LIB_OPEN(resampleFile LIB_OPTS);
+  resample = JF_LIB_OPEN(resampleFile JF_LIB_OPTS);
   if (resample == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), resampleFile);
     return JNI_FALSE;
   }
 
-  scale = LIB_OPEN(scaleFile LIB_OPTS);
+  scale = JF_LIB_OPEN(scaleFile JF_LIB_OPTS);
   if (scale == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), scaleFile);
     return JNI_FALSE;
   }
 
-  postproc = LIB_OPEN(postFile LIB_OPTS);
+  postproc = JF_LIB_OPEN(postFile JF_LIB_OPTS);
   if (postproc == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), postFile);
     return JNI_FALSE;
   }
 
-  codec = LIB_OPEN(codecFile LIB_OPTS);
+  codec = JF_LIB_OPEN(codecFile JF_LIB_OPTS);
   if (codec == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), codecFile);
     return JNI_FALSE;
   }
 
-  format = LIB_OPEN(formatFile LIB_OPTS);
+  format = JF_LIB_OPEN(formatFile JF_LIB_OPTS);
   if (format == NULL)  {
     printf("Could not find(0x%x):%s\n", GetLastError(), formatFile);
     return JNI_FALSE;
   }
 
-  filter = LIB_OPEN(filterFile LIB_OPTS);
-  if (filter == NULL) {
+  ffilter = JF_LIB_OPEN(filterFile JF_LIB_OPTS);
+  if (ffilter == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), filterFile);
     return JNI_FALSE;
   }
 
-  device = LIB_OPEN(deviceFile LIB_OPTS);
+  device = JF_LIB_OPEN(deviceFile JF_LIB_OPTS);
   if (device == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), deviceFile);
     return JNI_FALSE;
@@ -279,7 +279,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
 
   getFunction(device, (void**)&_avdevice_register_all, "avdevice_register_all");
 
-  getFunction(filter, (void**)&_avfilter_register_all, "avfilter_register_all");
+  getFunction(ffilter, (void**)&_avfilter_register_all, "avfilter_register_all");
 
   getFunction(format, (void**)&_av_register_all, "av_register_all");
   getFunction(format, (void**)&_av_register_output_format, "av_register_output_format");

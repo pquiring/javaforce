@@ -2,12 +2,12 @@
 
 // API Reference http://zone.ni.com/reference/en-XX/help/370471AF-01/
 
-LIB_HANDLE nidll = NULL;
+JF_LIB_HANDLE nidll = NULL;
 
 #ifdef __WIN32__
-  #define LIB_NAME "nicaiu.dll"
+  #define JF_LIB_NAME "nicaiu.dll"
 #else
-  #define LIB_NAME "nicaiu.so"
+  #define JF_LIB_NAME "nicaiu.so"
 #endif
 
 int32 (*__CFUNC _DAQmxCreateTask)(const char taskName[], TaskHandle *taskHandle);
@@ -32,9 +32,9 @@ int32 (*__CFUNC _DAQmxSetCICtrTimebaseRate)(TaskHandle taskHandle, const char ch
 JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_daqInit
   (JNIEnv *e, jclass cls)
 {
-  nidll = LIB_OPEN(LIB_NAME LIB_OPTS);
+  nidll = JF_LIB_OPEN(JF_LIB_NAME JF_LIB_OPTS);
   if (nidll == NULL) {
-    printf("Could not find:%s\n", LIB_NAME);
+    printf("Could not find:%s\n", JF_LIB_NAME);
     return JNI_FALSE;
   }
   getFunction(nidll, (void**)&_DAQmxCreateTask, "DAQmxCreateTask");
