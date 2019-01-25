@@ -41,7 +41,7 @@ Folders
  /src       - the javaforce source files
  /jars      - 3rd party files
  /stubs     - native launcher stubs
- /native    - native JNI bindings for FFMPEG, OpenGL, Camera
+ /native    - native library with JNI bindings for FFMPEG, OpenGL, Camera
  /classes   - javaforce compiled files
  /projects  - source for all sub-projects
 
@@ -95,9 +95,9 @@ Windows:Please install cygwin and install mingw-gcc 64bit packages.
 Linux:Debian/Ubuntu:run 'deb' ant job to install required packages.
 Linux:RedHat/Fedora:run 'rpm' ant job to install required packages.
 
-Building native api (ffmpeg, OpenGL, Camera)
+Building native library (ffmpeg, OpenGL, Camera)
 --------------------------------------------
-Building the stubs will requires gcc in your path.
+Building the native library will requires gcc in your path.
 Windows:Please install cygwin and install mingw-gcc 64bit packages.
 Linux:Requires gcc
 
