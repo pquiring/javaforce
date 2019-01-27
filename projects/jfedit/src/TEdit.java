@@ -1293,7 +1293,9 @@ public class TEdit implements KeyEvents {
   }
 
   public void doFind(boolean showError, boolean draw) {
-    find = input.getText(0);
+    if (input != null) {
+      find = input.getText(0);
+    }
     replace = null;
     found = false;
     Tab tab = tabs.get(tabidx);
@@ -1311,6 +1313,9 @@ public class TEdit implements KeyEvents {
       if (idx != -1) {
         found = true;
         tab.setSelection(ln, idx, ln, idx+find.length());
+        tab.cx = idx;
+        tab.cy = ln;
+        showCursor();
         break;
       }
     }
