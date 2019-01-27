@@ -105,6 +105,12 @@ public class TEdit implements KeyEvents {
           case KeyEvent.VK_RIGHT:
             moveRight(false);
             break;
+          case KeyEvent.VK_PAGE_UP:
+            movePageUp(false);
+            break;
+          case KeyEvent.VK_PAGE_DOWN:
+            movePageDown(false);
+            break;
           case KeyEvent.VK_DELETE:
             delete(true);
             break;
@@ -218,6 +224,12 @@ public class TEdit implements KeyEvents {
             break;
           case KeyEvent.VK_RIGHT:
             moveRight(true);
+            break;
+          case KeyEvent.VK_PAGE_UP:
+            movePageUp(true);
+            break;
+          case KeyEvent.VK_PAGE_DOWN:
+            movePageDown(true);
             break;
           case KeyEvent.VK_HOME:
             moveHome(true);
@@ -1074,6 +1086,46 @@ public class TEdit implements KeyEvents {
         tab.startSelection();
     }
     tab.cx++;
+    showCursor();
+    if (shift) {
+      tab.adjustSelection(true);
+    }
+    drawTab();
+  }
+
+  public void movePageUp(boolean shift) {
+    Tab tab = tabs.get(tabidx);
+    if (!shift) tab.clearSelection();
+    if (tab.cy == 0) return;
+    if (shift) {
+      if (tab.hasSelection())
+        tab.adjustSelectionCheck();
+      else
+        tab.startSelection();
+    }
+    tab.cy -= ansi.height - 3;
+    if (tab.cy < 0) tab.cy = 0;
+    checkBeyondEOL();
+    showCursor();
+    if (shift) {
+      tab.adjustSelection(false);
+    }
+    drawTab();
+  }
+
+  public void movePageDown(boolean shift) {
+    Tab tab = tabs.get(tabidx);
+    if (!shift) tab.clearSelection();
+    if (tab.cy == tab.lines.size()-1) return;
+    if (shift) {
+      if (tab.hasSelection())
+        tab.adjustSelectionCheck();
+      else
+        tab.startSelection();
+    }
+    tab.cy += ansi.height - 3;
+    if (tab.cy > tab.lines.size() - 1) tab.cy = tab.lines.size() - 1;
+    checkBeyondEOL();
     showCursor();
     if (shift) {
       tab.adjustSelection(true);
