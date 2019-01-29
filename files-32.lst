@@ -12,13 +12,6 @@
 /usr/bin/jopen
 /usr/bin/jsmbget
 /usr/bin/jservice
-/usr/bin/jfuse-smb
-/usr/bin/jfuse-ftp
-/usr/bin/jfuse-ftps
-/usr/bin/jfuse-sftp
-/usr/bin/jfuse-zip
-/usr/bin/jfuse-iso
-/usr/bin/jfuse-cdfs
 /usr/bin/jfshare
 /usr/bin/jcp
 /usr/bin/jmv
