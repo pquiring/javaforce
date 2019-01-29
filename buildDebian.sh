@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function build {
   ant jar
   sudo ant install -Dbits=$1
