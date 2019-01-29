@@ -1,3 +1,5 @@
+#!/bin/bash
+
 function build {
   if [ "$1" == "jphonelite-android" ]; then
     return
