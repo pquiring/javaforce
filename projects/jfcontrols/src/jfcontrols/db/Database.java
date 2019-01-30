@@ -18,6 +18,7 @@ import jfcontrols.db.*;
 
 public class Database {
 
+  //core system
   public static Table config;
   public static TableLog alarms;
   public static Table panels;
@@ -30,12 +31,17 @@ public class Database {
   public static Table udtmembers;
   public static Table tags;
   public static Table funcs;
+  //card access system
+  public static Table readers;
+  public static Table cards;
+  public static Table groups;
+  public static Table timezones;
 
   public static TableList rungs;
   public static TableList blocks;
   public static TableList watches;
 
-  public static String Version = "1.0";
+  public static String Version = "1.1";
 
   public static void start() {
     JFLog.log("Database starting...");
@@ -56,13 +62,26 @@ public class Database {
     rungs = TableList.load(Paths.dataPath + "/config/rungs");
     blocks = TableList.load(Paths.dataPath + "/config/blocks");
     watches = TableList.load(Paths.dataPath + "/config/watches");
+    //card system tables
+    readers = Table.load(Paths.dataPath + "/config/readers.dat");
+    cards = Table.load(Paths.dataPath + "/config/cards.dat");
+    groups = Table.load(Paths.dataPath + "/config/groups.dat");
+    timezones = Table.load(Paths.dataPath + "/config/timezones.dat");
 
     String version = getConfig("version");
     if (version == null) version = "0.0";
     JFLog.log("Database version=" + version);
     switch (version) {
-      case "1.0": break;
-      default: create(); break;
+      case "1.1":
+        break;
+      case "1.0":
+        create_card_system();
+        update_version();
+        break;
+      default:
+        create();
+        create_card_system();
+        break;
     }
   }
 
@@ -89,6 +108,10 @@ public class Database {
   public static void restart() {
     stop();
     start();
+  }
+
+  private static void update_version() {
+    setConfig("version", Version);
   }
 
   private static void create() {
@@ -579,6 +602,13 @@ public class Database {
     addFunction("init");
 
     udts.setMinId(IDs.uid_user);
+  }
+
+  private static void create_card_system() {
+    //addReader("name", "addr", -1);
+    //addCard(123456789, -1);  //card#,user id
+    addGroup("No Access");  //default access level
+    addTimezone("24/7 Access");
   }
 
   public static String quote(String value, String type) {
@@ -1412,6 +1442,43 @@ public class Database {
 
   public static AlarmRow[] getAlarms(long start, long end) {
     return (AlarmRow[])alarms.get(start, end);
+  }
+
+  public static void addReader(String name, String addr, int type) {
+    CardReaderRow reader = new CardReaderRow();
+    reader.name = name;
+    reader.addr = addr;
+    reader.type = type;
+    readers.add(reader);
+    readers.save();
+  }
+
+  public static void addCard(long cardnum, int uid) {
+    CardRow card = new CardRow();
+    card.card = cardnum;
+    card.uid = uid;
+    cards.add(card);
+    cards.save();
+  }
+
+  public static void addGroup(String name) {
+    GroupRow group = new GroupRow();
+    group.name = name;
+    groups.add(group);
+    groups.save();
+  }
+
+  public static void addTimezone(String name) {
+    TimezoneRow timezone = new TimezoneRow();
+    timezone.name = name;
+    for(int a=0;a<7;a++) {
+      timezone.begin[a].hour = 0;
+      timezone.begin[a].min = 0;
+      timezone.end[a].hour = 23;
+      timezone.end[a].min = 59;
+    }
+    timezones.add(timezone);
+    timezones.save();
   }
 
   public static boolean update(String tableName, String id, String col, String value, String type) {

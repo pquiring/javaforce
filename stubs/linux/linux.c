@@ -1,6 +1,6 @@
 //Java Launcher Linux
 
-// version 1.7
+// version 1.8
 // supports passing command line options to java main()
 // now loads CLASSPATH and MAINCLASS from embedded resource file (*.cfg)
 // now globbs arguments (see ExpandStringArray())
@@ -325,10 +325,7 @@ int main(int argc, char **argv) {
   *_java = 0;
   char *_bin = strrchr(javahome, '/');
   *_bin = 0;
-  if (sizeof(void*) == 8)
-    strcat(javahome, "/lib/amd64");
-  else
-    strcat(javahome, "/lib/i386");
+  strcat(javahome, "/lib");
 
   //open libjvm.so
   strcpy(dll, javahome);
