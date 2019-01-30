@@ -75,7 +75,7 @@ sudo mount --bind /proc chroot/proc
 sudo mount --bind /sys chroot/sys
 
 #run 'chroot' on folder 'chroot' with script '/chroot.sh'
-sudo chroot chroot /chroot.sh
+sudo chroot chroot /chroot.sh $ARCH
 
 sudo umount chroot/dev
 sudo umount chroot/proc
