@@ -10,9 +10,9 @@ Run gpg to create the key to sign the packages (Note:gnupg 2.1+ generates kbx fi
   gpg --gen-key
 Backup the ~/.gnupg/*.gpg files (pubring.gpg and secring.gpg)
 
-Then run update.sh to create the repo files and then upload everything to website that is specifed in javaforce.list
+Then run update.sh to create the repo files.
+Run rsync.sh to upload everything to the javaforce.sf.net website.
 
 To use the repo copy javaforce.list to /etc/apt/sources.list.d
 and copy javaforce.gpg to /etc/apt/trusted.gpg.d
-This is performed by the iso creation scripts.
-See install.sh
+This is performed by the iso creation scripts or see install.sh.
