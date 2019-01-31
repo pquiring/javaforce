@@ -188,7 +188,7 @@ public class ANSI {
             fx = x1 + pos + padleft;
             fy = py;
             TextField field = new TextField();
-            field.x = fx;
+            field.x = fx + 1;
             field.y = fy;
             String text = ln.substring(pos+1, ln.indexOf(']', pos));
             String trim = text.trim();

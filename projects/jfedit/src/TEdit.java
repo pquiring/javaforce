@@ -42,13 +42,18 @@ public class TEdit implements KeyEvents {
   public boolean found;
 
   public void keyPressed(int keyCode, int keyMods) {
+//    System.err.println("keyCode=" + keyCode + ",keyMods=" + keyMods);
+    if (keyMods == 0 && keyCode == KeyEvent.VK_F5) {
+      refresh();
+    }
     if (input != null) {
       input.keyPressed(keyCode, keyMods);
       if (input.isClosed()) {
         if (!input.isCancelled()) {
           doInput();
+        } else {
+          input = null;
         }
-        input = null;
         refresh();
       }
       return;
@@ -89,7 +94,6 @@ public class TEdit implements KeyEvents {
       }
       return;
     }
-    System.err.println("keyCode=" + keyCode + ",keyMods=" + keyMods);
     switch (keyMods) {
       case 0:
         switch (keyCode) {
@@ -128,9 +132,6 @@ public class TEdit implements KeyEvents {
             break;
           case KeyEvent.VK_F3:
             findAgain();
-            break;
-          case KeyEvent.VK_F5:
-            refresh();
             break;
         }
         break;
@@ -243,13 +244,15 @@ public class TEdit implements KeyEvents {
   }
 
   public void keyTyped(char key) {
+//    System.err.println("keyTyped:" + (int)key);
     if (input != null) {
       input.keyTyped(key);
       if (input.isClosed()) {
         if (!input.isCancelled()) {
           doInput();
+        } else {
+          input = null;
         }
-        input = null;
         refresh();
       }
       return;
@@ -323,9 +326,7 @@ public class TEdit implements KeyEvents {
         break;
       default:
         if (key < 32 && key != 9) return;
-        tab.dirty = true;
-        StringBuilder ln = tab.lines.get(tab.cy);
-        ln.insert(tab.cx, key);
+        tab.insert(key);
         moveRight(false);
         break;
     }
@@ -524,7 +525,6 @@ public class TEdit implements KeyEvents {
         sb.append(lines.get(ln));
         sb.append(eol);
       }
-      System.err.println("saveTo:" + filename);
       FileOutputStream fos = new FileOutputStream(filename);
       fos.write(sb.toString().getBytes("UTF-8"));
       fos.close();
@@ -582,6 +582,16 @@ public class TEdit implements KeyEvents {
       } catch (Exception e) {
         return false;
       }
+    }
+    public void insert(char ch) {
+      StringBuilder ln = lines.get(cy);
+      ln.insert(cx, ch);
+      dirty = true;
+    }
+    public void insert(String str) {
+      StringBuilder ln = lines.get(cy);
+      ln.insert(cx, str);
+      dirty = true;
     }
   }
 
@@ -723,6 +733,9 @@ public class TEdit implements KeyEvents {
     if (file != null) {
       file.draw();
     }
+    if (input != null) {
+      input.draw();
+    }
     if (message != null) {
       message.draw();
     }
@@ -849,7 +862,7 @@ public class TEdit implements KeyEvents {
     tabidx = tabs.size() - 1;
   }
 
-  public void enter() {
+  public void splitLine() {
     Tab tab = tabs.get(tabidx);
     tab.dirty = true;
     StringBuilder ln = tab.lines.get(tab.cy);
@@ -862,6 +875,10 @@ public class TEdit implements KeyEvents {
     }
     tab.cx = 0;
     tab.dx = 0;
+  }
+
+  public void enter() {
+    splitLine();
     moveDown(false);
   }
 
@@ -1211,17 +1228,19 @@ public class TEdit implements KeyEvents {
     for(int a=0;a<ca.length;a++) {
       char ch = ca[a];
       if (ch == 10) {
-        enter();
+        splitLine();
+        tab.cy++;
       }
       if (ch < 32) continue;
-      keyTyped(ch);
+      tab.insert(ch);
+      tab.cx++;
     }
     tab.dirty = true;
+    showCursor();
   }
 
   public void paste() {
     //paste clipboard
-    Tab tab = tabs.get(tabidx);
     String str = getClipboardText();
     if (str == null) return;
     paste(str);
@@ -1330,13 +1349,15 @@ public class TEdit implements KeyEvents {
     switch (inputType) {
       case gotoline:
         String str = input.getText(0);
+        input = null;
         if (str == null) return;
         int ln = JF.atoi(str);
         if (ln <= 0) ln = 1;
         moveToLine(ln-1);
         break;
       case find:
-        doFind(true, true);
+        doFind(true);
+        input = null;
         break;
       case replace:
         doReplace();
@@ -1344,11 +1365,10 @@ public class TEdit implements KeyEvents {
     }
   }
 
-  public void doFind(boolean showError, boolean draw) {
+  public void doFind(boolean showError) {
     if (input != null) {
       find = input.getText(0);
     }
-    replace = null;
     found = false;
     Tab tab = tabs.get(tabidx);
     int cnt = tab.lines.size();
@@ -1377,47 +1397,59 @@ public class TEdit implements KeyEvents {
     if (!found) {
       if (showError) message = new MessageDialog(ansi, new String[] {"Error", "Find text not found", "Press <ESC> to close"});
     }
-    if (draw) refresh();
   }
 
   public void doReplace() {
     find = input.getText(0);
     replace = input.getText(1);
     String action = input.getAction();
+    if (action == null) {
+      if (found) {
+        action = "Replace";
+      } else {
+        action = "Find";
+      }
+    }
     switch (action) {
       case "Find":
-        doFind(true, true);
+        doFind(true);
         break;
       case "Replace":
         doReplaceOne();
         break;
       case "ReplaceAll":
         doReplaceAll();
+        input = null;
+        break;
+      case "ESC":
+        input = null;
         break;
     }
+    if (input != null) {
+      input.setAction(null);
+      input.setClosed(false);
+    }
+    refresh();
   }
 
   private void doReplaceOne() {
     if (!found) return;
+    found = false;
     delete(false);
     paste(replace);
-    refresh();
   }
 
   private void doReplaceAll() {
-    if (!found) return;
-    Tab tab = tabs.get(tabidx);
     moveTop(false, false);
     int cnt = 0;
     do {
-      doFind(false, false);
+      doFind(false);
       if (!found) break;
       doReplaceOne();
       cnt++;
     } while (true);
     input = null;
-    message = new MessageDialog(ansi, new String[] {"Error", "Replaced " + cnt + " occurances", "Press <ESC> to close"});
-    refresh();
+    message = new MessageDialog(ansi, new String[] {"Replaced " + cnt + " occurances", "Press <ESC> to close"});
   }
 
   public void createMenu() {
@@ -1446,13 +1478,14 @@ public class TEdit implements KeyEvents {
     if (find == null) {
       find();
     } else {
-      doFind(true, true);
+      doFind(true);
     }
+    refresh();
   }
 
   public void replace() {
     inputType = InputType.replace;
-    input = new InputDialog(ansi, "title", new String[] {"Enter text to find", "Enter text to replace with"}, new String[] {find, replace}, "Then <Find>, <Replace>, <ReplaceAll> or <ESC> to cancel");
+    input = new InputDialog(ansi, "title", new String[] {"Enter text to find", "Enter text to replace with"}, new String[] {find, replace}, "<Find>, <Replace>, <ReplaceAll> or <ESC>");
     input.draw();
   }
 

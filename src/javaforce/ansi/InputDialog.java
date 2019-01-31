@@ -44,6 +44,13 @@ public class InputDialog implements Dialog {
       lines[pos++] = "[" + ANSI.repeat(48-2, ' ') + "]";
     }
     lines[pos] = opts;
+    if (fields != null) {
+      //preserve current values
+      initValues = new String[msg.length];
+      for(int a=0;a<msg.length;a++) {
+        initValues[a] = ((TextField)fields[a]).getText();
+      }
+    }
     fields = ansi.drawWindow(x, y, w+2, h+2, lines);
     if (initValues != null) {
       for(int a=0;a<initValues.length;a++) {
@@ -81,7 +88,12 @@ public class InputDialog implements Dialog {
       case 10:
         //enter
         closed = true;
-        cancel = field == fields.length-1;
+        if (fields[field] instanceof Button) {
+          action = ((Button)fields[field]).action;
+          if (action.equals("ESC")) {
+            cancel = true;
+          }
+        }
         break;
       default:
         fields[field].keyTyped(key);
@@ -105,6 +117,9 @@ public class InputDialog implements Dialog {
   }
   public String getAction() {
     return action;
+  }
+  public void setAction(String action) {
+    this.action = action;
   }
   public String getText(int idx) {
     if (cancel) return null;

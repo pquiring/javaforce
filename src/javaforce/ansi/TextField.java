@@ -66,6 +66,7 @@ public class TextField extends Field {
     text.setLength(0);
     text.append(in);
     cx = 0;
+    dx = 0;
   }
 
   public String getText() {
