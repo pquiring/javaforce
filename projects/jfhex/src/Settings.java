@@ -1,4 +1,5 @@
 public class Settings {
+  public static Settings settings;
   public static int fontSize = 12;
   public static boolean bWindowMax = false;
   public static int WindowXSize = 800, WindowYSize = 600;
