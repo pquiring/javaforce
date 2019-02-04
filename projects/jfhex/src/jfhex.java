@@ -239,11 +239,15 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   public static String args[];
   public static void main(String args[]) {
     jfhex.args = args;
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      public void run() {
-        new jfhex().setVisible(true);
-      }
-    });
+    if (JF.isUnix() && System.getenv("DISPLAY") == null) {
+      THex.main(args);
+    } else {
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          new jfhex().setVisible(true);
+        }
+      });
+    }
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
