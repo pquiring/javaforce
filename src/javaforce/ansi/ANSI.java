@@ -176,7 +176,7 @@ public class ANSI {
     for(int py=y1;py<y2;py++) {
       String ln = txt[idx++];
       if (ln == null) ln = "";
-      int len = ln.length();
+      int len = ln.replaceAll("\\{checkbox\\}", "[ ]").length();
       int pad = w2 - len;
       int padleft = pad/2;
       int padright = pad - padleft;
@@ -234,6 +234,23 @@ public class ANSI {
           }
         }
         ln = ln.replaceAll("\\{list\\}", "");
+      }
+      if (ln.indexOf("{checkbox}") != -1) {
+        for(int pos=0;pos<len;pos++) {
+          if (ln.substring(pos).startsWith("{checkbox}")) {
+            fx = x1 + pos + padleft;
+            fy = py;
+            CheckBox field = new CheckBox();
+            field.x = fx + 1;
+            field.y = fy;
+            field.cx = 0;
+            field.cy = 0;
+            field.dx = 0;
+            field.dy = 0;
+            fields.add(field);
+          }
+        }
+        ln = ln.replaceAll("\\{checkbox\\}", "[ ]");
       }
       System.out.print(repeat(padleft, ' ') + ln + repeat(padright, ' '));
     }

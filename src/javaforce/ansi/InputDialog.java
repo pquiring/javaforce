@@ -35,29 +35,50 @@ public class InputDialog implements Dialog {
   public void draw() {
     int w = 48;
     int h = msg.length * 2 + 1;
+    for(int a=0;a<msg.length;a++) {
+      if (msg[a].startsWith("{checkbox}")) {
+        h--;
+      }
+    }
     int x = (ansi.width - w)/2;
     int y = (ansi.height - h)/2;
     String lines[] = new String[msg.length * 2 + 1];
     int pos = 0;
     for(int a=0;a<msg.length;a++) {
-      lines[pos++] = msg[a];
-      lines[pos++] = "[" + ANSI.repeat(48-2, ' ') + "]";
+      if (msg[a].startsWith("{checkbox}")) {
+        lines[pos++] = msg[a] + ANSI.repeat(48-2-msg[a].length()+9, ' ');
+      } else {
+        lines[pos++] = msg[a];
+        lines[pos++] = "[" + ANSI.repeat(48-2, ' ') + "]";
+      }
     }
     lines[pos] = opts;
     if (fields != null) {
       //preserve current values
       initValues = new String[msg.length];
       for(int a=0;a<msg.length;a++) {
-        initValues[a] = ((TextField)fields[a]).getText();
+        if (fields[a] instanceof TextField) {
+          initValues[a] = ((TextField)fields[a]).getText();
+        }
+        if (fields[a] instanceof CheckBox) {
+          initValues[a] = Boolean.toString(((CheckBox)fields[a]).isChecked());
+        }
       }
     }
     fields = ansi.drawWindow(x, y, w+2, h+2, lines);
     if (initValues != null) {
       for(int a=0;a<initValues.length;a++) {
         if (initValues[a] == null) continue;
-        TextField text = (TextField)fields[a];
-        text.setText(initValues[a]);
-        text.draw();
+        if (fields[a] instanceof TextField) {
+          TextField text = (TextField)fields[a];
+          text.setText(initValues[a]);
+          text.draw();
+        }
+        if (fields[a] instanceof CheckBox) {
+          CheckBox cb = (CheckBox)fields[a];
+          cb.setChecked(initValues[a].equals("true"));
+          cb.draw();
+        }
       }
       initValues = null;
     }
@@ -95,6 +116,13 @@ public class InputDialog implements Dialog {
           }
         }
         break;
+      case ' ':
+        if (fields[field] instanceof CheckBox) {
+          CheckBox cb = (CheckBox)fields[field];
+          cb.toggle();
+          cb.draw();
+        }
+        break;
       default:
         fields[field].keyTyped(key);
         break;
@@ -124,6 +152,10 @@ public class InputDialog implements Dialog {
   public String getText(int idx) {
     if (cancel) return null;
     return ((TextField)fields[idx]).getText();
+  }
+  public boolean isChecked(int idx) {
+    if (cancel) return false;
+    return ((CheckBox)fields[idx]).isChecked();
   }
   public void setOptions(String ops) {
     this.opts = opts;
