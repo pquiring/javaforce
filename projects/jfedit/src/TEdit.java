@@ -27,15 +27,15 @@ public class TEdit implements KeyEvents {
   public int menuIdx;
 
   public String menus[][] = {
-    {"New", "Open", "Close", "Save", "Save As", "-", "Exit"},
-    {"Cut", "Copy", "Paste"},
+    {"New", "Open", "Close", "Save", "Save As", "-", "Properties", "-", "Exit"},
+    {"Cut", "Copy", "Paste", "-", "Find", "Replace", "-", "Options"},
     {"Prev", "Next", "-"},
     {"Keys", "About"},
   };
 
   public int menusPos[] = {2, 7, 12, 19};
 
-  public enum InputType {none, gotoline, find, replace};
+  public enum InputType {none, gotoline, find, replace, options, properties};
   public InputType inputType = InputType.none;
 
   public String find, replace;
@@ -1305,6 +1305,15 @@ public class TEdit implements KeyEvents {
       case "Close":
         close(false);
         break;
+      case "Save":
+        save();
+        break;
+      case "Save As":
+        saveAs();
+        break;
+      case "Properties":
+        properties();
+        break;
       case "Exit":
         active = false;
         break;
@@ -1316,6 +1325,15 @@ public class TEdit implements KeyEvents {
         break;
       case "Paste":
         paste();
+        break;
+      case "Find":
+        find();
+        break;
+      case "Replace":
+        replace();
+        break;
+      case "Options":
+        options();
         break;
       case "Prev":
         tabidx--;
@@ -1361,6 +1379,12 @@ public class TEdit implements KeyEvents {
         break;
       case replace:
         doReplace();
+        break;
+      case options:
+        doOptions();
+        break;
+      case properties:
+        doProperties();
         break;
     }
   }
@@ -1493,5 +1517,47 @@ public class TEdit implements KeyEvents {
     inputType = InputType.gotoline;
     input = new InputDialog(ansi, "title", new String[] {"Enter line number"}, null, InputDialog.ENTER_ESC);
     input.draw();
+  }
+
+  public void options() {
+    inputType = InputType.options;
+    input = new InputDialog(ansi, "title"
+      , new String[] {
+        "{checkbox} Preserve line endings",
+        "{checkbox} Unix line endings"
+      }
+      , new String[] {
+        Boolean.toString(Settings.settings.bPreserve),
+        Boolean.toString(Settings.settings.bUnix)
+      }, InputDialog.ENTER_ESC);
+    input.draw();
+  }
+
+  public void doOptions() {
+    Settings.settings.bPreserve = input.isChecked(0);
+    Settings.settings.bUnix = input.isChecked(1);
+    JEdit.savecfg();
+    input = null;
+    refresh();
+  }
+
+  public void properties() {
+    Tab tab = tabs.get(tabidx);
+    inputType = InputType.properties;
+    input = new InputDialog(ansi, "title"
+      , new String[] {
+        "{checkbox} Unix line endings"
+      }
+      , new String[] {
+        Boolean.toString(!tab.crlf)
+      }, InputDialog.ENTER_ESC);
+    input.draw();
+  }
+
+  public void doProperties() {
+    Tab tab = tabs.get(tabidx);
+    tab.crlf = !input.isChecked(0);
+    input = null;
+    refresh();
   }
 }

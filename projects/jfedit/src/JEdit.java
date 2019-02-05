@@ -232,7 +232,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     xml.writeClass(xml.root, Settings.settings);
     if (gui) fnt = JFAWT.getMonospacedFont(0, Settings.settings.fontSize);
   }
-  public void savecfg() {
+  public static void savecfg() {
     XML xml = new XML();
     XML.XMLTag tag;
     xml.root.name = "jfedit";
