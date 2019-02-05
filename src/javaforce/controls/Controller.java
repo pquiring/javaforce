@@ -235,6 +235,17 @@ public class Controller {
     ANY, INTEGER16, INTEGER32, FLOAT, BOOLEAN
   }
 
+  private boolean writePartial(S7Data s7) {
+    byte packet[] = S7Packet.makeWritePacket(s7);
+    try {
+      os.write(packet);
+    } catch (Exception e) {
+      lastException = e;
+      return false;
+    }
+    return true;
+  }
+
   /** Writes data to PLC. */
   public boolean write(String addr, byte data[]) {
     return write(addr, data, datatype.ANY);
@@ -251,13 +262,23 @@ public class Controller {
       switch (plc) {
         case ControllerType.S7: {
           S7Data s7 = S7Packet.decodeAddress(addr);
-          s7.data = data;
-          byte packet[] = S7Packet.makeWritePacket(s7);
-          try {
-            os.write(packet);
-          } catch (Exception e) {
-            lastException = e;
-            return false;
+          int left = s7.getLength();
+          int offset = 0;
+          while (left > 0) {
+            if (left > 200) {
+              s7.data = Arrays.copyOfRange(data, offset, 200);
+              if (!writePartial(s7)) {
+                return false;
+              }
+            } else {
+              s7.data = Arrays.copyOfRange(data, offset, left);
+              if (!writePartial(s7)) {
+                return false;
+              }
+            }
+            left -= s7.data.length;
+            offset += s7.data.length;
+            s7.offset += s7.data.length << 3;
           }
           return true;
         }
@@ -381,6 +402,7 @@ public class Controller {
             left -= part.length;
             read += part.length;
             s7.offset += part.length << 3;
+            offset += part.length;
           }
           return data;
         }
