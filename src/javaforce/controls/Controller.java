@@ -333,6 +333,30 @@ public class Controller {
     }
   }
 
+  private byte[] readPartial(S7Data s7) {
+    byte packet[] = S7Packet.makeReadPacket(s7);
+    try {
+      os.write(packet);
+    } catch (Exception e) {
+      lastException = e;
+      return null;
+    }
+    byte reply[] = new byte[1500];
+    int replySize = 0;
+    try {
+      do {
+        int read = is.read(reply, replySize, 1500 - replySize);
+        if (read == -1) throw new Exception("bad read");
+        replySize += read;
+      } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
+    } catch (Exception e) {
+      lastException = e;
+      return null;
+    }
+    s7 = S7Packet.decodePacket(Arrays.copyOf(reply, replySize));
+    return s7.data;
+  }
+
   /** Reads data from PLC. */
   public byte[] read(String addr) {
     addr = addr.toUpperCase();
@@ -342,27 +366,23 @@ public class Controller {
         case ControllerType.S7: {
           S7Data s7 = S7Packet.decodeAddress(addr);
           if (s7 == null) return null;
-          byte packet[] = S7Packet.makeReadPacket(s7);
-          try {
-            os.write(packet);
-          } catch (Exception e) {
-            lastException = e;
-            return null;
+          byte data[] = new byte[s7.getLength()];
+          int offset = 0;
+          int read = 0;
+          int left = data.length;
+          while (read < data.length) {
+            if (left > 200) {
+              s7.length = (short)(200 / S7Types.getTypeSize(s7.data_type, (short)1));
+            } else {
+              s7.length = (short)(left / S7Types.getTypeSize(s7.data_type, (short)1));
+            }
+            byte part[] = readPartial(s7);
+            System.arraycopy(part, 0, data, offset, part.length);
+            left -= part.length;
+            read += part.length;
+            s7.offset += part.length << 3;
           }
-          byte reply[] = new byte[1500];
-          int replySize = 0;
-          try {
-            do {
-              int read = is.read(reply, replySize, 1500 - replySize);
-              if (read == -1) throw new Exception("bad read");
-              replySize += read;
-            } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
-          } catch (Exception e) {
-            lastException = e;
-            return null;
-          }
-          s7 = S7Packet.decodePacket(Arrays.copyOf(reply, replySize));
-          return s7.data;
+          return data;
         }
         case ControllerType.MB: {
           ModAddr ma = ModPacket.decodeAddress(addr);
