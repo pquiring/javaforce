@@ -28,7 +28,7 @@ public class THex implements KeyEvents {
 
   public String menus[][] = {
     {"New", "Open", "Close", "Save", "Save As", "-", "Exit"},
-    {"Cut", "Copy", "Paste"},
+    {"Cut", "Copy", "Paste", "-", "Find", "Replace"},
     {"Prev", "Next", "-"},
     {"Keys", "About"},
   };
@@ -1371,6 +1371,12 @@ public class THex implements KeyEvents {
       case "Close":
         close(false);
         break;
+      case "Save":
+        save();
+        break;
+      case "Save As":
+        saveAs();
+        break;
       case "Exit":
         active = false;
         break;
@@ -1382,6 +1388,12 @@ public class THex implements KeyEvents {
         break;
       case "Paste":
         paste();
+        break;
+      case "Find":
+        find();
+        break;
+      case "Replace":
+        replace();
         break;
       case "Prev":
         tabidx--;
