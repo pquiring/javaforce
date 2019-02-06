@@ -90,10 +90,10 @@ jre-base-javac : prep JRE with java compiler support
 
 Building stubs (native launchers)
 ---------------------------------
-Building the stubs will requires gcc in your path.
+Building the stubs requires gcc in your path.
 Windows:Please install cygwin and install mingw-gcc 64bit packages.
-Linux:Debian/Ubuntu:run 'deb' ant job to install required packages.
-Linux:RedHat/Fedora:run 'rpm' ant job to install required packages.
+Linux:Debian/Ubuntu:run 'ant deb' to install required packages.
+Linux:RedHat/Fedora:run 'ant rpm' to install required packages.
 
 Building native library (ffmpeg, OpenGL, Camera)
 --------------------------------------------
