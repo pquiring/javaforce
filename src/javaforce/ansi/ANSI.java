@@ -62,6 +62,14 @@ public class ANSI {
     return changed;
   }
 
+  public boolean kbhit() {
+    if (JF.isWindows()) {
+      return WinNative.peekConsole();
+    } else {
+      return LnxNative.peekConsole();
+    }
+  }
+
   public char readConsole() {
     //System.in is buffered and not suitable for console apps
     char ch;
