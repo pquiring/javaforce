@@ -28,7 +28,7 @@
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
     <mkdir dir="jars"/>
-    <javac srcdir="${src}" destdir="${build}" target="1.8" source="1.8" debug="true" includeantruntime="false">
+    <javac srcdir="${src}" destdir="${build}" target="1.8" source="1.8" debug="true" includeantruntime="false" nativeheaderdir="native/headers">
       <compilerarg value="-Xlint:unchecked"/>
       <classpath>
         <fileset dir="jars" includes="*.jar"/>

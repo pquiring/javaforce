@@ -2,26 +2,10 @@
   <description>native</description>
   <property environment="env"/>
 
-  <target name="javah">
-    <javah destdir="." classpath="../../classes">
-      <class name="javaforce.gl.GL"/>
-      <class name="javaforce.gl.GLWindow"/>
-      <class name="javaforce.media.Camera"/>
-      <class name="javaforce.media.MediaCoder"/>
-      <class name="javaforce.media.MediaDecoder"/>
-      <class name="javaforce.media.MediaEncoder"/>
-      <class name="javaforce.media.MediaVideoDecoder"/>
-      <class name="javaforce.jni.LnxNative"/>
-      <class name="javaforce.controls.ni.DAQmx"/>
-      <class name="javaforce.pi.GPIO"/>
-      <class name="javaforce.pi.I2C"/>
-    </javah>
-  </target>
-
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
-  <target name="x64" depends="javah"  description="create linux native so">
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/x86_64-linux-gnu linux.cpp -c -o linux64.o -fPIC"/>
+  <target name="x64" description="create linux native so">
+    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux-I /usr/include/x86_64-linux-gnu -I ../headers  linux.cpp -c -o linux64.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw.c -c -o glfw64.o -fPIC"/>
     <exec command="gcc -shared linux64.o glfw64.o -L /usr/lib/x86_64-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative64.so"/>
 
@@ -30,8 +14,8 @@
     </delete>
   </target>
 
-  <target name="x32" depends="javah"  description="create linux native so">
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/i386-linux-gnu linux.cpp -c -o linux32.o -fPIC"/>
+  <target name="x32" description="create linux native so">
+    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/i386-linux-gnu -I ../headers  linux.cpp -c -o linux32.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/i386-linux-gnu glfw.c -c -o glfw32.o -fPIC"/>
     <exec command="gcc -shared linux32.o glfw32.o -L /usr/lib/i386-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative32.so"/>
 
@@ -40,8 +24,8 @@
     </delete>
   </target>
 
-  <target name="pi" depends="javah"  description="create Raspberry Pi native so">
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/arm-linux-gnueabihf linux.cpp -c -o linux32.o -fPIC"/>
+  <target name="pi" description="create Raspberry Pi native so">
+    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/arm-linux-gnueabihf -I ../headers  linux.cpp -c -o linux32.o -fPIC"/>
     <exec command="gcc ${opt} -I../glfw/include -I /usr/include/arm-linux-gnueabihf glfw.c -c -o glfw32.o -fPIC"/>
     <exec command="gcc -shared linux32.o glfw32.o -L /usr/lib/arm-linux-gnueabihf -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative32.so"/>
 

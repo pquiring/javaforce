@@ -105,4 +105,5 @@ public class LnxNative {
   public static native void disableConsoleMode();
   public static native int[] getConsoleSize();
   public static native char readConsole();
+  public static native boolean peekConsole();
 }

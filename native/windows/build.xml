@@ -2,25 +2,11 @@
   <description>native</description>
   <property environment="env"/>
 
-  <target name="javah">
-    <javah destdir="." classpath="../../classes">
-      <class name="javaforce.gl.GL"/>
-      <class name="javaforce.gl.GLWindow"/>
-      <class name="javaforce.media.Camera"/>
-      <class name="javaforce.media.MediaCoder"/>
-      <class name="javaforce.media.MediaDecoder"/>
-      <class name="javaforce.media.MediaEncoder"/>
-      <class name="javaforce.media.MediaVideoDecoder"/>
-      <class name="javaforce.jni.WinNative"/>
-      <class name="javaforce.controls.ni.DAQmx"/>
-    </javah>
-  </target>
-
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
   <!-- Requires cygwin/mingw in PATH -->
   <target name="windows" description="create windows native dll">
-    <exec command="x86_64-w64-mingw32-gcc ${opt} -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -I '${env.FFMPEG_HOME}' windows.cpp -c -Wl,-subsystem,windows -o win64.obj"/>
+    <exec command="x86_64-w64-mingw32-gcc ${opt} -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -I '${env.FFMPEG_HOME}' -I '../headers' windows.cpp -c -Wl,-subsystem,windows -o win64.obj"/>
     <exec command="x86_64-w64-mingw32-gcc ${opt} -I'../glfw/include' glfw.c -c -Wl,-subsystem,windows -o glfw64.obj -Wl,--kill-at"/>
     <exec command="x86_64-w64-mingw32-gcc -shared -static -static-libstdc++ win64.obj glfw64.obj -lgdi32 -lole32 -loleaut32 -lstrmiids -lopengl32 -lstdc++ -o ../jfnative64.dll"/>
     <delete>
