@@ -1664,6 +1664,39 @@ JNIEXPORT jchar JNICALL Java_javaforce_jni_LnxNative_readConsole
   return (jchar)ch;
 }
 
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_peekConsole
+  (JNIEnv *e, jclass c)
+{
+  if (console_buffer[0] != 0) return JNI_TRUE;
+  wtimeout(stdscr, 0);
+  char ch = wgetch(stdscr);
+  if (ch == 0x1b) {
+    console_buffer[0] = 0x1b;
+    //is it Escape key or ANSI code???
+    wtimeout(stdscr, 100);
+    char ch2 = wgetch(stdscr);  //waits 100ms max
+    if (ch2 == ERR) {
+      StringCopy(console_buffer+1, "[1~");  //custom ansi code for esc
+    } else {
+      if (ch2 == 0x1b) {
+        ungetch(ch2);
+        StringCopy(console_buffer+1, "[1~");  //custom ansi code for esc
+      } else {
+        console_buffer[1] = ch2;
+        console_buffer[2] = 0;
+      }
+    }
+    wtimeout(stdscr, -1);
+  }
+  if (ch == ERR) {
+    return JNI_FALSE;
+  } else {
+    console_buffer[0] = ch;
+    console_buffer[1] = 0;
+    return JNI_TRUE;
+  }
+}
+
 #include "../common/library.h"
 
 #include "../common/ffmpeg.cpp"

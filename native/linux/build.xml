@@ -5,7 +5,7 @@
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
   <target name="x64" description="create linux native so">
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux-I /usr/include/x86_64-linux-gnu -I ../headers  linux.cpp -c -o linux64.o -fPIC"/>
+    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include/linux -I ${env.JAVA_HOME}/include -I /usr/include/x86_64-linux-gnu -I ../headers  linux.cpp -c -o linux64.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw.c -c -o glfw64.o -fPIC"/>
     <exec command="gcc -shared linux64.o glfw64.o -L /usr/lib/x86_64-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative64.so"/>
 
@@ -15,7 +15,7 @@
   </target>
 
   <target name="x32" description="create linux native so">
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/i386-linux-gnu -I ../headers  linux.cpp -c -o linux32.o -fPIC"/>
+    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include/linux -I ${env.JAVA_HOME}/include -I /usr/include/i386-linux-gnu -I ../headers  linux.cpp -c -o linux32.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/i386-linux-gnu glfw.c -c -o glfw32.o -fPIC"/>
     <exec command="gcc -shared linux32.o glfw32.o -L /usr/lib/i386-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative32.so"/>
 

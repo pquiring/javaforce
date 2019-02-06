@@ -919,6 +919,14 @@ JNIEXPORT jchar JNICALL Java_javaforce_jni_WinNative_readConsole
   }
 }
 
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_peekConsole
+  (JNIEnv *e, jclass c)
+{
+  DWORD count;
+  GetNumberOfConsoleInputEvents(GetStdHandle(STD_INPUT_HANDLE), &count);
+  return count != 0;
+}
+
 JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_add
   (JNIEnv *e, jclass c, jint x, jint y)
 {
