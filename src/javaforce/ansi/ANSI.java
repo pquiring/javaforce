@@ -47,6 +47,21 @@ public class ANSI {
     getConsoleSize();
   }
 
+  public static void enableConsoleMode() {
+    JFNative.load_ffmpeg = false;  //speed up startup on Linux
+    if (JF.isWindows())
+      WinNative.enableConsoleMode();
+    else
+      LnxNative.enableConsoleMode();
+  }
+
+  public static void disableConsoleMode() {
+    if (JF.isWindows())
+      WinNative.disableConsoleMode();
+    else
+      LnxNative.disableConsoleMode();
+  }
+
   public boolean getConsoleSize() {
     int xy[];
     if (JF.isWindows()) {

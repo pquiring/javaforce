@@ -632,17 +632,10 @@ public class THex implements KeyEvents {
   }
 
   public static void main(String args[]) {
-    JFNative.load_ffmpeg = false;  //speed up startup on Linux
     THex.args = args;
-    if (JF.isWindows())
-      WinNative.enableConsoleMode();
-    else
-      LnxNative.enableConsoleMode();
+    ANSI.enableConsoleMode();
     new THex().run();
-    if (JF.isWindows())
-      WinNative.disableConsoleMode();
-    else
-      LnxNative.disableConsoleMode();
+    ANSI.disableConsoleMode();
   }
 
   public void run() {

@@ -596,17 +596,10 @@ public class TEdit implements KeyEvents {
   }
 
   public static void main(String args[]) {
-    JFNative.load_ffmpeg = false;  //speed up startup on Linux
+    ANSI.enableConsoleMode();
     TEdit.args = args;
-    if (JF.isWindows())
-      WinNative.enableConsoleMode();
-    else
-      LnxNative.enableConsoleMode();
     new TEdit().run();
-    if (JF.isWindows())
-      WinNative.disableConsoleMode();
-    else
-      LnxNative.disableConsoleMode();
+    ANSI.disableConsoleMode();
   }
 
   public void run() {
