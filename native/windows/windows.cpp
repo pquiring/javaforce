@@ -841,82 +841,79 @@ JNIEXPORT jchar JNICALL Java_javaforce_jni_WinNative_readConsole
     StringCopy(console_buffer, console_buffer+1);
     return (jchar)ret;
   }
-  while (1) {
-    ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &input, 1, &read);
-    if (input.EventType != KEY_EVENT) continue;
-    if (!input.Event.KeyEvent.bKeyDown) continue;
-    if (input.Event.KeyEvent.uChar.AsciiChar != 0) {
-      char ch = input.Event.KeyEvent.uChar.AsciiChar;
-      if (ch == 0x1b) {
-        //is it Escape key or ANSI code???
-        for(int a=0;a<10;a++) {
-          read = 0;
-          PeekConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &input, 1, &read);
-          if (read == 1) {
-            char ch2 = input.Event.KeyEvent.uChar.AsciiChar;
-            if (input.EventType == KEY_EVENT && input.Event.KeyEvent.bKeyDown && ch2 != 0) {
-              if (ch2 != 0x1b) {
-                //must be an ANSI code
-                return (jchar)ch;
-              } else {
-                //multiple esc chars - prev must be esc key
-                break;
-              }
+  ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &input, 1, &read);
+  if (input.EventType != KEY_EVENT) return 0;
+  if (!input.Event.KeyEvent.bKeyDown) return 0;
+  if (input.Event.KeyEvent.uChar.AsciiChar != 0) {
+    char ch = input.Event.KeyEvent.uChar.AsciiChar;
+    if (ch == 0x1b) {
+      //is it Escape key or ANSI code???
+      for(int a=0;a<10;a++) {
+        read = 0;
+        PeekConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &input, 1, &read);
+        if (read == 1) {
+          char ch2 = input.Event.KeyEvent.uChar.AsciiChar;
+          if (input.EventType == KEY_EVENT && input.Event.KeyEvent.bKeyDown && ch2 != 0) {
+            if (ch2 != 0x1b) {
+              //must be an ANSI code
+              return (jchar)ch;
             } else {
-              //ignore non-ascii events
-              ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &input, 1, &read);
-              continue;
+              //multiple esc chars - prev must be esc key
+              break;
             }
+          } else {
+            //ignore non-ascii events
+            ReadConsoleInput(GetStdHandle(STD_INPUT_HANDLE), &input, 1, &read);
+            continue;
           }
-          Sleep(10);
         }
-        //it must be Escape key
-        StringCopy(console_buffer, "[1~");  //custom code
+        Sleep(10);
       }
-      if (ch == 13) ch = 10;  //linux style
-      return (jchar)ch;
+      //it must be Escape key
+      StringCopy(console_buffer, "[1~");  //custom code
     }
-    bool shift = input.Event.KeyEvent.dwControlKeyState & SHIFT_PRESSED;
-    bool ctrl = input.Event.KeyEvent.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED);
-    bool alt = input.Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED);
-    char code = 0;
-    if (shift && ctrl && alt) {
-      code = '8';
-    } else if (ctrl && alt) {
-      code = '7';
-    } else if (ctrl && shift) {
-      code = '6';
-    } else if (ctrl) {
-      code = '5';
-    } else if (alt && shift) {
-      code = '4';
-    } else if (alt) {
-      code = '3';
-    } else if (shift) {
-      code = '2';
-    }
-    switch (input.Event.KeyEvent.wVirtualKeyCode) {
-      case VK_ESCAPE: StringCopy(console_buffer, "\x1b[1~"); break;  //custom
-      case VK_INSERT: StringCopy(console_buffer, "\x1b[2~"); break;
-      case VK_DELETE: StringCopy(console_buffer, "\x1b[3~"); break;
-      case VK_UP: StringCopy(console_buffer, "\x1b[1;0A"); break;
-      case VK_DOWN: StringCopy(console_buffer, "\x1b[1;0B"); break;
-      case VK_RIGHT: StringCopy(console_buffer, "\x1b[1;0C"); break;
-      case VK_LEFT: StringCopy(console_buffer, "\x1b[1;0D"); break;
-      case VK_HOME: StringCopy(console_buffer, "\x1b[1;0H"); break;
-      case VK_END: StringCopy(console_buffer, "\x1b[1;0F"); break;
-      default:
-        continue;
-    }
-    if (console_buffer[0] != 0) {
-      if (code > 0 && console_buffer[3] != '~') {
-        console_buffer[4] = code;
-      }
-      char ret = console_buffer[0];
-      StringCopy(console_buffer, console_buffer+1);
-      return (jchar)ret;
-    }
+    if (ch == 13) ch = 10;  //linux style
+    return (jchar)ch;
   }
+  bool shift = input.Event.KeyEvent.dwControlKeyState & SHIFT_PRESSED;
+  bool ctrl = input.Event.KeyEvent.dwControlKeyState & (LEFT_CTRL_PRESSED | RIGHT_CTRL_PRESSED);
+  bool alt = input.Event.KeyEvent.dwControlKeyState & (LEFT_ALT_PRESSED | RIGHT_ALT_PRESSED);
+  char code = 0;
+  if (shift && ctrl && alt) {
+    code = '8';
+  } else if (ctrl && alt) {
+    code = '7';
+  } else if (ctrl && shift) {
+    code = '6';
+  } else if (ctrl) {
+    code = '5';
+  } else if (alt && shift) {
+    code = '4';
+  } else if (alt) {
+    code = '3';
+  } else if (shift) {
+    code = '2';
+  }
+  switch (input.Event.KeyEvent.wVirtualKeyCode) {
+    case VK_ESCAPE: StringCopy(console_buffer, "\x1b[1~"); break;  //custom
+    case VK_INSERT: StringCopy(console_buffer, "\x1b[2~"); break;
+    case VK_DELETE: StringCopy(console_buffer, "\x1b[3~"); break;
+    case VK_UP: StringCopy(console_buffer, "\x1b[1;0A"); break;
+    case VK_DOWN: StringCopy(console_buffer, "\x1b[1;0B"); break;
+    case VK_RIGHT: StringCopy(console_buffer, "\x1b[1;0C"); break;
+    case VK_LEFT: StringCopy(console_buffer, "\x1b[1;0D"); break;
+    case VK_HOME: StringCopy(console_buffer, "\x1b[1;0H"); break;
+    case VK_END: StringCopy(console_buffer, "\x1b[1;0F"); break;
+  }
+  if (console_buffer[0] != 0) {
+    if (code > 0 && console_buffer[3] != '~') {
+      console_buffer[4] = code;
+    }
+    char ret = console_buffer[0];
+    StringCopy(console_buffer, console_buffer+1);
+    return (jchar)ret;
+  }
+  return 0;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_peekConsole
