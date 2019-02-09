@@ -55,7 +55,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/3">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">javaforce.jar;games.jar</classpath>
+                <classpath mode="compile">javaforce.jar</classpath>
                 <source-level>1.7</source-level>
             </compilation-unit>
         </java-data>
