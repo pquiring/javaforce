@@ -96,6 +96,12 @@ public class ANSI {
     return ch;
   }
 
+  public void flushConsole() {
+    while (kbhit()) {
+      readConsole();
+    }
+  }
+
   public void clrscr() {
     System.out.print(ESC + "[2J");
   }

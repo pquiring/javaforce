@@ -36,7 +36,7 @@ public class InputDialog implements Dialog {
     int w = 48;
     int h = msg.length * 2 + 1;
     for(int a=0;a<msg.length;a++) {
-      if (msg[a].startsWith("{checkbox}")) {
+      if (msg[a].startsWith("{checkbox}") || msg[a].startsWith("<")) {
         h--;
       }
     }
@@ -47,6 +47,8 @@ public class InputDialog implements Dialog {
     for(int a=0;a<msg.length;a++) {
       if (msg[a].startsWith("{checkbox}")) {
         lines[pos++] = msg[a] + ANSI.repeat(48-2-msg[a].length()+9, ' ');
+      } else if (msg[a].startsWith("<")) {
+        lines[pos++] = msg[a] + ANSI.repeat(48-2-msg[a].length(), ' ');
       } else {
         lines[pos++] = msg[a];
         lines[pos++] = "[" + ANSI.repeat(48-2, ' ') + "]";

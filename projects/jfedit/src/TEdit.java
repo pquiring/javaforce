@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 
 import javaforce.*;
 import javaforce.ansi.*;
+import javaforce.ansi.games.*;
 import javaforce.jni.*;
 
 public class TEdit implements KeyEvents {
@@ -23,6 +24,7 @@ public class TEdit implements KeyEvents {
   public InputDialog input;
   public FileDialog file;
   public Menu menu;
+  public KeyEvents game;
 
   public int menuIdx;
 
@@ -35,7 +37,7 @@ public class TEdit implements KeyEvents {
 
   public int menusPos[] = {2, 7, 12, 19};
 
-  public enum InputType {none, gotoline, find, replace, options, properties};
+  public enum InputType {none, gotoline, find, replace, options, properties, games};
   public InputType inputType = InputType.none;
 
   public String find, replace;
@@ -45,6 +47,10 @@ public class TEdit implements KeyEvents {
 //    System.err.println("keyCode=" + keyCode + ",keyMods=" + keyMods);
     if (keyMods == 0 && keyCode == KeyEvent.VK_F5) {
       refresh();
+    }
+    if (game != null) {
+      game.keyPressed(keyCode, keyMods);
+      return;
     }
     if (input != null) {
       input.keyPressed(keyCode, keyMods);
@@ -210,6 +216,10 @@ public class TEdit implements KeyEvents {
             createDebug();
             refresh();
             break;
+          case 'g':
+            createGames();
+            refresh();
+            break;
         }
         break;
       case KeyEvent.SHIFT_MASK:
@@ -245,6 +255,10 @@ public class TEdit implements KeyEvents {
 
   public void keyTyped(char key) {
 //    System.err.println("keyTyped:" + (int)key);
+    if (game != null) {
+      game.keyTyped(key);
+      return;
+    }
     if (input != null) {
       input.keyTyped(key);
       if (input.isClosed()) {
@@ -686,6 +700,12 @@ public class TEdit implements KeyEvents {
       "Size:" + ansi.width + "x" + ansi.height,
       "TabSize:" + Settings.settings.tabSize
     });
+  }
+
+  public void createGames() {
+    inputType = InputType.games;
+    input = new InputDialog(ansi, "games", new String[] {"<T> Tetris"}, null, "<ESC> to cancel");
+    refresh();
   }
 
   public void loadConfig() {
@@ -1378,6 +1398,18 @@ public class TEdit implements KeyEvents {
         break;
       case properties:
         doProperties();
+        break;
+      case games:
+        String action = input.getAction();
+        input = null;
+        switch (action) {
+          case "T":
+            game = new Tetris();
+            ((Tetris)game).run(ansi);
+            refresh();
+            game = null;
+            break;
+        }
         break;
     }
   }
