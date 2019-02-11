@@ -501,7 +501,7 @@ public class DHCP extends Thread {
           pool = null;
         }
         if (pool == null) throw new Exception("no pool for request");
-        if (yip !=0 && (yip & pool.mask_int) == (pool.pool_first_int & pool.mask_int)) {
+        if (yip != 0 && (yip & pool.mask_int) == (pool.pool_first_int & pool.mask_int)) {
           yipOffset = yip - pool.pool_first_int;
         }
         //28 = 16 bytes = client hardware address (ethernet : 6 bytes)
@@ -524,6 +524,8 @@ public class DHCP extends Thread {
               yip = bb.getInt(offset);
               if ((yip & pool.mask_int) == (pool.pool_first_int & pool.mask_int)) {
                 yipOffset = yip - pool.pool_first_int;
+              } else {
+                JFLog.log("invalid requested ip:" + IP4toString(yip));
               }
               break;
           }
@@ -570,7 +572,7 @@ public class DHCP extends Thread {
           case DHCPREQUEST:
             //mark ip as used and send ack or nak if already in use
             if (yipOffset < 0 || yipOffset >= pool.count) {
-              JFLog.log("request out of range");
+              JFLog.log("request out of range:" + yipOffset);
               break;
             }
             synchronized(pool.lock) {
@@ -677,6 +679,10 @@ public class DHCP extends Thread {
       reply[replyOffset++] = OPT_ROUTER;
       reply[replyOffset++] = 4;
       putIP4(pool.router);
+
+      reply[replyOffset++] = OPT_REQUEST_IP;
+      reply[replyOffset++] = 4;
+      putByteArray(yip);  //your IP
 
       reply[replyOffset++] = OPT_DHCP_SERVER_IP;
       reply[replyOffset++] = 4;
