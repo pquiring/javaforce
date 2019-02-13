@@ -53,8 +53,7 @@
 
     <echo>ant x32 : build intel x86 32bit</echo>
     <echo>ant x64 : build intel x86 64bit</echo>
-    <echo>ant a32 : build ARM 32bit</echo>
-    <echo>ant a64 : build ARM 64bit</echo>
+    <echo>ant pi : build ARM 32bit (Raspberry PI)</echo>
   </target>
 
 </project>

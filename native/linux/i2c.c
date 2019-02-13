@@ -27,9 +27,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_I2C_init
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_pi_I2C_read
-  (JNIEnv *env, jclass obj, jByteArray ba)
+  (JNIEnv *e, jclass c, jbyteArray ba)
 {
-  jbyte *bufr = e->GetByteArrayElements(ba, NULL);
+  jbyte *buf = e->GetByteArrayElements(ba, NULL);
   int bufsiz = e->GetArrayLength(ba);
   int read = read(file_i2c, buf, bufsiz);
   e->ReleaseByteArrayElements(ba, buf, 0);
@@ -37,9 +37,9 @@ JNIEXPORT jint JNICALL Java_javaforce_pi_I2C_read
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_pi_I2C_write
-  (JNIEnv *env, jclass obj, jByteArray ba)
+  (JNIEnv *e, jclass c, jbyteArray ba)
 {
-  jbyte *bufr = e->GetByteArrayElements(ba, NULL);
+  jbyte *buf = e->GetByteArrayElements(ba, NULL);
   int bufsiz = e->GetArrayLength(ba);
   int written = write(file_i2c, buf, bufsiz);
   e->ReleaseByteArrayElements(ba, buf, 0);
