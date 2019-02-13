@@ -8,7 +8,7 @@ package javaforce.pi;
  */
 
 public class I2C {
-  public native boolean init_incomplete();
+  public native boolean init(int slave_addr);
   public native boolean write(byte data[]);
   public native int read(byte data[]);
 }
