@@ -10,20 +10,25 @@
 static int file_i2c;
 
 JNIEXPORT jboolean JNICALL Java_javaforce_pi_I2C_init
-  (JNIEnv *env, jclass obj, jint addr)
+  (JNIEnv *env, jclass obj)
 {
   if ((file_i2c = open("/dev/i2c-1", O_RDWR)) < 0)
   {
     printf("Failed to open the i2c bus");
     return JNI_FALSE;
   }
+  return JNI_TRUE;
+}
 
+JNIEXPORT jboolean JNICALL Java_javaforce_pi_I2C_setSlave
+  (JNIEnv *env, jclass obj, jint addr)
+{
   if (ioctl(file_i2c, I2C_SLAVE, addr) < 0)
   {
     printf("Failed to acquire bus access and/or talk to slave.\n");
     return JNI_FALSE;
   }
-  return JNI_TRUE;	
+  return JNI_TRUE;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_pi_I2C_read
