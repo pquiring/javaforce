@@ -14,7 +14,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_I2C_init
 {
   if ((file_i2c = open("/dev/i2c-1", O_RDWR)) < 0)
   {
-    printf("Failed to open the i2c bus");
+    printf("Failed to open the i2c bus.\n");
     return JNI_FALSE;
   }
   return JNI_TRUE;
