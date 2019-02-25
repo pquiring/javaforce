@@ -64,7 +64,7 @@ public class ModbusServer extends Thread {
       //PORT=#  //Modbus port (default=502)
       //INVERT=true|false  //invert GPIO bits
       //GPIO:I/O;bit=#;addr=#
-      //I2C:I/O:data={int8|int16|int24|int32};avg=#,#;addr=#;slave=#;write=#,#,#;read=#,#,...
+      //I2C:I/O:type={int8|int16|int24|int32};avg=#,#;addr=#;slaveaddr=#;write=#,#,#;read=#,#,...
       if (ln.startsWith("GPIO:")) {
         //read GPIO config
         String fs[] = ln.substring(4).split(";");
