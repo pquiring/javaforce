@@ -60,14 +60,14 @@ public class ModbusServer extends Thread {
       return;
     }
     for(int a=0;a<lns.length;a++) {
-      String ln = lns[a];
+      String ln = lns[a].toLowerCase().replaceAll(" ", "");
       //PORT=#  //Modbus port (default=502)
       //INVERT=true|false  //invert GPIO bits
       //GPIO:I/O;bit=#;addr=#
       //I2C:I/O:type={int8|int16|int24|int32};avg=#,#;addr=#;slaveaddr=#;write=#,#,#;read=#,#,...
-      if (ln.startsWith("GPIO:")) {
+      if (ln.startsWith("gpio:")) {
         //read GPIO config
-        String fs[] = ln.substring(4).split(";");
+        String fs[] = ln.substring(5).split(";");
         IO io = IO.unknown;
         int addr = -1;
         int bit = -1;
@@ -75,10 +75,10 @@ public class ModbusServer extends Thread {
           int idx = ln.indexOf('=');
           if (idx == -1) {
             switch (ln) {
-              case "I":
+              case "i":
                 io = IO.input;
                 break;
-              case "O":
+              case "o":
                 io = IO.output;
                 break;
             }
@@ -114,7 +114,7 @@ public class ModbusServer extends Thread {
             break;
         }
       }
-      else if (ln.startsWith("I2C:")) {
+      else if (ln.startsWith("i2c:")) {
         //read I2C config
         String fs[] = ln.substring(4).split(";");
         IO io = IO.unknown;
@@ -129,10 +129,10 @@ public class ModbusServer extends Thread {
           int idx = ln.indexOf('=');
           if (idx == -1) {
             switch (ln) {
-              case "I":
+              case "i":
                 io = IO.input;
                 break;
-              case "O":
+              case "o":
                 io = IO.output;
                 break;
             }
@@ -237,8 +237,8 @@ public class ModbusServer extends Thread {
         String key = ln.substring(0, idx).trim();
         String value = ln.substring(idx+1).trim();
         switch (key) {
-          case "PORT": port = Integer.valueOf(value); break;
-          case "INVERT": invert = Boolean.valueOf(value); break;
+          case "port": port = Integer.valueOf(value); break;
+          case "invert": invert = Boolean.valueOf(value); break;
         }
       }
     }
@@ -266,25 +266,25 @@ public class ModbusServer extends Thread {
   private static final int IOflag = 0x200;  //I/O byte
 
   //hex values : xx = xx
-  //checksum8 : CS8 = -256
+  //checksum8 : CS8 = 0x100
   //input/output bytes : I/O# = -01 thru -ff
   public int[] decodeBytes(String fs[], boolean allowIO) {
     int ret[] = new int[fs.length];
     for(int a=0;a<fs.length;a++) {
       String f = fs[a].trim();
-      if (f.equals("CS8")) {
+      if (f.equals("cs8")) {
         ret[a] = CS8flag;
         continue;
       }
       switch (f.charAt(0)) {
-        case 'I':  //input byte
+        case 'i':  //input byte
           if (!allowIO) {
             JFLog.log("Error:bad I2C");
             System.exit(0);
           }
           ret[a] = IOflag & Integer.valueOf(f.substring(1));
           break;
-        case 'O':  //output byte
+        case 'o':  //output byte
           if (!allowIO) {
             JFLog.log("Error:bad I2C");
             System.exit(0);
