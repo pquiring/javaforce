@@ -318,6 +318,16 @@ public class ModbusServer extends Thread {
     //byte data[] per func
   }
 
+  public static void printArray(String msg, byte array[]) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(msg);
+    for(int a=0;a<array.length;a++) {
+      if (a > 0) sb.append(",");
+      sb.append(String.format("%02d", array[a]));
+    }
+    System.out.println(sb);
+  }
+
   //I2C Input Mapping
   public static class I2C_I extends TimerTask {
     public int addr;  //modbus register #
@@ -363,11 +373,13 @@ public class ModbusServer extends Thread {
           data[a] = (byte)(writeBytes[a] & 0xff);
         }
       }
+      printArray("write:", data);
       I2C.write(data);
     }
     private Value read() {
       byte data[] = new byte[readBytes.length];
       I2C.read(data);
+      printArray("read:", data);
       Value value = type.newInstance();
       byte vs[] = new byte[value.getSize()];
       for(int a=0;a<readBytes.length;a++) {
