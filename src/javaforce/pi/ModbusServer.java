@@ -68,6 +68,7 @@ public class ModbusServer extends Thread {
         int addr = -1;
         int bit = -1;
         for(int b=0;b<fs.length;b++) {
+          ln = fs[b];
           int idx = ln.indexOf('=');
           if (idx == -1) {
             switch (ln) {
@@ -122,6 +123,7 @@ public class ModbusServer extends Thread {
         int readBytes[] = null;
         int writeBytes[] = null;
         for(int b=0;b<fs.length;b++) {
+          ln = fs[b];
           int idx = ln.indexOf('=');
           if (idx == -1) {
             switch (ln) {
