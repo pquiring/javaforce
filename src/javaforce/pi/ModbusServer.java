@@ -653,7 +653,7 @@ public class ModbusServer extends Thread {
     }
     public void reply() {
       try {
-        os.write(data, 0, 6 + length);
+        os.write(data, 0, 8 + length);
       } catch (Exception e) {
         JFLog.log(e);
       }
