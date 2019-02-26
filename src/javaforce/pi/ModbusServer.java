@@ -375,7 +375,7 @@ public class ModbusServer extends Thread {
           vs[readBytes[a] & 0xff] = data[a];
         }
       }
-      type.set(vs);
+      value.set(vs);
       return value;
     }
     public void read(byte data[], int start_addr, int offset) {
@@ -391,7 +391,7 @@ public class ModbusServer extends Thread {
       } else {
         synchronized(i2cslaveaddrlock) {
           I2C.setSlave(slaveaddr);
-          write();
+          if (writeBytes != null) write();
           value = read();
         }
       }
