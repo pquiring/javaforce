@@ -61,13 +61,9 @@ public class ModbusServer extends Thread {
     }
     for(int a=0;a<lns.length;a++) {
       String ln = lns[a].toLowerCase().replaceAll(" ", "");
-      //PORT=#  //Modbus port (default=502)
-      //INVERT=true|false  //invert GPIO bits
-      //GPIO:I/O;bit=#;addr=#
-      //I2C:I/O:type={int8|int16|int24|int32};avg=#,#;addr=#;slaveaddr=#;write=#,#,#;read=#,#,...
       if (ln.startsWith("gpio:")) {
         //read GPIO config
-        String fs[] = ln.substring(5).split(";");
+        String fs[] = ln.substring(5).split(":");
         IO io = IO.unknown;
         int addr = -1;
         int bit = -1;
@@ -116,7 +112,7 @@ public class ModbusServer extends Thread {
       }
       else if (ln.startsWith("i2c:")) {
         //read I2C config
-        String fs[] = ln.substring(4).split(";");
+        String fs[] = ln.substring(4).split(":");
         IO io = IO.unknown;
         Value type = null;
         int addr = -1;  //modbus

@@ -15,13 +15,13 @@ modbus.cfg
 ----------
 PORT=#
   configure modbus port (decimal) (default = 502)
-GPIO:I/O:addr=#;pin=#
+GPIO:I/O:addr=#:pin=#
   setup I/O pin as input or output
     addr = modbus coil or discrete number
     pin = GPIO pin # (1-40)
 INVERT=true|false
   invert GPIO pin logic (default = false)
-I2C:I/O:addr=#;slaveaddr=#;type={type};read=...;write=...;avg=#,#
+I2C:I/O:addr=#:slaveaddr=#:type={type}:read=...:write=...:avg=#,#
   setup I2C device for read/write where:
     addr = starting modbus register (each is 16bit so could span multiple registers)
     type = int8, int16, int24, int32, float32, float64
@@ -37,8 +37,8 @@ I2C:I/O:addr=#;slaveaddr=#;type={type};read=...;write=...;avg=#,#
 
 Example config
 --------------
-GPIO:I:addr=1;pin=25
-I2C:addr=2;slaveaddr=2a;type=int32;write=00,55,11;read=00,66,I0,I1,I2,I3
+GPIO:I:addr=1:pin=25
+I2C:I:addr=2:slaveaddr=2a:type=int32:write=00,55,11:read=00,66,I0,I1,I2,I3
 
 Notes :
   - you must enable the I2C interface in raspi-config and reboot
