@@ -190,6 +190,10 @@ public class ModbusServer extends Thread {
           JFLog.log("Error:Invalid I2C:slaveaddr not specified");
           System.exit(0);
         }
+        if (type == null) {
+          JFLog.log("Error:Invalid I2C:type not specified");
+          System.exit(0);
+        }
         switch (io) {
           case input:
             if (readBytes == null) {
@@ -374,7 +378,7 @@ public class ModbusServer extends Thread {
       type.set(vs);
       return value;
     }
-    public void read(byte data[], int start_addr) {
+    public void read(byte data[], int start_addr, int offset) {
       Value value;
       if (avg) {
         value = type.newInstance();
@@ -393,7 +397,7 @@ public class ModbusServer extends Thread {
       }
       byte vb[] = value.getBytes();
       for(int a=0;a<typeSize;a++) {
-        data[(addr - start_addr)*2 + a] = vb[a];
+        data[(addr - start_addr)*2 + a + offset] = vb[a];
       }
     }
   }
@@ -743,14 +747,15 @@ public class ModbusServer extends Thread {
       int num_registers = BE.getuint16(data, 10);
       int end_idx = start_idx + num_registers - 1;
       for(int a=0;a<num_registers*2;a++) {
-        data[2 + a] = 0;
+        data[9 + a] = 0;
       }
       for(int a=0;a<i2cins.size();a++) {
         I2C_I i = i2cins.get(a);
         if (i.addr >= start_idx && i.addr <= end_idx) {
-          i.read(data, start_idx);
+          i.read(data, start_idx, 9);
         }
       }
+      data[8] = (byte)(num_registers * 2);
       setLength(1 + num_registers * 2);
     }
     public void writeSingleRegister() {
