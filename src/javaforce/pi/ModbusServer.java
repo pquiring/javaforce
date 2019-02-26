@@ -139,7 +139,7 @@ public class ModbusServer extends Thread {
             String value = ln.substring(idx+1).trim();
             switch (key) {
               case "addr": addr = Integer.valueOf(value); break;
-              case "slaveaddr": addr = Integer.valueOf(value); break;
+              case "slaveaddr": slaveaddr = Integer.valueOf(value, 16); break;
               case "avg":
                 String vs[] = value.split(",");
                 if (vs.length != 2) {
