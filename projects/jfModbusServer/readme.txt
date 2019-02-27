@@ -37,8 +37,10 @@ I2C:I/O:addr=#:slaveaddr=#:type={type}:read=...:write=...:avg=#,#
 
 Example config
 --------------
-GPIO:I:addr=1:pin=25
-I2C:I:addr=2:slaveaddr=2a:type=int32:write=00,55,11:read=00,66,I0,I1,I2,I3
+#this will setup pin#25 as an output coil
+GPIO:O:addr=1:pin=25
+#this will read power meters from ncd.io
+I2C:I:addr=1:slaveaddr=2a:type=int32:write=92,6a,01,01,01,00,00,cs8:read=I1,I2,I3,00
 
 Notes :
   - you must enable the I2C interface in raspi-config and reboot
@@ -54,5 +56,5 @@ Source : github.com/pquiring/javaforce (projects/jfmodbusserver)
 
 Version : 0.2
 
-Released : Mar ?, 2019
+Released : Feb 27, 2019
 

@@ -373,13 +373,13 @@ public class ModbusServer extends Thread {
           data[a] = (byte)(writeBytes[a] & 0xff);
         }
       }
-      printArray("write:", data);
+//      printArray("write:", data);
       I2C.write(data);
     }
     private Value read() {
       byte data[] = new byte[readBytes.length];
       I2C.read(data);
-      printArray("read:", data);
+//      printArray("read:", data);
       Value value = type.newInstance();
       byte vs[] = new byte[value.getSize()];
       for(int a=0;a<readBytes.length;a++) {
