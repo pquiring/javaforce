@@ -1,5 +1,8 @@
 What's new...
 
+Feb 27/2019 : JF 17.4.0 released
+  - new : jfmodbusserver/0.2 : added support for I2C devices on Raspberry PI
+
 Jan 24/2019 : JF 17.3.0 released
   - new : jfsocks/0.1 : SOCKS4 server (something I needed at work)
   - new : jfpasswords/0.20 : added OpenSite and Help buttons
