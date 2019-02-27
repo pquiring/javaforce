@@ -3,7 +3,7 @@
   <!-- set global properties for this build -->
   <property name="app" value="jfModbusServer"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.1"/>
+  <property name="version" value="0.2"/>
 
   <import file="../../base.xml"/>
 
