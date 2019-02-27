@@ -284,14 +284,14 @@ public class ModbusServer extends Thread {
             JFLog.log("Error:bad I2C");
             System.exit(0);
           }
-          ret[a] = IOflag & Integer.valueOf(f.substring(1));
+          ret[a] = IOflag | Integer.valueOf(f.substring(1));
           break;
         case 'o':  //output byte
           if (!allowIO) {
             JFLog.log("Error:bad I2C");
             System.exit(0);
           }
-          ret[a] = IOflag & Integer.valueOf(f.substring(1));
+          ret[a] = IOflag | Integer.valueOf(f.substring(1));
           break;
         default:  //hex value
           ret[a] = Integer.valueOf(f, 16) & 0xff;
@@ -395,7 +395,7 @@ public class ModbusServer extends Thread {
       if (avg) {
         value = type.newInstance();
         synchronized(avg_lock) {
-          for(int a=0;a<avgsamples-1;a++) {
+          for(int a=0;a<avgsamples;a++) {
             value.add(samples[a]);
           }
           value.div(avgsamples);
