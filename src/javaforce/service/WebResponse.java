@@ -10,6 +10,7 @@ import java.util.zip.*;
 
 public class WebResponse extends OutputStream {
   OutputStream os;
+  boolean liveStream;
   private ByteArrayOutputStream buf = new ByteArrayOutputStream();
   private int statusCode = 200;
   private String statusString = "OK";
@@ -19,17 +20,20 @@ public class WebResponse extends OutputStream {
 
   @Override
   public void write(int b) throws IOException {
+    if (liveStream) throw new IOException("");
     buf.write(b);
   }
   @Override
   public void write(byte b[], int off, int len) throws IOException {
+    if (liveStream) throw new IOException("");
     buf.write(b, off, len);
   }
 
   void writeAll(WebRequest req) throws Exception {
+    if (liveStream) throw new IOException("");
     byte data[] = buf.toByteArray();
+    boolean gzip = false;
     if (data.length > 0) {
-      boolean gzip = false;
       if (Web.config_enable_gzip) {
         String accept = req.getHeader("Accept-Encoding");
         if (accept != null) {
@@ -52,17 +56,24 @@ public class WebResponse extends OutputStream {
       }
     }
     int size = data.length;
-    writeHeaders(size);
-    if (data.length >0 ) {
+    writeHeaders(size, gzip);
+    if (data.length > 0) {
+      os.write(Web.chunkHeader(data));
       os.write(data);
+      os.write("\r\n0\r\n\r\n".getBytes());
     }
   }
 
-  void writeHeaders(int contentLength) throws Exception {
+  void writeHeaders(int contentLength, boolean gzip) throws Exception {
     StringBuilder res = new StringBuilder();
     res.append("HTTP/1.1 " + statusCode + " " + statusString + "\r\n");
-    res.append("Content-Length: " + contentLength + "\r\n");
+    if (contentLength != -1) {
+      res.append("Content-Length: " + contentLength + "\r\n");
+    }
     res.append("Content-Type: " + contentType + "\r\n");
+    if (contentLength != 0) {
+      res.append("Transfer-Encoding: chunked\r\n");
+    }
     for(int a=0;a<cookies.size();a++) {
       res.append("Set-Cookie: ");
       res.append(cookies.get(a));
@@ -78,7 +89,35 @@ public class WebResponse extends OutputStream {
 
   //public methods
 
-  public OutputStream getOutputStream() {return this;}
+  /** Returns buffered output stream.
+   * When doGet() or doPut() returns the headers and content are sent to client.
+   *
+   * @return OutputStream
+   */
+  public OutputStream getOutputStream() {
+    if (liveStream) return null;
+    return this;
+  }
+
+  /** Returns real output stream.
+   * Writes default header without Content-Length;
+   * Send Data in chunked format. See Web.chunkHeader()
+   *
+   * @return OutputStream
+   */
+  public OutputStream getLiveOutputStream() {
+    if (liveStream) return null;
+    if (buf.size() > 0) {
+      return null;
+    }
+    try {
+      writeHeaders(-1, false);
+    } catch (Exception e) {
+      return null;
+    }
+    liveStream = true;
+    return os;
+  }
 
   public void setStatus(int sc, String msg) {
     statusCode = sc;

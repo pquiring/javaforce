@@ -109,6 +109,7 @@ public class Web {
             else {
               res.setStatus(501, "Error - Unsupported Method");
             }
+            if (res.liveStream) return;  //stream until client disconnects
             res.writeAll(req);
             if (req.fields0[2].equals("HTTP/1.0")) break;
             request.setLength(0);
@@ -116,6 +117,7 @@ public class Web {
         }
         s.close();
       } catch (Exception e) {
+        e.printStackTrace();
       }
     }
     public Connection(Socket s) {
@@ -246,5 +248,11 @@ public class Web {
       }
       wsapi.doWebSocketClosed(socket);
     }
+  }
+  /** Returns a chunk header for a block of data for transmission in Transfer-Encoding: chunked
+   * Make sure to send \r\n after actual block of data.
+   */
+  public static byte[] chunkHeader(byte[] in) {
+    return String.format("%x\r\n", in.length).getBytes();
   }
 }
