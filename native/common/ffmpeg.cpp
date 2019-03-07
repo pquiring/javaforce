@@ -1231,6 +1231,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_getFrameRate
 //encoder codebase
 
 static jboolean add_stream(FFContext *ctx, int codec_id) {
+  printf("add_stream(codec_id=0x%x)\r\n", codec_id);
   AVCodecContext *codec_ctx;
   AVStream *stream;
   AVCodec *codec;
@@ -1348,6 +1349,9 @@ static jboolean open_video(FFContext *ctx) {
 }
 
 static jboolean open_audio(FFContext *ctx) {
+  //audio_codec_ctx = AVCodecContext
+  //audio_codec = AVCodec
+  printf("open_audio(type=0x%x,ctx.id=0x%x,id=0x%x)\r\n", ctx->audio_codec_ctx->codec_type, ctx->audio_codec_ctx->codec_id, ctx->audio_codec->id);
   int ret = (*_avcodec_open2)(ctx->audio_codec_ctx, ctx->audio_codec, NULL);
   if (ret < 0) {
     printf("avcodec_open2() failed!\n");
@@ -1362,6 +1366,7 @@ static jboolean open_audio(FFContext *ctx) {
   ctx->audio_frame->sample_rate = ctx->freq;
   ctx->audio_frame->channel_layout = ctx->audio_codec_ctx->channel_layout;
   ctx->audio_frame_size = ctx->audio_codec_ctx->frame_size * ctx->chs;  //max samples that encoder will accept
+  printf("audio_frame_size = %d\r\n", ctx->audio_frame_size);
   ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities /*& CODEC_CAP_VARIABLE_FRAME_SIZE*/) != 0;
   ctx->audio_frame->nb_samples = ctx->audio_codec_ctx->frame_size;
   ret = (*_av_frame_get_buffer)(ctx->audio_frame, 0);
