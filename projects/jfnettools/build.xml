@@ -12,7 +12,7 @@
   <target name="compile" depends="depnatives" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
-    <javac srcdir="${src}" destdir="${build}" target="1.6" source="1.6" debug="true" includeantruntime="false">
+    <javac srcdir="${src}" destdir="${build}" target="1.8" source="1.8" debug="true" includeantruntime="false">
     </javac>
   </target>
 

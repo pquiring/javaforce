@@ -34,7 +34,7 @@
   <target name="compile" depends="depjars" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
-    <javac srcdir="${src}" destdir="${build}" deprecation="true" target="1.6" source="1.6" debug="true" includeantruntime="false">
+    <javac srcdir="${src}" destdir="${build}" deprecation="true" target="1.8" source="1.8" debug="true" includeantruntime="false">
 <!--      <compilerarg value="-Xlint:unchecked"/>  -->  <!-- generates lots of annoying warnings -->
       <classpath path="javaforce.jar"/>
       <classpath path="bouncycastle.jar"/>
