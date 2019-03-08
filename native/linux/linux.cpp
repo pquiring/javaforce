@@ -1621,7 +1621,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_enableConsoleMode
 {
   console_buffer[0] = 0;
   initscr();
-  cbreak();
+  raw();
   noecho();
   wtimeout(stdscr, 0);
   wgetch(stdscr);  //first call to wgetch() clears the screen

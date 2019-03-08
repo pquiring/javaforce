@@ -20,6 +20,7 @@ public class TEdit implements KeyEvents {
   public ANSI ansi;
   public boolean active;
   public boolean ask_save;
+  public boolean hasClipboard;
   public MessageDialog message;
   public InputDialog input;
   public FileDialog file;
@@ -546,6 +547,7 @@ public class TEdit implements KeyEvents {
       return true;
     }
     public boolean load(String pathfile) {
+      System.err.println("Loading:" + pathfile);
       File file = new File(pathfile);
       pathfile = file.getAbsolutePath().replaceAll("\\\\", "/");
       String path = null;
@@ -618,6 +620,7 @@ public class TEdit implements KeyEvents {
 
   public void run() {
     ansi = new ANSI(this);
+    hasClipboard = JF.isWindows();
     loadConfig();
     processArgs();
     if (tabs.size() == 0) {
@@ -713,7 +716,10 @@ public class TEdit implements KeyEvents {
   }
 
   public void processArgs() {
-    if (args == null) return;
+    if (args == null) {
+      System.err.println("Error:args==null");
+      return;
+    }
     for(int a=0;a<args.length;a++) {
       Tab tab = new Tab();
       tab.load(args[a]);
@@ -1196,34 +1202,48 @@ public class TEdit implements KeyEvents {
     return true;
   }
 
+  public String clipboard;
+
   /**
   * get string from Clipboard
   */
   public String getClipboardText() {
+    if (!hasClipboard) {
+      return clipboard;
+    }
     String ret = "";
-    Clipboard sysClip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
-    Transferable clipTf = sysClip.getContents(null);
+    try {
+      Clipboard sysClip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+      Transferable clipTf = sysClip.getContents(null);
 
-    if (clipTf != null) {
-      if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-        try {
+      if (clipTf != null) {
+        if (clipTf.isDataFlavorSupported(DataFlavor.stringFlavor)) {
           ret = (String) clipTf.getTransferData(DataFlavor.stringFlavor);
-        } catch (Exception e) {
-          e.printStackTrace();
         }
       }
+    } catch (Exception e) {
+      e.printStackTrace(System.err);
     }
-
     return ret;
   }
 
   /**
   * put string into Clipboard
   */
-  public void setClipboardText(String writeMe) {
-    Clipboard clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
-    Transferable tText = new StringSelection(writeMe);
-    clip.setContents(tText, null);
+  public void setClipboardText(String txt) {
+    if (!hasClipboard) {
+      clipboard = txt;
+      return;
+    }
+    try {
+      System.err.println("Using desktop clipboard!");
+      Clipboard clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+      Transferable tText = new StringSelection(txt);
+      clip.setContents(tText, null);
+    } catch (Exception e) {
+      clipboard = txt;
+      e.printStackTrace(System.err);
+    }
   }
 
 
@@ -1250,6 +1270,7 @@ public class TEdit implements KeyEvents {
     }
     tab.dirty = true;
     showCursor();
+    refresh();
   }
 
   public void paste() {
