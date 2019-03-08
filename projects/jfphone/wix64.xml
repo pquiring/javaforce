@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{34b7ff5a-0b9d-4f4c-934c-a9ac08640c05}" Version="1.16" Language="1033" Name="jfPhone" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{34b7ff5a-0b9d-4f4c-934c-a9ac08640c05}" Version="1.17" Language="1033" Name="jfPhone" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
@@ -29,14 +29,6 @@
         <File Id="jfphone.exe" Source="jfphone.exe"/>
         <File Id="run.bat" Source="run.bat"/>
         <File Id="jfnative64.dll" Source="jfnative64.dll"/>
-        <File Id="avcodec57.dll" Source="avcodec-57.dll"/>
-        <File Id="avdevice57.dll" Source="avdevice-57.dll"/>
-        <File Id="avfilter6.dll" Source="avfilter-6.dll"/>
-        <File Id="avformat57.dll" Source="avformat-57.dll"/>
-        <File Id="avutil55.dll" Source="avutil-55.dll"/>
-        <File Id="postproc54.dll" Source="postproc-54.dll"/>
-        <File Id="swresample2.dll" Source="swresample-2.dll"/>
-        <File Id="swscale4.dll" Source="swscale-4.dll"/>
       </Component>
     </DirectoryRef>
 
