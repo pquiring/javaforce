@@ -23,6 +23,7 @@ public class Transcoder implements MediaIO {
       if (!decoder.start(this, -1, -1, -1, -1, true)) throw new Exception("Decoder Failed to start");
       chs = decoder.getChannels();
       freq = decoder.getSampleRate();
+      JFLog.log("decoder:chs=" + chs + ",freq=" + freq);
       if (!encoder.start(this, -1, -1, -1, chs, freq, outCodec, false, true)) throw new Exception("Encoder Failed to start");
       short samples[];
       while (true) {

@@ -1342,7 +1342,7 @@ static jboolean open_video(FFContext *ctx) {
   //copy params
   ret = (*_avcodec_parameters_from_context)(ctx->video_stream->codecpar, ctx->video_codec_ctx);
   if (ret < 0) {
-    printf("avcoidec_parameters_from_context() failed!\n");
+    printf("avcodec_parameters_from_context() failed!\n");
     return JNI_FALSE;
   }
   return JNI_TRUE;
@@ -1364,12 +1364,18 @@ static jboolean open_audio(FFContext *ctx) {
   }
   ctx->audio_frame->format = ctx->audio_codec_ctx->sample_fmt;
   ctx->audio_frame->sample_rate = ctx->freq;
+  ctx->audio_codec_ctx->sample_rate = ctx->freq;
   ctx->audio_frame->channel_layout = ctx->audio_codec_ctx->channel_layout;
+  ctx->audio_frame->channels = ctx->chs;
+  if (ctx->audio_codec_ctx->frame_size == 0) {
+    ctx->audio_codec_ctx->frame_size = 2048 * 2;  //default frame size
+  }
   ctx->audio_frame_size = ctx->audio_codec_ctx->frame_size * ctx->chs;  //max samples that encoder will accept
-  printf("audio_frame_size = %d\r\n", ctx->audio_frame_size);
   ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) != 0;
+  printf("audio_frame_size = %d audio_codec_ctx->frame_size=%d channels=%d variable=%d\r\n", ctx->audio_frame_size, ctx->audio_codec_ctx->frame_size, ctx->chs, ctx->audio_frame_size_variable);
   ctx->audio_frame->nb_samples = ctx->audio_codec_ctx->frame_size;
   ret = (*_av_frame_get_buffer)(ctx->audio_frame, 0);
+  printf("audio_frame:format=%d nb_samples=%d channel_layout=%d channels=%d\r\n", ctx->audio_frame->format, ctx->audio_frame->nb_samples, ctx->audio_frame->channel_layout, ctx->audio_frame->channels);
   if (ret < 0) {
     printf("av_frame_get_buffer() failed! %d\n", ret);
     return JNI_FALSE;
@@ -1378,14 +1384,15 @@ static jboolean open_audio(FFContext *ctx) {
     ctx->audio_buffer = (short*)malloc(ctx->audio_frame_size * 2);
     ctx->audio_buffer_size = 0;
   }
-  if (ctx->audio_codec_ctx->sample_fmt == AV_SAMPLE_FMT_S16) {
-    return JNI_TRUE;
-  }
   //copy params
+  printf("codec_type=%d\r\n", ctx->audio_codec_ctx->codec_type);
   ret = (*_avcodec_parameters_from_context)(ctx->audio_stream->codecpar, ctx->audio_codec_ctx);
   if (ret < 0) {
-    printf("avcoidec_parameters_from_context() failed!\n");
+    printf("avcodec_parameters_from_context() failed!\n");
     return JNI_FALSE;
+  }
+  if (ctx->audio_codec_ctx->sample_fmt == AV_SAMPLE_FMT_S16) {
+    return JNI_TRUE;
   }
   //create audio conversion (S16 -> FLTP)
   if (libav_org)
