@@ -12,7 +12,7 @@ import javaforce.media.*;
 
 public class MusicApp extends javax.swing.JFrame {
 
-  public static final String version = "0.5";
+  public static final String version = "0.6";
 
   /**
    * Creates new form MusicApp

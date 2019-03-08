@@ -15,7 +15,7 @@ import javaforce.media.*;
 
 public class App extends javax.swing.JFrame {
 
-  private String version = "0.1";
+  private String version = "0.2";
 
   /**
    * Creates new form RecordCameraApp

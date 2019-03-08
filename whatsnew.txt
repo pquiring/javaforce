@@ -1,5 +1,16 @@
 What's new...
 
+Mar 8/2019 : JF 17.5.0 released
+  - fix : ffmpeg loading/saving issues
+  - new : upgrade to ffmpeg/4.x
+  - jfAudio/0.18
+  - jfVideo/0.22
+  - jfMusic/0.6
+  - jfRecordCamera/0.6
+  - jfRecordDesktop/0.7
+  - jfProjector/0.2
+    - re-release all ffmpeg related apps
+
 Feb 27/2019 : JF 17.4.0 released
   - new : jfmodbusserver/0.2 : added support for I2C devices on Raspberry PI
 

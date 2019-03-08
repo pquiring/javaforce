@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{8F97E4C6-0D2B-4569-82A8-E55D3D281177}" Version="0.1" Language="1033" Name="jfProjector" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{8F97E4C6-0D2B-4569-82A8-E55D3D281177}" Version="0.2" Language="1033" Name="jfProjector" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
