@@ -1367,7 +1367,7 @@ static jboolean open_audio(FFContext *ctx) {
   ctx->audio_frame->channel_layout = ctx->audio_codec_ctx->channel_layout;
   ctx->audio_frame_size = ctx->audio_codec_ctx->frame_size * ctx->chs;  //max samples that encoder will accept
   printf("audio_frame_size = %d\r\n", ctx->audio_frame_size);
-  ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities /*& CODEC_CAP_VARIABLE_FRAME_SIZE*/) != 0;
+  ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) != 0;
   ctx->audio_frame->nb_samples = ctx->audio_codec_ctx->frame_size;
   ret = (*_av_frame_get_buffer)(ctx->audio_frame, 0);
   if (ret < 0) {
