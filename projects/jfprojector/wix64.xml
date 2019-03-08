@@ -55,6 +55,7 @@
       <ComponentRef Id="appfiles" />
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="ApplicationShortcut2" />
+      <ComponentGroupRef Id="JRE" />
     </Feature>
   </Product>
 </Wix>
