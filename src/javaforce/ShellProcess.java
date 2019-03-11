@@ -145,12 +145,12 @@ public class ShellProcess {
   /**
    * Runs a process, sending responses to stdin and returning all stdout. The
    * responses should cause the process to terminate.
-   * If cmd[0] is 'sudo' then jsudo-ask is used if a password is required to run the command.
+   * If cmd[0] is 'sudo' then jfsudo-ask is used if a password is required to run the command.
    * If redirStderr is true then stderr will be redir to stdout.
    */
   public String run(String cmd[], boolean redirStderr) {
     if (cmd[0].equals("sudo")) {
-      //if running sudo add -A option to use jsudo-ask to request password
+      //if running sudo add -A option to use jfsudo-ask to request password
       String newcmd[] = new String[cmd.length + 1];
       newcmd[0] = "sudo";
       newcmd[1] = "-A";
@@ -166,7 +166,7 @@ public class ShellProcess {
     }
     Map<String, String> env = pb.environment();
     if (cmd[0].equals("sudo")) {
-      env.put("SUDO_ASKPASS", "/usr/bin/jsudo-ask");
+      env.put("SUDO_ASKPASS", "/usr/bin/jfsudo-ask");
     }
     for (int a = 0; a < envAdd.size(); a++) {
       Variable v = envAdd.get(a);

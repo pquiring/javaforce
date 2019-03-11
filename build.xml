@@ -69,8 +69,8 @@
     <copy file="lnxbin/jbus-client" todir="/usr/bin"/>
     <chmod file="/usr/bin/jbus-client" perm="+x"/>
 
-    <elf appx="jsudo" cfgdir="cfg/"/>
-    <elf appx="jsudo-ask" cfgdir="cfg/"/>
+    <elf appx="jfsudo" cfgdir="cfg/"/>
+    <elf appx="jfsudo-ask" cfgdir="cfg/"/>
     <elf appx="jfopen" cfgdir="cfg/"/>
     <elf appx="jfs" cfgdir="cfg/"/>
     <elf appx="jfimageconvert" cfgdir="cfg/"/>

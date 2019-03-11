@@ -7,8 +7,8 @@
 /usr/bin/jfr
 /usr/bin/pngalpha
 /usr/bin/jf-update-desktop-database
-/usr/bin/jsudo
-/usr/bin/jsudo-ask
+/usr/bin/jfsudo
+/usr/bin/jfsudo-ask
 /usr/bin/jfopen
 /usr/bin/jsmbget
 /usr/bin/jservice

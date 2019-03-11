@@ -9,11 +9,11 @@ import javax.swing.*;
 
 import javaforce.*;
 
-public class jsudo {
+public class Sudo {
 
   public static void main(String args[]) {
     if (args.length == 0) {
-      System.out.println("Usage : jsudo command [args]");
+      System.out.println("Usage : jfsudo command [args]");
       System.exit(1);
     }
     if (args[0].equals("--ask")) {
@@ -32,7 +32,7 @@ public class jsudo {
       System.arraycopy(args, 0, cmd, 2, args.length);
       ProcessBuilder pb = new ProcessBuilder(cmd);
       Map<String, String> env = pb.environment();
-      env.put("SUDO_ASKPASS", "/usr/bin/jsudo-ask");
+      env.put("SUDO_ASKPASS", "/usr/bin/jfsudo-ask");
       Process p = pb.start();
       OutputStream os = p.getOutputStream();
       InputStream err = p.getErrorStream();
