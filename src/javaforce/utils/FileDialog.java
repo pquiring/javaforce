@@ -1,6 +1,6 @@
 package javaforce.utils;
 
-/** File operations (used by jfile)
+/** File Dialog (used by jfFile)
  *
  * @author pquiring
  */
@@ -10,12 +10,12 @@ import java.util.*;
 
 import javaforce.*;
 
-public class jfileop extends javax.swing.JFrame {
+public class FileDialog extends javax.swing.JFrame {
 
   /**
-   * Creates new form jfileop
+   * Creates new form
    */
-  public jfileop() {
+  public FileDialog() {
     initComponents();
     JFAWT.centerWindow(this);
   }
@@ -114,7 +114,7 @@ public class jfileop extends javax.swing.JFrame {
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        jfileop fop = new jfileop();
+        FileDialog fop = new FileDialog();
         fop.setVisible(true);
         fop.start(_args);
       }
