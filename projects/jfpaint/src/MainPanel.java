@@ -1145,7 +1145,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       }
     }
     else if (format.equals("bmp"))
-      result = img.loadBMP(filename);
+      result = img.loadBMP(filename, 0);
     else if (format.equals("svg"))
       result = img.loadSVG(filename);
     else if (format.equals("jpg"))
