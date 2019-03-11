@@ -17,10 +17,10 @@ import java.util.Random;
 
 import javaforce.*;
 
-public class jfr {
+public class FindReplace {
 
   public static void main(String args[]) {
-    jfr x = new jfr();
+    FindReplace x = new FindReplace();
     x.main2(args);
   }
   boolean b_icmp = false;

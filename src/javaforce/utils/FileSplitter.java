@@ -12,10 +12,10 @@ import java.util.Random;
 
 import javaforce.*;
 
-public class jfs {
+public class FileSplitter {
 
   public static void main(String args[]) {
-    jfs x = new jfs();
+    FileSplitter x = new FileSplitter();
     x.main2(args);
   }
   final int BUFSIZ = (64 * 1024); //buffer size
