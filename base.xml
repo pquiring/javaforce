@@ -130,7 +130,7 @@
     <attribute name="ico" default=""/>
     <sequential>
       <copy file="${home}/stubs/linux@{bits}.bin" tofile="/usr/@{bin}/@{appx}"/>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.jresmgr">
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ResourceManager">
         <arg value="/usr/@{bin}/@{appx}"/>
         <arg value="@{cfgdir}@{appx}.cfg"/>
       </java>

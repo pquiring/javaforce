@@ -12,12 +12,12 @@ import java.io.*;
 
 import javaforce.*;
 
-public class jresmgr {
+public class ResourceManager {
   public static void main(String args[]) {
     if (args == null || args.length < 2) {
-      System.out.println("jresmgr/" + JF.getVersion());
+      System.out.println("jfresmgr/" + JF.getVersion());
       System.out.println("Desc : Adds files to target file");
-      System.out.println("Usage : jresmgr target infile[...]");
+      System.out.println("Usage : jfresmgr target infile[...]");
       return;
     }
     try {

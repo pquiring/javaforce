@@ -85,7 +85,7 @@
     <elf appx="jmv" cfgdir="cfg/"/>
     <elf appx="jrm" cfgdir="cfg/"/>
     <elf appx="jver" cfgdir="cfg/"/>
-    <elf appx="jresmgr" cfgdir="cfg/"/>
+    <elf appx="jfresmgr" cfgdir="cfg/"/>
   </target>
 
   <macrodef name="utilsmacro">
