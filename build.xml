@@ -71,7 +71,7 @@
 
     <elf appx="jsudo" cfgdir="cfg/"/>
     <elf appx="jsudo-ask" cfgdir="cfg/"/>
-    <elf appx="jopen" cfgdir="cfg/"/>
+    <elf appx="jfopen" cfgdir="cfg/"/>
     <elf appx="jfs" cfgdir="cfg/"/>
     <elf appx="jfimageconvert" cfgdir="cfg/"/>
     <elf appx="jfr" cfgdir="cfg/"/>

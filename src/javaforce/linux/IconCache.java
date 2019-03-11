@@ -10,7 +10,7 @@ package javaforce.linux;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.utils.*;  //for jopen
+import javaforce.utils.*;  //for jfopen
 
 public class IconCache {
   private static HashMap<String, JFImage> icons = new HashMap<String, JFImage>();
@@ -98,8 +98,8 @@ public class IconCache {
       if (JF.isWindows()) {
         icon = "jfile-file";  //TODO!!!
       } else {
-        String mime = jopen.getMimeType(ext);
-        icon = jopen.getIcon(mime, "open");
+        String mime = OpenFile.getMimeType(ext);
+        icon = OpenFile.getIcon(mime, "open");
       }
     } catch (Exception e) {
       JFLog.log(e);

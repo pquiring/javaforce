@@ -9,12 +9,12 @@ import java.io.*;
 import javaforce.*;
 import javaforce.linux.*;
 
-public class jopen {
+public class OpenFile {
 
   public static void main(String args[]) {
     //opens arg[0]
     if ((args.length < 1) || (args[0].length() == 0)) {
-      System.out.println("usage : jopen file\ndesc : open program associated with file type");
+      System.out.println("usage : jfopen file\ndesc : open program associated with file type");
       return;
     }
     String action = "open";

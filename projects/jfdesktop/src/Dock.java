@@ -1454,8 +1454,8 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
         return;
       }
       if (!action.endsWith(".desktop")) {
-        //regular file, open with jopen
-        Runtime.getRuntime().exec(new String[] {"jopen", action});
+        //regular file, open with jfopen
+        Runtime.getRuntime().exec(new String[] {"jfopen", action});
         return;
       }
       //.desktop file, get Exec= line and execute it

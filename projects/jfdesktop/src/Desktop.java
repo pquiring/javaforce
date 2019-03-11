@@ -27,7 +27,7 @@ public class Desktop extends javax.swing.JWindow {
       arrangeAuto.setSelected(Dock.dock.config.arrangeIconsAuto);
       browser = new JFileBrowser(JFileBrowser.VIEW_ICONS, JF.getUserPath() + "/Desktop"
         , DesktopMenu, IconMenu, Dock.dock.config.desktopFile, Dock.dock.config.desktopMode
-        , true, "jfile", "jopen", Dock.dock.config.bc, Dock.dock.config.fc
+        , true, "jfile", "jfopen", Dock.dock.config.bc, Dock.dock.config.fc
         , false, true, false, Dock.dock.config.arrangeIconsAuto, Dock.jbusClient, true, Dock.dock);
       setContentPane(browser);
       browser.refresh();

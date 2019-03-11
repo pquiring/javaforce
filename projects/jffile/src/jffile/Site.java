@@ -910,12 +910,12 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
 
     view = Settings.settings.defaultView;
     localBrowser = new JFileBrowser(view, initLocalDir, localDesktopMenu
-      , localFileMenu, null, 0, false, null, "jopen", Color.LIGHT_GRAY, Color.BLACK
+      , localFileMenu, null, 0, false, null, "jfopen", Color.LIGHT_GRAY, Color.BLACK
       , true, false, false, false, FileApp.jbusClient, false, sfc);
     localBrowser.setName("localFiles");  //see FileApp.search()
     localBrowser.setListener(this);
     remoteBrowser = new JFileBrowser(view, null, remoteDesktopMenu
-      , localFileMenu, null, 0, false, null, "jopen", Color.LIGHT_GRAY, Color.BLACK
+      , localFileMenu, null, 0, false, null, "jfopen", Color.LIGHT_GRAY, Color.BLACK
       , true, false, false, false, FileApp.jbusClient, false, sfc);
     remoteBrowser.setListener(this);
     remoteBrowser.setName("remoteFiles");  //see FileApp.search()

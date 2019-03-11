@@ -9,7 +9,7 @@
 /usr/bin/jf-update-desktop-database
 /usr/bin/jsudo
 /usr/bin/jsudo-ask
-/usr/bin/jopen
+/usr/bin/jfopen
 /usr/bin/jsmbget
 /usr/bin/jservice
 /usr/bin/jfshare

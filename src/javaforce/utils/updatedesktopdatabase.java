@@ -15,7 +15,7 @@ package javaforce.utils;
  * Format of mimeaction.cache [open] mimetype=desktops... ... [edit]
  * mimetype=desktops... ...
  *
- * jopen (and jfile) will use this mimeaction.cache to determine how to open
+ * jfopen (and jfile) will use this mimeaction.cache to determine how to open
  * files.
  *
  * This allows different apps to handle the same mime-types for different
