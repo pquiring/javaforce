@@ -84,7 +84,7 @@
     <elf appx="jcp" cfgdir="cfg/"/>
     <elf appx="jmv" cfgdir="cfg/"/>
     <elf appx="jrm" cfgdir="cfg/"/>
-    <elf appx="jver" cfgdir="cfg/"/>
+    <elf appx="jfver" cfgdir="cfg/"/>
     <elf appx="jfresmgr" cfgdir="cfg/"/>
   </target>
 
