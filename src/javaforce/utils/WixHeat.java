@@ -11,9 +11,9 @@ package javaforce.utils;
 import java.io.*;
 import java.util.*;
 
-public class jheat {
+public class WixHeat {
   private static void usage() {
-    System.out.println("Usage:jheat JAVA_HOME [win32|win64] [--base=folder]");
+    System.out.println("Usage:wixheat JAVA_HOME [win32|win64] [--base=folder]");
     System.exit(1);
   }
 

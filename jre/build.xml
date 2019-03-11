@@ -8,7 +8,7 @@
   <property environment="env"/>
   <property name="jre" location="${env.JAVA_HOME}"/>
   <property name="version" value="11.0-2"/>
-  <property name="jheat" value="--base=."/>
+  <property name="heat_home" value="--base=."/>
 
   <target name="depjars">
     <jar destfile="javaforce.jar">
