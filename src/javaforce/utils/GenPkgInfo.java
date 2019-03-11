@@ -1,6 +1,6 @@
 package javaforce.utils;
 
-/** jpkginfo
+/** genpkginfo
  *
  * Generates Linux package info files.
  *
@@ -16,7 +16,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class jpkginfo {
+public class GenPkgInfo {
   private static void error(String msg) {
     System.out.print(msg);
     System.exit(1);
@@ -28,7 +28,7 @@ public class jpkginfo {
 
   public static void main(String args[]) {
     if (args == null || args.length < 3) {
-      System.out.println("jpkginfo : build linux package info files");
+      System.out.println("genpkginfo : build linux package info files");
       System.out.println("  Usage : jpkginfo distro archtype files.list");
       System.out.println("    distro = debian fedora arch");
       System.out.println("    archtype = x32 x64 a32 a64");

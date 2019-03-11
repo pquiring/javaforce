@@ -50,7 +50,7 @@ esac
 
 TMPDIR=jfrpm.$RANDOM
 
-java -cp /usr/share/java/javaforce.jar javaforce.utils.jpkginfo fedora $ARCH $FILES
+java -cp /usr/share/java/javaforce.jar javaforce.utils.GenPkgInfo fedora $ARCH $FILES
 
 WORKDIR=`pwd`
 mkdir $TMPDIR

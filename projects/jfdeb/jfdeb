@@ -29,7 +29,7 @@ ARCH=$2
 BITS=${ARCH:1:2}
 if [ -f files-$BITS.lst ]; then FILES=files-$BITS.lst; fi
 
-java -cp /usr/share/java/javaforce.jar javaforce.utils.jpkginfo debian $ARCH $FILES
+java -cp /usr/share/java/javaforce.jar javaforce.utils.GenPkgInfo debian $ARCH $FILES
 
 TMPDIR=jfdeb.$RANDOM
 
