@@ -73,7 +73,7 @@
     <elf appx="jsudo-ask" cfgdir="cfg/"/>
     <elf appx="jopen" cfgdir="cfg/"/>
     <elf appx="jfs" cfgdir="cfg/"/>
-    <elf appx="jimgconvert" cfgdir="cfg/"/>
+    <elf appx="jfimageconvert" cfgdir="cfg/"/>
     <elf appx="jfr" cfgdir="cfg/"/>
     <elf appx="pngalpha" cfgdir="cfg/"/>
     <elf appx="jf-update-desktop-database" cfgdir="cfg/"/>
@@ -103,7 +103,7 @@
   <target name="utils" depends="jar" description="build exe for utils 64bit">
     <utilsmacro app="jfr" bits="64"/>
     <utilsmacro app="jfs" bits="64"/>
-    <utilsmacro app="jimgconvert" bits="64"/>
+    <utilsmacro app="jfimageconvert" bits="64"/>
     <utilsmacro app="pngalpha" bits="64"/>
     <utilsmacro app="jfshare" bits="64"/>
     <utilsmacro app="WinPE" bits="64"/>

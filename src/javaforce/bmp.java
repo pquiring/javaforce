@@ -44,13 +44,13 @@ public class bmp {
    uint16 bpp;
    };
 
-   struct _icon {
+   struct _icon {  //6
      short reserved;
      short type;  //1=icon 2=cursor
      short imageCount;
    }
 
-   struct _icon_entry {
+   struct _icon_entry {  //16
      byte width, height, colorsPalette, reserved;
      short planes, bpp;
      int imageDataSize, dataOffset;
@@ -58,46 +58,86 @@ public class bmp {
 
    /*/
 
-  protected static int[] load(InputStream in, Dimension size) {
+  protected static int[] load(InputStream in, Dimension size, int index) {
     int a;
     int clrs;
     int bmp_x, bmp_y, bmp_bpp, bmp_bypp;
     int fs;
     int bo;
     int siz;
-    int ret[];
+    int ret[] = null;
+    byte m1, m2;
+    int type = -1, imagecount;  //icon
+    int bpp;
+    int planes;
 
     //read signature
-    try {
-      if (in.read() != 'B') {
-        return null;
+    m1 = (byte)JF.readuint8(in);
+    m2 = (byte)JF.readuint8(in);
+    if (m1 == 'B' && m2 == 'M') {
+      //bitmap
+      fs = JF.readuint32(in);
+      a = JF.readuint32(in);  //junk
+      bo = JF.readuint32(in);
+    } else if (m1 == 0 && m2 == 0) {
+      //icon / cursor
+      type = JF.readuint16(in);
+      switch (type) {
+        case 0:  //icon
+        case 1:  //cursor
+          imagecount = JF.readuint16(in);
+//          JFLog.log("# images = " + imagecount);
+          if (index >= imagecount) return null;
+          int index_offset = -1;
+          //read icon_entry headers
+          for(int i=0;i<imagecount;i++) {
+//            JFLog.log("index=" + i + (index == i ? "*" : ""));
+            int _x = JF.readuint8(in);
+            int _y = JF.readuint8(in);
+//            JFLog.log("icon size=" + _x + "x" + _y);
+            int _pal = JF.readuint8(in);
+            int _res = JF.readuint8(in);
+            int _planes = JF.readuint16(in);
+            int _bpp = JF.readuint16(in);
+//            JFLog.log("bpp=" + _bpp);
+            int _size = JF.readuint32(in);
+            int _off = JF.readuint32(in);
+            if (i == index) {
+              index_offset = _off;
+            }
+          }
+          //skip to offset of image data
+          int _skip = index_offset - 6 - (16 * imagecount);
+          if (_skip > 0) {
+            try {in.skip(_skip);} catch (Exception e) {return null;}
+          }
+          break;
+        default:
+          return null;
       }
-      if (in.read() != 'M') {
-        return null;
-      }
-    } catch (Exception e) {
+    } else {
+      //unknown image type
       return null;
     }
 
-    fs = JF.readuint32(in);
-    a = JF.readuint32(in);  //junk
-    bo = JF.readuint32(in);
     siz = JF.readuint32(in);
 
     switch (siz) {
       case 14:    //OS/2
         bmp_x = JF.readuint16(in);
         bmp_y = JF.readuint16(in);
-        a = JF.readuint16(in);  //planes - ignore
-        if (JF.readuint16(in) != 24) {
+        planes = JF.readuint16(in);  //planes - ignore
+        bpp = JF.readuint16(in);
+        if (bpp != 24 && bpp != 32) {
           return null;
         }
         break;
       case 40:    //win 3.0
         bmp_x = JF.readuint32(in);
         bmp_y = JF.readuint32(in);
-        a = JF.readuint16(in);  //planes - ignore
-        if (JF.readuint16(in) != 24) {
+        planes = JF.readuint16(in);  //planes - ignore
+        bpp = JF.readuint16(in);
+        if (bpp != 24 && bpp != 32) {
           return null;
         }
         if (JF.readuint32(in) != 0) {
@@ -108,39 +148,77 @@ public class bmp {
         }
         break;
       default:
+        JFLog.log("loadBMP() failed! bad image data header");
         return null;
     }
 
-    //each scan-line is DWORD aligned!
-    int slsiz = (bmp_x * 3 + 3) & 0x7ffffffc;
-    int sbufsiz = slsiz * bmp_y;
-
-    byte simg[] = new byte[sbufsiz];
-    try {
-      if (in.read(simg) != sbufsiz) {
-        return null;
-      }
-    } catch (Exception e) {
-      return null;
+    if (type == 0 || type == 1) {
+      //icon / cursor
+      bmp_y /= 2;
     }
 
-    ret = new int[bmp_x * bmp_y];
+//    JFLog.log("planes=" + planes);
+//    JFLog.log("image size=" + bmp_x + "x" + bmp_y);
 
-    int sidx = slsiz * (bmp_y - 1);
-    int didx = 0;
+    if (bpp == 24) {
+      //load 24bit BMP
+      int slsiz = (bmp_x * 3 + 3) & 0x7ffffffc;
+      int sbufsiz = slsiz * bmp_y;
 
-    for (int y = 0; y < bmp_y; y++) {
-      for (int x = 0; x < bmp_x; x++) {
-        ret[didx++] = (((int) simg[sidx + x * 3 + 2] & 0xff) << 16 | ((int) simg[sidx + x * 3 + 1] & 0xff) << 8 | (int) simg[sidx + x * 3] & 0xff) | JFImage.OPAQUE;
+      byte simg[] = new byte[sbufsiz];
+      try {
+        if (in.read(simg) != sbufsiz) {
+          return null;
+        }
+      } catch (Exception e) {
+        return null;
       }
-      sidx -= slsiz;
+
+      ret = new int[bmp_x * bmp_y];
+
+      int sidx = slsiz * (bmp_y - 1);
+      int didx = 0;
+
+      for (int y = 0; y < bmp_y; y++) {
+        for (int x = 0; x < bmp_x; x++) {
+          ret[didx++] = (((int) simg[sidx + x * 3 + 2] & 0xff) << 16 | ((int) simg[sidx + x * 3 + 1] & 0xff) << 8 | (int) simg[sidx + x * 3] & 0xff) | JFImage.OPAQUE;
+        }
+        sidx -= slsiz;
+      }
+    } else {
+      //load 32bit BMP
+      int slsiz = (bmp_x * 4 + 3) & 0x7ffffffc;
+      int sbufsiz = slsiz * bmp_y;
+
+      byte simg[] = new byte[sbufsiz];
+      try {
+        if (in.read(simg) != sbufsiz) {
+          JFLog.log("loadBMP() failed : unable to load image data");
+          return null;
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+        return null;
+      }
+
+      ret = new int[bmp_x * bmp_y];
+
+      int sidx = slsiz * (bmp_y - 1);
+      int didx = 0;
+
+      for (int y = 0; y < bmp_y; y++) {
+        for (int x = 0; x < bmp_x; x++) {
+          ret[didx++] = LE.getuint32(simg, sidx + x * 4);
+        }
+        sidx -= slsiz;
+      }
     }
     size.width = bmp_x;
     size.height = bmp_y;
     return ret;
   }
 
-  protected static boolean save24(OutputStream out, int buf[], Dimension size, boolean noheader) {
+  protected static boolean save24(OutputStream out, int buf[], Dimension size, boolean noheader, boolean icon) {
     int a;
     int slsiz = size.width * 3;
     int dlsiz = (slsiz + 3) & 0xfffffffc;
@@ -149,14 +227,30 @@ public class bmp {
     int fs;
 
     if (!noheader) {
-      JF.writeuint8(out, 'B');
-      JF.writeuint8(out, 'M');
-      fs = dbufsiz + 54;
-      JF.writeuint32(out, fs);
-      a = 0;
-      JF.writeuint32(out, a);
-      a = 54;  //offset of bits
-      JF.writeuint32(out, a);
+      if (!icon) {
+        JF.writeuint8(out, 'B');
+        JF.writeuint8(out, 'M');
+        fs = dbufsiz + 54;
+        JF.writeuint32(out, fs);
+        a = 0;
+        JF.writeuint32(out, a);
+        a = 54;  //offset of bits
+        JF.writeuint32(out, a);
+      } else {
+        //_icon
+        JF.writeuint16(out, 0);  //reserved
+        JF.writeuint16(out, 1);  //1=ICO
+        JF.writeuint16(out, 1);  //# of images
+        //_icon_entry
+        JF.writeuint8(out, size.width);
+        JF.writeuint8(out, size.height);
+        JF.writeuint8(out, 0);  //colors in palette (not used)
+        JF.writeuint8(out, 0);  //reserved
+        JF.writeuint16(out, 1);  //planes
+        JF.writeuint16(out, 24);  //bpp
+        JF.writeuint32(out, 40 + dbufsiz);  //size of image data
+        JF.writeuint32(out, 0x16);  //offset to image data
+      }
       a = 40;  //size of win header
       JF.writeuint32(out, a);
       JF.writeuint32(out, size.width);

@@ -294,12 +294,14 @@ public class JFImage extends JComponent implements Icon {
       return false;
     }
   }
+
   //NOTE : Not all JREs support "bmp" so I use custom code
 
-  public boolean loadBMP(String filename) {
+  public boolean loadBMP(String filename, int index) {
     try {
-      return loadBMP(new FileInputStream(filename));
+      return loadBMP(new FileInputStream(filename), index);
     } catch (Exception e) {
+      e.printStackTrace();
       return false;
     }
   }
@@ -308,19 +310,22 @@ public class JFImage extends JComponent implements Icon {
     try {
       return saveBMP(new FileOutputStream(filename));
     } catch (Exception e) {
+      e.printStackTrace();
       return false;
     }
   }
 
-  public boolean loadBMP(InputStream in) {
+  public boolean loadBMP(InputStream in, int index) {
     int buf[];
     Dimension size = new Dimension(0, 0);
-    buf = bmp.load(in, size);
-    try {in.close();} catch (Exception e) {}
+    buf = bmp.load(in, size, index);
+    try {in.close();} catch (Exception e) {e.printStackTrace();}
     if (buf == null) {
+      JFLog.log("loadBMP() failed! null returned");
       return false;
     }
     if (size.width == 0 || size.height == 0) {
+      JFLog.log("loadBMP() failed! image size zero");
       return false;
     }
     setImageSize(size.width, size.height);
@@ -332,7 +337,7 @@ public class JFImage extends JComponent implements Icon {
     int pixels[];
     pixels = getPixels(0, 0, getWidth(), getHeight());
     Dimension size = new Dimension(getWidth(), getHeight());
-    return bmp.save24(out, pixels, size, false);
+    return bmp.save24(out, pixels, size, false, false);
   }
 
   //save ICO (no loading supported)

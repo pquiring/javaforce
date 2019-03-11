@@ -402,7 +402,7 @@ public class JF {
       return in.read(buf, pos, len);
     } catch (Exception e) {
       JFLog.log(e);
-      return 0;
+      return -1;
     }
   }
 
@@ -411,7 +411,7 @@ public class JF {
       return in.read();
     } catch (Exception e) {
       JFLog.log(e);
-      return 0;
+      return -1;
     }
   }
 
