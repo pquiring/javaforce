@@ -36,8 +36,9 @@ public class AudioInput {
     return mixers.toArray(new String[0]);
   }
 
-  public boolean start(int chs, int freq, int bits, int bufsiz, String device) {
-    buf8 = new byte[bufsiz];
+  public boolean start(int chs, int freq, int bits, int frame_size, String device) {
+    if (bits != 16) return false;  //only 16bit supported for now
+    buf8 = new byte[frame_size * 2];
     if (device == null) {
       device = "<default>";
     }
@@ -89,7 +90,7 @@ public class AudioInput {
     BE.byteArray2shortArray(buf8, buf16);
     return true;
   }
-  
+
   public void flush() {
     tdl.drain();
     tdl.flush();

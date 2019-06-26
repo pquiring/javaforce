@@ -88,8 +88,6 @@ public class MediaCoder {
   }
 
   //constants
-
-  //constants
   public static final int SEEK_SET = 0;
   public static final int SEEK_CUR = 1;
   public static final int SEEK_END = 2;

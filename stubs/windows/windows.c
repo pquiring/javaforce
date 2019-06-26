@@ -491,6 +491,13 @@ int main(int argc, char **argv) {
     }
   }
 
+  //JRE11+
+  strcpy(crt, javahome);
+  strcat(crt, "\\bin\\msvcp140.dll");
+  LoadLibrary(crt);
+  strcpy(crt, javahome);
+  strcat(crt, "\\bin\\msvcr140.dll");
+  LoadLibrary(crt);
   //JRE10
   strcpy(crt, javahome);
   strcat(crt, "\\bin\\msvcp120.dll");
@@ -498,15 +505,6 @@ int main(int argc, char **argv) {
   strcpy(crt, javahome);
   strcat(crt, "\\bin\\msvcr120.dll");
   LoadLibrary(crt);
-  //JRE7/8
-  strcpy(crt, javahome);
-  strcat(crt, "\\bin\\msvcr100.dll");
-  LoadLibrary(crt);
-  //older JRE5/6 version
-  strcpy(crt, javahome);
-  strcat(crt, "\\bin\\msvcr71.dll");
-  LoadLibrary(crt);
-  //could be a much older version (JRE5???) which just uses msvcrt.dll
 
   strcpy(dll, javahome);
   strcat(dll, "\\bin\\server\\jvm.dll");

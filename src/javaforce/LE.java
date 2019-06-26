@@ -179,4 +179,16 @@ public class LE {
     }
     return out;
   }
+  public static short[] swap(short[] input) {
+    int t1, t2;
+    for(int a=0;a<input.length;a++) {
+      t1 = input[a] & 0xffff;
+      t2 = t1;
+      t1 <<= 8;
+      t1 &= 0xff00;
+      t2 >>= 8;
+      input[a] = (short)(t1 | t2);
+    }
+    return input;
+  }
 }

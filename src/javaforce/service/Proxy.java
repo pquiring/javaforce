@@ -837,17 +837,18 @@ public class Proxy extends Thread {
             //read chunk
             chunkLength += 2;  // \r\n
             contentLength += chunkLength;
-            int read , off = 0;
-            byte buf[] = new byte[chunkLength];
+            int read;
+            int bufsiz = chunkLength;
+            if (bufsiz > 4096) bufsiz = 4096;
+            byte buf[] = new byte[bufsiz];
             while (chunkLength != 0) {
-              read = iis.read(buf, off, chunkLength);
+              read = iis.read(buf, 0, chunkLength <= 4096 ? chunkLength : bufsiz);
               if (read == -1) throw new Exception("read error");
               if (read > 0) {
                 chunkLength -= read;
-                off += read;
+                pos.write(buf, 0, read);
               }
             }
-            pos.write(buf);
             pos.flush();
             if (zero) break;
           }

@@ -97,6 +97,7 @@ void (*_av_freep)(void** ptr);
 int (*_av_image_alloc)(uint8_t* ptrs[],int linesizes[],int w,int h,int pix_fmt,int align);
 int (*_av_opt_set)(void* obj,const char* name,const char* val,int search_flags);
 int (*_av_opt_set_int)(void* obj,const char* name,int64_t val,int search_flags);
+int (*_av_opt_set_sample_fmt)(void* obj,const char* name,int val,int search_flags);
 int (*_av_opt_get)(void* obj,const char* name,int search_flags,void* val[]);
 int (*_av_opt_get_int)(void* obj,const char* name,int search_flags,int64_t val[]);
 //    int (*_av_opt_get_pixel_fmt)(void* obj,const char* name,int search_flags,int val[]);
@@ -119,6 +120,7 @@ void (*_av_frame_free)(void** frame);
 
 //swresample functions )(ffmpeg.org)
 void* (*_swr_alloc)();
+void* (*_swr_alloc_set_opts)(void*, int64_t out_ch_layout, int out_sample_fmt, int out_sample_rate, int64_t in_ch_layout, int in_sample_fmt, int in_sample_rate, int log_offset, void*log_ctx);
 int (*_swr_init)(void* ctx);
 int64_t (*_swr_get_delay)(void* ctx,int64_t base);
 int (*_swr_convert)(void* ctx,uint8_t* out_arg[],int out_count,uint8_t* in_arg[],int in_count);
@@ -313,6 +315,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(util, (void**)&_av_image_alloc, "av_image_alloc");
   getFunction(util, (void**)&_av_opt_set, "av_opt_set");
   getFunction(util, (void**)&_av_opt_set_int, "av_opt_set_int");
+  getFunction(util, (void**)&_av_opt_set_sample_fmt, "av_opt_set_sample_fmt");
   getFunction(util, (void**)&_av_opt_get, "av_opt_get");
   getFunction(util, (void**)&_av_opt_get_int, "av_opt_get_int");
   getFunction(util, (void**)&_av_opt_find, "av_opt_find");
@@ -338,6 +341,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
 
   if (!libav_org) {
     getFunction(resample, (void**)&_swr_alloc, "swr_alloc");
+    getFunction(resample, (void**)&_swr_alloc_set_opts, "swr_alloc_set_opts");
     getFunction(resample, (void**)&_swr_init, "swr_init");
     getFunction(resample, (void**)&_swr_get_delay, "swr_get_delay");
     getFunction(resample, (void**)&_swr_convert, "swr_convert");
@@ -669,16 +673,27 @@ static jboolean open_codecs(FFContext *ctx, int new_width, int new_height, int n
     ctx->dst_sample_fmt = AV_SAMPLE_FMT_S16;
     ctx->src_rate = ctx->audio_codec_ctx->sample_rate;
     if (new_freq == -1) new_freq = ctx->src_rate;
-    (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_layout",     src_layout, 0);
+/*
+    (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_count",     ctx->audio_codec_ctx->channels, 0);
     (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_rate",        ctx->src_rate, 0);
-    (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_fmt",  ctx->audio_codec_ctx->sample_fmt, 0);
-    (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_layout",    new_layout, 0);
+    (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "in_sample_fmt",  ctx->audio_codec_ctx->sample_fmt, 0);
+    (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_count",    new_chs, 0);
     (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       new_freq, 0);
-    (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_fmt", ctx->dst_sample_fmt, 0);
+    (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->dst_sample_fmt, 0);
+*/
+    ctx->swr_ctx = (*_swr_alloc_set_opts)(ctx->swr_ctx,
+      new_layout, ctx->dst_sample_fmt, new_freq, src_layout,
+      ctx->audio_codec_ctx->sample_fmt, ctx->src_rate,
+      0, NULL);
+
+    int ret;
     if (libav_org)
-      (*_avresample_open)(ctx->swr_ctx);
+      ret = (*_avresample_open)(ctx->swr_ctx);
     else
-      (*_swr_init)(ctx->swr_ctx);
+      ret = (*_swr_init)(ctx->swr_ctx);
+    if (ret < 0) {
+      printf("resample init failed:%d\n", ret);
+    }
     ctx->dst_rate = new_freq;
   }
 
@@ -1246,7 +1261,29 @@ static jboolean add_stream(FFContext *ctx, int codec_id) {
   switch (codec->type) {
     case AVMEDIA_TYPE_AUDIO:
       if (codec->sample_fmts != NULL) {
-        codec_ctx->sample_fmt = codec->sample_fmts[0];
+        bool have_fmt = false;
+        for(int idx=0;;idx++) {
+          AVSampleFormat fmt = codec->sample_fmts[idx];
+          if (fmt == -1) {
+            if (!have_fmt) {
+              codec_ctx->sample_fmt = codec->sample_fmts[0];
+            }
+            break;
+          }
+          printf("available sample format:%d\n", fmt);
+          if (fmt == AV_SAMPLE_FMT_S16) {
+            //preferred format
+            have_fmt = true;
+            codec_ctx->sample_fmt = fmt;
+            break;
+          }
+          if (fmt == AV_SAMPLE_FMT_S16P && !have_fmt) {
+            //second preferred format
+            have_fmt = true;
+            codec_ctx->sample_fmt = fmt;
+            break;
+          }
+        };
       } else {
         codec_ctx->sample_fmt = AV_SAMPLE_FMT_S16;
       }
@@ -1254,6 +1291,7 @@ static jboolean add_stream(FFContext *ctx, int codec_id) {
       codec_ctx->bit_rate = ctx->config_audio_bit_rate;
       codec_ctx->sample_rate = ctx->freq;
       codec_ctx->channels = ctx->chs;
+      printf("audio:%d %d %d\n", ctx->config_audio_bit_rate, ctx->freq, ctx->chs);
       switch (ctx->chs) {
         case 1: codec_ctx->channel_layout = AV_CH_LAYOUT_MONO; break;
         case 2: codec_ctx->channel_layout = AV_CH_LAYOUT_STEREO; break;
@@ -1392,21 +1430,32 @@ static jboolean open_audio(FFContext *ctx) {
   if (ctx->audio_codec_ctx->sample_fmt == AV_SAMPLE_FMT_S16) {
     return JNI_TRUE;
   }
-  //create audio conversion (S16 -> FLTP)
+  //create audio conversion context
   if (libav_org)
     ctx->swr_ctx = (*_avresample_alloc_context)();
   else
     ctx->swr_ctx = (*_swr_alloc)();
-  (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_layout",     ctx->audio_codec_ctx->channel_layout, 0);
+/*
+  (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_count",      ctx->chs, 0);
   (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_rate",        ctx->freq, 0);
-  (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_fmt",  AV_SAMPLE_FMT_S16, 0);
-  (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_layout",    ctx->audio_codec_ctx->channel_layout, 0);
+  (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "in_sample_fmt",  AV_SAMPLE_FMT_S16, 0);
+  (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_count",     ctx->chs, 0);
   (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       ctx->freq, 0);
-  (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_fmt", ctx->audio_codec_ctx->sample_fmt, 0);
+  (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->audio_codec_ctx->sample_fmt, 0);
+*/
+  ctx->swr_ctx = (*_swr_alloc_set_opts)(ctx->swr_ctx,
+    ctx->audio_codec_ctx->channel_layout, ctx->audio_codec_ctx->sample_fmt, ctx->freq,
+    ctx->audio_codec_ctx->channel_layout, AV_SAMPLE_FMT_S16, ctx->freq,
+    0, NULL);
+
+  printf("conversion:%d to %d\n", AV_SAMPLE_FMT_S16, ctx->audio_codec_ctx->sample_fmt);
   if (libav_org)
-    (*_avresample_open)(ctx->swr_ctx);
+    ret = (*_avresample_open)(ctx->swr_ctx);
   else
-    (*_swr_init)(ctx->swr_ctx);
+    ret = (*_swr_init)(ctx->swr_ctx);
+  if (ret < 0) {
+    printf("resample init failed:%d\n", ret);
+  }
   return JNI_TRUE;
 }
 
@@ -1526,23 +1575,26 @@ static jboolean addAudioFrame(FFContext *ctx, short *sams, int offset, int lengt
   memcpy(samples_data, sams + offset, length * 2);
   AVPacket *pkt = AVPacket_New();
   (*_av_init_packet)(pkt);
+//  printf("buffer:%d %d %d\n", buffer_size, nb_samples, length);
 
   if (ctx->swr_ctx != NULL) {
-    //convert S16 -> FLTP (some codecs do not support S16)
+    //convert sample format (some codecs do not support S16)
     //sample rate is not changed
     if (((*_av_samples_alloc)(ctx->audio_dst_data, ctx->audio_dst_linesize, ctx->chs
-      , nb_samples, ctx->audio_codec_ctx->sample_fmt, 1)) < 0)
+      , nb_samples, ctx->audio_codec_ctx->sample_fmt, 0)) < 0)
     {
       printf("av_samples_alloc failed!\n");
       return JNI_FALSE;
     }
     ctx->audio_src_data[0] = (uint8_t*)samples_data;
+    int ret;
     if (libav_org)
-      (*_avresample_convert)(ctx->swr_ctx, ctx->audio_dst_data, 0, nb_samples
+      ret = (*_avresample_convert)(ctx->swr_ctx, ctx->audio_dst_data, 0, nb_samples
         , ctx->audio_src_data, 0, nb_samples);
     else
-      (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, nb_samples
+      ret = (*_swr_convert)(ctx->swr_ctx, ctx->audio_dst_data, nb_samples
         , ctx->audio_src_data, nb_samples);
+//    printf("convert = %d\n", ret);
   } else {
     ctx->audio_dst_data[0] = (uint8_t*)samples_data;
   }
@@ -1565,19 +1617,18 @@ static jboolean addAudioFrame(FFContext *ctx, short *sams, int offset, int lengt
   if (got_frame && pkt->size > 0) {
     pkt->stream_index = ctx->audio_stream->index;
     (*_av_packet_rescale_ts)(pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
-//printf("audio : write_frame() : %lld, %lld, %d, %d\n", pkt->pts, pkt->dts, pkt->duration, pkt->stream_index);
+//printf("audio : write_frame() : %lld, %lld, %d, %d, %d\n", pkt->pts, pkt->dts, pkt->duration, pkt->stream_index, pkt->size);
     ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
-    (*_av_free_packet)(pkt);
-    (*_av_free)(pkt);
-    pkt = NULL;
     if (ret < 0) {
       printf("av_interleaved_write_frame() failed!\n");
       return JNI_FALSE;
     }
   }
+  (*_av_free_packet)(pkt);
+  (*_av_free)(pkt);
   (*_av_free)(samples_data);
   if (ctx->swr_ctx != NULL) {
-    //free audio_dst_data (only the first pointer)
+    //free audio_dst_data (only the first pointer : regardless if format was plannar : it's alloced as one large block)
     if (ctx->audio_dst_data[0] != NULL) {
       (*_av_free)(ctx->audio_dst_data[0]);
       ctx->audio_dst_data[0] = NULL;
@@ -1594,6 +1645,7 @@ static jboolean addAudio(FFContext *ctx, short *sams, int offset, int length) {
   if (!ctx->audio_frame_size_variable) {
     frame_size = ctx->audio_frame_size;  //max samples that encoder will accept
     if (ctx->audio_buffer_size > 0) {
+      printf("warning : filling partial frame\n");
       //fill audio_buffer with input samples
       int size = ctx->audio_frame_size - ctx->audio_buffer_size;
       if (size > length) size = length;
@@ -1612,6 +1664,7 @@ static jboolean addAudio(FFContext *ctx, short *sams, int offset, int length) {
     if (size > frame_size) size = frame_size;
     if (size < frame_size && !ctx->audio_frame_size_variable) {
       //partial frame : copy the rest to temp storage for next call
+      printf("save partial frame\n");
       memcpy(ctx->audio_buffer, sams + offset, size * 2);
       ctx->audio_buffer_size = size;
       return JNI_TRUE;

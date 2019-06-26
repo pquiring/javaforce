@@ -1,4 +1,4 @@
-package javaforce.ansi.games;
+package javaforce.ansi.server.games;
 
 /** ANSI Tetris
  *
@@ -10,7 +10,7 @@ import java.awt.*;
 import java.util.*;
 
 import javaforce.*;
-import javaforce.ansi.*;
+import javaforce.ansi.server.*;
 
 public class Tetris extends TimerTask implements KeyEvents {
   private ANSI ansi;

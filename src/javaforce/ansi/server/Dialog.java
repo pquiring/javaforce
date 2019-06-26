@@ -1,4 +1,4 @@
-package javaforce.ansi;
+package javaforce.ansi.server;
 
 /** Dialog interface
  *

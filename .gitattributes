@@ -1,7 +1,0 @@
-**/*.sh        text eol=lf
-**/*.lst        text eol=lf
-**/control        text eol=lf
-**/preinst        text eol=lf
-**/prerm        text eol=lf
-**/postinst        text eol=lf
-**/postrm        text eol=lf
