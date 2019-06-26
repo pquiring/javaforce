@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" UpgradeCode="{0E82399B-4C4D-432B-917C-F98FDEBACC52}" Version="0.1" Language="1033" Name="jfWebPlayer" Manufacturer="Peter Quiring">
+    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
+    <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
+    <UIRef Id="WixUI_Minimal" />
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
+
+    <Icon Id="icon.ico" SourceFile="jfwebplayer.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
+
+    <!-- Step 1: Define the directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfwebplayer"/>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+<!-- Use the following if you want Shortcut in its own folder -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfWebPlayer"/> -->
+      </Directory>
+    </Directory>
+
+    <!-- Step 2: Add files to your installer package -->
+    <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+      <Component Id="appfiles" Guid="{F363F9C0-B6FE-44C6-937C-3EE006DB06D0}" Win64="yes">
+        <File Id="jfwebplayer.jar" Source="jfwebplayer.jar" KeyPath="yes"/>
+        <File Id="javaforce.jar" Source="javaforce.jar"/>
+        <File Id="jfwebplayer.exe" Source="jfwebplayer.exe"/>
+        <File Id="jfnative64.dll" Source="jfnative64.dll"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 2b: Add the shortcut to your installer package -->
+<!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
+    <DirectoryRef Id="ProgramMenuFolder">
+      <Component Id="ApplicationShortcut" Guid="{DC0EB428-2BAA-4027-8C5B-7EFE367862B0}">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfWebPlayer" Description="Java WebPlayer Editor" Target="[APPLICATIONROOTDIRECTORY]jfwebplayer.exe"
+          WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+<!-- Use the following if you want Shortcut in its own folder -->
+<!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfWebPlayer" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 3: Tell WiX to install the files -->
+    <Feature Id="MainApplication" Title="Main Application" Level="1">
+      <ComponentRef Id="appfiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentGroupRef Id="JRE" />
+    </Feature>
+  </Product>
+</Wix>

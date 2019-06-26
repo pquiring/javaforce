@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>WebPlayer</title>
+    <script src="/webplayer.js"></script>
+  </head>
+  <body style="margin: 0px;">
+    <div id="top">
+      <span id="controls"><button onclick="start()">Start</button></span>
+      <span id="charging">(charging state unknown)</span>
+      <span id="level">(battery level unknown)</span>
+      <span id="dischargingTime">(discharging time unknown)</span>
+      <span id="refresh"><button onclick="refresh()">Refresh</button></span>
+      <audio id=audio src="/audio"></audio>
+    </div>
+    <div id="bottom">
+      <img id="image" src="/loading" onclick="touch(event);">
+    </div>
+  </body>
+</html>

@@ -47,6 +47,7 @@ char xoptions[MAX_PATH];
 #ifdef _JF_SERVICE
 char service[MAX_PATH];
 #endif
+char err_msg[1024];
 JavaVM *g_jvm = NULL;
 JNIEnv *g_env = NULL;
 
@@ -57,8 +58,8 @@ int loadProperties();
 
 /** Displays the error message in a dialog box. */
 void error(char *msg) {
-  char fullmsg[1024];
-  sprintf(fullmsg, "Failed to start Java\nPlease visit www.java.com and install Java\nError:%s", msg);
+  char fullmsg[2048];
+  sprintf(fullmsg, "Failed to start Java\nPlease visit www.java.com and install Java\njavahome=%s\nError:%s", javahome, msg);
 #ifndef _JF_SERVICE
   MessageBox(NULL, fullmsg, "Java Virtual Machine Launcher", (MB_OK | MB_ICONSTOP | MB_APPLMODAL));
 #else
@@ -389,6 +390,7 @@ int findJavaHomeRegistry() {
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\JRE", 0, KEY_READ, &key) != 0) {
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Runtime Environment", 0, KEY_READ, &key) != 0) {
       if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\JDK", 0, KEY_READ, &key) != 0) {
+        sprintf(err_msg, "Unable to open JavaSoft registry key");
         return 0;
       }
     }
@@ -396,25 +398,30 @@ int findJavaHomeRegistry() {
 
   size = 0;
   if (RegQueryValueEx(key, "CurrentVersion", 0, (LPDWORD)&type, 0, (LPDWORD)&size) != 0 || (type != REG_SZ) || (size > MAX_PATH)) {
+    sprintf(err_msg, "Unable to find CurrentVersion registry key");
     return 0;
   }
 
   size = MAX_PATH;
   if (RegQueryValueEx(key, "CurrentVersion", 0, 0, version, (LPDWORD)&size) != 0) {
+    sprintf(err_msg, "Unable to load CurrentVersion registry key");
     return 0;
   }
 
   if (RegOpenKeyEx(key, version, 0, KEY_READ, &subkey) != 0) {
+    sprintf(err_msg, "Unable to open CurrentVersion registry key");
     return 0;
   }
 
   size = 0;
   if (RegQueryValueEx(subkey, "JavaHome", 0, (LPDWORD)&type, 0, (LPDWORD)&size) != 0 || (type != REG_SZ) || (size > MAX_PATH)) {
+    sprintf(err_msg, "Unable to find JavaHome registry key");
     return 0;
   }
 
   size = MAX_PATH;
   if (RegQueryValueEx(subkey, "JavaHome", 0, 0, javahome, (LPDWORD)&size) != 0) {
+    sprintf(err_msg, "Unable to load JavaHome registry key");
     return 0;
   }
 
@@ -481,11 +488,12 @@ int main(int argc, char **argv) {
     return 2;
   }
 
+  sprintf(err_msg, "Unable to find Java");
   if (javahome[0] == 0) {
     if (findJavaHomeAppFolder() == 0) {
       if (findJavaHomeRegistry() == 0) {
         if (findJavaHomeAppDataFolder() == 0) {
-          error("Unable to find Java");
+          error(err_msg);
         }
       }
     }
