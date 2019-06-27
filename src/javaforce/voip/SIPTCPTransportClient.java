@@ -24,11 +24,11 @@ public class SIPTCPTransportClient implements SIPTransport {
 
   public String getName() { return "TCP"; }
 
-  public boolean open(int localport) {
+  public boolean open(String localhost, int localport) {
     try {
       socket = new Socket();
       socket.setSoLinger(true, 0);  //allow to reuse socket again without waiting
-      socket.bind(new InetSocketAddress(InetAddress.getLocalHost(), localport));
+      socket.bind(new InetSocketAddress(localhost, localport));
     } catch (Exception e) {
       JFLog.log(e);
       return false;

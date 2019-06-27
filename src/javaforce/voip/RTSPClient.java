@@ -17,7 +17,6 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   private int remoteport;
   private String name;  //display name (usually same as user)
   private String user;  //acct name (usually a phone number)
-  private String auth;  //auth name (usually same as user)
   private String pass;  //password
   private RTSPClientInterface iface;
   private String localhost;
@@ -77,7 +76,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
         stopSTUN();
       }
       sess = new RTSPSession(localhost);
-      return super.init(localport, this, false, type);
+      return super.init(localhost, localport, this, false, type);
     } catch (Exception e) {
       if (stun != null) stopSTUN();
       JFLog.log(e);
@@ -253,24 +252,19 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   /**
    * Issues a command to the SIP server.
    */
-  private boolean issue(RTSPSession sess, String cmd, boolean sdp, boolean src) {
+  private boolean issue(RTSPSession sess, String cmd) {
     JFLog.log("sessid:" + sess.id + "\r\nissue command : " + cmd + " from : " + user + " to : " + remotehost);
     sess.remotehost = remoteip;
     sess.remoteport = remoteport;
+    sess.cmd = cmd;
     StringBuilder req = new StringBuilder();
     req.append(cmd + " " + sess.uri + " RTSP/1.0\r\n");
-    req.append("Cseq: " + sess.cseq + " " + cmd + "\r\n");
+    req.append("Cseq: " + sess.cseq + "\r\n");
     req.append("User-Agent: " + useragent + "\r\n");
     if (sess.epass != null) {
       req.append(sess.epass);
     }
-    if ((sess.sdp != null) && (sdp)) {
-      req.append("Content-Type: application/sdp\r\n");
-      req.append("Content-Length: " + sess.sdp.length() + "\r\n\r\n");
-      req.append(sess.sdp);
-    } else {
-      req.append("Content-Length: 0\r\n\r\n");
-    }
+    req.append("\r\n");
     return send(remoteaddr, remoteport, req.toString());
   }
 
@@ -306,94 +300,40 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send OPTIONS request to server.
    */
   public boolean options(String url) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("OPTIONS ");
-    sb.append(url);
-    sb.append(" RTSP/1.0\r\n");
-    sb.append("CSeq: ");
-    sb.append(sess.cseq++);
-    sb.append("\r\n");
-    if (false) {
-      //add authorization ???
-    }
-    sb.append("\r\n");
-    return send(remoteaddr, remoteport, sb.toString());
+    sess.uri = url;
+    return issue(sess, "OPTIONS");
   }
 
   /**
    * Send DESCRIBE request to server.
    */
   public boolean describe(String url) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("DESCRIBE ");
-    sb.append(url);
-    sb.append(" RTSP/1.0\r\n");
-    sb.append("CSeq: ");
-    sb.append(sess.cseq++);
-    sb.append("\r\n");
-    sb.append("Accept: application/sdp\r\n");
-    if (false) {
-      //add authorization ???
-    }
-    sb.append("\r\n");
-    return send(remoteaddr, remoteport, sb.toString());
+    sess.uri = url;
+    return issue(sess, "DESCRIBE");
   }
 
   /**
    * Send SETUP request to server (RTSP).
    */
   public boolean setup(String url) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("SETUP ");
-    sb.append(url);
-    sb.append(" RTSP/1.0\r\n");
-    sb.append("CSeq: ");
-    sb.append(sess.cseq++);
-    sb.append("\r\n");
-    sb.append("Transport: RTP/AVP;unicast;client_port=" + /* RTP port range??? */ "\r\n");
-    if (false) {
-      //add authorization ???
-    }
-    sb.append("\r\n");
-    return send(remoteaddr, remoteport, sb.toString());
+    sess.uri = url;
+    return issue(sess, "SETUP");
   }
 
   /**
    * Send PLAY request to server (RTSP).
    */
   public boolean play(String url) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("PLAY ");
-    sb.append(url);
-    sb.append(" RTSP/1.0\r\n");
-    sb.append("CSeq: ");
-    sb.append(sess.cseq++);
-    sb.append("\r\n");
-    sb.append("Session: " + sess.id + "\r\n");
-    if (false) {
-      //add authorization ???
-    }
-    sb.append("\r\n");
-    return send(remoteaddr, remoteport, sb.toString());
+    sess.uri = url;
+    return issue(sess, "PLAY");
   }
 
   /**
    * Send TEARDOWN request to server (RTSP).
    */
   public boolean teardown(String url) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("TEARDOWN ");
-    sb.append(url);
-    sb.append(" RTSP/1.0\r\n");
-    sb.append("CSeq: ");
-    sb.append(sess.cseq++);
-    sb.append("\r\n");
-    sb.append("Session: " + sess.id + "\r\n");
-    if (false) {
-      //add authorization ???
-    }
-    sb.append("\r\n");
-    return send(remoteaddr, remoteport, sb.toString());
+    sess.uri = url;
+    return issue(sess, "TEARDOWN");
   }
 
   /**
@@ -449,13 +389,13 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
               JFLog.log("err:401/407 without Authenticate tag");
               break;
             }
-            sess.epass = getAuthResponse(sess, auth, pass, remotehost, sess.cmd, (type == 401 ? "Authorization:" : "Proxy-Authorization:"));
+            sess.epass = getAuthResponse(sess, user, pass, remotehost, sess.cmd, (type == 401 ? "Authorization:" : "Proxy-Authorization:"));
             if (sess.epass == null) {
               JFLog.log("err:gen auth failed");
               break;
             }
             sess.cseq++;
-            issue(sess, sess.cmd, sess.cmd.equals("INVITE"), true);
+            issue(sess, sess.cmd);
             sess.authsent = true;
           }
           break;

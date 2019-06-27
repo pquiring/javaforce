@@ -27,7 +27,7 @@ public abstract class RTSP {
   /**
    * Opens the transport and sets the SIPInterface callback.
    */
-  protected boolean init(int port, RTSPInterface iface, boolean server, Transport type) throws Exception {
+  protected boolean init(String localhost, int localport, RTSPInterface iface, boolean server, Transport type) throws Exception {
     rinstance = null;
     this.iface = iface;
     this.server = server;
@@ -48,7 +48,7 @@ public abstract class RTSP {
           transport = new SIPTLSTransportClient();
         break;
     }
-    if (!transport.open(port)) return false;
+    if (!transport.open(localhost, localport)) return false;
     worker = new Worker();
     worker.start();
     return true;
@@ -753,10 +753,10 @@ public abstract class RTSP {
     if (msg[0].length() < 11) {
       return -1;  //bad msg
     }
-    if (!msg[0].regionMatches(true, 0, "RTSP/1.0 ", 0, 8)) {
+    if (!msg[0].regionMatches(true, 0, "RTSP/1.0 ", 0, 9)) {
       return -1;  //not a response
-    }    //SIP/2.0 ### ...
-    return Integer.valueOf(msg[0].substring(8, 11));
+    }    //RTSP/1.0 ### ...
+    return Integer.valueOf(msg[0].substring(9, 12));
   }
 
   /**
@@ -927,10 +927,10 @@ public abstract class RTSP {
       }
     }
     sess.nonce = nonce;
-    String response = getResponse(user, pass, realm, cmd, "sip:" + remote, nonce, qop, nc, cnonce);
+    String response = getResponse(user, pass, realm, cmd, "rtsp://" + remote, nonce, qop, nc, cnonce);
     StringBuffer ret = new StringBuffer();
     ret.append(header);
-    ret.append(" Digest username=\"" + user + "\", realm=\"" + realm + "\", uri=\"sip:" + remote + "\", nonce=\"" + nonce + "\"");
+    ret.append(" Digest username=\"" + user + "\", realm=\"" + realm + "\", uri=\"rtsp://" + remote + "\", nonce=\"" + nonce + "\"");
     if (cnonce != null) {
       ret.append(", cnonce=\"" + cnonce + "\"");
     }

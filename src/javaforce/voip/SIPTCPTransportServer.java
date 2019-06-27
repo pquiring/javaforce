@@ -23,7 +23,7 @@ public class SIPTCPTransportServer implements SIPTransport {
 
   public String getName() { return "TCP"; }
 
-  public boolean open(int localport) {
+  public boolean open(String localhost, int localport) {
     try {
       ss = new ServerSocket(localport);
       active = true;

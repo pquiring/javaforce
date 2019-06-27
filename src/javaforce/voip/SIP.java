@@ -29,7 +29,7 @@ public abstract class SIP {
   /**
    * Opens the transport and sets the SIPInterface callback.
    */
-  protected boolean init(int port, SIPInterface iface, boolean server, Transport type) throws Exception {
+  protected boolean init(String localhost, int localport, SIPInterface iface, boolean server, Transport type) throws Exception {
     rinstance = null;
     this.iface = iface;
     this.server = server;
@@ -50,7 +50,7 @@ public abstract class SIP {
           transport = new SIPTLSTransportClient();
         break;
     }
-    if (!transport.open(port)) return false;
+    if (!transport.open(localhost, localport)) return false;
     worker = new Worker();
     worker.start();
     return true;

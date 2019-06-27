@@ -95,7 +95,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       if (nat == NAT.STUN || nat == NAT.ICE) {
         stopSTUN();
       }
-      return super.init(localport, this, false, type);
+      return super.init(localhost, localport, this, false, type);
     } catch (Exception e) {
       if (stun != null) stopSTUN();
       JFLog.log(e);

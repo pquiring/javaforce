@@ -22,7 +22,7 @@ public class SIPServer extends SIP implements SIPInterface {
     cdlist = new Hashtable<String, CallDetailsServer>();
     try {
       JFLog.log("Starting SIP Server on port " + localport);
-      super.init(localport, this, true, type);
+      super.init(localhost, localport, this, true, type);
     } catch (Exception e) {
       JFLog.log("SIPServer:init() failed : " + e);
       return false;

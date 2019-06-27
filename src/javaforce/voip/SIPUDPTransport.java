@@ -17,7 +17,7 @@ public class SIPUDPTransport implements SIPTransport {
 
   public String getName() { return "UDP"; }
 
-  public boolean open(int localport) {
+  public boolean open(String localhost, int localport) {
     try {
       ds = new DatagramSocket(localport);
       active = true;
