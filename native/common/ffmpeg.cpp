@@ -1097,8 +1097,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
 {
   FFContext *ctx = createFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
+  printf("context=%p\n", ctx);
   ctx->video_codec = (*_avcodec_find_decoder)(codec_id);
   if (ctx->video_codec == NULL) {
+    printf("MediaVideoDecoder : codec == null\n");
     return JNI_FALSE;
   }
   ctx->video_codec_ctx = (*_avcodec_alloc_context3)(ctx->video_codec);
@@ -1110,19 +1112,23 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
   ctx->video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
 
   if (((*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL)) < 0) {
+    printf("avcodec_open2() failed\n");
     return JNI_FALSE;
   }
 
   if (new_width == -1) new_width = ctx->video_codec_ctx->width;
   if (new_height == -1) new_height = ctx->video_codec_ctx->height;
+  printf("width=%d height=%d\n", new_width, new_height);
   if ((ctx->video_dst_bufsize = (*_av_image_alloc)(ctx->video_dst_data, ctx->video_dst_linesize
     , ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt, 1)) < 0)
   {
+    printf("av_image_alloc() failed\n");
     return JNI_FALSE;
   }
   if ((ctx->rgb_video_dst_bufsize = (*_av_image_alloc)(ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize
     , new_width, new_height, AV_PIX_FMT_BGRA, 1)) < 0)
   {
+    printf("av_image_alloc(RGB) failed\n");
     return JNI_FALSE;
   }
   //create video conversion context
@@ -1133,6 +1139,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
   if ((ctx->frame = (*_av_frame_alloc)()) == NULL) return JNI_FALSE;
   ctx->pkt = AVPacket_New();
   (*_av_init_packet)(ctx->pkt);
+  ctx->pkt->data = NULL;
+  ctx->pkt->size = 0;
+  ctx->pkt_size_left = 0;
 
   int px_count = new_width * new_height;
   ctx->jvideo_length = px_count;
@@ -1187,6 +1196,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
     if (ctx->pkt->data != NULL) {
       (*_av_free)(ctx->pkt->data);
       ctx->pkt->data = NULL;
+      ctx->pkt->size = 0;
     }
     int data_length = e->GetArrayLength(data);
     ctx->pkt->data = (uint8_t*)(*_av_malloc)(data_length);

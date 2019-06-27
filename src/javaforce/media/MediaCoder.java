@@ -96,11 +96,12 @@ public class MediaCoder {
   public static final int AV_CODEC_ID_NONE = 0;
   public static final int AV_CODEC_ID_MPEG1VIDEO = 1;
   public static final int AV_CODEC_ID_MPEG2VIDEO = 2;
-  public static final int AV_CODEC_ID_H263 = 5;
-  public static final int AV_CODEC_ID_MPEG4 = 13;
-  public static final int AV_CODEC_ID_H264 = 28;
-  public static final int AV_CODEC_ID_THEORA = 31;
-  public static final int AV_CODEC_ID_VP8 = 141;
+  public static final int AV_CODEC_ID_H263 = 4;
+  public static final int AV_CODEC_ID_MPEG4 = 12;
+  public static final int AV_CODEC_ID_H264 = 27;
+  public static final int AV_CODEC_ID_THEORA = 30;
+  public static final int AV_CODEC_ID_VP8 = 139;
+  public static final int AV_CODEC_ID_VP9 = 167;
 
   //a few audio codecs
   public static final int AV_CODEC_ID_PCM_S16LE = 0x10000;  //wav file
