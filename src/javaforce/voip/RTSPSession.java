@@ -10,14 +10,15 @@ import java.util.*;
 public class RTSPSession {
   public RTSPSession(String localhost) {
     this.localhost = localhost;
-    Random r = new Random();
-    id = r.nextInt();
+    extra = "";
   }
   public String localhost;
   public int cseq = 2;
-  public int id;
+  public long id;
   public String uri;
+  public String extra;
   public String epass;
+  public String transport;
   public String headers[];
   public String sdp;
   public String cmd;

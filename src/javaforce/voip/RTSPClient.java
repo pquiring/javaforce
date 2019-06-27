@@ -5,7 +5,7 @@ import java.util.*;
 import javaforce.*;
 
 /**
- * Handles the client end of a SIP link.
+ * Handles the client end of a RTSP link.
  */
 
 public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
@@ -15,20 +15,16 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   private String remotehost, remoteip;
   private InetAddress remoteaddr;
   private int remoteport;
-  private String name;  //display name (usually same as user)
   private String user;  //acct name (usually a phone number)
   private String pass;  //password
   private RTSPClientInterface iface;
   private String localhost;
-  private int localport, rport = -1;
-  private static boolean use_received = true;
-  private static boolean use_rport = true;
+  private int localport;
   private static NAT nat = NAT.None;
   private static boolean useNATOnPrivateNetwork = false;  //do not use NATing techniques on private network servers
   private static String stunHost, stunUser, stunPass;
   private RTSPSession sess;
 
-  public Object rtmp;  //used by RTMP2SIPServer
   public Object userobj;  //user definable
   public int expires;  //expires
 
@@ -115,7 +111,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   }
 
   /**
-   * Send an empty SIP message to server. This should be done periodically to
+   * Send an empty RTSP message to server. This should be done periodically to
    * keep firewalls open. Most routers close UDP connections after 60 seconds.
    * Not sure if needed with TCP/TLS but is done anyways.
    */
@@ -190,7 +186,6 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     synchronized(stunLock) {
       if (stunWaiting) {
 //        localhost = ip;
-        rport = port;  //NOTE : this port may be wrong if router is symmetrical
         stunResponse = true;
         stunLock.notify();
       }
@@ -237,7 +232,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     if (useNATOnPrivateNetwork || !isPrivateNetwork(remoteip)) {
       if (nat == NAT.STUN || nat == NAT.ICE) {
         if (findlocalhost_stun()) return;
-        JFLog.log("SIP:STUN:Failed");
+        JFLog.log("RTSP:STUN:Failed");
       }
     }
     //try connecting to remotehost on webserver port
@@ -250,42 +245,35 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   }
 
   /**
-   * Issues a command to the SIP server.
+   * Issues a command to the RTSP server.
    */
   private boolean issue(RTSPSession sess, String cmd) {
+    return issue(sess, cmd, false);
+  }
+
+  /**
+   * Issues a command to the RTSP server.
+   */
+  private boolean issue(RTSPSession sess, String cmd, boolean sessid) {
     JFLog.log("sessid:" + sess.id + "\r\nissue command : " + cmd + " from : " + user + " to : " + remotehost);
     sess.remotehost = remoteip;
     sess.remoteport = remoteport;
     sess.cmd = cmd;
     StringBuilder req = new StringBuilder();
-    req.append(cmd + " " + sess.uri + " RTSP/1.0\r\n");
-    req.append("Cseq: " + sess.cseq + "\r\n");
+    req.append(cmd + " " + sess.uri + sess.extra + " RTSP/1.0\r\n");
+    req.append("Cseq: " + sess.cseq++ + "\r\n");
     req.append("User-Agent: " + useragent + "\r\n");
     if (sess.epass != null) {
       req.append(sess.epass);
     }
+    if (sess.transport != null) {
+      req.append(sess.transport);
+    }
+    if (sessid) {
+      req.append("Session: " + sess.id + "\r\n");
+    }
     req.append("\r\n");
     return send(remoteaddr, remoteport, req.toString());
-  }
-
-  /**
-   * Sends a reply to a SIP server.
-   */
-  private boolean reply(String cmd, int code, String msg, boolean sdp, boolean src) {
-    JFLog.log("callid:" + sess.id + "\r\nissue reply : " + code + " to : " + remotehost);
-    StringBuilder req = new StringBuilder();
-    req.append("RTSP/1.0 " + code + " " + msg + "\r\n");
-    req.append("Cseq: " + sess.cseq + "\r\n");
-    req.append("User-Agent: JavaForce\r\n");
-    if ((sess.sdp != null) && (sdp)) {
-      req.append("Content-Type: application/sdp\r\n");
-      req.append("Content-Length: " + sess.sdp.length() + "\r\n\r\n");
-      req.append(sess.sdp);
-    } else {
-      req.append("Content-Length: 0\r\n\r\n");
-    }
-    send(remoteaddr, remoteport, req.toString());
-    return true;
   }
 
   /*
@@ -301,6 +289,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    */
   public boolean options(String url) {
     sess.uri = url;
+    sess.extra = "";
     return issue(sess, "OPTIONS");
   }
 
@@ -309,15 +298,20 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    */
   public boolean describe(String url) {
     sess.uri = url;
+    sess.extra = "";
     return issue(sess, "DESCRIBE");
   }
 
   /**
    * Send SETUP request to server (RTSP).
    */
-  public boolean setup(String url) {
+  public boolean setup(String url, int localrtpport, int trackid) {
+    sess.transport = "Transport: RTP/AVP;unicast;client_port=" + localrtpport + "-" + (localrtpport+1) + "\r\n";
     sess.uri = url;
-    return issue(sess, "SETUP");
+    sess.extra = "/trackid=" + trackid;
+    boolean result = issue(sess, "SETUP");
+    sess.transport = null;
+    return result;
   }
 
   /**
@@ -325,7 +319,8 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    */
   public boolean play(String url) {
     sess.uri = url;
-    return issue(sess, "PLAY");
+    sess.extra = "/";
+    return issue(sess, "PLAY", true);
   }
 
   /**
@@ -333,11 +328,12 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    */
   public boolean teardown(String url) {
     sess.uri = url;
-    return issue(sess, "TEARDOWN");
+    sess.extra = "/";
+    return issue(sess, "TEARDOWN", true);
   }
 
   /**
-   * Processes SIP messages sent from the SIP server.
+   * Processes RTSP messages sent from the RTSP server.
    */
   public void packet(String msg[], String remoteip, int remoteport) {
     try {
@@ -352,6 +348,14 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
       sess.remotehost = remoteip;
       sess.remoteport = remoteport;
       sess.remotecseq = getcseq(msg);
+      String sid = getHeader("Session:", msg);
+      if (sid != null) {
+        int idx = sid.indexOf(';');
+        if (idx != -1) {
+          sid = sid.substring(0, idx);
+        }
+        sess.id = Long.valueOf(sid);
+      }
       sess.headers = msg;
 
       int type = getResponseType(msg);
@@ -394,7 +398,6 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
               JFLog.log("err:gen auth failed");
               break;
             }
-            sess.cseq++;
             issue(sess, sess.cmd);
             sess.authsent = true;
           }
@@ -407,17 +410,5 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     } catch (Exception e) {
       JFLog.log(e);
     }
-  }
-
-  private int getlocalport() {
-    if (rport != -1) return rport; else return localport;
-  }
-
-  public static void setEnableRport(boolean state) {
-    use_rport = state;
-  }
-
-  public static void setEnableReceived(boolean state) {
-    use_received = state;
   }
 }
