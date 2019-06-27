@@ -3,6 +3,14 @@ var playing = false;
 var onpower = false;
 
 function onBattery(charging) {
+  if (onpower != charging) {
+    var icon = document.getElementById('chargingicon');
+    if (charging) {
+      icon.src = "/green";
+    } else {
+      icon.src = "/red";
+    }
+  }
   onpower = charging;
 }
 
@@ -181,7 +189,7 @@ function timer() {
   if (onpower) {
     if (!playing) play();
   } else {
-//    if (playing) pause();
+    if (playing) pause();
   }
 }
 
@@ -193,19 +201,19 @@ function start() {
 }
 
 function refresh() {
-  var image = document.getElementById('image');
+  var screen = document.getElementById('screen');
   var top = document.getElementById('top');
   var width = document.body.clientWidth;
   var topheight = top.clientHeight;
   var height = document.body.clientHeight - topheight;
-  image.src = '/screen?x=' + width + '&y=' + height + '&id=' + imgcnt;
+  screen.src = '/screen?x=' + width + '&y=' + height + '&id=' + imgcnt;
   imgcnt++;
 }
 
 function touch(event) {
-  var image = document.getElementById('image');
-  var width = image.clientWidth;
-  var height = image.clientHeight;
+  var screen = document.getElementById('screen');
+  var width = screen.clientWidth;
+  var height = screen.clientHeight;
   var req = new XMLHttpRequest();
   var mx = event.clientX;
   var my = event.clientY;

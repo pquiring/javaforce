@@ -1406,7 +1406,7 @@ static jboolean open_audio(FFContext *ctx) {
   ctx->audio_frame->channel_layout = ctx->audio_codec_ctx->channel_layout;
   ctx->audio_frame->channels = ctx->chs;
   if (ctx->audio_codec_ctx->frame_size == 0) {
-    ctx->audio_codec_ctx->frame_size = 2048 * 2;  //default frame size
+    ctx->audio_codec_ctx->frame_size = 2048 * ctx->chs * 2;  //default frame size
   }
   ctx->audio_frame_size = ctx->audio_codec_ctx->frame_size * ctx->chs;  //max samples that encoder will accept
   ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) != 0;
@@ -1643,7 +1643,7 @@ static jboolean addAudio(FFContext *ctx, short *sams, int offset, int length) {
 
   int frame_size = length;
   if (!ctx->audio_frame_size_variable) {
-    frame_size = ctx->audio_frame_size;  //max samples that encoder will accept
+    frame_size = ctx->audio_frame_size;
     if (ctx->audio_buffer_size > 0) {
       printf("warning : filling partial frame\n");
       //fill audio_buffer with input samples

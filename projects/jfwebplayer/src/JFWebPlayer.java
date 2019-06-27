@@ -122,6 +122,14 @@ public class JFWebPlayer extends Thread implements WebHandler, WebSocketHandler,
     }
   }
 
+  private void sendIcon(WebResponse res, int clr) {
+    JFImage img = new JFImage(32,32);
+    img.fill(0, 0, 32, 32, clr);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    img.savePNG(baos);
+    try {res.write(baos.toByteArray());} catch (Exception e) {}
+  }
+
   public void doPost(WebRequest req, WebResponse res) {
     doGet(req,res);
   }
@@ -196,6 +204,18 @@ public class JFWebPlayer extends Thread implements WebHandler, WebSocketHandler,
       case "/audio":
         res.setContentType("audio/mp3");
         new StreamAudio(res.getLiveOutputStream()).start();
+        break;
+      case "/red":
+        sendIcon(res, 0xff0000);
+        break;
+      case "/green":
+        sendIcon(res, 0x00ff00);
+        break;
+      case "/yellow":
+        sendIcon(res, 0xffff00);
+        break;
+      case "/loading":
+        sendIcon(res, 0xffffff);
         break;
       case "/play":
         //TODO
