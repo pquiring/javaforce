@@ -71,8 +71,14 @@ public class SDP implements Cloneable {
       if (ip != null) return ip;
       return SDP.this.ip;
     }
+    public void setIP(String ip) {
+      this.ip = ip;
+    }
     public int getPort() {
       return port;
+    }
+    public void setPort(int port) {
+      this.port = port;
     }
     public boolean canSend() {
       return mode == Mode.sendrecv || mode == Mode.sendonly;

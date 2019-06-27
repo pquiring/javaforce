@@ -42,6 +42,10 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     return remotehost;
   }
 
+  public String getRemoteIP() {
+    return remoteip;
+  }
+
   /**
    * Initialize this instance for RTSP.<br>
    *
