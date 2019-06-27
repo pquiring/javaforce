@@ -5,19 +5,17 @@ import java.util.*;
 import javaforce.*;
 
 /**
- * Base class for SIP communications. Opens the UDP port and passes any received
- * packets thru the SIPInterface.
- * Direct Known subclasses : SIPClient, SIPServer.
- * RFC 3261 (2543) - SIP
- * See also:
- * http://www.iana.org/assignments/sip-parameters/sip-parameters.xhtml#sip-parameters-2
+ * Base class for RTSP communications. Opens the TCP port and passes any received
+ * packets thru the RTSPInterface.
+ * Direct Known subclasses : RTSPClient
  */
 
-public abstract class SIP {
+public abstract class RTSP {
+
   public enum Transport {UDP, TCP, TLS};
 
   private Worker worker;
-  private SIPInterface iface;
+  private RTSPInterface iface;
   private boolean active = true;
   private String rinstance;
   private String tupleid;
@@ -29,7 +27,7 @@ public abstract class SIP {
   /**
    * Opens the transport and sets the SIPInterface callback.
    */
-  protected boolean init(int port, SIPInterface iface, boolean server, Transport type) throws Exception {
+  protected boolean init(int port, RTSPInterface iface, boolean server, Transport type) throws Exception {
     rinstance = null;
     this.iface = iface;
     this.server = server;
@@ -755,7 +753,7 @@ public abstract class SIP {
     if (msg[0].length() < 11) {
       return -1;  //bad msg
     }
-    if (!msg[0].regionMatches(true, 0, "SIP/2.0 ", 0, 8)) {
+    if (!msg[0].regionMatches(true, 0, "RTSP/1.0 ", 0, 8)) {
       return -1;  //not a response
     }    //SIP/2.0 ### ...
     return Integer.valueOf(msg[0].substring(8, 11));
@@ -879,9 +877,9 @@ public abstract class SIP {
   /**
    * Generates a complete header response to a SIP authorization challenge.
    */
-  protected String getAuthResponse(CallDetails cd, String user, String pass, String remote, String cmd, String header) {
+  protected String getAuthResponse(RTSPSession sess, String user, String pass, String remote, String cmd, String header) {
     //request = ' Digest algorithm=MD5, realm="asterisk", nonce="value", etc.'
-    String request = cd.authstr;
+    String request = sess.authstr;
     if (!request.regionMatches(true, 0, "Digest ", 0, 7)) {
       JFLog.log("err:no digest");
       return null;
@@ -920,15 +918,15 @@ public abstract class SIP {
       if (qop != null) {
         //generate cnonce and nc
         cnonce = getnonce();
-        if (cd.nonce != null && cd.nonce.equals(nonce)) {
-          cd.nonceCount++;
+        if (sess.nonce != null && sess.nonce.equals(nonce)) {
+          sess.nonceCount++;
         } else {
-          cd.nonceCount = 1;
+          sess.nonceCount = 1;
         }
-        nc = String.format("%08x", cd.nonceCount);
+        nc = String.format("%08x", sess.nonceCount);
       }
     }
-    cd.nonce = nonce;
+    sess.nonce = nonce;
     String response = getResponse(user, pass, realm, cmd, "sip:" + remote, nonce, qop, nc, cnonce);
     StringBuffer ret = new StringBuffer();
     ret.append(header);
@@ -1031,21 +1029,21 @@ public abstract class SIP {
     return JF.atoi(expires);
   }
 
-  public abstract String getlocalRTPhost(CallDetails cd);
+  public abstract String getlocalRTPhost(RTSPSession sess);
 
   /**
    * Builds SDP packet. (RFC 2327)
    */
-  public void buildsdp(CallDetails cd, CallDetails.SideDetails cdsd) {
+  public void buildsdp(RTSPSession sess, CallDetails.SideDetails cdsd) {
     //build SDP content
     SDP sdp = cdsd.sdp;
     String ip = sdp.ip;
     if (ip == null) {
-      ip = getlocalRTPhost(cd);
+      ip = getlocalRTPhost(sess);
     }
     StringBuffer content = new StringBuffer();
     content.append("v=0\r\n");
-    content.append("o=- " + cdsd.o1 + " " + cdsd.o2 + " IN IP4 " + cd.localhost + "\r\n");
+    content.append("o=- " + cdsd.o1 + " " + cdsd.o2 + " IN IP4 " + sess.localhost + "\r\n");
     content.append("s=" + useragent + "\r\n");
     content.append("c=IN IP4 " + ip + "\r\n");
     content.append("t=0 0\r\n");
@@ -1135,7 +1133,7 @@ public abstract class SIP {
         content.append("a=rtcp-mux");  //http://tools.ietf.org/html/rfc5761
       }
     }
-    cd.sdp = content.toString();
+    sess.sdp = content.toString();
   }
   private static HashMap<String, String> dnsCache = new HashMap<String, String>();
 

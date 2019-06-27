@@ -48,7 +48,7 @@ public class SIPUDPTransport implements SIPTransport {
     return true;
   }
 
-  public boolean receive(SIP.Packet packet) {
+  public boolean receive(Packet packet) {
     try {
       DatagramPacket dp = new DatagramPacket(packet.data, packet.data.length);
       ds.receive(dp);

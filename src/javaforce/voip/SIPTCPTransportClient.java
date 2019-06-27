@@ -79,7 +79,7 @@ public class SIPTCPTransportClient implements SIPTransport {
     return -1;
   }
 
-  public boolean receive(SIP.Packet packet) {
+  public boolean receive(Packet packet) {
     try {
       if (is == null) {
         packet.length = 0;

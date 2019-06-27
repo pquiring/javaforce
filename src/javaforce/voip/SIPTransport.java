@@ -16,7 +16,7 @@ public interface SIPTransport {
   public boolean open(int localport);
   public boolean close();
   public boolean send(byte data[], int off, int len, InetAddress host, int port);
-  public boolean receive(SIP.Packet packet);  //blocking
+  public boolean receive(Packet packet);  //blocking
   public String getName();
 //  public int getLocalPort();
 }

@@ -65,17 +65,17 @@ public class SIPTCPTransportServer implements SIPTransport {
     return true;
   }
 
-  private ArrayList<SIP.Packet> packets = new ArrayList<SIP.Packet>();
+  private ArrayList<Packet> packets = new ArrayList<Packet>();
   private Object packetsLock = new Object();
 
-  public boolean receive(SIP.Packet packet) {
+  public boolean receive(Packet packet) {
     while (true) {
       synchronized(packetsLock) {
         if (packets.size() == 0) {
           try{packetsLock.wait();} catch (Exception e) {}
         }
 //        if (packets.size() == 0) continue;
-        SIP.Packet tmp = packets.remove(0);
+        Packet tmp = packets.remove(0);
         packet.data = tmp.data;
         packet.host = tmp.host;
         packet.length = tmp.length;
@@ -156,7 +156,7 @@ public class SIPTCPTransportServer implements SIPTransport {
       while (active) {
         try {
           byte data[] = new byte[1500];
-          SIP.Packet packet = new SIP.Packet();
+          Packet packet = new Packet();
           packet.data = data;
 
           if (extra != null) {

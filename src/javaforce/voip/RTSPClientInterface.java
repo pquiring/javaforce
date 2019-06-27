@@ -6,9 +6,9 @@ package javaforce.voip;
  */
 
 public interface RTSPClientInterface {
-  public void onOptions(SIPClient client);
-  public void onDescribe(SIPClient client, SDP sdp);
-  public void onSetup(SIPClient client);
-  public void onPlay(SIPClient client);
-  public void onTeardown(SIPClient client);
+  public void onOptions(RTSPClient client);
+  public void onDescribe(RTSPClient client, SDP sdp);
+  public void onSetup(RTSPClient client);
+  public void onPlay(RTSPClient client);
+  public void onTeardown(RTSPClient client);
 }
