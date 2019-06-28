@@ -935,4 +935,6 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_add
 
 #include "../common/ffmpeg.cpp"
 
+#include "../common/videobuffer.cpp"
+
 #include "../common/ni.cpp"

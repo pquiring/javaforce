@@ -1701,4 +1701,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_peekConsole
 
 #include "../common/ffmpeg.cpp"
 
+#include "../common/videobuffer.cpp"
+
 #include "../common/ni.cpp"
