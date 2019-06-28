@@ -11,9 +11,6 @@ import javaforce.*;
  */
 
 public abstract class RTSP {
-
-  public enum Transport {UDP, TCP, TLS};
-
   private Worker worker;
   private RTSPInterface iface;
   private boolean active = true;
@@ -27,25 +24,25 @@ public abstract class RTSP {
   /**
    * Opens the transport and sets the SIPInterface callback.
    */
-  protected boolean init(String localhost, int localport, RTSPInterface iface, boolean server, Transport type) throws Exception {
+  protected boolean init(String localhost, int localport, RTSPInterface iface, boolean server, TransportType type) throws Exception {
     rinstance = null;
     this.iface = iface;
     this.server = server;
     switch (type) {
       case UDP:
-        transport = new SIPUDPTransport();
+        transport = new TransportUDP();
         break;
       case TCP:
         if (server)
-          transport = new SIPTCPTransportServer();
+          transport = new TransportTCPServer();
         else
-          transport = new SIPTCPTransportClient();
+          transport = new TransportTCPClient();
         break;
       case TLS:
         if (server)
-          transport = new SIPTLSTransportServer();
+          transport = new TransportTLSServer();
         else
-          transport = new SIPTLSTransportClient();
+          transport = new TransportTLSClient();
         break;
     }
     if (!transport.open(localhost, localport)) return false;

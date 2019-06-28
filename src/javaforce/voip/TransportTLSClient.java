@@ -14,7 +14,7 @@ import javax.net.ssl.*;
 
 import javaforce.*;
 
-public class SIPTLSTransportClient extends SIPTCPTransportClient {
+public class TransportTLSClient extends TransportTCPClient {
   private static TrustManager[] trustAllCerts = new TrustManager[] {
     new X509TrustManager() {
       public java.security.cert.X509Certificate[] getAcceptedIssuers() {

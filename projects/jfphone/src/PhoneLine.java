@@ -15,7 +15,7 @@ public class PhoneLine {
 
   public boolean disableVideo;
   public boolean srtp;
-  public SIP.Transport transport;
+  public TransportType transport;
   public boolean dtls;
 
   public String user;

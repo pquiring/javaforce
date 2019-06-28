@@ -73,7 +73,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    * @param iface must be a SIPClientInterface where SIP events are dispatched
    * to.<br>
    */
-  public boolean init(String remotehost, int remoteport, int localport, SIPClientInterface iface, Transport type) {
+  public boolean init(String remotehost, int remoteport, int localport, SIPClientInterface iface, TransportType type) {
     this.iface = iface;
     this.localport = localport;
     this.remoteport = remoteport;

@@ -11,7 +11,7 @@ import java.net.*;
 
 import javaforce.*;
 
-public class SIPUDPTransport implements SIPTransport {
+public class TransportUDP implements SIPTransport {
   private DatagramSocket ds;
   private boolean active = false;
 

@@ -16,7 +16,7 @@ public class SIPServer extends SIP implements SIPInterface {
   private SIPServerInterface iface;
   private boolean use_qop = false;
 
-  public boolean init(int localport, SIPServerInterface iface, Transport type) {
+  public boolean init(int localport, SIPServerInterface iface, TransportType type) {
     this.iface = iface;
     this.localport = localport;
     cdlist = new Hashtable<String, CallDetailsServer>();

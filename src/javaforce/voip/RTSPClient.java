@@ -54,7 +54,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * @param iface must be a RTSPClientInterface where RTSP events are dispatched
    * to.<br>
    */
-  public boolean init(String remotehost, int remoteport, int localport, RTSPClientInterface iface, Transport type) {
+  public boolean init(String remotehost, int remoteport, int localport, RTSPClientInterface iface, TransportType type) {
     this.iface = iface;
     this.localport = localport;
     this.remoteport = remoteport;

@@ -142,9 +142,9 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         port = JF.atoi(Settings.current.lines[a].host.substring(idx+1));
       }
       switch (Settings.current.lines[a].transport) {
-        case 0: pl.transport = SIP.Transport.UDP; break;
-        case 1: pl.transport = SIP.Transport.TCP; break;
-        case 2: pl.transport = SIP.Transport.TLS; break;
+        case 0: pl.transport = TransportType.UDP; break;
+        case 1: pl.transport = TransportType.TCP; break;
+        case 2: pl.transport = TransportType.TLS; break;
       }
       int attempt = 0;
       while (!pl.sip.init(host, port, getlocalport(), this, pl.transport)) {

@@ -14,7 +14,7 @@ import java.io.*;
 
 import javaforce.*;
 
-public class SIPTCPTransportClient implements SIPTransport {
+public class TransportTCPClient implements SIPTransport {
   protected boolean connected = false;
   protected Socket socket;
   protected OutputStream os;

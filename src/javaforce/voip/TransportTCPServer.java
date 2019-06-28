@@ -15,7 +15,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class SIPTCPTransportServer implements SIPTransport {
+public class TransportTCPServer implements SIPTransport {
   protected ServerSocket ss;
   private HashMap<String, Socket> clients = new HashMap<String, Socket>();
   private Object clientsLock = new Object();
