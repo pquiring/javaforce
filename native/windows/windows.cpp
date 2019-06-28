@@ -15,6 +15,7 @@
 #include "javaforce_media_MediaEncoder.h"
 #include "javaforce_media_MediaVideoDecoder.h"
 #include "javaforce_controls_ni_DAQmx.h"
+#include "javaforce_media_VideoBuffer.h"
 
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
