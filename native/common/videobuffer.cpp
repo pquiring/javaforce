@@ -32,6 +32,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_VideoBuffer_compareFrames
 
   int changed = (diff * 100) / size;
 
+  printf("changed=%d threshold=%d\n", changed, threshold);
+
   e->ReleaseIntArrayElements(img1, px1, 0);
   e->ReleaseIntArrayElements(img2, px2, 0);
 

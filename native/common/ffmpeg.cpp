@@ -142,21 +142,18 @@ int (*_sws_scale)(void* c, uint8_t* srcSlice[],int srcStride[],int srcSliceY,int
 void (*_sws_freeContext)(void* ctx);
 
 static AVPacket *AVPacket_New() {
-  AVPacket *pkt = (AVPacket*)(*_av_malloc)(sizeof(AVPacket));
-  memset(pkt, 0, sizeof(AVPacket));
+  AVPacket *pkt = (AVPacket*)(*_av_mallocz)(sizeof(AVPacket));
   return pkt;
 }
 
 static AVOutputFormat *AVOutputFormat_New() {
-  AVOutputFormat *ofmt = (AVOutputFormat*)(*_av_malloc)(sizeof(AVOutputFormat));
-  memset(ofmt, 0, sizeof(AVOutputFormat));
+  AVOutputFormat *ofmt = (AVOutputFormat*)(*_av_mallocz)(sizeof(AVOutputFormat));
   return ofmt;
 }
 
 /*
 static AVPicture *AVPicture_New() {
-  AVPicture *pic = (AVPicture*)(*_av_malloc)(sizeof(AVPicture));
-  memset(pic, 0, sizeof(AVPicture));
+  AVPicture *pic = (AVPicture*)(*_av_mallocz)(sizeof(AVPicture));
   return pic;
 }
 */
@@ -726,7 +723,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start__Ljavaforce_m
   ctx->mio = e->NewGlobalRef(mio);
   ctx->GetMediaIO();
 
-  ctx->ff_buffer = (*_av_malloc)(ffiobufsiz);
+  ctx->ff_buffer = (*_av_mallocz)(ffiobufsiz);
   ctx->io_ctx = (*_avio_alloc_context)(ctx->ff_buffer, ffiobufsiz, 0, (void*)ctx, (void*)&read_packet, (void*)&write_packet, seekable ? (void*)&seek_packet : NULL);
   ctx->fmt_ctx = (*_avformat_alloc_context)();
   ctx->fmt_ctx->pb = ctx->io_ctx;
@@ -1192,26 +1189,37 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   FFContext *ctx = getFFContext(e,c);
 
   //read another frame
-  if (ctx->pkt_size_left == 0) {
-    if (ctx->pkt->data != NULL) {
-      (*_av_free)(ctx->pkt->data);
-      ctx->pkt->data = NULL;
-      ctx->pkt->size = 0;
-    }
-    int data_length = e->GetArrayLength(data);
-    ctx->pkt->data = (uint8_t*)(*_av_malloc)(data_length);
-    jbyte *data_ptr = e->GetByteArrayElements(data, NULL);
-    memcpy(ctx->pkt->data, data_ptr, data_length);
-    e->ReleaseByteArrayElements(data, data_ptr, JNI_ABORT);
-    ctx->pkt->size = data_length;
-    ctx->pkt_size_left = ctx->pkt->size;
+  int data_length = e->GetArrayLength(data);
+  uint8_t *orgdata = ctx->pkt->data;
+  ctx->pkt->data = (uint8_t*)(*_av_mallocz)(ctx->pkt->size + data_length + AV_INPUT_BUFFER_PADDING_SIZE);
+  if (ctx->pkt->size > 0) {
+    memcpy(ctx->pkt->data, orgdata, ctx->pkt->size);
+    (*_av_free)(orgdata);
+  }
+  jbyte *data_ptr = e->GetByteArrayElements(data, NULL);
+  memcpy(ctx->pkt->data + ctx->pkt->size , data_ptr, data_length);
+  e->ReleaseByteArrayElements(data, data_ptr, JNI_ABORT);
+  ctx->pkt->size += data_length;
+  if (ctx->pkt->size < 256) {
+    //wait till we get a full frame - otherwise h264 outputs 'no frame!' which is annoying!
+    //I think a parser_parse2() may be helpfull here!
+    return NULL;
   }
 
   //extract a video frame
   int got_frame = 0;
-  if ((*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt) < 0) {
-    ctx->pkt_size_left = 0;
+  int ret = (*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
+  (*_av_free)(ctx->pkt->data);
+  ctx->pkt->data = NULL;
+  if (ret < 0) {
+    printf("Error:avcodec_decode_video2() == %d\n", ret);
+    ctx->pkt->size = 0;
     return NULL;
+  }
+  ctx->pkt->size -= ret;
+  if (ctx->pkt->size != 0) {
+    printf("Error:avcodec_decode_video2() did not consume entire packet : left=%d\n", ctx->pkt->size);
+    ctx->pkt->size = 0;
   }
   if (got_frame == 0) return NULL;
   (*_av_image_copy)(ctx->video_dst_data, ctx->video_dst_linesize
@@ -1220,9 +1228,6 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   //convert image to RGBA format
   (*_sws_scale)(ctx->sws_ctx, ctx->video_dst_data, ctx->video_dst_linesize, 0, ctx->video_codec_ctx->height
     , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
-
-  ctx->pkt_size_left = 0;  //use entire packet
-  //do NOT free pkt - it's done in next decode() or stop()
 
   e->SetIntArrayRegion(ctx->jvideo, 0, ctx->jvideo_length, (const jint*)ctx->rgb_video_dst_data[0]);
 
@@ -1479,11 +1484,13 @@ static AVFormatContext *_avformat_alloc_output_context2(const char *codec) {
     return NULL;
   }
   if (fmt_ctx->oformat->priv_data_size > 0) {
-    fmt_ctx->priv_data = (*_av_malloc)(fmt_ctx->oformat->priv_data_size);
+    fmt_ctx->priv_data = (*_av_mallocz)(fmt_ctx->oformat->priv_data_size);
     if (fmt_ctx->oformat->priv_class != NULL) {
       *(const AVClass**)fmt_ctx->priv_data = fmt_ctx->oformat->priv_class;
       (*_av_opt_set_defaults)(fmt_ctx->priv_data);
     }
+  } else {
+    fmt_ctx->priv_data = NULL;
   }
   return fmt_ctx;
 }
@@ -1494,7 +1501,7 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
     printf("Error:Unable to find codec:%s\n", codec);
     return JNI_FALSE;
   }
-  ctx->ff_buffer = (*_av_malloc)(ffiobufsiz);
+  ctx->ff_buffer = (*_av_mallocz)(ffiobufsiz);
   ctx->io_ctx = (*_avio_alloc_context)(ctx->ff_buffer, ffiobufsiz, 1, (void*)ctx, read, write, seek);
   if (ctx->io_ctx == NULL) return JNI_FALSE;
   ctx->fmt_ctx->pb = ctx->io_ctx;
@@ -1570,9 +1577,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
   ctx->fps = fps;
   ctx->chs = chs;
   ctx->freq = freq;
+
   const char *ccodec = e->GetStringUTFChars(codec, NULL);
   jboolean ret = encoder_start(ctx, ccodec, doVideo, doAudio, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
   e->ReleaseStringUTFChars(codec, ccodec);
+
   return ret;
 }
 
@@ -1580,7 +1589,7 @@ static jboolean addAudioFrame(FFContext *ctx, short *sams, int offset, int lengt
 {
   int nb_samples = length / ctx->chs;
   int buffer_size = (*_av_samples_get_buffer_size)(NULL, ctx->chs, nb_samples, AV_SAMPLE_FMT_S16, 0);
-  void* samples_data = (*_av_malloc)(buffer_size);
+  void* samples_data = (*_av_mallocz)(buffer_size);
   //copy sams -> samples_data
   memcpy(samples_data, sams + offset, length * 2);
   AVPacket *pkt = AVPacket_New();

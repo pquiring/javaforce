@@ -134,7 +134,7 @@ public class TransportTCPServer implements SIPTransport {
     }
     private byte extra[] = null;
     private int detectLength(byte data[], int off, int len) {
-      for(int a=0;a<len-3;a++) {
+      for(int a=0;a<len-4;a++) {
         if (
           (data[off+a+0] == '\r') &&
           (data[off+a+1] == '\n') &&
