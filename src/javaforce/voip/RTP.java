@@ -194,6 +194,7 @@ public class RTP implements STUN.Listener {
         } else {
           sock1 = new DatagramSocket(localrtpport);
           sock2 = new DatagramSocket(localrtpport + 1);
+          setReceiveBufferSize(4*1024*1024);  //default 64K drops video packets
         }
         JFLog.log("RTP:localport=" + localrtpport);
       } catch (Exception e2) {
@@ -203,6 +204,14 @@ public class RTP implements STUN.Listener {
       return true;
     }
     return false;
+  }
+
+  public void setReceiveBufferSize(int bytes) {
+    if (sock1 == null) return;
+    try {
+      sock1.setReceiveBufferSize(16*1024*1024);
+      sock2.setReceiveBufferSize(16*1024*1024);
+    } catch (Exception e) {}
   }
 
   /**

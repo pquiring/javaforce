@@ -29,7 +29,7 @@ public class RTPH264 {
 
   /*
    * NAL Header : F(1) NRI(2) TYPE(5) : F=0 NRI=0-3 TYPE=1-23:full_packet 28=FU-A
-   * FUA Header : S(1) E(1) R(1) TYPE(5) : S=start E=end R=reserved TYPE=???
+   * FUA Header : S(1) E(1) R(1) TYPE(5) : S=start E=end R=reserved TYPE=1-23
    */
 
   /** Encodes raw H.264 data into multiple RTP packets. */
@@ -40,7 +40,7 @@ public class RTPH264 {
     int offset = 0;
     byte packet[];
     while (len > 0) {
-      //skip 0,0,1
+      //skip 0,0,0,1
       while (data[offset] == 0) {offset++; len--;}
       offset++; len--;  //skip 1
       if (len > mtu) {
@@ -100,60 +100,67 @@ public class RTPH264 {
   }
 
   /**
-   * Returns last full packet.
+   * Returns full packets.
    */
   public byte[] decode(byte rtp[]) {
     if (rtp.length < 12 + 2) return null;  //bad packet
     int h264Length = rtp.length - 12;
     int type = rtp[12] & 0x1f;
-    if (partial == null) {
-      partial = new byte[0];
-    }
+    int thisseqnum = RTPChannel.getseqnum(rtp, 0);
     if (type >= 1 && type <= 23) {
-      //a full packet
-      int partialLength = partial.length;
-      partial = Arrays.copyOf(partial, partial.length + 4 + h264Length);
-      partial[partialLength + 3] = 1;  //0,0,0,1
-      System.arraycopy(rtp, 12, partial, partialLength + 4, h264Length);
+      //a full NAL packet
+      byte[] full = new byte[4 + h264Length];  //+4 = start code
+      System.arraycopy(rtp, 12, full, 4, h264Length);
+      full[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
+      return full;
     } else if (type == 28) {
       //FU-A Packet
-      if ((rtp[13] & 0x80) == 0x80) {
-        //first NAL packet (restore first byte)
+      boolean first = (rtp[13] & 0x80) == 0x80;
+      boolean last = (rtp[13] & 0x40) == 0x40;
+      int realtype = rtp[13] & 0x1f;
+      boolean M = (rtp[12] & 0x80) == 0x80;
+      if (M && !last) {
+        JFLog.log("Error : H264 : FU-A : M bit set but not last packet");
+        return null;
+      }
+      if (first) {
+        if (partial != null) {
+          JFLog.log("Warning : H264 : FU-A : first packet again, last frame lost?");
+        }
         int nri = rtp[12] & 0x60;
-        type = rtp[13] & 0x1f;
-        partial = Arrays.copyOf(partial, partial.length + 5);
-        partial[partial.length-2] = 1;  //0,0,0,1
-        partial[partial.length-1] = (byte)(nri + type);  //NRI TYPE (first byte)
-        lastseqnum = RTPChannel.getseqnum(rtp, 0);
+        h264Length -= 2;
+        partial = new byte[4 + 1 + h264Length];
+        System.arraycopy(rtp, 12 + 2, partial, 4 + 1, h264Length);
+        partial[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
+        partial[4] = (byte)(nri + realtype);
+        lastseqnum = thisseqnum;
       } else {
-        int thisseqnum = RTPChannel.getseqnum(rtp, 0);
+        if (partial == null) {
+          JFLog.log("Error : H264 : partial packet received before first packet");
+          return null;
+        }
         if (thisseqnum != lastseqnum + 1) {
-          JFLog.log("H264:Received FU-A packet out of order, discarding frame.");
+          JFLog.log("Error : H264 : Received FU-A packet out of order, discarding frame.");
           partial = null;
           lastseqnum = -1;
           return null;
         }
         lastseqnum = thisseqnum;
+        int partialLength = partial.length;
+        h264Length -= 2;
+        partial = Arrays.copyOf(partial, partial.length + h264Length);
+        System.arraycopy(rtp, 12+2, partial, partialLength, h264Length);
+        if (last) {
+          byte[] full = partial;
+          partial = null;
+          return full;
+        }
       }
-      if ((rtp[13] & 0x40) == 0x40) {
-        //last NAL packet
-        lastseqnum = -1;
-      }
-      int partialLength = partial.length;
-      h264Length -= 2;
-      partial = Arrays.copyOf(partial, partial.length + h264Length);
-      System.arraycopy(rtp, 12+2, partial, partialLength, h264Length);
     } else {
       JFLog.log("H264:Unsupported packet type:" + type);
       partial = null;
       lastseqnum = -1;
       return null;
-    }
-    if ((rtp[1] & 0x80) == 0x80) {  //check RTP.M flag
-      byte full[] = partial;
-      partial = null;
-      lastseqnum = -1;
-      return full;
     }
     return null;
   }
