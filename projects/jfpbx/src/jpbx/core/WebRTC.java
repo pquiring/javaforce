@@ -250,7 +250,7 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
       } else if (type.equals("register")) {
         rtc.sip = new SIPClient();
         rtc.sip.userobj = rtc;
-        rtc.sip.init("127.0.0.1", WebConfig.sip_port, getlocalport(), this, SIP.Transport.UDP);
+        rtc.sip.init("127.0.0.1", WebConfig.sip_port, getlocalport(), this, TransportType.UDP);
         rtc.sip.register(user, user, null, pass);
       } else if (type.equals("offer")) {
         RTC rtc2 = rooms.get(room);

@@ -2417,7 +2417,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     lineCount = (Integer)number_lines.getValue();
     sip = new SIPClient();
     int fail = 0;
-    while (!sip.init(getHost(sip_host.getText()), getPort(sip_host.getText(), 5060), getlocalsipport(), this, SIP.Transport.UDP)) {
+    while (!sip.init(getHost(sip_host.getText()), getPort(sip_host.getText(), 5060), getlocalsipport(), this, TransportType.UDP)) {
       fail++;
       if (fail == 10) {
         setStatus("Error:SIP init failed");

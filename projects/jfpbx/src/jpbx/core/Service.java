@@ -81,7 +81,7 @@ public class Service implements SIPServerInterface, PBXAPI {
     new File(Paths.logs).mkdirs();
 
     loadPlugins(sql);
-    ss.init(sip_port, this, SIP.Transport.UDP);
+    ss.init(sip_port, this, TransportType.UDP);
 //    ss.enableQOP(true);  //test!
     //create timer to register trunks (every 110 seconds)
     timer = new Timer();
