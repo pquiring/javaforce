@@ -14,13 +14,14 @@ import java.io.*;
 
 import javaforce.*;
 
-public class TransportTCPClient implements SIPTransport {
+public class TransportTCPClient implements Transport {
   protected boolean connected = false;
   protected Socket socket;
   protected OutputStream os;
   protected InputStream is;
   protected InetAddress host;
   protected int port;
+  private boolean error;
 
   public String getName() { return "TCP"; }
 
@@ -66,7 +67,7 @@ public class TransportTCPClient implements SIPTransport {
   private byte extra[] = null;
 
   private int detectLength(byte data[], int off, int len) {
-    for(int a=0;a<len-4;a++) {
+    for(int a=0;a<len-3;a++) {
       if (
         (data[off+a+0] == '\r') &&
         (data[off+a+1] == '\n') &&
@@ -91,7 +92,9 @@ public class TransportTCPClient implements SIPTransport {
         packet.length = extra.length;
         extra = null;
       } else {
-        packet.length = is.read(packet.data);
+        int read = is.read(packet.data);
+        if (read == -1) throw new Exception();
+        packet.length = read;
       }
       int plen, tlen;
       do {
@@ -99,7 +102,9 @@ public class TransportTCPClient implements SIPTransport {
         plen = detectLength(packet.data, 0, packet.length);
         if (plen == -1) {
           //not enough read (frag?)
-          packet.length += is.read(packet.data, packet.length, packet.data.length - packet.length);
+          int read = is.read(packet.data, packet.length, packet.data.length - packet.length);
+          if (read == -1) throw new Exception();
+          packet.length += read;
         }
       } while (plen == -1);
       tlen = plen;
@@ -113,7 +118,9 @@ public class TransportTCPClient implements SIPTransport {
       }
       while (packet.length < tlen) {
         //not enough read (frag?)
-        packet.length += is.read(packet.data, packet.length, packet.data.length - packet.length);
+        int read = is.read(packet.data, packet.length, packet.data.length - packet.length);
+        if (read == -1) throw new Exception();
+        packet.length += read;
       }
       if (packet.length > tlen) {
         //extra read (from next packet)
@@ -125,6 +132,7 @@ public class TransportTCPClient implements SIPTransport {
       packet.host = host.getHostAddress();
       packet.port = port;
     } catch (Exception e) {
+      error = true;
       if (connected) JFLog.log(e);
       return false;
     }
@@ -138,5 +146,9 @@ public class TransportTCPClient implements SIPTransport {
     os = socket.getOutputStream();
     is = socket.getInputStream();
     connected = true;
+  }
+
+  public boolean error() {
+    return error;
   }
 }

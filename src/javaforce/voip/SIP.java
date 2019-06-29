@@ -21,7 +21,7 @@ public abstract class SIP {
   private String tupleid;
   private Random r = new Random();
   private boolean server;
-  protected SIPTransport transport;
+  protected Transport transport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
 
   /**

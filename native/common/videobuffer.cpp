@@ -11,10 +11,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_VideoBuffer_compareFrames
 
   int size = width * height;
 
-  printf("size=%d\n", size);
-  printf("img1.length=%d\n", s1);
-  printf("img2.length=%d\n", s2);
-
   jint *pc1 = px1;
   jint *pc2 = px2;
 

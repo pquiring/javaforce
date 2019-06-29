@@ -15,11 +15,12 @@ import java.util.*;
 
 import javaforce.*;
 
-public class TransportTCPServer implements SIPTransport {
+public class TransportTCPServer implements Transport {
   protected ServerSocket ss;
   private HashMap<String, Socket> clients = new HashMap<String, Socket>();
   private Object clientsLock = new Object();
   private boolean active;
+  private boolean error;
 
   public String getName() { return "TCP"; }
 
@@ -134,7 +135,7 @@ public class TransportTCPServer implements SIPTransport {
     }
     private byte extra[] = null;
     private int detectLength(byte data[], int off, int len) {
-      for(int a=0;a<len-4;a++) {
+      for(int a=0;a<len-3;a++) {
         if (
           (data[off+a+0] == '\r') &&
           (data[off+a+1] == '\n') &&
@@ -164,7 +165,9 @@ public class TransportTCPServer implements SIPTransport {
             packet.length = extra.length;
             extra = null;
           } else {
-            packet.length = is.read(packet.data);
+            int read = is.read(packet.data);
+            if (read == -1) throw new Exception();
+            packet.length = read;
           }
           int plen, tlen;
           do {
@@ -172,7 +175,9 @@ public class TransportTCPServer implements SIPTransport {
             plen = detectLength(packet.data, 0, packet.length);
             if (plen == -1) {
               //not enough read (frag?)
-              packet.length += is.read(packet.data, packet.length, packet.data.length - packet.length);
+              int read = is.read(packet.data, packet.length, packet.data.length - packet.length);
+              if (read == -1) throw new Exception();
+              packet.length += read;
             }
           } while (plen == -1);
           tlen = plen;
@@ -186,7 +191,9 @@ public class TransportTCPServer implements SIPTransport {
           }
           while (packet.length < tlen) {
             //not enough read (frag?)
-            packet.length += is.read(packet.data, packet.length, packet.data.length - packet.length);
+            int read = is.read(packet.data, packet.length, packet.data.length - packet.length);
+            if (read == -1) throw new Exception();
+            packet.length += read;
           }
           if (packet.length > tlen) {
             //extra read (from next packet)
@@ -203,9 +210,13 @@ public class TransportTCPServer implements SIPTransport {
             packetsLock.notify();
           }
         } catch (Exception e) {
+          error = true;
           JFLog.log(e);
         }
       }
     }
+  }
+  public boolean error() {
+    return error;
   }
 }

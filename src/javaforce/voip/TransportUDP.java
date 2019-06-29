@@ -11,9 +11,10 @@ import java.net.*;
 
 import javaforce.*;
 
-public class TransportUDP implements SIPTransport {
+public class TransportUDP implements Transport {
   private DatagramSocket ds;
   private boolean active = false;
+  private boolean error = false;
 
   public String getName() { return "UDP"; }
 
@@ -56,10 +57,15 @@ public class TransportUDP implements SIPTransport {
       packet.host = dp.getAddress().getHostAddress();
       packet.port = dp.getPort();
     } catch (Exception e) {
+      error = true;
       if (active) JFLog.log(e);
       return false;
     }
     return true;
+  }
+
+  public boolean error() {
+    return error;
   }
 
 }

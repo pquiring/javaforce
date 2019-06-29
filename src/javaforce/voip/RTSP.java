@@ -18,7 +18,7 @@ public abstract class RTSP {
   private String tupleid;
   private Random r = new Random();
   private boolean server;
-  protected SIPTransport transport;
+  protected Transport transport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
 
   /**
@@ -1158,12 +1158,16 @@ public abstract class RTSP {
 
   /**
    * This thread handles reading incoming SIP packets and dispatches them thru
-   * SIPInterface.
+   * RTSPInterface.
    */
   private class Worker extends Thread {
 
     public void run() {
       while (active) {
+        if (transport.error()) {
+          active = false;
+          break;
+        }
         try {
           byte data[] = new byte[mtu];
           Packet pack = new Packet();
