@@ -131,5 +131,6 @@ public class List extends ScrollPanel implements Click {
         }
       }
     }
+    onChanged(null);
   }
 }
