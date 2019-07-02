@@ -13,6 +13,9 @@ import java.util.zip.*;
 import javaforce.*;
 import javaforce.jni.*;
 
+import javaforce.webui.*;
+import javaforce.webui.event.*;
+
 public class MediaCoder {
   private long ctx = 0;
   private static boolean inited = false;
@@ -130,7 +133,12 @@ public class MediaCoder {
       JF.openURL("http://pquiring.github.io/javaforce/codecpack.html");
       return false;
     }
-    JFTask task = new JFTask() {
+    JFTask task = getDownloadTask();
+    new ProgressDialog(null, true, task).setVisible(true);
+    return task.getStatus();
+  }
+  private static JFTask getDownloadTask() {
+    return new JFTask() {
       public boolean work() {
         this.setTitle("Downloading CodecPack");
         this.setLabel("Downloading CodecPack...");
@@ -146,7 +154,7 @@ public class MediaCoder {
           this.setLabel("Download failed (no write access to folder)");
           return false;
         }
-        //first download latest URL from javaforce.sf.net
+        //first download latest URL from github
         try {
           BufferedReader reader = new BufferedReader(new InputStreamReader(
             new URL("http://pquiring.github.io/javaforce/codecpackwin"
@@ -265,7 +273,51 @@ public class MediaCoder {
         }
       }
     };
-    new ProgressDialog(null, true, task).setVisible(true);
-    return task.getStatus();
+  }
+
+  private static Label label;
+  private static ProgressBar progressBar;
+
+  public static Panel downloadWebUI() {
+    Panel panel = new Panel();
+    Column col = new Column();
+    panel.add(col);
+    label = new Label("jfDVR needs to download a codec pack to decode video");
+    col.add(label);
+    progressBar = new ProgressBar(Component.HORIZONTAL, 100, 14);
+    col.add(progressBar);
+    Row row = new Row();
+    col.add(row);
+    Button button = new Button("Download");
+    row.add(button);
+    button.addClickListener((MouseEvent me, Component c) -> {
+      JFLog.log("Starting codec pack download...");
+      c.setVisible(false);
+      JFTask task = getDownloadTask();
+      task.start(new WebUIUpdate());
+    });
+    return panel;
+  }
+  private static class WebUIUpdate implements JFTaskListener {
+    public void setLabel(String text) {
+      label.setText(text);
+    }
+
+    public void setTitle(String text) {
+      //nop
+    }
+
+    public void setProgress(int value) {
+      progressBar.setValue(value);
+    }
+
+    public void done() {
+      init();
+      label.setText("Press refresh your browser");
+    }
+
+    public void dispose() {
+      label.setText("Press refresh your browser");
+    }
   }
 }

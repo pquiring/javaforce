@@ -13,20 +13,20 @@ import java.util.*;
  */
 public abstract class JFTask extends Thread implements ShellProcessListener {
 
-  private ProgressDialog pd;
+  private JFTaskListener listener;
   private boolean status;
   private HashMap<String, Object> properties = new HashMap<String, Object>();
 
   public volatile boolean abort = false;
 
-  public void start(ProgressDialog pd) {
-    this.pd = pd;
+  public void start(JFTaskListener pd) {
+    this.listener = pd;
     start();
   }
 
   public void run() {
     status = work();
-    if (pd != null) pd.done();
+    if (listener != null) listener.done();
   }
 
   public void abort() {
@@ -34,7 +34,7 @@ public abstract class JFTask extends Thread implements ShellProcessListener {
   }
 
   public void dispose() {
-    if (pd != null) pd.dispose();
+    if (listener != null) listener.dispose();
   }
 
   public abstract boolean work();
@@ -44,15 +44,15 @@ public abstract class JFTask extends Thread implements ShellProcessListener {
   }
 
   public void setLabel(String txt) {
-    pd.setLabel(txt);
+    listener.setLabel(txt);
   }
 
   public void setTitle(String txt) {
-    pd.setTitle(txt);
+    listener.setTitle(txt);
   }
 
   public void setProgress(int value) {
-    pd.setProgress(value);
+    listener.setProgress(value);
   }
 
   public void shellProcessOutput(String out) {

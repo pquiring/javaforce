@@ -4,14 +4,15 @@
  */
 
 import java.util.*;
-import javaforce.media.MediaCoder;
-import javaforce.media.MediaEncoder;
+
+import javaforce.*;
+import javaforce.media.*;
 
 public class DVRService extends Thread {
   public static DVRService dvrService;
   public static ConfigService configService;
-  public static void serviceStart() {
-    main(null);
+  public static void serviceStart(String args[]) {
+    main(args);
   }
 
   public static void serviceStop() {
@@ -20,9 +21,6 @@ public class DVRService extends Thread {
 
   public static void main(String args[]) {
     if (dvrService != null) return;
-    if (args.length > 0 && args[0].equals("download")) {
-      MediaCoder.download();
-    }
     dvrService = new DVRService();
     dvrService.start();
   }
@@ -32,8 +30,10 @@ public class DVRService extends Thread {
     //load current config
     Config.load();
     //start config service
+    JFLog.log("APPDATA=" + System.getenv("APPDATA"));
     configService = new ConfigService();
     configService.start();
+    if (!MediaCoder.loaded) return;  //not ready
     //start recording threads
     Config config = Config.current;
     for(int a=0;a<config.cameras.length;a++) {

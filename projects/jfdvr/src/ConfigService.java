@@ -3,9 +3,10 @@
  * @author pquiring
  */
 
-import javaforce.JFLog;
+import javaforce.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
+import javaforce.media.*;
 
 public class ConfigService implements WebUIHandler {
   public WebUIServer server;
@@ -21,6 +22,12 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel getRootPanel(WebUIClient client) {
+    if (!MediaCoder.loaded) {
+      MediaCoder.init();
+    }
+    if (!MediaCoder.loaded) {
+      return MediaCoder.downloadWebUI();
+    }
     Label lbl;
     Row row;
 

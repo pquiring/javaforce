@@ -70,6 +70,7 @@ public class JFNative {
       for (int a = 0; a < files.length; a++) {
         File file = files[a];
         String fileName = files[a].getName();
+        if (fileName.startsWith("mdm")) continue;  //mdmpostprocessevaluator.dll is matching postproc-??.dll
         if (file.isDirectory()) {
           if (!recursive) continue;
           if (JF.isUnix()) {

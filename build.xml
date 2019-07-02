@@ -110,30 +110,30 @@
   </target>
 
   <target name="jre-base-desktop" description="build JRE for bundled JRE builds with desktop (swing) support">
-    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.desktop,java.sql --output jre_base_desktop"/>
+    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.desktop,java.sql,jdk.crypto.ec,jdk.crypto.cryptoki --output jre_base_desktop"/>
     <delete>
       <fileset dir="jre_base_desktop/bin" includes="java**.exe"/>
-      <fileset dir="jre_base_desktop/legal" includes="**/*"/>
-      <fileset dir="jre_base_desktop/include" includes="**/*"/>
     </delete>
+    <delete dir="jre_base_desktop/include"/>
+    <delete dir="jre_base_desktop/legal"/>
   </target>
 
   <target name="jre-base" description="build JRE for bundled JRE builds with only base">
-    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.sql --output jre_base"/>
+    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.sql,jdk.crypto.ec,jdk.crypto.cryptoki --output jre_base"/>
     <delete>
       <fileset dir="jre_base/bin" includes="java**.exe"/>
-      <fileset dir="jre_base/legal" includes="**/*"/>
-      <fileset dir="jre_base/include" includes="**/*"/>
     </delete>
+    <delete dir="jre_base/include"/>
+    <delete dir="jre_base/legal"/>
   </target>
 
   <target name="jre-base-javac" description="build JRE for bundled JRE builds with base and Java compiler">
-    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.sql,jdk.compiler,jdk.jartool,jdk.zipfs --output jre_base_javac"/>
+    <exec command="jlink --module-path ${env.JAVA_HOME}/jmods --add-modules java.base,java.sql,jdk.compiler,jdk.jartool,jdk.zipfs,jdk.crypto.ec,jdk.crypto.cryptoki --output jre_base_javac"/>
     <delete>
       <fileset dir="jre_base_javac/bin" includes="java**.exe"/>
-      <fileset dir="jre_base_javac/legal" includes="**/*"/>
-      <fileset dir="jre_base_javac/include" includes="**/*"/>
     </delete>
+    <delete dir="jre_base_javac/include"/>
+    <delete dir="jre_base_javac/legal"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

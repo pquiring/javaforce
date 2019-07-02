@@ -8,7 +8,7 @@ package javaforce;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class ProgressDialog extends javax.swing.JDialog {
+public class ProgressDialog extends javax.swing.JDialog implements JFTaskListener {
 
   /**
    * Creates new form ProgressDialog
