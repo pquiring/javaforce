@@ -29,14 +29,15 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private long file_size;
   private long folder_size;
   private int lastFrame[];
-  private int width, height;
+  private int width = -1, height = -1;
   private Calendar now;
   private boolean recording = false;
   private boolean end_recording = false;
   private int frameCount = 0;
   private boolean active = true;
   private ArrayList<Frame> frames = new ArrayList<Frame>();
-  private ArrayList<Packet> packets = new ArrayList<Packet>();
+  private ArrayList<Packet> packets_decode = new ArrayList<Packet>();
+  private ArrayList<Packet> packets_history = new ArrayList<Packet>();
   private Object framesLock = new Object();
   private static Object ffmpeg = new Object();
 
@@ -326,7 +327,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
   }
 
-  private void cleanPackets() {
+  private void cleanPackets(ArrayList<Packet> packets) {
     //only keep back to the last keyFrame (type 5)
     int last_key_frame = -1;
     int key_frames = 0;
@@ -343,7 +344,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
   }
 
-  private boolean haveCompleteFrame() {
+  private boolean haveCompleteFrame(ArrayList<Packet> packets) {
     int cnt = packets.size();
     for(int a=0;a<cnt;a++) {
       switch (packets.get(a).type) {
@@ -354,7 +355,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     return false;
   }
 
-  private boolean isNextKeyFrame() {
+  private boolean isNextKeyFrame(ArrayList<Packet> packets) {
     int cnt = packets.size();
     for(int a=0;a<cnt;a++) {
       switch (packets.get(a).type) {
@@ -365,8 +366,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     return false;
   }
 
-  private byte[] getNextFrame() {
-    if (!haveCompleteFrame()) return null;
+  private byte[] getNextFrame(ArrayList<Packet> packets) {
+    if (!haveCompleteFrame(packets)) return null;
     int total = 0;
     int cnt = packets.size();
     for(int a=0;a<cnt;a++) {
@@ -406,7 +407,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     decoder = new MediaVideoDecoder();
     boolean status;
     synchronized(ffmpeg) {
-      status = decoder.start(MediaCoder.AV_CODEC_ID_H264, 1920, 1080);
+      status = decoder.start(MediaCoder.AV_CODEC_ID_H264, -1, -1);
     }
     if (!status) {
       JFLog.log("Error:MediaVideoDecoder.start() failed");
@@ -478,17 +479,25 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       default:
         return;  //all others ignore
     }
-    packets.add(new Packet(buffer));
-    cleanPackets();
+    packets_decode.add(new Packet(buffer));
+    packets_history.add(new Packet(buffer));
+    cleanPackets(packets_decode);
+    cleanPackets(packets_history);
     int frame[];
+    boolean key_frame = isNextKeyFrame(packets_decode);
+    byte full[] = getNextFrame(packets_decode);
+    if (full == null) return;
     synchronized(ffmpeg) {
-      frame = decoder.decode(buffer);
+      frame = decoder.decode(full);
+      if (width == -1 && height == -1) {
+        width = decoder.getWidth();
+        height = decoder.getHeight();
+        JFLog.log("detected width/height=" + width + "x" + height);
+        if (width == 0 || height == 0) return;
+        if (width == -1 || height == -1) return;
+      }
     }
     now = Calendar.getInstance();
-    if (width == 0) {
-      width = decoder.getWidth();
-      height = decoder.getHeight();
-    }
     if (camera.record_motion) {
       detectMotion(frame);
     } else {
@@ -500,11 +509,11 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     if (recording) {
       if (raf == null) {
         createFile();
-        //add everything from packets
+        //add everything from packets history
         synchronized(framesLock) {
           do {
-            boolean key_frame = isNextKeyFrame();
-            byte full[] = getNextFrame();
+            key_frame = isNextKeyFrame(packets_history);
+            full = getNextFrame(packets_history);
             if (full == null) break;
             frames.add(new Frame(full, raf, false, key_frame));
           } while (true);
@@ -515,8 +524,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       }
       boolean had_frame = false;
       synchronized(framesLock) {
-        boolean key_frame = isNextKeyFrame();
-        byte full[] = getNextFrame();
+        key_frame = isNextKeyFrame(packets_history);
+        full = getNextFrame(packets_history);
         if (full != null) {
           frames.add(new Frame(full, raf, end_recording, key_frame));
           had_frame = true;

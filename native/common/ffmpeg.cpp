@@ -1091,7 +1091,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_resize
 //rawvideo decoder codebase
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
-  (JNIEnv *e, jobject c, jint codec_id, jint new_width, jint new_height)
+  (JNIEnv *e, jobject c, jint codec_id, jint width, jint height)
 {
   FFContext *ctx = createFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
@@ -1105,8 +1105,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
 
   //set default values
   ctx->video_codec_ctx->codec_id = (AVCodecID)codec_id;
-  ctx->video_codec_ctx->width = new_width;
-  ctx->video_codec_ctx->height = new_height;
   ctx->video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
 
   if (((*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL)) < 0) {
@@ -1114,36 +1112,16 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
     return JNI_FALSE;
   }
 
-  if (new_width == -1) new_width = ctx->video_codec_ctx->width;
-  if (new_height == -1) new_height = ctx->video_codec_ctx->height;
-  printf("width=%d height=%d\n", new_width, new_height);
-  if ((ctx->video_dst_bufsize = (*_av_image_alloc)(ctx->video_dst_data, ctx->video_dst_linesize
-    , ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt, 1)) < 0)
-  {
-    printf("av_image_alloc() failed\n");
-    return JNI_FALSE;
-  }
-  if ((ctx->rgb_video_dst_bufsize = (*_av_image_alloc)(ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize
-    , new_width, new_height, AV_PIX_FMT_BGRA, 1)) < 0)
-  {
-    printf("av_image_alloc(RGB) failed\n");
-    return JNI_FALSE;
-  }
-  //create video conversion context
-  ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt
-    , new_width, new_height, AV_PIX_FMT_BGRA
-    , SWS_BILINEAR, NULL, NULL, NULL);
-
   if ((ctx->frame = (*_av_frame_alloc)()) == NULL) return JNI_FALSE;
+
   ctx->pkt = AVPacket_New();
   (*_av_init_packet)(ctx->pkt);
   ctx->pkt->data = NULL;
   ctx->pkt->size = 0;
   ctx->pkt_size_left = 0;
 
-  int px_count = new_width * new_height;
-  ctx->jvideo_length = px_count;
-  ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
+  ctx->width = width;
+  ctx->height = height;
 
   return JNI_TRUE;
 }
@@ -1189,40 +1167,70 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
 {
   FFContext *ctx = getFFContext(e,c);
 
-  //read another frame
-  int data_length = e->GetArrayLength(data);
-  uint8_t *orgdata = ctx->pkt->data;
-  ctx->pkt->data = (uint8_t*)(*_av_mallocz)(ctx->pkt->size + data_length + AV_INPUT_BUFFER_PADDING_SIZE);
-  if (ctx->pkt->size > 0) {
-    memcpy(ctx->pkt->data, orgdata, ctx->pkt->size);
-    (*_av_free)(orgdata);
-  }
-  jbyte *data_ptr = e->GetByteArrayElements(data, NULL);
-  memcpy(ctx->pkt->data + ctx->pkt->size , data_ptr, data_length);
-  e->ReleaseByteArrayElements(data, data_ptr, JNI_ABORT);
-  ctx->pkt->size += data_length;
-  if (ctx->pkt->size < 256) {
-    //wait till we get a full frame - otherwise h264 outputs 'no frame!' which is annoying!
-    //I think a parser_parse2() may be helpfull here!
-    return NULL;
-  }
+  ctx->pkt->size = e->GetArrayLength(data);
+  ctx->pkt->data = (uint8_t*)e->GetByteArrayElements(data, NULL);
 
-  //extract a video frame
+/*
+  uint8_t* pdata = ctx->pkt->data;
+  int size = ctx->pkt->size;
+  for(int a=0;a<size-4;a++,pdata++) {
+    uint32_t* data32 = (uint32_t*)pdata;
+    if (((*data32) & 0xffffff) == 0x010000) {
+      for(int b=0;b<4;b++) {
+        printf("%02x ", pdata[b]);
+      }
+      printf("...");
+    }
+  }
+  printf(" [%d]\n", size);
+*/
+
   int got_frame = 0;
   int ret = (*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
-  (*_av_free)(ctx->pkt->data);
+  e->ReleaseByteArrayElements(data, (jbyte*)ctx->pkt->data, JNI_ABORT);
   ctx->pkt->data = NULL;
   if (ret < 0) {
     printf("Error:avcodec_decode_video2() == %d\n", ret);
     ctx->pkt->size = 0;
     return NULL;
   }
-  ctx->pkt->size -= ret;
-  if (ctx->pkt->size != 0) {
-    printf("Error:avcodec_decode_video2() did not consume entire packet : left=%d\n", ctx->pkt->size);
-    ctx->pkt->size = 0;
+  if (got_frame == 0) {
+    printf("no frame!\n");
+    return NULL;
   }
-  if (got_frame == 0) return NULL;
+
+  //setup conversion once width/height are known
+  if (ctx->jvideo == NULL) {
+    if (ctx->video_codec_ctx->width == 0 || ctx->video_codec_ctx->height == 0) {
+      printf("MediaVideoDecoder : width/height not known yet\n");
+      return NULL;
+    }
+    if (ctx->width == -1 && ctx->height == -1) {
+      ctx->width = ctx->video_codec_ctx->width;
+      ctx->height = ctx->video_codec_ctx->height;
+    }
+    if ((ctx->video_dst_bufsize = (*_av_image_alloc)(ctx->video_dst_data, ctx->video_dst_linesize
+      , ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt, 1)) < 0)
+    {
+      printf("av_image_alloc() failed\n");
+      return NULL;
+    }
+    if ((ctx->rgb_video_dst_bufsize = (*_av_image_alloc)(ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize
+      , ctx->width, ctx->height, AV_PIX_FMT_BGRA, 1)) < 0)
+    {
+      printf("av_image_alloc(RGB) failed\n");
+      return NULL;
+    }
+    //create video conversion context
+    ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt
+      , ctx->width, ctx->height, AV_PIX_FMT_BGRA
+      , SWS_BILINEAR, NULL, NULL, NULL);
+
+    int px_count = ctx->width * ctx->height;
+    ctx->jvideo_length = px_count;
+    ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
+  }
+
   (*_av_image_copy)(ctx->video_dst_data, ctx->video_dst_linesize
     , ctx->frame->data, ctx->frame->linesize
     , ctx->video_codec_ctx->pix_fmt, ctx->video_codec_ctx->width, ctx->video_codec_ctx->height);
