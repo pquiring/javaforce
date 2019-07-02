@@ -177,11 +177,11 @@ public class RTPH264 {
 /*
  Type Name
     0 [invalid]
-    1 Coded slice
+    1 Coded slice (incremental frame)
     2 Data Partition A
     3 Data Partition B
     4 Data Partition C
-    5 IDR (Instantaneous Decoding Refresh) Picture
+    5 IDR (Instantaneous Decoding Refresh) Picture (key frame)
     6 SEI (Supplemental Enhancement Information)
     7 SPS (Sequence Parameter Set)
     8 PPS (Picture Parameter Set)

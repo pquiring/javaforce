@@ -475,6 +475,7 @@ struct FFContext {
   AVFrame *audio_frame, *video_frame;
   AVFrame *src_pic, *dst_pic;
   jboolean audio_frame_size_variable;
+  jboolean video_delay;
   int audio_frame_size;
   short *audio_buffer;
   int audio_buffer_size;
@@ -1338,6 +1339,7 @@ static jboolean add_stream(FFContext *ctx, int codec_id) {
         stream->time_base.den = ctx->fps;
       }
       codec_ctx->gop_size = ctx->config_gop_size;
+      codec_ctx->keyint_min = ctx->config_gop_size;
       codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
       if (codec_ctx->codec_id == AV_CODEC_ID_H264) {
         (*_av_opt_set)(codec_ctx->priv_data, "profile", "baseline", 0);
@@ -1378,6 +1380,8 @@ static jboolean open_video(FFContext *ctx) {
     ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, AV_PIX_FMT_BGRA
       , ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt, SWS_BICUBIC, NULL, NULL, NULL);
   }
+  //get caps
+  ctx->video_delay = (ctx->video_codec->capabilities & AV_CODEC_CAP_DELAY) != 0;
   //set width/height/format
   ctx->video_frame->width = ctx->width;
   ctx->video_frame->height = ctx->height;
@@ -1737,6 +1741,25 @@ static jboolean addVideo(FFContext *ctx, int *px)
     printf("avcodec_encode_video2() failed!\n");
     return JNI_FALSE;
   }
+
+/*
+  printf("pts=%lld dts=%lld data=%p size=%d flags=%x side_data=%p, duration=%lld pos=%lld\n"
+    ,pkt->pts,pkt->dts,pkt->data,pkt->size,pkt->flags,pkt->side_data,pkt->duration,pkt->pos
+  );
+  uint8_t* data = pkt->data;
+  int size = pkt->size;
+  for(int a=0;a<size-4;a++,data++) {
+    uint32_t* data32 = (uint32_t*)data;
+    if (((*data32) & 0xffffff) == 0x010000) {
+      for(int b=0;b<4;b++) {
+        printf("%02x ", data[b]);
+      }
+      printf("...");
+    }
+  }
+  printf(" [%d]\n", size);
+*/
+
   if (got_frame != 0 && pkt->size > 0) {
     pkt->stream_index = ctx->video_stream->index;
     (*_av_packet_rescale_ts)(pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
@@ -1762,6 +1785,59 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideo
   jboolean ok = addVideo(ctx, (int*)px_ptr);
 
   e->ReleaseIntArrayElements(px, px_ptr, JNI_ABORT);
+
+  return ok;
+}
+
+static jboolean addVideoEncoded(FFContext *ctx, jbyte* data, jint size, jboolean key_frame) {
+  AVPacket *pkt = AVPacket_New();
+  (*_av_init_packet)(pkt);
+  pkt->data = (uint8_t*)data;
+  pkt->size = size;
+  pkt->stream_index = ctx->video_stream->index;
+  pkt->pts = ctx->video_pts;
+  pkt->dts = ctx->video_pts;
+  if (key_frame) {
+    pkt->flags = AV_PKT_FLAG_KEY;
+  }
+  (*_av_packet_rescale_ts)(pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
+
+/*
+  printf("pts=%lld dts=%lld data=%p size=%d flags=%x side_data=%p, duration=%lld pos=%lld\n"
+    ,pkt->pts,pkt->dts,pkt->data,pkt->size,pkt->flags,pkt->side_data,pkt->duration,pkt->pos
+  );
+  for(int a=0;a<size-4;a++,data++) {
+    uint32_t* data32 = (uint32_t*)data;
+    if (((*data32) & 0xffffff) == 0x010000) {
+      for(int b=0;b<4;b++) {
+        printf("%02x ", data[b]);
+      }
+      printf("...");
+    }
+  }
+  printf(" [%d]\n", size);
+*/
+
+  int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
+  pkt->data = NULL;
+  pkt->size = 0;
+  (*_av_free_packet)(pkt);
+  (*_av_free)(pkt);
+  ctx->video_pts++;
+  return ret == 0;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideoEncoded
+  (JNIEnv *e, jobject c, jbyteArray ba, jboolean key_frame)
+{
+  FFContext *ctx = getFFContext(e,c);
+
+  jbyte *ba_ptr = e->GetByteArrayElements(ba, NULL);
+  jint size = e->GetArrayLength(ba);
+
+  jboolean ok = addVideoEncoded(ctx, ba_ptr, size, key_frame);
+
+  e->ReleaseByteArrayElements(ba, ba_ptr, JNI_ABORT);
 
   return ok;
 }
