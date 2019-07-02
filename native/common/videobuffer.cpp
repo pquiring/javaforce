@@ -1,5 +1,5 @@
-JNIEXPORT jboolean JNICALL Java_javaforce_media_VideoBuffer_compareFrames
-  (JNIEnv *e, jclass c, jintArray img1, jintArray img2, jint width, jint height, jint threshold)
+JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
+  (JNIEnv *e, jclass c, jintArray img1, jintArray img2, jint width, jint height, jint mask)
 {
   if (img1 == NULL) return JNI_TRUE;
   if (img2 == NULL) return JNI_TRUE;
@@ -20,18 +20,18 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_VideoBuffer_compareFrames
     for(int y=0;y<height;y++) {
       jint p1 = *(pc1++);
       jint p2 = *(pc2++);
-      p1 &= 0xf0f0f0;
-      p2 &= 0xf0f0f0;
+      p1 &= mask;
+      p2 &= mask;
       if (p1 != p2) diff++;
     }
   }
 
-  int changed = (diff * 100) / size;
-
-  printf("changed=%d threshold=%d\n", changed, threshold);
+  float fdiff = diff;
+  float fsize = size;
+  float changed = (fdiff * 100.0f) / fsize;
 
   e->ReleaseIntArrayElements(img1, px1, 0);
   e->ReleaseIntArrayElements(img2, px2, 0);
 
-  return changed > threshold;
+  return changed;
 }

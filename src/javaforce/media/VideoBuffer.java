@@ -74,5 +74,6 @@ public class VideoBuffer {
     tail = head;
   }
 
-  public static native boolean compareFrames(int frame1[], int frame2[], int width, int height, int threshold);
+  /** Compares two frames masking each pixel with mask and returning percentage of pixels that are different. */
+  public static native float compareFrames(int frame1[], int frame2[], int width, int height, int mask);
 }
