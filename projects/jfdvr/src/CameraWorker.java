@@ -30,6 +30,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private long folder_size;
   private int lastFrame[];
   private int width = -1, height = -1;
+  private float fps = -1;
   private Calendar now;
   private boolean recording = false;
   private boolean end_recording = false;
@@ -147,7 +148,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
             if (encoder == null) {
               encoder = new MediaEncoder();
               encoder_raf = frame.raf;
-              encoder.framesPerKeyFrame = 24;  //test
+              encoder.framesPerKeyFrame = (int)fps;
               encoder.videoBitRate = 4 * 1024 * 1024;  //4Mb/sec
               synchronized(ffmpeg) {
                 encoder.start(this, width, height, 24, 0, 0, "mp4", true, false);
@@ -492,7 +493,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       if (width == -1 && height == -1) {
         width = decoder.getWidth();
         height = decoder.getHeight();
+        fps = decoder.getFrameRate();
         JFLog.log("detected width/height=" + width + "x" + height);
+        JFLog.log("detected FPS=" + fps);
         if (width == 0 || height == 0) return;
         if (width == -1 || height == -1) return;
       }
