@@ -1,0 +1,59 @@
+<project name="jfdvr" default="jar" basedir=".">
+  <description>dvr</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfdvr"/>
+  <property name="app2" value="jfdvrsvc"/>
+  <property name="apptype2" value="s"/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property name="home" location="../.."/>
+  <property name="classpath" location="javaforce.jar"/>
+  <property name="version" value="0.1"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars" depends="depnatives" description="jar">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" target="1.8" source="1.8" debug="true" includeantruntime="false">
+      <classpath path="${classpath}"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
+      <fileset dir="." includes="*.png"/>
+      <fileset dir="src" includes="*.png"/>
+      <fileset dir="." includes="*.crt"/>
+      <manifest>
+        <attribute name="Main-Class" value="AudioApp"/>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="${app}.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="release-bin" depends="jar" description="create release zip file">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+    <zip destfile="jfdvr-${version}.zip">
+      <fileset dir=".">
+        <include name="*.jar"/>
+        <include name="*.txt"/>
+        <include name="run*.bat"/>
+      </fileset>
+      <fileset dir="../.." includes="license.txt"/>
+    </zip>
+    <move file="jfdvr-${version}.zip" todir="${home}/release"/>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <copy file="${app}.service" todir="/lib/systemd/system"/>
+  </target>
+</project>
