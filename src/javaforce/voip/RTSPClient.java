@@ -331,6 +331,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send TEARDOWN request to server (RTSP).
    */
   public boolean teardown(String url) {
+    if (sess == null) return false;
     sess.uri = url;
     sess.extra = "/";
     return issue(sess, "TEARDOWN", true);

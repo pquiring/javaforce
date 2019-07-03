@@ -22,6 +22,32 @@ public class ConfigService implements WebUIHandler {
     server = null;
   }
 
+  private String cleanName(String name) {
+    char ca[] = name.toCharArray();
+    StringBuilder sb = new StringBuilder();
+    for(int a=0;a<ca.length;a++) {
+      char ch = ca[a];
+      if (Character.isAlphabetic(ch)) {
+        sb.append(ch);
+      } else if (Character.isDigit(ch)) {
+        sb.append(ch);
+      } else {
+        switch (ch) {
+          case '-':
+          case '_':
+            sb.append(ch);
+        }
+      }
+    }
+    return sb.toString();
+  }
+
+  private String cleanURL(String url) {
+    if (!url.startsWith("rtsp://")) return "rtsp://" + url;
+    //TODO : more validation
+    return url;
+  }
+
   public Panel getRootPanel(WebUIClient client) {
     if (!MediaCoder.loaded) {
       MediaCoder.init();
@@ -138,8 +164,12 @@ public class ConfigService implements WebUIHandler {
     b_save.addClickListener((MouseEvent e, Component button) -> {
       int idx = list.getSelectedIndex();
       String _name = name.getText();
+      _name = cleanName(_name);
+      name.setText(_name);
       if (_name.length() == 0) return;
       String _url = url.getText();
+      _url = cleanURL(_url);
+      url.setText(_url);
       if (_url.length() == 0) return;
       Camera camera;
       if (idx == -1) {

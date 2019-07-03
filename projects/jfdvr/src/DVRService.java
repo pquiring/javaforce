@@ -69,14 +69,16 @@ public class DVRService extends Thread {
   public void stopCamera(Camera camera) {
     int cnt = list.size();
     for(int a=0;a<cnt;a++) {
-      list.get(a).cancel(false);
+      if (list.get(a).camera == camera) {
+        try {list.get(a).cancel(false);} catch (Exception e) {JFLog.log(e);}
+      }
     }
   }
 
   public void startCamera(Camera camera) {
     int cnt = list.size();
     for(int a=0;a<cnt;a++) {
-      list.get(a).restart();
+      try {list.get(a).restart();} catch (Exception e) {JFLog.log(e);}
     }
   }
 }
