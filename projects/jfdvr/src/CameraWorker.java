@@ -41,6 +41,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private ArrayList<Packet> packets_history = new ArrayList<Packet>();
   private Object framesLock = new Object();
   private static Object ffmpeg = new Object();
+  private long lastKeepAlive;
+  private long lastPacket;
 
   private static int nextPort = 5000;
   private static synchronized int getLocalPort() {
@@ -121,12 +123,23 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     recording = !camera.record_motion;  //always recording
     JFLog.log("max file size=" + max_file_size);
   }
+
   public void run() {
     try {
       listFiles();
+      JFLog.log("Connecting to " + camera.name);
       connect();
       while (active) {
         JF.sleep(100);
+        long now = System.currentTimeMillis();
+        if (now - lastPacket > 10*1000) {
+          JFLog.log("Reconnecting to " + camera.name);
+          disconnect();
+          connect();
+        } else if (now - lastKeepAlive > 55*1000) {
+          client.keepalive(url);
+          lastKeepAlive = now;
+        }
         //clean up folder
         while (folder_size > max_folder_size) {
           Recording rec = files.get(0);
@@ -167,6 +180,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
           }
         } while (frame != null);
       }
+      disconnect();
       if (encoder != null) {
         synchronized(ffmpeg) {
           encoder.stop();
@@ -242,7 +256,14 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     client.init(remotehost, remoteport, localport, this, TransportType.TCP);
     if (user != null && pass != null) client.setUserPass(user, pass);
     client.options(this.url);
+    long now = System.currentTimeMillis();
+    lastKeepAlive = now;
+    lastPacket = now;
     return true;
+  }
+
+  public void disconnect() {
+    client.uninit();
   }
 
   private void listFiles() {
@@ -468,6 +489,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   public void rtpH264(RTPChannel rtp, byte[] buf, int offset, int length) {
     //I frame : 9 ... 5 (key frame)
     //P frame : 9 ... 1 (diff frame)
+    lastPacket = System.currentTimeMillis();
     byte buffer[] = h264.decode(Arrays.copyOf(buf, length));
     if (buffer == null) return;
     int type = buffer[4] & 0x1f;

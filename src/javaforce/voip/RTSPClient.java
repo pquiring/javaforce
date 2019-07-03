@@ -119,8 +119,8 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * keep firewalls open. Most routers close UDP connections after 60 seconds.
    * Not sure if needed with TCP/TLS but is done anyways.
    */
-  public void keepalive() {
-    send(remoteaddr, remoteport, "\r\n\r\n");  //must resemble a complete packet
+  public void keepalive(String url) {
+    get_parameter(url);
   }
 
   /**
@@ -334,6 +334,15 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     sess.uri = url;
     sess.extra = "/";
     return issue(sess, "TEARDOWN", true);
+  }
+
+  /**
+   * GET_PARAMETER (RTSP) Used as a keepalive.
+   */
+  public boolean get_parameter(String url) {
+    sess.uri = url;
+    sess.extra = "/";
+    return issue(sess, "GET_PARAMETER", true);
   }
 
   /**
