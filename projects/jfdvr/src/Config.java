@@ -44,4 +44,13 @@ public class Config implements Serializable {
     cameras = Arrays.copyOf(cameras, cameras.length + 1);
     cameras[cameras.length-1] = camera;
   }
+
+  public void removeCamera(Camera camera) {
+    int idx = -1;
+    for(int a=0;a<cameras.length;a++) {
+      if (cameras[a] == camera) {idx = a; break;}
+    }
+    if (idx == -1) return;
+    cameras = (Camera[])JF.copyOfExcluding(cameras, idx);
+  }
 }

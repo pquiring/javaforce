@@ -49,6 +49,7 @@ public class WebUIClient {
     dispatchEvent("", "load", null);
   }
   public void refresh() {
+    root = null;
     sendEvent("body", "redir", null);
   }
   private void initPanel() {

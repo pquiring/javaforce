@@ -56,7 +56,10 @@ public class ConfigService implements WebUIHandler {
     Button b_save = new Button("Save");
     row.add(b_save);
     b_save.setName("save");
-    //TODO : delete (need confirm dialog)
+
+    Button b_delete = new Button("Delete");
+    row.add(b_delete);
+    b_delete.setName("delete");
 
     row = new Row();
     right.add(row);
@@ -161,7 +164,38 @@ public class ConfigService implements WebUIHandler {
         list.update(idx, _name);
       }
       Config.current.save();
+      button.client.refresh();  //list not working yet
     });
+    PopupPanel popup = new PopupPanel("Confirm");
+    popup.setName("popup");
+    Label popup_label = new Label("Are you sure?");
+    popup.add(popup_label);
+    Button popup_b_delete = new Button("Delete");
+    popup.add(popup_b_delete);
+    popup_b_delete.addClickListener((MouseEvent e, Component button) -> {
+      int idx = list.getSelectedIndex();
+      if (idx < 0 || idx >= Config.current.cameras.length) return;
+      Camera camera = Config.current.cameras[idx];
+      DVRService.dvrService.stopCamera(camera);
+      DVRService.dvrService.removeCamera(camera);
+      Config.current.removeCamera(camera);
+      Config.current.save();
+      list.remove(idx);  //not working yet
+      popup.setVisible(false);
+      button.client.refresh();  //list not working yet
+    });
+    Button popup_b_cancel = new Button("Cancel");
+    popup.add(popup_b_cancel);
+    popup_b_cancel.addClickListener((MouseEvent e, Component button) -> {
+      popup.setVisible(false);
+    });
+    b_delete.addClickListener((MouseEvent e, Component button) -> {
+      int idx = list.getSelectedIndex();
+      if (idx < 0 || idx >= Config.current.cameras.length) return;
+      popup.setVisible(true);
+    });
+
+    panel.add(popup);
     split.setDividerPosition(150);
 
     return panel;

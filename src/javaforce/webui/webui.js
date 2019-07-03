@@ -23,12 +23,16 @@ function alarm() {
   setTimeout(alarm, 1000);
 }
 
-function wsopen(event) {
-  sendSize('body');
+function load() {
   var msg = {
     event: "load"
   };
   ws.send(JSON.stringify(msg));
+}
+
+function wsopen(event) {
+  sendSize('body');
+  load();
 };
 
 function wsclose(event) {
@@ -51,7 +55,7 @@ function wsevent(event) {
     return;
   }
   var msg = JSON.parse(event.data);
-  console.log("event:" + msg.event);
+  console.log("event:" + msg.event + " to " + msg.id);
   var element = document.getElementById(msg.id);
   if (element === null) {
     console.log("element not found:" + msg.id);
