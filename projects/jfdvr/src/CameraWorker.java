@@ -316,7 +316,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       recording = true;
     } else {
       if (!recording) return;
-      long diff = now.getTimeInMillis() - last_change_time;
+      long diff = (now.getTimeInMillis() - last_change_time) * 1000L;
       boolean off_delay = diff > camera.record_motion_after;
       if (off_delay) {
         end_recording = true;
