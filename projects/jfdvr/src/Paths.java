@@ -23,7 +23,8 @@ public class Paths {
     new File(dataPath).mkdirs();
     new File(logsPath).mkdirs();
     new File(videoPath).mkdirs();
-    JFLog.append(logsPath + "/service.log", true);
+    JFLog.append(logsPath + "/system.log", true);  //0
+    JFLog.append(1, logsPath + "/service.log", true);
     JFLog.log("jfDVR starting...");
   }
 }
