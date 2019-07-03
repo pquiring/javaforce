@@ -70,7 +70,6 @@ public class JFNative {
       for (int a = 0; a < files.length; a++) {
         File file = files[a];
         String fileName = files[a].getName();
-        if (fileName.startsWith("mdm")) continue;  //mdmpostprocessevaluator.dll is matching postproc-??.dll
         if (file.isDirectory()) {
           if (!recursive) continue;
           if (JF.isUnix()) {
@@ -100,7 +99,7 @@ public class JFNative {
                 cnt++;
               }
             }
-            else if (fileName.contains(libs[b].name)) {
+            else if (fileName.startsWith(libs[b].name) || fileName.startsWith("lib" + libs[b].name)) {
               JFLog.log("Found Library:" + file.toString());
               libs[b].path = file.getAbsolutePath();
               cnt++;
