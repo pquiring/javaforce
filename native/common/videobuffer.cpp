@@ -1,8 +1,8 @@
 JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
   (JNIEnv *e, jclass c, jintArray img1, jintArray img2, jint width, jint height, jint mask)
 {
-  if (img1 == NULL) return JNI_TRUE;
-  if (img2 == NULL) return JNI_TRUE;
+  if (img1 == NULL) return 100.0f;
+  if (img2 == NULL) return 100.0f;
   jint *px1 = e->GetIntArrayElements(img1, NULL);
   jint *px2 = e->GetIntArrayElements(img2, NULL);
 
@@ -10,11 +10,18 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
   int s2 = e->GetArrayLength(img2);
 
   int size = width * height;
+  if (s1 != size) {
+    printf("Error: VideoBuffer.compareFrames() img1 is wrong size\n");
+    return 100.0f;
+  }
+  if (s2 != size) {
+    printf("Error: VideoBuffer.compareFrames() img2 is wrong size\n");
+    return 100.0f;
+  }
 
   jint *pc1 = px1;
   jint *pc2 = px2;
 
-  int off = 0;
   int diff = 0;
   for(int x=0;x<width;x++) {
     for(int y=0;y<height;y++) {

@@ -310,6 +310,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private long last_change_time;
   private void detectMotion(int newFrame[]) {
     float changed = VideoBuffer.compareFrames(lastFrame, newFrame, width, height, 0xe0e0e0);
+    System.arraycopy(newFrame, 0, lastFrame, 0, width * height);
     if (changed > camera.record_motion_threshold) {
       last_change_time = now.getTimeInMillis();
       recording = true;
@@ -520,6 +521,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         JFLog.log("detected FPS=" + fps);
         if (width == 0 || height == 0) return;
         if (width == -1 || height == -1) return;
+        lastFrame = new int[width * height];
       }
     }
     now = Calendar.getInstance();
