@@ -181,6 +181,7 @@ public class ConfigService implements WebUIHandler {
     });
     PopupPanel popup = new PopupPanel("Confirm");
     popup.setName("popup");
+    popup.setModal(true);
     Label popup_label = new Label("Are you sure?");
     popup.add(popup_label);
     Button popup_b_delete = new Button("Delete");
