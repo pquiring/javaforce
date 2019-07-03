@@ -9,6 +9,7 @@ import javaforce.webui.event.*;
 import javaforce.media.*;
 
 public class ConfigService implements WebUIHandler {
+  public static String version = "0.1";
   public WebUIServer server;
   public void start() {
     server = new WebUIServer();
@@ -48,6 +49,18 @@ public class ConfigService implements WebUIHandler {
     left.add(list);
 
     //right side
+    row = new Row();
+    right.add(row);
+    Label label = new Label("jfDVR/" + version);
+    row.add(label);
+
+    row = new Row();
+    right.add(row);
+    HTML html = new HTML("hr");
+    html.setText("");
+    html.setStyle("width", "100%");
+    row.add(html);
+
     row = new Row();
     right.add(row);
     Button b_new = new Button("New");
