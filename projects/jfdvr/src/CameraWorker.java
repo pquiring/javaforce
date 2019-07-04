@@ -31,7 +31,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private int lastFrame[];
   private int width = -1, height = -1;
   private float fps = -1;
-  private Calendar now;
+  private long now;
   private boolean recording = false;
   private boolean end_recording = false;
   private int frameCount = 0;
@@ -301,6 +301,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   }
 
   private String getFilename() {
+    Calendar now = Calendar.getInstance();
     return String.format("%s/%04d-%02d-%02d_%02d-%02d-%02d.mp4", path
       , now.get(Calendar.YEAR)
       , now.get(Calendar.MONTH) + 1
@@ -316,11 +317,11 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     float changed = VideoBuffer.compareFrames(lastFrame, newFrame, width, height, 0xe0e0e0);
     System.arraycopy(newFrame, 0, lastFrame, 0, width * height);
     if (changed > camera.record_motion_threshold) {
-      last_change_time = now.getTimeInMillis();
+      last_change_time = now;
       recording = true;
     } else {
       if (!recording) return;
-      long diff = (now.getTimeInMillis() - last_change_time) * 1000L;
+      long diff = (now - last_change_time) * 1000L;
       boolean off_delay = diff > camera.record_motion_after;
       if (off_delay) {
         end_recording = true;
@@ -528,7 +529,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         lastFrame = new int[width * height];
       }
 //    }
-    now = Calendar.getInstance();
+    now = lastPacket;
     if (camera.record_motion) {
       detectMotion(frame);
     } else {

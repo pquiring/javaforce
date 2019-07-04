@@ -23,22 +23,21 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
   jint *pc2 = px2;
 
   int diff = 0;
-  for(int x=0;x<width;x++) {
-    for(int y=0;y<height;y++) {
-      jint p1 = *(pc1++);
-      jint p2 = *(pc2++);
-      p1 &= mask;
-      p2 &= mask;
-      if (p1 != p2) diff++;
-    }
+  jint p1, p2;
+  for(int i=0;i<size;i++) {
+    p1 = *(pc1++);
+    p2 = *(pc2++);
+    p1 &= mask;
+    p2 &= mask;
+    if (p1 != p2) diff++;
   }
 
   float fdiff = diff;
   float fsize = size;
   float changed = (fdiff * 100.0f) / fsize;
 
-  e->ReleaseIntArrayElements(img1, px1, 0);
-  e->ReleaseIntArrayElements(img2, px2, 0);
+  e->ReleaseIntArrayElements(img1, px1, JNI_ABORT);
+  e->ReleaseIntArrayElements(img2, px2, JNI_ABORT);
 
   return changed;
 }
