@@ -98,6 +98,19 @@ public class SMTP {
     return true;
   }
 
+  public boolean auth(String user, String pass) throws Exception {
+    cmd("AUTH LOGIN");
+    getResponse();
+    cmd(encode(user));
+    getResponse();
+    cmd(encode(pass));
+    getResponse();
+    if (!response[response.length - 1].startsWith("235")) {
+      return false;
+    }
+    return true;
+  }
+
   public void logout() throws Exception {
     cmd("quit");
     getResponse();  //should be "221" but ignored
@@ -182,8 +195,8 @@ public class SMTP {
   }
 
   public static void main(String args[]) {
-    if (args.length != 2) {
-      System.out.println("Usage:SMTP server[:port] msg.txt");
+    if (args.length < 2) {
+      System.out.println("Usage:SMTP server[:port] msg.txt [user pass]");
       System.out.println("msg.txt sample:\r\n");
       System.out.println("From: \"First Last\" <bob@example.com>");
       System.out.println("To: \"First Last\" <to@example.com>");
@@ -204,11 +217,21 @@ public class SMTP {
       String host = args[0];
       int idx = host.indexOf(':');
       if (idx != -1) {
-        host = host.substring(0, idx);
         port = JF.atoi(host.substring(idx+1));
+        host = host.substring(0, idx);
       }
-      smtp.connect(host, port);
+      if (port == 25 || port == 587) {
+        smtp.connect(host, port);
+      } else {
+        //465
+        smtp.connectSSL(host, port);
+      }
       smtp.login();
+      if (args.length == 4) {
+        if (!smtp.auth(args[2], args[3])) {
+          throw new Exception("Login failed!");
+        }
+      }
       smtp.from(extractEmail(lns[0]));
       for(int a=1;a<lns.length;a++) {
         String ln = lns[a].toLowerCase();
@@ -223,5 +246,8 @@ public class SMTP {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+  public static String encode(String in) {
+    return new String(Base64.encode(in.getBytes()));
   }
 }
