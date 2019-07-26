@@ -36,11 +36,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private boolean end_recording = false;
   private int frameCount = 0;
   private boolean active = true;
-  private ArrayList<Frame> frames = new ArrayList<Frame>();
-  private ArrayList<Packet> packets_decode = new ArrayList<Packet>();
-  private ArrayList<Packet> packets_history = new ArrayList<Packet>();
-  private Object framesLock = new Object();
-  private static Object ffmpeg = new Object();
+  private Frames frames = new Frames();
+  private Packets packets_decode = new Packets();
+  private Packets packets_encode = new Packets();
   private long lastKeepAlive;
   private long lastPacket;
 
@@ -78,33 +76,205 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     return 0;
   }
 
+  private static int maxFrames = 64;
+
   /** Frame to be recorded. */
-  private static class Frame {
-    public Frame(byte[] buffer, RandomAccessFile raf, boolean stop, boolean key_frame) {
-      this.buffer = buffer;
-      this.raf = raf;
-      this.stop = stop;
-      this.key_frame = key_frame;
-      type = buffer[4] & 0x1f;
+  private static class Frames {
+    public void add(Packets packets, int offset, int length, RandomAccessFile raf, boolean stop, boolean key_frame) {
+      this.packets.add(packets, offset, length);
+      this.raf[head] = raf;
+      this.stop[head] = stop;
+      this.key_frame[head] = key_frame;
+      type[head] = packets.data[offset + 4] & 0x1f;
+      int new_head = head + 1;
+      if (new_head == maxFrames) new_head = 0;
+      head = new_head;
     }
-    public byte[] buffer;
-    public boolean stop;
-    public RandomAccessFile raf;
-    public int type;
-    public boolean key_frame;
+    public void removeFrame() {
+      tail++;
+      if (tail == maxFrames) tail = 0;
+      packets.removePacket();
+    }
+    public boolean empty() {
+      return tail == head;
+    }
+    public int head = 0;
+    public int tail = 0;
+    public Packets packets = new Packets();
+
+    public boolean[] stop = new boolean[maxFrames];
+    public RandomAccessFile[] raf = new RandomAccessFile[maxFrames];
+    public int[] type = new int[maxFrames];
+    public boolean[] key_frame = new boolean[maxFrames];
+
     public void closeFile() {
-      try { raf.close(); } catch (Exception e) {}
+      try { raf[tail].close(); } catch (Exception e) {}
     }
   }
 
-  /** Packet received. */
-  private static class Packet {
-    public Packet(byte[] buffer) {
-      this.buffer = buffer;
-      type = buffer[4] & 0x1f;
+  private static int maxPacketsSize = 10 * 1024 * 1024;
+  private static int maxPackets = 64;
+
+  /** Packets received. */
+  private static class Packets {
+    public Packets() {
+      data = new byte[maxPacketsSize];
     }
-    public byte[] buffer;
-    public int type;
+    public byte[] data;
+    public int[] offset = new int[maxPackets];
+    public int[] length = new int[maxPackets];
+    public int[] type = new int[maxPackets];
+    public int nextOffset;
+    public int head, tail;
+    public Object lock = new Object();
+    private boolean calcOffset(int _length) {
+      if (nextOffset + _length >= maxPacketsSize) {
+        nextOffset = 0;
+      }
+      int next_head = head + 1;
+      if (next_head == maxPackets) {
+        next_head = 0;
+      }
+      if (next_head == tail) {
+        JFLog.log(1, "Error : Buffer Overflow (# of packets exceeded)");
+        return false;
+      }
+      int _tail = tail;
+      if (head == _tail) return true;  //empty
+      int h1 = nextOffset;
+      int h2 = nextOffset + _length - 1;
+      int t1 = offset[_tail];
+      int t2 = t1 + length[_tail] - 1;
+      if ((h1 >= t1 && h1 <= t2) || (h2 >= t1 && h2 <= t2)) {
+        JFLog.log(1, "Error : Buffer Overflow (# of bytes in buffer exceeded)");
+        return false;
+      }
+      return true;
+    }
+    public void add(Packet packet) {
+      synchronized(lock) {
+        if (!calcOffset(packet.length)) return;
+        System.arraycopy(packet.data, 0, data, nextOffset, packet.length);
+        offset[head] = nextOffset;
+        length[head] = packet.length;
+        type[head] = packet.data[4] & 0x1f;
+        nextOffset += packet.length;
+        int new_head = head + 1;
+        if (new_head == maxPackets) new_head = 0;
+        head = new_head;
+      }
+    }
+    public void add(Packets packets, int _offset, int _length) {
+      synchronized(lock) {
+        if (!calcOffset(_length)) return;
+        System.arraycopy(packets.data, _offset, data, nextOffset, _length);
+        offset[head] = nextOffset;
+        length[head] = _length;
+        type[head] = packets.data[_offset + 4] & 0x1f;
+        nextOffset += _length;
+        int new_head = head + 1;
+        if (new_head == maxPackets) new_head = 0;
+        head = new_head;
+      }
+    }
+    public void removePacket() {
+      synchronized(lock) {
+        tail++;
+        if (tail == maxPackets) {
+          tail = 0;
+        }
+      }
+    }
+    public void cleanPackets(boolean mark) {
+      //only keep back to the last keyFrame (type 5)
+      int key_frames = 0;
+      for(int pos=tail;pos!=head;) {
+        switch (type[pos]) {
+          case 5: key_frames++; break;
+        }
+        pos++;
+        if (pos == maxPackets) pos = 0;
+      }
+      if (key_frames <= 1) return;
+      if (mark) {
+        boolean i_frame = false;
+        for(;tail!=head;) {
+          switch (type[tail]) {
+            case 1: i_frame = true; break;
+            default: if (i_frame) return;
+          }
+          tail++;
+          if (tail == maxPackets) tail = 0;
+        }
+      }
+    }
+    public boolean haveCompleteFrame() {
+      next_frame_fragmented = false;
+      for(int pos=tail;pos!=head;) {
+        switch (type[pos]) {
+          case 1: return true;
+          case 5: return true;
+        }
+        pos++;
+        if (pos == maxPackets) {
+          pos = 0;
+          next_frame_fragmented = true;
+        }
+      }
+      return false;
+    }
+    public boolean isNextFrame_KeyFrame() {
+      for(int pos=tail;pos!=head;) {
+        switch (type[pos]) {
+          case 1: return false;
+          case 5: return true;
+        }
+        pos++;
+        if (pos == maxPackets) pos = 0;
+      }
+      return false;
+    }
+    public void getNextFrame() {
+      next_frame_packets = 0;
+      next_frame_bytes = 0;
+      if (!haveCompleteFrame()) {
+        JFLog.log("error : getNextFrame() called but don't have one ???");
+        return;
+      }
+      if (next_frame_fragmented) {
+        //packets MUST be re-ordered (keep buffer size large to avoid this)
+        JFLog.log("re-ordering packets");
+        int new_tail = head;
+        for(int pos=tail;pos!=head;) {
+          add(this, offset[pos], length[pos]);
+          pos++;
+          if (pos == maxPackets) pos = 0;
+        }
+        tail = new_tail;
+      }
+      for(int pos=tail;pos!=head;) {
+        next_frame_bytes += length[pos];
+        next_frame_packets++;
+        int this_type = type[pos];
+        if (this_type == 1 || this_type == 5) {
+          break;
+        }
+        pos++;
+        if (pos == maxPackets) pos = 0;
+      }
+    }
+    public void removeNextFrame() {
+      while (next_frame_packets > 0) {
+        tail++;
+        if (tail == maxPackets) {
+          tail = 0;
+        }
+        next_frame_packets--;
+      }
+    }
+    public boolean next_frame_fragmented;
+    public int next_frame_packets;
+    public int next_frame_bytes;
   }
 
   private static class Recording {
@@ -147,44 +317,31 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
           rec.file.delete();
           folder_size -= rec.size;
         }
-        Frame frame = null;
         do {
-          synchronized(framesLock) {
-            if (frames.size() > 0) {
-              frame = frames.remove(0);
-            } else {
-              frame = null;
-            }
+          if (frames.empty()) break;
+          int tail = frames.tail;
+          encoder_raf = frames.raf[tail];
+          if (encoder == null) {
+            encoder = new MediaEncoder();
+            encoder.framesPerKeyFrame = (int)fps;
+            encoder.videoBitRate = 4 * 1024 * 1024;  //4Mb/sec
+            encoder.start(this, width, height, (int)fps, 0, 0, "mp4", true, false);
           }
-          if (frame != null) {
-            encoder_raf = frame.raf;
-            if (encoder == null) {
-              encoder = new MediaEncoder();
-              encoder_raf = frame.raf;
-              encoder.framesPerKeyFrame = (int)fps;
-              encoder.videoBitRate = 4 * 1024 * 1024;  //4Mb/sec
-//              synchronized(ffmpeg) {
-                encoder.start(this, width, height, 24, 0, 0, "mp4", true, false);
-//              }
-            }
-//            synchronized(ffmpeg) {
-              encoder.addVideoEncoded(frame.buffer, frame.key_frame);
-//            }
-            if (frame.stop) {
-//              synchronized(ffmpeg) {
-                encoder.stop();
-//              }
-              encoder = null;
-              frame.closeFile();
-            }
+          synchronized(frames.packets.lock) {
+            JFLog.log("add:" + frames.packets.offset[frames.packets.tail]);
+            encoder.addVideoEncoded(frames.packets.data, frames.packets.offset[frames.packets.tail], frames.packets.length[frames.packets.tail], frames.key_frame[tail]);
           }
-        } while (frame != null);
+          if (frames.stop[tail]) {
+            encoder.stop();
+            encoder = null;
+            frames.closeFile();
+          }
+          frames.removeFrame();
+        } while (true);
       }
       disconnect();
       if (encoder != null) {
-//        synchronized(ffmpeg) {
-          encoder.stop();
-//        }
+        encoder.stop();
         encoder = null;
       }
       if (raf != null) {
@@ -355,67 +512,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
   }
 
-  private void cleanPackets(ArrayList<Packet> packets) {
-    //only keep back to the last keyFrame (type 5)
-    int last_key_frame = -1;
-    int key_frames = 0;
-    int cnt = packets.size();
-    for(int a=0;a<cnt;a++) {
-      switch (packets.get(a).type) {
-        case 5: last_key_frame = a; key_frames++; break;
-      }
-    }
-    if (key_frames <= 1) return;
-    //delete everything before last_key_frame
-    for(int a=0;a<last_key_frame;a++) {
-      packets.remove(0);
-    }
-  }
-
-  private boolean haveCompleteFrame(ArrayList<Packet> packets) {
-    int cnt = packets.size();
-    for(int a=0;a<cnt;a++) {
-      switch (packets.get(a).type) {
-        case 1: return true;
-        case 5: return true;
-      }
-    }
-    return false;
-  }
-
-  private boolean isNextKeyFrame(ArrayList<Packet> packets) {
-    int cnt = packets.size();
-    for(int a=0;a<cnt;a++) {
-      switch (packets.get(a).type) {
-        case 1: return false;
-        case 5: return true;
-      }
-    }
-    return false;
-  }
-
-  private byte[] getNextFrame(ArrayList<Packet> packets) {
-    if (!haveCompleteFrame(packets)) return null;
-    int total = 0;
-    int cnt = packets.size();
-    for(int a=0;a<cnt;a++) {
-      Packet packet = packets.get(a);
-      total += packet.buffer.length;
-      if (packet.type == 1 || packet.type == 5) {
-        cnt = a;
-        break;
-      }
-    }
-    byte full[] = new byte[total];
-    int pos = 0;
-    for(int a=0;a<=cnt;a++) {
-      Packet packet = packets.remove(0);
-      System.arraycopy(packet.buffer, 0, full, pos, packet.buffer.length);
-      pos += packet.buffer.length;
-    }
-    return full;
-  }
-
   //RTSPClient Interface
 
   public void onOptions(RTSPClient client) {
@@ -434,9 +530,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     stream.setPort(-1);
     decoder = new MediaVideoDecoder();
     boolean status;
-//    synchronized(ffmpeg) {
-      status = decoder.start(MediaCoder.AV_CODEC_ID_H264, -1, -1);
-//    }
+    status = decoder.start(MediaCoder.AV_CODEC_ID_H264, -1, -1);
     if (!status) {
       JFLog.log("Error:MediaVideoDecoder.start() failed");
       return;
@@ -463,9 +557,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     rtp.stop();
     rtp = null;
     channel = null;
-//    synchronized(ffmpeg) {
-      decoder.stop();
-//    }
+    decoder.stop();
     decoder = null;
   }
 
@@ -496,9 +588,11 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     //I frame : 9 ... 5 (key frame)
     //P frame : 9 ... 1 (diff frame)
     lastPacket = System.currentTimeMillis();
-    byte buffer[] = h264.decode(Arrays.copyOf(buf, length));
-    if (buffer == null) return;
-    int type = buffer[4] & 0x1f;
+    Packet packet = h264.decode(buf, 0, length);
+    if (packet == null) {
+      return;
+    }
+    int type = packet.data[4] & 0x1f;
     switch (type) {
       case 7:  //SPS
       case 8:  //PPS
@@ -508,60 +602,60 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       default:
         return;  //all others ignore
     }
-    packets_decode.add(new Packet(buffer));
-    packets_history.add(new Packet(buffer));
-    cleanPackets(packets_decode);
-    cleanPackets(packets_history);
+    JFLog.log("packet = " + (packet.data[4] & 0x1f) + " : " + packet.length);
+    packets_decode.add(packet);
+    packets_encode.add(packet);
+    packets_decode.cleanPackets(true);
+    packets_encode.cleanPackets(true);
     int frame[];
-    boolean key_frame = isNextKeyFrame(packets_decode);
-    byte full[] = getNextFrame(packets_decode);
-    if (full == null) return;
-//    synchronized(ffmpeg) {
-      frame = decoder.decode(full);
-      if (width == -1 && height == -1) {
-        width = decoder.getWidth();
-        height = decoder.getHeight();
-        fps = decoder.getFrameRate();
-        JFLog.log(1, camera.name + " : detected width/height=" + width + "x" + height);
-        JFLog.log(1, camera.name + " : detected FPS=" + fps);
-        if (width == 0 || height == 0) return;
-        if (width == -1 || height == -1) return;
-        lastFrame = new int[width * height];
-      }
-//    }
+    boolean key_frame = packets_decode.isNextFrame_KeyFrame();
+    if (!packets_decode.haveCompleteFrame()) return;
+    packets_decode.getNextFrame();
+    frame = decoder.decode(packets_decode.data, packets_decode.offset[packets_decode.tail], packets_decode.next_frame_bytes);
+    packets_decode.removeNextFrame();
+    if (width == -1 && height == -1) {
+      width = decoder.getWidth();
+      height = decoder.getHeight();
+      fps = decoder.getFrameRate();
+      JFLog.log(1, camera.name + " : detected width/height=" + width + "x" + height);
+      JFLog.log(1, camera.name + " : detected FPS=" + fps);
+      if (width == 0 || height == 0) return;
+      if (width == -1 || height == -1) return;
+      lastFrame = new int[width * height];
+    }
     now = lastPacket;
     if (camera.record_motion) {
       detectMotion(frame);
     } else {
       recording = true;  //always recording
+    }
+    if (recording) {
+      if (frameCount > 100) {
+        end_recording = true;  //test
+      }
       if (file_size > max_file_size) {
         end_recording = true;
       }
-    }
-    if (recording) {
       if (raf == null) {
         createFile();
         //add everything from packets history
         do {
-          key_frame = isNextKeyFrame(packets_history);
-          full = getNextFrame(packets_history);
-          if (full == null) break;
-          synchronized(framesLock) {
-            frames.add(new Frame(full, raf, false, key_frame));
-          }
+          if (!packets_encode.haveCompleteFrame()) break;
+          key_frame = packets_encode.isNextFrame_KeyFrame();
+          packets_encode.getNextFrame();
+          frames.add(packets_encode, packets_encode.offset[packets_encode.tail], packets_encode.next_frame_bytes, raf, false, key_frame);
+          frameCount++;
+          packets_encode.removeNextFrame();
         } while (true);
       }
-      if (frame != null) {
-        frameCount++;
-      }
+      frameCount++;
       boolean had_frame = false;
-      key_frame = isNextKeyFrame(packets_history);
-      full = getNextFrame(packets_history);
-      if (full != null) {
-        synchronized(framesLock) {
-          frames.add(new Frame(full, raf, end_recording, key_frame));
-        }
+      if (packets_encode.haveCompleteFrame()) {
+        packets_encode.getNextFrame();
+        key_frame = packets_encode.isNextFrame_KeyFrame();
+        frames.add(packets_encode, packets_encode.offset[packets_encode.tail], packets_encode.next_frame_bytes, raf, end_recording, key_frame);
         had_frame = true;
+        packets_encode.removeNextFrame();
       }
       if (end_recording && had_frame) {
         end_recording = false;

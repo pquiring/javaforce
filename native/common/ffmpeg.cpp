@@ -1163,12 +1163,13 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
 }
 
 JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
-  (JNIEnv *e, jobject c, jbyteArray data)
+  (JNIEnv *e, jobject c, jbyteArray data, jint offset, jint length)
 {
   FFContext *ctx = getFFContext(e,c);
+  uint8_t *dataptr = (uint8_t*)e->GetByteArrayElements(data, NULL);
 
-  ctx->pkt->size = e->GetArrayLength(data);
-  ctx->pkt->data = (uint8_t*)e->GetByteArrayElements(data, NULL);
+  ctx->pkt->size = length;
+  ctx->pkt->data = dataptr + offset;
 
 /*
   uint8_t* pdata = ctx->pkt->data;
@@ -1187,7 +1188,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
 
   int got_frame = 0;
   int ret = (*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
-  e->ReleaseByteArrayElements(data, (jbyte*)ctx->pkt->data, JNI_ABORT);
+  e->ReleaseByteArrayElements(data, (jbyte*)dataptr, JNI_ABORT);
   ctx->pkt->data = NULL;
   if (ret < 0) {
     printf("Error:avcodec_decode_video2() == %d\n", ret);
@@ -1836,14 +1837,13 @@ static jboolean addVideoEncoded(FFContext *ctx, jbyte* data, jint size, jboolean
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideoEncoded
-  (JNIEnv *e, jobject c, jbyteArray ba, jboolean key_frame)
+  (JNIEnv *e, jobject c, jbyteArray ba, jint offset, jint length, jboolean key_frame)
 {
   FFContext *ctx = getFFContext(e,c);
 
   jbyte *ba_ptr = e->GetByteArrayElements(ba, NULL);
-  jint size = e->GetArrayLength(ba);
 
-  jboolean ok = addVideoEncoded(ctx, ba_ptr, size, key_frame);
+  jboolean ok = addVideoEncoded(ctx, ba_ptr + offset, length, key_frame);
 
   e->ReleaseByteArrayElements(ba, ba_ptr, JNI_ABORT);
 

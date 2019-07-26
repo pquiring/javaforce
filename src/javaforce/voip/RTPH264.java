@@ -14,8 +14,12 @@ import javaforce.*;
 
 public class RTPH264 {
 
+  public static int decodeSize = 4 * 1024 * 1024;
+
   public RTPH264() {
     ssrc = new Random().nextInt();
+    packet = new Packet();
+    packet.data = new byte[decodeSize];
   }
 
   private int find_best_length(byte data[], int offset, int length) {
@@ -102,17 +106,23 @@ public class RTPH264 {
   /**
    * Returns full packets.
    */
-  public byte[] decode(byte rtp[]) {
-    if (rtp.length < 12 + 2) return null;  //bad packet
-    int h264Length = rtp.length - 12;
+  public Packet decode(byte rtp[], int offset, int length) {
+    //assumes offset == 0
+    if (length < 12 + 2) return null;  //bad packet
+    if (reset_packet) {
+      packet.length = 0;
+      reset_packet = false;
+    }
+    int h264Length = length - 12;
     int type = rtp[12] & 0x1f;
     int thisseqnum = RTPChannel.getseqnum(rtp, 0);
     if (type >= 1 && type <= 23) {
       //a full NAL packet
-      byte[] full = new byte[4 + h264Length];  //+4 = start code
-      System.arraycopy(rtp, 12, full, 4, h264Length);
-      full[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
-      return full;
+      System.arraycopy(rtp, 12, packet.data, 4, h264Length);
+      packet.data[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
+      packet.length = 4 + h264Length;
+      reset_packet = true;
+      return packet;
     } else if (type == 28) {
       //FU-A Packet
       boolean first = (rtp[13] & 0x80) == 0x80;
@@ -124,41 +134,40 @@ public class RTPH264 {
         return null;
       }
       if (first) {
-        if (partial != null) {
+        if (packet.length != 0) {
           JFLog.log("Warning : H264 : FU-A : first packet again, last frame lost?");
         }
         int nri = rtp[12] & 0x60;
         h264Length -= 2;
-        partial = new byte[4 + 1 + h264Length];
-        System.arraycopy(rtp, 12 + 2, partial, 4 + 1, h264Length);
-        partial[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
-        partial[4] = (byte)(nri + realtype);
+        System.arraycopy(rtp, 12 + 2, packet.data, 4 + 1, h264Length);
+        packet.length = 4 + 1 + h264Length;
+        packet.data[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
+        packet.data[4] = (byte)(nri + realtype);
         lastseqnum = thisseqnum;
       } else {
-        if (partial == null) {
+        if (packet.length == 0) {
           JFLog.log("Error : H264 : partial packet received before first packet");
           return null;
         }
         if (thisseqnum != lastseqnum + 1) {
           JFLog.log("Error : H264 : Received FU-A packet out of order, discarding frame.");
-          partial = null;
+          packet.length = 0;
           lastseqnum = -1;
           return null;
         }
         lastseqnum = thisseqnum;
-        int partialLength = partial.length;
+        int partialLength = packet.length;
         h264Length -= 2;
-        partial = Arrays.copyOf(partial, partial.length + h264Length);
-        System.arraycopy(rtp, 12+2, partial, partialLength, h264Length);
+        System.arraycopy(rtp, 12+2, packet.data, partialLength, h264Length);
+        packet.length += h264Length;
         if (last) {
-          byte[] full = partial;
-          partial = null;
-          return full;
+          reset_packet = true;
+          return packet;
         }
       }
     } else {
       JFLog.log("H264:Unsupported packet type:" + type);
-      partial = null;
+      packet.length = 0;
       lastseqnum = -1;
       return null;
     }
@@ -170,7 +179,8 @@ public class RTPH264 {
   private int seqnum;
   private int timestamp;
   private final int ssrc;
-  private byte partial[];
+  private Packet packet;
+  private boolean reset_packet;
   private int lastseqnum = -1;
 }
 

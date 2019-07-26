@@ -96,7 +96,7 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(pack);
+    int[] px = decoder.decode(pack, 0, pack.length);
     if (px == null) {
       return;
     }
@@ -127,7 +127,7 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(pack);
+    int[] px = decoder.decode(pack, 0, pack.length);
     if (px == null) {
       return;
     }
@@ -158,7 +158,7 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(pack);
+    int[] px = decoder.decode(pack, 0, pack.length);
     if (px == null) {
       return;
     }
@@ -176,7 +176,7 @@ public class RemoteCamera extends Thread {
       return;
     }
     //      printArray("i:rtpH264:", data, 0, len);
-    byte[] pack = rtpH264.decode(Arrays.copyOfRange(data, pos, pos + len));
+    Packet pack = rtpH264.decode(data, pos, pos + len);
     if (pack == null) {
       return;
       //      printArray("decoded_h264", pack, 0, pack.length);
@@ -191,7 +191,7 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(pack);
+    int[] px = decoder.decode(pack.data, 0, pack.length);
     if (px == null) {
       return;
     }
@@ -225,7 +225,7 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(pack);
+    int[] px = decoder.decode(pack, 0, pack.length);
     if (px == null) {
       return;
     }
