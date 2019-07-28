@@ -328,7 +328,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
             encoder.start(this, width, height, (int)fps, 0, 0, "mp4", true, false);
           }
           synchronized(frames.packets.lock) {
-            JFLog.log("add:" + frames.packets.offset[frames.packets.tail]);
             encoder.addVideoEncoded(frames.packets.data, frames.packets.offset[frames.packets.tail], frames.packets.length[frames.packets.tail], frames.key_frame[tail]);
           }
           if (frames.stop[tail]) {
@@ -602,7 +601,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       default:
         return;  //all others ignore
     }
-    JFLog.log("packet = " + (packet.data[4] & 0x1f) + " : " + packet.length);
     packets_decode.add(packet);
     packets_encode.add(packet);
     packets_decode.cleanPackets(true);

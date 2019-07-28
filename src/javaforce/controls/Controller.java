@@ -243,6 +243,18 @@ public class Controller {
       lastException = e;
       return false;
     }
+    byte reply[] = new byte[1500];
+    int replySize = 0;
+    try {
+      do {
+        int read = is.read(reply, replySize, 1500 - replySize);
+        if (read == -1) throw new Exception("bad read");
+        replySize += read;
+      } while (!S7Packet.isPacketComplete(Arrays.copyOf(reply, replySize)));
+    } catch (Exception e) {
+      lastException = e;
+      return false;
+    }
     return true;
   }
 
@@ -264,21 +276,27 @@ public class Controller {
           S7Data s7 = S7Packet.decodeAddress(addr);
           int left = s7.getLength();
           int offset = 0;
+          int copying = 0;
           while (left > 0) {
             if (left > 200) {
-              s7.data = Arrays.copyOfRange(data, offset, 200);
+              copying = 200;
+              s7.data = Arrays.copyOfRange(data, offset, offset + 200);
+              s7.length = (short)(200 / S7Types.getTypeSize(s7.data_type, (short)1));
+              s7.offset = offset << 3;
               if (!writePartial(s7)) {
                 return false;
               }
             } else {
-              s7.data = Arrays.copyOfRange(data, offset, left);
+              copying = left;
+              s7.data = Arrays.copyOfRange(data, offset, offset + left);
+              s7.length = (short)(left / S7Types.getTypeSize(s7.data_type, (short)1));
+              s7.offset = offset << 3;
               if (!writePartial(s7)) {
                 return false;
               }
             }
-            left -= s7.data.length;
-            offset += s7.data.length;
-            s7.offset += s7.data.length << 3;
+            left -= copying;
+            offset += copying;
           }
           return true;
         }
