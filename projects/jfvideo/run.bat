@@ -1,1 +1,2 @@
-java -cp javaforce.jar;filters.jar;lwjgl.jar;jfvideo.jar VideoApp %1
+\bin\jdk-12\bin\java  -cp javaforce.jar;filters.jar;jfvideo.jar VideoApp
+::-XX:+AlwaysUseJNICritical %1

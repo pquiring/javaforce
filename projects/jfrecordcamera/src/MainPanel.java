@@ -316,6 +316,10 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     camera.uninit();
     camera = null;
     cameraDevices.removeAllItems();
+    if (list == null) {
+      JFAWT.showError("Error", "No camera detected");
+      return;
+    }
     for(int a=0;a<list.length;a++) {
       cameraDevices.addItem(list[a]);
     }

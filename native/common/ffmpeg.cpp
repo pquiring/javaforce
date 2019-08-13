@@ -30,6 +30,12 @@ JF_LIB_HANDLE util = NULL;
 JF_LIB_HANDLE resample = NULL;
 JF_LIB_HANDLE postproc = NULL;
 JF_LIB_HANDLE scale = NULL;
+jboolean shownCopyWarning = JNI_FALSE;
+
+static void copyWarning() {
+  printf("Warning : JNI::Get*ArrayElements returned a copy : Performance will be degraded!\n");
+  shownCopyWarning = JNI_TRUE;
+}
 
 //avcodec functions
 void (*_avcodec_register_all)();
@@ -1166,7 +1172,9 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   (JNIEnv *e, jobject c, jbyteArray data, jint offset, jint length)
 {
   FFContext *ctx = getFFContext(e,c);
-  uint8_t *dataptr = (uint8_t*)e->GetByteArrayElements(data, NULL);
+  jboolean isCopy;
+  uint8_t *dataptr = (uint8_t*)e->GetByteArrayElements(data, &isCopy);
+  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   ctx->pkt->size = length;
   ctx->pkt->data = dataptr + offset;
@@ -1719,7 +1727,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudio
 
   if (ctx->audio_codec_ctx == NULL) return JNI_FALSE;
 
-  jshort* sams_ptr = e->GetShortArrayElements(sams, NULL);
+  jboolean isCopy;
+  jshort* sams_ptr = e->GetShortArrayElements(sams, &isCopy);
+  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   jboolean ok = addAudio(ctx, sams_ptr, offset, length);
 
@@ -1789,7 +1799,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideo
 
   if (ctx->video_codec_ctx == NULL) return JNI_FALSE;
 
-  jint *px_ptr = e->GetIntArrayElements(px, NULL);
+  jboolean isCopy;
+  jint *px_ptr = e->GetIntArrayElements(px, &isCopy);
+  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   jboolean ok = addVideo(ctx, (int*)px_ptr);
 
@@ -1841,7 +1853,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideoEncoded
 {
   FFContext *ctx = getFFContext(e,c);
 
-  jbyte *ba_ptr = e->GetByteArrayElements(ba, NULL);
+  jboolean isCopy;
+  jbyte *ba_ptr = e->GetByteArrayElements(ba, &isCopy);
+  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   jboolean ok = addVideoEncoded(ctx, ba_ptr + offset, length, key_frame);
 

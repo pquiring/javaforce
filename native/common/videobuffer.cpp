@@ -3,8 +3,11 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
 {
   if (img1 == NULL) return 100.0f;
   if (img2 == NULL) return 100.0f;
-  jint *px1 = e->GetIntArrayElements(img1, NULL);
-  jint *px2 = e->GetIntArrayElements(img2, NULL);
+  jboolean isCopy1, isCopy2;
+  jint *px1 = e->GetIntArrayElements(img1, &isCopy1);
+  if (!shownCopyWarning && isCopy1 == JNI_TRUE) copyWarning();
+  jint *px2 = e->GetIntArrayElements(img2, &isCopy2);
+  if (!shownCopyWarning && isCopy2 == JNI_TRUE) copyWarning();
 
   int s1 = e->GetArrayLength(img1);
   int s2 = e->GetArrayLength(img2);
