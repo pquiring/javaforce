@@ -7,7 +7,7 @@ package javaforce.media;
 
 public class MediaDecoder extends MediaCoder {
   public native boolean start(MediaIO io, int new_width, int new_height, int new_chs, int new_freq, boolean seekable);
-  public native boolean start(String file, String input_format, int new_width, int new_height, int chs, int new_freq);
+  public native boolean startFile(String file, String input_format, int new_width, int new_height, int chs, int new_freq);
   public native void stop();
   public native int read();
   public native int[] getVideo();

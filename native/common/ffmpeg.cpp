@@ -721,7 +721,7 @@ static jboolean open_codecs(FFContext *ctx, int new_width, int new_height, int n
  * NOTE : Audio output is always 16bit
  */
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start__Ljavaforce_media_MediaIO_2IIIIZ
+JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
   (JNIEnv *e, jobject c, jobject mio, jint new_width, jint new_height, jint new_chs, jint new_freq, jboolean seekable)
 {
   FFContext *ctx = createFFContext(e,c);
@@ -755,7 +755,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start__Ljavaforce_m
  * NOTE:input_format may be NULL
  */
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start__Ljava_lang_String_2Ljava_lang_String_2IIII
+JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_startFile
   (JNIEnv *e, jobject c, jstring file, jstring input_format, jint new_width, jint new_height, jint new_chs, jint new_freq)
 {
   FFContext *ctx = createFFContext(e,c);
@@ -993,15 +993,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaDecoder_getDuration
   FFContext *ctx = getFFContext(e,c);
   if (ctx->fmt_ctx == NULL) return 0;
   if (ctx->fmt_ctx->duration << 1 == 0) return 0;  //0x8000000000000000
-#ifdef __WINDOWS_32BIT__
-  // 64bit divide requires libgcc_s_sjlj-1.dll::__divdi3
-  // soln:convert to 32bit (this is only accurate up to 71 mins)
-  unsigned int duration = (unsigned int)(ctx->fmt_ctx->duration);
-  unsigned int av_time_base = (unsigned int)AV_TIME_BASE;
-  return duration / av_time_base;
-#else
   return ctx->fmt_ctx->duration / AV_TIME_BASE;  //return in seconds
-#endif
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_getSampleRate
