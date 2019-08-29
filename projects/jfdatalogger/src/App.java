@@ -14,7 +14,7 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.23";
+  public static String version = "0.24";
 
   public static int delays[] = new int[] {
     5, 10, 25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
@@ -531,6 +531,8 @@ public class App extends javax.swing.JFrame {
   public static int samplesLeft;
   public static Tag trigger = new Tag();
   public static int triggerReset = 250;
+  public static boolean SOCKSEnable = false;
+  public static String SOCKSHost = "";
   private static boolean triggerValid;
   private int span;  //data not in use yet
 
@@ -543,6 +545,8 @@ public class App extends javax.swing.JFrame {
     dataFile = null;
     trigger = new Tag();
     triggerReset = 250;
+    SOCKSEnable = false;
+    SOCKSHost = "";
   }
 
   public void clear() {
@@ -604,6 +608,12 @@ public class App extends javax.swing.JFrame {
                 break;
               case "triggerReset":
                 triggerReset = Integer.valueOf(cdata);
+                break;
+              case "socksEnable":
+                SOCKSEnable = cdata.equals("true");
+                break;
+              case "socksHost":
+                SOCKSHost = cdata;
                 break;
             }
           }
@@ -714,6 +724,8 @@ public class App extends javax.swing.JFrame {
     xml.addTag(config, "duration", "", Integer.toString(duration));
     xml.addTag(config, "triggerTag", "", tag_save(trigger));
     xml.addTag(config, "triggerReset", "", Integer.toString(triggerReset));
+    xml.addTag(config, "socksEnable", "", Boolean.toString(SOCKSEnable));
+    xml.addTag(config, "socksHost", "", SOCKSHost);
     xml.write(filename);
     projectFile = filename;
   }
@@ -1136,12 +1148,22 @@ public class App extends javax.swing.JFrame {
       int cnt = tags.size();
       triggerValid = trigger.isValid();
       if (triggerValid) {
+        if (SOCKSEnable) {
+          trigger.setSOCKS(SOCKSHost);
+        } else {
+          trigger.setSOCKS(null);
+        }
         trigger.start();
         trigger.connect();
       }
       //start tag timers
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
+        if (SOCKSEnable) {
+          tag.setSOCKS(SOCKSHost);
+        } else {
+          tag.setSOCKS(null);
+        }
         tag.delay = delay;
         Tag parent = null;
         for(int b=0;b<a;b++) {
@@ -1162,11 +1184,14 @@ public class App extends javax.swing.JFrame {
       timer = new java.util.Timer();
       task = new Task();
       timer.scheduleAtFixedRate(task, delay, delay);
-      triggerTimer = new java.util.Timer();
-      triggerTimer.schedule(new Task() {public void run() {
-        JFLog.log("TriggerReset:" + trigger.toString());
-        trigger.setValue("0");
-      }}, triggerReset);
+      if (triggerValid) {
+        triggerTimer = new java.util.Timer();
+        triggerTimer.schedule(new Task() {public void run() {
+          JFLog.log("TriggerReset:" + trigger.toString());
+          trigger.setValue("0");
+          triggerTimer = null;
+        }}, triggerReset);
+      }
       JFLog.log("running...");
       running = true;
     }

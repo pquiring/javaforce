@@ -15,20 +15,7 @@ public class SettingsDialog extends javax.swing.JDialog {
       speed.addItem(Integer.toString(App.delays[a]) + "ms");
     }
     speed.setSelectedIndex(2);
-    //load config
-    speed.setSelectedIndex(App.speed);
-    boolean c = App.duration == -1;
-    cont.setSelected(c);
-    if (c) {
-      duration.setValue(10);
-      duration.setEnabled(false);
-    } else {
-      duration.setValue(App.duration);
-      duration.setEnabled(true);
-    }
-    //load trigger tags
-    triggerTag.setText(App.trigger.toString());
-    triggerReset.setValue(App.triggerReset);
+    loadSettings();
   }
 
   /**
@@ -52,6 +39,9 @@ public class SettingsDialog extends javax.swing.JDialog {
     jLabel5 = new javax.swing.JLabel();
     jButton1 = new javax.swing.JButton();
     triggerTag = new javax.swing.JLabel();
+    SOCKSEnable = new javax.swing.JCheckBox();
+    SOCKSHost = new javax.swing.JTextField();
+    jLabel6 = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Settings");
@@ -103,6 +93,10 @@ public class SettingsDialog extends javax.swing.JDialog {
     triggerTag.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
     triggerTag.setText("...");
 
+    SOCKSEnable.setText("Use SOCKS4 Server");
+
+    jLabel6.setText("Host");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -134,7 +128,14 @@ public class SettingsDialog extends javax.swing.JDialog {
                 .addComponent(triggerReset)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel5))
-              .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+              .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(SOCKSEnable)
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel6)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(SOCKSHost)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -160,7 +161,13 @@ public class SettingsDialog extends javax.swing.JDialog {
           .addComponent(jLabel4)
           .addComponent(triggerReset, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(jLabel5))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 170, Short.MAX_VALUE)
+        .addGap(18, 18, 18)
+        .addComponent(SOCKSEnable)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(SOCKSHost, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel6))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 102, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(ok)
           .addComponent(cancel))
@@ -185,13 +192,7 @@ public class SettingsDialog extends javax.swing.JDialog {
   }//GEN-LAST:event_cancelActionPerformed
 
   private void okActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okActionPerformed
-    App.speed = speed.getSelectedIndex();
-    if (cont.isSelected()) {
-      App.duration = -1;
-    } else {
-      App.duration = (Integer)duration.getValue();
-    }
-    App.triggerReset = (Integer)triggerReset.getValue();
+    saveSettings();
     dispose();
   }//GEN-LAST:event_okActionPerformed
 
@@ -207,6 +208,8 @@ public class SettingsDialog extends javax.swing.JDialog {
   }//GEN-LAST:event_jButton1ActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JCheckBox SOCKSEnable;
+  private javax.swing.JTextField SOCKSHost;
   private javax.swing.JButton cancel;
   private javax.swing.JCheckBox cont;
   private javax.swing.JSpinner duration;
@@ -216,10 +219,41 @@ public class SettingsDialog extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
   private javax.swing.JButton ok;
   private javax.swing.JComboBox<String> speed;
   private javax.swing.JSpinner triggerReset;
   private javax.swing.JLabel triggerTag;
   // End of variables declaration//GEN-END:variables
 
+
+  void loadSettings() {
+    speed.setSelectedIndex(App.speed);
+    boolean c = App.duration == -1;
+    cont.setSelected(c);
+    if (c) {
+      duration.setValue(10);
+      duration.setEnabled(false);
+    } else {
+      duration.setValue(App.duration);
+      duration.setEnabled(true);
+    }
+    //load trigger tags
+    triggerTag.setText(App.trigger.toString());
+    triggerReset.setValue(App.triggerReset);
+    SOCKSEnable.setSelected(App.SOCKSEnable);
+    SOCKSHost.setText(App.SOCKSHost);
+  }
+
+  void saveSettings() {
+    App.speed = speed.getSelectedIndex();
+    if (cont.isSelected()) {
+      App.duration = -1;
+    } else {
+      App.duration = (Integer)duration.getValue();
+    }
+    App.triggerReset = (Integer)triggerReset.getValue();
+    App.SOCKSEnable = SOCKSEnable.isSelected();
+    App.SOCKSHost = SOCKSHost.getText();
+  }
 }
