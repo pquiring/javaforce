@@ -274,29 +274,36 @@ public class Controller {
       switch (plc) {
         case ControllerType.S7: {
           S7Data s7 = S7Packet.decodeAddress(addr);
-          int left = s7.getLength();
-          int offset = 0;
-          int copying = 0;
-          while (left > 0) {
-            if (left > 200) {
-              copying = 200;
-              s7.data = Arrays.copyOfRange(data, offset, offset + 200);
-              s7.length = (short)(200 / S7Types.getTypeSize(s7.data_type, (short)1));
-              s7.offset = offset << 3;
-              if (!writePartial(s7)) {
-                return false;
-              }
-            } else {
-              copying = left;
-              s7.data = Arrays.copyOfRange(data, offset, offset + left);
-              s7.length = (short)(left / S7Types.getTypeSize(s7.data_type, (short)1));
-              s7.offset = offset << 3;
-              if (!writePartial(s7)) {
-                return false;
-              }
+          if (s7.data_type == S7Types.BIT) {
+            s7.data = data;
+            if (!writePartial(s7)) {
+              return false;
             }
-            left -= copying;
-            offset += copying;
+          } else {
+            int left = s7.getLength();
+            int offset = 0;
+            int copying = 0;
+            while (left > 0) {
+              if (left > 200) {
+                copying = 200;
+                s7.data = Arrays.copyOfRange(data, offset, offset + 200);
+                s7.length = (short)(200 / S7Types.getTypeSize(s7.data_type, (short)1));
+                s7.offset = offset << 3;
+                if (!writePartial(s7)) {
+                  return false;
+                }
+              } else {
+                copying = left;
+                s7.data = Arrays.copyOfRange(data, offset, offset + left);
+                s7.length = (short)(left / S7Types.getTypeSize(s7.data_type, (short)1));
+                s7.offset = offset << 3;
+                if (!writePartial(s7)) {
+                  return false;
+                }
+              }
+              left -= copying;
+              offset += copying;
+            }
           }
           return true;
         }

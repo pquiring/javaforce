@@ -57,6 +57,7 @@ public class Tag {
   }
 
   private Controller c;
+  private String socks;
   private Timer timer;
   private Reader reader;
   private TagListener listener;
@@ -185,6 +186,9 @@ public class Tag {
     if (parent == null) {
       childData = null;
       c = new Controller();
+      if (socks != null) {
+        c.setSOCKS(socks);
+      }
     } else {
       c = null;
     }
@@ -222,6 +226,10 @@ public class Tag {
       reader = null;
     }
     disconnect();
+  }
+
+  public void setSOCKS(String socksHost) {
+    socks = socksHost;
   }
 
   public boolean connect() {
@@ -406,6 +414,7 @@ public class Tag {
         synchronized(tag.pendingLock) {
           if (tag.pending != null) {
             tag.write(tag.pending);
+            tag.pending = null;
           }
         }
         if (tag.listener == null) return;
