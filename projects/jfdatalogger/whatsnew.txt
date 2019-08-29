@@ -1,3 +1,9 @@
+Aug 29/2019 : v0.24 released
+  - added SOCKS4 support to connect to PLCs on different network
+
+? : v0.23 released
+  - ???
+
 Sept 26/2018 : v0.22 released
   - new : added CSV Save button
     - log saves while running
