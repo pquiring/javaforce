@@ -17,7 +17,7 @@ public class JFLog {
     private String filename;
     private boolean enabled = true;
   }
-  private static Hashtable<Integer, LogInstance> list = new Hashtable<Integer, LogInstance>();
+  private static HashMap<Integer, LogInstance> list = new HashMap<Integer, LogInstance>();
   private static boolean useTimestamp = false;
   private static long timestampBase;
 
