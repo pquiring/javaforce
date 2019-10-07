@@ -26,7 +26,7 @@ final class g729a_acelp_co implements g729a_constants {
     int i_16_ = 0;
     int i_17_ = 0;
     int i_18_ = 0;
-    int[] is = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4,
+    int[] is = new int[] {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4,
       4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7};
     g729a_sinthesis_filter var_g729a_sinthesis_filter = new g729a_sinthesis_filter();
     int i_19_ = 0;

@@ -12,14 +12,14 @@ import java.util.*;
 
 import javaforce.*;
 
-public class RTPJPEG {
+public class RTPJPEG extends RTPCodec {
 
   public RTPJPEG() {
-    ssrc = new Random().nextInt();
+    ssrc = random.nextInt();
   }
 
   /** Encodes a raw JPEG data into multiple RTP packets. */
-  public byte[][] encode(byte jpeg[], int x, int y) {
+  public byte[][] encode(byte jpeg[], int x, int y, int id) {
     int cnt = (jpeg.length + mtu - 1) / mtu;
     int len = jpeg.length;
     byte packets[][] = new byte[cnt][];
@@ -40,15 +40,17 @@ public class RTPJPEG {
     return packets;
   }
 
-  public byte[] decode(byte rtp[]) {
+  private Packet packet = new Packet();
+
+  public Packet decode(byte rtp[], int offset, int length) {
     if (rtp.length < 12 + 8) return null;  //bad packet
     if (partial == null) partial = new byte[0];
-    int offset = ((int)rtp[13]) & 0xff;
-    offset <<= 8;
-    offset += ((int)rtp[14]) & 0xff;
-    offset <<= 8;
-    offset += ((int)rtp[15]) & 0xff;
-    if (offset != partial.length) {
+    int off = ((int)rtp[13]) & 0xff;
+    off <<= 8;
+    off += ((int)rtp[14]) & 0xff;
+    off <<= 8;
+    off += ((int)rtp[15]) & 0xff;
+    if (off != partial.length) {
       //lost a packet
       JFLog.log("RTPJPEG:decode:lost a packet or not in order");
       partial = null;
@@ -59,9 +61,9 @@ public class RTPJPEG {
     partial = Arrays.copyOf(partial, partial.length + jpegLength);
     System.arraycopy(rtp, 12+8, partial, partialLength, jpegLength);
     if ((rtp[1] & 0x80) == 0x80) {  //check for marker
-      byte[] full = partial;
+      packet.data = partial;
       partial = null;
-      return full;
+      return packet;
     }
     return null;
   }

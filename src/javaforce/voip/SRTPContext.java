@@ -73,7 +73,7 @@ public class SRTPContext {
 
   ByteBuffer cloneByteBuffer(ByteBuffer orig) {
     ByteBuffer ret = ByteBuffer.allocate(orig.capacity());
-    ret.put(orig.array(), 0, orig.capacity());
+    ret.put((byte[])orig.array(), 0, orig.capacity());
     return ret;
   }
 

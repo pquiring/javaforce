@@ -15,6 +15,15 @@ import javax.swing.filechooser.*;
 
 public class JFAWT {
 
+  /** Opens a URL in default web browser */
+  public static void openURL(String url) {
+    try {
+      java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
   public static JFrame createJFrame(String title, int x, int y, int w, int h, LayoutManager lm) {
     //NOTE : When you add components, you must validate() the frame
     JFrame frame = new JFrame(title);

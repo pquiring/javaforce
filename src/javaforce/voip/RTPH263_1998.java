@@ -16,10 +16,10 @@ import java.util.*;
 
 import javaforce.*;
 
-public class RTPH263_1998 {
+public class RTPH263_1998 extends RTPCodec {
 
   public RTPH263_1998() {
-    ssrc = new Random().nextInt();
+    ssrc = random.nextInt();
   }
 
   private int find_best_length(byte data[], int offset, int length) {
@@ -65,10 +65,13 @@ public class RTPH263_1998 {
     return packets.toArray(new byte[0][0]);
   }
 
+  private Packet packet = new Packet();
+
   /**
    * Returns last full packet.
    */
-  public byte[] decode(byte rtp[]) {
+//  public byte[] decode(byte rtp[]) {
+  public Packet decode(byte rtp[], int offset, int length) {
     if (rtp.length < 12 + 2) return null;  //bad packet
     if (partial == null) {
       partial = new byte[0];
@@ -80,9 +83,9 @@ public class RTPH263_1998 {
     //if P is true a 0,0 is left between last packet and this packet
     System.arraycopy(rtp, 12 + 2, partial, partialLength + (P ? 2 : 0), h263Length);
     if ((rtp[1] & 0x80) == 0x80) {  //RTP.M flag
-      byte ret[] = partial;
+      packet.data = partial;
       partial = null;
-      return ret;
+      return packet;
     }
     return null;
   }

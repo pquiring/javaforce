@@ -66,30 +66,30 @@ public class g722 implements Coder {
   }
 
   private final int q6[]
-          = {
+          = new int[] {
             0, 35, 72, 110, 150, 190, 233, 276,
             323, 370, 422, 473, 530, 587, 650, 714,
             786, 858, 940, 1023, 1121, 1219, 1339, 1458,
             1612, 1765, 1980, 2195, 2557, 2919, 0, 0
           };
   private final int iln[]
-          = {
+          = new int[] {
             0, 63, 62, 31, 30, 29, 28, 27,
             26, 25, 24, 23, 22, 21, 20, 19,
             18, 17, 16, 15, 14, 13, 12, 11,
             10, 9, 8, 7, 6, 5, 4, 0
           };
   private final int ilp[]
-          = {
+          = new int[] {
             0, 61, 60, 59, 58, 57, 56, 55,
             54, 53, 52, 51, 50, 49, 48, 47,
             46, 45, 44, 43, 42, 41, 40, 39,
             38, 37, 36, 35, 34, 33, 32, 0
           };
-  private final int wl[] = {-60, -30, 58, 172, 334, 538, 1198, 3042};
-  private final int rl42[] = {0, 7, 6, 5, 4, 3, 2, 1, 7, 6, 5, 4, 3, 2, 1, 0};
+  private final int wl[] = new int[] {-60, -30, 58, 172, 334, 538, 1198, 3042};
+  private final int rl42[] = new int[] {0, 7, 6, 5, 4, 3, 2, 1, 7, 6, 5, 4, 3, 2, 1, 0};
   private final int ilb[]
-          = {
+          = new int[] {
             2048, 2093, 2139, 2186, 2233, 2282, 2332,
             2383, 2435, 2489, 2543, 2599, 2656, 2714,
             2774, 2834, 2896, 2960, 3025, 3091, 3158,
@@ -97,18 +97,18 @@ public class g722 implements Coder {
             3756, 3838, 3922, 4008
           };
   private final int qm4[]
-          = {
+          = new int[] {
             0, -20456, -12896, -8968,
             -6288, -4240, -2584, -1200,
             20456, 12896, 8968, 6288,
             4240, 2584, 1200, 0
           };
-  private final int qm2[] = {-7408, -1616, 7408, 1616};
-  private final int qmf_coeffs[] = {3, -11, 12, 32, -210, 951, 3876, -805, 362, -156, 53, -11};
-  private final int ihn[] = {0, 1, 0};
-  private final int ihp[] = {0, 3, 2};
-  private final int wh[] = {0, -214, 798};
-  private final int rh2[] = {2, 1, 2, 1};
+  private final int qm2[] = new int[] {-7408, -1616, 7408, 1616};
+  private final int qmf_coeffs[] = new int[] {3, -11, 12, 32, -210, 951, 3876, -805, 362, -156, 53, -11};
+  private final int ihn[] = new int[] {0, 1, 0};
+  private final int ihp[] = new int[] {0, 3, 2};
+  private final int wh[] = new int[] {0, -214, 798};
+  private final int rh2[] = new int[] {2, 1, 2, 1};
 
   private void block4(Band band, int d) {
     int wd1;
@@ -199,7 +199,7 @@ public class g722 implements Coder {
 
   public byte[] encode(short[] src16) {
     RTPChannel rtpChannel = rtp.getDefaultChannel();
-    rtpChannel.buildHeader(encoded, 9, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
+    RTPChannel.buildHeader(encoded, 9, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
 
     int dlow;
     int dhigh;
@@ -346,7 +346,7 @@ public class g722 implements Coder {
 
 // DECODING ...
   private final int qm5[]
-          = {
+          = new int[] {
             -280, -280, -23352, -17560,
             -14120, -11664, -9752, -8184,
             -6864, -5712, -4696, -3784,
@@ -357,7 +357,7 @@ public class g722 implements Coder {
             1520, 880, 280, -280
           };
   private final int qm6[]
-          = {
+          = new int[] {
             -136, -136, -136, -136,
             -24808, -21904, -19008, -16704,
             -14984, -13512, -12280, -11192,

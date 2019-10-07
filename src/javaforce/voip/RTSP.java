@@ -169,7 +169,7 @@ public abstract class RTSP {
     if (x == null) {
       return "\"null\"<sip:null@null>";
     }
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     if (x[0].length() > 0) {
       buf.append('\"');
       buf.append(x[0]);
@@ -925,7 +925,7 @@ public abstract class RTSP {
     }
     sess.nonce = nonce;
     String response = getResponse(user, pass, realm, cmd, "rtsp://" + remote, nonce, qop, nc, cnonce);
-    StringBuffer ret = new StringBuffer();
+    StringBuilder ret = new StringBuilder();
     ret.append(header);
     ret.append(" Digest username=\"" + user + "\", realm=\"" + realm + "\", uri=\"rtsp://" + remote + "\", nonce=\"" + nonce + "\"");
     if (cnonce != null) {
@@ -1038,7 +1038,7 @@ public abstract class RTSP {
     if (ip == null) {
       ip = getlocalRTPhost(sess);
     }
-    StringBuffer content = new StringBuffer();
+    StringBuilder content = new StringBuilder();
     content.append("v=0\r\n");
     content.append("o=- " + cdsd.o1 + " " + cdsd.o2 + " IN IP4 " + sess.localhost + "\r\n");
     content.append("s=" + useragent + "\r\n");

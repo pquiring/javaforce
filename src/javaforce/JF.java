@@ -6,6 +6,8 @@ import java.util.*;
 import java.util.zip.*;
 import java.lang.reflect.*;
 import javax.net.ssl.*;
+import java.security.*;
+import java.security.cert.*;
 
 /**
  * A collection of static methods. Many methods help reduce try/catch clutter by
@@ -845,12 +847,7 @@ public class JF {
   }
 
   public static int getPID() {
-    String pidstr = java.lang.management.ManagementFactory.getRuntimeMXBean().getName();
-    int idx = pidstr.indexOf("@");
-    if (idx == -1) {
-      return -1;
-    }
-    return JF.atoi(pidstr.substring(0, idx));
+    return (int)ProcessHandle.current().pid();
   }
 
   //copies arrays excluding one element (something Arrays is missing)
@@ -916,17 +913,17 @@ public class JF {
   public static void initHttps() {
     TrustManager[] trustAllCerts = new TrustManager[] {
       new X509TrustManager() {
-        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+        public X509Certificate[] getAcceptedIssuers() {
           return null;
         }
-        public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
-        public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {}
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
       }
     };
     // Let us create the factory where we can set some parameters for the connection
     try {
       SSLContext sc = SSLContext.getInstance("SSL");
-      sc.init(null, trustAllCerts, new java.security.SecureRandom());
+      sc.init(null, trustAllCerts, new SecureRandom());
       SSLSocketFactory sslsocketfactory = (SSLSocketFactory) sc.getSocketFactory();  //this method will work with untrusted certs
       HttpsURLConnection.setDefaultSSLSocketFactory(sslsocketfactory);
     } catch (Exception e) {
@@ -942,52 +939,6 @@ public class JF {
       }
     };
     HttpsURLConnection.setDefaultHostnameVerifier(hv);
-  }
-
-  /** Opens a URL in default web browser */
-  public static void openURL(String url) {
-    try {
-      java.awt.Desktop.getDesktop().browse(new java.net.URI(url));
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
-  /** Loads the JavaForce Certs into system. */
-  public static boolean loadCerts(InputStream root, InputStream applet, String domain) {
-    byte rootData[] = JF.readAll(root);
-    byte appletData[] = JF.readAll(applet);
-    if (isWindows()) {
-      KeyMgmt keys = new KeyMgmt();
-      try {
-        File file1 = new File(System.getenv("USERPROFILE")
-          + "\\AppData\\LocalLow\\Sun\\Java\\Deployment\\security\\trusted.cacerts");
-        if (!file1.exists()) throw new Exception("trusted.cacerts not found");
-        keys.open(new FileInputStream(file1), new char[0]);
-        if (!keys.hasCRT(new ByteArrayInputStream(rootData))) {
-          String alias = "usercacert" + Math.abs(new Random().nextLong());
-          keys.loadCRT(alias, new ByteArrayInputStream(rootData));
-          keys.save(new FileOutputStream(file1), new char[0]);
-        }
-
-        File file2 = new File(System.getenv("USERPROFILE")
-          + "\\AppData\\LocalLow\\Sun\\Java\\Deployment\\security\\trusted.certs");
-        if (!file2.exists()) throw new Exception("trusted.certs not found");
-        keys.open(new FileInputStream(file2), new char[0]);
-        if (!keys.hasCRT(new ByteArrayInputStream(appletData))) {
-          String alias = "deploymentusercert$tsflag$loc=http//" + domain;
-          keys.loadCRT(alias, new ByteArrayInputStream(appletData));
-          keys.save(new FileOutputStream(file2), new char[0]);
-        }
-      } catch (Exception e) {
-        JFLog.log(e);
-        return false;
-      }
-      return true;
-    } else {
-      //TODO : Linux : need to find keystore paths
-      return false;
-    }
   }
 
   /** Returns line # of calling method.

@@ -97,7 +97,7 @@ public class AudioOutput {
     sdl.write(BE.shortArray2byteArray(buf16, buf8), 0, buf16.length * 2);
     return true;
   }
-  
+
   public void flush() {
     sdl.drain();
     sdl.flush();

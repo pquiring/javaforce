@@ -16,6 +16,7 @@ package javaforce;
 import java.net.*;
 import java.nio.*;
 import java.util.*;
+import java.util.zip.*;
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
@@ -553,7 +554,7 @@ public class STUN {
 
   //see http://tools.ietf.org/html/rfc5389#section-15.5
   public static int calcFingerprint(byte data[], int length) {
-    java.util.zip.CRC32 crc = new java.util.zip.CRC32();
+    CRC32 crc = new CRC32();
     crc.update(data, 0, length);
     return ((int)crc.getValue()) ^ 0x5354554e;
   }

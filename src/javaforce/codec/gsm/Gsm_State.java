@@ -108,8 +108,7 @@ public class Gsm_State {
   }
 
   public String toString() {
-    String temp = new String("");
-    return (new String("").valueOf(nrp));
+    return String.valueOf(nrp);
   }
 
   public void setDp0(short[] lcl_arg0) {

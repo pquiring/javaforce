@@ -76,7 +76,7 @@ public class g711u implements Coder {
     short sample;
     RTPChannel rtpChannel = rtp.getDefaultChannel();
 
-    rtpChannel.buildHeader(encoded, 0, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
+    RTPChannel.buildHeader(encoded, 0, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
 
     for (int i = 0; i < 160; i++) {
       /* Get the sample into sign-magnitude. */

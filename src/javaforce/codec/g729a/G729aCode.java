@@ -184,7 +184,7 @@ final class G729aCode implements Constants {
   }
 
   public final String toString() {
-    StringBuffer stringbuffer = new StringBuffer();
+    StringBuilder stringbuffer = new StringBuilder();
     stringbuffer.append("L0=");
     stringbuffer.append((short) ((data[0] & 0x80) >>> 7));
     stringbuffer.append("\n");

@@ -12,10 +12,10 @@ import java.util.*;
 
 import javaforce.*;
 
-public class RTPVP8 {
+public class RTPVP8 extends RTPCodec {
 
   public RTPVP8() {
-    ssrc = new Random().nextInt();
+    ssrc = random.nextInt();
   }
 
   /** Encodes raw VP8 data into multiple RTP packets. */
@@ -43,10 +43,12 @@ public class RTPVP8 {
     return packets.toArray(new byte[0][0]);
   }
 
+  private Packet packet = new Packet();
+
   /**
    * Returns last full packet.
    */
-  public byte[] decode(byte rtp[]) {
+  public Packet decode(byte rtp[], int offset, int length) {
     if (rtp.length < 12 + 2) return null;  //bad packet
     int vp8Length = rtp.length - 12;
     int payloadOffset = 12;
@@ -88,10 +90,10 @@ public class RTPVP8 {
     }
     lastseqnum = thisseqnum;
     if ((rtp[1] & 0x80) == 0x80) {  //check RTP.M flag
-      byte full[] = partial;
+      packet.data = partial;
       partial = null;
       lastseqnum = -1;
-      return full;
+      return packet;
     }
     return null;
   }

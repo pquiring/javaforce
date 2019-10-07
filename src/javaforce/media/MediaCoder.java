@@ -122,7 +122,7 @@ public class MediaCoder {
       JFAWT.showError("Notice", "This application requires the codecpack which was not detected.\n"
         + "Please visit http://pquiring.github.io/javaforce/codecpack.html for more info.\n"
         + "Press OK to visit this page now");
-      JF.openURL("http://pquiring.github.io/javaforce/codecpack.html");
+      JFAWT.openURL("http://pquiring.github.io/javaforce/codecpack.html");
       return false;
     }
     if (!JFAWT.showConfirm("Notice", "This application requires the codecpack which was not detected.\n"
@@ -130,7 +130,7 @@ public class MediaCoder {
       + "Press OK to download and install now.\n"
       + "Press CANCEL to visit website now.\n"))
     {
-      JF.openURL("http://pquiring.github.io/javaforce/codecpack.html");
+      JFAWT.openURL("http://pquiring.github.io/javaforce/codecpack.html");
       return false;
     }
     JFTask task = getDownloadTask();

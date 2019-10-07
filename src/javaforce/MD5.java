@@ -62,7 +62,7 @@ public class MD5 {
   private final int S42 = 10;
   private final int S43 = 15;
   private final int S44 = 21;
-  private final byte PADDING[] = {
+  private final byte[] PADDING = new byte[] {
     (byte) 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0

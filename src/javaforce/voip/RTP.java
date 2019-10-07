@@ -20,7 +20,7 @@ public class RTP implements STUN.Listener {
   protected RTPInterface iface;
   private int mtu = 1500;  //max size of packet
   protected boolean rawMode;
-  public Vector<RTPChannel> channels = new Vector<RTPChannel>();
+  public ArrayList<RTPChannel> channels = new ArrayList<RTPChannel>();
   public static long now = 0;  //this is copied into each RTPChannel as it receives packets
   private static boolean hasBouncyCastle;
 
@@ -338,7 +338,7 @@ public class RTP implements STUN.Listener {
           JFLog.log("RTP:Couldn't create SRTPChannel");
           return null;
         }
-        channel = new SRTPChannel(this, ssrc, stream);
+//        channel = new SRTPChannel(this, ssrc, stream);  //TODO : temp fix for jfCompiler
         break;
       case UNKNOWN:
         JFLog.log("RTP:Can not create unknown profile");

@@ -12,12 +12,12 @@ import java.util.*;
 
 import javaforce.*;
 
-public class RTPH264 {
+public class RTPH264 extends RTPCodec {
 
   public static int decodeSize = 4 * 1024 * 1024;
 
   public RTPH264() {
-    ssrc = new Random().nextInt();
+    ssrc = random.nextInt();
     packet = new Packet();
     packet.data = new byte[decodeSize];
   }

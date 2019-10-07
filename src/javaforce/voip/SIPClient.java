@@ -24,7 +24,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   private int localport, rport = -1;
   private static boolean use_received = true;
   private static boolean use_rport = true;
-  private Hashtable<String, CallDetails> cdlist;
+  private HashMap<String, CallDetails> cdlist;
   private boolean registered;
   private static NAT nat = NAT.None;
   private static boolean useNATOnPrivateNetwork = false;  //do not use NATing techniques on private network servers
@@ -79,7 +79,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     this.remoteport = remoteport;
     this.remotehost = remotehost;
     this.remoteip = resolve(remotehost);
-    cdlist = new Hashtable<String, CallDetails>();
+    cdlist = new HashMap<String, CallDetails>();
     try {
       this.remoteaddr = InetAddress.getByName(remoteip);
       if (nat == NAT.STUN || nat == NAT.ICE) {

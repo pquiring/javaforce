@@ -12,14 +12,14 @@ public class SIPServer extends SIP implements SIPInterface {
 
   private int localport;
   private String localhost;
-  private Hashtable<String, CallDetailsServer> cdlist;
+  private HashMap<String, CallDetailsServer> cdlist;
   private SIPServerInterface iface;
   private boolean use_qop = false;
 
   public boolean init(int localport, SIPServerInterface iface, TransportType type) {
     this.iface = iface;
     this.localport = localport;
-    cdlist = new Hashtable<String, CallDetailsServer>();
+    cdlist = new HashMap<String, CallDetailsServer>();
     try {
       JFLog.log("Starting SIP Server on port " + localport);
       super.init(localhost, localport, this, true, type);
@@ -61,7 +61,7 @@ public class SIPServer extends SIP implements SIPInterface {
   public boolean issue(CallDetailsServer cd, String header, boolean sdp, boolean src) {
     CallDetails.SideDetails cdsd = (src ? cd.pbxsrc : cd.pbxdst);
     JFLog.log("callid:" + cd.callid + "\r\nissue command : " + cd.cmd + " from : " + cd.user + " to : " + cdsd.host + ":" + cdsd.port);
-    StringBuffer req = new StringBuffer();
+    StringBuilder req = new StringBuilder();
     req.append(cd.cmd + " " + cd.uri + " SIP/2.0\r\n");
     req.append("Via: SIP/2.0/UDP " + cd.localhost + ":" + localport + ";branch=" + cdsd.branch + "\r\n");
     req.append("Max-Forwards: 70\r\n");
@@ -96,7 +96,7 @@ public class SIPServer extends SIP implements SIPInterface {
   public boolean reply(CallDetailsServer cd, int code, String msg, String header, boolean sdp, boolean src) {
     CallDetails.SideDetails cdsd = (src ? cd.pbxsrc : cd.pbxdst);
     JFLog.log("callid:" + cd.callid + "\r\nissue reply : " + code + " to : " + cdsd.host + ":" + cdsd.port);
-    StringBuffer req = new StringBuffer();
+    StringBuilder req = new StringBuilder();
     req.append("SIP/2.0 " + code + " " + msg + "\r\n");
     if (cdsd.vialist != null) {
       for (int a = 0; a < cdsd.vialist.length; a++) {
@@ -521,7 +521,7 @@ public class SIPServer extends SIP implements SIPInterface {
     }
   }
 
-  public Enumeration getCalls() {
-    return cdlist.elements();
+  public Set getCalls() {
+    return cdlist.keySet();
   }
 }

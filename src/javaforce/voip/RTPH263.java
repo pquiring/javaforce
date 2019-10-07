@@ -21,10 +21,10 @@ import java.util.*;
 
 import javaforce.*;
 
-public class RTPH263 {
+public class RTPH263 extends RTPCodec {
 
   public RTPH263() {
-    ssrc = new Random().nextInt();
+    ssrc = random.nextInt();
   }
 
   private int find_best_length(byte data[], int offset, int length) {
@@ -44,7 +44,7 @@ public class RTPH263 {
   /**
    * Returns last full packet.
    */
-  public byte[] decode(byte rtp[]) {
+  public Packet decode(byte rtp[], int offset, int length) {
     return null;  //TODO
   }
 

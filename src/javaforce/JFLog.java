@@ -161,7 +161,7 @@ public class JFLog {
   }
 
   public static boolean log(int id, Throwable t) {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append(t.toString());
     buf.append("\r\n");
     StackTraceElement ste[] = t.getStackTrace();

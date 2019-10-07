@@ -80,7 +80,7 @@ public class RTPChannel {
       return;
     }
     try {
-      if (rtp.useTURN) {
+      if (RTP.useTURN) {
         rtp.stun1.sendData(turn1ch, data, off, len);
       } else {
         rtp.sock1.send(new DatagramPacket(data, off, len, InetAddress.getByName(stream.getIP()), stream.getPort()));
@@ -101,7 +101,7 @@ public class RTPChannel {
       return;  //not ready yet (NATing)
     }
     try {
-      if (rtp.useTURN) {
+      if (RTP.useTURN) {
         rtp.stun2.sendData(turn2ch, data, off, len);
       } else {
         rtp.sock2.send(new DatagramPacket(data, off, len, InetAddress.getByName(stream.getIP()), stream.getPort() + 1));
@@ -198,7 +198,7 @@ public class RTPChannel {
   }
 
   public String getremoteip() {
-    if (rtp.useTURN) {
+    if (RTP.useTURN) {
       return rtp.stun1.getIP();
     } else {
       return stream.getIP();
@@ -306,7 +306,7 @@ public class RTPChannel {
       JFLog.log("RTP:Error:No codecs provided");
     }
 
-    if (rtp.useTURN) {
+    if (RTP.useTURN) {
       try {
         synchronized (rtp.bindLock) {
           rtp.bindingChannel = this;
@@ -348,7 +348,7 @@ public class RTPChannel {
       }
       dtmf = new DTMF(coder.getSampleRate());
     }
-    if (rtp.useTURN) {
+    if (RTP.useTURN) {
       synchronized (rtp.bindLock) {
         rtp.bindingChannel = this;
         rtp.stun1.requestBind(turn1ch, stream.getIP(), stream.getPort());
@@ -468,7 +468,7 @@ public class RTPChannel {
 
   protected void keepalive(long now) {
     //do refreshes a little sooner (75 seconds) (in case nonce changes)
-    if (rtp.useTURN && (now + 75 * 1000) > turnBindExpires) {
+    if (RTP.useTURN && (now + 75 * 1000) > turnBindExpires) {
       //request another 10 mins (actually just 5???)
       synchronized (rtp.bindLock) {
         rtp.bindingChannel = this;
