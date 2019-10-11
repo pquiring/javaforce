@@ -34,7 +34,7 @@ public class Menu extends MenuItem {
     }
   }
   public String html() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(super.html());
     sb.append(popupMenu.html());
     return sb.toString();

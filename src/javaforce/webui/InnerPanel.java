@@ -12,7 +12,7 @@ public class InnerPanel extends Container {
     addClass("innerpanel");
   }
   public String html() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("<fieldset" + getAttrs() + "'>");
     if (header != null && header.length() > 0) {
       sb.append("<legend>" + header + "</legend>");

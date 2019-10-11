@@ -105,7 +105,7 @@ public abstract class Container extends Component {
     return components.size();
   }
   public String html() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("<div" + getAttrs() + ">");
     int cnt = count();
     for(int a=0;a<cnt;a++) {

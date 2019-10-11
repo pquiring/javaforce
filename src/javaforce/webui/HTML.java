@@ -22,7 +22,7 @@ public class HTML extends Container {
   }
 
   public String html() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("<" + tag + getAttrs() + ">");
     int cnt = count();
     if (cnt == 0) {

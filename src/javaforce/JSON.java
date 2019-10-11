@@ -202,6 +202,7 @@ public class JSON {
     }
     return str;
   }
+/* //remove JSON to XML support for now
   public static XML toXML(Element e) {
     XML xml = new XML();
     xml.root.setName(e.key);
@@ -216,4 +217,5 @@ public class JSON {
       addXML(c, xml, child);
     }
   }
+*/
 }

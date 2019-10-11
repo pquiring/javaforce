@@ -25,7 +25,7 @@ public class PopupPanel extends Panel {
     modal = state;
   }
   public String html() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     if (modal) {
       sb.append(block.html());
     }

@@ -27,7 +27,7 @@ public class Table extends Container {
       //setPosition(x * width, y * height);
       setStyle("left", Integer.toString(x * cellWidth));
       setStyle("top", Integer.toString(y * cellHeight));
-      StringBuffer sb = new StringBuffer();
+      StringBuilder sb = new StringBuilder();
       sb.append("<div" + getAttrs() + ">");
       sb.append(get(0).html());
       sb.append("</div>");
@@ -47,7 +47,7 @@ public class Table extends Container {
     }
   }
   public String html() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     //using an actualy <table> proved to be too difficult once spans where implemented
     sb.append("<div" + getAttrs() + ">");
     Component cells[] = getAll();

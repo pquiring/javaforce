@@ -20,14 +20,14 @@ public class Tree extends ScrollPanel implements Click {
   }
   private TreeModel model;
   public String html() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("<div" + getAttrs() + "'>");
     sb.append(innerhtml());
     sb.append("</div>");
     return sb.toString();
   }
   public String innerhtml() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     int cnt = count();
     for(int a=0;a<cnt;a++) {
       sb.append(get(a).html());

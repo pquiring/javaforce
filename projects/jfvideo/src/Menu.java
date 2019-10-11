@@ -106,7 +106,7 @@ public class Menu {
     item = new JMenuItem("Content");
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        JF.openURL("http://jfvideo.sourceforge.net/help.php");
+        JFAWT.openURL("http://jfvideo.sourceforge.net/help.php");
       }
     });
     menu.add(item);

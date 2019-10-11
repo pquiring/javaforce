@@ -21,7 +21,7 @@ public class Row extends Container {
     comp.addClass("row-item");
   }
   public String html() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("<div" + getAttrs() + ">");
     int cnt = count();
     for(int a=0;a<cnt;a++) {

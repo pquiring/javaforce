@@ -208,7 +208,7 @@ public abstract class Component {
     }
   }
   public String getEvents() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     int cnt = events.size();
     for(int a=0;a<cnt;a++) {
       sb.append(' ');
@@ -287,7 +287,7 @@ public abstract class Component {
   }
   /** Returns all attributes defined for a component (id, attrs, class, styles) */
   public String getAttrs() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append(" id='" + id + "'");
     if (attrs.size() > 0) {
       int size = attrs.size();

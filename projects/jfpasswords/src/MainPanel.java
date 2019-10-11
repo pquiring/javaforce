@@ -1214,7 +1214,7 @@ public class MainPanel extends javax.swing.JPanel {
     if (!url.startsWith("http:") && !url.startsWith("https:")) {
       url = "http://" + url;
     }
-    JF.openURL(url);
+    JFAWT.openURL(url);
   }
 
   public void showHelp() {

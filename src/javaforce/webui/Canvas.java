@@ -7,7 +7,7 @@ package javaforce.webui;
 
 public class Canvas extends Container {
   public String html() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("<canvas" + getAttrs() + ">");
     int cnt = count();
     for(int a=0;a<cnt;a++) {

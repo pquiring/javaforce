@@ -129,8 +129,8 @@ public class WebUIClient {
   }
   public synchronized void sendEvent(String id, String event, String args[]) {
     if (!isReady) return;
-    StringBuffer sb = new StringBuffer();
-    StringBuffer log = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
+    StringBuilder log = new StringBuilder();
     String str;
     str = "{\"event\":\"" + event + "\"";
     sb.append(str);

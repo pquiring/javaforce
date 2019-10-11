@@ -44,29 +44,29 @@ public abstract class Gsm_Def {
    */
  /* i       1      2      3        4      5      6        7       8 */
   public static final short gsm_A[]
-          = {
+          = new short[] {
             20480, 20480, 20480, 20480, 13964, 15360, 8534, 9036
           };
 
   public static final short gsm_B[]
-          = {
+          = new short[] {
             0, 0, 2048, -2560, 94, -1792, -341, -1144
           };
 
   public static final short gsm_MIC[]
-          = {
+          = new short[] {
             -32, -32, -16, -16, -8, -8, -4, -4
           };
 
   public static final short gsm_MAC[]
-          = {
+          = new short[] {
             31, 31, 15, 15, 7, 7, 3, 3
           };
 
   /*  Table 4.2  Tabulation  of 1/A[1..8]
    */
   public static final short gsm_INVA[]
-          = {
+          = new short[] {
             13107, 13107, 13107, 13107, 19223, 17476, 31454, 29708
           };
 
@@ -74,7 +74,7 @@ public abstract class Gsm_Def {
    */
  /*  bc   0         1         2          3      */
   public static final short gsm_DLB[]
-          = {
+          = new short[] {
             6554, 16384, 26214, 32767
           };
 
@@ -83,7 +83,7 @@ public abstract class Gsm_Def {
    */
  /* bc    0          1        2          3      */
   public static final short gsm_QLB[]
-          = {
+          = new short[] {
             3277, 11469, 21299, 32767
           };
 
@@ -92,7 +92,7 @@ public abstract class Gsm_Def {
    */
  /* i      0      1   2    3   4      5      6     7   8   9    10  */
   public static final short gsm_H[]
-          = {
+          = new short[] {
             -134, -374, 0, 2054, 5741, 8192, 5741, 2054, 0, -374, -134
           };
 
@@ -101,7 +101,7 @@ public abstract class Gsm_Def {
    */
  /* i      0      1      2      3      4      5     6        7  */
   public static final short gsm_NRFAC[]
-          = {
+          = new short[] {
             29128, 26215, 23832, 21846, 20165, 18725, 17476, 16384
           };
 
@@ -110,7 +110,7 @@ public abstract class Gsm_Def {
    */
  /* i      0      1       2      3      4      5      6      7   */
   public static final short gsm_FAC[]
-          = {
+          = new short[] {
             18431, 20479, 22527, 24575, 26623, 28671, 30719, 32767
           };
 }

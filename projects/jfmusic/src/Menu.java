@@ -139,7 +139,7 @@ public class Menu {
     item.setMnemonic('c');
     item.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        JF.openURL("http://jfmusic.sourceforge.net/help.php");
+        JFAWT.openURL("http://jfmusic.sourceforge.net/help.php");
       }
     });
     menu.add(item);

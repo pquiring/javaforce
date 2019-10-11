@@ -22,10 +22,10 @@ public final class GSMDecoder {
 
   private static final byte GSM_MAGIC = 0x0d;
 
-  private static final int[] FAC = {18431, 20479, 22527, 24575,
+  private static final int[] FAC = new int[] {18431, 20479, 22527, 24575,
     26623, 28671, 30719, 32767};
 
-  private static final int[] QLB = {3277, 11469, 21299, 32767};
+  private static final int[] QLB = new int[] {3277, 11469, 21299, 32767};
 
   // TODO: can be replaced by Short.MIN_VALUE and Short.MAX_VALUE ?
   private static final int MIN_WORD = -32767 - 1;

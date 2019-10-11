@@ -18,7 +18,7 @@ public class ComboBox extends Component {
   private int index = -1;
 
   public String html() {
-    StringBuffer sb = new StringBuffer();
+    StringBuilder sb = new StringBuilder();
     sb.append("<select" + getAttrs() + ">");
     int cnt = values.size();
     for(int a=0;a<cnt;a++) {
