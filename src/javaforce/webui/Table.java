@@ -16,17 +16,19 @@ public class Table extends Container {
     setClass("table");
     setSize();
   }
-  private class Cell extends Container {
+  private static class Cell extends Container {
+    private Table table;
     public int x,y,spanx,spany;
-    public Cell(Component comp) {
+    public Cell(Table table, Component comp) {
+      this.table = table;
       setClass("cell");
       add(comp);
     }
     public String html() {
-      setSize(spanx * cellWidth, spany * cellHeight);
+      setSize(spanx * table.cellWidth, spany * table.cellHeight);
       //setPosition(x * width, y * height);
-      setStyle("left", Integer.toString(x * cellWidth));
-      setStyle("top", Integer.toString(y * cellHeight));
+      setStyle("left", Integer.toString(x * table.cellWidth));
+      setStyle("top", Integer.toString(y * table.cellHeight));
       StringBuilder sb = new StringBuilder();
       sb.append("<div" + getAttrs() + ">");
       sb.append(get(0).html());
@@ -63,7 +65,7 @@ public class Table extends Container {
   }
   public void add(Component comp, int x, int y, int spanx, int spany) {
     String html;
-    Cell cell = new Cell(comp);
+    Cell cell = new Cell(this, comp);
     cell.x = x;
     cell.y = y;
     cell.spanx = spanx;

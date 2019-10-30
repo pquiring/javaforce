@@ -853,7 +853,7 @@ public class JF {
   //copies arrays excluding one element (something Arrays is missing)
 
   public static Object[] copyOfExcluding(Object[] array, int idx) {
-    Class cls = array.getClass().getComponentType();
+    Class<?> cls = array.getClass().getComponentType();
     Object newArray[] = (Object[]) Array.newInstance(cls, array.length - 1);
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx + 1, newArray, idx, array.length - idx - 1);
@@ -959,19 +959,6 @@ public class JF {
       sb.append(strings[a]);
     }
     return sb.toString();
-  }
-
-  /** Creates a field list used for JNA Structures. */
-  public static java.util.List makeFieldList(Class cls) {
-    //This "assumes" compiler places fields in order as defined (some don't)
-    ArrayList<String> list = new ArrayList<String>();
-    Field fields[] = cls.getFields();
-    for(int a=0;a<fields.length;a++) {
-      String name = fields[a].getName();
-      if (name.startsWith("ALIGN_")) continue;  //field of Structure
-      list.add(name);
-    }
-    return list;
   }
 
   /** Expand arguments.

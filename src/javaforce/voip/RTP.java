@@ -239,9 +239,9 @@ public class RTP implements STUN.Listener {
     }
     active = true;
     if (!useTURN) {
-      worker1 = new Worker(sock1, false);
+      worker1 = new Worker(this, sock1, false);
       worker1.start();
-      worker2 = new Worker(sock2, true);
+      worker2 = new Worker(this, sock2, true);
       worker2.start();
     }
     return true;
@@ -394,21 +394,23 @@ public class RTP implements STUN.Listener {
   /**
    * Reads inbound packets for RTP session.
    */
-  private class Worker extends Thread {
+  private static class Worker extends Thread {
 
+    private RTP rtp;
     private DatagramSocket sock;
     private boolean rtcp;
 
-    public Worker(DatagramSocket sock, boolean rtcp) {
+    public Worker(RTP rtp, DatagramSocket sock, boolean rtcp) {
+      this.rtp = rtp;
       this.sock = sock;
       this.rtcp = rtcp;
     }
 
     public void run() {
-      byte data[] = new byte[mtu];
-      while (active) {
+      byte data[] = new byte[rtp.mtu];
+      while (rtp.active) {
         try {
-          DatagramPacket pack = new DatagramPacket(data, mtu);
+          DatagramPacket pack = new DatagramPacket(data, rtp.mtu);
           sock.receive(pack);
           int len = pack.getLength();
           if (len < 12) {
@@ -418,14 +420,14 @@ public class RTP implements STUN.Listener {
           int remoteport = pack.getPort();
 //          JFLog.log("RTP:receive:" + remoteip + ":" + remoteport);  //test
           if (rtcp) {
-            RTPChannel channel = findChannel(remoteip, remoteport-1);
+            RTPChannel channel = rtp.findChannel(remoteip, remoteport-1);
             if (channel == null) {
               JFLog.log("RTP:No channel found:" + remoteip + ":" + remoteport);
               continue;
             }
             channel.processRTCP(data, 0, len);
           } else {
-            RTPChannel channel = findChannel(remoteip, remoteport);
+            RTPChannel channel = rtp.findChannel(remoteip, remoteport);
             if (channel == null) {
               JFLog.log("RTP:No channel found:" + remoteip + ":" + remoteport);
               continue;
@@ -437,13 +439,13 @@ public class RTP implements STUN.Listener {
             channel.processRTP(data, 0, len);
           }
         } catch (SocketException e) {
-          if (active) {
+          if (rtp.active) {
             JFLog.log(e);
           }
-          active = false;
+          rtp.active = false;
         } catch (Exception e) {
           JFLog.log(e);
-          active = false;
+          rtp.active = false;
         }
       }
     }

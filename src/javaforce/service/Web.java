@@ -29,7 +29,7 @@ public class Web {
       } else {
         ss = new ServerSocket(port);
       }
-      new Server().start();
+      new Server(this).start();
     } catch (Exception e) {
       JFLog.log(e);
       return false;
@@ -46,22 +46,31 @@ public class Web {
     } catch (Exception e) {
     }
   }
-  private class Server extends Thread {
+  private static class Server extends Thread {
+    private Web web;
+    public Server(Web web) {
+      this.web = web;
+    }
     public void run() {
       Socket s;
-      while (active) {
+      while (web.active) {
         try {
-          s = ss.accept();
-          new Connection(s).start();
+          s = web.ss.accept();
+          new Connection(web, s).start();
         } catch (Exception e) {
           JFLog.log(e);
         }
       }
     }
   }
-  private class Connection extends Thread {
+  private static class Connection extends Thread {
     private Socket s;
     private InputStream is;
+    private Web web;
+    public Connection(Web web, Socket s) {
+      this.web = web;
+      this.s = s;
+    }
     public void run() {
       //read request and pass to WebHandler
       try {
@@ -90,7 +99,7 @@ public class Web {
               socket.is = is;
               socket.os = res.os;
               socket.url = req.fields0[1];
-              if (wsapi != null && wsapi.doWebSocketConnect(socket)) {
+              if (web.wsapi != null && web.wsapi.doWebSocketConnect(socket)) {
                 sendWebSocketAccepted(req, res);
                 processWebSocket(socket);
               } else {
@@ -100,11 +109,11 @@ public class Web {
             }
             else if (req.fields0[0].equals("GET")) {
               req.method = "GET";
-              api.doGet(req, res);
+              web.api.doGet(req, res);
             }
             else if (req.fields0[0].equals("POST")) {
               req.method = "POST";
-              api.doPost(req, res);
+              web.api.doPost(req, res);
             }
             else {
               res.setStatus(501, "Error - Unsupported Method");
@@ -119,9 +128,6 @@ public class Web {
       } catch (Exception e) {
         e.printStackTrace();
       }
-    }
-    public Connection(Socket s) {
-      this.s = s;
     }
     private boolean isWebSocketRequest(WebRequest req) {
       boolean upgrade = false;
@@ -241,12 +247,12 @@ public class Web {
             continue;
           }
           if (opcode > 0x8) continue;  //other control message
-          wsapi.doWebSocketMessage(socket, data, opcode);
+          web.wsapi.doWebSocketMessage(socket, data, opcode);
         }
       } catch (Exception e) {
         JFLog.log(e);
       }
-      wsapi.doWebSocketClosed(socket);
+      web.wsapi.doWebSocketClosed(socket);
     }
   }
   /** Returns a chunk header for a block of data for transmission in Transfer-Encoding: chunked

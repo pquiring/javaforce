@@ -98,7 +98,7 @@ public class STUN {
       } else {
         ds = new DatagramSocket(localport);
       }
-      new Worker().start();
+      new Worker(this).start();
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -559,7 +559,11 @@ public class STUN {
     return ((int)crc.getValue()) ^ 0x5354554e;
   }
 
-  private class Worker extends Thread {
+  private static class Worker extends Thread {
+    private STUN stun;
+    public Worker(STUN stun) {
+      this.stun = stun;
+    }
     public void run() {
       DatagramPacket dp;
       boolean resendAuth;
@@ -568,11 +572,11 @@ public class STUN {
       byte response[] = new byte[1500];
       ByteBuffer bb = ByteBuffer.wrap(response);
       bb.order(ByteOrder.BIG_ENDIAN);
-      while (active) {
+      while (stun.active) {
         try {
           resendAuth = false;
           dp = new DatagramPacket(response, 1500);
-          ds.receive(dp);
+          stun.ds.receive(dp);
           //TODO : validate packet source
           int packetLength = dp.getLength();
           //decode response
@@ -580,12 +584,12 @@ public class STUN {
           short code = bb.getShort(0);
           if (code >= 0x4000) {
             //it's TURN data received back
-            listener.turnData(STUN.this, response, 4, bb.getShort(2), code);
+            stun.listener.turnData(stun, response, 4, bb.getShort(2), code);
             continue;
           }
 //          JFLog.log("STUN:code=0x" + Integer.toString(code, 16));
           if (code == BIND_RESPONSE) {
-            listener.turnBind(STUN.this);
+            stun.listener.turnBind(stun);
           }
           if (code == DATA_INDICATION) {
             continue;
@@ -600,7 +604,7 @@ public class STUN {
           offset += 8;
           long _id2 = bb.getLong(offset);
           offset += 8;
-          if (id1 != _id1 || id2 != _id2) {
+          if (stun.id1 != _id1 || stun.id2 != _id2) {
             throw new Exception("STUN:bad packet:id mismatch");
           }
           while (offset < packetLength) {
@@ -617,7 +621,7 @@ public class STUN {
                   ip[a] = ((int)response[offset + 4 + a]) & 0xff;
                 }
                 if (code == BINDING_RESPONSE) {
-                  listener.stunPublicIP(STUN.this, String.format("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]), port);
+                  stun.listener.stunPublicIP(stun, String.format("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]), port);
                 }
                 break;
               case XOR_MAPPED_ADDRESS:
@@ -628,23 +632,23 @@ public class STUN {
                   ip[a] = (response[offset + 4 + a] ^ response[4 + a]) & 0xff;
                 }
                 if (code == BINDING_RESPONSE) {
-                  listener.stunPublicIP(STUN.this, String.format("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]), port);
+                  stun.listener.stunPublicIP(stun, String.format("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]), port);
                 }
                 break;
               case REALM:
-                realm = new String(response, offset, length);
-                JFLog.log("STUN:realm=" + realm);
+                stun.realm = new String(response, offset, length);
+                JFLog.log("STUN:realm=" + stun.realm);
                 break;
               case NONCE:
-                nonce = new String(response, offset, length);
-                JFLog.log("STUN:nonce=" + nonce);
+                stun.nonce = new String(response, offset, length);
+                JFLog.log("STUN:nonce=" + stun.nonce);
                 break;
               case ERROR_CODE:
                 errcode = bb.getShort(offset + 2);
                 switch (errcode) {
                   case 0x401:
-                    if (sentAuth) {
-                      listener.turnFailed(STUN.this);
+                    if (stun.sentAuth) {
+                      stun.listener.turnFailed(stun);
                       JFLog.log("STUN:Error:" + Integer.toString(errcode, 16) + " (Bad Auth)");
                     } else {
                       resendAuth = true;
@@ -656,24 +660,24 @@ public class STUN {
                 }
                 break;
               case XOR_RELAY_ADDRESS:
-                relayPort = (bb.getShort(offset + 2) ^ bb.getShort(4)) & 0xffff;
+                stun.relayPort = (bb.getShort(offset + 2) ^ bb.getShort(4)) & 0xffff;
                 ip = new int[4];
                 for(int a=0;a<4;a++) {
                   ip[a] = (response[offset + 4 + a] ^ response[4 + a]) & 0xff;
                 }
-                relayIP = String.format("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
-                if (relayIP.equals("0.0.0.0")) {
+                stun.relayIP = String.format("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+                if (stun.relayIP.equals("0.0.0.0")) {
                   //use turn host address
-                  byte ip4[] = addr.getAddress();
-                  relayIP = String.format("%d.%d.%d.%d", ip4[0], ip4[1], ip4[2], ip4[3]);;
+                  byte ip4[] = stun.addr.getAddress();
+                  stun.relayIP = String.format("%d.%d.%d.%d", ip4[0], ip4[1], ip4[2], ip4[3]);;
                 }
                 break;
               case RESERVATION_TOKEN:
-                token = new byte[length];
-                System.arraycopy(response, offset, token, 0, length);
+                stun.token = new byte[length];
+                System.arraycopy(response, offset, stun.token, 0, length);
                 break;
               case LIFETIME:
-                lifetime = bb.getInt(offset);
+                stun.lifetime = bb.getInt(offset);
                 break;
             }
             offset += length;
@@ -682,21 +686,21 @@ public class STUN {
             }
           }
           if (resendAuth) {
-            if (lastRequest == ALLOCATE_REQUEST) {
+            if (stun.lastRequest == STUN.ALLOCATE_REQUEST) {
               //resend alloc request with auth
-              sentAuth = true;
-              requestAlloc(evenPort, token);
+              stun.sentAuth = true;
+              stun.requestAlloc(stun.evenPort, stun.token);
             }
           }
-          if (code == ALLOCATE_RESPONSE) {
-            listener.turnAlloc(STUN.this, relayIP, relayPort, token, lifetime);
-            token = null;
+          if (code == STUN.ALLOCATE_RESPONSE) {
+            stun.listener.turnAlloc(stun, stun.relayIP, stun.relayPort, stun.token, stun.lifetime);
+            stun.token = null;
           }
           if (code == REFRESH_RESPONSE) {
-            listener.turnRefresh(STUN.this, lifetime);
+            stun.listener.turnRefresh(stun, stun.lifetime);
           }
         } catch (Exception e) {
-          if (active) JFLog.log(e);
+          if (stun.active) JFLog.log(e);
         }
       }
     }
