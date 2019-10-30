@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{741FCC9E-8DEC-415E-A05E-1115FEA9FA31}" Version="0.24" Language="1033" Name="jfDataLogger" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{741FCC9E-8DEC-415E-A05E-1115FEA9FA31}" Version="0.25" Language="1033" Name="jfDataLogger" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
