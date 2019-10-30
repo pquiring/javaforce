@@ -14,7 +14,7 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.24";
+  public static String version = "0.25";
 
   public static int delays[] = new int[] {
     5, 10, 25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
@@ -850,7 +850,11 @@ public class App extends javax.swing.JFrame {
         String value = (String)tableModel.getValueAt(x, tagIdx+1);
         sv = getValue(tag, value);
         int y = 5 + 500 - (sv * 5);
+        if (y < 0) y = 0;
+        if (y >= 510) y = 510;
         int ly = 5 + 500 - (lsv * 5);
+        if (ly < 0) ly = 0;
+        if (ly >= 510) ly = 510;
         if (tag.size == TagType.bit) {
           if (!value.equals("0")) {
             logImage.putPixel(x, y, tag.color);
@@ -1323,7 +1327,11 @@ public class App extends javax.swing.JFrame {
         Tag tag = tags.get(a);
         getValues(tag);
         int y = 5 + 500 - (sv * 5);
+        if (y < 0) y = 0;
+        if (y >= 510) y = 510;
         int ly = 5 + 500 - (lsv * 5);
+        if (ly < 0) ly = 0;
+        if (ly >= 510) ly = 510;
         if (tag.size == TagType.bit) {
           if (!tag.getValue().equals("0")) {
             logImage.putPixel(x2, y, tag.color);
