@@ -851,10 +851,10 @@ public class App extends javax.swing.JFrame {
         sv = getValue(tag, value);
         int y = 5 + 500 - (sv * 5);
         if (y < 0) y = 0;
-        if (y >= 510) y = 510;
+        if (y >= 510) y = 510-1;
         int ly = 5 + 500 - (lsv * 5);
         if (ly < 0) ly = 0;
-        if (ly >= 510) ly = 510;
+        if (ly >= 510) ly = 510-1;
         if (tag.size == TagType.bit) {
           if (!value.equals("0")) {
             logImage.putPixel(x, y, tag.color);
@@ -1328,10 +1328,10 @@ public class App extends javax.swing.JFrame {
         getValues(tag);
         int y = 5 + 500 - (sv * 5);
         if (y < 0) y = 0;
-        if (y >= 510) y = 510;
+        if (y >= 510) y = 510-1;
         int ly = 5 + 500 - (lsv * 5);
         if (ly < 0) ly = 0;
-        if (ly >= 510) ly = 510;
+        if (ly >= 510) ly = 510-1;
         if (tag.size == TagType.bit) {
           if (!tag.getValue().equals("0")) {
             logImage.putPixel(x2, y, tag.color);
