@@ -338,7 +338,7 @@ public class RTP implements STUN.Listener {
           JFLog.log("RTP:Couldn't create SRTPChannel");
           return null;
         }
-//        channel = new SRTPChannel(this, ssrc, stream);  //TODO : temp fix for jfCompiler
+        channel = new SRTPChannel(this, ssrc, stream);
         break;
       case UNKNOWN:
         JFLog.log("RTP:Can not create unknown profile");
