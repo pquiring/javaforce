@@ -281,28 +281,30 @@ public class Controller {
             }
           } else {
             int left = s7.getLength();
-            int offset = 0;
+            int dst_offset = s7.offset >> 3;
+            int src_offset = 0;
             int copying = 0;
             while (left > 0) {
               if (left > 200) {
                 copying = 200;
-                s7.data = Arrays.copyOfRange(data, offset, offset + 200);
+                s7.data = Arrays.copyOfRange(data, src_offset, src_offset + 200);
                 s7.length = (short)(200 / S7Types.getTypeSize(s7.data_type, (short)1));
-                s7.offset = offset << 3;
+                s7.offset = dst_offset << 3;
                 if (!writePartial(s7)) {
                   return false;
                 }
               } else {
                 copying = left;
-                s7.data = Arrays.copyOfRange(data, offset, offset + left);
+                s7.data = Arrays.copyOfRange(data, src_offset, src_offset + left);
                 s7.length = (short)(left / S7Types.getTypeSize(s7.data_type, (short)1));
-                s7.offset = offset << 3;
+                s7.offset = dst_offset << 3;
                 if (!writePartial(s7)) {
                   return false;
                 }
               }
               left -= copying;
-              offset += copying;
+              dst_offset += copying;
+              src_offset += copying;
             }
           }
           return true;

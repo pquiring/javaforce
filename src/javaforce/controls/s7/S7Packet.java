@@ -106,7 +106,7 @@ public class S7Packet {
     dataoff += tpkt.size();
     cotp.write(data, dataoff);
     dataoff += cotp.size();
-    header.write(data, dataoff, (short)(params.size() - 4 - type.length), (short)(4 + type.length));
+    header.write(data, dataoff, (short)(params.size() - 4 - type.data.length), (short)(4 + type.data.length));
     dataoff += header.size();
     params.write(data, dataoff);
     return data;
@@ -159,7 +159,7 @@ public class S7Packet {
     }
     idx = addr.indexOf(" BYTE ");
     if (idx == -1) {
-      data.length = S7Types.getTypeSize(data.data_type, (short)1);
+      data.length = 1;  //# of elements (not bytes)
     } else {
       data.data_type = S7Types.BYTE;
       data.length = Short.valueOf(addr.substring(idx+6));

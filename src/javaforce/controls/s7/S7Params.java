@@ -118,8 +118,11 @@ public class S7Params {
 
     funcData[13] = 0x00;  //res
     funcData[14] = getTransportType(data_type);  //transport type
-    if (len > 1) len <<= 3;  //length in bits
-    BE.setuint16(funcData, 15, len);
+    if (data_type == S7Types.BIT) {
+      BE.setuint16(funcData, 15, len);  //# of bits
+    } else {
+      BE.setuint16(funcData, 15, data.length << 3);  //# of bits
+    }
     System.arraycopy(data, 0, funcData, 17, data.length);
   }
 
