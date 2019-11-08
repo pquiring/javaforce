@@ -14,7 +14,7 @@ public class Telnet {
 
   public Telnet() {}
 
-//Telnet Commands (Always preceded by IAC)
+  //Telnet Commands (Always preceded by IAC)
   public final static char SE  = 240;  //0xf0 : end of sub parameters
   public final static char NOP = 241;  //0xf1 : nothin
   public final static char DM  = 242;  //0xf2 : data mark (???)
@@ -32,15 +32,22 @@ public class Telnet {
   public final static char DONT = 254; //0xfe : don't (option) Request
   public final static char IAC  = 255; //0xff : start of all above commands (interpret as command)
 
-//Telnet Options
-  public final static char TO_SGO =  3;   //Supress Go Ahead
-  public final static char TO_TM  =  6;   //Timing Mark
-  public final static char TO_TT  = 24;   //Terminal Type (WILL/WONT)
-  public final static char TO_EOR = 25;   //EOR?
+  //Telnet Options see https://www.iana.org/assignments/telnet-options/telnet-options.xhtml
+  public final static char TO_BINARY    =  0;   //binary transmission
+  public final static char TO_ECHO      =  1;   //echo
+  public final static char TO_SGO       =  3;   //Supress Go Ahead
+  public final static char TO_TM        =  6;   //Timing Mark
+  public final static char TO_TT        = 24;   //Terminal Type
+  public final static char TO_EOR       = 25;   //end of record
+  public final static char TO_NWS       = 31;   //neg window size
+  public final static char TO_RFC       = 33;   //remote flow control
 
-  public final static char pre_tt[] = {255, 250, 24, 0};
-    //Terminal Type
-  public final static char post_tt[] = {255 , 240};
+  public final static char TT_REPLY    = 0;     //term type reply
+  public final static char TT_REQUEST  = 1;     //term type request
+
+  public final static char pre_tt[] = {IAC, SB, TO_TT, TT_REPLY};
+  //terminal type (ie:ANSI)
+  public final static char post_tt[] = {IAC, SE};
 
   public boolean decode(char code[], int codelen, Buffer buffer) {
     char res[] = new char[3];
@@ -68,8 +75,8 @@ public class Telnet {
       case SB:
         //decode sub-parameter(s)
         if (!((code[codelen-2] == IAC) && (code[codelen-1] == SE))) return false;
-        //IAC SB TO_TT ... IAC SE
-        if (code[2] == TO_TT) {
+        //IAC SB TO_TT TT_REQUEST ... IAC SE
+        if (code[2] == TO_TT && code[3] == TT_REQUEST) {
           buffer.output(pre_tt);
           buffer.output(buffer.settings.termType.toCharArray());
           buffer.output(post_tt);
@@ -88,4 +95,3 @@ public class Telnet {
     buffer.output(response);
   }
 }
-
