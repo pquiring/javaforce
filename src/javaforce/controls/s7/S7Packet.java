@@ -157,12 +157,25 @@ public class S7Packet {
       byte bit = Byte.valueOf(addr.substring(idx+1, idx2));
       data.offset += bit;
     }
+    data.length = 1;  //# of elements (not bytes)
+    idx = addr.indexOf(" BIT ");
+    if (idx != -1) {
+      data.length = Short.valueOf(addr.substring(idx+5));
+    }
     idx = addr.indexOf(" BYTE ");
-    if (idx == -1) {
-      data.length = 1;  //# of elements (not bytes)
-    } else {
+    if (idx != -1) {
       data.data_type = S7Types.BYTE;
       data.length = Short.valueOf(addr.substring(idx+6));
+    }
+    idx = addr.indexOf(" WORD ");
+    if (idx != -1) {
+      data.data_type = S7Types.WORD;
+      data.length = Short.valueOf(addr.substring(idx+6));
+    }
+    idx = addr.indexOf(" DWORD ");
+    if (idx != -1) {
+      data.data_type = S7Types.DWORD;
+      data.length = Short.valueOf(addr.substring(idx+7));
     }
     return data;
   }
