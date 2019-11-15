@@ -186,33 +186,33 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glBlendFunc
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glBufferData__II_3FI
   (JNIEnv *e, jclass c, jint i1, jint i2, jfloatArray f3, jint i4)
 {
-  float *f3ptr = e->GetFloatArrayElements(f3,NULL);
+  float *f3ptr = (float*)e->GetPrimitiveArrayCritical(f3,NULL);
   (*(void (*)(int,void*,float *,int))funcs[GLBUFFERDATA].func)(i1, (void*)i2, f3ptr, i4);
-  e->ReleaseFloatArrayElements(f3, f3ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(f3, f3ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glBufferData__II_3SI
   (JNIEnv *e, jclass c, jint i1, jint i2, jshortArray s3, jint i4)
 {
-  jshort *s3ptr = e->GetShortArrayElements(s3,NULL);
+  jshort *s3ptr = (jshort*)e->GetPrimitiveArrayCritical(s3,NULL);
   (*(void (*)(int,void*,jshort *,int))funcs[GLBUFFERDATA].func)(i1, (void*)i2, s3ptr, i4);
-  e->ReleaseShortArrayElements(s3, s3ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(s3, s3ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glBufferData__II_3II
   (JNIEnv *e, jclass c, jint i1, jint i2, jintArray i3, jint i4)
 {
-  jint *i3ptr = e->GetIntArrayElements(i3,NULL);
+  jint *i3ptr = (jint*)e->GetPrimitiveArrayCritical(i3,NULL);
   (*(void (*)(int,void*,jint *,int))funcs[GLBUFFERDATA].func)(i1, (void*)i2, i3ptr, i4);
-  e->ReleaseIntArrayElements(i3, i3ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(i3, i3ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glBufferData__II_3BI
   (JNIEnv *e, jclass c, jint i1, jint i2, jbyteArray b3, jint i4)
 {
-  jbyte *b3ptr = e->GetByteArrayElements(b3,NULL);
+  jbyte *b3ptr = (jbyte*)e->GetPrimitiveArrayCritical(b3,NULL);
   (*(void (*)(int,void*,jbyte *,int))funcs[GLBUFFERDATA].func)(i1, (void*)i2, b3ptr, i4);
-  e->ReleaseByteArrayElements(b3, b3ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(b3, b3ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glClear
@@ -260,33 +260,33 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glCullFace
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDeleteBuffers
   (JNIEnv *e, jclass c, jint i1, jintArray i2)
 {
-  jint *i2ptr = e->GetIntArrayElements(i2,NULL);
+  jint *i2ptr = (jint*)e->GetPrimitiveArrayCritical(i2,NULL);
   (*(void (*)(int,jint *))funcs[GLDELETEBUFFERS].func)(i1, i2ptr);
-  e->ReleaseIntArrayElements(i2, i2ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(i2, i2ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDeleteFramebuffers
   (JNIEnv *e, jclass c, jint i1, jintArray i2)
 {
-  jint *i2ptr = e->GetIntArrayElements(i2,NULL);
+  jint *i2ptr = (jint*)e->GetPrimitiveArrayCritical(i2,NULL);
   (*(void (*)(int,jint *))funcs[GLDELETEFRAMEBUFFERS].func)(i1, i2ptr);
-  e->ReleaseIntArrayElements(i2, i2ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(i2, i2ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDeleteRenderbuffers
   (JNIEnv *e, jclass c, jint i1, jintArray i2)
 {
-  jint *i2ptr = e->GetIntArrayElements(i2,NULL);
+  jint *i2ptr = (jint*)e->GetPrimitiveArrayCritical(i2,NULL);
   (*(void (*)(int,jint *))funcs[GLDELETERENDERBUFFERS].func)(i1, i2ptr);
-  e->ReleaseIntArrayElements(i2, i2ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(i2, i2ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDeleteTextures
   (JNIEnv *e, jclass c, jint i1, jintArray i2)
 {
-  jint *i2ptr = e->GetIntArrayElements(i2,NULL);
+  jint *i2ptr = (jint*)e->GetPrimitiveArrayCritical(i2,NULL);
   (*(void (*)(int,jint *))funcs[GLDELETETEXTURES].func)(i1, i2ptr);
-  e->ReleaseIntArrayElements(i2, i2ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(i2, i2ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDrawElements
@@ -401,41 +401,41 @@ JNIEXPORT jstring JNICALL Java_javaforce_gl_GL_glGetString
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glGetIntegerv
   (JNIEnv *e, jclass c, jint i1, jintArray i2)
 {
-  jint *i2ptr = e->GetIntArrayElements(i2,NULL);
+  jint *i2ptr = (jint*)e->GetPrimitiveArrayCritical(i2,NULL);
   (*(void (*)(int,jint *))funcs[GLGETINTEGERV].func)(i1, i2ptr);
-  e->ReleaseIntArrayElements(i2, i2ptr, 0);
+  e->ReleasePrimitiveArrayCritical(i2, i2ptr, 0);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glGenBuffers
   (JNIEnv *e, jclass c, jint i1, jintArray i2)
 {
-  jint *i2ptr = e->GetIntArrayElements(i2,NULL);
+  jint *i2ptr = (jint*)e->GetPrimitiveArrayCritical(i2,NULL);
   (*(void (*)(int,jint *))funcs[GLGENBUFFERS].func)(i1, i2ptr);
-  e->ReleaseIntArrayElements(i2, i2ptr, 0);
+  e->ReleasePrimitiveArrayCritical(i2, i2ptr, 0);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glGenFramebuffers
   (JNIEnv *e, jclass c, jint i1, jintArray i2)
 {
-  jint *i2ptr = e->GetIntArrayElements(i2,NULL);
+  jint *i2ptr = (jint*)e->GetPrimitiveArrayCritical(i2,NULL);
   (*(void (*)(int,jint *))funcs[GLGENFRAMEBUFFERS].func)(i1, i2ptr);
-  e->ReleaseIntArrayElements(i2, i2ptr, 0);
+  e->ReleasePrimitiveArrayCritical(i2, i2ptr, 0);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glGenRenderbuffers
   (JNIEnv *e, jclass c, jint i1, jintArray i2)
 {
-  jint *i2ptr = e->GetIntArrayElements(i2,NULL);
+  jint *i2ptr = (jint*)e->GetPrimitiveArrayCritical(i2,NULL);
   (*(void (*)(int,jint *))funcs[GLGENRENDERBUFFERS].func)(i1, i2ptr);
-  e->ReleaseIntArrayElements(i2, i2ptr, 0);
+  e->ReleasePrimitiveArrayCritical(i2, i2ptr, 0);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glGenTextures
   (JNIEnv *e, jclass c, jint i1, jintArray i2)
 {
-  jint *i2ptr = e->GetIntArrayElements(i2,NULL);
+  jint *i2ptr = (jint*)e->GetPrimitiveArrayCritical(i2,NULL);
   (*(void (*)(int,jint *))funcs[GLGENTEXTURES].func)(i1, i2ptr);
-  e->ReleaseIntArrayElements(i2, i2ptr, 0);
+  e->ReleasePrimitiveArrayCritical(i2, i2ptr, 0);
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_gl_GL_glGetUniformLocation
@@ -462,9 +462,9 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glPixelStorei
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glReadPixels
   (JNIEnv *e, jclass c, jint i1, jint i2, jint i3, jint i4, jint i5, jint i6, jintArray i7)
 {
-  jint *i7ptr = e->GetIntArrayElements(i7,NULL);
+  jint *i7ptr = (jint*)e->GetPrimitiveArrayCritical(i7,NULL);
   (*(void (*)(int,int,int,int,int,int,jint *))funcs[GLREADPIXELS].func)(i1, i2, i3, i4, i5, i6, i7ptr);
-  e->ReleaseIntArrayElements(i7, i7ptr, 0);
+  e->ReleasePrimitiveArrayCritical(i7, i7ptr, 0);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glRenderbufferStorage
@@ -477,7 +477,7 @@ JNIEXPORT jint JNICALL Java_javaforce_gl_GL_glShaderSource
   (JNIEnv *e, jclass c, jint i1, jint i2, jobjectArray s3, jintArray i4)
 {
   jint *i4ptr = NULL;
-  if (i4 != NULL) e->GetIntArrayElements(i4,NULL);
+  if (i4 != NULL) (jint*)e->GetPrimitiveArrayCritical(i4,NULL);
   int s3size = e->GetArrayLength(s3);
   const char **s3ptr = (const char **)malloc(s3size * sizeof(void*));
   for(int a=0;a<s3size;a++) {
@@ -489,7 +489,7 @@ JNIEXPORT jint JNICALL Java_javaforce_gl_GL_glShaderSource
     jobject s3e = e->GetObjectArrayElement(s3, a);
     e->ReleaseStringUTFChars((jstring)s3e, s3ptr[a]);
   }
-  if (i4 != NULL) e->ReleaseIntArrayElements(i4, i4ptr, JNI_ABORT);
+  if (i4 != NULL) e->ReleasePrimitiveArrayCritical(i4, i4ptr, JNI_ABORT);
   free(s3ptr);
   return ret;
 }
@@ -515,17 +515,17 @@ JNIEXPORT jint JNICALL Java_javaforce_gl_GL_glStencilOp
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glTexImage2D
   (JNIEnv *e, jclass c, jint i1, jint i2, jint i3, jint i4, jint i5, jint i6, jint i7, jint i8, jintArray i9)
 {
-  jint *i9ptr = e->GetIntArrayElements(i9,NULL);
+  jint *i9ptr = (jint*)e->GetPrimitiveArrayCritical(i9,NULL);
   (*(void (*)(int,int,int,int,int,int,int,int,jint *))funcs[GLTEXIMAGE2D].func)(i1, i2, i3, i4, i5, i6, i7, i8, i9ptr);
-  e->ReleaseIntArrayElements(i9, i9ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(i9, i9ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glTexSubImage2D
   (JNIEnv *e, jclass c, jint i1, jint i2, jint i3, jint i4, jint i5, jint i6, jint i7, jint i8, jintArray i9)
 {
-  jint *i9ptr = e->GetIntArrayElements(i9,NULL);
+  jint *i9ptr = (jint*)e->GetPrimitiveArrayCritical(i9,NULL);
   (*(void (*)(int,int,int,int,int,int,int,int,jint *))funcs[GLTEXSUBIMAGE2D].func)(i1, i2, i3, i4, i5, i6, i7, i8, i9ptr);
-  e->ReleaseIntArrayElements(i9, i9ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(i9, i9ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glTexParameteri
@@ -543,33 +543,33 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUseProgram
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniformMatrix4fv
   (JNIEnv *e, jclass c, jint i1, jint i2, jint i3, jfloatArray f4)
 {
-  float *f4ptr = e->GetFloatArrayElements(f4,NULL);
+  float *f4ptr = (float*)e->GetPrimitiveArrayCritical(f4,NULL);
   (*(void (*)(int,int,int,float *))funcs[GLUNIFORMMATRIX4FV].func)(i1, i2, i3, f4ptr);
-  e->ReleaseFloatArrayElements(f4, f4ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(f4, f4ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform4fv
   (JNIEnv *e, jclass c, jint i1, jint i2, jfloatArray f3)
 {
-  float *f3ptr = e->GetFloatArrayElements(f3,NULL);
+  float *f3ptr = (float*)e->GetPrimitiveArrayCritical(f3,NULL);
   (*(void (*)(int,int,float *))funcs[GLUNIFORM4FV].func)(i1, i2, f3ptr);
-  e->ReleaseFloatArrayElements(f3, f3ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(f3, f3ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform3fv
   (JNIEnv *e, jclass c, jint i1, jint i2, jfloatArray f3)
 {
-  float *f3ptr = e->GetFloatArrayElements(f3,NULL);
+  float *f3ptr = (float*)e->GetPrimitiveArrayCritical(f3,NULL);
   (*(void (*)(int,int,float *))funcs[GLUNIFORM3FV].func)(i1, i2, f3ptr);
-  e->ReleaseFloatArrayElements(f3, f3ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(f3, f3ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform2fv
   (JNIEnv *e, jclass c, jint i1, jint i2, jfloatArray f3)
 {
-  float *f3ptr = e->GetFloatArrayElements(f3,NULL);
+  float *f3ptr = (float*)e->GetPrimitiveArrayCritical(f3,NULL);
   (*(void (*)(int,int,float *))funcs[GLUNIFORM2FV].func)(i1, i2, f3ptr);
-  e->ReleaseFloatArrayElements(f3, f3ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(f3, f3ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform1f
@@ -581,25 +581,25 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform1f
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform4iv
   (JNIEnv *e, jclass c, jint i1, jint i2, jintArray i3)
 {
-  jint *i3ptr = e->GetIntArrayElements(i3,NULL);
+  jint *i3ptr = (jint*)e->GetPrimitiveArrayCritical(i3,NULL);
   (*(void (*)(int,int,jint *))funcs[GLUNIFORM4IV].func)(i1, i2, i3ptr);
-  e->ReleaseIntArrayElements(i3, i3ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(i3, i3ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform3iv
   (JNIEnv *e, jclass c, jint i1, jint i2, jintArray i3)
 {
-  jint *i3ptr = e->GetIntArrayElements(i3,NULL);
+  jint *i3ptr = (jint*)e->GetPrimitiveArrayCritical(i3,NULL);
   (*(void (*)(int,int,jint *))funcs[GLUNIFORM3IV].func)(i1, i2, i3ptr);
-  e->ReleaseIntArrayElements(i3, i3ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(i3, i3ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform2iv
   (JNIEnv *e, jclass c, jint i1, jint i2, jintArray i3)
 {
-  jint *i3ptr = e->GetIntArrayElements(i3,NULL);
+  jint *i3ptr = (jint*)e->GetPrimitiveArrayCritical(i3,NULL);
   (*(void (*)(int,int,jint *))funcs[GLUNIFORM2IV].func)(i1, i2, i3ptr);
-  e->ReleaseIntArrayElements(i3, i3ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(i3, i3ptr, JNI_ABORT);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform1i
