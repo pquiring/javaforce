@@ -487,7 +487,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_Camera_cameraGetFrame
   }
 
   //copy pixels, flip image, set opaque alpha channel
-  jint *jpxptr = (jint*)e->GetPrimitiveArrayCritical(ctx->jpx,NULL);
+  jint *jpxptr = e->GetIntArrayElements(ctx->jpx,NULL);
   int jpxsize = e->GetArrayLength(ctx->jpx);
 
   jint *dst = jpxptr;
@@ -501,7 +501,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_Camera_cameraGetFrame
     src -= w2;
   }
 
-  e->ReleasePrimitiveArrayCritical(ctx->jpx, jpxptr, 0);
+  e->ReleaseIntArrayElements(ctx->jpx, jpxptr, 0);
 
   return ctx->jpx;
 }
