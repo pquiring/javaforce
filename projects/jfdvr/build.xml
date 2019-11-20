@@ -32,7 +32,7 @@
       <fileset dir="src" includes="*.png"/>
       <fileset dir="." includes="*.crt"/>
       <manifest>
-        <attribute name="Main-Class" value="AudioApp"/>
+        <attribute name="Main-Class" value="DVRService"/>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>
         <attribute name="Codebase" value="${app}.sourceforge.net"/>

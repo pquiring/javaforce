@@ -1008,7 +1008,7 @@ public class JF {
   }
 
   public static boolean is64Bit() {
-    return System.getProperty("sun.arch.data.model").equals("64");
+    return true;
   }
 
   /** Returns path component of a filename */
