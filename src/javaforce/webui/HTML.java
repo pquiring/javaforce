@@ -11,6 +11,15 @@ public class HTML extends Container {
 
   public HTML(String tag) {
     this.tag = tag;
+    if (tag.equals("hr") || tag.equals("br")) {
+      enclosed = false;
+    }
+    text = "";
+  }
+
+  public HTML(String tag, String text) {
+    this.tag = tag;
+    this.text = text;
   }
 
   public void setEnclosed(boolean state) {
