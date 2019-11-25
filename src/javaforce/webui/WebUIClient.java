@@ -204,6 +204,11 @@ public class WebUIClient {
   public void setTitle(String title) {
     sendEvent("body", "settitle", new String[] {"title=" + title});
   }
+  /** Returns current ID.  This can be used to determine if user has switched to another page.  Returns -1 if user disconnected. */
+  public int getCurrentID() {
+    if (!isConnected()) return -1;
+    return nextID;
+  }
 
   private Resized resized;
   public void addResizedListener(Resized handler) {

@@ -62,7 +62,8 @@ public abstract class Container extends Component {
     return components.toArray(new Component[count()]);
   }
   public void set(int idx, Component c) {
-    components.set(idx, c);
+    remove(idx);
+    add(idx, c);
   }
   /** Add component to end of components. */
   public void add(Component comp) {
@@ -94,12 +95,20 @@ public abstract class Container extends Component {
   }
   public void remove(Component comp) {
     components.remove(comp);
+    if (id != null) {
+      sendEvent("remove", new String[] {"child=" + comp.id});
+    }
   }
   public void remove(int idx) {
-    components.remove(idx);
+    Component comp = components.remove(idx);
+    if (id != null) {
+      sendEvent("remove", new String[] {"child=" + comp.id});
+    }
   }
   public void removeAll() {
-    components.clear();
+    while (count() > 0) {
+      remove(0);
+    }
   }
   public int count() {
     return components.size();
