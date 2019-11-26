@@ -183,8 +183,8 @@ function wsevent(event) {
     case "focus":
       element.focus();
       break;
-    case "setselected":
-      element.selected = msg.state;
+    case "setchecked":
+      element.checked = msg.state === "true";
       break;
     case "ping":
       sendPong(msg.id);
@@ -347,7 +347,7 @@ function onCheckBoxChange(event, element) {
   var msg = {
     event: "changed",
     id: element.id,
-    on: element.on
+    on: element.checked
   };
   ws.send(JSON.stringify(msg));
 }

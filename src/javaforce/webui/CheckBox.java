@@ -48,7 +48,7 @@ public class CheckBox extends Container {
   public void setSelected(boolean state) {
     if (selected == state) return;
     selected = state;
-    input.sendEvent("setselected", new String[] {"state=" + selected});
+    input.sendEvent("setchecked", new String[] {"state=" + selected});
   }
   public boolean isSelected() {
     return selected;
@@ -58,5 +58,11 @@ public class CheckBox extends Container {
   }
   public void setDisabled(boolean state) {
     input.setDisabled(state);
+  }
+  public void addChangedListener(Changed handler) {
+    input.addChangedListener(handler);
+  }
+  public void addClickListener(Click handler) {
+    input.addClickListener(handler);
   }
 }
