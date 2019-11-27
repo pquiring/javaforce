@@ -19,6 +19,8 @@ public class TextArea extends TextComponent {
   }
   public void onChanged(String args[]) {
     int idx = args[0].indexOf("=");
-    text = args[0].substring(idx+1);
+    //TODO : better JSON.stringify() support
+    text = args[0].substring(idx+1).replaceAll("\\\\\\\\", "\\\\");
+    super.onChanged(args);
   }
 }
