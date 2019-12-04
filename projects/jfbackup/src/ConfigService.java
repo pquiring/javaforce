@@ -1045,7 +1045,93 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(5);
     panel.add(row);
 
-    panel.add(new Label("TODO"));
+    Label msg = new Label("");
+    panel.add(msg);
+
+    row = new Row();
+    row.add(new Label("Retention Period:"));
+    row.add(new Label("Years:"));
+    TextField years = new TextField(Integer.toString(Config.current.retention_years));
+    row.add(years);
+    row.add(new Label("Months:"));
+    TextField months = new TextField(Integer.toString(Config.current.retention_months));
+    row.add(months);
+    Button retention_save = new Button("Save");
+    retention_save.addClickListener((MouseEvent me, Component c) -> {
+      try {
+        int y = Integer.valueOf(years.getText());
+        int m = Integer.valueOf(months.getText());
+        if (y > 100) y = 100;
+        if (y < 0) y = 0;
+        if (m > 12) m = 12;
+        if (m < 0) m = 0;
+        if (y == 0 && m == 0) throw new Exception("no retention");
+        Config.current.retention_years = y;
+        Config.current.retention_months = m;
+        msg.setText("Updated Retention");
+        msg.setColor(Color.black);
+      } catch (Exception e) {
+        e.printStackTrace();
+        msg.setText("Failed to save retention");
+        msg.setColor(Color.red);
+      }
+    });
+    row.add(retention_save);
+    panel.add(row);
+
+    row = new Row();
+    row.add(new Label("Cleaning Tape Barcode ID:"));
+    row.add(new Label("Prefix:"));
+    TextField prefix = new TextField(Config.current.cleanPrefix);
+    row.add(prefix);
+    row.add(new Label("Months:"));
+    TextField suffix = new TextField(Config.current.cleanSuffix);
+    row.add(suffix);
+    Button clean_save = new Button("Save");
+    clean_save.addClickListener((MouseEvent me, Component c) -> {
+      try {
+        String pre = prefix.getText();
+        String suf = suffix.getText();
+        Config.current.cleanPrefix = pre;
+        Config.current.cleanSuffix = suf;
+        msg.setText("Updated Cleaning Tape Barcode IDs");
+        msg.setColor(Color.black);
+      } catch (Exception e) {
+        e.printStackTrace();
+        msg.setText("Failed to save Cleaning Tape Barcode IDs");
+        msg.setColor(Color.red);
+      }
+    });
+    row.add(clean_save);
+    panel.add(row);
+
+    row = new Row();
+    row.add(new Label("Device Names:"));
+    row.add(new Label("Tape:"));
+    TextField tape = new TextField(Config.current.tapeDevice);
+    row.add(tape);
+    row.add(new Label("Changer:"));
+    TextField changer = new TextField(Config.current.changerDevice);
+    row.add(changer);
+    row.add(new Label("(leave blank if not available)"));
+    Button devices_save = new Button("Save");
+    devices_save.addClickListener((MouseEvent me, Component c) -> {
+      try {
+        String _tape = tape.getText();
+        String _changer = changer.getText();
+        Config.current.cleanPrefix = _tape;
+        Config.current.cleanSuffix = _changer;
+        msg.setText("Updated Device Names");
+        msg.setColor(Color.black);
+      } catch (Exception e) {
+        e.printStackTrace();
+        msg.setText("Failed to save Device Names");
+        msg.setColor(Color.red);
+      }
+    });
+    row.add(devices_save);
+    panel.add(row);
+
     return panel;
   }
 
