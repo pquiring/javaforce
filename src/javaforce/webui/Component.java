@@ -7,6 +7,7 @@ package javaforce.webui;
 
 import java.util.*;
 
+import javaforce.*;
 import javaforce.webui.event.*;
 
 public abstract class Component {
@@ -75,8 +76,11 @@ public abstract class Component {
     id = "c" + client.getNextID();
   }
 
-  /** Returns client. */
+  /** Returns client (waits until Component is presented to user). */
   public WebUIClient getClient() {
+    while (client == null) {
+      JF.sleep(50);
+    }
     return client;
   }
 
