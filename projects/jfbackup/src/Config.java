@@ -1,0 +1,92 @@
+/** Config
+ *
+ * @author pquiring
+ */
+
+import java.io.*;
+import java.util.*;
+
+import javaforce.*;
+
+public class Config implements Serializable {
+  public static final long serialVersionUID = 1;
+
+  public static String AppVersion = "0.1";
+
+  public static String APIVersion = "V001";
+
+  public static Config current;
+
+  public String mode;  //'install','client','server'
+  public String server_host;  //if client
+  public String this_host;
+  public String password;  //in plain text
+
+  //if client
+//  public boolean authFailed;
+
+  //if server
+  public String tapeDevice;  //tape0
+  public String changerDevice;  //changer0 (black = no changer)
+  public ArrayList<String> exclude;  //exclude barcode from backup
+  public ArrayList<String> hosts;
+  public String restorePath;
+  public String cleanPrefix;  //"CLN"
+  public String cleanSuffix;  //"CN"
+  public boolean skipBadFiles;  //skip bad files during restore process
+
+  //backup jobs
+  public ArrayList<EntryJob> backups;
+
+  public int retention_years;
+  public int retention_months;
+
+  public Config() {
+    mode = "install";
+    server_host = null;
+    this_host = null;
+    tapeDevice = "tape0";
+    changerDevice = "changer0";
+    hosts = new ArrayList<String>();
+    exclude = new ArrayList<String>();
+    restorePath = System.getenv("SystemDrive") + "\\restored";
+    backups = new ArrayList<EntryJob>();
+    retention_years = 1;
+    retention_months = 0;
+    cleanPrefix = "CLN";
+    cleanSuffix = "CU";
+  }
+
+  public static void load() {
+    try {
+      FileInputStream fis = new FileInputStream(Paths.dataPath + "/config.dat");
+      ObjectInputStream ois = new ObjectInputStream(fis);
+      current = (Config)ois.readObject();
+      //TEMP FIX : for development only
+      if (current.cleanPrefix == null) {
+        current.cleanPrefix = "CLN";
+      }
+      if (current.cleanSuffix == null) {
+        current.cleanSuffix = "CU";
+      }
+      fis.close();
+    } catch (FileNotFoundException e) {
+      current = new Config();
+      JFLog.log("No config found!");
+    } catch (Exception e) {
+      current = new Config();
+      JFLog.log(e);
+    }
+  }
+
+  public static void save() {
+    try {
+      FileOutputStream fos = new FileOutputStream(Paths.dataPath + "/config.dat");
+      ObjectOutputStream oos = new ObjectOutputStream(fos);
+      oos.writeObject(current);
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+}

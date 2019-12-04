@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
+  <Product Id="*" UpgradeCode="{F6321886-AC06-4620-8CE5-FD9039DC42AE}" Version="0.1" Language="1033" Name="jfBackup" Manufacturer="Peter Quiring">
+    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
+    <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
+    <UIRef Id="WixUI_Minimal" />
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
+
+    <SetProperty Id="URL" Value="http://localhost:34002" Sequence="execute" Before="CreateShortcuts" />
+    <Icon Id="icon.ico" SourceFile="jfbackup.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
+
+    <!-- Step 1: Define the directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfBackup"/>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+      </Directory>
+    </Directory>
+
+    <!-- Step 2: Add files to your installer package -->
+    <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+      <Component Id="appfiles" Guid="{F4DA0561-CC6D-4683-8C77-B45C9CB108A9}" Win64="yes">
+        <File Id="jfbackup.exe" Source="jfbackup.exe" KeyPath="yes">
+          <fire:FirewallException
+            Id="FirewallRule1"
+            Name="jfBackupAPI"
+            Protocol="tcp"
+            Port="33200"
+            Scope="any"
+            IgnoreFailure="yes"
+            Profile="all" />
+          <fire:FirewallException
+            Id="FirewallRule2"
+            Name="jfBackupWEB"
+            Protocol="tcp"
+            Port="34003"
+            Scope="any"
+            IgnoreFailure="yes"
+            Profile="all" />
+				</File>
+        <File Id="jfbackup.jar" Source="jfbackup.jar"/>
+        <File Id="javaforce.jar" Source="javaforce.jar"/>
+        <File Id="jfnative64.dll" Source="jfnative64.dll"/>
+        <File Id="tapetool.exe" Source="tapetool.exe"/>
+        <ServiceInstall Id="ServiceInstaller"
+          Type="ownProcess"
+          Name="jfBackup"
+          DisplayName="jfBackup"
+          Description="jfBackup"
+          Start="auto"
+          ErrorControl="normal" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfBackup" Wait="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 2b: Add the shortcut to your installer package -->
+    <DirectoryRef Id="ProgramMenuFolder">
+      <Component Id="ApplicationShortcut" Guid="{9A353E46-4402-44D3-98BE-1F0A06348726}">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jf Backup" Description="jf Backup" Target="[URL]"
+          WorkingDirectory="APPLICATIONROOTDIRECTORY" Icon="icon.ico"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfBackup" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 3: Tell WiX to install the files -->
+    <Feature Id="MainApplication" Title="Main Application" Level="1">
+      <ComponentRef Id="appfiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentGroupRef Id="JRE" />
+    </Feature>
+  </Product>
+</Wix>
