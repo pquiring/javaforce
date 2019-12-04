@@ -637,6 +637,10 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Host:" + jobvol.host));
     panel.add(row);
 
+    Label msg = new Label("");
+    panel.add(msg);
+    row = new Row();
+
     //display list of volumes
     row = new Row();
     row.add(new Label("Volume:"));
@@ -645,6 +649,7 @@ public class ConfigService implements WebUIHandler {
     int sel = -1;
     int idx = 0;
     for(String v : vs) {
+      if (v.length() == 0) continue;
       vol.add(v, v);
       if (jobvol.volume != null && jobvol.volume.equals(v)) {
         sel = idx;
@@ -662,7 +667,15 @@ public class ConfigService implements WebUIHandler {
     if (jobvol.path == null) jobvol.path = "";
     TextField remotePath = new TextField(jobvol.path);
     row.add(remotePath);
+    row.add(new Label("(optional)"));
     panel.add(row);
+
+    if (idx == 0) {
+      row = new Row();
+      row.add(new Label("Error:No volumes found on host to backup."));
+      panel.add(row);
+      return panel;
+    }
 
     row = new Row();
     Button save = new Button("Save");
@@ -683,6 +696,11 @@ public class ConfigService implements WebUIHandler {
         remoteTxt = remoteTxt.substring(0, remoteTxt.length() - 1);
       }
       jobvol.volume = vol.getSelectedText();
+      if (jobvol.volume.length() == 0) {
+        msg.setText("Please select a volume");
+        msg.setColor(Color.red);
+        return;
+      }
       jobvol.path = remoteTxt;
       if (create) {
         job.backup.add(jobvol);
