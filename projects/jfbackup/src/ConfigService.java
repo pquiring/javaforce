@@ -1078,6 +1078,7 @@ public class ConfigService implements WebUIHandler {
         if (y == 0 && m == 0) throw new Exception("no retention");
         Config.current.retention_years = y;
         Config.current.retention_months = m;
+        Config.save();
         msg.setText("Updated Retention");
         msg.setColor(Color.black);
       } catch (Exception e) {
@@ -1104,6 +1105,7 @@ public class ConfigService implements WebUIHandler {
         String suf = suffix.getText();
         Config.current.cleanPrefix = pre;
         Config.current.cleanSuffix = suf;
+        Config.save();
         msg.setText("Updated Cleaning Tape Barcode IDs");
         msg.setColor(Color.black);
       } catch (Exception e) {
@@ -1131,6 +1133,7 @@ public class ConfigService implements WebUIHandler {
         String _changer = changer.getText();
         Config.current.cleanPrefix = _tape;
         Config.current.cleanSuffix = _changer;
+        Config.save();
         msg.setText("Updated Device Names");
         msg.setColor(Color.black);
       } catch (Exception e) {
