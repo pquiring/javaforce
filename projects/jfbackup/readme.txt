@@ -23,7 +23,7 @@ Tested hardware:
   - Quantum Superloader 3
 
 TCP Ports:
-  - 33200 & 34002
+  - 33200 & 34003
 
 Notes:
   - tapetool.exe - is an easy to use command line interface to use tape drive/media changer.
