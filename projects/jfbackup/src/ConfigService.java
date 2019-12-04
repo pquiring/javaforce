@@ -1191,6 +1191,10 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
 
     if (file == null) {
+      AutoScrollPanel scroll = new AutoScrollPanel();
+      scroll.setMaxWidth();
+      scroll.setMaxHeight();
+      panel.add(scroll);
       //list log files (limit 1 year)
       File folder = new File(Paths.logsPath);
       File files[] = folder.listFiles();
@@ -1199,7 +1203,7 @@ public class ConfigService implements WebUIHandler {
           long t1 = f1.lastModified();
           long t2 = f2.lastModified();
           if (t1 == t2) return 0;
-          if (t1 > t2) return 1;
+          if (t1 < t2) return 1;
           return -1;
         }
       });
@@ -1220,7 +1224,12 @@ public class ConfigService implements WebUIHandler {
         });
         row.add(view);
         row.add(new Label(" at " + toDateTime(lastMod)));
-        panel.add(row);
+        scroll.add(row);
+      }
+      if (files.length == 0) {
+        row = new Row();
+        row.add(new Label("No logs found"));
+        scroll.add(row);
       }
     } else {
       TextArea text = new TextArea("Loading...");
