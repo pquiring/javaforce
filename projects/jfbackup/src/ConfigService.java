@@ -1094,7 +1094,7 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Prefix:"));
     TextField prefix = new TextField(Config.current.cleanPrefix);
     row.add(prefix);
-    row.add(new Label("Months:"));
+    row.add(new Label("Suffix:"));
     TextField suffix = new TextField(Config.current.cleanSuffix);
     row.add(suffix);
     Button clean_save = new Button("Save");
