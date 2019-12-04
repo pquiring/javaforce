@@ -16,8 +16,14 @@ Not Supported (yet):
   - File Meta Data (file attributes, ACLs, etc.)
   - Restore in place (restored files need to be movied back into place)
 
+Web Interface:
+  - http://your_host_name:34002
+
 Tested hardware:
   - Quantum Superloader 3
+
+TCP Ports:
+  - 33200 & 34002
 
 Notes:
   - tapetool.exe - is an easy to use command line interface to use tape drive/media changer.
@@ -30,10 +36,10 @@ License:
 
 WebSite : http://jfbackup.sf.net
 
-Source Code : http://github.com/pquiring/javaforce/projects/jfbackup
+Source Code : https://github.com/pquiring/javaforce/tree/master/projects/jfbackup
 
 Author : Peter Quiring
 eMail : pquiring at gmail dot com
 
 Version : 0.1
-Date : ?/?/2020
+Date : 12/4/2019

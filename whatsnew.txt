@@ -1,5 +1,18 @@
 What's new...
 
+Dec 4/2019 : JF 18.0.0 released
+  - new app : jfBackup/0.1
+    - Enterprise Tape Backup Solution
+    - Volume Shadow Backup
+    - Multiple Servers
+    - Backup to tape drive/media changer (barcodes supported)
+    - Web interface
+    - when corporate IT pulled our license for our company wide backup software I tried other
+      open source solutions but they were all unacceptable so I build our own ;)
+  - new app : jfDVR/0.0 (not released yet)
+    - Records IP/RTSP cameras
+    - due to performance issues this release is delayed until I can find a better JVM (maybe graal someday)
+
 Mar 8/2019 : JF 17.5.0 released
   - fix : ffmpeg loading/saving issues
   - new : upgrade to ffmpeg/4.x

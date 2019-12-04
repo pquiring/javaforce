@@ -18,7 +18,7 @@ import java.security.cert.*;
 public class JF {
 
   public static String getVersion() {
-    return "17.5.0";
+    return "18.0.0";
   }
 
   public static void sleep(int milli) {
