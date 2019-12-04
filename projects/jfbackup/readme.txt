@@ -29,6 +29,7 @@ Notes:
   - tapetool.exe - is an easy to use command line interface to use tape drive/media changer.
   - tapes that are prefixed with "CLN" or suffixed with "CU" are assumed to be cleaning tapes (TODO : add config option for prefix)
   - jfBackup can be installed on Windows 10 x64 in server mode but local volumes will not be available for backup (vss create shadow is not available)
+  - restored files are placed in C:\restored
 
 License:
   - LGPL

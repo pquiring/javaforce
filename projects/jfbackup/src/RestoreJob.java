@@ -6,7 +6,6 @@
 //TODO : when restore in place is implemented a seperate thread would be required
 
 import java.util.*;
-import java.util.zip.*;
 import java.io.*;
 
 import javaforce.*;
@@ -41,6 +40,7 @@ public class RestoreJob extends Thread {
       Status.abort = false;
       Status.desc = "Restore aborted, see logs.";
     } else {
+      log("Restored files to " + Config.current.restorePath);
       log("Restore complete");
       Status.running = false;
       Status.abort = false;
