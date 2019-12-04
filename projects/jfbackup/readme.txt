@@ -17,7 +17,7 @@ Not Supported (yet):
   - Restore in place (restored files need to be movied back into place)
 
 Web Interface:
-  - http://your_host_name:34002
+  - http://your_host_name:34003
 
 Tested hardware:
   - Quantum Superloader 3
