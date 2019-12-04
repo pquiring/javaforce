@@ -11,10 +11,9 @@ public class EntryFile implements Serializable {
   public String name;
   public long o;  //logical 64k block offset in tape
   public int t;  //tape # (multi-tape backup)
-  public long s;  //uncompressed size
   public long c;  //compressed size
   public long u;  //uncompressed size
   public long b;  //# of blocks used on tape
-  public byte ct;  //compression type (0=none 1=zip)
+  public byte ct;  //compression type (0=none 1=zlib)
   public transient String localfile;
 }
