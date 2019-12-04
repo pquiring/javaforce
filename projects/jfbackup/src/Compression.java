@@ -1,6 +1,4 @@
-/** Test
- *
- * - test compress/decompress
+/** Compression
  *
  * @author pquiring
  */
