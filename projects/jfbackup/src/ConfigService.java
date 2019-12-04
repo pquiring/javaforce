@@ -1135,6 +1135,10 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private int tapeSize(long blks) {
+    return (int)(blks * 64);
+  }
+
   public Panel serverTapes() {
     Panel panel = new Panel();
     Row row = new Row();
@@ -1149,9 +1153,21 @@ public class ConfigService implements WebUIHandler {
 
     panel.add(new Label("Tapes Status:"));
 
+    row = new Row();
+    row.setBackColor(Color.blue);
+    row.setHeight(2);
+    panel.add(row);
+
     for(EntryTape tape : Tapes.current.tapes) {
       row = new Row();
       row.add(new Label("Tape:" + tape.barcode + " used in backup " + tape.job + " on date " + toDateTime(tape.backup) + " with retention until " + toDateTime(tape.retention)));
+      panel.add(row);
+      row = new Row();
+      row.add(new Label("Size(KB):" + tapeSize(tape.capacity) + " Used(KB):" + tapeSize(tape.capacity - tape.left)));
+      panel.add(row);
+      row = new Row();
+      row.setBackColor(Color.blue);
+      row.setHeight(2);
       panel.add(row);
     }
     if (Tapes.current.tapes.size() == 0) {

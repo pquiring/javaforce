@@ -22,7 +22,7 @@ public class EntryTape implements Serializable {
   public int number;
 
   public long capacity;  //in 64k blocks
+  public long left;  //in 64k blocks
 
-  public transient long left;  //in 64k blocks
   public transient long position;
 }
