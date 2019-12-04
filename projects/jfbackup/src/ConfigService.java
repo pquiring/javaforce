@@ -342,7 +342,12 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(5);
     panel.add(row);
 
-    panel.add(new Label("Backup Jobs:"));
+    AutoScrollPanel scroll = new AutoScrollPanel();
+    scroll.setMaxWidth();
+    scroll.setMaxHeight();
+    panel.add(scroll);
+
+    scroll.add(new Label("Backup Jobs:"));
 
     row = new Row();
     Button create = new Button("Create Job");
@@ -351,7 +356,7 @@ public class ConfigService implements WebUIHandler {
       split.setRightComponent(serverCreateBackupJob());
     });
     row.add(create);
-    panel.add(row);
+    scroll.add(row);
 
     //list current jobs
     for(EntryJob job : Config.current.backups) {
@@ -369,7 +374,7 @@ public class ConfigService implements WebUIHandler {
         split.setRightComponent(serverDeleteBackupJob(job));
       });
       row.add(delete);
-      panel.add(row);
+      scroll.add(row);
     }
 
     return panel;
@@ -781,6 +786,11 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(5);
     panel.add(row);
 
+    AutoScrollPanel scroll = new AutoScrollPanel();
+    scroll.setMaxWidth();
+    scroll.setMaxHeight();
+    panel.add(scroll);
+
     //list backups
     File folder = new File(Paths.catalogsPath);
     File files[] = folder.listFiles();
@@ -799,18 +809,18 @@ public class ConfigService implements WebUIHandler {
 
       row = new Row();
       row.add(new Label("Backup:" + info.name + "@" + toDateTime(backup)));
-      panel.add(row);
+      scroll.add(row);
 
       for(EntryTape tape : info.tapes) {
         row = new Row();
         row.add(new Label("  Tape:" + tape.barcode));
-        panel.add(row);
+        scroll.add(row);
       }
 
       row = new Row();
       Button restore = new Button("Restore Files");
       row.add(restore);
-      panel.add(row);
+      scroll.add(row);
 
       restore.addClickListener((MouseEvent me, Component c) -> {
         SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
@@ -820,14 +830,14 @@ public class ConfigService implements WebUIHandler {
       row = new Row();
       row.setBackColor(Color.blue);
       row.setHeight(5);
-      panel.add(row);
+      scroll.add(row);
       count++;
     }
 
     if (count == 0) {
       row = new Row();
       row.add(new Label("No backups found"));
-      panel.add(row);
+      scroll.add(row);
     }
 
     return panel;
@@ -1158,22 +1168,27 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(2);
     panel.add(row);
 
+    AutoScrollPanel scroll = new AutoScrollPanel();
+    scroll.setMaxWidth();
+    scroll.setMaxHeight();
+    panel.add(scroll);
+
     for(EntryTape tape : Tapes.current.tapes) {
       row = new Row();
       row.add(new Label("Tape:" + tape.barcode + " used in backup " + tape.job + " on date " + toDateTime(tape.backup) + " with retention until " + toDateTime(tape.retention)));
-      panel.add(row);
+      scroll.add(row);
       row = new Row();
       row.add(new Label("Size(KB):" + tapeSize(tape.capacity) + " Used(KB):" + tapeSize(tape.capacity - tape.left)));
-      panel.add(row);
+      scroll.add(row);
       row = new Row();
       row.setBackColor(Color.blue);
       row.setHeight(2);
-      panel.add(row);
+      scroll.add(row);
     }
     if (Tapes.current.tapes.size() == 0) {
       row = new Row();
       row.add(new Label("No tapes under retention"));
-      panel.add(row);
+      scroll.add(row);
     }
     return panel;
   }
