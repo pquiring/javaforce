@@ -29,8 +29,8 @@ public class PaintApplet extends javax.swing.JApplet {
     } catch (Exception ex) {
       ex.printStackTrace();
     }
-    JF.loadCerts(getClass().getResourceAsStream("javaforce.crt")
-      , getClass().getResourceAsStream("jfpaint.crt"), "jfpaint.sourceforge.net");
+//    JF.loadCerts(getClass().getResourceAsStream("javaforce.crt")
+//      , getClass().getResourceAsStream("jfpaint.crt"), "jfpaint.sourceforge.net");
   }
 
   public void destroy() {

@@ -86,6 +86,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     fillEdge = new javax.swing.JToggleButton();
     round = new javax.swing.JToggleButton();
     selkeyclr = new javax.swing.JToggleButton();
+    selFillAlpha = new javax.swing.JToggleButton();
     jLabel5 = new javax.swing.JLabel();
     selectFont = new javax.swing.JButton();
     changeSize = new javax.swing.JButton();
@@ -354,6 +355,13 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     selkeyclr.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     selkeyclr.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
     toolbar1.add(selkeyclr);
+
+    selFillAlpha.setIcon(new javax.swing.ImageIcon(getClass().getResource("/selboxalpha.png"))); // NOI18N
+    selFillAlpha.setToolTipText("Selection tool fills alpha");
+    selFillAlpha.setFocusable(false);
+    selFillAlpha.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    selFillAlpha.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    toolbar1.add(selFillAlpha);
 
     jLabel5.setText(":");
     toolbar1.add(jLabel5);
@@ -842,6 +850,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   private javax.swing.JToggleButton round;
   private javax.swing.JButton scaleSize;
   private javax.swing.JToggleButton selBox;
+  private javax.swing.JToggleButton selFillAlpha;
   private javax.swing.JButton selectFont;
   private javax.swing.JToggleButton selkeyclr;
   private javax.swing.JTextField status;
@@ -1426,10 +1435,10 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     JFImage clip = new JFImage(cbX,cbY);
     clipBoard = pc.img[pc.getImageLayer()].getPixels(selX1,selY1,cbX,cbY);
     clip.putPixels(clipBoard,0,0,cbX,cbY,0);
-    JFClipboard.writeImage(clip.getImage());
+    try {JFClipboard.writeImage(clip.getImage());} catch (Exception e) {e.printStackTrace();}
     int layer = pc.getImageLayer();
     if (layer == 0) {
-      pc.img[layer].fill(selX1,selY1,cbX,cbY,backClr);
+      pc.img[layer].fill(selX1,selY1,cbX,cbY,backClr,!selFillAlpha.isSelected());
     } else {
       pc.img[layer].fill(selX1,selY1,cbX,cbY,backClr,true);  //alpha = transparent
     }
@@ -1449,19 +1458,23 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     JFImage clip = new JFImage(cbX,cbY);
     clipBoard = pc.img[pc.getImageLayer()].getPixels(selX1,selY1,cbX,cbY);
     clip.putPixels(clipBoard,0,0,cbX,cbY,0);
-    JFClipboard.writeImage(clip.getImage());
+    try {JFClipboard.writeImage(clip.getImage());} catch (Exception e) {e.printStackTrace();}
   }
 
   public void pasteSel(int x, int y, boolean sysClipBoard) {
     if (colorLayer.getSelectedIndex() != 0) return;
     rotate = 0f;
     if (clipBoard == null || sysClipBoard) {
-      java.awt.Image img = JFClipboard.readImage();
-      if (img == null) return;
-      JFImage image = JFClipboard.convertImage(img);
-      cbX = image.getWidth();
-      cbY = image.getHeight();
-      clipBoard = image.getPixels();
+      try {
+        java.awt.Image img = JFClipboard.readImage();
+        if (img == null) return;
+        JFImage image = JFClipboard.convertImage(img);
+        cbX = image.getWidth();
+        cbY = image.getHeight();
+        clipBoard = image.getPixels();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
     int idx = getidx();
     PaintCanvas pc = imageTabs.get(idx).pc;
