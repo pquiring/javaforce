@@ -14,7 +14,7 @@ Not Supported (yet):
   - Image Backups (bare-metal restores)
   - SQL Backups
   - File Meta Data (file attributes, ACLs, etc.)
-  - Restore in place (restored files need to be movied back into place)
+  - Restore in place (restored files need to be moved back into place)
 
 Web Interface:
   - http://your_host_name:34003
