@@ -19,24 +19,56 @@ public class Catalog implements Serializable {
   public boolean haveChanger;
   public long backup;
 
-  public void save() {
+  public boolean save() {
+    String base = Paths.catalogsPath + "/catalog-" + backup;
+    String raw = base + ".raw";
+    String dat = base + ".dat";
     try {
-      FileOutputStream fos = new FileOutputStream(Paths.catalogsPath + "/catalog-" + backup + ".dat");
+      FileOutputStream fos = new FileOutputStream(raw);
       ObjectOutputStream oos = new ObjectOutputStream(fos);
       oos.writeObject(this);
       fos.close();
     } catch (Exception e) {
       JFLog.log(e);
+      return false;
     }
+    //compress raw -> dat
+    try {
+      FileInputStream fis = new FileInputStream(raw);
+      FileOutputStream fos = new FileOutputStream(dat);
+      Compression.compress(fis, fos, new File(raw).length());
+      fis.close();
+      fos.close();
+      new File(raw).delete();
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+    return true;
   }
 
   public static Catalog load(long backupid) {
     Catalog catalog;
+    String base = Paths.catalogsPath + "/catalog-" + backupid;
+    String raw = base + ".raw";
+    String dat = base + ".dat";
+    //decompress dat -> raw
     try {
-      FileInputStream fis = new FileInputStream(Paths.catalogsPath + "/catalog-" + backupid + ".dat");
+      FileInputStream fis = new FileInputStream(dat);
+      FileOutputStream fos = new FileOutputStream(raw);
+      Compression.decompress(fis, fos, new File(dat).length());
+      fis.close();
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+    try {
+      FileInputStream fis = new FileInputStream(raw);
       ObjectInputStream ois = new ObjectInputStream(fis);
       catalog = (Catalog)ois.readObject();
       fis.close();
+      new File(raw).delete();
       return catalog;
     } catch (FileNotFoundException e) {
       return null;

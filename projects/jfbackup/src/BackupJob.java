@@ -330,6 +330,8 @@ public class BackupJob extends Thread {
 
     String file = Paths.tempPath + "/header.dat";
 
+    log("WriteHeader to tape:" + barcode);
+
     try {
       FileOutputStream fos = new FileOutputStream(file);
       fos.write(data);
