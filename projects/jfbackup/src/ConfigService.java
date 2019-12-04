@@ -695,6 +695,9 @@ public class ConfigService implements WebUIHandler {
       if (remoteTxt.endsWith("\\")) {
         remoteTxt = remoteTxt.substring(0, remoteTxt.length() - 1);
       }
+      if (remoteTxt.equals("\\")) {
+        remoteTxt = "";
+      }
       jobvol.volume = vol.getSelectedText();
       if (jobvol.volume.length() == 0) {
         msg.setText("Please select a volume");
