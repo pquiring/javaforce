@@ -25,6 +25,7 @@ public class BackupService extends Thread {
   }
 
   public void cancel() {
+    JFLog.log("jfBackup shuting down...");
     Status.active = false;
     //TODO : stop any backup/restore jobs
     if (server != null) {

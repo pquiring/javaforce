@@ -263,7 +263,7 @@ public class ConfigService implements WebUIHandler {
           sb.append("Job Status : none\r\n");
         }
         sb.append("\r\n");
-        if (Config.current.changerDevice.length() > 0) {
+        if (!Status.running && Config.current.changerDevice.length() > 0) {
           //load changer status
           Element elements[] = new MediaChanger().list();
           if (elements != null) {
@@ -277,6 +277,7 @@ public class ConfigService implements WebUIHandler {
             sb.append("Media Changer Error\r\n");
           }
         }
+        panel.getClient();
         text.setText(sb.toString());
       }
     }.start();
@@ -568,6 +569,8 @@ public class ConfigService implements WebUIHandler {
             msg.setText("That client is not online");
             return;
           }
+          msg.setText("Loading, please wait...");
+          msg.setColor(Color.black);
           backupclient.addRequest(new Request("listvolumes"), (Request req) -> {
             SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
             split.setRightComponent(serverEditBackupJobVolume(job, backup, req.reply, false));
@@ -587,14 +590,24 @@ public class ConfigService implements WebUIHandler {
         });
         y++;
       }
+      if (job.backup.size() == 0) {
+        row = new Row();
+        row.add(new Label("No volumes"));
+        panel.add(row);
+      }
+      row = new Row();
+      row.setBackColor(Color.blue);
+      row.setHeight(5);
+      panel.add(row);
       panel.add(table);
       row = new Row();
+      row.add(new Label("Add Volume:"));
       ComboBox hosts = new ComboBox();
       for(String host : Config.current.hosts) {
         hosts.add(host, host);
       }
       row.add(hosts);
-      Button add = new Button("Add Volume");
+      Button add = new Button("Add");
       add.addClickListener((MouseEvent me, Component c) -> {
         String host = hosts.getSelectedValue();
         ServerClient backupclient = BackupService.server.getClient(host);
@@ -605,6 +618,8 @@ public class ConfigService implements WebUIHandler {
         }
         EntryJobVolume jobvolume = new EntryJobVolume();
         jobvolume.host = host;
+        msg.setText("Loading, please wait...");
+        msg.setColor(Color.black);
         backupclient.addRequest(new Request("listvolumes"), (Request req) -> {
           SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
           split.setRightComponent(serverEditBackupJobVolume(job, jobvolume, req.reply, true));
@@ -1387,8 +1402,6 @@ public class ConfigService implements WebUIHandler {
                 server_next.setVisible(true);
               } else {
                 saveConfigMode("client");
-                BackupService.client = client;
-                client.start();
                 client = null;
                 webclient.setProperty("password", passTxt);
                 webclient.setPanel(clientPanel());

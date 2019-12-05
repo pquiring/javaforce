@@ -15,12 +15,14 @@ public class ServerClient extends Thread {
   private OutputStream os;
   private boolean ready;
   private String host;
+  private int port;
   private boolean active;
   private Object lock = new Object();
   private ArrayList<Request> queue = new ArrayList<Request>();
   private Request request;
   private int version;
-  public static long localindex;
+  private static Object hostLock = new Object();
+  private static long localindex;
 
   public ServerClient(Socket s) {
     this.s = s;
@@ -37,20 +39,26 @@ public class ServerClient extends Thread {
     try {
       is = s.getInputStream();
       os = s.getOutputStream();
+      host = s.getInetAddress().toString();  //temp hostname = ip address
+      port = s.getPort();
       if (!version()) {
-        JFLog.log("Client rejected : unsupported version");
-        return;
+        JFLog.log("Client : " + host + " : rejected : unsupported version");
+        throw new Exception("bad client");
       }
       if (!authenticate()) {
-        JFLog.log("Client rejected : bad password");
-        return;
+        JFLog.log("Client : " + host + " : rejected : bad password");
+        throw new Exception("bad client");
       }
       if (!getHostName()) {
-        JFLog.log("Client rejected : bad hostname");
-        return;
+        JFLog.log("Client : " + host + " : rejected : bad hostname");
+        throw new Exception("bad client");
       }
-      JFLog.log("Client accepted:" + host);
-      if (!Config.current.hosts.contains(host)) {
+      synchronized(hostLock) {
+        if (Config.current.hosts.contains(host)) {
+          JFLog.log("Client : " + host + " : rejected : already connected");
+          throw new Exception("bad client");
+        }
+        JFLog.log("Client : " + host + ":" + port + " : accepted");
         Config.current.hosts.add(host);
         Config.save();
       }
@@ -101,7 +109,12 @@ public class ServerClient extends Thread {
           request.fos = null;
         }
       }
-//      JFLog.log(1, e);
+      JFLog.log("Client : " + host + " : disconnected");
+      if (Config.current.hosts.contains(host)) {
+        Config.current.hosts.remove(host);
+        Config.save();
+      }
+      try { s.close(); } catch (Exception e2) {}
     }
   }
   private byte[] read(int size) throws Exception {
@@ -161,7 +174,7 @@ public class ServerClient extends Thread {
     if (!challenge.equals(new String(reply))) {
       os.write("NOPE".getBytes());
       os.flush();
-      JFLog.log(1, "client password wrong");
+      JFLog.log("client password wrong [key=" + key + ":challenge=" + challenge + ":reply=" + reply + "]");
       s.close();
       return false;
     }

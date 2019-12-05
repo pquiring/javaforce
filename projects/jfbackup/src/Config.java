@@ -29,7 +29,7 @@ public class Config implements Serializable {
   public String tapeDevice;  //tape0
   public String changerDevice;  //changer0 (black = no changer)
   public ArrayList<String> exclude;  //exclude barcode from backup
-  public ArrayList<String> hosts;
+  public ArrayList<String> hosts;  //should be transient
   public String restorePath;
   public String cleanPrefix;  //"CLN"
   public String cleanSuffix;  //"CN"
@@ -62,13 +62,7 @@ public class Config implements Serializable {
       FileInputStream fis = new FileInputStream(Paths.dataPath + "/config.dat");
       ObjectInputStream ois = new ObjectInputStream(fis);
       current = (Config)ois.readObject();
-      //TEMP FIX : for development only
-      if (current.cleanPrefix == null) {
-        current.cleanPrefix = "CLN";
-      }
-      if (current.cleanSuffix == null) {
-        current.cleanSuffix = "CU";
-      }
+      current.hosts = new ArrayList();
       fis.close();
     } catch (FileNotFoundException e) {
       current = new Config();

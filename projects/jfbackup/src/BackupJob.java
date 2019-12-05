@@ -232,6 +232,7 @@ public class BackupJob extends Thread {
       if (elements[idx].name.startsWith("drive")) {
         //tape in drive is useable
         barcode = elements[idx].barcode;
+        log("Using tape:" + barcode);
         return true;
       }
       //move this tape to drive

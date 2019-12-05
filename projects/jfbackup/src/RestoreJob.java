@@ -165,6 +165,7 @@ public class RestoreJob extends Thread {
     if (!updateList()) return false;
     if (elements[driveIdx].barcode.equals(currentTape.barcode)) {
       //desired tape in drive
+      log("Using tape:" + currentTape.barcode);
       return true;
     }
     if (elements[driveIdx].barcode.equals("<empty>")) {
