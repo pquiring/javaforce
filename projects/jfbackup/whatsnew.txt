@@ -1,0 +1,5 @@
+Dec 5/2019 : 0.2 released
+  - minor fixes
+
+Dec 4/2019 : 0.1 released
+  - init public release
