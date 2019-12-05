@@ -149,7 +149,7 @@ public class ServerClient extends Thread {
     String key = String.format("%016x", r.nextLong());
     String pwd_key = Config.current.password + key;
     md5.add(pwd_key);
-    String challenge = new String(md5.done());
+    String challenge = md5.toString();
     //send password challenge
     os.write(key.getBytes());
     //read password reply

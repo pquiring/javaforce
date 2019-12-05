@@ -14,6 +14,7 @@ public class Client extends Thread {
   private Socket s;
   private InputStream is;
   private OutputStream os;
+
   public void run() {
     //connects to Server
 //    Config.current.authFailed = false;
@@ -59,8 +60,6 @@ public class Client extends Thread {
   }
   public boolean test() {
     Socket s;
-    InputStream is;
-    OutputStream os;
     try {
       s = new Socket(Config.current.server_host, 33200);
       is = s.getInputStream();
@@ -68,8 +67,11 @@ public class Client extends Thread {
       if (!version()) throw new Exception("version not accepted");
       if (!authenticate()) throw new Exception("wrong password");
     } catch (Exception e) {
+      JFLog.log(e);
       return false;
     }
+    is = null;
+    os = null;
     return true;
   }
   public void cancel() {
@@ -101,9 +103,9 @@ public class Client extends Thread {
     MD5 md5 = new MD5();
     String pwd_key = Config.current.password + new String(key);
     md5.add(pwd_key);
-    String md5reply = new String(md5.done());
+    String response = md5.toString();
     //send password reply
-    os.write(md5reply.getBytes());
+    os.write(response.getBytes());
     //read reply
     byte[] data = read(4);
     String reply = new String(data);
