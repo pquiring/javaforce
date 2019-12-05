@@ -21,7 +21,7 @@ import javaforce.gl.*;
 
 public class MainPanel extends javax.swing.JPanel implements MouseListener, MouseMotionListener, KeyListener, KeyEventDispatcher, ActionListener {
 
-  public static String version = "0.22";
+  public static String version = "0.23";
 
   /**
    * Creates new form PaintPanel
@@ -90,6 +90,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     jLabel5 = new javax.swing.JLabel();
     selectFont = new javax.swing.JButton();
     changeSize = new javax.swing.JButton();
+    crop = new javax.swing.JButton();
     backswap = new javax.swing.JButton();
     toolbar2 = new javax.swing.JToolBar();
     foreColor = new javax.swing.JButton();
@@ -389,6 +390,18 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       }
     });
     toolbar1.add(changeSize);
+
+    crop.setIcon(new javax.swing.ImageIcon(getClass().getResource("/selboxcrop.png"))); // NOI18N
+    crop.setToolTipText("Crop Image");
+    crop.setFocusable(false);
+    crop.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    crop.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    crop.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        cropActionPerformed(evt);
+      }
+    });
+    toolbar1.add(crop);
 
     backswap.setIcon(new javax.swing.ImageIcon(getClass().getResource("/backswap.png"))); // NOI18N
     backswap.setToolTipText("Alternate background checker pattern.");
@@ -816,6 +829,10 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     }
   }//GEN-LAST:event_fillAlphaActionPerformed
 
+  private void cropActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cropActionPerformed
+    crop();
+  }//GEN-LAST:event_cropActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JLabel alpha;
   private javax.swing.JSlider alphaSlider;
@@ -825,6 +842,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   private javax.swing.JButton changeSize;
   private javax.swing.JToggleButton circle;
   private javax.swing.JComboBox colorLayer;
+  private javax.swing.JButton crop;
   private javax.swing.JToggleButton curve;
   private javax.swing.JToggleButton fill;
   private javax.swing.JToggleButton fillAlpha;
@@ -2645,5 +2663,17 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     pc.swapLayers(layer, layer+1);
     pc.setImageLayer(layer+1);
     pc.repaint();
+  }
+  public void crop() {
+    if (!haveSel) return;
+    PaintCanvas pc = imageTabs.get(getidx()).pc;
+    int ox = pc.getUnscaledWidth();
+    int oy = pc.getUnscaledHeight();
+    int sx = selX2 - selX1 + 1;
+    int sy = selY2 - selY1 + 1;
+    changeSize(pc, sx - ox, sy - oy, false);
+    pc.img[pc.getImageLayer()].fill(0, 0, sx, sy, backClr, true);
+    pasteSel(0, 0, false);
+    unselectTool(getidx());
   }
 }

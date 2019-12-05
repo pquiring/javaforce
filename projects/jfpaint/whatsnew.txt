@@ -1,5 +1,12 @@
 Whatsnew ...
 
+Dec 5, 2019 - v0.23 released!
+  - new : added selection alpha fill toggle button
+  - new : added crop selection button
+
+Oct 18, 2017 - v0.22 released!
+  - ???
+
 Dec 27, 2015 - v0.21 released!
   - fix : added ENTER/ESCAPE hot keys to dialog boxes
 
