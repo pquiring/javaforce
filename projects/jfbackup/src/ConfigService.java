@@ -693,10 +693,8 @@ public class ConfigService implements WebUIHandler {
         remoteTxt = "\\" + remoteTxt;
       }
       if (remoteTxt.endsWith("\\")) {
+        //will also change "\\" to "" to avoid double \\ in path
         remoteTxt = remoteTxt.substring(0, remoteTxt.length() - 1);
-      }
-      if (remoteTxt.equals("\\")) {
-        remoteTxt = "";
       }
       jobvol.volume = vol.getSelectedText();
       if (jobvol.volume.length() == 0) {

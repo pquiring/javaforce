@@ -1,5 +1,12 @@
 What's new...
 
+Dec 5/2019 : JF 18.1.0 released
+  - new : jfPaint/0.23
+    - added selection alpha toggle
+    - added crop selection button
+  - fix : jfBackup/0.2
+    - minor fixes
+
 Dec 4/2019 : JF 18.0.0 released
   - new app : jfBackup/0.1
     - Enterprise Tape Backup Solution
