@@ -590,7 +590,6 @@ public class ConfigService implements WebUIHandler {
       panel.add(table);
       row = new Row();
       ComboBox hosts = new ComboBox();
-      hosts.add(Config.current.this_host, Config.current.this_host);
       for(String host : Config.current.hosts) {
         hosts.add(host, host);
       }

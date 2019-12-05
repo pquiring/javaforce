@@ -50,6 +50,10 @@ public class ServerClient extends Thread {
         return;
       }
       JFLog.log("Client accepted:" + host);
+      if (!Config.current.hosts.contains(host)) {
+        Config.current.hosts.add(host);
+        Config.save();
+      }
       while (active) {
         if (queue.isEmpty()) {
           pingCount += 250;

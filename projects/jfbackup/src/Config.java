@@ -79,7 +79,7 @@ public class Config implements Serializable {
     }
   }
 
-  public static void save() {
+  public synchronized static void save() {
     try {
       FileOutputStream fos = new FileOutputStream(Paths.dataPath + "/config.dat");
       ObjectOutputStream oos = new ObjectOutputStream(fos);
