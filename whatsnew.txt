@@ -1,5 +1,9 @@
 What's new...
 
+Dec 6/2019 : JF 18.2.0 released
+  - fix : jfBackup/0.3
+    - client connection issues
+
 Dec 5/2019 : JF 18.1.0 released
   - new : jfPaint/0.23
     - added selection alpha toggle
