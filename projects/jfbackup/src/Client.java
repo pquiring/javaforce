@@ -5,8 +5,6 @@
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
-import java.util.zip.*;
 
 import javaforce.*;
 
@@ -21,6 +19,7 @@ public class Client extends Thread {
 //    Config.save();
     while (Status.active) {
       try {
+        JFLog.log("Client Connecting to:" + Config.current.server_host);
         s = new Socket(Config.current.server_host, 33200);
         is = s.getInputStream();
         os = s.getOutputStream();
