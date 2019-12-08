@@ -78,8 +78,9 @@ public class ServerClient extends Thread {
         writeLength(request.cmd.length());
         os.write(request.cmd.getBytes());
         if (request.arg != null) {
-          writeLength(request.arg.length());
-          os.write(request.arg.getBytes());
+          byte data[] = request.arg.getBytes("utf-8");
+          writeLength(data.length);
+          os.write(data);
         }
         switch (request.cmd) {
           case "listvolumes":  //list volumes
@@ -236,7 +237,7 @@ public class ServerClient extends Thread {
       throw new Exception("folder too large");
     }
     byte data[] = read(length);
-    req.reply = new String(data);
+    req.reply = new String(data, "utf-8");
     req.notify.notify(req);
   }
   private synchronized long nextIndex() {

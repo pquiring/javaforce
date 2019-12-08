@@ -32,6 +32,9 @@ public class Client extends Thread {
             writeLength(0);  //pong
             continue;
           }
+          if (length > 11) {
+            throw new Exception("bad cmd length");
+          }
           byte cmd[] = read(length);
           switch (new String(cmd)) {
             case "listvolumes":  //list volumes
@@ -148,6 +151,9 @@ public class Client extends Thread {
   private void mount() throws Exception {
     //read arg
     int arglen = readLength();
+    if (arglen != 2) {
+      throw new Exception("bad mount volume length");
+    }
     byte[] arg = read(arglen);
     String vol = new String(arg);
     //remove old mount if exists
@@ -183,6 +189,9 @@ public class Client extends Thread {
   private void unmount() throws Exception {
     //read arg
     int arglen = readLength();
+    if (arglen != 2) {
+      throw new Exception("bad unmount volume length");
+    }
     byte[] arg = read(arglen);
     String vol = new String(arg);
     VSS.unmountShadow(Paths.vssPath);
@@ -197,6 +206,9 @@ public class Client extends Thread {
   private void listfolder() throws Exception {
     //read arg
     int arglen = readLength();
+    if (arglen > 2 * 1024) {
+      throw new Exception("bad folder name length");
+    }
     byte[] arg = read(arglen);
     String folder = Paths.vssPath + new String(arg);
     File files[] = new File(folder).listFiles();
@@ -204,6 +216,12 @@ public class Client extends Thread {
     for(File file : files) {
       String name = file.getName();
       if (name.equals(".") || name.equals("..")) continue;
+      if (name.equals("$RECYCLE.BIN")) continue;
+      if (name.equals("System Volume Information")) continue;
+      //skip files with invalid chars
+      if (name.contains("?")) continue;
+      if (name.contains("*")) continue;
+      if (name.contains(":")) continue;
       if (name.length() == 0) continue;
       if (file.isDirectory()) {
         list.append("\\");
@@ -216,16 +234,20 @@ public class Client extends Thread {
       }
       list.append("\r\n");
     }
-    writeLength(list.length());
-    os.write(list.toString().getBytes());
+    byte data[] = list.toString().getBytes("utf-8");
+    writeLength(data.length);
+    os.write(data);
   }
   private final static int blocksize = 64 * 1024;
   private void readfile() throws Exception {
     //read arg
     int arglen = readLength();
+    if (arglen > 2 * 1024) {
+      throw new Exception("bad file name length");
+    }
     byte[] arg = read(arglen);
     //compress file and then send it
-    String vssFilename = Paths.vssPath + new String(arg);
+    String vssFilename = Paths.vssPath + new String(arg, "utf-8");
     File vssFile = new File(vssFilename);
     if (!vssFile.exists()) {
       //should not happen

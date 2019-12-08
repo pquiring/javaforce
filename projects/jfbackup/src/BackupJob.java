@@ -13,7 +13,7 @@ import javaforce.*;
 
 public class BackupJob extends Thread {
   private EntryJob job;
-  private final static boolean verbose = false;
+  private final static boolean verbose = true;
   //TODO : support other blocksize (are there others?)
   private final static int blocksize = 64 * 1024;
   private long backupid;
@@ -40,12 +40,8 @@ public class BackupJob extends Thread {
     this.job = job;
   }
   public void run() {
-    if (!doBackup()) {
-      log("Backup failed at " + ConfigService.toDateTime(System.currentTimeMillis()));
-      Status.running = false;
-      Status.abort = false;
-      Status.desc = "Backup aborted, see logs.";
-    } else {
+    try {
+      if (!doBackup()) throw new Exception("Backup failed");
       //save tapes to library
       Tapes.current.tapes.addAll(catnfo.tapes);
       Tapes.save();
@@ -57,7 +53,16 @@ public class BackupJob extends Thread {
       Status.running = false;
       Status.abort = false;
       Status.desc = "Backup Complete";
+    } catch (Exception e) {
+      if (e.getMessage().equals("Backup failed")) {
+        log(e.toString());
+      }
+      log("Backup failed at " + ConfigService.toDateTime(System.currentTimeMillis()));
+      Status.running = false;
+      Status.abort = false;
+      Status.desc = "Backup aborted, see logs.";
     }
+    JFLog.close(3);
   }
   private boolean doBackup() {
     //assign a unique backup id
@@ -130,6 +135,9 @@ public class BackupJob extends Thread {
       deleteLocalFile(file);
     }
     return true;
+  }
+  private void log(Exception e) {
+    JFLog.log(3, e);
   }
   private void log(String msg) {
     JFLog.log(3, msg);
@@ -382,7 +390,9 @@ public class BackupJob extends Thread {
           lock.notify();
         }
       });
-      try {lock.wait();} catch (Exception e) {}
+      while (reply == null) {
+        try {lock.wait();} catch (Exception e) {}
+      }
     }
     return reply.equals("OKAY");
   }
@@ -398,12 +408,14 @@ public class BackupJob extends Thread {
           lock.notify();
         }
       });
-      try {lock.wait();} catch (Exception e) {}
+      while (reply == null) {
+        try {lock.wait();} catch (Exception e) {}
+      }
     }
     return reply.equals("OKAY");
   }
   private EntryFolder listVolume(EntryJobVolume jobvol, String path) {
-    if (verbose) log("ListVolume:" + jobvol.host + ":" + path);
+    if (verbose) log("ListVolume:" + jobvol.host + "\\" + path);
     ServerClient client = getClient(jobvol);
     Object lock = new Object();
     reply = null;
@@ -414,26 +426,31 @@ public class BackupJob extends Thread {
           lock.notify();
         }
       });
-      try {lock.wait();} catch (Exception e) {}
+      while (reply == null) {
+        try {lock.wait();} catch (Exception e) {}
+      }
     }
-    String list[] = reply.split("\r\n");
     EntryFolder folder = new EntryFolder();
-    for(String ff : list) {
-      if (Status.abort) return null;
-      String f[] = ff.split("[|]");
-      if (f[0].startsWith("\\")) {
-        if (verbose) log("ListFolder:" + f[0]);
-        EntryFolder subfolder = listVolume(jobvol, path + f[0]);
-        if (subfolder == null) return null;
-        subfolder.name = f[0].substring(1);
-        folder.folders.add(subfolder);
-      } else {
-        if (verbose) log("ListFile:" + f[0]);
-        EntryFile file = new EntryFile();
-        file.ct = 1;  //zip
-        file.name = f[0];
-        file.u = Long.valueOf(f[1]);
-        folder.files.add(file);
+    if (reply.length() > 0) {
+      String list[] = reply.split("\r\n");
+      for(String ff : list) {
+        if (Status.abort) return null;
+        String f[] = ff.split("[|]");
+        if (f[0].startsWith("\\")) {
+          if (verbose) log("ListFolder:" + f[0]);
+          EntryFolder subfolder = listVolume(jobvol, path + f[0]);
+          if (subfolder == null) return null;
+          subfolder.name = f[0].substring(1);
+          folder.folders.add(subfolder);
+        } else {
+          if (f[0].length() == 0) continue;
+          if (verbose) log("ListFile:" + f[0]);
+          EntryFile file = new EntryFile();
+          file.ct = 1;  //zip
+          file.name = f[0];
+          file.u = Long.valueOf(f[1]);
+          folder.files.add(file);
+        }
       }
     }
     return folder;
@@ -447,15 +464,24 @@ public class BackupJob extends Thread {
     }
     synchronized(lock) {
       client.addRequest(new Request("readfile", jobvol.path + path + "\\" + file.name), (Request req) -> {
-        file.localfile = req.localfile;
-        file.c = req.compressed;
+        if (req.localfile == null) {
+          file.localfile = ":abort:";
+        } else {
+          file.localfile = req.localfile;
+          file.c = req.compressed;
+        }
         synchronized(lock) {
           lock.notify();
         }
       });
-      try {lock.wait();} catch (Exception e) {}
+      while (file.localfile == null) {
+        try {lock.wait();} catch (Exception e) {}
+      }
     }
-    if (file.localfile == null) return false;
+    if (file.localfile.equals(":abort:")) {
+      log("Error:Read file failed");
+      return false;
+    }
     long c = new File(file.localfile).length();
     if (c != file.c) {
       log("Error:temp file size error, disk full?");
@@ -506,8 +532,14 @@ public class BackupJob extends Thread {
           log("Error:mount failed");
           return false;
         }
+        log("Mount successful");
+        log("ListVolume:" + jobvol.host + "\\" + jobvol.volume);
         EntryFolder root = listVolume(jobvol, jobvol.path);
-        if (root == null) return false;
+        if (root == null) {
+          log("Error:ListVolume failed");
+          return false;
+        }
+        log("ListVolume complete");
         root.name = "";
         //save to catalog
         EntryVolume volume = new EntryVolume();
@@ -521,7 +553,11 @@ public class BackupJob extends Thread {
         //save files to tape
         boolean success = doFolder(root, "");
         //unmount
-        unmountVolume(jobvol);
+        if (!unmountVolume(jobvol)) {
+          log("Error:Unable to unmount volume");
+          return false;
+        }
+        log("Unmount successful");
         if (!success) return false;
       }
       EntryFile end = new EntryFile();

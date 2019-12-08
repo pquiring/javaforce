@@ -34,18 +34,23 @@ public class RestoreJob extends Thread {
     this.info = info;
   }
   public void run() {
-    if (!doRestore()) {
-      log("Restore failed");
-      Status.running = false;
-      Status.abort = false;
-      Status.desc = "Restore aborted, see logs.";
-    } else {
+    try {
+      if (!doRestore()) throw new Exception("Restore failed");
       log("Restored files to " + Config.current.restorePath);
       log("Restore complete");
       Status.running = false;
       Status.abort = false;
       Status.desc = "Restore Complete";
+    } catch(Exception e) {
+      if (!e.getMessage().equals("Restore failed")) {
+        log(e);
+      }
+      log("Restore failed");
+      Status.running = false;
+      Status.abort = false;
+      Status.desc = "Restore aborted, see logs.";
     }
+    JFLog.close(3);
   }
   public boolean doRestore() {
     //assign a unique backup id
@@ -71,6 +76,9 @@ public class RestoreJob extends Thread {
       if (!doFolder(vol.root, isVolumeSelected(vol), Config.current.restorePath + "\\" + vol.host + "_" + vol.volume.replace(':', '_'))) return false;
     }
     return true;
+  }
+  private void log(Exception e) {
+    JFLog.log(3, e);
   }
   private void log(String msg) {
     JFLog.log(3, msg);
