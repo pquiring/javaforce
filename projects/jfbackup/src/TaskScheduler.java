@@ -49,6 +49,8 @@ public class TaskScheduler extends TimerTask {
     Status.running = true;
     Status.abort = false;
     Status.desc = "Running backup job";
+    Status.copied = 0;
+    Status.files = 0;
     Status.log = new StringBuilder();
     Status.job = new BackupJob(job);
     Status.job.start();

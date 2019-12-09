@@ -19,6 +19,7 @@ public class CatalogInfo implements Serializable {
   public long backup;
   public long retention;
   public String name;  //backup name
+  public int files;  //# of files in backup
 
   public void save() {
     try {

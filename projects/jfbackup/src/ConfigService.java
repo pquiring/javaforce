@@ -285,6 +285,17 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  private final static long MB = 1024 * 1024;
+  private final static long GB = 1024 * 1024 * 1024;
+
+  private static String memoryUsage() {
+    long total = Runtime.getRuntime().totalMemory() / GB;
+    long free = Runtime.getRuntime().freeMemory() / GB;
+    long max = Runtime.getRuntime().maxMemory() / GB;
+    long used = total - free;
+    return " Memory:Used:" + used + "GB Max:" + max + "GB";
+  }
+
   public Panel serverMonitor() {
     Panel panel = new Panel();
     Row row = new Row();
@@ -297,7 +308,12 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(5);
     panel.add(row);
 
-    panel.add(new Label("Monitor:"));
+    row = new Row();
+    row.add(new Label("Monitor:"));
+    Label progress = new Label("");
+    row.add(progress);
+
+    panel.add(row);
 
     TextArea text = new TextArea("Loading...");
     text.setReadonly(true);
@@ -316,6 +332,21 @@ public class ConfigService implements WebUIHandler {
           sb.setLength(0);
           if (Status.running) {
             sb.append("Job Status : " + Status.desc + "\r\n");
+            StringBuilder pt = new StringBuilder();
+            pt.append("Progress:");
+            if (Status.copied < GB) {
+              //under 1GB, show MBs
+              pt.append((Status.copied / MB));
+              pt.append("MB");
+            } else {
+              //show GBs
+              pt.append((Status.copied / GB));
+              pt.append("GB");
+            }
+            pt.append(" Files:");
+            pt.append(Status.files);
+            pt.append(memoryUsage());
+            progress.setText(pt.toString());
             if (Status.log != null) {
               sb.append(Status.log);
             }
@@ -1048,8 +1079,11 @@ public class ConfigService implements WebUIHandler {
         Status.running = true;
         Status.abort = false;
         Status.desc = "Running restore job";
+        Status.copied = 0;
+        Status.files = 0;
         Status.log = new StringBuilder();
-        new RestoreJob(cat, catinfo, ri).start();
+        Status.job = new RestoreJob(cat, catinfo, ri);
+        Status.job.start();
         cat = null;
         SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
         split.setRightComponent(serverMonitor());

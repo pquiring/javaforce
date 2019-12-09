@@ -13,7 +13,7 @@ import javaforce.*;
 
 public class BackupJob extends Thread {
   private EntryJob job;
-  private final static boolean verbose = true;
+  private final static boolean verbose = false;
   //TODO : support other blocksize (are there others?)
   private final static int blocksize = 64 * 1024;
   private long backupid;
@@ -45,10 +45,13 @@ public class BackupJob extends Thread {
       //save tapes to library
       Tapes.current.tapes.addAll(catnfo.tapes);
       Tapes.save();
+      log("Saving catalog...");
       catnfo.name = job.name;
       catnfo.save();
+      catnfo = null;
       cat.haveChanger = haveChanger;
       cat.save();
+      cat = null;
       log("Backup complete at " + ConfigService.toDateTime(System.currentTimeMillis()));
       Status.running = false;
       Status.abort = false;
@@ -62,6 +65,7 @@ public class BackupJob extends Thread {
       Status.abort = false;
       Status.desc = "Backup aborted, see logs.";
     }
+    Status.job = null;
     JFLog.close(3);
   }
   private boolean doBackup() {
@@ -133,6 +137,9 @@ public class BackupJob extends Thread {
       if (Status.abort) return false;
       if (!writeFile(file)) return false;
       deleteLocalFile(file);
+      Status.copied += file.u;
+      Status.files++;
+      catnfo.files++;
     }
     return true;
   }
@@ -414,8 +421,8 @@ public class BackupJob extends Thread {
     }
     return reply.equals("OKAY");
   }
-  private EntryFolder listVolume(EntryJobVolume jobvol, String path) {
-    if (verbose) log("ListVolume:" + jobvol.host + "\\" + path);
+  private EntryFolder listFolder(EntryJobVolume jobvol, String path) {
+    if (verbose) log("ListFolder:" + jobvol.host + "\\" + path);
     ServerClient client = getClient(jobvol);
     Object lock = new Object();
     reply = null;
@@ -438,7 +445,7 @@ public class BackupJob extends Thread {
         String f[] = ff.split("[|]");
         if (f[0].startsWith("\\")) {
           if (verbose) log("ListFolder:" + f[0]);
-          EntryFolder subfolder = listVolume(jobvol, path + f[0]);
+          EntryFolder subfolder = listFolder(jobvol, path + f[0]);
           if (subfolder == null) return null;
           subfolder.name = f[0].substring(1);
           folder.folders.add(subfolder);
@@ -533,13 +540,13 @@ public class BackupJob extends Thread {
           return false;
         }
         log("Mount successful");
-        log("ListVolume:" + jobvol.host + "\\" + jobvol.volume);
-        EntryFolder root = listVolume(jobvol, jobvol.path);
+        if (verbose) log("ListVolume:" + jobvol.host + "\\" + jobvol.volume);
+        EntryFolder root = listFolder(jobvol, jobvol.path);
         if (root == null) {
           log("Error:ListVolume failed");
           return false;
         }
-        log("ListVolume complete");
+        if (verbose) log("ListVolume complete");
         root.name = "";
         //save to catalog
         EntryVolume volume = new EntryVolume();

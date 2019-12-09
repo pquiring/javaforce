@@ -12,4 +12,6 @@ public class Status {
   public static String desc;
   public static StringBuilder log;
   public static Thread job;
+  public static long copied;
+  public static int files;
 }

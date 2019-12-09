@@ -51,6 +51,7 @@ public class RestoreJob extends Thread {
       Status.desc = "Restore aborted, see logs.";
     }
     JFLog.close(3);
+    Status.job = null;
   }
   public boolean doRestore() {
     //assign a unique backup id
