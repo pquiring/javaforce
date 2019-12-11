@@ -4,7 +4,7 @@
 
 JF_LIB_HANDLE nidll = NULL;
 
-#ifdef __WIN32__
+#ifdef _WIN32
   #define JF_LIB_NAME "nicaiu.dll"
 #else
   #define JF_LIB_NAME "nicaiu.so"

@@ -12,7 +12,6 @@ import javaforce.*;
 
 public class RestoreJob extends Thread {
   private long restoreid;
-  private final static boolean verbose = false;
   private MediaChanger changer = new MediaChanger();
   private TapeDrive tape = new TapeDrive();
   private boolean haveChanger;
@@ -27,6 +26,7 @@ public class RestoreJob extends Thread {
   private EntryVolume currentVolume;
   private EntryFolder currentFolder;
   private EntryTape currentTape;
+  private EntryTape desiredTape;
 
   public RestoreJob(Catalog cat, CatalogInfo catInfo, RestoreInfo info) {
     this.cat = cat;
@@ -42,7 +42,8 @@ public class RestoreJob extends Thread {
       Status.abort = false;
       Status.desc = "Restore Complete";
     } catch(Exception e) {
-      if (!e.getMessage().equals("Restore failed")) {
+      String msg = e.getMessage();
+      if (msg == null || !msg.equals("Restore failed")) {
         log(e);
       }
       log("Restore failed");
@@ -51,6 +52,10 @@ public class RestoreJob extends Thread {
       Status.desc = "Restore aborted, see logs.";
     }
     JFLog.close(3);
+    tape.close();
+    if (haveChanger) {
+      changer.close();
+    }
     Status.job = null;
   }
   public boolean doRestore() {
@@ -58,11 +63,20 @@ public class RestoreJob extends Thread {
     restoreid = System.currentTimeMillis();
     //do we have a media changer?
     haveChanger = Config.current.changerDevice.length() > 0;
-    //reset local file index
-    ServerClient.resetLocalIndex();
     //create a log file
     JFLog.init(3, Paths.logsPath + "/restore-" + restoreid + ".log", true);
     log("Restore job started at " + ConfigService.toDateTime(restoreid));
+    //open devices
+    if (!tape.open(Config.current.tapeDevice)) {
+      log("Error:Failed to open tape device");
+      return false;
+    }
+    if (haveChanger) {
+      if (!changer.open(Config.current.changerDevice)) {
+        log("Error:Failed to open changer device");
+        return false;
+      }
+    }
     if (haveChanger != cat.haveChanger) {
       log("Error:Media changer mismatch");
       return false;
@@ -91,7 +105,9 @@ public class RestoreJob extends Thread {
       doFolder(childFolder, restore ? true : isFolderSelected(childFolder), path + "\\" + childFolder.name);
     }
     for(EntryFile file : folder.files) {
-      if (restore || isFileSelected(file)) doFile(file, path);
+      if (restore || isFileSelected(file)) {
+        if (!doFile(file, path)) return false;
+      }
     }
     return true;
   }
@@ -99,60 +115,64 @@ public class RestoreJob extends Thread {
     if (haveChanger) {
       if (currentTape == null || currentTape.number != file.t) {
         if (!loadTape(file.t - 1)) return false;
+        if (!verifyHeader()) return false;
       }
     }
     if (!setpos(file.o)) {
       log("Error:Failed to set tape position:" + file.o);
       return false;
     }
-    long pos = getpos();
-    if (pos != file.o) {
-      log("Error:Failed to get tape position:Expected:" + file.o + " Returned:" + pos);
+    long tapepos = getpos();
+    if (tapepos != file.o) {
+      log("Error:Failed to get tape position:Expected:" + file.o + " Returned:" + tapepos);
       return false;
     }
     new File(path).mkdirs();
-    String tempfile = Paths.tempPath + "\\restored_compressed_file.dat";
     String resfile = path + "\\" + file.name;
-    if (!tape.read(tempfile, file.c)) {
-      log("Error:Failed to read file from tape:" + file.name);
+    try {
+      FileOutputStream fos = new FileOutputStream(resfile);
+      PipedInputStream pis = new PipedInputStream();
+      PipedOutputStream pos = new PipedOutputStream(pis);
+      Transfer transfer = new Transfer(pos, file.c);
+      transfer.start();
+      long uncompressed = Compression.decompress(pis, fos, file.c);
+      transfer.join();
+      if (uncompressed != file.u) return false;
+    } catch (Exception e) {
+      log(e);
       return false;
     }
-    if (!decompress(tempfile, resfile, file)) {
-      new File(tempfile).delete();
-      new File(resfile).delete();
-      return false;
-    }
-    new File(tempfile).delete();
     return true;
   }
-  private boolean decompress(String in, String out, EntryFile file) {
-    FileInputStream fis = null;
-    FileOutputStream fos = null;
-    if (verbose) {
-      File infile = new File(in);
-      File outfile = new File(out);
-      log("readFile:" + file.name + " blks=" + file.b + " compressed=" + file.c + " uncompressed=" + file.u + " tempfile.length=" + infile.length());
+  private static byte buffer[] = new byte[64 * 1024];
+  private static final int buffersize = 64 * 1024;
+  public class Transfer extends Thread {
+    private OutputStream os;
+    private boolean active = true;
+    public long copied;
+    public long compressed;
+    public Transfer(OutputStream os, long compressed) {
+      this.os = os;
+      this.compressed = compressed;
     }
-    try {
-      fis = new FileInputStream(in);
-      fos = new FileOutputStream(out);
-      long uncompressed = Compression.decompress(fis, fos, file.c);
-      fis.close();
-      fos.close();
-      if (uncompressed != file.u) {
-        log("Error:Decompression failed:" + file.name + " Expected:" + file.u + " Returned:" + uncompressed);
-        return Config.current.skipBadFiles;
+    public void run() {
+      long left = compressed;
+      try {
+        while (active) {
+          if (copied == compressed) break;
+          int toread = left < buffersize ? (int)left : buffersize;
+          int read = tape.read(buffer, 0, toread);
+          if (read == -1) break;
+          if (read == 0) continue;
+          os.write(buffer, 0, read);
+          copied += read;
+          left -= read;
+        }
+        os.flush();
+        os.close();
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-      return true;
-    } catch (Exception e) {
-      log("Error:" + e.toString());
-      if (fis != null) {
-        try { fis.close(); } catch (Exception e2) {}
-      }
-      if (fos != null) {
-        try { fos.close(); } catch (Exception e2) {}
-      }
-      return false;
     }
   }
   private boolean isVolumeSelected(EntryVolume volume) {
@@ -169,11 +189,14 @@ public class RestoreJob extends Thread {
       log("Error:Invalid tape number " + (index+1));
       return false;
     }
-    currentTape = catInfo.tapes.get(index);
+    desiredTape = catInfo.tapes.get(index);
+    if (currentTape == desiredTape) return true;
     //move this tape into position
     if (!updateList()) return false;
-    if (elements[driveIdx].barcode.equals(currentTape.barcode)) {
+    if (elements[driveIdx].barcode.equals(desiredTape.barcode)) {
       //desired tape in drive
+      currentTape = desiredTape;
+      desiredTape = null;
       log("Using tape:" + currentTape.barcode);
       return true;
     }
@@ -229,7 +252,7 @@ public class RestoreJob extends Thread {
       if (emptySlotIdx == -1 && elements[idx].name.startsWith("slot") && elements[idx].barcode.equals("<empty>")) {
         emptySlotIdx = idx;
       }
-      if (desiredSlotIdx == -1 && currentTape != null && elements[idx].barcode.equals(currentTape.barcode)) {
+      if (desiredSlotIdx == -1 && desiredTape != null && elements[idx].barcode.equals(desiredTape.barcode)) {
         desiredSlotIdx = idx;
       }
     }
@@ -237,8 +260,8 @@ public class RestoreJob extends Thread {
       log("Error:Unable to find drive in changer");
       return false;
     }
-    if (currentTape != null && desiredSlotIdx == -1) {
-      log("Error:Unable to find desired tape:" + currentTape.barcode);
+    if (desiredTape != null && desiredSlotIdx == -1) {
+      log("Error:Unable to find desired tape:" + desiredTape.barcode);
       return false;
     }
     return true;
@@ -253,24 +276,25 @@ public class RestoreJob extends Thread {
  *   B = barcode of tape (if available)
  */
   private boolean verifyHeader() {
-    if (!setpos(0)) return false;
+    log("Verify tape:" + currentTape.barcode);
+    if (!setpos(0)) {
+      log("Error:Unable to rewind tape");
+      return false;
+    }
     long pos = getpos();
     if (pos != 0) {
       log("Error:Failed to rewind tape");
       return false;
     }
-    String tempfile = Paths.tempPath + "/header.dat";
-    if (!tape.read(tempfile, 1)) {
+    byte data[] = new byte[64 * 1024];
+    if (tape.read(data, 0, data.length) != data.length) {
       log("Error:Failed to read tape header");
       return false;
     }
     try {
-      FileInputStream fis = new FileInputStream(tempfile);
-      byte data[] = fis.readAllBytes();
       int idx = 0;
       while (data[idx] != ' ' && idx < data.length) idx++;
       if (idx == data.length) throw new Exception("Invalid header on tape");
-      fis.close();
       String header = new String(data, 0, idx);
       String fs[] = header.split(";");
       //compare to currentTape
@@ -307,7 +331,7 @@ public class RestoreJob extends Thread {
       log("Error:" + e.toString());
       return false;
     }
-    return false;
+    return true;
   }
   private boolean setpos(long pos) {
     //try 3 times

@@ -7,13 +7,11 @@
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.*;
 
 import javaforce.*;
 
 public class BackupJob extends Thread {
   private EntryJob job;
-  private final static boolean verbose = false;
   //TODO : support other blocksize (are there others?)
   private final static int blocksize = 64 * 1024;
   private long backupid;
@@ -29,11 +27,6 @@ public class BackupJob extends Thread {
   private int driveIdx = -1;
   private int emptySlotIdx = -1;
   private String barcode;
-  private LinkedBlockingQueue<EntryFile> queue = new LinkedBlockingQueue<EntryFile>(16);
-  private long queueSize = 0;
-  private final static long maxQueueSize = 16 * 1024 * 1024 * 1024;  //16 GBs
-  private Object qsLock = new Object();
-  private FileReader reader = new FileReader();
   private int volCount = 1;
 
   public BackupJob(EntryJob job) {
@@ -57,13 +50,18 @@ public class BackupJob extends Thread {
       Status.abort = false;
       Status.desc = "Backup Complete";
     } catch (Exception e) {
-      if (e.getMessage().equals("Backup failed")) {
-        log(e.toString());
+      String msg = e.getMessage();
+      if (msg == null || !msg.equals("Backup failed")) {
+        log(e);
       }
       log("Backup failed at " + ConfigService.toDateTime(System.currentTimeMillis()));
       Status.running = false;
       Status.abort = false;
       Status.desc = "Backup aborted, see logs.";
+    }
+    tape.close();
+    if (haveChanger) {
+      changer.close();
     }
     Status.job = null;
     JFLog.close(3);
@@ -75,11 +73,20 @@ public class BackupJob extends Thread {
     retentionid = calcRetention();
     //do we have a media changer?
     haveChanger = Config.current.changerDevice.length() > 0;
-    //reset local file index
-    ServerClient.resetLocalIndex();
     //create a log file
     JFLog.init(3, Paths.logsPath + "/backup-" + backupid + ".log", true);
     log("Backup job " + job.name + " started at " + ConfigService.toDateTime(backupid));
+    //open devices
+    if (!tape.open(Config.current.tapeDevice)) {
+      log("Error:Failed to open tape device");
+      return false;
+    }
+    if (haveChanger) {
+      if (!changer.open(Config.current.changerDevice)) {
+        log("Error:Failed to open changer device");
+        return false;
+      }
+    }
     //verify all remote hosts are connected
     log("Verifying remote hosts...");
     for(EntryJobVolume jobvol : job.backup) {
@@ -112,34 +119,42 @@ public class BackupJob extends Thread {
       //prep current tape in drive
       if (!prepNextTape()) return false;
     }
-    reader.start();
-    while (Status.active) {
-      EntryFile file = get();
-      if (file == null) {
-        log("Error:no more files?");
-        return false;
-      }
-      if (file.name.equals(":end:")) {
-        break;
-      }
-      if (file.name.equals(":abort:")) {
-        return false;
-      }
-      if (currentTape == null || currentTape.left < file.b) {
-        if (!haveChanger) {
-          log("Error:Tape full (no media changer)");
-          return false;
-        }
-        if (!prepNextTape()) {
-          return false;
-        }
+    for(EntryJobVolume jobvol : job.backup) {
+      if (jobvol.volume.length() == 0) {
+        log("Warning:Skipping empty volume on host " + jobvol.host);
+        continue;
       }
       if (Status.abort) return false;
-      if (!writeFile(file)) return false;
-      deleteLocalFile(file);
-      Status.copied += file.u;
-      Status.files++;
-      catnfo.files++;
+      //mount/list volume on remote
+      if (!mountVolume(jobvol)) {
+        log("Error:mount failed");
+        return false;
+      }
+      log("Mount successful");
+      EntryFolder root = listFolder(jobvol, jobvol.path);
+      if (root == null) {
+        log("Error:ListVolume failed");
+        return false;
+      }
+      root.name = "";
+      //save to catalog
+      EntryVolume volume = new EntryVolume();
+      volume.host = jobvol.host;
+      volume.root = root;
+      volume.volume = jobvol.volume;
+      volume.path = jobvol.path;
+      volume.name = "vol-" + volCount++;
+      cat.volumes.add(volume);
+      BackupJob.this.jobvol = jobvol;
+      //save files to tape
+      boolean success = doFolder(root, "");
+      //unmount
+      if (!unmountVolume(jobvol)) {
+        log("Error:Unable to unmount volume");
+        return false;
+      }
+      log("Unmount successful");
+      if (!success) return false;
     }
     return true;
   }
@@ -150,37 +165,11 @@ public class BackupJob extends Thread {
     JFLog.log(3, msg);
     Status.log.append(msg + "\r\n");
   }
-  private EntryFile get() {
-    EntryFile file;
-    try {
-      file = queue.take();
-    } catch (Exception e) {
-      log("Error:queue empty?");
-      return null;
-    }
-    synchronized(qsLock) {
-      queueSize -= file.c;
-    }
-    return file;
-  }
-  private boolean put(EntryFile file) {
-    synchronized(qsLock) {
-      queueSize += file.c;
-    }
-    try {
-      queue.put(file);
-    } catch (Exception e) {
-      log("Error:queue full?");
-      return false;
-    }
-    return true;
-  }
   private boolean doFolder(EntryFolder parent, String path) {
     if (parent == null) return false;
     for(EntryFile file : parent.files) {
       if (Status.abort) return false;
       if (!doFile(file, path)) {
-        deleteLocalFile(file);
         return false;
       }
     }
@@ -191,9 +180,6 @@ public class BackupJob extends Thread {
     return true;
   }
   private boolean doFile(EntryFile file, String path) {
-    while (queueSize > maxQueueSize) {
-      JF.sleep(100);
-    }
     if (!readFile(file, path)) return false;
     return true;
   }
@@ -236,13 +222,19 @@ public class BackupJob extends Thread {
     }
     return true;
   }
+  private EntryTape findTape(String barcode) {
+    for(EntryTape tape : catnfo.tapes) {
+      if (tape.barcode.equals(barcode)) return tape;
+    }
+    return null;
+  }
   private boolean loadEmptyTape() {
     if (!updateList()) return false;
     for(int idx=0;idx<elements.length;idx++) {
       if (elements[idx].barcode.equals("<empty>")) continue;
       //check if tape is protected
-      EntryTape tape = Tapes.findTape(elements[idx].barcode);
-      if (tape != null) continue;
+      if (Tapes.findTape(elements[idx].barcode) != null) continue;
+      if (findTape(elements[idx].barcode) != null) continue;
       //tape is not protected, use it
       if (elements[idx].name.startsWith("drive")) {
         //tape in drive is useable
@@ -344,25 +336,12 @@ public class BackupJob extends Thread {
     byte src[] = sb.toString().getBytes();
     System.arraycopy(src, 0, data, 0, src.length);
 
-    String file = Paths.tempPath + "/header.dat";
-
     log("WriteHeader to tape:" + barcode);
 
-    try {
-      FileOutputStream fos = new FileOutputStream(file);
-      fos.write(data);
-      fos.close();
-    } catch (Exception e) {
-      log(e.toString());
-      return false;
-    }
-
-    if (!tape.write(file)) {
+    if (!tape.write(data, 0, data.length)) {
       log("Error:Tape write failed");
       return false;
     }
-
-    new File(file).delete();
 
     currentTape.left--;
     currentTape.position = 1;
@@ -392,7 +371,11 @@ public class BackupJob extends Thread {
     reply = null;
     synchronized(lock) {
       client.addRequest(new Request("mount", jobvol.volume), (Request req) -> {
-        reply = req.reply;
+        if (req == null || req.reply == null) {
+          reply = "NOPE";
+        } else {
+          reply = req.reply;
+        }
         synchronized(lock) {
           lock.notify();
         }
@@ -410,7 +393,11 @@ public class BackupJob extends Thread {
     reply = null;
     synchronized(lock) {
       client.addRequest(new Request("unmount", jobvol.volume), (Request req) -> {
-        reply = req.reply;
+        if (req == null || req.reply == null) {
+          reply = "NOPE";
+        } else {
+          reply = req.reply;
+        }
         synchronized(lock) {
           lock.notify();
         }
@@ -422,13 +409,16 @@ public class BackupJob extends Thread {
     return reply.equals("OKAY");
   }
   private EntryFolder listFolder(EntryJobVolume jobvol, String path) {
-    if (verbose) log("ListFolder:" + jobvol.host + "\\" + path);
     ServerClient client = getClient(jobvol);
     Object lock = new Object();
     reply = null;
     synchronized(lock) {
       client.addRequest(new Request("listfolder", path), (Request req) -> {
-        reply = req.reply;
+        if (req == null || req.reply == null) {
+          reply = "NOPE";
+        } else {
+          reply = req.reply;
+        }
         synchronized(lock) {
           lock.notify();
         }
@@ -437,6 +427,7 @@ public class BackupJob extends Thread {
         try {lock.wait();} catch (Exception e) {}
       }
     }
+    if (reply == null) return null;
     EntryFolder folder = new EntryFolder();
     if (reply.length() > 0) {
       String list[] = reply.split("\r\n");
@@ -444,14 +435,12 @@ public class BackupJob extends Thread {
         if (Status.abort) return null;
         String f[] = ff.split("[|]");
         if (f[0].startsWith("\\")) {
-          if (verbose) log("ListFolder:" + f[0]);
           EntryFolder subfolder = listFolder(jobvol, path + f[0]);
           if (subfolder == null) return null;
           subfolder.name = f[0].substring(1);
           folder.folders.add(subfolder);
         } else {
           if (f[0].length() == 0) continue;
-          if (verbose) log("ListFile:" + f[0]);
           EntryFile file = new EntryFile();
           file.ct = 1;  //zip
           file.name = f[0];
@@ -465,112 +454,98 @@ public class BackupJob extends Thread {
   private boolean readFile(EntryFile file, String path) {
     ServerClient client = getClient(jobvol);
     Object lock = new Object();
-    file.localfile = null;
-    if (verbose) {
-      log("ReadFile:" + file.name);
-    }
-    synchronized(lock) {
-      client.addRequest(new Request("readfile", jobvol.path + path + "\\" + file.name), (Request req) -> {
-        if (req.localfile == null) {
-          file.localfile = ":abort:";
-        } else {
-          file.localfile = req.localfile;
-          file.c = req.compressed;
-        }
-        synchronized(lock) {
-          lock.notify();
-        }
-      });
-      while (file.localfile == null) {
-        try {lock.wait();} catch (Exception e) {}
+    long maxBlocks = file.u / blocksize + 4;  //estimate on compression
+    if (haveChanger) {
+      if (currentTape == null || currentTape.left < maxBlocks) {
+        if (!prepNextTape()) return false;
       }
     }
-    if (file.localfile.equals(":abort:")) {
-      log("Error:Read file failed");
-      return false;
-    }
-    long c = new File(file.localfile).length();
-    if (c != file.c) {
-      log("Error:temp file size error, disk full?");
-      return false;
-    }
-    file.b = file.c / blocksize;
-    if (file.c % blocksize > 0) {
-      file.b++;
-    }
-    put(file);
-    return true;
-  }
-  private boolean writeFile(EntryFile file) {
     file.o = currentTape.position;
     file.t = catnfo.tapes.size();
-    currentTape.left -= file.b;
-    currentTape.position += file.b;
-    if (verbose) {
-      File tmpfile = new File(file.localfile);
-      log("writeFile:" + file.name + " blks=" + file.b + " compressed=" + file.c + " uncompressed=" + file.u + " tempfile.length=" + tmpfile.length());
-    }
-    return tape.write(file.localfile);
-  }
-  private void deleteLocalFile(EntryFile file) {
-    if (file.localfile == null) return;
-    new File(file.localfile).delete();
-    file.localfile = null;
-  }
-  private class FileReader extends Thread {
-    public void run() {
-      if (!doReader()) {
-        Status.abort = true;
-        log("Error:File Reader aborted");
-        EntryFile end = new EntryFile();
-        end.name = ":abort:";
-        put(end);
+    try {
+      PipedInputStream pis = new PipedInputStream();
+      PipedOutputStream pos = new PipedOutputStream(pis);
+      Transfer transfer = new Transfer(pis);
+      transfer.start();
+      synchronized(lock) {
+        client.addRequest(new Request("readfile", jobvol.path + path + "\\" + file.name, pos), (Request req) -> {
+          if (req == null) {
+            file.c = -1;
+          } else {
+            transfer.compressed = req.compressed;
+            try {
+              pos.flush();
+              pos.close();
+            } catch (Exception e) {}
+            file.c = req.compressed;
+          }
+          synchronized(lock) {
+            lock.notify();
+          }
+        });
+        while (file.c == 0) {
+          try {lock.wait();} catch (Exception e) {}
+        }
       }
-    }
-    public boolean doReader() {
-      for(EntryJobVolume jobvol : job.backup) {
-        if (jobvol.volume.length() == 0) {
-          log("Warning:Skipping empty volume on host " + jobvol.host);
-          continue;
-        }
-        if (Status.abort) return false;
-        //mount/list volume on remote
-        if (!mountVolume(jobvol)) {
-          log("Error:mount failed");
-          return false;
-        }
-        log("Mount successful");
-        if (verbose) log("ListVolume:" + jobvol.host + "\\" + jobvol.volume);
-        EntryFolder root = listFolder(jobvol, jobvol.path);
-        if (root == null) {
-          log("Error:ListVolume failed");
-          return false;
-        }
-        if (verbose) log("ListVolume complete");
-        root.name = "";
-        //save to catalog
-        EntryVolume volume = new EntryVolume();
-        volume.host = jobvol.host;
-        volume.root = root;
-        volume.volume = jobvol.volume;
-        volume.path = jobvol.path;
-        volume.name = "vol-" + volCount++;
-        cat.volumes.add(volume);
-        BackupJob.this.jobvol = jobvol;
-        //save files to tape
-        boolean success = doFolder(root, "");
-        //unmount
-        if (!unmountVolume(jobvol)) {
-          log("Error:Unable to unmount volume");
-          return false;
-        }
-        log("Unmount successful");
-        if (!success) return false;
+      transfer.join();
+      if (file.c == -1) {
+        log("Error:Read file failed");
+        return false;
       }
-      EntryFile end = new EntryFile();
-      end.name = ":end:";
-      put(end);
+      file.b = file.c / blocksize;
+      if (file.c % blocksize > 0) {
+        file.b++;
+      }
+      currentTape.left -= file.b;
+      currentTape.position += file.b;
       return true;
+    } catch (Exception e) {
+      log(e);
+      return false;
+    }
+  }
+  private static byte buffer[] = new byte[64 * 1024];
+  private static byte tapeBuffer[] = new byte[64 * 1024];
+  private static final int bufferSize = 64 * 1024;
+  public class Transfer extends Thread {
+    private InputStream is;
+    public long copied;
+    public long compressed = -1;
+    public Transfer(InputStream is) {
+      this.is = is;
+    }
+    public void run() {
+      int pos = 0;
+      int len = 0;
+      try {
+        while (Status.active) {
+          if (copied == compressed) break;
+          int read = is.read(buffer);
+          if (read == -1) break;
+          if (read == 0) continue;
+          copied += read;
+          System.arraycopy(buffer, 0, tapeBuffer, pos, read);
+          pos += read;
+          len += read;
+          if (len == bufferSize) {
+            if (!tape.write(tapeBuffer, 0, bufferSize)) {
+              throw new Exception("tape write failed");
+            }
+            len = 0;
+            pos = 0;
+          }
+        }
+        if (len > 0) {
+          if (len < bufferSize) {
+            Arrays.fill(tapeBuffer, pos, bufferSize, (byte)0);
+          }
+          if (!tape.write(tapeBuffer, 0, bufferSize)) {
+            throw new Exception("tape write failed");
+          }
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
     }
   }
 }

@@ -14,9 +14,6 @@ public class Client extends Thread {
   private OutputStream os;
 
   public void run() {
-    //connects to Server
-//    Config.current.authFailed = false;
-//    Config.save();
     while (Status.active) {
       try {
         JFLog.log("Client Connecting to:" + Config.current.server_host);
@@ -55,7 +52,7 @@ public class Client extends Thread {
           }
         }
       } catch (Exception e) {
-        //JFLog.log(e);
+        JFLog.log(e);
         JF.sleep(3000);  //try again in 3 seconds
       }
     }
@@ -238,7 +235,6 @@ public class Client extends Thread {
     writeLength(data.length);
     os.write(data);
   }
-  private final static int blocksize = 64 * 1024;
   private void readfile() throws Exception {
     //read arg
     int arglen = readLength();
@@ -256,26 +252,43 @@ public class Client extends Thread {
       return;
     }
     long uncompressed = vssFile.length();
-    FileInputStream fis = new FileInputStream(vssFile);
-    File tempFile = new File(Paths.tempPath + "\\compressed.dat");
-    FileOutputStream fos = new FileOutputStream(tempFile);
-    long compressed = Compression.compress(fis, fos, uncompressed);
-    fis.close();
-    fos.close();
     //send compressed file
     writeLength64(uncompressed);
-    writeLength64(compressed);
-    fis = new FileInputStream(tempFile);
-    long left = compressed;
-    byte[] buf = new byte[blocksize];
-    while (left > 0) {
-      int read = fis.read(buf);
-      if (read > 0) {
-        os.write(buf, 0, read);
-        left -= read;
+    //send compressed data in "chunks"
+    FileInputStream fis = new FileInputStream(vssFile);
+    PipedInputStream pis = new PipedInputStream();
+    PipedOutputStream pos = new PipedOutputStream(pis);
+    Transfer transfer = new Transfer(pis);
+    transfer.start();
+    transfer.compressed = Compression.compress(fis, pos, uncompressed);
+    pos.flush();
+    pos.close();
+    fis.close();
+    transfer.join();
+  }
+  private static byte buffer[] = new byte[64 * 1024];
+  public class Transfer extends Thread {
+    private InputStream t_is;
+    public long copied;
+    public long compressed = -1;
+    public Transfer(InputStream is) {
+      this.t_is = is;
+    }
+    public void run() {
+      try {
+        while (Status.active) {
+          if (copied == compressed) break;
+          int read = t_is.read(buffer);
+          if (read == -1) break;
+          if (read == 0) continue;
+          writeLength(read);
+          os.write(buffer, 0, read);
+          copied += read;
+        }
+        writeLength(0x20000);  //signal end of stream
+      } catch (Exception e) {
+        JFLog.log(e);
       }
     }
-    fis.close();
-    tempFile.delete();
   }
 }

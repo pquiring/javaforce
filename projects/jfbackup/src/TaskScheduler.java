@@ -9,6 +9,7 @@ import java.util.*;
 
 public class TaskScheduler extends TimerTask {
   private Timer timer;
+  private int lastmin = -1;
   public void init() {
     timer = new Timer();
     timer.scheduleAtFixedRate(this, 45 * 1000, 45 * 1000);
@@ -22,6 +23,8 @@ public class TaskScheduler extends TimerTask {
     int dayWeek = c.get(Calendar.DAY_OF_WEEK);  //1-7
     int hour = c.get(Calendar.HOUR_OF_DAY);  //0-23
     int minute = c.get(Calendar.MINUTE);  //0-59
+    if (minute == lastmin) return;
+    lastmin = minute;
     for(EntryJob job : Config.current.backups) {
       switch (job.freq) {
         case "daily": {

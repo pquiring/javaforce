@@ -3,14 +3,23 @@
     <type>org.netbeans.modules.ant.freeform</type>
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>javaforce</name>
+        </general-data>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
             <!-- Do not use Project Properties customizer when editing this file manually. -->
             <name>javaforce</name>
             <properties/>
             <folders>
                 <source-folder>
+                    <label>javaforce</label>
+                    <location>.</location>
+                    <encoding>windows-1252</encoding>
+                </source-folder>
+                <source-folder>
                     <label>src</label>
                     <type>java</type>
                     <location>src</location>
+                    <encoding>windows-1252</encoding>
                 </source-folder>
             </folders>
             <ide-actions>

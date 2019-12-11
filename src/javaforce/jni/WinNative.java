@@ -42,6 +42,27 @@ public class WinNative {
   public static native char readConsole();
   public static native boolean peekConsole();
 
+  //Tape drive
+  public static native long tapeOpen(String name);
+  public static native void tapeClose(long handle);
+  public static native int tapeRead(long handle, byte buf[], int offset, int length);
+  public static native int tapeWrite(long handle, byte buf[], int offset, int length);
+  public static native boolean tapeSetpos(long handle, long pos);
+  public static native long tapeGetpos(long handle);
+  public static native boolean tapeMedia(long handle);
+  public static native long tapeMediaSize();
+  public static native boolean tapeMediaReadOnly();
+  public static native boolean tapeDrive(long handle);
+  public static native int tapeDriveMinBlockSize();
+  public static native int tapeDriveMaxBlockSize();
+  public static native int tapeDriveDefaultBlockSize();
+
+  //Tape changer
+  public static native long changerOpen(String name);
+  public static native void changerClose(long handle);
+  public static native String[] changerList(long handle);
+  public static native boolean changerMove(long handle, String src, String transport, String dst);  //transport is optional
+
   //test
   public static native int add(int x, int y);
 }

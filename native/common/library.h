@@ -1,4 +1,4 @@
-#ifdef __WIN32__
+#ifdef _WIN32
   #define JF_LIB_HANDLE HMODULE
   #define JF_LIB_OPEN LoadLibrary
   #define JF_LIB_OPTS

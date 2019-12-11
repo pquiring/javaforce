@@ -13,10 +13,18 @@ public class Request {
     this.cmd = cmd;
     this.arg = arg;
   }
+  public Request(String cmd, String arg, OutputStream os) {
+    this.cmd = cmd;
+    this.arg = arg;
+    this.os = os;
+  }
+  public Request(String cmd, OutputStream os) {
+    this.cmd = cmd;
+    this.os = os;
+  }
   public String cmd;
   public String arg;
-  public String localfile;
-  public FileOutputStream fos;
+  public OutputStream os;
   public long uncompressed;
   public long compressed;
   public String reply;

@@ -63,7 +63,7 @@ HANDLE openTape(const char* device) {
     0,
     nullptr,
     OPEN_EXISTING,
-    FILE_ATTRIBUTE_NORMAL,
+    FILE_FLAG_NO_BUFFERING,
     nullptr
   );
   if (dev == INVALID_HANDLE_VALUE) {

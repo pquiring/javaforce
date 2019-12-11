@@ -22,7 +22,6 @@ public class ServerClient extends Thread {
   private Request request;
   private int version;
   private static Object hostLock = new Object();
-  private static long localindex;
 
   public ServerClient(Socket s) {
     this.s = s;
@@ -30,9 +29,6 @@ public class ServerClient extends Thread {
   }
   public String getClientName() {
     return host;
-  }
-  public static void resetLocalIndex() {
-    localindex = 0;
   }
   public void run() {
     int pingCount = 0;
@@ -75,6 +71,7 @@ public class ServerClient extends Thread {
         synchronized(lock) {
           request = queue.remove(0);
         }
+        pingCount = 0;
         writeLength(request.cmd.length());
         os.write(request.cmd.getBytes());
         if (request.arg != null) {
@@ -103,12 +100,9 @@ public class ServerClient extends Thread {
       }
       BackupService.server.removeClient(this);
     } catch (Exception e) {
+      JFLog.log(e);
       if (request != null) {
         request.notify.notify(null);  //signal an error
-        if (request.fos != null) {
-          try { request.fos.close(); } catch (Exception e2) {}
-          request.fos = null;
-        }
       }
       JFLog.log("Client : " + host + " : disconnected");
       if (Config.current.hosts.contains(host)) {
@@ -157,6 +151,9 @@ public class ServerClient extends Thread {
     int idx = 1;
     while (data[idx] == '0') idx++;
     version = Integer.valueOf(new String(data, idx, 4-idx));
+    if (version < Config.APIVersionMin) {
+      throw new Exception("client too old");
+    }
     //write server version
     os.write(Config.APIVersion.getBytes());
     return true;
@@ -240,34 +237,30 @@ public class ServerClient extends Thread {
     req.reply = new String(data, "utf-8");
     req.notify.notify(req);
   }
-  private synchronized long nextIndex() {
-    return localindex++;
-  }
+  private byte[] buffer = new byte[64 * 1024];
   private void readfile(Request req) throws Exception {
-    //this can be very large - need to save to a file
-    req.localfile = null;
     long uncompressed = readLength64();
     if (uncompressed == -1) {
-      req.notify.notify(req);
       throw new Exception("get file error");
     }
     req.uncompressed = uncompressed;
-    long compressed = readLength64();
-    req.compressed = compressed;
-    req.localfile = Paths.tempPath + "/file-" + nextIndex() + ".dat";
-    req.fos = new FileOutputStream(req.localfile);
-    byte[] data = new byte[64 * 1024];
-    long left = compressed;
-    while (left > 0) {
-      int read = is.read(data, 0, left > data.length ? data.length : (int)left);
-      if (read == -1) throw new Exception("bad read");
-      if (read > 0) {
-        left -= read;
-        req.fos.write(data, 0, read);
+    long compressed = 0;
+    while (Status.active) {
+      int chunk = readLength();
+      if (chunk == 0x20000) break;  //end of stream
+      compressed += chunk;
+      int left = chunk;
+      while (left > 0) {
+        int read = is.read(buffer, 0, left);
+        if (read == -1) throw new Exception("bad read");
+        if (read > 0) {
+          left -= read;
+          req.os.write(buffer, 0, read);
+        }
       }
     }
-    req.fos.close();
-    req.fos = null;
+    req.compressed = compressed;
+    req.os = null;
     req.notify.notify(req);
   }
 

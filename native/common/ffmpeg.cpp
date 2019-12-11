@@ -1,9 +1,5 @@
 //FFMPEG : Compatible with ffmpeg.org and libav.org
 
-#ifdef __WIN32__
-  #define UINT64_C(val) val##ULL  //stdint.h ???
-#endif
-
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/avutil.h>
@@ -200,7 +196,7 @@ int _avframe_alloc(AVFrame *picture, enum AVPixelFormat pix_fmt, int width, int 
   return 0;
 }
 
-#ifndef __WIN32__
+#ifndef _WIN32
 int GetLastError() {
   return errno;
 }
@@ -409,7 +405,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ffmpeg_1init
   return JNI_TRUE;
 }
 
-static int min(int a, int b) {
+static int ff_min(int a, int b) {
   if (a < b) return a; else return b;
 }
 
@@ -886,7 +882,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
       printf("Error:%d\n", ret);
       return NULL_FRAME;
     }
-    ret = min(ctx->pkt_size_left, ret);
+    ret = ff_min(ctx->pkt_size_left, ret);
     ctx->pkt_size_left -= ret;
     if (ctx->pkt_size_left == 0) {
       (*_av_free_packet)(ctx->pkt);

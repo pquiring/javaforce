@@ -1,8 +1,14 @@
 #include <windows.h>
+#include <ntddtape.h>
 
 #include <objbase.h>
 #include <dshow.h>
-#include <qedit.h>
+#include "qedit.h"
+
+#include <cstdio>
+#include <cstdlib>
+#include <cstdint>
+#include <cstring>
 
 #include <jni.h>
 
@@ -16,10 +22,6 @@
 #include "javaforce_media_MediaVideoDecoder.h"
 #include "javaforce_controls_ni_DAQmx.h"
 #include "javaforce_media_VideoBuffer.h"
-
-#ifdef __GNUC__
-  #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
-#endif
 
 HMODULE wgl = NULL;
 
@@ -272,7 +274,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListDevices
     }
     if (res == S_OK) {
       jchar *wstr = (jchar*)var.byref;
-      printf("camera=%ls\n", wstr);
+      //printf("camera=%ls\n", wstr);
       ctx->cameraDeviceNames[ctx->cameraDeviceCount] = wstr;
       ctx->cameraDevices[ctx->cameraDeviceCount] = moniker;
       ctx->cameraDeviceCount++;
@@ -924,6 +926,377 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_peekConsole
   GetNumberOfConsoleInputEvents(GetStdHandle(STD_INPUT_HANDLE), &count);
   return count != 0;
 }
+
+//tape drive API
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeOpen
+  (JNIEnv *e, jclass c, jstring name)
+{
+  const char *cstr = e->GetStringUTFChars(name,NULL);
+  HANDLE handle = CreateFileA(cstr, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING, NULL);
+  e->ReleaseStringUTFChars(name, cstr);
+  if (handle == INVALID_HANDLE_VALUE) {
+    printf("tapeOpen:Error=%d\n", GetLastError());
+    return 0;
+  }
+  return (jlong)handle;
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_tapeClose
+  (JNIEnv *e, jclass c, jlong handle)
+{
+  CloseHandle((HANDLE)handle);
+}
+
+JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeRead
+  (JNIEnv *e, jclass c, jlong handle, jbyteArray ba, jint offset, jint length)
+{
+  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
+  int read;
+  ReadFile((HANDLE)handle, baptr + offset, length, (LPDWORD)&read, NULL);
+  e->ReleaseByteArrayElements(ba, baptr, 0);
+  return read;
+}
+
+JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeWrite
+  (JNIEnv *e, jclass c, jlong handle, jbyteArray ba, jint offset, jint length)
+{
+  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
+  int write;
+  WriteFile((HANDLE)handle, baptr + offset, length, (LPDWORD)&write, NULL);
+  e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
+  return write;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeSetpos(JNIEnv *e, jclass c, jlong handle, jlong pos)
+{
+  HANDLE dev = (HANDLE)handle;
+  TAPE_SET_POSITION tapePos;
+  tapePos.Method = pos == 0 ? TAPE_REWIND : TAPE_LOGICAL_BLOCK;
+  tapePos.Partition = 0;
+  tapePos.Offset.QuadPart = pos;
+  tapePos.Immediate = FALSE;
+  DWORD bytesReturn;
+  BOOL ret = DeviceIoControl(
+    dev,
+    IOCTL_TAPE_SET_POSITION,
+    &tapePos,
+    sizeof(tapePos),
+    nullptr,
+    0,
+    &bytesReturn,
+    nullptr
+  );
+  if (ret != TRUE) {
+    return JNI_FALSE;
+  }
+  return JNI_TRUE;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeGetpos(JNIEnv *e, jclass c, jlong handle)
+{
+  HANDLE dev = (HANDLE)handle;
+  TAPE_GET_POSITION tapePos;
+  DWORD bytesReturn;
+  BOOL ret = DeviceIoControl(
+    dev,
+    IOCTL_TAPE_GET_POSITION,
+    nullptr,
+    0,
+    &tapePos,
+    sizeof(tapePos),
+    &bytesReturn,
+    nullptr
+  );
+  if (ret != TRUE) {
+    return -1;
+  }
+  return tapePos.Offset.QuadPart;
+}
+
+static jlong tape_media_size;
+static jboolean tape_media_readonly;
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeMedia(JNIEnv *e, jclass c, jlong handle)
+{
+  HANDLE dev = (HANDLE)handle;
+  TAPE_GET_MEDIA_PARAMETERS params;
+  DWORD bytesReturn;
+  BOOL ret = DeviceIoControl(
+    dev,
+    IOCTL_TAPE_GET_MEDIA_PARAMS,
+    nullptr,
+    0,
+    &params,
+    sizeof(params),
+    &bytesReturn,
+    nullptr
+  );
+  if (ret != TRUE) {
+    return JNI_FALSE;
+  }
+  tape_media_size = params.Capacity.QuadPart;
+  tape_media_readonly = params.WriteProtected;
+  return JNI_TRUE;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeMediaSize(JNIEnv *e, jclass c)
+{
+  return tape_media_size;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeMediaReadOnly(JNIEnv *e, jclass c)
+{
+  return tape_media_readonly;
+}
+
+static jint tape_drive_def_blocksize;
+static jint tape_drive_max_blocksize;
+static jint tape_drive_min_blocksize;
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeDrive(JNIEnv *e, jclass c, jlong handle)
+{
+  HANDLE dev = (HANDLE)handle;
+  TAPE_GET_DRIVE_PARAMETERS params;
+  DWORD bytesReturn;
+  BOOL ret = DeviceIoControl(
+    dev,
+    IOCTL_TAPE_GET_DRIVE_PARAMS,
+    nullptr,
+    0,
+    &params,
+    sizeof(params),
+    &bytesReturn,
+    nullptr
+  );
+  if (ret != TRUE) {
+    return JNI_FALSE;
+  }
+  tape_drive_def_blocksize = params.DefaultBlockSize;
+  tape_drive_max_blocksize = params.MaximumBlockSize;
+  tape_drive_min_blocksize = params.MinimumBlockSize;
+  return JNI_TRUE;
+}
+
+JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeDriveMinBlockSize(JNIEnv *e, jclass c)
+{
+  return tape_drive_min_blocksize;
+}
+
+JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeDriveMaxBlockSize(JNIEnv *e, jclass c)
+{
+  return tape_drive_max_blocksize;
+}
+
+JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeDriveDefaultBlockSize(JNIEnv *e, jclass c)
+{
+  return tape_drive_def_blocksize;
+}
+
+//tape changer
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_changerOpen(JNIEnv *e, jclass c, jstring name)
+{
+  const char *cstr = e->GetStringUTFChars(name, NULL);
+  HANDLE handle = CreateFileA(cstr, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+  e->ReleaseStringUTFChars(name, cstr);
+  if (handle == INVALID_HANDLE_VALUE) return 0;
+  return (jlong)handle;
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_changerClose(JNIEnv *e, jclass c, jlong handle)
+{
+  CloseHandle((HANDLE)handle);
+}
+
+static int list_count;
+static char* list_elements[32*4];
+
+static int listType(HANDLE dev, _ELEMENT_TYPE type, const char* name) {
+  CHANGER_READ_ELEMENT_STATUS request;
+  DWORD bytesReturn;
+  CHANGER_ELEMENT_STATUS_EX status;
+  for(int idx=0;idx<32;idx++) {
+    request.ElementList.Element.ElementType = type;
+    request.ElementList.Element.ElementAddress = idx;
+    request.ElementList.NumberOfElements = 1;
+    request.VolumeTagInfo = TRUE;
+    BOOL ret = DeviceIoControl(
+      dev,
+      IOCTL_CHANGER_GET_ELEMENT_STATUS,
+      &request,
+      sizeof(request),
+      &status,
+      sizeof(status),
+      &bytesReturn,
+      nullptr
+    );
+    if (ret == FALSE) break;
+    if (status.ExceptionCode == ERROR_SLOT_NOT_PRESENT) break;
+    BOOL hasTape = (status.Flags & ELEMENT_STATUS_FULL) != 0;
+    if (hasTape) {
+      //trim barcode
+      char *barcode = (char*)status.PrimaryVolumeID;
+      for(int a=0;a<MAX_VOLUME_ID_SIZE;a++) {
+        if (barcode[a] == ' ') barcode[a] = 0;
+      }
+    }
+    list_elements[list_count] = (char*)malloc(128);
+    std::sprintf(list_elements[list_count], "%s%d:%s", name, idx+1, (hasTape ? (const char*)status.PrimaryVolumeID : "<empty>"));
+    list_count++;
+  }
+  return 0;
+}
+
+JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_WinNative_changerList(JNIEnv *e, jclass c, jlong handle)
+{
+  HANDLE dev = (HANDLE)handle;
+
+  list_count = 0;
+
+  listType(dev, ELEMENT_TYPE::ChangerDrive, "drive");
+  listType(dev, ELEMENT_TYPE::ChangerTransport, "transport");
+  listType(dev, ELEMENT_TYPE::ChangerSlot, "slot");
+  listType(dev, ELEMENT_TYPE::ChangerIEPort, "port");
+
+  jobjectArray ret = (jobjectArray)e->NewObjectArray(list_count,e->FindClass("java/lang/String"),e->NewStringUTF(""));
+
+  for(int i=0;i<list_count;i++) {
+    e->SetObjectArrayElement(ret,i,e->NewStringUTF(list_elements[i]));
+    free(list_elements[i]);
+  }
+
+  return ret;
+}
+
+static BOOL startsWith(const char* str, const char* with) {
+  while (*str && *with) {
+    if (*str != *with) return FALSE;
+    str++;
+    with++;
+  }
+  if (*with == 0) return TRUE;
+  return FALSE;
+}
+
+static BOOL isValidElement(const char* loc) {
+  int len = -1;
+  if (startsWith(loc, "drive")) len = 5;
+  else if (startsWith(loc, "slot")) len = 4;
+  else if (startsWith(loc, "port")) len = 4;
+  else if (startsWith(loc, "transport")) len = 9;
+  if (len == -1) return FALSE;
+  loc += len;
+  if (*loc < '1' || *loc > '9') return FALSE;
+  loc++;
+  while (*loc) {
+    if (*loc < '0' || *loc > '9') return FALSE;
+    loc++;
+  }
+  return TRUE;
+}
+
+static ELEMENT_TYPE getElementType(const char* loc) {
+  if (startsWith(loc, "drive")) return ELEMENT_TYPE::ChangerDrive;
+  if (startsWith(loc, "slot")) return ELEMENT_TYPE::ChangerSlot;
+  if (startsWith(loc, "port")) return ELEMENT_TYPE::ChangerIEPort;
+  if (startsWith(loc, "transport")) return ELEMENT_TYPE::ChangerTransport;
+  return ELEMENT_TYPE::AllElements;
+}
+
+static int getElementAddress(const char* loc) {
+  int len = -1;
+  if (startsWith(loc, "drive")) len = 5;
+  else if (startsWith(loc, "slot")) len = 4;
+  else if (startsWith(loc, "port")) len = 4;
+  else if (startsWith(loc, "transport")) len = 9;
+  loc += len;
+  int value = std::atoi(loc);
+  if (value < 1 || value > 32) {
+    printf("Error:location invalid");
+    return -1;
+  }
+  return value - 1;  //return zero based
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_changerMove(JNIEnv *e, jclass c, jlong handle, jstring jsrc, jstring jtransport, jstring jdst)
+{
+  HANDLE dev = (HANDLE)handle;
+
+  const char *src = e->GetStringUTFChars(jsrc,NULL);
+  const char *transport = nullptr;
+  const char *dst = e->GetStringUTFChars(jdst,NULL);
+
+  if (jtransport != nullptr) transport = e->GetStringUTFChars(jtransport,NULL);
+
+  if (!isValidElement(src)) {
+    printf("Error:src invalid\n");
+    return JNI_FALSE;
+  }
+  if (getElementType(src) == ELEMENT_TYPE::ChangerTransport) {
+    printf("Error:src can not be transport\n");
+    return JNI_FALSE;
+  }
+
+  if (transport != nullptr) {
+    if (!isValidElement(transport)) {
+      printf("Error:transport invalid\n");
+      return JNI_FALSE;
+    }
+    if (getElementType(transport) != ELEMENT_TYPE::ChangerTransport) {
+      printf("Error:transport must be transport");
+      return JNI_FALSE;
+    }
+  }
+
+  if (!isValidElement(dst)) {
+    printf("Error:dst invalid\n");
+    return JNI_FALSE;
+  }
+  if (getElementType(dst) == ELEMENT_TYPE::ChangerTransport) {
+    printf("Error:dst can not be transport\n");
+    return JNI_FALSE;
+  }
+
+  CHANGER_MOVE_MEDIUM request;
+  DWORD bytesReturn;
+
+  if (transport == nullptr) {
+    request.Transport.ElementType = ELEMENT_TYPE::ChangerTransport;
+    request.Transport.ElementAddress = 0;
+  } else {
+    request.Transport.ElementType = getElementType(transport);
+    request.Transport.ElementAddress = getElementAddress(transport);
+  }
+
+  request.Source.ElementType = getElementType(src);
+  request.Source.ElementAddress = getElementAddress(src);
+
+  request.Destination.ElementType = getElementType(dst);
+  request.Destination.ElementAddress = getElementAddress(dst);
+
+  request.Flip = FALSE;
+
+  BOOL ret = DeviceIoControl(
+    dev,
+    IOCTL_CHANGER_MOVE_MEDIUM,
+    &request,
+    sizeof(request),
+    nullptr,
+    0,
+    &bytesReturn,
+    nullptr
+  );
+  e->ReleaseStringUTFChars(jsrc, src);
+  if (transport != nullptr) e->ReleaseStringUTFChars(jtransport, transport);
+  e->ReleaseStringUTFChars(jdst, dst);
+  if (ret != TRUE) {
+    return JNI_FALSE;
+  }
+  return JNI_TRUE;
+}
+
+//test
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_add
   (JNIEnv *e, jclass c, jint x, jint y)
