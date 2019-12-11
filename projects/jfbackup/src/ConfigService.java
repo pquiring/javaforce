@@ -309,11 +309,21 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
 
     row = new Row();
+    Button abort = new Button("Abort");
+    row.add(abort);
+    abort.addClickListener((MouseEvent me, Component c) -> {
+      if (Status.running) {
+        Status.abort = true;
+      }
+    });
+    if (!Status.running) {
+      abort.setVisible(false);
+    }
     row.add(new Label("Monitor:"));
     Label progress = new Label("");
     row.add(progress);
-
     panel.add(row);
+
 
     TextArea text = new TextArea("Loading...");
     text.setReadonly(true);
@@ -331,6 +341,9 @@ public class ConfigService implements WebUIHandler {
         while (webclient.getCurrentID() == id) {
           sb.setLength(0);
           if (Status.running) {
+            if (!abort.isVisible()) {
+              abort.setVisible(false);
+            }
             sb.append("Job Status : " + Status.desc + "\r\n");
             StringBuilder pt = new StringBuilder();
             pt.append("Progress:");
@@ -346,12 +359,18 @@ public class ConfigService implements WebUIHandler {
             pt.append(" Files:");
             pt.append(Status.files);
             pt.append(memoryUsage());
+            if (Status.abort) {
+              pt.append(" Aborting ");
+            }
             progress.setText(pt.toString());
             if (Status.log != null) {
               sb.append(Status.log);
             }
           } else {
             sb.append("No job running");
+            if (abort.isVisible()) {
+              abort.setVisible(false);
+            }
           }
           text.setText(sb.toString());
           JF.sleep(1000);
@@ -372,6 +391,11 @@ public class ConfigService implements WebUIHandler {
     row = new Row();
     row.setBackColor(Color.blue);
     row.setHeight(5);
+    panel.add(row);
+
+    row = new Row();
+    Label msg = new Label("");
+    row.add(msg);
     panel.add(row);
 
     AutoScrollPanel scroll = new AutoScrollPanel();
@@ -400,6 +424,17 @@ public class ConfigService implements WebUIHandler {
         split.setRightComponent(serverEditBackupJob(job));
       });
       row.add(edit);
+      Button run = new Button("Run Now");
+      run.addClickListener((MouseEvent me, Component c) -> {
+        if (Status.running) {
+          msg.setText("Another job is already running");
+          return;
+        }
+        TaskScheduler.startJob(job);
+        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
+        split.setRightComponent(serverMonitor());
+      });
+      row.add(run);
       Button delete = new Button("Delete");
       delete.addClickListener((MouseEvent me, Component c) -> {
         SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");

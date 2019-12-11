@@ -48,7 +48,7 @@ public class TaskScheduler extends TimerTask {
       }
     }
   }
-  private void startJob(EntryJob job) {
+  public static synchronized void startJob(EntryJob job) {
     Status.running = true;
     Status.abort = false;
     Status.desc = "Running backup job";
