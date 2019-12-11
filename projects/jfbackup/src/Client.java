@@ -219,6 +219,7 @@ public class Client extends Thread {
       if (name.contains("?")) continue;
       if (name.contains("*")) continue;
       if (name.contains(":")) continue;
+      if (name.contains("\r\n")) continue;
       if (name.length() == 0) continue;
       if (file.isDirectory()) {
         list.append("\\");
