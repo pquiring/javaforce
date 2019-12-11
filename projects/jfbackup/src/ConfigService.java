@@ -288,12 +288,20 @@ public class ConfigService implements WebUIHandler {
   private final static long MB = 1024 * 1024;
   private final static long GB = 1024 * 1024 * 1024;
 
+  private static String toEng(long size) {
+    if (size < GB) {
+      return String.format("%dMB", size / MB);
+    } else {
+      return String.format("%dGB", size / GB);
+    }
+  }
+
   private static String memoryUsage() {
-    long total = Runtime.getRuntime().totalMemory() / GB;
-    long free = Runtime.getRuntime().freeMemory() / GB;
-    long max = Runtime.getRuntime().maxMemory() / GB;
+    long total = Runtime.getRuntime().totalMemory();
+    long free = Runtime.getRuntime().freeMemory();
+    long max = Runtime.getRuntime().maxMemory();
     long used = total - free;
-    return " Memory:Used:" + used + "GB Max:" + max + "GB";
+    return " Memory:Used:" + toEng(used) + " Max:" + toEng(max);
   }
 
   public Panel serverMonitor() {
@@ -347,15 +355,7 @@ public class ConfigService implements WebUIHandler {
             sb.append("Job Status : " + Status.desc + "\r\n");
             StringBuilder pt = new StringBuilder();
             pt.append("Progress:");
-            if (Status.copied < GB) {
-              //under 1GB, show MBs
-              pt.append((Status.copied / MB));
-              pt.append("MB");
-            } else {
-              //show GBs
-              pt.append((Status.copied / GB));
-              pt.append("GB");
-            }
+            pt.append(toEng(Status.copied));
             pt.append(" Files:");
             pt.append(Status.files);
             pt.append(memoryUsage());
