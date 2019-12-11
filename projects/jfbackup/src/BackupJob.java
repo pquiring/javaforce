@@ -130,7 +130,7 @@ public class BackupJob extends Thread {
         log("Error:mount failed");
         return false;
       }
-      log("Mount successful");
+      log("Listing files...");
       EntryFolder root = listFolder(jobvol, jobvol.path);
       if (root == null) {
         log("Error:ListVolume failed");
@@ -146,14 +146,12 @@ public class BackupJob extends Thread {
       volume.name = "vol-" + volCount++;
       cat.volumes.add(volume);
       BackupJob.this.jobvol = jobvol;
-      //save files to tape
+      log("Backing up files...");
       boolean success = doFolder(root, "");
-      //unmount
       if (!unmountVolume(jobvol)) {
         log("Error:Unable to unmount volume");
         return false;
       }
-      log("Unmount successful");
       if (!success) return false;
     }
     return true;
@@ -498,6 +496,8 @@ public class BackupJob extends Thread {
       }
       currentTape.left -= file.b;
       currentTape.position += file.b;
+      Status.copied += file.u;
+      Status.files++;
       return true;
     } catch (Exception e) {
       log(e);

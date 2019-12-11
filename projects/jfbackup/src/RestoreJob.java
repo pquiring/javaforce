@@ -142,6 +142,8 @@ public class RestoreJob extends Thread {
       log(e);
       return false;
     }
+    Status.copied += file.u;
+    Status.files++;
     return true;
   }
   private static byte buffer[] = new byte[64 * 1024];
