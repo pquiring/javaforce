@@ -2,6 +2,7 @@ Dec 11/2019 : 0.4 released
   - fix major issues
   - support utf-8 filenames
   - diskless operation (no temp files)
+  - not compatible with prior versions
 
 Dec 6/2019 : 0.3 released
   - fix client connection issues

@@ -1,5 +1,11 @@
 What's new...
 
+Dec 11/2019 : JF 18.3.0 released
+  - fix : jfBackup/0.4
+    - fixed major issues - it actually works now
+    - greatly improved performance by directly writting data to tape drive instead of using intermidiate temp files
+      - windows was attempting to cache all disk I/O even swapping the kernel to disk to do this - wtf right ?
+
 Dec 6/2019 : JF 18.2.0 released
   - fix : jfBackup/0.3
     - client connection issues
