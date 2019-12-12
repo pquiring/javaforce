@@ -457,7 +457,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(msg);
     Row row = new Row();
     row.add(new Label("Job Name:"));
-    TextField name = new TextField("job-" + Config.current.backups.size() + 1);
+    TextField name = new TextField("job-" + (Config.current.backups.size() + 1));
     row.add(name);
     panel.add(row);
     row = new Row();
@@ -599,11 +599,29 @@ public class ConfigService implements WebUIHandler {
 
   public Panel serverEditBackupJob(EntryJob job) {
     Panel panel = new Panel();
-    panel.add(new Label("Edit Backup Job:" + job.name));
+    Row row = new Row();
+    row.add(new Label("Edit Backup Job:"));
+    TextField name = new TextField(job.name);
+    row.add(name);
+    Button update = new Button("Update");
+    row.add(update);
+    panel.add(row);
+
     Label msg = new Label("");
     panel.add(msg);
 
-    Row row = new Row();
+    update.addClickListener((MouseEvent me, Component c) -> {
+      String newname = cleanHost(name.getText());
+      if (newname.length() == 0) {
+        msg.setText("name too short");
+        msg.setColor(Color.red);
+        return;
+      }
+      job.name = newname;
+      Config.save();
+    });
+
+    row = new Row();
     Button editTime = new Button("Edit Backup Schedule");
     row.add(editTime);
     panel.add(row);
