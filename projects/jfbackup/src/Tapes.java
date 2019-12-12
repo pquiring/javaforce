@@ -14,14 +14,18 @@ public class Tapes implements Serializable {
 
   public static Tapes current;
 
+  private static Object lock = new Object();
+
   public ArrayList<EntryTape> tapes = new ArrayList<EntryTape>();
 
   public static void load() {
     try {
-      FileInputStream fis = new FileInputStream(Paths.dataPath + "/tapes.dat");
-      ObjectInputStream ois = new ObjectInputStream(fis);
-      current = (Tapes)ois.readObject();
-      fis.close();
+      synchronized(lock) {
+        FileInputStream fis = new FileInputStream(Paths.dataPath + "/tapes.dat");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        current = (Tapes)ois.readObject();
+        fis.close();
+      }
     } catch (FileNotFoundException e) {
       current = new Tapes();
     } catch (Exception e) {
@@ -32,10 +36,12 @@ public class Tapes implements Serializable {
 
   public static void save() {
     try {
-      FileOutputStream fos = new FileOutputStream(Paths.dataPath + "/tapes.dat");
-      ObjectOutputStream oos = new ObjectOutputStream(fos);
-      oos.writeObject(current);
-      fos.close();
+      synchronized(lock) {
+        FileOutputStream fos = new FileOutputStream(Paths.dataPath + "/tapes.dat");
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(current);
+        fos.close();
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -43,25 +49,47 @@ public class Tapes implements Serializable {
 
   public static void removeOldTapes(long now) {
     ArrayList<EntryTape> remove = new ArrayList<EntryTape>();
-    for(EntryTape tape : current.tapes) {
-      if (tape.retention < now) {
-        remove.add(tape);
+    synchronized(lock) {
+      for(EntryTape tape : current.tapes) {
+        if (tape.retention < now) {
+          remove.add(tape);
+        }
       }
-    }
-    if (remove.size() == 0) return;
-    for(EntryTape tape : remove) {
-      current.tapes.remove(tape);
+      if (remove.size() == 0) return;
+      for(EntryTape tape : remove) {
+        current.tapes.remove(tape);
+      }
     }
     save();
   }
 
   public static EntryTape findTape(String barcode) {
-    for(EntryTape tape : current.tapes) {
-      if (tape.barcode.equals(barcode)) return tape;
-    }
-    if (barcode.startsWith(Config.current.cleanPrefix) || barcode.endsWith(Config.current.cleanSuffix)) {
-      return new EntryTape(barcode, -1, -1, "n/a", -1);
+    synchronized(lock) {
+      for(EntryTape tape : current.tapes) {
+        if (tape.barcode.equals(barcode)) return tape;
+      }
+      if (barcode.startsWith(Config.current.cleanPrefix) || barcode.endsWith(Config.current.cleanSuffix)) {
+        return new EntryTape(barcode, -1, -1, "n/a", -1);
+      }
     }
     return null;
+  }
+
+  public static void deleteTapes(ArrayList<EntryTape> tapes) {
+    synchronized(lock) {
+      int cnt = 0;
+      for(EntryTape delete : tapes) {
+        for(EntryTape tape : current.tapes) {
+          if (tape.barcode.equals(delete.barcode)) {
+            current.tapes.remove(tape);
+            cnt++;
+            break;
+          }
+        }
+      }
+      if (cnt > 0) {
+        save();
+      }
+    }
   }
 }

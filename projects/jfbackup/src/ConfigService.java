@@ -919,12 +919,20 @@ public class ConfigService implements WebUIHandler {
       row = new Row();
       Button restore = new Button("Restore Files");
       row.add(restore);
-      scroll.add(row);
 
       restore.addClickListener((MouseEvent me, Component c) -> {
         SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
         split.setRightComponent(serverCreateRestoreJob(info, null, null));
       });
+
+      Button delete = new Button("Delete Backup");
+      row.add(delete);
+
+      delete.addClickListener((MouseEvent me, Component c) -> {
+        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
+        split.setRightComponent(serverDeleteBackupJob(info));
+      });
+      scroll.add(row);
 
       row = new Row();
       row.setBackColor(Color.blue);
@@ -939,6 +947,38 @@ public class ConfigService implements WebUIHandler {
       scroll.add(row);
     }
 
+    return panel;
+  }
+
+  private Panel serverDeleteBackupJob(CatalogInfo info) {
+    Panel panel = new Panel();
+    Row row = new Row();
+
+    row.add(new Label("Confirm Deletion:" + info.name + " with Tapes:" + info.tapes.size()));
+    panel.add(row);
+
+    row = new Row();
+    Button delete = new Button("Delete");
+    row.add(delete);
+    Button cancel = new Button("Cancel");
+    row.add(cancel);
+    panel.add(row);
+
+    delete.addClickListener((MouseEvent me, Component c) -> {
+      long backupid = info.backup;
+      new File(Paths.catalogsPath + "\\catalog-" + backupid + ".nfo").delete();
+      new File(Paths.catalogsPath + "\\catalog-" + backupid + ".dat").delete();
+      //delete tapes
+      Tapes.deleteTapes(info.tapes);
+      Tapes.save();
+      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
+      split.setRightComponent(serverRestores());
+    });
+
+    cancel.addClickListener((MouseEvent me, Component c) -> {
+      SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
+      split.setRightComponent(serverRestores());
+    });
     return panel;
   }
 
