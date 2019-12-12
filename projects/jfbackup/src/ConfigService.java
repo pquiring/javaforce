@@ -1391,7 +1391,7 @@ public class ConfigService implements WebUIHandler {
         row.add(new Label(" at " + toDateTime(lastMod)));
         scroll.add(row);
       }
-      if (files.length <= 2) {
+      if (files.length == 0) {
         row = new Row();
         row.add(new Label("No logs found"));
         scroll.add(row);
