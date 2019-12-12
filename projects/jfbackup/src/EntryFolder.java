@@ -14,4 +14,5 @@ public class EntryFolder implements Serializable {
   public ArrayList<EntryFile> files = new ArrayList<EntryFile>();
 
   public transient boolean isVolume;
+  public transient EntryFolder parent;
 }

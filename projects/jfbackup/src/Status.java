@@ -14,4 +14,5 @@ public class Status {
   public static Thread job;
   public static long copied;
   public static int files;
+  public static BackupJob backup;
 }

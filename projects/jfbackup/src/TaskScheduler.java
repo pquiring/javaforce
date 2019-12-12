@@ -55,7 +55,8 @@ public class TaskScheduler extends TimerTask {
     Status.copied = 0;
     Status.files = 0;
     Status.log = new StringBuilder();
-    Status.job = new BackupJob(job);
+    Status.backup = new BackupJob(job);
+    Status.job = Status.backup;
     Status.job.start();
   }
 }

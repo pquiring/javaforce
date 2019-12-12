@@ -332,7 +332,6 @@ public class ConfigService implements WebUIHandler {
     row.add(progress);
     panel.add(row);
 
-
     TextArea text = new TextArea("Loading...");
     text.setReadonly(true);
     text.setMaxWidth();
@@ -350,7 +349,7 @@ public class ConfigService implements WebUIHandler {
           sb.setLength(0);
           if (Status.running) {
             if (!abort.isVisible()) {
-              abort.setVisible(false);
+              abort.setVisible(true);
             }
             sb.append("Job Status : " + Status.desc + "\r\n");
             StringBuilder pt = new StringBuilder();
@@ -371,6 +370,7 @@ public class ConfigService implements WebUIHandler {
             if (abort.isVisible()) {
               abort.setVisible(false);
             }
+            progress.setText("");
           }
           text.setText(sb.toString());
           JF.sleep(1000);

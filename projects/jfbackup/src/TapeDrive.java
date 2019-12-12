@@ -3,9 +3,6 @@
  * @author pquiring
  */
 
-import java.io.*;
-
-import javaforce.*;
 import javaforce.jni.*;
 
 public class TapeDrive {

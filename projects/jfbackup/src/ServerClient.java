@@ -21,7 +21,6 @@ public class ServerClient extends Thread {
   private ArrayList<Request> queue = new ArrayList<Request>();
   private Request request;
   private int version;
-  private static Object hostLock = new Object();
 
   public ServerClient(Socket s) {
     this.s = s;
@@ -29,6 +28,15 @@ public class ServerClient extends Thread {
   }
   public String getClientName() {
     return host;
+  }
+  public int getVersion() {
+    return version;
+  }
+  public void close(boolean force) {
+    active = false;
+    if (force) {
+      try {s.close();} catch (Exception e) {}
+    }
   }
   public void run() {
     int pingCount = 0;
@@ -49,15 +57,11 @@ public class ServerClient extends Thread {
         JFLog.log("Client : " + host + " : rejected : bad hostname");
         throw new Exception("bad client");
       }
-      synchronized(hostLock) {
-        if (Config.current.hosts.contains(host)) {
-          JFLog.log("Client : " + host + " : rejected : already connected");
-          throw new Exception("bad client");
-        }
-        JFLog.log("Client : " + host + ":" + port + " : accepted");
-        Config.current.hosts.add(host);
-        Config.save();
+      if (!BackupService.server.addClient(this)) {
+        JFLog.log("Client : " + host + " : rejected : already connected");
+        throw new Exception("bad client");
       }
+      JFLog.log("Client : " + host + ":" + port + " : accepted");
       while (active) {
         if (queue.isEmpty()) {
           pingCount += 250;
@@ -95,22 +99,21 @@ public class ServerClient extends Thread {
           case "readfile":  //read file
             readfile(request);
             break;
+          case "readfolders":  //read files/folders recursively (faster)
+            readfolders(request);
+            break;
         }
         request = null;
       }
-      BackupService.server.removeClient(this);
     } catch (Exception e) {
       JFLog.log(e);
       if (request != null) {
         request.notify.notify(null);  //signal an error
       }
       JFLog.log("Client : " + host + " : disconnected");
-      if (Config.current.hosts.contains(host)) {
-        Config.current.hosts.remove(host);
-        Config.save();
-      }
       try { s.close(); } catch (Exception e2) {}
     }
+    BackupService.server.removeClient(this);
   }
   private byte[] read(int size) throws Exception {
     byte[] data = new byte[size];
@@ -143,6 +146,10 @@ public class ServerClient extends Thread {
   private long readLength64() throws Exception {
     byte[] data = read(8);
     return LE.getuint64(data, 0);
+  }
+  private String readString(int length) throws Exception {
+    byte[] data = read(length);
+    return new String(data, "utf-8");
   }
   private boolean version() throws Exception {
     //read client version
@@ -238,6 +245,7 @@ public class ServerClient extends Thread {
     req.notify.notify(req);
   }
   private byte[] buffer = new byte[64 * 1024];
+  private byte[] zero = new byte[64 * 1024];
   private void readfile(Request req) throws Exception {
     long uncompressed = readLength64();
     if (uncompressed == -1) {
@@ -245,7 +253,7 @@ public class ServerClient extends Thread {
     }
     req.uncompressed = uncompressed;
     long compressed = 0;
-    while (Status.active) {
+    while (active) {
       int chunk = readLength();
       if (chunk == 0x20000) break;  //end of stream
       compressed += chunk;
@@ -263,7 +271,100 @@ public class ServerClient extends Thread {
     req.os = null;
     req.notify.notify(req);
   }
-
+  private void readfolders(Request req) throws Exception {
+    EntryFolder root = new EntryFolder();
+    EntryFolder folder = root;
+    while (active) {
+      int len = readLength();
+      if (len == -1) break;  //end of volume
+      String str = readString(len);
+      if (str.startsWith("\\")) {
+        //change folder
+        if (str.equals("\\..")) {
+          //cd ..
+          folder = folder.parent;
+        } else {
+          //cd folder
+          EntryFolder subFolder = new EntryFolder();
+          subFolder.name = str.substring(1);
+          subFolder.parent = folder;
+          folder.folders.add(subFolder);
+          folder = subFolder;
+        }
+        continue;
+      }
+      EntryFile file = readfile(req, str);
+      if (file != null) {
+        folder.files.add(file);
+      }
+    }
+    req.root = root;
+    req.notify.notify(req);
+  }
+  private static final int blocksize = 64 * 1024;
+  private EntryFile readfile(Request req, String str) throws Exception {
+    EntryFile file = new EntryFile();
+    file.name = str;
+    long uncompressed = readLength64();
+    if (uncompressed == -1) {
+      throw new Exception("get file error");
+    }
+    file.u = uncompressed;
+    long maxBlocks = (file.u / blocksize) + 4;
+    if (BackupJob.currentTape == null || BackupJob.currentTape.left < maxBlocks) {
+      if (Status.backup.haveChanger) {
+        if (!Status.backup.prepNextTape()) {
+          Status.backup.log("Error:Prep next tape failed");
+          active = false;
+          return null;
+        }
+      } else {
+        Status.backup.log("Error:Tape full");
+        active = false;
+        return null;
+      }
+    }
+    long compressed = 0;
+    int pos = 0;
+    int len = 0;
+    while (active) {
+      int chunk = readLength();
+      if (chunk == 0x20000) break;  //end of stream
+      compressed += chunk;
+      int left = chunk;
+      while (left > 0) {
+        int maxread = blocksize - len;
+        int toread = left > maxread ? maxread : left;
+        int read = is.read(buffer, pos, toread);
+        if (read == -1) throw new Exception("bad read");
+        if (read > 0) {
+          left -= read;
+          len += read;
+          pos += read;
+          if (len == blocksize) {
+            req.tape.write(buffer, 0, blocksize);
+            len = 0;
+            pos = 0;
+          }
+        }
+      }
+    }
+    file.o = BackupJob.currentTape.position;
+    file.t = Status.backup.catnfo.tapes.size();
+    file.c = compressed;
+    file.b = file.c / blocksize;
+    if (file.c % blocksize != 0) {
+      file.b++;
+      //write last partial block to tape
+      Arrays.fill(buffer, pos, blocksize, (byte)0);
+      req.tape.write(buffer, 0, blocksize);
+    }
+    BackupJob.currentTape.position += file.b;
+    BackupJob.currentTape.left -= file.b;
+    Status.files++;
+    Status.copied += file.u;
+    return file;
+  }
   public void addRequest(Request req, RequestNotify notify) {
     req.notify = notify;
     synchronized(lock) {

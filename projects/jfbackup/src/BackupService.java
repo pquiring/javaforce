@@ -32,7 +32,7 @@ public class BackupService extends Thread {
       server.cancel();
     }
     if (client != null) {
-      client.cancel();
+      client.close();
     }
   }
 

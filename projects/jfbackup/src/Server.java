@@ -25,11 +25,8 @@ public class Server extends Thread {
         Socket s = ss.accept();
         ServerClient c = new ServerClient(s);
         c.start();
-        synchronized(lock) {
-          clients.add(c);
-        }
       }
-      local.cancel();
+      local.close();
     } catch (Exception e) {
 //      JFLog.log(1, e);
     }
@@ -45,9 +42,31 @@ public class Server extends Thread {
     }
     return null;
   }
+  public boolean addClient(ServerClient client) {
+    synchronized(lock) {
+      String host = client.getClientName();
+      if (Config.current.hosts.contains(host)) return false;
+      Config.current.hosts.add(client.getClientName());
+      Config.save();
+      clients.add(client);
+      return true;
+    }
+  }
   public void removeClient(ServerClient client) {
     synchronized(lock) {
       clients.remove(client);
+      if (Config.current.hosts.contains(client.getClientName())) {
+        Config.current.hosts.remove(client.getClientName());
+        Config.save();
+      }
+    }
+  }
+  public void dropClients() {
+    //drop carrier on all clients
+    synchronized(lock) {
+      for(ServerClient client : clients) {
+        client.close(true);
+      }
     }
   }
 }

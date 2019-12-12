@@ -22,6 +22,11 @@ public class Request {
     this.cmd = cmd;
     this.os = os;
   }
+  public Request(String cmd, String arg, TapeDrive tape) {
+    this.cmd = cmd;
+    this.arg = arg;
+    this.tape = tape;
+  }
   public String cmd;
   public String arg;
   public OutputStream os;
@@ -29,4 +34,6 @@ public class Request {
   public long compressed;
   public String reply;
   public RequestNotify notify;
+  public EntryFolder root;
+  public TapeDrive tape;
 }

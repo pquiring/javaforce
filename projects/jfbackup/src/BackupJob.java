@@ -19,15 +19,17 @@ public class BackupJob extends Thread {
   private MediaChanger changer = new MediaChanger();
   private TapeDrive tape = new TapeDrive();
   private Catalog cat = new Catalog();
-  private CatalogInfo catnfo = new CatalogInfo();
-  private EntryTape currentTape;
-  private EntryJobVolume jobvol;
-  private boolean haveChanger;
+  private EntryJobVolume currentjobvol;
+  private EntryVolume currentvolume;
   private Element elements[];
   private int driveIdx = -1;
   private int emptySlotIdx = -1;
   private String barcode;
   private int volCount = 1;
+
+  public static EntryTape currentTape;
+  public boolean haveChanger;
+  public CatalogInfo catnfo = new CatalogInfo();
 
   public BackupJob(EntryJob job) {
     this.job = job;
@@ -58,6 +60,8 @@ public class BackupJob extends Thread {
       Status.running = false;
       Status.abort = false;
       Status.desc = "Backup aborted, see logs.";
+      //clients may be deadlocked, drop carrier on them to reset them, they will reconnect in 3 seconds
+      BackupService.server.dropClients();
     }
     tape.close();
     if (haveChanger) {
@@ -120,6 +124,7 @@ public class BackupJob extends Thread {
       if (!prepNextTape()) return false;
     }
     for(EntryJobVolume jobvol : job.backup) {
+      currentjobvol = jobvol;
       if (jobvol.volume.length() == 0) {
         log("Warning:Skipping empty volume on host " + jobvol.host);
         continue;
@@ -130,24 +135,37 @@ public class BackupJob extends Thread {
         log("Error:mount failed");
         return false;
       }
-      log("Listing files...");
-      EntryFolder root = listFolder(jobvol, jobvol.path);
-      if (root == null) {
-        log("Error:ListVolume failed");
+      ServerClient client = BackupService.server.getClient(jobvol.host);
+      if (client == null) {
+        log("Error:client not found:" + jobvol.host);
         return false;
       }
-      root.name = "";
-      //save to catalog
+      boolean success = false;
       EntryVolume volume = new EntryVolume();
       volume.host = jobvol.host;
-      volume.root = root;
       volume.volume = jobvol.volume;
       volume.path = jobvol.path;
       volume.name = "vol-" + volCount++;
       cat.volumes.add(volume);
-      BackupJob.this.jobvol = jobvol;
-      log("Backing up files...");
-      boolean success = doFolder(root, "");
+      currentvolume = volume;
+      if (client.getVersion() < Config.APIVersionReadFolders) {
+        //old slow recursive "listfolder" then recursive "readfile" commands
+        log("Listing files...");
+        EntryFolder root = listFolder(jobvol, jobvol.path);
+        if (root == null) {
+          log("Error:ListVolume failed");
+          return false;
+        }
+        root.name = "";
+        //save to catalog
+        volume.root = root;
+        log("Backing up files...");
+        success = doFolder(root, "");
+      } else {
+        //new faster "readfolders" command
+        log("Backing up files...");
+        success = readFolders();
+      }
       if (!unmountVolume(jobvol)) {
         log("Error:Unable to unmount volume");
         return false;
@@ -156,10 +174,10 @@ public class BackupJob extends Thread {
     }
     return true;
   }
-  private void log(Exception e) {
+  public void log(Exception e) {
     JFLog.log(3, e);
   }
-  private void log(String msg) {
+  public void log(String msg) {
     JFLog.log(3, msg);
     Status.log.append(msg + "\r\n");
   }
@@ -181,7 +199,7 @@ public class BackupJob extends Thread {
     if (!readFile(file, path)) return false;
     return true;
   }
-  private boolean prepNextTape() {
+  public boolean prepNextTape() {
     //look for an empty tape
     if (haveChanger) {
       if (!loadEmptyTape()) return false;
@@ -450,7 +468,7 @@ public class BackupJob extends Thread {
     return folder;
   }
   private boolean readFile(EntryFile file, String path) {
-    ServerClient client = getClient(jobvol);
+    ServerClient client = getClient(currentjobvol);
     Object lock = new Object();
     long maxBlocks = file.u / blocksize + 4;  //estimate on compression
     if (haveChanger) {
@@ -466,7 +484,7 @@ public class BackupJob extends Thread {
       Transfer transfer = new Transfer(pis);
       transfer.start();
       synchronized(lock) {
-        client.addRequest(new Request("readfile", jobvol.path + path + "\\" + file.name, pos), (Request req) -> {
+        client.addRequest(new Request("readfile", currentjobvol.path + path + "\\" + file.name, pos), (Request req) -> {
           if (req == null) {
             file.c = -1;
           } else {
@@ -505,7 +523,6 @@ public class BackupJob extends Thread {
     }
   }
   private static byte buffer[] = new byte[64 * 1024];
-  private static byte tapeBuffer[] = new byte[64 * 1024];
   private static final int bufferSize = 64 * 1024;
   public class Transfer extends Thread {
     private InputStream is;
@@ -520,15 +537,15 @@ public class BackupJob extends Thread {
       try {
         while (Status.active) {
           if (copied == compressed) break;
-          int read = is.read(buffer);
+          int toread = blocksize - len;
+          int read = is.read(buffer, pos, toread);
           if (read == -1) break;
           if (read == 0) continue;
           copied += read;
-          System.arraycopy(buffer, 0, tapeBuffer, pos, read);
           pos += read;
           len += read;
           if (len == bufferSize) {
-            if (!tape.write(tapeBuffer, 0, bufferSize)) {
+            if (!tape.write(buffer, 0, bufferSize)) {
               throw new Exception("tape write failed");
             }
             len = 0;
@@ -537,15 +554,41 @@ public class BackupJob extends Thread {
         }
         if (len > 0) {
           if (len < bufferSize) {
-            Arrays.fill(tapeBuffer, pos, bufferSize, (byte)0);
+            Arrays.fill(buffer, pos, bufferSize, (byte)0);
           }
-          if (!tape.write(tapeBuffer, 0, bufferSize)) {
+          if (!tape.write(buffer, 0, bufferSize)) {
             throw new Exception("tape write failed");
           }
         }
       } catch (Exception e) {
         JFLog.log(e);
       }
+    }
+  }
+  private boolean readFolders() {
+    Object lock = new Object();
+    ServerClient client = getClient(currentjobvol);
+    try {
+      synchronized(lock) {
+        client.addRequest(new Request("readfolders", currentjobvol.path, tape), (Request req) -> {
+          if (req == null) {
+            Status.abort = true;
+            currentvolume.root = new EntryFolder();
+          } else {
+            currentvolume.root = req.root;
+          }
+          synchronized(lock) {
+            lock.notify();
+          }
+        });
+        while (currentvolume.root == null) {
+          try {lock.wait();} catch (Exception e) {}
+        }
+      }
+      return true;
+    } catch (Exception e) {
+      log(e);
+      return false;
     }
   }
 }

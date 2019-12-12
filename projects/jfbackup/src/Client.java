@@ -49,6 +49,9 @@ public class Client extends Thread {
             case "readfile":  //read file
               readfile();
               break;
+            case "readfolders":  //read all files in folder
+              readfolders();
+              break;
           }
         }
       } catch (Exception e) {
@@ -73,7 +76,7 @@ public class Client extends Thread {
     os = null;
     return true;
   }
-  public void cancel() {
+  public void close() {
     try {s.close();} catch (Exception e) {}
   }
   private byte[] read(int size) throws Exception {
@@ -117,14 +120,19 @@ public class Client extends Thread {
     writeLength(Config.current.this_host.length());
     os.write(Config.current.this_host.getBytes());
   }
+  private static byte[] len4 = new byte[4];
   private void writeLength(int len) throws Exception {
-    byte[] data = new byte[4];
-    LE.setuint32(data, 0, len);
-    os.write(data);
+    LE.setuint32(len4, 0, len);
+    os.write(len4);
   }
+  private static byte[] len8 = new byte[8];
   private void writeLength64(long len) throws Exception {
-    byte[] data = new byte[8];
-    LE.setuint64(data, 0, len);
+    LE.setuint64(len8, 0, len);
+    os.write(len8);
+  }
+  private void writeString(String str) throws Exception {
+    byte[] data = str.getBytes("utf-8");
+    writeLength(data.length);
     os.write(data);
   }
   private int readLength() throws Exception {
@@ -200,6 +208,17 @@ public class Client extends Thread {
       os.write("OKAY".getBytes());
     }
   }
+  private boolean isValid(String name) {
+    if (name.equals(".") || name.equals("..")) return false;
+    if (name.equals("$RECYCLE.BIN")) return false;
+    if (name.equals("System Volume Information")) return false;
+    //skip files with invalid chars
+    if (name.contains("?")) return false;
+    if (name.contains("*")) return false;
+    if (name.contains(":")) return false;
+    if (name.contains("\r\n")) return false;
+    return true;
+  }
   private void listfolder() throws Exception {
     //read arg
     int arglen = readLength();
@@ -212,15 +231,8 @@ public class Client extends Thread {
     StringBuilder list = new StringBuilder();
     for(File file : files) {
       String name = file.getName();
-      if (name.equals(".") || name.equals("..")) continue;
-      if (name.equals("$RECYCLE.BIN")) continue;
-      if (name.equals("System Volume Information")) continue;
-      //skip files with invalid chars
-      if (name.contains("?")) continue;
-      if (name.contains("*")) continue;
-      if (name.contains(":")) continue;
-      if (name.contains("\r\n")) continue;
       if (name.length() == 0) continue;
+      if (!isValid(name)) continue;
       if (file.isDirectory()) {
         list.append("\\");
         list.append(name);
@@ -259,6 +271,72 @@ public class Client extends Thread {
     FileInputStream fis = new FileInputStream(vssFile);
     PipedInputStream pis = new PipedInputStream();
     PipedOutputStream pos = new PipedOutputStream(pis);
+    Transfer transfer = new Transfer(pis);
+    transfer.start();
+    transfer.compressed = Compression.compress(fis, pos, uncompressed);
+    pos.flush();
+    pos.close();
+    fis.close();
+    transfer.join();
+  }
+  private void readfolders() throws Exception {
+    //read arg
+    int arglen = readLength();
+    if (arglen > 2 * 1024) {
+      throw new Exception("bad file name length");
+    }
+    byte[] arg = read(arglen);
+    String path = Paths.vssPath + new String(arg, "utf-8");
+    sendFolder(path);
+    JFLog.log("readfolders complete");
+    writeLength(-1);  //done
+  }
+  private void sendFolder(String path) throws Exception {
+    JFLog.log("sendFolder:" + path);
+    File folder = new File(path);
+    if (!folder.exists()) {
+      JFLog.log("Error:Path not found:" + path);
+      return;
+    }
+    File files[] = folder.listFiles();
+    for(File file : files) {
+      if (file.isDirectory()) continue;
+      String name = file.getName();
+      if (!isValid(name)) continue;
+      try {
+        sendFile(path, name);
+      } catch (Exception e) {
+        //log error but continue
+        JFLog.log(e);
+      }
+    }
+    for(File file : files) {
+      if (!file.isDirectory()) continue;
+      String name = file.getName();
+      if (!isValid(name)) continue;
+      writeString("\\" + name);
+      sendFolder(path + "\\" + name);
+      writeString("\\..");
+    }
+  }
+  private void sendFile(String path, String name) throws Exception {
+    //compress file and then send it
+    String vssFilename = path + "\\" + name;
+    File vssFile = new File(vssFilename);
+    if (!vssFile.exists()) {
+      //should not happen
+      JFLog.log(1, "Error:file not found:" + vssFilename);
+      return;
+    }
+    long uncompressed = vssFile.length();
+    FileInputStream fis = new FileInputStream(vssFile);
+    PipedInputStream pis = new PipedInputStream();
+    PipedOutputStream pos = new PipedOutputStream(pis);
+    //send file name
+    writeString(name);
+    //send compressed file length
+    writeLength64(uncompressed);
+    //send compressed data in "chunks"
     Transfer transfer = new Transfer(pis);
     transfer.start();
     transfer.compressed = Compression.compress(fis, pos, uncompressed);
