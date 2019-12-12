@@ -265,7 +265,9 @@ public class ConfigService implements WebUIHandler {
         sb.append("\r\n");
         if (!Status.running && Config.current.changerDevice.length() > 0) {
           //load changer status
-          Element elements[] = new MediaChanger().list();
+          MediaChanger changer = new MediaChanger();
+          changer.open(Config.current.changerDevice);
+          Element elements[] = changer.list();
           if (elements != null) {
             sb.append("Media Changer:\r\n\r\n");
             for(int a=0;a<elements.length;a++) {
@@ -1357,7 +1359,11 @@ public class ConfigService implements WebUIHandler {
       panel.add(scroll);
       //list log files (limit 1 year)
       File folder = new File(Paths.logsPath);
-      File files[] = folder.listFiles();
+      File files[] = folder.listFiles(new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+          return name.startsWith("backup") || name.startsWith("restore");
+        }
+      });
       Arrays.sort(files, new Comparator<File>() {
         public int compare(File f1, File f2) {
           long t1 = f1.lastModified();
@@ -1372,8 +1378,6 @@ public class ConfigService implements WebUIHandler {
       for(File log : files) {
         if (!log.isFile()) continue;
         String name = log.getName();
-        if (!name.endsWith(".log")) continue;
-        if (!name.startsWith("backup") && !name.startsWith("restore")) continue;
         long lastMod = log.lastModified();
         if (lastMod < oneyear) continue;
         row = new Row();
@@ -1386,7 +1390,7 @@ public class ConfigService implements WebUIHandler {
         row.add(new Label(" at " + toDateTime(lastMod)));
         scroll.add(row);
       }
-      if (files.length == 0) {
+      if (files.length <= 2) {
         row = new Row();
         row.add(new Label("No logs found"));
         scroll.add(row);
