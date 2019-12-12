@@ -278,6 +278,7 @@ public class ConfigService implements WebUIHandler {
           } else {
             sb.append("Media Changer Error\r\n");
           }
+          changer.close();
         }
         panel.getClient();
         text.setText(sb.toString());
