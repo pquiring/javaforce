@@ -1,5 +1,10 @@
 What's new...
 
+Dec 13/2019 : JF 18.4.0 released
+  - jfBackup/0.5
+    - greatly improved performance
+    - successfully backed up a remote 250GB volume in under 9 hrs
+
 Dec 11/2019 : JF 18.3.0 released
   - fix : jfBackup/0.4
     - fixed major issues - it actually works now
