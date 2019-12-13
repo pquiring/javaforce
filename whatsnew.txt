@@ -1,5 +1,9 @@
 What's new...
 
+Dec 13/2019 : JF 18.5.0 released
+  - jfBackup/0.6
+    - fix : close file after restore (gc would have got it eventually)
+
 Dec 13/2019 : JF 18.4.0 released
   - jfBackup/0.5
     - greatly improved performance

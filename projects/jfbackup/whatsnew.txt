@@ -1,3 +1,7 @@
+Dec 13/2019 : 0.6 released
+  - fix : restore job was not closing files (would eventually get closed by gc)
+  - everytime I find a bug 2 mins after a release - beta testers wanted
+
 Dec 13/2019 : 0.5 released
   - greatly improved performance
   - successfully backed up a 250GB remote volume in under 9 hrs
