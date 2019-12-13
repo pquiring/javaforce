@@ -1,8 +1,8 @@
 package javaforce.webui;
 
-/** WebClient.java
+/** WebClient
  *
- *  Tracks web page state for one client.
+ * Tracks web page state for one client.
  *
  * @author pquiring
  */
@@ -163,7 +163,11 @@ public class WebUIClient {
     sb.append("}");
     log.append("}");
     if (WebUIServer.debug) JFLog.log("SEND=" + log.toString());
-    socket.write(sb.toString().getBytes());
+    try {
+      socket.write(sb.toString().getBytes("utf-8"));
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
   public String html() {
     return root.html();

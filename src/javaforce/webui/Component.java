@@ -6,6 +6,7 @@ package javaforce.webui;
  */
 
 import java.util.*;
+import java.net.*;
 
 import javaforce.*;
 import javaforce.webui.event.*;
@@ -398,6 +399,22 @@ public abstract class Component {
 
   public void setFocus() {
     sendEvent("focus", null);
+  }
+
+  public String encode(String str) {
+    try {
+      return URLEncoder.encode(str, "utf-8");
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public String decode(String url) {
+    try {
+      return URLDecoder.decode(url, "utf-8");
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   public String toString() {

@@ -1,6 +1,6 @@
 package javaforce.webui;
 
-/** Label.java
+/** Label
  *
  * Generic Label.
  *

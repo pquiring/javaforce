@@ -1,8 +1,6 @@
 package javaforce.webui;
 
-import javaforce.JFLog;
-
-/** Button.java
+/** Button
  *
  * Generic button.
  *

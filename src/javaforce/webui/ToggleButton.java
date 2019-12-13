@@ -1,6 +1,6 @@
 package javaforce.webui;
 
-/** ToggleButton.java
+/** ToggleButton
  *
  * Toggle button.
  *
