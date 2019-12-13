@@ -1,3 +1,8 @@
+Dec 13/2019 : 0.5 released
+  - greatly improved performance
+  - successfully backed up a 250GB remote volume in under 9 hrs
+  - fixed restore selection issues and other UI fixes
+
 Dec 11/2019 : 0.4 released
   - fix major issues
   - support utf-8 filenames
