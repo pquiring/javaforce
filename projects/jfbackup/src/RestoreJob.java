@@ -137,6 +137,7 @@ public class RestoreJob extends Thread {
       transfer.start();
       long uncompressed = Compression.decompress(pis, fos, file.c);
       transfer.join();
+      fos.close();
       if (uncompressed != file.u) return false;
     } catch (Exception e) {
       log(e);
