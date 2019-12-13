@@ -291,7 +291,7 @@ public class ConfigService implements WebUIHandler {
   private final static long MB = 1024 * 1024;
   private final static long GB = 1024 * 1024 * 1024;
 
-  private static String toEng(long size) {
+  public static String toEng(long size) {
     if (size < GB) {
       return String.format("%dMB", size / MB);
     } else {
@@ -1078,6 +1078,25 @@ public class ConfigService implements WebUIHandler {
       return panel;
     }
 
+    AutoScrollPanel scroll = new AutoScrollPanel();
+    scroll.setMaxWidth();
+    scroll.setMaxHeight();
+
+    row = new Row();
+    Button restore = new Button("Restore");
+    restore.addClickListener((MouseEvent me, Component c) -> {
+      if (Status.running) {
+        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
+        split.setRightComponent(serverMonitor());
+      } else {
+        SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
+        split.setRightComponent(serverRestoreJobConfirm(catinfo));
+      }
+    });
+    row.add(restore);
+    row.add(selected);
+    scroll.add(row);
+
     if (volume == null) {
       //list available volumes
       for(EntryVolume vol : cat.volumes) {
@@ -1104,7 +1123,7 @@ public class ConfigService implements WebUIHandler {
         });
         row.add(enter);
         row.add(new Label(" on Host:" + vol.host));
-        panel.add(row);
+        scroll.add(row);
       }
     } else {
       EntryFolder folder2 = folder;
@@ -1125,7 +1144,7 @@ public class ConfigService implements WebUIHandler {
       });
       row.add(up);
       row.add(getPath());
-      panel.add(row);
+      scroll.add(row);
       for(EntryFolder childFolder : folder2.folders) {
         row = new Row();
         CheckBox cb = new CheckBox("\\" + childFolder.name);
@@ -1146,7 +1165,7 @@ public class ConfigService implements WebUIHandler {
           split.setRightComponent(serverCreateRestoreJob(catinfo, volume, childFolder));
         });
         row.add(enter);
-        panel.add(row);
+        scroll.add(row);
       }
       for(EntryFile file : folder2.files) {
         row = new Row();
@@ -1161,12 +1180,36 @@ public class ConfigService implements WebUIHandler {
           //TODO : unselect any parent folders
         });
         row.add(cb);
-        panel.add(row);
+        scroll.add(row);
       }
     }
+    panel.add(scroll);
+
+    return panel;
+  }
+
+  public Panel serverRestoreJobConfirm(CatalogInfo catinfo) {
+    Panel panel = new Panel();
+    Row row;
 
     row = new Row();
-    Button restore = new Button("Restore");
+    row.add(new Label("Confirm Restore"));
+    panel.add(row);
+
+    row = new Row();
+    row.setBackColor(Color.blue);
+    row.setHeight(5);
+    panel.add(row);
+
+    AutoScrollPanel scroll = new AutoScrollPanel();
+    scroll.setMaxWidth();
+    scroll.setMaxHeight();
+
+    Label selected = new Label("...");
+    updateSelected(selected);
+
+    row = new Row();
+    Button restore = new Button("Restore Now");
     restore.addClickListener((MouseEvent me, Component c) -> {
       if (Status.running) {
         SplitPanel split = (SplitPanel)c.getClient().getPanel().getComponent("split");
@@ -1187,22 +1230,23 @@ public class ConfigService implements WebUIHandler {
     });
     row.add(restore);
     row.add(selected);
-    panel.add(row);
+    scroll.add(row);
+
     if (cat.haveChanger) {
       row = new Row();
       row.add(new Label("Make sure following tape(s) are present before you start restore job."));
-      panel.add(row);
+      scroll.add(row);
       for(EntryTape tape : catinfo.tapes) {
         row = new Row();
         row.add(new Label("Tape:" + tape.barcode));
-        panel.add(row);
+        scroll.add(row);
       }
     } else {
       row = new Row();
       row.add(new Label("Make sure proper tape is inserted before you start restore job."));
-      panel.add(row);
+      scroll.add(row);
     }
-
+    panel.add(scroll);
     return panel;
   }
 

@@ -172,6 +172,7 @@ public class BackupJob extends Thread {
       }
       if (!success) return false;
     }
+    log("Total:" + ConfigService.toEng(Status.copied) + " files " + Status.files);
     return true;
   }
   public void log(Exception e) {
