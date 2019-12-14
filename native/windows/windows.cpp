@@ -620,7 +620,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_peAddIcon
   UpdateResource((HANDLE)handle, (LPCSTR)RT_GROUP_ICON, (LPCSTR)1, EN_US, grp, sizeof(GRPICONHEADER) + sizeof(GRPICONENTRY) * i.count);
 
   for(int a=0;a<i.count;a++) {
-    UpdateResource((HANDLE)handle, (LPCSTR)RT_ICON, (LPCSTR)(a+1), EN_US, ii[a], iiSize[a]);
+    UpdateResource((HANDLE)handle, (LPCSTR)RT_ICON, (LPCSTR)(jlong)(a+1), EN_US, ii[a], iiSize[a]);
   }
 }
 
@@ -628,7 +628,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_peAddString
   (JNIEnv *e, jclass c, jlong handle, jint type, jint idx, jbyteArray ba)
 {
   jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-  UpdateResource((HANDLE)handle, (LPCSTR)type, (LPCSTR)idx, EN_US, baptr, e->GetArrayLength(ba));
+  UpdateResource((HANDLE)handle, (LPCSTR)(jlong)type, (LPCSTR)(jlong)idx, EN_US, baptr, e->GetArrayLength(ba));
   e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
 }
 

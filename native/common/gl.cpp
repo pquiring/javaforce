@@ -187,7 +187,7 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glBufferData__II_3FI
   (JNIEnv *e, jclass c, jint i1, jint i2, jfloatArray f3, jint i4)
 {
   float *f3ptr = e->GetFloatArrayElements(f3,NULL);
-  (*(void (*)(int,void*,float *,int))funcs[GLBUFFERDATA].func)(i1, (void*)i2, f3ptr, i4);
+  (*(void (*)(int,void*,float *,int))funcs[GLBUFFERDATA].func)(i1, (void*)(jlong)i2, f3ptr, i4);
   e->ReleaseFloatArrayElements(f3, f3ptr, JNI_ABORT);
 }
 
@@ -195,7 +195,7 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glBufferData__II_3SI
   (JNIEnv *e, jclass c, jint i1, jint i2, jshortArray s3, jint i4)
 {
   jshort *s3ptr = e->GetShortArrayElements(s3,NULL);
-  (*(void (*)(int,void*,jshort *,int))funcs[GLBUFFERDATA].func)(i1, (void*)i2, s3ptr, i4);
+  (*(void (*)(int,void*,jshort *,int))funcs[GLBUFFERDATA].func)(i1, (void*)(jlong)i2, s3ptr, i4);
   e->ReleaseShortArrayElements(s3, s3ptr, JNI_ABORT);
 }
 
@@ -203,7 +203,7 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glBufferData__II_3II
   (JNIEnv *e, jclass c, jint i1, jint i2, jintArray i3, jint i4)
 {
   jint *i3ptr = e->GetIntArrayElements(i3,NULL);
-  (*(void (*)(int,void*,jint *,int))funcs[GLBUFFERDATA].func)(i1, (void*)i2, i3ptr, i4);
+  (*(void (*)(int,void*,jint *,int))funcs[GLBUFFERDATA].func)(i1, (void*)(jlong)i2, i3ptr, i4);
   e->ReleaseIntArrayElements(i3, i3ptr, JNI_ABORT);
 }
 
@@ -211,7 +211,7 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glBufferData__II_3BI
   (JNIEnv *e, jclass c, jint i1, jint i2, jbyteArray b3, jint i4)
 {
   jbyte *b3ptr = e->GetByteArrayElements(b3,NULL);
-  (*(void (*)(int,void*,jbyte *,int))funcs[GLBUFFERDATA].func)(i1, (void*)i2, b3ptr, i4);
+  (*(void (*)(int,void*,jbyte *,int))funcs[GLBUFFERDATA].func)(i1, (void*)(jlong)i2, b3ptr, i4);
   e->ReleaseByteArrayElements(b3, b3ptr, JNI_ABORT);
 }
 
@@ -292,7 +292,7 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDeleteTextures
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDrawElements
   (JNIEnv *e, jclass c, jint i1, jint i2, jint i3, jint i4)
 {
-  (*(void (*)(int,int,int,void*))funcs[GLDRAWELEMENTS].func)(i1,i2,i3,(void*)i4);
+  (*(void (*)(int,int,int,void*))funcs[GLDRAWELEMENTS].func)(i1,i2,i3,(void*)(jlong)i4);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glDepthFunc
@@ -611,7 +611,7 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GL_glUniform1i
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glVertexAttribPointer
   (JNIEnv *e, jclass c, jint i1, jint i2, jint i3, jint i4, jint i5, jint i6)
 {
-  (*(void (*)(int, int, int, int, int, void*))funcs[GLVERTEXATTRIBPOINTER].func)(i1, i2, i3, i4, i5, (void*)i6);
+  (*(void (*)(int, int, int, int, int, void*))funcs[GLVERTEXATTRIBPOINTER].func)(i1, i2, i3, i4, i5, (void*)(jlong)i6);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GL_glViewport

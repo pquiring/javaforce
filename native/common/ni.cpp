@@ -10,24 +10,26 @@ JF_LIB_HANDLE nidll = NULL;
   #define JF_LIB_NAME "nicaiu.so"
 #endif
 
-int32 (*__CFUNC _DAQmxCreateTask)(const char taskName[], TaskHandle *taskHandle);
-int32 (*__CFUNC _DAQmxCreateAIVoltageChan)(TaskHandle taskHandle, const char physicalChannel[], const char nameToAssignToChannel[], int32 terminalConfig, float64 minVal, float64 maxVal, int32 units, const char customScaleName[]);
-int32 (*__CFUNC _DAQmxCreateDIChan)(TaskHandle taskHandle, const char lines[], const char nameToAssignToLines[], int32 lineGrouping);
-int32 (*__CFUNC _DAQmxCreateCIFreqChan)(TaskHandle taskHandle, const char counter[], const char nameToAssignToChannel[], float64 minVal, float64 maxVal, int32 units, int32 edge, int32 measMethod, float64 measTime, uInt32 divisor, const char customScaleName[]);
-int32 (*__CFUNC _DAQmxCfgSampClkTiming)(TaskHandle taskHandle, const char source[], float64 rate, int32 activeEdge, int32 sampleMode, uInt64 sampsPerChan);
-int32 (*__CFUNC _DAQmxCfgImplicitTiming)(TaskHandle taskHandle, int32 sampleMode, uInt64 sampsPerChan);
-int32 (*__CFUNC _DAQmxStartTask)(TaskHandle taskHandle);
-int32 (*__CFUNC _DAQmxStopTask)(TaskHandle taskHandle);
-int32 (*__CFUNC _DAQmxClearTask)(TaskHandle taskHandle);
-int32 (*__CFUNC _DAQmxReadAnalogF64)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, bool32 fillMode, float64 readArray[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
-int32 (*__CFUNC _DAQmxReadBinaryU32)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, bool32 fillMode, uInt32 readArray[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
-int32 (*__CFUNC _DAQmxReadDigitalU32)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, bool32 fillMode, uInt32 readArray[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
-int32 (*__CFUNC _DAQmxReadCounterF64)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, float64 readArray[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
-int32 (*__CFUNC _DAQmxReadCounterU32)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, uInt32 readArray[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
-int32 (*__CFUNC _DAQmxReadCtrFreq)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, bool32 interleaved, float64 readArrayFrequency[], float64 readArrayDutyCycle[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
-int32 (*__CFUNC _DAQmxGetExtendedErrorInfo)(char errorString[], uInt32 bufferSize);
-int32 (*__CFUNC _DAQmxSetCIFreqTerm)(TaskHandle taskHandle, const char channel[], const char *data);
-int32 (*__CFUNC _DAQmxSetCICtrTimebaseRate)(TaskHandle taskHandle, const char channel[], float64 data);
+extern "C" {
+int32 (*_DAQmxCreateTask)(const char taskName[], TaskHandle *taskHandle);
+int32 (*_DAQmxCreateAIVoltageChan)(TaskHandle taskHandle, const char physicalChannel[], const char nameToAssignToChannel[], int32 terminalConfig, float64 minVal, float64 maxVal, int32 units, const char customScaleName[]);
+int32 (*_DAQmxCreateDIChan)(TaskHandle taskHandle, const char lines[], const char nameToAssignToLines[], int32 lineGrouping);
+int32 (*_DAQmxCreateCIFreqChan)(TaskHandle taskHandle, const char counter[], const char nameToAssignToChannel[], float64 minVal, float64 maxVal, int32 units, int32 edge, int32 measMethod, float64 measTime, uInt32 divisor, const char customScaleName[]);
+int32 (*_DAQmxCfgSampClkTiming)(TaskHandle taskHandle, const char source[], float64 rate, int32 activeEdge, int32 sampleMode, uInt64 sampsPerChan);
+int32 (*_DAQmxCfgImplicitTiming)(TaskHandle taskHandle, int32 sampleMode, uInt64 sampsPerChan);
+int32 (*_DAQmxStartTask)(TaskHandle taskHandle);
+int32 (*_DAQmxStopTask)(TaskHandle taskHandle);
+int32 (*_DAQmxClearTask)(TaskHandle taskHandle);
+int32 (*_DAQmxReadAnalogF64)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, bool32 fillMode, float64 readArray[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
+int32 (*_DAQmxReadBinaryU32)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, bool32 fillMode, uInt32 readArray[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
+int32 (*_DAQmxReadDigitalU32)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, bool32 fillMode, uInt32 readArray[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
+int32 (*_DAQmxReadCounterF64)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, float64 readArray[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
+int32 (*_DAQmxReadCounterU32)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, uInt32 readArray[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
+int32 (*_DAQmxReadCtrFreq)(TaskHandle taskHandle, int32 numSampsPerChan, float64 timeout, bool32 interleaved, float64 readArrayFrequency[], float64 readArrayDutyCycle[], uInt32 arraySizeInSamps, int32 *sampsPerChanRead, bool32 *reserved);
+int32 (*_DAQmxGetExtendedErrorInfo)(char errorString[], uInt32 bufferSize);
+int32 (*_DAQmxSetCIFreqTerm)(TaskHandle taskHandle, const char channel[], const char *data);
+int32 (*_DAQmxSetCICtrTimebaseRate)(TaskHandle taskHandle, const char channel[], float64 data);
+}
 
 JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_daqInit
   (JNIEnv *e, jclass cls)
