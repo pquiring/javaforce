@@ -3,7 +3,7 @@ var playing = false;
 var onpower = false;
 
 function onBattery(charging) {
-  if (onpower != charging) {
+  if (onpower !== charging) {
     var icon = document.getElementById('chargingicon');
     if (charging) {
       icon.src = "/green";
@@ -163,11 +163,18 @@ function onKeyUp(event, element) {
 
 */
 
+function toggle() {
+  var req = new XMLHttpRequest();
+  req.open("GET", "/toggle");
+  req.send();
+}
+
 function play() {
   try {
     var audio = document.getElementById('audio');
     var promise = audio.play();
     playing = true;
+    toggle();
 //    connect();
   } catch (err) {
     console.log("playing failed");
@@ -179,6 +186,7 @@ function pause() {
     var audio = document.getElementById('audio');
     var promise = audio.pause();
     playing = false;
+    toggle();
 //    disconnect();
   } catch (err) {
     console.log("pausing failed");
@@ -205,7 +213,7 @@ function refresh() {
   var top = document.getElementById('top');
   var width = document.body.clientWidth;
   var topheight = top.clientHeight;
-  var height = document.body.clientHeight - topheight;
+  var height = document.body.clientHeight - topheight - 5;
   screen.src = '/screen?x=' + width + '&y=' + height + '&id=' + imgcnt;
   imgcnt++;
 }

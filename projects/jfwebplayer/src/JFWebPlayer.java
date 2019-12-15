@@ -171,7 +171,7 @@ public class JFWebPlayer extends Thread implements WebHandler, WebSocketHandler,
         changed = false;
         try { res.write(baos.toByteArray()); } catch (Exception e) {}
         break;
-      case "/touch":
+      case "/touch": {
         res.setStatus(200, "Ok");
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         double dx = x;
@@ -188,6 +188,22 @@ public class JFWebPlayer extends Thread implements WebHandler, WebSocketHandler,
           robot.mouseRelease(InputEvent.BUTTON1_MASK);
         } catch (Exception e) {}
         break;
+      }
+      case "/toggle": {
+        //press Play button in Spotify
+        res.setStatus(200, "Ok");
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        int sx = (int)(screenSize.getWidth() / 2);
+        int sy = (int)(screenSize.getHeight() - 88);
+        JFLog.log("toggle@" + sx + "x" + sy);
+        try {
+          robot.mouseMove(sx, sy);
+          robot.mousePress(InputEvent.BUTTON1_MASK);
+          JF.sleep(15);
+          robot.mouseRelease(InputEvent.BUTTON1_MASK);
+        } catch (Exception e) {}
+        break;
+      }
       case "/":
       case "/webplayer.html":
         try {
