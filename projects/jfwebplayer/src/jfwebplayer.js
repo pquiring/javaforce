@@ -212,11 +212,13 @@ function refresh() {
 
 function touch(event) {
   var screen = document.getElementById('screen');
+  var top = document.getElementById('top');
+  var topheight = top.clientHeight;
   var width = screen.clientWidth;
   var height = screen.clientHeight;
   var req = new XMLHttpRequest();
   var mx = event.clientX;
-  var my = event.clientY;
+  var my = event.clientY - topheight;
   req.open("GET", "/touch?x=" + width + "&y=" + height + "&mx=" + mx + "&my=" + my);
   req.send();
 }

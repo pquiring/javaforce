@@ -286,7 +286,6 @@ public class JFWebPlayer extends Thread implements WebHandler, WebSocketHandler,
       int frame_size = encoder.getAudioFramesize() * 2;  //*2=stereo
       input.start(2, 44100, 16, frame_size, "<default>");
       short buf[] = new short[frame_size];
-      byte buf2[] = new byte[frame_size * 4];  //*2=mono *4=stereo
       while (active) {
         if (input.read(buf)) {
           encoder.addAudio(buf);
