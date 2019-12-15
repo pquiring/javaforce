@@ -673,18 +673,19 @@ static jboolean open_codecs(FFContext *ctx, int new_width, int new_height, int n
     ctx->dst_sample_fmt = AV_SAMPLE_FMT_S16;
     ctx->src_rate = ctx->audio_codec_ctx->sample_rate;
     if (new_freq == -1) new_freq = ctx->src_rate;
-/*
-    (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_count",     ctx->audio_codec_ctx->channels, 0);
-    (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_rate",        ctx->src_rate, 0);
-    (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "in_sample_fmt",  ctx->audio_codec_ctx->sample_fmt, 0);
-    (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_count",    new_chs, 0);
-    (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       new_freq, 0);
-    (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->dst_sample_fmt, 0);
-*/
-    ctx->swr_ctx = (*_swr_alloc_set_opts)(ctx->swr_ctx,
-      new_layout, ctx->dst_sample_fmt, new_freq, src_layout,
-      ctx->audio_codec_ctx->sample_fmt, ctx->src_rate,
-      0, NULL);
+    if (libav_org) {
+      (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_count",     ctx->audio_codec_ctx->channels, 0);
+      (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_rate",        ctx->src_rate, 0);
+      (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "in_sample_fmt",  ctx->audio_codec_ctx->sample_fmt, 0);
+      (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_count",    new_chs, 0);
+      (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       new_freq, 0);
+      (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->dst_sample_fmt, 0);
+    } else {
+      ctx->swr_ctx = (*_swr_alloc_set_opts)(ctx->swr_ctx,
+        new_layout, ctx->dst_sample_fmt, new_freq, src_layout,
+        ctx->audio_codec_ctx->sample_fmt, ctx->src_rate,
+        0, NULL);
+    }
 
     int ret;
     if (libav_org)
@@ -1459,18 +1460,19 @@ static jboolean open_audio(FFContext *ctx) {
     ctx->swr_ctx = (*_avresample_alloc_context)();
   else
     ctx->swr_ctx = (*_swr_alloc)();
-/*
-  (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_count",      ctx->chs, 0);
-  (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_rate",        ctx->freq, 0);
-  (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "in_sample_fmt",  AV_SAMPLE_FMT_S16, 0);
-  (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_count",     ctx->chs, 0);
-  (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       ctx->freq, 0);
-  (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->audio_codec_ctx->sample_fmt, 0);
-*/
-  ctx->swr_ctx = (*_swr_alloc_set_opts)(ctx->swr_ctx,
-    ctx->audio_codec_ctx->channel_layout, ctx->audio_codec_ctx->sample_fmt, ctx->freq,
-    ctx->audio_codec_ctx->channel_layout, AV_SAMPLE_FMT_S16, ctx->freq,
-    0, NULL);
+  if (libav_org) {
+    (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_count",      ctx->chs, 0);
+    (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_rate",        ctx->freq, 0);
+    (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "in_sample_fmt",  AV_SAMPLE_FMT_S16, 0);
+    (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_count",     ctx->chs, 0);
+    (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       ctx->freq, 0);
+    (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->audio_codec_ctx->sample_fmt, 0);
+  } else {
+    ctx->swr_ctx = (*_swr_alloc_set_opts)(ctx->swr_ctx,
+      ctx->audio_codec_ctx->channel_layout, ctx->audio_codec_ctx->sample_fmt, ctx->freq,
+      ctx->audio_codec_ctx->channel_layout, AV_SAMPLE_FMT_S16, ctx->freq,
+      0, NULL);
+  }
 
   printf("conversion:%d to %d\n", AV_SAMPLE_FMT_S16, ctx->audio_codec_ctx->sample_fmt);
   if (libav_org)
