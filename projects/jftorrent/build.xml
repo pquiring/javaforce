@@ -45,7 +45,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="${app}.jar" todir="/usr/share/java"/>
     <copy file="${app}Tracker" todir="/usr/bin"/>
     <chmod file="/usr/bin/${app}Tracker" perm="+x"/>
@@ -54,39 +54,6 @@
     <copy file="${app}.desktop" todir="/usr/share/applications"/>
     <copy file="${app}.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
     <copy file="${app}.html" todir="/usr/share/jhelp"/>
-  </target>
-
-  <target name="release-bin" description="create release zip file">
-    <zip destfile="${app}-${version}.zip">
-      <fileset dir=".">
-        <include name="j*.jar"/>
-        <include name="readme.txt"/>
-        <include name="run*.bat"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="${app}-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="${app}-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/${app}/src/*.java"/>
-        <include name="jf/projects/${app}/src/*.form"/>
-        <include name="jf/projects/${app}/*.txt"/>
-        <include name="jf/projects/${app}/*.xml"/>
-        <include name="jf/projects/${app}/*.png"/>
-        <include name="jf/projects/${app}/*.ico"/>
-        <include name="jf/projects/${app}/*.cfg"/>
-        <include name="jf/projects/${app}/run*.bat"/>
-        <include name="jf/projects/${app}/nbproject/*.xml"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/stubs/*"/>
-      </fileset>
-    </zip>
-    <move file="${app}-src-${version}.zip" todir="${home}/release"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

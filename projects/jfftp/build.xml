@@ -69,41 +69,6 @@
     </jar>
   </target>
 
-  <target name="release-bin" depends="jar" description="create release zip file">
-    <zip destfile="jfftp-${version}.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-        <include name="*.html"/>
-        <include name="run.bat"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfftp-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfftp-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/jars/jcifs.jar"/>
-        <include name="jf/jars/jsch.jar"/>
-        <include name="jf/jars/jzlib.jar"/>
-        <include name="jf/projects/jfftp/src/*.java"/>
-        <include name="jf/projects/jfftp/src/*.form"/>
-        <include name="jf/projects/jfftp/*.txt"/>
-        <include name="jf/projects/jfftp/*.xml"/>
-        <include name="jf/projects/jfftp/*.png"/>
-        <include name="jf/projects/jfftp/nbproject/*.xml"/>
-        <include name="jf/projects/jfftp/run.bat"/>
-        <include name="jf/stubs/*"/>
-      </fileset>
-    </zip>
-    <move file="jfftp-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <!-- sudo ant install -->
   <target name="install" description="install files">
 

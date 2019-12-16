@@ -52,38 +52,6 @@
     <copy file="jfmedia.html" todir="/usr/share/jhelp"/>
   </target>
 
-  <target name="release-bin" depends="jar" description="create release zip file">
-    <zip destfile="jfmedia-${version}.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-        <include name="run.bat"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfmedia-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfmedia-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/jfmedia/src/*.java"/>
-        <include name="jf/projects/jfmedia/src/*.form"/>
-        <include name="jf/projects/jfmedia/*.txt"/>
-        <include name="jf/projects/jfmedia/*.xml"/>
-        <include name="jf/projects/jfmedia/*.png"/>
-        <include name="jf/projects/jfmedia/*.ico"/>
-        <include name="jf/projects/jfmedia/run.bat"/>
-        <include name="jf/projects/jfmedia/nbproject/*.xml"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/stubs/*"/>
-      </fileset>
-    </zip>
-    <move file="jfmedia-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>

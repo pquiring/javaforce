@@ -59,42 +59,6 @@
     <exec command="x86_64-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ client.cpp -Wl,-subsystem,windows -lstdc++ -lole32 -loleaut32 -luuid -shared -o client64.dll"/>
   </target>
 
-  <target name="release-bin" depends="jar" description="create release zip file">
-    <copy file="../../license.txt" todir="."/>
-    <zip destfile="jfrdp-${version}.zip">
-      <fileset dir="..">
-        <include name="jfrdp/*.jar"/>
-        <include name="jfrdp/*.txt"/>
-        <include name="jfrdp/*.dll"/>
-        <include name="jfrdp/run*.bat"/>
-      </fileset>
-    </zip>
-    <move file="jfrdp-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfrdp-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/jfrdp/src/**/*.java"/>
-        <include name="jf/projects/jfrdp/src/**/*.form"/>
-        <include name="jf/projects/jfrdp/*.txt"/>
-        <include name="jf/projects/jfrdp/*.xml"/>
-        <include name="jf/projects/jfrdp/*.png"/>
-        <include name="jf/projects/jfrdp/*.ico"/>
-        <include name="jf/projects/jfrdp/*.cfg"/>
-        <include name="jf/projects/jfrdp/*.cpp"/>
-        <include name="jf/projects/jfrdp/*.h"/>
-        <include name="jf/projects/jfrdp/run*.bat"/>
-        <include name="jf/projects/jfrdp/nbproject/*.xml"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/stubs/*"/>
-      </fileset>
-    </zip>
-    <move file="jfrdp-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>

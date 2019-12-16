@@ -13,18 +13,4 @@
 
   <target name="jar" depends="depjars" description="jar">
   </target>
-
-  <target name="release-bin" depends="" description="create release zip file">
-    <copy file="../../jars/javaforce.jar" todir="."/>
-    <zip destfile="${app}-${version}.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-        <include name="*.so"/>
-        <include name="run*.sh"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="${app}-${version}.zip" todir="${home}/release"/>
-  </target>
 </project>

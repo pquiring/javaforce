@@ -76,45 +76,6 @@
     <copy file="jfterm.html" todir="/usr/share/jhelp"/>
   </target>
 
-  <target name="release-bin" description="create release zip file">
-    <zip destfile="jfterm-${version}.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-        <include name="*.html"/>
-        <include name="run.bat"/>
-        <include name="jfterm"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfterm-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfterm-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/jfterm/src/*.java"/>
-        <include name="jf/projects/jfterm/src/*.form"/>
-        <include name="jf/projects/jfterm/*.png"/>
-        <include name="jf/projects/jfterm/*.txt"/>
-        <include name="jf/projects/jfterm/build.xml"/>
-        <include name="jf/projects/jfterm/*.html"/>
-        <include name="jf/projects/jfterm/run.bat"/>
-        <include name="jf/projects/jfterm/jfterm"/>
-        <include name="jf/projects/jfterm/nbproject/*.xml"/>
-        <include name="jf/jars/jsch*.jar"/>
-        <include name="jf/jars/jzlib*.jar"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/keys/*.xml"/>
-        <include name="jf/keys/*.txt"/>
-        <include name="jf/stubs/*"/>
-      </fileset>
-    </zip>
-    <move file="jfterm-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>

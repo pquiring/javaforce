@@ -31,7 +31,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="jfwebproxy.jar" todir="/usr/share/java"/>
   </target>
 
@@ -74,45 +74,6 @@
     <war destfile="jfWebProxy.war" webxml="jsp/WEB-INF/web.xml">
       <fileset dir="jsp"/>
     </war>
-  </target>
-
-  <target name="release-bin" depends="jar,msi32,msi64" description="create release zip file">
-    <copy file="${home}/license.txt" todir="."/>
-    <zip destfile="jfwebproxy-${version}.zip">
-      <fileset dir="..">
-        <include name="jfwebproxy/jsp/**/*"/>
-        <include name="jfwebproxy/php/**/*"/>
-        <include name="jfwebproxy/*.msi"/>
-        <include name="jfwebproxy/*.jar"/>
-        <include name="jfwebproxy/*.txt"/>
-        <include name="jfwebproxy/run*.bat"/>
-      </fileset>
-    </zip>
-    <move file="jfwebproxy-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfwebproxy-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/jfwebproxy/jsp/**/*"/>
-        <include name="jf/projects/jfwebproxy/php/**/*"/>
-        <include name="jf/projects/jfwebproxy/src/*.java"/>
-        <include name="jf/projects/jfwebproxy/src/*.form"/>
-        <include name="jf/projects/jfwebproxy/*.c"/>
-        <include name="jf/projects/jfwebproxy/*.txt"/>
-        <include name="jf/projects/jfwebproxy/*.xml"/>
-        <include name="jf/projects/jfwebproxy/*.png"/>
-        <include name="jf/projects/jfwebproxy/*.ico"/>
-        <include name="jf/projects/jfwebproxy/*.rc"/>
-        <include name="jf/projects/jfwebproxy/run*.bat"/>
-        <include name="jf/projects/jfwebproxy/nbproject/*.xml"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/stubs/*"/>
-      </fileset>
-    </zip>
-    <move file="jfwebproxy-src-${version}.zip" todir="${home}/release"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

@@ -58,42 +58,6 @@
     <copy file="jfrecorddesktop.html" todir="/usr/share/jhelp"/>
   </target>
 
-  <target name="release-bin" description="create release zip file">
-    <copy file="../../jars/javaforce.jar" todir="."/>
-    <zip destfile="jfrecorddesktop-${version}.zip">
-      <fileset dir="..">
-        <include name="jfrecorddesktop/*.jar"/>
-        <include name="jfrecorddesktop/*.txt"/>
-        <include name="jfrecorddesktop/run.bat"/>
-        <include name="jfrecorddesktop/jfnative*"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfrecorddesktop-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfrecorddesktop-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/jfrecorddesktop/*.java"/>
-        <include name="jf/projects/jfrecorddesktop/*.form"/>
-        <include name="jf/projects/jfrecorddesktop/*.txt"/>
-        <include name="jf/projects/jfrecorddesktop/*.xml"/>
-        <include name="jf/projects/jfrecorddesktop/*.png"/>
-        <include name="jf/projects/jfrecorddesktop/*.ico"/>
-        <include name="jf/projects/jfrecorddesktop/*.cfg"/>
-        <include name="jf/projects/jfrecorddesktop/run.bat"/>
-        <include name="jf/projects/jfrecorddesktop/nbproject/*.xml"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/stubs/*"/>
-        <include name="jf/native/*"/>
-      </fileset>
-    </zip>
-    <move file="jfrecorddesktop-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>

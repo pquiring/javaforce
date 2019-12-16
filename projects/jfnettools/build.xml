@@ -36,32 +36,6 @@
     <copy file="jfnettools.jar" todir="/usr/share/java"/>
   </target>
 
-  <target name="release-bin" depends="" description="create release zip file">
-    <zip destfile="jfnettools-${version}.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfnettools-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfnettools-${version}-src.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/jfnettools/src/*.java"/>
-        <include name="jf/projects/jfnettools/src/*.form"/>
-        <include name="jf/projects/jfnettools/*.txt"/>
-        <include name="jf/projects/jfnettools/*.xml"/>
-        <include name="jf/projects/jfnettools/nbproject/*.xml"/>
-      </fileset>
-    </zip>
-    <move file="jfnettools-${version}-src.zip" todir="${home}/release"/>
-  </target>
-
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>

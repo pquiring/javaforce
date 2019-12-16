@@ -58,42 +58,6 @@
     <copy file="jfprojector.html" todir="/usr/share/jhelp"/>
   </target>
 
-  <target name="release-bin" description="create release zip file">
-    <copy file="../../jars/javaforce.jar" todir="."/>
-    <zip destfile="jfprojector-${version}.zip">
-      <fileset dir="..">
-        <include name="jfprojector/*.jar"/>
-        <include name="jfprojector/*.txt"/>
-        <include name="jfprojector/run.bat"/>
-        <include name="jfprojector/jfnative*"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfprojector-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfprojector-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/jfprojector/*.java"/>
-        <include name="jf/projects/jfprojector/*.form"/>
-        <include name="jf/projects/jfprojector/*.txt"/>
-        <include name="jf/projects/jfprojector/*.xml"/>
-        <include name="jf/projects/jfprojector/*.png"/>
-        <include name="jf/projects/jfprojector/*.ico"/>
-        <include name="jf/projects/jfprojector/*.cfg"/>
-        <include name="jf/projects/jfprojector/run.bat"/>
-        <include name="jf/projects/jfprojector/nbproject/*.xml"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/stubs/*"/>
-        <include name="jf/native/*"/>
-      </fileset>
-    </zip>
-    <move file="jfprojector-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>

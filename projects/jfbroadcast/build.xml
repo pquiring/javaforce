@@ -60,39 +60,6 @@
     <copy file="jfbroadcast.html" todir="/usr/share/jhelp"/>
   </target>
 
-  <target name="release-bin" depends="jar" description="create release zip file">
-    <zip destfile="jfbroadcast-${version}-bin.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-        <include name="run.*"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfbroadcast-${version}-bin.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfbroadcast-${version}-src.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/jfbroadcast/src/*.java"/>
-        <include name="jf/projects/jfbroadcast/src/*.form"/>
-        <include name="jf/projects/jfbroadcast/*.txt"/>
-        <include name="jf/projects/jfbroadcast/*.xml"/>
-        <include name="jf/projects/jfbroadcast/*.ico"/>
-        <include name="jf/projects/jfbroadcast/*.png"/>
-        <include name="jf/projects/jfbroadcast/nbproject/*.xml"/>
-        <include name="jf/projects/jfbroadcast/run.*"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/jars/derby.jar"/>
-        <include name="jf/stubs/*"/>
-      </fileset>
-    </zip>
-    <move file="jfbroadcast-${version}-src.zip" todir="${home}/release"/>
-  </target>
-
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcefiles="src/*.java" destdir="javadoc" classpath="${classpath}"/>
   </target>

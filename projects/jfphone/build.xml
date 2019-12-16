@@ -66,57 +66,6 @@
     <copy file="jfphone.html" todir="/usr/share/jhelp"/>
   </target>
 
-  <target name="release-bin" description="create release zip file">
-    <zip destfile="jfphone-bin-${version}.zip">
-      <fileset dir="..">
-        <include name="jfphone/*.jar"/>
-        <include name="jfphone/*.html"/>
-        <include name="jfphone/*.php"/>
-        <include name="jfphone/*.js"/>
-        <include name="jfphone/*.jnlp"/>
-        <include name="jfphone/readme.txt"/>
-        <include name="jfphone/jfphone"/>
-        <include name="jfphone/run.*"/>
-        <include name="jfphone/jfnative*"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfphone-bin-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfphone-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/jars/bouncycastle.jar"/>
-
-        <include name="jf/projects/jfphone/src/*.java"/>
-        <include name="jf/projects/jfphone/src/*.form"/>
-        <include name="jf/projects/jfphone/*.cfg"/>
-        <include name="jf/projects/jfphone/*.js"/>
-        <include name="jf/projects/jfphone/*.form"/>
-        <include name="jf/projects/jfphone/*.jnlp"/>
-        <include name="jf/projects/jfphone/*.txt"/>
-        <include name="jf/projects/jfphone/*.png"/>
-        <include name="jf/projects/jfphone/*.wav"/>
-        <include name="jf/projects/jfphone/image/*.png"/>
-        <include name="jf/projects/jfphone/*.ico"/>
-        <include name="jf/projects/jfphone/*.html"/>
-        <include name="jf/projects/jfphone/*.php"/>
-        <include name="jf/projects/jfphone/*.xml"/>
-        <include name="jf/projects/jfphone/run.*"/>
-        <include name="jf/projects/jfphone/jfphone"/>
-        <include name="jf/projects/jfphone/nbproject/*.xml"/>
-
-        <include name="jf/stubs/*"/>
-      </fileset>
-    </zip>
-    <move file="jfphone-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcepath="src" sourcefiles="src/*.java" destdir="javadoc">
       <classpath>

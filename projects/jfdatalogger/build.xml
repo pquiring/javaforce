@@ -48,39 +48,6 @@
     <copy file="jfdatalogger.html" todir="/usr/share/jhelp"/>
   </target>
 
-  <target name="release-bin" depends="jar" description="create release zip file">
-    <zip destfile="jfdatalogger-${version}.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-        <include name="run.bat"/>
-        <include name="*.dll"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfdatalogger-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfdatalogger-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/jfdatalogger/src/*.java"/>
-        <include name="jf/projects/jfdatalogger/src/*.form"/>
-        <include name="jf/projects/jfdatalogger/*.txt"/>
-        <include name="jf/projects/jfdatalogger/*.xml"/>
-        <include name="jf/projects/jfdatalogger/*.png"/>
-        <include name="jf/projects/jfdatalogger/*.ico"/>
-        <include name="jf/projects/jfdatalogger/run.bat"/>
-        <include name="jf/projects/jfdatalogger/nbproject/*.xml"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/stubs/*"/>
-      </fileset>
-    </zip>
-    <move file="jfdatalogger-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>

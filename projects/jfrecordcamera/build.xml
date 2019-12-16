@@ -57,42 +57,6 @@
     <copy file="${app}.html" todir="/usr/share/jhelp"/>
   </target>
 
-  <target name="release-bin" description="create release zip file">
-    <copy file="../../jars/javaforce.jar" todir="."/>
-    <zip destfile="${app}-${version}.zip">
-      <fileset dir="..">
-        <include name="jfrecordcamera/*.jar"/>
-        <include name="jfrecordcamera/*.txt"/>
-        <include name="jfrecordcamera/run.bat"/>
-        <include name="jfrecordcamera/jfnative*"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="${app}-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="${app}-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/${app}/src/*.java"/>
-        <include name="jf/projects/${app}/src/*.form"/>
-        <include name="jf/projects/${app}/*.txt"/>
-        <include name="jf/projects/${app}/*.xml"/>
-        <include name="jf/projects/${app}/*.png"/>
-        <include name="jf/projects/${app}/*.ico"/>
-        <include name="jf/projects/${app}/*.cfg"/>
-        <include name="jf/projects/${app}/run.bat"/>
-        <include name="jf/projects/${app}/nbproject/*.xml"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/stubs/*"/>
-        <include name="jf/native/*"/>
-      </fileset>
-    </zip>
-    <move file="${app}-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>

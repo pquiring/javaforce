@@ -16,19 +16,6 @@
   <target name="jar" depends="depjars" description="jar">
   </target>
 
-  <target name="release-bin" depends="" description="create release zip file">
-    <copy file="../../jars/javaforce.jar" todir="."/>
-    <zip destfile="jfstun-${version}.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-        <include name="run*.bat"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfstun-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <!-- sudo ant install -->
   <target name="install" description="install files">
     <copy file="${app}.service" todir="/lib/systemd/system"/>

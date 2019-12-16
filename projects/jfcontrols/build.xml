@@ -68,42 +68,6 @@
     <copy file="jfcontrols.service" todir="/lib/systemd/system"/>
   </target>
 
-  <target name="release-bin" description="create release zip file">
-    <zip destfile="${app}-${version}-bin.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-        <include name="*.dll"/>
-        <include name="run.bat"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="${app}-${version}-bin.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="${app}-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/stubs/*"/>
-        <include name="jf/projects/${app}/src/**/*.java"/>
-        <include name="jf/projects/${app}/src/**/*.form"/>
-        <include name="jf/projects/${app}/src/**/*.png"/>
-        <include name="jf/projects/${app}/*.txt"/>
-        <include name="jf/projects/${app}/*.xml"/>
-        <include name="jf/projects/${app}/*.png"/>
-        <include name="jf/projects/${app}/*.ico"/>
-        <include name="jf/projects/${app}/*.cfg"/>
-        <include name="jf/projects/${app}/run.bat"/>
-        <include name="jf/projects/${app}/nbproject/*.xml"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/jars/derby.jar"/>
-      </fileset>
-    </zip>
-    <move file="${app}-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>

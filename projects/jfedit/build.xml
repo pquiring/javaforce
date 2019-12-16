@@ -44,38 +44,6 @@
     <copy file="jfedit.html" todir="/usr/share/jhelp"/>
   </target>
 
-  <target name="release-bin" depends="jar" description="create release zip file">
-    <zip destfile="jfedit-${version}.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-        <include name="run.bat"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfedit-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfedit-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-        <include name="jf/projects/jfedit/src/*.java"/>
-        <include name="jf/projects/jfedit/src/*.form"/>
-        <include name="jf/projects/jfedit/*.txt"/>
-        <include name="jf/projects/jfedit/*.xml"/>
-        <include name="jf/projects/jfedit/*.png"/>
-        <include name="jf/projects/jfedit/*.ico"/>
-        <include name="jf/projects/jfedit/run.bat"/>
-        <include name="jf/projects/jfedit/nbproject/*.xml"/>
-        <include name="jf/jars/javaforce.jar"/>
-        <include name="jf/stubs/*"/>
-      </fileset>
-    </zip>
-    <move file="jfedit-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <macrodef name="utilsmacro">
     <attribute name="app"/>
     <attribute name="bits"/>

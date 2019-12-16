@@ -99,56 +99,6 @@
     </copy>
   </target>
 
-  <target name="release-bin" depends="jar" description="create release zip file">
-    <copy file="../../jars/javaforce.jar" todir="."/>
-    <copy file="../../jars/bouncycastle.jar" todir="."/>
-    <copy file="../../jars/derby.jar" todir="."/>
-    <zip destfile="jfpbx-${version}.zip">
-      <fileset dir="..">
-        <include name="jfpbx/**/*.jar"/>
-        <include name="jfpbx/**/*.wav"/>
-        <exclude name="jfpbx/**/moh-*.wav"/>
-        <include name="jfpbx/readme.txt"/>
-        <include name="jfpbx/whatsnew.txt"/>
-        <include name="jfpbx/run.bat"/>
-        <include name="jfpbx/install.bat"/>
-        <include name="jfpbx/run.sh"/>
-        <include name="jfpbx/install.sh"/>
-        <include name="jfpbx/jfpbx.key"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfpbx-${version}.zip" todir="${home}/release"/>
-  </target>
-
-  <target name="release-src" depends="" description="create release zip file">
-    <zip destfile="jfpbx-src-${version}.zip">
-      <fileset dir="../../..">
-        <include name="jf/license.txt"/>
-        <include name="jf/base.*"/>
-
-        <include name="jf/jars/derby.jar"/>
-        <include name="jf/jars/bouncycastle.jar"/>
-        <include name="jf/jars/javaforce.jar"/>
-
-        <include name="jf/stubs/*"/>
-
-        <include name="jf/projects/jfpbx/**/*.java"/>
-        <include name="jf/projects/jfpbx/*.txt"/>
-        <include name="jf/projects/jfpbx/*.png"/>
-        <include name="jf/projects/jfpbx/*.ico"/>
-        <include name="jf/projects/jfpbx/**/*.xml"/>
-        <exclude name="jf/projects/jfpbx/nbproject/private/*.xml"/>
-        <include name="jf/projects/jfpbx/**/*.wav"/>
-        <exclude name="jf/projects/jfpbx/**/moh-*.wav"/>
-        <include name="jf/projects/jfpbx/run.*"/>
-        <include name="jf/projects/jfpbx/install.*"/>
-        <include name="jf/projects/jfpbx/static/*"/>
-      </fileset>
-    </zip>
-    <move file="jfpbx-src-${version}.zip" todir="${home}/release"/>
-  </target>
-
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>
