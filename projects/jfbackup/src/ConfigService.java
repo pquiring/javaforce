@@ -518,13 +518,26 @@ public class ConfigService implements WebUIHandler {
     row.add(opt2);
     panel.add(row);
 
+    row = new Row();
+    CheckBox opt3 = new CheckBox("manual");
+    opt3.setSelected(job.freq.equals("manual"));
+    row.add(opt3);
+    panel.add(row);
+
     opt1.addChangedListener((Component c) -> {
       boolean sel = opt1.isSelected();
       opt2.setSelected(!sel);
+      opt3.setSelected(!sel);
     });
     opt2.addChangedListener((Component c) -> {
       boolean sel = opt2.isSelected();
       opt1.setSelected(!sel);
+      opt3.setSelected(!sel);
+    });
+    opt3.addChangedListener((Component c) -> {
+      boolean sel = opt3.isSelected();
+      opt1.setSelected(!sel);
+      opt2.setSelected(!sel);
     });
 
     row = new Row();

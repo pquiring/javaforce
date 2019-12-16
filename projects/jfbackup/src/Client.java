@@ -209,6 +209,7 @@ public class Client extends Thread {
     }
   }
   private boolean isValid(String name) {
+    if (name.length() == 0) return false;
     if (name.equals(".") || name.equals("..")) return false;
     if (name.equals("$RECYCLE.BIN")) return false;
     if (name.equals("System Volume Information")) return false;
@@ -231,7 +232,6 @@ public class Client extends Thread {
     StringBuilder list = new StringBuilder();
     for(File file : files) {
       String name = file.getName();
-      if (name.length() == 0) continue;
       if (!isValid(name)) continue;
       if (file.isDirectory()) {
         list.append("\\");
@@ -288,17 +288,19 @@ public class Client extends Thread {
     byte[] arg = read(arglen);
     String path = Paths.vssPath + new String(arg, "utf-8");
     sendFolder(path);
-    JFLog.log("readfolders complete");
     writeLength(-1);  //done
   }
   private void sendFolder(String path) throws Exception {
-    JFLog.log("sendFolder:" + path);
     File folder = new File(path);
     if (!folder.exists()) {
       JFLog.log("Error:Path not found:" + path);
       return;
     }
     File files[] = folder.listFiles();
+    if (files == null) {
+      JFLog.log("Warning:listFiles() returned null:" + path);
+      return;
+    }
     for(File file : files) {
       if (file.isDirectory()) continue;
       String name = file.getName();
