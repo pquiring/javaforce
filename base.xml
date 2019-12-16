@@ -203,33 +203,4 @@
     <delete file="${app}"/>
     <copy file="${app}-${version}.dmg" todir="${home}/release" overwrite="true"/>
   </target>
-
-  <!--
-    Applet stuff :
-     - highly deprecated : Chrome 42+ by default no longer supports Applets
-     - please consider migrating to JNLP
-  -->
-
-  <available property="keyexists" file="keystore.key"/>
-
-  <target name="genkey" unless="keyexists" description="generate keys">
-    <!-- create key -->
-    <genkey alias="${app}" storepass="password" keystore="keystore.key" keyalg="RSA" dname="CN=${app}.sourceforge.net, OU=${app}, O=JavaForce, C=CA"/>
-    <!-- create csr -->
-    <exec command="keytool -certreq -alias ${app} -keystore keystore.key -file ${app}.csr -storepass password"/>
-    <copy file="${app}.csr" todir="${home}/keys"/>
-  </target>
-
-  <target name="importcert">
-    <copy file="${home}/keys/javaforce.crt" todir="."/>
-    <exec command="keytool -import -alias root -file javaforce.crt -keystore keystore.key -storepass password -noprompt"/>
-    <copy file="${home}/keys/${app}.crt" todir="."/>
-    <exec command="keytool -import -alias ${app} -file ${app}.crt -keystore keystore.key -storepass password"/>
-  </target>
-
-  <target name="sign-jar" depends="jar,depjars" description="sign jars for applets">
-    <signjar alias="${app}" storepass="password" keystore="keystore.key">
-      <fileset dir="." includes="*.jar"/>
-    </signjar>
-  </target>
 </project>
