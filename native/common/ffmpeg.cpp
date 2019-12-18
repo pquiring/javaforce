@@ -981,6 +981,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaDecoder_getFrameRate
   AVRational value = ctx->video_stream->avg_frame_rate;
   float num = (float)value.num;
   float den = (float)value.den;
+  if (den == 0) return 0;
   return num / den;
 }
 
@@ -1262,6 +1263,8 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_getFrameRate
 {
   FFContext *ctx = getFFContext(e,c);
   if (ctx->video_codec_ctx == NULL) return 0;
+  if (ctx->video_codec_ctx->time_base.num == 0) return 0;
+  if (ctx->video_codec_ctx->ticks_per_frame == 0) return 0;
   return ctx->video_codec_ctx->time_base.den / ctx->video_codec_ctx->time_base.num / ctx->video_codec_ctx->ticks_per_frame;
 }
 
