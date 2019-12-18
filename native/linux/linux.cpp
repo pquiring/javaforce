@@ -31,6 +31,8 @@
 #include "javaforce_controls_ni_DAQmx.h"
 #include "javaforce_media_VideoBuffer.h"
 
+#include "../common/arrays.h"
+
 #ifdef __arm__
   //Raspberry PI stuff
   #include "gpio.c"

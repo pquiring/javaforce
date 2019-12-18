@@ -25,6 +25,8 @@
 
 HMODULE wgl = NULL;
 
+#include "../common/arrays.h"
+
 //open DLLs
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_winInit
