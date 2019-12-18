@@ -1,5 +1,5 @@
 
-#ifdef JFGC
+#ifdef JFDK
   #define GET_BYTE_ARRAY GetPrimitiveArrayCritical
   #define GET_SHORT_ARRAY GetPrimitiveArrayCritical
   #define GET_INT_ARRAY GetPrimitiveArrayCritical
