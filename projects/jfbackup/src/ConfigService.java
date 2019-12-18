@@ -564,6 +564,8 @@ public class ConfigService implements WebUIHandler {
         freq = "weekly";
       } else if (opt2.isSelected()) {
         freq = "daily";
+      } else if (opt3.isSelected()) {
+        freq = "manual";
       }
       if (freq == null) {
         msg.setText("Make a selection");
@@ -580,7 +582,7 @@ public class ConfigService implements WebUIHandler {
       }
       job.day = day.getSelectedIndex() + 1;
       int hourInt = Integer.valueOf(hourTxt);
-      if (hourInt > 23) {
+      if (hourInt < 0 || hourInt > 23) {
         hour.setText("");
         msg.setText("Invalid hour");
         msg.setColor(Color.red);
@@ -595,7 +597,7 @@ public class ConfigService implements WebUIHandler {
         return;
       }
       int minuteInt = Integer.valueOf(minuteTxt);
-      if (minuteInt > 59) {
+      if (minuteInt < 0 || minuteInt > 59) {
         minute.setText("");
         msg.setText("Invalid minute");
         msg.setColor(Color.red);

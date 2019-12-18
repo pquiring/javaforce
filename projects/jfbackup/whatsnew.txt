@@ -1,3 +1,9 @@
+Dec 18/2019 : 0.7 released
+  - fix : NPE on client side
+  - UI improvements
+    - client can now disconnect from server
+  - successfully backed up 1.4TB from two remote servers which is all I'll ever need
+
 Dec 13/2019 : 0.6 released
   - fix : restore job was not closing files (would eventually get closed by gc)
   - everytime I find a bug 2 mins after a release - beta testers wanted
