@@ -28,17 +28,17 @@ public class ConfigService implements WebUIHandler {
     server = null;
   }
 
-  public Panel getRootPanel(WebUIClient client) {
+  public Panel getRootPanel(WebUIClient webclient) {
     switch (Config.current.mode) {
       case "install": return installPanel();
     }
-    String password = (String)client.getProperty("password");
+    String password = (String)webclient.getProperty("password");
     if (password == null) {
       return loginPanel();
     }
     switch (Config.current.mode) {
-      case "server": return serverPanel(client);
-      case "client": return clientPanel();
+      case "server": return serverPanel(webclient);
+      case "client": return clientPanel(webclient);
     }
     return null;
   }
@@ -1419,7 +1419,7 @@ public class ConfigService implements WebUIHandler {
   public Panel serverLogs(String file) {
     Panel panel = new Panel();
     Row row = new Row();
-    Label label = new Label("Server Logs");
+    Label label = new Label("Logs");
     row.add(label);
     panel.add(row);
 
@@ -1490,13 +1490,58 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  public Panel clientPanel() {
+  public Panel clientPanel(WebUIClient webclient) {
     Panel panel = new Panel();
-    //TODO : add options to reset config, disconnect from server, etc.
-    panel.add(new Label("jfBackup is running in client mode."));
-    panel.add(new Label("There are no options to configure here."));
-    panel.add(new Label("Use the server to add volumes to backup jobs."));
-    panel.add(new Label("This Host=" + Config.current.this_host));
+    SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
+    split.setName("split");
+    split.setDividerPosition(100);
+    Panel left = serverLeftPanel();
+    Panel right = null;
+    String screen = (String)webclient.getProperty("screen");
+    if (screen == null) screen = "";
+    switch (screen) {
+      case "": right = serverHome(); break;
+      case "config": right = clientConfig(); break;
+      case "logs": right = serverLogs(null); break;
+    }
+    split.setLeftComponent(left);
+    split.setRightComponent(right);
+    panel.add(split);
+
+    return panel;
+  }
+
+  public Panel clientConfig() {
+    Panel panel = new Panel();
+    Row row = new Row();
+    Label label = new Label("Config Settings");
+    row.add(label);
+    panel.add(row);
+
+    row = new Row();
+    row.setBackColor(Color.blue);
+    row.setHeight(5);
+    panel.add(row);
+
+    Label msg = new Label("");
+    panel.add(msg);
+
+    row = new Row();
+    Button disconn = new Button("Disconnect from Server");
+    disconn.addClickListener((MouseEvent me, Component c) -> {
+      BackupService.client.close();
+      BackupService.client = null;
+      Config.current.mode = "install";
+      Config.current.this_host = null;
+      Config.current.server_host = null;
+      Config.current.password = null;
+      Config.save();
+      c.getClient().refresh();
+    });
+    row.add(disconn);
+    row.add(new Label("Server=" + Config.current.server_host));
+    panel.add(row);
+
     return panel;
   }
 
@@ -1593,7 +1638,7 @@ public class ConfigService implements WebUIHandler {
                 saveConfigMode("client");
                 client = null;
                 webclient.setProperty("password", passTxt);
-                webclient.setPanel(clientPanel());
+                webclient.setPanel(clientPanel(webclient));
               }
             }
           }

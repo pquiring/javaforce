@@ -21,6 +21,7 @@ Web Interface:
 
 Tested hardware:
   - Quantum Superloader 3
+  - 1.5TB LTO-5 tapes
 
 TCP Ports:
   - 33200 & 34003

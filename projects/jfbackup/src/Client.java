@@ -12,9 +12,10 @@ public class Client extends Thread {
   private Socket s;
   private InputStream is;
   private OutputStream os;
+  private boolean active = true;
 
   public void run() {
-    while (Status.active) {
+    while (Status.active && active) {
       try {
         JFLog.log("Client Connecting to:" + Config.current.server_host);
         s = new Socket(Config.current.server_host, 33200);
@@ -77,6 +78,7 @@ public class Client extends Thread {
     return true;
   }
   public void close() {
+    active = false;
     try {s.close();} catch (Exception e) {}
   }
   private byte[] read(int size) throws Exception {
@@ -286,9 +288,12 @@ public class Client extends Thread {
       throw new Exception("bad file name length");
     }
     byte[] arg = read(arglen);
+    long backupid = System.currentTimeMillis();
+    JFLog.init(Paths.logsPath + "/backup-" + backupid + ".log", true);
     String path = Paths.vssPath + new String(arg, "utf-8");
     sendFolder(path);
     writeLength(-1);  //done
+    JFLog.close();
   }
   private void sendFolder(String path) throws Exception {
     File folder = new File(path);
