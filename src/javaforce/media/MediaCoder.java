@@ -79,6 +79,7 @@ public class MediaCoder {
     return loaded;
   }
   private static native boolean ffmpeg_init(String codec, String device, String filter, String format, String util, String scale, String postproc, String resample, boolean libav_org);
+  public static native void ffmpeg_set_logging(boolean state);
 
   private static boolean haveLibs(Library libs[]) {
     int cnt = 0;

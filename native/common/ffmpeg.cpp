@@ -405,6 +405,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaCoder_ffmpeg_1init
   return JNI_TRUE;
 }
 
+JNIEXPORT void JNICALL Java_javaforce_media_MediaCoder_ffmpeg_1set_1logging
+  (JNIEnv *e, jclass c, jboolean state)
+{
+  (*_av_log_set_level)(state ? AV_LOG_ERROR : AV_LOG_QUIET);
+}
+
 static int ff_min(int a, int b) {
   if (a < b) return a; else return b;
 }

@@ -34,6 +34,7 @@ public class DVRService extends Thread {
     configService = new ConfigService();
     configService.start();
     if (!MediaCoder.loaded) return;  //not ready
+    MediaCoder.ffmpeg_set_logging(false);
     //start recording threads
     Config config = Config.current;
     for(int a=0;a<config.cameras.length;a++) {
