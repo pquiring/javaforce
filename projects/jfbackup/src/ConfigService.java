@@ -1495,7 +1495,7 @@ public class ConfigService implements WebUIHandler {
     SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
     split.setName("split");
     split.setDividerPosition(100);
-    Panel left = serverLeftPanel();
+    Panel left = clientLeftPanel();
     Panel right = null;
     String screen = (String)webclient.getProperty("screen");
     if (screen == null) screen = "";
@@ -1508,6 +1508,31 @@ public class ConfigService implements WebUIHandler {
     split.setRightComponent(right);
     panel.add(split);
 
+    return panel;
+  }
+
+  public Panel clientLeftPanel() {
+    Panel panel = new Panel();
+    //left side
+    List list = new List();
+    list.setName("list");
+    //add menu options
+    Button opt5 = new Button("Configure");
+    list.add(opt5);
+    opt5.addClickListener( (MouseEvent me, Component c) -> {
+      WebUIClient webclient = c.getClient();
+      webclient.setProperty("screen", "config");
+      webclient.refresh();
+    });
+    Button opt7 = new Button("Logs");
+    list.add(opt7);
+    opt7.addClickListener( (MouseEvent me, Component c) -> {
+      WebUIClient webclient = c.getClient();
+      webclient.setProperty("screen", "logs");
+      webclient.refresh();
+    });
+
+    panel.add(list);
     return panel;
   }
 
