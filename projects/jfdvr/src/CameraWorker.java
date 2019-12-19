@@ -43,6 +43,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private long lastPacket;
   private JFProfiler profile_rtph264 = new JFProfiler("   h264", 6);
   private JFProfiler profile_encoder = new JFProfiler("encoder", 2);
+  private int decoded_frame[];
 
   private static int nextPort = 5000;
   private static synchronized int getLocalPort() {
@@ -129,6 +130,10 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     public int nextOffset;
     public int head, tail;
     public Object lock = new Object();
+    private void reset() {
+      head = tail = 0;
+      nextOffset = 0;
+    }
     private boolean calcOffset(int _length) {
       if (nextOffset + _length >= maxPacketsSize) {
         nextOffset = 0;
@@ -139,7 +144,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       }
       if (next_head == tail) {
         JFLog.log(1, "Error : Buffer Overflow (# of packets exceeded)");
-        head = tail;  //flush buffer
+        reset();
         return false;
       }
       int _tail = tail;
@@ -150,7 +155,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       int t2 = t1 + length[_tail] - 1;
       if ((h1 >= t1 && h1 <= t2) || (h2 >= t1 && h2 <= t2)) {
         JFLog.log(1, "Error : Buffer Overflow (# of bytes in buffer exceeded)");
-        head = tail;  //flush buffer
+        reset();
         return false;
       }
       return true;
@@ -347,7 +352,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
           }
           frames.removeFrame();
           profile_encoder.step("removeFrame");
-          profile_encoder.stop();
+//          profile_encoder.stop();
         } while (true);
       }
       disconnect();
@@ -493,7 +498,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       recording = true;
     } else {
       if (!recording) return;
-      long diff = (now - last_change_time) * 1000L;
+      long diff = (now - last_change_time) / 1000L;
       boolean off_delay = diff > camera.record_motion_after;
       if (off_delay) {
         end_recording = true;
@@ -626,11 +631,10 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     packets_decode.cleanPackets(true);
     packets_encode.cleanPackets(true);
     profile_rtph264.step("add/clean");
-    int frame[];
     boolean key_frame = packets_decode.isNextFrame_KeyFrame();
     if (!packets_decode.haveCompleteFrame()) return;
     packets_decode.getNextFrame();
-    frame = decoder.decode(packets_decode.data, packets_decode.offset[packets_decode.tail], packets_decode.next_frame_bytes);
+    decoded_frame = decoder.decode(packets_decode.data, packets_decode.offset[packets_decode.tail], packets_decode.next_frame_bytes);
     profile_rtph264.step("ffmpeg decode");
     packets_decode.removeNextFrame();
     profile_rtph264.step("removeNextFrame");
@@ -640,19 +644,21 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       fps = decoder.getFrameRate();
       JFLog.log(1, camera.name + " : detected width/height=" + width + "x" + height);
       JFLog.log(1, camera.name + " : detected FPS=" + fps);
+      JFLog.log(1, camera.name + " : threshold=" + camera.record_motion_threshold + ":after=" + camera.record_motion_after);
       if (width == 0 || height == 0) return;
       if (width == -1 || height == -1) return;
       lastFrame = new int[width * height];
     }
     now = lastPacket;
     if (camera.record_motion) {
-      detectMotion(frame);
+      detectMotion(decoded_frame);
     } else {
       recording = true;  //always recording
     }
     profile_rtph264.step("detectMotion");
     if (recording) {
       if (file_size > max_file_size) {
+        JFLog.log(camera.name + " : max file size");
         end_recording = true;
       }
       if (raf == null) {
@@ -684,7 +690,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       }
     }
     profile_rtph264.step("done");
-    profile_rtph264.stop();
+//    profile_rtph264.stop();
   }
 
   public void rtpVP8(RTPChannel rtp, byte[] buf, int offset, int length) {
