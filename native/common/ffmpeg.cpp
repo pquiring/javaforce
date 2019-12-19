@@ -1277,7 +1277,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_getFrameRate
 //encoder codebase
 
 static jboolean add_stream(FFContext *ctx, int codec_id) {
-  printf("add_stream(codec_id=0x%x)\r\n", codec_id);
+//  printf("add_stream(codec_id=0x%x)\r\n", codec_id);
   AVCodecContext *codec_ctx;
   AVStream *stream;
   AVCodec *codec;

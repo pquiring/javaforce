@@ -41,6 +41,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private Packets packets_encode = new Packets();
   private long lastKeepAlive;
   private long lastPacket;
+  private JFProfiler profile_rtph264 = new JFProfiler("   h264", 6);
+  private JFProfiler profile_encoder = new JFProfiler("encoder", 2);
 
   private static int nextPort = 5000;
   private static synchronized int getLocalPort() {
@@ -137,6 +139,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       }
       if (next_head == tail) {
         JFLog.log(1, "Error : Buffer Overflow (# of packets exceeded)");
+        head = tail;  //flush buffer
         return false;
       }
       int _tail = tail;
@@ -147,6 +150,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       int t2 = t1 + length[_tail] - 1;
       if ((h1 >= t1 && h1 <= t2) || (h2 >= t1 && h2 <= t2)) {
         JFLog.log(1, "Error : Buffer Overflow (# of bytes in buffer exceeded)");
+        head = tail;  //flush buffer
         return false;
       }
       return true;
@@ -319,23 +323,31 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         }
         do {
           if (frames.empty()) break;
+          profile_encoder.start();
           int tail = frames.tail;
           encoder_raf = frames.raf[tail];
           if (encoder == null) {
             encoder = new MediaEncoder();
             encoder.framesPerKeyFrame = (int)fps;
             encoder.videoBitRate = 4 * 1024 * 1024;  //4Mb/sec
-            encoder.start(this, width, height, (int)fps, 0, 0, "mp4", true, false);
+            if (!encoder.start(this, width, height, (int)fps, 0, 0, "mp4", true, false)) {
+              JFLog.log("Error:Encoder.start() failed! : fps=" + fps);
+              encoder = null;
+              break;
+            }
           }
           synchronized(frames.packets.lock) {
             encoder.addVideoEncoded(frames.packets.data, frames.packets.offset[frames.packets.tail], frames.packets.length[frames.packets.tail], frames.key_frame[tail]);
           }
+          profile_encoder.step("addVideo");
           if (frames.stop[tail]) {
             encoder.stop();
             encoder = null;
             frames.closeFile();
           }
           frames.removeFrame();
+          profile_encoder.step("removeFrame");
+          profile_encoder.stop();
         } while (true);
       }
       disconnect();
@@ -470,6 +482,10 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
 
   private long last_change_time;
   private void detectMotion(int newFrame[]) {
+    if (newFrame == null) {
+      JFLog.log("Error:newFrame == null");
+      return;
+    }
     float changed = VideoBuffer.compareFrames(lastFrame, newFrame, width, height, 0xe0e0e0);
     System.arraycopy(newFrame, 0, lastFrame, 0, width * height);
     if (changed > camera.record_motion_threshold) {
@@ -489,7 +505,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     try {
       frameCount = 0;
       file_size = 0;
-      raf = new RandomAccessFile(getFilename(), "rw");
+      String filename = getFilename();
+      raf = new RandomAccessFile(filename, "rw");
+      JFLog.log(camera.name + " : createFile:" + filename);
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -586,11 +604,13 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   public void rtpH264(RTPChannel rtp, byte[] buf, int offset, int length) {
     //I frame : 9 ... 5 (key frame)
     //P frame : 9 ... 1 (diff frame)
+    profile_rtph264.start();
     lastPacket = System.currentTimeMillis();
     Packet packet = h264.decode(buf, 0, length);
     if (packet == null) {
       return;
     }
+    profile_rtph264.step("h264 decode");
     int type = packet.data[4] & 0x1f;
     switch (type) {
       case 7:  //SPS
@@ -605,12 +625,15 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     packets_encode.add(packet);
     packets_decode.cleanPackets(true);
     packets_encode.cleanPackets(true);
+    profile_rtph264.step("add/clean");
     int frame[];
     boolean key_frame = packets_decode.isNextFrame_KeyFrame();
     if (!packets_decode.haveCompleteFrame()) return;
     packets_decode.getNextFrame();
     frame = decoder.decode(packets_decode.data, packets_decode.offset[packets_decode.tail], packets_decode.next_frame_bytes);
+    profile_rtph264.step("ffmpeg decode");
     packets_decode.removeNextFrame();
+    profile_rtph264.step("removeNextFrame");
     if (width == -1 && height == -1) {
       width = decoder.getWidth();
       height = decoder.getHeight();
@@ -627,10 +650,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     } else {
       recording = true;  //always recording
     }
+    profile_rtph264.step("detectMotion");
     if (recording) {
-      if (frameCount > 100) {
-        end_recording = true;  //test
-      }
       if (file_size > max_file_size) {
         end_recording = true;
       }
@@ -656,11 +677,14 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         packets_encode.removeNextFrame();
       }
       if (end_recording && had_frame) {
+        JFLog.log(camera.name + " : end recording");
         end_recording = false;
         recording = false;
         raf = null;
       }
     }
+    profile_rtph264.step("done");
+    profile_rtph264.stop();
   }
 
   public void rtpVP8(RTPChannel rtp, byte[] buf, int offset, int length) {
