@@ -7,6 +7,8 @@
 #include <libavutil/mathematics.h>
 #include <libswscale/swscale.h>
 
+#include <chrono>
+
 //returned by Decoder.read()
 #define END_FRAME -1
 #define NULL_FRAME 0  //could be metadata frame
@@ -201,6 +203,10 @@ int GetLastError() {
   return errno;
 }
 #endif
+
+static int64_t currentTimeMillis() {
+  return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+}
 
 static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const char* filterFile, const char* formatFile
   , const char* utilFile, const char* scaleFile, const char* postFile, const char* resampleFile)
@@ -468,6 +474,7 @@ struct FFContext {
 
   jintArray jvideo;
   int jvideo_length;
+  jint* jvideo_ptr;
 
   jshortArray jaudio;
   int jaudio_length;
@@ -1158,6 +1165,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
     ctx->pkt = NULL;
   }
   if (ctx->jvideo != NULL) {
+    e->RELEASE_INT_ARRAY(ctx->jvideo, ctx->jvideo_ptr, JNI_ABORT);
     e->DeleteGlobalRef(ctx->jvideo);
     ctx->jvideo = NULL;
   }
@@ -1167,6 +1175,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
 JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   (JNIEnv *e, jobject c, jbyteArray data, jint offset, jint length)
 {
+  int64_t p_start = currentTimeMillis();
   FFContext *ctx = getFFContext(e,c);
   jboolean isCopy;
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GET_BYTE_ARRAY(data, &isCopy);
@@ -1190,6 +1199,9 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   printf(" [%d]\n", size);
 */
 
+  int64_t p_1 = currentTimeMillis();
+  int64_t d_1 = p_1 - p_start;
+
   int got_frame = 0;
   int ret = (*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
   e->RELEASE_BYTE_ARRAY(data, (jbyte*)dataptr, JNI_ABORT);
@@ -1203,6 +1215,9 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
     printf("no frame!\n");
     return NULL;
   }
+
+  int64_t p_2 = currentTimeMillis();
+  int64_t d_2 = p_2 - p_1;
 
   //setup conversion once width/height are known
   if (ctx->jvideo == NULL) {
@@ -1234,16 +1249,32 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
     int px_count = ctx->width * ctx->height;
     ctx->jvideo_length = px_count;
     ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
+    jboolean isCopy;
+    ctx->jvideo_ptr = (jint*)ctx->e->GET_INT_ARRAY(ctx->jvideo, &isCopy);
+    if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
   }
 
   (*_av_image_copy)(ctx->video_dst_data, ctx->video_dst_linesize
     , ctx->frame->data, ctx->frame->linesize
     , ctx->video_codec_ctx->pix_fmt, ctx->video_codec_ctx->width, ctx->video_codec_ctx->height);
+
+  int64_t p_3 = currentTimeMillis();
+  int64_t d_3 = p_3 - p_2;
+
   //convert image to RGBA format
   (*_sws_scale)(ctx->sws_ctx, ctx->video_dst_data, ctx->video_dst_linesize, 0, ctx->video_codec_ctx->height
     , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
 
-  e->SetIntArrayRegion(ctx->jvideo, 0, ctx->jvideo_length, (const jint*)ctx->rgb_video_dst_data[0]);
+  int64_t p_4 = currentTimeMillis();
+  int64_t d_4 = p_4 - p_3;
+
+  //e->SetIntArrayRegion(ctx->jvideo, 0, ctx->jvideo_length, (const jint*)ctx->rgb_video_dst_data[0]);
+  memcpy(ctx->jvideo_ptr, (const jint*)ctx->rgb_video_dst_data[0], ctx->jvideo_length * 4);
+
+  int64_t p_5 = currentTimeMillis();
+  int64_t d_5 = p_5 - p_4;
+
+//  printf("decode profile:%lld %lld %lld %lld %lld\n", d_1, d_2, d_3, d_4, d_5);
 
   return ctx->jvideo;
 }
