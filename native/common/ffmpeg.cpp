@@ -474,7 +474,6 @@ struct FFContext {
 
   jintArray jvideo;
   int jvideo_length;
-  jint* jvideo_ptr;
 
   jshortArray jaudio;
   int jaudio_length;
@@ -1147,14 +1146,6 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
     (*_av_free)(ctx->video_codec_ctx);
     ctx->video_codec_ctx = NULL;
   }
-  if (ctx->video_dst_data[0] != NULL) {
-    (*_av_free)(ctx->video_dst_data[0]);
-    ctx->video_dst_data[0] = NULL;
-  }
-  if (ctx->rgb_video_dst_data[0] != NULL) {
-    (*_av_free)(ctx->rgb_video_dst_data[0]);
-    ctx->rgb_video_dst_data[0] = NULL;
-  }
   if (ctx->sws_ctx != NULL) {
     (*_sws_freeContext)(ctx->sws_ctx);
     ctx->sws_ctx = NULL;
@@ -1165,9 +1156,6 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
     ctx->pkt = NULL;
   }
   if (ctx->jvideo != NULL) {
-#ifdef JFDK
-    e->RELEASE_INT_ARRAY(ctx->jvideo, ctx->jvideo_ptr, JNI_ABORT);
-#endif
     e->DeleteGlobalRef(ctx->jvideo);
     ctx->jvideo = NULL;
   }
@@ -1231,18 +1219,6 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
       ctx->width = ctx->video_codec_ctx->width;
       ctx->height = ctx->video_codec_ctx->height;
     }
-    if ((ctx->video_dst_bufsize = (*_av_image_alloc)(ctx->video_dst_data, ctx->video_dst_linesize
-      , ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt, 1)) < 0)
-    {
-      printf("av_image_alloc() failed\n");
-      return NULL;
-    }
-    if ((ctx->rgb_video_dst_bufsize = (*_av_image_alloc)(ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize
-      , ctx->width, ctx->height, AV_PIX_FMT_BGRA, 1)) < 0)
-    {
-      printf("av_image_alloc(RGB) failed\n");
-      return NULL;
-    }
     //create video conversion context
     ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt
       , ctx->width, ctx->height, AV_PIX_FMT_BGRA
@@ -1251,37 +1227,27 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
     int px_count = ctx->width * ctx->height;
     ctx->jvideo_length = px_count;
     ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
-#ifdef JFDK
-    jboolean isCopy;
-    ctx->jvideo_ptr = (jint*)ctx->e->GET_INT_ARRAY(ctx->jvideo, &isCopy);
-    if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-#endif
   }
 
-  (*_av_image_copy)(ctx->video_dst_data, ctx->video_dst_linesize
-    , ctx->frame->data, ctx->frame->linesize
-    , ctx->video_codec_ctx->pix_fmt, ctx->video_codec_ctx->width, ctx->video_codec_ctx->height);
+  jint *jvideo_ptr = (jint*)ctx->e->GET_INT_ARRAY(ctx->jvideo, &isCopy);
+  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   int64_t p_3 = currentTimeMillis();
   int64_t d_3 = p_3 - p_2;
 
-  //convert image to RGBA format
-  (*_sws_scale)(ctx->sws_ctx, ctx->video_dst_data, ctx->video_dst_linesize, 0, ctx->video_codec_ctx->height
+  ctx->rgb_video_dst_data[0] = (uint8_t*)jvideo_ptr;
+  (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
     , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
 
   int64_t p_4 = currentTimeMillis();
   int64_t d_4 = p_4 - p_3;
 
-#ifdef JFDK
-  memcpy(ctx->jvideo_ptr, (const jint*)ctx->rgb_video_dst_data[0], ctx->jvideo_length * 4);
-#else
-  e->SetIntArrayRegion(ctx->jvideo, 0, ctx->jvideo_length, (const jint*)ctx->rgb_video_dst_data[0]);
-#endif
-
   int64_t p_5 = currentTimeMillis();
   int64_t d_5 = p_5 - p_4;
 
 //  printf("decode profile:%lld %lld %lld %lld %lld\n", d_1, d_2, d_3, d_4, d_5);
+
+  ctx->e->RELEASE_INT_ARRAY(ctx->jvideo, jvideo_ptr, JNI_COMMIT);
 
   return ctx->jvideo;
 }
