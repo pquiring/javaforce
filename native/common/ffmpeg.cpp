@@ -1165,7 +1165,9 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
     ctx->pkt = NULL;
   }
   if (ctx->jvideo != NULL) {
+#ifdef JFDK
     e->RELEASE_INT_ARRAY(ctx->jvideo, ctx->jvideo_ptr, JNI_ABORT);
+#endif
     e->DeleteGlobalRef(ctx->jvideo);
     ctx->jvideo = NULL;
   }
@@ -1249,9 +1251,11 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
     int px_count = ctx->width * ctx->height;
     ctx->jvideo_length = px_count;
     ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
+#ifdef JFDK
     jboolean isCopy;
     ctx->jvideo_ptr = (jint*)ctx->e->GET_INT_ARRAY(ctx->jvideo, &isCopy);
     if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
+#endif
   }
 
   (*_av_image_copy)(ctx->video_dst_data, ctx->video_dst_linesize
@@ -1268,8 +1272,11 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   int64_t p_4 = currentTimeMillis();
   int64_t d_4 = p_4 - p_3;
 
-  //e->SetIntArrayRegion(ctx->jvideo, 0, ctx->jvideo_length, (const jint*)ctx->rgb_video_dst_data[0]);
+#ifdef JFDK
   memcpy(ctx->jvideo_ptr, (const jint*)ctx->rgb_video_dst_data[0], ctx->jvideo_length * 4);
+#else
+  e->SetIntArrayRegion(ctx->jvideo, 0, ctx->jvideo_length, (const jint*)ctx->rgb_video_dst_data[0]);
+#endif
 
   int64_t p_5 = currentTimeMillis();
   int64_t d_5 = p_5 - p_4;
