@@ -97,8 +97,13 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       head = new_head;
     }
     public void removeFrame() {
-      tail++;
-      if (tail == maxFrames) tail = 0;
+      if (tail == head) {
+        JFLog.log("Error:Frames Buffer underflow");
+        return;
+      }
+      int new_tail = tail + 1;
+      if (new_tail == maxFrames) new_tail = 0;
+      tail = new_tail;
       packets.removePacket();
     }
     public boolean empty() {
@@ -132,7 +137,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     public int[] type = new int[maxPackets];
     public int nextOffset;
     public int head, tail;
-    public Object lock = new Object();
     private void reset() {
       head = tail = 0;
       nextOffset = 0;
@@ -164,38 +168,35 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       return true;
     }
     public void add(Packet packet) {
-      synchronized(lock) {
-        if (!calcOffset(packet.length)) return;
-        System.arraycopy(packet.data, 0, data, nextOffset, packet.length);
-        offset[head] = nextOffset;
-        length[head] = packet.length;
-        type[head] = packet.data[4] & 0x1f;
-        nextOffset += packet.length;
-        int new_head = head + 1;
-        if (new_head == maxPackets) new_head = 0;
-        head = new_head;
-      }
+      if (!calcOffset(packet.length)) return;
+      System.arraycopy(packet.data, 0, data, nextOffset, packet.length);
+      offset[head] = nextOffset;
+      length[head] = packet.length;
+      type[head] = packet.data[4] & 0x1f;
+      nextOffset += packet.length;
+      int new_head = head + 1;
+      if (new_head == maxPackets) new_head = 0;
+      head = new_head;
     }
     public void add(Packets packets, int _offset, int _length) {
-      synchronized(lock) {
-        if (!calcOffset(_length)) return;
-        System.arraycopy(packets.data, _offset, data, nextOffset, _length);
-        offset[head] = nextOffset;
-        length[head] = _length;
-        type[head] = packets.data[_offset + 4] & 0x1f;
-        nextOffset += _length;
-        int new_head = head + 1;
-        if (new_head == maxPackets) new_head = 0;
-        head = new_head;
-      }
+      if (!calcOffset(_length)) return;
+      System.arraycopy(packets.data, _offset, data, nextOffset, _length);
+      offset[head] = nextOffset;
+      length[head] = _length;
+      type[head] = packets.data[_offset + 4] & 0x1f;
+      nextOffset += _length;
+      int new_head = head + 1;
+      if (new_head == maxPackets) new_head = 0;
+      head = new_head;
     }
     public void removePacket() {
-      synchronized(lock) {
-        tail++;
-        if (tail == maxPackets) {
-          tail = 0;
-        }
+      if (tail == head) {
+        JFLog.log("Error:Packets Buffer underflow");
+        return;
       }
+      int new_tail = tail + 1;
+      if (new_tail == maxPackets) new_tail = 0;
+      tail = new_tail;
     }
     public void cleanPackets(boolean mark) {
       //only keep back to the last keyFrame (type 5)
@@ -215,8 +216,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
             case 1: i_frame = true; break;
             default: if (i_frame) return;
           }
-          tail++;
-          if (tail == maxPackets) tail = 0;
+          int new_tail = tail + 1;
+          if (new_tail == maxPackets) new_tail = 0;
+          tail = new_tail;
         }
       }
     }
@@ -255,7 +257,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       }
       if (next_frame_fragmented) {
         //packets MUST be re-ordered (keep buffer size large to avoid this)
-        JFLog.log("re-ordering packets");
+        JFLog.log("Warning : re-ordering packets (increase buffer size)");
         int new_tail = head;
         for(int pos=tail;pos!=head;) {
           add(this, offset[pos], length[pos]);
@@ -277,10 +279,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     public void removeNextFrame() {
       while (next_frame_packets > 0) {
-        tail++;
-        if (tail == maxPackets) {
-          tail = 0;
-        }
+        int new_tail = tail + 1;
+        if (new_tail == maxPackets) new_tail = 0;
+        tail = new_tail;
         next_frame_packets--;
       }
     }
@@ -344,9 +345,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
               break;
             }
           }
-          synchronized(frames.packets.lock) {
-            encoder.addVideoEncoded(frames.packets.data, frames.packets.offset[frames.packets.tail], frames.packets.length[frames.packets.tail], frames.key_frame[tail]);
-          }
+          encoder.addVideoEncoded(frames.packets.data, frames.packets.offset[frames.packets.tail], frames.packets.length[frames.packets.tail], frames.key_frame[tail]);
           profile_encoder.step("addVideo");
           if (frames.stop[tail]) {
             encoder.stop();
