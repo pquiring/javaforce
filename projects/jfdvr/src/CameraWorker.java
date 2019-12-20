@@ -17,6 +17,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private long max_file_size;  //in bytes
   private long max_folder_size;  //in bytes
 
+  private final static boolean debug_motion_image = false;
+  private final static boolean debug_buffers = false;
+
   private RTSPClient client;
   private SDP sdp;
   private RTP rtp;
@@ -86,12 +89,12 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
 
   /** Frame to be recorded. */
   private static class Frames {
-    public void add(Packets packets, int offset, int length, RandomAccessFile raf, boolean stop, boolean key_frame) {
-      this.packets.add(packets, offset, length);
+    public void add(Packet packet, RandomAccessFile raf, boolean stop, boolean key_frame) {
+      this.packets.add(packets, packet.offset, packet.length);
       this.raf[head] = raf;
       this.stop[head] = stop;
       this.key_frame[head] = key_frame;
-      type[head] = packets.data[offset + 4] & 0x1f;
+      type[head] = packets.data[packet.offset + 4] & 0x1f;
       int new_head = head + 1;
       if (new_head == maxFrames) new_head = 0;
       head = new_head;
@@ -130,15 +133,20 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private static class Packets {
     public Packets() {
       data = new byte[maxPacketsSize];
+      frag_data = new byte[maxPacketsSize];
     }
     public byte[] data;
+    private byte[] frag_data;
+    private Packet nextFrame = new Packet();
     public int[] offset = new int[maxPackets];
     public int[] length = new int[maxPackets];
     public int[] type = new int[maxPackets];
     public int nextOffset;
     public int head, tail;
     private void reset() {
-      head = tail = 0;
+      //TODO : need to lock this from consumer
+      head = 0;
+      tail = 0;
       nextOffset = 0;
     }
     private boolean calcOffset(int _length) {
@@ -248,26 +256,27 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       }
       return false;
     }
-    public void getNextFrame() {
+    public Packet getNextFrame() {
       next_frame_packets = 0;
-      next_frame_bytes = 0;
       if (!haveCompleteFrame()) {
-        JFLog.log("error : getNextFrame() called but don't have one ???");
-        return;
+        JFLog.log("Error : getNextFrame() called but don't have one ???");
+        return null;
       }
       if (next_frame_fragmented) {
-        //packets MUST be re-ordered (keep buffer size large to avoid this)
-        JFLog.log("Warning : re-ordering packets (increase buffer size)");
-        int new_tail = head;
-        for(int pos=tail;pos!=head;) {
-          add(this, offset[pos], length[pos]);
-          pos++;
-          if (pos == maxPackets) pos = 0;
-        }
-        tail = new_tail;
+        nextFrame.data = frag_data;
+        nextFrame.offset = 0;
+      } else {
+        nextFrame.data = data;
+        nextFrame.offset = offset[tail];
       }
+      nextFrame.length = 0;
+      int frag_pos = 0;
       for(int pos=tail;pos!=head;) {
-        next_frame_bytes += length[pos];
+        if (next_frame_fragmented) {
+          System.arraycopy(data, offset[pos], frag_data, frag_pos, length[pos]);
+          frag_pos += length[pos];
+        }
+        nextFrame.length += length[pos];
         next_frame_packets++;
         int this_type = type[pos];
         if (this_type == 1 || this_type == 5) {
@@ -276,6 +285,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         pos++;
         if (pos == maxPackets) pos = 0;
       }
+      return nextFrame;
     }
     public void removeNextFrame() {
       while (next_frame_packets > 0) {
@@ -287,7 +297,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     public boolean next_frame_fragmented;
     public int next_frame_packets;
-    public int next_frame_bytes;
+    public String toString() {
+      return "Packets:tail=" + tail + ":head=" + head;
+    }
   }
 
   private static class Recording {
@@ -496,7 +508,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       return;
     }
     float changed = VideoBuffer.compareFrames16(last_frame, newFrame, decoded_x, decoded_y);
-    if (DVRService.debug && key_frame) {
+    if (debug_motion_image && key_frame) {
       JFImage img = new JFImage(decoded_x, decoded_y);
       if (temp_frame == null) {
         temp_frame = new int[decoded_xy];
@@ -647,9 +659,13 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     packets_encode.cleanPackets(true);
     profile_rtph264.step("add/clean");
     boolean key_frame = packets_decode.isNextFrame_KeyFrame();
+    if (debug_buffers && key_frame) {
+      JFLog.log("packets_decode=" + packets_decode.toString());
+      JFLog.log("packets_encode=" + packets_decode.toString());
+    }
     if (!packets_decode.haveCompleteFrame()) return;
-    packets_decode.getNextFrame();
-    decoded_frame = decoder.decodeLowQuality(packets_decode.data, packets_decode.offset[packets_decode.tail], packets_decode.next_frame_bytes);
+    Packet nextPacket = packets_decode.getNextFrame();
+    decoded_frame = decoder.decodeLowQuality(nextPacket.data, nextPacket.offset, nextPacket.length);
     profile_rtph264.step("ffmpeg decode");
     packets_decode.removeNextFrame();
     profile_rtph264.step("removeNextFrame");
@@ -682,8 +698,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         do {
           if (!packets_encode.haveCompleteFrame()) break;
           key_frame = packets_encode.isNextFrame_KeyFrame();
-          packets_encode.getNextFrame();
-          frames.add(packets_encode, packets_encode.offset[packets_encode.tail], packets_encode.next_frame_bytes, raf, false, key_frame);
+          nextPacket = packets_encode.getNextFrame();
+          frames.add(nextPacket, raf, false, key_frame);
           frameCount++;
           packets_encode.removeNextFrame();
         } while (true);
@@ -691,9 +707,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       frameCount++;
       boolean had_frame = false;
       if (packets_encode.haveCompleteFrame()) {
-        packets_encode.getNextFrame();
+        nextPacket = packets_encode.getNextFrame();
         key_frame = packets_encode.isNextFrame_KeyFrame();
-        frames.add(packets_encode, packets_encode.offset[packets_encode.tail], packets_encode.next_frame_bytes, raf, end_recording, key_frame);
+        frames.add(nextPacket, raf, end_recording, key_frame);
         had_frame = true;
         packets_encode.removeNextFrame();
       }
