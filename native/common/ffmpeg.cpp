@@ -473,6 +473,7 @@ struct FFContext {
   AVFrame *frame;
 
   jintArray jvideo;
+  jshortArray jvideo16;
   int jvideo_length;
 
   jshortArray jaudio;
@@ -1159,13 +1160,16 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
     e->DeleteGlobalRef(ctx->jvideo);
     ctx->jvideo = NULL;
   }
+  if (ctx->jvideo16 != NULL) {
+    e->DeleteGlobalRef(ctx->jvideo16);
+    ctx->jvideo16 = NULL;
+  }
   deleteFFContext(e,c,ctx);
 }
 
 JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   (JNIEnv *e, jobject c, jbyteArray data, jint offset, jint length)
 {
-  int64_t p_start = currentTimeMillis();
   FFContext *ctx = getFFContext(e,c);
   jboolean isCopy;
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GET_BYTE_ARRAY(data, &isCopy);
@@ -1173,24 +1177,6 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
 
   ctx->pkt->size = length;
   ctx->pkt->data = dataptr + offset;
-
-/*
-  uint8_t* pdata = ctx->pkt->data;
-  int size = ctx->pkt->size;
-  for(int a=0;a<size-4;a++,pdata++) {
-    uint32_t* data32 = (uint32_t*)pdata;
-    if (((*data32) & 0xffffff) == 0x010000) {
-      for(int b=0;b<4;b++) {
-        printf("%02x ", pdata[b]);
-      }
-      printf("...");
-    }
-  }
-  printf(" [%d]\n", size);
-*/
-
-  int64_t p_1 = currentTimeMillis();
-  int64_t d_1 = p_1 - p_start;
 
   int got_frame = 0;
   int ret = (*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
@@ -1205,9 +1191,6 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
     printf("no frame!\n");
     return NULL;
   }
-
-  int64_t p_2 = currentTimeMillis();
-  int64_t d_2 = p_2 - p_1;
 
   //setup conversion once width/height are known
   if (ctx->jvideo == NULL) {
@@ -1232,24 +1215,73 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   jint *jvideo_ptr = (jint*)ctx->e->GET_INT_ARRAY(ctx->jvideo, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-  int64_t p_3 = currentTimeMillis();
-  int64_t d_3 = p_3 - p_2;
-
   ctx->rgb_video_dst_data[0] = (uint8_t*)jvideo_ptr;
+  ctx->rgb_video_dst_linesize[0] = ctx->width * 2;
   (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
     , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
-
-  int64_t p_4 = currentTimeMillis();
-  int64_t d_4 = p_4 - p_3;
-
-  int64_t p_5 = currentTimeMillis();
-  int64_t d_5 = p_5 - p_4;
-
-//  printf("decode profile:%lld %lld %lld %lld %lld\n", d_1, d_2, d_3, d_4, d_5);
 
   ctx->e->RELEASE_INT_ARRAY(ctx->jvideo, jvideo_ptr, JNI_COMMIT);
 
   return ctx->jvideo;
+}
+
+JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decodeLowQuality
+  (JNIEnv *e, jobject c, jbyteArray data, jint offset, jint length)
+{
+  int64_t p_start = currentTimeMillis();
+  FFContext *ctx = getFFContext(e,c);
+  jboolean isCopy;
+  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GET_BYTE_ARRAY(data, &isCopy);
+  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
+
+  ctx->pkt->size = length;
+  ctx->pkt->data = dataptr + offset;
+
+  int got_frame = 0;
+  int ret = (*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
+  e->RELEASE_BYTE_ARRAY(data, (jbyte*)dataptr, JNI_ABORT);
+  ctx->pkt->data = NULL;
+  if (ret < 0) {
+    printf("Error:avcodec_decode_video2() == %d\n", ret);
+    ctx->pkt->size = 0;
+    return NULL;
+  }
+  if (got_frame == 0) {
+    printf("no frame!\n");
+    return NULL;
+  }
+
+  //setup conversion once width/height are known
+  if (ctx->jvideo16 == NULL) {
+    if (ctx->video_codec_ctx->width == 0 || ctx->video_codec_ctx->height == 0) {
+      printf("MediaVideoDecoder : width/height not known yet\n");
+      return NULL;
+    }
+    if (ctx->width == -1 && ctx->height == -1) {
+      ctx->width = ctx->video_codec_ctx->width;
+      ctx->height = ctx->video_codec_ctx->height;
+    }
+    //create video conversion context
+    ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt
+      , ctx->width, ctx->height, AV_PIX_FMT_BGR555
+      , SWS_BILINEAR, NULL, NULL, NULL);
+
+    int px_count = ctx->width * ctx->height;
+    ctx->jvideo_length = px_count;
+    ctx->jvideo16 = (jshortArray)ctx->e->NewGlobalRef(ctx->e->NewShortArray(ctx->jvideo_length));
+  }
+
+  jshort *jvideo_ptr = (jshort*)ctx->e->GET_SHORT_ARRAY(ctx->jvideo16, &isCopy);
+  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
+
+  ctx->rgb_video_dst_data[0] = (uint8_t*)jvideo_ptr;
+  ctx->rgb_video_dst_linesize[0] = ctx->width * 2;
+  (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
+    , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
+
+  ctx->e->RELEASE_SHORT_ARRAY(ctx->jvideo16, jvideo_ptr, JNI_COMMIT);
+
+  return ctx->jvideo16;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_getWidth

@@ -28,7 +28,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private RandomAccessFile encoder_raf;
   private long file_size;
   private long folder_size;
-  private int lastFrame[];
   private int width = -1, height = -1;
   private float fps = -1;
   private long now;
@@ -43,7 +42,11 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private long lastPacket;
   private JFProfiler profile_rtph264 = new JFProfiler("   h264", 6);
   private JFProfiler profile_encoder = new JFProfiler("encoder", 2);
-  private int decoded_frame[];
+  private short last_frame[];
+  private short decoded_frame[];
+  private static final int decoded_x = 320;
+  private static final int decoded_y = 200;
+  private static final int decoded_xy = 320 * 200;
 
   private static int nextPort = 5000;
   private static synchronized int getLocalPort() {
@@ -486,13 +489,26 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   }
 
   private long last_change_time;
-  private void detectMotion(int newFrame[]) {
+  private int temp_frame[];
+  private int imgcnt;
+  private void detectMotion(short newFrame[], boolean key_frame) {
     if (newFrame == null) {
       JFLog.log("Error:newFrame == null");
       return;
     }
-    float changed = VideoBuffer.compareFrames(lastFrame, newFrame, width, height, 0xe0e0e0);
-    System.arraycopy(newFrame, 0, lastFrame, 0, width * height);
+    float changed = VideoBuffer.compareFrames16(last_frame, newFrame, decoded_x, decoded_y);
+    if (DVRService.debug && key_frame) {
+      JFImage img = new JFImage(decoded_x, decoded_y);
+      if (temp_frame == null) {
+        temp_frame = new int[decoded_xy];
+      }
+      VideoBuffer.convertImage15(newFrame, temp_frame, decoded_x, decoded_y);
+      img.putPixels(temp_frame, 0, 0, decoded_x, decoded_y, 0);
+      String tmpfile = "temp-" + (imgcnt++) + ".png";
+      JFLog.log("Debug:Saving motion image to:" + tmpfile);
+      img.savePNG(tmpfile);
+    }
+    System.arraycopy(newFrame, 0, last_frame, 0, decoded_xy);
     if (changed > camera.record_motion_threshold) {
       last_change_time = now;
       recording = true;
@@ -552,7 +568,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     stream.setPort(-1);
     decoder = new MediaVideoDecoder();
     boolean status;
-    status = decoder.start(MediaCoder.AV_CODEC_ID_H264, -1, -1);
+    status = decoder.start(MediaCoder.AV_CODEC_ID_H264, decoded_x, decoded_y);
     if (!status) {
       JFLog.log("Error:MediaVideoDecoder.start() failed");
       return;
@@ -634,7 +650,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     boolean key_frame = packets_decode.isNextFrame_KeyFrame();
     if (!packets_decode.haveCompleteFrame()) return;
     packets_decode.getNextFrame();
-    decoded_frame = decoder.decode(packets_decode.data, packets_decode.offset[packets_decode.tail], packets_decode.next_frame_bytes);
+    decoded_frame = decoder.decodeLowQuality(packets_decode.data, packets_decode.offset[packets_decode.tail], packets_decode.next_frame_bytes);
     profile_rtph264.step("ffmpeg decode");
     packets_decode.removeNextFrame();
     profile_rtph264.step("removeNextFrame");
@@ -647,11 +663,11 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       JFLog.log(1, camera.name + " : threshold=" + camera.record_motion_threshold + ":after=" + camera.record_motion_after);
       if (width == 0 || height == 0) return;
       if (width == -1 || height == -1) return;
-      lastFrame = new int[width * height];
+      last_frame = new short[decoded_xy];
     }
     now = lastPacket;
     if (camera.record_motion) {
-      detectMotion(decoded_frame);
+      detectMotion(decoded_frame, key_frame);
     } else {
       recording = true;  //always recording
     }

@@ -11,6 +11,7 @@ import javaforce.media.*;
 public class DVRService extends Thread {
   public static DVRService dvrService;
   public static ConfigService configService;
+  public final static boolean debug = false;
   public static void serviceStart(String args[]) {
     main(args);
   }
@@ -34,7 +35,9 @@ public class DVRService extends Thread {
     configService = new ConfigService();
     configService.start();
     if (!MediaCoder.loaded) return;  //not ready
-    MediaCoder.ffmpeg_set_logging(false);
+    if (!debug) {
+      MediaCoder.ffmpeg_set_logging(false);
+    }
     //start recording threads
     Config config = Config.current;
     for(int a=0;a<config.cameras.length;a++) {
