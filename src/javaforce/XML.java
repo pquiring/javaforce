@@ -256,7 +256,7 @@ public class XML implements TreeModelListener {
   private final int XML_SINGLE = 4;
   private int type;
   private int line, pos;
-  private byte buf[];
+  private char buf[];
 
   private XMLTagPart readtag() {
     boolean quote2 = false, quote1 = false, isAttrs = false;
@@ -265,7 +265,7 @@ public class XML implements TreeModelListener {
 
     type = XML_DATA;
     while (pos < buf.length) {
-      ch = (char) buf[pos++];
+      ch = buf[pos++];
       if (ch == '\n') line++;
       switch (type) {
         case XML_OPEN:
@@ -481,7 +481,7 @@ public class XML implements TreeModelListener {
   public boolean read(InputStream is, XMLEvent event) {
     this.event = event;
     try {
-      buf = JF.readAll(is);
+      buf = new String(JF.readAll(is), "UTF-8").toCharArray();
     } catch (Exception e) {
       e.printStackTrace();
       return false;
