@@ -18,8 +18,6 @@
 static jboolean libav_org = JNI_FALSE;
 static jboolean loaded = JNI_FALSE;
 
-#define DEBUG_TRAP __asm("int $3");
-
 JF_LIB_HANDLE codec = NULL;
 JF_LIB_HANDLE device = NULL;
 JF_LIB_HANDLE ffilter = NULL;
@@ -43,7 +41,8 @@ int (*_avcodec_decode_audio4)(AVCodecContext *avctx,AVFrame *frame,int* got_fram
 int (*_avcodec_open2)(AVCodecContext *avctx,AVCodec *codec,void* options);
 AVCodecContext* (*_avcodec_alloc_context3)(AVCodec *codec);
 void (*_av_init_packet)(AVPacket *pkt);
-void (*_av_free_packet)(AVPacket *pkt);  //free data inside packet (not packet itself)
+void (*_av_free_packet)(AVPacket *pkt);  //free data inside packet (not packet itself) [DEPRECATED]
+void (*_av_packet_free)(AVPacket **pkt);
 //encoding
 AVCodec* (*_avcodec_find_encoder)(int codec_id);
 //int (*_avpicture_alloc)(AVPicture *pic, int pix_fmt, int width, int height);
@@ -270,6 +269,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(codec, (void**)&_avcodec_alloc_context3, "avcodec_alloc_context3");
   getFunction(codec, (void**)&_av_init_packet, "av_init_packet");
   getFunction(codec, (void**)&_av_free_packet, "av_free_packet");
+  getFunction(codec, (void**)&_av_packet_free, "av_packet_free");
   getFunction(codec, (void**)&_avcodec_find_encoder, "avcodec_find_encoder");
 //  getFunction(codec, (void**)&_avpicture_alloc, "avpicture_alloc");
 //  getFunction(codec, (void**)&_avpicture_free, "avpicture_free");
@@ -805,6 +805,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
   FFContext *ctx = getFFContext(e,c);
   if (ctx->io_ctx != NULL) {
     (*_avio_flush)(ctx->io_ctx);
+    (*_av_free)(ctx->io_ctx->buffer);
     ctx->io_ctx = NULL;
     ctx->ff_buffer = NULL;
   }
@@ -843,8 +844,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
     ctx->jvideo = NULL;
   }
   if (ctx->pkt != NULL) {
-    (*_av_free_packet)(ctx->pkt);
-    (*_av_free)(ctx->pkt);
+    (*_av_packet_free)(&ctx->pkt);
     ctx->pkt = NULL;
   }
   deleteFFContext(e,c,ctx);
@@ -1152,8 +1152,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
     ctx->sws_ctx = NULL;
   }
   if (ctx->pkt != NULL) {
-    (*_av_free_packet)(ctx->pkt);
-    (*_av_free)(ctx->pkt);
+    (*_av_packet_free)(&ctx->pkt);
     ctx->pkt = NULL;
   }
   if (ctx->jvideo != NULL) {
@@ -1188,7 +1187,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
     return NULL;
   }
   if (got_frame == 0) {
-    printf("no frame!\n");
+    printf("Error:MediaVideoDecoder::decode():no frame!\n");
     return NULL;
   }
 
@@ -1225,7 +1224,9 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   return ctx->jvideo;
 }
 
-JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decodeLowQuality
+static int avg;  //test
+
+JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
   (JNIEnv *e, jobject c, jbyteArray data, jint offset, jint length)
 {
   int64_t p_start = currentTimeMillis();
@@ -1233,6 +1234,16 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decodeLowQu
   jboolean isCopy;
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GET_BYTE_ARRAY(data, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
+
+//  if (length == -1) { //test
+    //touch input data (debug)
+    uint8_t *test = dataptr + offset;
+    int _avg = avg;
+    for(int a=0;a<length;a++) {
+      _avg += *(test++);
+    }
+    avg = _avg;
+//  }
 
   ctx->pkt->size = length;
   ctx->pkt->data = dataptr + offset;
@@ -1247,7 +1258,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decodeLowQu
     return NULL;
   }
   if (got_frame == 0) {
-    printf("no frame!\n");
+    printf("Error:MediaVideoDecoder::decode16():no frame!\n");
     return NULL;
   }
 
@@ -1437,11 +1448,13 @@ static jboolean open_video(FFContext *ctx) {
   ctx->video_frame->width = ctx->width;
   ctx->video_frame->height = ctx->height;
   ctx->video_frame->format = ctx->video_codec_ctx->pix_fmt;
+/*
   ret = (*_av_frame_get_buffer)(ctx->video_frame, 32);
   if (ret < 0) {
     printf("av_frame_get_buffer() failed! %d\n", ret);
     return JNI_FALSE;
   }
+*/
   //copy data/linesize pointers from dst_pic to frame
   for(int a=0;a<8;a++) {
     ctx->video_frame->data[a] = ctx->dst_pic->data[a];
@@ -1699,8 +1712,7 @@ static jboolean addAudioFrame(FFContext *ctx, short *sams, int offset, int lengt
       return JNI_FALSE;
     }
   }
-  (*_av_free_packet)(pkt);
-  (*_av_free)(pkt);
+  (*_av_packet_free)(&pkt);
   (*_av_free)(samples_data);
   if (ctx->swr_ctx != NULL) {
     //free audio_dst_data (only the first pointer : regardless if format was plannar : it's alloced as one large block)
@@ -1819,10 +1831,11 @@ static jboolean addVideo(FFContext *ctx, int *px)
     (*_av_packet_rescale_ts)(pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
 //printf("video : write_frame() : %lld, %lld, %d, %d\n", pkt->pts, pkt->dts, pkt->duration, pkt->stream_index);
     ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
-    (*_av_free_packet)(pkt);
-    (*_av_free)(pkt);
-    pkt = NULL;
+  } else {
+//    printf("Error:MediaEncoder::addVideo():no frame!\n");  //frames are delayed
+    ret = -1;
   }
+  (*_av_packet_free)(&pkt);
   ctx->video_pts++;
   return ret == 0;
 }
@@ -1877,8 +1890,7 @@ static jboolean addVideoEncoded(FFContext *ctx, jbyte* data, jint size, jboolean
   int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
   pkt->data = NULL;
   pkt->size = 0;
-  (*_av_free_packet)(pkt);
-  (*_av_free)(pkt);
+  (*_av_packet_free)(&pkt);
   ctx->video_pts++;
   return ret == 0;
 }
@@ -1921,13 +1933,13 @@ static jboolean flush(FFContext *ctx) {
   if (got_frame != 0 && pkt->size > 0) {
     pkt->stream_index = ctx->audio_stream->index;
     ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
-    (*_av_free_packet)(pkt);
-    (*_av_free)(pkt);
-    pkt = NULL;
     if (ret < 0) printf("av_interleaved_write_frame() failed!\n");
-    return ret == 0;
+  } else {
+//    printf("Error:MediaEncoder::flush():no frame!\n");  //frames are delayed
+    ret = -1;
   }
-  return JNI_FALSE;
+  (*_av_packet_free)(&pkt);
+  return ret == 0;
 }
 
 static void encoder_stop(FFContext *ctx)
@@ -1940,31 +1952,42 @@ static void encoder_stop(FFContext *ctx)
   }
   if (ctx->io_ctx != NULL) {
     (*_avio_flush)(ctx->io_ctx);
+    (*_av_free)(ctx->io_ctx->buffer);
     ctx->io_ctx = NULL;
     ctx->ff_buffer = NULL;
   }
   if (ctx->audio_stream != NULL) {
     (*_avcodec_close)(ctx->audio_codec_ctx);
+    (*_av_free)(ctx->audio_codec_ctx);
     ctx->audio_stream = NULL;
   }
   if (ctx->video_stream != NULL) {
     (*_avcodec_close)(ctx->video_codec_ctx);
+    (*_av_free)(ctx->video_codec_ctx);
     ctx->video_stream = NULL;
   }
   if (ctx->audio_frame != NULL) {
     (*_av_frame_free)((void**)&ctx->audio_frame);
+    ctx->audio_frame = NULL;
   }
   if (ctx->video_frame != NULL) {
     (*_av_frame_free)((void**)&ctx->video_frame);
+    ctx->video_frame = NULL;
   }
   if (ctx->fmt_ctx != NULL) {
+    if (ctx->fmt_ctx->priv_data != NULL) {
+      (*_av_free)(ctx->fmt_ctx->priv_data);
+      ctx->fmt_ctx->priv_data = NULL;
+    }
     (*_avformat_free_context)(ctx->fmt_ctx);
     ctx->fmt_ctx = NULL;
   }
   if (ctx->src_pic != NULL) {
+    (*_av_freep)((void**)&ctx->src_pic->data[0]);
     (*_av_frame_free)((void**)&ctx->src_pic);
   }
   if (ctx->dst_pic != NULL) {
+    (*_av_freep)((void**)&ctx->dst_pic->data[0]);
     (*_av_frame_free)((void**)&ctx->dst_pic);
   }
   if (ctx->sws_ctx != NULL) {
