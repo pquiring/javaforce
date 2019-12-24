@@ -90,7 +90,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames16
   return changed;
 }
 
-JNIEXPORT jboolean JNICALL Java_javaforce_media_VideoBuffer_convertImage15
+JNIEXPORT jboolean JNICALL Java_javaforce_media_VideoBuffer_convertImage16
   (JNIEnv *e, jclass c, jshortArray sa, jintArray ia, jint width, jint height)
 {
   if (sa == NULL) return JNI_FALSE;
