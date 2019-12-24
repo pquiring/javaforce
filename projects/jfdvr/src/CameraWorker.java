@@ -1,4 +1,4 @@
-/**
+/** CameraWorker
  *
  * @author pquiring
  */
@@ -90,7 +90,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   /** Frame to be recorded. */
   private static class Frames {
     public void add(Packet packet, RandomAccessFile raf, boolean stop, boolean key_frame) {
-      this.packets.add(packets, packet.offset, packet.length);
+      this.packets.add(packet);
       this.raf[head] = raf;
       this.stop[head] = stop;
       this.key_frame[head] = key_frame;
@@ -177,22 +177,17 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     public void add(Packet packet) {
       if (!calcOffset(packet.length)) return;
-      System.arraycopy(packet.data, 0, data, nextOffset, packet.length);
+      try {
+        System.arraycopy(packet.data, 0, data, nextOffset, packet.length);
+      } catch (Exception e) {
+        JFLog.log(e);
+        System.out.println("packet:" + packet.length);
+        return;
+      }
       offset[head] = nextOffset;
       length[head] = packet.length;
       type[head] = packet.data[4] & 0x1f;
       nextOffset += packet.length;
-      int new_head = head + 1;
-      if (new_head == maxPackets) new_head = 0;
-      head = new_head;
-    }
-    public void add(Packets packets, int _offset, int _length) {
-      if (!calcOffset(_length)) return;
-      System.arraycopy(packets.data, _offset, data, nextOffset, _length);
-      offset[head] = nextOffset;
-      length[head] = _length;
-      type[head] = packets.data[_offset + 4] & 0x1f;
-      nextOffset += _length;
       int new_head = head + 1;
       if (new_head == maxPackets) new_head = 0;
       head = new_head;
@@ -263,6 +258,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         return null;
       }
       if (next_frame_fragmented) {
+        JFLog.log("Warning:frame is fragmented");
         nextFrame.data = frag_data;
         nextFrame.offset = 0;
       } else {
@@ -455,6 +451,10 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
 
   public void disconnect() {
     client.uninit();
+    if (decoder != null) {
+      decoder.stop();
+      decoder = null;
+    }
   }
 
   private void listFiles() {
@@ -513,7 +513,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       if (temp_frame == null) {
         temp_frame = new int[decoded_xy];
       }
-      VideoBuffer.convertImage15(newFrame, temp_frame, decoded_x, decoded_y);
+      VideoBuffer.convertImage16(newFrame, temp_frame, decoded_x, decoded_y);
       img.putPixels(temp_frame, 0, 0, decoded_x, decoded_y, 0);
       String tmpfile = "temp-" + (imgcnt++) + ".png";
       JFLog.log("Debug:Saving motion image to:" + tmpfile);
@@ -529,6 +529,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       boolean off_delay = diff > camera.record_motion_after;
       if (off_delay) {
         end_recording = true;
+      }
+      if (frameCount > 200) {
+        end_recording = true;  //test
       }
     }
   }
@@ -577,6 +580,10 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     //IP/port in SDP is all zeros
     stream.setIP(client.getRemoteIP());
     stream.setPort(-1);
+    if (decoder != null) {
+      decoder.stop();
+      decoder = null;
+    }
     decoder = new MediaVideoDecoder();
     boolean status;
     status = decoder.start(MediaCoder.AV_CODEC_ID_H264, decoded_x, decoded_y);
@@ -606,8 +613,10 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     rtp.stop();
     rtp = null;
     channel = null;
-    decoder.stop();
-    decoder = null;
+    if (decoder != null) {
+      decoder.stop();
+      decoder = null;
+    }
   }
 
   //RTP Interface
@@ -665,7 +674,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     if (!packets_decode.haveCompleteFrame()) return;
     Packet nextPacket = packets_decode.getNextFrame();
-    decoded_frame = decoder.decodeLowQuality(nextPacket.data, nextPacket.offset, nextPacket.length);
+    decoded_frame = decoder.decode16(nextPacket.data, nextPacket.offset, nextPacket.length);
     profile_rtph264.step("ffmpeg decode");
     packets_decode.removeNextFrame();
     profile_rtph264.step("removeNextFrame");

@@ -78,6 +78,6 @@ public class VideoBuffer {
   public static native float compareFrames(int frame1[], int frame2[], int width, int height, int mask);
   /** Compares low quality 15bpp images. */
   public static native float compareFrames16(short frame1[], short frame2[], int width, int height);
-  /** Converts 15bpp (1:5:5:5) image to 24bpp format. */
-  public static native boolean convertImage15(short px16[], int px24[], int width, int height);
+  /** Converts 16bpp (1:5:5:5) image to 24bpp format. */
+  public static native boolean convertImage16(short px16[], int px24[], int width, int height);
 }
