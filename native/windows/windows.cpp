@@ -1306,6 +1306,17 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_add
   return x+y;
 }
 
+JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
+  (JNIEnv *e, jclass c, jintArray a, jint ms)
+{
+  jboolean isCopy;
+  jint *aptr = (jint*)e->GET_INT_ARRAY(a, &isCopy);
+
+  ::Sleep(ms);
+
+  e->RELEASE_INT_ARRAY(a, aptr, JNI_COMMIT);
+}
+
 
 #include "../common/library.h"
 

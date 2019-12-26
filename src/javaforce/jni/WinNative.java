@@ -65,4 +65,5 @@ public class WinNative {
 
   //test
   public static native int add(int x, int y);
+  public static native void hold(int a[], int ms);
 }
