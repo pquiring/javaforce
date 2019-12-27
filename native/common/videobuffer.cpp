@@ -4,9 +4,9 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
   if (img1 == NULL) return 100.0f;
   if (img2 == NULL) return 100.0f;
   jboolean isCopy1, isCopy2;
-  jint *px1 = (jint*)e->GET_INT_ARRAY(img1, &isCopy1);
+  jint *px1 = (jint*)e->GetPrimitiveArrayCritical(img1, &isCopy1);
   if (!shownCopyWarning && isCopy1 == JNI_TRUE) copyWarning();
-  jint *px2 = (jint*)e->GET_INT_ARRAY(img2, &isCopy2);
+  jint *px2 = (jint*)e->GetPrimitiveArrayCritical(img2, &isCopy2);
   if (!shownCopyWarning && isCopy2 == JNI_TRUE) copyWarning();
 
   int s1 = e->GetArrayLength(img1);
@@ -39,8 +39,8 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
   float fsize = size;
   float changed = (fdiff * 100.0f) / fsize;
 
-  e->RELEASE_INT_ARRAY(img1, px1, JNI_ABORT);
-  e->RELEASE_INT_ARRAY(img2, px2, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(img1, px1, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(img2, px2, JNI_ABORT);
 
   return changed;
 }
@@ -51,9 +51,9 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames16
   if (img1 == NULL) return 100.0f;
   if (img2 == NULL) return 100.0f;
   jboolean isCopy1, isCopy2;
-  jshort *px1 = (jshort*)e->GET_SHORT_ARRAY(img1, &isCopy1);
+  jshort *px1 = (jshort*)e->GetPrimitiveArrayCritical(img1, &isCopy1);
   if (!shownCopyWarning && isCopy1 == JNI_TRUE) copyWarning();
-  jshort *px2 = (jshort*)e->GET_SHORT_ARRAY(img2, &isCopy2);
+  jshort *px2 = (jshort*)e->GetPrimitiveArrayCritical(img2, &isCopy2);
   if (!shownCopyWarning && isCopy2 == JNI_TRUE) copyWarning();
 
   int s1 = e->GetArrayLength(img1);
@@ -84,8 +84,8 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames16
   float fsize = size;
   float changed = (fdiff * 100.0f) / fsize;
 
-  e->RELEASE_SHORT_ARRAY(img1, px1, JNI_ABORT);
-  e->RELEASE_SHORT_ARRAY(img2, px2, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(img1, px1, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(img2, px2, JNI_ABORT);
 
   return changed;
 }
@@ -96,9 +96,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_VideoBuffer_convertImage16
   if (sa == NULL) return JNI_FALSE;
   if (ia == NULL) return JNI_FALSE;
   jboolean isCopy1, isCopy2;
-  jshort *px1 = (jshort*)e->GET_SHORT_ARRAY(sa, &isCopy1);
+  jshort *px1 = (jshort*)e->GetPrimitiveArrayCritical(sa, &isCopy1);
   if (!shownCopyWarning && isCopy1 == JNI_TRUE) copyWarning();
-  jint *px2 = (jint*)e->GET_INT_ARRAY(ia, &isCopy2);
+  jint *px2 = (jint*)e->GetPrimitiveArrayCritical(ia, &isCopy2);
   if (!shownCopyWarning && isCopy2 == JNI_TRUE) copyWarning();
 
   int s1 = e->GetArrayLength(sa);
@@ -128,8 +128,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_VideoBuffer_convertImage16
     *(pc2++) = p24;
   }
 
-  e->RELEASE_SHORT_ARRAY(sa, px1, JNI_ABORT);
-  e->RELEASE_INT_ARRAY(ia, px2, JNI_COMMIT);
+  e->ReleasePrimitiveArrayCritical(sa, px1, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(ia, px2, JNI_COMMIT);
 
   return JNI_TRUE;
 }

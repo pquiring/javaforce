@@ -1171,7 +1171,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
 {
   FFContext *ctx = getFFContext(e,c);
   jboolean isCopy;
-  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GET_BYTE_ARRAY(data, &isCopy);
+  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   ctx->pkt->size = length;
@@ -1179,7 +1179,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
 
   int got_frame = 0;
   int ret = (*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
-  e->RELEASE_BYTE_ARRAY(data, (jbyte*)dataptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(data, (jbyte*)dataptr, JNI_ABORT);
   ctx->pkt->data = NULL;
   if (ret < 0) {
     printf("Error:avcodec_decode_video2() == %d\n", ret);
@@ -1211,7 +1211,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
     ctx->jvideo = (jintArray)ctx->e->NewGlobalRef(ctx->e->NewIntArray(ctx->jvideo_length));
   }
 
-  jint *jvideo_ptr = (jint*)ctx->e->GET_INT_ARRAY(ctx->jvideo, &isCopy);
+  jint *jvideo_ptr = (jint*)ctx->e->GetPrimitiveArrayCritical(ctx->jvideo, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   ctx->rgb_video_dst_data[0] = (uint8_t*)jvideo_ptr;
@@ -1219,7 +1219,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
     , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
 
-  ctx->e->RELEASE_INT_ARRAY(ctx->jvideo, jvideo_ptr, JNI_COMMIT);
+  ctx->e->ReleasePrimitiveArrayCritical(ctx->jvideo, jvideo_ptr, JNI_COMMIT);
 
   return ctx->jvideo;
 }
@@ -1232,7 +1232,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
   int64_t p_start = currentTimeMillis();
   FFContext *ctx = getFFContext(e,c);
   jboolean isCopy;
-  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GET_BYTE_ARRAY(data, &isCopy);
+  uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
 //  if (length == -1) { //test
@@ -1250,7 +1250,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
 
   int got_frame = 0;
   int ret = (*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
-  e->RELEASE_BYTE_ARRAY(data, (jbyte*)dataptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(data, (jbyte*)dataptr, JNI_ABORT);
   ctx->pkt->data = NULL;
   if (ret < 0) {
     printf("Error:avcodec_decode_video2() == %d\n", ret);
@@ -1282,7 +1282,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
     ctx->jvideo16 = (jshortArray)ctx->e->NewGlobalRef(ctx->e->NewShortArray(ctx->jvideo_length));
   }
 
-  jshort *jvideo_ptr = (jshort*)ctx->e->GET_SHORT_ARRAY(ctx->jvideo16, &isCopy);
+  jshort *jvideo_ptr = (jshort*)ctx->e->GetPrimitiveArrayCritical(ctx->jvideo16, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   ctx->rgb_video_dst_data[0] = (uint8_t*)jvideo_ptr;
@@ -1290,7 +1290,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
   (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
     , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
 
-  ctx->e->RELEASE_SHORT_ARRAY(ctx->jvideo16, jvideo_ptr, JNI_COMMIT);
+  ctx->e->ReleasePrimitiveArrayCritical(ctx->jvideo16, jvideo_ptr, JNI_COMMIT);
 
   return ctx->jvideo16;
 }
@@ -1775,12 +1775,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudio
   if (ctx->audio_codec_ctx == NULL) return JNI_FALSE;
 
   jboolean isCopy;
-  jshort* sams_ptr = (jshort*)e->GET_SHORT_ARRAY(sams, &isCopy);
+  jshort* sams_ptr = (jshort*)e->GetPrimitiveArrayCritical(sams, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   jboolean ok = addAudio(ctx, sams_ptr, offset, length);
 
-  e->RELEASE_SHORT_ARRAY(sams, sams_ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(sams, sams_ptr, JNI_ABORT);
 
   return ok;
 }
@@ -1848,12 +1848,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideo
   if (ctx->video_codec_ctx == NULL) return JNI_FALSE;
 
   jboolean isCopy;
-  jint *px_ptr = (jint*)e->GET_INT_ARRAY(px, &isCopy);
+  jint *px_ptr = (jint*)e->GetPrimitiveArrayCritical(px, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   jboolean ok = addVideo(ctx, (int*)px_ptr);
 
-  e->RELEASE_INT_ARRAY(px, px_ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(px, px_ptr, JNI_ABORT);
 
   return ok;
 }
@@ -1901,12 +1901,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideoEncoded
   FFContext *ctx = getFFContext(e,c);
 
   jboolean isCopy;
-  jbyte *ba_ptr = (jbyte*)e->GET_BYTE_ARRAY(ba, &isCopy);
+  jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   jboolean ok = addVideoEncoded(ctx, ba_ptr + offset, length, key_frame);
 
-  e->RELEASE_BYTE_ARRAY(ba, ba_ptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(ba, ba_ptr, JNI_ABORT);
 
   return ok;
 }
