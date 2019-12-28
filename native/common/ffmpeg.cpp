@@ -1235,15 +1235,13 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-//  if (length == -1) { //test
-    //touch input data (debug)
-    uint8_t *test = dataptr + offset;
-    int _avg = avg;
-    for(int a=0;a<length;a++) {
-      _avg += *(test++);
-    }
-    avg = _avg;
-//  }
+//  touch input data (debug)
+  uint8_t *test = dataptr + offset;
+  int _avg = avg;
+  for(int a=0;a<length;a++) {
+//    _avg += *(test++);
+  }
+  avg = _avg;
 
   ctx->pkt->size = length;
   ctx->pkt->data = dataptr + offset;
@@ -1258,7 +1256,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
     return NULL;
   }
   if (got_frame == 0) {
-    printf("Error:MediaVideoDecoder::decode16():no frame!\n");
+//    printf("Error:MediaVideoDecoder::decode16():no frame!\n");
     return NULL;
   }
 

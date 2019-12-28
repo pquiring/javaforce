@@ -8,6 +8,6 @@ AVOutputFormat = container
   - mux
 AVStream = holds Codec info
 AVCodec = read/write codec data
-
+AVCodecContext = AVCodec encoding/decoding data
 AVFrame = raw uncompressed data
 AVPacket = raw compressed data

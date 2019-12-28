@@ -17,8 +17,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private long max_file_size;  //in bytes
   private long max_folder_size;  //in bytes
 
-  private final static boolean debug_motion_image = false;
   private final static boolean debug_buffers = false;
+  private final static boolean debug_motion_image = false;
 
   private RTSPClient client;
   private SDP sdp;
@@ -227,7 +227,14 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     public boolean haveCompleteFrame() {
       next_frame_fragmented = false;
+      int _offset = offset[tail];
+      int _length = 0;
       for(int pos=tail;pos!=head;) {
+        _length += length[pos];
+        if ((!next_frame_fragmented) && (_offset + _length + 7 > data.length)) {
+          //FFMPEG recommends 7 extra bytes after input data
+          next_frame_fragmented = true;
+        }
         switch (type[pos]) {
           case 1: return true;
           case 5: return true;
@@ -504,11 +511,11 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private int imgcnt;
   private void detectMotion(short newFrame[], boolean key_frame) {
     if (newFrame == null) {
-      JFLog.log("Error:newFrame == null");
       return;
     }
     float changed = VideoBuffer.compareFrames16(last_frame, newFrame, decoded_x, decoded_y);
     if (debug_motion_image && key_frame) {
+      System.out.println(camera.name + ":changed=" + changed);
       JFImage img = new JFImage(decoded_x, decoded_y);
       if (temp_frame == null) {
         temp_frame = new int[decoded_xy];
@@ -675,6 +682,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     if (!packets_decode.haveCompleteFrame()) return;
     Packet nextPacket = packets_decode.getNextFrame();
     decoded_frame = decoder.decode16(nextPacket.data, nextPacket.offset, nextPacket.length);
+    if (decoded_frame == null) {
+      JFLog.log(camera.name + ":Error:newFrame == null:packet.length=" + nextPacket.length);
+    }
     profile_rtph264.step("ffmpeg decode");
     packets_decode.removeNextFrame();
     profile_rtph264.step("removeNextFrame");
