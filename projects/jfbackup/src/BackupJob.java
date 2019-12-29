@@ -35,6 +35,7 @@ public class BackupJob extends Thread {
     this.job = job;
   }
   public void run() {
+    currentTape = null;
     try {
       if (!doBackup()) throw new Exception("Backup failed");
       //save tapes to library
@@ -98,6 +99,7 @@ public class BackupJob extends Thread {
       ServerClient serverclient = BackupService.server.getClient(jobvol.host);
       if (serverclient == null) {
         log("Error:Host offline:" + jobvol.host);
+        return false;
       }
       //TODO : ping client ?
     }
