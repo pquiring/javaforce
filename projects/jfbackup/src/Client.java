@@ -291,8 +291,10 @@ public class Client extends Thread {
     long backupid = System.currentTimeMillis();
     JFLog.init(Paths.logsPath + "/backup-" + backupid + ".log", true);
     String path = Paths.vssPath + new String(arg, "utf-8");
+    JFLog.log("Sending Folder:" + path);
     sendFolder(path);
     writeLength(-1);  //done
+    JFLog.log("Done");
     JFLog.close();
   }
   private void sendFolder(String path) throws Exception {
