@@ -1,5 +1,9 @@
 What's new...
 
+Dec 29/2019 : JF 18.7.0 released
+  - jfBackup/0.8
+    - fix : reset tape used at start of backup
+
 Dec 18/2019 : JF 18.6.0 released
   - jfBackup/0.7
     - fix : NPE client side
