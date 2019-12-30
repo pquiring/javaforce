@@ -837,6 +837,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_ptyChildExec
 
   const char *ccmd = e->GetStringUTFChars(cmd,NULL);
   execvpe(ccmd, cargs, cenv);
+  return 0;
 }
 
 //X11

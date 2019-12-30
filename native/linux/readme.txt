@@ -8,7 +8,7 @@ Debian/Ubuntu:
     ant deb
 
   Required environment variable:
-    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
   Compile:
     ant <arch>
@@ -32,7 +32,7 @@ Arch:
     ant pac
 
   Required environment variable:
-    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk
+    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
 
   Compile:
     ant <arch>
@@ -42,7 +42,7 @@ Raspberry Pi (Debian):
   Same packages as Debian above.
 
   Required environment variable:
-    export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-armhf
+    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-armhf
 
   Compile:
     ant <arch>

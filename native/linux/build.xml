@@ -14,16 +14,6 @@
     </delete>
   </target>
 
-  <target name="x32" description="create linux native so">
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include/linux -I ${env.JAVA_HOME}/include -I /usr/include/i386-linux-gnu -I ../headers  linux.cpp -c -o linux32.o -fPIC"/>
-    <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/i386-linux-gnu glfw.c -c -o glfw32.o -fPIC"/>
-    <exec command="gcc -shared linux32.o glfw32.o -L /usr/lib/i386-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative32.so"/>
-
-    <delete>
-      <fileset dir="." includes="*.o"/>
-    </delete>
-  </target>
-
   <target name="pi" description="create Raspberry Pi native so">
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/arm-linux-gnueabihf -I ../headers  linux.cpp -c -o linux32.o -fPIC"/>
     <exec command="gcc ${opt} -I../glfw/include -I /usr/include/arm-linux-gnueabihf glfw.c -c -o glfw32.o -fPIC"/>
@@ -35,15 +25,15 @@
   </target>
 
   <target name="deb" description="install debian prerequisites">
-    <exec command="apt --yes install g++ openjdk-8-jdk ant libx11-dev libfuse-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev libncurses-dev"/>
+    <exec command="apt --yes install g++ default-jdk ant libx11-dev libfuse-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev libncurses-dev"/>
   </target>
 
   <target name="rpm" description="install fedora prerequisites">
-    <exec command="dnf -y install gcc-c++ java-1.8.0-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel"/>
+    <exec command="dnf -y install gcc-c++ java-11-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel"/>
   </target>
 
   <target name="pac" description="install arch prerequisites">
-    <exec command="pacman -S jdk8-openjdk apache-ant fuse pam ffmpeg mesa xproto libxcursor libxrandr libxinerama libxi libxt"/>
+    <exec command="pacman -S jdk11-openjdk apache-ant fuse pam ffmpeg mesa xproto libxcursor libxrandr libxinerama libxi libxt"/>
   </target>
 
   <target name="help">
@@ -51,7 +41,6 @@
     <echo>ant rpm : install Fedora prerequisites</echo>
     <echo>ant pac : install Arch prerequisites</echo>
 
-    <echo>ant x32 : build intel x86 32bit</echo>
     <echo>ant x64 : build intel x86 64bit</echo>
     <echo>ant pi : build ARM 32bit (Raspberry PI)</echo>
   </target>
