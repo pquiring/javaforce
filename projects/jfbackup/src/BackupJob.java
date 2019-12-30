@@ -52,6 +52,7 @@ public class BackupJob extends Thread {
       Status.running = false;
       Status.abort = false;
       Status.desc = "Backup Complete";
+      email_notify(true);
     } catch (Exception e) {
       String msg = e.getMessage();
       if (msg == null || !msg.equals("Backup failed")) {
@@ -63,7 +64,9 @@ public class BackupJob extends Thread {
       Status.desc = "Backup aborted, see logs.";
       //clients may be deadlocked, drop carrier on them to reset them, they will reconnect in 3 seconds
       BackupService.server.dropClients();
+      email_notify(false);
     }
+    currentTape = null;
     tape.close();
     if (haveChanger) {
       changer.close();
@@ -173,6 +176,9 @@ public class BackupJob extends Thread {
         return false;
       }
       if (!success) return false;
+    }
+    if (haveChanger) {
+      emptyDrive();
     }
     log("Total:" + ConfigService.toEng(Status.copied) + " files " + Status.files);
     return true;
@@ -285,6 +291,19 @@ public class BackupJob extends Thread {
       return loadEmptyTape();
     }
     return false;
+  }
+  private boolean emptyDrive() {
+    if (!updateList()) return false;
+    if (emptySlotIdx == -1) {
+      log("Error:No empty slot to move tapes");
+      return false;
+    }
+    log("Move Tape:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
+    if (!changer.move(elements[driveIdx].name, elements[emptySlotIdx].name)) {
+      log("Error:Move Tape failed:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
+      return false;
+    }
+    return true;
   }
   private boolean updateList() {
     elements = changer.list();
@@ -592,6 +611,71 @@ public class BackupJob extends Thread {
     } catch (Exception e) {
       log(e);
       return false;
+    }
+  }
+  private boolean isValid(String str) {
+    if (str == null) return false;
+    if (str.length() == 0) return false;
+    return true;
+  }
+  private void email_notify(boolean success) {
+    if (!isValid(Config.current.email_server)) return;
+    if (!isValid(Config.current.emails)) return;
+    SMTP smtp = new SMTP();
+    try {
+      int port = -1;
+      String server = Config.current.email_server;
+      int idx = server.indexOf(':');
+      if (idx != -1) {
+        port = Integer.valueOf(server.substring(idx+1));
+        server = server.substring(0, idx);
+      }
+      if (Config.current.email_secure) {
+        if (port == -1) port = 465;
+        smtp.connect(server, port);
+      } else {
+        if (port == -1) port = 25;
+        smtp.connect(server, port);
+      }
+      if (!smtp.login()) {
+        throw new Exception("SMTP HELLO failed");
+      }
+      if (isValid(Config.current.email_user) && isValid(Config.current.email_pass)) {
+        if (!smtp.auth(Config.current.email_user, Config.current.email_pass)) {
+          throw new Exception("SMTP auth failed");
+        }
+      }
+      smtp.from("jfBackup@" + Config.current.server_host);
+      smtp.to(Config.current.emails);
+      StringBuilder msg = new StringBuilder();
+      msg.append("Subject:Backup ");
+      msg.append(job.name);
+      msg.append(" ");
+      msg.append(success ? "successful" : "failed");
+      msg.append("\r\n\r\n");
+      msg.append("Backup job:");
+      msg.append(job.name);
+      msg.append("\r\n");
+      msg.append("Date:");
+      msg.append(ConfigService.toDateTime(backupid));
+      msg.append("\r\n");
+      if (success) {
+        msg.append("Backup job was successful.\r\n");
+        msg.append("Eject these tapes:\r\n");
+        for(EntryTape tape : catnfo.tapes) {
+          msg.append("Tape:");
+          msg.append(tape.barcode);
+          msg.append("\r\n");
+        }
+      } else {
+        msg.append("Backup job failed, see logs for more details.");
+      }
+      smtp.data(msg.toString());
+      smtp.logout();
+      smtp.disconnect();
+    } catch (Exception e) {
+      log("Email notification failed");
+      log(e);
     }
   }
 }

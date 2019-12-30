@@ -36,6 +36,11 @@ public class Config implements Serializable {
   public String cleanPrefix;  //"CLN"
   public String cleanSuffix;  //"CN"
   public boolean skipBadFiles;  //skip bad files during restore process
+  //notification settings
+  public String email_server;
+  public boolean email_secure;
+  public String email_user, email_pass;
+  public String emails;
 
   //backup jobs
   public ArrayList<EntryJob> backups;

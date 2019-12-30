@@ -1367,6 +1367,44 @@ public class ConfigService implements WebUIHandler {
     row.add(devices_save);
     panel.add(row);
 
+    row = new Row();
+    row.setBackColor(Color.blue);
+    row.setHeight(5);
+    panel.add(row);
+
+    row = new Row();
+    row.add(new Label("EMail Notification:"));
+    row.add(new Label("SMTP Server:"));
+    TextField email_server = new TextField(Config.current.email_server);
+    row.add(email_server);
+    CheckBox email_secure = new CheckBox("Secure");
+    email_secure.setSelected(Config.current.email_secure);
+    row.add(email_secure);
+    row.add(new Label("Email To:"));
+    TextField emails = new TextField(Config.current.emails);
+    row.add(emails);
+    row.add(new Label("(seperate multiple emails with commas)"));
+    Button email_save = new Button("Save");
+    email_save.addClickListener((MouseEvent me, Component c) -> {
+      try {
+        String _email_server = email_server.getText();
+        boolean _email_secure = email_secure.isSelected();
+        String _emails = emails.getText();
+        Config.current.email_server = _email_server;
+        Config.current.email_secure = _email_secure;
+        Config.current.emails = _emails;
+        Config.save();
+        msg.setText("Updated Notification Settings");
+        msg.setColor(Color.black);
+      } catch (Exception e) {
+        e.printStackTrace();
+        msg.setText("Failed to save Notification Settings");
+        msg.setColor(Color.red);
+      }
+    });
+    row.add(email_save);
+    panel.add(row);
+
     return panel;
   }
 
