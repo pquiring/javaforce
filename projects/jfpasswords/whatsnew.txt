@@ -1,0 +1,40 @@
+Dec 30/2019 : jfPasswords/0.21 released
+  - fix : support UTF-8
+
+Jan 24/2019 : jfpasswords/0.20 released
+  - added OpenSite and Help buttons
+
+Sept 26/2018 : jfPasswords/0.19 released
+  - add JRE to MSI package
+
+Oct 18/2017 : jfPasswords/0.17 released
+  - Java9 support
+
+Dec 17/2015 : jfPasswords/0.16 released
+  - added 'avoid ambiguous chars' option
+
+Dec 17/2015 : jfPasswords/0.15 released
+  - changed startup behaviour (do not show window on startup)
+
+Jul 9/2015 : jfPasswords/0.14 released
+  - fixed drag and drop entries between groups
+
+Sept 15/2014 : jfPasswords/0.12 released
+  - tray icon is now scaled to correct size (must call SystemTray.getTrayIconSize() to get OS specific size)
+  - new tray icons that matches Windows 7 theme
+
+Jun 23/2014 : jfPasswords/0.10 released
+  - fix : now shows Window regardless of if it's minimized, not in front or closed.
+
+May 22/2014 : jfPasswords/0.9 released
+  - now checks if safe file has changed when main window is shown and asks to reload if so
+
+Nov 30/2013 : jfPasswords/0.8 released
+  - now re-asks for password to show window (more secure)
+
+Nov 21/2013 : jfPasswords/0.7 released
+  - app now includes a tray icon for easy access
+
+Nov 14/2013 : jfPasswords/0.6 released
+  - added CTRL+Z to copy username and other minor bugs
+

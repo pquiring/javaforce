@@ -1,5 +1,10 @@
 What's new...
 
+Dec 30/2019 : JF 18.8.0 released
+  - XML loader now supports UTF-8
+  - jfPasswords/0.21
+    - fix : support UTF-8
+
 Dec 29/2019 : JF 18.7.0 released
   - jfBackup/0.8
     - fix : reset tape used at start of backup
