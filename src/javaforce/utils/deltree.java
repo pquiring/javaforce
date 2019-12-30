@@ -4,7 +4,7 @@ package javaforce.utils;
  *
  * Delete files/folder that are x days old.
  *
- * @author peterq.admin
+ * @author pquiring
  */
 
 import java.io.*;

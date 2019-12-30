@@ -2,7 +2,7 @@ package javaforce.voip;
 
 /** RTSP session
  *
- * @author peterq.admin
+ * @author pquiring
  */
 
 import java.util.*;

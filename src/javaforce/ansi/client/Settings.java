@@ -2,7 +2,7 @@ package javaforce.ansi.client;
 
 /** Telnet Settings
  *
- * @author peterq.admin
+ * @author pquiring
  */
 
 import java.awt.*;

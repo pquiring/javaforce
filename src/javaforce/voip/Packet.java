@@ -2,8 +2,9 @@ package javaforce.voip;
 
 /** SIP/RTSP Packet
  *
- * @author peterq.admin
+ * @author pquiring
  */
+
 public class Packet {
   public byte data[];
   public int offset;
