@@ -60,7 +60,7 @@ depjars : copy dependant jar files into project folder
 install : install files into proper folders (Linux only)
  - for the main JavaForce library you MUST specify -Dbits=32|64
  - requires root access
- - example : "sudo ant install -Dbits=32"
+ - example : "sudo ant install -Dbits=64"
 deb : build Ubuntu deb file (after install)
 rpm : build Fedora rpm file (after install)
  - linux packaging requires files.lst and linux stub (/stubs/linux)
@@ -88,18 +88,17 @@ jre-base : prep JRE for creating native packages (msi, dmg)
 jre-base-desktop : prep JRE with desktop support
 jre-base-javac : prep JRE with java compiler support
 
-Building stubs (native launchers)
----------------------------------
-Building the stubs requires gcc in your path.
-Windows:Please install cygwin and install mingw-gcc 64bit packages.
+Building native launchers
+-------------------------
+Native Launchers are in /stubs
+Windows:Requires Visual C++ in your PATH.
 Linux:Debian/Ubuntu:run 'ant deb' to install required packages.
 Linux:RedHat/Fedora:run 'ant rpm' to install required packages.
 
 Building native library (ffmpeg, OpenGL, Camera)
---------------------------------------------
-Building the native library will requires gcc in your path.
-Windows:Please install cygwin and install mingw-gcc 64bit packages.
-Linux:Requires gcc
+------------------------------------------------
+Native Library is in /native
+See readme.txt in each platform folder for more info.
 
 License
 =======
