@@ -62,6 +62,9 @@ public class Config implements Serializable {
     retention_months = 0;
     cleanPrefix = "CLN";
     cleanSuffix = "CU";
+    email_server = "";
+    email_user = "";
+    email_pass = "";
   }
 
   public static void load() {

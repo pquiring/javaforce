@@ -1265,6 +1265,11 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
+  public String validString(String str) {
+    if (str == null) return "";
+    return str;
+  }
+
   public Panel serverConfig() {
     Panel panel = new Panel();
     Row row = new Row();
@@ -1302,7 +1307,7 @@ public class ConfigService implements WebUIHandler {
         Config.current.retention_months = m;
         Config.save();
         msg.setText("Updated Retention");
-        msg.setColor(Color.black);
+        msg.setColor(Color.green);
       } catch (Exception e) {
         e.printStackTrace();
         msg.setText("Failed to save retention");
@@ -1329,7 +1334,7 @@ public class ConfigService implements WebUIHandler {
         Config.current.cleanSuffix = suf;
         Config.save();
         msg.setText("Updated Cleaning Tape Barcode IDs");
-        msg.setColor(Color.black);
+        msg.setColor(Color.green);
       } catch (Exception e) {
         e.printStackTrace();
         msg.setText("Failed to save Cleaning Tape Barcode IDs");
@@ -1357,7 +1362,7 @@ public class ConfigService implements WebUIHandler {
         Config.current.cleanSuffix = _changer;
         Config.save();
         msg.setText("Updated Device Names");
-        msg.setColor(Color.black);
+        msg.setColor(Color.green);
       } catch (Exception e) {
         e.printStackTrace();
         msg.setText("Failed to save Device Names");
@@ -1374,28 +1379,46 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     row.add(new Label("EMail Notification:"));
+    panel.add(row);
+    row = new Row();
     row.add(new Label("SMTP Server:"));
-    TextField email_server = new TextField(Config.current.email_server);
+    TextField email_server = new TextField(validString(Config.current.email_server));
     row.add(email_server);
     CheckBox email_secure = new CheckBox("Secure");
     email_secure.setSelected(Config.current.email_secure);
     row.add(email_secure);
-    row.add(new Label("Email To:"));
-    TextField emails = new TextField(Config.current.emails);
+    panel.add(row);
+    row = new Row();
+    row.add(new Label(" Email To:"));
+    TextField emails = new TextField(validString(Config.current.emails));
     row.add(emails);
     row.add(new Label("(seperate multiple emails with commas)"));
+    panel.add(row);
+    row = new Row();
+    row.add(new Label("SMTP Auth (optional): User:"));
+    TextField email_user = new TextField(validString(Config.current.email_user));
+    row.add(email_user);
+    row.add(new Label("Pass:"));
+    TextField email_pass = new TextField(validString(Config.current.email_pass));
+    row.add(email_pass);
+    panel.add(row);
+    row = new Row();
     Button email_save = new Button("Save");
     email_save.addClickListener((MouseEvent me, Component c) -> {
       try {
         String _email_server = email_server.getText();
         boolean _email_secure = email_secure.isSelected();
         String _emails = emails.getText();
+        String _email_user = email_user.getText();
+        String _email_pass = email_pass.getText();
         Config.current.email_server = _email_server;
         Config.current.email_secure = _email_secure;
+        Config.current.email_user = _email_user;
+        Config.current.email_pass = _email_pass;
         Config.current.emails = _emails;
         Config.save();
         msg.setText("Updated Notification Settings");
-        msg.setColor(Color.black);
+        msg.setColor(Color.green);
       } catch (Exception e) {
         e.printStackTrace();
         msg.setText("Failed to save Notification Settings");
@@ -1685,7 +1708,7 @@ public class ConfigService implements WebUIHandler {
                 return;
               }
               if (client != null) {
-                msg.setColor(Color.black);
+                msg.setColor(Color.red);
                 msg.setText("Already connecting!  Please refresh your browser.");
                 return;
               }
