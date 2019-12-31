@@ -513,7 +513,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     if (newFrame == null) {
       return;
     }
-    float changed = VideoBuffer.compareFrames16(last_frame, newFrame, decoded_x, decoded_y);
+    float changed = VideoBuffer.compareFrames16(last_frame, newFrame, decoded_x, decoded_y, (short)0b111101111011110);
     if (debug_motion_image && key_frame) {
       System.out.println(camera.name + ":changed=" + changed);
       JFImage img = new JFImage(decoded_x, decoded_y);

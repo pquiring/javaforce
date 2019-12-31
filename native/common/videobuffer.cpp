@@ -46,7 +46,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
 }
 
 JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames16
-  (JNIEnv *e, jclass c, jshortArray img1, jshortArray img2, jint width, jint height)
+  (JNIEnv *e, jclass c, jshortArray img1, jshortArray img2, jint width, jint height, jshort mask)
 {
   if (img1 == NULL) return 100.0f;
   if (img2 == NULL) return 100.0f;
@@ -75,8 +75,8 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames16
   short diff = 0;
   jshort p1, p2;
   for(int i=0;i<size;i++) {
-    p1 = *(pc1++);
-    p2 = *(pc2++);
+    p1 = *(pc1++) & mask;
+    p2 = *(pc2++) & mask;
     if (p1 != p2) diff++;
   }
 
