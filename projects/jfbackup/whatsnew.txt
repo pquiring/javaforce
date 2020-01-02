@@ -1,3 +1,7 @@
+Jan 2/2020 : 0.9 released
+  - new : add email notification
+  - new : empty drive after backup/restore operations
+
 Dec 29/2019 : 0.8 released
   - fix : clear tape in use at start of backup
 

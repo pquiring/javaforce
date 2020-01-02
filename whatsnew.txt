@@ -1,5 +1,11 @@
 What's new...
 
+Jan 2/2020 : JF 18.9.0 released
+  - webui
+    - fix JSON stringify()
+  - jfBackup/0.9
+    - add email notification
+
 Dec 30/2019 : JF 18.8.0 released
   - XML loader now supports UTF-8
   - jfPasswords/0.21
