@@ -45,8 +45,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private long lastPacket;
   private JFProfiler profile_rtph264 = new JFProfiler("   h264", 6);
   private JFProfiler profile_encoder = new JFProfiler("encoder", 2);
-  private short last_frame[];
-  private short decoded_frame[];
+  private int last_frame[];
+  private int decoded_frame[];
   private static final int decoded_x = 320;
   private static final int decoded_y = 200;
   private static final int decoded_xy = 320 * 200;
@@ -507,21 +507,16 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   }
 
   private long last_change_time;
-  private int temp_frame[];
   private int imgcnt;
-  private void detectMotion(short newFrame[], boolean key_frame) {
+  private void detectMotion(int newFrame[], boolean key_frame) {
     if (newFrame == null) {
       return;
     }
-    float changed = VideoBuffer.compareFrames16(last_frame, newFrame, decoded_x, decoded_y, (short)0b111101111011110);
+    float changed = VideoBuffer.compareFrames(last_frame, newFrame, decoded_x, decoded_y);
     if (debug_motion_image && key_frame) {
       System.out.println(camera.name + ":changed=" + changed);
       JFImage img = new JFImage(decoded_x, decoded_y);
-      if (temp_frame == null) {
-        temp_frame = new int[decoded_xy];
-      }
-      VideoBuffer.convertImage16(newFrame, temp_frame, decoded_x, decoded_y);
-      img.putPixels(temp_frame, 0, 0, decoded_x, decoded_y, 0);
+      img.putPixels(newFrame, 0, 0, decoded_x, decoded_y, 0);
       String tmpfile = "temp-" + (imgcnt++) + ".png";
       JFLog.log("Debug:Saving motion image to:" + tmpfile);
       img.savePNG(tmpfile);
@@ -681,7 +676,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     if (!packets_decode.haveCompleteFrame()) return;
     Packet nextPacket = packets_decode.getNextFrame();
-    decoded_frame = decoder.decode16(nextPacket.data, nextPacket.offset, nextPacket.length);
+    decoded_frame = decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
     if (decoded_frame == null) {
       JFLog.log(camera.name + ":Error:newFrame == null:packet.length=" + nextPacket.length);
     }
@@ -697,7 +692,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       JFLog.log(1, camera.name + " : threshold=" + camera.record_motion_threshold + ":after=" + camera.record_motion_after);
       if (width == 0 || height == 0) return;
       if (width == -1 || height == -1) return;
-      last_frame = new short[decoded_xy];
+      last_frame = new int[decoded_xy];
     }
     now = lastPacket;
     if (camera.record_motion) {

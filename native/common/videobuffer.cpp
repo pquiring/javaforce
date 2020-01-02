@@ -1,5 +1,7 @@
+#include <emmintrin.h>
+
 JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
-  (JNIEnv *e, jclass c, jintArray img1, jintArray img2, jint width, jint height, jint mask)
+  (JNIEnv *e, jclass c, jintArray img1, jintArray img2, jint width, jint height)
 {
   if (img1 == NULL) return 100.0f;
   if (img2 == NULL) return 100.0f;
@@ -26,13 +28,21 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
   jint *pc2 = px2;
 
   int diff = 0;
-  jint p1, p2;
+  __m128i p1, p2;
+  p1.m128i_i64[0] = 0;
+  p1.m128i_i64[1] = 0;
+  p2.m128i_i64[0] = 0;
+  p2.m128i_i64[1] = 0;
+  __m128i add;
+  add.m128i_i64[0] = 0;
+  add.m128i_i64[1] = 0;
+  add.m128i_i32[0] = 0x00030303;
   for(int i=0;i<size;i++) {
-    p1 = *(pc1++);
-    p2 = *(pc2++);
-    p1 &= mask;
-    p2 &= mask;
-    if (p1 != p2) diff++;
+    p1.m128i_i32[0] = *(pc1++);
+    p1 = _mm_adds_epu8(p1, add);
+    p2.m128i_i32[0] = *(pc2++);
+    p2 = _mm_adds_epu8(p2, add);
+    if ((p1.m128i_i32[0] & 0x00f8f8f8) != (p2.m128i_i32[0] & 0x00f8f8f8)) diff++;
   }
 
   float fdiff = diff;
@@ -46,7 +56,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
 }
 
 JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames16
-  (JNIEnv *e, jclass c, jshortArray img1, jshortArray img2, jint width, jint height, jshort mask)
+  (JNIEnv *e, jclass c, jshortArray img1, jshortArray img2, jint width, jint height)
 {
   if (img1 == NULL) return 100.0f;
   if (img2 == NULL) return 100.0f;
@@ -73,11 +83,21 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames16
   jshort *pc2 = px2;
 
   short diff = 0;
-  jshort p1, p2;
+  __m128i p1, p2;
+  p1.m128i_i64[0] = 0;
+  p1.m128i_i64[1] = 0;
+  p2.m128i_i64[0] = 0;
+  p2.m128i_i64[1] = 0;
+  __m128i add;
+  add.m128i_i64[0] = 0;
+  add.m128i_i64[1] = 0;
+  add.m128i_i16[0] = 0b10000100001;
   for(int i=0;i<size;i++) {
-    p1 = *(pc1++) & mask;
-    p2 = *(pc2++) & mask;
-    if (p1 != p2) diff++;
+    p1.m128i_i16[0] = *(pc1++);
+    p1 = _mm_adds_epu8(p1, add);
+    p2.m128i_i16[0] = *(pc2++);
+    p2 = _mm_adds_epu8(p2, add);
+    if ((p1.m128i_i16[0] & 0b111001110011100) != (p2.m128i_i16[0] & 0b111001110011100)) diff++;
   }
 
   float fdiff = diff;
