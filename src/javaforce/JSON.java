@@ -202,6 +202,23 @@ public class JSON {
     }
     return str;
   }
+  public static String escape(String in) {
+    if (in == null) return "null";
+    StringBuilder sb = new StringBuilder();
+    char ca[] = in.toCharArray();
+    for(char ch : ca) {
+      if (ch < ' ') {
+        sb.append(String.format("\\u%04x", (int)ch));  //UTF-16
+      } else if (ch == '"') {
+        sb.append("\\\"");
+      } else if (ch == '\\') {
+        sb.append("\\\\");
+      } else {
+        sb.append(ch);
+      }
+    }
+    return sb.toString();
+  }
 /* //remove JSON to XML support for now
   public static XML toXML(Element e) {
     XML xml = new XML();

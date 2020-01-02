@@ -118,7 +118,13 @@ public class WebUIClient {
         case '\r': sb.append("\\r"); break;
         case '\n': sb.append("\\n"); break;
         case '\\': sb.append("\\\\"); break;
-        default: sb.append(ch); break;
+        default:
+          if (ch < ' ') {
+            sb.append(String.format("\\u%04x", (int)ch));
+          } else {
+            sb.append(ch);
+          }
+          break;
       }
     }
     sb.append("\"");

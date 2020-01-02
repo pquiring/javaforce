@@ -7,6 +7,8 @@ package javaforce.webui;
 
 import java.util.*;
 
+import javaforce.*;
+
 public abstract class Container extends Component {
   public void setClient(WebUIClient client) {
     super.setClient(client);
