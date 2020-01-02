@@ -247,6 +247,7 @@ public class SMTP {
         }
       }
       smtp.data(txt);
+      System.out.println("Reply=" + smtp.getLastResponse());
       smtp.disconnect();
     } catch (Exception e) {
       e.printStackTrace();

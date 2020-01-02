@@ -90,6 +90,9 @@ public class RestoreJob extends Thread {
       currentVolume = vol;
       if (!doFolder(vol.root, isVolumeSelected(vol), Config.current.restorePath + "\\" + vol.host + "_" + vol.volume.replace(':', '_'))) return false;
     }
+    if (haveChanger) {
+      emptyDrive();
+    }
     return true;
   }
   private void log(Exception e) {
@@ -241,6 +244,20 @@ public class RestoreJob extends Thread {
       }
     }
     return !needTape;
+  }
+  private boolean emptyDrive() {
+    if (!updateList()) return false;
+    if (emptySlotIdx == -1) {
+      log("Error:No empty slot to move tapes");
+      return false;
+    }
+    if (elements[driveIdx].barcode.equals("<empty>")) return true;
+    log("Move Tape:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
+    if (!changer.move(elements[driveIdx].name, elements[emptySlotIdx].name)) {
+      log("Error:Move Tape failed:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
+      return false;
+    }
+    return true;
   }
   private boolean updateList() {
     elements = changer.list();

@@ -44,15 +44,15 @@ public class BackupJob extends Thread {
       log("Saving catalog...");
       catnfo.name = job.name;
       catnfo.save();
-      catnfo = null;
       cat.haveChanger = haveChanger;
       cat.save();
-      cat = null;
       log("Backup complete at " + ConfigService.toDateTime(System.currentTimeMillis()));
       Status.running = false;
       Status.abort = false;
       Status.desc = "Backup Complete";
       email_notify(true);
+      catnfo = null;
+      cat = null;
     } catch (Exception e) {
       String msg = e.getMessage();
       if (msg == null || !msg.equals("Backup failed")) {
@@ -84,6 +84,7 @@ public class BackupJob extends Thread {
     //create a log file
     JFLog.init(3, Paths.logsPath + "/backup-" + backupid + ".log", true);
     log("Backup job " + job.name + " started at " + ConfigService.toDateTime(backupid));
+    log("Backup id = " + backupid);
     //open devices
     if (!tape.open(Config.current.tapeDevice)) {
       log("Error:Failed to open tape device");
@@ -298,6 +299,7 @@ public class BackupJob extends Thread {
       log("Error:No empty slot to move tapes");
       return false;
     }
+    if (elements[driveIdx].barcode.equals("<empty>")) return true;
     log("Move Tape:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
     if (!changer.move(elements[driveIdx].name, elements[emptySlotIdx].name)) {
       log("Error:Move Tape failed:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
@@ -621,6 +623,7 @@ public class BackupJob extends Thread {
   private void email_notify(boolean success) {
     if (!isValid(Config.current.email_server)) return;
     if (!isValid(Config.current.emails)) return;
+    log("Sending email notification");
     SMTP smtp = new SMTP();
     try {
       int port = -1;
@@ -645,9 +648,24 @@ public class BackupJob extends Thread {
           throw new Exception("SMTP auth failed");
         }
       }
-      smtp.from("jfBackup@" + Config.current.server_host);
-      smtp.to(Config.current.emails);
+      if (isValid(Config.current.email_user)) {
+        smtp.from(Config.current.email_user);
+      } else {
+        smtp.from("jfBackup@" + Config.current.server_host);
+      }
+      String emails[] = Config.current.emails.split(",");
+      for(String email : emails) {
+        smtp.to(email);
+      }
       StringBuilder msg = new StringBuilder();
+      if (isValid(Config.current.email_user)) {
+        msg.append("From: <" + Config.current.email_user + ">\r\n");
+      } else {
+        msg.append("From: <jfBackup@" + Config.current.server_host + ">\r\n");
+      }
+      for(String email : emails) {
+        msg.append("To: <" + email + ">\r\n");
+      }
       msg.append("Subject:Backup ");
       msg.append(job.name);
       msg.append(" ");
@@ -670,11 +688,14 @@ public class BackupJob extends Thread {
       } else {
         msg.append("Backup job failed, see logs for more details.");
       }
-      smtp.data(msg.toString());
+      if (!smtp.data(msg.toString())) {
+        throw new Exception("Send email message failed");
+      }
       smtp.logout();
       smtp.disconnect();
     } catch (Exception e) {
       log("Email notification failed");
+      log("SMTP response=" + smtp.getLastResponse());
       log(e);
     }
   }
