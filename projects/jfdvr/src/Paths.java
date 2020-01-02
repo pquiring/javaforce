@@ -24,7 +24,9 @@ public class Paths {
     new File(logsPath).mkdirs();
     new File(videoPath).mkdirs();
     JFLog.append(logsPath + "/system.log", true);  //0
+    JFLog.setRetention(5);
     JFLog.append(1, logsPath + "/service.log", true);
+    JFLog.setRetention(1, 5);
     JFLog.log("jfDVR starting...");
   }
 }

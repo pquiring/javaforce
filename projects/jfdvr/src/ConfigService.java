@@ -116,19 +116,35 @@ public class ConfigService implements WebUIHandler {
     name.setName("url");
     row.add(url);
 
-    CheckBox record_motion = new CheckBox("Motion Recording");
-    record_motion.setSelected(true);
     row = new Row();
     right.add(row);
+    CheckBox record_motion = new CheckBox("Motion Recording");
+    record_motion.setSelected(true);
     row.add(record_motion);
-    lbl = new Label("Threshold:");
+
+    row = new Row();
+    right.add(row);
+    lbl = new Label("Motion Threshold:");
     row.add(lbl);
-    Slider threshold = new Slider(Slider.HORIZONTAL, 0, 100, 20);
+    Slider threshold = new Slider(Slider.HORIZONTAL, 0, 100, 15);
     row.add(threshold);
-    lbl = new Label("Recording Off Delay (sec):");
+    Label threshold_lbl = new Label("20");
+    threshold.addChangedListener((Component c) -> {
+      threshold_lbl.setText(Integer.toString(threshold.getPos()));
+    });
+    row.add(threshold_lbl);
+
+    row = new Row();
+    right.add(row);
+    lbl = new Label("Motion Recording Off Delay (sec):");
     row.add(lbl);
-    Slider motion_off_delay = new Slider(Slider.HORIZONTAL, 0, 60, 2);
+    Slider motion_off_delay = new Slider(Slider.HORIZONTAL, 0, 60, 5);
     row.add(motion_off_delay);
+    Label motion_off_delay_lbl = new Label("5");
+    motion_off_delay.addChangedListener((Component c) -> {
+      motion_off_delay_lbl.setText(Integer.toString(motion_off_delay.getPos()));
+    });
+    row.add(motion_off_delay_lbl);
 
     row = new Row();
     right.add(row);
@@ -150,9 +166,11 @@ public class ConfigService implements WebUIHandler {
       url.setText(camera.url);
       record_motion.setSelected(camera.record_motion);
       threshold.setPos(camera.record_motion_threshold);
+      threshold_lbl.setText(Integer.toString(camera.record_motion_threshold));
       if (camera.record_motion_after < 0) camera.record_motion_after = 0;
       if (camera.record_motion_after > 60) camera.record_motion_after = 60;
       motion_off_delay.setPos(camera.record_motion_after);
+      motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
       max_file_size.setText(Integer.toString(camera.max_file_size));
       max_folder_size.setText(Integer.toString(camera.max_folder_size));
     });
@@ -193,7 +211,9 @@ public class ConfigService implements WebUIHandler {
       camera.url = _url;
       camera.record_motion = record_motion.isSelected();
       camera.record_motion_threshold = threshold.getPos();
+      threshold_lbl.setText(Integer.toString(camera.record_motion_threshold));
       camera.record_motion_after = motion_off_delay.getPos();
+      motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
       camera.max_file_size = Integer.valueOf(max_file_size.getText());
       if (camera.max_file_size < 10) camera.max_file_size = 10;
       if (camera.max_file_size > 4096) camera.max_file_size = 4096;

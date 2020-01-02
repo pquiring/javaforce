@@ -552,9 +552,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       if (off_delay) {
         end_recording = true;
       }
-      if (frameCount > 200) {
-        end_recording = true;  //test
-      }
     }
   }
 
@@ -632,7 +629,11 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
 
   public void onTeardown(RTSPClient client) {
     //stop RTP stream
-    rtp.stop();
+    try {
+      rtp.stop();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
     rtp = null;
     channel = null;
     if (decoder != null) {
