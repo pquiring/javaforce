@@ -130,7 +130,7 @@ public class RTPH264 extends RTPCodec {
       int realtype = rtp[13] & 0x1f;
       boolean M = (rtp[12] & 0x80) == 0x80;
       if (M && !last) {
-        JFLog.log("Error : H264 : FU-A : M bit set but not last packet");
+        JFLog.log("Error : H264 : FU-A : M bit set but not last packet : seq=" + thisseqnum);
         return null;
       }
       if (first) {
@@ -146,11 +146,11 @@ public class RTPH264 extends RTPCodec {
         lastseqnum = thisseqnum;
       } else {
         if (packet.length == 0) {
-          JFLog.log("Error : H264 : partial packet received before first packet");
+          JFLog.log("Error : H264 : partial packet received before first packet : seq=" + thisseqnum);
           return null;
         }
         if (thisseqnum != lastseqnum + 1) {
-          JFLog.log("Error : H264 : Received FU-A packet out of order, discarding frame.");
+          JFLog.log("Error : H264 : Received FU-A packet out of order, discarding frame : seq=" + thisseqnum);
           packet.length = 0;
           lastseqnum = -1;
           return null;

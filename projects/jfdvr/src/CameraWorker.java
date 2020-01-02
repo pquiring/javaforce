@@ -18,6 +18,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private long max_folder_size;  //in bytes
 
   private final static boolean debug_buffers = false;
+  private final static boolean debug_motion = true;
   private final static boolean debug_motion_image = false;
 
   private RTSPClient client;
@@ -513,13 +514,15 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       return;
     }
     float changed = VideoBuffer.compareFrames(last_frame, newFrame, decoded_x, decoded_y);
-    if (debug_motion_image && key_frame) {
+    if (debug_motion && key_frame) {
       System.out.println(camera.name + ":changed=" + changed);
-      JFImage img = new JFImage(decoded_x, decoded_y);
-      img.putPixels(newFrame, 0, 0, decoded_x, decoded_y, 0);
-      String tmpfile = "temp-" + (imgcnt++) + ".png";
-      JFLog.log("Debug:Saving motion image to:" + tmpfile);
-      img.savePNG(tmpfile);
+      if (debug_motion_image) {
+        JFImage img = new JFImage(decoded_x, decoded_y);
+        img.putPixels(newFrame, 0, 0, decoded_x, decoded_y, 0);
+        String tmpfile = "temp-" + (imgcnt++) + ".png";
+        JFLog.log("Debug:Saving motion image to:" + tmpfile);
+        img.savePNG(tmpfile);
+      }
     }
     System.arraycopy(newFrame, 0, last_frame, 0, decoded_xy);
     if (changed > camera.record_motion_threshold) {
