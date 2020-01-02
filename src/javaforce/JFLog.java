@@ -16,10 +16,13 @@ public class JFLog {
     private long filesize;
     private String filename;
     private boolean enabled = true;
+    private long retention = -1;
+    private ArrayList<String> files = new ArrayList<String>();
   }
   private static HashMap<Integer, LogInstance> list = new HashMap<Integer, LogInstance>();
   private static boolean useTimestamp = false;
   private static long timestampBase;
+  private static final int maxfilesize = 1024 * 1024;
 
   private static class TraceException extends Exception {
     public TraceException(String msg) {
@@ -30,7 +33,7 @@ public class JFLog {
   public static boolean init(int id, String filename, boolean append, PrintStream stdout) {
     LogInstance log = new LogInstance();
     log.stdout = stdout;
-    log.filename = filename;
+    log.filename = filename.replaceAll("\\\\", "/");
     if (filename != null) {
       if (append) {
         File file = new File(filename);
@@ -67,6 +70,18 @@ public class JFLog {
     return init(id, filename, true, stdout ? System.out : null);
   }
 
+  public static void setRetention(int id, int days) {
+    LogInstance log = list.get(id);
+    if (log == null) {
+      return;
+    }
+    log.retention = days;
+  }
+
+  public static void setRetention(int days) {
+    setRetention(0, days);
+  }
+
   public static boolean close(int id) {
     LogInstance log = list.get(id);
     if (log == null) {
@@ -98,6 +113,8 @@ public class JFLog {
     return log(0, msg);
   }
 
+  private static final long ms_per_day = 24 * 60 * 60 * 1000;
+
   public static boolean log(int id, String msg) {
     LogInstance log = list.get(id);
     if (log == null) {
@@ -128,7 +145,7 @@ public class JFLog {
         return false;
       }
       log.filesize += msg.length();
-      if (log.filesize > 1024 * 1024) {
+      if (log.filesize > maxfilesize) {
         log.filesize = 0;
         //start new log file
         Calendar cal = Calendar.getInstance();
@@ -147,6 +164,41 @@ public class JFLog {
         }
         File file = new File(log.filename);
         file.renameTo(new File(tmp));
+        if (log.retention != -1) {
+          File files[] = null;
+          int fidx = log.filename.lastIndexOf('/');
+          if (fidx == -1) {
+            //no path
+            files = new File(".").listFiles(new FilenameFilter() {
+              public boolean accept(File dir, String name) {
+                return (name.startsWith(log.filename));
+              }
+            });
+          } else {
+            String folder = log.filename.substring(0, fidx);
+            String filename = null;
+            if (idx == -1) {
+              filename = log.filename.substring(fidx + 1);
+            } else {
+              filename = log.filename.substring(fidx + 1, idx);
+            }
+            String fn = filename;
+            files = new File(folder).listFiles(new FilenameFilter() {
+              public boolean accept(File dir, String name) {
+                return name.startsWith(fn);
+              }
+            });
+          }
+          if (files != null) {
+            //delete files older than retention
+            long timestamp = System.currentTimeMillis() - (log.retention * ms_per_day);
+            for(File logfile : files) {
+              if (logfile.lastModified() < timestamp) {
+                logfile.delete();
+              }
+            }
+          }
+        }
         try {
           log.fos = new FileOutputStream(log.filename);
         } catch (Exception e2) {
