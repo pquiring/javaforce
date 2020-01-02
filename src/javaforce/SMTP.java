@@ -188,6 +188,11 @@ public class SMTP {
     }
   }
 
+  public String getLastResponse() {
+    if (response == null) return null;
+    return response[response.length - 1];
+  }
+
   private static String extractEmail(String in) {
     int i1 = in.indexOf('<');
     int i2 = in.indexOf('>');
