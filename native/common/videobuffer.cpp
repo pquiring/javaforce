@@ -36,13 +36,13 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
   __m128i add;
   add.m128i_i64[0] = 0;
   add.m128i_i64[1] = 0;
-  add.m128i_i32[0] = 0x00030303;
+  add.m128i_i32[0] = 0x00080808;
   for(int i=0;i<size;i++) {
     p1.m128i_i32[0] = *(pc1++);
     p1 = _mm_adds_epu8(p1, add);
     p2.m128i_i32[0] = *(pc2++);
     p2 = _mm_adds_epu8(p2, add);
-    if ((p1.m128i_i32[0] & 0x00f8f8f8) != (p2.m128i_i32[0] & 0x00f8f8f8)) diff++;
+    if ((p1.m128i_i32[0] & 0x00f0f0f0) != (p2.m128i_i32[0] & 0x00f0f0f0)) diff++;
   }
 
   float fdiff = diff;

@@ -19,7 +19,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
 
   private final static boolean debug_buffers = false;
   private final static boolean debug_motion = true;
-  private final static boolean debug_motion_image = false;
+  private final static boolean debug_motion_image = true;
 
   private RTSPClient client;
   private SDP sdp;
@@ -518,6 +518,23 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       System.out.println(camera.name + ":changed=" + changed);
       if (debug_motion_image) {
         JFImage img = new JFImage(decoded_x, decoded_y);
+        int size = decoded_x * decoded_y;
+        int px,r,g,b;
+        for(int i=0;i<size;i++) {
+          //_mm_adds_epu8()
+          px = newFrame[i];
+          r = (px & 0xff0000) >> 16;
+          g = (px & 0xff00) >> 8;
+          b = (px & 0xff);
+          r += 8;
+          if (r > 255) r = 255;
+          g += 8;
+          if (g > 255) g = 255;
+          b += 8;
+          if (b > 255) b = 255;
+          px = 0xff000000 + (r << 16) + (g << 8) + b;
+          newFrame[i] = px & 0xfff0f0f0;
+        }
         img.putPixels(newFrame, 0, 0, decoded_x, decoded_y, 0);
         String tmpfile = "temp-" + (imgcnt++) + ".png";
         JFLog.log("Debug:Saving motion image to:" + tmpfile);
