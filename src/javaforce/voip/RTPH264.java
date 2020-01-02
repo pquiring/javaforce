@@ -149,7 +149,7 @@ public class RTPH264 extends RTPCodec {
           JFLog.log("Error : H264 : partial packet received before first packet : seq=" + thisseqnum);
           return null;
         }
-        if (thisseqnum != lastseqnum + 1) {
+        if (thisseqnum != nextseqnum()) {
           JFLog.log("Error : H264 : Received FU-A packet out of order, discarding frame : seq=" + thisseqnum);
           packet.length = 0;
           lastseqnum = -1;
@@ -172,6 +172,11 @@ public class RTPH264 extends RTPCodec {
       return null;
     }
     return null;
+  }
+
+  private int nextseqnum() {
+    if (lastseqnum == 65535) return 0;
+    return lastseqnum + 1;
   }
 
   //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) = 1446 bytes payload per packet
