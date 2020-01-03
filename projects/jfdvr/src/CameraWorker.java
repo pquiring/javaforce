@@ -390,6 +390,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   public void cancel(boolean restart) {
     if (client != null) {
       client.teardown(url);
+      client.uninit();
       client = null;
     }
     if (!restart) {
@@ -397,9 +398,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
   }
   public void restart() {
-    while (rtp != null) {
-      JF.sleep(100);
-    }
+    JF.sleep(500);
     connect();
   }
   public boolean connect() {
