@@ -167,15 +167,35 @@ public class S7Packet {
       data.data_type = S7Types.BYTE;
       data.length = Short.valueOf(addr.substring(idx+6));
     }
+    idx = addr.indexOf(" CHAR ");
+    if (idx != -1) {
+      data.data_type = S7Types.CHAR;
+      data.length = Short.valueOf(addr.substring(idx+6));
+    }
     idx = addr.indexOf(" WORD ");
     if (idx != -1) {
       data.data_type = S7Types.WORD;
       data.length = Short.valueOf(addr.substring(idx+6));
     }
+    idx = addr.indexOf(" INT ");
+    if (idx != -1) {
+      data.data_type = S7Types.INT;
+      data.length = Short.valueOf(addr.substring(idx+5));
+    }
     idx = addr.indexOf(" DWORD ");
     if (idx != -1) {
       data.data_type = S7Types.DWORD;
       data.length = Short.valueOf(addr.substring(idx+7));
+    }
+    idx = addr.indexOf(" DINT ");
+    if (idx != -1) {
+      data.data_type = S7Types.DINT;
+      data.length = Short.valueOf(addr.substring(idx+6));
+    }
+    idx = addr.indexOf(" REAL ");
+    if (idx != -1) {
+      data.data_type = S7Types.REAL;
+      data.length = Short.valueOf(addr.substring(idx+6));
     }
     return data;
   }
