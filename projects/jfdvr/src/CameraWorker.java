@@ -180,7 +180,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     public void add(Packet packet) {
       if (!calcOffset(packet.length)) return;
       try {
-        System.arraycopy(packet.data, 0, data, nextOffset, packet.length);
+        System.arraycopy(packet.data, packet.offset, data, nextOffset, packet.length);
       } catch (Exception e) {
         JFLog.log(e);
         System.out.println("packet:" + packet.length);
