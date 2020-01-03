@@ -1187,7 +1187,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
     return NULL;
   }
   if (got_frame == 0) {
-    printf("Error:MediaVideoDecoder::decode():no frame!\n");
+//    printf("Error:MediaVideoDecoder::decode():no frame!\n");
     return NULL;
   }
 
@@ -1215,7 +1215,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
   ctx->rgb_video_dst_data[0] = (uint8_t*)jvideo_ptr;
-  ctx->rgb_video_dst_linesize[0] = ctx->width * 2;
+  ctx->rgb_video_dst_linesize[0] = ctx->width * 4;
   (*_sws_scale)(ctx->sws_ctx, ctx->frame->data, ctx->frame->linesize, 0, ctx->video_codec_ctx->height
     , ctx->rgb_video_dst_data, ctx->rgb_video_dst_linesize);
 
@@ -1223,8 +1223,6 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
 
   return ctx->jvideo;
 }
-
-static int avg;  //test
 
 JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
   (JNIEnv *e, jobject c, jbyteArray data, jint offset, jint length)
@@ -1234,14 +1232,6 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
   jboolean isCopy;
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-
-//  touch input data (debug)
-  uint8_t *test = dataptr + offset;
-  int _avg = avg;
-  for(int a=0;a<length;a++) {
-//    _avg += *(test++);
-  }
-  avg = _avg;
 
   ctx->pkt->size = length;
   ctx->pkt->data = dataptr + offset;
