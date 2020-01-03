@@ -224,7 +224,7 @@ public class ConfigService implements WebUIHandler {
         DVRService.dvrService.addCamera(camera);
       } else {
         DVRService.dvrService.startCamera(camera);
-        list.update(idx, _name);
+//        list.update(idx, _name);
       }
       Config.current.save();
       button.client.refresh();  //list not working yet

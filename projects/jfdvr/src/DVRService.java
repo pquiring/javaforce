@@ -82,7 +82,9 @@ public class DVRService extends Thread {
   public void startCamera(Camera camera) {
     int cnt = list.size();
     for(int a=0;a<cnt;a++) {
-      try {list.get(a).restart();} catch (Exception e) {JFLog.log(e);}
+      if (list.get(a).camera == camera) {
+        try {list.get(a).restart();} catch (Exception e) {JFLog.log(e);}
+      }
     }
   }
 }
