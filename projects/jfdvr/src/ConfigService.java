@@ -205,7 +205,7 @@ public class ConfigService implements WebUIHandler {
       } else {
         //update existing camera
         camera = Config.current.cameras[idx];
-        DVRService.dvrService.stopCamera(camera);
+        DVRService.dvrService.stopCamera(camera, true);
       }
       camera.name = _name;
       camera.url = _url;
@@ -240,7 +240,7 @@ public class ConfigService implements WebUIHandler {
       int idx = list.getSelectedIndex();
       if (idx < 0 || idx >= Config.current.cameras.length) return;
       Camera camera = Config.current.cameras[idx];
-      DVRService.dvrService.stopCamera(camera);
+      DVRService.dvrService.stopCamera(camera, false);
       DVRService.dvrService.removeCamera(camera);
       Config.current.removeCamera(camera);
       Config.current.save();

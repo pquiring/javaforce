@@ -70,11 +70,11 @@ public class DVRService extends Thread {
     }
   }
 
-  public void stopCamera(Camera camera) {
+  public void stopCamera(Camera camera, boolean restart) {
     int cnt = list.size();
     for(int a=0;a<cnt;a++) {
       if (list.get(a).camera == camera) {
-        try {list.get(a).cancel(false);} catch (Exception e) {JFLog.log(e);}
+        try {list.get(a).cancel(restart);} catch (Exception e) {JFLog.log(e);}
       }
     }
   }

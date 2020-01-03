@@ -392,19 +392,14 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       client.teardown(url);
       client = null;
     }
-    if (rtp != null) {
-      rtp.stop();
-      rtp = null;
-    }
-    if (channel != null) {
-      channel = null;
-    }
     if (!restart) {
       active = false;
     }
   }
   public void restart() {
-    cancel(true);
+    while (rtp != null) {
+      JF.sleep(100);
+    }
     connect();
   }
   public boolean connect() {
@@ -448,6 +443,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     remotehost = url;
     this.url = "rtsp://" + remotehost + ":" + remoteport + uri;
+    JFLog.log(camera.name + ":connecting");
     int localport = getLocalPort();
     client.init(remotehost, remoteport, localport, this, TransportType.TCP);
     if (user != null && pass != null) client.setUserPass(user, pass);
@@ -635,12 +631,10 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
 
   public void onTeardown(RTSPClient client) {
     //stop RTP stream
-    try {
+    if (rtp != null) {
       rtp.stop();
-    } catch (Exception e) {
-      JFLog.log(e);
+      rtp = null;
     }
-    rtp = null;
     channel = null;
     if (decoder != null) {
       decoder.stop();
