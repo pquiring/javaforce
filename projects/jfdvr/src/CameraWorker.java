@@ -20,6 +20,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private final static boolean debug_buffers = false;
   private final static boolean debug_motion = true;
   private final static boolean debug_motion_image = true;
+  private final static boolean debug_short_clips = true;
 
   private RTSPClient client;
   private SDP sdp;
@@ -552,6 +553,11 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       if (off_delay) {
         end_recording = true;
       }
+    }
+    if (debug_short_clips && recording && frameCount > 200) {
+      System.out.println("Debug:end recording @ 200 frames");
+      end_recording = true;
+      frameCount = 0;
     }
   }
 
