@@ -7,7 +7,6 @@ package javaforce.utils;
 
 import java.io.*;
 import java.util.*;
-import javaforce.JF;
 
 import javaforce.media.*;
 
@@ -22,11 +21,12 @@ public class TestMedia implements MediaIO {
     }
     switch (args[0]) {
       case "decoder": decoder();
-      case "encoder": encoder();
+      case "encoder": encoder(true);
       default: usage();
     }
   }
   public static void decoder() {
+    encoder(false);  //create test.mp4
     while (true) {
       MediaDecoder decoder = new MediaDecoder();
       //...
@@ -39,30 +39,42 @@ public class TestMedia implements MediaIO {
       px[a] = r.nextInt() | 0xff000000;
     }
   }
-  public static void encoder() {
+  public static void random(short sams[]) {
+    Random r = new Random();
+    int len = sams.length;
+    for(int a=0;a<len;a++) {
+      sams[a] = (short)(r.nextInt(65536) - 32768);
+    }
+  }
+  public static void encoder(boolean loop) {
     TestMedia media = new TestMedia();
     int px[] = new int[640*480];
-    while (true) {
+    short sams[] = new short[7350];
+    int i = 0;
+    do {
       media.size = 0;
       MediaEncoder encoder = new MediaEncoder();
-      media.create();
+      media.create(i++);
+      if (i == 10) i = 0;
       encoder.start(media, 640, 480, 24, 2, 44100, "mp4", true, false);
-      for(int a=0;a<100;a++) {
+      for(int a=0;a<24 * 4;a++) {  //4 seconds
         random(px);
+        random(sams);
         encoder.addVideo(px);
+        encoder.addAudio(sams);
       }
       encoder.stop();
       media.close();
       System.out.println("size=" + media.size);
       System.gc();
-    }
+    } while (loop);
   }
 
   public RandomAccessFile raf;
 
-  public void create() {
+  public void create(int i) {
     try {
-      raf = new RandomAccessFile("test.mp4", "rw");
+      raf = new RandomAccessFile("test-" + i + ".mp4", "rw");
     } catch (Exception e) {
       e.printStackTrace();
     }

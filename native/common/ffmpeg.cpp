@@ -185,18 +185,6 @@ static void register_vpx() {
   (*_av_register_output_format)(vpx);
 }
 
-//AVPicture was deprecated in ffmpeg/3.0 - use AVFrame instead - this function does the same as avpicture_alloc() except using AVFrame
-int _avframe_alloc(AVFrame *picture, enum AVPixelFormat pix_fmt, int width, int height)
-{
-  int ret = (*_av_image_alloc)(picture->data, picture->linesize, width, height, pix_fmt, 1);
-  if (ret < 0) {
-    memset(picture, 0, sizeof(AVFrame));
-    return ret;
-  }
-
-  return 0;
-}
-
 #ifndef _WIN32
 int GetLastError() {
   return errno;
@@ -488,7 +476,7 @@ struct FFContext {
   int width, height, fps;
   int chs, freq;
   AVFrame *audio_frame, *video_frame;
-  AVFrame *src_pic, *dst_pic;
+  AVFrame *src_pic;
   jboolean audio_frame_size_variable;
   jboolean video_delay;
   int audio_frame_size;
@@ -608,7 +596,7 @@ static jlong seek_packet(FFContext *ctx, jlong offset, int how) {
 //decoder codebase
 
 //returns stream idx >= 0
-static int open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, int type)
+static int decoder_open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, int type)
 {
   int ret;
   int stream_idx;
@@ -631,9 +619,9 @@ static int open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, int type
   return stream_idx;
 }
 
-static jboolean open_codecs(FFContext *ctx, int new_width, int new_height, int new_chs, int new_freq) {
+static jboolean decoder_open_codecs(FFContext *ctx, int new_width, int new_height, int new_chs, int new_freq) {
   AVCodecContext *codec_ctx;
-  if ((ctx->video_stream_idx = open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_VIDEO)) >= 0) {
+  if ((ctx->video_stream_idx = decoder_open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_VIDEO)) >= 0) {
     ctx->video_stream = (AVStream*)ctx->fmt_ctx->streams[ctx->video_stream_idx];
     ctx->video_codec_ctx = ctx->codec_ctx;
     if (new_width == -1) new_width = ctx->video_codec_ctx->width;
@@ -658,7 +646,7 @@ static jboolean open_codecs(FFContext *ctx, int new_width, int new_height, int n
       , SWS_BILINEAR, NULL, NULL, NULL);
   }
 
-  if ((ctx->audio_stream_idx = open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_AUDIO)) >= 0) {
+  if ((ctx->audio_stream_idx = decoder_open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_AUDIO)) >= 0) {
     ctx->audio_stream = (AVStream*)ctx->fmt_ctx->streams[ctx->audio_stream_idx];
     ctx->audio_codec_ctx = ctx->codec_ctx;
     //create audio conversion context
@@ -754,7 +742,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
     return JNI_FALSE;
   }
   (*_av_dump_format)(ctx->fmt_ctx, 0, "memory_io", 0);
-  return open_codecs(ctx, new_width, new_height, new_chs, new_freq);
+  return decoder_open_codecs(ctx, new_width, new_height, new_chs, new_freq);
 }
 
 /**
@@ -796,7 +784,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_startFile
     printf("avformat_find_stream_info() failed : %d\n", res);
     return JNI_FALSE;
   }
-  return open_codecs(ctx, new_width, new_height, new_chs, new_freq);
+  return decoder_open_codecs(ctx, new_width, new_height, new_chs, new_freq);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
@@ -815,6 +803,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
   }
   if (ctx->frame != NULL) {
     (*_av_frame_free)((void**)&ctx->frame);
+    ctx->frame = NULL;
   }
   if (ctx->video_dst_data[0] != NULL) {
     (*_av_free)(ctx->video_dst_data[0]);
@@ -1141,6 +1130,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
   FFContext *ctx = getFFContext(e,c);
   if (ctx->frame != NULL) {
     (*_av_frame_free)((void**)&ctx->frame);
+    ctx->frame = NULL;
   }
   if (ctx->video_codec_ctx != NULL) {
     (*_avcodec_close)(ctx->video_codec_ctx);
@@ -1311,7 +1301,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_getFrameRate
 
 //encoder codebase
 
-static jboolean add_stream(FFContext *ctx, int codec_id) {
+static jboolean encoder_add_stream(FFContext *ctx, int codec_id) {
 //  printf("add_stream(codec_id=0x%x)\r\n", codec_id);
   AVCodecContext *codec_ctx;
   AVStream *stream;
@@ -1415,38 +1405,36 @@ static jboolean add_stream(FFContext *ctx, int codec_id) {
   return JNI_TRUE;
 }
 
-static jboolean open_video(FFContext *ctx) {
+static jboolean encoder_init_video(FFContext *ctx) {
   int ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
-  if (ret < 0) return JNI_FALSE;
-  ctx->video_frame = (*_av_frame_alloc)();
-  if (ctx->video_frame == NULL) return JNI_FALSE;
-  ctx->dst_pic = (*_av_frame_alloc)();
-  ret = _avframe_alloc(ctx->dst_pic, ctx->video_codec_ctx->pix_fmt, ctx->video_codec_ctx->width, ctx->video_codec_ctx->height);
   if (ret < 0) return JNI_FALSE;
   if (ctx->video_codec_ctx->pix_fmt != AV_PIX_FMT_BGRA) {
     ctx->src_pic = (*_av_frame_alloc)();
-    ret = _avframe_alloc(ctx->src_pic, AV_PIX_FMT_BGRA, ctx->video_codec_ctx->width, ctx->video_codec_ctx->height);
-    if (ret < 0) return JNI_FALSE;
+    ctx->src_pic->width = ctx->width;
+    ctx->src_pic->height = ctx->height;
+    ctx->src_pic->format = AV_PIX_FMT_BGRA;
+    ret = (*_av_frame_get_buffer)(ctx->src_pic, 32);
+    if (ret < 0) {
+      printf("av_frame_get_buffer() failed! %d\n", ret);
+      return JNI_FALSE;
+    }
     ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, AV_PIX_FMT_BGRA
       , ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt, SWS_BICUBIC, NULL, NULL, NULL);
   }
   //get caps
   ctx->video_delay = (ctx->video_codec->capabilities & AV_CODEC_CAP_DELAY) != 0;
-  //set width/height/format
+  ctx->video_frame = (*_av_frame_alloc)();
+  if (ctx->video_frame == NULL) {
+    printf("av_frame_alloc() failed!\n");
+    return JNI_FALSE;
+  }
   ctx->video_frame->width = ctx->width;
   ctx->video_frame->height = ctx->height;
   ctx->video_frame->format = ctx->video_codec_ctx->pix_fmt;
-/*
   ret = (*_av_frame_get_buffer)(ctx->video_frame, 32);
   if (ret < 0) {
     printf("av_frame_get_buffer() failed! %d\n", ret);
     return JNI_FALSE;
-  }
-*/
-  //copy data/linesize pointers from dst_pic to frame
-  for(int a=0;a<8;a++) {
-    ctx->video_frame->data[a] = ctx->dst_pic->data[a];
-    ctx->video_frame->linesize[a] = ctx->dst_pic->linesize[a];
   }
   //copy params
   ret = (*_avcodec_parameters_from_context)(ctx->video_stream->codecpar, ctx->video_codec_ctx);
@@ -1457,10 +1445,10 @@ static jboolean open_video(FFContext *ctx) {
   return JNI_TRUE;
 }
 
-static jboolean open_audio(FFContext *ctx) {
+static jboolean encoder_init_audio(FFContext *ctx) {
   //audio_codec_ctx = AVCodecContext
   //audio_codec = AVCodec
-  printf("open_audio(type=0x%x,ctx.id=0x%x,id=0x%x)\r\n", ctx->audio_codec_ctx->codec_type, ctx->audio_codec_ctx->codec_id, ctx->audio_codec->id);
+  printf("encoder_init_audio(type=0x%x,ctx.id=0x%x,id=0x%x)\r\n", ctx->audio_codec_ctx->codec_type, ctx->audio_codec_ctx->codec_id, ctx->audio_codec->id);
   int ret = (*_avcodec_open2)(ctx->audio_codec_ctx, ctx->audio_codec, NULL);
   if (ret < 0) {
     printf("avcodec_open2() failed!\n");
@@ -1564,26 +1552,26 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
   ctx->fmt_ctx->pb = ctx->io_ctx;
   ctx->out_fmt = ctx->fmt_ctx->oformat;
   if ((ctx->out_fmt->video_codec != AV_CODEC_ID_NONE) && doVideo) {
-    if (!add_stream(ctx, ctx->out_fmt->video_codec)) {
-      printf("add_stream:video failed!\n");
+    if (!encoder_add_stream(ctx, ctx->out_fmt->video_codec)) {
+      printf("encoder_add_stream:video failed!\n");
       return JNI_FALSE;
     }
   }
   if ((ctx->out_fmt->audio_codec != AV_CODEC_ID_NONE) && doAudio) {
-    if (!add_stream(ctx, ctx->out_fmt->audio_codec)) {
-      printf("add_stream:audio failed!\n");
+    if (!encoder_add_stream(ctx, ctx->out_fmt->audio_codec)) {
+      printf("encoder_add_stream:audio failed!\n");
       return JNI_FALSE;
     }
   }
   if (ctx->video_stream != NULL) {
-    if (!open_video(ctx)) {
-      printf("open_video failed!\n");
+    if (!encoder_init_video(ctx)) {
+      printf("encoder_init_video failed!\n");
       return JNI_FALSE;
     }
   }
   if (ctx->audio_stream != NULL) {
-    if (!open_audio(ctx)) {
-      printf("open_audio failed!\n");
+    if (!encoder_init_audio(ctx)) {
+      printf("encoder_init_audio failed!\n");
       return JNI_FALSE;
     }
   }
@@ -1642,7 +1630,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
   return ret;
 }
 
-static jboolean addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
+static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
 {
   int nb_samples = length / ctx->chs;
   int buffer_size = (*_av_samples_get_buffer_size)(NULL, ctx->chs, nb_samples, AV_SAMPLE_FMT_S16, 0);
@@ -1713,7 +1701,7 @@ static jboolean addAudioFrame(FFContext *ctx, short *sams, int offset, int lengt
   return ret == 0;
 }
 
-static jboolean addAudio(FFContext *ctx, short *sams, int offset, int length) {
+static jboolean encoder_addAudio(FFContext *ctx, short *sams, int offset, int length) {
   jboolean ok = JNI_TRUE;
 
   int frame_size = length;
@@ -1727,7 +1715,7 @@ static jboolean addAudio(FFContext *ctx, short *sams, int offset, int length) {
       memcpy(ctx->audio_buffer + ctx->audio_buffer_size, sams + offset, size * 2);
       ctx->audio_buffer_size += size;
       if (ctx->audio_buffer_size < ctx->audio_frame_size) return JNI_TRUE;  //frame still not full
-      addAudioFrame(ctx, ctx->audio_buffer, 0, ctx->audio_buffer_size);
+      encoder_addAudioFrame(ctx, ctx->audio_buffer, 0, ctx->audio_buffer_size);
       ctx->audio_buffer_size = 0;
       offset += size;
       length -= size;
@@ -1744,7 +1732,7 @@ static jboolean addAudio(FFContext *ctx, short *sams, int offset, int length) {
       ctx->audio_buffer_size = size;
       return JNI_TRUE;
     }
-    if (!addAudioFrame(ctx, sams, offset, size)) {
+    if (!encoder_addAudioFrame(ctx, sams, offset, size)) {
       ok = JNI_FALSE;
       break;
     }
@@ -1766,28 +1754,27 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudio
   jshort* sams_ptr = (jshort*)e->GetPrimitiveArrayCritical(sams, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-  jboolean ok = addAudio(ctx, sams_ptr, offset, length);
+  jboolean ok = encoder_addAudio(ctx, sams_ptr, offset, length);
 
   e->ReleasePrimitiveArrayCritical(sams, sams_ptr, JNI_ABORT);
 
   return ok;
 }
 
-static jboolean addVideo(FFContext *ctx, int *px)
+static jboolean encoder_addVideo(FFContext *ctx, int *px)
 {
   int length = ctx->width * ctx->height * 4;
   if (ctx->video_codec_ctx->pix_fmt != AV_PIX_FMT_BGRA) {
     //copy px -> ctx->src_pic->data[0];
     memcpy(ctx->src_pic->data[0], px, length);
     (*_sws_scale)(ctx->sws_ctx, ctx->src_pic->data, ctx->src_pic->linesize, 0, ctx->video_codec_ctx->height
-      , ctx->dst_pic->data, ctx->dst_pic->linesize);
+      , ctx->video_frame->data, ctx->video_frame->linesize);
   } else {
-    //copy px -> ctx->dst_pic->data[0];
-    memcpy(ctx->dst_pic->data[0], px, length);
+    //copy px -> ctx->video_frame->data[0];
+    memcpy(ctx->video_frame->data[0], px, length);
   }
   AVPacket *pkt = AVPacket_New();
   (*_av_init_packet)(pkt);
-
   int got_frame = 0;
   ctx->video_frame->pts = ctx->video_pts;
   int ret = (*_avcodec_encode_video2)(ctx->video_codec_ctx, pkt, ctx->video_frame, &got_frame);
@@ -1795,7 +1782,6 @@ static jboolean addVideo(FFContext *ctx, int *px)
     printf("avcodec_encode_video2() failed!\n");
     return JNI_FALSE;
   }
-
 /*
   printf("pts=%lld dts=%lld data=%p size=%d flags=%x side_data=%p, duration=%lld pos=%lld\n"
     ,pkt->pts,pkt->dts,pkt->data,pkt->size,pkt->flags,pkt->side_data,pkt->duration,pkt->pos
@@ -1839,14 +1825,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideo
   jint *px_ptr = (jint*)e->GetPrimitiveArrayCritical(px, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-  jboolean ok = addVideo(ctx, (int*)px_ptr);
+  jboolean ok = encoder_addVideo(ctx, (int*)px_ptr);
 
   e->ReleasePrimitiveArrayCritical(px, px_ptr, JNI_ABORT);
 
   return ok;
 }
 
-static jboolean addVideoEncoded(FFContext *ctx, jbyte* data, jint size, jboolean key_frame) {
+static jboolean encoder_addVideoEncoded(FFContext *ctx, jbyte* data, jint size, jboolean key_frame) {
   AVPacket *pkt = AVPacket_New();
   (*_av_init_packet)(pkt);
   pkt->data = (uint8_t*)data;
@@ -1892,7 +1878,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideoEncoded
   jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-  jboolean ok = addVideoEncoded(ctx, ba_ptr + offset, length, key_frame);
+  jboolean ok = encoder_addVideoEncoded(ctx, ba_ptr + offset, length, key_frame);
 
   e->ReleasePrimitiveArrayCritical(ba, ba_ptr, JNI_ABORT);
 
@@ -1907,7 +1893,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaEncoder_getAudioFramesize
   return ctx->audio_codec_ctx->frame_size;
 }
 
-static jboolean flush(FFContext *ctx) {
+static jboolean encoder_flush(FFContext *ctx) {
   if (ctx->audio_frame == NULL) return JNI_FALSE;
   AVPacket *pkt = AVPacket_New();
   (*_av_init_packet)(pkt);
@@ -1933,7 +1919,7 @@ static jboolean flush(FFContext *ctx) {
 static void encoder_stop(FFContext *ctx)
 {
   //flush audio encoder
-  while (flush(ctx)) {}
+  while (encoder_flush(ctx)) {}
   int ret = (*_av_write_trailer)(ctx->fmt_ctx);
   if (ret < 0) {
     printf("av_write_trailer() failed! %d\n", ret);
@@ -1971,12 +1957,8 @@ static void encoder_stop(FFContext *ctx)
     ctx->fmt_ctx = NULL;
   }
   if (ctx->src_pic != NULL) {
-    (*_av_freep)((void**)&ctx->src_pic->data[0]);
     (*_av_frame_free)((void**)&ctx->src_pic);
-  }
-  if (ctx->dst_pic != NULL) {
-    (*_av_freep)((void**)&ctx->dst_pic->data[0]);
-    (*_av_frame_free)((void**)&ctx->dst_pic);
+    ctx->src_pic = NULL;
   }
   if (ctx->sws_ctx != NULL) {
     (*_sws_freeContext)(ctx->sws_ctx);
