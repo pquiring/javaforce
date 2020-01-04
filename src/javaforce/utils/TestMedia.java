@@ -28,8 +28,20 @@ public class TestMedia implements MediaIO {
   public static void decoder() {
     encoder(false);  //create test.mp4
     while (true) {
+      TestMedia media = new TestMedia();
       MediaDecoder decoder = new MediaDecoder();
-      //...
+      media.open("test-0.mp4");
+      decoder.start(media, 640, 480, 2, 44100, true);
+      do {
+        int px[] = decoder.getVideo();
+        if (px == null) break;
+        System.out.println("video=" + px.length);
+        short sams[] = decoder.getAudio();
+        if (sams == null) break;
+        System.out.println("audio=" + sams.length);
+      } while (true);
+      decoder.stop();
+      media.close();
     }
   }
   public static void random(int px[]) {
@@ -121,6 +133,16 @@ public class TestMedia implements MediaIO {
 
   public long seek(MediaCoder coder, long pos, int how) {
     try {
+      switch (how) {
+        case MediaCoder.SEEK_SET:
+          break;
+        case MediaCoder.SEEK_CUR:
+          pos += raf.getFilePointer();
+          break;
+        case MediaCoder.SEEK_END:
+          pos += raf.length();
+          break;
+      }
       raf.seek(pos);
       return pos;
     } catch (Exception e) {

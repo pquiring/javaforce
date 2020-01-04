@@ -41,8 +41,8 @@ int (*_avcodec_decode_audio4)(AVCodecContext *avctx,AVFrame *frame,int* got_fram
 int (*_avcodec_open2)(AVCodecContext *avctx,AVCodec *codec,void* options);
 AVCodecContext* (*_avcodec_alloc_context3)(AVCodec *codec);
 void (*_av_init_packet)(AVPacket *pkt);
-void (*_av_free_packet)(AVPacket *pkt);  //free data inside packet (not packet itself) [DEPRECATED]
 void (*_av_packet_free)(AVPacket **pkt);
+void (*_av_packet_free_side_data)(AVPacket *pkt);
 //encoding
 AVCodec* (*_avcodec_find_encoder)(int codec_id);
 //int (*_avpicture_alloc)(AVPicture *pic, int pix_fmt, int width, int height);
@@ -120,6 +120,7 @@ int (*_av_compare_ts)(int64_t ts_a, AVRational tb_a, int64_t ts_b, AVRational tb
 int (*_av_frame_get_buffer)(AVFrame *frame, int align);
 AVFrame* (*_av_frame_alloc)();
 void (*_av_frame_free)(void** frame);
+void (*_av_buffer_unref)(AVBufferRef **buf);
 
 //swresample functions (ffmpeg.org)
 void* (*_swr_alloc)();
@@ -154,13 +155,6 @@ static AVOutputFormat *AVOutputFormat_New() {
   return ofmt;
 }
 
-/*
-static AVPicture *AVPicture_New() {
-  AVPicture *pic = (AVPicture*)(*_av_mallocz)(sizeof(AVPicture));
-  return pic;
-}
-*/
-
 static AVOutputFormat *vpx = NULL;
 
 static void register_vpx() {
@@ -183,6 +177,16 @@ static void register_vpx() {
   vpx->write_packet = h264->write_packet;
   vpx->flags = h264->flags;
   (*_av_register_output_format)(vpx);
+}
+
+//av_free_packet is deprecated : easy to implement
+static void _av_free_packet(AVPacket *pkt) {
+  if (pkt) {
+    if (pkt->buf) (*_av_buffer_unref)(&pkt->buf);
+    pkt->data = NULL;
+    pkt->size = 0;
+    (*_av_packet_free_side_data)(pkt);
+  }
 }
 
 #ifndef _WIN32
@@ -256,8 +260,8 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(codec, (void**)&_avcodec_open2, "avcodec_open2");
   getFunction(codec, (void**)&_avcodec_alloc_context3, "avcodec_alloc_context3");
   getFunction(codec, (void**)&_av_init_packet, "av_init_packet");
-  getFunction(codec, (void**)&_av_free_packet, "av_free_packet");
   getFunction(codec, (void**)&_av_packet_free, "av_packet_free");
+  getFunction(codec, (void**)&_av_packet_free_side_data, "av_packet_free_side_data");
   getFunction(codec, (void**)&_avcodec_find_encoder, "avcodec_find_encoder");
 //  getFunction(codec, (void**)&_avpicture_alloc, "avpicture_alloc");
 //  getFunction(codec, (void**)&_avpicture_free, "avpicture_free");
@@ -327,6 +331,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(util, (void**)&_av_frame_get_buffer, "av_frame_get_buffer");
   getFunction(util, (void**)&_av_frame_alloc, "av_frame_alloc");
   getFunction(util, (void**)&_av_frame_free, "av_frame_free");
+  getFunction(util, (void**)&_av_buffer_unref, "av_buffer_unref");
 
   getFunction(scale, (void**)&_sws_getContext, "sws_getContext");
   getFunction(scale, (void**)&_sws_scale, "sws_scale");
@@ -864,7 +869,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
       printf("Error:%d\n", ret);
       return NULL_FRAME;
     }
-    (*_av_free_packet)(ctx->pkt);
+    _av_free_packet(ctx->pkt);
     ctx->pkt_size_left = 0;  //use entire packet
     if (got_frame == 0) return NULL_FRAME;
     (*_av_image_copy)(ctx->video_dst_data, ctx->video_dst_linesize
@@ -888,7 +893,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
     ret = ff_min(ctx->pkt_size_left, ret);
     ctx->pkt_size_left -= ret;
     if (ctx->pkt_size_left == 0) {
-      (*_av_free_packet)(ctx->pkt);
+      _av_free_packet(ctx->pkt);
     }
     if (got_frame == 0) {
       return NULL_FRAME;
@@ -936,7 +941,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
   }
 
   //discard unknown packet
-  (*_av_free_packet)(ctx->pkt);
+  _av_free_packet(ctx->pkt);
   ctx->pkt_size_left = 0;  //use entire packet
 
   return NULL_FRAME;
