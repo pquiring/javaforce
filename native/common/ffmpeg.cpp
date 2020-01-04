@@ -36,8 +36,8 @@ static void copyWarning() {
 //avcodec functions
 void (*_avcodec_register_all)();
 AVCodec* (*_avcodec_find_decoder)(int codec_id);
-int (*_avcodec_decode_video2)(AVCodecContext *avctx,AVFrame *picture,int* got_picture_ptr,AVPacket *avpkt);
-int (*_avcodec_decode_audio4)(AVCodecContext *avctx,AVFrame *frame,int* got_frame_ptr,AVPacket *avpkt);
+int (*_avcodec_decode_video2)(AVCodecContext *avctx,AVFrame *picture,int* got_picture_ptr,AVPacket *avpkt);  //[DEPRECATED]
+int (*_avcodec_decode_audio4)(AVCodecContext *avctx,AVFrame *frame,int* got_frame_ptr,AVPacket *avpkt);  //[DEPRECATED]
 int (*_avcodec_open2)(AVCodecContext *avctx,AVCodec *codec,void* options);
 AVCodecContext* (*_avcodec_alloc_context3)(AVCodec *codec);
 void (*_av_init_packet)(AVPacket *pkt);
@@ -47,8 +47,8 @@ void (*_av_packet_free)(AVPacket **pkt);
 AVCodec* (*_avcodec_find_encoder)(int codec_id);
 //int (*_avpicture_alloc)(AVPicture *pic, int pix_fmt, int width, int height);
 //int (*_avpicture_free)(AVPicture *pic);
-int (*_avcodec_encode_video2)(AVCodecContext *cc, AVPacket *pkt, AVFrame *frame, int* intref);
-int (*_avcodec_encode_audio2)(AVCodecContext *cc, AVPacket *pkt, AVFrame *frame, int* intref);
+int (*_avcodec_encode_video2)(AVCodecContext *cc, AVPacket *pkt, AVFrame *frame, int* intref);  //[DEPRECATED]
+int (*_avcodec_encode_audio2)(AVCodecContext *cc, AVPacket *pkt, AVFrame *frame, int* intref);  //[DEPRECATED]
 int (*_avcodec_fill_audio_frame)(AVFrame *frame, int nb_channels, int fmt, void* buf, int bufsize, int align);
 int (*_avcodec_close)(AVCodecContext *cc);
 const char* (*_avcodec_get_name)(AVCodecID id);
@@ -121,7 +121,7 @@ int (*_av_frame_get_buffer)(AVFrame *frame, int align);
 AVFrame* (*_av_frame_alloc)();
 void (*_av_frame_free)(void** frame);
 
-//swresample functions )(ffmpeg.org)
+//swresample functions (ffmpeg.org)
 void* (*_swr_alloc)();
 void* (*_swr_alloc_set_opts)(void*, int64_t out_ch_layout, int out_sample_fmt, int out_sample_rate, int64_t in_ch_layout, int in_sample_fmt, int in_sample_rate, int log_offset, void*log_ctx);
 int (*_swr_init)(void* ctx);
@@ -129,7 +129,7 @@ int64_t (*_swr_get_delay)(void* ctx,int64_t base);
 int (*_swr_convert)(void* ctx,uint8_t* out_arg[],int out_count,uint8_t* in_arg[],int in_count);
 void (*_swr_free)(void** ctx);
 
-//avresample functions )(libav.org);
+//avresample functions (libav.org)  //[DEPRECATED]
 void* (*_avresample_alloc_context)();
 int (*_avresample_open)(void* ctx);
 int (*_avresample_free)(void* ctx);
@@ -1476,7 +1476,7 @@ static jboolean encoder_init_audio(FFContext *ctx) {
     return JNI_FALSE;
   }
   if (!ctx->audio_frame_size_variable) {
-    ctx->audio_buffer = (short*)malloc(ctx->audio_frame_size * 2);
+    ctx->audio_buffer = (short*)(*_av_malloc)(ctx->audio_frame_size * 2);
     ctx->audio_buffer_size = 0;
   }
   //copy params
@@ -1972,7 +1972,7 @@ static void encoder_stop(FFContext *ctx)
     ctx->swr_ctx = NULL;
   }
   if (ctx->audio_buffer != NULL) {
-    free(ctx->audio_buffer);
+    (*_av_free)(ctx->audio_buffer);
     ctx->audio_buffer = NULL;
   }
 }
