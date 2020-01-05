@@ -227,14 +227,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     public boolean haveCompleteFrame() {
       next_frame_fragmented = false;
-      int _offset = offset[tail];
-      int _length = 0;
       for(int pos=tail;pos!=head;) {
-        _length += length[pos];
-        if ((!next_frame_fragmented) && (_offset + _length + 7 > data.length)) {
-          //FFMPEG recommends 7 extra bytes after input data
-          next_frame_fragmented = true;
-        }
         switch (type[pos]) {
           case 1: return true;
           case 5: return true;
