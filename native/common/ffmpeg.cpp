@@ -436,6 +436,8 @@ struct FFContext {
   AVStream *video_stream;
   AVCodecContext *video_codec_ctx;
   void* sws_ctx;
+  uint8_t* decode_buffer;
+  int decode_buffer_size;
   //compressed video
   int video_dst_bufsize;
   uint8_t* video_dst_data[4];
@@ -531,8 +533,7 @@ FFContext* createFFContext(JNIEnv *e, jobject c) {
     printf("MediaCoder used twice\n");
     return NULL;
   }
-  ctx = new FFContext();
-  memset(ctx, 0, sizeof(FFContext));
+  ctx = (FFContext*)(*_av_mallocz)(sizeof(FFContext));
   e->SetLongField(c,fid_ff_ctx,(jlong)ctx);
   ctx->e = e;
   ctx->c = c;
@@ -555,7 +556,7 @@ void deleteFFContext(JNIEnv *e, jobject c, FFContext *ctx) {
     e->DeleteGlobalRef(ctx->mio);
     ctx->mio = NULL;
   }
-  delete ctx;
+  (*_av_free)(ctx);
   jclass cls_coder = e->FindClass("javaforce/media/MediaCoder");
   jfieldID fid_ff_ctx = e->GetFieldID(cls_coder, "ctx", "J");
   e->SetLongField(c,fid_ff_ctx,0);
@@ -1126,6 +1127,9 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
   ctx->width = width;
   ctx->height = height;
 
+  ctx->decode_buffer = (uint8_t*)(*_av_malloc)(1024*1024);
+  ctx->decode_buffer_size = 1024*1024;
+
   return JNI_TRUE;
 }
 
@@ -1158,6 +1162,11 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
     e->DeleteGlobalRef(ctx->jvideo16);
     ctx->jvideo16 = NULL;
   }
+  if (ctx->decode_buffer != NULL) {
+    (*_av_free)(ctx->decode_buffer);
+    ctx->decode_buffer = NULL;
+    ctx->decode_buffer_size = 0;
+  }
   deleteFFContext(e,c,ctx);
 }
 
@@ -1169,8 +1178,22 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
+  //there should always be 64 bytes after the data to decode
+  if (length + 64 > ctx->decode_buffer_size) {
+    (*_av_free)(ctx->decode_buffer);
+    while (length + 64 > ctx->decode_buffer_size) {
+      ctx->decode_buffer_size <<= 1;
+    }
+    ctx->decode_buffer = (uint8_t*)(*_av_malloc)(ctx->decode_buffer_size);
+  }
+  memcpy(ctx->decode_buffer, dataptr + offset, length);
+  uint8_t *pad = dataptr + offset + length;
+  for(int a=0;a<64;a++) {
+    *(pad++) = 0;
+  }
+
   ctx->pkt->size = length;
-  ctx->pkt->data = dataptr + offset;
+  ctx->pkt->data = ctx->decode_buffer;
 
   int got_frame = 0;
   int ret = (*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
@@ -1228,8 +1251,22 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
+  //there should always be 64 bytes after the data to decode
+  if (length + 64 > ctx->decode_buffer_size) {
+    (*_av_free)(ctx->decode_buffer);
+    while (length + 64 > ctx->decode_buffer_size) {
+      ctx->decode_buffer_size <<= 1;
+    }
+    ctx->decode_buffer = (uint8_t*)(*_av_malloc)(ctx->decode_buffer_size);
+  }
+  memcpy(ctx->decode_buffer, dataptr + offset, length);
+  uint8_t *pad = dataptr + offset + length;
+  for(int a=0;a<64;a++) {
+    *(pad++) = 0;
+  }
+
   ctx->pkt->size = length;
-  ctx->pkt->data = dataptr + offset;
+  ctx->pkt->data = ctx->decode_buffer;
 
   int got_frame = 0;
   int ret = (*_avcodec_decode_video2)(ctx->video_codec_ctx, ctx->frame, &got_frame, ctx->pkt);
