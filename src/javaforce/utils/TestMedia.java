@@ -32,14 +32,28 @@ public class TestMedia implements MediaIO {
       MediaDecoder decoder = new MediaDecoder();
       media.open("test-0.mp4");
       decoder.start(media, 640, 480, 2, 44100, true);
+      boolean eof = false;
+      int pkts = 0;
       do {
-        int px[] = decoder.getVideo();
-        if (px == null) break;
-        System.out.println("video=" + px.length);
-        short sams[] = decoder.getAudio();
-        if (sams == null) break;
-        System.out.println("audio=" + sams.length);
-      } while (true);
+        int type = decoder.read();
+        pkts++;
+        switch (type) {
+          case MediaCoder.VIDEO_FRAME:
+            int px[] = decoder.getVideo();
+            if (px == null) break;
+            System.out.println("video=" + px.length);
+            break;
+          case MediaCoder.AUDIO_FRAME:
+            short sams[] = decoder.getAudio();
+            if (sams == null) break;
+            System.out.println("audio=" + sams.length);
+            break;
+          case MediaCoder.END_FRAME:
+            eof = true;
+            break;
+        }
+      } while (!eof);
+      System.out.println("packets=" + pkts);
       decoder.stop();
       media.close();
     }
@@ -68,7 +82,7 @@ public class TestMedia implements MediaIO {
       MediaEncoder encoder = new MediaEncoder();
       media.create(i++);
       if (i == 10) i = 0;
-      encoder.start(media, 640, 480, 24, 2, 44100, "mp4", true, false);
+      encoder.start(media, 640, 480, 24, 2, 44100, "mp4", true, true);
       for(int a=0;a<24 * 4;a++) {  //4 seconds
         random(px);
         random(sams);
