@@ -7,19 +7,15 @@ package javaforce.jni;
 
 import java.io.*;
 import java.awt.*;
-import javaforce.JF;
 
-import javaforce.jni.lnx.*;
 import javaforce.linux.*;
 
 public class LnxNative {
   static {
     JFNative.load();  //ensure native library is loaded
     if (JFNative.loaded && JFNative.load_ffmpeg) {
-      String bits;
-      if (JF.is64Bit()) bits = "64"; else bits = "32";
       Library libs[] = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
-      if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File("/usr/lib" + bits)}, libs, ".so", libs.length, true)) {
+      if (!JFNative.findLibraries(new File[] {new File("/usr/lib/x86_64-linux-gnu")}, libs, ".so", libs.length)) {
         for(int a=0;a<libs.length;a++) {
           if (libs[a].path == null) {
             System.out.println("Warning:Unable to find library:" + libs[a].name + ".so");

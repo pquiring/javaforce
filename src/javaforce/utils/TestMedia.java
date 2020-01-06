@@ -83,6 +83,7 @@ public class TestMedia implements MediaIO {
       media.create(i++);
       if (i == 10) i = 0;
       encoder.start(media, 640, 480, 24, 2, 44100, "mp4", true, true);
+      System.out.println("Audio Frame Size=" + encoder.getAudioFramesize());
       for(int a=0;a<24 * 4;a++) {  //4 seconds
         random(px);
         random(sams);

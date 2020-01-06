@@ -33,7 +33,7 @@ public class JFNative {
         path = "/usr/lib";
       }
       Library lib = new Library("jfnative" + bits);
-      if (!findLibraries(new File[] {new File("."), new File(path)}, new Library[] {lib}, ext, 1, false)) {
+      if (!findLibraries(new File[] {new File("."), new File(path)}, new Library[] {lib}, ext, 1)) {
         JFLog.log("Warning:Unable to find jfnative library");
       }
       if (lib.path != null) {
@@ -50,7 +50,7 @@ public class JFNative {
   public static boolean load_ffmpeg = true;
 
   /** Find native libraries in folder (recursive). */
-  public static boolean findLibraries(File folders[], Library libs[], String ext, int needed, boolean recursive) {
+  public static boolean findLibraries(File folders[], Library libs[], String ext, int needed) {
     for(int fn=0;fn<folders.length;fn++) {
       File[] files = folders[fn].listFiles();
       if (files == null || files.length == 0) {
@@ -71,20 +71,7 @@ public class JFNative {
         File file = files[a];
         String fileName = files[a].getName();
         if (file.isDirectory()) {
-          if (!recursive) continue;
-          if (JF.isUnix()) {
-            //Ubuntu has i386 folders on 64bit systems
-            String path = file.getName();
-            if (JF.is64Bit()) {
-              if (path.contains("i386")) continue;
-              if (path.contains("i486")) continue;
-              if (path.contains("i586")) continue;
-              if (path.contains("i686")) continue;
-            } else {
-              if (path.contains("x86_64")) continue;
-            }
-          }
-          if (findLibraries(new File[] {file}, libs, ext, needed, recursive)) return true;
+          continue;
         } else if (fileName.contains(ext)) {
           int cnt = 0;
           boolean once = false;

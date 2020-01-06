@@ -1750,7 +1750,6 @@ static jboolean encoder_addAudio(FFContext *ctx, short *sams, int offset, int le
   if (!ctx->audio_frame_size_variable) {
     frame_size = ctx->audio_frame_size;
     if (ctx->audio_buffer_size > 0) {
-      printf("warning : filling partial frame\n");
       //fill audio_buffer with input samples
       int size = ctx->audio_frame_size - ctx->audio_buffer_size;
       if (size > length) size = length;
@@ -1769,7 +1768,6 @@ static jboolean encoder_addAudio(FFContext *ctx, short *sams, int offset, int le
     if (size > frame_size) size = frame_size;
     if (size < frame_size && !ctx->audio_frame_size_variable) {
       //partial frame : copy the rest to temp storage for next call
-      printf("save partial frame\n");
       memcpy(ctx->audio_buffer, sams + offset, size * 2);
       ctx->audio_buffer_size = size;
       return JNI_TRUE;
