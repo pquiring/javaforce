@@ -1,5 +1,14 @@
 What's new...
 
+Jan 7/2020 : JF 19.0.0 released
+  - jfDVR/0.1
+    - after 6 long months of development it's finally ready
+    - performance tuning took the longest - it was not possible until at least JDK12 or better
+      - I tried to make a better JVM (jfdk.sf.net) but it turned out to be unneccessary
+      - graalVM is just missing too many features
+    - out performs iSpy with better quality (but not as many features yet)
+    - runs as a service so it's always running even after server reboots
+
 Jan 2/2020 : JF 18.9.0 released
   - webui
     - fix JSON stringify()
