@@ -51,7 +51,7 @@ public class CameraInstance extends Thread {
       ProcessBuilder pb = new ProcessBuilder();
       try {
         int localPort = getLocalPort(15);
-        pb.command(new String[] {"CameraWorker.exe", camera.name, Integer.toString(localPort), Integer.toString(localPort+5), Integer.toString(localPort+10)});
+        pb.command(new String[] {"CameraWorker.exe", camera.name, Integer.toString(localPort), Integer.toString(localPort+5), Integer.toString(localPort+14)});
         process = pb.start();
         process.waitFor();
       } catch (Exception e) {
