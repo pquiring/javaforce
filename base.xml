@@ -110,7 +110,7 @@
       <delete file="jre.obj"/>
       <delete file="_jre.xml"/>
       <delete file="rt.jar"/>
-      <delete file="@{msi}-${version}-win@{bits}.wixpdb"/>
+      <delete file="@{msi}-${version}-win@{bits}-jre.wixpdb"/>
       <move unless:set="nomove" file="@{msi}-${version}-win@{bits}-jre.msi" todir="${home}/release"/>
     </sequential>
   </macrodef>
