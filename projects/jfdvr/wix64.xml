@@ -32,6 +32,7 @@
             IgnoreFailure="yes"
             Profile="all" />
         </File>
+        <File Id="cameraworker.exe" Source="cameraworker.exe"/>
         <File Id="jfdvr.jar" Source="jfdvr.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="jfnative64.dll" Source="jfnative64.dll"/>

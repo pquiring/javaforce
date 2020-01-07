@@ -12,7 +12,10 @@ public class Paths {
   public static String logsPath;
   public static String videoPath;
 
-  public static void init() {
+  public static void init(String name) {
+    if (name == null) {
+      name = "$";
+    }
     if (JF.isWindows()) {
       dataPath = System.getenv("ProgramData") + "/jfdvr";
     } else {
@@ -23,9 +26,9 @@ public class Paths {
     new File(dataPath).mkdirs();
     new File(logsPath).mkdirs();
     new File(videoPath).mkdirs();
-    JFLog.append(logsPath + "/system.log", true);  //0
+    JFLog.append(logsPath + "/" + name + "-system.log", true);  //0
     JFLog.setRetention(5);
-    JFLog.append(1, logsPath + "/service.log", true);
+    JFLog.append(1, logsPath + "/" + name + "-service.log", true);
     JFLog.setRetention(1, 5);
     JFLog.log("jfDVR starting...");
   }

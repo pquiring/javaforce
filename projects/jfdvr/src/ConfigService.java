@@ -152,6 +152,9 @@ public class ConfigService implements WebUIHandler {
     row.add(lbl);
     TextField max_file_size = new TextField("1024");
     row.add(max_file_size);
+
+    row = new Row();
+    right.add(row);
     lbl = new Label("Max folder size (GB) (1-4096):");
     row.add(lbl);
     TextField max_folder_size = new TextField("100");
@@ -205,7 +208,7 @@ public class ConfigService implements WebUIHandler {
       } else {
         //update existing camera
         camera = Config.current.cameras[idx];
-        DVRService.dvrService.stopCamera(camera, true);
+        DVRService.dvrService.stopCamera(camera);
       }
       camera.name = _name;
       camera.url = _url;
@@ -220,12 +223,7 @@ public class ConfigService implements WebUIHandler {
       camera.max_folder_size = Integer.valueOf(max_folder_size.getText());
       if (camera.max_folder_size < 0) camera.max_folder_size = 1;
       if (camera.max_folder_size > 4096) camera.max_folder_size = 4096;
-      if (idx == -1) {
-        DVRService.dvrService.addCamera(camera);
-      } else {
-        DVRService.dvrService.startCamera(camera);
-//        list.update(idx, _name);
-      }
+      DVRService.dvrService.startCamera(camera);
       Config.current.save();
       button.client.refresh();  //list not working yet
     });
@@ -240,8 +238,7 @@ public class ConfigService implements WebUIHandler {
       int idx = list.getSelectedIndex();
       if (idx < 0 || idx >= Config.current.cameras.length) return;
       Camera camera = Config.current.cameras[idx];
-      DVRService.dvrService.stopCamera(camera, false);
-      DVRService.dvrService.removeCamera(camera);
+      DVRService.dvrService.stopCamera(camera);
       Config.current.removeCamera(camera);
       Config.current.save();
       list.remove(idx);  //not working yet

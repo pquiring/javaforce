@@ -22,7 +22,7 @@ public abstract class RTSP {
   protected static String useragent = "JavaForce/" + JF.getVersion();
 
   /**
-   * Opens the transport and sets the SIPInterface callback.
+   * Opens the transport and sets the RTSPInterface callback.
    */
   protected boolean init(String localhost, int localport, RTSPInterface iface, boolean server, TransportType type) throws Exception {
     rinstance = null;

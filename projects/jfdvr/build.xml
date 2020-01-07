@@ -3,6 +3,8 @@
   <!-- set global properties for this build -->
   <property name="app" value="jfdvr"/>
   <property name="apptype" value="s"/>
+  <property name="app2" value="cameraworker"/>
+  <property name="apptype2" value="c"/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="home" location="../.."/>
