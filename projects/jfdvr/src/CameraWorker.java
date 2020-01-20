@@ -52,6 +52,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private static final int decoded_y = 200;
   private static final int decoded_xy = 320 * 200;
   private int localPort;
+  private boolean wait_next_key_frame;
 
   public int read(MediaCoder coder, byte[] buffer) {
 //    JFLog.log("read:" + buffer.length);
@@ -668,10 +669,23 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       JFLog.log("packets_encode=" + packets_decode.toString());
     }
     if (!packets_decode.haveCompleteFrame()) return;
+    if (wait_next_key_frame) {
+      if (!key_frame) {
+        packets_decode.reset();
+        packets_encode.reset();
+        return;
+      }
+      wait_next_key_frame = false;
+    }
     Packet nextPacket = packets_decode.getNextFrame();
     decoded_frame = decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
     if (decoded_frame == null) {
       JFLog.log(camera.name + ":Error:newFrame == null:packet.length=" + nextPacket.length);
+      packets_decode.reset();
+      packets_encode.reset();
+      //decoding error : delete all frames till next key frame
+      wait_next_key_frame = true;
+      return;
     }
     packets_decode.removeNextFrame();
     if (width == -1 && height == -1) {
