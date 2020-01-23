@@ -663,12 +663,12 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     packets_encode.add(packet);
     packets_decode.cleanPackets(true);
     packets_encode.cleanPackets(true);
+    if (!packets_decode.haveCompleteFrame()) return;
     boolean key_frame = packets_decode.isNextFrame_KeyFrame();
     if (debug_buffers && key_frame) {
       JFLog.log("packets_decode=" + packets_decode.toString());
       JFLog.log("packets_encode=" + packets_decode.toString());
     }
-    if (!packets_decode.haveCompleteFrame()) return;
     if (wait_next_key_frame) {
       if (!key_frame) {
         packets_decode.reset();
