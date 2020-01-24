@@ -46,6 +46,7 @@
         <include name="**/*.css"/>
       </fileset>
     </jar>
+    <copy file="jars/javaforce.jar" todir="."/>
   </target>
 
   <target name="javadoc" description="generate java documentation">

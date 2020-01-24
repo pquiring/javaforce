@@ -115,7 +115,9 @@ struct CamContext {
   IPin *pin;
   IEnumMediaTypes *enumMediaTypes;
   void* buffer;
+  int bufferSize;
   jintArray jpx;
+  int compression;
 };
 
 CamContext* createCamContext(JNIEnv *e, jobject c) {
@@ -304,6 +306,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
   (JNIEnv *e, jobject c, jint deviceIdx, jint desiredWidth, jint desiredHeight)
 {
   CamContext *ctx = getCamContext(e,c);
+  HRESULT res;
+
   if (deviceIdx >= ctx->cameraDeviceCount) return JNI_FALSE;
   if (CoCreateInstance(CLSID_CaptureGraphBuilder2, NULL, CLSCTX_INPROC_SERVER, IID_ICaptureGraphBuilder2 , (void**)&ctx->captureGraphBuilder) != S_OK) {
     printf("CoCreateInstance() failed\n");
@@ -363,6 +367,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
   if (res != 0) throw new Exception("IBaseFilter.EnumPins() failed");
 */
 
+  //GetFormat() returns the FIRST format supported and may not be the ACTIVE format
   if (ctx->streamConfig->GetFormat(&ctx->mediaType) != S_OK) {
     printf("IAMStreamConfig.GetFormat() failed\n");
     return JNI_FALSE;
@@ -376,31 +381,31 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
   ctx->videoInfo = (VIDEOINFOHEADER*) ctx->mediaType->pbFormat;
   ctx->width = ctx->videoInfo->bmiHeader.biWidth;
   ctx->height = ctx->videoInfo->bmiHeader.biHeight;
+  ctx->compression = ctx->videoInfo->bmiHeader.biCompression;
 
-/*
-  //TODO : try to find a different size
   if ((desiredWidth == -1) || (desiredHeight == -1)) {
-    desiredWidth = width;
-    desiredHeight = height;
+    desiredWidth = ctx->width;
+    desiredHeight = ctx->height;
   }
 
-  if (desiredWidth != ctx->width || desiredHeight != ctx->height) {
-    //enumerate formats
-    boolean ok = JNI_FALSE;
-    while (true) {
-      res = enumMediaTypes->Next(1, &enumMediaType, NULL);
-      if (res != 0) break;
-      videoInfo = mediaType.pbFormat;
-      int enumWidth = videoInfo->bmiHeader.biWidth;
-      int enumHeight = videoInfo->bmiHeader.biHeight;
-      if (enumWidth == desiredWidth && enumHeight == desiredHeight) {
-        width = enumWidth;
-        height = enumHeight;
-        //TODO : streamConfig->setFormat(enumMediaType);
-      }
+  //enumerate formats
+  while (true) {
+    res = ctx->enumMediaTypes->Next(1, &ctx->mediaType, NULL);
+    if (res != S_OK) {
+      printf("Camera:Error:Unable to enumerate compatible video mode\n");
+      return JNI_FALSE;
+    }
+    ctx->videoInfo = (VIDEOINFOHEADER*) ctx->mediaType->pbFormat;
+    int enumWidth = ctx->videoInfo->bmiHeader.biWidth;
+    int enumHeight = ctx->videoInfo->bmiHeader.biHeight;
+    printf("Camera:enumerate:size=%dx%d\n", enumWidth, enumHeight);
+    if (enumWidth == desiredWidth && enumHeight == desiredHeight) {
+      ctx->width = enumWidth;
+      ctx->height = enumHeight;
+      ctx->streamConfig->SetFormat(ctx->mediaType);
+      break;
     }
   }
-*/
 
   ctx->streamConfig->Release();
   ctx->streamConfig = NULL;
@@ -427,7 +432,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
   ctx->rgbMediaType.majortype = MEDIATYPE_Video;
   ctx->rgbMediaType.subtype = MEDIASUBTYPE_RGB32;
   ctx->rgbMediaType.formattype = FORMAT_VideoInfo;
-  ctx->sampleGrabber->SetMediaType(&ctx->rgbMediaType);
+
+  res = ctx->sampleGrabber->SetMediaType(&ctx->rgbMediaType);
+  if (res != S_OK) {
+    printf("ISampleGrabber.SetMediaType() failed : Result=0x%x\n", res);
+    return JNI_FALSE;
+  }
 
   if (CoCreateInstance(CLSID_NullRenderer, NULL, CLSCTX_INPROC_SERVER,IID_IBaseFilter, (void**)&ctx->destBaseFilter) != S_OK) {
     printf("CoCreateInstance() failed\n");
@@ -444,15 +454,16 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
     return JNI_FALSE;
   }
 
-  HRESULT res = ctx->mediaControl->Run();
+  res = ctx->mediaControl->Run();
   if (res == S_FALSE) res = S_OK;  //S_FALSE = preparing to run but not ready yet
   if (res != S_OK) {
     printf("IMediaControl.Run() failed\n");
     return JNI_FALSE;
   }
 
-  printf("Camera Size:%dx%d\n", ctx->width, ctx->height);
-  ctx->buffer = malloc(ctx->width * ctx->height * 4);
+  printf("Camera Size:%dx%d (Compression=%x)\n", ctx->width, ctx->height, ctx->compression);
+  ctx->bufferSize = ctx->width * ctx->height * 4;
+  ctx->buffer = malloc(ctx->bufferSize);
 
   ctx->videoInputFilter->Release();
   ctx->videoInputFilter = NULL;
@@ -479,9 +490,23 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_Camera_cameraGetFrame
 {
   CamContext *ctx = getCamContext(e,c);
   if (ctx->sampleGrabber == NULL) return JNI_FALSE;
-  int size = ctx->width * ctx->height * 4;
+  int size = ctx->bufferSize;
+  int status;
 
-  if (ctx->sampleGrabber->GetCurrentBuffer((LONG*)&size, (LONG*)ctx->buffer) != S_OK) return NULL;
+  status = ctx->sampleGrabber->GetCurrentBuffer((LONG*)&size, (LONG*)ctx->buffer);
+  if (status == E_OUTOFMEMORY) {
+    ctx->sampleGrabber->GetCurrentBuffer((LONG*)&size, (LONG*)NULL);
+    printf("Camera:SampleGrabber->GetCurrentBuffer() (Buffer too small) (Requested Size=%d)\n", size);
+    free(ctx->buffer);
+    ctx->bufferSize = size;
+    ctx->buffer = malloc(size);
+    return NULL;
+  }
+  if (status != S_OK) {
+    ctx->sampleGrabber->GetCurrentBuffer((LONG*)&size, (LONG*)NULL);
+    printf("Camera:SampleGrabber->GetCurrentBuffer() = 0x%x (Requested Size=%d)\n", status, size);
+    return NULL;
+  }
 
   if (ctx->jpx == NULL) {
     ctx->jpx = e->NewIntArray(ctx->width * ctx->height);
