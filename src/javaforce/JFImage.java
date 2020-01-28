@@ -519,7 +519,7 @@ public class JFImage extends JComponent implements Icon {
   public JFImage getJFImage(int x, int y, int w, int h) {
     JFImage ret = new JFImage(w,h);
     int px[] = getPixels(x,y,w,h);
-    ret.putPixels(px, x, y, w, h, 0);
+    ret.putPixels(px, 0, 0, w, h, 0);
     return ret;
   }
 
@@ -567,7 +567,6 @@ public class JFImage extends JComponent implements Icon {
   /** Puts pixels (supports padding at end of each scan line) */
   public void putPixels(int[] src, int x, int y, int w, int h, int srcOffset, int srcScanSize) {
     //do clipping
-    int ow = w;  //org width
     int bw = getWidth();
     int bh = getHeight();
     if (y < 0) {
@@ -797,9 +796,9 @@ public class JFImage extends JComponent implements Icon {
 
   /** Gets a rectangle of pixels (including alpha) */
   public int[] getPixels(int x, int y, int w, int h) {
-    int ret[] = new int[w * h];
-    int scansize = w;
-    int offset = 0;
+    int dst[] = new int[w * h];
+    int dstScanSize = w;
+    int dstOffset = 0;
     int bw = getWidth();
     int bh = getHeight();
     if (y < 0) {
@@ -808,7 +807,7 @@ public class JFImage extends JComponent implements Icon {
       if (h <= 0) {
         return null;
       }
-      offset += y * scansize;
+      dstOffset += y * dstScanSize;
       y = 0;
     }
     if (x < 0) {
@@ -817,7 +816,7 @@ public class JFImage extends JComponent implements Icon {
       if (w <= 0) {
         return null;
       }
-      offset += x;
+      dstOffset += x;
       x = 0;
     }
     if (x + w > bw) {
@@ -832,17 +831,17 @@ public class JFImage extends JComponent implements Icon {
         return null;
       }
     }
-    int src = y * bw + x;
-    if (w == bw && scansize == w) {
-      System.arraycopy(buffer, src, ret, offset, w * h);
+    int srcOffset = y * bw + x;
+    if (w == bw && dstScanSize == w) {
+      System.arraycopy(buffer, srcOffset, dst, dstOffset, w * h);
     } else {
       for(int i=0;i<h;i++) {
-        System.arraycopy(buffer, src, ret, offset, w);
-        offset += scansize;
-        src += bw;
+        System.arraycopy(buffer, srcOffset, dst, dstOffset, w);
+        dstOffset += dstScanSize;
+        srcOffset += bw;
       }
     }
-    return ret;
+    return dst;
   }
 
   /** Returns a copy of the buffer */
