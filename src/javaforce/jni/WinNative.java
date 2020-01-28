@@ -23,6 +23,9 @@ public class WinNative {
   public static native int comRead(long handle, byte buf[]);
   public static native int comWrite(long handle, byte buf[]);
 
+  //Windows
+  public static native boolean getWindowRect(String name, int rect[]);  //returns x,y,width,height
+
   //WinPE resources
   public static native long peBegin(String file);  //returns handle
   public static native void peAddIcon(long handle, byte data[]);

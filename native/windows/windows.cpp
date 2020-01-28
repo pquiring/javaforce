@@ -719,6 +719,30 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_comWrite
   return write;
 }
 
+//Windows
+
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_getWindowRect
+  (JNIEnv *e, jclass c, jstring name, jintArray rect)
+{
+  jint *rectptr = e->GetIntArrayElements(rect,NULL);
+  const char *cstr = e->GetStringUTFChars(name,NULL);
+  HWND hwnd = FindWindow(NULL, cstr);
+  RECT winrect;
+  jboolean ok = JNI_FALSE;
+  if (hwnd != NULL) {
+    if (GetWindowRect(hwnd, &winrect)) {
+      rectptr[0] = winrect.left;
+      rectptr[1] = winrect.top;
+      rectptr[2] = winrect.right - winrect.left;
+      rectptr[3] = winrect.bottom - winrect.top;
+      ok = JNI_TRUE;
+    }
+  }
+  e->ReleaseStringUTFChars(name, cstr);
+  e->ReleaseIntArrayElements(rect, rectptr, JNI_COMMIT);
+  return ok;
+}
+
 //impersonate user
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_impersonateUser

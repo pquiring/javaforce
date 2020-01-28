@@ -560,12 +560,12 @@ public class JFImage extends JComponent implements Icon {
   }
 
   /** Puts pixels */
-  public void putPixels(int[] px, int x, int y, int w, int h, int offset) {
-    putPixels(px, x, y, w, h, offset, w);
+  public void putPixels(int[] src, int x, int y, int w, int h, int srcOffset) {
+    putPixels(src, x, y, w, h, srcOffset, w);
   }
 
   /** Puts pixels (supports padding at end of each scan line) */
-  public void putPixels(int[] px, int x, int y, int w, int h, int offset, int scansize) {
+  public void putPixels(int[] src, int x, int y, int w, int h, int srcOffset, int srcScanSize) {
     //do clipping
     int ow = w;  //org width
     int bw = getWidth();
@@ -576,7 +576,7 @@ public class JFImage extends JComponent implements Icon {
       if (h <= 0) {
         return;
       }
-      offset += y * scansize;
+      srcOffset += y * srcScanSize;
       y = 0;
     }
     if (x < 0) {
@@ -585,7 +585,7 @@ public class JFImage extends JComponent implements Icon {
       if (w <= 0) {
         return;
       }
-      offset += x;
+      srcOffset += x;
       x = 0;
     }
     if (x + w > bw) {
@@ -600,14 +600,14 @@ public class JFImage extends JComponent implements Icon {
         return;
       }
     }
-    int dst = y * bw + x;
-    if (w == bw && scansize == w) {
-      System.arraycopy(px, offset, buffer, dst, w * h);
+    int dstOffset = y * bw + x;
+    if (w == bw && srcScanSize == w) {
+      System.arraycopy(src, srcOffset, buffer, dstOffset, w * h);
     } else {
       for(int i=0;i<h;i++) {
-        System.arraycopy(px, offset, buffer, dst, w);
-        offset += scansize;
-        dst += bw;
+        System.arraycopy(src, srcOffset, buffer, dstOffset, w);
+        srcOffset += srcScanSize;
+        dstOffset += bw;
       }
     }
   }
