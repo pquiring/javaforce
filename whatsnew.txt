@@ -1,5 +1,9 @@
 What's new...
 
+Jan 30/2020 : JF 19.1.0 released
+  - jfBackup/0.10
+    - fix restore job not detecting drive is empty
+
 Jan 7/2020 : JF 19.0.0 released
   - jfDVR/0.1
     - after 6 long months of development it's finally ready
