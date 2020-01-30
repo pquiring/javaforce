@@ -206,7 +206,7 @@ public class RestoreJob extends Thread {
       log("Using tape:" + currentTape.barcode);
       return true;
     }
-    if (elements[driveIdx].barcode.equals("<empty>")) {
+    if (!elements[driveIdx].barcode.equals("<empty>")) {
       //move tape out of drive
       if (emptySlotIdx == -1) {
         log("Error:No empty slot to move tape from drive");
