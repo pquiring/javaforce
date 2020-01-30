@@ -1,3 +1,6 @@
+Jan 30/2020 : 0.10 released
+  - fix : restore job not detecting empty drive
+
 Jan 2/2020 : 0.9 released
   - new : add email notification
   - new : empty drive after backup/restore operations
