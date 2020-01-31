@@ -8,6 +8,7 @@ package javaforce.utils;
 import java.io.*;
 import java.util.*;
 
+import javaforce.*;
 import javaforce.media.*;
 
 public class TestMedia implements MediaIO {
@@ -19,10 +20,22 @@ public class TestMedia implements MediaIO {
     if (args.length == 0) {
       usage();
     }
-    switch (args[0]) {
-      case "decoder": decoder();
-      case "encoder": encoder(true);
-      default: usage();
+    for(int a=0;a<args.length;a++) {
+      int idx = args[a].indexOf('=');
+      if (idx != -1) {
+        String key = args[a].substring(0, idx);
+        String value = args[a].substring(idx+1);
+        switch (key) {
+          case "seconds": encoder_seconds = Integer.valueOf(value); break;
+          case "audiosrc": encoder_audio_src = value; break;
+        }
+        continue;
+      }
+      switch (args[a]) {
+        case "decoder": decoder(); break;
+        case "encoder": encoder(true); break;
+        default: usage();
+      }
     }
   }
   public static void decoder() {
@@ -72,6 +85,8 @@ public class TestMedia implements MediaIO {
       sams[a] = (short)(r.nextInt(65536) - 32768);
     }
   }
+  public static int encoder_seconds = 4;
+  public static String encoder_audio_src = "random";
   public static void encoder(boolean loop) {
     TestMedia media = new TestMedia();
     int px[] = new int[640*480];
@@ -80,18 +95,33 @@ public class TestMedia implements MediaIO {
     do {
       media.size = 0;
       MediaEncoder encoder = new MediaEncoder();
+      AudioInput input = new AudioInput();
       media.create(i++);
       if (i == 10) i = 0;
       encoder.start(media, 640, 480, 24, 2, 44100, "mp4", true, true);
+      int frame_size = encoder.getAudioFramesize() * 2;  //*2=stereo
+      JFLog.log("frame_size=" + frame_size);
+      if (encoder_audio_src.equals("mic")) {
+        input.start(2, 44100, 16, frame_size, "<default>");
+      }
       System.out.println("Audio Frame Size=" + encoder.getAudioFramesize());
-      for(int a=0;a<24 * 4;a++) {  //4 seconds
+      for(int a=0;a<24 * encoder_seconds;a++) {
         random(px);
-        random(sams);
+        if (encoder_audio_src.equals("mic")) {
+          while (!input.read(sams)) {
+            JF.sleep(50);
+          }
+        } else {
+          random(sams);
+        }
         encoder.addVideo(px);
         encoder.addAudio(sams);
       }
       encoder.stop();
       media.close();
+      if (encoder_audio_src.equals("mic")) {
+        input.stop();
+      }
       System.out.println("size=" + media.size);
       System.gc();
     } while (loop);
