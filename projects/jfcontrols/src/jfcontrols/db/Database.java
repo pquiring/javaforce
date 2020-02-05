@@ -1472,8 +1472,10 @@ public class Database {
     TimezoneRow timezone = new TimezoneRow();
     timezone.name = name;
     for(int a=0;a<7;a++) {
+      timezone.begin[a] = new TimezoneRow.Time();
       timezone.begin[a].hour = 0;
       timezone.begin[a].min = 0;
+      timezone.end[a] = new TimezoneRow.Time();
       timezone.end[a].hour = 23;
       timezone.end[a].min = 59;
     }
