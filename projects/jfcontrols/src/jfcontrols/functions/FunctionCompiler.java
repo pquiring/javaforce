@@ -153,8 +153,9 @@ public class FunctionCompiler {
             }
             for(int a=1;a<node.tags.length;a++) {
               if (node.blk == null || node.blk.getTagType(a) != TagType.function) {
-                sb.append("    debug_tv[" + debug_tv++ + "]=tags[" + a + "].getValue();\r\n");
+                sb.append("    debug_tv[" + debug_tv + "]=tags[" + a + "].getValue();\r\n");
               }
+              debug_tv++;
             }
             sb.append("    debug_en[" + debug_en + "][1]=enabled;\r\n");
             debug_en++;
