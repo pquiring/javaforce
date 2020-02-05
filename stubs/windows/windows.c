@@ -31,7 +31,7 @@ char dll[MAX_PATH];
 char crt[MAX_PATH];
 int size = MAX_PATH;
 HMODULE jvm_dll;
-int (*CreateJavaVM)(void*,void*,void*);
+int (*CreateJavaVM)(JavaVM**,void**,void*);
 HANDLE thread_handle;
 int thread_id;
 STARTUPINFO si;
@@ -239,7 +239,7 @@ void FreeArgs(JavaVMInitArgs *args) {
 /** Creates a new JVM. */
 int CreateJVM() {
   JavaVMInitArgs *args = BuildArgs();
-  if ((*CreateJavaVM)(&g_jvm, &g_env, args) == -1) {
+  if ((*CreateJavaVM)(&g_jvm, (void**)&g_env, args) == -1) {
     error("Unable to create Java VM");
     return 0;
   }
@@ -250,7 +250,7 @@ int CreateJVM() {
 }
 
 /** Attachs current thread to JVM. */
-int AttachJVM() {
+void AttachJVM() {
   (*g_jvm)->AttachCurrentThread(g_jvm, (void**)&g_env, NULL);
 }
 
@@ -525,7 +525,7 @@ int main(int argc, char **argv) {
     }
   }
 
-  CreateJavaVM = (int (*)(void*,void*,void*)) GetProcAddress(jvm_dll, "JNI_CreateJavaVM");
+  CreateJavaVM = (int (*)(JavaVM**,void**,void*)) GetProcAddress(jvm_dll, "JNI_CreateJavaVM");
   if (CreateJavaVM == NULL) {
     error("Unable to find Java interfaces in jvm.dll");
     return 2;

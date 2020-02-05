@@ -4,11 +4,11 @@
 
   <!-- Requires cygwin/mingw in PATH -->
   <target name="windows" description="create windows stubs">
-    <exec command="x86_64-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ windows.c -Wl,-subsystem,windows -lstdc++ -o ../win64.exe"/>
+    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' windows.c user32.lib advapi32.lib /Fe: ../win64.exe"/>
 
-    <exec command="x86_64-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ windows.c -Wl,-subsystem,console -lstdc++ -o ../win64c.exe"/>
+    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' windows.c user32.lib advapi32.lib /Fe: ../win64c.exe /link /subsystem:console"/>
 
-    <exec command="x86_64-w64-mingw32-gcc -I '${env.JAVA_HOME}/include' -I '${env.JAVA_HOME}/include/win32' -static -static-libstdc++ -D_JF_SERVICE windows.c -Wl,-subsystem,console -lstdc++ -o ../win64s.exe"/>
+    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' /D_JF_SERVICE windows.c user32.lib advapi32.lib /Fe: ../win64s.exe /link /subsystem:console"/>
   </target>
 
   <target name="clean" description="deletes compiled files">
