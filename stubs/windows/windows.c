@@ -29,6 +29,8 @@ char version[MAX_PATH];
 char javahome[MAX_PATH];
 char dll[MAX_PATH];
 char crt[MAX_PATH];
+char path[MAX_PATH];
+WCHAR crt16[MAX_PATH];
 int size = MAX_PATH;
 HMODULE jvm_dll;
 int (*CreateJavaVM)(JavaVM**,void**,void*);
@@ -59,12 +61,16 @@ int loadProperties();
 /** Displays the error message in a dialog box. */
 void error(char *msg) {
   char fullmsg[2048];
-  sprintf(fullmsg, "Failed to start Java\nPlease visit www.java.com and install Java\njavahome=%s\nError:%s", javahome, msg);
+  sprintf(fullmsg, "Failed to start Java\nPlease visit http://javaforce.sf.net/java for more info\nError:%s", msg);
 #ifndef _JF_SERVICE
   MessageBox(NULL, fullmsg, "Java Virtual Machine Launcher", (MB_OK | MB_ICONSTOP | MB_APPLMODAL));
 #else
   printf("%s", fullmsg);
 #endif
+}
+
+void printLastError() {
+  printf("Last Error=%x\n", GetLastError());
 }
 
 void printException(JNIEnv *env) {
@@ -74,6 +80,14 @@ void printException(JNIEnv *env) {
   jclass newExcCls;
   (*env)->ExceptionDescribe(env);
   (*env)->ExceptionClear(env);
+}
+
+WCHAR* CSTR2WSTR(const char* src) {
+  WCHAR *dst = crt16;
+  do {
+    *dst = *src;
+  } while (*(src++));
+  return crt16;
 }
 
 /** Converts array of C strings into array of Java strings */
@@ -353,12 +367,6 @@ int findJavaHomeAppFolder() {
     javahome[sl] = 0;
     return 1;
   }
-  javahome[sl] = 0;
-  strcat(javahome, "bin\\client\\jvm.dll");
-  if (exists(javahome) == 1) {
-    javahome[sl] = 0;
-    return 1;
-  }
   return 0;
 }
 
@@ -372,12 +380,6 @@ int findJavaHomeAppDataFolder() {
     strcat(javahome, "64");
   int sl = strlen(javahome);
   strcat(javahome, "\\bin\\server\\jvm.dll");
-  if (exists(javahome) == 1) {
-    javahome[sl] = 0;
-    return 1;
-  }
-  javahome[sl] = 0;
-  strcat(javahome, "\\bin\\client\\jvm.dll");
   if (exists(javahome) == 1) {
     javahome[sl] = 0;
     return 1;
@@ -472,10 +474,10 @@ void __stdcall ServiceMain(int argc, char **argv) {
 #endif
 
 /** Main entry point. */
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   g_argv = argv;
   g_argc = argc;
-  //TODO : use GetCommandLine() instead to preserve "quotes"
 
   GetModuleFileName(NULL, module, MAX_PATH);
   strcpy(exepath, module);
@@ -499,30 +501,21 @@ int main(int argc, char **argv) {
     }
   }
 
-  //JRE11+
-  strcpy(crt, javahome);
-  strcat(crt, "\\bin\\msvcp140.dll");
-  LoadLibrary(crt);
-  strcpy(crt, javahome);
-  strcat(crt, "\\bin\\msvcr140.dll");
-  LoadLibrary(crt);
-  //JRE10
-  strcpy(crt, javahome);
-  strcat(crt, "\\bin\\msvcp120.dll");
-  LoadLibrary(crt);
-  strcpy(crt, javahome);
-  strcat(crt, "\\bin\\msvcr120.dll");
-  LoadLibrary(crt);
+/*
+  //add JRE BIN folder to Path so that MSVCRT DLLs can be found
+  GetEnvironmentVariable("PATH", path, MAX_PATH);
+  strcat(path, ";");
+  strcat(path, javahome);
+  strcat(path, "bin");
+  printf("new path = %s\n", path);
+  SetEnvironmentVariable("PATH", path);
+*/
 
   strcpy(dll, javahome);
   strcat(dll, "\\bin\\server\\jvm.dll");
   if ((jvm_dll = LoadLibrary(dll)) == 0) {
-    strcpy(dll, javahome);
-    strcat(dll, "\\bin\\client\\jvm.dll");
-    if ((jvm_dll = LoadLibrary(dll)) == 0) {
-      error("Unable to open jvm.dll");
-      return 2;
-    }
+    error("Unable to open jvm.dll");
+    return 2;
   }
 
   CreateJavaVM = (int (*)(JavaVM**,void**,void*)) GetProcAddress(jvm_dll, "JNI_CreateJavaVM");

@@ -4,7 +4,7 @@
 
   <!-- Requires cygwin/mingw in PATH -->
   <target name="windows" description="create windows stubs">
-    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' windows.c user32.lib advapi32.lib /Fe: ../win64.exe"/>
+    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' windows.c user32.lib advapi32.lib /Fe: ../win64.exe /link /subsystem:windows /entry:mainCRTStartup"/>
 
     <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' windows.c user32.lib advapi32.lib /Fe: ../win64c.exe /link /subsystem:console"/>
 
