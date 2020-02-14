@@ -28,9 +28,6 @@ int type;
 char version[MAX_PATH];
 char javahome[MAX_PATH];
 char dll[MAX_PATH];
-char crt[MAX_PATH];
-char path[MAX_PATH];
-WCHAR crt16[MAX_PATH];
 int size = MAX_PATH;
 HMODULE jvm_dll;
 int (*CreateJavaVM)(JavaVM**,void**,void*);
@@ -80,14 +77,6 @@ void printException(JNIEnv *env) {
   jclass newExcCls;
   (*env)->ExceptionDescribe(env);
   (*env)->ExceptionClear(env);
-}
-
-WCHAR* CSTR2WSTR(const char* src) {
-  WCHAR *dst = crt16;
-  do {
-    *dst = *src;
-  } while (*(src++));
-  return crt16;
 }
 
 /** Converts array of C strings into array of Java strings */
@@ -500,16 +489,6 @@ int main(int argc, char **argv)
       }
     }
   }
-
-/*
-  //add JRE BIN folder to Path so that MSVCRT DLLs can be found
-  GetEnvironmentVariable("PATH", path, MAX_PATH);
-  strcat(path, ";");
-  strcat(path, javahome);
-  strcat(path, "bin");
-  printf("new path = %s\n", path);
-  SetEnvironmentVariable("PATH", path);
-*/
 
   strcpy(dll, javahome);
   strcat(dll, "\\bin\\server\\jvm.dll");
