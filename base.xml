@@ -45,6 +45,7 @@
   <property name="apptype3" value=""/>
   <property name="apptype4" value=""/>
   <property name="apptype5" value=""/>
+  <property name="heat_home" value="jre"/>
 
   <macrodef name="exemacro">
     <attribute name="appx"/>
@@ -101,14 +102,24 @@
       <exec command="candle -ext WixFirewallExtension -ext WixUtilExtension ${candle_extra} -o wix.obj @{xml}.xml"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
         <arg value="${jre}"/>
-        <arg value="win@{bits}"/>
+        <arg value="jre.xml"/>
         <arg value="${heat_home}"/>
+        <arg value="JRE"/>
       </java>
       <exec command="candle -o jre.obj jre.xml"/>
-      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -ext WixUtilExtension -cultures:en-us -b ${home} -b ${jre} -dWixUILicenseRtf=${home}/license.rtf -o @{msi}-${version}-win@{bits}-jre.msi wix.obj jre.obj"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
+        <arg value="${home}/ffmpeg"/>
+        <arg value="ffmpeg.xml"/>
+        <arg value="."/>
+        <arg value="FFMPEG"/>
+      </java>
+      <exec command="candle -o ffmpeg.obj ffmpeg.xml"/>
+      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -ext WixUtilExtension -cultures:en-us -b ${home} -b ${jre} -b ${home}/ffmpeg -dWixUILicenseRtf=${home}/license.rtf -o @{msi}-${version}-win@{bits}-jre.msi wix.obj jre.obj ffmpeg.obj"/>
       <delete file="wix.obj"/>
       <delete file="jre.obj"/>
-      <delete file="_jre.xml"/>
+      <delete file="jre.xml"/>
+      <delete file="ffmpeg.obj"/>
+      <delete file="ffmpeg.xml"/>
       <delete file="rt.jar"/>
       <delete file="@{msi}-${version}-win@{bits}-jre.wixpdb"/>
       <move unless:set="nomove" file="@{msi}-${version}-win@{bits}-jre.msi" todir="${home}/release"/>

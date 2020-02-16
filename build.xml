@@ -21,7 +21,14 @@
     <exec command="git clone https://github.com/glfw/glfw.git native/glfw"/>
   </target>
 
-  <target name="depjars" depends="depnatives,glfw">
+  <available property="have_ffmpeg" file="jfcodecs.zip"/>
+  <target name="ffmpeg" unless="have_ffmpeg" description="download ffmpeg">
+    <get src="http://javaforce.sourceforge.net/jfcodecs.zip" dest="jfcodecs.zip"/>
+    <mkdir dir="ffmpeg"/>
+    <unzip src="jfcodecs.zip" dest="ffmpeg"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,glfw,ffmpeg">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
