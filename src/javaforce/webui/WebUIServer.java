@@ -93,6 +93,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       }
     } else if (url.startsWith("/user/")) {
       data = handler.getResource(url);
+      res.addHeader("Cache-Control: no-store");
     } else {
       data = getResource("javaforce/webui" + url);
     }

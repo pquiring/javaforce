@@ -28,6 +28,7 @@ public class TitleBar extends Container {
     });
   }
   public void init() {
+    super.init();
     addEvent("onmousedown", "onmousedownPopupPanel(event, " + panel.id + ");");
   }
   public void setHeight(int h) {

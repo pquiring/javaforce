@@ -9,7 +9,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public abstract class Container extends Component {
+public class Container extends Component {
   public void setClient(WebUIClient client) {
     super.setClient(client);
     int cnt = count();
@@ -22,6 +22,13 @@ public abstract class Container extends Component {
     int cnt = count();
     for(int a=0;a<cnt;a++) {
       get(a).init();
+    }
+  }
+  public void events() {
+    super.events();
+    int cnt = count();
+    for(int a=0;a<cnt;a++) {
+      get(a).events();
     }
   }
   public Component getComponent(String name) {
@@ -77,6 +84,7 @@ public abstract class Container extends Component {
     }
     if (id != null) {
       sendEvent("add", new String[] {"html=" + comp.html()});
+      comp.events();
     }
   }
   /** Add component at index. */
@@ -93,6 +101,7 @@ public abstract class Container extends Component {
         sendEvent("add", new String[] {"html=" + comp.html()});
       else
         sendEvent("addbefore", new String[] {"html=" + comp.html(), "beforeid=" + before.id});
+      comp.events();
     }
   }
   public void remove(Component comp) {

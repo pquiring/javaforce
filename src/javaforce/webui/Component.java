@@ -21,6 +21,10 @@ public abstract class Component {
   public HashMap<String, String> styles = new HashMap<String, String>();
   public int x,y,width,height;  //position and size (updated with mouseenter event)
   public int clr = 0, backclr = 0xcccccc, borderclr = 0;
+//  private boolean drag;
+  private int drag_type;
+  private int x1, y1, x2, y2;  //drag bounds
+  private ArrayList<Event> pendingEvents;
 
   //define constants
   public static final int VERTICAL = 1;
@@ -32,6 +36,10 @@ public abstract class Component {
   public static final int TOP = 4;
   public static final int BOTTOM = 5;
 
+  public static class Event {
+    public String msg;
+    public String args[];
+  }
 
   private static class OnEvent {
     public String event;
@@ -89,9 +97,23 @@ public abstract class Component {
    * Containers should call init() on all sub-components.
    */
   public void init() {}
+
+  /** Perform any post loading events.
+   * Containers should call events() on all sub-components.
+   */
+  public void events() {
+    if (pendingEvents != null) {
+      for(Event event : pendingEvents) {
+        sendEvent(event.msg, event.args);
+      }
+    }
+  }
+
   /** Returns HTML to render component. */
   public abstract String html();
+
   private HashMap<String,Object> map = new HashMap<>();
+
   /** Set user define property. */
   public void setProperty(String key, Object value) {
     map.put(key, value);
@@ -101,9 +123,15 @@ public abstract class Component {
     return map.get(key);
   }
   /** Invokes getClient().sendEvent() */
-  public void sendEvent(String event, String args[]) {
+  public void sendEvent(String msg, String args[]) {
     if (client != null) {
-      client . sendEvent(id, event, args);
+      client . sendEvent(id, msg, args);
+    } else {
+      if (pendingEvents == null) pendingEvents = new ArrayList<>();
+      Event event = new Event();
+      event.msg = msg;
+      event.args = args;
+      pendingEvents.add(event);
     }
   }
   /** Invokes getClient().sendData() */
@@ -241,6 +269,9 @@ public abstract class Component {
     setStyle("height", height + "px");
     sendEvent("setsize", new String[] {"w=" + width, "h=" + height});
   }
+  public int getX() {
+    return x;
+  }
   public int getWidth() {
     return width;
   }
@@ -251,6 +282,9 @@ public abstract class Component {
   }
   public void setMaxWidth() {
     setStyle("width", "100%");
+  }
+  public int getY() {
+    return y;
   }
   public int getHeight() {
     return height;
@@ -401,6 +435,31 @@ public abstract class Component {
     sendEvent("focus", null);
   }
 
+  public static final int DRAG_MOVE = 1;
+  public static final int DRAG_NS = 2;
+  public static final int DRAG_EW = 3;
+  public static final int DRAG_NESW = 4;
+  public static final int DRAG_NWSE = 5;
+
+  /** Enables dragging a component.
+   * @param drag_type = DRAG_... types (sets cursor type)
+   * @param (x1,y1)-(x2,y2) = dragging bounds (-1=no bounds)
+   */
+  public void enableDragging(int drag_type, int x1, int y1, int x2, int y2) {
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+    switch (drag_type) {
+      case DRAG_MOVE: addClass("drag_move"); break;
+      case DRAG_NS: addClass("drag_ns_resize"); break;
+      case DRAG_EW: addClass("drag_ew_resize"); break;
+      case DRAG_NESW: addClass("drag_nesw_resize"); break;
+      case DRAG_NWSE: addClass("drag_nwse_resize"); break;
+    }
+    sendEvent("enabledrag", new String[] {"x1=" + x1,"y1=" + y1,"x2=" + x2,"y2=" + y2, "type=" + drag_type});
+  }
+
   public String encode(String str) {
     try {
       return URLEncoder.encode(str, "utf-8");
@@ -477,6 +536,9 @@ public abstract class Component {
         break;
       case "onloaded":
         onLoaded(args);
+        break;
+      case "drawrect":
+        onDrawRect(args);
         break;
       default:
         onEvent(event, args);
@@ -689,4 +751,25 @@ public abstract class Component {
     moved = Arrays.copyOf(moved, moved.length + 1);
     moved[moved.length-1] = handler;
   }
+
+  public void onDrawRect(String args[]) {
+    Rectangle rect = new Rectangle();
+    for(int c=0;c<args.length;c++) {
+      String a = args[c];
+      if (a.startsWith("x=")) {
+        rect.x = Integer.valueOf(a.substring(2));
+      }
+      if (a.startsWith("y=")) {
+        rect.y = Integer.valueOf(a.substring(2));
+      }
+      if (a.startsWith("w=")) {
+        rect.width = Integer.valueOf(a.substring(2));
+      }
+      if (a.startsWith("h=")) {
+        rect.height = Integer.valueOf(a.substring(2));
+      }
+    }
+    onDrawRect(rect);
+  }
+  public void onDrawRect(Rectangle rect) {}
 }

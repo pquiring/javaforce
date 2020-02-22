@@ -205,6 +205,14 @@ function wsevent(event) {
       audioOscillator.stop();
       audioOscillator = null;
       break;
+    case "enabledrag":
+      enableDrag(msg.id, msg.type, msg.x1, msg.y1, msg.x2, msg.y2);
+      break;
+    case "drawrect":
+      var ctx = element.getContext('2d');
+      ctx.strokeStyle = msg.clr;
+      ctx.strokeRect(msg.x, msg.y, msg.w, msg.h);
+      break;
   }
 };
 
@@ -613,6 +621,97 @@ function onResized(event, element) {
 
 function onMoved(event, element) {
   sendPos(element.id);
+}
+
+function enableDragg(_id, _type, _x1, _y1, _x2, _y2) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  var id = _id;
+  var x1 = _x1, y1 = _y1, x2 = _x2, y2 = _y2;
+  var type = _type;
+  var element = document.getElementById(id);
+  element.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e) {
+    e.preventDefault();
+    // get the mouse cursor position at start of drag
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = stopDragElement;
+    // call a function whenever the cursor moves
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e.preventDefault();
+    // calculate the new cursor position
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position
+    var x = (element.offsetLeft - pos1);
+    var y = (element.offsetTop - pos2);
+    // perform bounds
+    if (x1 !== -1) {
+      if (x < x1) x = x1;
+    }
+    if (y1 !== -1) {
+      if (y < y1) y = y1;
+    }
+    if (x2 !== -1) {
+      if (x > x2) x = x2;
+    }
+    if (y2 !== -1) {
+      if (y > y2) y = y2;
+    }
+    element.style.left = x + "px";
+    element.style.top = y + "px";
+//    sendPos(id);  //use onMoved() event instead
+  }
+
+  function stopDragElement() {
+    // stop moving when mouse button is released
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
+var rect = {};
+
+function onMouseDownCanvas(event, element) {
+  rect.x1 = event.offsetX;
+  rect.y1 = event.offsetY;
+  rect.drag = true;
+}
+
+function onMouseUpCanvas(event, element) {
+  if (rect.drag) {
+    var msg = {
+      event: "drawrect",
+      id: element.id,
+      x: rect.x1,
+      y: rect.y1,
+      w: rect.w,
+      h: rect.h
+    };
+    ws.send(JSON.stringify(msg));
+    rect.drag = false;
+    var ctx = element.getContext('2d');
+    ctx.clearRect(0,0,element.width,element.height);
+  }
+}
+
+function onMouseMoveCanvasDrawRect(event, element) {
+  if (rect.drag) {
+    rect.w = event.offsetX - rect.x1;
+    rect.h = event.offsetY - rect.y1;
+    var ctx = element.getContext('2d');
+    ctx.clearRect(0,0,element.offsetWidth,element.offsetHeight);
+    ctx.setLineDash([]);
+    ctx.strokeStyle = "#FF0000";
+    ctx.strokeRect(rect.x1, rect.y1, rect.w, rect.h);
+    console.log("rect=" + rect.x1 + "," + rect.y1 + "," + rect.w + "," + rect.h);
+  }
 }
 
 setTimeout(connect, delay);

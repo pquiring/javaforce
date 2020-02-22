@@ -67,6 +67,7 @@ public class WebUIClient {
           isReady = true;
           String html = root.html();
           sendEvent("body", "sethtml", new String[] {"html=" + html});
+          root.events();
           break;
         case "mousedown":
           Menu.onMouseDownBody(this, args);
