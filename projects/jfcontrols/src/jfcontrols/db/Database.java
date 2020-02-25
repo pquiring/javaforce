@@ -5,7 +5,6 @@ package jfcontrols.db;
  * @author pquiring
  */
 
-import java.io.*;
 import java.util.*;
 
 import javaforce.*;
@@ -36,6 +35,11 @@ public class Database {
   public static Table cards;
   public static Table groups;
   public static Table timezones;
+  //vision system
+  public static Table visioncameras;
+  public static Table visionprograms;
+  public static Table visionshots;
+  public static Table visionareas;  //ROI
 
   public static TableList rungs;
   public static TableList blocks;
@@ -67,6 +71,11 @@ public class Database {
     cards = Table.load(Paths.dataPath + "/config/cards.dat");
     groups = Table.load(Paths.dataPath + "/config/groups.dat");
     timezones = Table.load(Paths.dataPath + "/config/timezones.dat");
+    //vision system
+    visioncameras = Table.load(Paths.dataPath + "/config/visioncameras.dat");
+    visionprograms = Table.load(Paths.dataPath + "/config/visionprograms.dat");
+    visionshots = Table.load(Paths.dataPath + "/config/visionshots.dat");
+    visionareas = Table.load(Paths.dataPath + "/config/visionareas.dat");
 
     String version = getConfig("version");
     if (version == null) version = "0.0";
@@ -75,12 +84,14 @@ public class Database {
       case "1.1":
         break;
       case "1.0":
-        create_card_system();
+//        create_card_system();
+        create_vision_system();
         update_version();
         break;
       default:
         create();
-        create_card_system();
+//        create_card_system();
+        create_vision_system();
         break;
     }
   }
@@ -103,6 +114,15 @@ public class Database {
     funcs = null;
     rungs = null;
     blocks = null;
+    watches = null;
+    readers = null;
+    cards = null;
+    groups = null;
+    timezones = null;
+    visioncameras = null;
+    visionprograms = null;
+    visionshots = null;
+    visionareas = null;
   }
 
   public static void restart() {
@@ -112,6 +132,7 @@ public class Database {
 
   private static void update_version() {
     setConfig("version", Version);
+    create_main_menu(getPanelByName("jfc_menu").id);
   }
 
   private static void create() {
@@ -341,20 +362,7 @@ public class Database {
     celltable.save();
 
     id = addPanel("jfc_menu", true, true);
-    celltable = addCellTable("jfc_menu", id);
-//    celltable.add(new Cell(id,2,16,6,1,"label", "", "Built in Detroit, MI, USA"));
-    celltable.add(new CellRow(id,0,0,3,1,"button","","Main Panel").setFuncArg("setPanel","main"));
-    celltable.add(new CellRow(id,0,1,3,1,"button","","Controllers").setFuncArg("setPanel","jfc_controllers"));
-    celltable.add(new CellRow(id,0,2,3,1,"button","","Tags").setFuncArg("jfc_ctrl_tags","1"));
-    celltable.add(new CellRow(id,0,3,3,1,"button","","UserDataTypes").setFuncArg("setPanel","jfc_udts"));
-    celltable.add(new CellRow(id,0,4,3,1,"button","","SysDataTypes").setFuncArg("setPanel","jfc_sdts"));
-    celltable.add(new CellRow(id,0,5,3,1,"button","","Panels").setFuncArg("setPanel","jfc_panels"));
-    celltable.add(new CellRow(id,0,6,3,1,"button","","Functions").setFuncArg("setPanel","jfc_funcs"));
-    celltable.add(new CellRow(id,0,7,3,1,"button","","Alarms").setFuncArg("setPanel","jfc_alarm_editor"));
-    celltable.add(new CellRow(id,0,8,3,1,"button","","Config").setFuncArg("setPanel","jfc_config"));
-    celltable.add(new CellRow(id,0,9,3,1,"button","","Watch").setFuncArg("setPanel","jfc_watch"));
-    celltable.add(new CellRow(id,0,10,3,1,"button","","Logoff").setFunc("jfc_logout"));
-    celltable.save();
+    create_main_menu(id);
 
     id = addPanel("jfc_controllers", "Controllers", false, true);
     celltable = addCellTable("jfc_controllers", id);
@@ -604,11 +612,82 @@ public class Database {
     udts.setMinId(IDs.uid_user);
   }
 
+  private static void create_main_menu(int id) {
+    deleteCellTableById(id);
+    Table celltable = addCellTable("jfc_menu", id);
+    celltable.add(new CellRow(id,0,0,3,1,"button","","Main Panel").setFuncArg("setPanel","main"));
+    celltable.add(new CellRow(id,0,1,3,1,"button","","Controllers").setFuncArg("setPanel","jfc_controllers"));
+    celltable.add(new CellRow(id,0,2,3,1,"button","","Tags").setFuncArg("jfc_ctrl_tags","1"));
+    celltable.add(new CellRow(id,0,3,3,1,"button","","UserDataTypes").setFuncArg("setPanel","jfc_udts"));
+    celltable.add(new CellRow(id,0,4,3,1,"button","","SysDataTypes").setFuncArg("setPanel","jfc_sdts"));
+    celltable.add(new CellRow(id,0,5,3,1,"button","","Panels").setFuncArg("setPanel","jfc_panels"));
+    celltable.add(new CellRow(id,0,6,3,1,"button","","Functions").setFuncArg("setPanel","jfc_funcs"));
+    celltable.add(new CellRow(id,0,7,3,1,"button","","Alarms").setFuncArg("setPanel","jfc_alarm_editor"));
+    celltable.add(new CellRow(id,0,8,3,1,"button","","Config").setFuncArg("setPanel","jfc_config"));
+    celltable.add(new CellRow(id,0,9,3,1,"button","","Watch").setFuncArg("setPanel","jfc_watch"));
+    celltable.add(new CellRow(id,0,10,3,1,"button","","Cameras").setFuncArg("setPanel","jfc_vision_cameras"));
+    celltable.add(new CellRow(id,0,11,3,1,"button","","Vision").setFuncArg("setPanel","jfc_vision_programs"));
+    celltable.add(new CellRow(id,0,12,3,1,"button","","Logoff").setFunc("jfc_logout"));
+    celltable.save();
+  }
+
   private static void create_card_system() {
     //addReader("name", "addr", -1);
     //addCard(123456789, -1);  //card#,user id
     addGroup("No Access");  //default access level
     addTimezone("24/7 Access");
+  }
+
+  private static void create_vision_system() {
+    Table celltable;
+    int id;
+
+    id = addPanel("jfc_vision_cameras", "Vision Cameras", false, true);
+    celltable = addCellTable("jfc_vision_cameras", id);
+    celltable.add(new CellRow(id,2,1,1,1,"label","","CID"));
+    celltable.add(new CellRow(id,3,1,3,1,"label","","Name"));
+    celltable.add(new CellRow(id,6,1,5,1,"label","","URL"));
+    celltable.add(new CellRow(id,12,1,3,1,"button","","New").setFunc("jfc_vision_camera_new"));
+    celltable.add(new CellRow(id,20,1,2,1,"link","","Help").setArg("vision_cameras"));
+    celltable.add(new CellRow(id,2,2,0,0,"table","jfc_vision_cameras",""));
+    celltable.save();
+
+    id = addPanel("jfc_vision_programs", "Vision Programs", false, true);
+    celltable = addCellTable("jfc_vision_programs", id);
+    celltable.add(new CellRow(id,2,1,1,1,"label","","PID"));
+    celltable.add(new CellRow(id,3,1,3,1,"label","","Name"));
+    celltable.add(new CellRow(id,12,1,3,1,"button","","New").setFunc("jfc_vision_program_new"));
+    celltable.add(new CellRow(id,20,1,2,1,"link","","Help").setArg("vision_programs"));
+    celltable.add(new CellRow(id,2,2,0,0,"table","jfc_vision_programs",""));
+    celltable.save();
+
+    id = addPanel("jfc_vision_shots", "Vision Shot Table", false, true);
+    celltable = addCellTable("jfc_vision_shots", id);
+    celltable.add(new CellRow(id,2,1,2,1,"label","","Camera"));
+    celltable.add(new CellRow(id,4,1,2,1,"label","","Offset"));
+    celltable.add(new CellRow(id,12,1,3,1,"button","","New").setFunc("jfc_vision_shot_new"));
+    celltable.add(new CellRow(id,20,1,2,1,"link","","Help").setArg("vision_shots"));
+    celltable.add(new CellRow(id,2,2,0,0,"table","jfc_vision_shots",""));
+    celltable.add(new CellRow(id,20,1,3,1,"button","","Load Last").setFunc("jfc_vision_shot_load_last"));
+    celltable.add(new CellRow(id,23,1,3,1,"button","","Load OK").setFunc("jfc_vision_shot_load_ok"));
+    celltable.add(new CellRow(id,26,1,3,1,"button","","Load NOK").setFunc("jfc_vision_shot_load_nok"));
+    celltable.add(new CellRow(id,23,2,3,1,"button","","Save OK").setFunc("jfc_vision_shot_save_ok"));
+    celltable.add(new CellRow(id,26,2,3,1,"button","","Save NOK").setFunc("jfc_vision_shot_save_nok"));
+    celltable.add(new CellRow(id,20,4,32,18,"layers","","jfc_vision_area"));
+    celltable.save();
+
+    id = addPanel("jfc_vision_areas", "Vision ROIs", false, true);
+    celltable = addCellTable("jfc_vision_areas", id);
+    celltable.add(new CellRow(id,2,1,3,1,"label","","Name"));
+    celltable.add(new CellRow(id,7,1,2,1,"label","","x1"));
+    celltable.add(new CellRow(id,9,1,2,1,"label","","y1"));
+    celltable.add(new CellRow(id,11,1,2,1,"label","","x2"));
+    celltable.add(new CellRow(id,13,1,2,1,"label","","y2"));
+    celltable.add(new CellRow(id,15,1,3,1,"button","","New").setFunc("jfc_vision_area_new"));
+    celltable.add(new CellRow(id,30,1,2,1,"link","","Help").setArg("vision_areas"));
+    celltable.add(new CellRow(id,2,2,0,0,"table","jfc_vision_areas",""));
+    celltable.add(new CellRow(id,20,4,32,18,"layers","","jfc_vision_area"));
+    celltable.save();
   }
 
   public static String quote(String value, String type) {
@@ -1055,6 +1134,12 @@ public class Database {
   public static void saveCellTable(String name) {
     cells.get(name).save();
   }
+  public static void deleteCellTableById(int pid) {
+    Table table = getCellTableById(pid);
+    if (table != null) {
+      cells.remove(table.id);
+    }
+  }
   public static CellRow[] getCells(String name) {
     Table table = cells.get(name);
     return table.getRows().toArray(new CellRow[0]);
@@ -1483,6 +1568,189 @@ public class Database {
     timezones.save();
   }
 
+  //vision cameras
+
+  public static void addVisionCamera() {
+    VisionCameraRow row = new VisionCameraRow();
+    int cnt = visioncameras.getCount()+1;
+    //TODO : make sure cnt is unique
+    row.cid = cnt;
+    row.name = "Camera " + cnt;
+    row.url = "";
+    visioncameras.add(row);
+    visioncameras.save();
+  }
+
+  public static void deleteVisionCamera(int id) {
+    visioncameras.remove(id);
+    visioncameras.save();
+  }
+
+  //vision programs
+
+  public static void addVisionProgram() {
+    VisionProgramRow row = new VisionProgramRow();
+    row.name = "Program " + (visionprograms.getCount()+1);
+    row.pid = visionprograms.getCount() + 1;
+    while (getVisionProgram(row.pid) != null) {
+      row.pid++;
+    }
+    visionprograms.add(row);
+    visionprograms.save();
+  }
+
+  public static VisionProgramRow getVisionProgram(int pid) {
+    int count = visionprograms.getCount();
+    ArrayList<Row> rows = visionprograms.getRows();
+    for(int a=0;a<count;a++) {
+      VisionProgramRow row = (VisionProgramRow)rows.get(a);
+      if (row.pid == pid) return row;
+    }
+    return null;
+  }
+
+  public static void deleteVisionProgram(int id) {
+    int pid = 0;
+    visionprograms.remove(id);
+    visionprograms.save();
+    deleteVisionAreas(pid);
+  }
+
+  public static int getVisionProgramPID(int id) {
+    int count = visionprograms.getCount();
+    ArrayList<Row> rows = visionprograms.getRows();
+    for(int a=0;a<count;a++) {
+      VisionProgramRow row = (VisionProgramRow)rows.get(a);
+      if (row.id == id) return row.pid;
+    }
+    JFLog.log("Error:VisionProgramRow not found for id=" + id);
+    return -1;
+  }
+
+  //vision shots
+
+  public static void addVisionShot(int pid) {
+    VisionShotRow row = new VisionShotRow();
+    row.pid = pid;
+    row.cid = 1;
+    row.offset = 0;
+    visionshots.add(row);
+    visionshots.save();
+    addVisionArea(row.pid, row.id, true);
+  }
+
+  public static void deleteVisionShot(int pid, int sid) {
+    //TODO
+  }
+
+  //vision areas (ROIs)
+
+  public static void addVisionArea(int pid, int sid, boolean locator) {
+    VisionAreaRow row = new VisionAreaRow();
+    if (locator) {
+      row.name = "Locator";
+    } else {
+      row.name = "ROI-" + (getCountVisionArea(pid, sid)+1);
+    }
+    row.pid = pid;
+    row.sid = sid;
+    row.x1 = (1920 / 2) - 50;
+    row.x2 = (1920 / 2) + 50;
+    row.y1 = (1080 / 2) - 50;
+    row.y2 = (1080 / 2) + 50;
+    visionareas.add(row);
+    visionareas.save();
+  }
+
+  public static void deleteVisionArea(int id) {
+    visionareas.remove(id);
+    visionareas.save();
+  }
+
+  public static void deleteVisionAreas(int pid) {
+    int size = visionareas.getCount();
+    ArrayList<Row> rows = visionareas.getRows();
+    for(int a=0;a<size;) {
+      VisionAreaRow row = (VisionAreaRow)rows.get(a);
+      if (row.pid == pid) {
+        visionareas.remove(row.id);
+        size--;
+      } else {
+        a++;
+      }
+    }
+  }
+
+  public static void deleteVisionAreas(int pid, int sid) {
+    int size = visionareas.getCount();
+    ArrayList<Row> rows = visionareas.getRows();
+    for(int a=0;a<size;) {
+      VisionAreaRow row = (VisionAreaRow)rows.get(a);
+      if (row.pid == pid && row.sid == sid) {
+        visionareas.remove(row.id);
+        size--;
+      } else {
+        a++;
+      }
+    }
+  }
+
+  public static int getCountVisionArea(int pid, int sid) {
+    int size = visionareas.getCount();
+    int count = 0;
+    ArrayList<Row> rows = visionareas.getRows();
+    for(int a=0;a<size;a++) {
+      VisionAreaRow row = (VisionAreaRow)rows.get(a);
+      if (row.pid == pid && row.sid == sid) count++;
+    }
+    return count;
+  }
+
+  public static VisionAreaRow[] getVisionAreas(int pid, int sid) {
+    int count = getCountVisionArea(pid, sid);
+    if (count == 0) return new VisionAreaRow[0];
+    VisionAreaRow arearows[] = new VisionAreaRow[count];
+    int size = visionareas.getCount();
+    int pos = 0;
+    ArrayList<Row> rows = visionareas.getRows();
+    for(int a=0;a<size;a++) {
+      VisionAreaRow row = (VisionAreaRow)rows.get(a);
+      if (row.pid == pid && row.sid == sid) {
+        arearows[pos++] = row;
+      }
+    }
+    return arearows;
+  }
+
+  public static VisionAreaRow getVisionArea(int pid, int sid, int rid) {
+    int count = getCountVisionArea(pid, sid);
+    if (count == 0) return null;
+    int size = visionareas.getCount();
+    int pos = 0;
+    ArrayList<Row> rows = visionareas.getRows();
+    for(int a=0;a<size;a++) {
+      VisionAreaRow row = (VisionAreaRow)rows.get(a);
+      if (row.pid == pid && row.id == rid) {
+        return row;
+      }
+    }
+    return null;
+  }
+
+  public static VisionAreaRow getVisionAreaLocator(int pid) {
+    int size = visionareas.getCount();
+    int pos = 0;
+    ArrayList<Row> rows = visionareas.getRows();
+    for(int a=0;a<size;a++) {
+      VisionAreaRow row = (VisionAreaRow)rows.get(a);
+      //first area is always locator
+      if (row.pid == pid) {
+        return row;
+      }
+    }
+    return null;
+  }
+
   public static boolean update(String tableName, String id, String col, String value, String type) {
     Table table = null;
     TableList tablelist = null;
@@ -1763,6 +2031,169 @@ public class Database {
         }
         break;
       }
+      case "visioncameras": {
+        table = visioncameras;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              VisionCameraRow row = (VisionCameraRow)rows.get(a);
+              if (row.id == rowid) {
+                row.name = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "url": {
+            for(int a=0;a<cnt;a++) {
+              VisionCameraRow row = (VisionCameraRow)rows.get(a);
+              if (row.id == rowid) {
+                row.url = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "visionprograms": {
+        table = visionprograms;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              VisionProgramRow row = (VisionProgramRow)rows.get(a);
+              if (row.id == rowid) {
+                row.name = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "pid": {
+            for(int a=0;a<cnt;a++) {
+              VisionProgramRow row = (VisionProgramRow)rows.get(a);
+              if (row.id == rowid) {
+                int newpid = Integer.valueOf(value);
+                VisionProgramRow row2 = getVisionProgram(newpid);
+                if (row2 != null && row2 != row) {
+                  //new value is not unique
+                  return false;
+                }
+                row.pid = newpid;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "visionshots": {
+        table = visionshots;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "camera": {
+            for(int a=0;a<cnt;a++) {
+              VisionShotRow row = (VisionShotRow)rows.get(a);
+              if (row.id == rowid) {
+                row.cid = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "offset": {
+            for(int a=0;a<cnt;a++) {
+              VisionShotRow row = (VisionShotRow)rows.get(a);
+              if (row.id == rowid) {
+                row.offset = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "visionareas": {
+        table = visionareas;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              VisionAreaRow row = (VisionAreaRow)rows.get(a);
+              if (row.id == rowid) {
+                row.name = value;
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "x1": {
+            for(int a=0;a<cnt;a++) {
+              VisionAreaRow row = (VisionAreaRow)rows.get(a);
+              if (row.id == rowid) {
+                row.x1 = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "y1": {
+            for(int a=0;a<cnt;a++) {
+              VisionAreaRow row = (VisionAreaRow)rows.get(a);
+              if (row.id == rowid) {
+                row.y1 = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "x2": {
+            for(int a=0;a<cnt;a++) {
+              VisionAreaRow row = (VisionAreaRow)rows.get(a);
+              if (row.id == rowid) {
+                row.x2 = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+          case "y2": {
+            for(int a=0;a<cnt;a++) {
+              VisionAreaRow row = (VisionAreaRow)rows.get(a);
+              if (row.id == rowid) {
+                row.y2 = Integer.valueOf(value);
+                table.save();
+                return true;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
       default: {
         JFLog.log("Error:Database.update():unknown table:" + tableName);
         return false;
@@ -2010,6 +2441,150 @@ public class Database {
               FunctionRow row = (FunctionRow)rows.get(a);
               if (row.id == rowid) {
                 return row.name;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "visioncameras": {
+        table = visioncameras;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "cid": {
+            for(int a=0;a<cnt;a++) {
+              VisionCameraRow row = (VisionCameraRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.cid);
+              }
+            }
+            break;
+          }
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              VisionCameraRow row = (VisionCameraRow)rows.get(a);
+              if (row.id == rowid) {
+                return row.name;
+              }
+            }
+            break;
+          }
+          case "url": {
+            for(int a=0;a<cnt;a++) {
+              VisionCameraRow row = (VisionCameraRow)rows.get(a);
+              if (row.id == rowid) {
+                return row.url;
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "visionprograms": {
+        table = visionprograms;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              VisionProgramRow row = (VisionProgramRow)rows.get(a);
+              if (row.id == rowid) {
+                return row.name;
+              }
+            }
+            break;
+          }
+          case "pid": {
+            for(int a=0;a<cnt;a++) {
+              VisionProgramRow row = (VisionProgramRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.pid);
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "visionshots": {
+        table = visionshots;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "cid": {
+            for(int a=0;a<cnt;a++) {
+              VisionShotRow row = (VisionShotRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.cid);
+              }
+            }
+            break;
+          }
+          case "offset": {
+            for(int a=0;a<cnt;a++) {
+              VisionShotRow row = (VisionShotRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.offset);
+              }
+            }
+            break;
+          }
+        }
+        break;
+      }
+      case "visionareas": {
+        table = visionareas;
+        ArrayList<Row> rows = table.getRows();
+        int cnt = rows.size();
+        int rowid = Integer.valueOf(id);
+        switch (col) {
+          case "name": {
+            for(int a=0;a<cnt;a++) {
+              VisionAreaRow row = (VisionAreaRow)rows.get(a);
+              if (row.id == rowid) {
+                return row.name;
+              }
+            }
+            break;
+          }
+          case "x1": {
+            for(int a=0;a<cnt;a++) {
+              VisionAreaRow row = (VisionAreaRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.x1);
+              }
+            }
+            break;
+          }
+          case "y1": {
+            for(int a=0;a<cnt;a++) {
+              VisionAreaRow row = (VisionAreaRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.y1);
+              }
+            }
+            break;
+          }
+          case "x2": {
+            for(int a=0;a<cnt;a++) {
+              VisionAreaRow row = (VisionAreaRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.x2);
+              }
+            }
+            break;
+          }
+          case "y2": {
+            for(int a=0;a<cnt;a++) {
+              VisionAreaRow row = (VisionAreaRow)rows.get(a);
+              if (row.id == rowid) {
+                return Integer.toString(row.y2);
               }
             }
             break;

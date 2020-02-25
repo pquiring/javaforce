@@ -156,8 +156,9 @@ public class FunctionService extends Thread {
       TagsService.doWrites();
       long end = System.currentTimeMillis();
       long scantime = end - FunctionRuntime.now;
-      if (!Main.debug) {
-        tag.setValue(Long.toString(scantime));
+      tag.setValue(Long.toString(scantime));
+      if (Main.debug_scantime) {
+        JFLog.log("scantime=" + scantime);
       }
     }
     JFLog.log("Function.Service stopping...");

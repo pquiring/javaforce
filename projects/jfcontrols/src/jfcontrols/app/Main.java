@@ -5,6 +5,7 @@ package jfcontrols.app;
  * @author pquiring
  */
 
+import java.io.ByteArrayOutputStream;
 import javaforce.*;
 import javaforce.webui.*;
 
@@ -19,12 +20,19 @@ public class Main implements WebUIHandler {
   public static String version = "0.4";
   public static ClassLoader loader;
   public static boolean debug = false;
+  public static boolean debug_scantime = false;
   public static String msgs = "";
+  public static WebUIServer server;
 
   public static void main(String args[]) {
     if (args != null && args.length > 0) {
-      if (args[0].equals("debug")) {
-        debug = true;
+      for(int a=0;a<args.length;a++) {
+        if (args[a].equals("debug")) {
+          debug = true;
+        }
+        if (args[a].equals("scantime")) {
+          debug_scantime = true;
+        }
       }
     }
 //    if (debug) SQL.debug = true;
@@ -38,7 +46,7 @@ public class Main implements WebUIHandler {
     //start api server
     APIService.main();
     //start webui server
-    WebUIServer server = new WebUIServer();
+    server = new WebUIServer();
     server.start(new Main(), 34000, false);
   }
 
@@ -53,9 +61,22 @@ public class Main implements WebUIHandler {
     return Panels.getPanel("main", client);
   }
 
-  public byte[] getResource(String string) {
-    System.out.println("getResource(" + string + ")");
-    return null;
+  public byte[] getResource(String url) {
+    System.out.println("getResource(" + url + ")");
+    // url = /user/hash/id/counter
+    String f[] = url.split("/");
+    //empty = f[0];
+    //user = f[1];
+    String hash = f[2];
+    String id = f[3];
+    WebUIClient client = server.getClient(hash);
+    if (client == null) {
+      JFLog.log("Error:Main.getResources():client==null");
+    }
+    JFImage img = VisionSystem.generateImage(client);
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    img.savePNG(baos);
+    return baos.toByteArray();
   }
 
   public void clientConnected(WebUIClient client) {

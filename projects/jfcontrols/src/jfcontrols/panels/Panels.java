@@ -210,7 +210,11 @@ public class Panels {
       c.setProperty("func", cells[a].func);
       c.setProperty("arg", cells[a].arg);
       c.setProperty("events", cells[a].events);
-      c.setName(cells[a].name);
+      if (cells[a].name != null) {
+        c.setName(cells[a].name);
+      } else if (cells[a].tag != null) {
+        c.setName(cells[a].tag);
+      }
       if (nodes != null && nodes.length > a) {
         c.setProperty("node", nodes[a]);
         nodes[a].comp = c;
@@ -293,7 +297,8 @@ public class Panels {
       case "checkbox": return getCheckBox(v, client);
       case "table": return getTable(v, container, r, client);
       case "overlay": return getOverlay(v);
-      case "image": return getImage(v);
+      case "image": Image img = getImage(v); client.setProperty(v.text, img); return img;
+      case "layers": LayersPanel panel = getLayersPanel(v, client); client.setProperty(v.text, panel); return panel;
       case "autoscroll": return getAutoScroll(v, container, client);
       case "light": return getLight(v);
       case "light3": return getLight3(v);
@@ -641,6 +646,13 @@ public class Panels {
       Events.release(c);
     });
     return img;
+  }
+  private static LayersPanel getLayersPanel(CellRow v, WebUIClient client) {
+    LayersPanel panel = new LayersPanel();
+    int pid = (Integer)client.getProperty("visionprogram");
+    int sid = (Integer)client.getProperty("visionshot");
+    VisionSystem.setupVisionImage(panel, pid, sid, -1);
+    return panel;
   }
   private static CellRow createCell(int x, int y, int w, int h, String comp, String name, String text, String tag, String func, String arg, String style /*, String events */) {
     CellRow cell = new CellRow(-1,x,y,w,h,comp,name,text);
@@ -1002,6 +1014,59 @@ public class Panels {
       }
       case "jfc_config_errors": {
         cells.add(createCell(0, 0, 20, 4, "textarea", null, Main.msgs, null, null, null, "readonly"));
+        break;
+      }
+      case "jfc_vision_cameras": {
+        VisionCameraRow[] cams = Database.visioncameras.getRows().toArray(new VisionCameraRow[0]);
+        for(int a=0;a<cams.length;a++) {
+          String id = Integer.toString(cams[a].id);
+          cells.add(createCell(0, a, 1, 1, "textfield", null, id, "jfc_visioncameras_cid_int_" + id, null, null, null));
+          cells.add(createCell(1, a, 3, 1, "textfield", null, id, "jfc_visioncameras_name_int_" + id, null, null, null));
+          cells.add(createCell(4, a, 5, 1, "textfield", null, cams[a].url, "jfc_visioncameras_url_str_" + id, null, null, null));
+          cells.add(createCell(10, a, 2, 1, "button", null, "Delete", null, "jfc_visioncamera_delete", id, null));
+        }
+        break;
+      }
+      case "jfc_vision_programs": {
+        VisionProgramRow[] prgs = Database.visionprograms.getRows().toArray(new VisionProgramRow[0]);
+        for(int a=0;a<prgs.length;a++) {
+          String id = Integer.toString(prgs[a].id);
+          cells.add(createCell(0, a, 1, 1, "textfield", null, id, "jfc_visionprograms_pid_int_" + id, null, null, null));
+          cells.add(createCell(1, a, 3, 1, "textfield", null, prgs[a].name, "jfc_visionprograms_name_str_" + id, null, null, null));
+          cells.add(createCell(4, a, 2, 1, "button", null, "Edit", null, "jfc_vision_program_edit", id, null));
+          cells.add(createCell(6, a, 2, 1, "button", null, "Delete", null, "jfc_vision_program_delete", id, null));
+        }
+        break;
+      }
+      case "jfc_vision_shots": {
+        VisionShotRow[] prgs = Database.visionshots.getRows().toArray(new VisionShotRow[0]);
+        for(int a=0;a<prgs.length;a++) {
+          String id = Integer.toString(prgs[a].id);
+          cells.add(createCell(0, a, 2, 1, "textfield", null, id, "jfc_visionshots_cid_int_" + id, null, null, null));
+          cells.add(createCell(2, a, 2, 1, "textfield", null, id, "jfc_visionshots_offset_int_" + id, null, null, null));
+          cells.add(createCell(4, a, 2, 1, "button", null, "Edit", null, "jfc_vision_shot_edit", id, null));
+          cells.add(createCell(6, a, 2, 1, "button", null, "Select", null, "jfc_vision_shot_select", id, null));
+          cells.add(createCell(8, a, 2, 1, "button", null, "Delete", null, "jfc_vision_shot_delete", id, null));
+        }
+        break;
+      }
+      case "jfc_vision_areas": {
+        int pid = (Integer)client.getProperty("visionprogram");
+        int sid = (Integer)client.getProperty("visionshot");
+        VisionAreaRow[] rois = Database.getVisionAreas(pid, sid);
+        for(int a=0;a<rois.length;a++) {
+          VisionAreaRow row = rois[a];
+          String id = Integer.toString(row.id);
+          cells.add(createCell(0, a, 3, 1, "textfield", null, rois[a].name, "jfc_visionareas_name_str_" + id, null, null, null));
+          cells.add(createCell(3, a, 2, 1, "textfield", null, Integer.toString(row.x1), "jfc_visionareas_x1_int_" + id, null, null, null));
+          cells.add(createCell(5, a, 2, 1, "textfield", null, Integer.toString(row.y1), "jfc_visionareas_y1_int_" + id, null, null, null));
+          cells.add(createCell(7, a, 2, 1, "textfield", null, Integer.toString(row.x2), "jfc_visionareas_x2_int_" + id, null, null, null));
+          cells.add(createCell(9, a, 2, 1, "textfield", null, Integer.toString(row.y2), "jfc_visionareas_y2_int_" + id, null, null, null));
+          cells.add(createCell(11, a, 2, 1, "button", null, "Select", null, "jfc_vision_area_select", id, null));
+          if (a > 0) {
+            cells.add(createCell(13, a, 2, 1, "button", null, "Delete", null, "jfc_vision_area_delete", id, null));
+          }
+        }
         break;
       }
       default: {

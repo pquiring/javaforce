@@ -9,6 +9,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.webui.*;
+import javaforce.webui.event.*;
 import javaforce.controls.*;
 
 import jfcontrols.app.*;
@@ -1300,6 +1301,169 @@ public class Events {
           //TODO
         }
         client.setPanel(Panels.getPanel("jfc_alarm_editor", client));
+        break;
+      }
+
+      case "jfc_vision_camera_new": {
+        synchronized(lock) {
+          Database.addVisionCamera();
+        }
+        client.setPanel(Panels.getPanel("jfc_vision_cameras", client));
+        break;
+      }
+
+      case "jfc_vision_camera_save": {
+        //not needed?
+        break;
+      }
+
+      case "jfc_vision_camera_delete": {
+        synchronized(lock) {
+          int id = Integer.valueOf(arg);
+          Database.deleteVisionCamera(id);
+        }
+        client.setPanel(Panels.getPanel("jfc_vision_cameras", client));
+        break;
+      }
+
+      case "jfc_vision_program_new": {
+        synchronized(lock) {
+          Database.addVisionProgram();
+        }
+        client.setPanel(Panels.getPanel("jfc_vision_programs", client));
+        break;
+      }
+
+      case "jfc_vision_program_save": {
+        //TODO
+        break;
+      }
+
+      case "jfc_vision_program_edit": {
+        int id = Integer.valueOf(arg);
+        int pid = Database.getVisionProgramPID(id);
+        client.setProperty("visionprogram", pid);
+        client.setProperty("visionshot", -1);
+        client.setProperty("visionarea", -1);
+        client.setPanel(Panels.getPanel("jfc_vision_shots", client));
+        break;
+      }
+
+      case "jfc_vision_program_delete": {
+        synchronized(lock) {
+          int id = Integer.valueOf(arg);
+          Database.deleteVisionProgram(id);
+        }
+        client.setPanel(Panels.getPanel("jfc_vision_shots", client));
+        break;
+      }
+
+      case "jfc_vision_shot_new": {
+        int pid = (Integer)client.getProperty("visionprogram");
+        synchronized(lock) {
+          Database.addVisionShot(pid);
+        }
+        client.setPanel(Panels.getPanel("jfc_vision_shots", client));
+        break;
+      }
+
+      case "jfc_vision_shot_save": {
+        //TODO
+        break;
+      }
+
+      case "jfc_vision_shot_edit": {
+        int sid = Integer.valueOf(arg);
+        client.setProperty("visionshot", sid);
+        client.setPanel(Panels.getPanel("jfc_vision_areas", client));
+        break;
+      }
+
+      case "jfc_vision_shot_select": {
+        int sid = Integer.valueOf(arg);
+        client.setProperty("visionshot", sid);
+        client.setPanel(Panels.getPanel("jfc_vision_shots", client));
+        break;
+      }
+
+      case "jfc_vision_shot_delete": {
+        synchronized(lock) {
+          int id = Integer.valueOf(arg);
+          int pid = (Integer)client.getProperty("visionprogram");
+          Database.deleteVisionShot(pid, id);
+        }
+        client.setPanel(Panels.getPanel("jfc_vision_shots", client));
+        break;
+      }
+
+      case "jfc_vision_shot_save_load_last": {
+        //TODO
+        break;
+      }
+
+      case "jfc_vision_shot_save_load_ok": {
+        //TODO
+        break;
+      }
+
+      case "jfc_vision_shot_save_load_nok": {
+        //TODO
+        break;
+      }
+
+      case "jfc_vision_shot_save_save_ok": {
+        //TODO
+        break;
+      }
+
+      case "jfc_vision_shot_save_save_nok": {
+        //TODO
+        break;
+      }
+
+      case "jfc_vision_area_new": {
+        int pid = (Integer)client.getProperty("visionprogram");
+        int sid = (Integer)client.getProperty("visionshot");
+        synchronized(lock) {
+          Database.addVisionArea(pid, sid, false);
+        }
+        client.setPanel(Panels.getPanel("jfc_vision_areas", client));
+        break;
+      }
+
+      case "jfc_vision_area_save": {
+        //TODO
+        break;
+      }
+
+      case "jfc_vision_area_update": {
+        int pid = (Integer)client.getProperty("visionprogram");
+        int sid = (Integer)client.getProperty("visionshot");
+        int id = (Integer)client.getProperty("visionarea");
+        LayersPanel panel = (LayersPanel)client.getProperty("jfc_vision_area");
+        VisionSystem.setupVisionImage(panel, pid, sid, id);
+        break;
+      }
+
+      case "jfc_vision_area_select": {
+        int pid = (Integer)client.getProperty("visionprogram");
+        int sid = (Integer)client.getProperty("visionshot");
+        int id = Integer.valueOf(arg);
+        client.setProperty("visionarea", id);
+        LayersPanel panel = (LayersPanel)client.getProperty("jfc_vision_area");
+        VisionSystem.setupVisionImage(panel, pid, sid, id);
+        break;
+      }
+
+      case "jfc_vision_area_delete": {
+        int id = Integer.valueOf(arg);
+        synchronized(lock) {
+          Database.deleteVisionArea(id);
+        }
+        int pid = (Integer)client.getProperty("visionprogram");
+        int rid = Database.getVisionAreaLocator(pid).id;
+        client.setProperty("visionarea", rid);
+        client.setPanel(Panels.getPanel("jfc_vision_areas", client));
         break;
       }
 
