@@ -31,7 +31,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private MediaVideoDecoder decoder;
   private MediaEncoder encoder;
   private RandomAccessFile raf;
-  private RandomAccessFile encoder_raf;
   private long file_size;
   private long folder_size;
   private int width = -1, height = -1;
@@ -61,7 +60,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
 
   public int write(MediaCoder coder, byte[] buffer) {
 //    JFLog.log("write:" + buffer.length);
-    writeFile(encoder_raf, buffer);
+    writeFile(buffer);
     file_size += buffer.length;
     folder_size += buffer.length;
     return buffer.length;
@@ -73,10 +72,10 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     try {
       switch (how) {
         case MediaCoder.SEEK_SET: newpos = pos; break;
-        case MediaCoder.SEEK_CUR: long curpos = encoder_raf.getFilePointer(); newpos = pos + curpos; break;
-        case MediaCoder.SEEK_END: long size = encoder_raf.length(); newpos = size + pos; break;
+        case MediaCoder.SEEK_CUR: long curpos = raf.getFilePointer(); newpos = pos + curpos; break;
+        case MediaCoder.SEEK_END: long size = raf.length(); newpos = size + pos; break;
       }
-      encoder_raf.seek(newpos);
+      raf.seek(newpos);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -87,10 +86,15 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
 
   /** Frame to be recorded. */
   private static class Frames {
-    public void add(Packet packet, RandomAccessFile raf, boolean stop, boolean key_frame) {
+    public void stop() {
+      this.stop[head] = true;
+      int new_head = head + 1;
+      if (new_head == maxFrames) new_head = 0;
+      head = new_head;
+    }
+    public void add(Packet packet, boolean key_frame) {
       this.packets.add(packet);
-      this.raf[head] = raf;
-      this.stop[head] = stop;
+      this.stop[head] = false;
       this.key_frame[head] = key_frame;
       type[head] = packets.data[packet.offset + 4] & 0x1f;
       int new_head = head + 1;
@@ -102,10 +106,12 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         JFLog.log("Error:Frames Buffer underflow");
         return;
       }
+      if (!stop[tail]) {
+        packets.removePacket();
+      }
       int new_tail = tail + 1;
       if (new_tail == maxFrames) new_tail = 0;
       tail = new_tail;
-      packets.removePacket();
     }
     public boolean empty() {
       return tail == head;
@@ -115,13 +121,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     public Packets packets = new Packets();
 
     public boolean[] stop = new boolean[maxFrames];
-    public RandomAccessFile[] raf = new RandomAccessFile[maxFrames];
     public int[] type = new int[maxFrames];
     public boolean[] key_frame = new boolean[maxFrames];
-
-    public void closeFile() {
-      try { raf[tail].close(); } catch (Exception e) {}
-    }
   }
 
   private static int maxPacketsSize = 10 * 1024 * 1024;
@@ -340,9 +341,35 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
           folder_size -= rec.size;
         }
         do {
+          if (file_size > max_file_size) {
+            JFLog.log(camera.name + " : max file size");
+            if (encoder != null) {
+              encoder.stop();
+              encoder = null;
+            }
+            if (raf != null) {
+              closeFile();
+              raf = null;
+            }
+            break;
+          }
           if (frames.empty()) break;
           int frame_tail = frames.tail;
-          encoder_raf = frames.raf[frame_tail];
+          if (frames.stop[frame_tail]) {
+            if (encoder != null) {
+              encoder.stop();
+              encoder = null;
+            }
+            if (raf != null) {
+              closeFile();
+              raf = null;
+            }
+            frames.removeFrame();
+            break;
+          }
+          if (raf == null) {
+            createFile();
+          }
           if (encoder == null) {
             encoder = new MediaEncoder();
             encoder.framesPerKeyFrame = (int)fps;
@@ -355,11 +382,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
           }
           int packet_tail = frames.packets.tail;
           encoder.addVideoEncoded(frames.packets.data, frames.packets.offset[packet_tail], frames.packets.length[packet_tail], frames.key_frame[frame_tail]);
-          if (frames.stop[frame_tail]) {
-            encoder.stop();
-            encoder = null;
-            frames.closeFile();
-          }
           frames.removeFrame();
         } while (true);
       }
@@ -369,7 +391,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         encoder = null;
       }
       if (raf != null) {
-        closeFile(raf);
+        closeFile();
         raf = null;
       }
     } catch (Exception e) {
@@ -545,15 +567,17 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
   }
 
-  private void closeFile(RandomAccessFile raf) {
+  private void closeFile() {
     try {
       raf.close();
     } catch (Exception e) {
       JFLog.log(e);
     }
+    frameCount = 0;
+    file_size = 0;
   }
 
-  private void writeFile(RandomAccessFile raf, byte data[]) {
+  private void writeFile(byte data[]) {
     try {
       raf.write(data);
     } catch (Exception e) {
@@ -714,36 +738,17 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       recording = true;  //always recording
     }
     if (recording) {
-      if (file_size > max_file_size) {
-        JFLog.log(camera.name + " : max file size");
-        end_recording = true;
-      }
-      if (raf == null) {
-        createFile();
-        //add everything from packets history
-        do {
-          if (!packets_encode.haveCompleteFrame()) break;
-          key_frame = packets_encode.isNextFrame_KeyFrame();
-          nextPacket = packets_encode.getNextFrame();
-          frames.add(nextPacket, raf, false, key_frame);
-          frameCount++;
-          packets_encode.removeNextFrame();
-        } while (true);
-      }
-      frameCount++;
-      boolean had_frame = false;
-      if (packets_encode.haveCompleteFrame()) {
-        nextPacket = packets_encode.getNextFrame();
+      while (packets_encode.haveCompleteFrame()) {
         key_frame = packets_encode.isNextFrame_KeyFrame();
-        frames.add(nextPacket, raf, end_recording, key_frame);
-        had_frame = true;
+        nextPacket = packets_encode.getNextFrame();
+        frames.add(nextPacket, key_frame);
+        frameCount++;
         packets_encode.removeNextFrame();
       }
-      if (end_recording && had_frame) {
-        JFLog.log(camera.name + " : end recording");
+      if (end_recording) {
+        frames.stop();
         end_recording = false;
         recording = false;
-        raf = null;
       }
     }
   }
