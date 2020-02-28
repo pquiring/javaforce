@@ -26,6 +26,7 @@ public abstract class RTSP {
    * Opens the transport and sets the RTSPInterface callback.
    */
   protected boolean init(String localhost, int localport, RTSPInterface iface, boolean server, TransportType type) throws Exception {
+    JFLog.log(log, "RTSP:local=" + localhost + ":" + localport);
     rinstance = null;
     this.iface = iface;
     this.server = server;

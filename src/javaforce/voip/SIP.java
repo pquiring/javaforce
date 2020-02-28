@@ -28,6 +28,7 @@ public abstract class SIP {
    * Opens the transport and sets the SIPInterface callback.
    */
   protected boolean init(String localhost, int localport, SIPInterface iface, boolean server, TransportType type) throws Exception {
+    JFLog.log("SIP:local=" + localhost + ":" + localport);
     rinstance = null;
     this.iface = iface;
     this.server = server;

@@ -21,7 +21,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private final static boolean debug_motion = false;
   private final static boolean debug_motion_image = false;
   private final static boolean debug_short_clips = false;
-  private final static boolean debug_ffmpeg = false;
 
   private RTSPClient client;
   private SDP sdp;

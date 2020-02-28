@@ -7,6 +7,7 @@ import java.util.*;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.voip.RTP;
 
 public class DVRService extends Thread {
   public static DVRService dvrService;
@@ -71,6 +72,7 @@ public class DVRService extends Thread {
   }
 
   private void setupFirewall() {
+    RTP.setPortRange(5000, 10000);
     try {
       File firewall_setup = new File(Paths.dataPath + "/firewall.setup");
       if (firewall_setup.exists()) return;

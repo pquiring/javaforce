@@ -423,7 +423,6 @@ public class RTP implements STUN.Listener {
           }
           String remoteip = pack.getAddress().getHostAddress();
           int remoteport = pack.getPort();
-//          JFLog.log(log, "RTP:receive:" + remoteip + ":" + remoteport);  //test
           if (rtcp) {
             RTPChannel channel = rtp.findChannel(remoteip, remoteport-1);
             if (channel == null) {
