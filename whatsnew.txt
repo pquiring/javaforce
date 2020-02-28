@@ -1,5 +1,11 @@
 What's new...
 
+Feb 28/2020 : JF 19.2.0 released
+  - jfDVR/0.2
+    - fix : run in one process or system runs out of virtual memory
+  - jfPasswords/0.22
+    - fix : msi package was missing DLLs
+
 Jan 30/2020 : JF 19.1.0 released
   - jfBackup/0.10
     - fix restore job not detecting drive is empty
