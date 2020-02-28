@@ -344,7 +344,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   public void run() {
     try {
       listFiles();
-      JFLog.log(log, camera.name + " : Connecting");
       if (!connect()) return;
       while (active) {
         JF.sleep(100);
@@ -466,7 +465,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     remotehost = url;
     this.url = "rtsp://" + remotehost + ":" + remoteport + uri;
-    JFLog.log(log, camera.name + ":connecting");
+    JFLog.log(log, camera.name + " : Connecting");
     if (!client.init(remotehost, remoteport, getLocalPort(), this, TransportType.TCP)) {
       System.out.println("RTSP init failed");
       return false;
@@ -781,13 +780,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         frames.add(nextPacket, key_frame);
         frameCount++;
         packets_encode.removeNextFrame();
-        if (key_frame) {
-          Runtime rt = Runtime.getRuntime();
-          long max_memory = rt.maxMemory();
-          long total_memory = rt.totalMemory();
-          System.out.println("max=" + max_memory);
-          System.out.println("total=" + total_memory);
-        }
       }
       if (end_recording) {
         frames.stop();
