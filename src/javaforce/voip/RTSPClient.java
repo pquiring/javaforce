@@ -66,11 +66,11 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
         if (!startSTUN()) return false;
       }
       findlocalhost();
-      JFLog.log("localhost = " + localhost + " for remotehost = " + remotehost);
+      JFLog.log(log, "localhost = " + localhost + " for remotehost = " + remotehost);
       if (this.remotehost.equals("127.0.0.1")) {
         this.remotehost = localhost;
         remoteip = resolve(this.remotehost);
-        JFLog.log("changed 127.0.0.1 to " + this.remotehost + " " + this.remoteip);
+        JFLog.log(log, "changed 127.0.0.1 to " + this.remotehost + " " + this.remoteip);
       }
       if (nat == NAT.STUN || nat == NAT.ICE) {
         stopSTUN();
@@ -79,7 +79,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
       return super.init(localhost, localport, this, false, type);
     } catch (Exception e) {
       if (stun != null) stopSTUN();
-      JFLog.log(e);
+      JFLog.log(log, e);
       return false;
     }
   }
@@ -162,7 +162,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
       s.connect(new InetSocketAddress(host, 80), 1000);
       localhost = s.getLocalAddress().getHostAddress();
       try { s.close(); } catch (Exception e) {}
-      JFLog.log("Detected IP connecting to WebServer at " + host);
+      JFLog.log(log, "Detected IP connecting to WebServer at " + host);
       return true;
     } catch (Exception e) {
       return false;
@@ -206,11 +206,11 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     stunWaiting = true;
     synchronized(stunLock) {
       stun.requestPublicIP();
-      try {stunLock.wait(1000);} catch (Exception e) {JFLog.log(e);}
+      try {stunLock.wait(1000);} catch (Exception e) {JFLog.log(log, e);}
       stunWaiting = false;
     }
     if (stunResponse) {
-      JFLog.log("Detected IP using STUN");
+      JFLog.log(log, "Detected IP using STUN");
     }
     return stunResponse;
   }
@@ -221,7 +221,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     try {
       InetAddress local = InetAddress.getLocalHost();
       localhost = local.getHostAddress();
-      JFLog.log("Detected IP using Java:" + localhost);
+      JFLog.log(log, "Detected IP using Java:" + localhost);
       return true;
     } catch (Exception e) {
       return false;
@@ -232,11 +232,11 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Determines local IP address. Method depends on NAT traversal type selected.
    */
   private void findlocalhost() {
-    JFLog.log("Detecting localhost for remotehost = " + remotehost);
+    JFLog.log(log, "Detecting localhost for remotehost = " + remotehost);
     if (useNATOnPrivateNetwork || !isPrivateNetwork(remoteip)) {
       if (nat == NAT.STUN || nat == NAT.ICE) {
         if (findlocalhost_stun()) return;
-        JFLog.log("RTSP:STUN:Failed");
+        JFLog.log(log, "RTSP:STUN:Failed");
       }
     }
     //try connecting to remotehost on webserver port
@@ -259,7 +259,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Issues a command to the RTSP server.
    */
   private boolean issue(RTSPSession sess, String cmd, boolean sessid) {
-    JFLog.log("sessid:" + sess.id + "\r\nissue command : " + cmd + " from : " + user + " to : " + remotehost);
+    JFLog.log(log, "sessid:" + sess.id + "\r\nissue command : " + cmd + " from : " + user + " to : " + remotehost);
     sess.remotehost = remoteip;
     sess.remoteport = remoteport;
     sess.cmd = cmd;
@@ -352,7 +352,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   public void packet(String msg[], String remoteip, int remoteport) {
     try {
       if (!remoteip.equals(this.remoteip) || remoteport != this.remoteport) {
-        JFLog.log("Ignoring packet from unknown host:" + remoteip + ":" + remoteport);
+        JFLog.log(log, "Ignoring packet from unknown host:" + remoteip + ":" + remoteport);
         return;
       }
       String req = null;
@@ -374,11 +374,11 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
 
       int type = getResponseType(msg);
       if (type != -1) {
-        JFLog.log("id:" + sess.id + "\r\nreply=" + type);
+        JFLog.log(log, "id:" + sess.id + "\r\nreply=" + type);
       } else {
         req = getRequest(msg);
         sess.uri = getURI(msg);
-        JFLog.log("id:" + sess.id + "\r\nrequest=" + req);
+        JFLog.log(log, "id:" + sess.id + "\r\nrequest=" + req);
       }
       switch (type) {
         case 200:
@@ -397,19 +397,19 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
         case 401:
         case 407:
           if (sess.authsent) {
-            JFLog.log("Server Error : Double " + type);
+            JFLog.log(log, "Server Error : Double " + type);
           } else {
             sess.authstr = getHeader("WWW-Authenticate:", msg);
             if (sess.authstr == null) {
               sess.authstr = getHeader("Proxy-Authenticate:", msg);
             }
             if (sess.authstr == null) {
-              JFLog.log("err:401/407 without Authenticate tag");
+              JFLog.log(log, "err:401/407 without Authenticate tag");
               break;
             }
             sess.epass = getAuthResponse(sess, user, pass, remotehost, sess.cmd, (type == 401 ? "Authorization:" : "Proxy-Authorization:"));
             if (sess.epass == null) {
-              JFLog.log("err:gen auth failed");
+              JFLog.log(log, "err:gen auth failed");
               break;
             }
             issue(sess, sess.cmd);
@@ -422,7 +422,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
           break;
       }
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
     }
   }
 }

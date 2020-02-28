@@ -115,12 +115,16 @@ public class SDP implements Cloneable {
       return null;
     }
   }
+  public int log;
+  public void setLog(int id) {
+    log = id;
+  }
   public String ip;  //global connection
   public String iceufrag, icepwd, fingerprint;
   public Stream streams[] = new Stream[0];
 
   public Stream addStream(Type type) {
-    JFLog.log("SDP.addStream:" + type);
+    JFLog.log(log, "SDP.addStream:" + type);
     Stream stream = new Stream();
     stream.sdp = this;
     stream.type = type;

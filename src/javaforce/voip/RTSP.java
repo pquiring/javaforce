@@ -20,6 +20,7 @@ public abstract class RTSP {
   private boolean server;
   protected Transport transport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
+  public int log;
 
   /**
    * Opens the transport and sets the RTSPInterface callback.
@@ -66,6 +67,10 @@ public abstract class RTSP {
     }
     transport = null;
     worker = null;
+  }
+
+  public void setLog(int id) {
+    log = id;
   }
 
   /**
@@ -507,11 +512,12 @@ public abstract class RTSP {
   /**
    * Parses the SDP content.
    */
-  public static SDP getSDP(String msg[]) {
+  public SDP getSDP(String msg[]) {
     String type = getHeader("Content-Type:", msg);
     if (type == null) type = getHeader("c:", msg);  //short form
     if (type == null || type.indexOf("application/sdp") == -1) return null;
     SDP sdp = new SDP();
+    sdp.setLog(log);
     SDP.Stream stream = null;
     int idx;
     int start = -1;
@@ -519,7 +525,7 @@ public abstract class RTSP {
       if (msg[a].length() == 0) {start = a+1; break;}
     }
     if (start == -1) {
-      JFLog.log("SIP.getSDP() : No SDP found");
+      JFLog.log(log, "SIP.getSDP() : No SDP found");
       return null;
     }
     int acnt = 1;
@@ -529,7 +535,7 @@ public abstract class RTSP {
       if (ln.startsWith("c=")) {
         //c=IN IP4 1.2.3.4
         idx = ln.indexOf("IP4 ");
-        if (idx == -1) {JFLog.log("SIP.getSDP() : Unsupported c field:" + ln); continue;}
+        if (idx == -1) {JFLog.log(log, "SIP.getSDP() : Unsupported c field:" + ln); continue;}
         String ip = ln.substring(idx+4);
         if (stream == null) {
           sdp.ip = ip;
@@ -551,7 +557,7 @@ public abstract class RTSP {
         } else if (ln.startsWith("m=video")) {
           stream = sdp.addStream(SDP.Type.video);
         } else {
-          JFLog.log("SIP.getSDP() : Unsupported m field:" + ln);
+          JFLog.log(log, "SIP.getSDP() : Unsupported m field:" + ln);
           stream = sdp.addStream(SDP.Type.other);
           continue;
         }
@@ -572,7 +578,7 @@ public abstract class RTSP {
           stream.profile = SDP.Profile.SAVPF;
         } else {
           stream.profile = SDP.Profile.UNKNOWN;
-          JFLog.log("SIP.getSDP() : Unsupported profile:" + p[1]);
+          JFLog.log(log, "SIP.getSDP() : Unsupported profile:" + p[1]);
         }
         stream.port = JF.atoi(f[1]);
         for(int b=3;b<f.length;b++) {
@@ -642,7 +648,7 @@ public abstract class RTSP {
           stream.keyExchange = SDP.KeyExchange.SDP;
           String f[] = ln.split(" ");
           if (!f[2].startsWith("inline:")) {
-            JFLog.log("a=crypto:bad keys(1)");
+            JFLog.log(log, "a=crypto:bad keys(1)");
             continue;
           }
           String base64 = f[2].substring(7);
@@ -652,7 +658,7 @@ public abstract class RTSP {
           }
           byte keys[] = javaforce.Base64.decode(base64.getBytes());
           if (keys == null || keys.length != 30) {
-            JFLog.log("a=crypto:bad keys(2)");
+            JFLog.log(log, "a=crypto:bad keys(2)");
             continue;
           }
           byte key[] = Arrays.copyOfRange(keys, 0, 16);
@@ -878,7 +884,7 @@ public abstract class RTSP {
     //request = ' Digest algorithm=MD5, realm="asterisk", nonce="value", etc.'
     String request = sess.authstr;
     if (!request.regionMatches(true, 0, "Digest ", 0, 7)) {
-      JFLog.log("err:no digest");
+      JFLog.log(log, "err:no digest");
       return null;
     }
     String tags[] = split(request.substring(7), ',');
@@ -887,7 +893,7 @@ public abstract class RTSP {
     auth = getHeader("algorithm=", tags);
     if (auth != null) {
       if (!auth.equalsIgnoreCase("MD5")) {
-        JFLog.log("err:only MD5 auth supported");
+        JFLog.log(log, "err:only MD5 auth supported");
         return null;
       }  //unsupported auth type
     }
@@ -896,11 +902,11 @@ public abstract class RTSP {
     qop = getHeader("qop=", tags);  //auth or auth-int
     stale = getHeader("stale=", tags);  //true|false ???
     if (nonce == null) {
-      JFLog.log("err:no nonce");
+      JFLog.log(log, "err:no nonce");
       return null;
     }  //no nonce found
     if (realm == null) {
-      JFLog.log("err:no realm");
+      JFLog.log(log, "err:no realm");
       return null;
     }  //no realm found
     if (qop != null) {
@@ -1125,7 +1131,7 @@ public abstract class RTSP {
       if (hasCodec(stream.codecs, RTP.CODEC_VP8)) {
         content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_VP8).id + " VP8/90000\r\n");
       }
-      JFLog.log("keyexchange=" + stream.keyExchange);
+      JFLog.log(log, "keyexchange=" + stream.keyExchange);
       if (stream.keyExchange == SDP.KeyExchange.DTLS) {
         content.append("a=rtcp-mux");  //http://tools.ietf.org/html/rfc5761
       }
@@ -1137,7 +1143,7 @@ public abstract class RTSP {
   /**
    * Resolve hostname to IP address. Keeps a cache to improve performance.
    */
-  public static String resolve(String host) {
+  public String resolve(String host) {
     //uses a small DNS cache
     //TODO : age and delete old entries (SIP servers should always have static IPs so this is not critical)
     String ip = dnsCache.get(host);
@@ -1150,7 +1156,7 @@ public abstract class RTSP {
       JFLog.log(e);
       return null;
     }
-    JFLog.log("dns:" + host + "=" + ip);
+    JFLog.log(log, "dns:" + host + "=" + ip);
     dnsCache.put(host, ip);
     return ip;
   }
@@ -1184,7 +1190,7 @@ public abstract class RTSP {
             iface.packet(msg, pack.host, pack.port);
           }
         } catch (Exception e) {
-          JFLog.log(e);
+          JFLog.log(log, e);
         }
       }
     }

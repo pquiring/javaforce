@@ -1099,7 +1099,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaVideoDecoder_start
 {
   FFContext *ctx = createFFContext(e,c);
   if (ctx == NULL) return JNI_FALSE;
-  printf("context=%p\n", ctx);
+//  printf("context=%p\n", ctx);
   ctx->video_codec = (*_avcodec_find_decoder)(codec_id);
   if (ctx->video_codec == NULL) {
     printf("MediaVideoDecoder : codec == null\n");

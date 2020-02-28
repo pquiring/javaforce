@@ -15,11 +15,16 @@ import javaforce.*;
 public class RTPH264 extends RTPCodec {
 
   public static int decodeSize = 4 * 1024 * 1024;
+  public int log;
 
   public RTPH264() {
     ssrc = random.nextInt();
     packet = new Packet();
     packet.data = new byte[decodeSize];
+  }
+
+  public void setLog(int id) {
+    log = id;
   }
 
   private int find_best_length(byte data[], int offset, int length) {
@@ -130,12 +135,12 @@ public class RTPH264 extends RTPCodec {
       int realtype = rtp[13] & 0x1f;
       boolean M = (rtp[12] & 0x80) == 0x80;
       if (M && !last) {
-        JFLog.log("Error : H264 : FU-A : M bit set but not last packet : seq=" + thisseqnum);
+        JFLog.log(log, "Error : H264 : FU-A : M bit set but not last packet : seq=" + thisseqnum);
         return null;
       }
       if (first) {
         if (packet.length != 0) {
-          JFLog.log("Warning : H264 : FU-A : first packet again, last frame lost?");
+          JFLog.log(log, "Warning : H264 : FU-A : first packet again, last frame lost?");
         }
         int nri = rtp[12] & 0x60;
         h264Length -= 2;
@@ -146,11 +151,11 @@ public class RTPH264 extends RTPCodec {
         lastseqnum = thisseqnum;
       } else {
         if (packet.length == 0) {
-          JFLog.log("Error : H264 : partial packet received before first packet : seq=" + thisseqnum);
+          JFLog.log(log, "Error : H264 : partial packet received before first packet : seq=" + thisseqnum);
           return null;
         }
         if (thisseqnum != nextseqnum()) {
-          JFLog.log("Error : H264 : Received FU-A packet out of order, discarding frame : seq=" + thisseqnum);
+          JFLog.log(log, "Error : H264 : Received FU-A packet out of order, discarding frame : seq=" + thisseqnum);
           packet.length = 0;
           lastseqnum = -1;
           return null;
@@ -166,7 +171,7 @@ public class RTPH264 extends RTPCodec {
         }
       }
     } else {
-      JFLog.log("H264:Unsupported packet type:" + type);
+      JFLog.log(log, "H264:Unsupported packet type:" + type);
       packet.length = 0;
       lastseqnum = -1;
       return null;

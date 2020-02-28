@@ -5,8 +5,6 @@ package javaforce.voip;
  * @author pquiring
  */
 
-import java.util.*;
-
 public class RTSPSession {
   public RTSPSession(String localhost) {
     this.localhost = localhost;

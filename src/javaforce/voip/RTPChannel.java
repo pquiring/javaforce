@@ -36,11 +36,16 @@ public class RTPChannel {
   public SDP.Stream stream;
   public Coder coder_g711u, coder_g711a, coder_g722, coder_g729a, coder_gsm;
   public Coder coder;  //selected audio encoder
+  public int log;
 
   protected RTPChannel(RTP rtp, int ssrc, SDP.Stream stream) {
     this.rtp = rtp;
     this.ssrc_src = ssrc;
     this.stream = stream;
+  }
+
+  public void setLog(int id) {
+    log = id;
   }
 
   public int getVP8id() {
@@ -68,15 +73,15 @@ public class RTPChannel {
    */
   public void writeRTP(byte data[], int off, int len) {
     if (!rtp.active) {
-      JFLog.log("RTPChannel.writeRTP() : not active");
+      JFLog.log(log, "RTPChannel.writeRTP() : not active");
       return;
     }
     if (stream.getPort() == -1) {
-      JFLog.log("RTPChannel.writeRTP() : not ready (NATing)");
+      JFLog.log(log, "RTPChannel.writeRTP() : not ready (NATing)");
       return;  //not ready yet (NATing)
     }
     if (!stream.canSend()) {
-      JFLog.log("RTPChannel.writeRTP() : stream without send");
+      JFLog.log(log, "RTPChannel.writeRTP() : stream without send");
       return;
     }
     try {
@@ -86,7 +91,7 @@ public class RTPChannel {
         rtp.sock1.send(new DatagramPacket(data, off, len, InetAddress.getByName(stream.getIP()), stream.getPort()));
       }
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
     }
   }
 
@@ -107,8 +112,8 @@ public class RTPChannel {
         rtp.sock2.send(new DatagramPacket(data, off, len, InetAddress.getByName(stream.getIP()), stream.getPort() + 1));
       }
     } catch (Exception e) {
-      JFLog.log("err:RTP.writeRTCP:failed");
-      JFLog.log(e);
+      JFLog.log(log, "err:RTP.writeRTCP:failed");
+      JFLog.log(log, e);
     }
   }
 
@@ -211,7 +216,7 @@ public class RTPChannel {
 
   public boolean start() {
     lastPacket = System.currentTimeMillis();
-    JFLog.log("RTPChannel.start() : localhost:" + rtp.getlocalrtpport() + " remote=" + stream.getIP() + ":" + stream.getPort());
+    JFLog.log(log, "RTPChannel.start() : localhost:" + rtp.getlocalrtpport() + " remote=" + stream.getIP() + ":" + stream.getPort());
 
     if ((stream.codecs != null) && (stream.codecs.length > 0)) {
       Codec codec_rfc2833 = stream.getCodec(RTP.CODEC_RFC2833);
@@ -250,28 +255,28 @@ public class RTPChannel {
           Codec codec = stream.codecs[a];
           if (codec.equals(RTP.CODEC_G711u)) {
             coder = coder_g711u;
-            JFLog.log("codec = g711u");
+            JFLog.log(log, "codec = g711u");
             break;
           } else if (codec.equals(RTP.CODEC_G711a)) {
             coder = coder_g711a;
-            JFLog.log("codec = g711a");
+            JFLog.log(log, "codec = g711a");
             break;
           } else if (codec.equals(RTP.CODEC_GSM)) {
             coder = coder_gsm;
-            JFLog.log("codec = gsm");
+            JFLog.log(log, "codec = gsm");
             break;
           } else if (codec.equals(RTP.CODEC_G722)) {
             coder = coder_g722;
-            JFLog.log("codec = g722");
+            JFLog.log(log, "codec = g722");
             break;
           } else if (codec.equals(RTP.CODEC_G729a)) {
             coder = coder_g729a;
-            JFLog.log("codec = g729a");
+            JFLog.log(log, "codec = g729a");
             break;
           }
         }
         if (coder == null) {
-          JFLog.log("RTP.start() : Warning : no compatible audio codec selected");
+          JFLog.log(log, "RTP.start() : Warning : no compatible audio codec selected");
         }
         dtmf = new DTMF(coder.getSampleRate());
       } else {
@@ -279,31 +284,31 @@ public class RTPChannel {
         for(int a=0;a<stream.codecs.length;a++) {
           Codec codec = stream.codecs[a];
           if (codec.equals(RTP.CODEC_H263)) {
-            JFLog.log("codec = H.263");
+            JFLog.log(log, "codec = H.263");
             break;
           } else if (codec.equals(RTP.CODEC_H263_1998)) {
-            JFLog.log("codec = H.263-1998");
+            JFLog.log(log, "codec = H.263-1998");
             break;
           } else if (codec.equals(RTP.CODEC_H263_2000)) {
-            JFLog.log("codec = H.263-2000");
+            JFLog.log(log, "codec = H.263-2000");
             break;
           } else if (codec.equals(RTP.CODEC_JPEG)) {
-            JFLog.log("codec = JPEG");
+            JFLog.log(log, "codec = JPEG");
             break;
           } else if (codec.equals(RTP.CODEC_H264)) {
-            JFLog.log("codec = H.264");
+            JFLog.log(log, "codec = H.264");
             break;
           } else if (codec.equals(RTP.CODEC_VP8)) {
-            JFLog.log("codec = VP8");
+            JFLog.log(log, "codec = VP8");
             break;
           }
         }
         if (!haveVcodec) {
-          JFLog.log("RTP.start() : Warning : no compatible video codec selected");
+          JFLog.log(log, "RTP.start() : Warning : no compatible video codec selected");
         }
       }
     } else {
-      JFLog.log("RTP:Error:No codecs provided");
+      JFLog.log(log, "RTP:Error:No codecs provided");
     }
 
     if (RTP.useTURN) {
@@ -320,7 +325,7 @@ public class RTPChannel {
           rtp.wait4reply();
         }
       } catch (Exception e) {
-        JFLog.log(e);
+        JFLog.log(log, e);
         return false;
       }
     }
@@ -370,7 +375,7 @@ public class RTPChannel {
         case 0:
           dtmfSent = false;  //just in case end of dtmf was not received
           if (len != 160 + 12) {
-            JFLog.log("RTP:Bad g711u length");
+            JFLog.log(log, "RTP:Bad g711u length");
             break;
           }
           addSamples(coder_g711u.decode(data, off));
@@ -379,7 +384,7 @@ public class RTPChannel {
         case 3:
           dtmfSent = false;  //just in case end of dtmf was not received
           if (len != 33 + 12) {
-            JFLog.log("RTP:Bad gsm length");
+            JFLog.log(log, "RTP:Bad gsm length");
             break;
           }
           addSamples(coder_gsm.decode(data, off));
@@ -388,7 +393,7 @@ public class RTPChannel {
         case 8:
           dtmfSent = false;  //just in case end of dtmf was not received
           if (len != 160 + 12) {
-            JFLog.log("RTP:Bad g711a length");
+            JFLog.log(log, "RTP:Bad g711a length");
             break;
           }
           addSamples(coder_g711a.decode(data, off));
@@ -397,7 +402,7 @@ public class RTPChannel {
         case 9:
           dtmfSent = false;  //just in case end of dtmf was not received
           if (len != 160 + 12) {
-            JFLog.log("RTP:Bad g722 length");
+            JFLog.log(log, "RTP:Bad g722 length");
             break;
           }
           addSamples(coder_g722.decode(data, off));
@@ -406,7 +411,7 @@ public class RTPChannel {
         case 18:
           dtmfSent = false;  //just in case end of dtmf was not received
           if (len != 20 + 12) {
-            JFLog.log("RTP:Bad g729a length");
+            JFLog.log(log, "RTP:Bad g729a length");
             break;
           }
           addSamples(coder_g729a.decode(data, off));

@@ -430,6 +430,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     height = -1;
     fps = -1;
     client = new RTSPClient();
+    client.setLog(log);
     String url = camera.url;
     String uri = null;
     String remotehost = null;
@@ -647,11 +648,13 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       return;
     }
     rtp = new RTP();
+    rtp.setLog(log);
     rtp.init(this);
     rtp.start();
     channel = rtp.createChannel(stream);
     channel.start();
     h264 = new RTPH264();
+    h264.setLog(log);
     client.setup(url, rtp.getlocalrtpport(), 0);
   }
 

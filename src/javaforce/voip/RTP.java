@@ -23,6 +23,7 @@ public class RTP implements STUN.Listener {
   public ArrayList<RTPChannel> channels = new ArrayList<RTPChannel>();
   public static long now = 0;  //this is copied into each RTPChannel as it receives packets
   private static boolean hasBouncyCastle;
+  public int log;
 
   //TURN related data
   protected static boolean useTURN = false;
@@ -53,9 +54,12 @@ public class RTP implements STUN.Listener {
       Class.forName("org.bouncycastle.crypto.tls.TlsServer");
       hasBouncyCastle = true;
     } catch (Exception e) {
-//      JFLog.log(e);
       JFLog.log("Warning:BouncyCastle not found, SRTP/DTLS not available");
     }
+  }
+
+  public void setLog(int id) {
+    log = id;
   }
 
   public static void enableTURN(String host, String user, String pass) {
@@ -148,22 +152,22 @@ public class RTP implements STUN.Listener {
         stun1.requestAlloc(true, null);
         wait4reply();
         if (turnToken == null) throw new Exception("Turn token missing");
-        JFLog.log("RTP:TURN:host=" + stun1.getIP());
-        JFLog.log("RTP:TURN:port=" + stun1.getPort());
+        JFLog.log(log, "RTP:TURN:host=" + stun1.getIP());
+        JFLog.log(log, "RTP:TURN:port=" + stun1.getPort());
         wait4reset();
         stun2 = new STUN();
         if (!stun2.start(localrtpport + 1, turnHost, turnUser, turnPass, this)) throw new Exception("STUN init failed");
         stun2.requestAlloc(false, turnToken);
         wait4reply();
-        JFLog.log("RTP:TURN:host=" + stun2.getIP());
-        JFLog.log("RTP:TURN:port=" + stun2.getPort());
+        JFLog.log(log, "RTP:TURN:host=" + stun2.getIP());
+        JFLog.log(log, "RTP:TURN:port=" + stun2.getPort());
       } else {
         sock1 = new DatagramSocket(localrtpport);
         sock2 = new DatagramSocket(localrtpport + 1);
       }
-      JFLog.log("RTP:localport=" + localrtpport);
+      JFLog.log(log, "RTP:localport=" + localrtpport);
     } catch (Exception e2) {
-      JFLog.log(e2);
+      JFLog.log(log, e2);
       return false;
     }
     return true;
@@ -182,23 +186,23 @@ public class RTP implements STUN.Listener {
           stun1.requestAlloc(true, null);
           wait4reply();
           if (turnToken == null) throw new Exception("Turn token missing");
-          JFLog.log("RTP:TURN:host=" + stun1.getIP());
-          JFLog.log("RTP:TURN:port=" + stun1.getPort());
+          JFLog.log(log, "RTP:TURN:host=" + stun1.getIP());
+          JFLog.log(log, "RTP:TURN:port=" + stun1.getPort());
           wait4reset();
           stun2 = new STUN();
           if (!stun2.start(localrtpport + 1, turnHost, turnUser, turnPass, this)) throw new Exception("STUN init failed");
           stun2.requestAlloc(false, turnToken);
           wait4reply();
-          JFLog.log("RTP:TURN:host=" + stun2.getIP());
-          JFLog.log("RTP:TURN:port=" + stun2.getPort());
+          JFLog.log(log, "RTP:TURN:host=" + stun2.getIP());
+          JFLog.log(log, "RTP:TURN:port=" + stun2.getPort());
         } else {
           sock1 = new DatagramSocket(localrtpport);
           sock2 = new DatagramSocket(localrtpport + 1);
           setReceiveBufferSize(16*1024*1024);  //default 64K drops video packets
         }
-        JFLog.log("RTP:localport=" + localrtpport);
+        JFLog.log(log, "RTP:localport=" + localrtpport);
       } catch (Exception e2) {
-        JFLog.log(e2);
+        JFLog.log(log, e2);
         continue;
       }
       return true;
@@ -325,7 +329,7 @@ public class RTP implements STUN.Listener {
    * Create a new RTP channel with a specified ssrc id.
    */
   public RTPChannel createChannel(int ssrc, SDP.Stream stream) {
-    JFLog.log("RTP.createChannel()" + stream.getIP() + ":" + stream.port);
+    JFLog.log(log, "RTP.createChannel()" + stream.getIP() + ":" + stream.port);
     RTPChannel channel = null;
     switch (stream.profile) {
       case AVP:
@@ -335,15 +339,16 @@ public class RTP implements STUN.Listener {
       case SAVP:
       case SAVPF:
         if (!hasBouncyCastle) {
-          JFLog.log("RTP:Couldn't create SRTPChannel");
+          JFLog.log(log, "RTP:Couldn't create SRTPChannel");
           return null;
         }
         channel = new SRTPChannel(this, ssrc, stream);
         break;
       case UNKNOWN:
-        JFLog.log("RTP:Can not create unknown profile");
+        JFLog.log(log, "RTP:Can not create unknown profile");
         return null;
     }
+    channel.setLog(log);
     channels.add(channel);
     return channel;
   }
@@ -394,7 +399,7 @@ public class RTP implements STUN.Listener {
   /**
    * Reads inbound packets for RTP session.
    */
-  private static class Worker extends Thread {
+  private class Worker extends Thread {
 
     private RTP rtp;
     private DatagramSocket sock;
@@ -418,33 +423,33 @@ public class RTP implements STUN.Listener {
           }
           String remoteip = pack.getAddress().getHostAddress();
           int remoteport = pack.getPort();
-//          JFLog.log("RTP:receive:" + remoteip + ":" + remoteport);  //test
+//          JFLog.log(log, "RTP:receive:" + remoteip + ":" + remoteport);  //test
           if (rtcp) {
             RTPChannel channel = rtp.findChannel(remoteip, remoteport-1);
             if (channel == null) {
-              JFLog.log("RTP:No channel found:" + remoteip + ":" + remoteport);
+              JFLog.log(log, "RTP:No channel found:" + remoteip + ":" + remoteport);
               continue;
             }
             channel.processRTCP(data, 0, len);
           } else {
             RTPChannel channel = rtp.findChannel(remoteip, remoteport);
             if (channel == null) {
-              JFLog.log("RTP:No channel found:" + remoteip + ":" + remoteport);
+              JFLog.log(log, "RTP:No channel found:" + remoteip + ":" + remoteport);
               continue;
             }
             if (channel.stream.port == -1) {
               channel.stream.port = remoteport;  //NATing
-              JFLog.log("RTP : NAT port = " + channel.stream.getPort());
+              JFLog.log(log, "RTP : NAT port = " + channel.stream.getPort());
             }
             channel.processRTP(data, 0, len);
           }
         } catch (SocketException e) {
           if (rtp.active) {
-            JFLog.log(e);
+            JFLog.log(log, e);
           }
           rtp.active = false;
         } catch (Exception e) {
-          JFLog.log(e);
+          JFLog.log(log, e);
           rtp.active = false;
         }
       }
