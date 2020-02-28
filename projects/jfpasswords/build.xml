@@ -7,7 +7,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
-  <property name="version" value="0.21"/>
+  <property name="version" value="0.22"/>
 
   <import file="../../base.xml"/>
 
