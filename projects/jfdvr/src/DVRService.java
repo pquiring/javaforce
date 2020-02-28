@@ -43,7 +43,7 @@ public class DVRService extends Thread {
     }
   }
 
-  public ArrayList<CameraInstance> list = new ArrayList<CameraInstance>();
+  public ArrayList<CameraWorker> list = new ArrayList<CameraWorker>();
 
   public void cancel() {
     int cnt = list.size();
@@ -54,7 +54,7 @@ public class DVRService extends Thread {
 
   public void startCamera(Camera camera) {
     System.out.println("Start Camera:" + camera.name);
-    CameraInstance instance = new CameraInstance(camera);
+    CameraWorker instance = new CameraWorker(camera);
     instance.start();
     list.add(instance);
   }

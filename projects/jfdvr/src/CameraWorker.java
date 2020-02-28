@@ -50,7 +50,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private static final int decoded_x = 320;
   private static final int decoded_y = 200;
   private static final int decoded_xy = 320 * 200;
-  private int localPort;
   private boolean wait_next_key_frame;
 
   public int read(MediaCoder coder, byte[] buffer) {
@@ -305,15 +304,22 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
 
   private ArrayList<Recording> files = new ArrayList<Recording>();
 
-  private CameraWorker(Camera camera, int localPort) {
+  public CameraWorker(Camera camera) {
     JFLog.log(1, "Camera=" + camera.name);
-    JFLog.log(1, "Local RTSP Port=" + localPort);
     this.camera = camera;
-    this.localPort = localPort;
     path = Paths.videoPath + "/" + camera.name;
     max_file_size = camera.max_file_size * 1024L * 1024L;
     max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
     recording = !camera.record_motion;  //always recording
+  }
+
+  public void cancel() {
+    if (client != null) {
+      client.teardown(url);
+      client.uninit();
+      client = null;
+    }
+    active = false;
   }
 
   public void run() {
@@ -440,7 +446,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     remotehost = url;
     this.url = "rtsp://" + remotehost + ":" + remoteport + uri;
     JFLog.log(camera.name + ":connecting");
-    if (!client.init(remotehost, remoteport, localPort, this, TransportType.TCP)) {
+    if (!client.init(remotehost, remoteport, getLocalPort(), this, TransportType.TCP)) {
       System.out.println("RTSP init failed");
       return false;
     }
@@ -458,6 +464,14 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       decoder.stop();
       decoder = null;
     }
+  }
+
+  private static int nextPort = 5000;
+  private static synchronized int getLocalPort() {
+    if (nextPort > 10000) nextPort = 5000;
+    int port = nextPort;
+    nextPort += 2;
+    return port;
   }
 
   private void listFiles() {
@@ -744,6 +758,13 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         frames.add(nextPacket, key_frame);
         frameCount++;
         packets_encode.removeNextFrame();
+        if (key_frame) {
+          Runtime rt = Runtime.getRuntime();
+          long max_memory = rt.maxMemory();
+          long total_memory = rt.totalMemory();
+          System.out.println("max=" + max_memory);
+          System.out.println("total=" + total_memory);
+        }
       }
       if (end_recording) {
         frames.stop();
@@ -760,36 +781,5 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   }
 
   public void rtpInactive(RTPChannel rtp) {
-  }
-
-  public static void main(String args[]) {
-    if (args.length != 4) {
-      System.out.println("Usage:CameraWorker camera-name rtspport rtpminport rtpmaxport");
-      System.exit(1);
-    }
-    Paths.init(args[0]);
-    Config.load();
-    if (!MediaCoder.loaded) {
-      System.out.println("Error:ffmpeg not loaded");
-      System.exit(1);
-    }
-    if (!debug_ffmpeg) {
-      MediaCoder.ffmpeg_set_logging(false);
-    }
-    Camera camera = null;
-    for(Camera cam : Config.current.cameras) {
-      if (cam.name.equals(args[0])) {
-        camera = cam;
-        break;
-      }
-    }
-    if (camera == null) {
-      System.out.println("Camera not found:" + args[0]);
-      System.exit(1);
-    }
-    RTP.setPortRange(Integer.valueOf(args[2]), Integer.valueOf(args[3]));
-    CameraWorker worker = new CameraWorker(camera, Integer.valueOf(args[1]));
-    worker.start();
-    try {worker.join();} catch (Exception e) {}
   }
 }
