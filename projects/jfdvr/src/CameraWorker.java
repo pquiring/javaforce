@@ -40,9 +40,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private boolean end_recording = false;
   private int frameCount = 0;
   private boolean active = true;
-  private Frames frames = new Frames();
-  private Packets packets_decode = new Packets();
-  private Packets packets_encode = new Packets();
+  private Frames frames;
+  private Packets packets_decode;
+  private Packets packets_encode;
   private long lastKeepAlive;
   private long lastPacket;
   private int last_frame[];
@@ -51,14 +51,15 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private static final int decoded_y = 200;
   private static final int decoded_xy = 320 * 200;
   private boolean wait_next_key_frame;
+  private int log;
 
   public int read(MediaCoder coder, byte[] buffer) {
-//    JFLog.log("read:" + buffer.length);
+//    JFLog.log(log, "read:" + buffer.length);
     return -1;
   }
 
   public int write(MediaCoder coder, byte[] buffer) {
-//    JFLog.log("write:" + buffer.length);
+//    JFLog.log(log, "write:" + buffer.length);
     writeFile(buffer);
     file_size += buffer.length;
     folder_size += buffer.length;
@@ -66,7 +67,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   }
 
   public long seek(MediaCoder coder, long pos, int how) {
-//    JFLog.log("seek:" + pos + ":" + how);
+//    JFLog.log(log, "seek:" + pos + ":" + how);
     long newpos = 0;
     try {
       switch (how) {
@@ -85,6 +86,10 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
 
   /** Frame to be recorded. */
   private static class Frames {
+    public Frames(int log) {
+      this.log = log;
+      packets = new Packets(log);
+    }
     public void stop() {
       this.stop[head] = true;
       int new_head = head + 1;
@@ -102,7 +107,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     public void removeFrame() {
       if (tail == head) {
-        JFLog.log("Error:Frames Buffer underflow");
+        JFLog.log(log, "Error:Frames Buffer underflow");
         return;
       }
       if (!stop[tail]) {
@@ -117,7 +122,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     public int head = 0;
     public int tail = 0;
-    public Packets packets = new Packets();
+    public Packets packets;
+    public int log;
 
     public boolean[] stop = new boolean[maxFrames];
     public int[] type = new int[maxFrames];
@@ -129,7 +135,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
 
   /** Packets received. */
   private static class Packets {
-    public Packets() {
+    public Packets(int log) {
+      this.log = log;
       data = new byte[maxPacketsSize];
       frag_data = new byte[maxPacketsSize];
     }
@@ -141,6 +148,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     public int[] type = new int[maxPackets];
     public int nextOffset;
     public int head, tail;
+    public int log;
     private void reset() {
       //TODO : need to lock this from consumer
       head = 0;
@@ -156,7 +164,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         next_head = 0;
       }
       if (next_head == tail) {
-        JFLog.log(1, "Error : Buffer Overflow (# of packets exceeded)");
+        JFLog.log(log, "Error : Buffer Overflow (# of packets exceeded)");
         reset();
         return false;
       }
@@ -167,7 +175,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       int t1 = offset[_tail];
       int t2 = t1 + length[_tail] - 1;
       if ((h1 >= t1 && h1 <= t2) || (h2 >= t1 && h2 <= t2)) {
-        JFLog.log(1, "Error : Buffer Overflow (# of bytes in buffer exceeded)");
+        JFLog.log(log, "Error : Buffer Overflow (# of bytes in buffer exceeded)");
         reset();
         return false;
       }
@@ -178,7 +186,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       try {
         System.arraycopy(packet.data, packet.offset, data, nextOffset, packet.length);
       } catch (Exception e) {
-        JFLog.log(e);
+        JFLog.log(log, e);
         System.out.println("packet:" + packet.length);
         return;
       }
@@ -192,7 +200,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     public void removePacket() {
       if (tail == head) {
-        JFLog.log("Error:Packets Buffer underflow");
+        JFLog.log(log, "Error:Packets Buffer underflow");
         return;
       }
       int new_tail = tail + 1;
@@ -252,11 +260,11 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     public Packet getNextFrame() {
       next_frame_packets = 0;
       if (!haveCompleteFrame()) {
-        JFLog.log("Error : getNextFrame() called but don't have one ???");
+        JFLog.log(log, "Error : getNextFrame() called but don't have one ???");
         return null;
       }
       if (next_frame_fragmented) {
-        JFLog.log("Warning:frame is fragmented");
+        JFLog.log(log, "Warning:frame is fragmented");
         nextFrame.data = frag_data;
         nextFrame.offset = 0;
       } else {
@@ -302,15 +310,26 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     public long time;
   }
 
+  private static int next_log = 1;
+  private static synchronized int nextLog() {
+    return next_log++;
+  }
+
   private ArrayList<Recording> files = new ArrayList<Recording>();
 
   public CameraWorker(Camera camera) {
-    JFLog.log(1, "Camera=" + camera.name);
+    log = nextLog();
+    JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + ".log", false);
+    JFLog.setRetention(log, 5);
+    JFLog.log(log, "Camera=" + camera.name);
     this.camera = camera;
     path = Paths.videoPath + "/" + camera.name;
     max_file_size = camera.max_file_size * 1024L * 1024L;
     max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
     recording = !camera.record_motion;  //always recording
+    frames = new Frames(log);
+    packets_decode = new Packets(log);
+    packets_encode = new Packets(log);
   }
 
   public void cancel() {
@@ -325,17 +344,17 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   public void run() {
     try {
       listFiles();
-      JFLog.log(1, camera.name + " : Connecting");
+      JFLog.log(log, camera.name + " : Connecting");
       if (!connect()) return;
       while (active) {
         JF.sleep(100);
         long now = System.currentTimeMillis();
         if (now - lastPacket > 10*1000) {
-          JFLog.log(1, camera.name + " : Reconnecting");
+          JFLog.log(log, camera.name + " : Reconnecting");
           disconnect();
           connect();
         } else if (now - lastKeepAlive > 55*1000) {
-          JFLog.log(1, camera.name + " : keep alive");
+          JFLog.log(log, camera.name + " : keep alive");
           client.keepalive(url);
           lastKeepAlive = now;
         }
@@ -348,7 +367,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         }
         do {
           if (file_size > max_file_size) {
-            JFLog.log(camera.name + " : max file size");
+            JFLog.log(log, camera.name + " : max file size");
             if (encoder != null) {
               encoder.stop();
               encoder = null;
@@ -381,7 +400,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
             encoder.framesPerKeyFrame = (int)fps;
             encoder.videoBitRate = 4 * 1024 * 1024;  //4Mb/sec
             if (!encoder.start(this, width, height, (int)fps, 0, 0, "mp4", true, false)) {
-              JFLog.log("Error:Encoder.start() failed! : fps=" + fps);
+              JFLog.log(log, "Error:Encoder.start() failed! : fps=" + fps);
               encoder = null;
               break;
             }
@@ -403,6 +422,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     } catch (Exception e) {
       e.printStackTrace();
     }
+    JFLog.close(log);
   }
   public boolean connect() {
     //reset values
@@ -445,7 +465,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
     remotehost = url;
     this.url = "rtsp://" + remotehost + ":" + remoteport + uri;
-    JFLog.log(camera.name + ":connecting");
+    JFLog.log(log, camera.name + ":connecting");
     if (!client.init(remotehost, remoteport, getLocalPort(), this, TransportType.TCP)) {
       System.out.println("RTSP init failed");
       return false;
@@ -546,7 +566,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         }
         img.putPixels(newFrame, 0, 0, decoded_x, decoded_y, 0);
         String tmpfile = "temp-" + (imgcnt++) + ".png";
-        JFLog.log("Debug:Saving motion image to:" + tmpfile);
+        JFLog.log(log, "Debug:Saving motion image to:" + tmpfile);
         img.savePNG(tmpfile);
       }
     }
@@ -575,9 +595,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       file_size = 0;
       String filename = getFilename();
       raf = new RandomAccessFile(filename, "rw");
-      JFLog.log(camera.name + " : createFile:" + filename);
+      JFLog.log(log, camera.name + " : createFile:" + filename);
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
     }
   }
 
@@ -585,7 +605,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     try {
       raf.close();
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
     }
     frameCount = 0;
     file_size = 0;
@@ -595,7 +615,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     try {
       raf.write(data);
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log(log, e);
     }
   }
 
@@ -609,7 +629,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     this.sdp = sdp;
     SDP.Stream stream = sdp.getFirstVideoStream();
     if (stream == null) {
-      JFLog.log("Error:CameraWorker:onDescribe():SDP does not contain video stream");
+      JFLog.log(log, "Error:CameraWorker:onDescribe():SDP does not contain video stream");
       return;
     }
     //IP/port in SDP is all zeros
@@ -623,7 +643,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     boolean status;
     status = decoder.start(MediaCoder.AV_CODEC_ID_H264, decoded_x, decoded_y);
     if (!status) {
-      JFLog.log("Error:MediaVideoDecoder.start() failed");
+      JFLog.log(log, "Error:MediaVideoDecoder.start() failed");
       return;
     }
     rtp = new RTP();
@@ -704,8 +724,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     if (!packets_decode.haveCompleteFrame()) return;
     boolean key_frame = packets_decode.isNextFrame_KeyFrame();
     if (debug_buffers && key_frame) {
-      JFLog.log("packets_decode=" + packets_decode.toString());
-      JFLog.log("packets_encode=" + packets_decode.toString());
+      JFLog.log(log, "packets_decode=" + packets_decode.toString());
+      JFLog.log(log, "packets_encode=" + packets_decode.toString());
     }
     if (wait_next_key_frame) {
       if (!key_frame) {
@@ -718,7 +738,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     Packet nextPacket = packets_decode.getNextFrame();
     decoded_frame = decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
     if (decoded_frame == null) {
-      JFLog.log(camera.name + ":Error:newFrame == null:packet.length=" + nextPacket.length);
+      JFLog.log(log, camera.name + ":Error:newFrame == null:packet.length=" + nextPacket.length);
       packets_decode.reset();
       packets_encode.reset();
       //decoding error : delete all frames till next key frame
@@ -730,9 +750,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       width = decoder.getWidth();
       height = decoder.getHeight();
       fps = decoder.getFrameRate();
-      JFLog.log(1, camera.name + " : detected width/height=" + width + "x" + height);
-      JFLog.log(1, camera.name + " : detected FPS=" + fps);
-      JFLog.log(1, camera.name + " : threshold=" + camera.record_motion_threshold + ":after=" + camera.record_motion_after);
+      JFLog.log(log, camera.name + " : detected width/height=" + width + "x" + height);
+      JFLog.log(log, camera.name + " : detected FPS=" + fps);
+      JFLog.log(log, camera.name + " : threshold=" + camera.record_motion_threshold + ":after=" + camera.record_motion_after);
       if (width == 0 || height == 0) {
         width = -1;
         height = -1;

@@ -27,7 +27,7 @@ public class DVRService extends Thread {
   }
 
   public void run() {
-    Paths.init(null);
+    Paths.init();
     //load current config
     Config.load();
     //start config service
