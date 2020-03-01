@@ -1,5 +1,11 @@
 What's new...
 
+Mar 1/2020 : JF 19.3.0 released
+  - jfDVR/0.3
+    - new : just changing camera options does not stop/start the camera
+            (which was causing the app to crash if too many were restarted quickly)
+    - fix : was not tracking folder storage properly
+
 Feb 28/2020 : JF 19.2.0 released
   - jfDVR/0.2
     - fix : run in one process or system runs out of virtual memory
