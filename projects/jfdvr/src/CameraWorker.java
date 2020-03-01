@@ -618,6 +618,15 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
   }
 
+  public void reloadConfig() {
+    JFLog.log(log, "Reloading config");
+    max_file_size = camera.max_file_size * 1024L * 1024L;
+    max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
+    if (!camera.record_motion) {
+      recording = true;
+    }
+  }
+
   //RTSPClient Interface
 
   public void onOptions(RTSPClient client) {

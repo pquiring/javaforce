@@ -193,6 +193,7 @@ public class ConfigService implements WebUIHandler {
       url.setText(_url);
       if (_url.length() == 0) return;
       Camera camera;
+      boolean reload = false;
       if (idx == -1) {
         //create new camera
         int ccnt = Config.current.cameras.length;
@@ -208,7 +209,12 @@ public class ConfigService implements WebUIHandler {
       } else {
         //update existing camera
         camera = Config.current.cameras[idx];
-        DVRService.dvrService.stopCamera(camera);
+        //check if name/url are the same
+        if (camera.name.equals(_name) && camera.url.equals(_url)) {
+          reload = true;
+        } else {
+          DVRService.dvrService.stopCamera(camera);
+        }
       }
       camera.name = _name;
       camera.url = _url;
@@ -223,7 +229,11 @@ public class ConfigService implements WebUIHandler {
       camera.max_folder_size = Integer.valueOf(max_folder_size.getText());
       if (camera.max_folder_size < 0) camera.max_folder_size = 1;
       if (camera.max_folder_size > 4096) camera.max_folder_size = 4096;
-      DVRService.dvrService.startCamera(camera);
+      if (!reload) {
+        DVRService.dvrService.startCamera(camera);
+      } else {
+        DVRService.dvrService.reloadCamera(camera);
+      }
       Config.current.save();
       button.client.refresh();  //list not working yet
     });

@@ -71,6 +71,16 @@ public class DVRService extends Thread {
     }
   }
 
+  public void reloadCamera(Camera camera) {
+    int cnt = list.size();
+    for(int a=0;a<cnt;a++) {
+      if (list.get(a).camera == camera) {
+        try {list.get(a).reloadConfig();} catch (Exception e) {JFLog.log(e);}
+        return;
+      }
+    }
+  }
+
   private void setupFirewall() {
     RTP.setPortRange(5000, 10000);
     try {
