@@ -9,12 +9,13 @@ Includes motion detection recording.
 
 Does NOT re-encode video if recording but just saves live stream into mp4 files.
 
-Note : When you first run the app it will ask to download a codec pack to decode video streams.
+Known issues:
+ - motion detection still needs work
 
 Downloads & Bug Reports : jfdvr.sf.net
 Source : github.com/pquiring/javaforce/tree/master/projects/jfdvr
 
 Author : Peter Quiring (pquiring at gmail dot com)
 
-Release Date : Feb 28, 2020
-Version : 0.2
+Release Date : Mar 1, 2020
+Version : 0.3

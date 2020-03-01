@@ -9,7 +9,7 @@ import javaforce.webui.event.*;
 import javaforce.media.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.2";
+  public static String version = "0.3";
   public WebUIServer server;
   public void start() {
     server = new WebUIServer();
