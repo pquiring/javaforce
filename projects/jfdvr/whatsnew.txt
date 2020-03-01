@@ -1,2 +1,10 @@
+Mar 1, 2020 : 0.3 released!
+  - new : updating a camera config no longer stops/starts the camera
+    (this often caused app to crash due to out of memory)
+  - fix : new recordings were not counted towards camera max storage
+
+Feb 28, 2020 : 0.2 released!
+  - undo running in multiple processes - ran out of virtual memory
+
 Jan 7, 2020 : 0.1 released!
   - init release
