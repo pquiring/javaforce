@@ -588,11 +588,13 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     }
   }
 
+  private String filename;
+
   private void createFile() {
     try {
       frameCount = 0;
       file_size = 0;
-      String filename = getFilename();
+      filename = getFilename();
       raf = new RandomAccessFile(filename, "rw");
       JFLog.log(log, camera.name + " : createFile:" + filename);
     } catch (Exception e) {
@@ -601,11 +603,18 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   }
 
   private void closeFile() {
+    if (raf == null) return;
     try {
       raf.close();
     } catch (Exception e) {
       JFLog.log(log, e);
     }
+    raf = null;
+    Recording rec = new Recording();
+    rec.file = new File(filename);
+    rec.size = rec.file.length();
+    rec.time = rec.file.lastModified();
+    files.add(rec);
     frameCount = 0;
     file_size = 0;
   }
