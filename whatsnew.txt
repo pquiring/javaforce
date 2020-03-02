@@ -1,5 +1,10 @@
 What's new...
 
+Mar 2/2020 : JF 19.4.0 released
+  - jfDVR/0.4
+    - new : preview image and view motion value thru web UI
+    - fix : file size logic was incorrect
+
 Mar 1/2020 : JF 19.3.0 released
   - jfDVR/0.3
     - new : just changing camera options does not stop/start the camera
