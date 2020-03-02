@@ -181,7 +181,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     preview_panel.add(row);
-    lbl = new Label("Motion:");
+    lbl = new Label("Motion Value:");
     row.add(lbl);
     ProgressBar bar = new ProgressBar(ProgressBar.HORIZONTAL, 100, 10);
     row.add(bar);
@@ -192,6 +192,9 @@ public class ConfigService implements WebUIHandler {
     preview_panel.add(row);
     lbl = new Label("Low Quality Preview:");
     row.add(lbl);
+
+    row = new Row();
+    preview_panel.add(row);
     Image img = new Image(null);
     row.add(img);
     preview_panel.setVisible(false);
@@ -333,7 +336,6 @@ public class ConfigService implements WebUIHandler {
     if (client == null) return null;
     Camera camera = (Camera)client.getProperty("camera");
     if (camera == null) return null;
-    System.out.println("data=" + camera.preview);
     return camera.preview;
   }
 
