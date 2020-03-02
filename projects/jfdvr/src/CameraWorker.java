@@ -49,6 +49,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private static final int decoded_x = 320;
   private static final int decoded_y = 200;
   private static final int decoded_xy = 320 * 200;
+  private JFImage decoded_image;
   private boolean wait_next_key_frame;
   private int log;
 
@@ -542,6 +543,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       return;
     }
     float changed = VideoBuffer.compareFrames(last_frame, newFrame, decoded_x, decoded_y);
+    camera.motion_value = changed;
     if (debug_motion && key_frame) {
       System.out.println(camera.name + ":changed=" + changed);
       if (debug_motion_image) {
@@ -789,6 +791,15 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       detectMotion(decoded_frame, key_frame);
     } else {
       recording = true;  //always recording
+    }
+    if (camera.viewing) {
+      if (decoded_image == null) {
+        decoded_image = new JFImage(decoded_x, decoded_y);
+      }
+      decoded_image.putPixels(last_frame, 0, 0, decoded_x, decoded_y, 0);
+      ByteArrayOutputStream preview = new ByteArrayOutputStream();
+      decoded_image.savePNG(preview);
+      camera.preview = preview.toByteArray();
     }
     if (recording) {
       while (packets_encode.haveCompleteFrame()) {

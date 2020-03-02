@@ -5,6 +5,8 @@
 
 import java.io.*;
 
+import javaforce.*;
+
 public class Camera implements Serializable {
   public static final long serialVersionUID = 1;
   public String name;
@@ -14,4 +16,8 @@ public class Camera implements Serializable {
   public int record_motion_after;
   public int max_file_size;  //in MBs
   public int max_folder_size;  //in GBs
+
+  public transient float motion_value;
+  public transient byte[] preview;  //png image
+  public transient boolean viewing;
 }

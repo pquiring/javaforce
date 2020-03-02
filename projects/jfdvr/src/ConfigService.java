@@ -3,6 +3,9 @@
  * @author pquiring
  */
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javaforce.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
@@ -46,6 +49,18 @@ public class ConfigService implements WebUIHandler {
     if (!url.startsWith("rtsp://")) return "rtsp://" + url;
     //TODO : more validation
     return url;
+  }
+
+  private void stopTimer(WebUIClient client) {
+    Timer timer = (Timer)client.getProperty("timer");
+    if (timer != null) {
+      timer.cancel();
+      client.setProperty("timer", null);
+    }
+    Camera camera = (Camera)client.getProperty("camera");
+    if (camera != null) {
+      camera.viewing = false;
+    }
   }
 
   public Panel getRootPanel(WebUIClient client) {
@@ -160,6 +175,26 @@ public class ConfigService implements WebUIHandler {
     TextField max_folder_size = new TextField("100");
     row.add(max_folder_size);
 
+    Column preview_panel = new Column();
+    right.add(preview_panel);
+
+    row = new Row();
+    preview_panel.add(row);
+    lbl = new Label("Motion:");
+    row.add(lbl);
+    ProgressBar bar = new ProgressBar(ProgressBar.HORIZONTAL, 100, 10);
+    row.add(bar);
+    Label motion_value = new Label("");
+    row.add(motion_value);
+
+    row = new Row();
+    preview_panel.add(row);
+    lbl = new Label("Low Quality Preview:");
+    row.add(lbl);
+    Image img = new Image(null);
+    row.add(img);
+    preview_panel.setVisible(false);
+
     list.addChangedListener((Component x) -> {
       int idx = list.getSelectedIndex();
       JFLog.log("list:idx=" + idx);
@@ -176,11 +211,26 @@ public class ConfigService implements WebUIHandler {
       motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
       max_file_size.setText(Integer.toString(camera.max_file_size));
       max_folder_size.setText(Integer.toString(camera.max_folder_size));
+      client.setProperty("camera", camera);
+      Timer timer = new Timer();
+      timer.schedule(new TimerTask() {
+        public void run() {
+          bar.setValue(camera.motion_value);
+          motion_value.setText(Integer.toString((int)camera.motion_value));
+          img.refresh();
+        }
+      }, 500, 500);
+      client.setProperty("timer", timer);
+      preview_panel.setVisible(true);
+      camera.viewing = true;
     });
     b_new.addClickListener((MouseEvent e, Component button) -> {
       list.setSelectedIndex(-1);
       name.setText("");
       url.setText("");
+      stopTimer(client);
+      bar.setValue(0);
+      preview_panel.setVisible(false);
     });
     b_save.addClickListener((MouseEvent e, Component button) -> {
       int idx = list.getSelectedIndex();
@@ -236,6 +286,7 @@ public class ConfigService implements WebUIHandler {
       }
       Config.current.save();
       button.client.refresh();  //list not working yet
+      stopTimer(client);
     });
     PopupPanel popup = new PopupPanel("Confirm");
     popup.setName("popup");
@@ -254,6 +305,7 @@ public class ConfigService implements WebUIHandler {
       list.remove(idx);  //not working yet
       popup.setVisible(false);
       button.client.refresh();  //list not working yet
+      stopTimer(client);
     });
     Button popup_b_cancel = new Button("Cancel");
     popup.add(popup_b_cancel);
@@ -273,12 +325,21 @@ public class ConfigService implements WebUIHandler {
   }
 
   public byte[] getResource(String url) {
-    return null;
+    //url = /user/hash/component_id/count
+    String pts[] = url.split("/");
+    String hash = pts[2];
+    WebUIClient client = server.getClient(hash);
+    if (client == null) return null;
+    Camera camera = (Camera)client.getProperty("camera");
+    if (camera == null) return null;
+    System.out.println("data=" + camera.preview);
+    return camera.preview;
   }
 
   public void clientConnected(WebUIClient client) {
   }
 
   public void clientDisconnected(WebUIClient client) {
+    stopTimer(client);
   }
 }
