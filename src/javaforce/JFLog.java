@@ -71,7 +71,10 @@ public class JFLog {
   }
 
   public static void setRetention(int id, int days) {
-    LogInstance log = list.get(id);
+    LogInstance log;
+    synchronized(list) {
+      log = list.get(id);
+    }
     if (log == null) {
       return;
     }
@@ -83,11 +86,12 @@ public class JFLog {
   }
 
   public static boolean close(int id) {
-    LogInstance log = list.get(id);
-    if (log == null) {
-      return false;
-    }
+    LogInstance log;
     synchronized(list) {
+      log = list.get(id);
+      if (log == null) {
+        return false;
+      }
       list.remove(id);
     }
     try {
@@ -116,7 +120,10 @@ public class JFLog {
   private static final long ms_per_day = 24 * 60 * 60 * 1000;
 
   public static boolean log(int id, String msg) {
-    LogInstance log = list.get(id);
+    LogInstance log;
+    synchronized(list) {
+      log = list.get(id);
+    }
     if (log == null) {
       System.out.println(msg);
       return false;
@@ -243,7 +250,10 @@ public class JFLog {
   }
 
   public static void setEnabled(int id, boolean state) {
-    LogInstance log = list.get(id);
+    LogInstance log;
+    synchronized(list) {
+      log = list.get(id);
+    }
     if (log == null) {
       return;
     }
@@ -258,7 +268,11 @@ public class JFLog {
    * NOTE: write() doesn't cycle log files.
    */
   public static boolean write(int id, byte data[], int off, int len) {
-    LogInstance log = list.get(id);
+    LogInstance log;
+    synchronized(list) {
+      log = list.get(id);
+    }
+    if (log == null) return false;
     synchronized (log.lock) {
       try {
         log.fos.write(data, off, len);
@@ -279,7 +293,10 @@ public class JFLog {
   }
 
   public static OutputStream getOutputStream(int id) {
-    LogInstance log = list.get(id);
+    LogInstance log;
+    synchronized(list) {
+      log = list.get(id);
+    }
     if (log == null) {
       return null;
     }
