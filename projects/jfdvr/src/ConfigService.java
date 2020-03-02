@@ -60,6 +60,7 @@ public class ConfigService implements WebUIHandler {
     Camera camera = (Camera)client.getProperty("camera");
     if (camera != null) {
       camera.viewing = false;
+      camera.preview = null;
     }
   }
 
