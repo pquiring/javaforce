@@ -31,6 +31,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private MediaEncoder encoder;
   private RandomAccessFile raf;
   private long file_size;
+  private long file_pos;
   private long folder_size;
   private int width = -1, height = -1;
   private float fps = -1;
@@ -61,8 +62,11 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   public int write(MediaCoder coder, byte[] buffer) {
 //    JFLog.log(log, "write:" + buffer.length);
     writeFile(buffer);
-    file_size += buffer.length;
-    folder_size += buffer.length;
+    if (file_pos == file_size) {
+      file_size += buffer.length;
+      folder_size += buffer.length;
+    }
+    file_pos += buffer.length;
     return buffer.length;
   }
 
@@ -79,7 +83,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     } catch (Exception e) {
       e.printStackTrace();
     }
-    return 0;
+    file_pos = newpos;
+    return newpos;
   }
 
   private static int maxFrames = 64;
@@ -596,6 +601,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     try {
       frameCount = 0;
       file_size = 0;
+      file_pos = 0;
       filename = getFilename();
       raf = new RandomAccessFile(filename, "rw");
       JFLog.log(log, camera.name + " : createFile:" + filename);
@@ -615,6 +621,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     Recording rec = new Recording();
     rec.file = new File(filename);
     rec.size = rec.file.length();
+    if (rec.size != file_size) {
+      JFLog.log(log, "Error:file size mismatch");
+    }
     rec.time = rec.file.lastModified();
     files.add(rec);
     frameCount = 0;
