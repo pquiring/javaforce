@@ -1,3 +1,7 @@
+Mar 2, 2020 : 0.4 released!
+  - new : added motion & image preview
+  - fix : file size logic was incorrect
+
 Mar 1, 2020 : 0.3 released!
   - new : updating a camera config no longer stops/starts the camera
     (this often caused app to crash due to out of memory)

@@ -50,7 +50,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   private static final int decoded_x = 320;
   private static final int decoded_y = 200;
   private static final int decoded_xy = 320 * 200;
-  private JFImage decoded_image;
+  private JFImage preview_image;
   private boolean wait_next_key_frame;
   private int log;
 
@@ -135,8 +135,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     public boolean[] key_frame = new boolean[maxFrames];
   }
 
-  private static int maxPacketsSize = 10 * 1024 * 1024;
-  private static int maxPackets = 64;
+  private static int maxPacketsSize = 16 * 1024 * 1024;
+  private static int maxPackets = 256;
 
   /** Packets received. */
   private static class Packets {
@@ -335,6 +335,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     frames = new Frames(log);
     packets_decode = new Packets(log);
     packets_encode = new Packets(log);
+    preview_image = new JFImage(decoded_x, decoded_y);
   }
 
   public void cancel() {
@@ -347,16 +348,22 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   }
 
   public void run() {
+    boolean idle = false;
     try {
       listFiles();
       if (!connect()) return;
       while (active) {
-        JF.sleep(100);
+        if (idle) {
+          JF.sleep(50);
+        } else {
+          idle = true;
+        }
         long now = System.currentTimeMillis();
         if (now - lastPacket > 10*1000) {
           JFLog.log(log, camera.name + " : Reconnecting");
           disconnect();
           connect();
+          idle = false;
         } else if (now - lastKeepAlive > 55*1000) {
           JFLog.log(log, camera.name + " : keep alive");
           client.keepalive(url);
@@ -368,6 +375,18 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
           files.remove(0);
           rec.file.delete();
           folder_size -= rec.size;
+          JFLog.log(log, "delete recording:" + rec.file.getName());
+        }
+        //update preview
+        if (camera.viewing && camera.update_preview) {
+          int px[] = decoded_frame;
+          if (px != null) {
+            preview_image.putPixels(px, 0, 0, decoded_x, decoded_y, 0);
+            ByteArrayOutputStream preview = new ByteArrayOutputStream();
+            preview_image.savePNG(preview);
+            camera.preview = preview.toByteArray();
+            camera.update_preview = false;
+          }
         }
         do {
           if (file_size > max_file_size) {
@@ -380,9 +399,11 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
               closeFile();
               raf = null;
             }
+            idle = false;
             break;
           }
           if (frames.empty()) break;
+          idle = false;
           int frame_tail = frames.tail;
           if (frames.stop[frame_tail]) {
             if (encoder != null) {
@@ -424,8 +445,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         raf = null;
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      JFLog.log(log, e);
     }
+    JFLog.log(log, ":closing");
     JFLog.close(log);
   }
   public boolean connect() {
@@ -730,99 +752,94 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
   }
 
   public void rtpH264(RTPChannel rtp, byte[] buf, int offset, int length) {
-    //I frame : 9 ... 5 (key frame)
-    //P frame : 9 ... 1 (diff frame)
-    lastPacket = System.currentTimeMillis();
-    Packet packet = h264.decode(buf, 0, length);
-    if (packet == null) {
-      return;
-    }
-    int type = packet.data[4] & 0x1f;
-    switch (type) {
-      case 7:  //SPS
-      case 8:  //PPS
-      case 1:  //P frame
-      case 5:  //I frame
-        break;
-      default:
-        return;  //all others ignore
-    }
-    packets_decode.add(packet);
-    packets_encode.add(packet);
-    packets_decode.cleanPackets(true);
-    packets_encode.cleanPackets(true);
-    if (!packets_decode.haveCompleteFrame()) return;
-    boolean key_frame = packets_decode.isNextFrame_KeyFrame();
-    if (debug_buffers && key_frame) {
-      JFLog.log(log, "packets_decode=" + packets_decode.toString());
-      JFLog.log(log, "packets_encode=" + packets_decode.toString());
-    }
-    if (wait_next_key_frame) {
-      if (!key_frame) {
+    try {
+      //I frame : 9 ... 5 (key frame)
+      //P frame : 9 ... 1 (diff frame)
+      lastPacket = System.currentTimeMillis();
+      Packet packet = h264.decode(buf, 0, length);
+      if (packet == null) {
+        return;
+      }
+      int type = packet.data[4] & 0x1f;
+      switch (type) {
+        case 7:  //SPS
+        case 8:  //PPS
+        case 1:  //P frame
+        case 5:  //I frame
+          break;
+        default:
+          return;  //all others ignore
+      }
+      packets_decode.add(packet);
+      packets_encode.add(packet);
+      packets_decode.cleanPackets(true);
+      packets_encode.cleanPackets(true);
+      if (!packets_decode.haveCompleteFrame()) return;
+      boolean key_frame = packets_decode.isNextFrame_KeyFrame();
+      if (debug_buffers && key_frame) {
+        JFLog.log(log, "packets_decode=" + packets_decode.toString());
+        JFLog.log(log, "packets_encode=" + packets_decode.toString());
+      }
+      if (wait_next_key_frame) {
+        if (!key_frame) {
+          packets_decode.reset();
+          packets_encode.reset();
+          return;
+        }
+        wait_next_key_frame = false;
+      }
+      Packet nextPacket = packets_decode.getNextFrame();
+      decoded_frame = decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
+      if (decoded_frame == null) {
+        JFLog.log(log, camera.name + ":Error:newFrame == null:packet.length=" + nextPacket.length);
         packets_decode.reset();
         packets_encode.reset();
+        //decoding error : delete all frames till next key frame
+        wait_next_key_frame = true;
         return;
       }
-      wait_next_key_frame = false;
-    }
-    Packet nextPacket = packets_decode.getNextFrame();
-    decoded_frame = decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
-    if (decoded_frame == null) {
-      JFLog.log(log, camera.name + ":Error:newFrame == null:packet.length=" + nextPacket.length);
-      packets_decode.reset();
-      packets_encode.reset();
-      //decoding error : delete all frames till next key frame
-      wait_next_key_frame = true;
-      return;
-    }
-    packets_decode.removeNextFrame();
-    if (width == -1 && height == -1) {
-      width = decoder.getWidth();
-      height = decoder.getHeight();
-      fps = decoder.getFrameRate();
-      JFLog.log(log, camera.name + " : detected width/height=" + width + "x" + height);
-      JFLog.log(log, camera.name + " : detected FPS=" + fps);
-      JFLog.log(log, camera.name + " : threshold=" + camera.record_motion_threshold + ":after=" + camera.record_motion_after);
-      if (width == 0 || height == 0) {
-        width = -1;
-        height = -1;
-        return;
+      packets_decode.removeNextFrame();
+      if (width == -1 && height == -1) {
+        width = decoder.getWidth();
+        height = decoder.getHeight();
+        fps = decoder.getFrameRate();
+        JFLog.log(log, camera.name + " : detected width/height=" + width + "x" + height);
+        JFLog.log(log, camera.name + " : detected FPS=" + fps);
+        JFLog.log(log, camera.name + " : threshold=" + camera.record_motion_threshold + ":after=" + camera.record_motion_after);
+        if (width == 0 || height == 0) {
+          width = -1;
+          height = -1;
+          return;
+        }
+        if (width == -1 || height == -1) {
+          width = -1;
+          height = -1;
+          return;
+        }
+        last_frame = new int[decoded_xy];
       }
-      if (width == -1 || height == -1) {
-        width = -1;
-        height = -1;
-        return;
+      now = lastPacket;
+      if (camera.record_motion) {
+        detectMotion(decoded_frame, key_frame);
+      } else {
+        recording = true;  //always recording
       }
-      last_frame = new int[decoded_xy];
-    }
-    now = lastPacket;
-    if (camera.record_motion) {
-      detectMotion(decoded_frame, key_frame);
-    } else {
-      recording = true;  //always recording
-    }
-    if (camera.viewing) {
-      if (decoded_image == null) {
-        decoded_image = new JFImage(decoded_x, decoded_y);
+      if (recording) {
+        while (packets_encode.haveCompleteFrame()) {
+          key_frame = packets_encode.isNextFrame_KeyFrame();
+          nextPacket = packets_encode.getNextFrame();
+          frames.add(nextPacket, key_frame);
+          frameCount++;
+          packets_encode.removeNextFrame();
+        }
+        if (end_recording) {
+          frames.stop();
+          end_recording = false;
+          recording = false;
+        }
       }
-      decoded_image.putPixels(last_frame, 0, 0, decoded_x, decoded_y, 0);
-      ByteArrayOutputStream preview = new ByteArrayOutputStream();
-      decoded_image.savePNG(preview);
-      camera.preview = preview.toByteArray();
-    }
-    if (recording) {
-      while (packets_encode.haveCompleteFrame()) {
-        key_frame = packets_encode.isNextFrame_KeyFrame();
-        nextPacket = packets_encode.getNextFrame();
-        frames.add(nextPacket, key_frame);
-        frameCount++;
-        packets_encode.removeNextFrame();
-      }
-      if (end_recording) {
-        frames.stop();
-        end_recording = false;
-        recording = false;
-      }
+    } catch (Exception e) {
+      JFLog.log(log, e);
     }
   }
 

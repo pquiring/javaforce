@@ -12,7 +12,7 @@ import javaforce.webui.event.*;
 import javaforce.media.*;
 
 public class ConfigService implements WebUIHandler {
-  public static String version = "0.3";
+  public static String version = "0.4";
   public WebUIServer server;
   public void start() {
     server = new WebUIServer();
@@ -215,6 +215,7 @@ public class ConfigService implements WebUIHandler {
       motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
       max_file_size.setText(Integer.toString(camera.max_file_size));
       max_folder_size.setText(Integer.toString(camera.max_folder_size));
+      stopTimer(client);
       client.setProperty("camera", camera);
       Timer timer = new Timer();
       timer.schedule(new TimerTask() {
@@ -227,6 +228,7 @@ public class ConfigService implements WebUIHandler {
       client.setProperty("timer", timer);
       preview_panel.setVisible(true);
       camera.viewing = true;
+      camera.update_preview = true;
     });
     b_new.addClickListener((MouseEvent e, Component button) -> {
       list.setSelectedIndex(-1);
@@ -333,9 +335,16 @@ public class ConfigService implements WebUIHandler {
     String pts[] = url.split("/");
     String hash = pts[2];
     WebUIClient client = server.getClient(hash);
-    if (client == null) return null;
+    if (client == null) {
+      JFLog.log("ConfigServer.getResouce() : WebUIClient not found for hash:" + hash);
+      return null;
+    }
     Camera camera = (Camera)client.getProperty("camera");
-    if (camera == null) return null;
+    if (camera == null) {
+      JFLog.log("ConfigServer.getResouce() : camera == null");
+      return null;
+    }
+    camera.update_preview = true;
     return camera.preview;
   }
 

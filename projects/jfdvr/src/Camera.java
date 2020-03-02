@@ -17,7 +17,8 @@ public class Camera implements Serializable {
   public int max_file_size;  //in MBs
   public int max_folder_size;  //in GBs
 
-  public transient float motion_value;
-  public transient byte[] preview;  //png image
-  public transient boolean viewing;
+  public transient volatile float motion_value;
+  public transient volatile byte[] preview;  //png image
+  public transient volatile boolean viewing;
+  public transient volatile boolean update_preview;
 }
