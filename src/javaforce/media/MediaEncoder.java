@@ -35,6 +35,8 @@ public class MediaEncoder extends MediaCoder {
   }
   public native boolean addVideo(int px[]);
   public native int getAudioFramesize();
+  /** Adds pre encoded audio. */
+  public native boolean addAudioEncoded(byte packet[], int offset, int length);
   /** Adds pre encoded video. */
   public native boolean addVideoEncoded(byte packet[], int offset, int length, boolean key_frame);
   public native void stop();
