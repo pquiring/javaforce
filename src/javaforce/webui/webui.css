@@ -136,6 +136,7 @@ input {
 
 .column-item {
   display: flex;
+  flex-shrink: 0;
 }
 
 .column-end {
