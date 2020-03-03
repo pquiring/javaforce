@@ -1,4 +1,10 @@
 CHANGELOG:
+3-3-2020 : v1.18 released
+  - fix : audio delay (JF:github bug #2)
+3-8-2019 : v1.17 released
+  - fix : re-release
+9-26-2018 : v1.16 released
+  - fix : version check function
 9-21-2018 : v1.15 released
   - fix : DTLS
 7-3-2017 : v1.12.0 released
