@@ -64,10 +64,10 @@ public class RemoteCamera extends Thread {
     if (!active) {
       return;
     }
-    byte[] jpeg = rtpJpeg.decode(Arrays.copyOfRange(data, pos, pos + len));
-    if (jpeg != null) {
+    Packet packet = rtpJpeg.decode(data, pos, len);
+    if (packet != null) {
       JFImage tmp = new JFImage();
-      if (!tmp.load(new ByteArrayInputStream(jpeg))) {
+      if (!tmp.load(new ByteArrayInputStream(packet.data))) {
         JFLog.log("RemoteCamera : failed to decode image");
         return;
       }
@@ -82,8 +82,8 @@ public class RemoteCamera extends Thread {
     if (!active) {
       return;
     }
-    byte[] pack = rtpH263.decode(Arrays.copyOfRange(data, pos, pos + len));
-    if (pack == null) {
+    Packet packet = rtpH263.decode(data, pos, len);
+    if (packet == null) {
       return;
       //      printArray("decoded_h263", pack, 0, pack.length);
     }
@@ -96,7 +96,7 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(pack, 0, pack.length);
+    int[] px = decoder.decode(packet.data, packet.offset, packet.length);
     if (px == null) {
       return;
     }
@@ -113,8 +113,8 @@ public class RemoteCamera extends Thread {
     if (!active) {
       return;
     }
-    byte[] pack = rtpH263_1998.decode(Arrays.copyOfRange(data, pos, pos + len));
-    if (pack == null) {
+    Packet packet = rtpH263_1998.decode(data, pos, len);
+    if (packet == null) {
       return;
       //      printArray("decoded_1998", pack, 0, pack.length);
     }
@@ -127,7 +127,7 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(pack, 0, pack.length);
+    int[] px = decoder.decode(packet.data, packet.offset, packet.length);
     if (px == null) {
       return;
     }
@@ -144,8 +144,8 @@ public class RemoteCamera extends Thread {
     if (!active) {
       return;
     }
-    byte[] pack = rtpH263_2000.decode(Arrays.copyOfRange(data, pos, pos + len));
-    if (pack == null) {
+    Packet packet = rtpH263_2000.decode(data, pos, len);
+    if (packet == null) {
       return;
       //      printArray("decoded_2000", pack, 0, pack.length);
     }
@@ -158,7 +158,7 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(pack, 0, pack.length);
+    int[] px = decoder.decode(packet.data, packet.offset, packet.length);
     if (px == null) {
       return;
     }
@@ -210,8 +210,8 @@ public class RemoteCamera extends Thread {
       return;
     }
     //      printArray("i:rtpVP8:", data, 0, len);
-    byte[] pack = rtpVP8.decode(Arrays.copyOfRange(data, pos, pos + len));
-    if (pack == null) {
+    Packet packet = rtpVP8.decode(data, pos, len);
+    if (packet == null) {
       return;
       //      printArray("decoded_VP8", pack, 0, pack.length);
       //      try { raf.write(pack); } catch (Exception e) {}
@@ -225,7 +225,7 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(pack, 0, pack.length);
+    int[] px = decoder.decode(packet.data, packet.offset, packet.length);
     if (px == null) {
       return;
     }

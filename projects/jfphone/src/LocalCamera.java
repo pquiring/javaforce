@@ -120,7 +120,7 @@ public class LocalCamera extends Thread implements MediaIO {
         if (codec.name.equals("JPEG")) {
           ByteArrayOutputStream baos = new ByteArrayOutputStream();
           localImage.saveJPG(baos);
-          byte[][] packets = rtpJpeg.encode(baos.toByteArray(), PhonePanel.vx, PhonePanel.vy);
+          byte[][] packets = rtpJpeg.encode(baos.toByteArray(), PhonePanel.vx, PhonePanel.vy, 0);
           for (int a = 0; a < packets.length; a++) {
             list.add(packets[a]);
           }
