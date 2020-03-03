@@ -1,5 +1,9 @@
 What's new...
 
+Mar 3/2020 : JF 19.5.0 released
+  - jfPhone/1.18
+    - fix : audio delay when switching lines
+
 Mar 2/2020 : JF 19.4.0 released
   - jfDVR/0.4
     - new : preview image and view motion value thru web UI
