@@ -35,8 +35,9 @@ public class AudioOutput {
     return mixers.toArray(new String[0]);
   }
 
-  public boolean start(int chs, int freq, int bits, int bufsiz, String device) {
-    buf8 = new byte[bufsiz];
+  public boolean start(int chs, int freq, int bits, int frame_size, String device) {
+    if (bits != 16) return false;
+    buf8 = new byte[frame_size * 2];
     if (device == null) {
       device = "<default>";
     }

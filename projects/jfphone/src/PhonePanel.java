@@ -648,10 +648,16 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
 
     private void cfgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cfgActionPerformed
       if (registeringAll) {
+        JFLog.log("CFG:Waiting for registration to complete");
         doConfig = true;  //do after registerAll is complete
         return;
       }
-      for(int a=0;a<6;a++) { if (lines[a].incall) return; }
+      for(int a=0;a<6;a++) {
+        if (lines[a].incall) {
+          JFLog.log("CFG:line in call:" + (a+1));
+          return;
+        }
+      }
       cfg.setIcon(ii[PIC_GREEN]);
       unRegisterAll();
       selectLine(-1);

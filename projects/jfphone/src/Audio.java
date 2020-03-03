@@ -115,11 +115,11 @@ public class Audio {
     input.listDevices();
     deactivateDelay = deactivateDelayInit;
     underBufferCount = 0;
-    if (!input.start(1, sampleRate, 16, sampleRate50x2, Settings.current.audioInput)) {
+    if (!input.start(1, sampleRate, 16, sampleRate50, Settings.current.audioInput)) {
       JFLog.log("Input.start() failed");
       return false;
     }
-    if (!output.start(1, sampleRate, 16, sampleRate50x2, Settings.current.audioOutput)) {
+    if (!output.start(1, sampleRate, 16, sampleRate50, Settings.current.audioOutput)) {
       JFLog.log("Output.start() failed");
       return false;
     }
@@ -152,8 +152,10 @@ public class Audio {
       output.stop();
       input.stop();
     }
-    mc.setMeterPlay(0);
-    mc.setMeterRec(0);
+    if (mc != null) {
+      mc.setMeterPlay(0);
+      mc.setMeterRec(0);
+    }
   }
 
   /** Frees resources. */
