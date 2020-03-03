@@ -53,8 +53,6 @@ public class EditSettings extends javax.swing.JDialog {
     if (!Settings.isLinux && !Settings.isWindows) {
       useNativeVideo.setEnabled(false);
     }
-    bits.setText("Make sure you use the " + (JF.is64Bit() ? "64" : "32") + "bit Codec Pack.");
-    if (Settings.hasFFMPEG) download.setEnabled(false);
     updateKeyStatus();
   }
 
@@ -143,12 +141,6 @@ public class EditSettings extends javax.swing.JDialog {
     jLabel47 = new javax.swing.JLabel();
     add_video_codec = new javax.swing.JButton();
     remove_video_codec = new javax.swing.JButton();
-    jPanel19 = new javax.swing.JPanel();
-    jLabel40 = new javax.swing.JLabel();
-    download = new javax.swing.JButton();
-    bits = new javax.swing.JLabel();
-    visitWebSite = new javax.swing.JButton();
-    jLabel38 = new javax.swing.JLabel();
     accts = new javax.swing.JPanel();
     jTabbedPane1 = new javax.swing.JTabbedPane();
     l1 = new javax.swing.JPanel();
@@ -947,58 +939,6 @@ public class EditSettings extends javax.swing.JDialog {
             .addContainerGap())))
     );
 
-    jLabel40.setText("To use H.263/H.264/VP8 codecs you must download / install the Codec Pack");
-
-    download.setText("Download / Install");
-    download.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        downloadActionPerformed(evt);
-      }
-    });
-
-    bits.setText("Make sure you use the ??bit Codec Pack.");
-
-    visitWebSite.setText("Visit WebSite");
-    visitWebSite.addActionListener(new java.awt.event.ActionListener() {
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        visitWebSiteActionPerformed(evt);
-      }
-    });
-
-    jLabel38.setText("Visit the website for more info or download and install now.");
-
-    javax.swing.GroupLayout jPanel19Layout = new javax.swing.GroupLayout(jPanel19);
-    jPanel19.setLayout(jPanel19Layout);
-    jPanel19Layout.setHorizontalGroup(
-      jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel19Layout.createSequentialGroup()
-        .addContainerGap()
-        .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(jPanel19Layout.createSequentialGroup()
-            .addComponent(visitWebSite)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(download))
-          .addComponent(bits)
-          .addComponent(jLabel40)
-          .addComponent(jLabel38))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-    );
-    jPanel19Layout.setVerticalGroup(
-      jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-      .addGroup(jPanel19Layout.createSequentialGroup()
-        .addContainerGap()
-        .addComponent(jLabel40)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jLabel38)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(bits)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addGroup(jPanel19Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(download)
-          .addComponent(visitWebSite))
-        .addContainerGap())
-    );
-
     javax.swing.GroupLayout videoLayout = new javax.swing.GroupLayout(video);
     video.setLayout(videoLayout);
     videoLayout.setHorizontalGroup(
@@ -1007,9 +947,8 @@ public class EditSettings extends javax.swing.JDialog {
         .addContainerGap()
         .addGroup(videoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addComponent(jPanel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(jPanel19, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel18, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap(166, Short.MAX_VALUE))
+        .addContainerGap(167, Short.MAX_VALUE))
     );
     videoLayout.setVerticalGroup(
       videoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1018,9 +957,7 @@ public class EditSettings extends javax.swing.JDialog {
         .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         .addGap(2, 2, 2)
         .addComponent(jPanel18, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jPanel19, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(75, Short.MAX_VALUE))
+        .addContainerGap(188, Short.MAX_VALUE))
     );
 
     tabs.addTab("Video", video);
@@ -2113,15 +2050,6 @@ public class EditSettings extends javax.swing.JDialog {
     disabledVideoCodecsList.addElement((String)enabledVideoCodecsList.remove(idx));
   }//GEN-LAST:event_remove_video_codecActionPerformed
 
-  private void downloadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadActionPerformed
-    if (MediaCoder.download()) {
-      if (MediaCoder.init()) {
-        download.setEnabled(false);
-        Settings.hasFFMPEG = true;
-      }
-    }
-  }//GEN-LAST:event_downloadActionPerformed
-
   private void disableVideoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_disableVideoItemStateChanged
     updateVideo();
   }//GEN-LAST:event_disableVideoItemStateChanged
@@ -2129,14 +2057,6 @@ public class EditSettings extends javax.swing.JDialog {
   private void useNativeVideoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_useNativeVideoItemStateChanged
     updateVideo();
   }//GEN-LAST:event_useNativeVideoItemStateChanged
-
-  private void visitWebSiteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_visitWebSiteActionPerformed
-    try {
-      java.awt.Desktop.getDesktop().browse(new java.net.URI("http://javaforce.sourceforge.net/codecpack.php"));
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }//GEN-LAST:event_visitWebSiteActionPerformed
 
   private void sipRangeStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_sipRangeStateChanged
     boolean state = sipRange.isSelected();
@@ -2248,7 +2168,6 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JCheckBox autohold;
   private javax.swing.JButton bCancel;
   private javax.swing.JButton bSave;
-  private javax.swing.JLabel bits;
   private javax.swing.JCheckBox checkVersion;
   private javax.swing.JCheckBox disableLogging;
   private javax.swing.JRadioButton disableVideo;
@@ -2257,7 +2176,6 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JTextField dname;
   private javax.swing.JTextField dndCodeOff;
   private javax.swing.JTextField dndCodeOn;
-  private javax.swing.JButton download;
   private javax.swing.JTextField downloadPath;
   private javax.swing.JPanel eKey;
   private javax.swing.JList enabled_audio_codecs;
@@ -2300,10 +2218,8 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel35;
   private javax.swing.JLabel jLabel36;
   private javax.swing.JLabel jLabel37;
-  private javax.swing.JLabel jLabel38;
   private javax.swing.JLabel jLabel39;
   private javax.swing.JLabel jLabel4;
-  private javax.swing.JLabel jLabel40;
   private javax.swing.JLabel jLabel41;
   private javax.swing.JLabel jLabel42;
   private javax.swing.JLabel jLabel43;
@@ -2345,7 +2261,6 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JPanel jPanel15;
   private javax.swing.JPanel jPanel17;
   private javax.swing.JPanel jPanel18;
-  private javax.swing.JPanel jPanel19;
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel21;
   private javax.swing.JPanel jPanel22;
@@ -2468,7 +2383,6 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JComboBox videoDevice;
   private javax.swing.JSlider videoFPS;
   private javax.swing.ButtonGroup videoGroup;
-  private javax.swing.JButton visitWebSite;
   // End of variables declaration//GEN-END:variables
 
   private DefaultListModel disabledAudioCodecsList = new DefaultListModel();

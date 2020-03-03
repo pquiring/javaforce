@@ -191,6 +191,12 @@ public class Audio {
 
   public void selectLine(int line) {
     this.line = line;
+    if (player != null) {
+      player.flush();
+    }
+    if (reader != null) {
+      reader.flush();
+    }
   }
 
   /** Changes software/hardware playback volume level. */
@@ -390,24 +396,31 @@ public class Audio {
         if (line != -1) {
           if (lines[line].dtmf != 'x') mix(mixed, dtmf.getSamples(lines[line].dtmf), 8);
         }
-        if ((line != -1) && (lines[line].talking) && (!lines[line].hld)) {
-          RTPChannel channel = lines[line].audioRTP.getDefaultChannel();
+        boolean inuse = false;
+        for (int a = 0; a < 6; a++) {
+          if (!lines[a].talking) continue;
+          boolean doline = line == a && !lines[a].hld;
+          RTPChannel channel = lines[a].audioRTP.getDefaultChannel();
           int rate = channel.coder.getSampleRate();
           switch (rate) {
             case 8000:  //G729, G711, GSM
-              if (channel.getSamples(indata8)) {
+              if (channel.getSamples(indata8) && doline) {
                 mix(mixed, indata8, 9);
               }
               break;
             case 16000:  //G722
-              if (channel.getSamples(indata16)) {
+              if (channel.getSamples(indata16) && doline) {
                 mix(mixed, indata16, 9);
               }
               break;
           }
-          if (inRinging) mix(mixed, getCallWaiting(), 10);
-          write(mixed);
-        } else {
+          if (doline) {
+            if (inRinging) mix(mixed, getCallWaiting(), 10);
+            write(mixed);
+            inuse = true;
+          }
+        }
+        if (!inuse) {
           if (inRinging || outRinging) mix(mixed, getRinging(), 11);
           if (active) write(mixed);
         }
