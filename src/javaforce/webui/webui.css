@@ -120,6 +120,7 @@ input {
 
 .row-item {
   display: flex;
+  flex-shrink: 0;
   vertical-align: top;
   padding: 0px;
 }

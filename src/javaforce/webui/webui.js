@@ -327,7 +327,7 @@ function onmousedownBody(event, element) {
 }
 
 function onresizeBody(event, element) {
-  if (ws == null) return;
+  if (ws === null) return;
   sendSize('body');
 }
 
@@ -452,7 +452,7 @@ function onresizeSplitDividerHeight(event, element, id1, id2, id3) {
   element3.style.height = maxHeight + "px";
 }
 
-function onmousedownSplitPanel(event, element, id1, id2) {
+function onmousedownSplitPanel(event, element, id1, id2, dir) {
   event.preventDefault();
   var element1 = document.getElementById(id1);
   var element2 = document.getElementById(id2);
@@ -466,13 +466,23 @@ function onmousedownSplitPanel(event, element, id1, id2) {
     //elements
     element: element,
     element1: element1,
-    element2: element2
+    element2: element2,
+    //direction
+    dir: dir
   };
 }
 
 function onmousemoveSplitPanel(event, element) {
-  var width = splitDragging.startX + (event.clientX - splitDragging.mouseX);
-  splitDragging.element1.style.width = width + "px";
+  switch (splitDragging.dir) {
+    case 'h':
+      var height = splitDragging.startY + (event.clientY - splitDragging.mouseY);
+      splitDragging.element1.style.height = height + "px";
+      break;
+    case 'v':
+      var width = splitDragging.startX + (event.clientX - splitDragging.mouseX);
+      splitDragging.element1.style.width = width + "px";
+      break;
+  }
 }
 
 function onmousedownSlider(event, element, sliderid, dir, max) {
@@ -496,7 +506,7 @@ function onmousedownSlider(event, element, sliderid, dir, max) {
 
 function onmousemoveSlider(event, element) {
   var pos;
-  if (sliderDragging.dir == "h") {
+  if (sliderDragging.dir === "h") {
     pos = sliderDragging.startX + (event.clientX - sliderDragging.mouseX);
     if (pos > sliderDragging.max) pos = sliderDragging.max;
     if (pos < 0) pos = 0;

@@ -55,13 +55,14 @@ public class SplitPanel extends Container {
 
   public void init() {
     super.init();
-    div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + b1.id + "\",\"" + b2.id + "\");");
     switch(dir) {
       case VERTICAL:
-        top.addEvent("onresize", "onresizeSplitDividerHeight(event, this,\"" + b1.id + "\",\"" + b2.id + "\",\"" + div.id + "\")");
+        div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + b1.id + "\",\"" + b2.id + "\", \"v\");");
+        top.addEvent("onresize", "onresizeSplitDividerWidth(event, this,\"" + b1.id + "\",\"" + b2.id + "\",\"" + div.id + "\")");
         break;
       case HORIZONTAL:
-        top.addEvent("onresize", "onresizeSplitDividerWidth(event, this,\"" + b1.id + "\",\"" + b2.id + "\",\"" + div.id + "\")");
+        div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + b1.id + "\",\"" + b2.id + "\", \"h\");");
+        top.addEvent("onresize", "onresizeSplitDividerHeight(event, this,\"" + b1.id + "\",\"" + b2.id + "\",\"" + div.id + "\")");
         break;
     }
   }

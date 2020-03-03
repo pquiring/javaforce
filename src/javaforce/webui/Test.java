@@ -188,14 +188,17 @@ public class Test implements WebUIHandler {
     //add third row
     Row row3 = new Row();
     panel.add(row3);
-    Image i = new Image(img);
-    row3.add(i);
+    Image i1 = new Image(img);
+    row3.add(i1);
 
     SplitPanel sp = new SplitPanel(SplitPanel.VERTICAL);
     sp.setLeftComponent(new Label("AA<br>aa"));
     sp.setRightComponent(new Label("BB<br>bb"));
     row3.add(sp);
 
+    Image i2 = new Image(img);
+    row3.add(i2);
+    
     //add forth row
     Row row4 = new Row();
     panel.add(row4);
