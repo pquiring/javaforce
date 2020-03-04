@@ -1,4 +1,4 @@
-<project name="jfpac" default="help" basedir=".">
+<project name="jfpac" default="jar" basedir=".">
   <description>pac</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfpac"/>
