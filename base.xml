@@ -1,4 +1,4 @@
-<!-- Note : Requires ANT 1.9.1+ -->
+<!-- Note : Requires ANT 1.9.8+ -->
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcepath="src" sourcefiles="src/*.java" destdir="javadoc">
