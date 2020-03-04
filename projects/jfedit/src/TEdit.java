@@ -9,9 +9,8 @@ import java.awt.datatransfer.*;
 import java.awt.event.KeyEvent;
 
 import javaforce.*;
-import javaforce.ansi.*;
-import javaforce.ansi.games.*;
-import javaforce.jni.*;
+import javaforce.ansi.server.*;
+import javaforce.ansi.server.games.*;
 
 public class TEdit implements KeyEvents {
   public static String args[];

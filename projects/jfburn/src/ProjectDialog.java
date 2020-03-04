@@ -53,7 +53,7 @@ public class ProjectDialog extends javax.swing.JDialog {
       toolbar.remove(createFolder);
     }
     xml.setRoot(xmlFiles);
-    xmlFiles.useContentForName = true;
+    xml.setUseContentForName(true);
     showAll();
   }
 

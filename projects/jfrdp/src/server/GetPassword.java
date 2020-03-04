@@ -1,6 +1,6 @@
 package server;
 
-import javaforce.JF;
+import javaforce.JFAWT;
 
 /**
  *

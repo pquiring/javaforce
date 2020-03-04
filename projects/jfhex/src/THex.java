@@ -9,7 +9,7 @@ import java.awt.datatransfer.*;
 import java.awt.event.KeyEvent;
 
 import javaforce.*;
-import javaforce.ansi.*;
+import javaforce.ansi.server.*;
 import javaforce.jni.*;
 
 public class THex implements KeyEvents {
