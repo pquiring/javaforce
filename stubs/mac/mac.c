@@ -257,9 +257,6 @@ int main(int argc, char **argv) {
 
   loadProperties();
 
-  //get java home
-  findJava();
-
   //open libjli.dylib
   jvm_dll = dlopen("jre/lib/libjli.dylib", RTLD_NOW);
   if (jvm_dll == NULL) {
