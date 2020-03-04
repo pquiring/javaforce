@@ -250,7 +250,7 @@ int loadProperties() {
 }
 
 void findJava() {
-  strcpy(javahome, "jre/lib/server/libjvm.dylib");
+  strcpy(javahome, "jre/lib/libjli.dylib");
 }
 
 /** Main entry point. */
@@ -264,15 +264,15 @@ int main(int argc, char **argv) {
   //get java home
   findJava();
 
-  //open libjvm.dylib
+  //open libjli.dylib
   jvm_dll = dlopen(javahome, RTLD_NOW);
   if (jvm_dll == NULL) {
-    error("Unable to open libjvm.dylib");
+    error("Unable to open libjli.dylib");
   }
 
   CreateJavaVM = (int (*)(void*,void*,void*)) dlsym(jvm_dll, "JNI_CreateJavaVM");
   if (CreateJavaVM == NULL) {
-    error("Unable to find Java interfaces in libjvm.dylib");
+    error("Unable to find Java interfaces in libjli.dylib");
   }
 
   //now continue in new thread (not really necessary but avoids some Java bugs)
