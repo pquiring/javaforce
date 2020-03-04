@@ -29,7 +29,6 @@
 /* Global variables */
 int type;
 char version[MAX_PATH];
-char javahome[MAX_PATH];
 int size = MAX_PATH;
 int (*CreateJavaVM)(void*,void*,void*);
 int thread_handle;
@@ -37,6 +36,7 @@ int thread_id;
 char **g_argv;
 int g_argc;
 void *jvm_dll;
+void *jawt_dll;
 pthread_t thread;
 pthread_attr_t thread_attr;
 char link1[MAX_PATH];
@@ -249,10 +249,6 @@ int loadProperties() {
   return 0;
 }
 
-void findJava() {
-  strcpy(javahome, "jre/lib/libjli.dylib");
-}
-
 /** Main entry point. */
 int main(int argc, char **argv) {
   void *retval;
@@ -265,9 +261,15 @@ int main(int argc, char **argv) {
   findJava();
 
   //open libjli.dylib
-  jvm_dll = dlopen(javahome, RTLD_NOW);
+  jvm_dll = dlopen("jre/lib/libjli.dylib", RTLD_NOW);
   if (jvm_dll == NULL) {
     error("Unable to open libjli.dylib");
+  }
+
+  //open libawt.dylib
+  jawt_dll = dlopen("jre/lib/libawt.dylib", RTLD_NOW);
+  if (jawt_dll == NULL) {
+    //error("Unable to open libawt.dylib");
   }
 
   CreateJavaVM = (int (*)(void*,void*,void*)) dlsym(jvm_dll, "JNI_CreateJavaVM");
