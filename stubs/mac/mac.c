@@ -45,7 +45,6 @@ char classpath[1024];
 char mainclass[MAX_PATH];
 char method[MAX_PATH];
 char cfgargs[1024];
-int appleJava = 0;  //use Oracle instead
 
 /* Prototypes */
 void error(char *msg);
@@ -244,9 +243,6 @@ int loadProperties() {
     else if (strncmp(ln1, "ARGS=", 5) == 0) {
       strcpy(cfgargs, ln1 + 5);
     }
-    else if (strncmp(ln1, "APPLEJAVA=TRUE", 14) == 0) {
-      appleJava = 1;
-    }
     ln1 = ln2;
   }
   free(data);
@@ -254,33 +250,7 @@ int loadProperties() {
 }
 
 void findJava() {
-#if 0
-  //this doesn't work - it always just pops up a window asking user to install java when it is installed
-  //user should have got a PC!
-  DIR *dir;
-  struct dirent *dp;
-
-  dir = opendir("/Library/Java/JavaVirtualMachines");
-  if (dir == NULL) {
-    error("Unable to open JVMs folder.");
-  }
-  while ((dp = readdir(dir)) != NULL) {
-    strcpy(javahome, "/Library/Java/JavaVirtualMachines/");
-    strcat(javahome, dp->d_name);
-    strcat(javahome, "/Contents/Home/jre/lib/server/libjvm.dylib");
-    printf("Trying %s\n", javahome);
-    int fd = open(javahome, O_RDONLY);
-    if (fd != -1) {
-      close(fd);
-      closedir(dir);
-      return;
-    }
-  }
-  error("No JVMs installed.");
-#else
-  //just use the bundled JRE
   strcpy(javahome, "jre/lib/server/libjvm.dylib");
-#endif
 }
 
 /** Main entry point. */
