@@ -1,9 +1,10 @@
 //Java Launcher Mac
 
-// version 1.5
+// version 1.6
 // supports passing command line options to java main()
 // now loads CLASSPATH and MAINCLASS from resource file (*.cfg)
 // now globbs arguments (see ExpandStringArray())
+// now support AWT
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -19,6 +20,11 @@
 #include <unistd.h>
 #include <dlfcn.h>
 #include <dirent.h>
+
+/* Support Cocoa event loop on the main thread */
+#include <Cocoa/Cocoa.h>
+#include <objc/objc-runtime.h>
+#include <objc/objc-auto.h>
 
 #ifndef MAX_PATH
   #define MAX_PATH 255
@@ -249,25 +255,52 @@ int loadProperties() {
   return 0;
 }
 
+static void dummyTimer(CFRunLoopTimerRef timer, void *info) {}
+
+static void ParkEventLoop() {
+    // RunLoop needs at least one source, and 1e20 is pretty far into the future
+    CFRunLoopTimerRef t = CFRunLoopTimerCreate(kCFAllocatorDefault, 1.0e20, 0.0, 0, 0, dummyTimer, NULL);
+    CFRunLoopAddTimer(CFRunLoopGetCurrent(), t, kCFRunLoopDefaultMode);
+    CFRelease(t);
+
+    // Park this thread in the main run loop.
+    int32_t result;
+    do {
+        result = CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0e20, false);
+    } while (result != kCFRunLoopRunFinished);
+}
+
 /** Main entry point. */
 int main(int argc, char **argv) {
   void *retval;
+  char var[80];
+
   g_argv = argv;
   g_argc = argc;
 
   loadProperties();
+  snprintf(var, sizeof(var), "JAVA_MAIN_CLASS_%d", getpid());
+  setenv(var, mainclass, 1);
+  printf("var=%s%s\n", var, mainclass);
 
   //open libjli.dylib
   jvm_dll = dlopen("jre/lib/libjli.dylib", RTLD_NOW);
   if (jvm_dll == NULL) {
     error("Unable to open libjli.dylib");
   }
+  printf("dll=%p\n", jvm_dll);
 
-  //open libawt.dylib
+  jawt_dll = dlopen("jre/lib/server/libjvm.dylib", RTLD_NOW);
+  printf("dll=%p %s\n", jawt_dll, dlerror());
+
+  jawt_dll = dlopen("jre/lib/libjava.dylib", RTLD_NOW);
+  printf("dll=%p %s\n", jawt_dll, dlerror());
+
   jawt_dll = dlopen("jre/lib/libawt.dylib", RTLD_NOW);
-  if (jawt_dll == NULL) {
-    //error("Unable to open libawt.dylib");
-  }
+  printf("dll=%p %s\n", jawt_dll, dlerror());
+
+  jawt_dll = dlopen("jre/lib/libverify.dylib", RTLD_NOW);
+  printf("dll=%p %s\n", jawt_dll, dlerror());
 
   CreateJavaVM = (int (*)(void*,void*,void*)) dlsym(jvm_dll, "JNI_CreateJavaVM");
   if (CreateJavaVM == NULL) {
@@ -278,6 +311,9 @@ int main(int argc, char **argv) {
   pthread_attr_init(&thread_attr);
 
   pthread_create(&thread, &thread_attr, (void *(*) (void *))&JavaThread, NULL);
+
+  //Must run a GUI loop on main thread in MacOSX
+  ParkEventLoop();
 
   pthread_join(thread, &retval);
 

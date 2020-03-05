@@ -3,7 +3,7 @@
   <property environment="env"/>
 
   <target name="mac" description="create mac stubs">
-    <exec command="gcc -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/darwin mac.c -ldl -lpthread -o ../mac64.bin"/>
+    <exec command="gcc -framework CoreFoundation -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/darwin mac.m -ldl -lpthread -o ../mac64.bin"/>
   </target>
 
   <target name="clean" description="deletes compiled files">
