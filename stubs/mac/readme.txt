@@ -1,6 +1,9 @@
 Set following variables:
 
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_91.jdk/Contents/Home
+Download latest JDK and extract to ~/jdk
 
-Install XCode command line tools.  Run git from terminal and that will prompt to install them.
+export JAVA_HOME=~/jdk
+
+Install XCode command line tools.
+Run git from terminal and that will prompt to install them.
 Then run ant.
