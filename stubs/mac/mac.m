@@ -42,7 +42,6 @@ int thread_id;
 char **g_argv;
 int g_argc;
 void *jvm_dll;
-void *jawt_dll;
 pthread_t thread;
 pthread_attr_t thread_attr;
 char link1[MAX_PATH];
@@ -280,27 +279,14 @@ int main(int argc, char **argv) {
 
   loadProperties();
   snprintf(var, sizeof(var), "JAVA_MAIN_CLASS_%d", getpid());
+  //TODO : mainclass convert '/' to '.'
   setenv(var, mainclass, 1);
-  printf("var=%s%s\n", var, mainclass);
 
   //open libjli.dylib
   jvm_dll = dlopen("jre/lib/libjli.dylib", RTLD_NOW);
   if (jvm_dll == NULL) {
     error("Unable to open libjli.dylib");
   }
-  printf("dll=%p\n", jvm_dll);
-
-  jawt_dll = dlopen("jre/lib/server/libjvm.dylib", RTLD_NOW);
-  printf("dll=%p %s\n", jawt_dll, dlerror());
-
-  jawt_dll = dlopen("jre/lib/libjava.dylib", RTLD_NOW);
-  printf("dll=%p %s\n", jawt_dll, dlerror());
-
-  jawt_dll = dlopen("jre/lib/libawt.dylib", RTLD_NOW);
-  printf("dll=%p %s\n", jawt_dll, dlerror());
-
-  jawt_dll = dlopen("jre/lib/libverify.dylib", RTLD_NOW);
-  printf("dll=%p %s\n", jawt_dll, dlerror());
 
   CreateJavaVM = (int (*)(void*,void*,void*)) dlsym(jvm_dll, "JNI_CreateJavaVM");
   if (CreateJavaVM == NULL) {
