@@ -1,14 +1,14 @@
 package javaforce.utils;
 
-import java.io.*;
-import javaforce.JF;
-
 /** GenRPM
  *
  * Generates RedHat .rpm files.
  *
  * @author pquiring
  */
+
+import java.io.*;
+import javaforce.JF;
 
 public class GenRPM {
   public static void main(String args[]) {

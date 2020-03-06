@@ -156,10 +156,10 @@
   </target>
 
   <target name="pac" depends="elfall" description="create pac package">
-    <exec executable="jfpac">
+    <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true">
       <arg value="${app}-${version}-${archext}.pkg.tar.xz"/>
       <arg value="${arch}"/>
-    </exec>
+    </java>
     <copy file="${app}-${version}-${archext}.pkg.tar.xz" todir="${home}/repo/arch/${arch}" overwrite="true"/>
   </target>
 

@@ -638,6 +638,18 @@ public class JF {
     }
   }
 
+  public static boolean echoAppend(String str, String dst) {
+    try {
+      FileOutputStream fos = new FileOutputStream(dst, true);
+      fos.write(str.getBytes());
+      fos.close();
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
   public static boolean copyAll(InputStream is, OutputStream os, long length) {
     try {
       byte buf[] = new byte[1024];
