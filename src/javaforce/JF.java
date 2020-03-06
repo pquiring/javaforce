@@ -624,6 +624,20 @@ public class JF {
     }
   }
 
+  public static boolean copyAllAppend(String src, String dst) {
+    try {
+      FileInputStream fis = new FileInputStream(src);
+      FileOutputStream fos = new FileOutputStream(dst, true);
+      boolean success = copyAll(fis, fos);
+      fis.close();
+      fos.close();
+      return success;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
   public static boolean copyAll(InputStream is, OutputStream os, long length) {
     try {
       byte buf[] = new byte[1024];
