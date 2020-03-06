@@ -40,7 +40,6 @@ public class GenDMG {
       System.out.println("Error:" + app + ".icns not found");
       System.exit(1);
     }
-    Process p;
     Runtime rt = Runtime.getRuntime();
     try {
       rt.exec(new String[] {"ln", "-s", jre, "./jre"}).waitFor();
