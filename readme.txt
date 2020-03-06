@@ -69,9 +69,7 @@ msi : build Windows msi file with JRE bundled (64bit)
   - jre pre-linked for native packaging (see below)
   - windows stub created (/stubs/windows)
 dmg : build Mac dmg file using hdiutil (mac only)
-genisodmg : build Mac dmg file using geniso (cygwin/linux/mac) (uncompressed)
  - dmg creation requires
-  - /projects/jfdmg installed (sudo ant install)
   - jre prep for native packaging (see below)
   - Info.plist, ${app}.icns and macfiles.lst
   - see projects/jfedit for only example

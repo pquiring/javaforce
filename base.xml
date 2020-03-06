@@ -46,6 +46,7 @@
   <property name="apptype4" value=""/>
   <property name="apptype5" value=""/>
   <property name="heat_home" value="jre"/>
+  <property name="ffmpeg_home" value=""/>
 
   <macrodef name="exemacro">
     <attribute name="appx"/>
@@ -172,26 +173,14 @@
     </sequential>
   </macrodef>
 
-  <target name="dmg" depends="jar"  description="create dmg package (using hciutil) (mac only)">
+  <target name="dmg" depends="jar"  description="create dmg package">
     <mac/>
-    <exec executable="jfdmg">
+    <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenDMG" fork="true">
       <arg value="${app}"/>
       <arg value="${app}-${version}.dmg"/>
       <arg value="${jre}"/>
-    </exec>
-    <delete file="${app}"/>
-    <copy file="${app}-${version}.dmg" todir="${home}/release" overwrite="true"/>
-  </target>
-
-  <target name="genisodmg" depends="jar"  description="create dmg package (using genisoimage)">
-    <mac/>
-    <exec executable="bash">
-      <arg value="jfdmg"/>
-      <arg value="${app}"/>
-      <arg value="${app}-${version}.dmg"/>
-      <arg value="${jre}"/>
-      <arg value="-geniso"/>
-    </exec>
+      <arg value="${ffmpeg_home}"/>
+    </java>
     <delete file="${app}"/>
     <copy file="${app}-${version}.dmg" todir="${home}/release" overwrite="true"/>
   </target>
