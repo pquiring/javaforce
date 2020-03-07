@@ -102,9 +102,9 @@ The MSI installers show the Common Public License 1.0 which is acceptable as wel
 The other jars in /jars each have their own licensing.
   filters.jar - Apache License 2.0 (http://www.jhlabs.com)
   bouncycastle.jar - MIT license? (http://www.bouncycastle.org)
-  derby.jar - Apache License 2.0 (http://db.apache.com/derby)
+  derby.jar - Apache License 2.0 (http://db.apache.org/derby)
   jcifs.jar - LGPL (http://jcifs.samba.org)
-  jsp-api.jar & servlet-api.jar - Apache License 2.0 (http://tomcat.apache.com)
+  jsp-api.jar & servlet-api.jar - Apache License 2.0 (http://tomcat.apache.org)
   jsch.jar & jzlib.jar - BSD license (http://www.jcraft.com)
 
 Enjoy!
