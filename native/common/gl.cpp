@@ -477,7 +477,7 @@ JNIEXPORT jint JNICALL Java_javaforce_gl_GL_glShaderSource
   (JNIEnv *e, jclass c, jint i1, jint i2, jobjectArray s3, jintArray i4)
 {
   jint *i4ptr = NULL;
-  if (i4 != NULL) (jint*)e->GetPrimitiveArrayCritical(i4,NULL);
+  if (i4 != NULL) i4ptr = (jint*)e->GetPrimitiveArrayCritical(i4,NULL);
   int s3size = e->GetArrayLength(s3);
   const char **s3ptr = (const char **)malloc(s3size * sizeof(void*));
   for(int a=0;a<s3size;a++) {
