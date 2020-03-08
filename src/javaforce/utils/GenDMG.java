@@ -60,7 +60,7 @@ public class GenDMG {
       rt.exec(new String[] {"cp", icon, tmp_contents_resources}).waitFor();
 
       if (System.getProperty("genisoimage") == null) {
-        rt.exec(new String[] {"hdiutil", "-srcfolder", "/tmp/dmg.tmp", out}).waitFor();
+        rt.exec(new String[] {"hdiutil", "create", "-srcfolder", "/tmp/dmg.tmp", out}).waitFor();
         rt.exec(new String[] {"hdiutil", "internet-enable", "-yes", out}).waitFor();
       } else {
         rt.exec(new String[] {"genisoimage", "-apple", "-r", "-o", out, "/tmp/dmg.tmp"}).waitFor();
