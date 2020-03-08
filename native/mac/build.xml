@@ -2,23 +2,9 @@
   <description>native</description>
   <property environment="env"/>
 
-  <target name="javah">
-    <javah destdir="." classpath="../../classes">
-      <class name="javaforce.gl.GL"/>
-      <class name="javaforce.gl.GLWindow"/>
-      <class name="javaforce.media.Camera"/>
-      <class name="javaforce.media.MediaCoder"/>
-      <class name="javaforce.media.MediaDecoder"/>
-      <class name="javaforce.media.MediaEncoder"/>
-      <class name="javaforce.media.MediaVideoDecoder"/>
-      <class name="javaforce.jni.MacNative"/>
-      <class name="javaforce.controls.ni.DAQmx"/>
-    </javah>
-  </target>
-
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
-  <target name="mac" depends="javah"  description="create mac native so">
+  <target name="mac" description="create mac native so">
     <exec command="gcc ${opt} -I ${env.FFMPEG_HOME} -I ${env.JAVA_HOME} -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/darwin mac.mm -c -o mac.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include glfw.m -c -o glfw.o -fPIC"/>
     <exec command="g++ -l objc -framework AVFoundation -framework CoreMedia -framework CoreVideo -framework Foundation -framework OpenGL -framework Cocoa -framework IOKit -shared mac.o glfw.o  -o ../jfnative64.dylib"/>
