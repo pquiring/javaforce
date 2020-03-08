@@ -38,13 +38,12 @@ public class MediaCoder {
     if (JF.isWindows()) {
       sysFolders = new File[] {new File("."), new File(System.getenv("appdata") + "/ffmpeg")};
       ext = ".dll";
+    } else if (JF.isMac()) {
+      sysFolders = new File[] {new File(".")};
+      ext = ".dylib";
     } else {
       sysFolders = new File[] {new File("/usr/lib/x86_64-linux-gnu")};
-      if (JF.isMac()) {
-        ext = ".dylib";
-      } else {
-        ext = ".so";
-      }
+      ext = ".so";
     }
     Library libs[] = {
       new Library("avcodec")
