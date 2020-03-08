@@ -42,6 +42,9 @@ public class GenDMG {
     }
     Runtime rt = Runtime.getRuntime();
     try {
+      if (new File("jre").exists()) {
+        rt.exec(new String[] {"rm", "./jre"}).waitFor();
+      }
       rt.exec(new String[] {"ln", "-s", jre, "./jre"}).waitFor();
       if (ffmpeg == null) {
         rt.exec(new String[] {"tar", "cjfh", "data.tar.bz2", "-T", "macfiles.lst", "jre"}).waitFor();
@@ -62,7 +65,7 @@ public class GenDMG {
       } else {
         rt.exec(new String[] {"genisoimage", "-apple", "-r", "-o", out, "/tmp/dmg.tmp"}).waitFor();
       }
-      rt.exec(new String[] {"rm", "-rf", "/tmp/dmg.tmp", out}).waitFor();
+      rt.exec(new String[] {"rm", "-rf", "/tmp/dmg.tmp"}).waitFor();
       System.out.println(out + " created!");
       System.exit(0);
     } catch (Exception e) {
