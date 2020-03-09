@@ -35,11 +35,13 @@ public class MediaCoder {
     boolean libav_org = false;
     File sysFolders[];
     String ext = "";
+    String apphome = System.getProperty("java.app.home");
+    if (apphome == null) apphome = ".";
     if (JF.isWindows()) {
-      sysFolders = new File[] {new File("."), new File(System.getenv("appdata") + "/ffmpeg")};
+      sysFolders = new File[] {new File(apphome), new File(System.getenv("appdata") + "/ffmpeg")};
       ext = ".dll";
     } else if (JF.isMac()) {
-      sysFolders = new File[] {new File(".")};
+      sysFolders = new File[] {new File(apphome)};
       ext = ".dylib";
     } else {
       sysFolders = new File[] {new File("/usr/lib/x86_64-linux-gnu")};
