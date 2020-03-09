@@ -20,9 +20,9 @@ public class GenDMG {
     String out = args[1];
     String jre = args[2];
     String ffmpeg = null;
-    String tmp_contents = "/tmp/dmg.tmp/" + app + ".app/Contents";
-    String tmp_contents_resources = "/tmp/dmg.tmp/" + app + ".app/Contents/Resources";
-    String tmp_contents_macos = "/tmp/dmg.tmp/" + app + ".app/Contents/MacOS";
+    String tmp_contents = "/tmp/" + app + "/" + app + ".app/Contents";
+    String tmp_contents_resources = "/tmp/" + app + "/" + app + ".app/Contents/Resources";
+    String tmp_contents_macos = "/tmp/" + app + "/" + app + ".app/Contents/MacOS";
     String icon = app + ".icns";
     if (args.length > 3) {
       ffmpeg = args[3];
@@ -60,12 +60,12 @@ public class GenDMG {
       rt.exec(new String[] {"cp", icon, tmp_contents_resources}).waitFor();
 
       if (System.getProperty("genisoimage") == null) {
-        rt.exec(new String[] {"hdiutil", "create", "-srcfolder", "/tmp/dmg.tmp", out}).waitFor();
+        rt.exec(new String[] {"hdiutil", "create", "-srcfolder", "/tmp/"+ app, out}).waitFor();
         rt.exec(new String[] {"hdiutil", "internet-enable", "-yes", out}).waitFor();
       } else {
-        rt.exec(new String[] {"genisoimage", "-apple", "-r", "-o", out, "/tmp/dmg.tmp"}).waitFor();
+        rt.exec(new String[] {"genisoimage", "-apple", "-r", "-o", out, "/tmp/" + app}).waitFor();
       }
-      rt.exec(new String[] {"rm", "-rf", "/tmp/dmg.tmp"}).waitFor();
+      rt.exec(new String[] {"rm", "-rf", "/tmp/" + app}).waitFor();
       System.out.println(out + " created!");
       System.exit(0);
     } catch (Exception e) {
