@@ -1,5 +1,7 @@
 Mar 9, 2020 : 0.5 released!
   - fix : finding ffmpeg libraries
+  - new : use ZGC which uses less virtual memory
+    - requires Win10-1803 or Win Server 2019 or better
 
 Mar 2, 2020 : 0.4 released!
   - new : added motion & image preview
