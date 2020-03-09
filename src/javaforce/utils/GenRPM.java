@@ -12,7 +12,7 @@ import javaforce.JF;
 
 public class GenRPM {
   public static void main(String args[]) {
-    if (args.length < 3) {
+    if (args.length < 2) {
       System.out.println("Usage:GenRPM output.rpm arch");
       System.exit(1);
     }
