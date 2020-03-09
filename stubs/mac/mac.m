@@ -50,6 +50,8 @@ char classpath[1024];
 char mainclass[MAX_PATH];
 char method[MAX_PATH];
 char cfgargs[1024];
+char app_path[MAX_PATH];
+char app_name[MAX_PATH];
 
 /* Prototypes */
 void error(char *msg);
@@ -203,14 +205,13 @@ int loadProperties() {
   strcpy(method, "main");
   cfgargs[0] = 0;
 
-  strcpy(app, g_argv[0]);
+  strcpy(app, app_name);
   strcat(app, ".cfg");
-
-//  printf("cfg=%s\n", app);
 
   int file = open(app, O_RDONLY);
   if (file == -1) {
-    error("app.cfg not found");
+    printf("cfg=%s\n", app);
+    error("cfg not found");
     return -1;
   }
   fs = lseek(file, 0, SEEK_END);
@@ -269,13 +270,29 @@ static void ParkEventLoop() {
     } while (result != kCFRunLoopRunFinished);
 }
 
+void changeToAppHome(char* path_exe) {
+  char *slash = strrchr(path_exe, '/');
+  if (slash == NULL) {
+    strcpy(app_path, ".");
+    strcpy(app_name, path_exe);
+    return;
+  }
+  *slash = 0;
+  strcpy(app_path, path_exe);
+  chdir(app_path);
+  strcpy(app_name, slash+1);
+}
+
 /** Main entry point. */
 int main(int argc, char **argv) {
   void *retval;
   char var[80];
+  char *path;
 
   g_argv = argv;
   g_argc = argc;
+
+  changeToAppHome(argv[0]);
 
   loadProperties();
   snprintf(var, sizeof(var), "JAVA_MAIN_CLASS_%d", getpid());
@@ -283,7 +300,7 @@ int main(int argc, char **argv) {
   setenv(var, mainclass, 1);
 
   //open libjli.dylib
-  jvm_dll = dlopen("jre/lib/libjli.dylib", RTLD_NOW);
+  jvm_dll = dlopen("./jre/lib/libjli.dylib", RTLD_NOW);
   if (jvm_dll == NULL) {
     error("Unable to open libjli.dylib");
   }
