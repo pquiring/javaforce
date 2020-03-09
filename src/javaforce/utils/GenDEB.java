@@ -37,7 +37,7 @@ public class GenDEB {
       if (new File(control).exists()) {
         new File(control).delete();
       }
-      rt.exec(new String[] {"tar", "czf", control, "-C", "deb"}).waitFor();
+      rt.exec(new String[] {"tar", "czf", control, "-C", "deb", "."}).waitFor();
       if (new File(data).exists()) {
         new File(data).delete();
       }

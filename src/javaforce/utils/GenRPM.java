@@ -53,7 +53,7 @@ public class GenRPM {
         new File(out).delete();
       }
       new File(tmpdir).mkdir();
-      rt.exec(new String[] {"tar", "xjf", data, "-C", tmpdir}).waitFor();
+      rt.exec(new String[] {"tar", "xjf", data, "-C", tmpdir, "."}).waitFor();
       new File(data).delete();
       //Warning : rpmbuild nukes the buildroot
       rt.exec(new String[] {"rpmbuild", "-bb", "rpm.spec", "--buildroot", tmpdir}).waitFor();
