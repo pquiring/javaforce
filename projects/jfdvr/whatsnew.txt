@@ -1,3 +1,6 @@
+Mar 9, 2020 : 0.5 released!
+  - fix : finding ffmpeg libraries
+
 Mar 2, 2020 : 0.4 released!
   - new : added motion & image preview
   - fix : file size logic was incorrect
