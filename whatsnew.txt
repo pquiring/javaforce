@@ -1,5 +1,11 @@
 What's new...
 
+Mar 9/2020 : JF 19.6.0 released
+  - jfDVR/0.5
+    - fix : loading ffmpeg libraries
+    - new : uses JDK14-ZGC which results in lower virtual memory usage
+      - requires Win10-1803 or WinServer 2019 or better
+
 Mar 3/2020 : JF 19.5.0 released
   - jfPhone/1.18
     - fix : audio delay when switching lines
