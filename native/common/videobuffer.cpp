@@ -37,8 +37,8 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_VideoBuffer_compareFrames
   MD128 p1, p2, add, mask;
   p1.md = _mm_setzero_si128();
   p2.md = _mm_setzero_si128();
-  add.md = _mm_set_epi32(0,0,0,0x00080808);
-  mask.md = _mm_set_epi32(0,0,0,0x00f0f0f0);
+  add.md = _mm_set_epi32(0x00080808,0,0,0);
+  mask.md = _mm_set_epi32(0x00f0f0f0,0,0,0);
   for(int i=0;i<size;i++) {
     p1.i32[3] = *(pc1++);
     p1.md = _mm_adds_epu8(p1.md, add.md);
