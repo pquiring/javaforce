@@ -427,4 +427,12 @@ public class JFAWT {
       }
     });
   }
+
+  public static void setMetalLAF() {
+    try {
+      javax.swing.UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 }

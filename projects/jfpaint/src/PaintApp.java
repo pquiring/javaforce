@@ -10,6 +10,9 @@ public class PaintApp extends JFrame implements WindowListener {
   public static String args[];
   public static void main(String args[]) {
     PaintApp.args = args;
+    if (JF.isMac()) {
+      JFAWT.setMetalLAF();
+    }
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
         new PaintApp();
