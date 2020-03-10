@@ -1,5 +1,8 @@
 What's new ??
 
+Mar 10/2020 : vrsion 0.7 released
+  - re-release msi for updated libraries
+
 Jun 15/2015 : version 0.3 released
   - added new video bit rates
 
