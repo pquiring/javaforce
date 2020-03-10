@@ -1,5 +1,9 @@
 Whatsnew...
 
+Mar 10, 2020 : v0.23 released!
+  - fix : video files without audio would skip over all video in one frame
+  - fix : re-release msi for updated libraries
+
 Apr 25, 2017 : v0.20 relaesed!
   - fixed decoding files with metadata
 

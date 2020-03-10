@@ -168,6 +168,7 @@ public class Element implements MediaIO {
           JFLog.log("frameRateRatio=" + frameRateRatio);
           currentFrame = 0.0;
         }
+        JFLog.log("audioRate=" + ff.getAudioBitRate());
         audio = null;
         audioSize = 0;
         audioPos = 0;
@@ -273,21 +274,18 @@ public class Element implements MediaIO {
         if (path.length > 1) imgIdx++;
         break;
       case TYPE_VIDEO:
-        while (!eof && frames.isEmpty()) readMore();
-        if (frames.isEmpty()) return;  //no more video
+        currentFrame += frameRateRatio;
+        while (currentFrame >= 1.0) {
+          while (!frames.isEmpty()) frames.remove(0);
+          while (!eof && frames.isEmpty()) readMore();
+          currentFrame -= 1.0;
+        }
+        if (frames.isEmpty()) break;  //no more video
         int px[] = frames.get(0);
         for(int a=0;a<px.length;a++) {
           px[a] |= 0xff000000;  //test - should already be done
         }
         srcImage.putPixels(px, 0, 0, width, height, 0);
-        //BUG : this code to resample video rate is drifting...
-        currentFrame += frameRateRatio;
-        while (currentFrame >= 1.0) {
-          while (!eof && frames.isEmpty()) readMore();
-          currentFrame -= 1.0;
-          if (frames.isEmpty()) break;  //no more video
-          frames.remove(0);
-        }
         break;
     }
   }
@@ -405,6 +403,7 @@ public class Element implements MediaIO {
     if (type == TYPE_SPECIAL_TEXT) return;
     int renderSize = render.length;
     int renderPos = 0;
+    if (ff.getAudioBitRate() == 0) return;
     while (renderSize > 0) {
       while (!eof && audioSize < renderSize) readMore();
       int toCopy = renderSize;
