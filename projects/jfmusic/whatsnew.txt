@@ -1,6 +1,9 @@
 What's new...
 =============
 
+Mar 10, 2020 : 0.7 released!
+  - fix : re-release msi for updated libraries
+
 May 12, 2014 : 0.3 released!
   - added Tools > Export to Audio (export to WAV/MP3 file)
     - now requires FFMPEG
