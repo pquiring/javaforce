@@ -128,16 +128,6 @@ char *CreateClassPath() {
   return ClassPath;
 }
 
-char *DOption2 = "-Djava.app.home=";
-
-char *DefineAppHome() {
-  int sl = strlen(DOption2) + strlen(app_path);
-  char *option = malloc(sl + 1);
-  strcpy(option, DOption2);
-  strcat(option, app_path);
-  return option;
-}
-
 void printException(JNIEnv *env) {
   jthrowable exc;
   exc = (*env)->ExceptionOccurred(env);
@@ -162,7 +152,7 @@ int JavaThread(void *ignore) {
 
   options[0].optionString = CreateClassPath();
   options[0].extraInfo = NULL;
-  options[1].optionString = DefineAppHome();
+  options[1].optionString = "-Djava.app.home=.";
   options[1].extraInfo = NULL;
 
   if ((*CreateJavaVM)(&jvm, &env, &args) == -1) {
