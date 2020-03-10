@@ -2,6 +2,8 @@ What's new...
 
 Mar 10/2020 : JF 20.0.0 released
   - fix : mac support has been fixed
+    - note : the icns look corrupted but using Finder or Preview they look good
+      - could be a MacOS bug
   - jfPaint/0.24
     - new : create MacOS .dmg
 
