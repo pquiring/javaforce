@@ -1,5 +1,8 @@
 Whatsnew ...
 
+Mar 10, 2020 - v0.24 released!
+  - new : create MacOS .dmg
+
 Dec 5, 2019 - v0.23 released!
   - new : added selection alpha fill toggle button
   - new : added crop selection button

@@ -20,7 +20,7 @@ public class Linux {
 
   /** Returns jfLinux ISO version. */
   public static String getVersion() {
-    return "19";
+    return "20";
   }
 
   public static enum DistroTypes {

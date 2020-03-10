@@ -1,5 +1,10 @@
 What's new...
 
+Mar 10/2020 : JF 20.0.0 released
+  - fix : mac support has been fixed
+  - jfPaint/0.24
+    - new : create MacOS .dmg
+
 Mar 9/2020 : JF 19.6.0 released
   - jfDVR/0.5
     - fix : loading ffmpeg libraries

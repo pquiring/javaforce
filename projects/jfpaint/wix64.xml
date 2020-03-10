@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{C048BDDC-BF09-446F-BF07-E703E5B5C629}" Version="0.23" Language="1033" Name="jfPaint" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{C048BDDC-BF09-446F-BF07-E703E5B5C629}" Version="0.24" Language="1033" Name="jfPaint" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
