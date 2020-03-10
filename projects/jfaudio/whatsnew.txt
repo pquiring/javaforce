@@ -1,5 +1,8 @@
 Whats' new....
 
+Mar 10, 2020 - v0.19 released
+  - fix : re-release msi for updated libraries
+
 Jan 17, 2015 - v0.14 released
   - fix : added locks to paint() while recording to avoid jitter on screen
   - fix : Java and Native sound were using different endianess
