@@ -117,7 +117,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     delay3seconds.setText("3 second delay");
     delay3seconds.setToolTipText("Delay so you can minimize this window (Applet)");
 
-    jLabel8.setText("When you start a tray icon you be added to pause/stop recording.");
+    jLabel8.setText("When you start a tray icon will be added to pause/stop recording.");
 
     jLabel1.setText("bits/sec");
 

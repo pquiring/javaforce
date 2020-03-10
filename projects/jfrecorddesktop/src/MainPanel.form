@@ -287,7 +287,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel8">
       <Properties>
-        <Property name="text" type="java.lang.String" value="When you start a tray icon you be added to pause/stop recording."/>
+        <Property name="text" type="java.lang.String" value="When you start a tray icon will be added to pause/stop recording."/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
