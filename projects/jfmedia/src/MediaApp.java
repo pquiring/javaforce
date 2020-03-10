@@ -12,7 +12,7 @@ import javaforce.*;
 
 public class MediaApp extends javax.swing.JFrame {
 
-  public static String version = "0.12";
+  public static String version = "0.13";
 
   /**
    * Creates new form MediaApp

@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Mar 10, 2020 : v0.13 released!
+  - fix : re-release msi for updated libraries
+
 Apr 25, 2017 : v0.12 released!
   - fixed decoding files with metadata
 
