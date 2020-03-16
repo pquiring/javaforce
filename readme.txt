@@ -59,21 +59,21 @@ install : install files into proper folders (Linux only)
  - for the main JavaForce library you MUST specify -Dbits=32|64
  - requires root access
  - example : "sudo ant install -Dbits=64"
-deb : build Ubuntu deb file (after install)
+deb : build Debian deb file (after install)
 rpm : build Fedora rpm file (after install)
  - linux packaging requires files.lst and linux stub (/stubs/linux)
 msi : build Windows msi file with JRE bundled (64bit)
- - msi creation requires
-  - requires wixtoolset in path (http://wixtoolset.org/)
+ - msi creation requires:
+  - wixtoolset in path (http://wixtoolset.org)
   - wix64.xml file
   - jre pre-linked for native packaging (see below)
   - windows stub created (/stubs/windows)
 dmg : build Mac dmg file using hdiutil (mac only)
- - dmg creation requires
+ - dmg creation requires:
   - jre prep for native packaging (see below)
   - Info.plist, ${app}.icns and macfiles.lst
-  - see projects/jfedit for only example
-  - jimgconvert can convert images to .icns file format (mac icons)
+  - see projects/jfedit or projects/jfpaint for only examples
+  - jfimageconvert can convert images to .icns file format (mac icons)
   - mac stub created (/stubs/mac)
 javadoc : create javadoc api help files (open ./javadoc/index.html)
 
