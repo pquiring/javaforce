@@ -1,5 +1,9 @@
 What's new...
 
+Mar 17/2020 : JF 20.0.1 released
+  - jfDVR/0.6
+    - fix : use 24 hour format in filenames
+
 Mar 10/2020 : JF 20.0.0 released
   - fix : mac support has been fixed
     - note : the icns look corrupted but using Finder or Preview they look good
