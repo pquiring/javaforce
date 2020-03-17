@@ -1,6 +1,6 @@
 What's new...
 
-Mar 17/2020 : JF 20.0.1 released
+Mar 17/2020 : JF 20.1.0 released
   - jfDVR/0.6
     - fix : use 24 hour format in filenames
 
