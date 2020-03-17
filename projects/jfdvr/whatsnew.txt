@@ -1,3 +1,6 @@
+Mar 17, 2020 : 0.6 released!
+  - fix : use 24 hour format for filenames
+
 Mar 9, 2020 : 0.5 released!
   - fix : finding ffmpeg libraries
   - new : use ZGC which uses less virtual memory
