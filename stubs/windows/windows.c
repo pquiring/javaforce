@@ -137,7 +137,7 @@ char *CreateClassPath() {
   int sl = strlen(classpath);
   ClassPath = malloc(sl + 1);
   strcpy(ClassPath, classpath);
-  int ml = strlen(exepath);
+  int ml = strlen(exepath) + 1;
   char *jar[32];
   jar[0] = ClassPath;
   int cnt = 1;
