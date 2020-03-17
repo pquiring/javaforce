@@ -156,6 +156,7 @@ char *CreateClassPath() {
     if (a > 0) strcat(ExpandedClassPath, ";");
     if (strchr(jar[a], '/') == NULL && strchr(jar[a], '\\') == NULL) {
       strcat(ExpandedClassPath, exepath);
+      strcat(ExpandedClassPath, "\\");
     }
     strcat(ExpandedClassPath, jar[a]);
   }
@@ -349,9 +350,9 @@ int exists(char *file) {
 int findJavaHomeAppFolder() {
   //try to find JRE in Apps folder
   strcpy(javahome, exepath);
-  strcat(javahome, "jre\\");
+  strcat(javahome, "\\jre");
   int sl = strlen(javahome);
-  strcat(javahome, "bin\\server\\jvm.dll");
+  strcat(javahome, "\\bin\\server\\jvm.dll");
   if (exists(javahome) == 1) {
     javahome[sl] = 0;
     return 1;
@@ -471,8 +472,9 @@ int main(int argc, char **argv)
   GetModuleFileName(NULL, module, MAX_PATH);
   strcpy(exepath, module);
   char *LastPath = strrchr(exepath, '\\');
-  LastPath++;
-  *LastPath = 0;
+  if (LastPath != NULL) {
+    *LastPath = 0;
+  }
 
   if (loadProperties() == 0) {
     error("Unable to load properties");
@@ -489,6 +491,10 @@ int main(int argc, char **argv)
       }
     }
   }
+
+  strcpy(dll, javahome);
+  strcat(dll, "\\bin");
+  SetDllDirectory(dll);
 
   strcpy(dll, javahome);
   strcat(dll, "\\bin\\server\\jvm.dll");
