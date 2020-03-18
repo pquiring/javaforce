@@ -1,7 +1,7 @@
 DHCP Server
 ===========
 
-A DHCP Server, supporting:
+DHCP Server supports:
  - IP4 only
  - multiple pools
  - custom options
