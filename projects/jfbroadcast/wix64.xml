@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{261112D1-DA93-48DE-A284-AC430A8731D9}" Version="0.37" Language="1033" Name="jfBroadcast" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{261112D1-DA93-48DE-A284-AC430A8731D9}" Version="0.38" Language="1033" Name="jfBroadcast" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64" />
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
@@ -45,6 +45,7 @@
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
       <ComponentRef Id="appfiles" />
+      <ComponentGroupRef Id="JRE" />
       <ComponentRef Id="ApplicationShortcut" />
     </Feature>
   </Product>
