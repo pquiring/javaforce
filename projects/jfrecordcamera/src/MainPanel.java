@@ -13,7 +13,7 @@ import javaforce.media.*;
 
 public class MainPanel extends javax.swing.JPanel implements MediaIO {
 
-  public static String version = "0.7";
+  public static String version = "0.8";
 
   /**
    * Creates new form MainPanel
