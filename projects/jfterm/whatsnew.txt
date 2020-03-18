@@ -1,5 +1,8 @@
 What's new...
 
+Mar 18/2020 - 0.20 released!
+  - fix : win64 loader now loads msvcrt dlls properly
+
 Nov 27/2014 - jfTerm/0.18 released!
   - ANSI codes added and fixed
   - ASCII8bit to Unicode improved

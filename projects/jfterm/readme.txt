@@ -1,4 +1,4 @@
-A Java Telnet client
+Terminal client
 
 Supports:
   Telnet/ANSI codes (full color)
