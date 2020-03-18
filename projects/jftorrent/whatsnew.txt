@@ -1,0 +1,4 @@
+What's new ???
+
+Mar 18, 2020 : 0.5
+  - fix : win64 loader now loads msvcrt dlls properly
