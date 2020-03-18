@@ -1,5 +1,8 @@
 Whatsnew...
 
+Mar 18, 2020 : v0.24 released!
+  - fix : win64 loader now loads msvcrt dlls properly
+
 Mar 10, 2020 : v0.23 released!
   - fix : video files without audio would skip over all video in one frame
   - fix : re-release msi for updated libraries
