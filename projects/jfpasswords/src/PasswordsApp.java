@@ -11,7 +11,7 @@ import javaforce.*;
 
 public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
 
-  private String version = "0.22";
+  private String version = "0.23";
 
   /**
    * Creates new form PasswordsApp

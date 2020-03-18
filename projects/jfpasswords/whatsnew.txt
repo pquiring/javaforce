@@ -1,3 +1,6 @@
+Mar 18/2020 : jfPasswords/0.23 released
+  - fix : win64 loader now loads msvcrt dlls properly
+
 Feb 28/2020 : jfPasswords/0.22 released
   - fix : re-release due to possible corrupt bundled JRE
 
