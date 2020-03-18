@@ -1,5 +1,10 @@
 What's new...
 
+Mar 18/2020 : JF 21.0.0 released
+  - major fix : win64 loader now loads msvcrt dlls included with jre properly
+    - tested msi packages in Windows Sandbox, they no longer require msvcrt to be pre-installed.
+    - all msi packages will be re-released
+
 Mar 17/2020 : JF 20.1.0 released
   - jfDVR/0.6
     - fix : use 24 hour format in filenames

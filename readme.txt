@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 20.1.0
+Version 21.0
 
 What is it?
 ===========
@@ -17,21 +17,17 @@ JF is also used to create jfCraft, a Minecraft clone : http://pquiring.github.io
 
 Projects
 ========
-jfPhone - Java VoIP soft phone
+jfPhone - VoIP soft phone
 
-jfVideo Creator - video production
+jfVideo - video production
+
+jfAudio - audio editor
 
 jfPaint - multi-tabbed image editor
 
-jfPBX - Java VoIP PBX
+jfDVR - Records IP/RTSP/H264 cameras with motion detection
 
-jfBroadcast - VoIP Auto Dialer System
-
-jfTerm - Telnet client application that includes scripting support
-
-jfEdit - multi-tabbed text editor.
-
-jfHex - multi-tabbed hex editor.
+jfBackup - Enterprise tape backup system
 
 and many more...
 
@@ -118,4 +114,4 @@ Web : pquiring.github.io/javaforce
 
 Git : github.com/pquiring/javaforce
 
-Released : Mar 17, 2020
+Released : Mar 18, 2020
