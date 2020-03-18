@@ -1,3 +1,6 @@
+Mar 18/2020 : v0.10 released
+  - fix : win64 loader now loads msvcrt dlls properly
+
 Nov 30/2017 : v0.9 released
   - fix : connection issue
 
