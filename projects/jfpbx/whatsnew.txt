@@ -1,5 +1,7 @@
 CHANGELOG
 =========
+3-18-2020 : v0.28 released
+ - fix : win64 loader now loads msvcrt dlls properly
 9-21-2018 : v0.27 released
  - minor issues
 7-31-2015 : v0.24 released

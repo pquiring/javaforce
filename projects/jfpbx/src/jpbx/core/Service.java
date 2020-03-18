@@ -12,7 +12,7 @@ import javaforce.jbus.*;
 public class Service implements SIPServerInterface, PBXAPI {
 
   public static String getVersion() {
-    return "0.27";
+    return "0.28";
   }
 
   private SIPServer ss;
