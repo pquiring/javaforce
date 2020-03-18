@@ -1,5 +1,5 @@
-JEdit
-=====
+jfEdit
+======
 
 A multi-tabbed text editor.
 
@@ -12,4 +12,4 @@ If you notice the cursor leaving a trail you have a bad 3D video card (ie: nVidi
 
 Author : Peter Quiring
 
-http://javaforce.sourceforge.net
+http://jfedit.sourceforge.net

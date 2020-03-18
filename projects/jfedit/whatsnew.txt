@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+3-18-2020 : v0.17
+  - fix : win64 loader now loads msvcrt dlls properly
+
 10-31-2017 : v0.16
   - new : added Tab to Spaces option
 
