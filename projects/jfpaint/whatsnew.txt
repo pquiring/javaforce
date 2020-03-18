@@ -1,5 +1,8 @@
 Whatsnew ...
 
+Mar 18, 2020 - v0.25 released!
+  - fix : win64 loader now loads msvcrt dlls properly
+
 Mar 10, 2020 - v0.24 released!
   - new : create MacOS .dmg
 
