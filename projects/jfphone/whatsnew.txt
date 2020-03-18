@@ -1,4 +1,6 @@
 CHANGELOG:
+3-18-2020 : v1.19 released
+  - fix : win64 loader now loads msvcrt dlls properly
 3-3-2020 : v1.18 released
   - fix : audio delay (JF:github bug #2)
 3-8-2019 : v1.17 released
