@@ -1,0 +1,10 @@
+Whats new???
+
+Mar 18, 2020 : version 0.9 released!
+  - fix : win64 loader now loads msvcrt dlls properly
+
+Mar 10, 2020 : version 0.8 released!
+  - re-release msi with updated libraries
+
+Jun 16, 2015 : version 0.4 released!
+  - added new higher video bit rates
