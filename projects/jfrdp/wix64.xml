@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{FBDD3492-042E-4FA7-8066-95E8A6FE12DA}" Version="0.4" Language="1033" Name="jfRDP" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{FBDD3492-042E-4FA7-8066-95E8A6FE12DA}" Version="0.5" Language="1033" Name="jfRDP" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
@@ -59,6 +59,7 @@
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="CommonFiles" Title="Core" Level="1" Absent="disallow">
       <ComponentRef Id="commonfiles" />
+      <ComponentGroupRef Id="JRE" />
     </Feature>
     <Feature Id="ClientFiles" Title="Client" Level="1">
       <ComponentRef Id="clientfiles" />
