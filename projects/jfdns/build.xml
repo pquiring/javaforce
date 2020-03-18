@@ -5,7 +5,8 @@
   <property name="app2" value="jfdnssvc"/>
   <property name="apptype2" value="s"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.10"/>
+  <property name="version" value="0.11"/>
+  <property name="jre" location="${home}/jre_base_desktop"/>
 
   <import file="../../base.xml"/>
 
