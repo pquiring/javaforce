@@ -193,7 +193,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       try {
         System.arraycopy(packet.data, packet.offset, data, nextOffset, packet.length);
       } catch (Exception e) {
-        System.out.println("Error:arraycopy(src," + packet.offset + ",dst," + nextOffset + "," + packet.length + ")");
+        JFLog.log(log, "Error:arraycopy(src," + packet.offset + ",dst," + nextOffset + "," + packet.length + ")");
         JFLog.log(log, e);
         return;
       }
