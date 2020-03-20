@@ -135,8 +135,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     public boolean[] key_frame = new boolean[maxFrames];
   }
 
-  private static int maxPacketsSize = 16 * 1024 * 1024;
-  private static int maxPackets = 256;
+  private static final int maxPacketsSize = 16 * 1024 * 1024;
+  private static final int maxPackets = 256;
 
   /** Packets received. */
   private static class Packets {
@@ -160,8 +160,8 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       tail = 0;
       nextOffset = 0;
     }
-    private boolean calcOffset(int _length) {
-      if (nextOffset + _length >= maxPacketsSize) {
+    private boolean calcOffset(int nextLength) {
+      if (nextOffset + nextLength >= maxPacketsSize) {
         nextOffset = 0;
       }
       int next_head = head + 1;
@@ -175,12 +175,14 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       }
       int _tail = tail;
       if (head == _tail) return true;  //empty
-      int h1 = nextOffset;
-      int h2 = nextOffset + _length - 1;
-      int t1 = offset[_tail];
-      int t2 = t1 + length[_tail] - 1;
-      if ((h1 >= t1 && h1 <= t2) || (h2 >= t1 && h2 <= t2)) {
-        JFLog.log(log, "Error : Buffer Overflow (# of bytes in buffer exceeded)");
+      int total_length = 0;
+      while (_tail != head) {
+        total_length += length[_tail];
+        _tail++;
+        if (_tail == maxPackets) _tail = 0;
+      }
+      if (total_length + nextLength > maxPacketsSize) {
+        JFLog.log(log, "Error : Buffer Overflow (# of bytes exceeded)");
         reset();
         return false;
       }
@@ -435,11 +437,23 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
           frames.removeFrame();
         } while (true);
       }
+    } catch (Exception e) {
+      JFLog.log(log, e);
+    }
+    try {
       disconnect();
+    } catch (Exception e) {
+      JFLog.log(log, e);
+    }
+    try {
       if (encoder != null) {
         encoder.stop();
         encoder = null;
       }
+    } catch (Exception e) {
+      JFLog.log(log, e);
+    }
+    try {
       if (raf != null) {
         closeFile();
         raf = null;
