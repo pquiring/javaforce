@@ -143,10 +143,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
     public Packets(int log) {
       this.log = log;
       data = new byte[maxPacketsSize];
-      frag_data = new byte[maxPacketsSize];
+      nextFrame.data = new byte[maxPacketsSize];
     }
     public byte[] data;
-    private byte[] frag_data;
     private Packet nextFrame = new Packet();
     public int[] offset = new int[maxPackets];
     public int[] length = new int[maxPackets];
@@ -239,7 +238,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       }
     }
     public boolean haveCompleteFrame() {
-      next_frame_fragmented = false;
       for(int pos=tail;pos!=head;) {
         switch (type[pos]) {
           case 1: return true;
@@ -248,7 +246,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         pos++;
         if (pos == maxPackets) {
           pos = 0;
-          next_frame_fragmented = true;
         }
       }
       return false;
@@ -270,21 +267,9 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         JFLog.log(log, "Error : getNextFrame() called but don't have one ???");
         return null;
       }
-      if (next_frame_fragmented) {
-        JFLog.log(log, "Warning:frame is fragmented");
-        nextFrame.data = frag_data;
-        nextFrame.offset = 0;
-      } else {
-        nextFrame.data = data;
-        nextFrame.offset = offset[tail];
-      }
       nextFrame.length = 0;
-      int frag_pos = 0;
       for(int pos=tail;pos!=head;) {
-        if (next_frame_fragmented) {
-          System.arraycopy(data, offset[pos], frag_data, frag_pos, length[pos]);
-          frag_pos += length[pos];
-        }
+        System.arraycopy(data, offset[pos], nextFrame.data, nextFrame.length, length[pos]);
         nextFrame.length += length[pos];
         next_frame_packets++;
         int this_type = type[pos];
@@ -304,7 +289,6 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
         next_frame_packets--;
       }
     }
-    public boolean next_frame_fragmented;
     public int next_frame_packets;
     public String toString() {
       return "Packets:tail=" + tail + ":head=" + head;
