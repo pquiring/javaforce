@@ -199,7 +199,7 @@ public class CameraWorker extends Thread implements RTSPClientInterface, RTPInte
       }
       offset[head] = nextOffset;
       length[head] = packet.length;
-      type[head] = packet.data[4] & 0x1f;
+      type[head] = packet.data[packet.offset + 4] & 0x1f;
       nextOffset += packet.length;
       int new_head = head + 1;
       if (new_head == maxPackets) new_head = 0;
