@@ -17,5 +17,5 @@ Source : github.com/pquiring/javaforce/tree/master/projects/jfdvr
 
 Author : Peter Quiring (pquiring at gmail dot com)
 
-Release Date : Mar 18, 2020
-Version : 0.7
+Release Date : Mar 20, 2020
+Version : 0.8

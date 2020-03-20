@@ -1,3 +1,6 @@
+Mar 20, 2020 : 0.8 released!
+  - fix : buffer overflow issues
+
 Mar 18, 2020 : 0.7 released!
   - fix : win64 loader now loads msvcrt dlls properly
 
