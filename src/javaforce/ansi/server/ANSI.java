@@ -77,6 +77,14 @@ public class ANSI {
     return changed;
   }
 
+  public int[] getConsolePos() {
+    if (JF.isWindows()) {
+      return WinNative.getConsolePos();
+    } else {
+      return LnxNative.getConsolePos();
+    }
+  }
+
   public boolean kbhit() {
     if (JF.isWindows()) {
       return WinNative.peekConsole();
@@ -217,13 +225,12 @@ public class ANSI {
             fx = x1 + pos + padleft;
             fy = py;
             TextField field = new TextField();
-            field.x = fx + 1;
-            field.y = fy;
+            field.setPos(fx + 1, fy);
             String text = ln.substring(pos+1, ln.indexOf(']', pos));
             String trim = text.trim();
             field.setText(trim);
             field.cx = trim.length();
-            field.width = text.length();
+            field.setWidth(text.length());
             fields.add(field);
           }
         }
@@ -253,12 +260,9 @@ public class ANSI {
             fx = x1 + pos + padleft;
             fy = py;
             List field = new List();
-            field.x = fx;
-            field.y = fy;
-            field.cx = 0;
-            field.cy = 0;
-            field.dx = 1;
-            field.dy = 1;
+            field.setPos(fx, fy);
+            field.setCursorPos(0, 0);
+            field.setDeltaOffset(1, 1);
             fields.add(field);
           }
         }
@@ -270,12 +274,9 @@ public class ANSI {
             fx = x1 + pos + padleft;
             fy = py;
             CheckBox field = new CheckBox();
-            field.x = fx + 1;
-            field.y = fy;
-            field.cx = 0;
-            field.cy = 0;
-            field.dx = 0;
-            field.dy = 0;
+            field.setPos(fx + 1, fy);
+            field.setCursorPos(0, 0);
+            field.setDeltaOffset(0, 0);
             fields.add(field);
           }
         }

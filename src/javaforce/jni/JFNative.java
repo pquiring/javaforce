@@ -87,7 +87,6 @@ public class JFNative {
               }
             }
             else if (fileName.startsWith(libs[b].name) || fileName.startsWith("lib" + libs[b].name)) {
-              JFLog.log("Found Library:" + file.toString());
               libs[b].path = file.getAbsolutePath();
               cnt++;
             }

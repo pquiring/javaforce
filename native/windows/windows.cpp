@@ -824,6 +824,19 @@ JNIEXPORT jintArray JNICALL Java_javaforce_jni_WinNative_getConsoleSize
   return ia;
 }
 
+JNIEXPORT jintArray JNICALL Java_javaforce_jni_WinNative_getConsolePos
+  (JNIEnv *e, jclass c)
+{
+  CONSOLE_SCREEN_BUFFER_INFO info;
+  int xy[2];
+  GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+  xy[0] = info.dwCursorPosition.X - info.srWindow.Left + 1;
+  xy[1] = info.dwCursorPosition.Y - info.srWindow.Top + 1;
+  jintArray ia = e->NewIntArray(2);
+  e->SetIntArrayRegion(ia, 0, 2, (const jint*)xy);
+  return ia;
+}
+
 static DWORD input_console_mode;
 static DWORD output_console_mode;
 static char console_buffer[8];

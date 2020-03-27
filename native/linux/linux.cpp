@@ -1607,6 +1607,40 @@ JNIEXPORT jintArray JNICALL Java_javaforce_jni_LnxNative_getConsoleSize
   return ia;
 }
 
+JNIEXPORT jintArray JNICALL Java_javaforce_jni_LnxNative_getConsolePos
+  (JNIEnv *e, jclass c)
+{
+  int xy[2];
+  //print ESC[6n
+  printf("\x1b[6n");
+  int x = 1;
+  int y = 1;
+  char c;
+  int val = 0;
+  //reply = ESC[row;colR
+  while (1) {
+    c = fgetc(stdin);
+    if (c == '\x1b') continue;
+    if (c == '[') continue;
+    if (c == 'R') {
+      x = val;
+      break;
+    }
+    if (c == ';') {
+      y = val;
+      val = 0;
+    } else {
+      val *= 10;
+      val += (c - '0');
+    }
+  }
+  xy[0] = x;
+  xy[1] = y;
+  jintArray ia = e->NewIntArray(2);
+  e->SetIntArrayRegion(ia, 0, 2, (const jint*)xy);
+  return ia;
+}
+
 static char console_buffer[8];
 
 static void StringCopy(char *dest, const char *src) {
