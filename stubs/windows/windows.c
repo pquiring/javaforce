@@ -1,12 +1,13 @@
 //Java Launcher Win32/64
 
-// version 1.8
+// version 1.9
 // - supports passing command line options to java main()
 // - loads CLASSPATH and MAINCLASS from PE-EXE resource
 // - globbs arguments (see ExpandStringArray())
 // - supports console apps (type "c")
 // - supports windows services (type "s")
 // - define java.app.home to find exe/dll files
+// - support graal
 
 #include <windows.h>
 #include <io.h>
@@ -49,6 +50,7 @@ char service[MAX_PATH];
 char err_msg[1024];
 JavaVM *g_jvm = NULL;
 JNIEnv *g_env = NULL;
+int graal = 0;
 
 /* Prototypes */
 void error(char *msg);
@@ -134,6 +136,14 @@ char *DOption = "-Djava.class.path=";
 /** Create class path adding exe path to each element (because the current path is not where the EXE is). */
 char *CreateClassPath() {
   char *ClassPath;
+  if (graal) {
+    //classpath not needed with Graal
+    int len = strlen(DOption) + 2;
+    ClassPath = (char*)malloc(len);
+    strcpy(ClassPath, DOption);
+    strcat(ClassPath, ".");
+    return ClassPath;
+  }
   int sl = strlen(classpath);
   ClassPath = malloc(sl + 1);
   strcpy(ClassPath, classpath);
@@ -163,6 +173,13 @@ char *CreateClassPath() {
   return ExpandedClassPath;
 }
 
+void convertClass(char *cls) {
+  while (*cls) {
+    if (*cls == '.') *cls = '/';
+    cls++;
+  }
+}
+
 char *DOption2 = "-Djava.app.home=";
 
 char *DefineAppHome() {
@@ -174,6 +191,7 @@ char *DefineAppHome() {
 }
 
 int InvokeMethod(char *_method, jobjectArray args, char *sign) {
+  convertClass(mainclass);
   jclass cls = (*g_env)->FindClass(g_env, mainclass);
   if (cls == 0) {
     printException(g_env);
@@ -463,30 +481,23 @@ void __stdcall ServiceMain(int argc, char **argv) {
 
 #endif
 
-/** Main entry point. */
-int main(int argc, char **argv)
-{
-  g_argv = argv;
-  g_argc = argc;
+int try_graal() {
+  strcpy(dll, exepath);
+  strcat(dll, "\\");
+  strcat(dll, mainclass);
+  strcat(dll, ".dll");
+  jvm_dll = LoadLibrary(dll);
+  return jvm_dll == NULL ? 0 : 1;
+}
 
-  GetModuleFileName(NULL, module, MAX_PATH);
-  strcpy(exepath, module);
-  char *LastPath = strrchr(exepath, '\\');
-  if (LastPath != NULL) {
-    *LastPath = 0;
-  }
-
-  if (loadProperties() == 0) {
-    error("Unable to load properties");
-    return 2;
-  }
-
+int try_jvm() {
   sprintf(err_msg, "Unable to find Java");
   if (javahome[0] == 0) {
     if (findJavaHomeAppFolder() == 0) {
       if (findJavaHomeRegistry() == 0) {
         if (findJavaHomeAppDataFolder() == 0) {
           error(err_msg);
+          return 0;
         }
       }
     }
@@ -500,7 +511,40 @@ int main(int argc, char **argv)
   strcat(dll, "\\bin\\server\\jvm.dll");
   if ((jvm_dll = LoadLibrary(dll)) == 0) {
     error("Unable to open jvm.dll");
+    return 0;
+  }
+  return 1;
+}
+
+void trim(char *str, char ch) {
+  char *lastchar = strrchr(str, ch);
+  if (lastchar != NULL) {
+    *lastchar = 0;
+  }
+}
+
+/** Main entry point. */
+int main(int argc, char **argv)
+{
+  g_argv = argv;
+  g_argc = argc;
+
+  GetModuleFileName(NULL, module, MAX_PATH);
+  trim(module, '.');
+  strcpy(exepath, module);
+  trim(exepath, '\\');
+
+  if (loadProperties() == 0) {
+    error("Unable to load properties");
     return 2;
+  }
+
+  if (try_graal() == 1) {
+    graal = 1;
+  } else {
+    if (try_jvm() == 0) {
+      return 2;
+    }
   }
 
   CreateJavaVM = (int (*)(JavaVM**,void**,void*)) GetProcAddress(jvm_dll, "JNI_CreateJavaVM");

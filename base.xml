@@ -8,6 +8,18 @@
     </javadoc>
   </target>
 
+  <scriptdef language="javascript" name="upper">
+    <attribute name="string" />
+    <attribute name="to" />
+    project.setProperty( attributes.get( "to" ), attributes.get( "string" ).toUpperCase() );
+  </scriptdef>
+
+  <scriptdef language="javascript" name="lower">
+    <attribute name="string" />
+    <attribute name="to" />
+    project.setProperty( attributes.get( "to" ), attributes.get( "string" ).toLowerCase() );
+  </scriptdef>
+
   <target name="depnatives">
     <copy todir=".">
       <fileset dir="${home}/native" includes="*.dll"/>
@@ -16,7 +28,6 @@
     </copy>
   </target>
 
-  <!-- need this to download ONLY if file doesn't exist -->
   <macrodef name="download">
     <attribute name="url"/>
     <attribute name="dest"/>
@@ -28,60 +39,49 @@
   <!-- Windows targets -->
 
   <!--these should be set before importing this file to override default behavior-->
-  <property name="ico" value="${app}"/>
-  <property name="ico2" value="${app2}"/>
-  <property name="ico3" value="${app3}"/>
-  <property name="ico4" value="${app4}"/>
-  <property name="ico5" value="${app5}"/>
+  <property name="ico" value="${app}.ico"/>
   <property name="msi" value="${app}"/>
+  <property name="bits" value="64"/>
+  <property name="cfg" value="${app}.cfg"/>
   <property name="candle_extra" value=""/>
   <property name="light_extra" value=""/>
-  <property name="app2" value=""/>
-  <property name="app3" value=""/>
-  <property name="app4" value=""/>
-  <property name="app5" value=""/>
   <property name="apptype" value=""/>
-  <property name="apptype2" value=""/>
-  <property name="apptype3" value=""/>
-  <property name="apptype4" value=""/>
-  <property name="apptype5" value=""/>
   <property name="heat_home" value="jre"/>
   <property name="ffmpeg_home" value=""/>
 
-  <macrodef name="exemacro">
-    <attribute name="appx"/>
-    <attribute name="apptypex"/>
-    <attribute name="bits"/>
-    <attribute name="ico"/>
-    <sequential>
-      <copy file="${home}/stubs/win@{bits}@{apptypex}.exe" tofile="@{appx}.exe" overwrite="true"/>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
-        <arg value="@{appx}.exe"/>
-        <arg value="@{ico}.ico"/>
-        <arg value="@{appx}.cfg"/>
-      </java>
-    </sequential>
-  </macrodef>
+  <property file="${cfg}"/>
+  <lower string="${MAINCLASS}" to="mainclass" />
 
   <target name="exe" depends="jar,depjars,depnatives"  description="create msi installer file 64bit">
-    <exemacro appx="${app}" apptypex="${apptype}" bits="64" ico="${ico}"/>
-    <exemacro appx="${app2}" apptypex="${apptype2}" bits="64" ico="${ico2}" unless:blank="${app2}"/>
-    <exemacro appx="${app3}" apptypex="${apptype3}" bits="64" ico="${ico3}" unless:blank="${app3}"/>
-    <exemacro appx="${app4}" apptypex="${apptype4}" bits="64" ico="${ico4}" unless:blank="${app4}"/>
-    <exemacro appx="${app5}" apptypex="${apptype5}" bits="64" ico="${ico5}" unless:blank="${app5}"/>
+    <sequential>
+      <copy file="${home}/stubs/win${bits}${apptype}.exe" tofile="${app}.exe" overwrite="true"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
+        <arg value="${app}.exe"/>
+        <arg value="${ico}"/>
+        <arg value="${cfg}"/>
+      </java>
+    </sequential>
   </target>
 
-  <macrodef name="msimacro">
-    <attribute name="xml"/>
-    <attribute name="bits"/>
-    <attribute name="msi" default="${msi}"/>
+  <target name="graal" depends="jar,depjars,depnatives,exe"  description="generate aot library">
     <sequential>
-      <exemacro appx="${app}" apptypex="${apptype}" bits="@{bits}" ico="${ico}"/>
-      <exemacro appx="${app2}" apptypex="${apptype2}" bits="@{bits}" ico="${ico2}" unless:blank="${app2}"/>
-      <exemacro appx="${app3}" apptypex="${apptype3}" bits="@{bits}" ico="${ico3}" unless:blank="${app3}"/>
-      <exemacro appx="${app4}" apptypex="${apptype4}" bits="@{bits}" ico="${ico4}" unless:blank="${app4}"/>
-      <exemacro appx="${app5}" apptypex="${apptype5}" bits="@{bits}" ico="${ico5}" unless:blank="${app5}"/>
-      <exec command="candle -ext WixFirewallExtension -ext WixUtilExtension ${candle_extra} -o wix.obj @{xml}.xml"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenGraal" fork="true">
+        <arg value="${MAINCLASS}"/>
+      </java>
+      <exec executable="native-image.cmd">
+        <arg value="-cp"/>
+        <arg value="${CLASSPATH}"/>
+        <arg value="${MAINCLASS}"/>
+        <arg value="-H:JNIConfigurationFiles=graal.json"/>
+        <arg value="--shared"/>
+      </exec>
+      <delete file="graal.json"/>
+    </sequential>
+  </target>
+
+  <target name="msi" depends="exe,jar,depjars"  description="create msi installer file 64bit">
+    <sequential>
+      <exec command="candle -ext WixFirewallExtension -ext WixUtilExtension ${candle_extra} -o wix.obj wix64.xml"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
         <arg value="${jre}"/>
         <arg value="jre.xml"/>
@@ -96,50 +96,32 @@
         <arg value="FFMPEG"/>
       </java>
       <exec command="candle -o ffmpeg.obj ffmpeg.xml"/>
-      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -ext WixUtilExtension -cultures:en-us -b ${home} -b ${jre} -b ${home}/ffmpeg -dWixUILicenseRtf=${home}/license.rtf -o @{msi}-${version}-win@{bits}-jre.msi wix.obj jre.obj ffmpeg.obj"/>
+      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -ext WixUtilExtension -cultures:en-us -b ${home} -b ${jre} -b ${home}/ffmpeg -dWixUILicenseRtf=${home}/license.rtf -o ${msi}-${version}-win${bits}.msi wix.obj jre.obj ffmpeg.obj"/>
       <delete file="wix.obj"/>
       <delete file="jre.obj"/>
       <delete file="jre.xml"/>
       <delete file="ffmpeg.obj"/>
       <delete file="ffmpeg.xml"/>
       <delete file="rt.jar"/>
-      <delete file="@{msi}-${version}-win@{bits}-jre.wixpdb"/>
-      <move unless:set="nomove" file="@{msi}-${version}-win@{bits}-jre.msi" todir="${home}/release"/>
+      <delete file="${msi}-${version}-win${bits}.wixpdb"/>
+      <move unless:set="nomove" file="${msi}-${version}-win${bits}.msi" todir="${home}/release"/>
     </sequential>
-  </macrodef>
-
-  <target name="msi" depends="exe,jar,depjars"  description="create msi installer file 64bit">
-    <msimacro xml="wix64" bits="64"/>
   </target>
 
   <!-- Linux targets -->
 
-  <macrodef name="elf">
-    <attribute name="appx" default="${app}"/>
-    <attribute name="apptypex" default="${apptype}"/>
-    <attribute name="cfgdir" default=""/>
-    <attribute name="bin" default="bin"/>
-    <attribute name="bits" default="${bits}"/>
-    <attribute name="ico" default=""/>
+  <target name="elf" depends="jar,depjars,depnatives" unless="noelf" description="create elf binaries">
     <sequential>
-      <copy file="${home}/stubs/linux@{bits}.bin" tofile="/usr/@{bin}/@{appx}"/>
+      <copy file="${home}/stubs/linux${bits}.bin" tofile="/usr/${bin}/${app}"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ResourceManager">
-        <arg value="/usr/@{bin}/@{appx}"/>
-        <arg value="@{cfgdir}@{appx}.cfg"/>
+        <arg value="/usr/${bin}/${app}"/>
+        <arg value="${cfg}"/>
       </java>
-      <chmod file="/usr/@{bin}/@{appx}" perm="+x"/>
+      <chmod file="/usr/${bin}/${app}" perm="+x"/>
     </sequential>
-  </macrodef>
-
-  <target name="elfall" depends="jar,depjars,depnatives" unless="noelf" description="create elf binaries">
-    <elf appx="${app}" apptypex="${apptype}" ico="${ico}"/>
-    <elf appx="${app2}" apptypex="${apptype2}" ico="${ico2}" unless:blank="${app2}"/>
-    <elf appx="${app3}" apptypex="${apptype3}" ico="${ico3}" unless:blank="${app3}"/>
-    <elf appx="${app4}" apptypex="${apptype4}" ico="${ico4}" unless:blank="${app4}"/>
-    <elf appx="${app5}" apptypex="${apptype5}" ico="${ico5}" unless:blank="${app5}"/>
   </target>
 
-  <target name="deb" depends="elfall" description="create deb package">
+  <target name="deb" depends="elf" description="create deb package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true">
       <arg value="${app}-${version}_${archext}.deb"/>
       <arg value="${arch}"/>
@@ -147,7 +129,7 @@
     <copy file="${app}-${version}_${archext}.deb" todir="${home}/repo/debian" overwrite="true"/>
   </target>
 
-  <target name="rpm" depends="elfall" description="create rpm package">
+  <target name="rpm" depends="elf" description="create rpm package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenRPM" fork="true">
       <arg value="${app}-${version}-1.${archext}.rpm"/>
       <arg value="${arch}"/>
@@ -155,7 +137,7 @@
     <copy file="${app}-${version}-1.${archext}.rpm" todir="${home}/repo/fedora" overwrite="true"/>
   </target>
 
-  <target name="pac" depends="elfall" description="create pac package">
+  <target name="pac" depends="elf" description="create pac package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true">
       <arg value="${app}-${version}-${archext}.pkg.tar.xz"/>
       <arg value="${arch}"/>
@@ -165,16 +147,14 @@
 
   <!-- MacOSX targets -->
 
-  <macrodef name="mac">
-    <attribute name="app" default="${app}"/>
+  <target name="mac">
     <sequential>
-      <copy file="${home}/stubs/mac64.bin" tofile="@{app}"/>
-      <chmod file="@{app}" perm="+x"/>
+      <copy file="${home}/stubs/mac64.bin" tofile="${app}"/>
+      <chmod file="${app}" perm="+x"/>
     </sequential>
-  </macrodef>
+  </target>
 
-  <target name="dmg" depends="jar"  description="create dmg package">
-    <mac/>
+  <target name="dmg" depends="jar,mac"  description="create dmg package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenDMG" fork="true">
       <arg value="${app}"/>
       <arg value="${app}-${version}.dmg"/>

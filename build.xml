@@ -116,13 +116,13 @@
   </macrodef>
 
   <target name="utils" depends="jar" description="build exe for utils 64bit">
+    <ant antfile="build-copypathex.xml" inheritAll="false"/>
     <utilsmacro app="jfr" bits="64"/>
     <utilsmacro app="jfs" bits="64"/>
     <utilsmacro app="jfimageconvert" bits="64"/>
     <utilsmacro app="pngalpha" bits="64"/>
     <utilsmacro app="jfshare" bits="64"/>
     <utilsmacro app="WinPE" bits="64"/>
-    <utilsmacro app="CopyPathEx" bits="64"/>
   </target>
 
   <target name="jre-base-desktop" description="build JRE for bundled JRE builds with desktop (swing) support">
