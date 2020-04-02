@@ -2,11 +2,11 @@
   <description>paint</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfstun"/>
-  <property name="app2" value="jfstunsvc"/>
-  <property name="apptype2" value="s"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.5"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
+
+  <property name="project2" value="build-service"/>
 
   <import file="../../base.xml"/>
 
