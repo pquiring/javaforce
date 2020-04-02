@@ -13,7 +13,10 @@ import java.util.*;
 public class JFNative {
   static {
     try {
-      String path = null;
+      String path = System.getProperty("java.app.home");
+      if (path == null) {
+        path = ".";
+      }
       String ext = "", bits = "";
       if (JF.is64Bit())
         bits = "64";
@@ -21,13 +24,8 @@ public class JFNative {
         bits = "32";
       if (JF.isWindows()) {
         ext = ".dll";
-        path = System.getProperty("java.app.home");
-        if (path == null) {
-          path = ".";
-        }
       } else if (JF.isMac()) {
         ext = ".dylib";
-        path = "/usr/lib";
       } else {
         ext = ".so";
         path = "/usr/lib";
