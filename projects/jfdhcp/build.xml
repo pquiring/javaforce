@@ -8,6 +8,8 @@
   <property name="version" value="0.10"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
 
+  <property name="project2" value="build-service"/>
+
   <import file="../../base.xml"/>
 
   <target name="depjars" description="jar">
