@@ -1,0 +1,17 @@
+<project name="jfplcrestore" basedir=".">
+  <!-- set global properties for this build -->
+  <property name="app" value="jfplcrestore"/>
+  <property name="apptype" value="c"/>
+  <property name="home" value="../.."/>
+
+  <import file="${home}/base.xml"/>
+
+  <target name="depjars" depends="depnatives">
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+  </target>
+
+  <target name="jar" depends="depjars,compile" description="build jar file">
+  </target>
+</project>
