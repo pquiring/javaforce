@@ -3,8 +3,6 @@
   <!-- set global properties for this build -->
   <property name="app" value="jfcontrols"/>
   <property name="apptype" value="s"/>
-  <property name="app2" value="jfcompile"/>
-  <property name="apptype2" value="c"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
