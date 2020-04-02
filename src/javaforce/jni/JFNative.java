@@ -23,7 +23,7 @@ public class JFNative {
         ext = ".dll";
         path = System.getProperty("java.app.home");
         if (path == null) {
-          path = System.getenv("windir");
+          path = ".";
         }
       } else if (JF.isMac()) {
         ext = ".dylib";
@@ -33,7 +33,7 @@ public class JFNative {
         path = "/usr/lib";
       }
       Library lib = new Library("jfnative" + bits);
-      if (!findLibraries(new File[] {new File("."), new File(path)}, new Library[] {lib}, ext, 1)) {
+      if (!findLibraries(new File[] {new File(path)}, new Library[] {lib}, ext, 1)) {
         JFLog.log("Warning:Unable to find jfnative library");
       }
       if (lib.path != null) {

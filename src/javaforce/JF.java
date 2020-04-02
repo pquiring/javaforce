@@ -1033,6 +1033,14 @@ public class JF {
     return list.toArray(new String[list.size()]);
   }
 
+  public static String java_app_home = ".";
+
+  public static void setJavaAppHome(String value) {
+    System.out.println("setting java_app_home to " + value);
+    java_app_home = value;
+  }
+
+
   public static boolean is64Bit() {
     return true;
   }

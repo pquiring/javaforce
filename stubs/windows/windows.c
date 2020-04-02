@@ -131,19 +131,36 @@ ExpandStringArray(JNIEnv *env, jobjectArray inArray) {
   return outArray;
 }
 
+int setJavaAppHome(JNIEnv *env, char *java_app_home) {
+  jarray cls;
+  jmethodID mid;
+  jstring name, value;
+
+  cls = (*env)->FindClass(env, "java/lang/System");
+  if (cls == 0) {
+    printException(g_env);
+    error("Unable to find java.lang.System class");
+    return 0;
+  }
+  mid = (*env)->GetStaticMethodID(env, cls, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+  if (mid == 0) {
+    printException(g_env);
+    error("Unable to find java.lang.System.setProperty method");
+    return 0;
+  }
+  name = (*env)->NewStringUTF(env, "java.app.home");
+  value = (*env)->NewStringUTF(env, java_app_home);
+  (*env)->CallStaticObjectMethod(env, cls, mid, name, value);
+  (*env)->DeleteLocalRef(env, name);
+  (*env)->DeleteLocalRef(env, value);
+  return 1;
+}
+
 char *DOption = "-Djava.class.path=";
 
 /** Create class path adding exe path to each element (because the current path is not where the EXE is). */
 char *CreateClassPath() {
   char *ClassPath;
-  if (graal) {
-    //classpath not needed with Graal
-    int len = strlen(DOption) + 2;
-    ClassPath = (char*)malloc(len);
-    strcpy(ClassPath, DOption);
-    strcat(ClassPath, ".");
-    return ClassPath;
-  }
   int sl = strlen(classpath);
   ClassPath = malloc(sl + 1);
   strcpy(ClassPath, classpath);
@@ -180,16 +197,6 @@ void convertClass(char *cls) {
   }
 }
 
-char *DOption2 = "-Djava.app.home=";
-
-char *DefineAppHome() {
-  int sl = strlen(DOption2) + strlen(exepath);
-  char *option = malloc(sl + 1);
-  strcpy(option, DOption2);
-  strcat(option, exepath);
-  return option;
-}
-
 int InvokeMethod(char *_method, jobjectArray args, char *sign) {
   convertClass(mainclass);
   jclass cls = (*g_env)->FindClass(g_env, mainclass);
@@ -213,21 +220,24 @@ int InvokeMethod(char *_method, jobjectArray args, char *sign) {
 JavaVMInitArgs *BuildArgs() {
   JavaVMInitArgs *args;
   JavaVMOption *options;
-  int nOpts = 2;
-  char *opts[64];
+  int nOpts = 0;
   int idx;
+  char *opts[64];
 
-  opts[0] = CreateClassPath();
-  opts[1] = DefineAppHome();
+  if (!graal) {
+    nOpts++;
 
-  if (strlen(xoptions) > 0) {
-    char *x = xoptions;
-    while (x != NULL) {
-      opts[nOpts++] = x;
-      x = strchr(x, ' ');
-      if (x != NULL) {
-        *x = 0;
-        x++;
+    opts[0] = CreateClassPath();
+
+    if (strlen(xoptions) > 0) {
+      char *x = xoptions;
+      while (x != NULL) {
+        opts[nOpts++] = x;
+        x = strchr(x, ' ');
+        if (x != NULL) {
+          *x = 0;
+          x++;
+        }
       }
     }
   }
@@ -279,6 +289,10 @@ void AttachJVM() {
 /** Invokes the main method in a new thread. */
 int JavaStart(void *ignore) {
   CreateJVM();
+
+  if (!setJavaAppHome(g_env, exepath)) {
+    return 0;
+  }
 
   char **argv = g_argv;
   int argc = g_argc;

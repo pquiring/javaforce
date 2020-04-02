@@ -39,6 +39,12 @@ public class GenGraal {
     sb.append("{\"name\":\"expandArgs\"}");
     sb.append("]");
     sb.append("},{");
+    sb.append("\"name\":\"java.lang.System\",");
+    sb.append("\"methods\":");
+    sb.append("[");
+    sb.append("{\"name\":\"setProperty\"}");
+    sb.append("]");
+    sb.append("},{");
     sb.append("\"name\":\"" + args[0] + "\",");
     sb.append("\"methods\":");
     sb.append("[");
