@@ -2,7 +2,6 @@
   <description>jfconfig</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfconfig"/>
-  <property name="app2" value="jfopenssl"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
@@ -12,6 +11,8 @@
   <property name="debian.depends" value="jfparted, jfapps, jfrepo, libnss3-tools"/>
   <property name="fedora.depends" value="jfparted, jfapps, jfrepo, pciutils"/>
   <property name="arch.depends" value="jfparted, jfapps, jfrepo, nss"/>
+
+  <property name="project2" value="build-openssl"/>
 
   <import file="../../base.xml"/>
 
