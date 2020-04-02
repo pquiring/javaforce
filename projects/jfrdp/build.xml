@@ -3,13 +3,14 @@
   <!-- set global properties for this build -->
   <property name="msi" value="jfrdp"/>
   <property name="app" value="jfrdpclient"/>
-  <property name="app2" value="jfrdpserver"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.5"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
+
+  <property name="project2" value="build-server"/>
 
   <property environment="env"/>
 
