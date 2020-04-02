@@ -1,6 +1,6 @@
-<project name="jfdhcpsvc" basedir=".">
+<project name="jfdnssvc" basedir=".">
   <!-- set global properties for this build -->
-  <property name="app" value="jfdhcpsvc"/>
+  <property name="app" value="jfdnssvc"/>
   <property name="apptype" value="s"/>
   <property name="home" value="../.."/>
 

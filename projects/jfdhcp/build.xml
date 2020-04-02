@@ -2,8 +2,6 @@
   <description>DHCP Server</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfdhcp"/>
-  <property name="app2" value="jfdhcpsvc"/>
-  <property name="apptype2" value="s"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.10"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
