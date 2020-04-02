@@ -105,9 +105,8 @@
 
   <macrodef name="utilsmacro">
     <attribute name="app"/>
-    <attribute name="bits"/>
     <sequential>
-      <copy file="${home}/stubs/win@{bits}c.exe" tofile="@{app}.exe" overwrite="true"/>
+      <copy file="${home}/stubs/win64c.exe" tofile="@{app}.exe" overwrite="true"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
         <arg value="@{app}.exe"/>
         <arg value="cfg/@{app}.cfg"/>
@@ -117,12 +116,12 @@
 
   <target name="utils" depends="jar" description="build exe for utils 64bit">
     <ant antfile="build-copypathex.xml" inheritAll="false"/>
-    <utilsmacro app="jfr" bits="64"/>
-    <utilsmacro app="jfs" bits="64"/>
-    <utilsmacro app="jfimageconvert" bits="64"/>
-    <utilsmacro app="pngalpha" bits="64"/>
-    <utilsmacro app="jfshare" bits="64"/>
-    <utilsmacro app="WinPE" bits="64"/>
+    <utilsmacro app="jfr"/>
+    <utilsmacro app="jfs"/>
+    <utilsmacro app="jfimageconvert"/>
+    <utilsmacro app="pngalpha"/>
+    <utilsmacro app="jfshare"/>
+    <utilsmacro app="WinPE"/>
   </target>
 
   <target name="jre-base-desktop" description="build JRE for bundled JRE builds with desktop (swing) support">
