@@ -46,34 +46,34 @@
   <property name="apptype" value="w"/>
   <property name="heat_home" value="jre"/>
   <property name="ffmpeg_home" value=""/>
-  <property name="build2" value=""/>
-  <property name="build3" value=""/>
-  <property name="build4" value=""/>
-  <property name="build5" value=""/>
+  <property name="project2" value=""/>
+  <property name="project3" value=""/>
+  <property name="project4" value=""/>
+  <property name="project5" value=""/>
   <property file="${cfg}"/>
   <lower string="${MAINCLASS}" to="mainclass" />
 
   <target name="check-builds">
-    <available file="${build2}.xml" property="build2.present"/>
-    <available file="${build3}.xml" property="build3.present"/>
-    <available file="${build4}.xml" property="build4.present"/>
-    <available file="${build5}.xml" property="build5.present"/>
+    <available file="${project2}.xml" property="project2.present"/>
+    <available file="${project3}.xml" property="project3.present"/>
+    <available file="${project4}.xml" property="project4.present"/>
+    <available file="${project5}.xml" property="project5.present"/>
   </target>
 
-  <target name="executable2" depends="check-builds" if="build2.present">
-    <ant antfile="${build2}.xml" target="executable" inheritAll="false"/>
+  <target name="executable2" depends="check-builds" if="project2.present">
+    <ant antfile="${project2}.xml" target="executable" inheritAll="false"/>
   </target>
 
-  <target name="executable3" depends="check-builds" if="build3.present">
-    <ant antfile="${build3}.xml" target="executable" inheritAll="false"/>
+  <target name="executable3" depends="check-builds" if="project3.present">
+    <ant antfile="${project3}.xml" target="executable" inheritAll="false"/>
   </target>
 
-  <target name="executable4" depends="check-builds" if="build4.present">
-    <ant antfile="${build4}.xml" target="executable" inheritAll="false"/>
+  <target name="executable4" depends="check-builds" if="project4.present">
+    <ant antfile="${project4}.xml" target="executable" inheritAll="false"/>
   </target>
 
-  <target name="executable5" depends="check-builds" if="build5.present">
-    <ant antfile="${build5}.xml" target="executable" inheritAll="false"/>
+  <target name="executable5" depends="check-builds" if="project5.present">
+    <ant antfile="${project5}.xml" target="executable" inheritAll="false"/>
   </target>
 
   <target name="executable" depends="jar,depjars,depnatives,executable2,executable3,executable4,executable5"  description="create msi installer file 64bit">
