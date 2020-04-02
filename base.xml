@@ -36,8 +36,6 @@
     </sequential>
   </macrodef>
 
-  <!-- Windows targets -->
-
   <!--these should be set before importing this file to override default behavior-->
   <property name="ico" value="${app}.ico"/>
   <property name="msi" value="${app}"/>
@@ -45,25 +43,52 @@
   <property name="cfg" value="${app}.cfg"/>
   <property name="candle_extra" value=""/>
   <property name="light_extra" value=""/>
-  <property name="apptype" value=""/>
+  <property name="apptype" value="w"/>
   <property name="heat_home" value="jre"/>
   <property name="ffmpeg_home" value=""/>
-
+  <property name="build2" value=""/>
+  <property name="build3" value=""/>
+  <property name="build4" value=""/>
+  <property name="build5" value=""/>
   <property file="${cfg}"/>
   <lower string="${MAINCLASS}" to="mainclass" />
 
-  <target name="exe" depends="jar,depjars,depnatives"  description="create msi installer file 64bit">
+  <target name="check-builds">
+    <available file="${build2}.xml" property="build2.present"/>
+    <available file="${build3}.xml" property="build3.present"/>
+    <available file="${build4}.xml" property="build4.present"/>
+    <available file="${build5}.xml" property="build5.present"/>
+  </target>
+
+  <target name="executable2" depends="check-builds" if="build2.present">
+    <ant antfile="${build2}.xml" target="executable" inheritAll="false"/>
+  </target>
+
+  <target name="executable3" depends="check-builds" if="build3.present">
+    <ant antfile="${build3}.xml" target="executable" inheritAll="false"/>
+  </target>
+
+  <target name="executable4" depends="check-builds" if="build4.present">
+    <ant antfile="${build4}.xml" target="executable" inheritAll="false"/>
+  </target>
+
+  <target name="executable5" depends="check-builds" if="build5.present">
+    <ant antfile="${build5}.xml" target="executable" inheritAll="false"/>
+  </target>
+
+  <target name="executable" depends="jar,depjars,depnatives,executable2,executable3,executable4,executable5"  description="create msi installer file 64bit">
     <sequential>
-      <copy file="${home}/stubs/win${bits}${apptype}.exe" tofile="${app}.exe" overwrite="true"/>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
-        <arg value="${app}.exe"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenExecutable" fork="true">
+        <arg value="${home}"/>
+        <arg value="${app}"/>
+        <arg value="${apptype}"/>
         <arg value="${ico}"/>
         <arg value="${cfg}"/>
       </java>
     </sequential>
   </target>
 
-  <target name="graal" depends="jar,depjars,depnatives,exe"  description="generate aot library">
+  <target name="graal" depends="executable"  description="generate aot library">
     <sequential>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenGraal" fork="true">
         <arg value="${MAINCLASS}"/>
@@ -79,7 +104,9 @@
     </sequential>
   </target>
 
-  <target name="msi" depends="exe,jar,depjars"  description="create msi installer file 64bit">
+  <!-- Windows targets -->
+
+  <target name="msi" depends="executable"  description="create msi installer file 64bit">
     <sequential>
       <exec command="candle -ext WixFirewallExtension -ext WixUtilExtension ${candle_extra} -o wix.obj wix64.xml"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
@@ -102,7 +129,6 @@
       <delete file="jre.xml"/>
       <delete file="ffmpeg.obj"/>
       <delete file="ffmpeg.xml"/>
-      <delete file="rt.jar"/>
       <delete file="${msi}-${version}-win${bits}.wixpdb"/>
       <move unless:set="nomove" file="${msi}-${version}-win${bits}.msi" todir="${home}/release"/>
     </sequential>
@@ -110,18 +136,7 @@
 
   <!-- Linux targets -->
 
-  <target name="elf" depends="jar,depjars,depnatives" unless="noelf" description="create elf binaries">
-    <sequential>
-      <copy file="${home}/stubs/linux${bits}.bin" tofile="/usr/${bin}/${app}"/>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ResourceManager">
-        <arg value="/usr/${bin}/${app}"/>
-        <arg value="${cfg}"/>
-      </java>
-      <chmod file="/usr/${bin}/${app}" perm="+x"/>
-    </sequential>
-  </target>
-
-  <target name="deb" depends="elf" description="create deb package">
+  <target name="deb" depends="executable" description="create deb package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true">
       <arg value="${app}-${version}_${archext}.deb"/>
       <arg value="${arch}"/>
@@ -129,7 +144,7 @@
     <copy file="${app}-${version}_${archext}.deb" todir="${home}/repo/debian" overwrite="true"/>
   </target>
 
-  <target name="rpm" depends="elf" description="create rpm package">
+  <target name="rpm" depends="executable" description="create rpm package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenRPM" fork="true">
       <arg value="${app}-${version}-1.${archext}.rpm"/>
       <arg value="${arch}"/>
@@ -137,7 +152,7 @@
     <copy file="${app}-${version}-1.${archext}.rpm" todir="${home}/repo/fedora" overwrite="true"/>
   </target>
 
-  <target name="pac" depends="elf" description="create pac package">
+  <target name="pac" depends="executable" description="create pac package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true">
       <arg value="${app}-${version}-${archext}.pkg.tar.xz"/>
       <arg value="${arch}"/>
@@ -147,14 +162,7 @@
 
   <!-- MacOSX targets -->
 
-  <target name="mac">
-    <sequential>
-      <copy file="${home}/stubs/mac64.bin" tofile="${app}"/>
-      <chmod file="${app}" perm="+x"/>
-    </sequential>
-  </target>
-
-  <target name="dmg" depends="jar,mac"  description="create dmg package">
+  <target name="dmg" depends="executable"  description="create dmg package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenDMG" fork="true">
       <arg value="${app}"/>
       <arg value="${app}-${version}.dmg"/>
