@@ -193,6 +193,13 @@ void printException(JNIEnv *env) {
   (*env)->ExceptionClear(env);
 }
 
+void convertClass(char *cls) {
+  while (*cls) {
+    if (*cls == '.') *cls = '/';
+    cls++;
+  }
+}
+
 /** Continues loading the JVM in a new Thread. */
 int JavaThread(void *ignore) {
   JavaVM *jvm = NULL;
@@ -203,6 +210,7 @@ int JavaThread(void *ignore) {
     return -1;
   }
 
+  convertClass(mainclass);
   jclass cls = (*env)->FindClass(env, mainclass);
   if (cls == NULL) {
     printException(env);

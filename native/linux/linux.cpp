@@ -1615,23 +1615,23 @@ JNIEXPORT jintArray JNICALL Java_javaforce_jni_LnxNative_getConsolePos
   printf("\x1b[6n");
   int x = 1;
   int y = 1;
-  char c;
+  char t;
   int val = 0;
   //reply = ESC[row;colR
   while (1) {
-    c = fgetc(stdin);
-    if (c == '\x1b') continue;
-    if (c == '[') continue;
-    if (c == 'R') {
+    t = fgetc(stdin);
+    if (t == '\x1b') continue;
+    if (t == '[') continue;
+    if (t == 'R') {
       x = val;
       break;
     }
-    if (c == ';') {
+    if (t == ';') {
       y = val;
       val = 0;
     } else {
       val *= 10;
-      val += (c - '0');
+      val += (t - '0');
     }
   }
   xy[0] = x;
