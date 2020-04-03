@@ -9,7 +9,8 @@ import java.io.*;
 
 public class ObjectReader {
   public Object readObject(InputStream is, SerialObject reader) throws Exception {
-    DataInputStream dis = new DataInputStream(is);
+    BufferedInputStream bis = new BufferedInputStream(is);
+    DataInputStream dis = new DataInputStream(bis);
     int magic = dis.readInt();
     if (magic != SerialObject.magic) {
       throw new Exception("invalid magic");
