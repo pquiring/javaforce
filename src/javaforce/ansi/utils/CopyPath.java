@@ -1,6 +1,6 @@
 package javaforce.ansi.utils;
 
-/** CopyPathEx
+/** CopyPath
  *
  * @author pquiring
  */
@@ -10,7 +10,7 @@ import java.nio.file.*;
 
 import javaforce.ansi.server.*;
 
-public class CopyPathEx implements KeyEvents {
+public class CopyPath implements KeyEvents {
   public static String args[];
   public ANSI ansi;
   public String src;
@@ -30,9 +30,9 @@ public class CopyPathEx implements KeyEvents {
 
   public static void main(String args[]) {
     ANSI.enableConsoleMode();
-    CopyPathEx.args = args;
+    CopyPath.args = args;
     try {
-      new CopyPathEx().run();
+      new CopyPath().run();
     } catch (Throwable e) {
       e.printStackTrace();
     }
@@ -40,7 +40,7 @@ public class CopyPathEx implements KeyEvents {
   }
 
   public void usage() {
-    System.out.println("CopyPathEx src dest");
+    System.out.println("CopyPath src dest");
   }
 
   public void run() {

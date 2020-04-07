@@ -115,7 +115,7 @@
   </macrodef>
 
   <target name="utils" depends="jar" description="build exe for utils 64bit">
-    <ant antfile="build-copypathex.xml" inheritAll="false"/>
+    <ant antfile="build-copypath.xml" inheritAll="false"/>
     <utilsmacro app="jfr"/>
     <utilsmacro app="jfs"/>
     <utilsmacro app="jfimageconvert"/>

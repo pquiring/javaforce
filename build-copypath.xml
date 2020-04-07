@@ -1,9 +1,9 @@
-<project name="copypathex" default="zip" basedir=".">
-  <description>copypathex SDK</description>
+<project name="copypath" default="zip" basedir=".">
+  <description>copypath</description>
   <!-- set global properties for this build -->
-  <property name="app" value="copypathex"/>
+  <property name="app" value="copypath"/>
   <property name="apptype" value="c"/>
-  <property name="cfg" value="cfg/copypathex.cfg"/>
+  <property name="cfg" value="cfg/copypath.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>
 
