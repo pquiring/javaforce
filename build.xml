@@ -103,17 +103,6 @@
     <elf appx="jfresmgr" cfgdir="cfg/"/>
   </target>
 
-  <macrodef name="utilsmacro">
-    <attribute name="app"/>
-    <sequential>
-      <copy file="${home}/stubs/win64c.exe" tofile="@{app}.exe" overwrite="true"/>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
-        <arg value="@{app}.exe"/>
-        <arg value="cfg/@{app}.cfg"/>
-      </java>
-    </sequential>
-  </macrodef>
-
   <target name="utils" depends="jar" description="build exe for utils 64bit">
     <ant antfile="build-copypath.xml" inheritAll="false"/>
     <ant antfile="build-findreplace.xml" inheritAll="false"/>
@@ -121,7 +110,6 @@
     <ant antfile="build-imageconvert.xml" inheritAll="false"/>
     <ant antfile="build-pngalpha.xml" inheritAll="false"/>
     <ant antfile="build-web.xml" inheritAll="false"/>
-    <utilsmacro app="WinPE"/>
   </target>
 
   <target name="jre-base-desktop" description="build JRE for bundled JRE builds with desktop (swing) support">
