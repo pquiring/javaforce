@@ -1,0 +1,32 @@
+<project name="findreplace" default="zip" basedir=".">
+  <description>findreplace</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="findreplace"/>
+  <property name="apptype" value="c"/>
+  <property name="cfg" value="cfg/findreplace.cfg"/>
+  <property name="ico" value="javaforce.ico"/>
+  <property name="home" value="."/>
+
+  <property environment="env"/>
+
+  <import file="base.xml"/>
+
+  <target name="depjars" depends="depnatives">
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+  </target>
+
+  <target name="jar" depends="depjars,compile" description="build jar file">
+  </target>
+
+  <target name="zip" depends="graal">
+    <zip destfile="${app}.zip">
+      <fileset dir=".">
+        <include name="${app}.exe"/>
+        <include name="jfnative64.dll"/>
+        <include name="${mainclass}.dll"/>
+      </fileset>
+    </zip>
+  </target>
+</project>
