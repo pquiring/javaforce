@@ -119,7 +119,7 @@
     <ant antfile="build-findreplace.xml" inheritAll="false"/>
     <ant antfile="build-filesplitter.xml" inheritAll="false"/>
     <ant antfile="build-imageconvert.xml" inheritAll="false"/>
-    <utilsmacro app="pngalpha"/>
+    <ant antfile="build-pngalpha.xml" inheritAll="false"/>
     <utilsmacro app="jfshare"/>
     <utilsmacro app="WinPE"/>
   </target>
