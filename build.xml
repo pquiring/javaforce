@@ -87,7 +87,7 @@
     <elf appx="jfsudo" cfgdir="cfg/"/>
     <elf appx="jfsudo-ask" cfgdir="cfg/"/>
     <elf appx="jfopen" cfgdir="cfg/"/>
-    <elf appx="jfs" cfgdir="cfg/"/>
+    <elf appx="filespliter" cfgdir="cfg/"/>
     <elf appx="ImageConvert" cfgdir="cfg/"/>
     <elf appx="FindReplace" cfgdir="cfg/"/>
     <elf appx="pngalpha" cfgdir="cfg/"/>
@@ -117,7 +117,7 @@
   <target name="utils" depends="jar" description="build exe for utils 64bit">
     <ant antfile="build-copypath.xml" inheritAll="false"/>
     <ant antfile="build-findreplace.xml" inheritAll="false"/>
-    <utilsmacro app="jfs"/>
+    <ant antfile="build-filesplitter.xml" inheritAll="false"/>
     <ant antfile="build-imageconvert.xml" inheritAll="false"/>
     <utilsmacro app="pngalpha"/>
     <utilsmacro app="jfshare"/>

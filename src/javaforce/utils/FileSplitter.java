@@ -22,7 +22,7 @@ public class FileSplitter {
 
   void usage() {
     System.out.println("File splitter utility");
-    System.out.println("Usage : jfs filein fileout1 fileout2 [size]");
+    System.out.println("Usage : filesplitter filein fileout1 fileout2 [size]");
     System.out.println("  size = size of fileout1 (default = 1/2 of filein)");
     System.exit(0);
   }
