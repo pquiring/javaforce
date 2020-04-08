@@ -88,14 +88,14 @@
     <elf appx="jfsudo-ask" cfgdir="cfg/"/>
     <elf appx="jfopen" cfgdir="cfg/"/>
     <elf appx="filespliter" cfgdir="cfg/"/>
-    <elf appx="ImageConvert" cfgdir="cfg/"/>
-    <elf appx="FindReplace" cfgdir="cfg/"/>
+    <elf appx="imageconvert" cfgdir="cfg/"/>
+    <elf appx="findreplace" cfgdir="cfg/"/>
     <elf appx="pngalpha" cfgdir="cfg/"/>
     <elf appx="jf-update-desktop-database" cfgdir="cfg/"/>
     <elf appx="jsmbget" cfgdir="cfg/"/>
     <elf appx="jservice" cfgdir="cfg/"/>
     <elf appx="jf-monitor-dir" cfgdir="cfg/"/>
-    <elf appx="jfshare" cfgdir="cfg/"/>
+    <elf appx="web" cfgdir="cfg/"/>
     <elf appx="jcp" cfgdir="cfg/"/>
     <elf appx="jmv" cfgdir="cfg/"/>
     <elf appx="jrm" cfgdir="cfg/"/>
@@ -120,7 +120,7 @@
     <ant antfile="build-filesplitter.xml" inheritAll="false"/>
     <ant antfile="build-imageconvert.xml" inheritAll="false"/>
     <ant antfile="build-pngalpha.xml" inheritAll="false"/>
-    <utilsmacro app="jfshare"/>
+    <ant antfile="build-web.xml" inheritAll="false"/>
     <utilsmacro app="WinPE"/>
   </target>
 
