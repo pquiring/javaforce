@@ -8,10 +8,16 @@ package javaforce.io;
 import java.io.*;
 
 public class ObjectWriter {
-  public void writeObject(OutputStream os, SerialObject writer) throws Exception {
+  private OutputStream os;
+  public ObjectWriter(OutputStream os) {
+    this.os = os;
+  }
+  public void writeObject(SerialObject writer) throws Exception {
     BufferedOutputStream bos = new BufferedOutputStream(os);
     DataOutputStream dos = new DataOutputStream(bos);
-    dos.writeInt(SerialObject.magic);
-    writer.writeObject(dos);
+    dos.writeShort(SerialObject.javaforce_magic);
+    writer.writeInit(dos);
+    writer.writeObject();
+    bos.flush();
   }
 }

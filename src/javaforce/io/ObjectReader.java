@@ -8,14 +8,19 @@ package javaforce.io;
 import java.io.*;
 
 public class ObjectReader {
-  public Object readObject(InputStream is, SerialObject reader) throws Exception {
+  private InputStream is;
+  public ObjectReader(InputStream is) {
+    this.is = is;
+  }
+  public Object readObject(SerialObject reader) throws Exception {
     BufferedInputStream bis = new BufferedInputStream(is);
     DataInputStream dis = new DataInputStream(bis);
-    int magic = dis.readInt();
-    if (magic != SerialObject.magic) {
+    short magic = dis.readShort();
+    if (magic != SerialObject.javaforce_magic) {
       throw new Exception("invalid magic");
     }
-    reader.readObject(dis);
+    reader.readInit(dis);
+    reader.readObject();
     return reader;
   }
 }
