@@ -42,7 +42,7 @@ public abstract class SerialObject {
     return false;
   }
 
-  public DataInputStream dis;
+  public transient DataInputStream dis;
   public void readInit(DataInputStream dis) {
     this.dis = dis;
   }
@@ -67,6 +67,7 @@ public abstract class SerialObject {
   }
   public String readString() throws Exception {
     int len = dis.readInt();
+    if (len == -1) return null;
     byte bytes[] = new byte[len];
     dis.read(bytes);
     return new String(bytes, "UTF-8");
@@ -114,7 +115,7 @@ public abstract class SerialObject {
     } while (true);
   }
 
-  public DataOutputStream dos;
+  public transient DataOutputStream dos;
   public void writeInit(DataOutputStream dos) {
     this.dos = dos;
   }
@@ -138,6 +139,10 @@ public abstract class SerialObject {
     dos.writeChar(value);
   }
   public void writeString(String value) throws Exception {
+    if (value == null) {
+      writeInt(-1);
+      return;
+    }
     byte bytes[] = value.getBytes("UTF-8");
     dos.writeInt(bytes.length);
     dos.write(bytes);

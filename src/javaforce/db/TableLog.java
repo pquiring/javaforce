@@ -12,19 +12,27 @@ import java.nio.channels.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.io.*;
 
-public class TableLog {
+public class TableLog<ROW extends Row> {
   private String folder;
   private RandomAccessFile raf;
   private String filename;
   private Object lock = new Object();
+  private Row.Creator ctr;
 
-  public TableLog(String folder) {
+  public TableLog(String folder, Row.Creator rowCreator) {
     this.folder = folder;
+    this.ctr = rowCreator;
+  }
+  @SuppressWarnings("unchecked")
+  private ROW create() {
+    return (ROW)ctr.newInstance();
   }
   private final long ms_per_day = 24 * 60 * 60 * 1000;  //ms per day
-  public Row[] get(long start, long end) {
-    ArrayList<Row> rows = new ArrayList<Row>();
+  @SuppressWarnings("unchecked")
+  public ROW[] get(long start, long end) {
+    ArrayList<ROW> rows = new ArrayList<ROW>();
     try {
       synchronized(lock) {
         long current = start;
@@ -34,8 +42,8 @@ public class TableLog {
             //load all rows within start to end
             raf.seek(0);
             while (raf.getFilePointer() < raf.length()) {
-              ObjectInputStream ois = new ObjectInputStream(Channels.newInputStream(raf.getChannel()));
-              Row row = (Row)ois.readObject();
+              ObjectReader ois = new ObjectReader(Channels.newInputStream(raf.getChannel()));
+              ROW row = (ROW)ois.readObject(create());
               if (row.timestamp >= start && row.timestamp <= end) {
                 rows.add(row);
               }
@@ -44,7 +52,7 @@ public class TableLog {
           current += ms_per_day;
         }
       }
-      return rows.toArray(new Row[0]);
+      return (ROW[])rows.toArray();
     } catch (Exception e) {
       JFLog.log(e);
       return null;
@@ -83,13 +91,13 @@ public class TableLog {
       }
     }
   }
-  public void add(Row row) {
+  public void add(ROW row) {
     row.id = -1;  //not used
     row.timestamp = System.currentTimeMillis();
     synchronized(lock) {
       open(row.timestamp, true);
       try {
-        ObjectOutputStream oos = new ObjectOutputStream(Channels.newOutputStream(raf.getChannel()));
+        ObjectWriter oos = new ObjectWriter(Channels.newOutputStream(raf.getChannel()));
         oos.writeObject(row);
       } catch (Exception e) {
         JFLog.log(e);

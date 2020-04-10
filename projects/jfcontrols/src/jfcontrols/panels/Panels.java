@@ -524,7 +524,7 @@ public class Panels {
       value = "bit";
     } else if (arg.equals("jfc_tag_type_udt")) {
       javaforce.db.Table listTable = Database.getList("jfc_tag_type");
-      ListRow basicTypes[] = listTable.getRows().toArray(new ListRow[0]);
+      ListRow basicTypes[] = (ListRow[])listTable.getRows().toArray(new ListRow[0]);
       String basic[][] = new String[basicTypes.length][2];
       for(int a=0;a<basicTypes.length;a++) {
         basic[a][0] = Integer.toString(basicTypes[a].idx);
@@ -546,7 +546,7 @@ public class Panels {
       }
     } else {
       javaforce.db.Table listTable = Database.getList(arg);
-      ListRow data[] = listTable.getRows().toArray(new ListRow[0]);
+      ListRow data[] = (ListRow[])listTable.getRows().toArray(new ListRow[0]);
       pairs = new String[data.length][];
       for(int a=0;a<data.length;a++) {
         pairs[a] = new String[2];

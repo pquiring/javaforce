@@ -9,21 +9,31 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.io.*;
 
-public class TableList implements java.io.Serializable {
-  public static final long serialVersionUID = 1;
+public class TableList<ROW extends Row> extends SerialObject {
+  private Row.Creator ctr;
+
+  @SuppressWarnings("unchecked")
+  public Table<ROW> create() {
+    return (Table<ROW>)new Table(ctr);
+  }
+
+  public TableList(Row.Creator rowCreator) {
+  }
 
   private String folder;
   private int minid = 1;
   private int nextid = 1;
   private int maxid = 2147483647;  //2^31-1
-  private transient ArrayList<Table> tables = new ArrayList<Table>();
+  private transient ArrayList<Table<ROW>> tables = new ArrayList<Table<ROW>>();
 
   private void loadTables() {
     for(int a=1;a<nextid;a++) {
       String filename = folder + "/" + a + ".dat";
       if (!new File(filename).exists()) continue;
-      Table table = Table.load(filename);
+      Table<ROW> table = create();
+      table.load(filename);
       if (table == null) {
         JFLog.log("Error:Table.load() failed:" + filename);
         continue;
@@ -31,25 +41,24 @@ public class TableList implements java.io.Serializable {
       tables.add(table);
     }
   }
-  public static TableList load(String folder) {
+
+  public boolean load(String folder) {
     try {
-      TableList list;
       File file = new File(folder + "/0.dat");
       if (!file.exists()) {
-        list = new TableList();
-        list.folder = folder;
-        return list;
+        this.folder = folder;
+        return false;
       }
-      FileInputStream fis = new FileInputStream(folder + "/0.dat");
-      ObjectInputStream ois = new ObjectInputStream(fis);
-      list = (TableList)ois.readObject();
-      list.tables = new ArrayList<Table>();
+      String filename = folder + "/0.dat";
+      FileInputStream fis = new FileInputStream(filename);
+      new ObjectReader(fis).readObject(this);
       fis.close();
-      list.loadTables();
-      return list;
+      tables = new ArrayList<Table<ROW>>();
+      loadTables();
+      return true;
     } catch (Exception e) {
       JFLog.log(e);
-      return null;
+      return false;
     }
   }
 
@@ -80,14 +89,15 @@ public class TableList implements java.io.Serializable {
     try {
       new File(folder).mkdirs();
       FileOutputStream fos = new FileOutputStream(folder + "/0.dat");
-      ObjectOutputStream oos = new ObjectOutputStream(fos);
+      ObjectWriter oos = new ObjectWriter(fos);
       oos.writeObject(this);
       fos.close();
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
-  public synchronized void add(Table table) {
+
+  public synchronized void add(Table<ROW> table) {
     table.id = nextid++;
     if (nextid == maxid) {
       JFLog.log("Warning:TableList:next id reset to start");
@@ -97,7 +107,7 @@ public class TableList implements java.io.Serializable {
     tables.add(table);
     save();
   }
-  public ArrayList<Table> getTables() {
+  public ArrayList<Table<ROW>> getTables() {
     return tables;
   }
   public void remove(int id) {
@@ -113,5 +123,23 @@ public class TableList implements java.io.Serializable {
         break;
       }
     }
+  }
+
+  private static final int version = 1;
+
+  public void readObject() throws Exception {
+    int ver = readInt();
+    folder = readString();
+    minid = readInt();
+    nextid = readInt();
+    maxid = readInt();
+  }
+
+  public void writeObject() throws Exception {
+    writeInt(version);
+    writeString(folder);
+    writeInt(minid);
+    writeInt(nextid);
+    writeInt(maxid);
   }
 }

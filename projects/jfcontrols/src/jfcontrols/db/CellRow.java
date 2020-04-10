@@ -6,6 +6,7 @@ package jfcontrols.db;
  */
 
 public class CellRow extends javaforce.db.Row {
+  public CellRow() {};
   public CellRow(int pid, int x, int y, int w, int h, String comp, String name, String text) {
     this.pid = pid;
     this.x = x;
@@ -52,4 +53,39 @@ public class CellRow extends javaforce.db.Row {
   public String arg;
   public String style;
   public String events;
+  private static final int version = 1;
+  public void readObject() throws Exception {
+    super.readObject();
+    int ver = readInt();
+    pid = readInt();
+    x = readInt();
+    y = readInt();
+    w = readInt();
+    h = readInt();
+    comp = readString();
+    name = readString();
+    text = readString();
+    tag = readString();
+    func = readString();
+    arg = readString();
+    style = readString();
+    events = readString();
+  }
+  public void writeObject() throws Exception {
+    super.writeObject();
+    writeInt(version);
+    writeInt(pid);
+    writeInt(x);
+    writeInt(y);
+    writeInt(w);
+    writeInt(h);
+    writeString(comp);
+    writeString(name);
+    writeString(text);
+    writeString(tag);
+    writeString(func);
+    writeString(arg);
+    writeString(style);
+    writeString(events);
+  }
 }

@@ -87,12 +87,10 @@ public class Config extends SerialObject implements Serializable {
   }
 
   public void writeObject() throws Exception {
-    JFLog.log("writeObject:Config");
     writeShort(id_cameras);
     int cnt = cameras.length;
     writeInt(cnt);
     for(int a=0;a<cnt;a++) {
-      JFLog.log("writeObject:Camera:" + cameras[a].name);
       cameras[a].writeInit(this);
       cameras[a].writeObject();
     }

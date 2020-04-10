@@ -18,32 +18,32 @@ import jfcontrols.db.*;
 public class Database {
 
   //core system
-  public static Table config;
-  public static TableLog alarms;
-  public static Table panels;
-  public static TableList cells;
-  public static Table controllers;
-  public static Table users;
-  public static TableList lists;
-  public static Table logics;
-  public static Table udts;
-  public static Table udtmembers;
-  public static Table tags;
-  public static Table funcs;
+  public static Table<ConfigRow> config;
+  public static TableLog<AlarmRow> alarms;
+  public static Table<PanelRow> panels;
+  public static TableList<CellRow> cells;
+  public static Table<ControllerRow> controllers;
+  public static Table<UserRow> users;
+  public static TableList<ListRow> lists;
+  public static Table<LogicRow> logics;
+  public static Table<UDT> udts;
+  public static Table<UDTMember> udtmembers;
+  public static Table<TagRow> tags;
+  public static Table<FunctionRow> funcs;
   //card access system
-  public static Table readers;
-  public static Table cards;
-  public static Table groups;
-  public static Table timezones;
+  public static Table<CardReaderRow> readers;
+  public static Table<CardRow> cards;
+  public static Table<GroupRow> groups;
+  public static Table<TimezoneRow> timezones;
   //vision system
-  public static Table visioncameras;
-  public static Table visionprograms;
-  public static Table visionshots;
-  public static Table visionareas;  //ROI
+  public static Table<VisionCameraRow> visioncameras;
+  public static Table<VisionProgramRow> visionprograms;
+  public static Table<VisionShotRow> visionshots;
+  public static Table<VisionAreaRow> visionareas;  //ROI
 
-  public static TableList rungs;
-  public static TableList blocks;
-  public static TableList watches;
+  public static TableList<RungRow> rungs;
+  public static TableList<BlockRow> blocks;
+  public static TableList<WatchRow> watches;
 
   public static String Version = "1.1";
 
@@ -51,31 +51,53 @@ public class Database {
     JFLog.log("Database starting...");
 
     //create/load tables
-    config = Table.load(Paths.dataPath + "/config/config.dat");
-    alarms = new TableLog(Paths.logsPath);
-    panels = Table.load(Paths.dataPath + "/config/panels.dat");
-    cells = TableList.load(Paths.dataPath + "/config/cells");
-    controllers = Table.load(Paths.dataPath + "/config/ctrls.dat");
-    users = Table.load(Paths.dataPath + "/config/users.dat");
-    lists = TableList.load(Paths.dataPath + "/config/lists");
-    logics = Table.load(Paths.dataPath + "/config/logics.dat");
-    udts = Table.load(Paths.dataPath + "/config/udts.dat");
-    udtmembers = Table.load(Paths.dataPath + "/config/udtmembers.dat");
-    tags = Table.load(Paths.dataPath + "/config/tags.dat");
-    funcs = Table.load(Paths.dataPath + "/config/funcs.dat");
-    rungs = TableList.load(Paths.dataPath + "/config/rungs");
-    blocks = TableList.load(Paths.dataPath + "/config/blocks");
-    watches = TableList.load(Paths.dataPath + "/config/watches");
+    config = new Table<ConfigRow>(() -> {return new ConfigRow();});
+    config.load(Paths.dataPath + "/config/config.dat");
+    alarms = new TableLog<AlarmRow>(Paths.logsPath, () -> {return new AlarmRow();});
+    panels = new Table<PanelRow>(() -> {return new PanelRow();});
+    panels.load(Paths.dataPath + "/config/panels.dat");
+    cells = new TableList<CellRow>(() -> {return new CellRow();});
+    cells.load(Paths.dataPath + "/config/cells");
+    controllers = new Table<ControllerRow>(() -> {return new ControllerRow();});
+    controllers.load(Paths.dataPath + "/config/ctrls.dat");
+    users = new Table<UserRow>(() -> {return new UserRow();});
+    users.load(Paths.dataPath + "/config/users.dat");
+    lists = new TableList<ListRow>(() -> {return new ListRow();});
+    lists.load(Paths.dataPath + "/config/lists");
+    logics = new Table<LogicRow>(() -> {return new LogicRow();});
+    logics.load(Paths.dataPath + "/config/logics.dat");
+    udts = new Table<UDT>(() -> {return new UDT();});
+    udts.load(Paths.dataPath + "/config/udts.dat");
+    udtmembers = new Table<UDTMember>(() -> {return new UDTMember();});
+    udtmembers.load(Paths.dataPath + "/config/udtmembers.dat");
+    tags = new Table<TagRow>(() -> {return new TagRow();});
+    tags.load(Paths.dataPath + "/config/tags.dat");
+    funcs = new Table<FunctionRow>(() -> {return new FunctionRow();});
+    funcs.load(Paths.dataPath + "/config/funcs.dat");
+    rungs = new TableList<RungRow>(() -> {return new RungRow();});
+    rungs.load(Paths.dataPath + "/config/rungs");
+    blocks = new TableList<BlockRow>(() -> {return new BlockRow();});
+    blocks.load(Paths.dataPath + "/config/blocks");
+    watches = new TableList<WatchRow>(() -> {return new WatchRow();});
+    watches.load(Paths.dataPath + "/config/watches");
     //card system tables
-    readers = Table.load(Paths.dataPath + "/config/readers.dat");
-    cards = Table.load(Paths.dataPath + "/config/cards.dat");
-    groups = Table.load(Paths.dataPath + "/config/groups.dat");
-    timezones = Table.load(Paths.dataPath + "/config/timezones.dat");
+    readers = new Table<CardReaderRow>(() -> {return new CardReaderRow();});
+    readers.load(Paths.dataPath + "/config/readers.dat");
+    cards = new Table<CardRow>(() -> {return new CardRow();});
+    cards.load(Paths.dataPath + "/config/cards.dat");
+    groups = new Table<GroupRow>(() -> {return new GroupRow();});
+    groups.load(Paths.dataPath + "/config/groups.dat");
+    timezones = new Table<TimezoneRow>(() -> {return new TimezoneRow();});
+    timezones.load(Paths.dataPath + "/config/timezones.dat");
     //vision system
-    visioncameras = Table.load(Paths.dataPath + "/config/visioncameras.dat");
-    visionprograms = Table.load(Paths.dataPath + "/config/visionprograms.dat");
-    visionshots = Table.load(Paths.dataPath + "/config/visionshots.dat");
-    visionareas = Table.load(Paths.dataPath + "/config/visionareas.dat");
+    visioncameras = new Table<VisionCameraRow>(() -> {return new VisionCameraRow();});
+    visioncameras.load(Paths.dataPath + "/config/visioncameras.dat");
+    visionprograms = new Table<VisionProgramRow>(() -> {return new VisionProgramRow();});
+    visionprograms.load(Paths.dataPath + "/config/visionprograms.dat");
+    visionshots = new Table<VisionShotRow>(() -> {return new VisionShotRow();});
+    visionshots.load(Paths.dataPath + "/config/visionshots.dat");
+    visionareas = new Table<VisionAreaRow>(() -> {return new VisionAreaRow();});
+    visionareas.load(Paths.dataPath + "/config/visionareas.dat");
 
     String version = getConfig("version");
     if (version == null) version = "0.0";
@@ -731,7 +753,7 @@ public class Database {
   }
 
   public static String getConfig(String name) {
-    ArrayList<Row> rows = config.getRows();
+    ArrayList<ConfigRow> rows = config.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       ConfigRow row = (ConfigRow)rows.get(a);
@@ -742,7 +764,7 @@ public class Database {
     return null;
   }
   public static void setConfig(String name, String value) {
-    ArrayList<Row> rows = config.getRows();
+    ArrayList<ConfigRow> rows = config.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       ConfigRow row = (ConfigRow)rows.get(a);
@@ -760,7 +782,7 @@ public class Database {
   }
 
   public static UserRow getUser(String name) {
-    ArrayList<Row> rows = users.getRows();
+    ArrayList<UserRow> rows = users.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       UserRow row = (UserRow)rows.get(a);
@@ -784,7 +806,7 @@ public class Database {
   }
 
   public static Table addList(String name) {
-    Table list = new Table();
+    Table list = new Table(() -> {return new ListRow();});
     list.name = name;
     lists.add(list);
     return list;
@@ -803,7 +825,7 @@ public class Database {
     controllers.save();
   }
   public static int getControllerCID(int id) {
-    ArrayList<Row> rows = controllers.getRows();
+    ArrayList<ControllerRow> rows = controllers.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       ControllerRow ctrl = (ControllerRow)rows.get(a);
@@ -814,7 +836,7 @@ public class Database {
     return -1;
   }
   public static ControllerRow getControllerById(int cid) {
-    ArrayList<Row> rows = controllers.getRows();
+    ArrayList<ControllerRow> rows = controllers.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       ControllerRow ctrl = (ControllerRow)rows.get(a);
@@ -825,7 +847,7 @@ public class Database {
     return null;
   }
   public static void deleteControllerById(int cid) {
-    ArrayList<Row> rows = controllers.getRows();
+    ArrayList<ControllerRow> rows = controllers.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       ControllerRow ctrl = (ControllerRow)rows.get(a);
@@ -838,10 +860,10 @@ public class Database {
   }
   public static boolean isControllerInUse(int cid) {
     String match = ",c" + cid + "#";
-    ArrayList<Table> tables = blocks.getTables();
+    ArrayList<Table<BlockRow>> tables = blocks.getTables();
     for(int t=0;t<tables.size();t++) {
       Table table = tables.get(t);
-      ArrayList<Row> blockRows = table.getRows();
+      ArrayList<BlockRow> blockRows = table.getRows();
       for(int r=0;r<blockRows.size();r++) {
         BlockRow row = (BlockRow)blockRows.get(r);
         if (row.tags.contains(match)) return true;
@@ -863,8 +885,8 @@ public class Database {
     logics.add(logic);
   }
   public static LogicRow[] getLogicsByGroupId(String group) {
-    ArrayList<Row> rows = logics.getRows();
-    ArrayList<Row> ret = new ArrayList<Row>();
+    ArrayList<LogicRow> rows = logics.getRows();
+    ArrayList<LogicRow> ret = new ArrayList<LogicRow>();
     for(int r=0;r<rows.size();r++) {
       LogicRow row = (LogicRow)rows.get(r);
       if (row.group.equals(group)) {
@@ -874,7 +896,7 @@ public class Database {
     return ret.toArray(new LogicRow[0]);
   }
   public static String[] getLogicGroups() {
-    ArrayList<Row> rows = logics.getRows();
+    ArrayList<LogicRow> rows = logics.getRows();
     ArrayList<String> ret = new ArrayList<String>();
     for(int r=0;r<rows.size();r++) {
       LogicRow row = (LogicRow)rows.get(r);
@@ -902,7 +924,7 @@ public class Database {
     udts.save();
   }
   public static boolean isUDTInUse(int uid) {
-    ArrayList<Row> rows = tags.getRows();
+    ArrayList<TagRow> rows = tags.getRows();
     for(int r=0;r<rows.size();r++) {
       TagRow tag = (TagRow)rows.get(r);
       if (tag.type == uid) return true;
@@ -922,7 +944,7 @@ public class Database {
   }
   public static UDTMember[] getUDTMembersById(int id) {
     ArrayList<UDTMember> list = new ArrayList<UDTMember>();
-    ArrayList<Row> rows = udtmembers.getRows();
+    ArrayList<UDTMember> rows = udtmembers.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       UDTMember member = (UDTMember)rows.get(a);
@@ -933,7 +955,7 @@ public class Database {
     return list.toArray(new UDTMember[0]);
   }
   public static UDTMember getUDTMemberById(int uid, int mid) {
-    ArrayList<Row> rows = udtmembers.getRows();
+    ArrayList<UDTMember> rows = udtmembers.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       UDTMember member = (UDTMember)rows.get(a);
@@ -944,7 +966,7 @@ public class Database {
     return null;
   }
   public static void deleteUDTMembersById(int uid) {
-    ArrayList<Row> rows = udtmembers.getRows();
+    ArrayList<UDTMember> rows = udtmembers.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       UDTMember member = (UDTMember)rows.get(a);
@@ -955,7 +977,7 @@ public class Database {
     udtmembers.save();
   }
   public static void deleteUDTMemberById(int uid, int mid) {
-    ArrayList<Row> rows = udtmembers.getRows();
+    ArrayList<UDTMember> rows = udtmembers.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       UDTMember member = (UDTMember)rows.get(a);
@@ -979,7 +1001,7 @@ public class Database {
     return tag.id;
   }
   public static TagRow getTagByName(int cid, String name) {
-    ArrayList<Row> rows = tags.getRows();
+    ArrayList<TagRow> rows = tags.getRows();
     for(int r=0;r<rows.size();r++) {
       TagRow tag = (TagRow)rows.get(r);
       if (tag.cid == cid && tag.name.equals(name)) {
@@ -995,7 +1017,7 @@ public class Database {
     return tags.getRows().toArray(new TagRow[0]);
   }
   public static TagRow[] getTagsByCid(int cid) {
-    ArrayList<Row> rows = tags.getRows();
+    ArrayList<TagRow> rows = tags.getRows();
     ArrayList<TagRow> ret = new ArrayList<TagRow>();
     for(int r=0;r<rows.size();r++) {
       TagRow tag = (TagRow)rows.get(r);
@@ -1008,10 +1030,10 @@ public class Database {
   public static boolean isTagInUse(int cid, String name) {
     String match1 = ",c" + cid + "#" + name + ",";
     String match2 = "," + name + ",";  //cid == 0 only
-    ArrayList<Table> tables = blocks.getTables();
+    ArrayList<Table<BlockRow>> tables = blocks.getTables();
     for(int t=0;t<tables.size();t++) {
       Table table = tables.get(t);
-      ArrayList<Row> blockRows = table.getRows();
+      ArrayList<BlockRow> blockRows = table.getRows();
       for(int r=0;r<blockRows.size();r++) {
         BlockRow row = (BlockRow)blockRows.get(r);
         if (row.tags.contains(match1)) return true;
@@ -1046,7 +1068,7 @@ public class Database {
     return panel.id;
   }
   public static PanelRow getPanelByName(String name) {
-    ArrayList<Row> rows = panels.getRows();
+    ArrayList<PanelRow> rows = panels.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       PanelRow panel = (PanelRow)rows.get(a);
@@ -1060,7 +1082,7 @@ public class Database {
     return (PanelRow)panels.get(pid);
   }
   public static int getPanelIdByName(String name) {
-    ArrayList<Row> rows = panels.getRows();
+    ArrayList<PanelRow> rows = panels.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       PanelRow panel = (PanelRow)rows.get(a);
@@ -1087,7 +1109,7 @@ public class Database {
     String start4 = tag.name+ "[";
     String start5 = tag.name+ ".";
     ArrayList<Integer> pids = new ArrayList<Integer>();
-    ArrayList<Table> tables = cells.getTables();
+    ArrayList<Table<CellRow>> tables = cells.getTables();
     for(int t=0;t<tables.size();t++) {
       Table table = tables.get(t);
       ArrayList<Row> cellRows = table.getRows();
@@ -1117,14 +1139,14 @@ public class Database {
   }
 
   public static Table addCellTable(String name, int pid) {
-    Table table = new Table();
+    Table table = new Table(() -> {return new CellRow();});
     table.name = name;
     table.xid = pid;
     cells.add(table);
     return table;
   }
   public static Table getCellTableById(int pid) {
-    ArrayList<Table> tables = cells.getTables();
+    ArrayList<Table<CellRow>> tables = cells.getTables();
     for(int a=0;a<tables.size();a++) {
       Table table = tables.get(a);
       if (table.xid == pid) return table;
@@ -1141,7 +1163,7 @@ public class Database {
     }
   }
   public static CellRow[] getCells(String name) {
-    Table table = cells.get(name);
+    Table<CellRow> table = cells.get(name);
     return table.getRows().toArray(new CellRow[0]);
   }
   public static CellRow getCell(int pid, int x, int y) {
@@ -1179,17 +1201,17 @@ public class Database {
     func.comment = "";
     funcs.add(func);
     funcs.save();
-    Table rungsTable = new Table();
+    Table rungsTable = new Table(() -> {return new RungRow();});
     rungsTable.xid = func.id;
     rungs.add(rungsTable);
     rungsTable.save();
-    Table blocksTable = new Table();
+    Table blocksTable = new Table(() -> {return new BlockRow();});
     blocksTable.xid = func.id;
     blocks.add(blocksTable);
     blocksTable.save();
   }
   public static int getFunctionIdByName(String name) {
-    ArrayList<Row> rows = funcs.getRows();
+    ArrayList<FunctionRow> rows = funcs.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       FunctionRow func = (FunctionRow)rows.get(a);
@@ -1200,7 +1222,7 @@ public class Database {
     return -1;
   }
   public static FunctionRow getFunctionById(int id) {
-    ArrayList<Row> rows = funcs.getRows();
+    ArrayList<FunctionRow> rows = funcs.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       FunctionRow func = (FunctionRow)rows.get(a);
@@ -1213,7 +1235,7 @@ public class Database {
   public static boolean isFunctionInUse(int id) {
     FunctionRow func = getFunctionById(id);
     String tags = "," + func.name + ",";
-    ArrayList<Table> tables = blocks.getTables();
+    ArrayList<Table<BlockRow>> tables = blocks.getTables();
     for(int t=0;t<tables.size();t++) {
       Table table = tables.get(t);
       ArrayList<Row> blockRows = table.getRows();
@@ -1225,7 +1247,7 @@ public class Database {
     return false;
   }
   public static void deleteFunctionById(int id) {
-    ArrayList<Row> rows = funcs.getRows();
+    ArrayList<FunctionRow> rows = funcs.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       FunctionRow func = (FunctionRow)rows.get(a);
@@ -1237,7 +1259,7 @@ public class Database {
     funcs.save();
   }
   private static int getRungId(int fid) {
-    ArrayList<Table> tables = rungs.getTables();
+    ArrayList<Table<RungRow>> tables = rungs.getTables();
     for(int t=0;t<tables.size();t++) {
       Table table = tables.get(t);
       if (table.xid == fid) return table.id;
@@ -1280,7 +1302,7 @@ public class Database {
   }
   public static RungRow[] getRungsById(int fid, boolean forwardOrder) {
     int xid = getRungId(fid);
-    Table table = rungs.get(xid);
+    Table<RungRow> table = rungs.get(xid);
     RungRow[] rows = table.getRows().toArray(new RungRow[0]);
     //must sort by rid
     RungRow tmp;
@@ -1358,7 +1380,7 @@ public class Database {
     }
   }
   private static int getBlockId(int fid) {
-    ArrayList<Table> tables = blocks.getTables();
+    ArrayList<Table<BlockRow>> tables = blocks.getTables();
     for(int t=0;t<tables.size();t++) {
       Table table = tables.get(t);
       if (table.xid == fid) return table.id;
@@ -1367,7 +1389,7 @@ public class Database {
   }
   public static BlockRow[] getBlocksById(int fid) {
     int xid = getBlockId(fid);
-    Table table = blocks.get(xid);
+    Table<BlockRow> table = blocks.get(xid);
     return table.getRows().toArray(new BlockRow[0]);
   }
   public static void addBlock(int fid, int rid, int bid, String name, String tags) {
@@ -1397,7 +1419,7 @@ public class Database {
   }
   public static BlockRow[] getBlocksUsingTagId(int id) {
     TagRow tag = getTagById(id);
-    ArrayList<Table> tables = blocks.getTables();
+    ArrayList<Table<BlockRow>> tables = blocks.getTables();
     ArrayList<BlockRow> blocks = new ArrayList<BlockRow>();
     if (tag.cid == 0) {
       String match1 = ",t" + tag.name + ",";
@@ -1457,7 +1479,7 @@ public class Database {
     return blocks.toArray(new BlockRow[0]);
   }
   public static void deleteBlocksById(int fid) {
-    ArrayList<Table> tables = blocks.getTables();
+    ArrayList<Table<BlockRow>> tables = blocks.getTables();
     int cnt = tables.size();
     for(int a=0;a<cnt;a++) {
       Table table = tables.get(a);
@@ -1498,7 +1520,7 @@ public class Database {
   }
 
   public static void addWatchTable(String name) {
-    Table table = new Table();
+    Table table = new Table(() -> {return new WatchRow();});
     table.name = name;
     watches.add(table);
   }
@@ -1513,7 +1535,7 @@ public class Database {
     table.save();
   }
   public static WatchRow[] getWatchTagsById(int wid) {
-    return watches.get(wid).getRows().toArray(new WatchRow[0]);
+    return (WatchRow[])watches.get(wid).getRows().toArray(new WatchRow[0]);
   }
   public static void deleteWatchTagById(int wid, int id) {
     Table table = watches.get(wid);
@@ -1601,7 +1623,7 @@ public class Database {
 
   public static VisionProgramRow getVisionProgram(int pid) {
     int count = visionprograms.getCount();
-    ArrayList<Row> rows = visionprograms.getRows();
+    ArrayList<VisionProgramRow> rows = visionprograms.getRows();
     for(int a=0;a<count;a++) {
       VisionProgramRow row = (VisionProgramRow)rows.get(a);
       if (row.pid == pid) return row;
@@ -1618,7 +1640,7 @@ public class Database {
 
   public static int getVisionProgramPID(int id) {
     int count = visionprograms.getCount();
-    ArrayList<Row> rows = visionprograms.getRows();
+    ArrayList<VisionProgramRow> rows = visionprograms.getRows();
     for(int a=0;a<count;a++) {
       VisionProgramRow row = (VisionProgramRow)rows.get(a);
       if (row.id == id) return row.pid;
@@ -1669,7 +1691,7 @@ public class Database {
 
   public static void deleteVisionAreas(int pid) {
     int size = visionareas.getCount();
-    ArrayList<Row> rows = visionareas.getRows();
+    ArrayList<VisionAreaRow> rows = visionareas.getRows();
     for(int a=0;a<size;) {
       VisionAreaRow row = (VisionAreaRow)rows.get(a);
       if (row.pid == pid) {
@@ -1683,7 +1705,7 @@ public class Database {
 
   public static void deleteVisionAreas(int pid, int sid) {
     int size = visionareas.getCount();
-    ArrayList<Row> rows = visionareas.getRows();
+    ArrayList<VisionAreaRow> rows = visionareas.getRows();
     for(int a=0;a<size;) {
       VisionAreaRow row = (VisionAreaRow)rows.get(a);
       if (row.pid == pid && row.sid == sid) {
@@ -1698,7 +1720,7 @@ public class Database {
   public static int getCountVisionArea(int pid, int sid) {
     int size = visionareas.getCount();
     int count = 0;
-    ArrayList<Row> rows = visionareas.getRows();
+    ArrayList<VisionAreaRow> rows = visionareas.getRows();
     for(int a=0;a<size;a++) {
       VisionAreaRow row = (VisionAreaRow)rows.get(a);
       if (row.pid == pid && row.sid == sid) count++;
@@ -1712,7 +1734,7 @@ public class Database {
     VisionAreaRow arearows[] = new VisionAreaRow[count];
     int size = visionareas.getCount();
     int pos = 0;
-    ArrayList<Row> rows = visionareas.getRows();
+    ArrayList<VisionAreaRow> rows = visionareas.getRows();
     for(int a=0;a<size;a++) {
       VisionAreaRow row = (VisionAreaRow)rows.get(a);
       if (row.pid == pid && row.sid == sid) {
@@ -1727,7 +1749,7 @@ public class Database {
     if (count == 0) return null;
     int size = visionareas.getCount();
     int pos = 0;
-    ArrayList<Row> rows = visionareas.getRows();
+    ArrayList<VisionAreaRow> rows = visionareas.getRows();
     for(int a=0;a<size;a++) {
       VisionAreaRow row = (VisionAreaRow)rows.get(a);
       if (row.pid == pid && row.id == rid) {
@@ -1740,7 +1762,7 @@ public class Database {
   public static VisionAreaRow getVisionAreaLocator(int pid) {
     int size = visionareas.getCount();
     int pos = 0;
-    ArrayList<Row> rows = visionareas.getRows();
+    ArrayList<VisionAreaRow> rows = visionareas.getRows();
     for(int a=0;a<size;a++) {
       VisionAreaRow row = (VisionAreaRow)rows.get(a);
       //first area is always locator
