@@ -83,6 +83,7 @@ public abstract class SerialObject {
   }
   public byte[] readBytes() throws Exception {
     int len = readInt();
+    if (len == -1) return null;
     byte bytes[] = new byte[len];
     dis.read(bytes);
     return bytes;
@@ -157,6 +158,10 @@ public abstract class SerialObject {
     dos.writeDouble(value);
   }
   public void writeBytes(byte[] bytes) throws Exception {
+    if (bytes == null) {
+      writeInt(-1);
+      return;
+    }
     writeInt(bytes.length);
     dos.write(bytes);
   }
