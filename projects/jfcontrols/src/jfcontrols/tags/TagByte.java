@@ -6,7 +6,7 @@ package jfcontrols.tags;
  */
 
 public class TagByte extends TagBase {
-  public static final long serialVersionUID = 1;
+  public TagByte() {}
   public TagByte(int cid, int tid, String name, boolean unsigned, int length) {
     type = javaforce.controls.TagType.int8;
     if (unsigned) type |= javaforce.controls.TagType.unsigned_mask;
@@ -71,5 +71,13 @@ public class TagByte extends TagBase {
   public void setDouble(int idx, double value) {
     setDirty();
     values[idx] = (byte)value;
+  }
+  public void readObject() throws Exception {
+    super.readObject();
+    values = readBytes();
+  }
+  public void writeObject() throws Exception {
+    super.writeObject();
+    writeBytes(values);
   }
 }

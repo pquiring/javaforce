@@ -9,6 +9,8 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.db.*;
+import javaforce.io.*;
 import javaforce.controls.*;
 
 import jfcontrols.db.*;
@@ -88,7 +90,7 @@ public class TagsService extends Thread {
     try {
       String filename = Paths.tagsPath + "/" + tag.tid + ".dat";
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      ObjectWriter oos = new ObjectWriter(baos);
       oos.writeObject(tag);
       RandomAccessFile raf = new RandomAccessFile(filename, "rw");
       raf.writeInt(baos.size());
@@ -116,8 +118,9 @@ public class TagsService extends Thread {
         }
       }
       raf.close();
-      ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));
-      TagBase tag = (TagBase)ois.readObject();
+      ObjectReader ois = new ObjectReader(new ByteArrayInputStream(data));
+      TagBase tag = createTag(BE.getuint32(data, 4));
+      ois.readObject(tag);
       tag.init(tag);
       return tag;
     } catch (Exception e) {
@@ -188,6 +191,7 @@ public class TagsService extends Thread {
   public void run() {
     JFLog.log("TagServer starting...");
     service = this;
+    registerAll();
     TagRow tagList[] = Database.getTags();
     for(int a=0;a<tagList.length;a++) {
       int tid = tagList[a].id;
@@ -300,5 +304,25 @@ public class TagsService extends Thread {
       return false;
     }
     return true;
+  }
+  private static HashMap<Integer, TagBase.Creator> tagTypes = new HashMap<>();
+  public static TagBase createTag(int id) {
+    TagBase.Creator creator = tagTypes.get(id);
+    if (creator == null) return new TagUDT();
+    return creator.create();
+  }
+  private static void registerTag(int id, TagBase.Creator creator) {
+    tagTypes.put(id, creator);
+  }
+  private static void registerAll() {
+    registerTag(TagType.int8, () -> {return new TagByte();});
+    registerTag(TagType.char16, () -> {return new TagChar16();});
+    registerTag(TagType.char8, () -> {return new TagChar8();});
+    registerTag(TagType.int16, () -> {return new TagShort();});
+    registerTag(TagType.int32, () -> {return new TagInt();});
+    registerTag(TagType.int64, () -> {return new TagLong();});
+    registerTag(TagType.float32, () -> {return new TagFloat();});
+    registerTag(TagType.float64, () -> {return new TagDouble();});
+    registerTag(TagType.string, () -> {return new TagString();});
   }
 }

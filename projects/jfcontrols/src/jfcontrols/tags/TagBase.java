@@ -8,22 +8,29 @@ package jfcontrols.tags;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.db.*;
+import javaforce.io.*;
 import javaforce.controls.*;
 
-public abstract class TagBase implements java.io.Serializable {
-  public static final long serialVersionUID = 1;
+public abstract class TagBase extends Row {
+
+  public int type;
   public int cid, tid;
   public String name;
   public String comment;
-  public int type;
   public boolean unsigned;
   public boolean isArray;
+
   public transient boolean dirty;  //local tag usage only
   public transient Tag remoteTag;  //if cid > 0
   public transient TagBase parent;  //if field
 
   private transient ArrayList<TagBaseListener> listeners;
   private transient Object lock;
+
+  public static interface Creator {
+    public TagBase create();
+  }
 
   public void setDirty() {
     parent.dirty = true;
@@ -272,4 +279,25 @@ public abstract class TagBase implements java.io.Serializable {
   public TagBase[] getFields() {return null;}
   public TagBase[] getFields(int idx) {return null;}
   public TagBase getField(int idx, String name) {return null;}
+
+  public void readObject() throws Exception {
+    super.readObject();
+    type = readInt();
+    cid = readInt();
+    tid = readInt();
+    name = readString();
+    comment = readString();
+    unsigned = readBoolean();
+    isArray = readBoolean();
+  }
+  public void writeObject() throws Exception {
+    super.writeObject();
+    writeInt(type);
+    writeInt(cid);
+    writeInt(tid);
+    writeString(name);
+    writeString(comment);
+    writeBoolean(unsigned);
+    writeBoolean(isArray);
+  }
 }

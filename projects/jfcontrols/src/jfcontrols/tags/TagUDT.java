@@ -6,7 +6,7 @@ package jfcontrols.tags;
  */
 
 public class TagUDT extends TagBase {
-  public static final long serialVersionUID = 1;
+  public TagUDT() {}
   public TagUDT(int cid, int tid, int type, int length, int fieldCount) {
     this.cid = cid;
     this.tid = tid;
@@ -89,5 +89,34 @@ public class TagUDT extends TagBase {
       }
     }
     return null;
+  }
+  public void readObject() throws Exception {
+    super.readObject();
+    int cnt = readInt();
+    fields = new TagBase[cnt][];
+    for(int a=0;a<cnt;a++) {
+      int fieldCnt = readInt();
+      fields[a] = new TagBase[fieldCnt];
+      for(int b=0;b<fieldCnt;b++) {
+        int type = readInt();
+        fields[a][b] = TagsService.createTag(type);
+        fields[a][b].readInit(this);
+        fields[a][b].readObject();
+      }
+    }
+  }
+  public void writeObject() throws Exception {
+    super.writeObject();
+    int cnt = fields.length;
+    writeInt(cnt);
+    for(int a=0;a<cnt;a++) {
+      int fieldCnt = fields[a].length;
+      writeInt(fieldCnt);
+      for(int b=0;b<fieldCnt;b++) {
+        writeInt(fields[a][b].type);
+        fields[a][b].writeInit(this);
+        fields[a][b].writeObject();
+      }
+    }
   }
 }

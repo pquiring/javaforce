@@ -6,7 +6,7 @@ package jfcontrols.tags;
  */
 
 public class TagDouble extends TagBase {
-  public static final long serialVersionUID = 1;
+  public TagDouble() {}
   public TagDouble(int cid, int tid, String name, int length) {
     type = javaforce.controls.TagType.float64;
     this.cid = cid;
@@ -66,5 +66,21 @@ public class TagDouble extends TagBase {
   public void setDouble(int idx, double value) {
     setDirty();
     values[idx] = value;
+  }
+  public void readObject() throws Exception {
+    super.readObject();
+    int cnt = readInt();
+    values = new double[cnt];
+    for(int a=0;a<cnt;a++) {
+      values[a] = readDouble();
+    }
+  }
+  public void writeObject() throws Exception {
+    super.writeObject();
+    int cnt = values.length;
+    writeInt(cnt);
+    for(int a=0;a<cnt;a++) {
+      writeDouble(values[a]);
+    }
   }
 }

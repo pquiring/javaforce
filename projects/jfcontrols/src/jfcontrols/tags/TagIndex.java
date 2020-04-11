@@ -1,8 +1,10 @@
 package jfcontrols.tags;
 
-/**
+/** Index Tags are temp variables used in functions.
  *
- * @author User
+ * They are not saved to disk.
+ *
+ * @author pquiring
  */
 
 public class TagIndex extends TagBase {
@@ -98,5 +100,11 @@ public class TagIndex extends TagBase {
   public TagBase[] getFields() {
     TagUDT udt = (TagUDT)tag;
     return udt.getFields(idx);
+  }
+  public void readObject() throws Exception {
+    super.readObject();
+  }
+  public void writeObject() throws Exception {
+    super.writeObject();
   }
 }

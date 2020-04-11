@@ -6,7 +6,7 @@ package jfcontrols.tags;
  */
 
 public class TagChar8 extends TagBase {
-  public static final long serialVersionUID = 1;
+  public TagChar8() {}
   public TagChar8(int cid, int tid, String name, int length) {
     type = javaforce.controls.TagType.char8;
     this.cid = cid;
@@ -77,5 +77,13 @@ public class TagChar8 extends TagBase {
       len++;
     }
     return new String(values, 0, len);
+  }
+  public void readObject() throws Exception {
+    super.readObject();
+    writeBytes(values);
+  }
+  public void writeObject() throws Exception {
+    super.writeObject();
+    values = readBytes();
   }
 }

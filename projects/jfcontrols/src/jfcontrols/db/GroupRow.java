@@ -7,7 +7,6 @@ package jfcontrols.db;
 
 public class GroupRow extends javaforce.db.Row {
   public static class Zone extends javaforce.db.Row {
-    public static final long serialVersionUID = 1;
     public int rid;  //reader id
     public int zid;  //timezone id
     private static final int version = 1;

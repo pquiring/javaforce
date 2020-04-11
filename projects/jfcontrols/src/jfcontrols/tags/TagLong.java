@@ -6,7 +6,7 @@ package jfcontrols.tags;
  */
 
 public class TagLong extends TagBase {
-  public static final long serialVersionUID = 1;
+  public TagLong() {}
   public TagLong(int cid, int tid, String name, boolean unsigned, int length) {
     type = javaforce.controls.TagType.int64;
     if (unsigned) type |= javaforce.controls.TagType.unsigned_mask;
@@ -68,5 +68,21 @@ public class TagLong extends TagBase {
   public void setDouble(int idx, double value) {
     setDirty();
     values[idx] = (long)value;
+  }
+  public void readObject() throws Exception {
+    super.readObject();
+    int cnt = readInt();
+    values = new long[cnt];
+    for(int a=0;a<cnt;a++) {
+      values[a] = readLong();
+    }
+  }
+  public void writeObject() throws Exception {
+    super.writeObject();
+    int cnt = values.length;
+    writeInt(cnt);
+    for(int a=0;a<cnt;a++) {
+      writeLong(values[a]);
+    }
   }
 }
