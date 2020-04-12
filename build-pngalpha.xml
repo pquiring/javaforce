@@ -1,4 +1,4 @@
-<project name="pngalpha" default="zip" basedir=".">
+<project name="pngalpha" default="graal" basedir=".">
   <description>pngalpha</description>
   <!-- set global properties for this build -->
   <property name="app" value="pngalpha"/>
@@ -18,15 +18,5 @@
   </target>
 
   <target name="jar" depends="depjars,compile" description="build jar file">
-  </target>
-
-  <target name="zip" depends="graal">
-    <zip destfile="${app}.zip">
-      <fileset dir=".">
-        <include name="${app}.exe"/>
-        <include name="jfnative64.dll"/>
-        <include name="${mainclass}.dll"/>
-      </fileset>
-    </zip>
   </target>
 </project>

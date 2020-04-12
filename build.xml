@@ -110,6 +110,15 @@
     <ant antfile="build-imageconvert.xml" inheritAll="false"/>
     <ant antfile="build-pngalpha.xml" inheritAll="false"/>
     <ant antfile="build-web.xml" inheritAll="false"/>
+    <zip destfile="jfUtilities-${version}.zip">
+      <fileset dir=".">
+        <include name="*.exe"/>
+        <include name="*.dll"/>
+      </fileset>
+      <fileset dir="jre_base/bin">
+        <include name="*.dll"/>
+      </fileset>
+    </zip>
   </target>
 
   <target name="jre-base-desktop" description="build JRE for bundled JRE builds with desktop (swing) support">
