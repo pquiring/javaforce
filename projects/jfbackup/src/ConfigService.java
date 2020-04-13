@@ -6,6 +6,7 @@
 import java.io.*;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Stack;
 import java.util.Comparator;
 
@@ -1458,6 +1459,12 @@ public class ConfigService implements WebUIHandler {
     scroll.setMaxWidth();
     scroll.setMaxHeight();
     panel.add(scroll);
+
+    EntryTape.sorted = false;
+    Collections.sort(Tapes.current.tapes);
+    if (EntryTape.sorted) {
+      Tapes.save();
+    }
 
     for(EntryTape tape : Tapes.current.tapes) {
       row = new Row();

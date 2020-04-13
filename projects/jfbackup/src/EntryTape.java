@@ -5,7 +5,7 @@
 
 import java.io.*;
 
-public class EntryTape implements Serializable {
+public class EntryTape implements Serializable, Comparable {
   private static final long serialVersionUID = 1L;
 
   public EntryTape(String barcode, long backup, long retention, String job, int number) {
@@ -25,4 +25,13 @@ public class EntryTape implements Serializable {
   public long left;  //in 64k blocks
 
   public transient long position;
+  public static boolean sorted;
+
+  /** Sort tapes by retention date. */
+  public int compareTo(Object o) {
+    EntryTape ot = (EntryTape)o;
+    if (retention > ot.retention) {sorted = true; return -1;}
+    if (retention < ot.retention) {return 1;}
+    return 0;
+  }
 }
