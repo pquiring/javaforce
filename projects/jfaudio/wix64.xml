@@ -48,7 +48,6 @@
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentGroupRef Id="JRE" />
       <ComponentGroupRef Id="FFMPEG" />
-      <ComponentGroupRef Id="MSVCRT" />
     </Feature>
   </Product>
 </Wix>
