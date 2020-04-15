@@ -9,11 +9,12 @@ package javaforce.utils;
  */
 
 import java.io.*;
+import java.nio.file.*;
 import java.util.*;
 
 public class WixHeat {
   private static void usage() {
-    System.out.println("Usage:WixHeat input_folder output_xml base_folder resource_name");
+    System.out.println("Usage:WixHeat input_folder output_xml resource_name base_folder [files...]");
     System.exit(1);
   }
 
@@ -26,6 +27,8 @@ public class WixHeat {
   private static String output_xml;
   private static String base_folder;
   private static String res_name;
+  private static ArrayList<String> files = new ArrayList<String>();
+  private static ArrayList<PathMatcher> matches = new ArrayList<PathMatcher>();
   private static ArrayList<String> wixfolders = new ArrayList<String>();
   private static ArrayList<Entry> wixfiles = new ArrayList<Entry>();
   private static String dir;
@@ -39,27 +42,40 @@ public class WixHeat {
   private static void addFolder(String parent, String path) throws Exception {
     if (path.startsWith("/")) path = path.substring(1);
     String fullpath = input_folder + path;
-//    System.out.println("Path:" + fullpath);
     File folder = new File(fullpath);
     File files[] = folder.listFiles();
     if (files == null || files.length == 0) return;
     int idx = path.lastIndexOf("/");
     if (idx == -1) idx = 0; else idx++;
-    outFolder(parent, path.substring(idx), path);
-    wixfolders.add(path);
+    int cnt = 0;
     for(int a=0;a<files.length;a++) {
       String name = files[a].getName();
       if (files[a].isDirectory()) {
         if (files[a].getName().equals("jmods")) continue;  //skip jmods folder
         addFolder(path, path + "/" + name);
       } else {
-//        System.out.println("File:" + path + ":" + name);
+        //check if file matches wildcard list
+        boolean matched = false;
+        for(int m=0;m<matches.size();m++) {
+          PathMatcher matcher = matches.get(m);
+          if (matcher.matches(files[a].toPath())) {
+            matched = true;
+            break;
+          }
+        }
+        if (!matched) {
+          continue;
+        }
         Entry e = new Entry();
         e.path = path;
         e.file = name;
         wixfiles.add(e);
+        cnt++;
       }
     }
+    if (cnt == 0) return;
+    outFolder(parent, path.substring(idx), path);
+    wixfolders.add(path);
   }
 
   private static void outFolder(String parent, String name, String path) {
@@ -125,15 +141,25 @@ public class WixHeat {
   }
 
   public static void main(String args[]) {
-    if (args.length != 4) {
+    if (args.length < 4) {
       usage();
     }
     //create jvm.xml
     out = new StringBuilder();
     input_folder = args[0].replaceAll("\\\\", "/");
     output_xml = args[1].replaceAll("\\\\", "/");
-    base_folder = args[2].replaceAll("\\\\", "/");
-    res_name = args[3];
+    res_name = args[2];
+    base_folder = args[3].replaceAll("\\\\", "/");
+    for(int a=4;a<args.length;a++) {
+      files.add(args[a]);
+    }
+    if (args.length == 4) {
+      files.add("**");
+    }
+    FileSystem fs = FileSystems.getDefault();
+    for(int a=0;a<files.size();a++) {
+      matches.add(fs.getPathMatcher("glob:" + files.get(a)));
+    }
     char ca[] = res_name.toCharArray();
     for(int a=0;a<ca.length;a++) {
       baseguid += ca[a];

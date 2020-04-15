@@ -112,23 +112,36 @@
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
         <arg value="${jre}"/>
         <arg value="jre.xml"/>
-        <arg value="${heat_home}"/>
         <arg value="JRE"/>
+        <arg value="${heat_home}"/>
       </java>
       <exec command="candle -o jre.obj jre.xml"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
         <arg value="${home}/ffmpeg"/>
         <arg value="ffmpeg.xml"/>
-        <arg value="."/>
         <arg value="FFMPEG"/>
+        <arg value="."/>
       </java>
       <exec command="candle -o ffmpeg.obj ffmpeg.xml"/>
-      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -ext WixUtilExtension -cultures:en-us -b ${home} -b ${jre} -b ${home}/ffmpeg -dWixUILicenseRtf=${home}/license.rtf -o ${msi}-${version}-win${bits}.msi wix.obj jre.obj ffmpeg.obj"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
+        <arg value="${home}/jre_base/bin"/>
+        <arg value="msvcrt.xml"/>
+        <arg value="MSVCRT"/>
+        <arg value="."/>
+        <arg value="**/api*.dll"/>
+        <arg value="**/msvc*.dll"/>
+        <arg value="**/ucrtbase.dll"/>
+        <arg value="**/vcruntime*.dll"/>
+      </java>
+      <exec command="candle -o msvcrt.obj msvcrt.xml"/>
+      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -ext WixUtilExtension -cultures:en-us -b ${home} -b ${jre} -b ${jre}\\bin -b ${home}/ffmpeg -dWixUILicenseRtf=${home}/license.rtf -o ${msi}-${version}-win${bits}.msi wix.obj jre.obj ffmpeg.obj msvcrt.obj"/>
       <delete file="wix.obj"/>
       <delete file="jre.obj"/>
       <delete file="jre.xml"/>
       <delete file="ffmpeg.obj"/>
       <delete file="ffmpeg.xml"/>
+      <delete file="msvcrt.obj"/>
+      <delete file="msvcrt.xml"/>
       <delete file="${msi}-${version}-win${bits}.wixpdb"/>
       <move unless:set="nomove" file="${msi}-${version}-win${bits}.msi" todir="${home}/release"/>
     </sequential>
