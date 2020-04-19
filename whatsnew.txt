@@ -1,5 +1,11 @@
 What's new...
 
+Apr 19/2020 : JF 21.2 released
+  - improved build scripts
+  - added graal support although not much works with it yet
+    to build a project with graal use the 'graal' ant task:
+      ant graal
+
 Mar 20/2020 : JF 21.1 released
   - jfDVR/0.8
     - fix : buffer overflow issues
