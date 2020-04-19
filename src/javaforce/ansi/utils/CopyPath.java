@@ -31,12 +31,15 @@ public class CopyPath implements KeyEvents {
   public static void main(String args[]) {
     ANSI.enableConsoleMode();
     CopyPath.args = args;
+    int ret = 0;
     try {
       new CopyPath().run();
     } catch (Throwable e) {
       e.printStackTrace();
+      ret = 1;
     }
     ANSI.disableConsoleMode();
+    System.exit(ret);
   }
 
   public void usage() {
@@ -46,19 +49,19 @@ public class CopyPath implements KeyEvents {
   public void run() {
     if (args.length < 2) {
       usage();
-      System.exit(1);
+      return;
     }
     src = args[0];
     dest = args[1];
     File fsrc = new File(src);
     if (!fsrc.exists() || !fsrc.isDirectory()) {
       System.out.println("Error:src not found");
-      System.exit(1);
+      return;
     }
     File fdest = new File(dest);
     if (fdest.exists() && !fdest.isDirectory()) {
       System.out.println("Error:dest not folder");
-      System.exit(1);
+      return;
     }
     if (!fdest.exists()) {
       fdest.mkdirs();
