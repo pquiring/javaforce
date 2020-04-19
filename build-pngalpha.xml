@@ -1,4 +1,4 @@
-<project name="pngalpha" default="graal" basedir=".">
+<project name="pngalpha" default="executable" basedir=".">
   <description>pngalpha</description>
   <!-- set global properties for this build -->
   <property name="app" value="pngalpha"/>

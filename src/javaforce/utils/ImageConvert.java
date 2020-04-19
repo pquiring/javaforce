@@ -5,7 +5,7 @@ import javaforce.*;
 public class ImageConvert {
   public static void main(String args[]) {
     if (args.length < 2) {
-      System.out.println("Usage : JFImageConvert filein fileout [index]");
+      System.out.println("Usage : ImageConvert filein fileout [index]");
       System.out.println("Suppports : jpg, png, bmp, ico, icns(output only)");
       System.out.println("    index : ico index (input only)");
       return;

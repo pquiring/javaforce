@@ -1,4 +1,4 @@
-<project name="imageconvert" default="graal" basedir=".">
+<project name="imageconvert" default="executable" basedir=".">
   <description>imageconvert</description>
   <!-- set global properties for this build -->
   <property name="app" value="imageconvert"/>
