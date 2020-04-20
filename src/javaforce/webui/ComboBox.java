@@ -34,7 +34,9 @@ public class ComboBox extends Component {
     if (index == -1) index = 0;
     values.add(value);
     texts.add(text);
-    sendEvent("addoption", new String[] {"value=" + value, "text=" + text});
+    if (client != null) {
+      sendEvent("addoption", new String[] {"value=" + value, "text=" + text});
+    }
   }
 
   public void clear() {
