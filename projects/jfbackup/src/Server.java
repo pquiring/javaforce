@@ -46,7 +46,7 @@ public class Server extends Thread {
     synchronized(lock) {
       String host = client.getClientName();
       if (Config.current.hosts.contains(host)) return false;
-      Config.current.hosts.add(client.getClientName());
+      Config.current.hosts.add(host);
       Config.save();
       clients.add(client);
       return true;
@@ -55,8 +55,9 @@ public class Server extends Thread {
   public void removeClient(ServerClient client) {
     synchronized(lock) {
       clients.remove(client);
-      if (Config.current.hosts.contains(client.getClientName())) {
-        Config.current.hosts.remove(client.getClientName());
+      String host = client.getClientName();
+      if (Config.current.hosts.contains(host)) {
+        Config.current.hosts.remove(host);
         Config.save();
       }
     }

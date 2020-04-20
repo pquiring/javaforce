@@ -8,7 +8,7 @@
   <property name="home" location="../.."/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base"/>
-  <property name="version" value="0.11"/>
+  <property name="version" value="0.12"/>
   <property name="classpath" value="${home}/jars/javaforce.jar"/>
 
   <import file="../../base.xml"/>
@@ -44,5 +44,12 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
     <copy file="${app}.service" todir="/lib/systemd/system"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.jar"/>
+    </delete>
   </target>
 </project>
