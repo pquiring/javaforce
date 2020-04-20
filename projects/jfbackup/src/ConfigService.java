@@ -929,7 +929,20 @@ public class ConfigService implements WebUIHandler {
 
     //list backups
     File folder = new File(Paths.catalogsPath);
-    File files[] = folder.listFiles();
+    File files[] = folder.listFiles(new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return name.endsWith(".nfo");
+      }
+    });
+    Arrays.sort(files, new Comparator() {
+      public int compare(Object o1, Object o2) {
+        File f1 = (File)o1;
+        File f2 = (File)o2;
+        if (f1.lastModified() < f2.lastModified()) return 1;
+        if (f1.lastModified() > f2.lastModified()) return -1;
+        return 0;
+      }
+    });
     if (files == null) files = new File[0];
 
     int count = 0;
