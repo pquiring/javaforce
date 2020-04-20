@@ -1,5 +1,9 @@
 What's new...
 
+Apr 20/2020 : JF 22.0 released
+  - jfBackup/0.12
+    - minor fixes and improvements
+
 Apr 19/2020 : JF 21.2 released
   - improved build scripts
   - added graal support although not much works with it yet
