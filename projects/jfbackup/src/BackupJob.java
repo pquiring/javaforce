@@ -679,6 +679,9 @@ public class BackupJob extends Thread {
       msg.append("\r\n");
       if (success) {
         msg.append("Backup job was successful.\r\n");
+        msg.append("Tapes Expire:");
+        msg.append(ConfigService.toDateTime(retentionid));
+        msg.append("\r\n");
         msg.append("Eject these tapes:\r\n");
         for(EntryTape tape : catnfo.tapes) {
           msg.append("Tape:");
