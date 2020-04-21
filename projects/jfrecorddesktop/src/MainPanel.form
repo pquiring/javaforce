@@ -62,6 +62,8 @@
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="delay3seconds" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="trim3seconds" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
                       <Component id="start" min="-2" max="-2" attributes="0"/>
                   </Group>
@@ -134,6 +136,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="start" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="delay3seconds" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="trim3seconds" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -298,6 +301,12 @@
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
         <Property name="text" type="java.lang.String" value="bits/sec"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="trim3seconds">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="3 second trim at end"/>
+        <Property name="toolTipText" type="java.lang.String" value="Delay so you can minimize this window (Applet)"/>
       </Properties>
     </Component>
   </SubComponents>

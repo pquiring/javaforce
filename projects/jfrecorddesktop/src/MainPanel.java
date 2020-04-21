@@ -57,6 +57,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     jLabel8 = new javax.swing.JLabel();
     jLabel1 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
+    trim3seconds = new javax.swing.JCheckBox();
 
     buttonGroup1.add(audio);
     audio.setSelected(true);
@@ -123,6 +124,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
 
     jLabel2.setText("bits/sec");
 
+    trim3seconds.setText("3 second trim at end");
+    trim3seconds.setToolTipText("Delay so you can minimize this window (Applet)");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -158,6 +162,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
             .addGap(22, 22, 22))
           .addGroup(layout.createSequentialGroup()
             .addComponent(delay3seconds)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(trim3seconds)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(start))
           .addGroup(layout.createSequentialGroup()
@@ -216,7 +222,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(start)
-          .addComponent(delay3seconds))
+          .addComponent(delay3seconds)
+          .addComponent(trim3seconds))
         .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
@@ -255,6 +262,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private javax.swing.JCheckBox showMouseCursor;
   private javax.swing.JButton start;
   private javax.swing.JRadioButton stereo;
+  private javax.swing.JCheckBox trim3seconds;
   private javax.swing.JComboBox vBitRate;
   // End of variables declaration//GEN-END:variables
 
@@ -286,6 +294,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     freq.setEnabled(state);
     fps.setEnabled(state);
     delay3seconds.setEnabled(state);
+    trim3seconds.setEnabled(state);
   }
 
   public void start() {
@@ -377,6 +386,11 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
       JFLog.log("size=" + width + "," + height);
       JFLog.log("frameRate=" + frameRate);
       JFLog.log("audioRate=" + audioRate + ",chs=" + chs);
+      int abufsiz = audioRate * chs * 3;
+      AudioBuffer abuffer = new AudioBuffer(audioRate, chs, 3 + 1);
+      int vbufsiz = frameRate * 3;
+      int imgsiz = width * height;
+      VideoBuffer vbuffer = new VideoBuffer(width, height, vbufsiz + 1);
       if (delay3seconds.isSelected()) {
         JF.sleep(3000);
       }
@@ -400,11 +414,13 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
       start.setEnabled(true);
       byte sams8[] = new byte[samples*2];
       short sams16[] = new short[samples];
+      short sams16trim[] = new short[samples];
 
       double current = System.currentTimeMillis();
       double delay = 1000.0 / frameRate;
 
       boolean showMouse = showMouseCursor.isSelected();
+      boolean trim = trim3seconds.isSelected();
 
       if (frame != null) frame.setVisible(false);
       boolean skip_frame = false;
@@ -425,12 +441,31 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
         } else {
           skip_frame = false;
         }
-        int px[] = img.getPixels();
-        encoder.addVideo(px);
+        int px[] = img.getBuffer();
+        if (trim) {
+          //System.out.println("vsize=" + vbuffer.size() + " == " + vbufsiz);
+          if (vbuffer.size() >= vbufsiz) {
+            encoder.addVideo(vbuffer.getNextFrame().getBuffer());
+            vbuffer.freeNextFrame();
+          }
+          System.arraycopy(px, 0, vbuffer.getNewFrame().getBuffer(), 0, imgsiz);
+          vbuffer.freeNewFrame();
+        } else {
+          encoder.addVideo(px);
+        }
         if (doAudio) {
           while (mic.read(sams8)) {
             swapEndian(sams8, sams16);
-            encoder.addAudio(sams16);
+            if (trim) {
+              //System.out.println("asize=" + abuffer.size() + " == " + abufsiz);
+              if (abuffer.size() >= abufsiz) {
+                abuffer.get(sams16trim, 0, sams16.length);
+                encoder.addAudio(sams16trim);
+              }
+              abuffer.add(sams16, 0, sams16.length);
+            } else {
+              encoder.addAudio(sams16);
+            }
           }
         }
         double now = System.currentTimeMillis();
