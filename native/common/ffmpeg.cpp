@@ -1671,10 +1671,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
   ctx->config_gop_size = e->GetIntField(c, fid_framesPerKeyFrame);
   ctx->config_video_bit_rate = e->GetIntField(c, fid_videoBitRate);
   ctx->config_audio_bit_rate = e->GetIntField(c, fid_audioBitRate);
+  ctx->org_width = width;
+  ctx->org_height = height;
   if (((width & 3) != 0) || ((height & 3) != 0)) {
     ctx->scaleVideo = JNI_TRUE;
-    ctx->org_width = width;
-    ctx->org_height = height;
     //align up to / by 4 pixels
     width = (width + 3) & 0xfffffffc;
     height = (height + 3) & 0xfffffffc;
