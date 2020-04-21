@@ -482,6 +482,8 @@ struct FFContext {
   AVOutputFormat *out_fmt;
   int width, height, fps;
   int chs, freq;
+  jboolean scaleVideo;
+  int org_width, org_height;
   AVFrame *audio_frame, *video_frame;
   AVFrame *src_pic;
   jboolean audio_frame_size_variable;
@@ -1447,20 +1449,30 @@ static jboolean encoder_add_stream(FFContext *ctx, int codec_id) {
   return JNI_TRUE;
 }
 
+static int get_size_alignment(int width, int height) {
+  if (((width & 3) != 0) || ((height & 3) != 0)) {
+    return 8;  //must be byte size alignment (performance degraded)
+  }
+  return 32;  //int alignment (faster)
+}
+
 static jboolean encoder_init_video(FFContext *ctx) {
   int ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
   if (ret < 0) return JNI_FALSE;
   if (ctx->video_codec_ctx->pix_fmt != AV_PIX_FMT_BGRA) {
+    ctx->scaleVideo = JNI_TRUE;
+  }
+  if (ctx->scaleVideo) {
     ctx->src_pic = (*_av_frame_alloc)();
-    ctx->src_pic->width = ctx->width;
-    ctx->src_pic->height = ctx->height;
+    ctx->src_pic->width = ctx->org_width;
+    ctx->src_pic->height = ctx->org_height;
     ctx->src_pic->format = AV_PIX_FMT_BGRA;
-    ret = (*_av_frame_get_buffer)(ctx->src_pic, 32);
+    ret = (*_av_frame_get_buffer)(ctx->src_pic, get_size_alignment(ctx->org_width, ctx->org_height));
     if (ret < 0) {
       printf("av_frame_get_buffer() failed! %d\n", ret);
       return JNI_FALSE;
     }
-    ctx->sws_ctx = (*_sws_getContext)(ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, AV_PIX_FMT_BGRA
+    ctx->sws_ctx = (*_sws_getContext)(ctx->org_width, ctx->org_height, AV_PIX_FMT_BGRA
       , ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt, SWS_BICUBIC, NULL, NULL, NULL);
   }
   //get caps
@@ -1473,7 +1485,7 @@ static jboolean encoder_init_video(FFContext *ctx) {
   ctx->video_frame->width = ctx->width;
   ctx->video_frame->height = ctx->height;
   ctx->video_frame->format = ctx->video_codec_ctx->pix_fmt;
-  ret = (*_av_frame_get_buffer)(ctx->video_frame, 32);
+  ret = (*_av_frame_get_buffer)(ctx->video_frame, get_size_alignment(ctx->width, ctx->height));
   if (ret < 0) {
     printf("av_frame_get_buffer() failed! %d\n", ret);
     return JNI_FALSE;
@@ -1659,6 +1671,16 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
   ctx->config_gop_size = e->GetIntField(c, fid_framesPerKeyFrame);
   ctx->config_video_bit_rate = e->GetIntField(c, fid_videoBitRate);
   ctx->config_audio_bit_rate = e->GetIntField(c, fid_audioBitRate);
+  if (((width & 3) != 0) || ((height & 3) != 0)) {
+    ctx->scaleVideo = JNI_TRUE;
+    ctx->org_width = width;
+    ctx->org_height = height;
+    //align up to / by 4 pixels
+    width = (width + 3) & 0xfffffffc;
+    height = (height + 3) & 0xfffffffc;
+  } else {
+    ctx->scaleVideo = JNI_FALSE;
+  }
   ctx->width = width;
   ctx->height = height;
   ctx->fps = fps;
@@ -1803,11 +1825,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudio
 
 static jboolean encoder_addVideo(FFContext *ctx, int *px)
 {
-  int length = ctx->width * ctx->height * 4;
-  if (ctx->video_codec_ctx->pix_fmt != AV_PIX_FMT_BGRA) {
+  int length = ctx->org_width * ctx->org_height * 4;
+  if (ctx->scaleVideo) {
     //copy px -> ctx->src_pic->data[0];
     memcpy(ctx->src_pic->data[0], px, length);
-    (*_sws_scale)(ctx->sws_ctx, ctx->src_pic->data, ctx->src_pic->linesize, 0, ctx->video_codec_ctx->height
+    (*_sws_scale)(ctx->sws_ctx, ctx->src_pic->data, ctx->src_pic->linesize, 0, ctx->org_height
       , ctx->video_frame->data, ctx->video_frame->linesize);
   } else {
     //copy px -> ctx->video_frame->data[0];
