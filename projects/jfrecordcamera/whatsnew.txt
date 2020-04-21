@@ -1,5 +1,8 @@
 What's new ??
 
+Apr 21/2020 : version 0.9 released
+  - fix : support resolution not multiple of 4
+
 Mar 18/2020 : version 0.8 released
   - fix : win64 loader now loads msvcrt dlls properly
 

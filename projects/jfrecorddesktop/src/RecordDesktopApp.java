@@ -12,7 +12,7 @@ import javaforce.media.*;
 
 public class RecordDesktopApp extends javax.swing.JFrame {
 
-  private String version = "0.9";
+  private String version = "0.10";
 
   /**
    * Creates new form RecordCameraApp
