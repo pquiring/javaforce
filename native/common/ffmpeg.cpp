@@ -1674,6 +1674,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
   ctx->org_width = width;
   ctx->org_height = height;
   if (((width & 3) != 0) || ((height & 3) != 0)) {
+    printf("Warning : Video resolution not / by 4 : Performance will be degraded!\n");
     ctx->scaleVideo = JNI_TRUE;
     //align up to / by 4 pixels
     width = (width + 3) & 0xfffffffc;
