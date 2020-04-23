@@ -1,7 +1,4 @@
-import java.awt.*;
-import java.awt.event.*;
 import java.util.*;
-import javax.swing.*;
 
 import javaforce.*;
 import javaforce.gl.*;
@@ -191,29 +188,29 @@ public class GLCode {
     leftpoint.set(-1.0f, 0.0f, 0.0f);  //normally left is along x axis
     render.m_camera.mult(leftpoint);
 
-    if (keys[KeyEvent.VK_LEFT]) { rotateLR(-1.0f); }
-    if (keys[KeyEvent.VK_RIGHT]) { rotateLR(1.0f); }
-    if (keys[KeyEvent.VK_UP]) { rotateUD(1.0f); }
-    if (keys[KeyEvent.VK_DOWN]) { rotateUD(-1.0f); }
-    if (keys[KeyEvent.VK_Z]) { spin(1.0f); }
-    if (keys[KeyEvent.VK_X]) { spin(-1.0f); }
+    if (keys[GLVK.VK_LEFT]) { rotateLR(-1.0f); }
+    if (keys[GLVK.VK_RIGHT]) { rotateLR(1.0f); }
+    if (keys[GLVK.VK_UP]) { rotateUD(1.0f); }
+    if (keys[GLVK.VK_DOWN]) { rotateUD(-1.0f); }
+    if (keys[GLVK.VK_Z]) { spin(1.0f); }
+    if (keys[GLVK.VK_X]) { spin(-1.0f); }
 
-    if (keys[KeyEvent.VK_Q]) { resetPosition(); }
+    if (keys[GLVK.VK_Q]) { resetPosition(); }
 
-    if (keys[KeyEvent.VK_F1]) { render.cameraRotate(10.0f, 1.0f, 0.0f, 0.0f); }
-    if (keys[KeyEvent.VK_F2]) { render.cameraRotate(10.0f, 0.0f, 1.0f, 0.0f); }
-    if (keys[KeyEvent.VK_F3]) { render.cameraRotate(10.0f, 0.0f, 0.0f, 1.0f); }
-    if (keys[KeyEvent.VK_F5]) { render.cameraRotate(-10.0f, 1.0f, 0.0f, 0.0f); }
-    if (keys[KeyEvent.VK_F6]) { render.cameraRotate(-10.0f, 0.0f, 1.0f, 0.0f); }
-    if (keys[KeyEvent.VK_F7]) { render.cameraRotate(-10.0f, 0.0f, 0.0f, 1.0f); }
+    if (keys[GLVK.VK_F1]) { render.cameraRotate(10.0f, 1.0f, 0.0f, 0.0f); }
+    if (keys[GLVK.VK_F2]) { render.cameraRotate(10.0f, 0.0f, 1.0f, 0.0f); }
+    if (keys[GLVK.VK_F3]) { render.cameraRotate(10.0f, 0.0f, 0.0f, 1.0f); }
+    if (keys[GLVK.VK_F5]) { render.cameraRotate(-10.0f, 1.0f, 0.0f, 0.0f); }
+    if (keys[GLVK.VK_F6]) { render.cameraRotate(-10.0f, 0.0f, 1.0f, 0.0f); }
+    if (keys[GLVK.VK_F7]) { render.cameraRotate(-10.0f, 0.0f, 0.0f, 1.0f); }
 
-    if (keys[KeyEvent.VK_9]) { render.fovy -= 10.0f; System.out.println("fovy = " + render.fovy); }
-    if (keys[KeyEvent.VK_0]) { render.fovy += 10.0f; System.out.println("fovy = " + render.fovy); }
+    if (keys[GLVK.VK_9]) { render.fovy -= 10.0f; System.out.println("fovy = " + render.fovy); }
+    if (keys[GLVK.VK_0]) { render.fovy += 10.0f; System.out.println("fovy = " + render.fovy); }
 
-    if (keys[KeyEvent.VK_S]) { move(1); }
-    if (keys[KeyEvent.VK_W]) { move(-1); }
-    if (keys[KeyEvent.VK_D]) { stride(1); }
-    if (keys[KeyEvent.VK_A]) { stride(-1); }
+    if (keys[GLVK.VK_S]) { move(1); }
+    if (keys[GLVK.VK_W]) { move(-1); }
+    if (keys[GLVK.VK_D]) { stride(1); }
+    if (keys[GLVK.VK_A]) { stride(-1); }
 
     //fade box in/out
     alpha += alphadir;
