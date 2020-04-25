@@ -33,6 +33,6 @@ public class ASCII8 {
     return convert((char)ascii);
   }
   public static void main(String args[]) {
-    System.out.println("ASCII=" + convert(176) + convert(177) + convert(178) + convert(219)s);
+    System.out.println("ASCII=" + convert(176) + convert(177) + convert(178) + convert(219));
   }
 }
