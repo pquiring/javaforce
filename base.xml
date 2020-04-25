@@ -99,6 +99,7 @@
         <arg value="${MAINCLASS}"/>
         <arg value="-H:JNIConfigurationFiles=graal.json"/>
         <arg value="--shared"/>
+        <arg value="--initialize-at-run-time=sun.awt.dnd.SunDropTargetContextPeer$EventDispatcher"/>
       </exec>
       <delete file="graal.json"/>
     </sequential>
