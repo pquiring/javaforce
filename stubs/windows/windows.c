@@ -489,6 +489,7 @@ void __stdcall ServiceMain(int argc, char **argv) {
   ServiceHandle = RegisterServiceCtrlHandler(service, (void (__stdcall *)(unsigned long))ServiceControl);
   ServiceStatus(SERVICE_RUNNING);
   CreateJVM();
+  setJavaAppHome(g_env, exepath);
   InvokeMethod("serviceStart", ConvertStringArray(g_env, argc, argv), "([Ljava/lang/String;)V");
   (*g_jvm)->DestroyJavaVM(g_jvm);
 }
