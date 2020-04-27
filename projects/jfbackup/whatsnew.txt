@@ -1,3 +1,6 @@
+Apr 27/2020 : 0.13 released
+  - fix : loader was unable to find native dll
+
 Apr 20/2020 : 0.12 released
   - fix : display tapes is descending order
   - new : added tape(s) expired date to notification
