@@ -33,6 +33,7 @@ public class JFNative {
       Library lib = new Library("jfnative" + bits);
       if (!findLibraries(new File[] {new File(path)}, new Library[] {lib}, ext, 1)) {
         JFLog.log("Warning:Unable to find jfnative library");
+        JFLog.log("Library Path=" + path);
       }
       if (lib.path != null) {
         System.load(lib.path);

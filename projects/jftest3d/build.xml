@@ -2,6 +2,7 @@
   <description>jftest3d</description>
   <!-- set global properties for this build -->
   <property name="app" value="jftest3d"/>
+  <property name="apptype" value="c"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
