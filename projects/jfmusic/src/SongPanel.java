@@ -1905,7 +1905,9 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
   public boolean load(String fn) {
     music = new Music();
     filename = fn;
-    if (!music.load(fn)) return false;
+    Music.Song song = music.load(fn);
+    if (song == null) return false;
+    music.load(song);
     updatePatterns();
     updatePattern();
     updateSequence();

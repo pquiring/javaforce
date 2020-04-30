@@ -513,21 +513,35 @@ public class Music {
     }
   }
 
-  public boolean load(String fn) {
-    //load a .mproj file
-    close();
+  public static Song load(String fn) {
     try {
       FileInputStream fis = new FileInputStream(fn);
-      ObjectInputStream ois = new ObjectInputStream(fis);
-      Version version = (Version)ois.readObject();
-      song = (Song)ois.readObject();
-      if (song.samples == null) song.samples = new ArrayList<Sample>();  //beta upgrade
+      Song song = load(fis);
       fis.close();
-      return true;
+      return song;
     } catch (Exception e) {
       JFLog.log(e);
-      return false;
+      return null;
     }
+  }
+
+  public static Song load(InputStream is) {
+    try {
+      ObjectInputStream ois = new ObjectInputStream(is);
+      Version version = (Version)ois.readObject();
+      Song song = (Song)ois.readObject();
+      if (song.samples == null) song.samples = new ArrayList<Sample>();  //beta upgrade
+      return song;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public boolean load(Song song) {
+    close();
+    this.song = song;
+    return true;
   }
 
   public boolean save(String fn) {
