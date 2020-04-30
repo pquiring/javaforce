@@ -26,6 +26,20 @@ public class Music {
     /** Triggered as the music moves to each row. */
     public void musicRow(int sequence, int pattern, int row);
   }
+  public static class Notes {
+    public int A = 0;
+    public int As = 1;
+    public int B = 2;
+    public int C = 3;
+    public int Cs = 4;
+    public int D = 5;
+    public int Ds = 6;
+    public int E = 7;
+    public int F = 8;
+    public int Fs = 9;
+    public int G = 10;
+    public int Gs = 11;
+  }
   private enum Play {song, pattern, note};
   public static class Version implements Serializable {
     public static final long serialVersionUID = 1L;
@@ -432,7 +446,7 @@ public class Music {
 
   private Listener listener;
   private AudioOutput output;
-  private int samplesPerBuffer, samplesPerBuffer2;
+  private int samplesPerBuffer;
   private short[] samples;
   private Timer timer;
 
@@ -444,8 +458,8 @@ public class Music {
   private int patternIdx = 0;  //current pattern
   private Pattern pattern;  //current pattern
   private boolean repeatSong;  //repeat song continuously
-  private float mL = 1.0f, mR = 1.0f;  //overall music volume level
-  private float sL = 1.0f, sR = 1.0f;  //overall sound volume level
+  private float m_volL = 1.0f, m_volR = 1.0f;  //overall music volume level
+  private float s_volL = 1.0f, s_volR = 1.0f;  //overall sound volume level
   private int samplesPerBeat;
   private int samplesThisBeat;
   private int rowIdx;  //0-63
@@ -461,27 +475,29 @@ public class Music {
     }
   }
 
+  private static final int chs = 2;
+
   /** Starts the sound output engine.
    * After you can start music or sound playback.
    */
   public boolean start(int milliSec, int soundChannels) {
     if (output != null) stop();
     output = new AudioOutput();
-    if (output == null) return false;
     sounds = new Track[soundChannels];
     for(int a=0;a<soundChannels;a++) {
       sounds[a] = new Track();
     }
-    samplesPerBuffer = 44100 * 2 * milliSec / 1000;  //*2 stereo
-    samplesPerBuffer2 = samplesPerBuffer / 2;
-    samples = new short[samplesPerBuffer];
-    if (!output.start(2, 44100, 16, samplesPerBuffer * 2, null)) {  //*2 = bytes
+    samplesPerBuffer = 44100 * milliSec / 1000;
+    samples = new short[samplesPerBuffer * chs];
+    if (!output.start(chs, 44100, 16, samplesPerBuffer * chs * 2, null)) {  //*2 = bytes
       JFLog.log("Music.start() failed");
       return false;
     }
+    //prime the buffers (a buffer underflow causes delay in output)
+    output.write(samples);
+    output.write(samples);
     timer = new Timer();
     timer.scheduleAtFixedRate(new TimerTask() {public void run() {process();}}, milliSec / 2, milliSec);
-    output.write(samples);
     return true;
   }
 
@@ -619,12 +635,12 @@ public class Music {
    * @param note = note to play (midi value)
    * @return idx to use with other Sound channel functions, -1 if can't play now
    */
-  public synchronized int instrumentPlay(int idx, float L, float R, int note) {
+  public synchronized int instrumentPlay(int idx, float volL, float volR, int note) {
     for(int a=0;a<sounds.length;a++) {
       if (!sounds[a].playing) {
         Track t = sounds[a];
-        t.volL = L;
-        t.volR = R;
+        t.volL = volL;
+        t.volR = volR;
         t.vol = 1.0f;
         t.i = song.instruments.get(idx);
         t.r = t.i.getRegion(note);
@@ -718,17 +734,17 @@ public class Music {
   }
   /** Plays a sound, returns channel idx to modify during playback.
    * @param idx = sound index
-   * @param L = left volume (0.0 - 1.0)
-   * @param R = right volume (0.0 - 1.0)
-   * @param note = midi note to play
+   * @param volL = left volume (0.0 - 1.0)
+   * @param volR = right volume (0.0 - 1.0)
+   * @param note = midi note to play (0-11)
    * @return idx to use with other Sound functions, -1 if can't play now
    */
-  public synchronized int soundPlay(int idx, float L, float R, int note) {
+  public synchronized int soundPlay(int idx, float volL, float volR, int note) {
     for(int a=0;a<sounds.length;a++) {
       if (!sounds[a].playing) {
         Track t = sounds[a];
-        t.volL = L;
-        t.volR = R;
+        t.volL = volL;
+        t.volR = volR;
         t.vol = 1.0f;
         t.i = loadedSounds.get(idx);
         t.r = t.i.getRegion(note);
@@ -888,14 +904,14 @@ public class Music {
 
   /** Range: 0.0f -> 1.0f */
   public void setMasterMusicVolume(float l, float r) {
-    mL = l;
-    mR = r;
+    m_volL = l;
+    m_volR = r;
   }
 
   /** Range: 0.0f -> 1.0f */
   public void setMasterSoundVolume(float l, float r) {
-    sL = l;
-    sR = r;
+    s_volL = l;
+    s_volR = r;
   }
 
   //private code
@@ -914,7 +930,6 @@ public class Music {
 
   //output next audio chunk
   private void process() {
-//    JFLog.log("process:" + System.currentTimeMillis());
     try {
       Arrays.fill(samples, (short)0);
       synchronized(lock) {
@@ -930,7 +945,7 @@ public class Music {
 
   private void processMusic() {
     int idx = 0;
-    for(int a=0;a<samplesPerBuffer2;a++) {
+    for(int a=0;a<samplesPerBuffer;a++) {
       float L = 0, R = 0;
       samplesThisBeat++;
       if (samplesThisBeat == samplesPerBeat) {
@@ -1008,8 +1023,8 @@ public class Music {
           t.doCmds();
         }
       }
-      L *= mL;
-      R *= mR;
+      L *= m_volL;
+      R *= m_volR;
       int iL = (int)L, iR = (int)R;
       //clamp to short
       if (iL < -32768) iL = -32768;
@@ -1023,9 +1038,9 @@ public class Music {
 
   private void processSound() {
     int idx = 0;
-    for(int b=0;b<samplesPerBuffer2;b++) {
-      float L = 0.0f;
-      float R = 0.0f;
+    for(int b=0;b<samplesPerBuffer;b++) {
+      float samL = 0.0f;
+      float samR = 0.0f;
       for(int a=0;a<sounds.length;a++) {
         Track t = sounds[a];
         if (!t.playing) continue;
@@ -1048,8 +1063,8 @@ public class Music {
         t.sIdx += t.freqPow2;
         cIdx = (int)t.sIdx;
         t.vol -= t.attenuation;
-        L += sample * t.volL * t.vol;
-        R += sample * t.volR * t.vol;
+        samL += sample * t.volL * t.vol;
+        samR += sample * t.volR * t.vol;
         if (t.vol <= 0.0f) {
           t.playing = false;
         }
@@ -1066,18 +1081,22 @@ public class Music {
           t.doCmds();
         }
       }
-      L *= sL;
-      R *= sR;
-      int iL = (int)L, iR = (int)R;
-      iL += samples[idx];
-      iR += samples[idx+1];
+      samL *= s_volL;
+      samR *= s_volR;
+      int isamL = (int)samL, isamR = (int)samR;
+      isamL += samples[idx];
+      if (chs > 1) {
+        isamR += samples[idx+1];
+      }
       //clamp to short
-      if (iL < -32768) iL = -32768;
-      if (iL > 32767) iL = 32767;
-      if (iR < -32768) iR = -32768;
-      if (iR > 32767) iR = 32767;
-      samples[idx++] = (short)iL;
-      samples[idx++] = (short)iR;
+      if (isamL < -32768) isamL = -32768;
+      if (isamL > 32767) isamL = 32767;
+      if (isamR < -32768) isamR = -32768;
+      if (isamR > 32767) isamR = 32767;
+      samples[idx++] = (short)isamL;
+      if (chs > 1) {
+        samples[idx++] = (short)isamR;
+      }
     }
   }
 }
