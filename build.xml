@@ -87,7 +87,7 @@
     <ant antfile="build-jfsudo.xml" inheritAll="false"/>
     <ant antfile="build-jfsudo-ask.xml" inheritAll="false"/>
     <ant antfile="build-jfopen.xml" inheritAll="false"/>
-    <ant antfile="build-filespliter.xml" inheritAll="false"/>
+    <ant antfile="build-filesplitter.xml" inheritAll="false"/>
     <ant antfile="build-imageconvert.xml" inheritAll="false"/>
     <ant antfile="build-findreplace.xml" inheritAll="false"/>
     <ant antfile="build-pngalpha.xml" inheritAll="false"/>
