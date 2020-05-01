@@ -84,23 +84,23 @@
     <copy file="lnxbin/jbus-client" todir="/usr/bin"/>
     <chmod file="/usr/bin/jbus-client" perm="+x"/>
 
-    <elf appx="jfsudo" cfgdir="cfg/"/>
-    <elf appx="jfsudo-ask" cfgdir="cfg/"/>
-    <elf appx="jfopen" cfgdir="cfg/"/>
-    <elf appx="filespliter" cfgdir="cfg/"/>
-    <elf appx="imageconvert" cfgdir="cfg/"/>
-    <elf appx="findreplace" cfgdir="cfg/"/>
-    <elf appx="pngalpha" cfgdir="cfg/"/>
-    <elf appx="jf-update-desktop-database" cfgdir="cfg/"/>
-    <elf appx="jsmbget" cfgdir="cfg/"/>
-    <elf appx="jservice" cfgdir="cfg/"/>
-    <elf appx="jf-monitor-dir" cfgdir="cfg/"/>
-    <elf appx="web" cfgdir="cfg/"/>
-    <elf appx="jcp" cfgdir="cfg/"/>
-    <elf appx="jmv" cfgdir="cfg/"/>
-    <elf appx="jrm" cfgdir="cfg/"/>
-    <elf appx="jfver" cfgdir="cfg/"/>
-    <elf appx="jfresmgr" cfgdir="cfg/"/>
+    <ant antfile="build-jfsudo.xml" inheritAll="false"/>
+    <ant antfile="build-jfsudo-ask.xml" inheritAll="false"/>
+    <ant antfile="build-jfopen.xml" inheritAll="false"/>
+    <ant antfile="build-filespliter.xml" inheritAll="false"/>
+    <ant antfile="build-imageconvert.xml" inheritAll="false"/>
+    <ant antfile="build-findreplace.xml" inheritAll="false"/>
+    <ant antfile="build-pngalpha.xml" inheritAll="false"/>
+    <ant antfile="build-jf-update-desktop-database.xml" inheritAll="false"/>
+    <ant antfile="build-jsmbget.xml" inheritAll="false"/>
+    <ant antfile="build-jservice.xml" inheritAll="false"/>
+    <ant antfile="build-jf-monitor-dir.xml" inheritAll="false"/>
+    <ant antfile="build-web.xml" inheritAll="false"/>
+    <ant antfile="build-jcp.xml" inheritAll="false"/>
+    <ant antfile="build-jmv.xml" inheritAll="false"/>
+    <ant antfile="build-jrm.xml" inheritAll="false"/>
+    <ant antfile="build-jfver.xml" inheritAll="false"/>
+    <ant antfile="build-jfresmgr.xml" inheritAll="false"/>
   </target>
 
   <target name="utils" depends="jar" description="build exe for utils 64bit">

@@ -1,0 +1,22 @@
+<project name="jf-update-desktop-database" default="executable" basedir=".">
+  <description>jf-update-desktop-database</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jf-update-desktop-database"/>
+  <property name="apptype" value="c"/>
+  <property name="cfg" value="cfg/jf-update-desktop-database.cfg"/>
+  <property name="ico" value="javaforce.ico"/>
+  <property name="home" value="."/>
+
+  <property environment="env"/>
+
+  <import file="base.xml"/>
+
+  <target name="depjars" depends="depnatives">
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+  </target>
+
+  <target name="jar" depends="depjars,compile" description="build jar file">
+  </target>
+</project>

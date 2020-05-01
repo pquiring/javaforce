@@ -1,0 +1,22 @@
+<project name="jsmbget" default="executable" basedir=".">
+  <description>jsmbget</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jsmbget"/>
+  <property name="apptype" value="c"/>
+  <property name="cfg" value="cfg/jsmbget.cfg"/>
+  <property name="ico" value="javaforce.ico"/>
+  <property name="home" value="."/>
+
+  <property environment="env"/>
+
+  <import file="base.xml"/>
+
+  <target name="depjars" depends="depnatives">
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+  </target>
+
+  <target name="jar" depends="depjars,compile" description="build jar file">
+  </target>
+</project>
