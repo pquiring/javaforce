@@ -87,15 +87,15 @@
     <ant antfile="build-jfsudo.xml" inheritAll="false"/>
     <ant antfile="build-jfsudo-ask.xml" inheritAll="false"/>
     <ant antfile="build-jfopen.xml" inheritAll="false"/>
-    <ant antfile="build-filesplitter.xml" inheritAll="false"/>
+<!--    <ant antfile="build-filesplitter.xml" inheritAll="false"/>  -->
     <ant antfile="build-imageconvert.xml" inheritAll="false"/>
-    <ant antfile="build-findreplace.xml" inheritAll="false"/>
+<!--    <ant antfile="build-findreplace.xml" inheritAll="false"/>  -->
     <ant antfile="build-pngalpha.xml" inheritAll="false"/>
     <ant antfile="build-jf-update-desktop-database.xml" inheritAll="false"/>
     <ant antfile="build-jsmbget.xml" inheritAll="false"/>
     <ant antfile="build-jservice.xml" inheritAll="false"/>
     <ant antfile="build-jf-monitor-dir.xml" inheritAll="false"/>
-    <ant antfile="build-web.xml" inheritAll="false"/>
+<!--    <ant antfile="build-web.xml" inheritAll="false"/>  -->
     <ant antfile="build-jcp.xml" inheritAll="false"/>
     <ant antfile="build-jmv.xml" inheritAll="false"/>
     <ant antfile="build-jrm.xml" inheritAll="false"/>
