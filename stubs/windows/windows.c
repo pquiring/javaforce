@@ -176,6 +176,11 @@ char *CreateClassPath() {
     }
   }
   int len = strlen(DOption) + sl + (ml * cnt) + 1;
+  char *env_classpath = getenv("CLASSPATH");
+  if (env_classpath != NULL) {
+    int env_len = strlen(env_classpath);
+    len += env_len + 1;
+  }
   char *ExpandedClassPath = malloc(len);
   ExpandedClassPath[0] = 0;
   strcat(ExpandedClassPath, DOption);
@@ -186,6 +191,10 @@ char *CreateClassPath() {
       strcat(ExpandedClassPath, "\\");
     }
     strcat(ExpandedClassPath, jar[a]);
+  }
+  if (env_classpath != NULL) {
+    strcat(ExpandedClassPath, ";");
+    strcat(ExpandedClassPath, env_classpath);
   }
   return ExpandedClassPath;
 }
@@ -228,7 +237,7 @@ JavaVMInitArgs *BuildArgs() {
     nOpts++;
 
     opts[0] = CreateClassPath();
-
+printf("%s\n", opts[0]);
     if (strlen(xoptions) > 0) {
       char *x = xoptions;
       while (x != NULL) {

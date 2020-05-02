@@ -124,7 +124,12 @@ char *CreateClassPath() {
       ClassPath[a] = 0;
     }
   }
-  char *ExpandedClassPath = malloc(strlen(DOption) + sl + (ml * cnt) + 1);
+  int len = strlen(DOption) + sl + (ml * cnt) + 1;
+  char *env_classpath = getenv("CLASSPATH");
+  if (env_classpath != NULL) {
+    len += strlen(env_classpath) + 1;
+  }
+  char *ExpandedClassPath = malloc(len);
   ExpandedClassPath[0] = 0;
   strcat(ExpandedClassPath, DOption);
   for(a=0;a<cnt;a++) {
@@ -133,6 +138,10 @@ char *CreateClassPath() {
       strcat(ExpandedClassPath, "/usr/share/java/");
     }
     strcat(ExpandedClassPath, jar[a]);
+  }
+  if (env_classpath != NULL) {
+    strcat(ExpandedClassPath, ":");
+    strcat(ExpandedClassPath, env_classpath);
   }
   return ExpandedClassPath;
 }
