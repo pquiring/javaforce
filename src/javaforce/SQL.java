@@ -90,6 +90,44 @@ public class SQL {
     return new String(strca2);
   }
 
+  /** Returns only numbers in string. */
+  public static String numbers(String str) {
+    char strca[] = str.toCharArray();
+    int len = 0;
+    for(int a=0;a<strca.length;a++) {
+      if (Character.isDigit(strca[a])) len++;
+    }
+    if (len == 0) return "";
+    char newstrca[] = new char[len];
+    int pos = 0;
+    for(int a=0;a<strca.length;a++) {
+      if (Character.isDigit(strca[a])) {
+        newstrca[pos++] = strca[a];
+      }
+    }
+    return new String(newstrca);
+  }
+
+  /** Returns only letters in quotes in string. */
+  public static String letters(String str) {
+    char strca[] = str.toCharArray();
+    int len = 0;
+    for(int a=0;a<strca.length;a++) {
+      if (Character.isLetter(strca[a])) len++;
+    }
+    len += 2;
+    char newstrca[] = new char[len];
+    int pos = 0;
+    newstrca[pos++] = '\'';
+    for(int a=0;a<strca.length;a++) {
+      if (Character.isLetter(strca[a])) {
+        newstrca[pos++] = strca[a];
+      }
+    }
+    newstrca[pos++] = '\'';
+    return new String(newstrca);
+  }
+
   /** Executes a SQL query (no return data). */
   public boolean execute(String str) {
     java.sql.Statement stmt = null;
