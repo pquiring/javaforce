@@ -46,11 +46,7 @@ public class GenDMG {
         rt.exec(new String[] {"rm", "./jre"}).waitFor();
       }
       rt.exec(new String[] {"ln", "-s", jre, "./jre"}).waitFor();
-      if (ffmpeg == null) {
-        rt.exec(new String[] {"tar", "cjfh", "data.tar.bz2", "-T", "macfiles.lst", "jre"}).waitFor();
-      } else {
-        rt.exec(new String[] {"tar", "cjfh", "data.tar.bz2", "-T", "macfiles.lst", "jre", "-C", ffmpeg, "."}).waitFor();
-      }
+      rt.exec(new String[] {"tar", "cjfh", "data.tar.bz2", "-T", "macfiles.lst", "jre"}).waitFor();
       rt.exec(new String[] {"rm", "./jre"}).waitFor();
       rt.exec(new String[] {"mkdir", "-p", tmp_contents_resources}).waitFor();
       rt.exec(new String[] {"mkdir", "-p", tmp_contents_macos}).waitFor();
@@ -58,6 +54,9 @@ public class GenDMG {
       rt.exec(new String[] {"rm", "data.tar.bz2"}).waitFor();
       rt.exec(new String[] {"cp", "Info.plist", tmp_contents}).waitFor();
       rt.exec(new String[] {"cp", icon, tmp_contents_resources}).waitFor();
+      if (ffmpeg != null) {
+        rt.exec(new String[] {"cp", ffmpeg + "/*", tmp_contents_macos}).waitFor();
+      }
 
       if (System.getProperty("genisoimage") == null) {
         rt.exec(new String[] {"hdiutil", "create", "-srcfolder", "/tmp/"+ app, out}).waitFor();
