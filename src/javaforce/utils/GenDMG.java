@@ -57,6 +57,7 @@ public class GenDMG {
       if (ffmpeg != null) {
         File files[] = new File(ffmpeg).listFiles();
         for(int a=0;a<files.length;a++) {
+          if (files[a].isDirectory()) continue;
           rt.exec(new String[] {"cp", files[a].getAbsolutePath(), tmp_contents_macos}).waitFor();
         }
       }
