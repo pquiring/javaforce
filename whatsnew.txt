@@ -1,5 +1,8 @@
 What's new...
 
+May 10/2020 : JF 22.2 released
+  - fix linux and mac builds
+
 Apr 27/2020 : JF 22.1 released
   - jfBackup/0.13
     - fix : was unable to load native dll
