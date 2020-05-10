@@ -184,7 +184,6 @@
       <arg value="${jre}"/>
       <arg value="${ffmpeg_home}"/>
     </java>
-    <delete file="${app}"/>
     <copy file="${app}-${version}.dmg" todir="${home}/release" overwrite="true"/>
   </target>
 </project>

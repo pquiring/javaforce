@@ -55,7 +55,13 @@ public class GenDMG {
       rt.exec(new String[] {"cp", "Info.plist", tmp_contents}).waitFor();
       rt.exec(new String[] {"cp", icon, tmp_contents_resources}).waitFor();
       if (ffmpeg != null) {
-        rt.exec(new String[] {"cp", ffmpeg + "/*", tmp_contents_macos}).waitFor();
+        File files[] = new File(ffmpeg).listFiles();
+        for(int a=0;a<files.length;a++) {
+          rt.exec(new String[] {"cp", files[a].getAbsolutePath(), tmp_contents_macos}).waitFor();
+        }
+      }
+      if (new File("jfnative64.dylib").exists()) {
+        rt.exec(new String[] {"cp", "jfnative64.dylib", tmp_contents_macos}).waitFor();
       }
 
       if (System.getProperty("genisoimage") == null) {
