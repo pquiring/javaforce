@@ -8,6 +8,7 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="version" value="0.8"/>
+  <property name="ffmpeg_home" value="${home}/ffmpeg"/>
 
   <property name="project2" value="build-midi"/>
 
