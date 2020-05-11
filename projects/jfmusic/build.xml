@@ -7,7 +7,7 @@
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
-  <property name="version" value="0.8"/>
+  <property name="version" value="0.9"/>
   <property name="ffmpeg_home" value="${home}/ffmpeg"/>
 
   <property name="project2" value="build-midi"/>
@@ -59,6 +59,7 @@
     <copy file="jfmusic.desktop" todir="/usr/share/applications"/>
     <copy file="jfmusic.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
     <copy file="jfmusic.html" todir="/usr/share/jhelp"/>
+    <copy file="gm.dls" todir="/usr/bin"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

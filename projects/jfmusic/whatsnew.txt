@@ -1,6 +1,9 @@
 What's new...
 =============
 
+May 11, 2020 : 0.9 released!
+  - fix : include dls file with application bundle
+
 Mar 18, 2020 : 0.8 released!
   - fix : win64 loader now loads msvcrt dlls properly
 
