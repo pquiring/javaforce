@@ -1,5 +1,9 @@
 What's new...
 
+May 11/2020 : JF 22.3 released
+  - jfMusic/0.9
+    - now includes sample DLS file (instrument bank)
+
 May 10/2020 : JF 22.2 released
   - fix linux and mac builds
 
