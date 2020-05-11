@@ -149,7 +149,7 @@ char *CreateClassPath() {
 JavaVMInitArgs *BuildArgs() {
   JavaVMInitArgs *args;
   JavaVMOption *options;
-  int nOpts = 1;
+  int nOpts = 2;
   char *opts[64];
   int idx;
 
@@ -165,6 +165,7 @@ JavaVMInitArgs *BuildArgs() {
       }
     }
   }
+  opts[1] = "-Djava.app.home=/usr/bin";
 
   args = malloc(sizeof(JavaVMInitArgs));
   memset(args, 0, sizeof(JavaVMInitArgs));
@@ -173,7 +174,6 @@ JavaVMInitArgs *BuildArgs() {
 
   for(idx=0;idx<nOpts;idx++) {
     options[idx].optionString = opts[idx];
-//    printf("[] = %s\n", opts[idx]);  //debug
   }
 
   args->version = JNI_VERSION_1_2;
