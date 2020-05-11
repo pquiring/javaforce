@@ -1,1 +1,1 @@
-java -cp javaforce.jar;jfmusic.jar MusicApp %1
+java -Djava.app.home=%CD% -cp javaforce.jar;jfmusic.jar MusicApp %1

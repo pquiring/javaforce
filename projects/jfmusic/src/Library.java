@@ -27,9 +27,9 @@ public class Library {
 
   public static void load() {
     if (!libraryList.isEmpty()) return;  //already done (must restart app to reload)
-    File folder = new File("Library");
-    if (folder.exists() && folder.isDirectory()) {
-      File files[] = folder.listFiles();
+    File appFolder = new File(System.getProperty("java.app.home"));
+    if (appFolder.exists() && appFolder.isDirectory()) {
+      File files[] = appFolder.listFiles();
       for(int a=0;a<files.length;a++) {
         if (!files[a].isFile()) continue;
         String name = files[a].getName().toLowerCase();
@@ -54,10 +54,6 @@ public class Library {
           loadDLS(files[a].getAbsolutePath());
         }
       }
-    }
-    //add gm.dls (windows only)
-    if (JF.isWindows()) {
-      loadDLS(System.getenv("windir") + "\\System32\\Drivers\\gm.dls");
     }
   }
 

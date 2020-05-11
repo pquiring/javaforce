@@ -29,6 +29,7 @@
         <File Id="jfmidi.exe" Source="jfmidi.exe"/>
         <File Id="FurElise.mproj" Source="examples/FurElise.mproj"/>
         <File Id="jfnative64.dll" Source="jfnative64.dll"/>
+        <File Id="gm.dls" Source="gm.dls"/>
       </Component>
     </DirectoryRef>
 
