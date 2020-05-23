@@ -198,6 +198,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
 
 //camera API
 
+#ifndef NO_V4L2
+
 #define MAX_NUM_CAMERAS 32
 
 struct mmapbuffer {
@@ -595,6 +597,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
   if (ctx == NULL) return 0;
   return ctx->height;
 }
+
+#endif
 
 //com port API
 
