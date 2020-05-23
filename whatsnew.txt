@@ -1,5 +1,10 @@
 What's new...
 
+May 23/2020 : JF 22.4 released
+  - FreeBSD is now supported (excluding native bindings for OpenGL and Camera)
+    - OpenGL relies on GLFW which doesn't compile
+    - Camera relies on V4L2 which isn't available yet
+
 May 11/2020 : JF 22.3 released
   - jfMusic/0.9
     - now includes sample DLS file (instrument bank)
