@@ -4,7 +4,9 @@
 #include <termios.h>  //com ports
 #include <unistd.h>  //close select
 #include <stdio.h>
+#ifndef NO_V4L2
 #include <linux/videodev2.h>  //V4L2
+#endif
 #include <sys/ioctl.h>  //ioctl
 #include <sys/mman.h>  //mmap
 #include <sys/inotify.h>
