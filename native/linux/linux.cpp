@@ -786,6 +786,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_ptySetSize
   ioctl(pty->master, TIOCSWINSZ, &size);
 }
 
+#ifndef __FreeBSD__
 JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_ptyChildExec
   (JNIEnv *e, jclass c, jstring slaveName, jstring cmd, jobjectArray args, jobjectArray env)
 {
@@ -847,6 +848,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_ptyChildExec
   execvpe(ccmd, cargs, cenv);
   return 0;
 }
+#endif
 
 //X11
 
