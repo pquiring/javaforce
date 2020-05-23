@@ -173,7 +173,6 @@ static long getX11ID(JNIEnv *e, jobject c) {
 #include "../common/glfw.cpp"
 
 #include "../common/gl.cpp"
-#endif
 
 //this func must be called only when a valid OpenGL context is set
 JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
@@ -195,6 +194,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
   }
   return JNI_TRUE;
 }
+#endif  //NO_OPENGL
 
 //camera API
 
