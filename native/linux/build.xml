@@ -4,10 +4,19 @@
 
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
-  <target name="x64" description="create linux native so">
+  <target name="linux" description="create linux native so">
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include/linux -I ${env.JAVA_HOME}/include -I /usr/include/x86_64-linux-gnu -I ../headers  linux.cpp -c -o linux64.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw.c -c -o glfw64.o -fPIC"/>
     <exec command="gcc -shared linux64.o glfw64.o -L /usr/lib/x86_64-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative64.so"/>
+
+    <delete>
+      <fileset dir="." includes="*.o"/>
+    </delete>
+  </target>
+
+  <target name="freebsd" description="create linux native so">
+    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -DNO_OPENGL -DNO_V4L2 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include/freebsd -I ${env.JAVA_HOME}/include -I /usr/include/x86_64-linux-gnu -I ../headers  linux.cpp -c -o linux64.o -fPIC"/>
+    <exec command="gcc -shared linux64.o -lX11 -lXrandr -lXinerama -lXcursor -lncurses -o ../jfnative64.so"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
@@ -36,12 +45,18 @@
     <exec command="pacman -S jdk11-openjdk apache-ant fuse pam ffmpeg mesa xproto libxcursor libxrandr libxinerama libxi libxt"/>
   </target>
 
+  <target name="pkg" description="install freebsd prerequisites">
+    <exec command="pkg install gcc ffmpeg libX11 libXrandr libXcursor libXinerama libXi libXt ncurses mesa-libs"/>
+  </target>
+
   <target name="help">
     <echo>ant deb : install Debian/Ubuntu prerequisites</echo>
     <echo>ant rpm : install Fedora prerequisites</echo>
     <echo>ant pac : install Arch prerequisites</echo>
+    <echo>ant pkg : install FreeBSD prerequisites</echo>
 
-    <echo>ant x64 : build intel x86 64bit</echo>
+    <echo>ant linux : build intel x86 64bit (Debian/Ubuntu/Fedora/Arch)</echo>
+    <echo>ant freebsd : build intel x86 64bit (FreeBSD)</echo>
     <echo>ant pi : build ARM 32bit (Raspberry PI)</echo>
   </target>
 

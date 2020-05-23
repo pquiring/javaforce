@@ -167,9 +167,11 @@ static long getX11ID(JNIEnv *e, jobject c) {
   return handle;
 }
 
+#ifndef NO_OPENGL
 #include "../common/glfw.cpp"
 
 #include "../common/gl.cpp"
+#endif
 
 //this func must be called only when a valid OpenGL context is set
 JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
