@@ -1747,4 +1747,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_peekConsole
 
 #include "../common/videobuffer.cpp"
 
+#ifndef __FreeBSD__
 #include "../common/ni.cpp"
+#endif
