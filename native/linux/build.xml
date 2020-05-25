@@ -15,8 +15,9 @@
   </target>
 
   <target name="freebsd" description="create linux native so">
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -DNO_OPENGL -DNO_V4L2 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include/freebsd -I ${env.JAVA_HOME}/include -I ../headers  linux.cpp -c -o linux64.o -fPIC"/>
-    <exec command="gcc -shared linux64.o -lX11 -lXrandr -lXinerama -lXcursor -lncurses -o ../jfnative64.so"/>
+    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include/freebsd -I ${env.JAVA_HOME}/include -I ../headers  linux.cpp -c -o linux64.o -fPIC"/>
+    <exec command="gcc ${opt} -I ../glfw/include glfw.c -c -o glfw64.o -fPIC"/>
+    <exec command="gcc -shared linux64.o glfw64.o -lX11 -lXrandr -lXinerama -lXcursor -lncurses -o ../jfnative64.so"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>

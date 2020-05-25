@@ -4,7 +4,7 @@
 #include <termios.h>  //com ports
 #include <unistd.h>  //close select
 #include <stdio.h>
-#ifndef NO_V4L2
+#ifndef __FreeBSD__
 #include <linux/videodev2.h>  //V4L2
 #endif
 #include <sys/ioctl.h>  //ioctl
@@ -169,7 +169,6 @@ static long getX11ID(JNIEnv *e, jobject c) {
   return handle;
 }
 
-#ifndef NO_OPENGL
 #include "../common/glfw.cpp"
 
 #include "../common/gl.cpp"
@@ -194,11 +193,10 @@ JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
   }
   return JNI_TRUE;
 }
-#endif  //NO_OPENGL
 
 //camera API
 
-#ifndef NO_V4L2
+#ifndef __FreeBSD__
 
 #define MAX_NUM_CAMERAS 32
 

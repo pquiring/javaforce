@@ -20,5 +20,8 @@
 #include "../glfw/src/posix_time.c"
 #include "../glfw/src/x11_window.c"
 #include "../glfw/src/xkb_unicode.c"
-#include "../glfw/src/linux_joystick.c"
 #include "../glfw/src/glx_context.c"
+
+#ifndef __FreeBSD__
+#include "../glfw/src/linux_joystick.c"
+#endif
