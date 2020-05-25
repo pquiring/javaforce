@@ -19,7 +19,6 @@
                     <label>src</label>
                     <type>java</type>
                     <location>src</location>
-                    <excludes>cp.bat</excludes>
                     <encoding>windows-1252</encoding>
                 </source-folder>
             </folders>
@@ -43,7 +42,6 @@
                     <source-folder style="packages">
                         <label>src</label>
                         <location>src</location>
-                        <excludes>cp.bat</excludes>
                     </source-folder>
                     <source-file>
                         <location>build.xml</location>
