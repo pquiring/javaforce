@@ -1415,6 +1415,15 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Pass:"));
     TextField email_pass = new TextField(validString(Config.current.email_pass));
     row.add(email_pass);
+    row.add(new Label("Type:"));
+    ComboBox email_type = new ComboBox();
+    email_type.add("LOGIN", "LOGIN");
+    email_type.add("NTLM", "NTLM");
+    switch (Config.current.email_type) {
+      case SMTP.AUTH_LOGIN: email_type.setSelectedIndex(0); break;
+      case SMTP.AUTH_NTLM: email_type.setSelectedIndex(1); break;
+    }
+    row.add(email_type);
     panel.add(row);
     row = new Row();
     Button email_save = new Button("Save");
@@ -1429,6 +1438,11 @@ public class ConfigService implements WebUIHandler {
         Config.current.email_secure = _email_secure;
         Config.current.email_user = _email_user;
         Config.current.email_pass = _email_pass;
+        int _email_type = email_type.getSelectedIndex();
+        switch (_email_type) {
+          case 0: Config.current.email_type = SMTP.AUTH_LOGIN; break;
+          case 1: Config.current.email_type = SMTP.AUTH_NTLM; break;
+        }
         Config.current.emails = _emails;
         Config.save();
         msg.setText("Updated Notification Settings");

@@ -643,8 +643,8 @@ public class BackupJob extends Thread {
       if (!smtp.login()) {
         throw new Exception("SMTP HELLO failed");
       }
-      if (isValid(Config.current.email_user) && isValid(Config.current.email_pass)) {
-        if (!smtp.auth(Config.current.email_user, Config.current.email_pass)) {
+      if (isValid(Config.current.email_user) && isValid(Config.current.email_pass) && isValid(Config.current.email_type)) {
+        if (!smtp.auth(Config.current.email_user, Config.current.email_pass, Config.current.email_type)) {
           throw new Exception("SMTP auth failed");
         }
       }

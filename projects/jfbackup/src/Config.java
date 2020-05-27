@@ -40,6 +40,7 @@ public class Config implements Serializable {
   public String email_server;
   public boolean email_secure;
   public String email_user, email_pass;
+  public String email_type;
   public String emails;
 
   //backup jobs
@@ -65,6 +66,7 @@ public class Config implements Serializable {
     email_server = "";
     email_user = "";
     email_pass = "";
+    email_type = SMTP.AUTH_LOGIN;
   }
 
   public static void load() {
@@ -73,6 +75,9 @@ public class Config implements Serializable {
       ObjectInputStream ois = new ObjectInputStream(fis);
       current = (Config)ois.readObject();
       current.hosts = new ArrayList();
+      if (current.email_type == null) {
+        current.email_type = SMTP.AUTH_LOGIN;
+      }
       fis.close();
     } catch (FileNotFoundException e) {
       current = new Config();
