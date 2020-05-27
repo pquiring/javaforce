@@ -133,6 +133,10 @@ public class SMTP {
     return true;
   }
 
+  public boolean auth(String user, String pass) throws Exception {
+    return auth(user, pass, AUTH_LOGIN);
+  }
+
   public void logout() throws Exception {
     cmd("quit");
     getResponse();  //should be "221" but ignored
