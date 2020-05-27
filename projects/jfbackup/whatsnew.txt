@@ -1,3 +1,6 @@
+May 27/2020 : 0.14 released
+  - new : email notification auth now supports NTLM
+
 Apr 27/2020 : 0.13 released
   - fix : loader was unable to find native dll
 
