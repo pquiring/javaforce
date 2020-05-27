@@ -1,5 +1,10 @@
 What's new...
 
+May 27/2020 : JF 23.0 released
+  - SMTP now supports NTLM auth
+  - jfBackup/0.14
+    - added SMTP NTLM
+
 May 25/2020 : JF 22.5 released
   - FreeBSD
     - added OpenGL support (GLFW)
