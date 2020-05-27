@@ -614,9 +614,15 @@ public class SMTP {
         System.arraycopy(Z4, 0, blob, 24, 4);
         System.arraycopy(targetInfo, 0, blob, 28, targetInfo.length);
         System.arraycopy(Z4, 0, blob, 28 + targetInfo.length, 4);
-        nthash = calcNTv2Hash(domain_str, user_str, pass_str);
-        nt_response = calcNTv2ResponseVariant(nthash, blob, server_nonce);
-
+        if (false) {  //both methods work
+          //Jakarta mail method
+          nthash = calcNTHash(pass_str);
+          nt_response = calcNTv2Response(nthash, blob, server_nonce, domain_str, user_str);
+        } else {
+          //jcifs method
+          nthash = calcNTv2Hash(domain_str, user_str, pass_str);
+          nt_response = calcNTv2ResponseVariant(nthash, blob, server_nonce);
+        }
         if ((server_flags & NTLMSSP_NEGOTIATE_SIGN) != 0) {
           JFLog.log("SMTP:NTML:ERROR:NEED SESSION KEYS");
           //https://github.com/codelibs/jcifs/blob/master/src/main/java/jcifs/smb1/ntlmssp/Type3Message.java#L247
