@@ -4,7 +4,7 @@
 
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
-  <target name="linux" description="create linux native so">
+  <target name="linux" description="create linux native so for x64">
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include/linux -I ${env.JAVA_HOME}/include -I /usr/include/x86_64-linux-gnu -I ../headers  linux.cpp -c -o linux64.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw.c -c -o glfw64.o -fPIC"/>
     <exec command="gcc -shared linux64.o glfw64.o -L /usr/lib/x86_64-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative64.so"/>
@@ -14,7 +14,7 @@
     </delete>
   </target>
 
-  <target name="freebsd" description="create linux native so">
+  <target name="freebsd" description="create linux native so for x64/freebsd">
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include/freebsd -I ${env.JAVA_HOME}/include -I ../headers  linux.cpp -c -o linux64.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include glfw.c -c -o glfw64.o -fPIC"/>
     <exec command="gcc -shared linux64.o glfw64.o -lX11 -lXrandr -lXinerama -lXcursor -lncurses -o ../jfnative64.so"/>
@@ -24,10 +24,21 @@
     </delete>
   </target>
 
-  <target name="pi" description="create Raspberry Pi native so">
+  <target name="arm32" description="create linux native so for arm32">
+    <echo message="arm32 is deprecated and will be removed when arm64 is offically supported"/>
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/arm-linux-gnueabihf -I ../headers  linux.cpp -c -o linux32.o -fPIC"/>
     <exec command="gcc ${opt} -I../glfw/include -I /usr/include/arm-linux-gnueabihf glfw.c -c -o glfw32.o -fPIC"/>
     <exec command="gcc -shared linux32.o glfw32.o -L /usr/lib/arm-linux-gnueabihf -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative32.so"/>
+
+    <delete>
+      <fileset dir="." includes="*.o"/>
+    </delete>
+  </target>
+
+  <target name="arm64" description="create linux native so for arm64">
+    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -I /usr/include/aarch64-linux-gnu -I ../headers  linux.cpp -c -o linux64.o -fPIC"/>
+    <exec command="gcc ${opt} -I../glfw/include -I /usr/include/aarch64-linux-gnu glfw.c -c -o glfw64.o -fPIC"/>
+    <exec command="gcc -shared linux64.o glfw64.o -L /usr/lib/aarch64-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative64.so"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
@@ -58,7 +69,8 @@
 
     <echo>ant linux : build intel x86 64bit (Debian/Ubuntu/Fedora/Arch)</echo>
     <echo>ant freebsd : build intel x86 64bit (FreeBSD)</echo>
-    <echo>ant pi : build ARM 32bit (Raspberry PI)</echo>
+    <echo>ant arm32 : build ARM 32bit (Raspberry PI) (deprecated)</echo>
+    <echo>ant arm64 : build ARM 64bit (Raspberry PI)</echo>
   </target>
 
 </project>
