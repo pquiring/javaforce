@@ -1,7 +1,3 @@
-To compile:
-
-  arch = x32 | x64 | a32 | a64
-
 Debian/Ubuntu:
 
   Required packages:
@@ -11,7 +7,7 @@ Debian/Ubuntu:
     export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
 
   Compile:
-    ant <arch>
+    ant linux
 
 Fedora:
 
@@ -24,7 +20,7 @@ Fedora:
     export JAVA_HOME=/usr/lib/jvm/java
 
   Compile:
-    ant <arch>
+    ant linux
 
 Arch:
 
@@ -35,9 +31,20 @@ Arch:
     export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
 
   Compile:
-    ant <arch>
+    ant linux
 
-Raspberry Pi (Debian):
+FreeBSD:
+
+  Required packages :
+    ant pkg
+
+  Required environment variable:
+    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk
+
+  Compile:
+    ant freebsd
+
+Raspberry Pi (Debian) (32bit deprecated):
 
   Same packages as Debian above.
 
@@ -45,4 +52,15 @@ Raspberry Pi (Debian):
     export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-armhf
 
   Compile:
-    ant <arch>
+    ant arm32
+
+Raspberry Pi (Debian) (64bit):
+
+  Same packages as Debian above.
+
+  Required environment variable:
+    export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-arm64
+
+  Compile:
+    ant arm64
+
