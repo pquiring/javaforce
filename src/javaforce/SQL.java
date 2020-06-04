@@ -9,7 +9,7 @@ public class SQL {
   /** Last exception that occured. */
   public Exception lastException;
   /** Column names from last query. */
-  public String colNames[];
+  public String[] colNames;
 
   /** Outputs all statements to stdout (default = false). */
   public static boolean debug = false;
@@ -110,13 +110,13 @@ public class SQL {
 
   /** Returns only letters in quotes in string. */
   public static String letters(String str) {
-    char strca[] = str.toCharArray();
+    char[] strca = str.toCharArray();
     int len = 0;
     for(int a=0;a<strca.length;a++) {
       if (Character.isLetter(strca[a])) len++;
     }
     len += 2;
-    char newstrca[] = new char[len];
+    char[] newstrca = new char[len];
     int pos = 0;
     newstrca[pos++] = '\'';
     for(int a=0;a<strca.length;a++) {

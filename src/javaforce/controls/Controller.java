@@ -31,7 +31,7 @@ public class Controller {
   private static Object s7_connect_lock = new Object();
   private AudioInput mic;
   private int micBufferSize;
-  private short micBuffer[];
+  private short[] micBuffer;
 
   private ABContext ab_context;
 
@@ -71,10 +71,10 @@ public class Controller {
 
           //connect1
           {
-            byte packet[] = S7Packet.makeConnectPacket1();
+            byte[] packet = S7Packet.makeConnectPacket1();
             os.write(packet);
 
-            byte reply[] = new byte[1500];
+            byte[] reply = new byte[1500];
             int replySize = 0;
             do {
               int read = is.read(reply, replySize, 1500 - replySize);
@@ -85,10 +85,10 @@ public class Controller {
 
           //connect2
           {
-            byte packet[] = S7Packet.makeConnectPacket2();
+            byte[] packet = S7Packet.makeConnectPacket2();
             os.write(packet);
 
-            byte reply[] = new byte[1500];
+            byte[] reply = new byte[1500];
             int replySize = 0;
             do {
               int read = is.read(reply, replySize, 1500 - replySize);
@@ -132,10 +132,10 @@ public class Controller {
 
         //connect1
         {
-          byte packet[] = ABPacket.makeConnectPacket(ab_context);
+          byte[] packet = ABPacket.makeConnectPacket(ab_context);
           os.write(packet);
 
-          byte reply[] = new byte[1500];
+          byte[] reply = new byte[1500];
           int replySize = 0;
           do {
             int read = is.read(reply, replySize, 1500 - replySize);
@@ -259,7 +259,7 @@ public class Controller {
   }
 
   /** Writes data to PLC. */
-  public boolean write(String addr, byte data[]) {
+  public boolean write(String addr, byte[] data) {
     return write(addr, data, datatype.ANY);
   }
 
@@ -525,25 +525,25 @@ public class Controller {
   }
 
  /** Reads multiple data tags from PLC. (only S7 is currently supported) */
-  public byte[][] read(String addr[]) {
+  public byte[][] read(String[] addr) {
     if (!connected) return null;
     for(int a=0;a<addr.length;a++) {
       addr[a] = addr[a].toUpperCase();
     }
     switch (plc) {
       case ControllerType.S7: {
-        S7Data s7[] = new S7Data[addr.length];
+        S7Data[] s7 = new S7Data[addr.length];
         for(int a=0;a<addr.length;a++) {
           s7[a] = S7Packet.decodeAddress(addr[a]);
         }
-        byte packet[] = S7Packet.makeReadPacket(s7);
+        byte[] packet = S7Packet.makeReadPacket(s7);
         try {
           os.write(packet);
         } catch (Exception e) {
           lastException = e;
           return null;
         }
-        byte reply[] = new byte[1500];
+        byte[] reply = new byte[1500];
         int replySize = 0;
         try {
           do {
@@ -556,7 +556,7 @@ public class Controller {
           return null;
         }
         s7 = S7Packet.decodeMultiPacket(Arrays.copyOf(reply, replySize), addr.length);
-        byte ret[][] = new byte[addr.length][];
+        byte[][] ret = new byte[addr.length][];
         for(int a=0;a<addr.length;a++) {
           ret[a] = s7[a].data;
         }
@@ -611,18 +611,18 @@ public class Controller {
       }
 */
       case ControllerType.JF: {
-        JFTag tags[] = new JFTag[addr.length];
+        JFTag[] tags = new JFTag[addr.length];
         for(int a=0;a<addr.length;a++) {
           tags[a] = JFPacket.decodeAddress(addr[a]);
         }
-        byte packet[] = JFPacket.makeReadPacket(tags);
+        byte[] packet = JFPacket.makeReadPacket(tags);
         try {
           os.write(packet);
         } catch (Exception e) {
           lastException = e;
           return null;
         }
-        byte reply[] = new byte[1500];
+        byte[] reply = new byte[1500];
         int replySize = 0;
         try {
           do {
@@ -635,7 +635,7 @@ public class Controller {
           return null;
         }
         tags = JFPacket.decodeMultiPacket(Arrays.copyOf(reply, replySize), addr.length);
-        byte ret[][] = new byte[addr.length][];
+        byte[][] ret = new byte[addr.length][];
         for(int a=0;a<addr.length;a++) {
           ret[a] = tags[a].data;
         }

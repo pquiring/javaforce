@@ -61,7 +61,7 @@ public class GLTexture {
 
   public boolean load() {
     if (glid == -1) {
-      int id[] = new int[1];
+      int[] id = new int[1];
       id[0] = -1;
       glGenTextures(1, id);
       if (id[0] == -1) {

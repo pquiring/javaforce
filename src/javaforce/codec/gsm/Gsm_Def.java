@@ -65,7 +65,7 @@ public abstract class Gsm_Def {
 
   /*  Table 4.2  Tabulation  of 1/A[1..8]
    */
-  public static final short gsm_INVA[]
+  public static final short[] gsm_INVA
           = new short[] {
             13107, 13107, 13107, 13107, 19223, 17476, 31454, 29708
           };
@@ -109,7 +109,7 @@ public abstract class Gsm_Def {
   /*   Table 4.6   Normalized direct mantissa used to compute xM/xmax
    */
  /* i      0      1       2      3      4      5      6      7   */
-  public static final short gsm_FAC[]
+  public static final short[] gsm_FAC
           = new short[] {
             18431, 20479, 22527, 24575, 26623, 28671, 30719, 32767
           };

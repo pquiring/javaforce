@@ -54,7 +54,7 @@ public class monitordir {
   public static void setListener(int wd, Listener listener) {
     map.put(wd, listener);
   }
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length == 0) {
       System.out.println("Usage:jf-monitor-dir folder");
       return;
@@ -67,7 +67,7 @@ public class monitordir {
     public void run() {
 //      JFLog.log("worker start");
       while (active) {
-        byte data[] = LnxNative.inotify_read(fd);
+        byte[] data = LnxNative.inotify_read(fd);
         int pos = 0;
         int siz = data.length;
         while (siz > 12) {

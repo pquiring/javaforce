@@ -153,7 +153,7 @@ public class Web {
       catch(NoSuchAlgorithmException e) {
         JFLog.log(e);
       }
-      byte sha1[] = md.digest(inKey.getBytes());
+      byte[] sha1 = md.digest(inKey.getBytes());
       String base64 = new String(Base64.encode(sha1));
       return base64;
     }
@@ -162,7 +162,7 @@ public class Web {
       res.addHeader("Upgrade: websocket");
       res.addHeader("Connection: Upgrade");
       String inKey = null;
-      String protocols[] = null;
+      String[] protocols = null;
       for(int a=0;a<req.fields.length;a++) {
         String field = req.fields[a];
         if (field.startsWith("Sec-WebSocket-Key:")) {
@@ -190,7 +190,7 @@ public class Web {
     }
     private void processWebSocket(WebSocket socket) {
       //keep reading packets and deliver to WebHandler
-      byte maskKey[] = new byte[4];
+      byte[] maskKey = new byte[4];
       try {
         while (true) {
           int opcode = socket.is.read();
@@ -236,7 +236,7 @@ public class Web {
             throw new Exception("WebSocket message > 16MB");
           }
           //now read data
-          byte data[] = JF.readAll(socket.is, (int)length);
+          byte[] data = JF.readAll(socket.is, (int)length);
           //unmask data
           for(int a=0;a<length;a++) {
             data[a] ^= maskKey[a % 4];

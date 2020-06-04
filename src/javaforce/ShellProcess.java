@@ -148,10 +148,10 @@ public class ShellProcess {
    * If cmd[0] is 'sudo' then jfsudo-ask is used if a password is required to run the command.
    * If redirStderr is true then stderr will be redir to stdout.
    */
-  public String run(String cmd[], boolean redirStderr) {
+  public String run(String[] cmd, boolean redirStderr) {
     if (cmd[0].equals("sudo")) {
       //if running sudo add -A option to use jfsudo-ask to request password
-      String newcmd[] = new String[cmd.length + 1];
+      String[] newcmd = new String[cmd.length + 1];
       newcmd[0] = "sudo";
       newcmd[1] = "-A";
       System.arraycopy(cmd, 1, newcmd, 2, cmd.length - 1);

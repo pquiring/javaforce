@@ -27,7 +27,7 @@ public class RTPH263 extends RTPCodec {
     ssrc = random.nextInt();
   }
 
-  private int find_best_length(byte data[], int offset, int length) {
+  private int find_best_length(byte[] data, int offset, int length) {
     //see if there is a double zero and return a length to that
     //this way the next packet will start at a resync point
     for(int a=1;a<length-3;a++) {
@@ -37,14 +37,14 @@ public class RTPH263 extends RTPCodec {
   }
 
   /** Encodes raw H.263 data into multiple RTP packets. */
-  public byte[][] encode(byte data[], int x, int y, int id) {
+  public byte[][] encode(byte[] data, int x, int y, int id) {
     return null;  //TODO
   }
 
   /**
    * Returns last full packet.
    */
-  public Packet decode(byte rtp[], int offset, int length) {
+  public Packet decode(byte[] rtp, int offset, int length) {
     return null;  //TODO
   }
 
@@ -53,5 +53,5 @@ public class RTPH263 extends RTPCodec {
   private int seqnum;
   private int timestamp;
   private final int ssrc;
-  private byte partial[];
+  private byte[] partial;
 }

@@ -19,7 +19,7 @@ import javaforce.*;
 
 public class FindReplace {
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     FindReplace x = new FindReplace();
     x.main2(args);
   }
@@ -41,11 +41,11 @@ public class FindReplace {
     System.out.println(" -r = recursive");
     System.exit(0);
   }
-  byte ibuf[];
-  byte obuf[];
+  byte[] ibuf;
+  byte[] obuf;
   ParseArgs pa = new ParseArgs();
 
-  void main2(String args[]) {
+  void main2(String[] args) {
     int a;
     pa.arg_decoderefs = false;  //do not process @ref files
     pa.arg_parse(args);
@@ -95,7 +95,7 @@ public class FindReplace {
   }
 
   void doFolder(File folder) {
-    File files[] = folder.listFiles();
+    File[] files = folder.listFiles();
     for(int a=0;a<files.length;a++) {
       File file = files[a];
       if (file.isDirectory()) {

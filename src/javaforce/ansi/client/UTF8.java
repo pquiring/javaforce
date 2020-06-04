@@ -17,7 +17,7 @@ public class UTF8 {
 
   public char char16;
 
-  public boolean decode(char code[], int codelen, Buffer buffer) {
+  public boolean decode(char[] code, int codelen, Buffer buffer) {
     if ((code[0] & 0xe0) == 0xc0) {
       if (codelen != 2) return false;
       int utf16 = code[0] & 0x01f;

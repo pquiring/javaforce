@@ -21,7 +21,7 @@ public class Panel extends Container {
     sb.append("</div>");
     return sb.toString();
   }
-  public void onLoaded(String args[]) {
+  public void onLoaded(String[] args) {
     super.onLoaded(args);
     if (parent == null) invokeOnLoaded(this);
   }

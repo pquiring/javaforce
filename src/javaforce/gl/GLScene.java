@@ -164,7 +164,7 @@ public class GLScene {
     return true;
   }
   //directly load a texture
-  public boolean setTexture(String fn, int px[], int w, int h, int idx) {
+  public boolean setTexture(String fn, int[] px, int w, int h, int idx) {
     GLTexture tex = tl.get(fn);
     if (tex == null) {
       tex = new GLTexture(idx);
@@ -207,7 +207,7 @@ public class GLScene {
     return true;
   }
   private boolean uninitTexture(int glid) {
-    int id[] = new int[1];
+    int[] id = new int[1];
     id[0] = glid;
     glDeleteTextures(1, id);
     return true;

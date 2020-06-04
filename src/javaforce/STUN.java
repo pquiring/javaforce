@@ -303,8 +303,8 @@ public class STUN {
     int lengthOffset;
     try {
       lastRequest = BIND_REQUEST;
-      byte hostaddr[] = InetAddress.getByName(host).getAddress();
-      byte request[] = new byte[1024];
+      byte[] hostaddr = InetAddress.getByName(host).getAddress();
+      byte[] request = new byte[1024];
       ByteBuffer bb = ByteBuffer.wrap(request);
       bb.order(ByteOrder.BIG_ENDIAN);
       int offset = 0;
@@ -383,7 +383,7 @@ public class STUN {
       if (realm != null && nonce != null) {
         //length should include size of message integrity attr (even though it's not filled in yet)
         bb.putShort(lengthOffset, (short)(offset - 20 + 24));  //patch length
-        byte id[] = calcMsgIntegrity(request, offset, calcKey(user, realm, pass));
+        byte[] id = calcMsgIntegrity(request, offset, calcKey(user, realm, pass));
         int strlen = id.length;
         bb.putShort(offset, MESSAGE_INTEGRITY);
         offset += 2;
@@ -507,7 +507,7 @@ public class STUN {
 
   /** TURN : Send out a UDP packet.
    */
-  public void sendData(short channel, byte data[], int offset, int length) {
+  public void sendData(short channel, byte[] data, int offset, int length) {
     if (fulldata == null || fulldata.length != length + 4) {
       fulldata = new byte[length + 4];
       fulldatabb = ByteBuffer.wrap(fulldata);
@@ -540,7 +540,7 @@ public class STUN {
     return md5.done();
   }
 
-  public static byte[] calcMsgIntegrity(byte data[], int length, byte key[]) {
+  public static byte[] calcMsgIntegrity(byte[] data, int length, byte[] key) {
     try {
       SecretKeySpec ks = new SecretKeySpec(key, "HmacSHA1");
       Mac mac = Mac.getInstance("HmacSHA1");
@@ -553,7 +553,7 @@ public class STUN {
   }
 
   //see http://tools.ietf.org/html/rfc5389#section-15.5
-  public static int calcFingerprint(byte data[], int length) {
+  public static int calcFingerprint(byte[] data, int length) {
     CRC32 crc = new CRC32();
     crc.update(data, 0, length);
     return ((int)crc.getValue()) ^ 0x5354554e;
@@ -568,8 +568,9 @@ public class STUN {
       DatagramPacket dp;
       boolean resendAuth;
       int errcode;
-      int ip[], port;
-      byte response[] = new byte[1500];
+      int[] ip;
+      int port;
+      byte[] response = new byte[1500];
       ByteBuffer bb = ByteBuffer.wrap(response);
       bb.order(ByteOrder.BIG_ENDIAN);
       while (stun.active) {
@@ -668,7 +669,7 @@ public class STUN {
                 stun.relayIP = String.format("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
                 if (stun.relayIP.equals("0.0.0.0")) {
                   //use turn host address
-                  byte ip4[] = stun.addr.getAddress();
+                  byte[] ip4 = stun.addr.getAddress();
                   stun.relayIP = String.format("%d.%d.%d.%d", ip4[0], ip4[1], ip4[2], ip4[3]);;
                 }
                 break;
@@ -794,11 +795,11 @@ public class STUN {
       this.port = port;
       ok = true;
     };
-    public void turnAlloc(STUN stun, String ip, int port, byte token[], int lifetime) {};
+    public void turnAlloc(STUN stun, String ip, int port, byte[] token, int lifetime) {};
     public void turnBind(STUN stun) {};
     public void turnRefresh(STUN stun, int lifetime) {};
     public void turnFailed(STUN stun) {};
-    public void turnData(STUN stun, byte data[], int offset, int length, short channel) {};
+    public void turnData(STUN stun, byte[] data, int offset, int length, short channel) {};
   }
 
   /** Performs a quick test to determine your firewall type. */

@@ -10,12 +10,12 @@ import java.awt.event.KeyEvent;
 public class Menu implements Dialog {
   private boolean closed = false;
   private ANSI ansi;
-  private String opts[];
+  private String[] opts;
   private int x,y;
   private int selected = 0;
   private String action = "";
 
-  public Menu(ANSI ansi, String opts[], int x, int y) {
+  public Menu(ANSI ansi, String[] opts, int x, int y) {
     this.ansi = ansi;
     this.opts = opts;
     this.x = x;

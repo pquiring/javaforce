@@ -26,10 +26,10 @@ public class WinCom {
     if (com.handle == 0) return null;
     return com;
   }
-  public int read(byte data[]) {
+  public int read(byte[] data) {
     return WinNative.comRead(handle, data);
   }
-  public int write(byte data[]) {
+  public int write(byte[] data) {
     return WinNative.comWrite(handle, data);
   }
   public void close() {

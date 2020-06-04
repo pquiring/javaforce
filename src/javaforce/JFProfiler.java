@@ -6,8 +6,8 @@ package javaforce;
  */
 
 public class JFProfiler {
-  private long ms[];
-  private String names[];
+  private long[] ms;
+  private String[] names;
   private int step;
   private String name;
   private StringBuilder sb = new StringBuilder();

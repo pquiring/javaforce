@@ -25,8 +25,8 @@ public class RTPChannel {
   private boolean dtmfSent = false;
   private AudioBuffer buffer = new AudioBuffer(8000, 1, 2);  //freq, chs, seconds
   private DTMF dtmf;
-  private static short silence8[] = new short[160];
-  private static short silence16[] = new short[320];
+  private static short[] silence8 = new short[160];
+  private static short[] silence16 = new short[320];
   protected long turnBindExpires;
   private long lastPacket = 0;
   protected boolean active = false;
@@ -98,7 +98,7 @@ public class RTPChannel {
   /**
    * Writes a packet to the RTCP port.
    */
-  public void writeRTCP(byte data[], int off, int len) {
+  public void writeRTCP(byte[] data, int off, int len) {
     if (!rtp.active) {
       return;
     }
@@ -489,14 +489,14 @@ public class RTPChannel {
   /**
    * Returns a packet of decoded samples.
    */
-  public boolean getSamples(short data[]) {
+  public boolean getSamples(short[] data) {
     if (!stream.canRecv()) {
       return moh.getSamples(data);
     }
     return buffer.get(data, 0, data.length);
   }
 
-  private void addSamples(short data[]) {
+  private void addSamples(short[] data) {
     buffer.add(data, 0, data.length);
   }
 

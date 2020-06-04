@@ -363,7 +363,7 @@ public class Rpe {
           int xmc_start, /* Starting point for the three bit part of xmc */
           short[] xmc, /* [0..12], 3 bits     IN      */
           short[] erp /* [0..39]             OUT     */) {
-    short xMp[] = new short[13];
+    short[] xMp = new short[13];
 
     /* exp_out and mant_out are modified in this method */
     APCM_quantization_xmaxc_to_exp_mant(xmaxc_elem, DECODE);

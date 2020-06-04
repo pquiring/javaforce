@@ -19,12 +19,12 @@ public class RTPVP8 extends RTPCodec {
   }
 
   /** Encodes raw VP8 data into multiple RTP packets. */
-  public byte[][] encode(byte data[], int x, int y, int id) {
+  public byte[][] encode(byte[] data, int x, int y, int id) {
     ArrayList<byte[]> packets = new ArrayList<byte[]>();
     int len = data.length;
     int packetLength;
     int offset = 0;
-    byte packet[];
+    byte[] packet;
     while (len > 0) {
       if (len > mtu) {
         packetLength = mtu;
@@ -48,7 +48,7 @@ public class RTPVP8 extends RTPCodec {
   /**
    * Returns last full packet.
    */
-  public Packet decode(byte rtp[], int offset, int length) {
+  public Packet decode(byte[] rtp, int offset, int length) {
     if (rtp.length < 12 + 2) return null;  //bad packet
     int vp8Length = rtp.length - 12;
     int payloadOffset = 12;
@@ -103,6 +103,6 @@ public class RTPVP8 extends RTPCodec {
   private int seqnum;
   private int timestamp;
   private final int ssrc;
-  private byte partial[];
+  private byte[] partial;
   private int lastseqnum = -1;
 }

@@ -11,7 +11,7 @@ import java.util.HashMap;
 import javaforce.*;
 
 public class Resource {
-  public byte data[];
+  public byte[] data;
   public String id;
   public String mime;
 
@@ -28,7 +28,7 @@ public class Resource {
     Resource.loader = loader;
   }
 
-  public static synchronized Resource registerResource(byte data[], String mime) {
+  public static synchronized Resource registerResource(byte[] data, String mime) {
     Resource res = new Resource();
     res.data = data;
     res.id = "r" + nextID++;
@@ -42,12 +42,12 @@ public class Resource {
       JFLog.log("Error:Resource not found:" + name);
       return null;
     }
-    byte data[] = JF.readAll(is);
+    byte[] data = JF.readAll(is);
     try {is.close();} catch (Exception e) {}
     return registerResource(data, mime);
   }
   public static Resource readStream(InputStream is, String mime) {
-    byte data[] = JF.readAll(is);
+    byte[] data = JF.readAll(is);
     return registerResource(data, mime);
   }
   public static Resource getResource(String id) {

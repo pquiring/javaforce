@@ -192,7 +192,7 @@ public class GenPkgInfo {
 */
       sb.append("Summary: " + desc + "\n");
       sb.append("Requires: ");
-      String depends[] = getDepends("fedora.depends");
+      String[] depends = getDepends("fedora.depends");
       for(int a=0;a<depends.length;a++) {
         if (a > 0) sb.append(",");
         sb.append(depends[a]);
@@ -238,7 +238,7 @@ public class GenPkgInfo {
         case "a64": sb.append("aarch64"); break;
       }
       sb.append("\n");
-      String depends[] = getDepends("arch.depends");
+      String[] depends = getDepends("arch.depends");
       for(int a=0;a<depends.length;a++) {
         sb.append("depend = ");
         sb.append(depends[a]);

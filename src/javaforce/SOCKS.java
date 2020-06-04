@@ -16,12 +16,12 @@ public class SOCKS {
    * @return boolean state if SOCKS4 connection to host:port was successful.
    */
   public static boolean connect(Socket s, String host, int port) {
-    byte req[] = new byte[9];
-    byte reply[] = new byte[8];
+    byte[] req = new byte[9];
+    byte[] reply = new byte[8];
     req[0] = 0x04;
     req[1] = 0x01;
     BE.setuint16(req, 2, port);
-    String ips[] = host.split("[.]");
+    String[] ips = host.split("[.]");
     if (ips == null || ips.length != 4) {
       JFLog.log("SOCKS.connect() : host is not an IP4 address");
       return false;

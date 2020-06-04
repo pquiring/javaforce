@@ -39,11 +39,11 @@ public class GSMEncoder
   /* [0..3] coded LTP gain                OUT     */
   private short Mc[] = new short[4];
   /* [0..3] RPE grid selection            OUT     */
-  private short bc[] = new short[4];
+  private short[] bc = new short[4];
   /* [0..3] Coded maximum amplitude       OUT     */
-  private short xmaxc[] = new short[4];
+  private short[] xmaxc = new short[4];
   /* [13*4] normalized RPE samples        OUT     */
-  private short xmc[] = new short[13 * 4];
+  private short[] xmc = new short[13 * 4];
 
   /* Reads 160 bytes */
   private int[] input_signal = new int[160];
@@ -499,7 +499,7 @@ public class GSMEncoder
 	 * a little memory although I do not think it will cause a
 	 * problem.
    */
-  private static final int u2s[]
+  private static final int[] u2s
           = new int[] {
             33280, 34308, 35336, 36364, 37393, 38421, 39449, 40477,
             41505, 42534, 43562, 44590, 45618, 46647, 47675, 48703,

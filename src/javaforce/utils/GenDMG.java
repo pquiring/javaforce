@@ -10,7 +10,7 @@ package javaforce.utils;
 import java.io.*;
 
 public class GenDMG {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length < 3) {
       System.out.println("Usage:GenDMG app output jre_folder [ffmpeg_folder]");
       System.out.println("  define 'genisoimage' to use genisoimage instead of hdiutil");
@@ -55,7 +55,7 @@ public class GenDMG {
       rt.exec(new String[] {"cp", "Info.plist", tmp_contents}).waitFor();
       rt.exec(new String[] {"cp", icon, tmp_contents_resources}).waitFor();
       if (ffmpeg != null) {
-        File files[] = new File(ffmpeg).listFiles();
+        File[] files = new File(ffmpeg).listFiles();
         for(int a=0;a<files.length;a++) {
           if (files[a].isDirectory()) continue;
           rt.exec(new String[] {"cp", files[a].getAbsolutePath(), tmp_contents_macos}).waitFor();

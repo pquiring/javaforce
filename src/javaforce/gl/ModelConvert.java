@@ -18,7 +18,7 @@ public class ModelConvert {
     System.out.println("Out format: .jf3d");
     System.exit(0);
   }
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args == null || args.length  != 2) usage();
     String in = args[0];
     String out = args[1];
@@ -62,7 +62,7 @@ public class ModelConvert {
     System.out.println("Converted " + in + " to " + out);
   }
   private static void doFolder(String in, String out) {
-    File ins[] = new File(in).listFiles();
+    File[] ins = new File(in).listFiles();
     for(int a=0;a<ins.length;a++) {
       File f = ins[a];
       if (f.isDirectory()) continue;

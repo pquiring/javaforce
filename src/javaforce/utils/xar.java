@@ -19,7 +19,7 @@ import javaforce.*;
 public class xar {
   private RandomAccessFile raf;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     xar i = new xar();
     i.open(args[0]);
   }
@@ -29,7 +29,7 @@ public class xar {
       raf = new RandomAccessFile(file, "r");
 
       //read header
-      byte header[] = new byte[28];
+      byte[] header = new byte[28];
       if (raf.read(header) != header.length) throw new Exception("bad header:read failed");
       if (BE.getuint32(header, 0) != 0x78617221) throw new Exception("bad header:magic");
       int header_size = BE.getuint16(header, 4);
@@ -42,7 +42,7 @@ public class xar {
         raf.seek(header_size);
       }
       //now read compressed toc
-      byte toc_compressed[] = new byte[(int)toc_size_compressed];
+      byte[] toc_compressed = new byte[(int)toc_size_compressed];
       //TODO : support reading fragments
       if (raf.read(toc_compressed) != toc_compressed.length) throw new Exception("bad toc:read failed");
       //now decompress toc
@@ -50,7 +50,7 @@ public class xar {
       InflaterOutputStream dos = new InflaterOutputStream(baos);
       dos.write(toc_compressed);
       dos.finish();
-      byte toc_uncompressed[] = baos.toByteArray();
+      byte[] toc_uncompressed = baos.toByteArray();
       if (toc_uncompressed.length != toc_size_uncompressed) throw new Exception("bad toc:deflat failed");
       System.out.println("toc=" + new String(toc_uncompressed));
     } catch (Exception e) {

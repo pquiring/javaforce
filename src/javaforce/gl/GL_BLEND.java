@@ -217,12 +217,12 @@ public class GL_BLEND {
     datapos += sl+1;
     return str;
   }
-  private void setData(byte in[]) {
+  private void setData(byte[] in) {
     data = in;
     datapos = 0;
   }
   private class Context {
-    byte data[];
+    byte[] data;
     int datapos;
   }
   private Context pushData() {
@@ -235,7 +235,7 @@ public class GL_BLEND {
     data = ctx.data;
     datapos = ctx.datapos;
   }
-  private int strlen(byte str[], int offset, int max) {
+  private int strlen(byte[] str, int offset, int max) {
     for(int a=0;a<max;a++) {
       if (str[a+offset] == 0) return a;
     }
@@ -256,7 +256,7 @@ public class GL_BLEND {
     return chunk;
   }
   private class Vertex {
-    float xyz[];
+    float[] xyz;
   }
   private GLModel loadBlend(InputStream is) throws Exception {
     setData(JF.readAll(is));

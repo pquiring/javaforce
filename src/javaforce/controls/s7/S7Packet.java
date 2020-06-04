@@ -30,7 +30,7 @@ public class S7Packet {
     COTP cotp = new COTP(COTP.type_data);
     S7Header header = new S7Header();
     S7Params params = new S7Params();
-    byte data[];
+    byte[] data;
 
     params.makeConnect();
     int size = tpkt.size() + cotp.size() + header.size() + params.size();
@@ -69,12 +69,12 @@ public class S7Packet {
   }
 
   /** Creates a packet to read data from S7. */
-  public static byte[] makeReadPacket(S7Data s7[]) {
+  public static byte[] makeReadPacket(S7Data[] s7) {
     TPKT tpkt = new TPKT();
     COTP cotp = new COTP(COTP.type_data);
     S7Header header = new S7Header();
     S7Params params = new S7Params();
-    byte data[];
+    byte[] data;
 
     params.makeRead(s7);
     int size = tpkt.size() + cotp.size() + header.size() + params.size();
@@ -96,7 +96,7 @@ public class S7Packet {
     COTP cotp = new COTP(COTP.type_data);
     S7Header header = new S7Header();
     S7Params params = new S7Params();
-    byte data[];
+    byte[] data;
 
     params.makeWrite(type.block_type, type.block_number, type.data_type, type.offset, type.length, type.data);
     int size = tpkt.size() + cotp.size() + header.size() + params.size();

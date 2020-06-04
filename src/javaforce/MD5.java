@@ -40,7 +40,7 @@ public class MD5 {
 
     long count;                      /* number of bits */
 
-    byte buffer[] = new byte[64];    /* input buffer */
+    byte[] buffer = new byte[64];    /* input buffer */
 
   };
   private Context context;
@@ -176,8 +176,8 @@ public class MD5 {
    * message digest and zeroizing the context.
    */
   public byte[] done() {
-    byte digest[] = new byte[16];
-    byte bits[] = new byte[8];
+    byte[] digest = new byte[16];
+    byte[] bits = new byte[8];
     int index, padLen;
 
     /* Save number of bits */

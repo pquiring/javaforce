@@ -14,7 +14,7 @@ public class CIP_Reply_Write {
   public int size() {
     return 4;
   }
-  public void read(byte data[], int offset) throws Exception {
+  public void read(byte[] data, int offset) throws Exception {
     cmd = data[offset++];
     reserved1 = data[offset++];
     reserved2 = data[offset++];

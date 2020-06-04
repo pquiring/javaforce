@@ -15,7 +15,7 @@ public class deltree {
   public static int fileCount;
   public static int folderCount;
   public static int checkCount;
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length != 2) {
       System.out.println("Usage : deltree PATH days");
       System.out.println(" Desc : delete all files/folder from PATH that are specifed days old or older.");
@@ -38,7 +38,7 @@ public class deltree {
   }
 
   public static void deleteFolder(File file) {
-    File files[] = file.listFiles();
+    File[] files = file.listFiles();
     if (files == null) return;
     for(int a=0;a<files.length;a++) {
 //      System.out.println("checking:" + files[a].getAbsolutePath() + ":" + files[a].lastModified());  //test

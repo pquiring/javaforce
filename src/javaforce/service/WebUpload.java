@@ -21,7 +21,7 @@ public class WebUpload {
   }
   public static class WebFile {
     /** File data */
-    public byte data[];
+    public byte[] data;
     /** Name of file (excluding any path info) */
     public String name;
     /** Copies temp uploaded file to dest */
@@ -34,7 +34,7 @@ public class WebUpload {
   }
   private WebFile[] list;
   private static int maxlength = 64 * 1024 * 1024;  //64MBs
-  private boolean cmp(byte s1[], int p1, byte s2[], int p2, int len) {
+  private boolean cmp(byte[] s1, int p1, byte[] s2, int p2, int len) {
     while (len > 0) {
       if (s1[p1++] != s2[p2++]) return false;
       len--;
@@ -48,13 +48,13 @@ public class WebUpload {
     if (contentType == null) throw new Exception("WebUpload:No Content-Type");
     int idx = contentType.indexOf("boundary=");
     if (idx == -1) throw new Exception("WebUpload:No boundary");
-    byte boundary[] = ("--" + contentType.substring(idx+9)).getBytes();
+    byte[] boundary = ("--" + contentType.substring(idx+9)).getBytes();
     int boundaryLength = boundary.length;
     String contentLength = req.getHeader("Content-Length");
     if (contentLength == null) throw new Exception("WebUpload:No Content-Length");
     int postlength = Integer.valueOf(contentLength);
     if (postlength > maxlength) throw new Exception("WebUpload:Upload > Max allowed");
-    byte data[] = JF.readAll(req.is, postlength);
+    byte[] data = JF.readAll(req.is, postlength);
     //now process files in post data
     //[\r\n]boundary\r\nContent-Disposition: form-data; name="???"; filename="???"\r\nContent-Type: mime/type\r\n\r\n
     int pos = 0;

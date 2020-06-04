@@ -125,7 +125,7 @@ public class LE {
 
   //Using arrays are 40% faster than using java.nio.ByteBuffer
 
-  public static short[] byteArray2shortArray(byte in[], short out[]) {
+  public static short[] byteArray2shortArray(byte[] in, short[] out) {
     int len = in.length / 2;
     if (out == null) out = new short[len];
     int p = 0;
@@ -137,7 +137,7 @@ public class LE {
     }
     return out;
   }
-  public static int[] byteArray2intArray(byte in[], int out[]) {
+  public static int[] byteArray2intArray(byte[] in, int[] out) {
     int len = in.length / 4;
     if (out == null) out = new int[len];
     int p = 0;
@@ -151,7 +151,7 @@ public class LE {
     }
     return out;
   }
-  public static byte[] shortArray2byteArray(short in[], byte out[]) {
+  public static byte[] shortArray2byteArray(short[] in, byte[] out) {
     int len = in.length;
     if (out == null) out = new byte[len * 2];
     int p = 0;
@@ -163,7 +163,7 @@ public class LE {
     }
     return out;
   }
-  public static byte[] intArray2byteArray(int in[], byte out[]) {
+  public static byte[] intArray2byteArray(int[] in, byte[] out) {
     int len = in.length;
     if (out == null) out = new byte[len * 4];
     int p = 0;

@@ -15,6 +15,6 @@ public class I2C {
   }
   public native static boolean init();
   public native static boolean setSlave(int addr);
-  public native static boolean write(byte data[]);
-  public native static int read(byte data[]);
+  public native static boolean write(byte[] data);
+  public native static int read(byte[] data);
 }

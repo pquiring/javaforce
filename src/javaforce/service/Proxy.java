@@ -59,7 +59,7 @@ public class Proxy extends Thread {
       sess.close();
     }
     if (filtersecure) {
-      SecureSite ssList[] = secureSites.values().toArray(new SecureSite[0]);
+      SecureSite[] ssList = secureSites.values().toArray(new SecureSite[0]);
       for(int a=0;a<ssList.length;a++) {
         ssList[a].close();
       }
@@ -70,7 +70,7 @@ public class Proxy extends Thread {
 
   public void deleteKeys() {
     //delete all temp files in ~/.jfproxy.keys
-    File files[] = new File(keyPath).listFiles();
+    File[] files = new File(keyPath).listFiles();
     if (files != null) {
       for(int a=0;a<files.length;a++) {
         if (files[a].getName().startsWith("localhost.")) continue;
@@ -154,7 +154,7 @@ public class Proxy extends Thread {
   }
 
   /** Executes keytool directly */
-  public static boolean keytool(String args[]) {
+  public static boolean keytool(String[] args) {
     ArrayList<String> cmd = new ArrayList<String>();
     try {
       if (JF.isWindows()) {

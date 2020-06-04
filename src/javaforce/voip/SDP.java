@@ -97,13 +97,13 @@ public class SDP implements Cloneable {
      * @param key = 16 byte key
      * @param salt = 14 byte salt
      */
-    public void addKey(String crypto, byte key[], byte salt[]) {
+    public void addKey(String crypto, byte[] key, byte[] salt) {
       Key newkey = new Key();
       newkey.crypto = crypto;
       newkey.key = key;
       newkey.salt = salt;
       if (keys == null) keys = new Key[0];
-      Key newKeys[] = new Key[keys.length + 1];
+      Key[] newKeys = new Key[keys.length + 1];
       newKeys[keys.length] = newkey;
       keys = newKeys;
     }
@@ -121,7 +121,7 @@ public class SDP implements Cloneable {
   }
   public String ip;  //global connection
   public String iceufrag, icepwd, fingerprint;
-  public Stream streams[] = new Stream[0];
+  public Stream[] streams = new Stream[0];
 
   public Stream addStream(Type type) {
     JFLog.log(log, "SDP.addStream:" + type);

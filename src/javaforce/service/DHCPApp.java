@@ -164,7 +164,7 @@ public class DHCPApp extends javax.swing.JFrame {
   private void test() {
     try {
       DatagramSocket s = new DatagramSocket(68);
-      byte d[] = new byte[242];
+      byte[] d = new byte[242];
       d[0] = DHCP.DHCP_OPCODE_REQUEST;
       d[1] = 1;  //ethernet
       d[2] = 6;  //hw len (MAC size)

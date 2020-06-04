@@ -103,7 +103,7 @@ public class SIPServer extends SIP implements SIPInterface {
         if (a == 0) {
           //add received to first via entry (and rport if requested)
           String via = cdsd.vialist[a];
-          String f[] = via.split(";");
+          String[] f = via.split(";");
           StringBuilder sb = new StringBuilder();
           for(int b=0;b<f.length;b++) {
             if (f[b].equals("rport")) {
@@ -189,7 +189,7 @@ public class SIPServer extends SIP implements SIPInterface {
     dst.vialist = src.vialist;
   }
 
-  public void packet(String msg[], String remoteip, int remoteport) {
+  public void packet(String[] msg, String remoteip, int remoteport) {
     try {
       String tmp, req = null, epass;
       String callid = getHeader("Call-ID:", msg);
@@ -200,7 +200,7 @@ public class SIPServer extends SIP implements SIPInterface {
       }
       CallDetailsServer cd = getCallDetailsServer(callid);
       if (cd.localhost == null && !msg[0].startsWith("SIP/")) {
-        String f[] = msg[0].split(" ");  //REQUEST sip:[ext@]HOST[:port] SIP/2.0
+        String[] f = msg[0].split(" ");  //REQUEST sip:[ext@]HOST[:port] SIP/2.0
         String sip = f[1];
         if (sip.startsWith("sip:")) {
           sip = sip.substring(4);
@@ -299,7 +299,7 @@ public class SIPServer extends SIP implements SIPInterface {
               if (!resln.regionMatches(true, 0, "digest ", 0, 7)) {
                 break;
               }
-              String tags[] = resln.substring(7).replaceAll(" ", "").replaceAll("\"", "").split(",");
+              String[] tags = resln.substring(7).replaceAll(" ", "").replaceAll("\"", "").split(",");
               String res = getHeader("response=", tags);
               String nonce = getHeader("nonce=", tags);
               if ((nonce == null) || (cd.nonce == null) || (!cd.nonce.equals(nonce))) {
@@ -345,7 +345,7 @@ public class SIPServer extends SIP implements SIPInterface {
                 if (!resln.regionMatches(true, 0, "digest ", 0, 7)) {
                   break;
                 }
-                String tags[] = resln.substring(7).replaceAll(" ", "").replaceAll("\"", "").split(",");
+                String[] tags = resln.substring(7).replaceAll(" ", "").replaceAll("\"", "").split(",");
                 String res = getHeader("response=", tags);
                 String nonce = getHeader("nonce=", tags);
                 if ((nonce == null) || (!cd.nonce.equals(nonce))) {

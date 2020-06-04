@@ -38,7 +38,7 @@ public abstract class Component {
 
   public static class Event {
     public String msg;
-    public String args[];
+    public String[] args;
   }
 
   private static class OnEvent {
@@ -123,7 +123,7 @@ public abstract class Component {
     return map.get(key);
   }
   /** Invokes getClient().sendEvent() */
-  public void sendEvent(String msg, String args[]) {
+  public void sendEvent(String msg, String[] args) {
     if (client != null) {
       client . sendEvent(id, msg, args);
     } else {
@@ -330,8 +330,8 @@ public abstract class Component {
     sb.append(" id='" + id + "'");
     if (attrs.size() > 0) {
       int size = attrs.size();
-      String keys[] = attrs.keySet().toArray(new String[size]);
-      String vals[] = attrs.values().toArray(new String[size]);
+      String[] keys = attrs.keySet().toArray(new String[size]);
+      String[] vals = attrs.values().toArray(new String[size]);
       for(int a=0;a<size;a++) {
         if (vals[a] == null) {
           sb.append(" " + keys[a]);

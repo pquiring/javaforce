@@ -19,10 +19,10 @@ public class RTPJPEG extends RTPCodec {
   }
 
   /** Encodes a raw JPEG data into multiple RTP packets. */
-  public byte[][] encode(byte jpeg[], int x, int y, int id) {
+  public byte[][] encode(byte[] jpeg, int x, int y, int id) {
     int cnt = (jpeg.length + mtu - 1) / mtu;
     int len = jpeg.length;
-    byte packets[][] = new byte[cnt][];
+    byte[][] packets = new byte[cnt][];
     int packetLength;
     int offset = 0;
     for(int a=0;a<cnt;a++) {
@@ -42,7 +42,7 @@ public class RTPJPEG extends RTPCodec {
 
   private Packet packet = new Packet();
 
-  public Packet decode(byte rtp[], int offset, int length) {
+  public Packet decode(byte[] rtp, int offset, int length) {
     if (rtp.length < 12 + 8) return null;  //bad packet
     if (partial == null) partial = new byte[0];
     int off = ((int)rtp[13]) & 0xff;
@@ -68,7 +68,7 @@ public class RTPJPEG extends RTPCodec {
     return null;
   }
 
-  private static void buildHeader(byte data[], int x, int y, int offset) {
+  private static void buildHeader(byte[] data, int x, int y, int offset) {
     data[12] = 0;  //type-specfic ???
     data[13] = (byte) ((offset & 0xff0000) >> 16);
     data[14] = (byte) ((offset & 0xff00) >> 8);
@@ -84,5 +84,5 @@ public class RTPJPEG extends RTPCodec {
   private int seqnum;
   private int timestamp;
   private int ssrc;
-  private byte partial[];
+  private byte[] partial;
 }

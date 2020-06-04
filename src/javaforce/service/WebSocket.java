@@ -39,7 +39,7 @@ public class WebSocket {
   /** Writes a WebSocket message to client.
    * Type = TYPE_TEXT
    */
-  public void write(byte msg[]) {
+  public void write(byte[] msg) {
     write(msg, TYPE_TEXT);
   }
 

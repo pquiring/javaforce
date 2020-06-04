@@ -23,7 +23,7 @@ public class GL_3DS {
   private static final int _3DS_FLG_EASE_FROM   =  0x10;
   //*.3DS loading (loades meshes, textures and animation - lights are not supported)
   //You should now use GLSCene.load3DS() instead
-  public byte data[];
+  public byte[] data;
   public int datapos;
 
   public static boolean debug = false;
@@ -66,8 +66,8 @@ public class GL_3DS {
     int head_id;
     int head_len;
     int _siz;
-    float _float[];
-    int _pts[];
+    float[] _float;
+    int[] _pts;
     boolean done_vertex = false;
     boolean done_pts = false;
     int vertexidx = -1;

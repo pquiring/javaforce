@@ -146,12 +146,12 @@ public class LnxPty {
   }
 
   /** Writes to child process (max 1024 bytes) */
-  public void write(byte buf[]) {
+  public void write(byte[] buf) {
     LnxNative.ptyWrite(ctx, buf);
   }
 
   /** Reads from child process (max 1024 bytes) */
-  public int read(byte buf[]) {
+  public int read(byte[] buf) {
     if (closed) return -1;
     return LnxNative.ptyRead(ctx, buf);
   }
@@ -164,11 +164,11 @@ public class LnxPty {
   /** Returns current processes environment variables plus those passed in extra.
    * extra overrides current variables.
    */
-  public static String[] makeEnvironment(String extra[]) {
+  public static String[] makeEnvironment(String[] extra) {
     ArrayList<String> env = new ArrayList<String>();
     Map<String, String> old = System.getenv();
     Set<String> set = old.keySet();
-    String keys[] = (String[])set.toArray(new String[0]);
+    String[] keys = (String[])set.toArray(new String[0]);
     for(int a=0;a<keys.length;a++) {
       String key = keys[a];
       env.add(key + "=" + old.get(key));

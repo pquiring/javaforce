@@ -13,7 +13,7 @@ import java.io.*;
 import javaforce.*;
 
 public class ResourceManager {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args == null || args.length < 2) {
       System.out.println("jfresmgr/" + JF.getVersion());
       System.out.println("Desc : Adds files to target file");
@@ -23,10 +23,10 @@ public class ResourceManager {
     try {
       RandomAccessFile target = new RandomAccessFile(args[0], "rw");
       target.seek(target.length());
-      byte header[] = new byte[8];
+      byte[] header = new byte[8];
       for(int a=1;a<args.length;a++) {
         FileInputStream fis = new FileInputStream(args[a]);
-        byte data[] = JF.readAll(fis);
+        byte[] data = JF.readAll(fis);
         fis.close();
         System.arraycopy(args[a].getBytes(), args[a].length() - 4, header, 0, 4);
         LE.setuint32(header, 4, data.length);

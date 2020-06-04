@@ -109,10 +109,10 @@ public class Wav {
   /** Returns next chunk of samples. */
   public byte[] readSamples(int nSamples) {
     int byteLength = nSamples*bytes*chs;
-    byte read8[];
+    byte[] read8;
     read8 = JF.readAll(wav, byteLength);
     if (read8 == null) return null;
-    byte read32[];
+    byte[] read32;
     int lenXchs = nSamples * chs, pos = 0, pos24 = 0;
     switch (bits) {
       case 16:
@@ -175,7 +175,7 @@ public class Wav {
         break;
     }
     try {
-      byte data[] = new byte[20];
+      byte[] data = new byte[20];
       //write RIFF header (20 bytes);
       LE.setString(data, 0, 4, "RIFF");
       LE.setuint32(data, 4, size + 36);  //rest of file size

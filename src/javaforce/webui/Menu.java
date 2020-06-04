@@ -42,13 +42,13 @@ public class Menu extends MenuItem {
   public void add(MenuItem item) {
     popupMenu.add(item);
   }
-  public void onMouseDown(String args[]) {
+  public void onMouseDown(String[] args) {
 
   }
-  public void onClick(String args[], MouseEvent me) {
+  public void onClick(String[] args, MouseEvent me) {
     sendEvent("getpossize", null);
   }
-  public void onPosSize(String args[]) {
+  public void onPosSize(String[] args) {
     super.onPosSize(args);
     if (inMenuBar)
       popupMenu.setPosition(x, y + height);
@@ -59,7 +59,7 @@ public class Menu extends MenuItem {
       client.topPopupMenu = popupMenu;
     }
   }
-  public void onMouseMove(String args[]) {
+  public void onMouseMove(String[] args) {
     if (!inMenu && client.topPopupMenu != null && client.topPopupMenu != popupMenu) {
       client.topPopupMenu.setVisible(false);
     }
@@ -68,7 +68,7 @@ public class Menu extends MenuItem {
   public void closeMenu() {
     popupMenu.setVisible(false);
   }
-  public static void onMouseDownBody(WebUIClient client, String args[]) {
+  public static void onMouseDownBody(WebUIClient client, String[] args) {
     //args : p=x,y
 /*
     System.out.println("args=" + args.length);

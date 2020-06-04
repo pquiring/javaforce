@@ -11,7 +11,7 @@ import javaforce.*;
 
 public class Sudo {
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length == 0) {
       System.out.println("Usage : jfsudo command [args]");
       System.exit(1);
@@ -26,7 +26,7 @@ public class Sudo {
     }
     try {
       //add "sudo -A"
-      String cmd[] = new String[args.length + 2];
+      String[] cmd = new String[args.length + 2];
       cmd[0] = "sudo";
       cmd[1] = "-A";
       System.arraycopy(args, 0, cmd, 2, args.length);
@@ -63,7 +63,7 @@ public class Sudo {
     }
 
     public void run() {
-      byte buf[] = new byte[1024];
+      byte[] buf = new byte[1024];
       try {
         while (true) {
           int len = is.read(buf);

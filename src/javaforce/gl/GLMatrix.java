@@ -215,7 +215,7 @@ public class GLMatrix implements Cloneable {
       r[col+3*4] = a0 * src.m[0+3*4] + a1 * src.m[1+3*4] + a2 * src.m[2+3*4] + a3 * src.m[3+3*4];
     }
     //swap m/r
-    float x[];
+    float[] x;
     x = m;
     m = r;
     r = x;
@@ -235,7 +235,7 @@ public class GLMatrix implements Cloneable {
     }
     for(int a=0;a<4;a++) r[a+3*4] = m[a+3*4];
     //swap m/r
-    float x[];
+    float[] x;
     x = m;
     m = r;
     r = x;

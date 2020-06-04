@@ -424,7 +424,7 @@ public class ANSI {
     }
   }
 
-  private boolean hasDigit(int nums[], int digit) {
+  private boolean hasDigit(int[] nums, int digit) {
     for(int a=0;a<nums.length;a++) {
       if (nums[a] == digit) return true;
     }

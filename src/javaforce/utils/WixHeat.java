@@ -43,7 +43,7 @@ public class WixHeat {
     if (path.startsWith("/")) path = path.substring(1);
     String fullpath = input_folder + path;
     File folder = new File(fullpath);
-    File files[] = folder.listFiles();
+    File[] files = folder.listFiles();
     if (files == null || files.length == 0) return;
     int idx = path.lastIndexOf("/");
     if (idx == -1) idx = 0; else idx++;
@@ -140,7 +140,7 @@ public class WixHeat {
     out.append("</Wix>\n");
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length < 4) {
       usage();
     }

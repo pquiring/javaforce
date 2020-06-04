@@ -48,7 +48,7 @@ public class updatedesktopdatabase {
   public static ArrayList<ActionGroup> actionsList = new ArrayList<ActionGroup>();
   public static boolean recursive = true;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     String folderPath = "/usr/share/applications";  //default if none specified
     for (int a = 0; a < args.length; a++) {
       if (args[a].equals("--no-recursive")) {
@@ -72,7 +72,7 @@ public class updatedesktopdatabase {
   public static void parseFolder(File folder) {
 //System.out.println("folder=" + folder.getAbsolutePath());
     try {
-      File files[] = folder.listFiles();
+      File[] files = folder.listFiles();
       for (int f = 0; f < files.length; f++) {
         if (files[f].isDirectory()) {
           if (recursive) {
@@ -98,7 +98,7 @@ public class updatedesktopdatabase {
         if ((mimetype == null) || (mimetype.length() == 0)) {
           continue;
         }
-        String mimes[] = mimetype.split(";");
+        String[] mimes = mimetype.split(";");
         if (mimes.length == 0) {
           continue;
         }
@@ -106,7 +106,7 @@ public class updatedesktopdatabase {
         if (action == null) {
           action = "open";
         }
-        String actions[] = action.split(",");
+        String[] actions = action.split(",");
 //System.out.println("actions.length=" + actions.length + ",mimes.length=" + mimes.length);
         for (int m = 0; m < mimes.length; m++) {
           for (int a = 0; a < actions.length; a++) {

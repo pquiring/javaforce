@@ -29,7 +29,7 @@ public class CIP_Request {
       public byte[] tag_chars;
       //1 byte padding if tag_type/tag_len/tag is not multiple of 16bit words
     //}
-    public byte tagdata[];
+    public byte[] tagdata;
   //}
   public byte route_size = 0x01;  //size of following {} in 16bit words
   public byte route_res = 0x00;  //reserved
@@ -49,7 +49,7 @@ public class CIP_Request {
     return size;
   }
 
-  public void write(byte data[], int offset) throws Exception {
+  public void write(byte[] data, int offset) throws Exception {
     data[offset++] = cmd;
     data[offset++] = count;
     data[offset++] = path_1;
@@ -82,7 +82,7 @@ public class CIP_Request {
     setLengths();
   }
 
-  public void setWrite(String tag, byte type, byte data[]) {
+  public void setWrite(String tag, byte type, byte[] data) {
     service = SERVICE_WRITETAG;
     tag_len = (byte)tag.length();
     tag_chars = tag.getBytes();

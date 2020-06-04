@@ -27,7 +27,7 @@ public class JFCompiler {
     System.out.println("  outFolder for compile only");
     System.exit(0);
   }
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length < 2) {
       usage();
     }
@@ -44,7 +44,7 @@ public class JFCompiler {
     return files.toArray(new File[0]);
   }
   private static void addFolder(File folder, ArrayList<File> files) {
-    File list[] = folder.listFiles();
+    File[] list = folder.listFiles();
     for(int a=0;a<list.length;a++) {
       if (list[a].isDirectory()) {
         addFolder(list[a], files);
@@ -56,7 +56,7 @@ public class JFCompiler {
   public static boolean compile(String inFolder, String outFolder) {
     System.out.println("Compiling:" + inFolder);
     try {
-      File files[] = getFiles(inFolder);
+      File[] files = getFiles(inFolder);
       JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
       StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
       Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromFiles(Arrays.asList(files));
@@ -77,7 +77,7 @@ public class JFCompiler {
   public static boolean parse(String inFolder, TreeScanner scanner) {
     System.out.println("Parsing:" + inFolder);
     try {
-      File files[] = getFiles(inFolder);
+      File[] files = getFiles(inFolder);
       JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
       StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
       Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromFiles(Arrays.asList(files));
@@ -100,7 +100,7 @@ public class JFCompiler {
   public static boolean analyze(String inFolder, ElementScanner9 scanner) {
     System.out.println("Analyzing:" + inFolder);
     try {
-      File files[] = getFiles(inFolder);
+      File[] files = getFiles(inFolder);
       JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
       StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
       Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromFiles(Arrays.asList(files));

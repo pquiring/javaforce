@@ -33,7 +33,7 @@ public class MediaCoder {
   public static boolean init() {
     if (loaded) return true;
     boolean libav_org = false;
-    File sysFolders[];
+    File[] sysFolders;
     String ext = "";
     String apphome = System.getProperty("java.app.home");
     if (apphome == null) apphome = ".";
@@ -47,7 +47,7 @@ public class MediaCoder {
       sysFolders = new File[] {new File("/usr/lib/x86_64-linux-gnu")};
       ext = ".so";
     }
-    Library libs[] = {
+    Library[] libs = {
       new Library("avcodec")
       , new Library("avdevice")
       , new Library("avfilter")
@@ -82,7 +82,7 @@ public class MediaCoder {
   private static native boolean ffmpeg_init(String codec, String device, String filter, String format, String util, String scale, String postproc, String resample, boolean libav_org);
   public static native void ffmpeg_set_logging(boolean state);
 
-  private static boolean haveLibs(Library libs[]) {
+  private static boolean haveLibs(Library[] libs) {
     int cnt = 0;
     for(int a=0;a<7;a++) {
       if (libs[a].path != null) cnt++;
@@ -163,7 +163,7 @@ public class MediaCoder {
             + (JF.is64Bit() ? "64" : "32") + ".html").openStream()));
           String url = reader.readLine();
           int zLength = JF.atoi(reader.readLine());
-          byte buf[] = new byte[64 * 1024];
+          byte[] buf = new byte[64 * 1024];
           int length = 0;
           File zfile;
           boolean z7;

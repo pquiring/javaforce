@@ -36,7 +36,7 @@ public class list3ds {
     int u16;
     int u32;
     float f;
-    float f4[] = new float[4];
+    float[] f4 = new float[4];
     int cnt;
 
     u16 = readuint16(fi);
@@ -89,14 +89,14 @@ public class list3ds {
     }
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     int id, u16;
     int len, u32;
     int pos = 0, skip;
     int cnt;
 
-    float f[] = new float[4];
-    int i16[] = new int[4];
+    float[] f = new float[4];
+    int[] i16 = new int[4];
 
     if (args.length != 1) {
       System.out.println("Usage : list3ds filein.3ds");
@@ -289,7 +289,7 @@ public class list3ds {
   }
 
   public static int readuint16(InputStream in) {
-    byte data[] = new byte[2];
+    byte[] data = new byte[2];
     try {
       if (in.read(data) != 2) {
         return -1;
@@ -305,7 +305,7 @@ public class list3ds {
   }
 
   public static int readuint32(InputStream in) {
-    byte data[] = new byte[4];
+    byte[] data = new byte[4];
     try {
       if (in.read(data) != 4) {
         return -1;

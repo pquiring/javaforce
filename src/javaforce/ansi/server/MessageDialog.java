@@ -8,15 +8,15 @@ package javaforce.ansi.server;
 import java.awt.event.KeyEvent;
 
 public class MessageDialog implements Dialog {
-  private String lines[];
+  private String[] lines;
   private ANSI ansi;
   private boolean closed = false;
   private int maxlen;
-  private Field fields[];
+  private Field[] fields;
   private int field = 0;
   private String action;
 
-  public MessageDialog(ANSI ansi, String lines[]) {
+  public MessageDialog(ANSI ansi, String[] lines) {
     this.ansi = ansi;
     this.lines = lines;
     for(int a=0;a<lines.length;a++) {

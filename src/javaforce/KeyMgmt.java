@@ -19,7 +19,7 @@ public class KeyMgmt {
   private KeyStore keyStore = null;
 
   /** Executes keytool directly */
-  public static boolean keytool(String args[]) {
+  public static boolean keytool(String[] args) {
     ArrayList<String> cmd = new ArrayList<String>();
     try {
       if (JF.isWindows()) {
@@ -30,7 +30,7 @@ public class KeyMgmt {
       for(int a=0;a<args.length;a++) {
         cmd.add(args[a]);
       }
-      String sa[] = cmd.toArray(new String[cmd.size()]);
+      String[] sa = cmd.toArray(new String[cmd.size()]);
 /*
       System.out.print("cmd=");
       for(int a=0;a<sa.length;a++) {
@@ -74,7 +74,7 @@ public class KeyMgmt {
     try {
       // loading Key
       KeyFactory kf = KeyFactory.getInstance("RSA");
-      byte key[] = JF.readAll(keyStream);
+      byte[] key = JF.readAll(keyStream);
       PKCS8EncodedKeySpec keysp = new PKCS8EncodedKeySpec(key);
       PrivateKey ff = kf.generatePrivate(keysp);
 
@@ -139,10 +139,10 @@ public class KeyMgmt {
     }
   }
 
-  public static String fingerprintSHA256(byte key[]) {
+  public static String fingerprintSHA256(byte[] key) {
     try {
       MessageDigest md = MessageDigest.getInstance("SHA-256");
-      byte res[] = md.digest(key);
+      byte[] res = md.digest(key);
       StringBuilder sb = new StringBuilder();
       for(int a=0;a<res.length;a++) {
         int b = ((int)res[a]) & 0xff;

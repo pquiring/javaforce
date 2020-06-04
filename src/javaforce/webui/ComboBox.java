@@ -69,7 +69,7 @@ public class ComboBox extends Component {
     sendEvent("setidx", new String[] {"idx=" + idx});
   }
 
-  public void onChanged(String args[]) {
+  public void onChanged(String[] args) {
     int idx = args[0].indexOf("=");
     index = Integer.valueOf(args[0].substring(idx+1));
     super.onChanged(args);

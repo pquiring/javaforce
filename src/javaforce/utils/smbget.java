@@ -9,7 +9,7 @@ import javaforce.*;
 
 public class smbget {
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length == 0) {
       System.out.println("Usage:jsmbget smb://server/share/file [--user=user] [--pass=pass]");
       System.out.println("Note:DOMAINNAME and PASSWORD environment variables are used by default");

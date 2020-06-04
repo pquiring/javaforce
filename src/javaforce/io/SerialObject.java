@@ -68,7 +68,7 @@ public abstract class SerialObject {
   public String readString() throws Exception {
     int len = dis.readInt();
     if (len == -1) return null;
-    byte bytes[] = new byte[len];
+    byte[] bytes = new byte[len];
     dis.read(bytes);
     return new String(bytes, "UTF-8");
   }
@@ -84,7 +84,7 @@ public abstract class SerialObject {
   public byte[] readBytes() throws Exception {
     int len = readInt();
     if (len == -1) return null;
-    byte bytes[] = new byte[len];
+    byte[] bytes = new byte[len];
     dis.read(bytes);
     return bytes;
   }
@@ -97,7 +97,7 @@ public abstract class SerialObject {
       case id_8: readLong(); break;
       case id_len:
         int len = readInt();
-        byte data[] = new byte[len];
+        byte[] data = new byte[len];
         dis.read(data);
         break;
       case id_array:
@@ -144,7 +144,7 @@ public abstract class SerialObject {
       writeInt(-1);
       return;
     }
-    byte bytes[] = value.getBytes("UTF-8");
+    byte[] bytes = value.getBytes("UTF-8");
     dos.writeInt(bytes.length);
     dos.write(bytes);
   }

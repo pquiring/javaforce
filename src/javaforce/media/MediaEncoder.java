@@ -38,6 +38,6 @@ public class MediaEncoder extends MediaCoder {
   /** Adds pre encoded audio. */
   public native boolean addAudioEncoded(byte packet[], int offset, int length);
   /** Adds pre encoded video. */
-  public native boolean addVideoEncoded(byte packet[], int offset, int length, boolean key_frame);
+  public native boolean addVideoEncoded(byte[] packet, int offset, int length, boolean key_frame);
   public native void stop();
 }

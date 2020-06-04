@@ -24,11 +24,11 @@ public class LnxCom {
     return com;
   }
 
-  public int read(byte data[]) {
+  public int read(byte[] data) {
     return LnxNative.comRead(fd, data);
   }
 
-  public int write(byte data[]) {
+  public int write(byte[] data) {
     return LnxNative.comRead(fd, data);
   }
 

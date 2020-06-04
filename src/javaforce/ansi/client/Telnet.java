@@ -45,12 +45,12 @@ public class Telnet {
   public final static char TT_REPLY    = 0;     //term type reply
   public final static char TT_REQUEST  = 1;     //term type request
 
-  public final static char pre_tt[] = {IAC, SB, TO_TT, TT_REPLY};
+  public final static char[] pre_tt = {IAC, SB, TO_TT, TT_REPLY};
   //terminal type (ie:ANSI)
-  public final static char post_tt[] = {IAC, SE};
+  public final static char[] post_tt = {IAC, SE};
 
-  public boolean decode(char code[], int codelen, Buffer buffer) {
-    char res[] = new char[3];
+  public boolean decode(char[] code, int codelen, Buffer buffer) {
+    char[] res = new char[3];
     res[0] = IAC;
     if (codelen < 2) return false;
     if (code[1] == IAC) return true;  //double IAC - ignore it
@@ -88,7 +88,7 @@ public class Telnet {
     }
   }
   private static void send(char ww, char code, Buffer buffer) {
-    char response[] = new char[3];
+    char[] response = new char[3];
     response[0] = IAC;
     response[1] = ww;
     response[2] = code;

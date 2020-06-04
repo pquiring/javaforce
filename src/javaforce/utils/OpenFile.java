@@ -11,7 +11,7 @@ import javaforce.linux.*;
 
 public class OpenFile {
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     //opens arg[0]
     if ((args.length < 1) || (args[0].length() == 0)) {
       System.out.println("usage : jfopen file\ndesc : open program associated with file type");
@@ -61,17 +61,17 @@ public class OpenFile {
   public static String getMimeType(String ext) throws Exception {
     if (mimetypes == null) {
       FileInputStream fis = new FileInputStream("/etc/mime.types");
-      byte data[] = JF.readAll(fis);
+      byte[] data = JF.readAll(fis);
       fis.close();
       mimetypes = new String(data);
     }
-    String lns[] = mimetypes.split("\n");
+    String[] lns = mimetypes.split("\n");
     for (int a = 0; a < lns.length; a++) {
-      String f[] = lns[a].split("\t+");  //greedy tabs
+      String[] f = lns[a].split("\t+");  //greedy tabs
       if (f.length < 2) {
         continue;
       }
-      String exts[] = f[1].split(" ");
+      String[] exts = f[1].split(" ");
       for (int b = 0; b < exts.length; b++) {
         if (exts[b].equalsIgnoreCase(ext)) {
           return f[0];
@@ -96,10 +96,10 @@ public class OpenFile {
       }
     }
     FileInputStream fis = new FileInputStream(desktop);
-    byte data[] = JF.readAll(fis);
+    byte[] data = JF.readAll(fis);
     fis.close();
     String str = new String(data);
-    String lns[] = str.split("\n");
+    String[] lns = str.split("\n");
     for (int a = 0; a < lns.length; a++) {
       if (lns[a].startsWith("Icon=")) {
         return lns[a].substring(5).trim();
@@ -114,10 +114,10 @@ public class OpenFile {
       return null;
     }
     FileInputStream fis = new FileInputStream(file);
-    byte data[] = JF.readAll(fis);
+    byte[] data = JF.readAll(fis);
     fis.close();
     String str = new String(data);
-    String lns[] = str.split("\n");
+    String[] lns = str.split("\n");
     String cacheAction = "open";  //assume open in cause cache is not generated from JF
     for (int a = 0; a < lns.length; a++) {
       String ln = lns[a].trim();
@@ -133,7 +133,7 @@ public class OpenFile {
         continue;
       }
       if (lns[a].substring(0, idx).equals(mime)) {
-        String desktops[] = lns[a].substring(idx + 1).trim().split(";");
+        String[] desktops = lns[a].substring(idx + 1).trim().split(";");
         if ((desktops == null) || (desktops.length == 0)) {
           continue;
         }

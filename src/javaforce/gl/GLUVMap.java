@@ -25,12 +25,12 @@ public class GLUVMap {
     }
   }
 
-  public void addText(float uv[]) {
+  public void addText(float[] uv) {
     uvl.append(uv);
   }
 
   public void copyBuffers() {
-    int ids[] = new int[1];
+    int[] ids = new int[1];
     if (uvb == -1) {
       glGenBuffers(1, ids);
       uvb = ids[0];

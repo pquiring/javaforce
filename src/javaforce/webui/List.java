@@ -61,7 +61,7 @@ public class List extends ScrollPanel implements Click {
 
   public int[] getSelectedIndices() {
     int selCount = getSelectedCount();
-    int selIdx[] = new int[selCount];
+    int[] selIdx = new int[selCount];
     int selPos = 0;
     int cnt = count();
     for(int idx=0;idx<cnt;idx++) {

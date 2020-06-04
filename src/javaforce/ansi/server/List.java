@@ -8,7 +8,7 @@ package javaforce.ansi.server;
 import java.awt.event.KeyEvent;
 
 public class List extends Field {
-  public String items[];
+  public String[] items;
   public void keyPressed(int keyCode, int keyMods) {
     if (keyMods != 0) {
       return;

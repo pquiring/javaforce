@@ -16,7 +16,7 @@ public class DatagramOutputStream extends OutputStream {
   }
 
   public void write(int b) {
-    byte data[] = new byte[1];
+    byte[] data = new byte[1];
     data[0] = (byte) b;
     DatagramPacket pack = new DatagramPacket(data, 1, ip, port);
     try {
@@ -25,11 +25,11 @@ public class DatagramOutputStream extends OutputStream {
     }
   }
 
-  public void write(byte buf[]) {
+  public void write(byte[] buf) {
     write(buf, 0, buf.length);
   }
 
-  public void write(byte buf[], int pos, int len) {
+  public void write(byte[] buf, int pos, int len) {
     DatagramPacket pack = new DatagramPacket(buf, pos, len, ip, port);
     try {
       ds.send(pack);

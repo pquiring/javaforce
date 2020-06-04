@@ -7,12 +7,12 @@ public class DatagramInputStream extends InputStream {
 
   private static final int MAX = 1460;
   private DatagramSocket ds;
-  private byte buffer[];
+  private byte[] buffer;
   private int buffersize = 0, bufferpos = 0;
 
   private boolean fillBuffer() {
     while (buffersize == 0) {
-      byte data[] = new byte[MAX];
+      byte[] data = new byte[MAX];
       DatagramPacket pack = new DatagramPacket(data, MAX);
       try {
         ds.receive(pack);
@@ -43,11 +43,11 @@ public class DatagramInputStream extends InputStream {
     return ret;
   }
 
-  public int read(byte buf[]) {
+  public int read(byte[] buf) {
     return read(buf, 0, buf.length);
   }
 
-  public int read(byte buf[], int pos, int len) {
+  public int read(byte[] buf, int pos, int len) {
     int ret;
     if (!fillBuffer()) {
       return -1;

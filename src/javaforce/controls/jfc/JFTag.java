@@ -11,5 +11,5 @@ public class JFTag {
   }
   public String tag;
   public int type;
-  public byte data[];
+  public byte[] data;
 }

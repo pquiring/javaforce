@@ -22,7 +22,7 @@ public class g722 implements Coder {
   private boolean itu_test_mode = false;
 
   private RTP rtp;
-  private byte encoded[] = new byte[160 + 12];
+  private byte[] encoded = new byte[160 + 12];
 
   public g722(RTP rtp) {
     this.rtp = rtp;
@@ -34,14 +34,14 @@ public class g722 implements Coder {
 
   private static class Band {
     int s, sp, sz;
-    int r[] = new int[3];
-    int a[] = new int[3];
-    int ap[] = new int[3];
-    int p[] = new int[3];
-    int d[] = new int[7];
-    int b[] = new int[7];
-    int bp[] = new int[7];
-    int sg[] = new int[7];
+    int[] r = new int[3];
+    int[] a = new int[3];
+    int[] ap = new int[3];
+    int[] p = new int[3];
+    int[] d = new int[7];
+    int[] b = new int[7];
+    int[] bp = new int[7];
+    int[] sg = new int[7];
     int nb, det;
   }
   private int in_buffer;
@@ -49,11 +49,11 @@ public class g722 implements Coder {
   private int out_buffer;
   private int out_bits;
 
-  private int e_x[] = new int[24];  //signal history for QMF
-  private Band e_band[] = new Band[2];
+  private int[] e_x = new int[24];  //signal history for QMF
+  private Band[] e_band = new Band[2];
 
-  private int d_x[] = new int[24];  //signal history for QMF
-  private Band d_band[] = new Band[2];
+  private int[] d_x = new int[24];  //signal history for QMF
+  private Band[] d_band = new Band[2];
 
   private static short saturate(int amp) {
     if (amp > Short.MAX_VALUE) {
@@ -65,30 +65,30 @@ public class g722 implements Coder {
     return (short)amp;
   }
 
-  private final int q6[]
+  private final int[] q6
           = new int[] {
             0, 35, 72, 110, 150, 190, 233, 276,
             323, 370, 422, 473, 530, 587, 650, 714,
             786, 858, 940, 1023, 1121, 1219, 1339, 1458,
             1612, 1765, 1980, 2195, 2557, 2919, 0, 0
           };
-  private final int iln[]
+  private final int[] iln
           = new int[] {
             0, 63, 62, 31, 30, 29, 28, 27,
             26, 25, 24, 23, 22, 21, 20, 19,
             18, 17, 16, 15, 14, 13, 12, 11,
             10, 9, 8, 7, 6, 5, 4, 0
           };
-  private final int ilp[]
+  private final int[] ilp
           = new int[] {
             0, 61, 60, 59, 58, 57, 56, 55,
             54, 53, 52, 51, 50, 49, 48, 47,
             46, 45, 44, 43, 42, 41, 40, 39,
             38, 37, 36, 35, 34, 33, 32, 0
           };
-  private final int wl[] = new int[] {-60, -30, 58, 172, 334, 538, 1198, 3042};
-  private final int rl42[] = new int[] {0, 7, 6, 5, 4, 3, 2, 1, 7, 6, 5, 4, 3, 2, 1, 0};
-  private final int ilb[]
+  private final int[] wl = new int[] {-60, -30, 58, 172, 334, 538, 1198, 3042};
+  private final int[] rl42 = new int[] {0, 7, 6, 5, 4, 3, 2, 1, 7, 6, 5, 4, 3, 2, 1, 0};
+  private final int[] ilb
           = new int[] {
             2048, 2093, 2139, 2186, 2233, 2282, 2332,
             2383, 2435, 2489, 2543, 2599, 2656, 2714,
@@ -96,19 +96,19 @@ public class g722 implements Coder {
             3228, 3298, 3371, 3444, 3520, 3597, 3676,
             3756, 3838, 3922, 4008
           };
-  private final int qm4[]
+  private final int[] qm4
           = new int[] {
             0, -20456, -12896, -8968,
             -6288, -4240, -2584, -1200,
             20456, 12896, 8968, 6288,
             4240, 2584, 1200, 0
           };
-  private final int qm2[] = new int[] {-7408, -1616, 7408, 1616};
-  private final int qmf_coeffs[] = new int[] {3, -11, 12, 32, -210, 951, 3876, -805, 362, -156, 53, -11};
-  private final int ihn[] = new int[] {0, 1, 0};
-  private final int ihp[] = new int[] {0, 3, 2};
-  private final int wh[] = new int[] {0, -214, 798};
-  private final int rh2[] = new int[] {2, 1, 2, 1};
+  private final int[] qm2 = new int[] {-7408, -1616, 7408, 1616};
+  private final int[] qmf_coeffs = new int[] {3, -11, 12, 32, -210, 951, 3876, -805, 362, -156, 53, -11};
+  private final int[] ihn = new int[] {0, 1, 0};
+  private final int[] ihp = new int[] {0, 3, 2};
+  private final int[] wh = new int[] {0, -214, 798};
+  private final int[] rh2 = new int[] {2, 1, 2, 1};
 
   private void block4(Band band, int d) {
     int wd1;
@@ -345,7 +345,7 @@ public class g722 implements Coder {
   }
 
 // DECODING ...
-  private final int qm5[]
+  private final int[] qm5
           = new int[] {
             -280, -280, -23352, -17560,
             -14120, -11664, -9752, -8184,
@@ -356,7 +356,7 @@ public class g722 implements Coder {
             4696, 3784, 2960, 2208,
             1520, 880, 280, -280
           };
-  private final int qm6[]
+  private final int[] qm6
           = new int[] {
             -136, -136, -136, -136,
             -24808, -21904, -19008, -16704,
@@ -378,7 +378,7 @@ public class g722 implements Coder {
 
   private int decode_timestamp;
 
-  private final short decoded[] = new short[320];
+  private final short[] decoded = new short[320];
 
   public short[] decode(byte[] src8, int off) {
     int dlowt;

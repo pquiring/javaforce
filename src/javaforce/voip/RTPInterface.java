@@ -24,7 +24,7 @@ public interface RTPInterface {
   /**
    * Triggered when RTP is using raw mode and a RTCP packet is received.
    */
-  public void rtcpPacket(RTPChannel rtp, byte data[], int off, int len);
+  public void rtcpPacket(RTPChannel rtp, byte[] data, int off, int len);
 
   /**
    * Triggered when a H.263 packet is received.
@@ -34,12 +34,12 @@ public interface RTPInterface {
   /**
    * Triggered when a H.263-1998 packet is received.
    */
-  public void rtpH263_1998(RTPChannel rtp, byte data[], int off, int len);
+  public void rtpH263_1998(RTPChannel rtp, byte[] data, int off, int len);
 
   /**
    * Triggered when a H.263-2000 packet is received.
    */
-  public void rtpH263_2000(RTPChannel rtp, byte data[], int off, int len);
+  public void rtpH263_2000(RTPChannel rtp, byte[] data, int off, int len);
 
   /**
    * Triggered when a H.264 packet is received.

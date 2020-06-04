@@ -23,7 +23,7 @@ import javaforce.*;
  */
 
 public class GL_JF3D {
-  private byte data[];
+  private byte[] data;
   private int datapos;
   private int skip;
 
@@ -203,7 +203,7 @@ public class GL_JF3D {
   }
 
   private ByteArrayOutputStream baos;
-  private byte tmp[];
+  private byte[] tmp;
 
   private void writeString(String str) throws Exception {
     baos.write(str.getBytes());
@@ -255,7 +255,7 @@ public class GL_JF3D {
       writefloat(obj.org.y);
       writefloat(obj.org.z);
       writeuint32(vcnt / 3);
-      float xyz[] = obj.vpl.toArray();
+      float[] xyz = obj.vpl.toArray();
       for(int a=0;a<vcnt;a++) {
         writefloat(xyz[a]);
       }
@@ -267,7 +267,7 @@ public class GL_JF3D {
           writeuint32(pcnt / 4);
           break;
       }
-      int pts[] = obj.vil.toArray();
+      int[] pts = obj.vil.toArray();
       for(int a=0;a<pcnt;a++) {
         writeuint32(pts[a]);
       }
@@ -284,7 +284,7 @@ public class GL_JF3D {
         writeString(map.name);
         writeuint32(map.textureIndex);
         writeuint32(uvcnt/2);
-        float uv[] = map.uvl.toArray();
+        float[] uv = map.uvl.toArray();
         for(int a=0;a<uvcnt;a++) {
           writefloat(uv[a]);
         }

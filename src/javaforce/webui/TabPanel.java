@@ -56,7 +56,7 @@ public class TabPanel extends Column {
     }
     addEvent("onresize", "onresizeTabPanel(event,\"" + tabs.id + "\");");
   }
-  public void onLoaded(String args[]) {
+  public void onLoaded(String[] args) {
     super.onLoaded(args);
     sendOnResize();
   }

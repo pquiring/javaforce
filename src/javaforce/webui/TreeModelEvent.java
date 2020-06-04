@@ -7,7 +7,7 @@ package javaforce.webui;
 
 public class TreeModelEvent {
   public TreePath path;
-  public int indices[];
+  public int[] indices;
   public TreePath getTreePath() {return path;}
   public int[] getChildIndices() {return indices;}
 }

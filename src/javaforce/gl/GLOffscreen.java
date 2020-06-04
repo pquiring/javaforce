@@ -81,7 +81,7 @@ public class GLOffscreen {
   /** Creates an offscreen buffer to where rendering is directly to. */
   public void createOffscreen(int width, int height) {
     if (os_fb != 0) return;  //already done
-    int ids[] = new int[1];
+    int[] ids = new int[1];
 
     glGenFramebuffers(1, ids);
     os_fb = ids[0];

@@ -8,7 +8,7 @@ package javaforce.utils;
 import java.io.*;
 
 public class GenGraal {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length != 1) {
       System.out.println("usage:GenGraal mainclass");
       System.exit(1);

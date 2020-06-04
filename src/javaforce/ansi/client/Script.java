@@ -34,7 +34,7 @@ public class Script {
 
   private boolean waiting = false;
   private int waitsiz = 0;
-  private char buf[];
+  private char[] buf;
   private int buflen = 0;
   private String waitstr = null;
 
@@ -75,7 +75,7 @@ public class Script {
       FileInputStream fis = new FileInputStream(chooser.getSelectedFile().getAbsolutePath());
       int fs = fis.available();
       if (fs < 1) return null;
-      byte data[] = new byte[fs];
+      byte[] data = new byte[fs];
       if (fis.read(data) != fs) throw new Exception();
       String str = new String(data);
       str = str.replaceAll("\r", "");  //get rid of Windows junk

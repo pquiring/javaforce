@@ -17,7 +17,7 @@ public class RTSPSession {
   public String extra;
   public String epass;
   public String transport;
-  public String headers[];
+  public String[] headers;
   public String sdp;
   public String cmd;
   public boolean authsent;

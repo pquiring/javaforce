@@ -78,7 +78,7 @@ public abstract class RTSP {
    * Sends a packet out on the UDP port.
    */
   protected boolean send(InetAddress remote, int remoteport, String datastr) {
-    byte data[] = datastr.getBytes();
+    byte[] data = datastr.getBytes();
     return transport.send(data, 0, data.length, remote, remoteport);
   }
 
@@ -169,7 +169,7 @@ public abstract class RTSP {
   /**
    * Joins a To: or From: field after it was split into parts.
    */
-  public static String join(String x[]) {
+  public static String join(String[] x) {
     //x = "display name" <sip:user@host ;...  > ;...
     //return:    [0]          [1]  [2]  [...][:][...]
     if (x == null) {

@@ -24,7 +24,7 @@ public class PopupMenu extends Container {
       }
     }
   }
-  public void onMouseDown(String args[]) {
+  public void onMouseDown(String[] args) {
     client.popupMenuMouseDown = true;
   }
 }

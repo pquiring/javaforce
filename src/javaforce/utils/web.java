@@ -13,7 +13,7 @@ import javaforce.*;
 import javaforce.service.*;
 
 public class web implements WebHandler {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     System.out.println("Starting web server on port 80...");
     Web server = new Web();
     server.start(new web(), 80, false);
@@ -32,7 +32,7 @@ public class web implements WebHandler {
       if (path.startsWith("/")) path = url.substring(1);
       if (path.equals("")) path = ".";
       File folder = new File(path);
-      File files[] = folder.listFiles();
+      File[] files = folder.listFiles();
       if (files == null) files = new File[0];
       StringBuilder sb = new StringBuilder();
       try {

@@ -11,7 +11,7 @@ public class InputDialog implements Dialog {
   private ANSI ansi;
   private boolean closed = false;
   private boolean cancel = false;
-  private Field fields[];
+  private Field[] fields;
   private int field = 0;
   private String action;
   private String title, msg[], initValues[], opts;

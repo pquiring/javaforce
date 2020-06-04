@@ -65,7 +65,7 @@ public class SRTPChannelJ9 extends RTPChannel {
     }
   };
 
-  public void writeRTP(byte data[], int off, int len) {
+  public void writeRTP(byte[] data, int off, int len) {
     synchronized(data_output) {
       if (off == 0 && len == data.length) {
         data_output.add(data);
@@ -75,7 +75,7 @@ public class SRTPChannelJ9 extends RTPChannel {
     }
   }
 
-  protected void processRTP(byte data[], int off, int len) {
+  protected void processRTP(byte[] data, int off, int len) {
     synchronized(data_input) {
       if (off == 0 && len == data.length) {
         data_input.add(data);
@@ -159,7 +159,7 @@ public class SRTPChannelJ9 extends RTPChannel {
               output.compact();
               break;
             case NEED_UNWRAP:
-              byte data[];
+              byte[] data;
               synchronized(data_input) {
                 if (data_input.size() == 0) break;
                 data = data_input.remove(0);
@@ -217,7 +217,7 @@ public class SRTPChannelJ9 extends RTPChannel {
         int total = 0;
         DatagramPacket dp;
         while (true) {
-          byte data[];
+          byte[] data;
           synchronized(data_input) {
             if (data_input.size() == 0) break;
             data = data_input.remove(0);
@@ -263,7 +263,7 @@ public class SRTPChannelJ9 extends RTPChannel {
     public void run() {
       try {
         SSLSession sess = ssl.getSession();
-        byte tmp[] = new byte[1024];
+        byte[] tmp = new byte[1024];
         Random r = new Random();
         r.nextBytes(tmp);
         output = ByteBuffer.wrap(tmp);
@@ -379,14 +379,14 @@ public class SRTPChannelJ9 extends RTPChannel {
   private final static short ICE_CONTROLLED = (short)0x8029;
   private final static short FINGERPRINT = (short)0x8028;
 
-  private byte stun[];
+  private byte[] stun;
 
   private boolean isClassicStun(long id1) {
     return ((id1 >>> 32) != 0x2112a442);
   }
 
   private int IP4toInt(String ip) {
-    String o[] = ip.split("[.]");
+    String[] o = ip.split("[.]");
     int ret = 0;
     for (int a = 0; a < 4; a++) {
       ret <<= 8;
@@ -395,7 +395,7 @@ public class SRTPChannelJ9 extends RTPChannel {
     return ret;
   }
 
-  protected void processSTUN(byte data[], int off, int len) {
+  protected void processSTUN(byte[] data, int off, int len) {
     JFLog.log("SRTPChannel:received STUN request");
     //the only command supported is BINDING_REQUEST
     String username = null, flipped = null;
@@ -424,13 +424,13 @@ public class SRTPChannelJ9 extends RTPChannel {
       switch (attr) {
         case USERNAME:
           username = new String(data, offset, length);
-          String f[] = username.split("[:]");
+          String[] f = username.split("[:]");
           flipped = f[1] + ":" + f[0];  //reverse username
           break;
         case MESSAGE_INTEGRITY:
           bb.putShort(lengthOffset, (short) (offset));  //patch length
-          byte correct[] = STUN.calcMsgIntegrity(data, offset - 4, STUN.calcKey(local_icepwd));
-          byte supplied[] = Arrays.copyOfRange(data, offset, offset + 20);
+          byte[] correct = STUN.calcMsgIntegrity(data, offset - 4, STUN.calcKey(local_icepwd));
+          byte[] supplied = Arrays.copyOfRange(data, offset, offset + 20);
           auth = Arrays.equals(correct, supplied);
           break;
       }
@@ -489,7 +489,7 @@ public class SRTPChannelJ9 extends RTPChannel {
     }
 
     bb.putShort(lengthOffset, (short) (offset - 20 + 24));  //patch length
-    byte id[] = STUN.calcMsgIntegrity(stun, offset, STUN.calcKey(local_icepwd));
+    byte[] id = STUN.calcMsgIntegrity(stun, offset, STUN.calcKey(local_icepwd));
     int strlen = id.length;
     bb.putShort(offset, MESSAGE_INTEGRITY);
     offset += 2;

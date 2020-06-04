@@ -11,7 +11,7 @@ import java.nio.file.*;
 import javaforce.ansi.server.*;
 
 public class CopyPath implements KeyEvents {
-  public static String args[];
+  public static String[] args;
   public ANSI ansi;
   public String src;
   public String dest;
@@ -28,7 +28,7 @@ public class CopyPath implements KeyEvents {
   public void keyTyped(char key) {
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     ANSI.enableConsoleMode();
     CopyPath.args = args;
     int ret = 0;
@@ -69,7 +69,7 @@ public class CopyPath implements KeyEvents {
     ansi = new ANSI(this);
     progress = new ProgressBar();
     ansi.getConsoleSize();
-    int pos[] = ansi.getConsolePos();
+    int[] pos = ansi.getConsolePos();
     progress.setPos(0, pos[1]);
     progress.setWidth(ansi.width - 1);
     lastdone = -1;
@@ -92,7 +92,7 @@ public class CopyPath implements KeyEvents {
   }
 
   public void findPath(File src) {
-    File files[] = src.listFiles();
+    File[] files = src.listFiles();
     if (files == null) return;
     for(int a=0;a<files.length;a++) {
       if (files[a].isDirectory()) {
@@ -104,7 +104,7 @@ public class CopyPath implements KeyEvents {
   }
 
   public void copyPath(File src, File dest) throws Exception {
-    File files[] = src.listFiles();
+    File[] files = src.listFiles();
     if (files == null) return;
     for(int a=0;a<files.length;a++) {
       String name = files[a].getName();

@@ -11,7 +11,7 @@ public class KeyPad extends PopupPanel implements Click {
   private TextComponent field;
   private Table table;
 
-  private static String cols[][] = {
+  private static String[][] cols = {
     {"<", "/", "*", "-"},
     {"7", "8", "9", "+"},
     {"4", "5", "6",null},
@@ -25,7 +25,7 @@ public class KeyPad extends PopupPanel implements Click {
     setTitleBarSize(px);
     add(table);
     for(int col=0;col<cols.length;col++) {
-      String rowchs[] = cols[col];
+      String[] rowchs = cols[col];
       for(int row=0;row<rowchs.length;row++) {
         String key = rowchs[row];
         if (key == null) continue;

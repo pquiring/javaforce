@@ -132,7 +132,7 @@ public class S7Params {
   }
 
   /** Write params to packet. */
-  public void write(byte data[], int offset) {
+  public void write(byte[] data, int offset) {
     data[offset++] = func;
     System.arraycopy(funcData, 0, data, offset, funcData.length);
   }
@@ -149,7 +149,7 @@ public class S7Params {
   }
 
   /** Reads params from packet and fills in S7Data. */
-  public boolean read(byte data[], int offset, S7Data out) throws Exception {
+  public boolean read(byte[] data, int offset, S7Data out) throws Exception {
     func = data[offset++];
     byte count = data[offset++];
     for(int a=0;a<count;a++) {
@@ -179,7 +179,7 @@ public class S7Params {
   }
 
   /** Reads params from packet and fills in S7Data. */
-  public boolean read(byte data[], int offset, S7Data outs[]) throws Exception {
+  public boolean read(byte[] data, int offset, S7Data[] outs) throws Exception {
     func = data[offset++];
     byte count = data[offset++];
     for(int a=0;a<count;a++) {

@@ -714,7 +714,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   /**
    * Processes SIP messages sent from the SIP server.
    */
-  public void packet(String msg[], String remoteip, int remoteport) {
+  public void packet(String[] msg, String remoteip, int remoteport) {
     try {
       if (!remoteip.equals(this.remoteip) || remoteport != this.remoteport) {
         JFLog.log("Ignoring packet from unknown host:" + remoteip + ":" + remoteport);
@@ -756,7 +756,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         via = getHeader("v:", msg);
       }
       if (via != null) {
-        String f[] = via.split(";");
+        String[] f = via.split(";");
         if (use_received) {
           //check for received in via header which equals my IP as seen by server
           String received = getHeader("received=", f);
@@ -932,7 +932,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           if (cd.authsent) {
             JFLog.log("Server Error : Double " + type);
           } else {
-            String src_to[] = cd.src.to;
+            String[] src_to = cd.src.to;
             cd.src.to = cd.dst.to;  //update to (tag may have been added)
             if (iface != null) issue(cd, "ACK", false, true);
             cd.src.to = src_to;

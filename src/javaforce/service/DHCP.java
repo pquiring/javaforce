@@ -725,21 +725,21 @@ public class DHCP extends Thread {
       sendReply(reply, replyOffset, rip);
     }
 
-    private void putByteArray(byte ba[]) {
+    private void putByteArray(byte[] ba) {
       for(int a=0;a<ba.length;a++) {
         reply[replyOffset++] = ba[a];
       }
     }
 
     private void putIP4(String ip) {
-      String p[] = ip.split("[.]");
+      String[] p = ip.split("[.]");
       for(int a=0;a<4;a++) {
         reply[replyOffset++] = (byte)JF.atoi(p[a]);
       }
     }
 
     private void putIP6(String ip) {
-      String p[] = ip.split(":");
+      String[] p = ip.split(":");
       for(int a=0;a<8;a++) {
         putShort((short)JF.atox(p[a]));
       }
@@ -789,7 +789,7 @@ public class DHCP extends Thread {
     }
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     serviceStart(args);
   }
 
@@ -797,7 +797,7 @@ public class DHCP extends Thread {
 
   private static DHCP dhcp;
 
-  public static void serviceStart(String args[]) {
+  public static void serviceStart(String[] args) {
     if (JF.isWindows()) {
       busServer = new JBusServer(getBusPort());
       busServer.start();

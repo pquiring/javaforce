@@ -21,7 +21,7 @@ public class GenExecutable {
   public static void chmod(String file) {
     new File(file).setExecutable(true);
   }
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length != 5) {
       System.out.println("Usage:GenExecutable home app apptype ico cfg");
       System.exit(1);

@@ -56,7 +56,7 @@ public class Linux {
       File fedora = new File("/etc/fedora-release");
       if (fedora.exists()) {
         FileInputStream fis = new FileInputStream(fedora);
-        byte data[] = JF.readAll(fis);
+        byte[] data = JF.readAll(fis);
         fis.close();
         String str = new String(data);
         if (str.indexOf("Fedora") != -1) {
@@ -338,7 +338,7 @@ public class Linux {
     }
     return true;
   }
-  private static String pkgList[][];
+  private static String[][] pkgList;
 
   /*  public static String[][] getPackages() {
    if (dpkg == null) updateInstalled();
@@ -355,9 +355,9 @@ public class Linux {
       JFLog.log("Error:unable to execute apt-cache");
       return null;
     }
-    String lns[] = output.split("\n");
-    String ret[][] = new String[lns.length][2];
-    String f[];
+    String[] lns = output.split("\n");
+    String[][] ret = new String[lns.length][2];
+    String[] f;
     for (int a = 0; a < lns.length; a++) {
       f = lns[a].split(" - ");
       if (f.length != 2) {
@@ -380,9 +380,9 @@ public class Linux {
       JFLog.log("Error:unable to execute yum");
       return null;
     }
-    String lns[] = output.split("\n");
-    String ret[][] = new String[lns.length][2];
-    String f[];
+    String[] lns = output.split("\n");
+    String[][] ret = new String[lns.length][2];
+    String[] f;
     for (int a = 0; a < lns.length; a++) {
       f = lns[a].split(" : ");
       if (f.length != 2) {
@@ -418,9 +418,9 @@ public class Linux {
       JFLog.log("Error:unable to execute dpkg");
       return;
     }
-    String lns[] = output.split("\n");
+    String[] lns = output.split("\n");
     pkgList = new String[lns.length - 5][3];
-    String f[];
+    String[] f;
     for (int a = 5; a < lns.length; a++) {
       f = lns[a].split(" +", 4);  //greedy spaces
       pkgList[a - 5][0] = f[1];  //package name

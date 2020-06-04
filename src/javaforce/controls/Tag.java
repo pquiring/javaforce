@@ -326,7 +326,7 @@ public class Tag {
     } else {
       if (multiRead && type == ControllerType.S7 && children.size() > 0) {
         int cnt = children.size();
-        String tags[] = new String[cnt+1];
+        String[] tags = new String[cnt+1];
         tags[cnt] = tag;
         for(int a=0;a<cnt;a++) {
           tags[a] = children.get(a).tag;
@@ -350,7 +350,7 @@ public class Tag {
   }
 
   /** Writes data to tag. */
-  public void write(byte data[]) {
+  public void write(byte[] data) {
     if (parent != null) {
       if (parent.c == null) return;
       parent.c.write(tag, data);
@@ -366,7 +366,7 @@ public class Tag {
 
   private static class Reader extends TimerTask {
     public Tag tag;
-    public byte data[];
+    public byte[] data;
     public void run() {
       try {
         String lastValue = tag.value;

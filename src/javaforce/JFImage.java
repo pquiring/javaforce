@@ -19,7 +19,7 @@ public class JFImage extends JComponent implements Icon {
 
   private BufferedImage bi;
   private Graphics2D g2d;
-  private int buffer[];
+  private int[] buffer;
   private ResizeOperation resizeOperation = ResizeOperation.CLEAR;
   private int imageType;  //BufferedImage.TYPE_INT_...
 
@@ -445,7 +445,7 @@ public class JFImage extends JComponent implements Icon {
   }
 
   public boolean loadSVG(InputStream in) {
-    int buf[];
+    int[] buf;
     Dimension size = new Dimension(0, 0);
     buf = svg.load(in, size);
     try {in.close();} catch (Exception e) {}
@@ -478,7 +478,7 @@ public class JFImage extends JComponent implements Icon {
   }
 
   public boolean loadXPM(InputStream in) {
-    int buf[];
+    int[] buf;
     Dimension size = new Dimension(0, 0);
     buf = new xpm().load(in, size);
     if (buf == null) {
@@ -494,7 +494,7 @@ public class JFImage extends JComponent implements Icon {
 
   /** Puts pixels . */
   public void putJFImage(JFImage img, int x, int y) {
-    int px[] = img.getPixels();
+    int[] px = img.getPixels();
     putPixels(px, x, y, img.getWidth(), img.getHeight(), 0);
   }
 
@@ -518,7 +518,7 @@ public class JFImage extends JComponent implements Icon {
   /** Returns an area of this image as a new JFImage. */
   public JFImage getJFImage(int x, int y, int w, int h) {
     JFImage ret = new JFImage(w,h);
-    int px[] = getPixels(x,y,w,h);
+    int[] px = getPixels(x,y,w,h);
     ret.putPixels(px, 0, 0, w, h, 0);
     return ret;
   }
@@ -846,7 +846,7 @@ public class JFImage extends JComponent implements Icon {
 
   /** Returns a copy of the buffer */
   public int[] getPixels() {
-    int px[] = new int[buffer.length];
+    int[] px = new int[buffer.length];
     System.arraycopy(buffer, 0, px, 0, buffer.length);
     return px;
   }
@@ -1092,7 +1092,7 @@ public class JFImage extends JComponent implements Icon {
   public int[] getFontMetrics(Font fnt, String txt) {
     FontRenderContext frc = g2d.getFontRenderContext();
     TextLayout tl = new TextLayout(txt, fnt, frc);
-    int ret[] = new int[3];
+    int[] ret = new int[3];
     ret[0] = (int) tl.getBounds().getWidth();
     ret[1] = (int) tl.getAscent();
     ret[2] = (int) tl.getDescent();
@@ -1165,7 +1165,7 @@ public class JFImage extends JComponent implements Icon {
 
   /** Gets color Layer (RGB) : pixels & bits */
   public int[] getLayer(int bits) {
-    int px[] = getPixels();
+    int[] px = getPixels();
     for(int a=0;a<px.length;a++) {
       px[a] &= bits;
       px[a] |= OPAQUE;
@@ -1185,7 +1185,7 @@ public class JFImage extends JComponent implements Icon {
 
   /** Gets alpha Layer as grey scale */
   public int[] getAlphaLayer() {
-    int px[] = getPixels();
+    int[] px = getPixels();
     int p1, p2;
     for(int a=0;a<px.length;a++) {
       p1 = px[a] & 0xff000000;

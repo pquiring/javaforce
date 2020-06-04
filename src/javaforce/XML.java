@@ -811,7 +811,7 @@ public class XML implements TreeModelListener {
    * Returns a node based on the objs[] path. Relative to virtual root tag. (see
    * setRoot())
    */
-  public XMLTag getTag(Object objs[]) {
+  public XMLTag getTag(Object[] objs) {
     XMLTag tag = (XMLTag) treemodel.getRoot(), child;
     String name;
     if (objs == null || objs.length == 0) {
@@ -981,7 +981,7 @@ public class XML implements TreeModelListener {
           } else if (typeString.indexOf(" java.awt.Color ") != -1) {
             f.set(obj, new Color(JF.atox(child.content)));
           } else if (typeString.indexOf(" int[] ") != -1) {
-            int array2[] = (int[]) f.get(obj);
+            int[] array2 = (int[]) f.get(obj);
             int idx;
             if (array2 == null) {
               idx = 0;
@@ -993,7 +993,7 @@ public class XML implements TreeModelListener {
             array2[idx] = Integer.valueOf(child.content);
             f.set(obj, array2);
           } else if (typeString.indexOf(" short[] ") != -1) {
-            short array2[] = (short[]) f.get(obj);
+            short[] array2 = (short[]) f.get(obj);
             int idx;
             if (array2 == null) {
               idx = 0;
@@ -1005,7 +1005,7 @@ public class XML implements TreeModelListener {
             array2[idx] = Short.valueOf(child.content);
             f.set(obj, array2);
           } else if (typeString.indexOf(" byte[] ") != -1) {
-            byte array2[] = (byte[]) f.get(obj);
+            byte[] array2 = (byte[]) f.get(obj);
             int idx;
             if (array2 == null) {
               idx = 0;
@@ -1017,7 +1017,7 @@ public class XML implements TreeModelListener {
             array2[idx] = Byte.valueOf(child.content);
             f.set(obj, array2);
           } else if (typeString.indexOf(" float[] ") != -1) {
-            float array2[] = (float[]) f.get(obj);
+            float[] array2 = (float[]) f.get(obj);
             int idx;
             if (array2 == null) {
               idx = 0;
@@ -1029,7 +1029,7 @@ public class XML implements TreeModelListener {
             array2[idx] = Float.valueOf(child.content);
             f.set(obj, array2);
           } else if (typeString.indexOf(" double[] ") != -1) {
-            double array2[] = (double[]) f.get(obj);
+            double[] array2 = (double[]) f.get(obj);
             int idx;
             if (array2 == null) {
               idx = 0;
@@ -1041,7 +1041,7 @@ public class XML implements TreeModelListener {
             array2[idx] = Double.valueOf(child.content);
             f.set(obj, array2);
           } else if (typeString.indexOf(" boolean[] ") != -1) {
-            boolean array2[] = (boolean[]) f.get(obj);
+            boolean[] array2 = (boolean[]) f.get(obj);
             int idx;
             if (array2 == null) {
               idx = 0;
@@ -1053,7 +1053,7 @@ public class XML implements TreeModelListener {
             array2[idx] = child.content.equalsIgnoreCase("true");
             f.set(obj, array2);
           } else if (typeString.indexOf(" java.lang.String[] ") != -1) {
-            String array2[] = (String[]) f.get(obj);
+            String[] array2 = (String[]) f.get(obj);
             int idx;
             if (array2 == null) {
               idx = 0;
@@ -1065,7 +1065,7 @@ public class XML implements TreeModelListener {
             array2[idx] = child.content;
             f.set(obj, array2);
           } else if (typeString.indexOf(" java.awt.Color[] ") != -1) {
-            Color array2[] = (Color[]) f.get(obj);
+            Color[] array2 = (Color[]) f.get(obj);
             int idx;
             if (array2 == null) {
               idx = 0;

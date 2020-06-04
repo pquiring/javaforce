@@ -11,10 +11,10 @@ public class UnixCrypt {
   // Provides the Unix crypt() encryption algorithm.
   // The list with characters allowed in a Unix encrypted password.
   // It is used to randomly chose two characters for use in the encryption.
-  private static char m_encryptionSaltCharacters[] = ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./".toCharArray());
+  private static char[] m_encryptionSaltCharacters = ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./".toCharArray());
   // A lookup-table, presumably filled with some sort of encryption key.
   // It is used to calculate the index to the m_SPTranslationTable lookup-table.
-  private static int m_saltTranslation[] = {
+  private static int[] m_saltTranslation = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -34,13 +34,13 @@ public class UnixCrypt {
   };
   // A lookup-table.
   // It is used to calculate the index to the m_skb lookup-table.
-  private static boolean m_shifts[] = {
+  private static boolean[] m_shifts = {
     false, false, true, true, true, true, true, true,
     false, true, true, true, true, true, true, false
   };
   // A lookup-table.
   // It is used the dynamically create the schedule lookup-table.
-  private static int m_skb[][] = {
+  private static int[][] m_skb = {
     {
       /* for C bits (numbered as per FIPS 46) 1 2 3 4 5 6 */
       0x00000000, 0x00000010, 0x20000000, 0x20000010,
@@ -196,7 +196,7 @@ public class UnixCrypt {
   };
   // A lookup-table.
   // It is used to calculate two ints that are used to encrypt the password.
-  private static int m_SPTranslationTable[][] = {
+  private static int[][] m_SPTranslationTable = {
     {
       /* nibble 0 */
       0x00820200, 0x00020000, 0x80800000, 0x80820200,
@@ -353,7 +353,7 @@ public class UnixCrypt {
   // A lookup-table filled with printable characters.
   // It is used to make sure the encrypted password contains only printable characters. It is filled with
   // ASCII characters 46 - 122 (from the dot (.) untill (including) the lowercase 'z').
-  private static int m_characterConversionTable[] = {
+  private static int[] m_characterConversionTable = {
     0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35,
     0x36, 0x37, 0x38, 0x39, 0x41, 0x42, 0x43, 0x44,
     0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C,
@@ -430,7 +430,7 @@ public class UnixCrypt {
     int firstInt = FourbytesToInt(encryptionKey, 0);
     int secondInt = FourbytesToInt(encryptionKey, 4);
 
-    int operationResults[] = new int[2];
+    int[] operationResults = new int[2];
     PermOperation(secondInt, firstInt, 4, 0x0F0F0F0F, operationResults);
     secondInt = operationResults[0];
     firstInt = operationResults[1];
@@ -551,7 +551,7 @@ public class UnixCrypt {
     left &= 0xFFFFFFFF;
     right &= 0xFFFFFFFF;
 
-    int operationResults[] = new int[2];
+    int[] operationResults = new int[2];
 
     PermOperation(right, left, 1, 0x55555555, operationResults);
     right = operationResults[0];
@@ -587,7 +587,7 @@ public class UnixCrypt {
     Random randomGenerator = new Random();
     int maxGeneratedNumber = m_encryptionSaltCharacters.length;
     int randomIndex;
-    char encryptionSalt[] = new char[3];
+    char[] encryptionSalt = new char[3];
 
     randomGenerator.setSeed(System.currentTimeMillis());
     encryptionSalt[2] = 0;  //NULL term (not required)
@@ -598,7 +598,7 @@ public class UnixCrypt {
     return crypt(encryptionSalt, textToEncrypt);
   }
 
-  private static boolean hasChar(char chars[], char ch) {
+  private static boolean hasChar(char[] chars, char ch) {
     for (int a = 0; a < chars.length; a++) {
       if (chars[a] == ch) {
         return true;
@@ -630,7 +630,7 @@ public class UnixCrypt {
     // Make sure the string builder is big enough AND filled with 13 characters (the length of the encrypted password).
     // We will use the index operator to set them, but when the characters are not present, even though the string builder
     // has enough capacity, it will throw an exception.
-    byte encryptionBuffer[] = new byte[13];  //"*************";
+    byte[] encryptionBuffer = new byte[13];  //"*************";
     encryptionBuffer[0] = (byte) firstSaltCharacter;
     encryptionBuffer[1] = (byte) secondSaltCharacter;
 
@@ -642,7 +642,7 @@ public class UnixCrypt {
     // multiplying it by two. Note how the cast will not lose any information. The highest possible ASCII character
     // in a password is the tilde (~), which has ASCII value 126, so the highest possible value after the
     // multiplication would be 252.
-    byte encryptionKey[] = new byte[8];
+    byte[] encryptionKey = new byte[8];
     for (int index = 0; index < 8 && index < textToEncrypt.length; index++) {
       int shiftedCharacter = textToEncrypt[index];
       encryptionKey[index] = (byte) (shiftedCharacter << 1);
@@ -651,7 +651,7 @@ public class UnixCrypt {
     int[] schedule = SetDESKey(encryptionKey);
     int[] singleOutputKey = Body(schedule, firstSaltTranslator, secondSaltTranslator);
 
-    byte binaryBuffer[] = new byte[9];
+    byte[] binaryBuffer = new byte[9];
 
     IntToFourbytes(singleOutputKey[0], binaryBuffer, 0);
     IntToFourbytes(singleOutputKey[1], binaryBuffer, 4);

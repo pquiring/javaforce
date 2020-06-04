@@ -64,9 +64,9 @@ public class TransportTCPClient implements Transport {
     return true;
   }
 
-  private byte extra[] = null;
+  private byte[] extra = null;
 
-  private int detectLength(byte data[], int off, int len) {
+  private int detectLength(byte[] data, int off, int len) {
     for(int a=0;a<len-3;a++) {
       if (
         (data[off+a+0] == '\r') &&

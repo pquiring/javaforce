@@ -45,17 +45,17 @@ public class BE {
     return ret;
   }
 
-  public static void setuint8(byte data[], int offset, int value) {
+  public static void setuint8(byte[] data, int offset, int value) {
     data[offset+0] = (byte)(value & 0xff);
   }
 
-  public static void setuint16(byte data[], int offset, int value) {
+  public static void setuint16(byte[] data, int offset, int value) {
     data[offset+1] = (byte)(value & 0xff);
     value >>= 8;
     data[offset+0] = (byte)(value & 0xff);
   }
 
-  public static void setuint32(byte data[], int offset, int value) {
+  public static void setuint32(byte[] data, int offset, int value) {
     data[offset+3] = (byte)(value & 0xff);
     value >>= 8;
     data[offset+2] = (byte)(value & 0xff);
@@ -65,7 +65,7 @@ public class BE {
     data[offset+0] = (byte)(value & 0xff);
   }
 
-  public static void setuint64(byte data[], int offset, long value) {
+  public static void setuint64(byte[] data, int offset, long value) {
     data[offset+7] = (byte)(value & 0xff);
     value >>= 8;
     data[offset+6] = (byte)(value & 0xff);
@@ -85,17 +85,17 @@ public class BE {
 
   //these funcs are no different (just conv functions)
 
-  public static String getString(byte data[], int offset, int len) {
+  public static String getString(byte[] data, int offset, int len) {
     return LE.getString(data, offset, len);
   }
 
-  public static void setString(byte data[], int offset, int len, String str) {
+  public static void setString(byte[] data, int offset, int len, String str) {
     LE.setString(data, offset, len, str);
   }
 
   //Using arrays are 40% faster than using java.nio.ByteBuffer
 
-  public static short[] byteArray2shortArray(byte in[], short out[]) {
+  public static short[] byteArray2shortArray(byte[] in, short[] out) {
     int len = in.length / 2;
     if (out == null) out = new short[len];
     int p = 0;
@@ -107,7 +107,7 @@ public class BE {
     }
     return out;
   }
-  public static int[] byteArray2intArray(byte in[], int out[]) {
+  public static int[] byteArray2intArray(byte[] in, int[] out) {
     int len = in.length / 4;
     if (out == null) out = new int[len];
     int p = 0;
@@ -121,7 +121,7 @@ public class BE {
     }
     return out;
   }
-  public static byte[] shortArray2byteArray(short in[], byte out[]) {
+  public static byte[] shortArray2byteArray(short[] in, byte[] out) {
     int len = in.length;
     if (out == null) out = new byte[len * 2];
     int p = 0;
@@ -133,7 +133,7 @@ public class BE {
     }
     return out;
   }
-  public static byte[] intArray2byteArray(int in[], byte out[]) {
+  public static byte[] intArray2byteArray(int[] in, byte[] out) {
     int len = in.length;
     if (out == null) out = new byte[len * 4];
     int p = 0;

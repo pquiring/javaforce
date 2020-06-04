@@ -22,7 +22,7 @@ public class Music {
     public void musicEnded();
     /** Triggered each time a chunk of samples is going to be played.
      Use to apply effects, etc.*/
-    public void musicSamples(short samples[]);
+    public void musicSamples(short[] samples);
     /** Triggered as the music moves to each row. */
     public void musicRow(int sequence, int pattern, int row);
   }
@@ -52,11 +52,11 @@ public class Music {
     public float startVolVibrateSpeed;  //speed for vibrate cmds
     public float startPanVibrateSpeed;  //speed for vibrate cmds  //use vol
     public float startFreqVibrateSpeed;  //speed for vibrate cmds
-    public byte notes[] = new byte[64];  //MIDI : 0=C-2 ... 0x7f = ??? (-1 = no note)
-    public byte volcmds[] = new byte[64];
-    public int volparams[] = new int[64];  //or float
-    public byte fxcmds[] = new byte[64];
-    public int fxparams[] = new int[64];  //or float
+    public byte[] notes = new byte[64];  //MIDI : 0=C-2 ... 0x7f = ??? (-1 = no note)
+    public byte[] volcmds = new byte[64];
+    public int[] volparams = new int[64];  //or float
+    public byte[] fxcmds = new byte[64];
+    public int[] fxparams = new int[64];  //or float
     public int flags;  //not used
 
     public transient float sIdx;  //sample index
@@ -829,7 +829,7 @@ public class Music {
     }
   }
 
-  public boolean addSamples(String name, short samples[], int loopStart, int loopEnd
+  public boolean addSamples(String name, short[] samples, int loopStart, int loopEnd
     , int sustainStart, int sustainEnd, float attenuation)
   {
     Sample s = new Sample();

@@ -59,7 +59,7 @@ public class SRTPChannel extends RTPChannel {
   private byte[] remoteKey = new byte[KEY_LENGTH], remoteSalt = new byte[SALT_LENGTH+2];
   private byte[] localKey = new byte[KEY_LENGTH], localSalt = new byte[SALT_LENGTH+2];
 
-  public void writeRTP(byte data[], int off, int len) {
+  public void writeRTP(byte[] data, int off, int len) {
     if (rtp.rawMode) {
       super.writeRTP(data, off, len);
       return;
@@ -77,7 +77,7 @@ public class SRTPChannel extends RTPChannel {
       }
     }
     try {
-      byte payload[] = Arrays.copyOfRange(data, off+12, off + len);
+      byte[] payload = Arrays.copyOfRange(data, off+12, off + len);
       int ssrc = BE.getuint32(data, off + 8);
 //      int stamp = BE.getuint32(data, off + 4);
       int seqno = BE.getuint16(data, off + 2);
@@ -87,7 +87,7 @@ public class SRTPChannel extends RTPChannel {
       _seqno &= 0xffff0000;
       _seqno |= seqno;
       encrypt(payload, ssrc, _seqno++);
-      byte packet[] = new byte[len + _tailOut];
+      byte[] packet = new byte[len + _tailOut];
       System.arraycopy(data, off, packet, 0, 12);
       System.arraycopy(payload, 0, packet, 12, payload.length);
       appendAuth(packet, srtp_out, seqno);
@@ -130,7 +130,7 @@ public class SRTPChannel extends RTPChannel {
         while (rtp.active && !stunReceived) {
           JF.sleep(500);
           Random r = new Random();
-          byte request[] = new byte[1500];
+          byte[] request = new byte[1500];
           ByteBuffer bb = ByteBuffer.wrap(request);
           bb.order(ByteOrder.BIG_ENDIAN);
           int offset = 0;
@@ -179,7 +179,7 @@ public class SRTPChannel extends RTPChannel {
 
           bb.putShort(lengthOffset, (short)(offset - 20 + 24));  //patch length (24=MSG_INT)
 
-          byte id[] = STUN.calcMsgIntegrity(request, offset, STUN.calcKey(stream.sdp.icepwd));
+          byte[] id = STUN.calcMsgIntegrity(request, offset, STUN.calcKey(stream.sdp.icepwd));
           strlen = id.length;
           bb.putShort(offset, MESSAGE_INTEGRITY);
           offset += 2;
@@ -264,7 +264,7 @@ public class SRTPChannel extends RTPChannel {
   //              SRTPProtectionProfile.SRTP_NULL_HMAC_SHA1_32
   //              SRTPProtectionProfile.SRTP_NULL_HMAC_SHA1_80
               };
-              byte mki[] = new byte[0];  //do not use mki
+              byte[] mki = new byte[0];  //do not use mki
               UseSRTPData srtpData = new UseSRTPData(protectionProfiles, mki);
               TlsSRTPUtils.addUseSRTPExtension(table, srtpData);
               return table;
@@ -421,7 +421,7 @@ public class SRTPChannel extends RTPChannel {
     //              SRTPProtectionProfile.SRTP_NULL_HMAC_SHA1_32
     //              SRTPProtectionProfile.SRTP_NULL_HMAC_SHA1_80
                 };
-                byte mki[] = new byte[0];  //should match client or use nothing
+                byte[] mki = new byte[0];  //should match client or use nothing
                 UseSRTPData srtpData = new UseSRTPData(protectionProfiles, mki);
                 TlsSRTPUtils.addUseSRTPExtension(table, srtpData);
                 return table;
@@ -473,14 +473,14 @@ public class SRTPChannel extends RTPChannel {
   private final static short ICE_CONTROLLED = (short)0x8029;
   private final static short FINGERPRINT = (short)0x8028;
 
-  private byte stun[];
+  private byte[] stun;
 
   private boolean isClassicStun(long id1) {
     return ((id1 >>> 32) != 0x2112a442);
   }
 
   private int IP4toInt(String ip) {
-    String o[] = ip.split("[.]");
+    String[] o = ip.split("[.]");
     int ret = 0;
     for (int a = 0; a < 4; a++) {
       ret <<= 8;
@@ -489,7 +489,7 @@ public class SRTPChannel extends RTPChannel {
     return ret;
   }
 
-  protected void processSTUN(byte data[], int off, int len) {
+  protected void processSTUN(byte[] data, int off, int len) {
     JFLog.log("SRTPChannel:received STUN request");
     //the only command supported is BINDING_REQUEST
     String username = null, flipped = null;
@@ -518,13 +518,13 @@ public class SRTPChannel extends RTPChannel {
       switch (attr) {
         case USERNAME:
           username = new String(data, offset, length);
-          String f[] = username.split("[:]");
+          String[] f = username.split("[:]");
           flipped = f[1] + ":" + f[0];  //reverse username
           break;
         case MESSAGE_INTEGRITY:
           bb.putShort(lengthOffset, (short) (offset));  //patch length
-          byte correct[] = STUN.calcMsgIntegrity(data, offset - 4, STUN.calcKey(local_icepwd));
-          byte supplied[] = Arrays.copyOfRange(data, offset, offset + 20);
+          byte[] correct = STUN.calcMsgIntegrity(data, offset - 4, STUN.calcKey(local_icepwd));
+          byte[] supplied = Arrays.copyOfRange(data, offset, offset + 20);
           auth = Arrays.equals(correct, supplied);
           break;
       }
@@ -583,7 +583,7 @@ public class SRTPChannel extends RTPChannel {
     }
 
     bb.putShort(lengthOffset, (short) (offset - 20 + 24));  //patch length
-    byte id[] = STUN.calcMsgIntegrity(stun, offset, STUN.calcKey(local_icepwd));
+    byte[] id = STUN.calcMsgIntegrity(stun, offset, STUN.calcKey(local_icepwd));
     int strlen = id.length;
     bb.putShort(offset, MESSAGE_INTEGRITY);
     offset += 2;
@@ -608,9 +608,9 @@ public class SRTPChannel extends RTPChannel {
     }
   }
 
-  public static boolean initDTLS(java.util.List<byte []> certChain, byte privateKey[], boolean pkRSA) {
+  public static boolean initDTLS(java.util.List<byte []> certChain, byte[] privateKey, boolean pkRSA) {
     try {
-      org.bouncycastle.asn1.x509.Certificate x509certs[] = new org.bouncycastle.asn1.x509.Certificate[certChain.size()];
+      org.bouncycastle.asn1.x509.Certificate[] x509certs = new org.bouncycastle.asn1.x509.Certificate[certChain.size()];
       for (int i = 0; i < certChain.size(); ++i) {
         x509certs[i] = org.bouncycastle.asn1.x509.Certificate.getInstance(certChain.get(i));
       }
@@ -678,7 +678,7 @@ public class SRTPChannel extends RTPChannel {
     }
   }
 
-  protected void processDTLS(byte data[], int off, int len) {
+  protected void processDTLS(byte[] data, int off, int len) {
     if (!dtlsReady) return;  //not ready
     try {
       rawSocket.send(new DatagramPacket(data, off, len, localhost, dtlsSocket.getLocalPort()));

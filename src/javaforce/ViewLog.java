@@ -17,7 +17,7 @@ public class ViewLog extends javax.swing.JFrame {
     JFAWT.centerWindow(this);
     try {
       FileInputStream fis = new FileInputStream(file);
-      byte txt[] = JF.readAll(fis);
+      byte[] txt = JF.readAll(fis);
       load(txt);
     } catch (Exception e) {
       JFLog.log(e);
@@ -29,7 +29,7 @@ public class ViewLog extends javax.swing.JFrame {
     load(JF.readAll(is));
   }
 
-  public ViewLog(byte txt[]) {
+  public ViewLog(byte[] txt) {
     initComponents();
     load(txt);
   }
@@ -104,7 +104,7 @@ public class ViewLog extends javax.swing.JFrame {
   /**
    * @param args the command line arguments
    */
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     final String file = args[0];
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
@@ -119,7 +119,7 @@ public class ViewLog extends javax.swing.JFrame {
   private javax.swing.JTextArea txt;
   // End of variables declaration//GEN-END:variables
 
-  private void load(byte data[]) {
+  private void load(byte[] data) {
     txt.setText(new String(data));
   }
 

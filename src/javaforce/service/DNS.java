@@ -60,7 +60,7 @@ public class DNS extends Thread {
         break;
       }
       while (true) {
-        byte data[] = new byte[maxmtu];
+        byte[] data = new byte[maxmtu];
         DatagramPacket packet = new DatagramPacket(data, maxmtu);
         ds.receive(packet);
         new Worker(packet).start();

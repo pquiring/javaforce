@@ -8,7 +8,7 @@ package javaforce.controls.s7;
 public class COTP {
   public byte length;
   public byte PDU_type;
-  public byte pdata[];
+  public byte[] pdata;
 
   private short src_ref;
 
@@ -42,7 +42,7 @@ public class COTP {
   public int size() {
     return length + 1;
   }
-  public void write(byte data[], int offset) {
+  public void write(byte[] data, int offset) {
     data[offset++] = length;
     data[offset++] = PDU_type;
     switch (PDU_type) {
@@ -67,7 +67,7 @@ public class COTP {
         break;
     }
   }
-  public void read(byte data[], int offset) throws Exception {
+  public void read(byte[] data, int offset) throws Exception {
     length = data[offset++];
     PDU_type = data[offset++];
     pdata = new byte[length - 1];

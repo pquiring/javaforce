@@ -17,7 +17,7 @@ public class CIP_Reply_Read {
   public int size() {
     return tagdata.length + 6;
   }
-  public void read(byte data[], int offset) throws Exception {
+  public void read(byte[] data, int offset) throws Exception {
     cmd = data[offset++];
     reserved1 = data[offset++];
     reserved2 = data[offset++];

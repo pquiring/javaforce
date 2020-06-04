@@ -58,7 +58,7 @@ public class SOCKS extends Thread {
     active = false;
     try { ss.close(); } catch (Exception e) {}
     synchronized(lock) {
-      Session list[] = sessions.toArray(new Session[0]);
+      Session[] list = sessions.toArray(new Session[0]);
       for(int a=0;a<list.length;a++) {
         list[a].close();
       }
@@ -88,8 +88,8 @@ public class SOCKS extends Thread {
     public void run() {
       //request = 0x04 0x01 port16 ip32 user_id_null_terminated...
       //reply   = 0x00 0x5a reserved[6]   //0x5b = failed
-      byte req[] = new byte[1500];
-      byte reply[] = new byte[8];
+      byte[] req = new byte[1500];
+      byte[] reply = new byte[8];
       int reqSize = 0;
       boolean connected = false;
       InputStream cis = null;
@@ -149,7 +149,7 @@ public class SOCKS extends Thread {
       try {
         InputStream is = sRead.getInputStream();
         OutputStream os = sWrite.getOutputStream();
-        byte buf[] = new byte[1500];
+        byte[] buf = new byte[1500];
         active = true;
         while (active) {
           int read = is.read(buf);
@@ -171,7 +171,7 @@ public class SOCKS extends Thread {
 
   private static SOCKS socks;
 
-  public static void serviceStart(String args[]) {
+  public static void serviceStart(String[] args) {
     socks = new SOCKS();
     socks.start();
   }

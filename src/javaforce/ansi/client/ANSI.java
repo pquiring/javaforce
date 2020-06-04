@@ -22,7 +22,7 @@ public class ANSI {
 
   public final static char ESC = 0x1b;
 
-  public final static int clrs[][] = {
+  public final static int[][] clrs = {
     //Black  ,Red     ,Green   ,Yellow  ,Blue    ,Magenta ,Cyan    ,White
     {0x000000,0x880000,0x008800,0x888800,0x000088,0x880088,0x008888,0x888888},  //low
     {0x444444,0xff0000,0x00ff00,0xffff00,0x0000ff,0xff00ff,0x00ffff,0xffffff}  //high

@@ -52,7 +52,7 @@ public class CallDetails implements Cloneable {
   /** was auth (401/407) tried? */
   public boolean authsent;
   /** last set of full headers received. */
-  public String headers[];
+  public String[] headers;
   /** Last nonce value from server. */
   public String nonce;
   /** Counter for nonce value (if qop=auth is used).

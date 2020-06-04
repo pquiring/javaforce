@@ -9,7 +9,7 @@ public class pngalpha {
     System.exit(0);
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     JFImage bm = new JFImage();
     if (args.length < 1) {
       error("Desc : Modifies/Adds Alpha channel in PNG images.\r\nUsage : pngalpha file.png [defaultLevel [[clr=level] ...]]\r\nWhere:\r\n level = 0-255 (default=255)\r\n clr = RGB(hex)\r\n"

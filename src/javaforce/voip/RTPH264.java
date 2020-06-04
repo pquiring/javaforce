@@ -111,7 +111,7 @@ public class RTPH264 extends RTPCodec {
   /**
    * Returns full packets.
    */
-  public Packet decode(byte rtp[], int offset, int length) {
+  public Packet decode(byte[] rtp, int offset, int length) {
     //assumes offset == 0
     if (length < 12 + 2) return null;  //bad packet
     if (reset_packet) {

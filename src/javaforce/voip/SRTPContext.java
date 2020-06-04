@@ -220,7 +220,7 @@ public class SRTPContext {
    * @param master_salt = byte[14]  //+2 bytes for something???
    */
 
-  void setCrypto(String crypto_suite, byte master_key[], byte master_salt[]) throws GeneralSecurityException {
+  void setCrypto(String crypto_suite, byte[] master_key, byte[] master_salt) throws GeneralSecurityException {
     /*
      * required='1' crypto-suite='AES_CM_128_HMAC_SHA1_80' key-params='inline:WVNfX19zZW1jdGwgKCkgewkyMjA7fQp9CnVubGVz' session-params='KDR=1 UNENCRYPTED_SRTCP' tag='1'
      */

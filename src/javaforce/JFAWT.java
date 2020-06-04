@@ -111,7 +111,7 @@ public class JFAWT {
     for(int x=0;x<128;x++,width++) {
       if (tmp.getPixel(x, 63) == 0) break;
     }
-    int ret[] = new int[3];
+    int[] ret = new int[3];
     ret[0] = width;
     ret[1] = ascent;
     ret[2] = descent;
@@ -129,8 +129,8 @@ public class JFAWT {
   public static int[] getFontMetrics(Font font, String txt) {
     JFImage tmp = new JFImage(1,1);
     FontMetrics fm = tmp.getGraphics().getFontMetrics(font);
-    int ret[] = new int[3];
-    char ca[] = txt.toCharArray();
+    int[] ret = new int[3];
+    char[] ca = txt.toCharArray();
     ret[0] = fm.charsWidth(ca, 0, ca.length);
     ret[1] = fm.getAscent();
     ret[2] = fm.getDescent();

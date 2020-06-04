@@ -106,7 +106,7 @@ public class Buffer {
   private final char IAC = 255;
   private final char ESC = 27;  //0x1b
   /** The actual screen buffer.*/
-  public Char chars[] = null;
+  public Char[] chars = null;
   public int cx, cy;  //cursor position (0,0 = top left)
   /** A timer to blink the cursor, the blinky text. */
   private java.util.Timer timer;

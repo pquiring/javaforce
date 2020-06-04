@@ -9,8 +9,8 @@ import javaforce.jni.*;
 
 public class TestGC extends Thread {
   public static int threadCount = 20;
-  public static void main(String args[]) {
-    TestGC threads[] = new TestGC[threadCount];
+  public static void main(String[] args) {
+    TestGC[] threads = new TestGC[threadCount];
     for(int a=0;a<threadCount;a++) {
       threads[a] = new TestGC();
       threads[a].start();

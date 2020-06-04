@@ -32,7 +32,7 @@ public class Slider extends Container {
         break;
     }
   }
-  public void onEvent(String event, String args[]) {
+  public void onEvent(String event, String[] args) {
     switch (event) {
       case "sliderpos":
         for(int a=0;a<args.length;a++) {
