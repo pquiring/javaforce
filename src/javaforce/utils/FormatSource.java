@@ -45,7 +45,57 @@ public class FormatSource {
     //type name[] -> type[] name
     int count = 0;
     int offset = 0;
+    boolean inMultiComment = false, inSingleComment = false;
+    boolean inDoubleQuote = false, inSingleQuote = false;
     while (offset < data.length) {
+      if (inMultiComment) {
+        if (data[offset] == '*' && data[offset + 1] == '/') inMultiComment = false;
+        offset += 2;
+        continue;
+      }
+      if (inSingleComment) {
+        if (data[offset] == '\n') inSingleComment = false;
+        offset++;
+        continue;
+      }
+      if (inDoubleQuote) {
+        if (data[offset] == '\\' && data[offset + 1] == '"') {
+          offset += 2;
+          continue;
+        }
+        if (data[offset] == '"') inDoubleQuote = false;
+        offset++;
+        continue;
+      }
+      if (inSingleQuote) {
+        if (data[offset] == '\\' && data[offset + 1] == '\'') {
+          offset += 2;
+          continue;
+        }
+        if (data[offset] == '\'') inDoubleQuote = false;
+        offset++;
+        continue;
+      }
+      if (data[offset] == '/' && data[offset + 1] == '*') {
+        inMultiComment = true;
+        offset += 2;
+        continue;
+      }
+      if (data[offset] == '/' && data[offset + 1] == '/') {
+        inSingleComment = true;
+        offset += 2;
+        continue;
+      }
+      if (data[offset] == '"') {
+        inDoubleQuote = true;
+        offset++;
+        continue;
+      }
+      if (data[offset] == '\'') {
+        inSingleQuote = true;
+        offset++;
+        continue;
+      }
       int length = 0;
       while (data[offset + length] == '[' && data[offset + length + 1] == ']') {
         length += 2;
