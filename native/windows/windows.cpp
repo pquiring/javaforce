@@ -991,6 +991,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_peekConsole
 
 //tape drive API
 
+static int tapeLastError;
+
 JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeOpen
   (JNIEnv *e, jclass c, jstring name)
 {
@@ -998,7 +1000,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeOpen
   HANDLE handle = CreateFileA(cstr, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_FLAG_NO_BUFFERING, NULL);
   e->ReleaseStringUTFChars(name, cstr);
   if (handle == INVALID_HANDLE_VALUE) {
-    printf("tapeOpen:Error=%d\n", GetLastError());
+    tapeLastError = GetLastError();
     return 0;
   }
   return (jlong)handle;
@@ -1014,8 +1016,9 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeRead
   (JNIEnv *e, jclass c, jlong handle, jbyteArray ba, jint offset, jint length)
 {
   jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-  int read;
+  int read = 0;
   ReadFile((HANDLE)handle, baptr + offset, length, (LPDWORD)&read, NULL);
+  tapeLastError = GetLastError();
   e->ReleaseByteArrayElements(ba, baptr, 0);
   return read;
 }
@@ -1024,8 +1027,9 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeWrite
   (JNIEnv *e, jclass c, jlong handle, jbyteArray ba, jint offset, jint length)
 {
   jbyte *baptr = e->GetByteArrayElements(ba,NULL);
-  int write;
+  int write = 0;
   WriteFile((HANDLE)handle, baptr + offset, length, (LPDWORD)&write, NULL);
+  tapeLastError = GetLastError();
   e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
   return write;
 }
@@ -1050,6 +1054,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeSetpos(JNIEnv *e, jc
     nullptr
   );
   if (ret != TRUE) {
+    tapeLastError = GetLastError();
     return JNI_FALSE;
   }
   return JNI_TRUE;
@@ -1071,6 +1076,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeGetpos(JNIEnv *e, jclas
     nullptr
   );
   if (ret != TRUE) {
+    tapeLastError = GetLastError();
     return -1;
   }
   return tapePos.Offset.QuadPart;
@@ -1095,6 +1101,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeMedia(JNIEnv *e, jcl
     nullptr
   );
   if (ret != TRUE) {
+    tapeLastError = GetLastError();
     return JNI_FALSE;
   }
   tape_media_size = params.Capacity.QuadPart;
@@ -1132,6 +1139,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeDrive(JNIEnv *e, jcl
     nullptr
   );
   if (ret != TRUE) {
+    tapeLastError = GetLastError();
     return JNI_FALSE;
   }
   tape_drive_def_blocksize = params.DefaultBlockSize;
@@ -1162,7 +1170,10 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_changerOpen(JNIEnv *e, jcla
   const char *cstr = e->GetStringUTFChars(name, NULL);
   HANDLE handle = CreateFileA(cstr, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
   e->ReleaseStringUTFChars(name, cstr);
-  if (handle == INVALID_HANDLE_VALUE) return 0;
+  if (handle == INVALID_HANDLE_VALUE) {
+    tapeLastError = GetLastError();
+    return 0;
+  }
   return (jlong)handle;
 }
 
@@ -1353,9 +1364,16 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_changerMove(JNIEnv *e, j
   if (transport != nullptr) e->ReleaseStringUTFChars(jtransport, transport);
   e->ReleaseStringUTFChars(jdst, dst);
   if (ret != TRUE) {
+    tapeLastError = GetLastError();
     return JNI_FALSE;
   }
   return JNI_TRUE;
+}
+
+JNIEXPORT int JNICALL Java_javaforce_jni_WinNative_tapeLastError
+  (JNIEnv *e, jclass c, jlong handle)
+{
+  return tapeLastError;
 }
 
 //test

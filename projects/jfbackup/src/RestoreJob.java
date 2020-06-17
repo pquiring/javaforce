@@ -68,12 +68,12 @@ public class RestoreJob extends Thread {
     log("Restore job started at " + ConfigService.toDateTime(restoreid));
     //open devices
     if (!tape.open(Config.current.tapeDevice)) {
-      log("Error:Failed to open tape device");
+      log("Error:Failed to open tape device:Error=" + tape.lastError());
       return false;
     }
     if (haveChanger) {
       if (!changer.open(Config.current.changerDevice)) {
-        log("Error:Failed to open changer device");
+        log("Error:Failed to open changer device:Error=" + changer.lastError());
         return false;
       }
     }
@@ -122,12 +122,12 @@ public class RestoreJob extends Thread {
       }
     }
     if (!setpos(file.o)) {
-      log("Error:Failed to set tape position:" + file.o);
+      log("Error:Failed to set tape position:" + file.o + ":Error=" + tape.lastError());
       return false;
     }
     long tapepos = getpos();
     if (tapepos != file.o) {
-      log("Error:Failed to get tape position:Expected:" + file.o + " Returned:" + tapepos);
+      log("Error:Failed to get tape position:Expected:" + file.o + " Returned:" + tapepos + ":Error=" + tape.lastError());
       return false;
     }
     new File(path).mkdirs();
@@ -214,7 +214,7 @@ public class RestoreJob extends Thread {
       }
       log("Move Tape:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
       if (!changer.move(elements[driveIdx].name, elements[emptySlotIdx].name)) {
-        log("Error:failed to move tape out of drive");
+        log("Error:failed to move tape out of drive" + ":Error=" + changer.lastError());
         return false;
       }
       return loadTape(index);
@@ -222,7 +222,7 @@ public class RestoreJob extends Thread {
     //move desired tape into drive
     log("Move Tape:" + elements[desiredSlotIdx].name + " to " + elements[driveIdx].name);
     if (!changer.move(elements[desiredSlotIdx].name, elements[driveIdx].name)) {
-      log("Error:failed to move tape into drive");
+      log("Error:failed to move tape into drive" + ":Error=" + changer.lastError());
       return false;
     }
     return loadTape(index);
@@ -254,7 +254,7 @@ public class RestoreJob extends Thread {
     if (elements[driveIdx].barcode.equals("<empty>")) return true;
     log("Move Tape:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
     if (!changer.move(elements[driveIdx].name, elements[emptySlotIdx].name)) {
-      log("Error:Move Tape failed:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
+      log("Error:Move Tape failed:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name + ":Error=" + changer.lastError());
       return false;
     }
     return true;
@@ -298,17 +298,18 @@ public class RestoreJob extends Thread {
   private boolean verifyHeader() {
     log("Verify tape:" + currentTape.barcode);
     if (!setpos(0)) {
-      log("Error:Unable to rewind tape");
+      log("Error:Unable to rewind tape" + ":Error=" + tape.lastError());
       return false;
     }
     long pos = getpos();
     if (pos != 0) {
-      log("Error:Failed to rewind tape");
+      log("Error:Failed to rewind tape" + ":Error=" + tape.lastError());
       return false;
     }
     byte data[] = new byte[64 * 1024];
-    if (tape.read(data, 0, data.length) != data.length) {
-      log("Error:Failed to read tape header");
+    int read = tape.read(data, 0, data.length);
+    if (read != data.length) {
+      log("Error:Failed to read tape header:Expected=" + data.length + ":Actual=" + read + ":Error=" + tape.lastError());
       return false;
     }
     try {

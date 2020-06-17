@@ -43,4 +43,7 @@ public class TapeDrive {
   public boolean write(byte data[], int offset, int length) {
     return WinNative.tapeWrite(handle, data, offset, length) == data.length;
   }
+  public int lastError() {
+    return WinNative.tapeLastError();
+  }
 }

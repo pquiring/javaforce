@@ -87,12 +87,12 @@ public class BackupJob extends Thread {
     log("Backup id = " + backupid);
     //open devices
     if (!tape.open(Config.current.tapeDevice)) {
-      log("Error:Failed to open tape device");
+      log("Error:Failed to open tape device" + ":Error=" + tape.lastError());
       return false;
     }
     if (haveChanger) {
       if (!changer.open(Config.current.changerDevice)) {
-        log("Error:Failed to open changer device");
+        log("Error:Failed to open changer device" + ":Error=" + changer.lastError());
         return false;
       }
     }
@@ -117,7 +117,7 @@ public class BackupJob extends Thread {
     catnfo.retention = retentionid;
     DriveInfo info = tape.getDriveInfo();
     if (info == null) {
-      log("Error:unable to get drive parameters");
+      log("Error:unable to get drive parameters" + ":Error=" + tape.lastError());
       return false;
     }
     if (info.defaultBlockSize != blocksize) {
@@ -220,14 +220,14 @@ public class BackupJob extends Thread {
     }
     long pos = getpos();
     if (pos != 0) {
-      log("Error:Tape rewind failed");
+      log("Error:Tape rewind failed" + ":Error=" + tape.lastError());
       return false;
     }
     currentTape = new EntryTape(barcode, backupid, retentionid, job.name, catnfo.tapes.size() + 1);
     //get tape info
     MediaInfo mediainfo = getMediaInfo();
     if (mediainfo == null) {
-      log("Error:Tape get Media Info failed");
+      log("Error:Tape get Media Info failed" + ":Error=" + tape.lastError());
       return false;
     }
     currentTape.capacity = mediainfo.capacity / blocksize;
@@ -243,7 +243,7 @@ public class BackupJob extends Thread {
     writeHeader();
     pos = getpos();
     if (pos != 1) {
-      log("Error:Tape write header failed");
+      log("Error:Tape write header failed" + ":Error=" + tape.lastError());
       return false;
     }
     return true;
@@ -278,7 +278,7 @@ public class BackupJob extends Thread {
         }
         log("Move Tape:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
         if (!changer.move(elements[driveIdx].name, elements[emptySlotIdx].name)) {
-          log("Error:Move Tape failed:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
+          log("Error:Move Tape failed:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name + ":Error=" + changer.lastError());
           return false;
         }
         return loadEmptyTape();
@@ -286,7 +286,7 @@ public class BackupJob extends Thread {
       //move desired tape to drive
       log("Move Tape:" + elements[idx].name + " to " + elements[driveIdx].name);
       if (!changer.move(elements[idx].name, elements[driveIdx].name)) {
-        log("Error:Move Tape failed:" + elements[idx].name + " to " + elements[driveIdx].name);
+        log("Error:Move Tape failed:" + elements[idx].name + " to " + elements[driveIdx].name + ":Error=" + changer.lastError());
         return false;
       }
       return loadEmptyTape();
@@ -302,7 +302,7 @@ public class BackupJob extends Thread {
     if (elements[driveIdx].barcode.equals("<empty>")) return true;
     log("Move Tape:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
     if (!changer.move(elements[driveIdx].name, elements[emptySlotIdx].name)) {
-      log("Error:Move Tape failed:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name);
+      log("Error:Move Tape failed:" + elements[driveIdx].name + " to " + elements[emptySlotIdx].name + ":Error=" + changer.lastError());
       return false;
     }
     return true;
@@ -379,7 +379,7 @@ public class BackupJob extends Thread {
     log("WriteHeader to tape:" + barcode);
 
     if (!tape.write(data, 0, data.length)) {
-      log("Error:Tape write failed");
+      log("Error:Tape write failed" + ":Error=" + tape.lastError());
       return false;
     }
 

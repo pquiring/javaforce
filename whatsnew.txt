@@ -1,5 +1,12 @@
 What's new...
 
+June 17/2020 : JF 23.1 released
+  - jfBackup/0.15
+    - added more error reporting and show online clients in status screen
+  - added support for Arm64 (Raspberry Pi)
+    - Raspberry Pi has released a Beta Arm64 release
+    - not fully working yet, unable to compile native library, they need to fix some packages
+
 May 27/2020 : JF 23.0 released
   - SMTP now supports NTLM auth
   - jfBackup/0.14

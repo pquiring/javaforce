@@ -1,3 +1,7 @@
+Jun 17/2020 : 0.15 released
+  - new : add more error reporting
+  - new : show online clients in status screen
+
 May 27/2020 : 0.14 released
   - new : email notification auth now supports NTLM
 

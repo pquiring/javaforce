@@ -60,6 +60,7 @@ public class WinNative {
   public static native int tapeDriveMinBlockSize();
   public static native int tapeDriveMaxBlockSize();
   public static native int tapeDriveDefaultBlockSize();
+  public static native int tapeLastError();
 
   //Tape changer
   public static native long changerOpen(String name);

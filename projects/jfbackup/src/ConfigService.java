@@ -281,6 +281,10 @@ public class ConfigService implements WebUIHandler {
           }
           changer.close();
         }
+        sb.append("Online Clients:\r\n\r\n");
+        for(String host : Config.current.hosts) {
+          sb.append(host + "\r\n");
+        }
         panel.getClient();
         text.setText(sb.toString());
       }

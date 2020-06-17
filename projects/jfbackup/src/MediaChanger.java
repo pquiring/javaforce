@@ -43,4 +43,7 @@ public class MediaChanger {
     JF.sleep(1000);
     return ok;
   }
+  public int lastError() {
+    return WinNative.tapeLastError();
+  }
 }
