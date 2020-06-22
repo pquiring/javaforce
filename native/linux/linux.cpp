@@ -1744,6 +1744,35 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_peekConsole
   }
 }
 
+JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_writeConsole
+  (JNIEnv *e, jclass c, jbyte ch)
+{
+  printf("%c", ch);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_writeConsoleArray
+  (JNIEnv *e, jclass c, jbyteArray ba, jint off, jint len)
+{
+  jbyte tmp[128];
+  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
+  int length = len;
+  int pos = off;
+  while (length > 0) {
+    if (length > 127) {
+      std::memcpy(tmp, baptr+pos, 127);
+      tmp[127] = 0;
+      length -= 127;
+      pos += 127;
+    } else {
+      std::memcpy(tmp, baptr+pos, length);
+      tmp[length] = 0;
+      length = 0;
+    }
+    printf("%s", tmp);
+  }
+  e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
+}
+
 #include "../common/library.h"
 
 #include "../common/ffmpeg.cpp"

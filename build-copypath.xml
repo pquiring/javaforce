@@ -1,4 +1,4 @@
-<project name="copypath" default="executable" basedir=".">
+<project name="copypath" default="graal" basedir=".">
   <description>copypath</description>
   <!-- set global properties for this build -->
   <property name="app" value="copypath"/>

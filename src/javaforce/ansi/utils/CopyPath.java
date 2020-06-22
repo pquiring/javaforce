@@ -7,6 +7,7 @@ package javaforce.ansi.utils;
 
 import java.io.*;
 import java.nio.file.*;
+import javaforce.ConsoleOutput;
 
 import javaforce.ansi.server.*;
 
@@ -30,6 +31,7 @@ public class CopyPath implements KeyEvents {
 
   public static void main(String[] args) {
     ANSI.enableConsoleMode();
+    ConsoleOutput.install();
     CopyPath.args = args;
     int ret = 0;
     try {

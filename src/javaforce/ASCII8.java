@@ -32,6 +32,15 @@ public class ASCII8 {
   public static char convert(int ascii) {
     return convert((char)ascii);
   }
+  public static char convertUTF16(int utf16) {
+    if (utf16 < 128) return (char)utf16;
+    for(int a=0;a<table.length;a++) {
+      if (table[a] == utf16) {
+        return (char)(a + 128);
+      }
+    }
+    return (char)-1;
+  }
   public static void main(String args[]) {
     System.out.println("ASCII=" + convert(176) + convert(177) + convert(178) + convert(219));
   }

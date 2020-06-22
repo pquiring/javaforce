@@ -989,6 +989,47 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_peekConsole
   return count != 0;
 }
 
+/**
+  UTF8 Format:
+    1st bytes:
+      0xxxxxxx = 7bit (1 byte)
+      110xxxxx = 5bit (2 byte) 11bit total (import supported) (not exported)
+      1110xxxx = 4bit (3 byte) 16bit total (import/export supported)
+      11110xxx = 3bit (4 byte) 21bit total (import truncated to 16bit) (not exported)
+    2nd,3rd,4th bytes only:
+      10xxxxxx = 6bit
+*/
+
+JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_writeConsole
+  (JNIEnv *e, jclass c, jint ch)
+{
+  printf("%c", ch);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_writeConsoleArray
+  (JNIEnv *e, jclass c, jbyteArray ba, jint off, jint len)
+{
+  jbyte tmp[128];
+  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
+  int length = len;
+  int pos = off;
+  while (length > 0) {
+    if (length > 127) {
+      std::memcpy(tmp, baptr+pos, 127);
+      tmp[127] = 0;
+      length -= 127;
+      pos += 127;
+    } else {
+      std::memcpy(tmp, baptr+pos, length);
+      tmp[length] = 0;
+      length = 0;
+    }
+    printf("%s", tmp);
+  }
+  e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
+}
+
+
 //tape drive API
 
 static int tapeLastError;

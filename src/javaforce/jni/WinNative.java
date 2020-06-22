@@ -45,6 +45,8 @@ public class WinNative {
   public static native int[] getConsolePos();
   public static native char readConsole();
   public static native boolean peekConsole();
+  public static native void writeConsole(int ch);
+  public static native void writeConsoleArray(byte[] ch, int off, int len);
 
   //Tape drive
   public static native long tapeOpen(String name);
