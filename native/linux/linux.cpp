@@ -1759,12 +1759,12 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_writeConsoleArray
   int pos = off;
   while (length > 0) {
     if (length > 127) {
-      std::memcpy(tmp, baptr+pos, 127);
+      memcpy(tmp, baptr+pos, 127);
       tmp[127] = 0;
       length -= 127;
       pos += 127;
     } else {
-      std::memcpy(tmp, baptr+pos, length);
+      memcpy(tmp, baptr+pos, length);
       tmp[length] = 0;
       length = 0;
     }
