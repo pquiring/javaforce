@@ -55,7 +55,15 @@ public class DVRService extends Thread {
 
   public void startCamera(Camera camera) {
     System.out.println("Start Camera:" + camera.name);
-    CameraWorker instance = new CameraWorker(camera);
+    CameraWorker instance = null;
+    switch (camera.url.substring(0,4)) {
+      case "rtsp": instance = new CameraWorkerVideo(camera); break;
+      case "http": instance = new CameraWorkerPictures(camera); break;
+    }
+    if (instance == null) {
+      JFLog.log("Error:invalid camera:" + camera.name);
+      return;
+    }
     instance.start();
     list.add(instance);
   }
@@ -63,7 +71,7 @@ public class DVRService extends Thread {
   public void stopCamera(Camera camera) {
     int cnt = list.size();
     for(int a=0;a<cnt;a++) {
-      if (list.get(a).camera == camera) {
+      if (list.get(a).getCamera() == camera) {
         try {list.get(a).cancel();} catch (Exception e) {JFLog.log(e);}
         list.remove(a);
         return;
@@ -74,7 +82,7 @@ public class DVRService extends Thread {
   public void reloadCamera(Camera camera) {
     int cnt = list.size();
     for(int a=0;a<cnt;a++) {
-      if (list.get(a).camera == camera) {
+      if (list.get(a).getCamera() == camera) {
         try {list.get(a).reloadConfig();} catch (Exception e) {JFLog.log(e);}
         return;
       }

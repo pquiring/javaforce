@@ -45,10 +45,10 @@ public class ConfigService implements WebUIHandler {
     return sb.toString();
   }
 
-  private String cleanURL(String url) {
-    if (!url.startsWith("rtsp://")) return "rtsp://" + url;
-    //TODO : more validation
-    return url;
+  private boolean validURL(String url) {
+    if (url.startsWith("rtsp://")) return true;
+    if (url.startsWith("http://")) return true;
+    return false;
   }
 
   private void stopTimer(WebUIClient client) {
@@ -104,6 +104,11 @@ public class ConfigService implements WebUIHandler {
     row.add(html);
 
     row = new Row();
+    Label errmsg = new Label("");
+    errmsg.setColor(Color.red);
+    right.add(row);
+
+    row = new Row();
     right.add(row);
     Button b_new = new Button("New");
     row.add(b_new);
@@ -132,14 +137,17 @@ public class ConfigService implements WebUIHandler {
     name.setName("url");
     row.add(url);
 
+    InnerPanel video = new InnerPanel("Video Options (rtsp)");
+    right.add(video);
+
     row = new Row();
-    right.add(row);
+    video.add(row);
     CheckBox record_motion = new CheckBox("Motion Recording");
     record_motion.setSelected(true);
     row.add(record_motion);
 
     row = new Row();
-    right.add(row);
+    video.add(row);
     lbl = new Label("Motion Threshold:");
     row.add(lbl);
     Slider threshold = new Slider(Slider.HORIZONTAL, 0, 100, 15);
@@ -151,7 +159,7 @@ public class ConfigService implements WebUIHandler {
     row.add(threshold_lbl);
 
     row = new Row();
-    right.add(row);
+    video.add(row);
     lbl = new Label("Motion Recording Off Delay (sec):");
     row.add(lbl);
     Slider motion_off_delay = new Slider(Slider.HORIZONTAL, 0, 60, 5);
@@ -161,6 +169,38 @@ public class ConfigService implements WebUIHandler {
       motion_off_delay_lbl.setText(Integer.toString(motion_off_delay.getPos()));
     });
     row.add(motion_off_delay_lbl);
+
+    InnerPanel pic = new InnerPanel("Picture Options (http)");
+    right.add(pic);
+
+    row = new Row();
+    pic.add(row);
+    lbl = new Label("Controller:");
+    row.add(lbl);
+    TextField controller = new TextField("");
+    row.add(controller);
+
+    row = new Row();
+    pic.add(row);
+    lbl = new Label("Trigger Tag:");
+    row.add(lbl);
+    TextField tag_trigger = new TextField("");
+    row.add(tag_trigger);
+
+    row = new Row();
+    pic.add(row);
+    lbl = new Label("Program Tag:");
+    row.add(lbl);
+    TextField tag_value = new TextField("");
+    row.add(tag_value);
+    lbl = new Label("(optional)");
+    row.add(lbl);
+
+    row = new Row();
+    pic.add(row);
+    CheckBox pos_edge = new CheckBox("Pos Edge Trigger");
+    pos_edge.setSelected(true);
+    row.add(pos_edge);
 
     row = new Row();
     right.add(row);
@@ -215,6 +255,10 @@ public class ConfigService implements WebUIHandler {
       motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
       max_file_size.setText(Integer.toString(camera.max_file_size));
       max_folder_size.setText(Integer.toString(camera.max_folder_size));
+      controller.setText(camera.controller);
+      tag_trigger.setText(camera.tag_trigger);
+      tag_value.setText(camera.tag_value);
+      pos_edge.setSelected(camera.pos_edge);
       stopTimer(client);
       client.setProperty("camera", camera);
       Timer timer = new Timer();
@@ -234,6 +278,9 @@ public class ConfigService implements WebUIHandler {
       list.setSelectedIndex(-1);
       name.setText("");
       url.setText("");
+      controller.setText("");
+      tag_trigger.setText("");
+      tag_value.setText("");
       stopTimer(client);
       bar.setValue(0);
       preview_panel.setVisible(false);
@@ -243,11 +290,15 @@ public class ConfigService implements WebUIHandler {
       String _name = name.getText();
       _name = cleanName(_name);
       name.setText(_name);
-      if (_name.length() == 0) return;
+      if (_name.length() == 0) {
+        errmsg.setText("Invalid Name");
+        return;
+      }
       String _url = url.getText();
-      _url = cleanURL(_url);
-      url.setText(_url);
-      if (_url.length() == 0) return;
+      if (!validURL(_url)) {
+        errmsg.setText("Invalid URL");
+        return;
+      }
       Camera camera;
       boolean reload = false;
       if (idx == -1) {
@@ -255,7 +306,7 @@ public class ConfigService implements WebUIHandler {
         int ccnt = Config.current.cameras.length;
         for(int a=0;a<ccnt;a++) {
           if (Config.current.cameras[a].name.equals(_name)) {
-            //TODO : signal error
+            errmsg.setText("That name already exists");
             return;
           }
         }
@@ -285,6 +336,10 @@ public class ConfigService implements WebUIHandler {
       camera.max_folder_size = Integer.valueOf(max_folder_size.getText());
       if (camera.max_folder_size < 0) camera.max_folder_size = 1;
       if (camera.max_folder_size > 4096) camera.max_folder_size = 4096;
+      camera.controller = controller.getText();
+      camera.tag_trigger = tag_trigger.getText();
+      camera.tag_value = tag_value.getText();
+      camera.pos_edge = pos_edge.isSelected();
       if (!reload) {
         DVRService.dvrService.startCamera(camera);
       } else {
