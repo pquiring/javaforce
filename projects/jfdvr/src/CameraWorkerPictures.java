@@ -192,11 +192,6 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
     }
     remotehost = url;
     this.url = "http://" + remotehost + ":" + remoteport + uri;
-    Authenticator.setDefault(new Authenticator() {
-      protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication (user, pass.toCharArray());
-      }
-    });
     return true;
   }
 
@@ -295,6 +290,11 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
       FileOutputStream fos = new FileOutputStream(filename);
       URL url = new URL(this.url);
       HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+      conn.setAuthenticator(new Authenticator() {
+        protected PasswordAuthentication getPasswordAuthentication() {
+          return new PasswordAuthentication (user, pass.toCharArray());
+        }
+      });
       conn.connect();
       InputStream is = conn.getInputStream();
       byte[] data = is.readAllBytes();
