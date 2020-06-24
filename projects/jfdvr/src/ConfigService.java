@@ -121,6 +121,10 @@ public class ConfigService implements WebUIHandler {
     row.add(b_delete);
     b_delete.setName("delete");
 
+    Button b_help = new Button("Help");
+    row.add(b_help);
+    b_help.setName("help");
+
     row = new Row();
     right.add(row);
     Label lname = new Label("Name:");
@@ -377,6 +381,9 @@ public class ConfigService implements WebUIHandler {
       int idx = list.getSelectedIndex();
       if (idx < 0 || idx >= Config.current.cameras.length) return;
       popup.setVisible(true);
+    });
+    b_help.addClickListener((MouseEvent e, Component button) -> {
+      client.openURL("http://jfdvr.sourceforge.net/help.html");
     });
 
     panel.add(popup);

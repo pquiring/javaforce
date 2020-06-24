@@ -225,4 +225,8 @@ public class WebUIClient {
   public void addResizedListener(Resized handler) {
     resized = handler;
   }
+
+  public void openURL(String url) {
+    sendEvent(root.id, "openurl", new String[] {"url=" + url});
+  }
 }
