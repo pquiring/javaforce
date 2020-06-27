@@ -240,15 +240,15 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
 
   private String getFilename() {
     Calendar now = Calendar.getInstance();
-    return String.format("%s/%04d-%02d-%02d_%02d-%02d-%02d%s.jpg"
+    return String.format("%s/%s%04d-%02d-%02d_%02d-%02d-%02d.jpg"
       , path
+      , tag_value
       , now.get(Calendar.YEAR)
       , now.get(Calendar.MONTH) + 1
       , now.get(Calendar.DAY_OF_MONTH)
       , now.get(Calendar.HOUR_OF_DAY)
       , now.get(Calendar.MINUTE)
       , now.get(Calendar.SECOND)
-      , tag_value
     );
   }
 
@@ -272,14 +272,14 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
     if (camera.tag_value.length() > 0) {
       byte[] data = controller.read(camera.tag_value);
       if (data == null) {
-        tag_value = "_tag_error";
+        tag_value = "error_";
       } else {
         switch (data.length) {
-          case 1: tag_value = "_" + Integer.toString(data[0]); break;
-          case 2: tag_value = "_" + Integer.toString(LE.getuint16(data, 0)); break;
-          case 4: tag_value = "_" + Integer.toString(LE.getuint32(data, 0)); break;
-          case 8: tag_value = "_" + Long.toString(LE.getuint64(data, 0)); break;
-          default: try {tag_value = "_" + new String(data, "UTF-8");} catch (Exception e) {JFLog.log(e); tag_value = "_tag_error";}
+          case 1: tag_value = Integer.toString(data[0]) + "_"; break;
+          case 2: tag_value = Integer.toString(LE.getuint16(data, 0)) + "_"; break;
+          case 4: tag_value = Integer.toString(LE.getuint32(data, 0)) + "_"; break;
+          case 8: tag_value = Long.toString(LE.getuint64(data, 0)) + "_"; break;
+          default: try {tag_value = new String(data, "UTF-8") + "_";} catch (Exception e) {JFLog.log(e); tag_value = "error_";}
         }
       }
     } else {
