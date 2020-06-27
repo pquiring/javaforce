@@ -69,7 +69,7 @@ public class MediaCoder {
         if (a == 7 && libav_org) continue;
         if (a == 8 && !libav_org) continue;
         if (libs[a].path == null) {
-          System.out.println("Error:Unable to load library:" + libs[a].name + ext);
+          System.out.println("Error:Unable to find library:" + libs[a].name + ext);
         }
       }
 //      JFLog.logTrace("MediaCoder.init() failed");

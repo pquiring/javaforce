@@ -50,6 +50,7 @@ public class JFNative {
 
   /** Find native libraries in folder (recursive). */
   public static boolean findLibraries(File folders[], Library libs[], String ext, int needed) {
+    boolean once = false;
     for(int fn=0;fn<folders.length;fn++) {
       File[] files = folders[fn].listFiles();
       if (files == null || files.length == 0) {
@@ -73,21 +74,12 @@ public class JFNative {
           continue;
         } else if (fileName.contains(ext)) {
           int cnt = 0;
-          boolean once = false;
           for(int b=0;b<libs.length;b++) {
-            if (libs[b].path != null) {
-              if (libs[b].once) {
-                if (!once) {
-                  cnt++;
-                  once = true;
-                }
-              } else {
-                cnt++;
-              }
-            }
-            else if (fileName.startsWith(libs[b].name) || fileName.startsWith("lib" + libs[b].name)) {
+            if (fileName.startsWith(libs[b].name) || fileName.startsWith("lib" + libs[b].name)) {
+              if (once && libs[b].once) continue;
               libs[b].path = file.getAbsolutePath();
               cnt++;
+              if (libs[b].once) once = true;
             }
           }
           if (cnt == needed) return true;
