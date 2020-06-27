@@ -17,6 +17,7 @@
 //linux
 #include "../glfw/src/x11_init.c"
 #include "../glfw/src/x11_monitor.c"
+#undef _POSIX_C_SOURCE
 #include "../glfw/src/posix_time.c"
 #include "../glfw/src/x11_window.c"
 #include "../glfw/src/xkb_unicode.c"
