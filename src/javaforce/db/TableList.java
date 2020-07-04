@@ -20,6 +20,7 @@ public class TableList<ROW extends Row> extends SerialObject {
   }
 
   public TableList(Row.Creator rowCreator) {
+    ctr = rowCreator;
   }
 
   private String folder;
