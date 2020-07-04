@@ -10,8 +10,9 @@ package jfcontrols.logic;
  */
 
 import javaforce.controls.*;
+import jfcontrols.tags.TagBase;
 
-public class DO extends Logic {
+public class DO extends LogicBlock {
 
   public boolean isBlock() {
     return false;
@@ -21,8 +22,8 @@ public class DO extends Logic {
     return "Do";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "do {";
+  public boolean execute(boolean enabled) {
+    return enabled;
   }
 
   public int getTagsCount() {

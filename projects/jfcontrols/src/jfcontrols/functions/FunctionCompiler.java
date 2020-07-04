@@ -17,165 +17,55 @@ import jfcontrols.db.*;
 
 public class FunctionCompiler {
   public static String error;
-  public static String generateFunction(int fid) {
+  public static LogicFunction generateFunction(int fid, long revision) {
     error = null;
-    StringBuilder sb = new StringBuilder();
-    FunctionRow fnc = Database.getFunctionById(fid);
-    sb.append("import jfcontrols.tags.*;\r\n");
-    sb.append("public class func_" + fid + " extends jfcontrols.functions.FunctionRuntime {\r\n");
-    BlockRow blks[] = Database.getBlocksById(fid);
-    sb.append("  public static boolean debug_en[][] = new boolean[" + blks.length + "][2];\r\n");
-    int tagcount = 0;
-    for(int a=0;a<blks.length;a++) {
-      tagcount += blks[a].tags.split(",").length;
-    }
-    sb.append("  public static String debug_tv[] = new String[" + tagcount + "];\r\n");
-    sb.append("  public static long revision = " + fnc.revision + ";\r\n");
-    sb.append("  public boolean code(TagBase args[]) {\r\n");
-    sb.append("    boolean enabled = true;\r\n");
-    sb.append("    boolean en[] = new boolean[256];\r\n");
-    sb.append("    int eidx = 0;\r\n");
-    sb.append("    TagBase tags[] = new TagBase[33];\r\n");
+
+    LogicFunction func = new LogicFunction();
+    func.id = fid;
+    func.revision = revision;
 
     //append code from jfc_rungs
     RungRow rungs[] = Database.getRungsById(fid, true);
     int norungs = rungs.length;
-    ArrayList<String> stack = new ArrayList<>();
-    int debug_en = 0;
-    int debug_tv = 0;
+    Node.resetDebug();
+    LogicRung rung = null;
     for(int rid=0;rid<norungs;rid++) {
-      sb.append("//Rung #" + (rid+1) + "\r\n");
-      sb.append("    enabled = true;\r\n");
-      sb.append("    en[0] = enabled;\r\n");
-      int pos = sb.length();
-      String logic[] = rungs[rid].logic.split("[|]");
+      if (rung == null) {
+        rung = new LogicRung();
+        func.root = rung;
+      } else {
+        rung.next = new LogicRung();
+        rung = rung.next;
+      }
+      LogicBlock logic = new Wire();
+      logic.func = func;
+      logic.rung = rung;
+      rung.root = logic;
+      String logics[] = rungs[rid].logic.split("[|]");
       BlockRow blocks[] = Database.getRungBlocksById(fid, rid);
-      NodeRoot root = buildNodes(fid, rid, logic, blocks);
+      NodeRoot root = buildNodes(fid, rid, logics, blocks);
       if (root == null) return null;
-      Node node = root, upper;
-      String func = null;
-      int cnt;
-      int eidx = 0;
+      Node.resetStack();
+      Node node = root;
       while (node != null) {
-        node.eidx = eidx;
-        switch (node.type) {
-          case 't':
-            sb.append("    en[" + (eidx+1) + "] = en[" + eidx + "];\r\n");
-            eidx++;
-            break;
-          case 'a':
-          case 'c':
-            cnt = 1;
-            upper = node.upper;
-            while (upper != null) {
-              cnt++;
-              upper = upper.upper;
-            }
-            sb.append("    en[" + eidx + "] = en[" + (eidx-cnt) + "];\r\n");
-            break;
-          case 'b':
-            sb.append("    en[" + (eidx+1) + "] = en[" + eidx + "];\r\n");
-            eidx++;
-            break;
-          case 'd':
-            upper = node.upper;
-            while (upper != null) {
-              sb.append("    en[" + upper.eidx + "] |= en[" + eidx + "];\r\n");
-              eidx = upper.eidx;
-              upper = upper.upper;
-            };
-            sb.append("    en[" + (eidx-1) + "] = en[" + eidx + "];\r\n");
-            eidx--;
-            break;
-          case '#': {
-            if (node.blk.isFlowControl()) {
-              String name = node.blk.getName();
-              if (name.endsWith("_END")) {
-                if (stack.size() == 0) {
-                  error = "Error:" + name + " without starting block";
-                  return null;
-                }
-                String start = stack.remove(stack.size() - 1);
-                if (!node.blk.canClose(start)) {
-                  error = "Error:" + name + " unmatching block";
-                  return null;
-                }
-              } else {
-                stack.add(name);
-              }
-            }
-            int types[] = new int[node.tags.length];
-            boolean array[] = new boolean[node.tags.length];
-            boolean unsigned[] = new boolean[node.tags.length];
-            for(int t=1;t<node.tags.length;t++) {
-              String tag = node.tags[t];
-              char type = tag.charAt(0);
-              String value = tag.substring(1);
-              int tagType = node.blk.getTagType(t);
-              switch (type) {
-                case 't':
-                  sb.append("    tags[" + t + "] = TagsService.getTag(\"" + value + "\");\r\n");
-                  TagBase tagbase = TagsService.getTag(value);
-                  if (tagType >= TagType.any) {
-                    types[t] = tagbase.getType();
-                  } else {
-                    types[t] = tagType;
-                  }
-                  array[t] = tagbase.isArray();
-                  unsigned[t] = tagbase.isUnsigned();
-                  break;
-                case 'i':
-                  if (value.indexOf(".") == -1) {
-                    tagType = TagType.int32;
-                    sb.append("    tags[" + t + "] = new TagInt(" + value + ");\r\n");
-                  } else {
-                    tagType = TagType.float32;
-                    sb.append("    tags[" + t + "] = new TagFloat(" + value + ");\r\n");
-                  }
-                  types[t] = tagType;
-                  break;
-                case 'f':
-                  func = value;
-                  types[t] = TagType.function;
-                  break;
-              }
-            }
-            sb.append("    enabled = en[" + eidx + "];\r\n");
-            sb.append("    debug_en[" + debug_en + "][0]=enabled;\r\n");
-            if (node.blk.getName().equals("CALL")) {
-              sb.append(node.blk.getCode(func));
-            } else {
-              sb.append(node.blk.getCode(types, array, unsigned));
-              String preCode = node.blk.getPreCode();
-              if (preCode != null) {
-                sb.insert(pos, preCode);
-              }
-            }
-            for(int a=1;a<node.tags.length;a++) {
-              if (node.blk == null || node.blk.getTagType(a) != TagType.function) {
-                sb.append("    debug_tv[" + debug_tv + "]=tags[" + a + "].getValue();\r\n");
-              }
-              debug_tv++;
-            }
-            sb.append("    debug_en[" + debug_en + "][1]=enabled;\r\n");
-            debug_en++;
-            sb.append("    en[" + eidx + "] = enabled;\r\n");
-            break;
-          }
+        logic.next = node.getLogic();
+        if (logic.next == null) {
+          JFLog.log("Error:logic==null for node:" + node.toString());
         }
+        logic = logic.next;
+        logic.func = func;
+        logic.rung = rung;
         node = node.next;
       }
+      if (Node.getStackSize() > 0) {
+        Node.resetStack();
+        error = "Error:Unclosed flow blocks";
+        return null;
+      }
     }
-
-    if (stack.size() > 0) {
-      error = "Error:Unclosed block:" + stack.get(stack.size() - 1);
-      return null;
-    }
-
-    sb.append("    return en[0];\r\n");
-    sb.append("  }\r\n");
-    sb.append("}\r\n");
-    return sb.toString();
+    func.debug_en = new boolean[Node.debug_en_idx][2];
+    func.debug_tv = new String[Node.debug_tv_idx];
+    return func;
   }
   public static NodeRoot buildNodes(int fid, int rid, String logic[], BlockRow blocks[]) {
     int x = 0;
@@ -264,10 +154,10 @@ public class FunctionCompiler {
             error = "Error:Block not found:rid=" + rid + ":bid=" + part;
             return null;
           }
-          Logic blk = null;
+          LogicBlock blk = null;
           try {
             Class cls = Class.forName("jfcontrols.logic." + name.toUpperCase());
-            blk = (Logic)cls.newInstance();
+            blk = (LogicBlock)cls.newInstance();
           } catch (Exception e) {
             JFLog.log(e);
           }

@@ -1,12 +1,15 @@
 package jfcontrols.logic;
 
-import javaforce.controls.*;
-
 /**  Array shift down
  *
  */
 
-public class ARRAY_SHIFT extends Logic {
+import javaforce.controls.*;
+
+import jfcontrols.functions.*;
+import jfcontrols.tags.*;
+
+public class ARRAY_SHIFT extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -16,8 +19,9 @@ public class ARRAY_SHIFT extends Logic {
     return "ArrayShift";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) arrayshift(tags);";
+  public boolean execute(boolean enabled) {
+    if (enabled) FunctionRuntime.arrayshift(tags);
+    return enabled;
   }
 
   public int getTagsCount() {

@@ -1614,10 +1614,10 @@ public class Panels {
             JFLog.log("Error:Block not found:rid=" + rid + ":bid=" + part);
             continue;
           }
-          Logic blk = null;
+          LogicBlock blk = null;
           try {
             Class cls = Class.forName("jfcontrols.logic." + name.toUpperCase());
-            blk = (Logic)cls.newInstance();
+            blk = (LogicBlock)cls.newInstance();
           } catch (Exception e) {
             JFLog.log(e);
           }
@@ -1786,7 +1786,7 @@ public class Panels {
         case '#': {
           //create cells for block
           //id,name,tags
-          Logic blk = node.blk;
+          LogicBlock blk = node.blk;
           childIdx = 0;
           int tagIdx = 1;
           if (!blk.isBlock()) {

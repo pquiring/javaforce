@@ -7,7 +7,9 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class NEG extends Logic {
+import jfcontrols.tags.*;
+
+public class NEG extends LogicBlock {
 
   public boolean isBlock() {
     return false;
@@ -17,8 +19,14 @@ public class NEG extends Logic {
     return "pos";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) {if (!tags[1].getBoolean()) tags[1].setBoolean(true); enabled = false;} else {if (tags[1].getBoolean()) {tags[1].setBoolean(false); enabled = true;}}";
+  public boolean execute(boolean enabled) {
+    if (enabled) {
+      if (!tags[1].getBoolean()) tags[1].setBoolean(true);
+      enabled = false;
+    } else {
+      if (tags[1].getBoolean()) {tags[1].setBoolean(false); enabled = true;}
+    }
+    return enabled;
   }
 
   public int getTagsCount() {

@@ -7,7 +7,9 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class COIL extends Logic {
+import jfcontrols.tags.*;
+
+public class COIL extends LogicBlock {
 
   public boolean isBlock() {
     return false;
@@ -17,8 +19,9 @@ public class COIL extends Logic {
     return "Coil";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "    tags[1].setBoolean(enabled);\r\n";
+  public boolean execute(boolean enabled) {
+    tags[1].setBoolean(enabled);
+    return enabled;
   }
 
   public int getTagsCount() {

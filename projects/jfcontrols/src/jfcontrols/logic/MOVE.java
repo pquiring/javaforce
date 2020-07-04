@@ -7,7 +7,9 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class MOVE extends Logic {
+import jfcontrols.tags.*;
+
+public class MOVE extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -17,46 +19,44 @@ public class MOVE extends Logic {
     return "Move";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("if (enabled) {");
+  public boolean execute(boolean enabled) {
+    if (!enabled) return false;
 
-    switch (types[1]) {
+    switch (tags[1].type) {
       case TagType.float32:
-        switch (types[2]) {
-          case TagType.float32: sb.append("tags[2].setFloat(tags[1].getFloat());"); break;
-          case TagType.float64: sb.append("tags[2].setDouble(tags[1].getFloat());"); break;
-          case TagType.int64: sb.append("tags[2].setLong((long)tags[1].getFloat());"); break;
-          default: sb.append("tags[2].setInt((int)tags[1].getFloat());"); break;
+        switch (tags[2].type) {
+          case TagType.float32: tags[2].setFloat(tags[1].getFloat()); break;
+          case TagType.float64: tags[2].setDouble(tags[1].getFloat()); break;
+          case TagType.int64: tags[2].setLong((long)tags[1].getFloat()); break;
+          default: tags[2].setInt((int)tags[1].getFloat()); break;
         }
         break;
       case TagType.float64:
-        switch (types[2]) {
-          case TagType.float32: sb.append("tags[2].setFloat((float)tags[1].getDouble());"); break;
-          case TagType.float64: sb.append("tags[2].setDouble(tags[1].getDouble());"); break;
-          case TagType.int64: sb.append("tags[2].setLong((long)tags[1].getDouble());"); break;
-          default: sb.append("tags[2].setInt((int)tags[1].getDouble());"); break;
+        switch (tags[2].type) {
+          case TagType.float32: tags[2].setFloat((float)tags[1].getDouble()); break;
+          case TagType.float64: tags[2].setDouble(tags[1].getDouble()); break;
+          case TagType.int64: tags[2].setLong((long)tags[1].getDouble()); break;
+          default: tags[2].setInt((int)tags[1].getDouble()); break;
         }
         break;
       case TagType.int64:
-        switch (types[2]) {
-          case TagType.float32: sb.append("tags[2].setFloat((float)tags[1].getLong());"); break;
-          case TagType.float64: sb.append("tags[2].setDouble((double)tags[1].getLong());"); break;
-          case TagType.int64: sb.append("tags[2].setLong((long)tags[1].getLong());"); break;
-          default: sb.append("tags[2].setInt((int)tags[1].getLong());"); break;
+        switch (tags[2].type) {
+          case TagType.float32: tags[2].setFloat((float)tags[1].getLong()); break;
+          case TagType.float64: tags[2].setDouble((double)tags[1].getLong()); break;
+          case TagType.int64: tags[2].setLong((long)tags[1].getLong()); break;
+          default: tags[2].setInt((int)tags[1].getLong()); break;
         }
         break;
       default:
-        switch (types[2]) {
-          case TagType.float32: sb.append("tags[2].setFloat((float)tags[1].getInt());"); break;
-          case TagType.float64: sb.append("tags[2].setDouble((double)tags[1].getInt());"); break;
-          case TagType.int64: sb.append("tags[2].setLong((long)tags[1].getInt());"); break;
-          default: sb.append("tags[2].setInt(tags[1].getInt());"); break;
+        switch (tags[2].type) {
+          case TagType.float32: tags[2].setFloat((float)tags[1].getInt()); break;
+          case TagType.float64: tags[2].setDouble((double)tags[1].getInt()); break;
+          case TagType.int64: tags[2].setLong((long)tags[1].getInt()); break;
+          default: tags[2].setInt(tags[1].getInt()); break;
         }
         break;
     }
-    sb.append("}\r\n");
-    return sb.toString();
+    return true;
   }
 
   public int getTagsCount() {

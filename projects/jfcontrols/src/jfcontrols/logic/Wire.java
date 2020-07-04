@@ -1,33 +1,33 @@
 package jfcontrols.logic;
 
-/** Image Compare
+/** Wire -
  *
  * @author pquiring
  */
 
 import javaforce.controls.*;
+
 import jfcontrols.tags.*;
 
-public class IMAGE_COMPARE extends LogicBlock {
+public class Wire extends LogicBlock {
 
   public boolean isBlock() {
-    return true;
+    return false;
   }
 
   public String getDesc() {
-    return "ImageCompare";
+    return "";
   }
 
   public boolean execute(boolean enabled) {
-    //TODO
     return enabled;
   }
 
   public int getTagsCount() {
-    return 3;  //program# shot# roi#
+    return 0;
   }
 
   public int getTagType(int idx) {
-    return TagType.uint32;
+    return TagType.any;
   }
 }

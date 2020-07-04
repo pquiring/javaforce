@@ -8,16 +8,10 @@ package jfcontrols.logic;
 import javaforce.*;
 import javaforce.controls.*;
 
-public class CALL extends Logic {
+import jfcontrols.tags.*;
+import jfcontrols.functions.*;
 
-/*
-  private int fid;
-  private int types[];
-  public void setFunction(int fid, int types[]) {
-    this.fid = fid;
-    this.types = types;
-  }
-*/
+public class CALL extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -27,10 +21,11 @@ public class CALL extends Logic {
     return "Call";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {return null;}
+  public boolean doCall;
 
-  public String getCode(String func) {
-    return "  if (enabled) enabled = new func_" + func + "().code(tags);";
+  public boolean execute(boolean enabled) {
+    doCall = enabled;
+    return enabled;
   }
 
   public int getTagsCount() {
@@ -44,4 +39,21 @@ public class CALL extends Logic {
   public int getTagType(int idx) {
     return TagType.function;
   }
+
+  public void moveNext(LogicPos pos) throws Exception {
+    if (doCall) {
+      if (pos.stackpos == pos.stackmax) {
+        throw new Exception("Too many nested CALLs");
+      }
+      pos.push();
+      LogicFunction func = FunctionService.getFunction(fid);
+      pos.func = func;
+      pos.rung = func.root;
+      pos.block = func.root.root;
+    } else {
+      super.moveNext(pos);
+    }
+  }
+
+  public int fid;
 }

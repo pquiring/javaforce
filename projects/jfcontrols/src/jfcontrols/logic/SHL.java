@@ -2,7 +2,9 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class SHL extends Logic {
+import jfcontrols.tags.*;
+
+public class SHL extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -12,9 +14,10 @@ public class SHL extends Logic {
     return "SHL";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    if (types[1] == TagType.int64) return "if (enabled) tags[3].setLong(tags[1].getLong() << tags[2].getInt());\r\n";
-    return "if (enabled) tags[3].setInt(tags[1].getInt() << tags[2].getInt());\r\n";
+  public boolean execute(boolean enabled) {
+    if (tags[1].type == TagType.int64) if (enabled) tags[3].setLong(tags[1].getLong() << tags[2].getInt());
+    else if (enabled) tags[3].setInt(tags[1].getInt() << tags[2].getInt());
+    return enabled;
   }
 
   public int getTagsCount() {

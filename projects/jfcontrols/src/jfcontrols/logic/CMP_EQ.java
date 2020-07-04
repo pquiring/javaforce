@@ -7,7 +7,9 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class CMP_EQ extends Logic {
+import jfcontrols.tags.*;
+
+public class CMP_EQ extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -17,11 +19,14 @@ public class CMP_EQ extends Logic {
     return "Compare ==";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    if (types[1] == TagType.float32) return "enabled &= (tags[1].getFloat() == tags[2].getFloat());\r\n";
-    if (types[1] == TagType.float64) return "enabled &= (tags[1].getDouble() ==  tags[2].getDouble());\r\n";
-    if (types[1] == TagType.int64) return "enabled &= (tags[1].getLong() == tags[2].getLong());\r\n";
-    return "enabled &= (tags[1].getInt() == tags[2].getInt());\r\n";
+  public boolean execute(boolean enabled) {
+    switch (tags[1].type) {
+      case TagType.float32: enabled &= (tags[1].getFloat() == tags[2].getFloat()); break;
+      case TagType.float64: enabled &= (tags[1].getDouble() ==  tags[2].getDouble()); break;
+      case TagType.int64: enabled &= (tags[1].getLong() == tags[2].getLong()); break;
+      default: enabled &= (tags[1].getInt() == tags[2].getInt()); break;
+    }
+    return enabled;
   }
 
   public int getTagsCount() {

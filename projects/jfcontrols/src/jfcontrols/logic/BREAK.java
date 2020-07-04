@@ -11,7 +11,9 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class BREAK extends Logic {
+import jfcontrols.tags.*;
+
+public class BREAK extends LogicBlock {
 
   public boolean isBlock() {
     return false;
@@ -21,8 +23,11 @@ public class BREAK extends Logic {
     return "Break";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) break;";
+  public boolean doBreak;
+
+  public boolean execute(boolean enabled) {
+    doBreak = enabled;
+    return enabled;
   }
 
   public int getTagsCount() {
@@ -35,5 +40,14 @@ public class BREAK extends Logic {
 
   public boolean isLast() {
     return true;
+  }
+
+  public void moveNext(LogicPos pos) throws Exception {
+    if (doBreak) {
+      pos.rung = other.other.rung.next;
+      pos.block = pos.rung.root;
+    } else {
+      super.moveNext(pos);
+    }
   }
 }

@@ -10,8 +10,9 @@ package jfcontrols.logic;
  */
 
 import javaforce.controls.*;
+import jfcontrols.tags.TagBase;
 
-public class WHILE extends Logic {
+public class WHILE extends LogicBlock {
 
   public boolean isBlock() {
     return false;
@@ -21,12 +22,8 @@ public class WHILE extends Logic {
     return "while () {";
   }
 
-  public String getPreCode() {
-    return "while (true) {";
-  }
-
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (!enabled) break;";
+  public boolean execute(boolean enabled) {
+    return enabled;
   }
 
   public int getTagsCount() {
@@ -43,5 +40,9 @@ public class WHILE extends Logic {
 
   public boolean isFlowControl() {
     return true;
+  }
+
+  public LogicBlock getNext() {
+    return next;
   }
 }

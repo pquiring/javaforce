@@ -1,12 +1,15 @@
 package jfcontrols.logic;
 
-import javaforce.controls.*;
-
 /**  Alarm active
  *
  */
 
-public class ALARM_ACTIVE extends Logic {
+import javaforce.controls.*;
+
+import jfcontrols.functions.*;
+import jfcontrols.tags.*;
+
+public class ALARM_ACTIVE extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -16,8 +19,8 @@ public class ALARM_ACTIVE extends Logic {
     return "AlarmActive";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "enabled &= alarm_active();";
+  public boolean execute(boolean enabled) {
+    return enabled & FunctionRuntime.alarm_active();
   }
 
   public int getTagsCount() {

@@ -16,7 +16,7 @@ public class FunctionRuntime {
   public static long now;
   public static SQL sql;
   public IndexTags it = new IndexTags(256);
-  public void arraycopy(TagBase tags[]) {
+  public static void arraycopy(TagBase tags[]) {
     //tags = src srcOff dst dstOff length
     int length = tags[5].getInt();
     if (length <= 0) return;
@@ -42,7 +42,7 @@ public class FunctionRuntime {
       }
     }
   }
-  public void arraylength(TagBase tags[]) {
+  public static void arraylength(TagBase tags[]) {
     TagBase tag = tags[1];
     int len = tag.getLength();
     if (len == -1) {
@@ -51,15 +51,26 @@ public class FunctionRuntime {
       tags[2].setInt(Integer.valueOf(len) + 1);
     }
   }
-  public void arraysize(TagBase tags[]) {
+  public static void arraysize(TagBase tags[]) {
     arraylength(tags);
   }
-  public void arrayshift(TagBase tags[]) {
+  public static void arrayshift(TagBase tags[]) {
     TagBase tag = tags[1];
     //TODO
   }
+  public static void arrayremove(TagBase tags[]) {
+    TagBase array = tags[1];
+    TagBase tagidx = tags[2];
+    int idx = tagidx.getInt();
+    int len = tags[1].getLength();
+    if (idx < 0 || idx >= len) return;  //out of range
+    for(int a=idx;a<len;a++) {
+      array.setValue(array.getValue(a), a);
+    }
+    //TODO : array.length--;
+  }
 
-  public void getdate(TagBase tag) {
+  public static void getdate(TagBase tag) {
     if (tag.getType() != IDs.uid_date) {
       JFLog.log("Error:GET_DATE:wrong tag type");
       return;
@@ -73,7 +84,7 @@ public class FunctionRuntime {
 
   }
 
-  public void gettime(TagBase tag) {
+  public static void gettime(TagBase tag) {
     if (tag.getType() != IDs.uid_time) {
       JFLog.log("Error:GET_TIME:wrong tag type");
       return;
@@ -87,7 +98,7 @@ public class FunctionRuntime {
 
   }
 
-  public boolean timer_on_delay(boolean enabled, TagBase tags[]) {
+  public static boolean timer_on_delay(boolean enabled, TagBase tags[]) {
     TagUDT timer_udt = (TagUDT)tags[1];
     TagBase[] timer = timer_udt.fields[0];  //TODO : index ???
     TagBase time_left_tag = (TagBase)timer[0];
@@ -141,7 +152,7 @@ public class FunctionRuntime {
     return done;
   }
 
-  public boolean timer_off_delay(boolean enabled, TagBase tags[]) {
+  public static boolean timer_off_delay(boolean enabled, TagBase tags[]) {
     TagUDT timer_udt = (TagUDT)tags[1];
     TagBase[] timer = timer_udt.fields[0];  //TODO : ???
     TagBase time_left_tag = (TagBase)timer[0];
@@ -228,7 +239,7 @@ public class FunctionRuntime {
     }
     return false;
   }
-  public void alarm_ack_all() {
+  public static void alarm_ack_all() {
     TagUDT alarms = (TagUDT)TagsService.getTag("alarms");
     int length = alarms.getLength();
     for(int a=0;a<length;a++) {

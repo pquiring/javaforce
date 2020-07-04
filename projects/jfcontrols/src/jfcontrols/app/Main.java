@@ -17,7 +17,7 @@ import jfcontrols.tags.*;
 
 public class Main implements WebUIHandler {
 
-  public static String version = "0.4";
+  public static String version = "0.5";
   public static ClassLoader loader;
   public static boolean debug = false;
   public static boolean debug_scantime = false;

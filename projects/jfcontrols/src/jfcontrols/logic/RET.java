@@ -6,8 +6,9 @@ package jfcontrols.logic;
  */
 
 import javaforce.controls.*;
+import jfcontrols.tags.TagBase;
 
-public class RET extends Logic {
+public class RET extends LogicBlock {
 
   public boolean isBlock() {
     return false;
@@ -17,8 +18,11 @@ public class RET extends Logic {
     return "Return";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) return tags[1].getBoolean();\r\n";
+  public boolean doReturn;
+
+  public boolean execute(boolean enabled) {
+    doReturn = enabled;
+    return enabled;
   }
 
   public int getTagsCount() {
@@ -31,5 +35,12 @@ public class RET extends Logic {
 
   public boolean isLast() {
     return true;
+  }
+
+  public LogicBlock getNext() {
+    if (doReturn) {
+      return null;
+    }
+    return next;
   }
 }

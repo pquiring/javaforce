@@ -1124,10 +1124,10 @@ public class Events {
         x = node.x + node.getDelta();
         y = node.y;
         String name = c.getName();
-        Logic blk = null;
+        LogicBlock blk = null;
         try {
           Class cls = Class.forName("jfcontrols.logic." + name.replaceAll(" ", "_").toUpperCase());
-          blk = (Logic)cls.newInstance();
+          blk = (LogicBlock)cls.newInstance();
         } catch (Exception e) {
           JFLog.log(e);
         }
@@ -1252,14 +1252,9 @@ public class Events {
         }
         int fid = (Integer)client.getProperty("func");
         synchronized(lock) {
-          if (!FunctionService.generateFunction(fid)) {
+          if (FunctionService.generateFunction(fid) == null) {
             Panels.showErrorText(client, "Compile failed!", FunctionCompiler.error);
             FunctionCompiler.error = null;
-            break;
-          }
-          if (!FunctionService.compileProgram()) {
-            Panels.showErrorText(client, "Compile failed!", FunctionService.error);
-            FunctionService.error = null;
             break;
           }
           JFLog.log("Compiling successful");

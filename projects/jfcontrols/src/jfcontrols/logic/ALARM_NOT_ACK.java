@@ -1,12 +1,15 @@
 package jfcontrols.logic;
 
-import javaforce.controls.*;
-
 /**  Alarm not ack
  *
  */
 
-public class ALARM_NOT_ACK extends Logic {
+import javaforce.controls.*;
+
+import jfcontrols.functions.*;
+import jfcontrols.tags.*;
+
+public class ALARM_NOT_ACK extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -16,8 +19,8 @@ public class ALARM_NOT_ACK extends Logic {
     return "AlarmNotAck";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "enabled &= alarm_not_ack();";
+  public boolean execute(boolean enabled) {
+    return enabled & FunctionRuntime.alarm_not_ack();
   }
 
   public int getTagsCount() {

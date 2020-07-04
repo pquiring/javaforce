@@ -5,9 +5,11 @@ package jfcontrols.logic;
  * @author pquiring
  */
 
+import jfcontrols.tags.*;
+
 import javaforce.controls.*;
 
-public class SIN extends Logic {
+public class SIN extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -17,10 +19,12 @@ public class SIN extends Logic {
     return "SIN";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    if (types[1] == TagType.float32) return "if (enabled) tags[2].setFloat((float)Math.sin(tags[1].getFloat()));\r\n";
-    if (types[1] == TagType.float64) return "if (enabled) tags[2].setDouble(Math.sin(tags[1].getDouble()));\r\n";
-    return null;  //wrong tag type
+  public boolean execute(boolean enabled) {
+    switch (tags[1].type) {
+      case TagType.float32: if (enabled) tags[2].setFloat((float)Math.sin(tags[1].getFloat())); break;
+      case TagType.float64: if (enabled) tags[2].setDouble(Math.sin(tags[1].getDouble())); break;
+    }
+    return enabled;
   }
 
   public int getTagsCount() {

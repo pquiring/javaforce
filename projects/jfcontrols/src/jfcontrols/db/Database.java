@@ -47,6 +47,9 @@ public class Database {
 
   public static String Version = "1.1";
 
+  public static int FUNC_INIT = 1;
+  public static int FUNC_MAIN = 2;
+
   public static void start() {
     JFLog.log("Database starting...");
 
@@ -628,8 +631,8 @@ public class Database {
     celltable.save();
 
     //insert system funcs
-    addFunction("main");
-    addFunction("init");
+    addFunction("init");  //1
+    addFunction("main");  //2
 
     udts.setMinId(IDs.uid_user);
   }
@@ -1257,6 +1260,9 @@ public class Database {
       }
     }
     funcs.save();
+  }
+  public static FunctionRow[] getFunctions() {
+    return funcs.getRows().toArray(new FunctionRow[funcs.getRows().size()]);
   }
   private static int getRungId(int fid) {
     ArrayList<Table<RungRow>> tables = rungs.getTables();

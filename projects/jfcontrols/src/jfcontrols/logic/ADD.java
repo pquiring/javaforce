@@ -7,7 +7,9 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class ADD extends Logic {
+import jfcontrols.tags.*;
+
+public class ADD extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -17,11 +19,14 @@ public class ADD extends Logic {
     return "Add";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    if (types[3] == TagType.float32) return "if (enabled) tags[3].setFloat(tags[1].getFloat() + tags[2].getFloat());\r\n";
-    if (types[3] == TagType.float64) return "if (enabled) tags[3].setDouble(tags[1].getDouble() + tags[2].getDouble());\r\n";
-    if (types[3] == TagType.int64) return "if (enabled) tags[3].setLong(tags[1].getLong() + tags[2].getLong());\r\n";
-    return "if (enabled) tags[3].setInt(tags[1].getInt() + tags[2].getInt());\r\n";
+  public boolean execute(boolean enabled) {
+    switch (tags[3].type) {
+      case TagType.float32: if (enabled) tags[3].setFloat(tags[1].getFloat() + tags[2].getFloat()); break;
+      case TagType.float64: if (enabled) tags[3].setDouble(tags[1].getDouble() + tags[2].getDouble()); break;
+      case TagType.int64: if (enabled) tags[3].setLong(tags[1].getLong() + tags[2].getLong()); break;
+      default: if (enabled) tags[3].setInt(tags[1].getInt() + tags[2].getInt()); break;
+    }
+    return enabled;
   }
 
   public int getTagsCount() {

@@ -1,13 +1,14 @@
 package jfcontrols.logic;
 
-import javaforce.controls.*;
-
 /** Image NOK
  *
  * @author pquiring
  */
 
-public class IMAGE_NOK extends Logic {
+import javaforce.controls.*;
+import jfcontrols.tags.*;
+
+public class IMAGE_NOK extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -17,9 +18,9 @@ public class IMAGE_NOK extends Logic {
     return "ImageNOK";
   }
 
-  public String getCode(int[] tagTypes, boolean[] array, boolean[] unsigned) {
+  public boolean execute(boolean enabled) {
     //TODO
-    return null;
+    return enabled;
   }
 
   public int getTagsCount() {

@@ -10,8 +10,9 @@ package jfcontrols.logic;
  */
 
 import javaforce.controls.*;
+import jfcontrols.tags.TagBase;
 
-public class IF extends Logic {
+public class IF extends LogicBlock {
 
   public boolean isBlock() {
     return false;
@@ -21,8 +22,11 @@ public class IF extends Logic {
     return "if";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) {";
+  public boolean enabled;
+
+  public boolean execute(boolean enabled) {
+    this.enabled = enabled;
+    return enabled;
   }
 
   public int getTagsCount() {
@@ -39,5 +43,18 @@ public class IF extends Logic {
 
   public boolean isFlowControl() {
     return true;
+  }
+
+  public void moveNext(LogicPos pos) {
+    if (enabled) {
+      pos.block = next;
+    } else {
+      pos.rung = other.rung.next;
+      if (pos.rung != null) {
+        pos.block = pos.rung.root;
+      } else {
+        pos.block = null;
+      }
+    }
   }
 }

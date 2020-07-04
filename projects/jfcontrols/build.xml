@@ -23,14 +23,6 @@
         <attribute name="Codebase" value="${app}.sourceforge.net"/>
       </manifest>
     </jar>
-    <jar destfile="derby.jar">
-      <zipfileset src="../../jars/derby.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="${app}.sourceforge.net"/>
-      </manifest>
-    </jar>
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

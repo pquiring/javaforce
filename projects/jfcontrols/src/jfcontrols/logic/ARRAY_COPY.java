@@ -1,14 +1,17 @@
 package jfcontrols.logic;
 
-import javaforce.controls.*;
-
 /**  Array copy
  *
  *   src and dst may overlap.
  *
  */
 
-public class ARRAY_COPY extends Logic {
+import javaforce.controls.*;
+
+import jfcontrols.functions.*;
+import jfcontrols.tags.*;
+
+public class ARRAY_COPY extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -18,8 +21,9 @@ public class ARRAY_COPY extends Logic {
     return "ArrayCopy";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) arraycopy(tags);";
+  public boolean execute(boolean enabled) {
+    if (enabled) FunctionRuntime.arraycopy(tags);
+    return enabled;
   }
 
   public int getTagsCount() {

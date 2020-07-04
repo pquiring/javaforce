@@ -12,8 +12,9 @@ package jfcontrols.logic;
  */
 
 import javaforce.controls.*;
+import jfcontrols.tags.TagBase;
 
-public class DO_END extends Logic {
+public class DO_END extends LogicBlock {
 
   public boolean isBlock() {
     return false;
@@ -23,8 +24,11 @@ public class DO_END extends Logic {
     return "} while()";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "} while(enabled);";
+  public boolean doDoEnd;
+
+  public boolean execute(boolean enabled) {
+    doDoEnd = enabled;
+    return enabled;
   }
 
   public int getTagsCount() {
@@ -45,5 +49,14 @@ public class DO_END extends Logic {
 
   public boolean canClose(String name) {
     return name.equals("DO");
+  }
+
+  public void moveNext(LogicPos pos) throws Exception {
+    if (doDoEnd) {
+      pos.rung = other.rung;
+      pos.block = other.rung.root;
+    } else {
+      super.moveNext(pos);
+    }
   }
 }

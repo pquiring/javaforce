@@ -10,8 +10,9 @@ package jfcontrols.logic;
  */
 
 import javaforce.controls.*;
+import jfcontrols.tags.TagBase;
 
-public class WHILE_END extends Logic {
+public class WHILE_END extends LogicBlock {
 
   public boolean isBlock() {
     return false;
@@ -21,8 +22,11 @@ public class WHILE_END extends Logic {
     return "}";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "}";
+  public boolean doWhileEnd;
+
+  public boolean execute(boolean enabled) {
+    doWhileEnd = enabled;
+    return enabled;
   }
 
   public int getTagsCount() {
@@ -43,5 +47,14 @@ public class WHILE_END extends Logic {
 
   public boolean canClose(String name) {
     return name.equals("IF") || name.equals("WHILE");
+  }
+
+  public void moveNext(LogicPos pos) throws Exception {
+    if (doWhileEnd) {
+      pos.rung = other.rung;
+      pos.block = other.rung.root;
+    } else {
+      super.moveNext(pos);
+    }
   }
 }

@@ -7,7 +7,9 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class XOFF extends Logic {
+import jfcontrols.tags.*;
+
+public class XOFF extends LogicBlock {
 
   public boolean isBlock() {
     return false;
@@ -17,8 +19,8 @@ public class XOFF extends Logic {
     return "xoff";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "enabled &= !tags[1].getBoolean();\r\n";
+  public boolean execute(boolean enabled) {
+    return enabled & !tags[1].getBoolean();
   }
 
   public int getTagsCount() {

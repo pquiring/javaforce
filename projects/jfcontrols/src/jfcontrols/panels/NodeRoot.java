@@ -62,7 +62,7 @@ public class NodeRoot extends Node {
     while (node != null) {
       switch (node.type) {
         case '#':
-          Logic blk = node.blk;
+          LogicBlock blk = node.blk;
           //check all tags are valid
           int cnt = node.childs.size();
           int tagidx = 0;

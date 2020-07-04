@@ -6,9 +6,11 @@ package jfcontrols.logic;
  */
 
 import javaforce.controls.*;
-import jfcontrols.tags.IDs;
 
-public class TIMER_ON_DELAY extends Logic {
+import jfcontrols.functions.*;
+import jfcontrols.tags.*;
+
+public class TIMER_ON_DELAY extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -18,8 +20,8 @@ public class TIMER_ON_DELAY extends Logic {
     return "TimerOnDelay";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "enabled = timer_on_delay(enabled, tags);\r\n";
+  public boolean execute(boolean enabled) {
+    return FunctionRuntime.timer_on_delay(enabled, tags);
   }
 
   public int getTagsCount() {

@@ -39,6 +39,7 @@ xon(c1t1)|f(t2,t3)|t|xon(t4)|t|c,xon(t5)|d|coil(t6)
 */
 
 import javaforce.webui.*;
+import static jfcontrols.functions.FunctionCompiler.error;
 import jfcontrols.images.Images;
 
 public class Node {
@@ -53,7 +54,7 @@ public class Node {
   public Node upper; //b,d only
   public Node lower; //a,c only
   public Node parent;
-  public Logic blk;
+  public LogicBlock blk;
   public String tags[];
   public Component comp;
   public NodeRoot root;
@@ -138,7 +139,7 @@ public class Node {
     return node;
   }
 
-  public Node insertLogic(char type, int x, int y, Logic blk, String tags[]) {
+  public Node insertLogic(char type, int x, int y, LogicBlock blk, String tags[]) {
     JFLog.log("insertLogic:" + type);
     Node node = new Node();
     node.root = root;
@@ -674,5 +675,123 @@ public class Node {
     sb.append("@");
     sb.append(Integer.toHexString(hashCode()));
     return sb.toString();
+  }
+
+  private static ArrayList<LogicBlock> stack = new ArrayList<>();
+
+  public static void resetStack() {
+    stack.clear();
+  }
+
+  public static int getStackSize() {
+    return stack.size();
+  }
+
+  public static int debug_en_idx;
+  public static int debug_tv_idx;
+
+  public static void resetDebug() {
+    debug_en_idx = 0;
+    debug_tv_idx = 0;
+  }
+
+  public LogicBlock getLogic() {
+    String call_func = null;
+    switch (type) {
+      case 't':
+      case 'a':
+      case 'c':
+      case 'b':
+      case 'd':
+        if (blk != null) {
+          return blk;
+        }
+        Tee tee = new Tee();
+        blk = tee;
+        tee.type = type;
+        tee.upper = upper != null ? (Tee)upper.getLogic() : null;
+        tee.lower = lower != null ? (Tee)lower.getLogic() : null;
+        return tee;
+      case 'h':
+      case 'r':  //root
+        if (blk != null) {
+          return blk;
+        }
+        blk = new Wire();
+        return blk;
+      case '#': {
+        String name = blk.getName();
+        if (blk.isFlowControl()) {
+          if (name.endsWith("_END")) {
+            if (stack.size() == 0) {
+              error = "Error:" + name + " without starting block";
+              return null;
+            }
+            LogicBlock start = stack.remove(stack.size() - 1);
+            if (!blk.canClose(start.getName())) {
+              error = "Error:" + name + " unmatching block";
+              return null;
+            }
+            blk.other = start;
+            start.other = blk;
+          } else {
+            stack.add(blk);
+          }
+        }
+        switch (name) {
+          case "BREAK":
+            blk.other = stack.get(stack.size() - 1);
+            break;
+          case "CONTINUE":
+            blk.other = stack.get(stack.size() - 1);
+            break;
+        }
+        int types[] = new int[tags.length];
+        TagBase tagbases[] = new TagBase[tags.length];
+        boolean array[] = new boolean[tags.length];
+        boolean unsigned[] = new boolean[tags.length];
+        for(int t=1;t<tagbases.length;t++) {
+          String tag = tags[t];
+          char type = tag.charAt(0);
+          String value = tag.substring(1);
+          int tagType = blk.getTagType(t);
+          switch (type) {
+            case 't':
+              tagbases[t] = TagsService.getTag(value);
+              if (tagType >= TagType.any) {
+                types[t] = tagbases[t].getType();
+              } else {
+                types[t] = tagType;
+              }
+              array[t] = tagbases[t].isArray();
+              unsigned[t] = tagbases[t].isUnsigned();
+              break;
+            case 'i':
+              if (value.indexOf(".") == -1) {
+                tagType = TagType.int32;
+                tagbases[t] = new TagInt(Integer.valueOf(value));
+              } else {
+                tagType = TagType.float32;
+                tagbases[t] = new TagFloat(Float.valueOf(value));
+              }
+              types[t] = tagType;
+              break;
+            case 'f':
+              call_func = value;
+              types[t] = TagType.function;
+              CALL call = (CALL)blk;
+              call.fid = Integer.valueOf(value);
+              break;
+          }
+        }
+        blk.tags = tagbases;
+        blk.debug_en_idx = debug_en_idx++;
+        if (blk.tags != null && blk.tags.length > 1) {
+          blk.debug_tv_idx = debug_tv_idx;
+          debug_tv_idx += blk.tags.length - 1;
+        }
+      }
+    }
+    return blk;
   }
 }

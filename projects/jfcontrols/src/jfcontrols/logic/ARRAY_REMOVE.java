@@ -1,12 +1,15 @@
 package jfcontrols.logic;
 
-import javaforce.controls.*;
-
 /**  Array remove
  *
  */
 
-public class ARRAY_REMOVE extends Logic {
+import javaforce.controls.*;
+
+import jfcontrols.functions.*;
+import jfcontrols.tags.*;
+
+public class ARRAY_REMOVE extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -16,8 +19,9 @@ public class ARRAY_REMOVE extends Logic {
     return "ArrayRemove";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) arrayremove(tags);";
+  public boolean execute(boolean enabled) {
+    if (enabled) FunctionRuntime.arrayremove(tags);
+    return enabled;
   }
 
   public int getTagsCount() {

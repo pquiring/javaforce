@@ -11,6 +11,7 @@ import javaforce.*;
 import javaforce.webui.*;
 
 import jfcontrols.functions.*;
+import jfcontrols.logic.*;
 import jfcontrols.tags.*;
 
 public class DebugContext extends Thread {
@@ -26,6 +27,7 @@ public class DebugContext extends Thread {
   public void run() {
     ClientContext context = (ClientContext)client.getProperty("context");
     Panel panel = client.getPanel();
+    LogicFunction func = FunctionService.getFunction(fid);
     boolean debug_en[][] = FunctionService.getDebugEnabled(fid);
     if (debug_en == null) {
       active = false;
@@ -47,6 +49,7 @@ public class DebugContext extends Thread {
     for(int a=0;a<debug_tv.length;a++) {
       tv[a] = (Label)panel.getComponent("tv_" + a);
     }
+    func.debug = true;
     boolean first = true;
 
     int cnt = debug_en.length;
@@ -85,6 +88,7 @@ public class DebugContext extends Thread {
     } catch (Exception e) {
       JFLog.log(e);
     }
+    func.debug = false;
     synchronized(lock) {
       lock.notify();
     }

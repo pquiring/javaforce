@@ -1,5 +1,7 @@
 package jfcontrols.logic;
 
+import jfcontrols.tags.TagBase;
+
 /** Continue
  *
  * Restart a looping block of code.
@@ -9,7 +11,7 @@ package jfcontrols.logic;
  * @author pquiring
  */
 
-public class CONTINUE extends Logic {
+public class CONTINUE extends LogicBlock {
 
   public boolean isBlock() {
     return false;
@@ -19,8 +21,11 @@ public class CONTINUE extends Logic {
     return "Continue";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) continue;";
+  public boolean doContinue;
+
+  public boolean execute(boolean enabled) {
+    doContinue = enabled;
+    return enabled;
   }
 
   public int getTagsCount() {
@@ -33,5 +38,14 @@ public class CONTINUE extends Logic {
 
   public boolean isLast() {
     return true;
+  }
+
+  public void moveNext(LogicPos pos) throws Exception {
+    if (doContinue) {
+      pos.rung = other.rung;
+      pos.block = pos.rung.root;
+    } else {
+      super.moveNext(pos);
+    }
   }
 }

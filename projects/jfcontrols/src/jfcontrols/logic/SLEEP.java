@@ -7,7 +7,9 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class SLEEP extends Logic {
+import jfcontrols.tags.*;
+
+public class SLEEP extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -17,8 +19,9 @@ public class SLEEP extends Logic {
     return "Sleep";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) javaforce.JF.sleep(tags[1].getInt());\r\n";
+  public boolean execute(boolean enabled) {
+    if (enabled) javaforce.JF.sleep(tags[1].getInt());
+    return enabled;
   }
 
   public int getTagsCount() {

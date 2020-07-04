@@ -7,7 +7,9 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class ROUND extends Logic {
+import jfcontrols.tags.*;
+
+public class ROUND extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -17,10 +19,10 @@ public class ROUND extends Logic {
     return "Round";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    if (types[1] == TagType.float32) return "if (enabled) tags[2].setInt(Math.round(tags[1].getFloat()));\r\n";
-    if (types[1] == TagType.float64) return "if (enabled) tags[2].setLong(Math.round(tags[1].getDouble()));\r\n";
-    return null;  //wrong tag type
+  public boolean execute(boolean enabled) {
+    if (tags[1].type == TagType.float32) if (enabled) tags[2].setInt(Math.round(tags[1].getFloat()));
+    if (tags[1].type == TagType.float64) if (enabled) tags[2].setLong(Math.round(tags[1].getDouble()));
+    return enabled;
   }
 
   public int getTagsCount() {

@@ -1,13 +1,14 @@
 package jfcontrols.logic;
 
-import javaforce.controls.*;
-
 /** Image OK
  *
  * @author pquiring
  */
 
-public class IMAGE_OK extends Logic {
+import javaforce.controls.*;
+import jfcontrols.tags.*;
+
+public class IMAGE_OK extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -17,9 +18,9 @@ public class IMAGE_OK extends Logic {
     return "ImageOK";
   }
 
-  public String getCode(int[] tagTypes, boolean[] array, boolean[] unsigned) {
+  public boolean execute(boolean enabled) {
     //TODO
-    return null;
+    return enabled;
   }
 
   public int getTagsCount() {

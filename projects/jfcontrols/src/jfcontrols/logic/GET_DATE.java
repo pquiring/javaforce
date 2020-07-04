@@ -7,9 +7,10 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
+import jfcontrols.functions.*;
 import jfcontrols.tags.*;
 
-public class GET_DATE extends Logic {
+public class GET_DATE extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -19,8 +20,9 @@ public class GET_DATE extends Logic {
     return "GetDate";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) getdate(tags[1]);";
+  public boolean execute(boolean enabled) {
+    if (enabled) FunctionRuntime.getdate(tags[1]);
+    return enabled;
   }
 
   public int getTagsCount() {

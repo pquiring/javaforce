@@ -9,7 +9,10 @@ package jfcontrols.logic;
 
 import javaforce.controls.*;
 
-public class GET_MILLIS extends Logic {
+import jfcontrols.functions.*;
+import jfcontrols.tags.*;
+
+public class GET_MILLIS extends LogicBlock {
 
   public boolean isBlock() {
     return true;
@@ -19,8 +22,9 @@ public class GET_MILLIS extends Logic {
     return "GetMillis";
   }
 
-  public String getCode(int[] types, boolean[] array, boolean[] unsigned) {
-    return "if (enabled) tags[1].setLong(System.currentTimeMillis());";
+  public boolean execute(boolean enabled) {
+    if (enabled) tags[1].setLong(System.currentTimeMillis());
+    return enabled;
   }
 
   public int getTagsCount() {

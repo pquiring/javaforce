@@ -6,10 +6,7 @@ package jfcontrols.functions;
  */
 
 import java.io.*;
-import java.lang.reflect.*;
 import java.util.*;
-
-import javax.tools.*;
 
 import javaforce.*;
 import javaforce.jni.*;
@@ -18,6 +15,7 @@ import jfcontrols.app.*;
 import jfcontrols.api.*;
 import jfcontrols.db.*;
 import jfcontrols.tags.*;
+import jfcontrols.logic.*;
 
 public class FunctionService extends Thread {
   public static volatile boolean active;
@@ -25,7 +23,6 @@ public class FunctionService extends Thread {
   public static Object rapi = new Object();
   public static Object wapi = new Object();
   public static Object fapi = new Object();
-  public static FunctionLoader loader;
 
   private static String jdk;
 
@@ -61,6 +58,18 @@ public class FunctionService extends Thread {
     }
   }
 
+  private static ArrayList<LogicFunction> functions = new ArrayList<>();
+
+  public static LogicFunction getFunction(int fid) {
+    int size = functions.size();
+    for(int a=0;a<size;a++) {
+      LogicFunction func = functions.get(a);
+      if (func.id == fid) return func;
+    }
+    JFLog.log("Error:fid not found:" + fid);
+    return null;
+  }
+
   private void try_run() {
     if (active) {
       JFLog.log("Error:FunctionService already running");
@@ -68,70 +77,26 @@ public class FunctionService extends Thread {
       return;
     }
     active = true;
-    Class mainCls, initCls;
-    File mainFile = new File(Paths.configPath + "/work/class/func_1.class");
-    boolean compile = false;
-    if (!mainFile.exists()) {
-      FunctionService.generateFunction(1);
-      compile = true;
-    }
-    File initFile = new File(Paths.configPath + "/work/class/func_2.class");
-    if (!initFile.exists()) {
-      FunctionService.generateFunction(2);
-      compile = true;
-    }
-    if (compile) {
-      FunctionService.compileProgram();
-    }
-    if (!mainFile.exists()) {
-      JFLog.log("main function not compiled");
-      active = false;
-      return;
-    }
-    if (!initFile.exists()) {
-      JFLog.log("init function not compiled");
-      active = false;
-      return;
-    }
-    loader = new FunctionLoader();
-    try {
-      mainCls = loader.loadClass("func_1");
-      initCls = loader.loadClass("func_2");
-    } catch (Exception e) {
-      JFLog.log(e);
-      active = false;
-      JFLog.log("Function.Service can not start, program not compiled!");
-      return;
-    }
-    Method main, init;
-    try {
-      main = mainCls.getMethod("code", TagBase[].class);
-      init = initCls.getMethod("code", TagBase[].class);
-    } catch (Exception e) {
-      JFLog.log(e);
-      active = false;
-      JFLog.log("Function.Service can not start, program not compiled!");
-      return;
-    }
-    Object mainObj, initObj;
-    try {
-      mainObj = mainCls.newInstance();
-      initObj = initCls.newInstance();
-    } catch (Exception e) {
-      JFLog.log(e);
-      active = false;
-      JFLog.log("Function.Service can not start, program not compiled!");
-      return;
-    }
+
     JFLog.log("Function.Service starting...");
+
+    JFLog.log("Building all functions...");
+    FunctionRow funcs[] = Database.getFunctions();
+    for(int a=0;a<funcs.length;a++) {
+      LogicFunction func = FunctionCompiler.generateFunction(funcs[a].id, funcs[a].revision);
+      functions.add(func);
+    }
+
     TagsService.doReads();
     try {
-      init.invoke(initObj, new Object[] {null});
+      LogicFunction init = getFunction(Database.FUNC_INIT);
+      init.execute(new LogicPos(128));
     } catch (Exception e) {
       JFLog.log(e);
     }
     TagsService.doWrites();
     TagBase tag = TagsService.getTag("system.scantime");
+    LogicPos pos = new LogicPos(128);
     while (active) {
       FunctionRuntime.now = System.currentTimeMillis();
       FunctionRuntime.alarm_clear_ack();
@@ -143,10 +108,9 @@ public class FunctionService extends Thread {
         fapi.notifyAll();
       }
       try {
-        main.invoke(mainObj, new Object[] {null});
-      } catch (InvocationTargetException ite) {
-        Throwable e = ite.getTargetException();
-        JFLog.log(e);
+        LogicFunction main = getFunction(Database.FUNC_MAIN);
+        pos.stackpos = 0;
+        main.execute(pos);
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -174,7 +138,6 @@ public class FunctionService extends Thread {
       active = false;
       try {done.wait();} catch (Exception e) {}
     }
-    loader = null;
   }
 
   private static void restart() {
@@ -209,127 +172,39 @@ public class FunctionService extends Thread {
 
   public static void functionRequest(int fid) {
     synchronized(fapi) {
-      try {fapi.wait(10 * 1000);} catch (Exception e) {return;}
-      Class cls;
       try {
-        cls = loader.loadClass("func_" + fid);
-      } catch (Exception e) {
-        JFLog.log(e);
-        return;
-      }
-      Method main;
-      try {
-        main = cls.getMethod("code", TagBase[].class);
-      } catch (Exception e) {
-        JFLog.log(e);
-        return;
-      }
-      try {
-        main.invoke(null, new Object[] {null});
+        fapi.wait(10 * 1000);
+        LogicFunction func = getFunction(fid);
+        if (func == null) return;
+        func.execute(new LogicPos(128));
       } catch (Exception e) {
         JFLog.log(e);
       }
     }
   }
 
-  public static boolean generateFunction(int fid) {
+  public static LogicFunction generateFunction(int fid) {
     FunctionRow func = Database.getFunctionById(fid);
     JFLog.log("Compiling func:" + fid + ":" + func.name);
-    String code = FunctionCompiler.generateFunction(fid);
-    if (code == null) return false;
-    new File(Paths.configPath + "/work/java").mkdirs();
-    new File(Paths.configPath + "/work/class").mkdirs();
-    String java_file = Paths.configPath + "/work/java/func_" + fid + ".java";
-    String class_file = Paths.configPath + "/work/class/func_" + fid + ".class";
-    try {
-      FileOutputStream fos = new FileOutputStream(java_file);
-      fos.write(code.getBytes());
-      fos.close();
-      return true;
-    } catch (Exception e) {
-      new File(java_file).delete();
-      JFLog.log(e);
-      return false;
-    }
-  }
-  public static String error;
-  public static boolean compileProgram() {
-    JFLog.log("Compiling functions...");
-    try {
-      File files[] = new File(Paths.configPath + "/work/java").listFiles(
-        new FilenameFilter() {
-           public boolean accept(File dir, String name) {
-             return name.endsWith(".java");
-           }
-        }
-      );
-      JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-      StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
-
-      Iterable<? extends JavaFileObject> compilationUnits1 = fileManager.getJavaFileObjectsFromFiles(Arrays.asList(files));
-      Iterable<String> options = Arrays.asList(new String[] {
-        "-cp", System.getProperty("java.class.path"),
-        "-d", Paths.configPath + "/work/class"
-      });
-      JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, null, options, null, compilationUnits1);
-
-      boolean success = task.call();
-
-      fileManager.close();
-
-      if (success) {
-        JFLog.log("Compilation successful!");
-        restart();
-        return true;
-      }
-      JFLog.log("Error:Compilation failed! See log output and try again.");
-      return false;
-    } catch (Exception e) {
-      JFLog.log(e);
-      return false;
-    }
+    //TODO : get revision
+    LogicFunction code = FunctionCompiler.generateFunction(fid, 0);
+    return code;
   }
   public static boolean[][] getDebugEnabled(int fid) {
-    File clsFile = new File(Paths.configPath + "/work/class/func_" + fid + ".class");
-    if (!clsFile.exists()) return null;
-    Class cls;
-    try {
-      cls = loader.loadClass("func_" + fid);
-      Field fld = cls.getField("debug_en");
-      boolean flags[][] = (boolean[][])fld.get(null);
-      return flags;
-    } catch (Exception e) {
-      JFLog.log(e);
-      return null;
-    }
+    LogicFunction func = getFunction(fid);
+    if (func == null) return null;
+    return func.debug_en;
   }
   public static String[] getDebugTagValues(int fid) {
-    File clsFile = new File(Paths.configPath + "/work/class/func_" + fid + ".class");
-    if (!clsFile.exists()) return null;
-    Class cls;
-    try {
-      cls = loader.loadClass("func_" + fid);
-      Field fld = cls.getField("debug_tv");
-      String flags[] = (String[])fld.get(null);
-      return flags;
-    } catch (Exception e) {
-      JFLog.log(e);
-      return null;
-    }
+    LogicFunction func = getFunction(fid);
+    if (func == null) return null;
+    return func.debug_tv;
   }
   public static boolean functionUpToDate(int fid, long revision) {
-    File clsFile = new File(Paths.configPath + "/work/class/func_" + fid + ".class");
-    if (!clsFile.exists()) return false;
-    Class cls;
-    try {
-      cls = loader.loadClass("func_" + fid);
-      Field fld = cls.getField("revision");
-      long rev = (long)fld.get(null);
-      return rev == revision;
-    } catch (Exception e) {
-      JFLog.log(e);
+    LogicFunction func = getFunction(fid);
+    if (func == null) {
       return false;
     }
+    return func.revision == revision;
   }
-
 }
