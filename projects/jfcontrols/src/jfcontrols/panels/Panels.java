@@ -66,6 +66,13 @@ public class Panels {
     table.add(menu, x, 0);
     x++; width -= cellWidth;
 
+    Button home = getButton(createCell(0, 0, 0, 0, "button", null, "!image:home", null, "setPanel", "main", null));
+    home.setProperty("func", "setPanel");
+    home.setProperty("arg", "main");
+    setCellSize(home, new Rectangle(x,0,1,1));
+    table.add(home, x, 0);
+    x++; width -= cellWidth;
+
     Label alarms = getLabel(createCell(0, 0, 0, 0, "label", null, "0", null, "setPanel", "jfc_alarms", null));
     alarms.setProperty("func", "setPanel");
     alarms.setProperty("arg", "jfc_alarms");
