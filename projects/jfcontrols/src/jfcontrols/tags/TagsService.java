@@ -91,9 +91,11 @@ public class TagsService extends Thread {
       String filename = Paths.tagsPath + "/" + tag.tid + ".dat";
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       ObjectWriter oos = new ObjectWriter(baos);
-      oos.writeObject(tag);
+      if (tag.type == -1) {
+        JFLog.log("Error:tag.type==-1");
+      }
+      oos.writeObject(tag, tag.type);
       RandomAccessFile raf = new RandomAccessFile(filename, "rw");
-      raf.writeInt(baos.size());
       raf.write(baos.toByteArray());
       raf.close();
     } catch (Exception e) {
@@ -107,8 +109,7 @@ public class TagsService extends Thread {
       File file = new File(filename);
       if (!file.exists()) return null;
       RandomAccessFile raf = new RandomAccessFile(filename, "rw");
-      int size = raf.readInt();
-      if (size > 4 * 1024 * 1024) throw new Exception("tag too large");
+      int size = (int)raf.length();
       byte data[] = new byte[size];
       int done = 0;
       while (done != size) {
@@ -119,8 +120,9 @@ public class TagsService extends Thread {
       }
       raf.close();
       ObjectReader ois = new ObjectReader(new ByteArrayInputStream(data));
-      //jf.io.Serail write 2 bytes + jf.db.Row writes 16 bytes data = 18
-      TagBase tag = createTag(BE.getuint32(data, 18));
+      ois.readHeader();
+      int type = ois.getType();
+      TagBase tag = createTag(type);
       ois.readObject(tag);
       tag.init(tag);
       return tag;
