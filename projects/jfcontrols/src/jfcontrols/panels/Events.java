@@ -67,6 +67,7 @@ public class Events {
             Database.deleteFunctionById(id);
             Database.deleteRungsById(id);
             Database.deleteBlocksById(id);
+            FunctionService.deleteFunction(id);
             client.setPanel(Panels.getPanel("jfc_funcs", client));
             break;
           }

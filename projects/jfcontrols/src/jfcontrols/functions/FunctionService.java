@@ -202,6 +202,20 @@ public class FunctionService extends Thread {
     }
   }
 
+  public static void deleteFunction(int fid) {
+    synchronized(fapi) {
+      try {
+        fapi.wait(10 * 1000);
+        LogicFunction org = getFunction(fid);
+        if (org != null) {
+          functions.remove(org);
+        }
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+  }
+
   public static LogicFunction generateFunction(int fid) {
     FunctionRow func = Database.getFunctionById(fid);
     JFLog.log("Compiling func:" + fid + ":" + func.name);
