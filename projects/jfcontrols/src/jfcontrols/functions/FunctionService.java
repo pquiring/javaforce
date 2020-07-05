@@ -183,11 +183,29 @@ public class FunctionService extends Thread {
     }
   }
 
+  public static boolean recompileFunction(int fid) {
+    synchronized(fapi) {
+      try {
+        fapi.wait(10 * 1000);
+        LogicFunction org = getFunction(fid);
+        LogicFunction func = generateFunction(fid);
+        if (func == null) throw new Exception("");
+        if (org != null) {
+          functions.remove(org);
+        }
+        functions.add(func);
+        return true;
+      } catch (Exception e) {
+        JFLog.log(e);
+        return false;
+      }
+    }
+  }
+
   public static LogicFunction generateFunction(int fid) {
     FunctionRow func = Database.getFunctionById(fid);
     JFLog.log("Compiling func:" + fid + ":" + func.name);
-    //TODO : get revision
-    LogicFunction code = FunctionCompiler.generateFunction(fid, 0);
+    LogicFunction code = FunctionCompiler.generateFunction(fid, func.revision);
     return code;
   }
   public static boolean[][] getDebugEnabled(int fid) {

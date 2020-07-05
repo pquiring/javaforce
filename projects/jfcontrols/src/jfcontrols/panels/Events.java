@@ -1252,7 +1252,7 @@ public class Events {
         }
         int fid = (Integer)client.getProperty("func");
         synchronized(lock) {
-          if (FunctionService.generateFunction(fid) == null) {
+          if (!FunctionService.recompileFunction(fid)) {
             Panels.showErrorText(client, "Compile failed!", FunctionCompiler.error);
             FunctionCompiler.error = null;
             break;
