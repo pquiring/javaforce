@@ -6,7 +6,10 @@ package jfcontrols.tags;
  */
 
 public class TagShort extends TagBase {
-  public TagShort() {}
+  public TagShort(boolean unsigned) {
+    type = javaforce.controls.TagType.int16;
+    if (unsigned) type |= javaforce.controls.TagType.unsigned_mask;
+  }
   public TagShort(int cid, int tid, String name, boolean unsigned, int length) {
     type = javaforce.controls.TagType.int16;
     if (unsigned) type |= javaforce.controls.TagType.unsigned_mask;

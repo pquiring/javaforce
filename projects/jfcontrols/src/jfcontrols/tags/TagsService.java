@@ -85,7 +85,7 @@ public class TagsService extends Thread {
   }
 
   private void saveTag(TagBase tag) {
-//    JFLog.log("saveTag:" + tag.tid);
+//    JFLog.log("saveTag:" + tag.type + ":" + tag.tid);
     if (tag == null) return;
     try {
       String filename = Paths.tagsPath + "/" + tag.tid + ".dat";
@@ -119,7 +119,8 @@ public class TagsService extends Thread {
       }
       raf.close();
       ObjectReader ois = new ObjectReader(new ByteArrayInputStream(data));
-      TagBase tag = createTag(BE.getuint32(data, 4));
+      //jf.io.Serail write 2 bytes + jf.db.Row writes 16 bytes data = 18
+      TagBase tag = createTag(BE.getuint32(data, 18));
       ois.readObject(tag);
       tag.init(tag);
       return tag;
@@ -308,21 +309,31 @@ public class TagsService extends Thread {
   private static HashMap<Integer, TagBase.Creator> tagTypes = new HashMap<>();
   public static TagBase createTag(int id) {
     TagBase.Creator creator = tagTypes.get(id);
-    if (creator == null) return new TagUDT();
+    if (creator == null) {
+      if (id < IDs.uid_sdt || id > IDs.uid_user_end) {
+        JFLog.log("Error:Unknown tag type:" + id);
+        return null;
+      }
+      return new TagUDT(id);
+    }
     return creator.create();
   }
   private static void registerTag(int id, TagBase.Creator creator) {
     tagTypes.put(id, creator);
   }
   private static void registerAll() {
-    registerTag(TagType.int8, () -> {return new TagByte();});
+    registerTag(TagType.int8, () -> {return new TagByte(false);});
     registerTag(TagType.char16, () -> {return new TagChar16();});
     registerTag(TagType.char8, () -> {return new TagChar8();});
-    registerTag(TagType.int16, () -> {return new TagShort();});
-    registerTag(TagType.int32, () -> {return new TagInt();});
-    registerTag(TagType.int64, () -> {return new TagLong();});
+    registerTag(TagType.int16, () -> {return new TagShort(false);});
+    registerTag(TagType.int32, () -> {return new TagInt(false);});
+    registerTag(TagType.int64, () -> {return new TagLong(false);});
     registerTag(TagType.float32, () -> {return new TagFloat();});
     registerTag(TagType.float64, () -> {return new TagDouble();});
     registerTag(TagType.string, () -> {return new TagString();});
+    registerTag(TagType.uint8, () -> {return new TagByte(true);});
+    registerTag(TagType.uint16, () -> {return new TagShort(true);});
+    registerTag(TagType.uint32, () -> {return new TagInt(true);});
+    registerTag(TagType.uint64, () -> {return new TagLong(true);});
   }
 }

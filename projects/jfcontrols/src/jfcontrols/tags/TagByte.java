@@ -6,7 +6,10 @@ package jfcontrols.tags;
  */
 
 public class TagByte extends TagBase {
-  public TagByte() {}
+  public TagByte(boolean unsigned) {
+    type = javaforce.controls.TagType.int8;
+    if (unsigned) type |= javaforce.controls.TagType.unsigned_mask;
+  }
   public TagByte(int cid, int tid, String name, boolean unsigned, int length) {
     type = javaforce.controls.TagType.int8;
     if (unsigned) type |= javaforce.controls.TagType.unsigned_mask;

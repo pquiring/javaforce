@@ -6,7 +6,9 @@ package jfcontrols.tags;
  */
 
 public class TagUDT extends TagBase {
-  public TagUDT() {}
+  public TagUDT(int type) {
+    this.type = type;
+  }
   public TagUDT(int cid, int tid, int type, int length, int fieldCount) {
     this.cid = cid;
     this.tid = tid;

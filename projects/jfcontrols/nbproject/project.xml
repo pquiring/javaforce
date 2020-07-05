@@ -3,7 +3,7 @@
     <type>org.netbeans.modules.ant.freeform</type>
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
-            <name>jfcontrols-v2</name>
+            <name>jfcontrols</name>
         </general-data>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
             <!-- Do not use Project Properties customizer when editing this file manually. 
@@ -12,7 +12,7 @@ auxiliary.show.customizer=false
 property there. Adding 
 auxiliary.show.customizer.message=<message>
  will show your customized message when someone attempts to open the customizer.  -->
-            <name>jfcontrols-v2</name>
+            <name>jfcontrols</name>
             <properties/>
             <folders>
                 <source-folder>

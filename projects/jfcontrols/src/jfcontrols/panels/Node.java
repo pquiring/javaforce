@@ -76,7 +76,7 @@ public class Node {
   }
 
   public Node addChildLower(char type, int x, int y) {
-    JFLog.log("addChild:" + type);
+//    JFLog.log("addChild:" + type);
     Node node = new Node();
     node.root = root;
 
@@ -92,7 +92,7 @@ public class Node {
   }
 
   public Node addChildUpper(char type, int x, int y) {
-    JFLog.log("addChild:" + type);
+//    JFLog.log("addChild:" + type);
     Node node = new Node();
     node.root = root;
 
@@ -108,7 +108,7 @@ public class Node {
   }
 
   public Node insertPreNode(char type, int x, int y) {
-    JFLog.log("insertPreNode:" + type);
+//    JFLog.log("insertPreNode:" + type);
     Node node = new Node();
     node.root = root;
     //insert BEFORE this node
@@ -124,7 +124,7 @@ public class Node {
   }
 
   public Node insertNode(char type, int x, int y) {
-    JFLog.log("insertNode:" + type);
+//    JFLog.log("insertNode:" + type);
     Node node = new Node();
     node.root = root;
     //insert AFTER this node
@@ -140,7 +140,7 @@ public class Node {
   }
 
   public Node insertLogic(char type, int x, int y, LogicBlock blk, String tags[]) {
-    JFLog.log("insertLogic:" + type);
+//    JFLog.log("insertLogic:" + type);
     Node node = new Node();
     node.root = root;
     //insert AFTER this node
@@ -161,7 +161,7 @@ public class Node {
   }
 
   public Node insertLinkUpper(Node upper, char type, int x, int y) {
-    JFLog.log("insertLinkUpper:" + type);
+//    JFLog.log("insertLinkUpper:" + type);
     Node node = new Node();
     node.root = root;
     //insert AFTER this node

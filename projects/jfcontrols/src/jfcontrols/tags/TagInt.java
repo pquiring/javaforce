@@ -6,7 +6,10 @@ package jfcontrols.tags;
  */
 
 public class TagInt extends TagBase {
-  public TagInt() {}
+  public TagInt(boolean unsigned) {
+    type = javaforce.controls.TagType.int32;
+    if (unsigned) type |= javaforce.controls.TagType.unsigned_mask;
+  }
   public TagInt(int value) {
     //create temp tag
     isArray = false;
