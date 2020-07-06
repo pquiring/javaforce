@@ -100,7 +100,7 @@ public class FunctionRuntime {
 
   public static boolean timer_on_delay(boolean enabled, TagBase tags[]) {
     TagUDT timer_udt = (TagUDT)tags[1];
-    TagBase[] timer = timer_udt.fields[0];  //TODO : index ???
+    TagBase[] timer = timer_udt.getFields();
     TagBase time_left_tag = (TagBase)timer[0];
     TagBase time_last_tag = (TagBase)timer[1];
     TagBase run_tag = (TagBase)timer[2];
@@ -154,7 +154,7 @@ public class FunctionRuntime {
 
   public static boolean timer_off_delay(boolean enabled, TagBase tags[]) {
     TagUDT timer_udt = (TagUDT)tags[1];
-    TagBase[] timer = timer_udt.fields[0];  //TODO : ???
+    TagBase[] timer = timer_udt.getFields();
     TagBase time_left_tag = (TagBase)timer[0];
     TagBase time_last_tag = (TagBase)timer[1];
     TagBase run_tag = (TagBase)timer[2];

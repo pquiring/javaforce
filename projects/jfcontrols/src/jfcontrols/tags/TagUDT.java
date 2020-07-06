@@ -6,6 +6,7 @@ package jfcontrols.tags;
  */
 
 public class TagUDT extends TagBase {
+  public TagUDT() {}
   public TagUDT(int type) {
     this.type = type;
   }
@@ -29,6 +30,7 @@ public class TagUDT extends TagBase {
 
   public void init(TagBase parent) {
     super.init(parent);
+    if (fields == null) return;
     for(int a=0;a<fields.length;a++) {
       TagBase row[] = fields[a];
       for(int b=0;b<row.length;b++) {

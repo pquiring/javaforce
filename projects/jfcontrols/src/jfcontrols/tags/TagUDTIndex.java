@@ -1,14 +1,14 @@
 package jfcontrols.tags;
 
-/** Index Tag.
+/** Index TagUDT.
  *
  * @author pquiring
  */
 
-public class TagIndex extends TagBase {
-  public TagBase tag;
+public class TagUDTIndex extends TagUDT {
+  public TagUDT tag;
   public int idx;
-  public TagIndex(TagBase tag, int idx) {
+  public TagUDTIndex(TagUDT tag, int idx) {
     this.tag = tag;
     this.idx = idx;
   }
@@ -98,6 +98,9 @@ public class TagIndex extends TagBase {
   public TagBase[] getFields() {
     TagUDT udt = (TagUDT)tag;
     return udt.getFields(idx);
+  }
+  public TagBase getField(int idx, String name) {
+    return tag.getField(idx, name);
   }
   public void readObject() throws Exception {
     super.readObject();

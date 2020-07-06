@@ -54,6 +54,7 @@ public class TagsService extends Thread {
       //array access
       tagidx = Integer.valueOf(name.substring(idx + 1, name.length() - 1));
       name = name.substring(0, idx);
+      JFLog.log("tag=" + name + " @ " + tagidx);
     }
     TagBase tag = map.get(name);
     if (tag == null) {
@@ -62,6 +63,16 @@ public class TagsService extends Thread {
     if (field != null) {
       TagUDT udt = (TagUDT)tag;
       tag = udt.getField(tagidx, field);
+      if (tag == null) {
+        JFLog.log("Error:getTag(" + name + ")." + field + " == null");
+      }
+    } else if (tagidx != -1) {
+      if (tag instanceof TagUDT) {
+        tag = new TagUDTIndex((TagUDT)tag, tagidx);
+      } else {
+        tag = new TagIndex(tag, tagidx);
+      }
+      tag.init(tag);
     }
     return tag;
   }
