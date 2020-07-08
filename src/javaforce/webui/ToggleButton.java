@@ -9,8 +9,7 @@ package javaforce.webui;
 
 import javaforce.webui.event.*;
 
-public class ToggleButton extends Component {
-  private String text;
+public class ToggleButton extends TextComponent {
   private boolean state;
   private int clrOff, clrOn;
   public ToggleButton(String text) {
@@ -32,12 +31,16 @@ public class ToggleButton extends Component {
     state = !state;
     setColor();
     onChanged(args);
+    super.onClick(args, me);
   }
   public String html() {
     return "<button" + getAttrs() + ">" + text + "</button>";
   }
   public void setText(String text) {
     this.text = text;
+    sendEvent("settext", new String[] {"text=" + text});
+  }
+  public void updateText(String text) {
     sendEvent("settext", new String[] {"text=" + text});
   }
   public void setColors(int clrOff, int clrOn) {
