@@ -1,5 +1,12 @@
 What's new...
 
+July 8/2020 : JF 24.0 released
+  - jfDVR/0.9
+    - new : take pictures from cameras triggered by PLC tag
+  - jfControls/0.5
+    - major rewrite, no longer uses Java compiler
+    - better performance
+
 June 17/2020 : JF 23.1 released
   - jfBackup/0.15
     - added more error reporting and show online clients in status screen
