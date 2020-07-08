@@ -1,3 +1,7 @@
+July 8, 2020 : 0.9 released!
+  - new : added picture snapshots triggered by PLC tag
+  - new : config file format has changed (upgrade is automatic)
+
 Mar 20, 2020 : 0.8 released!
   - fix : buffer overflow issues
 
