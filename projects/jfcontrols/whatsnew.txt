@@ -1,6 +1,12 @@
 ChangeLog
 =========
 
+July 8, 2020 : v0.5 released
+  - major rewrite (no longer uses Java Compiler)
+    - better performance
+  - jfDB went under minor changes so we'll have to start over, no automatic upgrade
+    - just add 14 zero bytes after the 'JF' header
+
 Sept 19, 2018 : v0.4 released
   - major performance improvements
     - replaced Derby SQL database with a simple NoSQL database (jfDB)
