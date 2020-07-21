@@ -52,6 +52,7 @@ public class WixHeat {
       String name = files[a].getName();
       if (files[a].isDirectory()) {
         if (files[a].getName().equals("jmods")) continue;  //skip jmods folder
+        if (files[a].getName().equals("legal")) continue;  //skip legal folder
         addFolder(path, path + "/" + name);
       } else {
         //check if file matches wildcard list

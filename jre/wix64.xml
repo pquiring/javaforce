@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="*" UpgradeCode="{A6A6CE8E-B40E-4079-BB9F-78EC0028F3BC}" Version="11.0" Language="1033" Name="Java JRE-11" Manufacturer="JavaForce">
+  <Product Id="*" UpgradeCode="{A6A6CE8E-B40E-4079-BB9F-78EC0028F3BC}" Version="14.0" Language="1033" Name="Java JRE-14" Manufacturer="JavaForce">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
@@ -12,7 +12,7 @@
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
         <Directory Id="Java" Name="Java">
-          <Directory Id="APPLICATIONROOTDIRECTORY" Name="jre-11"/>
+          <Directory Id="APPLICATIONROOTDIRECTORY" Name="jre-14"/>
         </Directory>
       </Directory>
     </Directory>
@@ -31,9 +31,9 @@
 
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="regkeys" Guid="{C3883BA6-F58F-4B44-902D-DAEF1C54ED7B}" Win64="yes">
-        <RegistryValue Root="HKLM" Key="Software\JavaSoft\Java Runtime Environment" Name="CurrentVersion" Type="string" Value="11" KeyPath="yes"/>
-        <RegistryValue Root="HKLM" Key="Software\JavaSoft\Java Runtime Environment\11" Name="JavaHome" Type="string" Value="[APPLICATIONROOTDIRECTORY]"/>
-        <RegistryValue Root="HKLM" Key="Software\JavaSoft\Java Runtime Environment\11" Name="RuntimeLib" Type="string" Value="[APPLICATIONROOTDIRECTORY]bin\server\jvm.dll"/>
+        <RegistryValue Root="HKLM" Key="Software\JavaSoft\Java Runtime Environment" Name="CurrentVersion" Type="string" Value="14" KeyPath="yes"/>
+        <RegistryValue Root="HKLM" Key="Software\JavaSoft\Java Runtime Environment\14" Name="JavaHome" Type="string" Value="[APPLICATIONROOTDIRECTORY]"/>
+        <RegistryValue Root="HKLM" Key="Software\JavaSoft\Java Runtime Environment\14" Name="RuntimeLib" Type="string" Value="[APPLICATIONROOTDIRECTORY]bin\server\jvm.dll"/>
       </Component>
     </DirectoryRef>
 
