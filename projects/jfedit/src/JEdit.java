@@ -22,7 +22,7 @@ import javaforce.*;
 
 public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener, ActionListener {
 
-  private String getVersion() { return "0.17"; }
+  private String getVersion() { return "0.18"; }
 
   /** Creates new form jfedit */
   public JEdit() {
@@ -438,7 +438,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       if (Settings.settings.bPreserve) {
         int lf = str.indexOf("\n");
         if (lf > 0) {
-          if (txt[lf-1] == '\r') bUnix = false;
+          if (txt[lf-1] == '\r') bUnix = false; else bUnix = true;
         }
       }
       pages.get(idx).bUnix = bUnix;

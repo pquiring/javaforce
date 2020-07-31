@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+7-30-2020 : v0.18
+  - fix : eol detection
+
 3-18-2020 : v0.17
   - fix : win64 loader now loads msvcrt dlls properly
 

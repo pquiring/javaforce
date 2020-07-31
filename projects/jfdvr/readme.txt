@@ -3,7 +3,10 @@ jfDVR
 
 Records IP cameras over RTSP (h264).
 
-Typical URL : rtsp://username:password@192.168.1.15/cam/realmonitor?channel=1&subtype=0
+Typical video URL : rtsp://username:password@192.168.1.15/cam/realmonitor?channel=1&subtype=0
+Typical picture URL : http://username:password@192.168.1.16/cgi-bin/snapshot.cgi
+
+iSpy Connect can help detect URLs.
 
 Includes motion detection recording.
 
