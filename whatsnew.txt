@@ -1,5 +1,29 @@
 What's new...
 
+Aug 3/2020 : JF 25.0 released
+  - completed ARM64 support
+    - Arm Neon is much better API and data types compared to Intel's SSE
+    - download Raspberry PI images from raspi.debian.net
+    - images from raspberrypi.org are:
+      - only 32bit (64bit beta still uses 32bit apps)
+      - package names are different requiring modified scripts
+      - packages are old (Chromium 78 suffers from major bugs)
+      - progress is slow
+    - images from ubuntu are:
+      - slow - they load too many services trying to make the PI a server
+        - unattended-upgrades kills the system
+      - some of their packages are foobar
+        - lightdm auto-login never works for me
+        - cloud-init is a PITA
+      - if you must, run this asap and then reboot:
+        - apt remove unattended-upgrades cloud-init
+  - jfPasswords/0.24
+    - recreate tray icon each time app is opened
+      - in Windows the tray icon gets re-scaled each time the screen resolution changes
+        which makes it look corrupted over time
+  - jfEdit/0.18
+    - fix line ending detection
+
 July 8/2020 : JF 24.0 released
   - jfDVR/0.9
     - new : take pictures from cameras triggered by PLC tag
