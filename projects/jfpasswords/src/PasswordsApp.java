@@ -11,7 +11,7 @@ import javaforce.*;
 
 public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
 
-  private String version = "0.23";
+  private String version = "0.24";
 
   /**
    * Creates new form PasswordsApp
@@ -34,36 +34,9 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
     JFImage appicon = new JFImage();
     appicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfpasswords.png"));
     setIconImage(appicon.getImage());
-    appicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfpasswords_tray.png"));
-    tray = SystemTray.getSystemTray();
-    Dimension size = tray.getTrayIconSize();
-    JFImage scaled = new JFImage(size.width, size.height);
-    scaled.fill(0, 0, size.width, size.height, 0x00000000, true);  //fill with alpha transparent
-    if (false) {
-      //scaled image (looks bad sometimes)
-      scaled.getGraphics().drawImage(appicon.getImage()
-        , 0, 0, size.width, size.height
-        , 0, 0, appicon.getWidth(), appicon.getHeight()
-        , null);
-    } else {
-      //center image
-      scaled.getGraphics().drawImage(appicon.getImage()
-        , (size.width - appicon.getWidth()) / 2
-        , (size.height - appicon.getHeight()) / 2
-        , null);
-    }
-    //create tray icon
-    PopupMenu popup = new PopupMenu();
-    show = new MenuItem("Show");
-    show.addActionListener(this);
-    popup.add(show);
-    popup.addSeparator();
-    exit = new MenuItem("Exit");
-    exit.addActionListener(this);
-    popup.add(exit);
-    icon = new TrayIcon(scaled.getImage(), "Passwords", popup);
-    icon.addActionListener(this);
-    try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
+    trayicon = new JFImage();
+    trayicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfpasswords_tray.png"));
+    addTrayIcon();
     if (panel.config.safe.length() == 0) {
       setVisible(true);
     }
@@ -188,9 +161,50 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
       }
       panel.checkTimestamp();
       setVisible(true);
+      removeTrayIcon();
+      addTrayIcon();
     }
   }
 
+  private void addTrayIcon() {
+    tray = SystemTray.getSystemTray();
+    Dimension size = tray.getTrayIconSize();
+    JFImage scaled = new JFImage(size.width, size.height);
+    scaled.fill(0, 0, size.width, size.height, 0x00000000, true);  //fill with alpha transparent
+    if (false) {
+      //scaled image (looks bad sometimes)
+      scaled.getGraphics().drawImage(trayicon.getImage()
+        , 0, 0, size.width, size.height
+        , 0, 0, trayicon.getWidth(), trayicon.getHeight()
+        , null);
+    } else {
+      //center image
+      scaled.getGraphics().drawImage(trayicon.getImage()
+        , (size.width - trayicon.getWidth()) / 2
+        , (size.height - trayicon.getHeight()) / 2
+        , null);
+    }
+    //create tray icon
+    PopupMenu popup = new PopupMenu();
+    show = new MenuItem("Show");
+    show.addActionListener(this);
+    popup.add(show);
+    popup.addSeparator();
+    exit = new MenuItem("Exit");
+    exit.addActionListener(this);
+    popup.add(exit);
+    icon = new TrayIcon(scaled.getImage(), "Passwords", popup);
+    icon.addActionListener(this);
+    try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
+  }
+
+  private void removeTrayIcon() {
+    if (tray != null) {
+      tray.remove(icon);
+    }
+  }
+
+  private JFImage trayicon;
   private MainPanel panel;
   public SystemTray tray;
   public TrayIcon icon;

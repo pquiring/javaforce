@@ -1,3 +1,7 @@
+Aug 3/2020 : jfPasswords/0.24 released
+  - fix : reset tray icon each time password is entered
+    - on Windows switching between screens can change scaling and distort tray icon
+
 Mar 18/2020 : jfPasswords/0.23 released
   - fix : win64 loader now loads msvcrt dlls properly
 
