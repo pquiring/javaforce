@@ -8,8 +8,6 @@ union MD128 {
 static int simd_diff(jint *pc1, jint *pc2, int size_4) {
   MD128 p1, p2, add, mask;
   int diff = 0;
-  p1.md = 0;
-  p2.md = 0;
   for(int a=0;a<4;a++) {
     add.i32[a] = 0x00080808;
     mask.i32[a] = 0x00f0f0f0;
