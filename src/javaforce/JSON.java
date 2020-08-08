@@ -31,6 +31,15 @@ public class JSON {
     public String key;
     public String value;
     public ArrayList<Element> children = new ArrayList<Element>();
+
+    public Element getChild(String name) {
+      for(Element child : children) {
+        if (child.key.equals(name)) {
+          return child;
+        }
+      }
+      return null;
+    }
   }
   /** Parses a JSON string. */
   public static Element parse(String str) throws Exception {
