@@ -321,7 +321,7 @@ JNIEXPORT jboolean JNICALL Java_client_WDS_startClient
   e->ReleaseStringUTFChars(pass, cpass);
   res = rdp->rdpViewer->Connect(bstr_xml, bstr_user, bstr_pass);
   if (res != 0) {
-    printf("CreateInvitation() Failed\n");
+    printf("Connect() Failed:%x\n", res);
     return 0;
   }
   bstr_free(bstr_xml);

@@ -248,7 +248,10 @@ public class Client extends javax.swing.JFrame {
         }
       }
       s.close();
-      return xml;
+      //ERROR : getting some junk before the xml (most likely a bug in WebServer)
+      idx = xml.indexOf('<');
+      if (idx == 0) return xml;
+      return xml.substring(idx);
     } catch (Exception e) {
       e.printStackTrace();
       errmsg = e.toString();
