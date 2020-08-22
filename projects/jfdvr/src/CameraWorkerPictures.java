@@ -268,6 +268,27 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
     max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
   }
 
+  private String get16(byte[] data, boolean isBE) {
+    if (isBE)
+      return Integer.toString(BE.getuint16(data, 0));
+    else
+      return Integer.toString(LE.getuint16(data, 0));
+  }
+
+  private String get32(byte[] data, boolean isBE) {
+    if (isBE)
+      return Integer.toString(BE.getuint32(data, 0));
+    else
+      return Integer.toString(LE.getuint32(data, 0));
+  }
+
+  private String get64(byte[] data, boolean isBE) {
+    if (isBE)
+      return Long.toString(BE.getuint64(data, 0));
+    else
+      return Long.toString(LE.getuint64(data, 0));
+  }
+
   private void take_picture() {
     if (camera.tag_value.length() > 0) {
       byte[] data = controller.read(camera.tag_value);
@@ -276,9 +297,9 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
       } else {
         switch (data.length) {
           case 1: tag_value = Integer.toString(data[0]) + "_"; break;
-          case 2: tag_value = Integer.toString(LE.getuint16(data, 0)) + "_"; break;
-          case 4: tag_value = Integer.toString(LE.getuint32(data, 0)) + "_"; break;
-          case 8: tag_value = Long.toString(LE.getuint64(data, 0)) + "_"; break;
+          case 2: tag_value = get16(data, controller.isBE()) + "_"; break;
+          case 4: tag_value = get32(data, controller.isBE()) + "_"; break;
+          case 8: tag_value = get64(data, controller.isBE()) + "_"; break;
           default: try {tag_value = new String(data, "UTF-8") + "_";} catch (Exception e) {JFLog.log(e); tag_value = "error_";}
         }
       }

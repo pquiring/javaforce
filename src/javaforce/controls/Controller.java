@@ -664,4 +664,21 @@ public class Controller {
       return false;
     }
   }
+
+  /** Returns true is controller is Big Endian byte order. */
+  public boolean isBE() {
+    switch (plc) {
+      case ControllerType.JF: return false;
+      case ControllerType.S7: return true;
+      case ControllerType.AB: return false;
+      case ControllerType.MB: return true;
+      case ControllerType.NI: return true;
+      case ControllerType.MIC: return false;
+      default: return true;
+    }
+  }
+
+  public boolean isLE() {
+    return !isBE();
+  }
 }
