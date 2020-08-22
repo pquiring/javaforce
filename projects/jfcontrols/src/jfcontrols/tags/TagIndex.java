@@ -14,6 +14,7 @@ public class TagIndex extends TagBase {
   }
 
   public String toString(int idx) {
+    if (tag == null) return "";
     return tag.toString(idx);
   }
 

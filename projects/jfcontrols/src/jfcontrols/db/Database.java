@@ -1078,6 +1078,9 @@ public class Database {
       if (panel.name.equals(name)) {
         return panel;
       }
+      if (panel.display != null && panel.display.equals(name)) {
+        return panel;
+      }
     }
     return null;
   }
