@@ -1053,6 +1053,7 @@ public class Database {
   public static int addPanel(String name, boolean popup, boolean builtin) {
     PanelRow panel = new PanelRow();
     panel.name = name;
+    panel.display = "";
     panel.popup = popup;
     panel.builtin = builtin;
     panels.add(panel);

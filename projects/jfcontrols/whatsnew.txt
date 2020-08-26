@@ -1,6 +1,10 @@
 ChangeLog
 =========
 
+Aug 26, 2020 : v0.6 released
+  - fix : NPE
+  - fix : finding panels
+
 July 8, 2020 : v0.5 released
   - major rewrite (no longer uses Java Compiler)
     - better performance

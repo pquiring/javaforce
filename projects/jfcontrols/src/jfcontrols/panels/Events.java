@@ -437,8 +437,9 @@ public class Events {
       }
       case "jfc_panels_new": {
         synchronized(lock) {
-          int pid = Database.addPanel("New Panel", false, false);
-          Database.addCellTable("New Panel", pid).save();
+          //BUG : panel name should be unique
+          int pid = Database.addPanel("jfc_user_panel", "New Panel", false, false);
+          Database.addCellTable("jfc_user_panel", pid).save();
         }
         client.setPanel(Panels.getPanel("jfc_panels", client));
         break;
