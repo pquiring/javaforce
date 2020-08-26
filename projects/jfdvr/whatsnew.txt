@@ -1,3 +1,6 @@
+Aug 26, 2020 : 0.10 released!
+  - fix : use proper endianness of PLC tags
+
 July 8, 2020 : 0.9 released!
   - new : added picture snapshots triggered by PLC tag
   - new : config file format has changed (upgrade is automatic)
