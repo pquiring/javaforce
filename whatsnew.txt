@@ -1,5 +1,12 @@
 What's new...
 
+Aug 26/2020 : JF 25.1 released
+  - jfDVR/0.10
+    - fix : use proper endianness of PLC tags
+  - jfControls/0.6
+    - fix : NPE
+    - fix : get panel by name
+
 Aug 3/2020 : JF 25.0 released
   - completed ARM64 support
     - Arm Neon is much better API and data types compared to Intel's SSE
