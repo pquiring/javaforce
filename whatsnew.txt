@@ -1,5 +1,13 @@
 What's new...
 
+Aug 28/2020 : JF 25.2 released
+  - VoIP/SIP
+    - fix : ACK only for INVITE related requests
+    - new : ignore 481 (unknown call leg)
+  - jfPhone/1.20
+    - improved SIP handling
+    - fixes issue #4 (Cant make Phonecalls over AVM Fritzbox 7590)
+
 Aug 26/2020 : JF 25.1 released
   - jfDVR/0.10
     - fix : use proper endianness of PLC tags
