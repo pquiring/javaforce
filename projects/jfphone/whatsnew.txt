@@ -1,4 +1,6 @@
 CHANGELOG:
+8-28-2020 : v1.20 released
+  - fix : only send ACK for INVITE related requests
 3-18-2020 : v1.19 released
   - fix : win64 loader now loads msvcrt dlls properly
 3-3-2020 : v1.18 released
