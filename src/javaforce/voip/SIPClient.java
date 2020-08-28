@@ -934,7 +934,13 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           } else {
             String[] src_to = cd.src.to;
             cd.src.to = cd.dst.to;  //update to (tag may have been added)
-            if (iface != null) issue(cd, "ACK", false, true);
+            if (iface != null) {
+              if (cmd.equals("INVITE")) {
+                //only issue ACK for call setup (INVITE)
+                //not for REGISTER or SUBSCRIBE or NOTIFY
+                issue(cd, "ACK", false, true);
+              }
+            }
             cd.src.to = src_to;
             cd.authstr = getHeader("WWW-Authenticate:", msg);
             if (cd.authstr == null) {
@@ -959,11 +965,11 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
         case 403:
           cd.src.epass = null;
           cd.src.cseq = cd.dst.cseq;
-          issue(cd, "ACK", false, true);
           if (cmd.equals("REGISTER")) {
             //bad password
             iface.onRegister(this, false);
           } else {
+            issue(cd, "ACK", false, true);
             iface.onCancel(this, callid, type);
           }
           break;
@@ -975,6 +981,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           issue(cd, "ACK", false, true);
           iface.onCancel(this, callid, type);
           setCallDetails(callid, null);
+          break;
+        case 481:
+          //call leg unknown - ignore it
           break;
         default:
           //treat all other codes as a cancel
