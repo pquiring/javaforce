@@ -167,7 +167,7 @@ public class Database {
       ArrayList<PanelRow> rows = panels.getRows();
       for(PanelRow row : rows) {
         String name = row.name;
-        JFLog.log("panel" + row.name + ":" + row.id);
+        JFLog.log("panel:" + row.name + ":" + row.id);
         if (name.startsWith("jfc_")) continue;
         if (name.startsWith("usr_")) continue;
         //add usr_
@@ -1207,9 +1207,9 @@ public class Database {
       CellRow cell = (CellRow)rows.get(r);
       if (
         (x >= cell.x) &&
-        (x <= (cell.x + cell.w)) &&
+        (x <= (cell.x + cell.w - 1)) &&
         (y >= cell.y) &&
-        (y <= (cell.y + cell.h))
+        (y <= (cell.y + cell.h - 1))
       )
       {
         return cell;
