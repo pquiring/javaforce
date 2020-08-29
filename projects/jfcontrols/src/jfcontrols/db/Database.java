@@ -107,6 +107,7 @@ public class Database {
     JFLog.log("Database version=" + version);
     switch (version) {
       case "1.1":
+        update_panels();
         break;
       case "1.0":
 //        create_card_system();
@@ -158,6 +159,44 @@ public class Database {
   private static void update_version() {
     setConfig("version", Version);
     create_main_menu(getPanelByName("jfc_menu").id);
+  }
+
+  private static void update_panels() {
+    //rename panels : add usr_ to user visible panels
+    {
+      ArrayList<PanelRow> rows = panels.getRows();
+      for(PanelRow row : rows) {
+        String name = row.name;
+        JFLog.log("panel" + row.name + ":" + row.id);
+        if (name.startsWith("jfc_")) continue;
+        if (name.startsWith("usr_")) continue;
+        //add usr_
+        row.name = "usr_" + name;
+        Table<CellRow> table = (Table<CellRow>)cells.get(name);
+        if (table == null) {
+          table = addCellTable(row.name, row.id);
+        } else {
+          table.name = "usr_" + name;
+        }
+        table.save();
+      }
+    }
+    panels.save();
+    {
+      ArrayList<Table<CellRow>> rows = cells.getTables();
+      int cnt = rows.size();
+      for(int idx = 0;idx<cnt;) {
+        Table<CellRow> row = rows.get(idx);
+        JFLog.log("cellTable:" + row.name + ":" + row.xid);
+        if (Database.getPanelById(row.xid) == null) {
+          JFLog.log("deleteCellTable:" + row.name + ":" + row.xid);
+          cells.remove(row.id);
+          cnt--;
+        } else {
+          idx++;
+        }
+      }
+    }
   }
 
   private static void create() {
@@ -374,8 +413,8 @@ public class Database {
     celltable.add(new CellRow(id,0,8,3,1,"button", "", "Ok").setFunc("jfc_error_textarea_ok"));
     celltable.save();
 
-    id = addPanel("main", "Main", false, false);
-    celltable = addCellTable("main", id);
+    id = addPanel("usr_Main", false, false);
+    celltable = addCellTable("usr_Main", id);
     celltable.add(new CellRow(id,1,2,7,1,"label", "", "Welcome to jfControls!").setStyle("left"));
     celltable.add(new CellRow(id,1,4,16,1,"label", "", "Use the Menu Icon in the top left corner to get started.").setStyle("left"));
     celltable.add(new CellRow(id,1,6,16,1,"label", "", "License : LGPL : This program comes with no warranty.").setStyle("left"));
@@ -389,7 +428,7 @@ public class Database {
     id = addPanel("jfc_menu", true, true);
     create_main_menu(id);
 
-    id = addPanel("jfc_controllers", "Controllers", false, true);
+    id = addPanel("jfc_controllers", false, true);
     celltable = addCellTable("jfc_controllers", id);
     celltable.add(new CellRow(id,2,1,1,1,"label","","ID"));
     celltable.add(new CellRow(id,3,1,3,1,"label","","IP"));
@@ -401,7 +440,7 @@ public class Database {
     celltable.add(new CellRow(id,2,2,0,0,"table","jfc_ctrls",""));
     celltable.save();
 
-    id = addPanel("jfc_config", "Config", false, true);
+    id = addPanel("jfc_config", false, true);
     celltable = addCellTable("jfc_config", id);
     celltable.add(new CellRow(id,5,1,4,1,"button","","Change Password").setFunc("jfc_config_password"));
     celltable.add(new CellRow(id,10,1,4,1,"togglebutton","","Strict Tag Checking").setTag("jfc_config_value_boolean_strict_tags"));
@@ -417,7 +456,7 @@ public class Database {
     celltable.add(new CellRow(id,1,5,1,1,"table","jfc_config_errors", ""));
     celltable.save();
 
-    id = addPanel("jfc_alarm_editor", "Alarm Editor", false, true);
+    id = addPanel("jfc_alarm_editor", false, true);
     celltable = addCellTable("jfc_alarm_editor", id);
     celltable.add(new CellRow(id,2,1,2,1,"label","","Index"));
     celltable.add(new CellRow(id,4,1,8,1,"label","","Name"));
@@ -427,7 +466,7 @@ public class Database {
     celltable.save();
 
     //display active alarms
-    id = addPanel("jfc_alarms", "Alarms", false, true);
+    id = addPanel("jfc_alarms", false, true);
     celltable = addCellTable("jfc_alarms", id);
     celltable.add(new CellRow(id,2,1,2,1,"label","","Ack"));
     celltable.add(new CellRow(id,4,1,10,1,"label","","Name"));
@@ -435,14 +474,14 @@ public class Database {
     celltable.add(new CellRow(id,2,2,0,0,"autoscroll","jfc_alarms", ""));
     celltable.save();
 
-    id = addPanel("jfc_alarm_history", "Alarm History", false, true);
+    id = addPanel("jfc_alarm_history", false, true);
     celltable = addCellTable("jfc_alarm_history", id);
     celltable.add(new CellRow(id,2,1,4,1,"label","","Time"));
     celltable.add(new CellRow(id,6,1,10,1,"label","","Name"));
     celltable.add(new CellRow(id,2,2,0,0,"autoscroll","jfc_alarm_history", ""));
     celltable.save();
 
-    id = addPanel("jfc_tags", "Tags", false, true);
+    id = addPanel("jfc_tags", false, true);
     celltable = addCellTable("jfc_tags", id);
     celltable.add(new CellRow(id,2,1,6,1,"label","","Name"));
     celltable.add(new CellRow(id,8,1,3,1,"label","","Type"));
@@ -477,12 +516,12 @@ public class Database {
     celltable.add(new CellRow(id,4,4,3,1,"button","","Cancel").setFunc("jfc_tag_new_cancel_udt"));
     celltable.save();
 
-    id = addPanel("jfc_xref", "Cross Reference", false, true);
+    id = addPanel("jfc_xref", false, true);
     celltable = addCellTable("jfc_xref", id);
     celltable.add(new CellRow(id,1,1,0,0,"table","jfc_xref", ""));
     celltable.save();
 
-    id = addPanel("jfc_watch", "Watch Tables", false, true);
+    id = addPanel("jfc_watch", false, true);
     celltable = addCellTable("jfc_watch", id);
     celltable.add(new CellRow(id,2,1,6,1,"label","","Name"));
     celltable.add(new CellRow(id,9,1,2,1,"button","","New").setFunc("jfc_watch_new"));
@@ -490,7 +529,7 @@ public class Database {
     celltable.add(new CellRow(id,2,2,0,0,"table","jfc_watch", ""));
     celltable.save();
 
-    id = addPanel("jfc_watch_tags", "Watch Tag", false, true);
+    id = addPanel("jfc_watch_tags", false, true);
     celltable = addCellTable("jfc_watch_tags", id);
     celltable.add(new CellRow(id,2,1,6,1,"label","","Name"));
     celltable.add(new CellRow(id,8,1,6,1,"label","","Value"));
@@ -500,7 +539,7 @@ public class Database {
     celltable.add(new CellRow(id,2,2,0,0,"table","jfc_watch_tags", ""));
     celltable.save();
 
-    id = addPanel("jfc_udts", "User Data Types", false, true);
+    id = addPanel("jfc_udts", false, true);
     celltable = addCellTable("jfc_udts", id);
     celltable.add(new CellRow(id,2,1,7,1,"label","","Name"));
     celltable.add(new CellRow(id,12,1,3,1,"button","","New").setFunc("jfc_udts_new"));
@@ -509,7 +548,7 @@ public class Database {
     celltable.add(new CellRow(id,2,2,0,0,"table","jfc_udts", ""));
     celltable.save();
 
-    id = addPanel("jfc_udt_editor", "User Data Type Editor", false, true);
+    id = addPanel("jfc_udt_editor", false, true);
     celltable = addCellTable("jfc_udt_editor", id);
     celltable.add(new CellRow(id,2,1,7,1,"label","","Name"));
     celltable.add(new CellRow(id,9,1,2,1,"label","","Type"));
@@ -519,14 +558,14 @@ public class Database {
     celltable.add(new CellRow(id,2,2,0,0,"table","jfc_udt_editor", ""));
     celltable.save();
 
-    id = addPanel("jfc_sdts", "System Data Types", false, true);
+    id = addPanel("jfc_sdts", false, true);
     celltable = addCellTable("jfc_sdts", id);
     celltable.add(new CellRow(id,2,1,7,1,"label","","Name"));
     celltable.add(new CellRow(id,10,1,2,1,"link","","Help").setArg("sdt"));
     celltable.add(new CellRow(id,2,2,0,0,"table","jfc_sdts", ""));
     celltable.save();
 
-    id = addPanel("jfc_sdt_editor", "System Data Type Viewer", false, true);
+    id = addPanel("jfc_sdt_editor", false, true);
     celltable = addCellTable("jfc_sdt_editor", id);
     celltable.add(new CellRow(id,2,1,7,1,"label","","Name"));
     celltable.add(new CellRow(id,9,1,2,1,"label","","Type"));
@@ -534,7 +573,7 @@ public class Database {
     celltable.add(new CellRow(id,2,2,0,0,"table","jfc_sdt_editor", ""));
     celltable.save();
 
-    id = addPanel("jfc_panels", "Panels", false, true);
+    id = addPanel("jfc_panels", false, true);
     celltable = addCellTable("jfc_panels", id);
     celltable.add(new CellRow(id,2,1,7,1,"label","","Name"));
     celltable.add(new CellRow(id,12,1,3,1,"button","","New").setFunc("jfc_panels_new"));
@@ -542,7 +581,7 @@ public class Database {
     celltable.add(new CellRow(id,2,2,0,0,"table","jfc_panels", ""));
     celltable.save();
 
-    id = addPanel("jfc_panel_editor", "Panel Editor", false, true);
+    id = addPanel("jfc_panel_editor", false, true);
     celltable = addCellTable("jfc_panel_editor", id);
     celltable.add(new CellRow(id,1,1,3,1,"combobox","panel_type","").setArg("jfc_panel_type"));
     celltable.add(new CellRow(id,5,1,1,1,"button","","!image:add").setFunc("jfc_panel_editor_add"));
@@ -597,7 +636,7 @@ public class Database {
     celltable.add(new CellRow(id,3,8,2,1,"button","","Cancel").setFunc("jfc_panel_props_cancel"));
     celltable.save();
 
-    id = addPanel("jfc_funcs", "Functions", false, true);
+    id = addPanel("jfc_funcs", false, true);
     celltable = addCellTable("jfc_funcs", id);
     celltable.add(new CellRow(id,2,1,7,1,"label","","Name"));
     celltable.add(new CellRow(id,12,1,3,1,"button","","New").setFunc("jfc_funcs_new"));
@@ -605,7 +644,7 @@ public class Database {
     celltable.add(new CellRow(id,2,2,0,0,"table","jfc_funcs", ""));
     celltable.save();
 
-    id = addPanel("jfc_func_editor", "Function Editor", false, true);
+    id = addPanel("jfc_func_editor", false, true);
     celltable = addCellTable("jfc_func_editor", id);
     celltable.add(new CellRow(id,1,1,1,1,"button","","!image:add").setFunc("jfc_func_editor_add_rung"));
     celltable.add(new CellRow(id,3,1,1,1,"button","","!image:minus").setFunc("jfc_func_editor_del_rung"));
@@ -616,7 +655,7 @@ public class Database {
     celltable.add(new CellRow(id,0,0,0,0,"autoscroll","jfc_rungs_viewer", ""));
     celltable.save();
 
-    id = addPanel("jfc_rung_editor", "Rung Editor", false, true);
+    id = addPanel("jfc_rung_editor", false, true);
     celltable = addCellTable("jfc_rung_editor", id);
     celltable.add(new CellRow(id,0,1,1,1,"button","","!image:cancel").setFunc("jfc_rung_editor_cancel"));
     celltable.add(new CellRow(id,2,1,1,1,"button","","!image:delete").setFunc("jfc_rung_editor_del"));
@@ -640,7 +679,7 @@ public class Database {
   private static void create_main_menu(int id) {
     deleteCellTableById(id);
     Table celltable = addCellTable("jfc_menu", id);
-    celltable.add(new CellRow(id,0,0,3,1,"button","","Main Panel").setFuncArg("setPanel","main"));
+    celltable.add(new CellRow(id,0,0,3,1,"button","","Main Panel").setFuncArg("setPanel","usr_Main"));
     celltable.add(new CellRow(id,0,1,3,1,"button","","Controllers").setFuncArg("setPanel","jfc_controllers"));
     celltable.add(new CellRow(id,0,2,3,1,"button","","Tags").setFuncArg("jfc_ctrl_tags","1"));
     celltable.add(new CellRow(id,0,3,3,1,"button","","UserDataTypes").setFuncArg("setPanel","jfc_udts"));
@@ -667,7 +706,7 @@ public class Database {
     Table celltable;
     int id;
 
-    id = addPanel("jfc_vision_cameras", "Vision Cameras", false, true);
+    id = addPanel("jfc_vision_cameras", false, true);
     celltable = addCellTable("jfc_vision_cameras", id);
     celltable.add(new CellRow(id,2,1,1,1,"label","","CID"));
     celltable.add(new CellRow(id,3,1,3,1,"label","","Name"));
@@ -677,7 +716,7 @@ public class Database {
     celltable.add(new CellRow(id,2,2,0,0,"table","jfc_vision_cameras",""));
     celltable.save();
 
-    id = addPanel("jfc_vision_programs", "Vision Programs", false, true);
+    id = addPanel("jfc_vision_programs", false, true);
     celltable = addCellTable("jfc_vision_programs", id);
     celltable.add(new CellRow(id,2,1,1,1,"label","","PID"));
     celltable.add(new CellRow(id,3,1,3,1,"label","","Name"));
@@ -686,7 +725,7 @@ public class Database {
     celltable.add(new CellRow(id,2,2,0,0,"table","jfc_vision_programs",""));
     celltable.save();
 
-    id = addPanel("jfc_vision_shots", "Vision Shot Table", false, true);
+    id = addPanel("jfc_vision_shots", false, true);
     celltable = addCellTable("jfc_vision_shots", id);
     celltable.add(new CellRow(id,2,1,2,1,"label","","Camera"));
     celltable.add(new CellRow(id,4,1,2,1,"label","","Offset"));
@@ -701,7 +740,7 @@ public class Database {
     celltable.add(new CellRow(id,20,4,32,18,"layers","","jfc_vision_area"));
     celltable.save();
 
-    id = addPanel("jfc_vision_areas", "Vision ROIs", false, true);
+    id = addPanel("jfc_vision_areas", false, true);
     celltable = addCellTable("jfc_vision_areas", id);
     celltable.add(new CellRow(id,2,1,3,1,"label","","Name"));
     celltable.add(new CellRow(id,7,1,2,1,"label","","x1"));
@@ -1053,7 +1092,6 @@ public class Database {
   public static int addPanel(String name, boolean popup, boolean builtin) {
     PanelRow panel = new PanelRow();
     panel.name = name;
-    panel.display = "";
     panel.popup = popup;
     panel.builtin = builtin;
     panels.add(panel);
@@ -1061,25 +1099,12 @@ public class Database {
     return panel.id;
   }
 
-  public static int addPanel(String name, String display, boolean popup, boolean builtin) {
-    PanelRow panel = new PanelRow();
-    panel.name = name;
-    panel.display = display;
-    panel.popup = popup;
-    panel.builtin = builtin;
-    panels.add(panel);
-    panels.save();
-    return panel.id;
-  }
   public static PanelRow getPanelByName(String name) {
     ArrayList<PanelRow> rows = panels.getRows();
     int cnt = rows.size();
     for(int a=0;a<cnt;a++) {
       PanelRow panel = (PanelRow)rows.get(a);
       if (panel.name.equals(name)) {
-        return panel;
-      }
-      if (panel.display != null && panel.display.equals(name)) {
         return panel;
       }
     }
@@ -1150,6 +1175,7 @@ public class Database {
     table.name = name;
     table.xid = pid;
     cells.add(table);
+    table.save();
     return table;
   }
   public static Table getCellTableById(int pid) {
@@ -1170,17 +1196,22 @@ public class Database {
     }
   }
   public static CellRow[] getCells(String name) {
+    JFLog.log("getCells:" + name);
     Table<CellRow> table = cells.get(name);
     return table.getRows().toArray(new CellRow[0]);
   }
   public static CellRow getCell(int pid, int x, int y) {
-    PanelRow panel = getPanelById(pid);
-    String name = panel.name;
-    Table table = cells.get(name);
+    Table table = getCellTableById(pid);
     ArrayList<Row> rows = table.getRows();
     for(int r=0;r<rows.size();r++) {
       CellRow cell = (CellRow)rows.get(r);
-      if (cell.x == x && cell.y == y) {
+      if (
+        (x >= cell.x) &&
+        (x <= (cell.x + cell.w)) &&
+        (y >= cell.y) &&
+        (y <= (cell.y + cell.h))
+      )
+      {
         return cell;
       }
     }
@@ -2029,12 +2060,17 @@ public class Database {
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
-          case "display": {
+          case "name": {
             for(int a=0;a<cnt;a++) {
               PanelRow row = (PanelRow)rows.get(a);
               if (row.id == rowid) {
-                row.display = value;
+                String oldname = row.name;
+                row.name = "usr_" + value;
                 table.save();
+                //must update cellTable name too
+                Table<CellRow> cellTable = cells.get(oldname);
+                cellTable.name = "usr_" + value;
+                cellTable.save();
                 return true;
               }
             }
@@ -2450,11 +2486,11 @@ public class Database {
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
-          case "display": {
+          case "name": {
             for(int a=0;a<cnt;a++) {
               PanelRow row = (PanelRow)rows.get(a);
               if (row.id == rowid) {
-                return row.display;
+                return row.name.substring(4);  //remove usr_
               }
             }
             break;

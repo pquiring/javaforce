@@ -134,7 +134,7 @@ public class Events {
         client.setProperty("user", null);
         PopupPanel panel = (PopupPanel)client.getPanel().getComponent("jfc_menu");
         panel.setVisible(false);
-        client.setPanel(Panels.getPanel("main", client));
+        client.setPanel(Panels.getPanel("usr_Main", client));
         break;
       }
       case "jfc_login_ok": {
@@ -438,8 +438,9 @@ public class Events {
       case "jfc_panels_new": {
         synchronized(lock) {
           //BUG : panel name should be unique
-          int pid = Database.addPanel("jfc_user_panel", "New Panel", false, false);
-          Database.addCellTable("jfc_user_panel", pid).save();
+          String name = "usr_NewPanel";
+          int pid = Database.addPanel(name, false, false);
+          Database.addCellTable(name, pid).save();
         }
         client.setPanel(Panels.getPanel("jfc_panels", client));
         break;
@@ -547,6 +548,7 @@ public class Events {
         int pid = (Integer)client.getProperty("panel");
         javaforce.db.Table celltable = Database.getCellTableById(pid);
         celltable.add(new CellRow(pid,r.x,r.y,1,1,type,text,"").setStyle(style));
+        celltable.save();
         break;
       }
       case "jfc_panel_editor_del": {
@@ -582,6 +584,10 @@ public class Events {
         String type = getComponentType(comp);
         int pid = (Integer)client.getProperty("panel");
         CellRow cell = Database.getCell(pid, r.x, r.y);
+        if (cell == null) {
+          JFLog.log("Error:no cell found @" + pid + ":" + r.x + "," + r.y);
+          return;
+        }
         String events = cell.events;
         String tag = cell.tag;
         if (tag == null) tag = "";
@@ -1465,11 +1471,17 @@ public class Events {
       }
 
       case "setPanel":
-        Panel panel = Panels.getPanel(arg, client);
+        String name;
+        if (arg.startsWith("jfc_")) {
+          name = arg;
+        } else {
+          name = "usr_" + arg;
+        }
+        Panel panel = Panels.getPanel(name, client);
         if (panel != null) {
           client.setPanel(panel);
         } else {
-          JFLog.log("Error:Panel not found:" + arg);
+          JFLog.log("Error:Panel not found:" + name);
         }
         break;
       default:
@@ -1496,9 +1508,9 @@ public class Events {
       String col = f[2];
       String type = f[3];
       String id = f[4];
-      int ctrl = Integer.valueOf(client.getProperty("ctrl").toString());
-      int cid = Database.getControllerCID(ctrl);
       if (type.equals("tagid")) {
+        int ctrl = Integer.valueOf(client.getProperty("ctrl").toString());
+        int cid = Database.getControllerCID(ctrl);
         if (!TagsService.validTagName(cid, value)) {
           tf.setBackColor(Color.red);
           tf.setProperty("red", "true");
@@ -1506,6 +1518,8 @@ public class Events {
         }
       }
       if (type.equals("tag")) {
+        int ctrl = Integer.valueOf(client.getProperty("ctrl").toString());
+        int cid = Database.getControllerCID(ctrl);
         if (Database.getTagByName(cid, value) != null) {
           //duplicate tag name
           tf.setBackColor(Color.red);
@@ -1729,7 +1743,7 @@ public class Events {
         break;
       }
       case "setPanel": {
-        client.setPanel(Panels.getPanel(args[0], client));
+        client.setPanel(Panels.getPanel("usr_" + args[0], client));
       }
     }
   }

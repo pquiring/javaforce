@@ -58,7 +58,7 @@ public class Main implements WebUIHandler {
       client.setProperty("user", "admin");
     }
     client.setTitle("jfControls");
-    return Panels.getPanel("main", client);
+    return Panels.getPanel("usr_Main", client);
   }
 
   public byte[] getResource(String url) {

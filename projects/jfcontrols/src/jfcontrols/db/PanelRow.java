@@ -7,7 +7,6 @@ package jfcontrols.db;
 
 public class PanelRow extends javaforce.db.Row {
   public String name;
-  public String display;
   public boolean popup;
   public boolean builtin;
   private static final int version = 1;
@@ -15,7 +14,7 @@ public class PanelRow extends javaforce.db.Row {
     super.readObject();
     int ver = readInt();
     name = readString();
-    display = readString();
+    readString();  //old display name (obsolete)
     popup = readBoolean();
     builtin = readBoolean();
   }
@@ -23,7 +22,7 @@ public class PanelRow extends javaforce.db.Row {
     super.writeObject();
     writeInt(version);
     writeString(name);
-    writeString(display);
+    writeString(null);  //old display name (obsolete)
     writeBoolean(popup);
     writeBoolean(builtin);
   }

@@ -66,9 +66,9 @@ public class Panels {
     table.add(menu, x, 0);
     x++; width -= cellWidth;
 
-    Button home = getButton(createCell(0, 0, 0, 0, "button", null, "!image:home", null, "setPanel", "main", null));
+    Button home = getButton(createCell(0, 0, 0, 0, "button", null, "!image:home", null, "setPanel", "Main", null));
     home.setProperty("func", "setPanel");
-    home.setProperty("arg", "main");
+    home.setProperty("arg", "Main");
     setCellSize(home, new Rectangle(x,0,1,1));
     table.add(home, x, 0);
     x++; width -= cellWidth;
@@ -92,7 +92,7 @@ public class Panels {
       //client.setProperty("xref", -1);
     }
 
-    Label title = getLabel(createCell(0, 0, 0, 0, "label", "jfc_title", pnl.display, null, null, null, null));
+    Label title = getLabel(createCell(0, 0, 0, 0, "label", "jfc_title", pnl.name.substring(4), null, null, null, null));
     title.setName("jfc_title");
     title.setStyle("background-color", "blue");
     title.setStyle("color", "white");
@@ -864,8 +864,8 @@ public class Panels {
         for(int a=0;a<data.length;a++) {
           if (data[a].builtin) continue;
           String id = Integer.toString(data[a].id);
-          String style = data[a].name.equals("main") ? "disabled" : null;
-          cells.add(createCell(0, pos, 6, 1, "textfield", null, null, "jfc_panels_display_str_" + data[a].id, null, null, style));
+          String style = data[a].name.equals("usr_Main") ? "disabled" : null;
+          cells.add(createCell(0, pos, 6, 1, "textfield", null, null, "jfc_panels_name_str_" + data[a].id, null, null, style));
           cells.add(createCell(7, pos, 2, 1, "button", null, "Edit", null, "jfc_panels_edit", id, null));
           if (style == null) {
             cells.add(createCell(10, pos, 2, 1, "button", null, "Delete", null, "jfc_panels_delete", id, null));
