@@ -59,6 +59,7 @@ public class TagsService extends Thread {
     TagBase tag = map.get(name);
     if (tag == null) {
       JFLog.log("Error:getTag(" + name + ") == null");
+      return tag;
     }
     if (field != null) {
       TagUDT udt = (TagUDT)tag;

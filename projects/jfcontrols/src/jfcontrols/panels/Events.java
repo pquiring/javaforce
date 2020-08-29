@@ -1504,7 +1504,9 @@ public class Events {
         }
       }
       if (type.equals("tag")) {
-        if (context.decode(value) != null) {
+        int ctrl = Integer.valueOf(client.getProperty("ctrl").toString());
+        int cid = Database.getControllerCID(ctrl);
+        if (Database.getTagByName(cid, value) != null) {
           //duplicate tag name
           tf.setBackColor(Color.red);
           tf.setProperty("red", "true");
