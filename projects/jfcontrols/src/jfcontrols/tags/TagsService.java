@@ -303,11 +303,12 @@ public class TagsService extends Thread {
       lock_signal.notify();
     }
   }
-  public static boolean validTagName(String tag) {
+  public static boolean validTagName(int cid, String tag) {
     //first letter must be a-z or A-Z
     //other chars : 0-9 _
     tag = tag.toLowerCase();
     if (tag.length() == 0) return false;
+    if (cid != 0) return true;  //controller tags
     char ch = tag.charAt(0);
     if ((ch < 'a' || ch > 'z') && (ch != '_')) return false;
     char ca[] = tag.toCharArray();

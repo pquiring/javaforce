@@ -235,7 +235,7 @@ public class Events {
           TextField name = (TextField)client.getPanel().getComponent(tag_type + "_name");
           String tag_name = name.getText();
           clearError(name);
-          if (!TagsService.validTagName(tag_name)) {
+          if (!TagsService.validTagName(cid, tag_name)) {
             setError(name);
             return;
           }
@@ -1496,16 +1496,16 @@ public class Events {
       String col = f[2];
       String type = f[3];
       String id = f[4];
+      int ctrl = Integer.valueOf(client.getProperty("ctrl").toString());
+      int cid = Database.getControllerCID(ctrl);
       if (type.equals("tagid")) {
-        if (!TagsService.validTagName(value)) {
+        if (!TagsService.validTagName(cid, value)) {
           tf.setBackColor(Color.red);
           tf.setProperty("red", "true");
           return;
         }
       }
       if (type.equals("tag")) {
-        int ctrl = Integer.valueOf(client.getProperty("ctrl").toString());
-        int cid = Database.getControllerCID(ctrl);
         if (Database.getTagByName(cid, value) != null) {
           //duplicate tag name
           tf.setBackColor(Color.red);
