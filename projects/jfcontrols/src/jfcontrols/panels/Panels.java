@@ -92,7 +92,7 @@ public class Panels {
       //client.setProperty("xref", -1);
     }
 
-    Label title = getLabel(createCell(0, 0, 0, 0, "label", "jfc_title", pnl.name.substring(4), null, null, null, null));
+    Label title = getLabel(createCell(0, 0, 0, 0, "label", "jfc_title", getPanelName(pnl.name), null, null, null, null));
     title.setName("jfc_title");
     title.setStyle("background-color", "blue");
     title.setStyle("color", "white");
@@ -137,6 +137,28 @@ public class Panels {
       panel.add(getPopupPanel(client, "Properties", "jfc_panel_props"));
     }
     return panel;
+  }
+  private static String getPanelName(String name) {
+    if (name.startsWith("usr_")) return name.substring(4);
+    switch (name) {
+      case "jfc_xref": return "Cross References";
+      case "jfc_udts": return "User Data Types";
+      case "jfc_udt_editor": return "User Data Type Editor";
+      case "jfc_sdts": return "System Data Types";
+      case "jfc_sdt_editor": return "System Data Type Editor";
+      case "jfc_funcs": return "Functions";
+      case "jfc_func_editor": return "Function Editor";
+      default:
+        name = name.substring(4).replaceAll("_", " ");
+        //Camel Case String
+        char[] ca = name.toCharArray();
+        for(int a=0;a<ca.length;a++) {
+          if (a == 0 || ca[a-1] == ' ') {
+            ca[a] = Character.toUpperCase(ca[a]);
+          }
+        }
+        return new String(ca);
+    }
   }
   //x,y,w,h,comp,name,text,tag,func,arg,style,events
   public static Table buildTable(Table table, Container container, CellRow cells[], WebUIClient client, int ix, int iy, Node nodes[]) {

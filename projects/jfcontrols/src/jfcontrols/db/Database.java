@@ -45,7 +45,7 @@ public class Database {
   public static TableList<BlockRow> blocks;
   public static TableList<WatchRow> watches;
 
-  public static String Version = "1.1";
+  public static String Version = "1.2";
 
   public static int FUNC_INIT = 1;
   public static int FUNC_MAIN = 2;
@@ -106,15 +106,18 @@ public class Database {
     if (version == null) version = "0.0";
     JFLog.log("Database version=" + version);
     switch (version) {
+      case "1.2":
+        break;
       case "1.1":
         update_panels();
+        update_version();
         break;
       case "1.0":
 //        create_card_system();
         create_vision_system();
         update_version();
         break;
-      default:
+      case "0.0":
         create();
 //        create_card_system();
         create_vision_system();
