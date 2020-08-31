@@ -77,11 +77,17 @@ public class Tag {
 
   /** Returns true is controller is Big Endian byte order. */
   public boolean isBE() {
+    if (parent != null) {
+      return parent.c.isBE();
+    }
     return c.isBE();
   }
 
   /** Returns true is controller is Little Endian byte order. */
   public boolean isLE() {
+    if (parent != null) {
+      return parent.c.isLE();
+    }
     return c.isLE();
   }
 
@@ -371,7 +377,7 @@ public class Tag {
         }
         data = tag.read();
         if (data == null) {
-          System.out.println("Error:" + System.currentTimeMillis() + ":data==null:host=" + tag.host + ":tag=" + tag.tag);
+          //JFLog.log("Error:TagRead:data==null:host=" + tag.host + ":tag=" + tag.tag);
           return;
         }
         if (tag.isBE()) {

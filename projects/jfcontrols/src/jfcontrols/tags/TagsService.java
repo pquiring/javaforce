@@ -28,12 +28,23 @@ public class TagsService extends Thread {
   private static volatile boolean doWrites;
 
   public static final int MAX_TAGS = 4096;
-  public static TagBase tags[] = new TagBase[MAX_TAGS];
-  private static HashMap<String, TagBase> map = new HashMap<String, TagBase>();
+  public static TagBase tags[] = new TagBase[MAX_TAGS];  //all tags (local & remote)
+  private static HashMap<String, TagBase> map = new HashMap<String, TagBase>();  //local tags only
 
   public static TagBase getTag(String name) {
-    //TODO : c# // controller #
-    if (name == null) return null;
+    if (name == null || name.length() == 0) return null;
+    int cidx = name.indexOf('#');
+    if (cidx != -1) {
+      //c{id}#tag
+      if (name.charAt(0) != 'c') {
+        JFLog.log("Error:Invalid Tag Format:" + name);
+        return null;
+      }
+      String cidstr = name.substring(1, cidx);
+      int cid = Integer.valueOf(cidstr);
+      name = name.substring(cidx + 1);
+      return RemoteControllers.getTag(cid, name);
+    }
     int tagidx = 0;
     int fieldidx = 0;
     String field = null;
@@ -76,10 +87,6 @@ public class TagsService extends Thread {
       tag.init(tag);
     }
     return tag;
-  }
-
-  public static TagBase getTag(int idx) {
-    return tags[idx];
   }
 
   public static void main() {
@@ -189,18 +196,14 @@ public class TagsService extends Thread {
     return tag;
   }
 
-  public static void addTag(TagBase tag) {
-    if (tag.cid > 0) {
-      tag.remoteTag = RemoteControllers.getTag(tag);
-    }
-    tags[tag.tid] = tag;
-    map.put(tag.name, tag);
-  }
-
   public static void deleteTag(int id) {
     TagBase tag = tags[id];
     tags[tag.tid] = null;
-    map.put(tag.name, null);
+    if (tag.cid == 0) {
+      map.put(tag.name, null);
+    } else {
+      RemoteControllers.deleteTag(tag);
+    }
   }
 
   public void run() {
@@ -219,8 +222,11 @@ public class TagsService extends Thread {
       if (tag == null) {
         tag = createTag(null, cid, tid, type, length, name, comment);
       }
+      JFLog.log("loadTag:" + tid + ":c" + tag.cid + ":" + tag.name);
       tags[tid] = tag;
-      map.put(tag.name, tag);
+      if (cid == 0) {
+        map.put(tag.name, tag);
+      }
     }
     active = true;
     synchronized(lock_main) {
@@ -246,7 +252,7 @@ public class TagsService extends Thread {
       if (tag == null) continue;
       if (tag.cid > 0) {
         if (tag.remoteTag == null) continue;
-        tag.setValue(tag.remoteTag.getValue());
+        tag.updateValue(tag.remoteTag.getValue());
       }
     }
     synchronized(lock_done_reads) {
@@ -260,7 +266,10 @@ public class TagsService extends Thread {
       if (tag == null) continue;
       if (tag.cid > 0) {
         if (tag.remoteTag == null) continue;
-        tag.remoteTag.setValue(tag.getValue());
+        if (tag.dirty) {
+          JFLog.log("RemoteTag:c" + tag.cid + ":" + tag.name + ":setValue:" + tag.getValue());
+          tag.remoteTag.setValue(tag.getValue());
+        }
       }
     }
     synchronized(lock_done_writes) {
@@ -304,8 +313,8 @@ public class TagsService extends Thread {
     }
   }
   public static boolean validTagName(int cid, String tag) {
-    //first letter must be a-z or A-Z
-    //other chars : 0-9 _
+    //first letter must be a-z or A-Z or _
+    //other chars may also include : 0-9
     tag = tag.toLowerCase();
     if (tag.length() == 0) return false;
     if (cid != 0) return true;  //controller tags

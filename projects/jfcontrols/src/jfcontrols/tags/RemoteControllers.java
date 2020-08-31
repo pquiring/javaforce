@@ -8,6 +8,7 @@ package jfcontrols.tags;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.controls.*;
 
 import jfcontrols.db.*;
 
@@ -23,15 +24,34 @@ public class RemoteControllers {
     map.clear();
   }
 
-  public static javaforce.controls.Tag getTag(TagBase tag) {
+  private static RemoteController getController(int cid) {
+    RemoteController ctrl = map.get(cid);
+    if (ctrl == null) {
+      ControllerRow cc = Database.getControllerById(cid);
+      ctrl = new RemoteController(cid, cc.type, cc.ip, cc.speed);
+      map.put(cid, ctrl);
+    }
+    return ctrl;
+  }
+
+  public static TagBase getTag(int cid, String name) {
     synchronized(lock) {
-      RemoteController ctrl = map.get(tag.cid);
-      if (ctrl == null) {
-        ControllerRow cc = Database.getControllerById(tag.cid);
-        ctrl = new RemoteController(tag.cid, cc.type, cc.ip, cc.speed);
-        map.put(tag.cid, ctrl);
-      }
-      return ctrl.getTag(tag.name, tag.type);
+      RemoteController ctrl = getController(cid);
+      return ctrl.getTag(name);
+    }
+  }
+
+  public static void addTag(TagBase tag) {
+    synchronized(lock) {
+      RemoteController ctrl = getController(tag.cid);
+      ctrl.addTag(tag);
+    }
+  }
+
+  public static void deleteTag(TagBase tag) {
+    synchronized(lock) {
+      RemoteController ctrl = getController(tag.cid);
+      ctrl.deleteTag(tag);
     }
   }
 }

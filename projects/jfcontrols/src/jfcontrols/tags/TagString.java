@@ -25,7 +25,6 @@ public class TagString extends TagBase {
   }
 
   public void setBoolean(int idx, boolean value) {
-    setDirty();
     setString8(idx, value ? "true" : "false");
   }
 
@@ -34,7 +33,6 @@ public class TagString extends TagBase {
   }
 
   public void setInt(int idx, int value) {
-    setDirty();
     setString8(idx, Integer.toString(value));
   }
 
@@ -43,7 +41,6 @@ public class TagString extends TagBase {
   }
 
   public void setLong(int idx, long value) {
-    setDirty();
     setString8(idx, Long.toString(value));
   }
 
@@ -52,7 +49,6 @@ public class TagString extends TagBase {
   }
 
   public void setFloat(int idx, float value) {
-    setDirty();
     setString8(idx, Float.toString(value));
   }
 
@@ -61,17 +57,17 @@ public class TagString extends TagBase {
   }
 
   public void setDouble(int idx, double value) {
-    setDirty();
     setString8(idx, Double.toString(value));
   }
 
   public String getString8() {
     return toString(0);
   }
+
   public void setString8(int idx, String str) {
-    setDirty();
     values[idx] = str.toCharArray();
   }
+
   public void readObject() throws Exception {
     super.readObject();
     int cnt = readInt();

@@ -36,7 +36,6 @@ public class TagByte extends TagBase {
   }
 
   public void setBoolean(int idx, boolean value) {
-    setDirty();
     values[idx] = (byte)(value ? 1 : 0);
   }
 
@@ -45,7 +44,6 @@ public class TagByte extends TagBase {
   }
 
   public void setInt(int idx, int value) {
-    setDirty();
     values[idx] = (byte)value;
   }
 
@@ -54,7 +52,6 @@ public class TagByte extends TagBase {
   }
 
   public void setLong(int idx, long value) {
-    setDirty();
     values[idx] = (byte)value;
   }
 
@@ -63,7 +60,6 @@ public class TagByte extends TagBase {
   }
 
   public void setFloat(int idx, float value) {
-    setDirty();
     values[idx] = (byte)value;
   }
 
@@ -72,7 +68,6 @@ public class TagByte extends TagBase {
   }
 
   public void setDouble(int idx, double value) {
-    setDirty();
     values[idx] = (byte)value;
   }
   public void readObject() throws Exception {

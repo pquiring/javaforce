@@ -21,12 +21,12 @@ public abstract class TagBase extends Row {
   public boolean unsigned;
   public boolean isArray;
 
-  public transient boolean dirty;  //local tag usage only
-  public transient Tag remoteTag;  //if cid > 0
-  public transient TagBase parent;  //if field
+  public boolean dirty;  //value changed
+  public Tag remoteTag;  //if cid > 0
+  public TagBase parent;  //if field of UDT (else points to this)
 
-  private transient ArrayList<TagBaseListener> listeners;
-  private transient Object lock;
+  private ArrayList<TagBaseListener> listeners;
+  private Object lock;
 
   public static interface Creator {
     public TagBase create();
@@ -143,6 +143,7 @@ public abstract class TagBase extends Row {
     }
     return null;
   }
+
   public String getValue() {
     return toString();
   }
@@ -151,27 +152,26 @@ public abstract class TagBase extends Row {
     return toString(idx);
   }
 
-/*
-  public String getValue(String name) {
-    try {
-      return value.member(name);
-    } catch (Exception e) {
-      JFLog.log(e);
-      return null;
-    }
-  }
-
-  public String getValue(String name, int idx) {
-    try {
-      return value.member(name).toString();
-    } catch (Exception e) {
-      JFLog.log(e);
-      return null;
-    }
-  }
-*/
-
   public void setValue(String newValue) {
+    if (cid != 0) {
+      JFLog.log("Tag:" + name + ":setValue:" + newValue);
+    }
+    switch (type) {
+      case TagType.bit: setBoolean(0, newValue.equals("1"));
+      case TagType.int8:
+      case TagType.int16:
+      case TagType.int32: setInt(0, Integer.valueOf(newValue)); break;
+      case TagType.int64: setLong(0, Long.valueOf(newValue)); break;
+      case TagType.float32: setInt(0, Float.floatToIntBits(Float.valueOf(newValue)));
+      case TagType.float64: setLong(0, Double.doubleToLongBits(Double.valueOf(newValue)));
+      case TagType.string: setString8(0, newValue);
+    }
+    setDirty();
+  }
+
+  public void updateValue(String newValue) {
+    String oldValue = getValue();
+    if (newValue.equals(oldValue)) return;
     switch (type) {
       case TagType.bit: setBoolean(0, newValue.equals("1"));
       case TagType.int8:
@@ -195,6 +195,7 @@ public abstract class TagBase extends Row {
       case TagType.float64: setLong(idx, Double.doubleToLongBits(Double.valueOf(newValue)));
       case TagType.string: setString8(idx, newValue);
     }
+    setDirty();
   }
 
   public String getComment() {
@@ -210,6 +211,9 @@ public abstract class TagBase extends Row {
     this.parent = parent;
     listeners = new ArrayList<>();
     lock = new Object();
+    if (cid > 0) {
+      RemoteControllers.addTag(this);
+    }
   }
 
   public void addListener(TagBaseListener listener) {

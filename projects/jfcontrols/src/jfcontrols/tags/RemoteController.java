@@ -13,8 +13,8 @@ import javaforce.controls.*;
 public class RemoteController {
   private int cid;
   private Object lock = new Object();
-  private javaforce.controls.Tag first;
-  private HashMap<TagBase, javaforce.controls.Tag> map = new HashMap<>();
+  private Tag first;
+  private HashMap<String, TagBase> map = new HashMap<>();
   private int delay;
   private String ip;
   private int controllerType;
@@ -33,7 +33,7 @@ public class RemoteController {
 
   public void cancel() {
     synchronized(lock) {
-      javaforce.controls.Tag tags[] = map.values().toArray(new javaforce.controls.Tag[0]);
+      Tag[] tags = map.values().toArray(new Tag[0]);
       for(int a=0;a<tags.length;a++) {
         tags[a].stop();
       }
@@ -42,42 +42,48 @@ public class RemoteController {
     }
   }
 
-  public javaforce.controls.Tag getTag(String name, int tagType) {
+  public TagBase getTag(String name) {
     synchronized(lock) {
-      javaforce.controls.Tag tag = map.get(name);
+      TagBase tag = map.get(name);
       if (tag == null) {
-        tag = new javaforce.controls.Tag();
-        tag.delay = delay;
-        tag.host = ip;
-        switch (tagType) {
-          case TagType.bit: tag.size = TagType.bit; break;
-          case TagType.int8: tag.size = TagType.int8; break;
-          case TagType.int16: tag.size = TagType.int16; break;
-          case TagType.int32: tag.size = TagType.int32; break;
-          case TagType.int64: tag.size = TagType.int64; break;
-          case TagType.float32: tag.size = TagType.float32; break;
-          case TagType.float64: tag.size = TagType.float64; break;
-          default: JFLog.log("Error:TagType unknown:" + tagType); return null;
-        }
-        tag.tag = name;
-        switch (controllerType) {
-          case 0: tag.type = ControllerType.JF; break;
-          case 1: tag.type = ControllerType.S7; break;
-          case 2: tag.type = ControllerType.AB; break;
-          case 3: tag.type = ControllerType.MB; break;
-          case 4: tag.type = ControllerType.NI; break;
-          default: JFLog.log("Error:Controller type unknown:" + controllerType);
-        }
-//        map.put(?, tag);
-        if (ip.length() == 0) return tag;
-        tag.start(first);
-        if (first == null) first = tag;
-      } else {
-        if (tag.type == 0) {
-          JFLog.log("error:loaded tag with type==0");
-        }
+        JFLog.log("Unknown Tag:" + name);
       }
       return tag;
     }
+  }
+
+  public void addTag(TagBase tagBase) {
+    Tag tag = new Tag();
+    tagBase.remoteTag = tag;
+    tag.delay = delay;
+    tag.host = ip;
+    switch (tagBase.type) {
+      case TagType.bit: tag.size = TagType.bit; break;
+      case TagType.int8: tag.size = TagType.int8; break;
+      case TagType.int16: tag.size = TagType.int16; break;
+      case TagType.int32: tag.size = TagType.int32; break;
+      case TagType.int64: tag.size = TagType.int64; break;
+      case TagType.float32: tag.size = TagType.float32; break;
+      case TagType.float64: tag.size = TagType.float64; break;
+      default: JFLog.log("Error:TagType unknown:" + tagBase.type); return;
+    }
+    tag.tag = tagBase.name;
+    switch (controllerType) {
+      case 0: tag.type = ControllerType.JF; break;
+      case 1: tag.type = ControllerType.S7; break;
+      case 2: tag.type = ControllerType.AB; break;
+      case 3: tag.type = ControllerType.MB; break;
+      case 4: tag.type = ControllerType.NI; break;
+      default: JFLog.log("Error:Controller type unknown:" + controllerType);
+    }
+    map.put(tagBase.name, tagBase);
+    if (ip.length() == 0) return;
+    tag.start(first);
+    if (first == null) first = tag;
+  }
+
+  public void deleteTag(TagBase tag) {
+    map.put(tag.name, null);
+    //TODO : delete tag completely
   }
 }

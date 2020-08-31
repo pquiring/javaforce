@@ -53,10 +53,10 @@ public class Controller {
    *
    */
   public boolean connect(String url) {
-    System.out.println("Info:" + System.currentTimeMillis() + ":Controller.connect():" + url);
+    JFLog.log("Controller.connect():" + url);
     connected = false;
     if (url == null) {
-      System.out.println("Error:url == null");
+      JFLog.log("Error:url == null");
       return false;
     }
     if (url.startsWith("S7:")) {
@@ -369,11 +369,11 @@ public class Controller {
           return true;
         }
         case ControllerType.NI: {
-          System.out.println("NI write() not implemented");
+          JFLog.log("NI write() not implemented");
           return false;
         }
         case ControllerType.MIC: {
-          System.out.println("MIC write() not implemented");
+          JFLog.log("MIC write() not implemented");
           return false;
         }
       }

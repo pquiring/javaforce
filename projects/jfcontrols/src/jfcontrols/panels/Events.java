@@ -262,7 +262,6 @@ public class Events {
           String comment = "";  //edit later
           Database.addTag(cid, tag_name, type, array_size, false);
           TagBase tag = TagsService.createTag(null, cid, id, type, is_array ? array_size : 0, tag_name, comment);
-          TagsService.addTag(tag);
           client.setPanel(Panels.getPanel("jfc_tags", client));  //force update
         }
         break;
@@ -1716,30 +1715,31 @@ public class Events {
       doCommand(cmd, args, c.getClient());
     }
   }
-  public static void doCommand(String cmd, String args[], WebUIClient client) {
-    //TODO : these commands need to be processed by the FunctionService thread - in between scan cycles
+  private static String getArgs(String[] args) {
+    StringBuilder sb = new StringBuilder();
+    for(String arg : args) {
+      if (sb.length() > 0) sb.append(",");
+      sb.append(arg);
+    }
+    return sb.toString();
+  }
+  public static void doCommand(String cmd, String[] args, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    JFLog.log("doCommand:" + cmd);
+    JFLog.log("doCommand:" + cmd + ":" + getArgs(args));
     switch (cmd) {
       case "toggleBit": {
         TagBase tag = context.getTag(args[0]);
-        if (tag != null) {
-          tag.setValue(tag.getValue().equals("0") ? "1" : "0");
-        }
+        FunctionService.addCommand(cmd, tag);
         break;
       }
       case "setBit": {
         TagBase tag = context.getTag(args[0]);
-        if (tag != null) {
-          tag.setValue("1");
-        }
+        FunctionService.addCommand(cmd, tag);
         break;
       }
       case "resetBit": {
         TagBase tag = context.getTag(args[0]);
-        if (tag != null) {
-          tag.setValue("0");
-        }
+        FunctionService.addCommand(cmd, tag);
         break;
       }
       case "setPanel": {

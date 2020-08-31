@@ -23,6 +23,8 @@ public class FunctionService extends Thread {
   public static Object rapi = new Object();
   public static Object wapi = new Object();
   public static Object fapi = new Object();
+  public static ArrayList<Command> cmds = new ArrayList<Command>();
+  public static Object cmdLock = new Object();
 
   private static String jdk;
 
@@ -77,6 +79,7 @@ public class FunctionService extends Thread {
       return;
     }
     active = true;
+    cmds.clear();
 
     JFLog.log("Function.Service starting...");
 
@@ -113,6 +116,12 @@ public class FunctionService extends Thread {
         main.execute(pos);
       } catch (Exception e) {
         JFLog.log(e);
+      }
+      synchronized(cmdLock) {
+        while (cmds.size() > 0) {
+          Command command = cmds.remove(0);
+          doCommand(command);
+        }
       }
       synchronized(wapi) {
         wapi.notifyAll();
@@ -238,5 +247,30 @@ public class FunctionService extends Thread {
       return false;
     }
     return func.revision == revision;
+  }
+  public static void addCommand(String cmd, TagBase tag) {
+    if (tag == null) return;
+    Command command = new Command();
+    command.cmd = cmd;
+    command.tag = tag;
+    synchronized(cmdLock) {
+      cmds.add(command);
+    }
+  }
+  public static void doCommand(Command cmd) {
+    switch (cmd.cmd) {
+      case "toggleBit": {
+        cmd.tag.setValue(cmd.tag.getValue().equals("0") ? "1" : "0");
+        break;
+      }
+      case "setBit": {
+        cmd.tag.setValue("1");
+        break;
+      }
+      case "resetBit": {
+        cmd.tag.setValue("0");
+        break;
+      }
+    }
   }
 }
