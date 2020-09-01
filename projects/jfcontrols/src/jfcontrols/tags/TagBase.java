@@ -22,6 +22,7 @@ public abstract class TagBase extends Row {
   public boolean isArray;
 
   public boolean dirty;  //value changed
+  public boolean nosave;
   public Tag remoteTag;  //if cid > 0
   public TagBase parent;  //if field of UDT (else points to this)
 
@@ -33,7 +34,11 @@ public abstract class TagBase extends Row {
   }
 
   public void setDirty() {
+    if (nosave) return;
     parent.dirty = true;
+    if (cid > 0) {
+      JFLog.log("SetDirty:" + name);
+    }
   }
 
   public final boolean isArray() {return isArray;}
@@ -156,6 +161,7 @@ public abstract class TagBase extends Row {
     if (cid != 0) {
       JFLog.log("Tag:" + name + ":setValue:" + newValue);
     }
+    tagChanged(null, newValue);
     switch (type) {
       case TagType.bit: setBoolean(0, newValue.equals("1"));
       case TagType.int8:
@@ -214,6 +220,9 @@ public abstract class TagBase extends Row {
     if (cid > 0) {
       RemoteControllers.addTag(this);
     }
+    if (cid == 0 && name != null && name.equals("scantime") && parent != null && parent.name.equals("system")) {
+      nosave = true;
+    }
   }
 
   public void addListener(TagBaseListener listener) {
@@ -228,7 +237,7 @@ public abstract class TagBase extends Row {
     }
   }
 
-  public void tagChanged(TagBase tag, String oldValue, String newValue) {
+  public void tagChanged(String oldValue, String newValue) {
     synchronized(lock) {
       int cnt = listeners.size();
       for(int a=0;a<cnt;a++) {
@@ -236,6 +245,7 @@ public abstract class TagBase extends Row {
       }
     }
   }
+
   public String toString() {return toString(0);}
 
   public abstract String toString(int idx);

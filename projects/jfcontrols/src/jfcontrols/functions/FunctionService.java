@@ -258,6 +258,7 @@ public class FunctionService extends Thread {
     }
   }
   public static void doCommand(Command cmd) {
+    JFLog.log("doCommand:" + cmd.cmd + ":" + cmd.tag.name);
     switch (cmd.cmd) {
       case "toggleBit": {
         cmd.tag.setValue(cmd.tag.getValue().equals("0") ? "1" : "0");
@@ -267,6 +268,7 @@ public class FunctionService extends Thread {
         cmd.tag.setValue("1");
         break;
       }
+      case "clearBit":
       case "resetBit": {
         cmd.tag.setValue("0");
         break;

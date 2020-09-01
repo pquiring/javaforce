@@ -535,8 +535,8 @@ public class Events {
         switch (type) {
           case "label": text = "label"; nc = new Label(text); break;
           case "button": text = "button"; nc = new Button(text); break;
-          case "light": style = "0=ff0000;1=00ff00"; nc = new Light(Color.red,Color.green); break;
-          case "light3": style = "0=ff0000;1=00ff00;n=333333"; nc = new Light3(Color.red, Color.green, Color.lightGrey); break;
+          case "light": style = "0=ff0000;1=00ff00"; nc = new Light(Color.red,Color.green, false); break;
+          case "light3": style = "0=ff0000;1=00ff00;n=333333"; nc = new Light3(Color.red, Color.green, Color.lightGrey, 0); break;
           case "togglebutton": style = "0=ff0000;1=00ff00"; nc = new ToggleButton(text, Color.red, Color.green); break;
           case "progressbar": style = "o=h;0=ff0000;1=ffff00;2=00ff00;v0=5;v1=10;max=100.0"; nc = new ProgressBar(ProgressBar.HORIZONTAL, 100.0f, 32); break;
           case "image": text = "image"; nc = new Image(Images.getImage(text)); break;
@@ -1725,7 +1725,6 @@ public class Events {
   }
   public static void doCommand(String cmd, String[] args, WebUIClient client) {
     ClientContext context = (ClientContext)client.getProperty("context");
-    JFLog.log("doCommand:" + cmd + ":" + getArgs(args));
     switch (cmd) {
       case "toggleBit": {
         TagBase tag = context.getTag(args[0]);
@@ -1737,13 +1736,19 @@ public class Events {
         FunctionService.addCommand(cmd, tag);
         break;
       }
+      case "clearBit":
       case "resetBit": {
         TagBase tag = context.getTag(args[0]);
         FunctionService.addCommand(cmd, tag);
         break;
       }
       case "setPanel": {
+        JFLog.log("doCommand:" + cmd + ":" + getArgs(args));
         client.setPanel(Panels.getPanel("usr_" + args[0], client));
+      }
+      default: {
+        JFLog.log("doCommand:unknown cmd=" + cmd);
+        break;
       }
     }
   }

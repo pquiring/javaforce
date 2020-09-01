@@ -186,7 +186,7 @@ public class Panels {
           cells[a].text = tag.getValue();
         }
       }
-      Component c = getCell(compType, container, cells[a], rs[a], client);
+      Component c = getCell(compType, container, cells[a], rs[a], client, context);
       if (c == null) {
         JFLog.log("Error:cell == null:" + compType);
         c = new Label("null");
@@ -231,6 +231,9 @@ public class Panels {
               case "progressbar":
                 ProgressBar pb = (ProgressBar)cmp;
                 pb.setValue(Float.valueOf(newValue));
+                break;
+              default:
+                JFLog.log("Error:Component Type unknown:" + type);
                 break;
             }
           });
@@ -312,7 +315,7 @@ public class Panels {
     c.setProperty("rect", r);
     return c;
   }
-  public static Component getCell(String name, Container container, CellRow v, Rectangle r, WebUIClient client) {
+  public static Component getCell(String name, Container container, CellRow v, Rectangle r, WebUIClient client, ClientContext context) {
     switch (name) {
       case "label": return getLabel(v);
       case "button": return getButton(v);
@@ -329,8 +332,8 @@ public class Panels {
       case "image": Image img = getImage(v); client.setProperty(v.text, img); return img;
       case "layers": LayersPanel panel = getLayersPanel(v, client); client.setProperty(v.text, panel); return panel;
       case "autoscroll": return getAutoScroll(v, container, client);
-      case "light": return getLight(v);
-      case "light3": return getLight3(v);
+      case "light": return getLight(v, context);
+      case "light3": return getLight3(v, context);
       case "progressbar": return getProgressBar(v);
       default: JFLog.log("Unknown component:" + name); break;
     }
@@ -1188,7 +1191,7 @@ public class Panels {
     }
     return panel;
   }
-  private static Component getLight(CellRow v) {
+  private static Component getLight(CellRow v, ClientContext context) {
     String style = v.style;
     if (style == null) style = "";
     String ss[] = style.split(";");
@@ -1205,7 +1208,7 @@ public class Panels {
         case "1": c1 = value; break;
       }
     }
-    Light light = new Light(Integer.valueOf(c0, 16),Integer.valueOf(c1, 16));
+    Light light = new Light(Integer.valueOf(c0, 16),Integer.valueOf(c1, 16), !context.getTag(v.tag).getValue().equals("0"));
     light.addClickListener((me, c) -> {
       Events.click(c);
     });
@@ -1217,7 +1220,7 @@ public class Panels {
     });
     return light;
   }
-  private static Component getLight3(CellRow v) {
+  private static Component getLight3(CellRow v, ClientContext context) {
     String style = v.style;
     if (style == null) style = "";
     String ss[] = style.split(";");
@@ -1236,7 +1239,7 @@ public class Panels {
         case "n": cn = value; break;
       }
     }
-    Light3 light = new Light3(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16), Integer.valueOf(cn, 16));
+    Light3 light = new Light3(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16), Integer.valueOf(cn, 16), context.getTagInt(v.tag));
     light.addClickListener((me, c) -> {
       Events.click(c);
     });

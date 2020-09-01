@@ -11,11 +11,11 @@ public class Light extends Component {
   private int clr0, clr1;
   private boolean state;
 
-  public Light(int clr0, int clr1) {
+  public Light(int clr0, int clr1, boolean initState) {
     this.clr0 = clr0;
     this.clr1 = clr1;
     setBorder(true);
-    setBackColor(clr0);
+    setColor(initState);
   }
 
   public String html() {

@@ -8,15 +8,15 @@ package jfcontrols.panels;
 import javaforce.webui.*;
 
 public class Light3 extends Component {
-  private int clr0, clr1, clrn;
+  private int clr0, clrP, clrN;
   private int state;
 
-  public Light3(int clr0, int clr1, int clrn) {
+  public Light3(int clr0, int clrP, int clrN, int initState) {
     this.clr0 = clr0;
-    this.clr1 = clr1;
-    this.clrn = clrn;
+    this.clrP = clrP;
+    this.clrN = clrN;
     setBorder(true);
-    setBackColor(clr0);
+    setColor(initState);
   }
 
   public String html() {
@@ -28,15 +28,15 @@ public class Light3 extends Component {
     if (state == 0)
       setBackColor(clr0);
     else if (state > 0)
-      setBackColor(clr1);
+      setBackColor(clrP);
     else
-      setBackColor(clrn);
+      setBackColor(clrN);
   }
 
-  public void setColors(int clr0, int clr1, int clrn) {
+  public void setColors(int clr0, int clrP, int clrN) {
     this.clr0 = clr0;
-    this.clr1 = clr1;
-    this.clrn = clrn;
+    this.clrP = clrP;
+    this.clrN = clrN;
     setColor(state);
   }
 }

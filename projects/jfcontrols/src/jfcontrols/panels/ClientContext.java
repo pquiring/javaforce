@@ -36,6 +36,15 @@ public class ClientContext extends Thread {
     return TagsService.getTag(name);
   }
 
+  public String getTagValue(String name) {
+    return TagsService.getTag(name).getValue();
+  }
+
+  public int getTagInt(String name) {
+    TagBase tag = TagsService.getTag(name);
+    return Integer.valueOf(tag.getValue());
+  }
+
   public String read(String name) {
     TagBase tag = getTag(name);
     return tag.getValue();
@@ -59,7 +68,6 @@ public class ClientContext extends Thread {
     public boolean anyChange;
 
     public Monitor(TagBase tag, Component cmp, TagAction action, ClientContext ctx) {
-//      JFLog.log("addListener2:" + tag.getTagID() + "," + tag.getIndex() + "," + tag.getMember() + "," + tag.getMemberIndex() + ":" + this);
       this.tag = tag;
       this.cmp = cmp;
       this.action = action;
@@ -68,7 +76,6 @@ public class ClientContext extends Thread {
     public void tagChanged(TagBase tagBase, String oldValue, String newValue) {
       //NOTE : this function is running in FunctionService - it must return asap
       synchronized(ctx.lock) {
-//        JFLog.log("tagChanged:" + tag + ":" + id + ":" + oldValue + ":" + newValue + ":" + this);
         this.oldValue = oldValue;
         this.newValue = newValue;
         ctx.stack.add(this);
@@ -90,7 +97,6 @@ public class ClientContext extends Thread {
       Monitor monitor = listeners.remove(0);
       monitor.tag.removeListener(monitor);
     }
-//    tags.clear();  //TODO
     if (debug != null) {
       debug.cancel();
       debug = null;

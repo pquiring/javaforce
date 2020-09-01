@@ -283,6 +283,7 @@ public class TagsService extends Thread {
       if (tag == null) continue;
 //      if (tag.tid == 2) JFLog.log("check:" + tag.cid + ":" + tag.tid + ":" + tag.name + ":" + tag.type + ":" + tag.dirty);
       if (tag.dirty) {
+        JFLog.log("SetClean:" + tag.name);
         tag.dirty = false;
         saveTag(tag);
       }
