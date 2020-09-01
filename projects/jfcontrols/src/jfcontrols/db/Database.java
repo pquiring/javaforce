@@ -107,6 +107,7 @@ public class Database {
     JFLog.log("Database version=" + version);
     switch (version) {
       case "1.2":
+        update_version();
         break;
       case "1.1":
         update_panels();
@@ -682,7 +683,7 @@ public class Database {
   private static void create_main_menu(int id) {
     deleteCellTableById(id);
     Table celltable = addCellTable("jfc_menu", id);
-    celltable.add(new CellRow(id,0,0,3,1,"button","","Main Panel").setFuncArg("setPanel","usr_Main"));
+    celltable.add(new CellRow(id,0,0,3,1,"button","","Main Panel").setFuncArg("setPanel","Main"));
     celltable.add(new CellRow(id,0,1,3,1,"button","","Controllers").setFuncArg("setPanel","jfc_controllers"));
     celltable.add(new CellRow(id,0,2,3,1,"button","","Tags").setFuncArg("jfc_ctrl_tags","1"));
     celltable.add(new CellRow(id,0,3,3,1,"button","","UserDataTypes").setFuncArg("setPanel","jfc_udts"));
