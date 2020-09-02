@@ -328,7 +328,7 @@ public class Panels {
       case "combobox": return getComboBox(v, client);
       case "checkbox": return getCheckBox(v, client);
       case "table": return getTable(v, container, r, client);
-      case "overlay": return getOverlay(v);
+      case "overlay": return getOverlay(v, r.y == 0);
       case "image": Image img = getImage(v); client.setProperty(v.text, img); return img;
       case "layers": LayersPanel panel = getLayersPanel(v, client); client.setProperty(v.text, panel); return panel;
       case "autoscroll": return getAutoScroll(v, container, client);
@@ -698,11 +698,11 @@ public class Panels {
     int cnt = cells.length;
     for(int a=0;a<cnt;a++) {
       CellRow cell = cells[a];
-      int x = Integer.valueOf(cell.x);
-      int y = Integer.valueOf(cell.y);
-      int w = Integer.valueOf(cell.w) - 1;
-      int h = Integer.valueOf(cell.h) - 1;
-      if ( (cx >= x && cx <= x + w) && (cy >= y && cy <= y + h) ) {
+      int x1 = Integer.valueOf(cell.x);
+      int y1 = Integer.valueOf(cell.y);
+      int x2 = x1 + Integer.valueOf(cell.w) - 1;
+      int y2 = y1 + Integer.valueOf(cell.h) - 1;
+      if ( (cx >= x1 && cx <= x2) && (cy >= y1 && cy <= y2) ) {
         return false;
       }
     }
@@ -1357,15 +1357,16 @@ public class Panels {
       panel.add(table);
     }
   }
-  private static Component getOverlay(CellRow v) {
+  private static Component getOverlay(CellRow v, boolean topRow) {
     Block div = new Block();
     div.setBorder(true);
-    div.setBorderColor(Color.black);
+    div.setBorderColor(topRow ? Color.grey : Color.black);
     div.addClickListener((me, comp) -> {
       WebUIClient client = comp.getClient();
       Block focus = (Block)client.getProperty("focus");
       if (focus != null) {
-        focus.setBorderColor(Color.black);
+        Rectangle rect = (Rectangle)focus.getProperty("rect");
+        focus.setBorderColor(rect.y == 0 ? Color.grey : Color.black);
       }
       comp.setBorderColor(Color.green);
       client.setProperty("focus", comp);
@@ -1373,7 +1374,7 @@ public class Panels {
     return div;
   }
   public static Component getOverlay(int x,int y) {
-    Component c = getOverlay(null);
+    Component c = getOverlay(null, y == 0);
     Rectangle r = new Rectangle(x,y,1,1);
     setCellSize(c, r);
     return c;

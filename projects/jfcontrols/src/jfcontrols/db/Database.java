@@ -1199,7 +1199,6 @@ public class Database {
     }
   }
   public static CellRow[] getCells(String name) {
-    JFLog.log("getCells:" + name);
     Table<CellRow> table = cells.get(name);
     return table.getRows().toArray(new CellRow[0]);
   }
