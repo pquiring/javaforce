@@ -42,6 +42,7 @@ public class ClientContext extends Thread {
 
   public int getTagInt(String name) {
     TagBase tag = TagsService.getTag(name);
+    if (tag == null) return 0;
     return Integer.valueOf(tag.getValue());
   }
 

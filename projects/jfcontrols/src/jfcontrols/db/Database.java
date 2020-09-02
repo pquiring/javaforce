@@ -107,7 +107,6 @@ public class Database {
     JFLog.log("Database version=" + version);
     switch (version) {
       case "1.2":
-        update_version();
         break;
       case "1.1":
         update_panels();

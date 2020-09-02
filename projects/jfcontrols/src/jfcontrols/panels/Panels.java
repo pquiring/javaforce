@@ -1208,7 +1208,12 @@ public class Panels {
         case "1": c1 = value; break;
       }
     }
-    Light light = new Light(Integer.valueOf(c0, 16),Integer.valueOf(c1, 16), !context.getTag(v.tag).getValue().equals("0"));
+    TagBase tag = context.getTag(v.tag);
+    boolean state = false;
+    if (tag != null) {
+      state = !tag.getValue().equals("0");
+    }
+    Light light = new Light(Integer.valueOf(c0, 16),Integer.valueOf(c1, 16), state);
     light.addClickListener((me, c) -> {
       Events.click(c);
     });
