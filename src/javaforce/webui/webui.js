@@ -55,7 +55,7 @@ function wsevent(event) {
     return;
   }
   var msg = JSON.parse(event.data);
-  console.log("event:" + msg.event + " to " + msg.id);
+  console.log("event:" + msg.event + " id=" + msg.id + " tid=" + msg.tid);
   var element = document.getElementById(msg.id);
   if (element === null) {
     console.log("element not found:" + msg.id);

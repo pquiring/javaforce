@@ -191,6 +191,7 @@ public class Panels {
         JFLog.log("Error:cell == null:" + compType);
         c = new Label("null");
       }
+      c.setProperty("name", compType);
       cs[a] = c;
       int x2 = rs[a].x + rs[a].width;
       if (x2 > mx) {
@@ -1513,7 +1514,7 @@ public class Panels {
     int x2 = x1 + r.width - 1;
     int y2 = y1 + r.height - 1;
     int x,y;
-    //remove from jfc_src pos
+    //remove from src pos
     for(x = x1;x <= x2;x++) {
       for(y = y1;y <= y2;y++) {
         if (x == x1 && y == y1) {
@@ -1537,9 +1538,9 @@ public class Panels {
       for(y = y1;y <= y2;y++) {
         tbl.remove(x, y);
         if (x == x1 && y == y1) {
-          setCellSize(c, r);
           tbl.add(c, x, y);
           tbl.setSpans(x, y, r.width, r.height);
+          setCellSize(c, r);
         }
       }
     }

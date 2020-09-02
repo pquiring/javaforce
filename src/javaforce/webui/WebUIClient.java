@@ -134,6 +134,7 @@ public class WebUIClient {
   public void sendData(byte data[]) {
     socket.write(data, WebSocket.TYPE_BINARY);
   }
+  private int tid = 1;
   public synchronized void sendEvent(String id, String event, String args[]) {
     if (!isReady) return;
     StringBuilder sb = new StringBuilder();
@@ -147,6 +148,10 @@ public class WebUIClient {
       sb.append(str);
       log.append(str);
     }
+    //add transaction id for debugging
+    str = ",\"tid\":\"" + (tid++) + "\"";
+    sb.append(str);
+    log.append(str);
     if (args != null) {
       int cnt = args.length;
       for(int a=0;a<cnt;a++) {

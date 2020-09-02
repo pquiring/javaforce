@@ -93,7 +93,7 @@ public class Table extends Container {
       Cell cell = (Cell)get(a);
       if (cell.get(0) == c) {
         super.remove(cell);
-        sendEvent("remove", new String[] {"child=" + cell.id});
+        cell.sendEvent("remove", new String[] {"child=" + cell.id});
         return;
       }
     }
@@ -102,7 +102,7 @@ public class Table extends Container {
     Cell cell = getCell(x,y,false);
     if (cell != null) {
       super.remove(cell);
-      sendEvent("remove", new String[] {"child=" + cell.id});
+      cell.sendEvent("remove", new String[] {"child=" + cell.id});
       return cell.get(0);
     }
     return null;
