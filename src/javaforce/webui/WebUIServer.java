@@ -27,7 +27,11 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   private Web web;
   private WebUIHandler handler;
 
+  /** Enable debug log messages. */
   public static boolean debug = false;
+
+  /** Enable transaction id in WebSocket messages for debugging. */
+  public static boolean debug_tid = false;
 
   public void start(WebUIHandler handler, int port, boolean secure) {
     this.handler = handler;

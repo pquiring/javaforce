@@ -148,10 +148,12 @@ public class WebUIClient {
       sb.append(str);
       log.append(str);
     }
-    //add transaction id for debugging
-    str = ",\"tid\":\"" + (tid++) + "\"";
-    sb.append(str);
-    log.append(str);
+    if (WebUIServer.debug_tid) {
+      //add transaction id for debugging
+      str = ",\"tid\":\"" + (tid++) + "\"";
+      sb.append(str);
+      log.append(str);
+    }
     if (args != null) {
       int cnt = args.length;
       for(int a=0;a<cnt;a++) {
