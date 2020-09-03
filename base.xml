@@ -8,18 +8,6 @@
     </javadoc>
   </target>
 
-  <scriptdef language="javascript" name="upper">
-    <attribute name="string" />
-    <attribute name="to" />
-    project.setProperty( attributes.get( "to" ), attributes.get( "string" ).toUpperCase() );
-  </scriptdef>
-
-  <scriptdef language="javascript" name="lower">
-    <attribute name="string" />
-    <attribute name="to" />
-    project.setProperty( attributes.get( "to" ), attributes.get( "string" ).toLowerCase() );
-  </scriptdef>
-
   <target name="depnatives">
     <copy todir=".">
       <fileset dir="${home}/native" includes="*.dll"/>
@@ -51,7 +39,6 @@
   <property name="project4" value=""/>
   <property name="project5" value=""/>
   <property file="${cfg}"/>
-  <lower string="${MAINCLASS}" to="mainclass" />
 
   <target name="check-builds">
     <available file="${project2}.xml" property="project2.present"/>
