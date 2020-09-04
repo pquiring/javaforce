@@ -178,6 +178,13 @@ public abstract class TagBase extends Row {
   public void updateValue(String newValue) {
     String oldValue = getValue();
     if (newValue.equals(oldValue)) return;
+    if (cid > 0) {
+      JFLog.log("updateValue:" + name + ":o=" + oldValue + ":n=" + newValue + ":l=" + listeners.size());
+    }
+    tagChanged(oldValue, newValue);
+    if (cid > 0) {
+      JFLog.log("______Value:" + name + ":o=" + oldValue + ":n=" + newValue + ":l=" + listeners.size());
+    }
     switch (type) {
       case TagType.bit: setBoolean(0, newValue.equals("1"));
       case TagType.int8:

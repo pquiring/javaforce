@@ -76,6 +76,11 @@ public class ClientContext extends Thread {
     }
     public void tagChanged(TagBase tagBase, String oldValue, String newValue) {
       //NOTE : this function is running in FunctionService - it must return asap
+      if (tagBase != tag) {
+        JFLog.log("ERROR:Incorrect tagChanged:expected=" + tag.name + ":received=" + tagBase.name);
+        return;
+      }
+      JFLog.log("PRE:tagChanged:" + tag.name + ":" + oldValue + ":" + newValue);
       synchronized(ctx.lock) {
         this.oldValue = oldValue;
         this.newValue = newValue;
@@ -117,12 +122,14 @@ public class ClientContext extends Thread {
     }
     while (active) {
       synchronized(lock) {
-        try {lock.wait();} catch (Exception e) {}
+        if (stack.size() == 0) {
+          try {lock.wait();} catch (Exception e) {}
+        }
         if (stack.size() == 0) continue;
         monitor = stack.remove(0);
       }
       if (monitor == null) continue;
-//      JFLog.log("tagChanged:" + monitor.tag + ":" + monitor.oldValue + ":" + monitor.newValue);
+      JFLog.log("RUN:tagChanged:" + monitor.tag.name + ":" + monitor.oldValue + ":" + monitor.newValue);
       monitor.action.tagChanged(monitor.tag, monitor.oldValue, monitor.newValue, monitor.cmp);
     }
   }
