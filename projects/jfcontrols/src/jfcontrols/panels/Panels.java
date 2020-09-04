@@ -208,7 +208,7 @@ public class Panels {
           TagBase tag = context.decode(tagName);
           context.addListener(tag, c, false, (_tag, oldValue, newValue, cmp) -> {
             String type = Events.getComponentType(cmp);
-            JFLog.log("Event:" + type + ":" + tagName + ":" + oldValue + ":" + newValue);
+//            JFLog.log("Event:" + type + ":" + tagName + ":" + oldValue + ":" + newValue);
             switch (type) {
               case "label":
                 Label lbl = (Label)cmp;

@@ -80,7 +80,7 @@ public class ClientContext extends Thread {
         JFLog.log("ERROR:Incorrect tagChanged:expected=" + tag.name + ":received=" + tagBase.name);
         return;
       }
-      JFLog.log("PRE:tagChanged:" + tag.name + ":" + oldValue + ":" + newValue);
+//      JFLog.log("PRE:tagChanged:" + tag.name + ":" + oldValue + ":" + newValue);
       synchronized(ctx.lock) {
         this.oldValue = oldValue;
         this.newValue = newValue;
@@ -129,7 +129,7 @@ public class ClientContext extends Thread {
         monitor = stack.remove(0);
       }
       if (monitor == null) continue;
-      JFLog.log("RUN:tagChanged:" + monitor.tag.name + ":" + monitor.oldValue + ":" + monitor.newValue);
+//      JFLog.log("RUN:tagChanged:" + monitor.tag.name + ":" + monitor.oldValue + ":" + monitor.newValue);
       monitor.action.tagChanged(monitor.tag, monitor.oldValue, monitor.newValue, monitor.cmp);
     }
   }

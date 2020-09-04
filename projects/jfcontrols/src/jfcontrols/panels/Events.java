@@ -1745,6 +1745,7 @@ public class Events {
       case "setPanel": {
         JFLog.log("doCommand:" + cmd + ":" + getArgs(args));
         client.setPanel(Panels.getPanel("usr_" + args[0], client));
+        break;
       }
       default: {
         JFLog.log("doCommand:unknown cmd=" + cmd);

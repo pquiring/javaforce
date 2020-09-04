@@ -37,7 +37,7 @@ public abstract class TagBase extends Row {
     if (nosave) return;
     parent.dirty = true;
     if (cid > 0) {
-      JFLog.log("SetDirty:" + name);
+//      JFLog.log("SetDirty:" + name);
     }
   }
 
@@ -159,7 +159,7 @@ public abstract class TagBase extends Row {
 
   public void setValue(String newValue) {
     if (cid != 0) {
-      JFLog.log("Tag:" + name + ":setValue:" + newValue);
+//      JFLog.log("Tag:" + name + ":setValue:" + newValue);
     }
     tagChanged(null, newValue);
     switch (type) {
@@ -179,12 +179,9 @@ public abstract class TagBase extends Row {
     String oldValue = getValue();
     if (newValue.equals(oldValue)) return;
     if (cid > 0) {
-      JFLog.log("updateValue:" + name + ":o=" + oldValue + ":n=" + newValue + ":l=" + listeners.size());
+//      JFLog.log("updateValue:" + name + ":o=" + oldValue + ":n=" + newValue + ":l=" + listeners.size());
     }
     tagChanged(oldValue, newValue);
-    if (cid > 0) {
-      JFLog.log("______Value:" + name + ":o=" + oldValue + ":n=" + newValue + ":l=" + listeners.size());
-    }
     switch (type) {
       case TagType.bit: setBoolean(0, newValue.equals("1"));
       case TagType.int8:
