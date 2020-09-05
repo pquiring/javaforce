@@ -1,3 +1,7 @@
+Sept 5/2020 : 0.16 released
+  - fix : improved error handling
+  - new : added client status page
+
 Jun 17/2020 : 0.15 released
   - new : add more error reporting
   - new : show online clients in status screen
