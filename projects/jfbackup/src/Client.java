@@ -299,18 +299,24 @@ public class Client extends Thread {
   }
   private void readfolders() throws Exception {
     //read arg
-    int arglen = readLength();
-    if (arglen > 2 * 1024) {
-      throw new Exception("bad file name length");
-    }
-    byte[] arg = read(arglen);
     long backupid = System.currentTimeMillis();
     JFLog.init(Paths.logsPath + "/backup-" + backupid + ".log", true);
-    String path = Paths.vssPath + new String(arg, "utf-8");
-    JFLog.log("Sending Folder:" + path);
-    sendFolder(path);
-    writeLength(-1);  //done
-    JFLog.log("Done");
+    try {
+      JFLog.log("Reading folder length");
+      int arglen = readLength();
+      JFLog.log("Folder Length=" + arglen);
+      if (arglen > 2 * 1024) {
+        throw new Exception("bad file name length");
+      }
+      byte[] arg = read(arglen);
+      String path = Paths.vssPath + new String(arg, "utf-8");
+      JFLog.log("Sending Folder:" + path);
+      sendFolder(path);
+      writeLength(-1);  //done
+      JFLog.log("Done");
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
     JFLog.close();
   }
   private void sendFolder(String path) throws Exception {

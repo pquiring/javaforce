@@ -423,8 +423,8 @@ public class BackupJob extends Thread {
           lock.notify();
         }
       });
-      while (reply == null) {
-        try {lock.wait();} catch (Exception e) {}
+      while (reply == null && !Status.abort) {
+        try {lock.wait(5000);} catch (Exception e) {}
       }
     }
     return reply.equals("OKAY");
@@ -445,8 +445,8 @@ public class BackupJob extends Thread {
           lock.notify();
         }
       });
-      while (reply == null) {
-        try {lock.wait();} catch (Exception e) {}
+      while (reply == null && !Status.abort) {
+        try {lock.wait(5000);} catch (Exception e) {}
       }
     }
     return reply.equals("OKAY");
@@ -466,8 +466,8 @@ public class BackupJob extends Thread {
           lock.notify();
         }
       });
-      while (reply == null) {
-        try {lock.wait();} catch (Exception e) {}
+      while (reply == null && !Status.abort) {
+        try {lock.wait(5000);} catch (Exception e) {}
       }
     }
     if (reply == null) return null;
@@ -526,8 +526,8 @@ public class BackupJob extends Thread {
             lock.notify();
           }
         });
-        while (file.c == 0) {
-          try {lock.wait();} catch (Exception e) {}
+        while (file.c == 0 && !Status.abort) {
+          try {lock.wait(5000);} catch (Exception e) {}
         }
       }
       transfer.join();
@@ -608,8 +608,8 @@ public class BackupJob extends Thread {
             lock.notify();
           }
         });
-        while (currentvolume.root == null) {
-          try {lock.wait();} catch (Exception e) {}
+        while (currentvolume.root == null && !Status.abort) {
+          try {lock.wait(5000);} catch (Exception e) {}
         }
       }
       return true;

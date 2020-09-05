@@ -3,8 +3,6 @@
  * @author pquiring
  */
 
-//TODO : when restore in place is implemented a seperate thread would be required
-
 import java.util.*;
 import java.io.*;
 
