@@ -43,7 +43,7 @@ public class MediaChanger {
     JF.sleep(1000);
     return ok;
   }
-  public int lastError() {
-    return WinNative.tapeLastError();
+  public String lastError() {
+    return String.format("0x%08x : Handle=0x%08x", WinNative.tapeLastError(), handle);
   }
 }

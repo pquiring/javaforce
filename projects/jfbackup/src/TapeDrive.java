@@ -44,6 +44,6 @@ public class TapeDrive {
     return WinNative.tapeWrite(handle, data, offset, length) == data.length;
   }
   public String lastError() {
-    return String.format("0x%08x", WinNative.tapeLastError());
+    return String.format("0x%08x : Handle=0x%08x", WinNative.tapeLastError(), handle);
   }
 }
