@@ -31,7 +31,7 @@ public class SplitPanel extends Container {
         b2.addClass("splitPanel");
         top = new Row();
         b1.setWidth(pos);
-//        b2.setMaxWidth();
+        b2.setMaxWidth();
         div.setWidth(5);
         break;
       case HORIZONTAL:
@@ -43,7 +43,7 @@ public class SplitPanel extends Container {
         b2.addClass("splitPanel");
         top = new Column();
         b1.setHeight(pos);
-//        b2.setMaxHeight();
+        b2.setMaxHeight();
         div.setHeight(5);
         break;
     }

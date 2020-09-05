@@ -117,6 +117,7 @@ public class BackupJob extends Thread {
     cat.backup = backupid;
     catnfo.backup = backupid;
     catnfo.retention = retentionid;
+    log("Retrieving drive info...");
     DriveInfo info = tape.getDriveInfo();
     if (info == null) {
       log("Error:unable to get drive parameters" + ":Error=" + tape.lastError());

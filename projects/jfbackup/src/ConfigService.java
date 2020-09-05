@@ -152,6 +152,7 @@ public class ConfigService implements WebUIHandler {
     }
     split.setLeftComponent(left);
     split.setRightComponent(right);
+    right.setMaxWidth();
     panel.add(split);
 
     return panel;
@@ -252,6 +253,8 @@ public class ConfigService implements WebUIHandler {
     text.setReadonly(true);
     text.setMaxWidth();
     text.setMaxHeight();
+    panel.setMaxWidth();
+    row.setMaxWidth();
 
     panel.add(text);
 
@@ -289,6 +292,40 @@ public class ConfigService implements WebUIHandler {
         text.setText(sb.toString());
       }
     }.start();
+
+    return panel;
+  }
+
+  public Panel clientStatus() {
+    Panel panel = new Panel();
+    Row row = new Row();
+    Label label = new Label("jfBackup/" + Config.AppVersion);
+    row.add(label);
+    panel.add(row);
+
+    row = new Row();
+    row.setBackColor(Color.blue);
+    row.setHeight(5);
+    panel.add(row);
+
+    panel.add(new Label("Status:"));
+
+    StringBuilder status = new StringBuilder();
+    synchronized(Client.lock) {
+      for(String mount : Client.mounts) {
+        status.append("Mounted:" + mount + "\r\n");
+      }
+      status.append("Reading files:" + Client.reading_files);
+    }
+
+    TextArea text = new TextArea(status.toString());
+    text.setReadonly(true);
+    text.setMaxWidth();
+    text.setMaxHeight();
+    panel.setMaxWidth();
+    row.setMaxWidth();
+
+    panel.add(text);
 
     return panel;
   }
@@ -344,6 +381,8 @@ public class ConfigService implements WebUIHandler {
     text.setReadonly(true);
     text.setMaxWidth();
     text.setMaxHeight();
+    panel.setMaxWidth();
+    row.setMaxWidth();
 
     panel.add(text);
 
@@ -409,6 +448,8 @@ public class ConfigService implements WebUIHandler {
     AutoScrollPanel scroll = new AutoScrollPanel();
     scroll.setMaxWidth();
     scroll.setMaxHeight();
+    panel.setMaxWidth();
+    row.setMaxWidth();
     panel.add(scroll);
 
     scroll.add(new Label("Backup Jobs:"));
@@ -929,6 +970,8 @@ public class ConfigService implements WebUIHandler {
     AutoScrollPanel scroll = new AutoScrollPanel();
     scroll.setMaxWidth();
     scroll.setMaxHeight();
+    panel.setMaxWidth();
+    row.setMaxWidth();
     panel.add(scroll);
 
     //list backups
@@ -1114,6 +1157,8 @@ public class ConfigService implements WebUIHandler {
     AutoScrollPanel scroll = new AutoScrollPanel();
     scroll.setMaxWidth();
     scroll.setMaxHeight();
+    panel.setMaxWidth();
+    row.setMaxWidth();
 
     row = new Row();
     Button restore = new Button("Restore");
@@ -1237,6 +1282,8 @@ public class ConfigService implements WebUIHandler {
     AutoScrollPanel scroll = new AutoScrollPanel();
     scroll.setMaxWidth();
     scroll.setMaxHeight();
+    panel.setMaxWidth();
+    row.setMaxWidth();
 
     Label selected = new Label("...");
     updateSelected(selected);
@@ -1489,6 +1536,8 @@ public class ConfigService implements WebUIHandler {
     AutoScrollPanel scroll = new AutoScrollPanel();
     scroll.setMaxWidth();
     scroll.setMaxHeight();
+    panel.setMaxWidth();
+    row.setMaxWidth();
     panel.add(scroll);
 
     EntryTape.sorted = false;
@@ -1533,6 +1582,8 @@ public class ConfigService implements WebUIHandler {
       AutoScrollPanel scroll = new AutoScrollPanel();
       scroll.setMaxWidth();
       scroll.setMaxHeight();
+      panel.setMaxWidth();
+      row.setMaxWidth();
       panel.add(scroll);
       //list log files (limit 1 year)
       File folder = new File(Paths.logsPath);
@@ -1577,6 +1628,8 @@ public class ConfigService implements WebUIHandler {
       text.setReadonly(true);
       text.setMaxWidth();
       text.setMaxHeight();
+      panel.setMaxWidth();
+      row.setMaxWidth();
       try {
         FileInputStream fis = new FileInputStream(Paths.logsPath + "\\" + file);
         byte data[] = fis.readAllBytes();
@@ -1602,6 +1655,7 @@ public class ConfigService implements WebUIHandler {
     if (screen == null) screen = "";
     switch (screen) {
       case "": right = serverHome(); break;
+      case "status": right = clientStatus(); break;
       case "config": right = clientConfig(); break;
       case "logs": right = serverLogs(null); break;
     }
@@ -1618,6 +1672,13 @@ public class ConfigService implements WebUIHandler {
     List list = new List();
     list.setName("list");
     //add menu options
+    Button opt1 = new Button("Status");
+    list.add(opt1);
+    opt1.addClickListener( (MouseEvent me, Component c) -> {
+      WebUIClient webclient = c.getClient();
+      webclient.setProperty("screen", "status");
+      webclient.refresh();
+    });
     Button opt5 = new Button("Configure");
     list.add(opt5);
     opt5.addClickListener( (MouseEvent me, Component c) -> {

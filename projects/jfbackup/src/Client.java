@@ -5,6 +5,7 @@
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 import javaforce.*;
 
@@ -13,6 +14,11 @@ public class Client extends Thread {
   private InputStream is;
   private OutputStream os;
   private boolean active = true;
+
+  //status
+  public static ArrayList<String> mounts = new ArrayList<String>();
+  public static Object lock = new Object();
+  public static boolean reading_files;
 
   public void run() {
     while (Status.active && active) {
@@ -48,10 +54,14 @@ public class Client extends Thread {
               listfolder();
               break;
             case "readfile":  //read file
+              reading_files = true;
               readfile();
+              reading_files = false;
               break;
             case "readfolders":  //read all files in folder
+              reading_files = true;
               readfolders();
+              reading_files = false;
               break;
           }
         }
@@ -183,6 +193,9 @@ public class Client extends Thread {
         if (VSS.mountShadow(Paths.vssPath, shadow.substring(3))) {
           writeLength(4);
           os.write("OKAY".getBytes());
+          synchronized(lock) {
+            mounts.add(vol);
+          }
         } else {
           writeLength(4);
           os.write("FAIL".getBytes());
@@ -208,6 +221,9 @@ public class Client extends Thread {
     } else {
       writeLength(4);
       os.write("OKAY".getBytes());
+      synchronized(lock) {
+        mounts.remove(vol);
+      }
     }
   }
   private boolean isValid(String name) {
