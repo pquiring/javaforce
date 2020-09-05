@@ -1,5 +1,13 @@
 What's new...
 
+Sept 5/2020 : JF 26.0 released
+  - fix : support JDK15
+  - jfControls/0.7
+    - fix : many issues
+  - jfBackup/0.16
+    - fix : error handling
+    - new : added client status page
+
 Aug 28/2020 : JF 25.2 released
   - VoIP/SIP
     - fix : ACK only for INVITE related requests
