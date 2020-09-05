@@ -67,11 +67,13 @@ public class RestoreJob extends Thread {
     JFLog.init(3, Paths.logsPath + "/restore-" + restoreid + ".log", true);
     log("Restore job started at " + ConfigService.toDateTime(restoreid));
     //open devices
+    log("Opening tape drive...");
     if (!tape.open(Config.current.tapeDevice)) {
       log("Error:Failed to open tape device:Error=" + tape.lastError());
       return false;
     }
     if (haveChanger) {
+      log("Opening changer device...");
       if (!changer.open(Config.current.changerDevice)) {
         log("Error:Failed to open changer device:Error=" + changer.lastError());
         return false;
