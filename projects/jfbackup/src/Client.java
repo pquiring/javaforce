@@ -182,6 +182,10 @@ public class Client extends Thread {
     for(String shadow : shadows) {
       VSS.deleteShadow(shadow.substring(0, 2));
     }
+    //remove old mount if exists (2nd attempt)
+    if (new File(Paths.vssPath).exists()) {
+      VSS.unmountShadow(Paths.vssPath);
+    }
     if (!VSS.createShadow(vol)) {
       writeLength(4);
       os.write("FAIL".getBytes());
@@ -191,12 +195,14 @@ public class Client extends Thread {
     for(String shadow : shadows) {
       if (shadow.startsWith(vol)) {
         if (VSS.mountShadow(Paths.vssPath, shadow.substring(3))) {
+          JFLog.log("Note:mountShadow successful:" + shadow);
           writeLength(4);
           os.write("OKAY".getBytes());
           synchronized(lock) {
             mounts.add(vol);
           }
         } else {
+          JFLog.log("Error:mountShadow failed:" + shadow);
           writeLength(4);
           os.write("FAIL".getBytes());
         }

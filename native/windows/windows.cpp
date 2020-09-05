@@ -1056,22 +1056,24 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_tapeClose
 JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeRead
   (JNIEnv *e, jclass c, jlong handle, jbyteArray ba, jint offset, jint length)
 {
-  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
+  jboolean isCopy;
+  jbyte *baptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
   int read = 0;
   ReadFile((HANDLE)handle, baptr + offset, length, (LPDWORD)&read, NULL);
   tapeLastError = GetLastError();
-  e->ReleaseByteArrayElements(ba, baptr, 0);
+  e->ReleasePrimitiveArrayCritical(ba, (jbyte*)baptr, JNI_ABORT);
   return read;
 }
 
 JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeWrite
   (JNIEnv *e, jclass c, jlong handle, jbyteArray ba, jint offset, jint length)
 {
-  jbyte *baptr = e->GetByteArrayElements(ba,NULL);
+  jboolean isCopy;
+  jbyte *baptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
   int write = 0;
   WriteFile((HANDLE)handle, baptr + offset, length, (LPDWORD)&write, NULL);
   tapeLastError = GetLastError();
-  e->ReleaseByteArrayElements(ba, baptr, JNI_ABORT);
+  e->ReleasePrimitiveArrayCritical(ba, (jbyte*)baptr, JNI_ABORT);
   return write;
 }
 
@@ -1411,8 +1413,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_changerMove(JNIEnv *e, j
   return JNI_TRUE;
 }
 
-JNIEXPORT int JNICALL Java_javaforce_jni_WinNative_tapeLastError
-  (JNIEnv *e, jclass c, jlong handle)
+JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeLastError
+  (JNIEnv *e, jclass c)
 {
   return tapeLastError;
 }

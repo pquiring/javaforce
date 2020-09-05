@@ -249,6 +249,7 @@ public class BackupJob extends Thread {
       log("Error:Tape write header failed" + ":Error=" + tape.lastError());
       return false;
     }
+    log("Tape ready for backup");
     return true;
   }
   private EntryTape findTape(String barcode) {
@@ -357,7 +358,7 @@ public class BackupJob extends Thread {
   }
 /**
  * Each tape has a one block header stored in block 0.
- * Header = "jfBackup;version=V.V;timestamp=S;tape=T;blocksize=K;barcode=B" (zero filled to 64k)
+ * Header = "jfBackup;version=V.V;timestamp=S;tape=T;blocksize=K;barcode=B" (padded to fill 64k)
  *   V.V = version of jfBackup used to create backup
  *   T = tape # (in multi-tape backup) (1 based)
  *   S = timestamp of backup (same on all tapes of multi-tape backup)
@@ -366,7 +367,7 @@ public class BackupJob extends Thread {
  */
   private boolean writeHeader() {
     StringBuilder sb = new StringBuilder();
-    // Header = "jfBackup;version=V.V;timestamp=S;tape=T;blocksize=K;barcode=B" (zero filled to 64k)
+    // Header = "jfBackup;version=V.V;timestamp=S;tape=T;blocksize=K;barcode=B" (padded to fill 64k)
     sb.append("jfBackup");
     sb.append(";version=" + Config.AppVersion);
     sb.append(";timestamp=" + backupid);
@@ -432,6 +433,10 @@ public class BackupJob extends Thread {
   private boolean unmountVolume(EntryJobVolume jobvol) {
     log("Unmount:" + jobvol.host + ":" + jobvol.volume);
     ServerClient client = getClient(jobvol);
+    if (client == null) {
+      JFLog.log("Error:unmountValue:Client disconnected!");
+      return false;
+    }
     Object lock = new Object();
     reply = null;
     synchronized(lock) {

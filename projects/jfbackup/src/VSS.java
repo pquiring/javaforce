@@ -110,6 +110,7 @@ public class VSS {
     sh.keepOutput(true);
     String out = sh.run(new String[] {"cmd", "/c", "mklink", "/d", mountPath.replaceAll("[/]", "\\\\"), shadowPath + "\\"}, true);
     //symbolic link created for c:\vss <<===>> c:\windows
+    JFLog.log("mklink output:" + out);
     return out.startsWith("symbolic link created for");
   }
 
