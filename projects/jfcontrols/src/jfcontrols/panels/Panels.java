@@ -336,7 +336,7 @@ public class Panels {
       case "autoscroll": return getAutoScroll(v, container, client);
       case "light": return getLight(v, context);
       case "light3": return getLight3(v, context);
-      case "progressbar": return getProgressBar(v);
+      case "progressbar": return getProgressBar(v, context);
       default: JFLog.log("Unknown component:" + name); break;
     }
     return null;
@@ -1258,7 +1258,7 @@ public class Panels {
     });
     return light;
   }
-  private static Component getProgressBar(CellRow v) {
+  private static Component getProgressBar(CellRow v, ClientContext context) {
     String style = v.style;
     if (style == null) style = "";
     String ss[] = style.split(";");
@@ -1289,6 +1289,10 @@ public class Panels {
     ProgressBar pb = new ProgressBar(dir, Float.valueOf(v2), 32);
     pb.setLevels(Float.valueOf(v0), Float.valueOf(v1), Float.valueOf(v2));
     pb.setColors(Integer.valueOf(c0, 16), Integer.valueOf(c1, 16), Integer.valueOf(c2, 16));
+    TagBase tag = context.getTag(v.tag);
+    if (tag != null) {
+      pb.setValue(Float.valueOf(tag.getValue()));
+    }
     return pb;
   }
   private static void updateAlarmCount(Label label, WebUIClient client) {
