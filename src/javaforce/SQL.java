@@ -26,6 +26,8 @@ public class SQL {
   public static String oracleSQL = "oracle.jdbc.driver.OracleDriver";
   /** jTDS (Microsoft SQL compatible) (jtds.sourceforge.net) */
   public static String jTDS = "net.sourceforge.jtds.jdbc.Driver";
+  /** IBM UNIDATA */
+  public static String UniData = "com.ibm.u2.jdbc.UniJDBCDriver";
 
   /** Init JDBC driver (need only call once) */
   public static boolean initClass(String jdbcClass) {
