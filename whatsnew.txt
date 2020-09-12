@@ -1,5 +1,9 @@
 What's new...
 
+Sept 12/2020 : JF 26.1 released
+  - jfBackup/0.17
+    - fix : NPEs and ABEs
+
 Sept 5/2020 : JF 26.0 released
   - fix : support JDK15
   - jfControls/0.7
