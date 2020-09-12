@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
-  <Product Id="*" UpgradeCode="{F6321886-AC06-4620-8CE5-FD9039DC42AE}" Version="0.16" Language="1033" Name="jfBackup" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{F6321886-AC06-4620-8CE5-FD9039DC42AE}" Version="0.17" Language="1033" Name="jfBackup" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />

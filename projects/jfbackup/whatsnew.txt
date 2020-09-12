@@ -1,3 +1,6 @@
+Sept 12/2020 : 0.17 released
+  - fix : some NPEs
+
 Sept 5/2020 : 0.16 released
   - fix : improved error handling
   - new : added client status page
