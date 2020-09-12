@@ -28,7 +28,11 @@ public class MediaChanger {
       String fs[] = lns[a].split("[:]");
       Element element = new Element();
       element.name = fs[0];
-      element.barcode = fs[1];
+      if (fs.length == 1) {
+        element.barcode = "<empty>";
+      } else {
+        element.barcode = fs[1];
+      }
       elements.add(element);
     }
     return elements.toArray(new Element[elements.size()]);
