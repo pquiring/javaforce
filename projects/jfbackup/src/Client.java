@@ -97,7 +97,7 @@ public class Client extends Thread {
     int pos = 0;
     while (left > 0) {
       int read = is.read(data, pos, left);
-      if (read == -1) throw new Exception("bad read");
+      if (read == -1) throw new Exception("bad read:expected=" + size);
       if (read > 0) {
         pos += read;
         left -= read;
@@ -176,6 +176,7 @@ public class Client extends Thread {
     //remove old mount if exists
     if (new File(Paths.vssPath).exists()) {
       VSS.unmountShadow(Paths.vssPath);
+      new File(Paths.vssPath).delete();
     }
     //delete all old shadow copies
     String shadows[] = VSS.listShadows();
@@ -185,6 +186,7 @@ public class Client extends Thread {
     //remove old mount if exists (2nd attempt)
     if (new File(Paths.vssPath).exists()) {
       VSS.unmountShadow(Paths.vssPath);
+      new File(Paths.vssPath).delete();
     }
     if (!VSS.createShadow(vol)) {
       writeLength(4);

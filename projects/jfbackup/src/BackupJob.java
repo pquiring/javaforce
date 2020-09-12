@@ -619,6 +619,7 @@ public class BackupJob extends Thread {
           try {lock.wait(5000);} catch (Exception e) {}
         }
       }
+      log("Done reading volume");
       return true;
     } catch (Exception e) {
       log(e);
