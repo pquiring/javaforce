@@ -428,6 +428,7 @@ public class BackupJob extends Thread {
         try {lock.wait(5000);} catch (Exception e) {}
       }
     }
+    if (reply == null) return false;
     return reply.equals("OKAY");
   }
   private boolean unmountVolume(EntryJobVolume jobvol) {
@@ -454,6 +455,7 @@ public class BackupJob extends Thread {
         try {lock.wait(5000);} catch (Exception e) {}
       }
     }
+    if (reply == null) return false;
     return reply.equals("OKAY");
   }
   private EntryFolder listFolder(EntryJobVolume jobvol, String path) {
