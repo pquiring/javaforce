@@ -1,6 +1,6 @@
 package javaforce.service;
 
-/** Socks 4 Server
+/** Socks 4a Server
  *
  * No auth
  * No config
@@ -86,7 +86,7 @@ public class SOCKS extends Thread {
       }
     }
     public void run() {
-      //request = 0x04 0x01 port16 ip32 user_id_null_terminated...
+      //request = 0x04 0x01 port16 ip32 user_id_null [domain_name_null]
       //reply   = 0x00 0x5a reserved[6]   //0x5b = failed
       byte[] req = new byte[1500];
       byte[] reply = new byte[8];
@@ -103,13 +103,53 @@ public class SOCKS extends Thread {
           int read = cis.read(req, reqSize, 1500 - reqSize);
           if (read < 0) throw new Exception("bad read");
           reqSize += read;
-          if (reqSize > 8 && req[reqSize] == 0) break;  //valid request size
+          if (reqSize > 8) {
+            String ip3 = String.format("%d.%d.%d", req[4], req[5], req[6]);
+            if (ip3.equals("0.0.0")) {
+              //domain request
+              //look for user_id_null and domain_null
+              int null_count = 0;
+              for(int a=8;a<reqSize;a++) {
+                if (req[a] == 0) null_count++;
+              }
+              if (null_count == 2) break;
+              if (null_count > 2) throw new Exception("bad request:too many nulls:expect=2");
+            } else {
+              //ip4 request
+              //look for user_id_null
+              int null_count = 0;
+              for(int a=8;a<reqSize;a++) {
+                if (req[a] == 0) null_count++;
+              }
+              if (null_count == 1) break;
+              if (null_count > 1) throw new Exception("bad request:too many nulls:expect=1");
+            }
+          }
         }
         if (req[0] != 0x04) throw new Exception("bad request:not SOCKS4 request");
         if (req[1] != 0x01) throw new Exception("bad request:not open socket request");
         int port = BE.getuint16(req, 2);
-        String ip4 = String.format("%d.%d.%d.%d", req[4], req[5], req[6], req[7]);
-        o = new Socket(ip4, port);
+        String user_id;
+        String ip3 = String.format("%d.%d.%d", req[4], req[5], req[6]);
+        if (ip3.equals("0.0.0")) {
+          int user_null = -1;
+          int domain_null = -1;
+          for(int a=8;a<reqSize;a++) {
+            if (req[a] == 0) {
+              if (user_null == -1) {
+                user_null = a;
+              } else {
+                domain_null = a;
+              }
+            }
+          }
+          user_id = new String(req, 8, user_null - 8);
+          String domain = new String(req, 8, domain_null - 8);
+          o = new Socket(domain, port);
+        } else {
+          String ip4 = String.format("%d.%d.%d.%d", req[4], req[5], req[6], req[7]);
+          o = new Socket(ip4, port);
+        }
         connected = true;
         reply[0] = 0x00;
         reply[1] = 0x5a;  //success
