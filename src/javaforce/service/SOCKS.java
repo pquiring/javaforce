@@ -21,6 +21,23 @@ import javax.net.ssl.*;
 import javaforce.*;
 
 public class SOCKS extends Thread {
+  public final static String busPack = "net.sf.jfsocks";
+
+  public static String getConfigFile() {
+    return JF.getConfigPath() + "/jfsocks.cfg";
+  }
+
+  public static String getLogFile() {
+    return JF.getLogPath() + "/jfsocks.log";
+  }
+
+  public static int getBusPort() {
+    if (JF.isWindows()) {
+      return 33008;
+    } else {
+      return 777;
+    }
+  }
 
   private ServerSocket ss;
   private volatile boolean active;
