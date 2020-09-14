@@ -44,6 +44,7 @@ public class SOCKS extends Thread {
   private static ArrayList<Session> sessions = new ArrayList<Session>();
   private static Object lock = new Object();
   private static boolean debug = false;
+  private static boolean socks4, socks5;
   private int port;
   private boolean secure;
   private static ArrayList<String> user_pass_list = new ArrayList<String>();
@@ -112,7 +113,10 @@ public class SOCKS extends Thread {
   private final static String defaultConfig
     = "[global]\n"
     + "port=1080\n"
-    + "secure=false\n";
+    + "secure=false\n"
+    + "socks4=true\n"
+    + "socks5=false\n"
+    + "#auth=user:pass\n";
 
   private String config;
 
@@ -143,6 +147,16 @@ public class SOCKS extends Thread {
             }
             if (ln.startsWith("secure=")) {
               secure = ln.substring(7).equals("true");
+            }
+            if (ln.startsWith("socks4=")) {
+              socks4 = ln.substring(7).equals("true");
+            }
+            if (ln.startsWith("socks5=")) {
+              socks5 = ln.substring(7).equals("true");
+            }
+            if (ln.startsWith("auth=")) {
+              String user_pass = ln.substring(5);
+              user_pass_list.add(user_pass);
             }
             break;
         }
@@ -255,6 +269,7 @@ public class SOCKS extends Thread {
 
     private void socks4() throws Exception {
       if (req[1] != 0x01) throw new Exception("SOCKS4:bad request:not open socket request");
+      if (!socks4) throw new Exception("SOCKS4:not enabled");
       int port = BE.getuint16(req, 2);
       String user_id;  //ignored
       String ip3 = String.format("%d.%d.%d", req[4] & 0xff, req[5] & 0xff, req[6] & 0xff);
@@ -293,6 +308,7 @@ public class SOCKS extends Thread {
     }
 
     private void socks5() throws Exception {
+      if (!socks5) throw new Exception("SOCKS5:not enabled");
       //req = 0x05 nauth auth_types[]
       int nauth = req[1] & 0xff;
       boolean auth_type_2 = false;
