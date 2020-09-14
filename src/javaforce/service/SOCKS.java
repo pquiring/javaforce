@@ -77,6 +77,7 @@ public class SOCKS extends Thread {
   public void run() {
     JFLog.init(JF.getLogPath() + "/jfsocks.log", true);
     try {
+      loadConfig();
       if (secure) {
         ss = SSLServerSocketFactory.getDefault().createServerSocket(port);
       } else {
@@ -103,6 +104,65 @@ public class SOCKS extends Thread {
         list[a].close();
       }
       sessions.clear();
+    }
+  }
+
+  enum Section {None, Global};
+
+  private final static String defaultConfig
+    = "[global]\n"
+    + "port=1080\n"
+    + "secure=false\n";
+
+  private String config;
+
+  private void loadConfig() {
+    JFLog.log("loadConfig");
+    Section section = Section.None;
+    try {
+      BufferedReader br = new BufferedReader(new FileReader(getConfigFile()));
+      StringBuilder cfg = new StringBuilder();
+      while (true) {
+        String ln = br.readLine();
+        if (ln == null) break;
+        cfg.append(ln);
+        cfg.append("\n");
+        ln = ln.trim().toLowerCase();
+        int idx = ln.indexOf('#');
+        if (idx != -1) ln = ln.substring(0, idx).trim();
+        if (ln.length() == 0) continue;
+        if (ln.equals("[global]")) {
+          section = Section.Global;
+          continue;
+        }
+        switch (section) {
+          case None:
+          case Global:
+            if (ln.startsWith("port=")) {
+              port = Integer.valueOf(ln.substring(5));
+            }
+            if (ln.startsWith("secure=")) {
+              secure = ln.substring(7).equals("true");
+            }
+            break;
+        }
+      }
+      br.close();
+      config = cfg.toString();
+    } catch (FileNotFoundException e) {
+      //create default config
+      JFLog.log("config not found, creating defaults.");
+      port = 1080;
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(defaultConfig.getBytes());
+        fos.close();
+        config = defaultConfig;
+      } catch (Exception e2) {
+        JFLog.log(e2);
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
 
