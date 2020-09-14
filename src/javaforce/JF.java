@@ -1194,4 +1194,46 @@ public class JF {
     } catch (Exception e) {}
     return sb.toString();
   }
+
+  public static Object readObject(InputStream is) {
+    try {
+      ObjectInputStream ois = new ObjectInputStream(is);
+      Object obj = ois.readObject();
+      return obj;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public static Object readObject(String file) {
+    try {
+      FileInputStream fis = new FileInputStream(file);
+      Object obj = readObject(fis);
+      fis.close();
+      return obj;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public static void writeObject(Object obj, OutputStream os) {
+    try {
+      ObjectOutputStream oos = new ObjectOutputStream(os);
+      oos.writeObject(obj);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
+  public static void writeObject(Object obj, String file) {
+    try {
+      FileOutputStream fos = new FileOutputStream(file);
+      writeObject(obj, fos);
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
 }

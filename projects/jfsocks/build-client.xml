@@ -1,0 +1,39 @@
+<project name="jfsocks-client" default="jar" basedir=".">
+  <description>SOCKS Client</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="client"/>
+  <property name="home" location="../.."/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property name="version" value="0.2"/>
+  <property name="jre" location="${home}/jre_base_desktop"/>
+  <property name="classpath" value="javaforce.jar"/>
+
+  <import file="../../base.xml"/>
+
+  <target name="depjars" description="jar">
+    <copy file="../../jars/javaforce.jar" todir="."/>
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" target="1.8" source="1.8" debug="true" includeantruntime="false">
+      <classpath path="${classpath}"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile" description="jar">
+    <!-- Build jar file from class files -->
+    <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
+      <fileset dir="." includes="*.png"/>
+      <fileset dir="src" includes="*.png"/>
+      <manifest>
+        <attribute name="Main-Class" value="SocksClient"/>
+        <attribute name="Trusted-Library" value="true"/>
+        <attribute name="Permissions" value="all-permissions"/>
+        <attribute name="Codebase" value="${app}.sourceforge.net"/>
+      </manifest>
+    </jar>
+  </target>
+</project>
