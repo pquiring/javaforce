@@ -20,6 +20,7 @@ public class Main extends javax.swing.JFrame {
     initComponents();
     JFAWT.centerWindow(this);
     loadConfig();
+    genkeys.setVisible(false);  //SSL keys not needed on client side
   }
 
   /**
@@ -54,7 +55,7 @@ public class Main extends javax.swing.JFrame {
     pass = new javax.swing.JTextField();
     jLabel10 = new javax.swing.JLabel();
     socks_port = new javax.swing.JTextField();
-    jButton1 = new javax.swing.JButton();
+    genkeys = new javax.swing.JButton();
 
     jLabel7.setText("jLabel7");
 
@@ -128,10 +129,10 @@ public class Main extends javax.swing.JFrame {
 
     jLabel10.setText("SOCKS Port");
 
-    jButton1.setText("Generate SSL Keys");
-    jButton1.addActionListener(new java.awt.event.ActionListener() {
+    genkeys.setText("Generate SSL Keys");
+    genkeys.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton1ActionPerformed(evt);
+        genkeysActionPerformed(evt);
       }
     });
 
@@ -145,7 +146,7 @@ public class Main extends javax.swing.JFrame {
           .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addGap(0, 0, Short.MAX_VALUE)
-            .addComponent(jButton1)
+            .addComponent(genkeys)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(connect))
           .addGroup(layout.createSequentialGroup()
@@ -218,7 +219,7 @@ public class Main extends javax.swing.JFrame {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(connect)
-          .addComponent(jButton1))
+          .addComponent(genkeys))
         .addContainerGap())
     );
 
@@ -229,9 +230,9 @@ public class Main extends javax.swing.JFrame {
     connect();
   }//GEN-LAST:event_connectActionPerformed
 
-  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+  private void genkeysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_genkeysActionPerformed
     genKeys();
-  }//GEN-LAST:event_jButton1ActionPerformed
+  }//GEN-LAST:event_genkeysActionPerformed
 
   /**
    * @param args the command line arguments
@@ -248,7 +249,7 @@ public class Main extends javax.swing.JFrame {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.JButton connect;
-  private javax.swing.JButton jButton1;
+  private javax.swing.JButton genkeys;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel2;
@@ -439,7 +440,7 @@ public class Main extends javax.swing.JFrame {
           } else {
             JFLog.log("Warning:Client SSL keys not generated!");
           }
-          s = JF.connectSSL(config.socks_server, config.socks_port, keys);
+          s = JF.connectSSL(config.socks_server, config.socks_port/*, keys*/);
         } else {
           s = new Socket(config.socks_server, config.socks_port);
         }
