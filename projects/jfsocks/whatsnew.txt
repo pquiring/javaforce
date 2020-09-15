@@ -1,5 +1,10 @@
 Whats new ???
 
+Sept 15, 2020 : 0.3
+  - new : added SOCKS4a/5 support
+  - new : added config tool
+  - new : added client tool
+
 Mar 18, 2020 : 0.2
   - fix : win64 loader now loads msvcrt dlls properly
 

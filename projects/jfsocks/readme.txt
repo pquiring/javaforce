@@ -1,11 +1,13 @@
-SOCKS Server
-============
+SOCKS4/4a/5 Server
+==================
 
-SOCKS4 Server, supporting:
- - IP4 only
- - no auth
- - no config
- - port 1080
+Supports:
+ - IP4
+ - domain names
+ - SSL server
+
+Not Supported:
+ - IP6
 
 WebSite: http://jfsocks.sourceforge.net
 
