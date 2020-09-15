@@ -18,7 +18,6 @@ public class Main extends javax.swing.JFrame {
    */
   public Main() {
     initComponents();
-    JF.initHttps();
     JFAWT.centerWindow(this);
     loadConfig();
   }
@@ -55,6 +54,7 @@ public class Main extends javax.swing.JFrame {
     pass = new javax.swing.JTextField();
     jLabel10 = new javax.swing.JLabel();
     socks_port = new javax.swing.JTextField();
+    jButton1 = new javax.swing.JButton();
 
     jLabel7.setText("jLabel7");
 
@@ -128,6 +128,13 @@ public class Main extends javax.swing.JFrame {
 
     jLabel10.setText("SOCKS Port");
 
+    jButton1.setText("Generate SSL Keys");
+    jButton1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton1ActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -138,6 +145,8 @@ public class Main extends javax.swing.JFrame {
           .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addGap(0, 0, Short.MAX_VALUE)
+            .addComponent(jButton1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(connect))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel5)
@@ -207,7 +216,9 @@ public class Main extends javax.swing.JFrame {
           .addComponent(jLabel3)
           .addComponent(remote_port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(connect)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(connect)
+          .addComponent(jButton1))
         .addContainerGap())
     );
 
@@ -217,6 +228,10 @@ public class Main extends javax.swing.JFrame {
   private void connectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectActionPerformed
     connect();
   }//GEN-LAST:event_connectActionPerformed
+
+  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    genKeys();
+  }//GEN-LAST:event_jButton1ActionPerformed
 
   /**
    * @param args the command line arguments
@@ -233,6 +248,7 @@ public class Main extends javax.swing.JFrame {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.JButton connect;
+  private javax.swing.JButton jButton1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel2;
@@ -299,6 +315,7 @@ public class Main extends javax.swing.JFrame {
       if (str.length() == 0) throw new Exception("Invalid local port");
       num = Integer.valueOf(str);
       if (num < 1 || num > 65535) throw new Exception("Invalid local port");
+      config.local_port = num;
 
       config.socks_server = socks_server.getText();
       str = SQL.numbers(socks_port.getText());
@@ -315,14 +332,15 @@ public class Main extends javax.swing.JFrame {
       if (num < 1 || num > 65535) throw new Exception("Invalid remote port");
       config.remote_port = num;
 
-      is_socks_4 = socks4.isSelected();
-      is_secure = secure.isSelected();
+      config.socks4 = socks4.isSelected();
+      config.socks5 = socks5.isSelected();
+      config.secure = secure.isSelected();
 
       config.user = user.getText();
       config.pass = pass.getText();
 
       server = new Server();
-      server.ss = new ServerSocket(num);
+      server.ss = new ServerSocket(config.local_port);
       server.start();
       connect.setText("Cancel");
       setState(false);
@@ -372,7 +390,6 @@ public class Main extends javax.swing.JFrame {
     }
   }
 
-  public static boolean is_socks_4, is_secure;
   public static boolean is_remote_ip4;
 
   public static boolean getIP(byte[] packet, int offset, String ip) {
@@ -386,25 +403,52 @@ public class Main extends javax.swing.JFrame {
     return true;
   }
 
+  public static void printArray(byte[] array, String msg) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(msg);
+    sb.append("=[");
+    for(int a=0;a<array.length;a++) {
+      if (a > 0) sb.append(",");
+      sb.append(String.format("%02x", array[a] & 0xff));
+    }
+    sb.append("]");
+    JFLog.log(sb.toString());
+  }
+
   public static class Client extends Thread {
     public Socket c, s;
-    public InputStream is;
-    public OutputStream os;
+    //public InputStream cis;
+    //public OutputStream cos;
+    public InputStream sis;
+    public OutputStream sos;
     private ProxyData pd1, pd2;
     public void run() {
       byte[] req;
       byte[] reply;
       try {
-        is = c.getInputStream();
-        os = c.getOutputStream();
+        //cis = c.getInputStream();
+        //cos = c.getOutputStream();
         //connect to SOCKS server
-        if (is_secure) {
-          s = SSLSocketFactory.getDefault().createSocket(config.socks_server, config.socks_port);
+        JFLog.log("Connecting to:" + config.socks_server + ":" + config.socks_port + ":secure=" + config.secure);
+        if (config.secure) {
+          KeyMgmt keys = new KeyMgmt();
+          if (new File(getKeyFile()).exists()) {
+            FileInputStream fis = new FileInputStream(getKeyFile());
+            keys.open(fis, "password".toCharArray());
+            fis.close();
+          } else {
+            JFLog.log("Warning:Client SSL keys not generated!");
+          }
+          s = JF.connectSSL(config.socks_server, config.socks_port, keys);
         } else {
           s = new Socket(config.socks_server, config.socks_port);
         }
+        if (s == null) throw new Exception("Connection to SOCKS server failed");
+        sis = s.getInputStream();
+        sos = s.getOutputStream();
+        JFLog.log("Connected to SOCKS server");
         //init connection
-        if (is_socks_4) {
+        if (config.socks4) {
           if (is_remote_ip4) {
             //ip4
             req = new byte[9];
@@ -412,9 +456,11 @@ public class Main extends javax.swing.JFrame {
             req[1] = 0x01;  //connect
             BE.setuint16(req, 2, config.remote_port);
             getIP(req, 4, config.remote_host);
-            os.write(req);
+            sos.write(req);
             reply = new byte[8];
-            JF.readAll(is, reply, 0, reply.length);
+            if (!JF.readAll(sis, reply, 0, reply.length)) {
+              throw new Exception("SOCKS4:read failed");
+            }
             if (reply[1] != 0x5a) throw new Exception("SOCKS4 connection failed");
           } else {
             //TODO : domain
@@ -426,9 +472,11 @@ public class Main extends javax.swing.JFrame {
           req[0] = 0x05;  //SOCKS ver 5
           req[1] = 1;  //nauth
           req[2] = 0x02;  //user/pass auth type
-          os.write(req);
+          sos.write(req);
           reply = new byte[2];
-          JF.readAll(is, reply, 0, reply.length);
+          if (!JF.readAll(sis, reply, 0, reply.length)) {
+            throw new Exception("SOCKS5:read failed");
+          }
           if (reply[1] != 0x02) throw new Exception("SOCKS5 auth type not supported");
           //send user/pass
           byte[] user = config.user.getBytes();
@@ -439,9 +487,11 @@ public class Main extends javax.swing.JFrame {
           System.arraycopy(user, 0, req, 2, user.length);
           req[2 + user.length] = (byte)pass.length;
           System.arraycopy(pass, 0, req, 3 + user.length, pass.length);
-          os.write(req);
+          sos.write(req);
           reply = new byte[2];
-          JF.readAll(is, reply, 0, reply.length);
+          if (!JF.readAll(sis, reply, 0, reply.length)) {
+            throw new Exception("SOCKS5:read failed");
+          }
           if (reply[1] != 0x00) throw new Exception("SOCKS5 auth failed");
           if (is_remote_ip4) {
             req = new byte[10];
@@ -450,16 +500,19 @@ public class Main extends javax.swing.JFrame {
             //req[2] = reserved
             req[3] = 0x01;  //IP4 address
             getIP(req, 4, config.remote_host);
-            BE.setuint16(req, 9, config.remote_port);
-            os.write(req);
+            BE.setuint16(req, 8, config.remote_port);
+            sos.write(req);
             reply = new byte[10];
-            JF.readAll(is, reply, 0, reply.length);
+            if (!JF.readAll(sis, reply, 0, reply.length)) {
+              throw new Exception("SOCKS5:read failed");
+            }
             if (reply[1] != 0x00) throw new Exception("SOCKS5 connect failed");
           } else {
             //TODO : domain
             throw new Exception("remote domain not implemented yet");
           }
         }
+        JFLog.log("Connection complete");
         //relay data between sockets
         pd1 = new ProxyData(c,s,"1");
         pd1.start();
@@ -538,5 +591,21 @@ public class Main extends javax.swing.JFrame {
 
   public void saveConfig() {
     JF.writeObject(config, JF.getUserPath() + "/.jfsocks-client.cfg");
+  }
+
+  public static String getKeyFile() {
+    return JF.getUserPath() + "/.jfsocks.key";
+  }
+
+  public void genKeys() {
+    if (KeyMgmt.keytool(new String[] {
+      "-genkey", "-debug", "-alias", "jfsocks", "-keypass", "password", "-storepass", "password",
+      "-keystore", getKeyFile(), "-validity", "3650", "-dname", "CN=jfsocks.sourceforge.net, OU=user, O=client, C=CA",
+      "-keyalg" , "RSA", "-keysize", "2048"
+    })) {
+      JFAWT.showMessage("GenKeys", "OK");
+    } else {
+      JFAWT.showMessage("GenKeys", "Error");
+    }
   }
 }

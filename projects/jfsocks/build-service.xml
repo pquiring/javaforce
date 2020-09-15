@@ -4,8 +4,6 @@
   <property name="app" value="jfsockssvc"/>
   <property name="apptype" value="s"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.2"/>
-  <property name="jre" location="${home}/jre_base"/>
 
   <import file="../../base.xml"/>
 

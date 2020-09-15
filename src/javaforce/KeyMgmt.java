@@ -17,6 +17,7 @@ import java.util.*;
 public class KeyMgmt {
 
   private KeyStore keyStore = null;
+  private char[] password = null;
 
   /** Executes keytool directly */
   public static boolean keytool(String[] args) {
@@ -38,7 +39,10 @@ public class KeyMgmt {
       }
 */
       Process p = Runtime.getRuntime().exec(sa);
+      InputStream is = p.getInputStream();
       p.waitFor();
+      String output = new String(is.readAllBytes());
+      JFLog.log("KeyMgmt.keyTool()=" + output);
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -50,6 +54,7 @@ public class KeyMgmt {
    * Open an existing keystore (Note: use null for InputStream to create a blank keystore)
    */
   public boolean open(InputStream is, char[] pwd) {
+    this.password = pwd;
     try {
       keyStore = KeyStore.getInstance("JKS", "SUN");
       keyStore.load(is, pwd);
@@ -61,6 +66,7 @@ public class KeyMgmt {
   }
 
   public boolean save(OutputStream os, char[] pwd) {
+    this.password = pwd;
     try {
       keyStore.store(os, pwd);
       return true;
@@ -155,5 +161,13 @@ public class KeyMgmt {
       JFLog.log(e);
       return null;
     }
+  }
+
+  public KeyStore getKeyStore() {
+    return keyStore;
+  }
+
+  public char[] getPassword() {
+    return password;
   }
 }

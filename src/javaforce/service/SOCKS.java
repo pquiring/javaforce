@@ -1,11 +1,8 @@
 package javaforce.service;
 
-/** Socks 4a Server
+/** Socks 4/4a/5 Server
  *
- * No auth
- * No config
- *
- * Port 1080
+ * Default Port 1080
  *
  * https://en.wikipedia.org/wiki/SOCKS
  *
@@ -19,6 +16,7 @@ import java.util.*;
 import javax.net.ssl.*;
 
 import javaforce.*;
+import javaforce.jbus.*;
 
 public class SOCKS extends Thread {
   public final static String busPack = "net.sf.jfsocks";
@@ -43,14 +41,12 @@ public class SOCKS extends Thread {
   private volatile boolean active;
   private static ArrayList<Session> sessions = new ArrayList<Session>();
   private static Object lock = new Object();
-  private static boolean debug = false;
-  private static boolean socks4, socks5;
-  private int port;
-  private boolean secure;
+  private static boolean socks4 = true, socks5 = false;
+  private int port = 1080;
+  private boolean secure = false;
   private static ArrayList<String> user_pass_list = new ArrayList<String>();
 
   public SOCKS() {
-    port = 1080;
   }
 
   public SOCKS(int port, boolean secure) {
@@ -75,12 +71,28 @@ public class SOCKS extends Thread {
     }
   }
 
+  public static String getKeyFile() {
+    return JF.getConfigPath() + "/jfsocks.key";
+  }
+
   public void run() {
     JFLog.init(JF.getLogPath() + "/jfsocks.log", true);
     try {
       loadConfig();
+      busClient = new JBusClient(busPack, new JBusMethods());
+      busClient.setPort(getBusPort());
+      busClient.start();
       if (secure) {
-        ss = SSLServerSocketFactory.getDefault().createServerSocket(port);
+        JFLog.log("CreateServerSocketSSL");
+        KeyMgmt keys = new KeyMgmt();
+        if (new File(getKeyFile()).exists()) {
+          FileInputStream fis = new FileInputStream(getKeyFile());
+          keys.open(fis, "password".toCharArray());
+          fis.close();
+        } else {
+          JFLog.log("Warning:Server SSL Keys not generated!");
+        }
+        ss = JF.createServerSocketSSL(port, keys);
       } else {
         ss = new ServerSocket(port);
       }
@@ -117,8 +129,6 @@ public class SOCKS extends Thread {
     + "socks4=true\n"
     + "socks5=false\n"
     + "#auth=user:pass\n";
-
-  private String config;
 
   private void loadConfig() {
     JFLog.log("loadConfig");
@@ -210,7 +220,7 @@ public class SOCKS extends Thread {
       //request = 0x04 0x01 port16 ip32 user_id_null [domain_name_null]
       //reply   = 0x00 0x5a reserved[6]   //0x5b = failed
       try {
-        if (debug) JFLog.log("Session start");
+        JFLog.log("Session start");
         cis = c.getInputStream();
         cos = c.getOutputStream();
         //read request
@@ -255,7 +265,7 @@ public class SOCKS extends Thread {
           default: throw new Exception("bad request:not SOCKS4/5 request");
         }
       } catch (Exception e) {
-        if (debug) JFLog.log(e);
+        JFLog.log(e);
         if (!connected) {
           byte[] reply = new byte[8];
           reply[0] = 0x00;
@@ -268,6 +278,7 @@ public class SOCKS extends Thread {
     }
 
     private void socks4() throws Exception {
+      JFLog.log("socks4 connection started");
       if (req[1] != 0x01) throw new Exception("SOCKS4:bad request:not open socket request");
       if (!socks4) throw new Exception("SOCKS4:not enabled");
       int port = BE.getuint16(req, 2);
@@ -290,6 +301,7 @@ public class SOCKS extends Thread {
         o = new Socket(domain, port);
       } else {
         String ip4 = String.format("%d.%d.%d.%d", req[4] & 0xff, req[5] & 0xff, req[6] & 0xff, req[7] & 0xff);
+        JFLog.log("SOCKS4:Connect:" + ip4 + ":" + port);
         o = new Socket(ip4, port);
       }
       connected = true;
@@ -304,10 +316,11 @@ public class SOCKS extends Thread {
       pd2.start();
       pd1.join();
       pd2.join();
-      if (debug) JFLog.log("Session end");
+      JFLog.log("SOCKS4:Session end");
     }
 
     private void socks5() throws Exception {
+      JFLog.log("socks5 connection started");
       if (!socks5) throw new Exception("SOCKS5:not enabled");
       //req = 0x05 nauth auth_types[]
       int nauth = req[1] & 0xff;
@@ -352,14 +365,14 @@ public class SOCKS extends Thread {
       //read connect request
       reqSize = 0;
       while (c.isConnected()) {
-        int read = cis.read(req, reqSize, 9 - reqSize);
+        int read = cis.read(req, reqSize, 10 - reqSize);
         if (read < 0) throw new Exception("bad read");
         reqSize += read;
-        if (reqSize < 9) continue;
+        if (reqSize < 10) continue;
         int dest_type = req[3];
         if (dest_type == 0x01) {
           //ip4
-          if (reqSize == 9) break;
+          if (reqSize == 10) break;
         } else if (dest_type == 0x03) {
           //domain name
           int domain_len = req[4];
@@ -385,6 +398,7 @@ public class SOCKS extends Thread {
       System.arraycopy(req, 0, reply, 0, reqSize);
       reply[1] = 0x00;  //success
       cos.write(reply);
+      JFLog.log("SOCKS5:Connect:" + dest + ":" + port);
       o = new Socket(dest, port);
       connected = true;
       //now just proxy data back and forth
@@ -394,7 +408,7 @@ public class SOCKS extends Thread {
       pd2.start();
       pd1.join();
       pd2.join();
-      if (debug) JFLog.log("Session end");
+      JFLog.log("SOCKS5:Session end");
     }
   }
 
@@ -424,7 +438,7 @@ public class SOCKS extends Thread {
       } catch (Exception e) {
         try {sRead.close();} catch (Exception e2) {}
         try {sWrite.close();} catch (Exception e2) {}
-        if (debug) JFLog.log(e);
+        JFLog.log(e);
       }
     }
     public void close() {
@@ -435,11 +449,58 @@ public class SOCKS extends Thread {
   private static SOCKS socks;
 
   public static void serviceStart(String[] args) {
+    if (JF.isWindows()) {
+      busServer = new JBusServer(getBusPort());
+      busServer.start();
+      while (!busServer.ready) {
+        JF.sleep(10);
+      }
+    }
     socks = new SOCKS();
     socks.start();
   }
 
   public static void serviceStop() {
     socks.close();
+  }
+
+  private static JBusServer busServer;
+  private JBusClient busClient;
+  private String config;
+
+  public static class JBusMethods {
+    public void getConfig(String pack) {
+      socks.busClient.call(pack, "getConfig", socks.busClient.quote(socks.busClient.encodeString(socks.config)));
+    }
+    public void setConfig(String cfg) {
+      //write new file
+      JFLog.log("setConfig");
+      try {
+        FileOutputStream fos = new FileOutputStream(getConfigFile());
+        fos.write(JBusClient.decodeString(cfg).getBytes());
+        fos.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    public void restart() {
+      JFLog.log("restart");
+      socks.close();
+      socks = new SOCKS();
+      socks.start();
+    }
+
+    public void genKeys(String pack) {
+      if (KeyMgmt.keytool(new String[] {
+        "-genkey", "-debug", "-alias", "jfsocks", "-keypass", "password", "-storepass", "password",
+        "-keystore", getKeyFile(), "-validity", "3650", "-dname", "CN=jfsocks.sourceforge.net, OU=user, O=server, C=CA",
+        "-keyalg" , "RSA", "-keysize", "2048"
+      })) {
+        JFLog.log("Generated Keys");
+        socks.busClient.call(pack, "getKeys", socks.busClient.quote("OK"));
+      } else {
+        socks.busClient.call(pack, "getKeys", socks.busClient.quote("ERROR"));
+      }
+    }
   }
 }

@@ -967,6 +967,67 @@ public class JF {
     HttpsURLConnection.setDefaultHostnameVerifier(hv);
   }
 
+  private static final String[] protocols = new String[] {"TLSv1.3"};
+  private static final String[] cipher_suites = new String[] {"TLS_AES_128_GCM_SHA256"};
+
+  public static Socket connectSSL(String host, int port, KeyMgmt keys) {
+    TrustManager[] trustAllCerts = new TrustManager[] {
+      new X509TrustManager() {
+        public X509Certificate[] getAcceptedIssuers() {
+          return null;
+        }
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+      }
+    };
+    // Let us create the factory where we can set some parameters for the connection
+    try {
+      SSLContext ctx = SSLContext.getInstance("TLSv1.3");
+      KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+      KeyStore ks = keys.getKeyStore();
+      kmf.init(ks, keys.getPassword());
+      ctx.init(kmf.getKeyManagers(), trustAllCerts, new SecureRandom());
+      SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
+      Socket raw = new Socket(host, port);
+      SSLSocket ssl = (SSLSocket)sslsocketfactory.createSocket(raw, raw.getInetAddress().getHostAddress(), raw.getPort(), true);
+//      ssl.setEnabledProtocols(protocols);
+//      ssl.setEnabledCipherSuites(cipher_suites);
+      ssl.startHandshake();
+      return ssl;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public static ServerSocket createServerSocketSSL(int port, KeyMgmt keys) {
+    TrustManager[] trustAllCerts = new TrustManager[] {
+      new X509TrustManager() {
+        public X509Certificate[] getAcceptedIssuers() {
+          return null;
+        }
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+      }
+    };
+    // Let us create the factory where we can set some parameters for the connection
+    try {
+      SSLContext ctx = SSLContext.getInstance("TLSv1.3");
+      KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+      KeyStore ks = keys.getKeyStore();
+      kmf.init(ks, keys.getPassword());
+      ctx.init(kmf.getKeyManagers(), trustAllCerts, new SecureRandom());
+      SSLServerSocketFactory sslfactory = ctx.getServerSocketFactory();  //this method will work with untrusted certs
+      SSLServerSocket ssl = (SSLServerSocket) sslfactory.createServerSocket(port);
+//      ssl.setEnabledProtocols(protocols);
+//      ssl.setEnabledCipherSuites(cipher_suites);
+      return ssl;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
   /** Returns line # of calling method.
    * See http://stackoverflow.com/questions/115008/how-can-we-print-line-numbers-to-the-log-in-java
    */
