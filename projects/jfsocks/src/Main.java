@@ -9,9 +9,12 @@ import java.io.*;
 import java.net.*;
 import javax.net.ssl.*;
 
+import java.awt.*;
+import java.awt.event.*;
+
 import javaforce.*;
 
-public class Main extends javax.swing.JFrame {
+public class Main extends javax.swing.JFrame implements ActionListener {
 
   /**
    * Creates new form SOCKSClient
@@ -21,6 +24,12 @@ public class Main extends javax.swing.JFrame {
     JFAWT.centerWindow(this);
     loadConfig();
     genkeys.setVisible(false);  //SSL keys not needed on client side
+    JFImage appicon = new JFImage();
+    appicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfsocks.png"));
+    setIconImage(appicon.getImage());
+    trayicon = new JFImage();
+    trayicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfsocks_tray.png"));
+    addTrayIcon();
   }
 
   /**
@@ -59,7 +68,7 @@ public class Main extends javax.swing.JFrame {
 
     jLabel7.setText("jLabel7");
 
-    setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("SOCKS Client");
 
     jLabel1.setText("SOCKS4/5 Client : Redirects local port to SOCKS Server");
@@ -609,4 +618,60 @@ public class Main extends javax.swing.JFrame {
       JFAWT.showMessage("GenKeys", "Error");
     }
   }
+
+  public void actionPerformed(ActionEvent e) {
+    Object o = e.getSource();
+    if (o == exit) {
+      System.exit(0);
+    }
+    if (o == show) {
+      setVisible(true);
+      removeTrayIcon();
+      addTrayIcon();
+    }
+  }
+
+  private void addTrayIcon() {
+    tray = SystemTray.getSystemTray();
+    Dimension size = tray.getTrayIconSize();
+    JFImage scaled = new JFImage(size.width, size.height);
+    scaled.fill(0, 0, size.width, size.height, 0x00000000, true);  //fill with alpha transparent
+    if (false) {
+      //scaled image (looks bad sometimes)
+      scaled.getGraphics().drawImage(trayicon.getImage()
+        , 0, 0, size.width, size.height
+        , 0, 0, trayicon.getWidth(), trayicon.getHeight()
+        , null);
+    } else {
+      //center image
+      scaled.getGraphics().drawImage(trayicon.getImage()
+        , (size.width - trayicon.getWidth()) / 2
+        , (size.height - trayicon.getHeight()) / 2
+        , null);
+    }
+    //create tray icon
+    PopupMenu popup = new PopupMenu();
+    show = new MenuItem("Show");
+    show.addActionListener(this);
+    popup.add(show);
+    popup.addSeparator();
+    exit = new MenuItem("Exit");
+    exit.addActionListener(this);
+    popup.add(exit);
+    icon = new TrayIcon(scaled.getImage(), "Passwords", popup);
+    icon.addActionListener(this);
+    try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
+  }
+
+  private void removeTrayIcon() {
+    if (tray != null) {
+      tray.remove(icon);
+    }
+  }
+
+  private JFImage trayicon;
+  private Main panel;
+  public SystemTray tray;
+  public TrayIcon icon;
+  public MenuItem exit, show;
 }
