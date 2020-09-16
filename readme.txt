@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 26.1
+Version 27.0
 
 What is it?
 ===========
@@ -114,4 +114,4 @@ Web : pquiring.github.io/javaforce
 
 Git : github.com/pquiring/javaforce
 
-Released : Sept 12, 2020
+Released : Sept 16, 2020
