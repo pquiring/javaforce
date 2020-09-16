@@ -1,6 +1,6 @@
 Whats new ???
 
-Sept 15, 2020 : 0.3
+Sept 16, 2020 : 0.3
   - new : added SOCKS4a/5 support
   - new : added config tool
   - new : added client tool
