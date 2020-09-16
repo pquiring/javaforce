@@ -1,21 +1,26 @@
 SOCKS4/4a/5 Server
 ==================
 
-Server Supports:
+Socks4/4a/5 server with a sample client that redirects a local port thru the SOCKS server.
+Supports making server secure with SSL.
+Great for connecting to insecure services behind a firewall (such as RDP).
+
+Server supports:
  - IP4
  - domain names
  - Secure SSL
+ - SOCKS5 auth type 0x02 only (plain text:therefore use secure mode if using authentication)
 
-Server Not Supported:
+Server does not support:
  - IP6
 
-Client Supports:
+Redirect Client supports:
  - IP4
  - Secure SSL
 
-Client Not Supported:
+Redirect Client does not support:
  - IP6
- - domain names (mostly connecting to IP's behind the firewall)
+ - domain names (mostly used to connect to IP's behind the firewall)
 
 WebSite: http://jfsocks.sourceforge.net
 

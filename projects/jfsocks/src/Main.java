@@ -77,7 +77,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
 
     jLabel3.setText("Remote Port");
 
-    jLabel4.setText("Remote IP/Host");
+    jLabel4.setText("Remote IP");
 
     secure.setText("Server is Secure (SSL)");
 
@@ -159,14 +159,6 @@ public class Main extends javax.swing.JFrame implements ActionListener {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(connect))
           .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel5)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(socks_server))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel2)
-            .addGap(33, 33, 33)
-            .addComponent(local_port))
-          .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel4)
               .addComponent(jLabel3))
@@ -175,9 +167,9 @@ public class Main extends javax.swing.JFrame implements ActionListener {
               .addComponent(remote_port)
               .addComponent(remote_host)))
           .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel10)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(socks_port))
+            .addComponent(jLabel2)
+            .addGap(17, 17, 17)
+            .addComponent(local_port))
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel1)
@@ -188,7 +180,15 @@ public class Main extends javax.swing.JFrame implements ActionListener {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(socks5))
               .addComponent(secure))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel5)
+              .addComponent(jLabel10))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(socks_port)
+              .addComponent(socks_server))))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -217,7 +217,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel2)
           .addComponent(local_port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGap(4, 4, 4)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel4)
           .addComponent(remote_host, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -225,7 +225,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
           .addComponent(remote_port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGap(18, 18, 18)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(connect)
           .addComponent(genkeys))
