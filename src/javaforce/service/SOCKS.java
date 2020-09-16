@@ -44,7 +44,7 @@ public class SOCKS extends Thread {
   private static boolean socks4 = true, socks5 = false;
   private int port = 1080;
   private boolean secure = false;
-  private static ArrayList<String> user_pass_list = new ArrayList<String>();
+  private static ArrayList<String> user_pass_list;
 
   public SOCKS() {
   }
@@ -132,6 +132,7 @@ public class SOCKS extends Thread {
 
   private void loadConfig() {
     JFLog.log("loadConfig");
+    user_pass_list = new ArrayList<String>();
     Section section = Section.None;
     try {
       BufferedReader br = new BufferedReader(new FileReader(getConfigFile()));
@@ -141,9 +142,8 @@ public class SOCKS extends Thread {
         if (ln == null) break;
         cfg.append(ln);
         cfg.append("\n");
-        ln = ln.trim().toLowerCase();
-        int idx = ln.indexOf('#');
-        if (idx != -1) ln = ln.substring(0, idx).trim();
+        ln = ln.trim();
+        if (ln.startsWith("#")) continue;
         if (ln.length() == 0) continue;
         if (ln.equals("[global]")) {
           section = Section.Global;
