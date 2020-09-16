@@ -353,9 +353,9 @@ public class SOCKS extends Thread {
       int user_len = req[1] & 0xff;
       int pass_len = req[2 + user_len] & 0xff;
       String user = new String(req, 2, user_len);
-      String pass = new String(req, 2 + user_len, pass_len);
+      String pass = new String(req, 3 + user_len, pass_len);
       String user_pass = user + ":" + pass;
-      if (user_pass_list.contains(user_pass)) {
+      if (!user_pass_list.contains(user_pass)) {
         throw new Exception("SOCKS5:user/pass not authorized");
       }
       reply = new byte[2];
