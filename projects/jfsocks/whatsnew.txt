@@ -1,5 +1,9 @@
 Whats new ???
 
+Sept 18, 2020 : 0.4
+  - fix : server domain name support
+  - new : client now support domain names
+
 Sept 16, 2020 : 0.3
   - new : added SOCKS4a/5 support
   - new : added config tool

@@ -364,25 +364,26 @@ public class SOCKS extends Thread {
       cos.write(reply);
       //read connect request
       reqSize = 0;
+      int toRead = 10;
       while (c.isConnected()) {
-        int read = cis.read(req, reqSize, 10 - reqSize);
+        int read = cis.read(req, reqSize, toRead - reqSize);
         if (read < 0) throw new Exception("bad read");
         reqSize += read;
         if (reqSize < 10) continue;
-        int dest_type = req[3];
+        int dest_type = req[3] & 0xff;
         if (dest_type == 0x01) {
           //ip4
-          if (reqSize == 10) break;
+          if (reqSize == toRead) break;
         } else if (dest_type == 0x03) {
           //domain name
-          int domain_len = req[4];
-          if (reqSize == 6 + domain_len) break;
+          int domain_len = req[4] & 0xff;
+          toRead = 5 + domain_len + 2;
+          if (reqSize == toRead) break;
         } else if (dest_type == 0x04) {
           throw new Exception("SOCKS5:IP6 not supported");
         } else {
           throw new Exception("SOCKS5:dest_type not supported:" + dest_type);
         }
-        break;
       }
       if (req[0] != 0x05) throw new Exception("SOCKS5:bad connection request:version != 0x05");
       if (req[1] != 0x01) throw new Exception("SOCKS5:bad connection request:cmd not supported:" + req[1]);
