@@ -489,8 +489,21 @@ public class Main extends javax.swing.JFrame implements ActionListener {
             }
             if (reply[1] != 0x5a) throw new Exception("SOCKS4 connection failed");
           } else {
-            //TODO : domain
-            throw new Exception("remote domain not implemented yet");
+            //domain
+            byte[] domain = config.remote_host.getBytes();
+            req = new byte[9 + domain.length + 1];
+            req[0] = 0x04;  //SOCKS ver 4
+            req[1] = 0x01;  //connect
+            BE.setuint16(req, 2, config.remote_port);
+            getIP(req, 4, "0.0.0.1");
+            req[8] = 0x00;  //user-id null
+            System.arraycopy(domain, 0, req, 9, domain.length);
+            sos.write(req);
+            reply = new byte[8];
+            if (!JF.readAll(sis, reply, 0, reply.length)) {
+              throw new Exception("SOCKS4:read failed");
+            }
+            if (reply[1] != 0x5a) throw new Exception("SOCKS4 connection failed");
           }
         } else {
           req = new byte[3];
@@ -534,8 +547,21 @@ public class Main extends javax.swing.JFrame implements ActionListener {
             }
             if (reply[1] != 0x00) throw new Exception("SOCKS5 connect failed");
           } else {
-            //TODO : domain
-            throw new Exception("remote domain not implemented yet");
+            byte[] domain = config.remote_host.getBytes();
+            req = new byte[5 + domain.length + 2];
+            req[0] = 0x05;  //SOCKS ver 5
+            req[1] = 0x01;  //connect command
+            //req[2] = reserved
+            req[3] = 0x03;  //domain name
+            req[4] = (byte)domain.length;
+            System.arraycopy(domain, 0, req, 5, domain.length);
+            BE.setuint16(req, 5 + domain.length, config.remote_port);
+            sos.write(req);
+            reply = new byte[req.length];
+            if (!JF.readAll(sis, reply, 0, reply.length)) {
+              throw new Exception("SOCKS5:read failed");
+            }
+            if (reply[1] != 0x00) throw new Exception("SOCKS5 connect failed");
           }
         }
         JFLog.log("Connection complete");

@@ -391,7 +391,7 @@ public class SOCKS extends Thread {
       int port = BE.getuint16(req, reqSize - 2);
       switch (req[3]) {
         case 0x01: dest = String.format("%d.%d.%d.%d", req[4] & 0xff, req[5] & 0xff, req[6] & 0xff, req[7] & 0xff); break;
-        case 0x03: dest = new String(req, 4, req[4] & 0xff); break;
+        case 0x03: dest = new String(req, 5, req[4] & 0xff); break;
         default: throw new Exception("SOCKS5:bad connection request:addr type not supported:" + req[3]);
       }
       reply = new byte[reqSize];
