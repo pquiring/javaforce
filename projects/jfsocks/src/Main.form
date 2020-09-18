@@ -163,7 +163,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Remote IP"/>
+        <Property name="text" type="java.lang.String" value="Remote Host/IP"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="local_port">

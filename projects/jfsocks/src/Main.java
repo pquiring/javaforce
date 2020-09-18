@@ -79,7 +79,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
 
     jLabel3.setText("Remote Port");
 
-    jLabel4.setText("Remote IP");
+    jLabel4.setText("Remote Host/IP");
 
     secure.setText("Server is Secure (SSL)");
 
