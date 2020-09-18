@@ -1,5 +1,10 @@
 What's new...
 
+Sept 18/2020 : JF 27.1 released
+  - jfSOCKS/0.4
+    - fix : server domain support
+    - new : client now supports domain names
+
 Sept 16/2020 : JF 27.0 released
   - jfSOCKS/0.3
     - new : added SOCKS4a/5 support
