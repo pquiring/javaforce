@@ -102,7 +102,9 @@ public class ModPacket {
     byte func = data[7];
     switch (func) {
       case 0x01:  //returning coils
-      case 0x02:  //returning inputs
+      case 0x02:  //returning discrete inputs
+      case 0x03:  //returning input registers
+      case 0x04:  //returning holding registers
         byte blen = data[8];
         out.type = func;
         out.data = new byte[blen];
