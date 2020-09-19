@@ -7,6 +7,6 @@ package javaforce.controls.mod;
 
 public class ModAddr {
   public byte io_type;
-  public short io_number, length;
+  public int io_number, length;
   public byte data[];
 }

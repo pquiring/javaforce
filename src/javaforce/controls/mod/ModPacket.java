@@ -70,20 +70,28 @@ public class ModPacket {
     ma.length = 1;
     switch (addr.charAt(0)) {
       case 'C':
+        //1-9999
         ma.io_type = ModTypes.C;
         ma.io_number = Short.valueOf(addr.substring(1));
+        ma.io_number--;
         break;
       case 'D':
+        //10001-19999
         ma.io_type = ModTypes.DI;
-        ma.io_number = Short.valueOf(addr.substring(2));
-        break;
-      case 'H':
-        ma.io_type = ModTypes.HR;
-        ma.io_number = Short.valueOf(addr.substring(2));
+        ma.io_number = Integer.valueOf(addr.substring(2));
+        ma.io_number -= 10001;
         break;
       case 'I':
+        //30001-39999
         ma.io_type = ModTypes.IR;
         ma.io_number = Short.valueOf(addr.substring(2));
+        ma.io_number -= 30001;
+        break;
+      case 'H':
+        //40001-49999
+        ma.io_type = ModTypes.HR;
+        ma.io_number = Short.valueOf(addr.substring(2));
+        ma.io_number -= 40001;
         break;
       default:
         return null;
