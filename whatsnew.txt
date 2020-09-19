@@ -1,5 +1,9 @@
 What's new...
 
+Sept 19/2020 : JF 27.2 released
+  - jfBackup/0.18
+    - new : detect tapes with no barcode
+
 Sept 18/2020 : JF 27.1 released
   - jfSOCKS/0.4
     - fix : server domain support
