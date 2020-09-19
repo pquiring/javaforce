@@ -80,9 +80,11 @@ public class ModPacket {
       case 'H':
         ma.io_type = ModTypes.HR;
         ma.io_number = Short.valueOf(addr.substring(2));
+        break;
       case 'I':
         ma.io_type = ModTypes.IR;
         ma.io_number = Short.valueOf(addr.substring(2));
+        break;
       default:
         return null;
     }
