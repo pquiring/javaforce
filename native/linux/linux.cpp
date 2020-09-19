@@ -34,7 +34,14 @@
 #include "javaforce_media_VideoBuffer.h"
 
 #ifdef __arm__
-  //Raspberry PI stuff
+  #define __RASPBERRY_PI__
+#endif
+
+#ifdef __aarch64__
+  #define __RASPBERRY_PI__
+#endif
+
+#ifdef __RASPBERRY_PI__
   #include "gpio.c"
   #include "i2c.c"
 #endif
