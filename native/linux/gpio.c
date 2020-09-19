@@ -65,7 +65,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_init
     close(mem_fd); //No need to keep mem_fd open after mmap
     // Always use volatile pointer!
     gpio = (volatile unsigned *)gpio_map;
-
+    printf("GPIO:Detected Raspberry PI 4\n");
     return JNI_TRUE;
   }
 
@@ -83,7 +83,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_init
     close(mem_fd); //No need to keep mem_fd open after mmap
     // Always use volatile pointer!
     gpio = (volatile unsigned *)gpio_map;
-
+    printf("GPIO:Detected Raspberry PI 2/3\n");
     return JNI_TRUE;
   }
 
@@ -106,6 +106,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_init
 
   // Always use volatile pointer!
   gpio = (volatile unsigned *)gpio_map;
+  printf("GPIO:Detected Raspberry PI 1\n");
 
   return JNI_TRUE;
 }
