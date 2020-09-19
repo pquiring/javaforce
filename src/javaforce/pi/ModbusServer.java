@@ -39,16 +39,6 @@ public class ModbusServer extends Thread {
   public static Object i2cslaveaddrlock = new Object();
   public void run() {
     JFLog.log("jfModbusServer/" + version);
-    //init GPIO
-    if (!GPIO.init()) {
-      JFLog.log("Failed to init GPIO library");
-      return;
-    }
-    //init I2C
-    if (!I2C.init()) {
-      JFLog.log("Failed to init I2C library");
-      return;
-    }
     //read config
     String lns[];
     try {
@@ -59,10 +49,13 @@ public class ModbusServer extends Thread {
       JFLog.log(e);
       return;
     }
+    boolean has_gpio = false;
+    boolean has_i2c = false;
     for(int a=0;a<lns.length;a++) {
       String ln = lns[a].toLowerCase().replaceAll(" ", "");
       if (ln.startsWith("gpio:")) {
         //read GPIO config
+        has_gpio = true;
         String fs[] = ln.substring(5).split(":");
         IO io = IO.unknown;
         int addr = -1;
@@ -113,6 +106,7 @@ public class ModbusServer extends Thread {
       }
       else if (ln.startsWith("i2c:")) {
         //read I2C config
+        has_i2c = true;
         String fs[] = ln.substring(4).split(":");
         IO io = IO.unknown;
         Value type = null;
@@ -243,6 +237,16 @@ public class ModbusServer extends Thread {
           case "invert": invert = Boolean.valueOf(value); break;
         }
       }
+    }
+    //init GPIO
+    if (has_gpio && !GPIO.init()) {
+      JFLog.log("Failed to init GPIO library");
+      return;
+    }
+    //init I2C
+    if (has_i2c && !I2C.init()) {
+      JFLog.log("Failed to init I2C library");
+      return;
     }
     //open TCP socket
     try {
