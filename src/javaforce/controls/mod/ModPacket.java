@@ -84,13 +84,13 @@ public class ModPacket {
       case 'I':
         //30001-39999
         ma.io_type = ModTypes.IR;
-        ma.io_number = Short.valueOf(addr.substring(2));
+        ma.io_number = Integer.valueOf(addr.substring(2));
         ma.io_number -= 30001;
         break;
       case 'H':
         //40001-49999
         ma.io_type = ModTypes.HR;
-        ma.io_number = Short.valueOf(addr.substring(2));
+        ma.io_number = Integer.valueOf(addr.substring(2));
         ma.io_number -= 40001;
         break;
       default:
