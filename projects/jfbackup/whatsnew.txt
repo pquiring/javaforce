@@ -1,3 +1,6 @@
+Sept 19/2020 : 0.18 released
+  - fix : add "<no label>" when changer is unable to read bar code label
+
 Sept 12/2020 : 0.17 released
   - fix : some NPEs
 
