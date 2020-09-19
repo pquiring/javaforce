@@ -6,6 +6,9 @@
 #define PI_2_3_PERI_BASE       0x3f000000
 #define GPIO_2_3_BASE          (PI_2_3_PERI_BASE + 0x200000) /* GPIO controller */
 
+#define PI_4_PERI_BASE         0x7E000000
+#define GPIO_4_BASE            (PI_4_PERI_BASE + 0x200000) /* GPIO controller */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -46,6 +49,24 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_init
   if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0) {
     printf("can't open /dev/mem \n");
     return JNI_FALSE;
+  }
+
+  /* mmap GPIO RPi4 */
+  gpio_map = mmap(
+    NULL,           //Any adddress in our space will do
+    BLOCK_SIZE,     //Map length
+    PROT_READ|PROT_WRITE,// Enable reading & writting to mapped memory
+    MAP_SHARED,     //Shared with other processes
+    mem_fd,         //File to map
+    GPIO_4_BASE     //Offset to GPIO peripheral
+  );
+
+  if (gpio_map != MAP_FAILED) {
+    close(mem_fd); //No need to keep mem_fd open after mmap
+    // Always use volatile pointer!
+    gpio = (volatile unsigned *)gpio_map;
+
+    return JNI_TRUE;
   }
 
   /* mmap GPIO RPi2/3 */
