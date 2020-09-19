@@ -262,6 +262,8 @@ public class BackupJob extends Thread {
     if (!updateList()) return false;
     for(int idx=0;idx<elements.length;idx++) {
       if (elements[idx].barcode.equals("<empty>")) continue;
+      if (elements[idx].barcode.equals("<no label>")) continue;
+      if (elements[idx].barcode.equals("<null>")) continue;
       //check if tape is protected
       if (Tapes.findTape(elements[idx].barcode) != null) continue;
       if (findTape(elements[idx].barcode) != null) continue;

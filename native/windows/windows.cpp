@@ -1250,15 +1250,27 @@ static int listType(HANDLE dev, _ELEMENT_TYPE type, const char* name) {
     if (ret == FALSE) break;
     if (status.ExceptionCode == ERROR_SLOT_NOT_PRESENT) break;
     BOOL hasTape = (status.Flags & ELEMENT_STATUS_FULL) != 0;
+    BOOL noLabel = (status.ExceptionCode & ERROR_LABEL_UNREADABLE) != 0;
+    char* label = NULL;
     if (hasTape) {
       //trim barcode
       char *barcode = (char*)status.PrimaryVolumeID;
       for(int a=0;a<MAX_VOLUME_ID_SIZE;a++) {
         if (barcode[a] == ' ') barcode[a] = 0;
       }
+      if (barcode[0] != 0) {
+        label = barcode;
+      } else {
+        label = "<null>";
+      }
+    } else {
+      label = "<empty>";
+    }
+    if (noLabel) {
+      label = "<no label>";
     }
     list_elements[list_count] = (char*)malloc(128);
-    std::sprintf(list_elements[list_count], "%s%d:%s", name, idx+1, (hasTape ? (const char*)status.PrimaryVolumeID : "<empty>"));
+    std::sprintf(list_elements[list_count], "%s%d:%s", name, idx+1, label);
     list_count++;
   }
   return 0;
