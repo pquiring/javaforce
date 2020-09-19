@@ -13,8 +13,10 @@ public class ModPacket {
 
   private static byte readFunc(byte io_type) {
     switch (io_type) {
-      case ModTypes.C: return 0x01;
-      case ModTypes.DI: return 0x02;
+      case ModTypes.C: return 0x01;  //read coil
+      case ModTypes.DI: return 0x02;  //read direct input
+      case ModTypes.HR: return 0x03;  //read holding register
+      case ModTypes.IR: return 0x04;  //read input register
     }
     return 0;
   }
@@ -29,9 +31,17 @@ public class ModPacket {
 
     data[7] = readFunc(addr.io_type);
     BE.setuint16(data, 8, addr.io_number - 1);  //starting addr
-    BE.setuint16(data, 10, addr.length);  //bit count
+    BE.setuint16(data, 10, addr.length);  //bit count / register count
 
     return data;
+  }
+
+  private static byte writeFunc(byte io_type) {
+    switch (io_type) {
+      case ModTypes.C: return 0x5;  //write single coil
+      case ModTypes.HR: return 0x6;  //write output register
+    }
+    return 0;
   }
 
   /** Creates a packet to write data to ModBus. */
@@ -42,9 +52,14 @@ public class ModPacket {
     BE.setuint16(data, 4, 6);  //length
 //    data[6] = 0;  //unit ID
 
-    data[7] = 5;  //set single coil
+    data[7] = writeFunc(addr.io_type);
     BE.setuint16(data, 8, addr.io_number - 1);
-    BE.setuint16(data, 10, addr.state ? 0xff00 : 0x0000);
+    if (addr.io_type == ModTypes.C) {
+      BE.setuint16(data, 10, addr.data[0] != 0 ? 0xff00 : 0x0000);
+    } else {
+      data[10] = addr.data[0];
+      data[11] = addr.data[1];
+    }
     return data;
   }
 
@@ -62,6 +77,12 @@ public class ModPacket {
         ma.io_type = ModTypes.DI;
         ma.io_number = Short.valueOf(addr.substring(2));
         break;
+      case 'H':
+        ma.io_type = ModTypes.HR;
+        ma.io_number = Short.valueOf(addr.substring(2));
+      case 'I':
+        ma.io_type = ModTypes.IR;
+        ma.io_number = Short.valueOf(addr.substring(2));
       default:
         return null;
     }

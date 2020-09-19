@@ -311,7 +311,7 @@ public class Controller {
         }
         case ControllerType.MB: {
           ModAddr ma = ModPacket.decodeAddress(addr);
-          ma.state = data[0] != 0;
+          ma.data = data;
           byte packet[] = ModPacket.makeWritePacket(ma);
           try {
             os.write(packet);
