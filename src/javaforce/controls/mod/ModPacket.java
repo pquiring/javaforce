@@ -30,7 +30,7 @@ public class ModPacket {
 //    data[6] = 0;  //unit ID
 
     data[7] = readFunc(addr.io_type);
-    BE.setuint16(data, 8, addr.io_number - 1);  //starting addr
+    BE.setuint16(data, 8, addr.io_number);  //starting addr
     BE.setuint16(data, 10, addr.length);  //bit count / register count
 
     return data;
@@ -53,7 +53,7 @@ public class ModPacket {
 //    data[6] = 0;  //unit ID
 
     data[7] = writeFunc(addr.io_type);
-    BE.setuint16(data, 8, addr.io_number - 1);
+    BE.setuint16(data, 8, addr.io_number);
     if (addr.io_type == ModTypes.C) {
       BE.setuint16(data, 10, addr.data[0] != 0 ? 0xff00 : 0x0000);
     } else {
