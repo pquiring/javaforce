@@ -96,11 +96,9 @@ public class ModbusServer extends Thread {
         switch (io) {
           case input:
             ins[addr] = bit + 1;
-            GPIO.configInput(bit + 1);
             break;
           case output:
             outs[addr] = bit + 1;
-            GPIO.configOutput(bit + 1);
             break;
         }
       }
@@ -247,6 +245,17 @@ public class ModbusServer extends Thread {
     if (has_i2c && !I2C.init()) {
       JFLog.log("Failed to init I2C library");
       return;
+    }
+    if (has_gpio) {
+      //init input/output bits
+      for(int pos=0;pos<40;pos++) {
+        if (ins[pos] != 0) {
+          GPIO.configInput(ins[pos]);
+        }
+        if (outs[pos] != 0) {
+          GPIO.configOutput(outs[pos]);
+        }
+      }
     }
     //open TCP socket
     try {
