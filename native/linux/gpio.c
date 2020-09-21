@@ -6,8 +6,10 @@
 #define PI_2_3_PERI_BASE       0x3f000000
 #define GPIO_2_3_BASE          (PI_2_3_PERI_BASE + 0x200000) /* GPIO controller */
 
-#define PI_4_PERI_BASE         0x7E000000
+#define PI_4_PERI_BASE         0xfe000000
 #define GPIO_4_BASE            (PI_4_PERI_BASE + 0x200000) /* GPIO controller */
+
+#define PI_PERI_BUS            0x7e000000
 
 #include <stdio.h>
 #include <stdlib.h>
