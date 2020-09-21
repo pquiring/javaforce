@@ -76,7 +76,8 @@ public class SOCKS extends Thread {
   }
 
   public void run() {
-    JFLog.init(JF.getLogPath() + "/jfsocks.log", true);
+    JFLog.append(JF.getLogPath() + "/jfsocks.log", true);
+    JFLog.setRetention(30);
     try {
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());

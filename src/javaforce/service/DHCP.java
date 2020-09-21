@@ -79,6 +79,7 @@ public class DHCP extends Thread {
 
   public void run() {
     JFLog.append(getLogFile(), true);
+    JFLog.setRetention(30);
     try {
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());

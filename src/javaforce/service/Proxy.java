@@ -80,7 +80,8 @@ public class Proxy extends Thread {
   }
 
   public void run() {
-    JFLog.init(getLogFile(), true);
+    JFLog.append(getLogFile(), true);
+    JFLog.setRetention(30);
     Socket s;
     Session sess;
     loadConfig();

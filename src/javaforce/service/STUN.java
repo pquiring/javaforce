@@ -101,7 +101,8 @@ public class STUN {
 
   /** Starts a STUN/TURN server, loading config from file. */
   public boolean start() {
-    JFLog.init(getLogFile(), true);
+    JFLog.append(getLogFile(), true);
+    JFLog.setRetention(30);
     loadConfig();
     busClient = new JBusClient(busPack, new JBusMethods());
     busClient.setPort(getBusPort());

@@ -41,6 +41,7 @@ public class DNS extends Thread {
 
   public void run() {
     JFLog.append(getLogFile(), false);
+    JFLog.setRetention(30);
     try {
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());
