@@ -2,10 +2,16 @@ package javaforce.controls.mod;
 
 /** ModBus packet
  *
+ * Addressing:
+ *  C1-65536
+ *  DI1-65536
+ *  IR0-65535 or IRX0-FFFF
+ *  HR0-65535 or HRX0-FFFF
+ *
  * @author pquiring
  */
 
-import javaforce.BE;
+import javaforce.*;
 
 public class ModPacket {
 
@@ -66,32 +72,47 @@ public class ModPacket {
   public static ModAddr decodeAddress(String addr) {
     //C# - coil output
     //DI# = discrete input
+    addr = addr.toUpperCase();
     ModAddr ma = new ModAddr();
     ma.length = 1;
     switch (addr.charAt(0)) {
       case 'C':
-        //1-9999
+        //1-65536
         ma.io_type = ModTypes.C;
         ma.io_number = Short.valueOf(addr.substring(1));
         ma.io_number--;
         break;
       case 'D':
-        //10001-19999
+        //1-65536
         ma.io_type = ModTypes.DI;
         ma.io_number = Integer.valueOf(addr.substring(2));
-        ma.io_number -= 10001;
+        ma.io_number--;
         break;
       case 'I':
-        //30001-39999
+        //0-65535
+        if (addr.charAt(1) != 'R') {
+          JFLog.log("MODBUS:Invalid addr:" + addr);
+          return null;
+        }
         ma.io_type = ModTypes.IR;
-        ma.io_number = Integer.valueOf(addr.substring(2));
-        ma.io_number -= 30001;
+        if (addr.charAt(2) == 'X') {
+          ma.io_number = Integer.valueOf(addr.substring(3), 16);
+        } else {
+          ma.io_number = Integer.valueOf(addr.substring(2));
+        }
         break;
       case 'H':
-        //40001-49999
+        //0-65535
+        if (addr.charAt(1) != 'R') {
+          JFLog.log("MODBUS:Invalid addr:" + addr);
+          return null;
+        }
         ma.io_type = ModTypes.HR;
-        ma.io_number = Integer.valueOf(addr.substring(2));
-        ma.io_number -= 40001;
+        if (addr.charAt(2) == 'X') {
+          ma.io_number = Integer.valueOf(addr.substring(3), 16);
+        } else {
+          ma.io_number = Integer.valueOf(addr.substring(2));
+        }
         break;
       default:
         return null;
