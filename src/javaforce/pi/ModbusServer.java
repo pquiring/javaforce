@@ -12,6 +12,12 @@ package javaforce.pi;
  *  - input and holding registers are treated as the same
  *  - changes to config require a reboot
  *
+ * modbus.cfg:
+ *   gpio:i|o:bit=?:addr=?
+ *   i2c:i|o:addr=?:slaveaddr=??:avg=?,?,...:read=?,?,...:write=?,?,...
+ *   port=502
+ *   invert=true|false
+ *
  * @author User
  */
 
