@@ -84,6 +84,10 @@ public class ModPacket {
         break;
       case 'D':
         //1-65536
+        if (addr.charAt(1) != 'I') {
+          JFLog.log("MODBUS:Invalid addr:" + addr);
+          return null;
+        }
         ma.io_type = ModTypes.DI;
         ma.io_number = Integer.valueOf(addr.substring(2));
         ma.io_number--;
