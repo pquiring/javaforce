@@ -1,16 +1,5 @@
 //Raspberry PI GPIO
 
-#define PI_1_PERI_BASE         0x20000000
-#define GPIO_1_BASE            (PI_1_PERI_BASE + 0x200000) /* GPIO controller */
-
-#define PI_2_3_PERI_BASE       0x3f000000
-#define GPIO_2_3_BASE          (PI_2_3_PERI_BASE + 0x200000) /* GPIO controller */
-
-#define PI_4_PERI_BASE         0xfe000000
-#define GPIO_4_BASE            (PI_4_PERI_BASE + 0x200000) /* GPIO controller */
-
-#define PI_PERI_BUS            0x7e000000
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
@@ -41,8 +30,8 @@ volatile unsigned int *gpio;  //32bits (each bit is a port)
 //
 // Set up a memory regions to access GPIO
 //
-JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_init
-  (JNIEnv *env, jclass obj)
+JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_ninit
+  (JNIEnv *env, jclass obj, jint addr)
 {
   int  mem_fd;
   void *gpio_map;
@@ -53,50 +42,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_init
     return JNI_FALSE;
   }
 
-  /* mmap GPIO RPi4 */
   gpio_map = mmap(
     NULL,           //Any adddress in our space will do
     BLOCK_SIZE,     //Map length
     PROT_READ|PROT_WRITE,// Enable reading & writting to mapped memory
     MAP_SHARED,     //Shared with other processes
     mem_fd,         //File to map
-    GPIO_4_BASE     //Offset to GPIO peripheral
-  );
-
-  if (gpio_map != MAP_FAILED) {
-    close(mem_fd); //No need to keep mem_fd open after mmap
-    // Always use volatile pointer!
-    gpio = (volatile unsigned *)gpio_map;
-    printf("GPIO:Detected Raspberry PI 4\n");
-    return JNI_TRUE;
-  }
-
-  /* mmap GPIO RPi2/3 */
-  gpio_map = mmap(
-    NULL,           //Any adddress in our space will do
-    BLOCK_SIZE,     //Map length
-    PROT_READ|PROT_WRITE,// Enable reading & writting to mapped memory
-    MAP_SHARED,     //Shared with other processes
-    mem_fd,         //File to map
-    GPIO_2_3_BASE   //Offset to GPIO peripheral
-  );
-
-  if (gpio_map != MAP_FAILED) {
-    close(mem_fd); //No need to keep mem_fd open after mmap
-    // Always use volatile pointer!
-    gpio = (volatile unsigned *)gpio_map;
-    printf("GPIO:Detected Raspberry PI 2/3\n");
-    return JNI_TRUE;
-  }
-
-  /* mmap GPIO RPi1 */
-  gpio_map = mmap(
-    NULL,           //Any adddress in our space will do
-    BLOCK_SIZE,     //Map length
-    PROT_READ|PROT_WRITE,// Enable reading & writting to mapped memory
-    MAP_SHARED,     //Shared with other processes
-    mem_fd,         //File to map
-    GPIO_1_BASE     //Offset to GPIO peripheral
+    addr            //Offset to GPIO peripheral
   );
 
   close(mem_fd); //No need to keep mem_fd open after mmap
@@ -108,7 +60,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_pi_GPIO_init
 
   // Always use volatile pointer!
   gpio = (volatile unsigned *)gpio_map;
-  printf("GPIO:Detected Raspberry PI 1\n");
 
   return JNI_TRUE;
 }
