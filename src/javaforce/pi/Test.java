@@ -6,12 +6,21 @@ package javaforce.pi;
  */
 
 import javaforce.*;
+import javaforce.controls.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 
 public class Test implements WebUIHandler {
   public static void main(String args[]) {
-    new Test().start();
+    if (args.length > 0) {
+      switch (args[0]) {
+        case "read": read(args[1], args[2]); break;
+        case "write": write(args[1], args[2], args[3]); break;
+        default: JFLog.log("usage: read|write ip tag [value]"); break;
+      }
+    } else {
+      new Test().start();
+    }
   }
   public void start() {
     if (!GPIO.init()) {
@@ -107,5 +116,42 @@ public class Test implements WebUIHandler {
         JF.sleep(100);
       }
     }
+  }
+
+  public static void write(String ip, String tag, String value) {
+    Controller c = new Controller();
+    if (!c.connect("MODBUS:" + ip)) {
+      JFLog.log("Error:connect() failed");
+      return;
+    }
+    byte[] data = new byte[2];
+    switch (value) {
+      case "true": data[0] = 1; break;
+      case "false": break;
+      default: BE.setuint16(data, 0, Integer.valueOf(value)); break;
+    }
+    c.write(tag, data);
+    JF.sleep(500);
+    JFLog.log("write:" + tag + "=" + value);
+  }
+  public static void read(String ip, String tag) {
+    Controller c = new Controller();
+    if (!c.connect("MODBUS:" + ip)) {
+      JFLog.log("Error:connect() failed");
+      return;
+    }
+    byte[] data = c.read(tag);
+    if (data == null) {
+      JFLog.log("Error:read() == null");
+      return;
+    }
+    int value = 0;
+    switch (data.length) {
+      case 0: JFLog.log("Error:data.length==0"); break;
+      case 1: value = data[0] & 0xff; break;
+      default:
+      case 2: value = BE.getuint16(data, 0); break;
+    }
+    JFLog.log("read:" + tag + "=" + value);
   }
 }
