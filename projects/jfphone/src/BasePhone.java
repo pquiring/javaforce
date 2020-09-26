@@ -865,6 +865,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       } else {
         pl.sip.refer(pl.callid, pl.dial);
         pl.status = "XFER Requested";
+        pl.dial = "";
       }
       pl.xfer = false;
     } else {
@@ -1361,7 +1362,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   /** SIPClientInterface.onNotify() : processes SIP:NOTIFY messages. */
 
   public void onNotify(SIPClient sip, String callid, String event, String content) {
-//    JFLog.log("notify()");
+    JFLog.log("onNotify:event=" + event);
     String contentLines[] = content.split("\r\n");
     event = event.toLowerCase();
     if (event.equals("message-summary")) {
@@ -1416,6 +1417,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         case 200:  //refer successful
         case 202:  //accepted (not used by Asterisk)
           lines[notifyLine].status = "XFER Success";
+          lines[notifyLine].incall = false;
           break;
         case 404:  //refer failed
         default:
