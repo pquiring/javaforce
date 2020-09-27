@@ -30,6 +30,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   private static boolean useNATOnPrivateNetwork = false;  //do not use NATing techniques on private network servers
   private static String stunHost, stunUser, stunPass;
   private boolean caller;
+  private int log = -1;
 
   public Object rtmp;  //used by RTMP2SIPServer
   public Object userobj;  //user definable
@@ -107,7 +108,21 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    * Free all resources.
    */
   public void uninit() {
+    if (log != -1) {
+      JFLog.close(log);
+    }
     super.uninit();
+  }
+
+  /**
+   * Logs all SIP messages to a log file.
+   *
+   * @param id = JFLog id (0 = default and should not be used)
+   * @param file = log file
+   */
+  public void log(int id, String file) {
+    log = id;
+    JFLog.init(id, file, false);
   }
 
   /**
@@ -461,7 +476,12 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     } else {
       req.append("Content-Length: 0\r\n\r\n");
     }
-    return send(remoteaddr, remoteport, req.toString());
+    String sip = req.toString();
+    if (log != -1) {
+      JFLog.log(log, "Client -> Server");
+      JFLog.log(log, sip);
+    }
+    return send(remoteaddr, remoteport, sip);
   }
 
   /**
@@ -501,7 +521,12 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     } else {
       req.append("Content-Length: 0\r\n\r\n");
     }
-    send(remoteaddr, remoteport, req.toString());
+    String sip = req.toString();
+    if (log != -1) {
+      JFLog.log(log, "Client -> Server");
+      JFLog.log(log, sip);
+    }
+    send(remoteaddr, remoteport, sip);
     return true;
   }
 
@@ -719,6 +744,15 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       if (!remoteip.equals(this.remoteip) || remoteport != this.remoteport) {
         JFLog.log("Ignoring packet from unknown host:" + remoteip + ":" + remoteport);
         return;
+      }
+      if (log != -1) {
+        JFLog.log(log, "Server -> Client");
+        StringBuilder sip = new StringBuilder();
+        for(int a=0;a<msg.length;a++) {
+          sip.append(msg[a]);
+          sip.append("\r\n");
+        }
+        JFLog.log(log, sip.toString());
       }
       String tmp, req = null;
       String callid = getHeader("Call-ID:", msg);

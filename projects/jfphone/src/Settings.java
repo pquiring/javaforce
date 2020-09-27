@@ -20,7 +20,7 @@ public class Settings {
   public static class Line {
     public int same;  //0-5 (-1=disabled) (ignored for lines[0])
     public String name, user, auth, pass, host;
-    public boolean disableVideo, srtp, dtls;
+    public boolean disableVideo, srtp, dtls, siplog;
     public int transport;
     public Line() {
       same = 0;

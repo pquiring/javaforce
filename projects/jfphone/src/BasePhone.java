@@ -157,6 +157,9 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         }
       }
       if (pl.sip == null) continue;  //sip.init failed
+      if (Settings.current.lines[a].siplog) {
+        pl.sip.log(a+1, JF.getUserPath() + "/jfphone-sip-protocol-line" + (a+1) + ".log");
+      }
       pl.user = Settings.current.lines[a].user;
 //JFLog.log("lines[" + a + "].pass=" + Settings.current.lines[a].pass + "!");
       if ((Settings.current.lines[a].pass == null) || (Settings.current.lines[a].pass.length() == 0) || (Settings.current.lines[a].pass.equals("crypto(1,)"))) {
