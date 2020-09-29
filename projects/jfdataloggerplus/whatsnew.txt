@@ -1,3 +1,6 @@
+Sept 28/2020 : v0.11 released
+  - new : added support for modbus IR and HR tags
+
 Mar 18/2020 : v0.10 released
   - fix : win64 loader now loads msvcrt dlls properly
 
