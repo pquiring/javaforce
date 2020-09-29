@@ -1,3 +1,6 @@
+Sept 28, 2020 : 0.11 released!
+  - new : PLC tag : modbus now supports IR and HR tags
+
 Aug 26, 2020 : 0.10 released!
   - fix : use proper endianness of PLC tags
 
