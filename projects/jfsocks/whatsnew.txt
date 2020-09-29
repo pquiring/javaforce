@@ -1,5 +1,8 @@
 Whats new ???
 
+Sept 28, 2020 : 0.5
+  - new : log retention set to 30 days
+
 Sept 18, 2020 : 0.4
   - fix : server domain name support
   - new : client now support domain names
