@@ -3,7 +3,7 @@
   <!-- set global properties for this build -->
   <property name="app" value="jfproxy"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.8"/>
+  <property name="version" value="0.9"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
 
   <property name="project2" value="build-service"/>

@@ -1,6 +1,9 @@
 what's new?
 ===========
 
+Sept 28, 2020 : version 0.9
+  - fix : log retention set to 30 days
+
 Mar 18, 2020 : version 0.5
   - fix : win64 loader now loads msvcrt dlls properly
 
