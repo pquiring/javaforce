@@ -1,5 +1,21 @@
 What's new...
 
+Sept 28/2020 : JF 28.0 released
+  - MODBUS : added support for IR and HR tags
+    - jfDataLogger/0.27
+    - jfDataLoggerPlus/0.11
+    - jfControls/0.8
+    - jfDVR/0.11
+  - services : set log retention to 30 days
+    - jfDNS/0.12
+    - jfDHCP/0.11
+    - jfProxy/0.9
+    - jfSocks/0.5
+    - jfStun/0.6
+  - jfPhone/1.21
+    - fix : transfer issue
+    - new : added SIP logging option
+
 Sept 19/2020 : JF 27.2 released
   - jfBackup/0.18
     - new : detect tapes with no barcode
