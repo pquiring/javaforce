@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+Sept 28, 2020 : v0.8 released
+  - new : modbus now supports IR and HR tags
+
 Sept 5, 2020 : v0.7 released
   - fix : many issues (application is actually usable now)
   - upgrade is possible (not recommended)
