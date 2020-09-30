@@ -16,6 +16,12 @@ public class SIPServer extends SIP implements SIPInterface {
   private SIPServerInterface iface;
   private boolean use_qop = false;
 
+  private static class Trunk {
+    public String user, auth, pass;
+  }
+
+  private HashMap<String, Trunk> trunks = new HashMap<String, Trunk>();
+
   public boolean init(int localport, SIPServerInterface iface, TransportType type) {
     this.iface = iface;
     this.localport = localport;
@@ -156,6 +162,12 @@ public class SIPServer extends SIP implements SIPInterface {
   }
 
   public boolean register(String user, String pass, String remotehost, int remoteport, int expires, String did, String regcallid) {
+    String key = remotehost + ":" + remoteport;
+    Trunk trunk = new Trunk();
+    trunk.user = user;
+    trunk.auth = user;
+    trunk.pass = pass;
+    trunks.put(key, trunk);
     //NOTE : There is no dst in a register, it's a one-sided call
     CallDetailsServer cd = getCallDetailsServer(regcallid);
     cd.user = user;
@@ -448,26 +460,33 @@ public class SIPServer extends SIP implements SIPInterface {
             iface.onSuccess(cd, src);
             break;
           case 401:
-            if (cd.cmd.equals("REGISTER")) {
+            if (cd.authsent) {
+              JFLog.log("Server Error : Double 401");
+              setCallDetailsServer(callid, null);
+              break;
+            }
+            if (cd.cmd.equals("INVITE")) {
               cd.cmd = "ACK";
               issue(cd, null, false, src);
               cd.cmd = "REGISTER";
-              if (cd.authsent) {
-                JFLog.log("Server Error : Double 401");
-                setCallDetailsServer(callid, null);
-                break;
-              }
-              cd.authstr = getHeader("WWW-Authenticate:", msg);
-              epass = getAuthResponse(cd, cd.user, cd.pass, cdpbx.host, cd.cmd, "Authorization:");
-              if (epass == null) {
-                JFLog.log("err:gen auth failed");
-                setCallDetailsServer(callid, null);
-                break;
-              }
-              cdsd.cseq++;
-              cd.authsent = true;
-              issue(cd, epass, false, src);
             }
+            String key = remoteip + ":" + remoteport;
+            Trunk trunk = trunks.get(key);
+            if (trunk == null) {
+              JFLog.log("err:trunk not found:" + key);
+              setCallDetailsServer(callid, null);
+              break;
+            }
+            cd.authstr = getHeader("WWW-Authenticate:", msg);
+            epass = getAuthResponse(cd, trunk.user, trunk.pass, cdpbx.host, cd.cmd, "Authorization:");
+            if (epass == null) {
+              JFLog.log("err:gen auth failed");
+              setCallDetailsServer(callid, null);
+              break;
+            }
+            cdsd.cseq++;
+            cd.authsent = true;
+            issue(cd, epass, false, src);
             break;
           case 407:
             //BUG : Should the cdsd.contact be changed to:
