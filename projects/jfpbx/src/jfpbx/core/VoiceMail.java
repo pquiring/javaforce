@@ -1,10 +1,12 @@
-package jpbx.plugins.core;
+package jfpbx.core;
 
+import jfpbx.db.Database;
+import jfpbx.db.ExtensionRow;
 import java.io.*;
 
 import javaforce.*;
 import javaforce.voip.*;
-import jpbx.core.*;
+
 
 /** Low-level plugin for handling INVITEs to voicemail. */
 
@@ -53,13 +55,13 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
 
 //interface DialChain
   public int getPriority() {return pid;}
-  public int onInvite(CallDetailsPBX cd, SQL sql, boolean src) {
+  public int onInvite(CallDetailsPBX cd, boolean src) {
     //NOTE : there is no dst - it's a one-sided call
     if (!src) return -1;
     if (!cd.authorized) {
       if (!cd.anon) return -1;
     }
-    String ext = sql.select1value("SELECT ext FROM exts WHERE ext=" + sql.quote(cd.dialed));
+    ExtensionRow ext = Database.getExtension(cd.dialed);
     if (ext == null) return -1;  //an extension is not being dialed
     if (cd.invited) {
       //reINVITE (just get new codecs)
@@ -71,8 +73,7 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
       api.reply(cd, 200, "OK", null, true, true);
       return pid;
     }
-    String value = sql.select1value("SELECT value FROM extopts WHERE ext=" + sql.quote(cd.dialed) + " AND id='vm'");
-    if ((value == null) || (!value.equals("true"))) {
+    if (!ext.voicemail) {
       api.log(cd, "VM : ext doesn't have voicemail enabled");
       return -1;  //extension doesn't have voicemail
     }
@@ -94,26 +95,26 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
     cd.connected = true;
     cd.pbxsrc.to = SIP.replacetag(cd.pbxsrc.to, SIP.generatetag());  //assign tag
     api.reply(cd, 200, "OK", null, true, true);
-    start(cd, sql);
+    start(cd);
     return pid;
   }
 
-  public void onRinging(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onRinging(CallDetailsPBX cd, boolean src) {
   }
 
-  public void onSuccess(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onSuccess(CallDetailsPBX cd, boolean src) {
   }
 
-  public void onCancel(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onCancel(CallDetailsPBX cd, boolean src) {
   }
 
-  public void onError(CallDetailsPBX cd, SQL sql, int code, boolean src) {
+  public void onError(CallDetailsPBX cd, int code, boolean src) {
   }
 
-  public void onTrying(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onTrying(CallDetailsPBX cd, boolean src) {
   }
 
-  public void onBye(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onBye(CallDetailsPBX cd, boolean src) {
     if (!src) return;
     api.reply(cd, 200, "OK", null, false, true);
     if (cd.audioRelay != null) {
@@ -122,7 +123,7 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
     }
   }
 
-  public void onFeature(CallDetailsPBX cd, SQL sql, String cmd, String cmddata, boolean src) {
+  public void onFeature(CallDetailsPBX cd, String cmd, String cmddata, boolean src) {
   }
 
 //interface PBXEventHandler
@@ -346,11 +347,12 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
   public void video(CallDetailsPBX cd, byte data[], int off, int len) {}
 
 //private code
-  protected void start(CallDetailsPBX cd, SQL sql) {
+  protected void start(CallDetailsPBX cd) {
     String lang = "en";  //TODO : query for ext
+    ExtensionRow ext = Database.getExtension(cd.dialed);
     cd.vmstate = State.VM_GREETING;
     cd.vmstr = "";
-    cd.vmpass = sql.select1value("SELECT value FROM extopts WHERE ext=" + sql.quote(cd.dialed) + " AND id='vmpass'");
+    cd.vmpass = ext.voicemailpass;
     cd.audioRelay.setLang(lang);
     cd.audioRelay.setRawMode(false);
     if (api.getExtension(cd.fromnumber) != null) {

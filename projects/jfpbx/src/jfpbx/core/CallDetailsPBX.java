@@ -1,15 +1,16 @@
-package jpbx.core;
+package jfpbx.core;
 
+import jfpbx.db.TrunkRow;
 import java.util.*;
 import javaforce.voip.*;
-import jpbx.plugins.core.*;
+
 
 /** Extends CallDetailsServer to add more details. */
 
 public class CallDetailsPBX extends CallDetailsServer {
   public RTPRelay audioRelay;  //relay audio
   public RTPRelay videoRelay;  //relay video
-  public String trunks[];  //trunks to try and dial
+  public TrunkRow[] trunks;  //trunks to try and dial
   public int trunkidx;
   public boolean trunkok;
   public int trunkdelay;  //time to give trunk more time

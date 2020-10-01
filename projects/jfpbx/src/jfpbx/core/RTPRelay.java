@@ -1,4 +1,4 @@
-package jpbx.core;
+package jfpbx.core;
 
 import java.io.*;
 import java.util.*;

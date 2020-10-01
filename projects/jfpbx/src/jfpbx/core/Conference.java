@@ -1,8 +1,7 @@
-package jpbx.plugins.core;
+package jfpbx.core;
 
 import java.util.*;
 
-import jpbx.core.*;
 
 /* Conference - see IVR.java for logic code (conferences are special IVRs) */
 

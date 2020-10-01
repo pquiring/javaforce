@@ -1,4 +1,4 @@
-package jpbx.plugins.core;
+package jfpbx.core;
 
 /** Queues (ACD : Automatic Call Distributor)
  *
@@ -7,12 +7,13 @@ package jpbx.plugins.core;
  * Created : Jun 27, 2014
  */
 
+import jfpbx.db.Database;
+import jfpbx.db.ExtensionRow;
 import java.util.*;
 
 import javaforce.*;
 import javaforce.voip.*;
 
-import jpbx.core.*;
 
 public class Queues implements Plugin, DialChain, PBXEventHandler {
   public final static int pid = 25;  //priority
@@ -59,8 +60,6 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
       if (member.pids == null) {
         member.pids = new int[agentList.length];
       }
-      SQL sql = new SQL();
-      if (!sql.connect(Paths.jdbc)) return;
       for(int a=0;a<agentList.length;a++) {
         if (agentList[a].length() == 0) continue;
         JFLog.log("Calling agent:" + agentList[a]);
@@ -83,12 +82,11 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
         agent.authorized = true;
         agent.queue = member.queue;
         agent.cmd = "INVITE";
-        member.pids[a] = api.onInvite(agent, sql, true, 0);  //simulate call from PBX to agent
+        member.pids[a] = api.onInvite(agent, true, 0);  //simulate call from PBX to agent
         //BUG : another inbound msg here could bypass Queues control
         agent.pid = pid;
         member.agents[a] = agent;
       }
-      sql.close();
     }
   }
 
@@ -127,7 +125,7 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
     return pid;
   }
 
-  public int onInvite(CallDetailsPBX cd, SQL sql, boolean src) {
+  public int onInvite(CallDetailsPBX cd, boolean src) {
     //NOTE : there is no dst - it's a one-sided call
     if (!src) return -1;
 /*
@@ -135,8 +133,8 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
       if (!cd.anon) return -1;
     }
 */
-    String ext = sql.select1value("SELECT ext FROM queues WHERE ext=" + sql.quote(cd.dialed));
-    if (ext == null) return -1;  //a queue is not being dialed
+    ExtensionRow queue = Database.getQueue(cd.dialed);
+    if (queue == null) return -1;  //a queue is not being dialed
     if (cd.invited) {
       //reINVITE (just get new codecs)
       api.log(cd, "ACD : reINVITE");
@@ -165,14 +163,14 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
     cd.connected = true;
     cd.pbxsrc.to = SIP.replacetag(cd.pbxsrc.to, SIP.generatetag());  //assign tag
     api.reply(cd, 200, "OK", null, true, true);
-    start(cd, sql);
+    start(cd);
     return pid;
   }
 
-  public void onRinging(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onRinging(CallDetailsPBX cd, boolean src) {
   }
 
-  public void onSuccess(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onSuccess(CallDetailsPBX cd, boolean src) {
     try {
       if (cd.isAgent) {
         int idx = -1;
@@ -194,7 +192,7 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
             //dup msg
             return;
           }
-          api.onSuccess(cd, sql, src, member.pids[idx]);  //this will generate dup msg
+          api.onSuccess(cd, src, member.pids[idx]);  //this will generate dup msg
           if (member.qstate == MemberState.CALLING) {
             //connect current member to agent
             member.qstate = MemberState.CONNECTED;
@@ -230,11 +228,11 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
     }
   }
 
-  public void onCancel(CallDetailsPBX cd, SQL sql, boolean src) {
-    onBye(cd, sql, src);
+  public void onCancel(CallDetailsPBX cd, boolean src) {
+    onBye(cd, src);
   }
 
-  public void onBye(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onBye(CallDetailsPBX cd, boolean src) {
     if (cd.queue == null) return;
     synchronized(cd.queue) {
       if (src) {
@@ -288,14 +286,14 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
     }
   }
 
-  public void onError(CallDetailsPBX cd, SQL sql, int code, boolean src) {
-    onBye(cd, sql, src);
+  public void onError(CallDetailsPBX cd, int code, boolean src) {
+    onBye(cd, src);
   }
 
-  public void onTrying(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onTrying(CallDetailsPBX cd, boolean src) {
   }
 
-  public void onFeature(CallDetailsPBX cd, SQL sql, String cmd, String cmddata, boolean src) {
+  public void onFeature(CallDetailsPBX cd, String cmd, String cmddata, boolean src) {
   }
 
   //PBXEventHandler
@@ -318,21 +316,22 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
   public void samples(CallDetailsPBX cd, short[] sam) {}
 
   //private code
-  private void start(CallDetailsPBX cd, SQL sql) {
+  private void start(CallDetailsPBX cd) {
     String lang = "en";  //TODO : query for ext
     cd.qstate = MemberState.WELCOME;
     String message = null;
     synchronized(queues) {
       Queue q = queues.get(cd.dialed);
-      String list[] = sql.select1value("SELECT agents FROM queues WHERE ext=" + sql.quote(cd.dialed)).split(",");
-      message = sql.select1value("SELECT message FROM queues WHERE ext=" + sql.quote(cd.dialed));
+      ExtensionRow queue = Database.getQueue(cd.dialed);
+      String list = queue.agents;
+      message = queue.message;
       if (q == null) {
         q = new Queue();
         q.ext = cd.dialed;
-        q.agentList = list;
+        q.agentList = list.split(",");
         queues.put(cd.dialed, q);
       } else {
-        q.agentList = list;  //update
+        q.agentList = list.split(",");  //update
       }
       q.queue.add(cd);
       cd.queue = q;

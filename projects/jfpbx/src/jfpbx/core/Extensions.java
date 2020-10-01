@@ -1,10 +1,12 @@
-package jpbx.plugins.core;
+package jfpbx.core;
 
+import jfpbx.db.RouteRow;
+import jfpbx.db.Database;
+import jfpbx.db.ExtensionRow;
 import java.util.*;
 
 import javaforce.*;
 
-import jpbx.core.*;
 
 /** Low-level plugin for handling INVITEs to extensions. */
 
@@ -29,7 +31,7 @@ public class Extensions implements Plugin, DialChain {
   }
 //interface DialChain
   public int getPriority() {return pid;}
-  public int onInvite(CallDetailsPBX cd, SQL sql, boolean src) {
+  public int onInvite(CallDetailsPBX cd, boolean src) {
     JFLog.log("check invite" + cd.dialed);
     if (cd.invited) {
       //reINVITE
@@ -47,10 +49,10 @@ public class Extensions implements Plugin, DialChain {
     }
     if (!src) return -1;
     if (!cd.authorized) {
-      if (!apply_inbound_routes(cd, sql)) return -1;
+      if (!apply_inbound_routes(cd)) return -1;
     }
     //dial inbound to an extension
-    String ext = sql.select1value("SELECT ext FROM exts WHERE ext=" + sql.quote(cd.dialed));
+    ExtensionRow ext = Database.getExtension(cd.dialed);
     if (ext == null) {
       JFLog.log("err0");
       return -1;
@@ -85,11 +87,11 @@ public class Extensions implements Plugin, DialChain {
     api.log(cd, "DEBUG:INVITE:" + cd.dialed + ":dst=" + cd.pbxdst.host + ":" + cd.pbxdst.port);
     return pid;
   }
-  public void onRinging(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onRinging(CallDetailsPBX cd, boolean src) {
     if (src) return;
     api.reply(cd, 180, "RINGING", null, false, true);
   }
-  public void onSuccess(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onSuccess(CallDetailsPBX cd, boolean src) {
     if (!cd.cmd.equals("INVITE")) return;
     synchronized(cd.lock) {
       if (cd.cancelled) return;
@@ -111,7 +113,7 @@ public class Extensions implements Plugin, DialChain {
     cd.cmd = "INVITE";
     api.reply(cd, 200, "OK", null, true, !src);  //send 200 (NOTE : ACK is ignored)
   }
-  public void onCancel(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onCancel(CallDetailsPBX cd, boolean src) {
     if (!src) return;
     synchronized(cd.lock) {
       if (cd.connected) return;  //TODO : should return error already connected
@@ -121,14 +123,14 @@ public class Extensions implements Plugin, DialChain {
     api.issue(cd, null, false, false);
     api.disconnect(cd);
   }
-  public void onError(CallDetailsPBX cd, SQL sql, int code, boolean src) {
+  public void onError(CallDetailsPBX cd, int code, boolean src) {
     api.reply(cd, code, "RELAY", null, false, !src);
     cd.cmd = "ACK";
     api.issue(cd, null, false, src);
   }
-  public void onTrying(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onTrying(CallDetailsPBX cd, boolean src) {
   }
-  public void onBye(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onBye(CallDetailsPBX cd, boolean src) {
     if (src) {
       //NOTE:to/from have been swapped
       cd.pbxdst.to = cd.src.to.clone();
@@ -152,7 +154,7 @@ public class Extensions implements Plugin, DialChain {
     }
     api.disconnect(cd);
   }
-  public void onFeature(CallDetailsPBX cd, SQL sql, String cmd, String cmddata, boolean src) {
+  public void onFeature(CallDetailsPBX cd, String cmd, String cmddata, boolean src) {
   }
   private void setTimer(CallDetailsPBX cd, int timeout) {
     api.log(cd, "setting timer for call");
@@ -167,21 +169,18 @@ public class Extensions implements Plugin, DialChain {
           //send CANCEL to dst
           cd.cmd = "CANCEL";
           api.issue(cd, null, false, false);
-          SQL sql = new SQL();
-          if (!sql.connect(Paths.jdbc)) return;  //ohoh
           //check if ext has voicemail?
-          String value = sql.select1value("SELECT value FROM extopts WHERE ext=" + sql.quote(cd.dialed) + " AND id='vm'");
-          if ((value != null) && (value.equals("yes"))) {
+          ExtensionRow ext = Database.getExtension(cd.dialed);
+          if ((ext != null) && (ext.voicemail)) {
             //transfer call to voicemail after timeout
             cd.invited = false;
             cd.pid = VoiceMail.pid;
-            api.onInvite(cd, sql, true, cd.pid);
+            api.onInvite(cd, true, cd.pid);
           } else {
             //reply 486 (user is busy)
             cd.cmd = "INVITE";
             api.reply(cd, 486, "NO ONE HERE", null, false, true);
           }
-          sql.close();
         }
       }
       public TimerTask init(CallDetailsPBX cd) {
@@ -197,20 +196,18 @@ public class Extensions implements Plugin, DialChain {
       cd.timer = null;
     }
   }
-  private boolean apply_inbound_routes(CallDetailsPBX cd, SQL sql) {
-    String routes[][] = sql.select("SELECT cid,did,dest FROM inroutes");
+  private boolean apply_inbound_routes(CallDetailsPBX cd) {
+    RouteRow[] routes = Database.getInRoutes();
     //cd.user = cid
     //cd.dialed = did
     for(int route=0;route<routes.length;route++) {
-      if (routes[route][0].length() == 0 && routes[route][1].length() == 0) continue;  //bad route
-      if (routes[route][2].length() == 0) continue;  //bad route
-      if ((routes[route][0].length() > 0) && !routes[route][0].equals(cd.user)) continue;  //no cid match
-      if ((routes[route][1].length() > 0) && !routes[route][1].equals(cd.dialed)) continue;  //no did match
-      cd.dialed = routes[route][2];  //set new destination
+      if (!routes[route].cid.equals(cd.user)) continue;  //no cid match
+      if (!routes[route].did.equals(cd.dialed)) continue;  //no did match
+      cd.dialed = routes[route].dest;  //set new destination
       return true;
     }
-    String anon = sql.select1value("SELECT value FROM config WHERE id='anon'");
-    String route = sql.select1value("SELECT value FROM config WHERE id='route'");
+    String anon = Database.getConfig("anon");
+    String route = Database.getConfig("route");
     cd.anon = anon.equals("true");
     cd.route = route.equals("true");
     return cd.anon;  //FALSE = no anonymous inbound calls

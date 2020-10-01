@@ -1,4 +1,4 @@
-jpbxlite/0.28
+jpbxlite/0.30
 =============
 
 Welcome to jpbxlite.

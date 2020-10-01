@@ -1,4 +1,4 @@
-package jpbx.core;
+package jfpbx.core;
 
 /** Interface plugins must implement. */
 

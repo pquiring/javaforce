@@ -1,9 +1,11 @@
-package jpbx.core;
+package jfpbx.core;
 
+import jfpbx.db.Database;
 import java.io.*;
 import java.net.*;
 
 import javaforce.*;
+
 
 /** Main
  *
@@ -14,15 +16,7 @@ import javaforce.*;
 
 public class Main {
   //linux shutdown function (from command line)
-  private static String cfg[][];
   public static void shutdownService() {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) {
-      System.out.println("SQL init failed");
-      return;
-    }
-    cfg = sql.select("SELECT id,value FROM config");
-    sql.close();
     //send "SHUTDOWN" command to SIP port (this command is only accepted from localhost)
     try {
       int port = Integer.valueOf(getCfg("port"));
@@ -35,21 +29,7 @@ public class Main {
     }
   }
   private static String getCfg(String id) {
-    for(int a=0;a<cfg.length;a++) {
-      if (cfg[a][0].equalsIgnoreCase(id)) return cfg[a][1];
-    }
-    return null;
-  }
-
-  public static boolean createDB() {
-    if (new File(Paths.dbPath + "/jfpbx/service.properties").exists()) return true;
-    JFLog.log("Creating database...");
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc + ";create=true")) return false;
-    sql.execute("CREATE TABLE users (userid VARCHAR(16) PRIMARY KEY NOT NULL, passmd5 VARCHAR(32) NOT NULL)");
-    sql.execute("INSERT INTO users (userid, passmd5) VALUES ('admin', '21232f297a57a5a743894a0e4a801fc3')");
-    sql.close();
-    return true;
+    return Database.getConfig(id);
   }
 
   private static Service service;
@@ -61,16 +41,8 @@ public class Main {
 
   public static void serviceStart(String args[]) {
     Paths.init();
-    //load SQL database
-    if (!SQL.initClass(SQL.derbySQL)) {
-      JFLog.log("Failed to init database");
-      return;
-    }
-    //create SQL database (if needed)
-    if (!createDB()) {
-      JFLog.log("Failed to create database");
-      return;
-    }
+    //start database
+    Database.start();
     //init log files
     JFLog.append(Paths.logs + "jpbx.log", true);
     JFLog.log("jfPBX/" + Service.getVersion() + " starting...");

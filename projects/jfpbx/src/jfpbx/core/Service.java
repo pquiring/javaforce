@@ -1,11 +1,16 @@
-package jpbx.core;
+package jfpbx.core;
 
+import jfpbx.db.Database;
+import jfpbx.db.RouteRow;
+import jfpbx.db.TrunkRow;
+import jfpbx.db.ExtensionRow;
 import java.util.*;
 import java.io.*;
 
 import javaforce.*;
 import javaforce.voip.*;
 import javaforce.jbus.*;
+
 
 /** Handles main SIP messages and dispatches them to low-level plugins. */
 
@@ -16,8 +21,6 @@ public class Service implements SIPServerInterface, PBXAPI {
   }
 
   private SIPServer ss;
-  private String cfg[][];
-  private PluginsClassLoader pcl;
   private Vector<DialChain> dialChainList;
   private Hashtable<String, Extension> extList;
   private JBusClient jbusClient;
@@ -31,15 +34,6 @@ public class Service implements SIPServerInterface, PBXAPI {
       jbusClient = new JBusClient("org.jflinux.service.jfpbx", new JBusMethods());
       jbusClient.start();
     }
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) {
-      JFLog.log("Failed to connect to database");
-      return false;
-    }
-    //read config
-    cfg = sql.select("SELECT id,value FROM config");
-    //update config
-    sql.execute("UPDATE config SET value='" + JF.getCurrentPath() + "' WHERE id='binpath'");
     //start service
     ss = new SIPServer();
     int rtpmin, rtpmax;
@@ -61,7 +55,6 @@ public class Service implements SIPServerInterface, PBXAPI {
     JFLog.log("Setting RTP Range:" + rtpmin + "-" + rtpmax);
     RTP.setPortRange(rtpmin, rtpmax);
 
-    pcl = new PluginsClassLoader();
     dialChainList = new Vector<DialChain>();
     extList = new Hashtable<String, Extension>();
     relayAudio = getCfg("relayAudio").equals("true");
@@ -80,20 +73,14 @@ public class Service implements SIPServerInterface, PBXAPI {
     new File(Paths.lib + "voicemail").mkdirs();
     new File(Paths.logs).mkdirs();
 
-    loadPlugins(sql);
     ss.init(sip_port, this, TransportType.UDP);
 //    ss.enableQOP(true);  //test!
     //create timer to register trunks (every 110 seconds)
     timer = new Timer();
     timer.scheduleAtFixedRate(new TimerTask() {public void run() {registerTrunks();}}, 0, 110 * 1000);
-    sql.close();
     return true;
   }
   public void uninit() {
-    if (pcl != null) {
-      pcl.unloadPlugins();
-      pcl = null;
-    }
     if (ss != null) {
       ss.uninit();
       ss = null;
@@ -109,35 +96,7 @@ public class Service implements SIPServerInterface, PBXAPI {
     init();
   }
   public String getCfg(String id) {
-    if (cfg == null) return "";
-    for(int a=0;a<cfg.length;a++) {
-      if (cfg[a][0].equalsIgnoreCase(id)) return cfg[a][1];
-    }
-    return "";
-  }
-  public boolean loadPlugins(SQL sql) {
-    JFLog.log("loading plugins");
-    String plugins[][] = sql.select("SELECT jar,cls FROM svcplugins");
-    if (plugins == null) {JFLog.log("no plugins loaded?"); return false;}
-    for(int a=0;a<plugins.length;a++) {
-      if (pcl.isLoaded(plugins[a][0])) continue;
-      try {
-        pcl.loadPlugin(plugins[a][0]);
-        Class cls = pcl.findClass("jpbx.plugins." + plugins[a][1]);
-        Object inst = cls.newInstance();
-/*  //this works too
-        Method method = cls.getMethod("init", PBXAPI.class);
-        method.invoke(inst, (PBXAPI)this);
-*/
-        Plugin plugin = (Plugin)inst;
-        plugin.init(this);
-      } catch (Exception e) {
-        JFLog.log("Failed to init plugin:" + plugins[a][0]);
-        JFLog.log(e);
-      }
-    }
-    JFLog.log("loading plugins complete");
-    return true;
+    return Database.getConfig(id);
   }
   private long getNow() {
     return System.currentTimeMillis() / 1000;
@@ -146,12 +105,9 @@ public class Service implements SIPServerInterface, PBXAPI {
   public CallDetailsServer createCallDetailsServer() {
     return new CallDetailsPBX();
   }
-  public String getPassword(String ext) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) return null;
-    String password = sql.select1value("SELECT pass FROM exts WHERE ext=" + sql.quote(ext));
-    sql.close();
-    return password;
+  public String getPassword(String number) {
+    ExtensionRow ext = Database.getExtension(number);
+    return ext.password;
   }
   public void onRegister(String ext, int expires, String remoteip, int remoteport) {
     if (expires == 0) {
@@ -161,18 +117,15 @@ public class Service implements SIPServerInterface, PBXAPI {
     }
   }
   public void onInvite(CallDetailsServer cd, boolean src) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) return;
-    cd.pid = onInvite(cd, sql, src, cd.pid);
-    sql.close();
+    cd.pid = onInvite(cd, src, cd.pid);
   }
-  public int onInvite(CallDetailsServer cd, SQL sql, boolean src, int pid) {
+  public int onInvite(CallDetailsServer cd, boolean src, int pid) {
     DialChain chain;
     int newpid;
     for(int a=0;a<dialChainList.size();a++) {
       chain = dialChainList.get(a);
       if ((pid == 0) || (pid == chain.getPriority())) {
-        newpid = chain.onInvite((CallDetailsPBX)cd, sql, src);
+        newpid = chain.onInvite((CallDetailsPBX)cd, src);
         if (newpid != -1) {
           return newpid;
         }
@@ -183,108 +136,87 @@ public class Service implements SIPServerInterface, PBXAPI {
     return -1;
   }
   public void onCancel(CallDetailsServer cd, boolean src) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) return;
-    onCancel(cd, sql, src, cd.pid);
-    sql.close();
+    onCancel(cd, src, cd.pid);
   }
-  public void onCancel(CallDetailsServer cd, SQL sql, boolean src, int pid) {
+  public void onCancel(CallDetailsServer cd, boolean src, int pid) {
     DialChain chain;
     for(int a=0;a<dialChainList.size();a++) {
       chain = dialChainList.get(a);
       if (pid == chain.getPriority()) {
-        chain.onCancel((CallDetailsPBX)cd, sql, src);
+        chain.onCancel((CallDetailsPBX)cd, src);
         return;
       }
     }
   }
   public void onBye(CallDetailsServer cd, boolean src) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) return;
-    onBye(cd, sql, src, cd.pid);
-    sql.close();
+    onBye(cd, src, cd.pid);
   }
-  public void onBye(CallDetailsServer cd, SQL sql, boolean src, int pid) {
+  public void onBye(CallDetailsServer cd, boolean src, int pid) {
     DialChain chain;
     for(int a=0;a<dialChainList.size();a++) {
       chain = dialChainList.get(a);
       if (pid == chain.getPriority()) {
-        chain.onBye((CallDetailsPBX)cd, sql, src);
+        chain.onBye((CallDetailsPBX)cd, src);
         return;
       }
     }
   }
   public void onSuccess(CallDetailsServer cd, boolean src) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) return;
-    onSuccess(cd,sql,src,cd.pid);
-    sql.close();
+    onSuccess(cd, src, cd.pid);
   }
-  public void onSuccess(CallDetailsServer cd, SQL sql, boolean src, int pid) {
+  public void onSuccess(CallDetailsServer cd, boolean src, int pid) {
     DialChain chain;
     for(int a=0;a<dialChainList.size();a++) {
       chain = dialChainList.get(a);
       if (pid == chain.getPriority()) {
-        chain.onSuccess((CallDetailsPBX)cd, sql, src);
+        chain.onSuccess((CallDetailsPBX)cd, src);
         return;
       }
     }
   }
   public void onRinging(CallDetailsServer cd, boolean src) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) return;
-    onRinging(cd, sql, src, cd.pid);
-    sql.close();
+    onRinging(cd, src, cd.pid);
   }
-  public void onRinging(CallDetailsServer cd, SQL sql, boolean src, int pid) {
+  public void onRinging(CallDetailsServer cd, boolean src, int pid) {
     DialChain chain;
     for(int a=0;a<dialChainList.size();a++) {
       chain = dialChainList.get(a);
       if (pid == chain.getPriority()) {
-        chain.onRinging((CallDetailsPBX)cd, sql, src);
+        chain.onRinging((CallDetailsPBX)cd, src);
         return;
       }
     }
   }
   public void onError(CallDetailsServer cd, int code, boolean src) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) return;
-    onError(cd, sql, code, src, cd.pid);
-    sql.close();
+    onError(cd, code, src, cd.pid);
   }
-  public void onError(CallDetailsServer cd, SQL sql, int code, boolean src, int pid) {
+  public void onError(CallDetailsServer cd, int code, boolean src, int pid) {
     DialChain chain;
     for(int a=0;a<dialChainList.size();a++) {
       chain = dialChainList.get(a);
       if (pid == chain.getPriority()) {
-        chain.onError((CallDetailsPBX)cd, sql, code, src);
+        chain.onError((CallDetailsPBX)cd, code, src);
         return;
       }
     }
   }
   public void onTrying(CallDetailsServer cd, boolean src) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) return;
-    onTrying(cd, sql, src, cd.pid);
-    sql.close();
+    onTrying(cd, src, cd.pid);
   }
-  public void onTrying(CallDetailsServer cd, SQL sql, boolean src, int pid) {
+  public void onTrying(CallDetailsServer cd, boolean src, int pid) {
     DialChain chain;
     for(int a=0;a<dialChainList.size();a++) {
       chain = dialChainList.get(a);
       if (pid == chain.getPriority()) {
-        chain.onTrying((CallDetailsPBX)cd, sql, src);
+        chain.onTrying((CallDetailsPBX)cd, src);
         return;
       }
     }
   }
   public void onFeature(CallDetailsServer cd, String cmd, String cmddata, boolean src) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) return;
-    onFeature(cd, sql, cmd, cmddata, src, cd.pid);
-    sql.close();
+    onFeature(cd, cmd, cmddata, src, cd.pid);
   }
-  public void onFeature(CallDetailsServer cd, SQL sql, String cmd, String cmddata, boolean src, int pid) {
+  public void onFeature(CallDetailsServer cd, String cmd, String cmddata, boolean src, int pid) {
     DialChain chain;
     if (cmd.equalsIgnoreCase("REFER")) {
       if (src) {
@@ -311,7 +243,7 @@ public class Service implements SIPServerInterface, PBXAPI {
     for(int a=0;a<dialChainList.size();a++) {
       chain = dialChainList.get(a);
       if ((pid == 0) || (pid == chain.getPriority())) {
-        chain.onFeature((CallDetailsPBX)cd, sql, cmd, cmddata, src);
+        chain.onFeature((CallDetailsPBX)cd, cmd, cmddata, src);
         return;
       }
     }
@@ -457,28 +389,29 @@ public class Service implements SIPServerInterface, PBXAPI {
     return sip_port;
   }
   /** Returns new dial string in [0] and trunks in [1-n] */
-  public String[] getTrunks(String dialed, String ext, SQL sql) {
+  public TrunkRow[] getTrunks(Dial dialed, String number) {
     //look for a route that matches dialed and return its trunks
     String routetable = null;
-    if (ext != null) {
-      routetable = sql.select1value("SELECT value FROM extopts WHERE id='routetable' AND ext=" + sql.quote(ext));
-      if (routetable == null) {
-        routetable = sql.select1value("SELECT defaultroutetable FROM config");
+    if (number != null) {
+      ExtensionRow ext = Database.getExtension(number);
+      if (ext != null) {
+        routetable = ext.routetable;
       }
     }
-    if (routetable == null) routetable = "default";
-    String routes[][] = sql.select("SELECT patterns,trunks FROM outroutes WHERE routetable=" + sql.quote(routetable) + " ORDER BY priority");
+    if (routetable == null) {
+      routetable = "@outbound";
+    }
+    RouteRow[] routes = Database.getOutRoutes(routetable);
     if (routes == null) return null;
     String patterns[];
     String newdialed;
     for(int a=0;a<routes.length;a++) {
-      patterns = routes[a][0].split(":");
+      patterns = routes[a].patterns.split(",");
       for(int b=0;b<patterns.length;b++) {
-        newdialed = patternMatches(patterns[b], dialed);
+        newdialed = patternMatches(patterns[b], dialed.number);
         if (newdialed == null) continue;
-        newdialed += ":";
-        newdialed += routes[a][1];
-        return newdialed.split(":");
+        dialed.number = newdialed;
+        return Database.getTrunks(routes[a]);
       }
     }
     return null;
@@ -615,19 +548,10 @@ public class Service implements SIPServerInterface, PBXAPI {
     return outstr;
   }
   private void registerTrunks() {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) {
-      JFLog.log("registerTrunks() SQL connect failed");
-      return;
-    }
     try {
-      String trunks[] = sql.select1col("SELECT register FROM trunks WHERE LENGTH(register) > 0");
-      if (trunks == null) {
-        sql.close();
-        return;
-      }
+      TrunkRow trunks[] = Database.getTrunks();
       for(int trunk=0;trunk<trunks.length;trunk++) {
-        String register = trunks[trunk];  //user : password @ domain[:sip_port] [/ did]
+        String register = trunks[trunk].register;  //user : password @ domain[:sip_port] [/ did]
         int idx = register.indexOf(":");
         if (idx == -1) continue;  //bad string
         String user = register.substring(0, idx);
@@ -657,28 +581,19 @@ public class Service implements SIPServerInterface, PBXAPI {
     } catch (Exception e) {
       JFLog.log(e);
     }
-    sql.close();
   }
   public String getTrunkRegister(String ip) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) {
-      JFLog.log("registerTrunks() SQL connect failed");
-      return null;
-    }
     String reg = null;
     try {
-      String trunks[] = sql.select1col("SELECT register FROM trunks WHERE LENGTH(register) > 0");
-      if (trunks == null) {
-        sql.close();
-        return null;
-      }
+      TrunkRow trunks[] = Database.getTrunks();
       //user : pass @ host [:sip_port] / did
       int idx;
       String host;
       for(int a=0;a<trunks.length;a++) {
-        idx = trunks[a].indexOf("@");
+        String register = trunks[a].register;
+        idx = register.indexOf("@");
         if (idx == -1) continue;
-        host = trunks[a].substring(idx+1);
+        host = register.substring(idx+1);
         idx = host.indexOf(":");
         if (idx == -1) {
           idx = host.indexOf("/");
@@ -689,14 +604,13 @@ public class Service implements SIPServerInterface, PBXAPI {
         String trunkip = resolve(host);
         if (trunkip == null) continue;
         if (trunkip.equals(ip)) {
-          reg = trunks[a];
+          reg = register;
           break;
         }
       }
     } catch (Exception e) {
       JFLog.log(e);
     }
-    sql.close();
     return reg;
   }
   public SIPServerInterface getSIPServerInterface() {

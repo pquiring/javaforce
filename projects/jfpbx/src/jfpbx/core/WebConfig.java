@@ -1,4 +1,4 @@
-package jpbx.core;
+package jfpbx.core;
 
 /**
  * WebConfig service for jfPBX
@@ -8,6 +8,11 @@ package jpbx.core;
  * Created : Sept 14, 2013
  */
 
+import jfpbx.db.ExtensionRow;
+import jfpbx.db.Database;
+import jfpbx.db.RouteRow;
+import jfpbx.db.TrunkRow;
+import jfpbx.db.RouteTableRow;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -15,10 +20,10 @@ import java.util.*;
 import javaforce.*;
 import javaforce.service.*;
 
+
 public class WebConfig implements WebHandler {
   public static int http_port, https_port, sip_port;
   public static boolean hideAdmin, disableWebRTC;
-  private static String dbVersion = "0.92";
   private WebRTC webrtc;
   private Web http, https;
 
@@ -154,10 +159,7 @@ public class WebConfig implements WebHandler {
   }
 
   public String ValidUser(String user, String passmd5) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) return "Unable to connect to database";
-    String res = sql.select1value("SELECT passmd5 FROM users WHERE userid='" + user + "'");
-    sql.close();
+    String res = Database.getUserPassword(user);
     if (res == null) return "Database not setup";
     return (res.equalsIgnoreCase(passmd5) ? "ok" : "Invalid Login");
   }
@@ -213,7 +215,7 @@ public class WebConfig implements WebHandler {
     res.sendRedirect("/");
   }
 
-  private String doAdminPage(SQL sql, String args[]) {
+  private String doAdminPage(String args[]) {
     String verb = "", current = "", p1 = "", p2 = "";
     for(int a=0;a<args.length;a++) {
       if (args[a].startsWith("verb=")) verb = args[a].substring(5);
@@ -232,14 +234,14 @@ public class WebConfig implements WebHandler {
         md5.init();
         md5.add(current.getBytes(),0,current.length());
         String currentmd5 = new String(md5.byte2char(md5.done()));
-        String storedmd5 = sql.select1value("SELECT passmd5 FROM users WHERE userid='admin'");
+        String storedmd5 = Database.getUserPassword("admin");
         if ((storedmd5 == null) || (!storedmd5.equals(currentmd5))) {
           msg = "Incorrect current password";
         } else {
           md5.init();
           md5.add(p1.getBytes(),0,p1.length());
           String passmd5 = new String(md5.byte2char(md5.done()));
-          if (!sql.execute("UPDATE users SET passmd5=" + sql.quote(passmd5) + " WHERE userid='admin'")) {
+          if (Database.setUserPassword("admin", passmd5)) {
             msg = "Unable to change password (DB error)";
           } else {
             msg = "Password changed";
@@ -270,22 +272,22 @@ public class WebConfig implements WebHandler {
     return html.toString();
   }
 
-  private String doBlankPage(SQL sql, String args[]) {
+  private String doBlankPage(String args[]) {
     return "Please select an option on the left.";
   }
 
-  private String doConfPage(SQL sql, String args[]) {
+  private String doConfPage(String args[]) {
     return "Conferences are special IVRs.  To create a conference, create a new IVR and load the preset \"Conference\".<br>\n" +
            "To create a video conference select the \"Video Conference\" preset.<br>\n" +
            "Then change the $adminpass and $userpass variables for the admin and user pass codes.<br>\n";
   }
 
-  private String doExtsPage(SQL sql, String args[]) {
-    String verb = "", ext = "", editext = "", cloneStart = "", cloneCount = "", display = "", cid = "", pass = "", msg = "", sure = "", vm = "", vmpass = "";
+  private String doExtsPage(String args[]) {
+    String verb = "", number = "", editext = "", cloneStart = "", cloneCount = "", display = "", cid = "", pass = "", msg = "", sure = "", vm = "", vmpass = "";
     for(int a=0;a<args.length;a++) {
       int x = args[a].indexOf("=") + 1;
       if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("ext=")) ext = args[a].substring(x);
+      if (args[a].startsWith("ext=")) number = args[a].substring(x);
       if (args[a].startsWith("editext=")) editext = args[a].substring(x);
       if (args[a].startsWith("cloneStart=")) cloneStart = args[a].substring(x);
       if (args[a].startsWith("cloneCount=")) cloneCount = args[a].substring(x);
@@ -296,46 +298,35 @@ public class WebConfig implements WebHandler {
       if (args[a].startsWith("vm=")) vm = args[a].substring(x);
       if (args[a].startsWith("vmpass=")) vmpass = args[a].substring(x);
     }
-    ext = numbersOnly(ext);
+    number = numbersOnly(number);
     cid = numbersOnly(cid);
     display = convertString(display);
     vmpass = numbersOnly(vmpass);
     if (verb.equals("del")) {
       if (sure.equalsIgnoreCase("on")) {
-        if (sql.execute("DELETE FROM exts WHERE ext=" + sql.quote(ext))) {
-          if (!sql.execute("DELETE FROM extopts WHERE ext=" + sql.quote(ext))) {
-            msg = "Failed to delete extension options";
-          }
-        } else {
-          msg = "Failed to delete extension";
-        }
-        if (msg.length() == 0) {
-          msg = "Extension deleted";
-        }
+        Database.deleteExtension(number);
+        msg = "Extension deleted";
       } else {
         msg = "Please confirm delete action";
       }
-      ext = "";
+      number = "";
     }
     if (verb.equals("view")) {
-      editext = ext;
-      String exts[] = sql.select1row("SELECT display,cid,pass FROM exts WHERE ext=" + sql.quote(ext));
-      if (exts != null) {
-        display = exts[0];
-        cid = exts[1];
-        pass = exts[2];
-        vm = sql.select1value("SELECT value FROM extopts WHERE ext=" + sql.quote(ext) + " AND id='vm'");
-        if (vm == null) vm = "false";
-        vmpass = sql.select1value("SELECT value FROM extopts WHERE ext=" + sql.quote(ext) + " AND id='vmpass'");
-        if (vmpass == null) vmpass = "";
+      editext = number;
+      ExtensionRow ext = Database.getExtension(number);
+      if (ext != null) {
+        display = ext.display;
+        cid = ext.cid;
+        pass = ext.password;
+        vm = ext.voicemail ? "true" : "false";
+        vmpass = ext.voicemailpass;
       }
     }
     if (verb.equals("add") || verb.equals("edit")) {
-      if (ext.length() == 0)  {
+      if (number.length() == 0)  {
         msg = "Invalid extension number";
       } else {
-        String isivr = sql.select1value("SELECT ext FROM ivrs WHERE ext=" + sql.quote(ext));
-        if ((isivr != null) && (isivr.equals(ext))) {
+        if (Database.extensionExists(number)) {
           msg = "IVR already exists with that number";
         }
       }
@@ -350,16 +341,17 @@ public class WebConfig implements WebHandler {
       }
     }
     if (verb.equals("add")) {
-      if (!sql.execute("INSERT INTO exts (ext, display, cid, pass) VALUES (" + sql.quote(ext) + "," + sql.quote(display) + "," + sql.quote(cid) + "," + sql.quote(pass) + ")")) {
-        msg = "Failed to add : " + sql.getLastException();
-      } else if (!sql.execute("INSERT INTO extopts (ext, id, value) VALUES (" + sql.quote(ext) + ",'vm'," + sql.quote( (vm.equalsIgnoreCase("on") ? "true" : "false") ) + ")")) {
-        msg = "Unable to add voicemail option";
-      } else if (!sql.execute("INSERT INTO extopts (ext, id, value) VALUES (" + sql.quote(ext) + ",'vmpass'," + sql.quote(vmpass) + ")")) {
-        msg = "Unable to add voicemail password";
-      }
+      ExtensionRow ext = new ExtensionRow();
+      ext.number = number;
+      ext.display = display;
+      ext.cid = cid;
+      ext.password = pass;
+      ext.voicemail = vm.equals("true");
+      ext.voicemailpass = vmpass;
+      Database.addExtension(ext);
       if (msg.length() == 0) {
         msg = "Extension added";
-        ext = "";
+        number = "";
         display = "";
         cid = "";
         pass = "";
@@ -368,16 +360,16 @@ public class WebConfig implements WebHandler {
       }
     }
     if (verb.equals("edit")) {
-      if (!sql.execute("UPDATE exts SET ext=" + sql.quote(ext) + ",display=" + sql.quote(display) + ",cid=" + sql.quote(cid) + ",pass=" + sql.quote(pass) + " WHERE ext=" + sql.quote(editext))) {
-        msg = "Failed to edit : " + sql.getLastException();
-      } else if (!sql.execute("UPDATE extopts SET ext=" + sql.quote(ext) + ",value=" + sql.quote( (vm.equalsIgnoreCase("on") ? "true" : "false") ) + " WHERE id='vm' AND ext=" + sql.quote(editext))) {
-        msg = "Unable to edit voicemail option";
-      } else if (!sql.execute("UPDATE extopts SET ext=" + sql.quote(ext) + ",value=" + sql.quote(vmpass) + " WHERE id='vmpass' AND ext=" + sql.quote(editext))) {
-        msg = "Unable to edit voicemail password";
-      }
+      ExtensionRow ext = Database.getExtension(number);
+      ext.display = display;
+      ext.cid = cid;
+      ext.password = pass;
+      ext.voicemail = vm.equals("true");
+      ext.voicemailpass = vmpass;
+      Database.saveExtensions();
       if (msg.length() == 0) {
         msg = "Extension edited";
-        ext = "";
+        number = "";
         display = "";
         cid = "";
         pass = "";
@@ -389,36 +381,32 @@ public class WebConfig implements WebHandler {
     }
     if (verb.equals("clone")) {
       verb = "";
-      String exts[] = sql.select1row("SELECT cid,pass FROM exts WHERE ext=" + sql.quote(ext));
-      cid = exts[0];
-      pass = exts[1];
-      vm = sql.select1value("SELECT value FROM extopts WHERE ext=" + sql.quote(ext) + " AND id='vm'");
-      if (vm == null) vm = "false";
-      vmpass = sql.select1value("SELECT value FROM extopts WHERE ext=" + sql.quote(ext) + " AND id='vmpass'");
-      if (vmpass == null) vmpass = "";
+      ExtensionRow ext = Database.getExtension(number);
+      cid = ext.cid;
+      pass = ext.password;
+      vm = ext.voicemail ? "true" : "false";
+      vmpass = ext.voicemailpass;
       try {
         int start = Integer.valueOf(cloneStart);
         int count = Integer.valueOf(cloneCount);
         if (count <=0 || count > 1000) throw new Exception("max 1000 clones");
         int added = 0;
         for(int idx=start;count > 0;count--,idx++) {
-          ext = "" + idx;
+          ext = new ExtensionRow();
+          number = "" + idx;
+          ext.number = number;
           display = "" + idx;
-          msg = "";
-          if (!sql.execute("INSERT INTO exts (ext, display, cid, pass) VALUES (" + sql.quote(ext) + "," + sql.quote(display) + "," + sql.quote(cid) + "," + sql.quote(pass) + ")")) {
-            msg = "Failed to add";
-          } else if (!sql.execute("INSERT INTO extopts (ext, id, value) VALUES (" + sql.quote(ext) + ",'vm'," + sql.quote(vm) + ")")) {
-            msg = "Unable to add voicemail option";
-          } else if (!sql.execute("INSERT INTO extopts (ext, id, value) VALUES (" + sql.quote(ext) + ",'vmpass'," + sql.quote(vmpass) + ")")) {
-            msg = "Unable to add voicemail password";
-          }
-          if (msg.length() == 0) added++;
+          ext.display = display;
+          ext.voicemail = vm.equals("true");
+          ext.voicemailpass = vmpass;
+          Database.addExtension(ext);
+          added++;
         }
         msg = "Cloning complete (" + added + " extensions added)";
       } catch (Exception e) {
         msg = "Cloning failed:" + e.toString();
       }
-      ext = "";
+      number = "";
       display = "";
       cid = "";
       pass = "";
@@ -432,14 +420,14 @@ public class WebConfig implements WebHandler {
     if (msg.length() > 0) html.append("<font color=#ff0000>" + msg + "</font><br>");
     if (verb.equals("view")) {
       html.append(form("core", "exts"));
-      html.append("<input type=hidden name=verb value=del><input type=hidden name=ext value=" + sql.quote(ext) + ">");
+      html.append("<input type=hidden name=verb value=del><input type=hidden name=ext value=" + SQL.quote(number) + ">");
       html.append("<input type=submit value='Delete Extension'> <input type=checkbox name=sure>I'm Sure</form>");
     }
     html.append(form("core", "exts"));
     if (verb.equals("cloneForm")) {
       html.append("<input type=hidden name=verb value=clone>");
       html.append("<table>");
-      html.append("<tr><td>Extension #:</td><td><input name=ext value=" + sql.quote(ext) + " readonly></td></tr>");
+      html.append("<tr><td>Extension #:</td><td><input name=ext value=" + SQL.quote(number) + " readonly></td></tr>");
       html.append("<tr><td>Start:</td><td><input name=cloneStart></td></tr>");
       html.append("<tr><td>Count:</td><td><input name=cloneCount></td></tr>");
       html.append("<tr><td colspan=2>NOTE : Existing extension in clone range may be altered!</td></tr>");
@@ -447,28 +435,28 @@ public class WebConfig implements WebHandler {
       html.append("<input type=submit value=Clone>");
     } else {
       html.append("<input type=hidden name=verb value=" + (verb.equals("view") ? "edit" : "add") + ">");
-      if (verb.equals("view")) html.append("<input type=hidden name=editext value=" + sql.quote(editext) + ">");
+      if (verb.equals("view")) html.append("<input type=hidden name=editext value=" + SQL.quote(editext) + ">");
       html.append("<table>");
-      html.append("<tr><td>Extension #:</td><td><input name=ext value=" + sql.quote(ext) + "></td><td>");
+      html.append("<tr><td>Extension #:</td><td><input name=ext value=" + SQL.quote(number) + "></td><td>");
       if (verb.equals("view")) {
         html.append(link("core", "exts", "verb=cloneForm&ext=" + editext, "Clone"));
       }
       html.append("</td></tr>");
-      html.append("<tr><td>Display Name:</td><td><input name=display value=" + sql.quote(display) + "></td><td>(usually same as extension #)</td></tr>");
-      html.append("<tr><td>Outbound Caller ID #:</td><td><input name=cid value=" + sql.quote(cid) + "></td><td>(optional) (used if call sent to trunk)</td></tr>");
-      html.append("<tr><td>SIP Password:</td><td><input name=pass value=" + sql.quote(pass) + "></td></tr>");
+      html.append("<tr><td>Display Name:</td><td><input name=display value=" + SQL.quote(display) + "></td><td>(usually same as extension #)</td></tr>");
+      html.append("<tr><td>Outbound Caller ID #:</td><td><input name=cid value=" + SQL.quote(cid) + "></td><td>(optional) (used if call sent to trunk)</td></tr>");
+      html.append("<tr><td>SIP Password:</td><td><input name=pass value=" + SQL.quote(pass) + "></td></tr>");
       html.append("<tr><td>VoiceMail:</td><td><input type=checkbox name=vm " + (vm.equals("true") ? "checked" : "") + "></td></tr>");
-      html.append("<tr><td>VM Password:</td><td><input name=vmpass value=" + sql.quote(vmpass) + "></td></tr>");
+      html.append("<tr><td>VM Password:</td><td><input name=vmpass value=" + SQL.quote(vmpass) + "></td></tr>");
       html.append("</table>");
       html.append("<input type=submit value=" + (verb.equals("view") ? "Edit" : "Add") + ">");
     }
     html.append("</form>");
     html.append("</td><td width=2 bgcolor=#000000></td><td width=180>");
     html.append("<div class=menuitem>" + link("core", "exts", "", "Add New") + "</div>");
-    String exts[][] = sql.select("SELECT ext,display FROM exts ORDER BY ext");
+    ExtensionRow[] exts = Database.getExtensions(ExtensionRow.EXT);
     if (exts != null) {
       for(int a=0;a<exts.length;a++) {
-        html.append("<div class=menuitem>" + link("core", "exts", "verb=view&ext=" + exts[a][0], exts[a][1] + "&lt;" + exts[a][0] + "&gt;") + "</div>");
+        html.append("<div class=menuitem>" + link("core", "exts", "verb=view&ext=" + exts[a].number, exts[a].display + "&lt;" + exts[a].number + "&gt;") + "</div>");
       }
     }
     html.append("</td></tr>");
@@ -477,14 +465,14 @@ public class WebConfig implements WebHandler {
     return html.toString();
   }
 
-  private String doInRoutesPage(SQL sql, String args[]) {
+  private String doInRoutesPage(String args[]) {
     StringBuilder html = new StringBuilder();
 
-    String verb = "", route = "", cid = "", did = "", dest = "", msg = "", editroute= "", sure = "";
+    String verb = "", name = "", cid = "", did = "", dest = "", msg = "", editroute= "", sure = "";
     for(int a=0;a<args.length;a++) {
       int x = args[a].indexOf("=") + 1;
       if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("route=")) route = args[a].substring(x);
+      if (args[a].startsWith("route=")) name = args[a].substring(x);
       if (args[a].startsWith("editroute=")) editroute = args[a].substring(x);
       if (args[a].startsWith("cid=")) cid = args[a].substring(x);
       if (args[a].startsWith("did=")) did = args[a].substring(x);
@@ -495,26 +483,23 @@ public class WebConfig implements WebHandler {
     did = numbersOnly(did);
     dest = numbersOnly(dest);
 
-    if (route.length() == 0) verb = "";
+    if (name.length() == 0) verb = "";
     if (verb.equals("del")) {
       if (sure.equalsIgnoreCase("on")) {
-        if (sql.execute("DELETE FROM inroutes WHERE route=" + sql.quote(route))) {
-          msg = "Route deleted";
-        } else {
-          msg = "Failed to delete";
-        }
+        Database.deleteInRoute(name);
+        msg = "Route deleted";
       } else {
         msg = "Please confirm delete action";
       }
-      route = "";
+      name = "";
     }
     if (verb.equals("view")) {
-      editroute = route;
-      String routes[] = sql.select1row("SELECT cid,did,dest FROM inroutes WHERE route=" + sql.quote(route));
-      if (routes != null) {
-        cid = routes[0];
-        did = routes[1];
-        dest = routes[2];
+      editroute = name;
+      RouteRow row = Database.getInRoute(name);
+      if (row != null) {
+        cid = row.cid;
+        did = row.did;
+        dest = row.dest;
       }
     }
     if (verb.equals("add") || verb.equals("edit")) {
@@ -528,27 +513,27 @@ public class WebConfig implements WebHandler {
       }
     }
     if (verb.equals("add")) {
-      if (sql.execute("INSERT INTO inroutes (route, cid, did, dest) VALUES (" + sql.quote(route) + ","
-      + sql.quote(cid) + "," + sql.quote(did) + "," + sql.quote(dest) + ")")) {
-        msg = "Route added";
-        route = "";
-        cid = "";
-        did = "";
-        dest = "";
-      } else {
-        msg = "Failed to add:" + sql.getLastException();
-      }
+      RouteRow route = new RouteRow();
+      route.name = name;
+      route.cid = cid;
+      route.did = did;
+      route.dest = dest;
+      Database.addInRoute(route);
+      msg = "Route added";
     }
     if (verb.equals("edit")) {
-      if (sql.execute("UPDATE inroutes SET route=" + sql.quote(route) + ",cid=" + sql.quote(cid) + ",did=" + sql.quote(did)
-      + ",dest=" + sql.quote(dest) + " WHERE route=" + sql.quote(editroute))) {
+      RouteRow route = Database.getInRoute(name);
+      if (route != null) {
+        route.cid = cid;
+        route.did = did;
+        route.dest = dest;
         msg = "Route edited";
-        route = "";
+        name = "";
         cid = "";
         did = "";
         dest = "";
       } else {
-        msg = "Failed to edit:" + sql.getLastException();
+        msg = "Route not found";
         verb = "view";
       }
     }
@@ -560,31 +545,34 @@ public class WebConfig implements WebHandler {
     }
     if (verb.equals("view")) {
       html.append(form("core", "inroutes"));
-      html.append("<input type=hidden name=verb value=del><input type=hidden name=route value=" + sql.quote(route) + "><input type=submit value='Delete route'>");
+      html.append("<input type=hidden name=verb value=del><input type=hidden name=route value=" + SQL.quote(name) + "><input type=submit value='Delete route'>");
       html.append("<input type=checkbox name=sure>I'm Sure</form>");
     }
     html.append(form("core", "inroutes"));
     html.append("<input type=hidden name=verb value=" + (verb.equals("view") ? "edit" : "add") + ">");
     if (verb.equals("view")) {
-      html.append("<input type=hidden name=editroute value=" + sql.quote(editroute) + ">");
+      html.append("<input type=hidden name=editroute value=" + SQL.quote(editroute) + ">");
     }
     html.append("<table>");
-    html.append("<tr><td> Route Name: </td><td> <input name=route value=" + sql.quote(route) + "</td></tr>");
-    html.append("<tr><td> Dialed # (DID): </td><td> <input name=did value=" + sql.quote(did) + "></td><td>(optional)</td></tr>");
-    html.append("<tr><td> Caller # (CID): </td><td> <input name=cid value=" + sql.quote(cid) + "></td><td>(optional)</td></tr>");
-    html.append("<tr><td> Destination #: </td><td> <input name=dest value=" + sql.quote(dest) + "></td><td>(Extension, IVR, etc.)</tr>");
+    html.append("<tr><td> Route Name: </td><td> <input name=route value=" + SQL.quote(name) + "</td></tr>");
+    html.append("<tr><td> Dialed # (DID): </td><td> <input name=did value=" + SQL.quote(did) + "></td><td>(optional)</td></tr>");
+    html.append("<tr><td> Caller # (CID): </td><td> <input name=cid value=" + SQL.quote(cid) + "></td><td>(optional)</td></tr>");
+    html.append("<tr><td> Destination #: </td><td> <input name=dest value=" + SQL.quote(dest) + "></td><td>(Extension, IVR, etc.)</tr>");
     html.append("<tr><td> <input type=submit value=" + (verb.equals("view") ? "Edit" : "Add") + "></td></tr>");
     html.append("</table>");
     html.append("</form>");
     html.append("</td><td width=2 bgcolor=#000000></td><td width=180>");
     html.append("<div class=menuitem>" + link("core", "inroutes", "", "Add New") + "</div>");
-    String routes[][] = sql.select("SELECT route, did, cid FROM inroutes ORDER BY route");
+    RouteRow[] routes = Database.getInRoutes();
     if (routes != null) {
       for(int a=0;a<routes.length;a++) {
-        if (routes[a][1].length() == 0) routes[a][1] = "any DID";
-        if (routes[a][2].length() == 0) routes[a][2] = "any CID";
-        html.append("<div class=menuitem>" + link("core", "inroutes", "verb=view&route=" + routes[a][0],
-          "&lt;" + routes[a][0] + "&gt;" + routes[a][1] + "/" + routes[a][2]) + "</div>");
+        cid = routes[a].cid;
+        did = routes[a].did;
+        dest = routes[a].dest;
+        if (cid.length() == 0) cid = "any DID";
+        if (did.length() == 0) did = "any CID";
+        html.append("<div class=menuitem>" + link("core", "inroutes", "verb=view&route=" + routes[a].name,
+          "&lt;" + routes[a].name + "&gt;" + cid + "/" + did) + "</div>");
       }
     }
     html.append("</td></tr></table>");
@@ -592,42 +580,38 @@ public class WebConfig implements WebHandler {
     return html.toString();
   }
 
-  private String doIVRPage(SQL sql, String args[]) {
-    String verb = "", ext = "", editext = "", display = "", script = "", sure = "", msg = "";
+  private String doIVRPage(String args[]) {
+    String verb = "", number = "", editext = "", display = "", script = "", sure = "", msg = "";
     for(int a=0;a<args.length;a++) {
       int x = args[a].indexOf("=") + 1;
       if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("ext=")) ext = args[a].substring(x);
+      if (args[a].startsWith("ext=")) number = args[a].substring(x);
       if (args[a].startsWith("display=")) display = args[a].substring(x);
       if (args[a].startsWith("script=")) script = args[a].substring(x);
       if (args[a].startsWith("editext=")) editext = args[a].substring(x);
       if (args[a].startsWith("sure=")) sure = args[a].substring(x);
     }
-    ext = numbersOnly(ext);
+    number = numbersOnly(number);
     if (verb.equals("del")) {
       if (sure.equalsIgnoreCase("on")) {
-        if (!sql.execute("DELETE FROM ivrs WHERE ext=" + sql.quote(ext))) {
-          msg = "Failed to delete IVR";
-        }
-        if (msg.length() == 0) {
-          msg = "IVR deleted";
-        }
+        Database.deleteIVR(number);
+        msg = "IVR deleted";
       } else {
         msg = "Please confirm delete action";
       }
-      ext = "";
+      number = "";
     }
     if (verb.equals("view")) {
-      editext = ext;
-      display = sql.select1value("SELECT display FROM ivrs WHERE ext=" + sql.quote(ext));
-      script = sql.select1value("SELECT script FROM ivrs WHERE ext=" + sql.quote(ext));
+      ExtensionRow ivr = Database.getIVR(number);
+      editext = number;
+      display = ivr.display;
+      script = ivr.script;
     }
     if (verb.equals("add") || verb.equals("edit")) {
-      if (ext.length() == 0)  {
+      if (number.length() == 0)  {
         msg = "Invalid IVR number";
       } else {
-        String isext = sql.select1value("SELECT ext FROM exts WHERE ext=" + sql.quote(ext));
-        if ((isext != null) && (isext.equals(ext))) {
+        if (Database.extensionExists(number)) {
           msg = "Extension already exists with that number";
         }
       }
@@ -639,24 +623,24 @@ public class WebConfig implements WebHandler {
       }
     }
     if (verb.equals("add")) {
-      if (!sql.execute("INSERT INTO ivrs (ext, display, script) VALUES (" + sql.quote(ext) + "," + sql.quote(display) + "," + sql.quote(script) + ")")) {
-        msg = "Failed to add";
-      }
-      if (msg.length() == 0) {
-        msg = "IVR added";
-        ext = "";
-        display = "";
-        script = "";
-      }
+      ExtensionRow ivr = new ExtensionRow();
+      ivr.number = number;
+      ivr.display = display;
+      ivr.script = script;
+      Database.addIVR(ivr);
+      msg = "IVR added";
+      number = "";
+      display = "";
+      script = "";
     }
     if (verb.equals("edit")) {
-      if (!sql.execute("UPDATE ivrs SET ext=" + sql.quote(ext) + ",display=" + sql.quote(display) + ",script=" + sql.quote(script) + " WHERE ext=" + sql.quote(editext))) {
-        msg = "Failed to edit : " + sql.getLastException();
-        verb = "view";
-      }
+      ExtensionRow ivr = Database.getIVR(number);
+      ivr.display = display;
+      ivr.script = script;
+      Database.saveIVRs();
       if (msg.length() == 0) {
         msg = "IVR edited";
-        ext = "";
+        number = "";
         display = "";
         script = "";
       }
@@ -670,18 +654,18 @@ public class WebConfig implements WebHandler {
     }
     if (verb.equals("view")) {
       html.append(form("core", "ivrs"));
-      html.append("<input type=hidden name=verb value=del><input type=hidden name=ext value=" + sql.quote(ext));
+      html.append("<input type=hidden name=verb value=del><input type=hidden name=ext value=" + SQL.quote(number));
       html.append("><input type=submit value='Delete IVR'>" + "<input type=checkbox name=sure>I'm Sure</form>");
     }
     html.append(form("core", "ivrs"));
     html.append("<input type=hidden name=verb value=" + (verb.equals("view") ? "edit" : "add") + ">");
     if (verb.equals("view")) {
-      html.append("<input type=hidden name=editext value=" + sql.quote(editext) + ">");
+      html.append("<input type=hidden name=editext value=" + SQL.quote(editext) + ">");
     }
     html.append("<table>");
-    html.append("<tr><td>IVR #:</td><td><input name=ext value=" + sql.quote(ext) + ">");
+    html.append("<tr><td>IVR #:</td><td><input name=ext value=" + SQL.quote(number) + ">");
     html.append("</td></tr>");
-    html.append("<tr><td>Name:</td><td><input name=display value=" + sql.quote(display) + "></td></tr>");
+    html.append("<tr><td>Name:</td><td><input name=display value=" + SQL.quote(display) + "></td></tr>");
     html.append("<tr><td>Script:</td><td><textarea id=script name=script cols=40 rows=20>" + convertString(script) + "</textarea></td><td><a href=\"javascript:showHelp('ivr');\">Help</a><br>");
     html.append("Presets:<select id=preset><option>-none-</option><option>Conference</option><option>Video Conference</option></select> <a href=\"javascript:load_preset();\">Load</a></td></tr>");
     html.append("</table>");
@@ -689,10 +673,13 @@ public class WebConfig implements WebHandler {
     html.append("</form>");
     html.append("</td><td width=2 bgcolor=#000000></td><td width=180>");
     html.append("<div class=menuitem>" + link("core", "ivrs", "", "Add New") + "</div>");
-    String ivrs[][] = sql.select("SELECT ext,display FROM ivrs ORDER BY ext");
+    ExtensionRow[] ivrs = Database.getIVRs();
     if (ivrs != null) {
       for(int a=0;a<ivrs.length;a++) {
-        html.append("<div class=menuitem>" + link("core", "ivrs", "verb=view&ext=" + ivrs[a][0], ivrs[a][1] + "&lt;" + ivrs[a][0] + "&gt;") + "</div>");
+        number = ivrs[a].number;
+        display = ivrs[a].display;
+        script = ivrs[a].script;
+        html.append("<div class=menuitem>" + link("core", "ivrs", "verb=view&ext=" + number, display + "&lt;" + number + "&gt;") + "</div>");
       }
     }
     html.append("</td></tr>");
@@ -701,12 +688,12 @@ public class WebConfig implements WebHandler {
     return html.toString();
   }
 
-  private String doQueuesPage(SQL sql, String args[]) {
-    String verb = "", ext = "", editext = "", display = "", agents = "", sure = "", msg = "", message = "";
+  private String doQueuesPage(String args[]) {
+    String verb = "", number = "", editext = "", display = "", agents = "", sure = "", msg = "", message = "";
     for(int a=0;a<args.length;a++) {
       int x = args[a].indexOf("=") + 1;
       if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("ext=")) ext = args[a].substring(x);
+      if (args[a].startsWith("ext=")) number = args[a].substring(x);
       if (args[a].startsWith("display=")) display = args[a].substring(x);
       if (args[a].startsWith("agents=")) agents = convertString(args[a].substring(x)).replaceAll("\r\n", ",");
       if (args[a].startsWith("message=")) message = args[a].substring(x);
@@ -714,32 +701,28 @@ public class WebConfig implements WebHandler {
       if (args[a].startsWith("sure=")) sure = args[a].substring(x);
     }
     if (message.length() == 0) message = "acd-wait-for-agent";
-    ext = numbersOnly(ext);
+    number = numbersOnly(number);
     if (verb.equals("del")) {
       if (sure.equalsIgnoreCase("on")) {
-        if (!sql.execute("DELETE FROM queues WHERE ext=" + sql.quote(ext))) {
-          msg = "Failed to delete queue";
-        }
-        if (msg.length() == 0) {
-          msg = "Queue deleted";
-        }
+        Database.deleteQueue(number);
+        msg = "Queue deleted";
       } else {
         msg = "Please confirm delete action";
       }
-      ext = "";
+      number = "";
     }
     if (verb.equals("view")) {
-      editext = ext;
-      display = sql.select1value("SELECT display FROM queues WHERE ext=" + sql.quote(ext));
-      agents = sql.select1value("SELECT agents FROM queues WHERE ext=" + sql.quote(ext));
-      message = sql.select1value("SELECT message FROM queues WHERE ext=" + sql.quote(ext));
+      editext = number;
+      ExtensionRow queue = Database.getQueue(number);
+      display = queue.display;
+      agents = queue.agents;
+      message = queue.message;
     }
     if (verb.equals("add") || verb.equals("edit")) {
-      if (ext.length() == 0)  {
+      if (number.length() == 0)  {
         msg = "Invalid Queue number";
       } else {
-        String isext = sql.select1value("SELECT ext FROM exts WHERE ext=" + sql.quote(ext));
-        if ((isext != null) && (isext.equals(ext))) {
+        if (Database.extensionExists(number)) {
           msg = "Extension already exists with that number";
         }
       }
@@ -751,27 +734,31 @@ public class WebConfig implements WebHandler {
       }
     }
     if (verb.equals("add")) {
-      if (!sql.execute("INSERT INTO queues (ext, display, agents, message) VALUES (" + sql.quote(ext) + "," + sql.quote(display) + "," + sql.quote(agents) + "," + sql.quote(message) + ")")) {
-        msg = "Failed to add";
-      }
+      ExtensionRow queue = new ExtensionRow();
+      queue.number = number;
+      queue.display = display;
+      queue.agents = agents;
+      queue.message = message;
+      Database.addQueue(queue);
       if (msg.length() == 0) {
         msg = "Queue added";
-        ext = "";
+        number = "";
         display = "";
         agents = "";
       }
     }
     if (verb.equals("edit")) {
-      if (!sql.execute("UPDATE queues SET ext=" + sql.quote(ext) + ",display=" + sql.quote(display) + ",agents=" + sql.quote(agents) + ",message=" + sql.quote(message) + " WHERE ext=" + sql.quote(editext))) {
-        msg = "Failed to edit : " + sql.getLastException();
-        verb = "view";
+      ExtensionRow queue = Database.getQueue(number);
+      if (queue != null) {
+        queue.display = display;
+        queue.agents = agents;
+        queue.message = message;
+        Database.saveQueues();
       }
-      if (msg.length() == 0) {
-        msg = "Queue edited";
-        ext = "";
-        display = "";
-        agents = "";
-      }
+      msg = "Queue edited";
+      number = "";
+      display = "";
+      agents = "";
     }
     StringBuilder html = new StringBuilder();
 
@@ -782,18 +769,18 @@ public class WebConfig implements WebHandler {
     }
     if (verb.equals("view")) {
       html.append(form("core", "queues"));
-      html.append("<input type=hidden name=verb value=del><input type=hidden name=ext value=" + sql.quote(ext));
+      html.append("<input type=hidden name=verb value=del><input type=hidden name=ext value=" + SQL.quote(number));
       html.append("><input type=submit value='Delete Queue'>" + "<input type=checkbox name=sure>I'm Sure</form>");
     }
     html.append(form("core", "queues"));
     html.append("<input type=hidden name=verb value=" + (verb.equals("view") ? "edit" : "add") + ">");
     if (verb.equals("view")) {
-      html.append("<input type=hidden name=editext value=" + sql.quote(editext) + ">");
+      html.append("<input type=hidden name=editext value=" + SQL.quote(editext) + ">");
     }
     html.append("<table>");
-    html.append("<tr><td>Queue #:</td><td><input name=ext value=" + sql.quote(ext) + ">");
+    html.append("<tr><td>Queue #:</td><td><input name=ext value=" + SQL.quote(number) + ">");
     html.append("</td></tr>");
-    html.append("<tr><td>Name:</td><td><input name=display value=" + sql.quote(display) + "></td></tr>");
+    html.append("<tr><td>Name:</td><td><input name=display value=" + SQL.quote(display) + "></td></tr>");
     html.append("<tr><td>Agents:</td><td><textarea id=agents name=agents cols=40 rows=20>" + convertString(agents).replaceAll(",", "\r\n") + "</textarea> (list agents one per line)</td></tr>");
     html.append("<tr><td>Member Join Message:</td><td>");
     ArrayList<String> wavFiles = new ArrayList<String>();
@@ -820,10 +807,14 @@ public class WebConfig implements WebHandler {
     html.append("</form>");
     html.append("</td><td width=2 bgcolor=#000000></td><td width=180>");
     html.append("<div class=menuitem>" + link("core", "queues", "", "Add New") + "</div>");
-    String queues[][] = sql.select("SELECT ext,display FROM queues ORDER BY ext");
+    ExtensionRow[] queues = Database.getQueues();
     if (queues != null) {
       for(int a=0;a<queues.length;a++) {
-        html.append("<div class=menuitem>" + link("core", "queues", "verb=view&ext=" + queues[a][0], queues[a][1] + "&lt;" + queues[a][0] + "&gt;") + "</div>");
+        number = queues[a].number;
+        display = queues[a].display;
+        agents = queues[a].agents;
+        message = queues[a].message;
+        html.append("<div class=menuitem>" + link("core", "queues", "verb=view&ext=" + number, display + "&lt;" + number + "&gt;") + "</div>");
       }
     }
     html.append("</td></tr>");
@@ -832,7 +823,7 @@ public class WebConfig implements WebHandler {
     return html.toString();
   }
 
-  private String doMsgsPage(SQL sql, String args[], WebRequest req) {
+  private String doMsgsPage(String args[], WebRequest req) {
     String verb = "", file = "", oldfile = "", newfile = "", sure = "", msg= "";
     for(int a=0;a<args.length;a++) {
       int x = args[a].indexOf("=") + 1;
@@ -909,7 +900,7 @@ public class WebConfig implements WebHandler {
     if (msg.length() > 0) html.append("<font color=#ff0000>" + msg + "</font><br>");
     if (verb.equals("view")) {
       html.append(form("core", "msgs"));
-      html.append("<input type=hidden name=verb value=del><input type=hidden name=file value=" + sql.quote(file));
+      html.append("<input type=hidden name=verb value=del><input type=hidden name=file value=" + SQL.quote(file));
       html.append("><input type=submit value='Delete Message'>" + "<input type=checkbox name=sure>I'm Sure</form>");
     }
     if (verb.equals("renameForm")) {
@@ -917,7 +908,7 @@ public class WebConfig implements WebHandler {
       html.append("Not implemented Yet!<br>");
       html.append("<input type=hidden name=verb value=rename>");
       html.append("<table>");
-      html.append("<tr><td>Old Filename:</td><td><input name=oldfile value=" + sql.quote(oldfile) + " readonly></td></tr>");
+      html.append("<tr><td>Old Filename:</td><td><input name=oldfile value=" + SQL.quote(oldfile) + " readonly></td></tr>");
       html.append("<tr><td>New Filename:</td><td><input name=newfile></td></tr>");
       html.append("</table>");
       html.append("<input type=submit value=Rename>");
@@ -959,13 +950,13 @@ public class WebConfig implements WebHandler {
     return html.toString();
   }
 
-  private String doOutRoutesPage(SQL sql, String args[]) {
-    String verb = "", routetable = "", route = "", priority = "", cid = "", patterns = "", trunks = "", msg = "", editroute= "", t1 = "", t2 = "", t3 = "", t4 = "", sure = "";
+  private String doOutRoutesPage(String args[]) {
+    String verb = "", table = "", name = "", priority = "", cid = "", patterns = "", trunks = "", msg = "", editroute= "", t1 = "", t2 = "", t3 = "", t4 = "", sure = "";
     for(int a=0;a<args.length;a++) {
       int x = args[a].indexOf("=") + 1;
       if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("routetable=")) routetable = args[a].substring(x);
-      if (args[a].startsWith("route=")) route = args[a].substring(x);
+      if (args[a].startsWith("routetable=")) table = args[a].substring(x);
+      if (args[a].startsWith("route=")) name = args[a].substring(x);
       if (args[a].startsWith("priority=")) priority = args[a].substring(x);
       if (args[a].startsWith("editroute=")) editroute = args[a].substring(x);
       if (args[a].startsWith("cid=")) cid = args[a].substring(x);
@@ -984,45 +975,37 @@ public class WebConfig implements WebHandler {
     priority = numbersOnly(priority);
     if (priority.length() == 0) priority = "0";
 
-    if (routetable.length() == 0) verb = "";
+    if (table.length() == 0) verb = "";
     if (verb.equals("deltable")) {
-      if (sql.execute("DELETE FROM outroutetables WHERE routetable=" + sql.quote(routetable))) {
-        sql.execute("DELETE FROM outroutes WHERE routetable=" + sql.quote(routetable));
-        msg = "Table deleted";
-      } else {
-        msg = "Failed to delete table";
-      }
-      routetable = "";
+      Database.deleteOutRouteTable(table);
+      msg = "Table deleted";
+      table = "";
     }
     if (verb.equals("addtable")) {
-      if (sql.execute("INSERT INTO outroutetables (routetable) VALUES (" + sql.quote(routetable) + ")")) {
-        msg = "Table added";
-      } else {
-        msg = "Failed to add table";
-      }
+      RouteTableRow row = new RouteTableRow();
+      row.name = table;
+      Database.addOutRouteTable(row);
+      msg = "Table added";
     }
 
-    if (route.length() == 0) verb = "";
+    if (name.length() == 0) verb = "";
     if (verb.equals("del")) {
       if (sure.equalsIgnoreCase("on")) {
-        if (sql.execute("DELETE FROM outroutes WHERE routetable=" + sql.quote(routetable) + " AND route=" + sql.quote(route))) {
-          msg = "Route deleted";
-        } else {
-          msg = "Failed to delete";
-        }
+        Database.deleteOutRouteTable(table);
+        msg = "Route deleted";
       } else {
         msg = "Please confirm delete action";
       }
-      route = "";
+      name = "";
     }
     if (verb.equals("view")) {
-      editroute = route;
-      String routes[] = sql.select1row("SELECT priority,cid,patterns,trunks FROM outroutes WHERE routetable=" + sql.quote(routetable) + " AND route=" + sql.quote(route));
-      if (routes != null) {
-        priority = routes[0];
-        cid = routes[1];
-        patterns = routes[2];
-        trunks = routes[3];
+      editroute = name;
+      RouteRow row = Database.getOutRoute(table, name);
+      if (row != null) {
+        priority = row.priority;
+        cid = row.cid;
+        patterns = row.patterns;
+        trunks = row.trunks;
         String lns[] = trunks.split(":");
         if (lns.length > 0) t1 = lns[0];
         if (lns.length > 1) t2 = lns[1];
@@ -1033,80 +1016,88 @@ public class WebConfig implements WebHandler {
     if (verb.equals("add")) {
       patterns = convertString(patterns).replaceAll("\r\n", ":");
       patterns = patternsOnly(patterns);
-      if (sql.execute("INSERT INTO outroutes (routetable, route, priority, cid, patterns, trunks) VALUES (" + sql.quote(routetable) + "," + sql.quote(route) + ","
-      + priority + "," + sql.quote(cid) + "," + sql.quote(patterns) + "," + sql.quote(trunks) + ")")) {
-        msg = "Route added";
-        route = "";
-        priority = "";
-        cid = "";
-        patterns = "";
-        trunks = "";
-        t1 = "";
-        t2 = "";
-        t3 = "";
-        t4 = "";
-      } else {
-        msg = "Failed to add";
-      }
+      RouteRow row = new RouteRow();
+      row.name = name;
+      row.priority = priority;
+      row.cid = cid;
+      row.patterns = patterns;
+      row.trunks = trunks;
+      Database.addOutRoute(table, row);
+      msg = "Route added";
+      name = "";
+      priority = "";
+      cid = "";
+      patterns = "";
+      trunks = "";
+      t1 = "";
+      t2 = "";
+      t3 = "";
+      t4 = "";
     }
     if (verb.equals("edit")) {
       patterns = convertString(patterns).replaceAll("\r\n", ":");
       patterns = patternsOnly(patterns);
-      if (sql.execute("UPDATE outroutes SET route=" + sql.quote(route) + ",priority=" + sql.quote(priority) + ",cid=" + sql.quote(cid) + ",patterns=" + sql.quote(patterns)
-      + ",trunks=" + sql.quote(trunks) + " WHERE routetable=" + sql.quote(routetable) + " AND route=" + sql.quote(editroute))) {
-        msg = "Route edited";
-        route = "";
-        priority = "";
-        cid = "";
-        patterns = "";
-        t1 = "";
-        t2 = "";
-        t3 = "";
-        t4 = "";
-      } else {
-        msg = "Failed to edit";
-        verb = "view";
-      }
+      RouteRow row = Database.getOutRoute(table, name);
+      row.name = name;
+      row.priority = priority;
+      row.cid = cid;
+      row.patterns = patterns;
+      row.trunks = trunks;
+      Database.saveOutRoutes(table);
+      msg = "Route edited";
+      name = "";
+      priority = "";
+      cid = "";
+      patterns = "";
+      t1 = "";
+      t2 = "";
+      t3 = "";
+      t4 = "";
     }
-    String list[] = sql.select1col("SELECT trunk FROM trunks");
+    TrunkRow[] rows = Database.getTrunks();
+    ArrayList<String> strs = new ArrayList<String>();
+    for(int a=0;a<rows.length;a++) {
+      strs.add(rows[a].name);
+    }
+    String[] list = strs.toArray(new String[strs.size()]);
     StringBuilder html = new StringBuilder();
 
     html.append("<table height=100%>");
     html.append("<tr><td width=100%>");
     html.append("<div class=table>");
     html.append("<div class=menucat>Routing Tables</div>");
-    String tables[] = sql.select1col("SELECT routetable FROM outroutetables");
+    RouteTableRow[] tables = Database.getOutRouteTables();
     if (tables != null) {
       for(int a=0;a<tables.length;a++) {
-        if (routetable.equals(tables[a])) {
+        if (table.equals(tables[a])) {
           html.append("<div class=menuitemselected>");
         } else {
           html.append("<div class=menuitem>");
         }
-        html.append(link("core", "outroutes", "routetable=" + tables[a], tables[a]) + "</div>");
+        html.append(link("core", "outroutes", "routetable=" + tables[a].name, tables[a].name) + "</div>");
       }
     }
     html.append(form("core", "outroutes") + "<input name=routetable><input type=hidden name=verb value=addtable><input type=submit value='Add Table'></form><br>");
     html.append(form("core", "outroutes") + "<input name=routetable><input type=hidden name=verb value=deltable><input type=submit value='Delete Table'></form>");
     html.append("</div>");
     html.append("<hr>");
-    if (routetable.length() > 0) {
+    if (table.length() > 0) {
       if (msg.length() > 0) html.append("<font color=#ff0000>" + msg + "</font><br>");
       if (verb.equals("view")) {
-        html.append(form("core", "outroutes") + "<input type=hidden name=routetable value=" + routetable);
-        html.append("><input type=hidden name=verb value=del><input type=hidden name=route value=" + sql.quote(route) + "><input type=submit value='Delete route'>");
+        html.append(form("core", "outroutes") + "<input type=hidden name=routetable value=" + table);
+        html.append("><input type=hidden name=verb value=del><input type=hidden name=route value=" + SQL.quote(name) + "><input type=submit value='Delete route'>");
         html.append("<input type=checkbox name=sure>I'm Sure</form>");
       }
       html.append(form("core", "outroutes"));
-      html.append("<input type=hidden name=routetable value=" + sql.quote(routetable) + ">");
+      html.append("<input type=hidden name=routetable value=" + SQL.quote(table) + ">");
       html.append("<input type=hidden name=verb value=" + (verb.equals("view") ? "edit" : "add") + ">");
       if (verb.equals("view")) {
-        html.append("<input type=hidden name=editroute value=" + sql.quote(editroute) + ">");
+        html.append("<input type=hidden name=editroute value=" + SQL.quote(editroute) + ">");
       }
       html.append("<table>");
-      html.append("<tr><td> Route Name: </td><td> <input name=route value=" + sql.quote(route) + "></td></tr>");
-      html.append("<tr><td> Priority: </td><td> <input name=priority value=" + sql.quote(priority) + "></td></tr>");
-      html.append("<tr><td> Default Caller ID: </td><td> <input name=cid value=" + sql.quote(cid) + "></td><td>(optional)</td></tr>");
+      html.append("<tr><td> Route Name: </td><td> <input name=route value=" + SQL.quote(name) + "></td></tr>");
+      html.append("<tr><td> Priority: </td><td> <input name=priority value=" + SQL.quote(priority) + "></td></tr>");
+      html.append("<tr><td> Default Caller ID: </td><td> <input name=cid value=" + SQL.quote(cid) + "></td><td>(optional)</td></tr>");
       html.append("<tr><td> Dial Patterns: </td><td> <textarea name=patterns cols=20 rows=10>");
       String lns[] = patterns.split(":");
       for(int a=0;a<lns.length;a++) html.append(lns[a]);
@@ -1135,14 +1126,14 @@ public class WebConfig implements WebHandler {
       html.append("</form>");
     }
     html.append("</td><td width=2 bgcolor=#000000></td><td width=180>");
-    if (routetable.length() == 0) {
+    if (table.length() == 0) {
       html.append("<div class=menuitem>Select a Routing Table</div>");
     } else {
-      html.append("<div class=menuitem>" + link("core", "outroutes", "routetable=" + routetable, "Add New") + "</div>");
-      String routes[] = sql.select1col("SELECT route FROM outroutes WHERE routetable=" + sql.quote(routetable) + " ORDER BY priority");
+      html.append("<div class=menuitem>" + link("core", "outroutes", "routetable=" + table, "Add New") + "</div>");
+      RouteRow[] routes = Database.getOutRoutes(table);
       if (routes != null) {
         for(int a=0;a<routes.length;a++) {
-          html.append("<div class=menuitem>" + link("core", "outroutes", "routetable=" + routetable + "&verb=view&route=" + routes[a], "&lt;" + routes[a] + "&gt;") + "</div>");
+          html.append("<div class=menuitem>" + link("core", "outroutes", "routetable=" + table + "&verb=view&route=" + routes[a].name, "&lt;" + routes[a].name + "&gt;") + "</div>");
         }
       }
     }
@@ -1162,7 +1153,7 @@ public class WebConfig implements WebHandler {
     return "";
   }
 
-  private String doSettingsPage(SQL sql, String args[], WebRequest req) {
+  private String doSettingsPage(String args[], WebRequest req) {
     String verb = "", port = "", msg = "", anon = "", route = "", rtpmin = "", rtpmax = "", videoCodecs = "";
     String relayAudio = "", relayVideo = "", moh = "";
     String http = "", https = "", hideAdmin = "", disableWebRTC = "";
@@ -1217,19 +1208,19 @@ public class WebConfig implements WebHandler {
         irtpmin = 32768;
         irtpmax = 65535;
       }
-      sql.execute("UPDATE config SET value=" + sql.quote(port) + " WHERE id='port'");
-      sql.execute("UPDATE config SET value=" + sql.quote(anon) + " WHERE id='anon'");
-      sql.execute("UPDATE config SET value=" + sql.quote(route) + " WHERE id='route'");
-      sql.execute("UPDATE config SET value=" + sql.quote("" + irtpmin) + " WHERE id='rtpmin'");
-      sql.execute("UPDATE config SET value=" + sql.quote("" + irtpmax) + " WHERE id='rtpmax'");
-      sql.execute("UPDATE config SET value=" + sql.quote(videoCodecs) + " WHERE id='videoCodecs'");
-      sql.execute("UPDATE config SET value=" + sql.quote(relayAudio) + " WHERE id='relayAudio'");
-      sql.execute("UPDATE config SET value=" + sql.quote(relayVideo) + " WHERE id='relayVideo'");
-      sql.execute("UPDATE config SET value=" + sql.quote(moh) + " WHERE id='moh'");
-      sql.execute("UPDATE config SET value=" + sql.quote(http) + " WHERE id='http'");
-      sql.execute("UPDATE config SET value=" + sql.quote(https) + " WHERE id='https'");
-      sql.execute("UPDATE config SET value=" + sql.quote(hideAdmin) + " WHERE id='hideAdmin'");
-      sql.execute("UPDATE config SET value=" + sql.quote(disableWebRTC) + " WHERE id='disableWebRTC'");
+      Database.setConfig("port", port);
+      Database.setConfig("anonymous", anon);
+      Database.setConfig("route", route);
+      Database.setConfig("rtpmin", rtpmin);
+      Database.setConfig("rtpmax", rtpmax);
+      Database.setConfig("videoCodes", videoCodecs);
+      Database.setConfig("relayAudio", relayAudio);
+      Database.setConfig("relayVideo", relayVideo);
+      Database.setConfig("moh", moh);
+      Database.setConfig("http", http);
+      Database.setConfig("https", https);
+      Database.setConfig("hideAdmin", hideAdmin);
+      Database.setConfig("disableWebRTC", disableWebRTC);
       msg = "Settings saved";
     }
     //NOTE : The -debug option is important to prevent KeyTool from executing System.exit()
@@ -1244,23 +1235,19 @@ public class WebConfig implements WebHandler {
         msg = "KeyTool Error";
       }
     }
-    String cfg[][] = sql.select("SELECT id,value FROM config");
-    if (cfg == null) {
-      return "Database error";
-    }
     html.append("<font color=#ff0000>" + msg + "</font><br>");
     html.append(form("core", "settings"));
 
     html.append("<input type=hidden name='verb' value='save'>");
-    html.append("SIP Port : <input name=port value=" + getCfg(cfg, "port") + "><br>");
-    html.append("RTP Port Min : <input name=rtpmin value=" + getCfg(cfg, "rtpmin") + "> (1024-64534) (default:32768)<br>");
-    html.append("RTP Port Max : <input name=rtpmax value=" + getCfg(cfg, "rtpmax") + "> (2023-65535) (default:65535)<br>");
+    html.append("SIP Port : <input name=port value=" + Database.getConfig("port") + "><br>");
+    html.append("RTP Port Min : <input name=rtpmin value=" + Database.getConfig("rtpmin") + "> (1024-64534) (default:32768)<br>");
+    html.append("RTP Port Max : <input name=rtpmax value=" + Database.getConfig("rtpmax") + "> (2023-65535) (default:65535)<br>");
     html.append("RTP Port Range must include at least 1000 ports and start on an even port number.<br>");
-    html.append("<input type=checkbox name=anon " + checked(getCfg(cfg, "anon")) + "> Anonymous Inbound Calls (allows calls from any source to extensions, voicemail, IVRs, etc.)<br>");
-    html.append("<input type=checkbox name=route " + checked(getCfg(cfg, "route")) + "> Route Calls (route calls from one trunk to another) [not implemented yet]<br>");
-    html.append("Video Conference Codecs : <input name=videoCodecs value=" + getCfg(cfg, "videoCodecs") + "> [comma list : H263,H263-1998,H263-2000,H264,VP8]<br>");
-    html.append("<input type=checkbox name=relayAudio " + checked(getCfg(cfg, "relayAudio")) + "> Relay Audio Media (recommended)<br>");
-    html.append("<input type=checkbox name=relayVideo " + checked(getCfg(cfg, "relayVideo")) + "> Relay Video Media (optional)<br>");
+    html.append("<input type=checkbox name=anon " + checked(Database.getConfig("anon")) + "> Anonymous Inbound Calls (allows calls from any source to extensions, voicemail, IVRs, etc.)<br>");
+    html.append("<input type=checkbox name=route " + checked(Database.getConfig("route")) + "> Route Calls (route calls from one trunk to another) [not implemented yet]<br>");
+    html.append("Video Conference Codecs : <input name=videoCodecs value=" + Database.getConfig("videoCodecs") + "> [comma list : H263,H263-1998,H263-2000,H264,VP8]<br>");
+    html.append("<input type=checkbox name=relayAudio " + checked(Database.getConfig("relayAudio")) + "> Relay Audio Media (recommended)<br>");
+    html.append("<input type=checkbox name=relayVideo " + checked(Database.getConfig("relayVideo")) + "> Relay Video Media (optional)<br>");
     html.append("Music on Hold : ");
     ArrayList<String> wavFiles = new ArrayList<String>();
     try {
@@ -1279,12 +1266,12 @@ public class WebConfig implements WebHandler {
     } catch (Exception e2) {
       html.append(e2.toString());
     }
-    html.append(select("moh", getCfg(cfg, "moh"), wavFiles.toArray(new String[0])));
+    html.append(select("moh", Database.getConfig("moh"), wavFiles.toArray(new String[0])));
     html.append(" (use " + link("core", "msgs", "", "Messages") + " page to upload new files)<br>");
-    html.append("Web HTTP Port : <input name=http value=" + getCfg(cfg, "http") + "><br>");
-    html.append("Web HTTPS Port : <input name=https value=" + getCfg(cfg, "https") + "><br>");
-    html.append("<input type=checkbox name=hideAdmin " + checked(getCfg(cfg, "hideAdmin")) + "> Hide Admin Link on Home Page<br>");
-    html.append("<input type=checkbox name=disableWebRTC " + checked(getCfg(cfg, "disableWebRTC")) + "> Disable WebRTC support<br>");
+    html.append("Web HTTP Port : <input name=http value=" + Database.getConfig("http") + "><br>");
+    html.append("Web HTTPS Port : <input name=https value=" + Database.getConfig("https") + "><br>");
+    html.append("<input type=checkbox name=hideAdmin " + checked(Database.getConfig("hideAdmin")) + "> Hide Admin Link on Home Page<br>");
+    html.append("<input type=checkbox name=disableWebRTC " + checked(Database.getConfig("disableWebRTC")) + "> Disable WebRTC support<br>");
     html.append("<br>");
     html.append("<input type=submit value='Save'>");
     html.append("</form>");
@@ -1303,125 +1290,44 @@ public class WebConfig implements WebHandler {
     return html.toString();
   }
 
-  private String doStatusPage(SQL sql, String args[]) {
+  private String doStatusPage(String args[]) {
     String verb = "", msg = "";
     for(int a=0;a<args.length;a++) {
       int x = args[a].indexOf("=") + 1;
       if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-    }
-    if (verb.equals("initdb") || verb.equals("upgradedb")) {
-      String version;
-      version = sql.select1value("SELECT value FROM config WHERE id='version'");
-      if (version == null) version = "0.0";
-      Float fversion = Float.valueOf(version);
-      //setup init DB (ignore errors -- it is repeatable)
-      if (fversion == 0.91) {
-        sql.execute("DROP TABLE queues");  //test
-      }
-      sql.execute("CREATE TABLE svcplugins (jar VARCHAR(32), cls VARCHAR(32), UNIQUE (jar, cls))");
-      sql.execute("INSERT INTO svcplugins (jar, cls) VALUES ('extensions.jar', 'core.Extensions')");
-      sql.execute("INSERT INTO svcplugins (jar, cls) VALUES ('trunks.jar', 'core.Trunks')");
-      sql.execute("INSERT INTO svcplugins (jar, cls) VALUES ('voicemail.jar', 'core.VoiceMail')");
-      sql.execute("INSERT INTO svcplugins (jar, cls) VALUES ('ivrs.jar', 'core.IVR')");
-      sql.execute("INSERT INTO svcplugins (jar, cls) VALUES ('queues.jar', 'core.Queues')");
-      sql.execute("CREATE TABLE webplugins (plugin VARCHAR(16), pg VARCHAR(16), cat VARCHAR(32), display VARCHAR(32), UNIQUE (plugin, pg))");
-      sql.execute("INSERT INTO webplugins (plugin, pg, cat, display) VALUES ('core', 'status', 'General', 'System Status')");
-      sql.execute("INSERT INTO webplugins (plugin, pg, cat, display) VALUES ('core', 'admin', 'General', 'Administrator')");
-      sql.execute("INSERT INTO webplugins (plugin, pg, cat, display) VALUES ('core', 'exts', 'General', 'Extensions')");
-      sql.execute("INSERT INTO webplugins (plugin, pg, cat, display) VALUES ('core', 'ivrs', 'General', 'IVR')");
-      sql.execute("INSERT INTO webplugins (plugin, pg, cat, display) VALUES ('core', 'conf', 'General', 'Conference')");
-      sql.execute("INSERT INTO webplugins (plugin, pg, cat, display) VALUES ('core', 'msgs', 'General', 'Messsages')");
-      sql.execute("INSERT INTO webplugins (plugin, pg, cat, display) VALUES ('core', 'trunks', 'General', 'Trunks')");
-      sql.execute("INSERT INTO webplugins (plugin, pg, cat, display) VALUES ('core', 'settings', 'General', 'Settings')");
-      sql.execute("INSERT INTO webplugins (plugin, pg, cat, display) VALUES ('core', 'outroutes', 'Routing', 'Outbound Routes')");
-      sql.execute("INSERT INTO webplugins (plugin, pg, cat, display) VALUES ('core', 'inroutes', 'Routing', 'Inbound Routes')");
-      sql.execute("INSERT INTO webplugins (plugin, pg, cat, display) VALUES ('core', 'queues', 'General', 'Queues')");
-      sql.execute("CREATE TABLE webpluginusers (plugin VARCHAR(16), pg VARCHAR(16), userid VARCHAR(16), UNIQUE (plugin, pg, userid))");
-      sql.execute("INSERT INTO webpluginusers (plugin, pg, userid) VALUES ('core', 'status', 'admin')");
-      sql.execute("INSERT INTO webpluginusers (plugin, pg, userid) VALUES ('core', 'admin', 'admin')");
-      sql.execute("INSERT INTO webpluginusers (plugin, pg, userid) VALUES ('core', 'exts', 'admin')");
-      sql.execute("INSERT INTO webpluginusers (plugin, pg, userid) VALUES ('core', 'ivrs', 'admin')");
-      sql.execute("INSERT INTO webpluginusers (plugin, pg, userid) VALUES ('core', 'conf', 'admin')");
-      sql.execute("INSERT INTO webpluginusers (plugin, pg, userid) VALUES ('core', 'msgs', 'admin')");
-      sql.execute("INSERT INTO webpluginusers (plugin, pg, userid) VALUES ('core', 'trunks', 'admin')");
-      sql.execute("INSERT INTO webpluginusers (plugin, pg, userid) VALUES ('core', 'settings', 'admin')");
-      sql.execute("INSERT INTO webpluginusers (plugin, pg, userid) VALUES ('core', 'outroutes', 'admin')");
-      sql.execute("INSERT INTO webpluginusers (plugin, pg, userid) VALUES ('core', 'inroutes', 'admin')");
-      sql.execute("INSERT INTO webpluginusers (plugin, pg, userid) VALUES ('core', 'queues', 'admin')");
-      sql.execute("CREATE TABLE config (id VARCHAR(32) NOT NULL UNIQUE, value VARCHAR(256))");
-      sql.execute("DELETE FROM config WHERE id='version'");
-      sql.execute("INSERT INTO config (id, value) VALUES ('version', '" + dbVersion + "')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('port', '5060')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('rtpmin', '32768')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('rtpmax', '65535')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('anon', 'false')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('route', 'false')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('defaultoutroutetable', 'default')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('binpath', 'invalid')");  //each time the service starts it will set this value
-      sql.execute("INSERT INTO config (id, value) VALUES ('videoCodecs', 'H264,VP8')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('relayAudio', 'true')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('relayVideo', 'true')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('moh', '')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('http', '80')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('https', '443')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('hideAdmin', 'false')");
-      sql.execute("INSERT INTO config (id, value) VALUES ('disableWebRTC', 'false')");
-      sql.execute("CREATE TABLE notices (msg VARCHAR(64) NOT NULL, plugin VARCHAR(16), pg VARCHAR(16))");
-      sql.execute("CREATE TABLE exts (ext VARCHAR(16) NOT NULL UNIQUE, display VARCHAR(64) NOT NULL, cid VARCHAR(16), pass VARCHAR(16) NOT NULL)");
-      sql.execute("CREATE TABLE extopts (ext VARCHAR(16) NOT NULL, id VARCHAR(16) NOT NULL, value VARCHAR(32), UNIQUE (ext, id))");  //voicemail, routetable, block1, block011, etc.
-      sql.execute("CREATE TABLE trunks (trunk VARCHAR(16) NOT NULL UNIQUE, host VARCHAR(255) NOT NULL, cid VARCHAR(16) NOT NULL DEFAULT '0000000000', register VARCHAR(512), outrules CLOB, inrules CLOB, routetable VARCHAR(16) NOT NULL DEFAULT 'default')");
-      sql.execute("CREATE TABLE outroutetables (routetable VARCHAR(16) NOT NULL UNIQUE)");
-      sql.execute("INSERT INTO outroutetables (routetable) VALUES ('default')");  //can not be deleted/edited
-      sql.execute("CREATE TABLE outroutes (routetable VARCHAR(16) NOT NULL, route VARCHAR(16) NOT NULL, cid VARCHAR(16), patterns CLOB NOT NULL, trunks CLOB NOT NULL, priority INT NOT NULL, UNIQUE (routetable, route))");
-      sql.execute("CREATE TABLE inroutes (route VARCHAR(16) NOT NULL UNIQUE, did VARCHAR(16), cid VARCHAR(16), dest VARCHAR(16))");
-      sql.execute("CREATE TABLE ivrs (ext VARCHAR(16) NOT NULL UNIQUE, display VARCHAR(64) NOT NULL, script CLOB NOT NULL)");
-      sql.execute("CREATE TABLE queues (ext VARCHAR(16) NOT NULL UNIQUE, display VARCHAR(64) NOT NULL, agents CLOB NOT NULL, message VARCHAR(256) NOT NULL)");
-      if (verb.equals("initdb")) msg = "Database created"; else msg = "Database upgraded";
     }
     StringBuilder html = new StringBuilder();
 
     if (msg.length() > 0) html.append("<font color=#ff0000>" + msg + "</font>");
     html.append("<div class=table>");
     html.append("<div class=notice>Notices</div>");
-    String res = sql.select1value("SELECT value FROM config WHERE id='version'");
+    String res = Database.getConfig("version");
     if (res == null) {
       html.append("<div class=noticeitem>");
       html.append(link("core", "status", "verb=initdb", "Database not initialized"));
       html.append("</div>");
-    } else if (!res.equals(dbVersion)) {
+    } else if (!res.equals(Database.dbVersion)) {
       html.append("<div class=noticeitem>");
       html.append(link("core", "status", "verb=upgradedb", "Database upgrade required"));
       html.append("</div>");
     }
-    res = sql.select1value("SELECT passmd5 FROM users WHERE userid='admin'");
+    res = Database.getUserPassword("admin");
     if ((res == null) || (res.equals("21232f297a57a5a743894a0e4a801fc3"))) {
       html.append("<div class=noticeitem>");
       html.append(link("core", "admin", "", "Default Admin Password in use"));
       html.append("</div>");
-    }
-    String notices[][] = sql.select("SELECT msg, plugin, pg FROM notices");
-    if (notices != null) {
-      for(int a=0;a<notices.length;a++) {
-        html.append("<div class=noticeitem>");
-        if ((notices[a][1] == null) || (notices[a][2] == null)) {
-          html.append(notices[a][0]);
-        } else {
-          html.append(link(notices[a][1], notices[a][2], "", notices[a][0]));
-        }
-        html.append("</div>");
-      }
     }
     html.append("</div>");
 
     return html.toString();
   }
 
-  private String doTrunksPage(SQL sql, String args[]) {
-    String verb = "", trunk = "", cid = "", host = "", register = "", msg = "", outrules = "", inrules = "", edittrunk= "", sure = "";
+  private String doTrunksPage(String args[]) {
+    String verb = "", name = "", cid = "", host = "", register = "", msg = "", outrules = "", inrules = "", edittrunk= "", sure = "";
     for(int a=0;a<args.length;a++) {
       int x = args[a].indexOf("=") + 1;
       if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("trunk=")) trunk = args[a].substring(x);
+      if (args[a].startsWith("trunk=")) name = args[a].substring(x);
       if (args[a].startsWith("edittrunk=")) edittrunk = args[a].substring(x);
       if (args[a].startsWith("cid=")) cid = args[a].substring(x);
       if (args[a].startsWith("host=")) host = args[a].substring(x);
@@ -1431,28 +1337,25 @@ public class WebConfig implements WebHandler {
       if (args[a].startsWith("sure=")) sure = args[a].substring(x);
     }
     cid = numbersOnly(cid);
-    if (trunk.length() == 0) verb = "";
+    if (name.length() == 0) verb = "";
     if (verb.equals("del")) {
       if (sure.equalsIgnoreCase("on")) {
-        if (sql.execute("DELETE FROM trunks WHERE trunk=" + sql.quote(trunk))) {
-          msg = "Trunk deleted";
-        } else {
-          msg = "Failed to delete";
-        }
+        Database.deleteTrunk(name);
+        msg = "Trunk deleted";
       } else {
         msg = "Please confirm delete action";
       }
-      trunk = "";
+      name = "";
     }
     if (verb.equals("view")) {
-      edittrunk = trunk;
-      String trunks[] = sql.select1row("SELECT host,cid,outrules,inrules,register FROM trunks WHERE trunk=" + sql.quote(trunk));
-      if (trunks != null) {
-        host = trunks[0];
-        cid = trunks[1];
-        outrules = trunks[2];
-        inrules = trunks[3];
-        register = trunks[4];
+      edittrunk = name;
+      TrunkRow row = Database.getTrunk(name);
+      if (row != null) {
+        host = row.host;
+        cid = row.cid;
+        outrules = row.outrules;
+        inrules = row.inrules;
+        register = row.register;
       }
     }
     if (verb.equals("add")) {
@@ -1461,18 +1364,21 @@ public class WebConfig implements WebHandler {
       inrules = convertString(inrules).replaceAll("\r\n", ":");
       inrules = patternsOnly(inrules);
       register = convertString(register);
-      if (sql.execute("INSERT INTO trunks (trunk, host, cid, outrules, inrules, register) VALUES (" + sql.quote(trunk) + "," + sql.quote(host) + "," + sql.quote(cid) + ","
-      + sql.quote(outrules) + "," + sql.quote(inrules) + "," + sql.quote(register) + ")")) {
-        msg = "Trunk added";
-        trunk = "";
-        host = "";
-        cid = "";
-        register = "";
-        outrules = "";
-        inrules = "";
-      } else {
-        msg = "Failed to add:" + sql.getLastException();
-      }
+      TrunkRow row = new TrunkRow();
+      row.name = name;
+      row.host = host;
+      row.cid = cid;
+      row.inrules = inrules;
+      row.outrules = outrules;
+      row.register = register;
+      Database.addTrunk(row);
+      msg = "Trunk added";
+      name = "";
+      host = "";
+      cid = "";
+      register = "";
+      outrules = "";
+      inrules = "";
     }
     if (verb.equals("edit")) {
       outrules = convertString(outrules).replaceAll("\r\n", ":");
@@ -1480,17 +1386,24 @@ public class WebConfig implements WebHandler {
       inrules = convertString(inrules).replaceAll("\r\n", ":");
       inrules = patternsOnly(inrules);
       register = convertString(register);
-      if (sql.execute("UPDATE trunks SET trunk=" + sql.quote(trunk) + ",host=" + sql.quote(host) + ",cid=" + sql.quote(cid) + ",outrules=" + sql.quote(outrules)
-      + ",inrules=" + sql.quote(inrules) + ",register=" + sql.quote(register) + " WHERE trunk=" + sql.quote(edittrunk))) {
+      TrunkRow row = Database.getTrunk(name);
+      if (row != null) {
+        row.name = name;
+        row.host = host;
+        row.cid = cid;
+        row.inrules = inrules;
+        row.outrules = outrules;
+        row.register = register;
+        Database.saveTrunks();
         msg = "Trunk edited";
-        trunk = "";
+        name = "";
         host = "";
         cid = "";
         register = "";
         outrules = "";
         inrules = "";
       } else {
-        msg = "Failed to edit:" + sql.getLastException();
+        msg = "Failed to edit";
         verb = "view";
       }
     }
@@ -1500,17 +1413,17 @@ public class WebConfig implements WebHandler {
     html.append("<tr><td width=100%>");
     if (msg.length() > 0) html.append("<font color=#ff0000>" + msg + "</font><br>");
     if (verb.equals("view")) {
-      html.append(form("core", "trunks") + "<input type=hidden name=verb value=del><input type=hidden name=trunk value=" + sql.quote(trunk));
+      html.append(form("core", "trunks") + "<input type=hidden name=verb value=del><input type=hidden name=trunk value=" + SQL.quote(name));
       html.append("><input type=submit value='Delete Trunk'>" + "<input type=checkbox name=sure>I'm Sure</form>");
     }
     html.append(form("core", "trunks"));
     html.append("<input type=hidden name=verb value=" + (verb.equals("view") ? "edit" : "add") + ">");
-    if (verb.equals("view")) html.append("<input type=hidden name=edittrunk value=" + sql.quote(edittrunk) + ">");
+    if (verb.equals("view")) html.append("<input type=hidden name=edittrunk value=" + SQL.quote(edittrunk) + ">");
     html.append("<table>");
-    html.append("<tr><td> Trunk: </td><td> <input name=trunk value=" + sql.quote(trunk) + "</td></tr>");
-    html.append("<tr><td> Host: </td><td> <input name=host value=" + sql.quote(host) + "></td><td>domain_or_ip[:port] (default port = 5060)</td></tr>");
-    html.append("<tr><td nowrap> Override Caller ID: </td><td> <input name=cid value=" + sql.quote(cid) + "></td><td>(optional)</td></tr>");
-    html.append("<tr><td> Register String: </td><td> <input name=register value=" + sql.quote(register) + "></td><td>(optional) [user:pass@host/did]</td></tr>");
+    html.append("<tr><td> Trunk: </td><td> <input name=trunk value=" + SQL.quote(name) + "</td></tr>");
+    html.append("<tr><td> Host: </td><td> <input name=host value=" + SQL.quote(host) + "></td><td>domain_or_ip[:port] (default port = 5060)</td></tr>");
+    html.append("<tr><td nowrap> Override Caller ID: </td><td> <input name=cid value=" + SQL.quote(cid) + "></td><td>(optional)</td></tr>");
+    html.append("<tr><td> Register String: </td><td> <input name=register value=" + SQL.quote(register) + "></td><td>(optional) [user:pass@host/did]</td></tr>");
     html.append("<tr><td> Dial Out Rules: </td><td> <textarea name=outrules cols=20 rows=10>");
       String lns[] = outrules.split(":");
       for(int a=0;a<lns.length;a++) html.append(lns[a]);
@@ -1550,10 +1463,10 @@ public class WebConfig implements WebHandler {
     html.append("</form>");
     html.append("</td><td width=2 bgcolor=#000000></td><td width=180>");
       html.append("<div class=menuitem>" + link("core", "trunks", "", "Add New") + "</div>");
-      String trunks[] = sql.select1col("SELECT trunk FROM trunks");
+      TrunkRow[] trunks = Database.getTrunks();
       if (trunks != null) {
         for(int a=0;a<trunks.length;a++) {
-          html.append("<div class=menuitem>" + link("core", "trunks", "verb=view&trunk=" + trunks[a], "&lt;" + trunks[a] + "&gt;") + "</div>");
+          html.append("<div class=menuitem>" + link("core", "trunks", "verb=view&trunk=" + trunks[a].name, "&lt;" + trunks[a].name + "&gt;") + "</div>");
         }
       }
     html.append("</td></tr></table>");
@@ -1561,46 +1474,80 @@ public class WebConfig implements WebHandler {
     return html.toString();
   }
 
-  private String getPluginPage(String plugin, String pg, SQL sql, String args[], WebRequest req) {
+  private String getPluginPage(String plugin, String pg, String args[], WebRequest req) {
     //currently plugin is only "core" - the idea was to allow other plugins - not likely
     if (!plugin.equals("core")) return "Plugin does not exist";
     if (pg.equals("blank")) {
-      return doBlankPage(sql, args);
+      return doBlankPage(args);
     }
     else if (pg.equals("admin")) {
-      return doAdminPage(sql, args);
+      return doAdminPage(args);
     }
     else if (pg.equals("conf")) {
-      return doConfPage(sql, args);
+      return doConfPage(args);
     }
     else if (pg.equals("exts")) {
-      return doExtsPage(sql, args);
+      return doExtsPage(args);
     }
     else if (pg.equals("inroutes")) {
-      return doInRoutesPage(sql, args);
+      return doInRoutesPage(args);
     }
     else if (pg.equals("ivrs")) {
-      return doIVRPage(sql, args);
+      return doIVRPage(args);
     }
     else if (pg.equals("msgs")) {
-      return doMsgsPage(sql, args, req);
+      return doMsgsPage(args, req);
     }
     else if (pg.equals("outroutes")) {
-      return doOutRoutesPage(sql, args);
+      return doOutRoutesPage(args);
     }
     else if (pg.equals("settings")) {
-      return doSettingsPage(sql, args, req);
+      return doSettingsPage(args, req);
     }
     else if (pg.equals("status")) {
-      return doStatusPage(sql, args);
+      return doStatusPage(args);
     }
     else if (pg.equals("trunks")) {
-      return doTrunksPage(sql, args);
+      return doTrunksPage(args);
     }
     else if (pg.equals("queues")) {
-      return doQueuesPage(sql, args);
+      return doQueuesPage(args);
     }
     return "Page does not exist";
+  }
+
+  private static String pages[][] = {
+    // plugin, pg, display, cat
+    {"core", "status", "System Status", "General"},
+    {"core", "admin", "Administrator", "General"},
+    {"core", "exts", "Extensions", "General"},
+    {"core", "ivrs", "IVR", "General"},
+    {"core", "conf", "Conference", "General"},
+    {"core", "msgs", "Messsages", "General"},
+    {"core", "trunks", "Trunks", "General"},
+    {"core", "settings", "Settings", "General"},
+    {"core", "queues", "Queues", "General"},
+    {"core", "outroutes", "Outbound Routes", "Routing"},
+    {"core", "inroutes", "Inbound Routes", "Routing"},
+  };
+
+  public String listPages(String id, String plugin, String pluginpg) {
+    StringBuffer list = new StringBuffer();
+    String lastCat = "";
+    for(int a=0;a<pages.length;a++) {
+      if (!pages[a][3].equals(lastCat)) {
+        lastCat = pages[a][3];
+        list.append("<div class=menucat>" + pages[a][3] + "</div>");
+      }
+      if (plugin.equalsIgnoreCase(pages[a][0]) && pluginpg.equalsIgnoreCase(pages[a][1])) {
+        list.append("<div class=menuitemselected>");
+      } else {
+        list.append("<div class=menuitem>");
+      }
+      list.append("<a href='?plugin=" + pages[a][0] + "&pluginpg=" + pages[a][1] + "'>" + pages[a][2] + "</a></div>");
+    }
+    return list.toString();
+
   }
 
   public void doAdmin(WebRequest req, WebResponse res) throws Exception {
@@ -1612,11 +1559,6 @@ public class WebConfig implements WebHandler {
       return;
     }
     String args[] = req.getQueryString().split("&");
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) {
-      res.write("SQL connection failed".getBytes());
-      return;
-    }
     String plugin = "core";
     String pg;
     if (isAdmin(id)) {
@@ -1628,17 +1570,17 @@ public class WebConfig implements WebHandler {
       if (args[a].startsWith("plugin=")) plugin = args[a].substring(7);
       if (args[a].startsWith("pluginpg=")) pg = args[a].substring(9);
     }
-    if (!isAllowed(sql, id, plugin, pg)) { redir(res, "core", "blank"); return; }
+    if (!isAllowed(id, plugin, pg)) { redir(res, "core", "blank"); return; }
 
     html.append("<div style='overflow: auto;'>");
     html.append("<table border=0 width=100% height=100% cellpadding=0 cellspacing=0>");
     html.append("<tr height=64><td width=100% colspan=2><a href='http://jfpbx.sourceforge.net'><img border=0 src=/static/img/logo.png></a>");
     html.append("<a href='/logout' style='float:right;'>Logout</a></td></tr>");
     html.append("<tr><td style='width: 180px; vertical-align:top;'>");
-    html.append(listPlugins(sql, id, plugin, pg));
+    html.append(listPages(id, plugin, pg));
     html.append("</td><td style='vertical-align:top; width: 100%;'>");
     html.append("<div style='border-top: 2px solid #000000; border-left: 2px solid #000000; height: 100%;'>");
-    html.append(getPluginPage(plugin, pg, sql, args, req));
+    html.append(getPluginPage(plugin, pg, args, req));
     html.append("</div>");
     html.append("</td></tr>");
     html.append("</table>");
@@ -1659,8 +1601,6 @@ public class WebConfig implements WebHandler {
     html.append("</div>");
 
     res.getOutputStream().write(html.toString().getBytes());
-
-    sql.close();
   }
 
   private void noCache(WebResponse res) {
@@ -1703,48 +1643,11 @@ public class WebConfig implements WebHandler {
   }
 
   //Core API
-  public String listPlugins(SQL sql, String id, String plugin, String pluginpg) {
-    String res[][] = sql.select("SELECT webplugins.plugin,webplugins.pg,webplugins.display,webplugins.cat FROM webplugins JOIN webpluginusers" +
-      " ON webplugins.plugin = webpluginusers.plugin AND webplugins.pg = webpluginusers.pg" +
-      " WHERE webpluginusers.userid=" + sql.quote(id) + " OR webpluginusers.userid='*'" +
-      " ORDER BY webplugins.cat");
-    if (res == null) {
-      if (isAdmin(id)) {
-        //allow init setup
-        res = new String[1][4];
-        res[0][0] = "core";
-        res[0][1] = "status";
-        res[0][2] = "System Status (init)";
-        res[0][3] = "General";
-      } else {
-        return "";
-      }
-    }
-    StringBuffer list = new StringBuffer();
-    String lastCat = "";
-//    list.append("length=" + res.length);
-    for(int a=0;a<res.length;a++) {
-      if (!res[a][3].equals(lastCat)) {
-        lastCat = res[a][3];
-        list.append("<div class=menucat>" + res[a][3] + "</div>");
-      }
-      if (plugin.equalsIgnoreCase(res[a][0]) && pluginpg.equalsIgnoreCase(res[a][1])) {
-        list.append("<div class=menuitemselected>");
-      } else {
-        list.append("<div class=menuitem>");
-      }
-      list.append("<a href='?plugin=" + res[a][0] + "&pluginpg=" + res[a][1] + "'>" + res[a][2] + "</a></div>");
-    }
-    return list.toString();
-  }
   public boolean isAdmin(String id) {
     return id.equals("admin");
   }
-  public boolean isAllowed(SQL sql, String id, String plugin, String pluginpg) {
-    if (isAdmin(id)) return true;
-    String res[][] = sql.select("SELECT plugin,pg FROM webpluginusers WHERE (userid=" + sql.quote(id) + " OR userid='*') AND plugin=" + sql.quote(plugin) +
-      " AND pg=" + sql.quote(pluginpg));
-    return (res.length > 0);
+  public boolean isAllowed(String id, String plugin, String pluginpg) {
+    return id.equals("admin");
   }
   public void redir(WebResponse response, String plugin, String pluginpg) {
     try {

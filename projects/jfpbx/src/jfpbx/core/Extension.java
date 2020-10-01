@@ -1,4 +1,4 @@
-package jpbx.core;
+package jfpbx.core;
 
 public class Extension {
   public Extension(String ext, long expires, String remoteip, int remoteport) {

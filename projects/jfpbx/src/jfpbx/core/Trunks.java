@@ -1,9 +1,13 @@
-package jpbx.plugins.core;
+package jfpbx.core;
 
+import jfpbx.db.TrunkRow;
+import jfpbx.db.ExtensionRow;
+import jfpbx.db.Database;
 import java.util.*;
+
 import javaforce.*;
 import javaforce.voip.*;
-import jpbx.core.*;
+
 
 /** Low-level plugin for handling INVITEs from extensions to trunks. */
 
@@ -28,7 +32,7 @@ public class Trunks implements Plugin, DialChain {
   }
 //interface DialChain
   public int getPriority() {return pid;}
-  public int onInvite(CallDetailsPBX cd, SQL sql, boolean src) {
+  public int onInvite(CallDetailsPBX cd, boolean src) {
     if (cd.invited) {
       //reINVITE
       api.connect(cd);
@@ -45,11 +49,11 @@ public class Trunks implements Plugin, DialChain {
     }
     //dial outbound from extension
     if (!cd.authorized) {
-      if (cd.route) route_call(cd, sql);  //TODO : route call from one trunk to another ???
+      if (cd.route) route_call(cd);  //TODO : route call from one trunk to another ???
       return -1;  //??? pid ???
     }
     if ((cd.user == null) || (cd.user.length() == 0)) return -1;
-    String ext = sql.select1value("SELECT ext FROM exts WHERE ext=" + sql.quote(cd.user));
+    ExtensionRow ext = Database.getExtension(cd.user);
     if (ext == null) return -1;  //an extension is not dialing
     if (!api.isRegistered(cd.user)) return -1;
     if (cd.user.equals(cd.dialed)) return -1;  //voicemail may intercept next
@@ -60,22 +64,24 @@ public class Trunks implements Plugin, DialChain {
     cd.pbxdst.contact = cd.src.contact;  //BUG : should this be changed to DID from trunk register string ???
     cd.pbxdst.branch = cd.src.branch;
     api.connect(cd);
-    cd.trunks = api.getTrunks(cd.dialed, cd.user, sql);
+    Dial dial = new Dial();
+    dial.number = cd.dialed;
+    cd.trunks = api.getTrunks(dial, cd.user);
     if ((cd.trunks == null) || (cd.trunks.length < 2)) return -1;  //no routes on this trunk
     api.reply(cd, 100, "TRYING", null, false, true);
-    cd.dialed = cd.trunks[0];  //apply new dialed after outroute pattern is applied
+    cd.dialed = dial.number;  //apply new dialed after outroute pattern is applied
     cd.trunkidx = 1;
     cd.lastcode = -1;
     cd.invited = true;
-    tryTrunk(cd, sql);
+    tryTrunk(cd);
     return pid;
   }
-  public void onRinging(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onRinging(CallDetailsPBX cd, boolean src) {
     if (src) return;
     cd.trunkok = true;
     api.reply(cd, 180, "RINGING", null, false, true);
   }
-  public void onSuccess(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onSuccess(CallDetailsPBX cd, boolean src) {
     if (!cd.cmd.equals("INVITE")) return;
     synchronized(cd.lock) {
       if (cd.cancelled) return;
@@ -97,7 +103,7 @@ public class Trunks implements Plugin, DialChain {
     cd.cmd = "INVITE";
     api.reply(cd, 200, "OK", null, true, !src);  //send 200 (NOTE : ACK is ignored (already sent))
   }
-  public void onCancel(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onCancel(CallDetailsPBX cd, boolean src) {
     //extension "CANCEL"ed call
     if (!src) return;
     synchronized(cd.lock) {
@@ -109,7 +115,7 @@ public class Trunks implements Plugin, DialChain {
     api.issue(cd, null, false, false);
     api.disconnect(cd);
   }
-  public void onError(CallDetailsPBX cd, SQL sql, int code, boolean src) {
+  public void onError(CallDetailsPBX cd, int code, boolean src) {
     if (!cd.connected) {
       cd.lastcode = code;
     }
@@ -117,12 +123,12 @@ public class Trunks implements Plugin, DialChain {
     cd.cmd = "ACK";
     api.issue(cd, null, false, src);
   }
-  public void onTrying(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onTrying(CallDetailsPBX cd, boolean src) {
     if (!src) {
       cd.trunkdelay = 2;  //give trunk 10 more secs
     }
   }
-  public void onBye(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onBye(CallDetailsPBX cd, boolean src) {
     if (src) {
       api.log(cd, "TRUNK : src terminated call with BYE");
       cd.pbxdst.cseq++;
@@ -141,15 +147,13 @@ public class Trunks implements Plugin, DialChain {
     }
     api.disconnect(cd);
   }
-  public void onFeature(CallDetailsPBX cd, SQL sql, String cmd, String cmddata, boolean src) {
+  public void onFeature(CallDetailsPBX cd, String cmd, String cmddata, boolean src) {
   }
-  private void tryTrunk(CallDetailsPBX cd, SQL sql) {
+  private void tryTrunk(CallDetailsPBX cd) {
     //try INVITE to cd.trunks[cd.trunkidx]
-    String trunk = cd.trunks[cd.trunkidx];
+    TrunkRow trunk = cd.trunks[cd.trunkidx];
     api.log(cd, "TRUNK : Trying trunk " + trunk);
-    String host_rules[] = sql.select1row("SELECT host,outrules FROM trunks WHERE trunk=" + sql.quote(trunk));
-    if ((host_rules == null) || (host_rules[0] == null)) return;  //ohoh
-    String host = host_rules[0];
+    String host = trunk.host;
     int idx = host.indexOf(':');
     if (idx == -1) {
       cd.pbxdst.host = host;
@@ -158,7 +162,7 @@ public class Trunks implements Plugin, DialChain {
       cd.pbxdst.host = host.substring(0, idx);
       cd.pbxdst.port = Integer.valueOf(host.substring(idx+1));
     }
-    String rulesStr = host_rules[1];
+    String rulesStr = trunk.outrules;
     if (rulesStr != null) {
       cd.pbxdst.to[1] = null;
       String rules[] = rulesStr.split(":");
@@ -207,10 +211,7 @@ public class Trunks implements Plugin, DialChain {
               api.reply(cd, cd.lastcode, "ERROR", null, false, true);
               return;
             }
-            SQL sql = new SQL();
-            if (!sql.connect(Paths.jdbc)) return;  //ohoh
-            tryTrunk(cd, sql);
-            sql.close();
+            tryTrunk(cd);
           }
         }
       }
@@ -227,7 +228,7 @@ public class Trunks implements Plugin, DialChain {
       cd.timer = null;
     }
   }
-  private void route_call(CallDetailsPBX cd, SQL sql) {
+  private void route_call(CallDetailsPBX cd) {
     //TODO : route call from one trunk to another
   }
 }

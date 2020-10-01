@@ -1,4 +1,4 @@
-package jpbx.core;
+package jfpbx.core;
 
 /** Paths.
  *
@@ -18,10 +18,7 @@ public class Paths {
   public static String logs;  //stores log files
   public static String lib;  //used to store voicemail
   public static String etc;  //used to store WebSecure key
-  public static String dbPath;
-  public static String jdbc = "jdbc:derby:jfpbx";
-
-  //NOTE:SQL determines it's own path to use.
+  public static String db;
 
   public static void init() {
     lang = "en";
@@ -44,7 +41,7 @@ public class Paths {
       logs = base + "/logs/";
       lib = base + "/";
       etc = base + "/";
-      dbPath = base;
+      db = base + "/db";
     } else {
       //Linux
       sounds = "/usr/share/sounds/jpbx/";
@@ -52,13 +49,14 @@ public class Paths {
       logs = "/var/log/jpbx/";
       lib = "/var/lib/jpbx/";
       etc = "/etc/";
-      dbPath = lib;
+      db = lib + "/db";
     }
-    System.setProperty("derby.system.home", dbPath);
+    System.setProperty("derby.system.home", db);
     //ensure some folders exist
     new File(logs).mkdirs();
     new File(lib).mkdirs();
     new File(etc).mkdirs();
+    new File(db).mkdirs();
   }
 
   public static void setLang(String newLang) {

@@ -1,10 +1,13 @@
-package jpbx.plugins.core;
+package jfpbx.core;
 
+import jfpbx.db.ExtensionRow;
+import jfpbx.db.Database;
+import jfpbx.core.Conference;
 import java.util.*;
 
 import javaforce.*;
 import javaforce.voip.*;
-import jpbx.core.*;
+
 
 /** Low-level plugin for handling INVITEs to IVR. */
 
@@ -45,13 +48,13 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
 //interface DialChain
   public int getPriority() {return pid;}
 
-  public int onInvite(CallDetailsPBX cd, SQL sql, boolean src) {
+  public int onInvite(CallDetailsPBX cd, boolean src) {
     //NOTE:There is no dst used in IVR (it's a one-sided call)
     if (!cd.authorized) {
       if (!cd.anon) return -1;
     }
-    String ext = sql.select1value("SELECT ext FROM ivrs WHERE ext=" + sql.quote(cd.dialed));
-    if (ext == null) return -1;  //an IVR is not being dialed
+    ExtensionRow ivr = Database.getIVR(cd.dialed);
+    if (ivr == null) return -1;  //an IVR is not being dialed
     if (cd.invited) {
       //reINVITE
       api.log(cd, "IVR : reINVITE");
@@ -62,7 +65,7 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
       api.reply(cd, 200, "OK", null, true, true);
       return pid;
     }
-    String script = api.convertString(sql.select1value("SELECT script FROM ivrs WHERE ext=" + sql.quote(cd.dialed)));
+    String script = api.convertString(ivr.script);
     cd.ivrscript = script.replaceAll("\r", " ").replaceAll("\n", " ").replaceAll("\t", " ").replaceAll(">", " > ").replaceAll("<", " < ").replaceAll("=", " = ")
       .replaceAll("!", " ! ").replaceAll("[+]", " + ").split(" ");
     cd.ivrtag = 0;
@@ -95,26 +98,26 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
     cd.connected = true;
     cd.pbxsrc.to = SIP.replacetag(cd.pbxsrc.to, SIP.generatetag());  //assign tag
     api.reply(cd, 200, "OK", null, true, true);
-    start(cd, sql);
+    start(cd);
     return pid;
   }
 
-  public void onRinging(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onRinging(CallDetailsPBX cd, boolean src) {
   }
 
-  public void onSuccess(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onSuccess(CallDetailsPBX cd, boolean src) {
   }
 
-  public void onCancel(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onCancel(CallDetailsPBX cd, boolean src) {
   }
 
-  public void onError(CallDetailsPBX cd, SQL sql, int code, boolean src) {
+  public void onError(CallDetailsPBX cd, int code, boolean src) {
   }
 
-  public void onTrying(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onTrying(CallDetailsPBX cd, boolean src) {
   }
 
-  public void onBye(CallDetailsPBX cd, SQL sql, boolean src) {
+  public void onBye(CallDetailsPBX cd, boolean src) {
     if (!src) return;
     api.reply(cd, 200, "OK", null, false, true);
     if (cd.audioRelay != null) {
@@ -126,7 +129,7 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
     }
   }
 
-  public void onFeature(CallDetailsPBX cd, SQL sql, String cmd, String cmddata, boolean src) {
+  public void onFeature(CallDetailsPBX cd, String cmd, String cmddata, boolean src) {
   }
 
 //interface PBXEventHandler
@@ -297,7 +300,7 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
   }
 
 //private code
-  protected void start(CallDetailsPBX cd, SQL sql) {
+  protected void start(CallDetailsPBX cd) {
     String lang = "en";  //TODO : query for ext
     cd.ivrstate = State.IVR_NONE;
     cd.ivrstring = new StringBuffer();
@@ -310,7 +313,7 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
       stream.port = -1;
     }
     cd.audioRelay.start_src(stream);
-    while (runScript(cd, sql));
+    while (runScript(cd));
   }
 
   private String gettag(CallDetailsPBX cd) {
@@ -339,7 +342,7 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
     return cd.ivrvars.get(key);
   }
 
-  private boolean runScript(CallDetailsPBX cd, SQL sql) {
+  private boolean runScript(CallDetailsPBX cd) {
     String tag = gettag(cd);
     if (tag.length() == 0) {
       api.log(cd, "IVR error : tag = zero length");  //should never happen
@@ -520,13 +523,6 @@ public class IVR implements Plugin, DialChain, PBXEventHandler {
     api.log(cd, "IVR:Unknown command:"+tag);
     hangup(cd);
     return false;
-  }
-
-  private void runScript(CallDetailsPBX cd) {
-    SQL sql = new SQL();
-    if (!sql.connect(Paths.jdbc)) return;
-    while (runScript(cd, sql)) {}
-    sql.close();
   }
 
   private void hangup(CallDetailsPBX cd) {

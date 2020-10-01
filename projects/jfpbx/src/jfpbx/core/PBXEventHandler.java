@@ -1,4 +1,4 @@
-package jpbx.core;
+package jfpbx.core;
 
 public interface PBXEventHandler {
   public static final int DIGIT = 1;  //a DTMF digit receieved

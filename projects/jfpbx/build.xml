@@ -8,24 +8,16 @@
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base"/>
-  <property name="version" value="0.28"/>
+  <property name="version" value="0.30"/>
 
   <property name="candle_extra" value=""/>
-  <property name="light_extra" value="-b plugins -b sounds\\en"/>
+  <property name="light_extra" value="-b sounds\\en"/>
 
   <import file="../../base.xml"/>
 
   <target name="depjars">
     <jar destfile="javaforce.jar">
       <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfpbx.sourceforge.net"/>
-      </manifest>
-    </jar>
-    <jar destfile="derby.jar">
-      <zipfileset src="../../jars/derby.jar"/>
       <manifest>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>
@@ -54,7 +46,7 @@
 
   <target name="core" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jfpbxcore.jar" includes="jpbx/core/*.class" basedir="${build}">
+    <jar destfile="jfpbxcore.jar" includes="**/*.class" basedir="${build}">
       <fileset dir="static" includes="*"/>
       <fileset dir="." includes="*.png"/>
       <fileset dir="." includes="*.ico"/>
@@ -64,35 +56,19 @@
     </jar>
   </target>
 
-  <target name="plugins" depends="compile" description="build jar file">
-    <!-- Build plugins jar files from class files -->
-    <jar destfile="plugins/extensions.jar" includes="jpbx/plugins/core/Extensions*.class" basedir="${build}"/>
-    <jar destfile="plugins/trunks.jar" includes="jpbx/plugins/core/Trunks*.class" basedir="${build}"/>
-    <jar destfile="plugins/voicemail.jar" includes="jpbx/plugins/core/VoiceMail*.class" basedir="${build}"/>
-    <jar destfile="plugins/ivrs.jar">
-      <fileset dir="${build}" includes="jpbx/plugins/core/IVR*.class"/>
-      <fileset dir="${build}" includes="jpbx/plugins/core/Conference*.class"/>
-    </jar>
-    <jar destfile="plugins/queues.jar" includes="jpbx/plugins/core/Queues*.class" basedir="${build}"/>
-  </target>
-
-  <target name="jar" depends="core,plugins" description="build everything"/>
+  <target name="jar" depends="core" description="build everything"/>
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
     <mkdir dir="/usr/share/java/jfpbx"/>
     <mkdir dir="/var/log/jfpbx"/>
     <mkdir dir="/var/lib/jfpbx/voicemail"/>
-    <mkdir dir="/usr/share/java/jfpbx/plugins"/>
     <mkdir dir="/usr/share/sounds/jfpbx/en"/>
 
     <copy file="jfpbx.html" todir="/usr/share/jhelp"/>
     <copy file="${app}.service" todir="/lib/systemd/system"/>
     <copy todir="/usr/share/java/jfpbx">
       <fileset file="*.jar"/>
-    </copy>
-    <copy todir="/usr/share/java/jfpbx/plugins">
-      <fileset file="plugins/*.jar"/>
     </copy>
     <copy todir="/usr/share/sounds/jfpbx/en">
       <fileset file="sounds/en/*.wav"/>

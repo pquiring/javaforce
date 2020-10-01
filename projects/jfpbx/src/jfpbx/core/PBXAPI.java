@@ -1,7 +1,9 @@
-package jpbx.core;
+package jfpbx.core;
 
+import jfpbx.db.TrunkRow;
 import javaforce.*;
 import javaforce.voip.*;
+
 
 /** Low-level and high-level APIs used by Plugins for processing SIP messages. */
 
@@ -18,7 +20,7 @@ public interface PBXAPI {
   public Extension getExtension(String ext);
   public String getlocalhost(CallDetailsPBX cd);
   public int getlocalport();
-  public String[] getTrunks(String dialed, String ext, SQL sql);
+  public TrunkRow[] getTrunks(Dial dialed, String ext);
   public String resolve(String host);  //resolve host to ip address
   public CallDetailsServer createCallDetailsServer();
   public void releaseCallDetails(CallDetails cd);
@@ -31,14 +33,14 @@ public interface PBXAPI {
   public String getCfg(String id);
   public SIPServerInterface getSIPServerInterface();
 
-  public int onInvite(CallDetailsServer cd, SQL sql, boolean src, int pid);
-  public void onCancel(CallDetailsServer cd, SQL sql, boolean src, int pid);
-  public void onError(CallDetailsServer cd, SQL sql, int code, boolean src, int pid);
-  public void onBye(CallDetailsServer cd, SQL sql, boolean src, int pid);
-  public void onSuccess(CallDetailsServer cd, SQL sql, boolean src, int pid);
-  public void onRinging(CallDetailsServer cd, SQL sql, boolean src, int pid);
-  public void onTrying(CallDetailsServer cd, SQL sql, boolean src, int pid);
-  public void onFeature(CallDetailsServer cd, SQL sql, String cmd, String data, boolean src, int pid);
+  public int onInvite(CallDetailsServer cd, boolean src, int pid);
+  public void onCancel(CallDetailsServer cd, boolean src, int pid);
+  public void onError(CallDetailsServer cd, int code, boolean src, int pid);
+  public void onBye(CallDetailsServer cd, boolean src, int pid);
+  public void onSuccess(CallDetailsServer cd, boolean src, int pid);
+  public void onRinging(CallDetailsServer cd, boolean src, int pid);
+  public void onTrying(CallDetailsServer cd, boolean src, int pid);
+  public void onFeature(CallDetailsServer cd, String cmd, String data, boolean src, int pid);
 
   /** Connects src with dst end points.
    * Creates RTP relays as needed.
