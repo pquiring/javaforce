@@ -206,7 +206,7 @@ public class Extensions implements Plugin, DialChain {
       cd.dialed = routes[route].dest;  //set new destination
       return true;
     }
-    String anon = Database.getConfig("anon");
+    String anon = Database.getConfig("anonymous");
     String route = Database.getConfig("route");
     cd.anon = anon.equals("true");
     cd.route = route.equals("true");

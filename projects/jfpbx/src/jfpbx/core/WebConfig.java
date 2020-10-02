@@ -1243,7 +1243,7 @@ public class WebConfig implements WebHandler {
     html.append("RTP Port Min : <input name=rtpmin value=" + Database.getConfig("rtpmin") + "> (1024-64534) (default:32768)<br>");
     html.append("RTP Port Max : <input name=rtpmax value=" + Database.getConfig("rtpmax") + "> (2023-65535) (default:65535)<br>");
     html.append("RTP Port Range must include at least 1000 ports and start on an even port number.<br>");
-    html.append("<input type=checkbox name=anon " + checked(Database.getConfig("anon")) + "> Anonymous Inbound Calls (allows calls from any source to extensions, voicemail, IVRs, etc.)<br>");
+    html.append("<input type=checkbox name=anon " + checked(Database.getConfig("anonymous")) + "> Anonymous Inbound Calls (allows calls from any source to extensions, voicemail, IVRs, etc.)<br>");
     html.append("<input type=checkbox name=route " + checked(Database.getConfig("route")) + "> Route Calls (route calls from one trunk to another) [not implemented yet]<br>");
     html.append("Video Conference Codecs : <input name=videoCodecs value=" + Database.getConfig("videoCodecs") + "> [comma list : H263,H263-1998,H263-2000,H264,VP8]<br>");
     html.append("<input type=checkbox name=relayAudio " + checked(Database.getConfig("relayAudio")) + "> Relay Audio Media (recommended)<br>");
