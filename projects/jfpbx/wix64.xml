@@ -36,7 +36,6 @@
         <File Id="jfpbxcore.jar" Source="jfpbxcore.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="bouncycastle.jar" Source="bouncycastle.jar"/>
-        <File Id="derby.jar" Source="derby.jar"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"
           Name="jfPBX"
