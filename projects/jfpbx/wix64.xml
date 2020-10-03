@@ -24,7 +24,6 @@
           <Directory Id="APPLICATIONDATADIRECTORY_SOUNDS" Name="sounds">
             <Directory Id="APPLICATIONDATADIRECTORY_SOUNDS_EN" Name="en"/>
           </Directory>
-          <Directory Id="APPLICATIONDATADIRECTORY_PLUGINS" Name="plugins"/>
         </Directory>
       </Directory>
     </Directory>
@@ -44,15 +43,6 @@
           Start="auto"
           ErrorControl="normal" />
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfPBX" Wait="yes" />
-      </Component>
-    </DirectoryRef>
-    <DirectoryRef Id="APPLICATIONDATADIRECTORY_PLUGINS">
-      <Component Id="pluginfiles" Guid="{A1E62DA3-6388-437B-AADD-4FFCCC947D16}" Win64="yes">
-        <File Source="extensions.jar"/>
-        <File Source="ivrs.jar"/>
-        <File Source="trunks.jar"/>
-        <File Source="voicemail.jar"/>
-        <File Source="queues.jar"/>
       </Component>
     </DirectoryRef>
 
@@ -103,7 +93,6 @@
     <!-- Step 3: Tell WiX to install the files -->
     <Feature Id="MainApplication" Title="Main Application" Level="1">
       <ComponentRef Id="appfiles" />
-      <ComponentRef Id="pluginfiles" />
       <ComponentRef Id="soundfiles" />
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentGroupRef Id="JRE" />
