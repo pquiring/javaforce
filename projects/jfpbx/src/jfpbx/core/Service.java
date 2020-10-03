@@ -27,6 +27,13 @@ public class Service implements SIPServerInterface, PBXAPI {
   private boolean relayAudio, relayVideo;
   private Timer timer;
 
+  //plugins
+  public Trunks pluginTrunks;
+  public Extensions pluginExtensions;
+  public VoiceMail pluginVoicemail;
+  public IVR pluginIvr;
+  public Queues pluginQueues;
+
   public static int sip_port;
 
   public boolean init() {
@@ -73,6 +80,8 @@ public class Service implements SIPServerInterface, PBXAPI {
     new File(Paths.lib + "voicemail").mkdirs();
     new File(Paths.logs).mkdirs();
 
+    initPlugins();
+
     ss.init(sip_port, this, TransportType.UDP);
 //    ss.enableQOP(true);  //test!
     //create timer to register trunks (every 110 seconds)
@@ -88,6 +97,42 @@ public class Service implements SIPServerInterface, PBXAPI {
     if (timer != null) {
       timer.cancel();
       timer = null;
+    }
+    uninitPlugins();
+  }
+  private void initPlugins() {
+    pluginTrunks = new Trunks();
+    pluginTrunks.init(this);
+    pluginExtensions = new Extensions();
+    pluginExtensions.init(this);
+    pluginVoicemail = new VoiceMail();
+    pluginVoicemail.init(this);
+    pluginIvr = new IVR();
+    pluginIvr.init(this);
+    pluginQueues = new Queues();
+    pluginQueues.init(this);
+  }
+
+  public void uninitPlugins() {
+    if (pluginTrunks != null) {
+      pluginTrunks.uninit(this);
+      pluginTrunks = null;
+    }
+    if (pluginExtensions != null) {
+      pluginExtensions.uninit(this);
+      pluginExtensions = null;
+    }
+    if (pluginVoicemail != null) {
+      pluginVoicemail.uninit(this);
+      pluginVoicemail = null;
+    }
+    if (pluginIvr != null) {
+      pluginIvr.uninit(this);
+      pluginIvr = null;
+    }
+    if (pluginQueues != null) {
+      pluginQueues.uninit(this);
+      pluginQueues = null;
     }
   }
   public void restart() {
@@ -551,6 +596,7 @@ public class Service implements SIPServerInterface, PBXAPI {
     try {
       TrunkRow trunks[] = Database.getTrunks();
       for(int trunk=0;trunk<trunks.length;trunk++) {
+        if (!trunks[trunk].doRegister()) continue;
         String register = trunks[trunk].register;  //user : password @ domain[:sip_port] [/ did]
         int idx = register.indexOf(":");
         if (idx == -1) continue;  //bad string

@@ -13,6 +13,9 @@ public class TrunkRow extends Row {
   public String host;
   public String cid;
   public String inrules, outrules;
+  public int flags;
+
+  public static int FLAG_REGISTER = 1;
 
   private static final int version = 1;
   public void readObject() throws Exception {
@@ -24,6 +27,7 @@ public class TrunkRow extends Row {
     cid = readString();
     inrules = readString();
     outrules = readString();
+    flags = readInt();
   }
   public void writeObject() throws Exception {
     super.writeObject();
@@ -34,5 +38,18 @@ public class TrunkRow extends Row {
     writeString(cid);
     writeString(inrules);
     writeString(outrules);
+    writeInt(flags);
+  }
+
+  public boolean doRegister() {
+    return (flags & FLAG_REGISTER) != 0;
+  }
+
+  public void setRegister(boolean state) {
+    if (state) {
+      flags |= FLAG_REGISTER;
+    } else {
+      flags &= -1 ^ FLAG_REGISTER;
+    }
   }
 }
