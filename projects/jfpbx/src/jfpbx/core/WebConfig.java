@@ -282,7 +282,7 @@ public class WebConfig implements WebHandler {
   }
 
   private String doExtsPage(String args[]) {
-    String verb = "", number = "", editext = "", cloneStart = "", cloneCount = "", display = "", cid = "", pass = "", msg = "", sure = "", vm = "", vmpass = "";
+    String verb = "", number = "", editext = "", cloneStart = "", cloneCount = "", display = "", cid = "", pass = "", routetable = "default", msg = "", sure = "", vm = "", vmpass = "";
     for(int a=0;a<args.length;a++) {
       int x = args[a].indexOf("=") + 1;
       if (args[a].startsWith("verb=")) verb = args[a].substring(x);
@@ -293,6 +293,7 @@ public class WebConfig implements WebHandler {
       if (args[a].startsWith("display=")) display = args[a].substring(x);
       if (args[a].startsWith("cid=")) cid = args[a].substring(x);
       if (args[a].startsWith("pass=")) pass = args[a].substring(x);
+      if (args[a].startsWith("routetable=")) routetable = args[a].substring(x);
       if (args[a].startsWith("sure=")) sure = args[a].substring(x);
       if (args[a].startsWith("vm=")) vm = args[a].substring(x);
       if (args[a].startsWith("vmpass=")) vmpass = args[a].substring(x);
@@ -317,6 +318,7 @@ public class WebConfig implements WebHandler {
         display = ext.display;
         cid = ext.cid;
         pass = ext.password;
+        routetable = ext.routetable;
         vm = ext.voicemail ? "true" : "false";
         vmpass = ext.voicemailpass;
       }
@@ -345,6 +347,7 @@ public class WebConfig implements WebHandler {
       ext.display = display;
       ext.cid = cid;
       ext.password = pass;
+      ext.routetable = routetable;
       ext.voicemail = vm.equals("true");
       ext.voicemailpass = vmpass;
       Database.addExtension(ext);
@@ -354,6 +357,7 @@ public class WebConfig implements WebHandler {
         display = "";
         cid = "";
         pass = "";
+        routetable = "";
         vm = "";
         vmpass = "";
       }
@@ -363,6 +367,7 @@ public class WebConfig implements WebHandler {
       ext.display = display;
       ext.cid = cid;
       ext.password = pass;
+      ext.routetable = routetable;
       ext.voicemail = vm.equals("true");
       ext.voicemailpass = vmpass;
       Database.saveExtensions();
@@ -372,6 +377,7 @@ public class WebConfig implements WebHandler {
         display = "";
         cid = "";
         pass = "";
+        routetable = "";
         vm = "";
         vmpass = "";
       } else {
@@ -383,6 +389,7 @@ public class WebConfig implements WebHandler {
       ExtensionRow ext = Database.getExtension(number);
       cid = ext.cid;
       pass = ext.password;
+      routetable = ext.routetable;
       vm = ext.voicemail ? "true" : "false";
       vmpass = ext.voicemailpass;
       try {
@@ -396,6 +403,7 @@ public class WebConfig implements WebHandler {
           ext.number = number;
           display = "" + idx;
           ext.display = display;
+          ext.routetable = routetable;
           ext.voicemail = vm.equals("true");
           ext.voicemailpass = vmpass;
           Database.addExtension(ext);
@@ -409,6 +417,7 @@ public class WebConfig implements WebHandler {
       display = "";
       cid = "";
       pass = "";
+      routetable = "";
       vm = "";
       vmpass = "";
     }
@@ -444,6 +453,7 @@ public class WebConfig implements WebHandler {
       html.append("<tr><td>Display Name:</td><td><input name=display value=" + SQL.quote(display) + "></td><td>(usually same as extension #)</td></tr>");
       html.append("<tr><td>Outbound Caller ID #:</td><td><input name=cid value=" + SQL.quote(cid) + "></td><td>(optional) (used if call sent to trunk)</td></tr>");
       html.append("<tr><td>SIP Password:</td><td><input name=pass value=" + SQL.quote(pass) + "></td></tr>");
+      html.append("<tr><td>Route Table:</td><td><input name=routetable value=" + SQL.quote(routetable) + "></td></tr>");
       html.append("<tr><td>VoiceMail:</td><td><input type=checkbox name=vm " + (vm.equals("true") ? "checked" : "") + "></td></tr>");
       html.append("<tr><td>VM Password:</td><td><input name=vmpass value=" + SQL.quote(vmpass) + "></td></tr>");
       html.append("</table>");
