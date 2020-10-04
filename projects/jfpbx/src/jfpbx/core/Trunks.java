@@ -49,16 +49,35 @@ public class Trunks implements Plugin, DialChain {
     }
     //dial outbound from extension
     if (!cd.authorized) {
+      JFLog.log("Trunks:call from unregistered source");
       if (cd.route) route_call(cd);  //TODO : route call from one trunk to another ???
       return -1;  //??? pid ???
     }
-    if ((cd.user == null) || (cd.user.length() == 0)) return -1;
+    if ((cd.user == null) || (cd.user.length() == 0)) {
+      JFLog.log("Trunks:invalid user");
+      return -1;
+    }
     ExtensionRow ext = Database.getExtension(cd.user);
-    if (ext == null) return -1;  //an extension is not dialing
-    if (!api.isRegistered(cd.user)) return -1;
-    if (cd.user.equals(cd.dialed)) return -1;  //voicemail may intercept next
+    if (ext == null) {
+      //an extension is not dialing
+      JFLog.log("Trunks:Call not from extension");
+      return -1;
+    }
+    if (!api.isRegistered(cd.user)) {
+      JFLog.log("Trunks:call from unregistered extension");
+      return -1;
+    }
+    if (cd.user.equals(cd.dialed)) {
+      //voicemail may intercept next
+      JFLog.log("Trunks:extension called self");
+      return -1;
+    }
     Extension x = api.getExtension(cd.user);
-    if (x == null) return -1;  //unauth trunk access
+    if (x == null) {
+      //unauth trunk access
+      JFLog.log("Trunks:extension not found");
+      return -1;
+    }
     cd.pbxdst.to = cd.src.to.clone();
     cd.pbxdst.from = cd.src.from.clone();
     cd.pbxdst.contact = cd.src.contact;  //BUG : should this be changed to DID from trunk register string ???
@@ -67,10 +86,14 @@ public class Trunks implements Plugin, DialChain {
     Dial dial = new Dial();
     dial.number = cd.dialed;
     cd.trunks = api.getTrunks(dial, cd.user);
-    if ((cd.trunks == null) || (cd.trunks.length < 2)) return -1;  //no routes on this trunk
+    if ((cd.trunks == null) || (cd.trunks.length == 0)) {
+      //no routes on this trunk
+      JFLog.log("Trunks:no routes apply to call dialed");
+      return -1;
+    }
     api.reply(cd, 100, "TRYING", null, false, true);
     cd.dialed = dial.number;  //apply new dialed after outroute pattern is applied
-    cd.trunkidx = 1;
+    cd.trunkidx = 0;
     cd.lastcode = -1;
     cd.invited = true;
     tryTrunk(cd);
@@ -130,12 +153,12 @@ public class Trunks implements Plugin, DialChain {
   }
   public void onBye(CallDetailsPBX cd, boolean src) {
     if (src) {
-      api.log(cd, "TRUNK : src terminated call with BYE");
+      api.log(cd, "Trunks:src terminated call with BYE");
       cd.pbxdst.cseq++;
       api.issue(cd, null, false, false);
       api.reply(cd, 200, "OK", null, false, true);
     } else {
-      api.log(cd, "TRUNK : dst terminated call with BYE");
+      api.log(cd, "Trunks:dst terminated call with BYE");
       //NOTE:to/from have been swapped
       cd.pbxsrc.to = cd.dst.to.clone();
       cd.pbxsrc.from = cd.dst.from.clone();
@@ -152,7 +175,7 @@ public class Trunks implements Plugin, DialChain {
   private void tryTrunk(CallDetailsPBX cd) {
     //try INVITE to cd.trunks[cd.trunkidx]
     TrunkRow trunk = cd.trunks[cd.trunkidx];
-    api.log(cd, "TRUNK : Trying trunk " + trunk);
+    api.log(cd, "Trunks:Trying trunk " + trunk);
     String host = trunk.host;
     int idx = host.indexOf(':');
     if (idx == -1) {
@@ -207,7 +230,7 @@ public class Trunks implements Plugin, DialChain {
             if ((cd.trunks.length == cd.trunkidx) || (cd.lastcode == 486)) {
               //reply last error (if any) to extension
               if (cd.lastcode == -1) cd.lastcode = 487;
-              api.log(cd, "TRUNK : call failed : error = " + cd.lastcode);
+              api.log(cd, "Trunks:call failed:error = " + cd.lastcode);
               api.reply(cd, cd.lastcode, "ERROR", null, false, true);
               return;
             }

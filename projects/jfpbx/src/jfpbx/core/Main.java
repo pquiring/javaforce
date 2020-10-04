@@ -44,7 +44,7 @@ public class Main {
     //start database
     Database.start();
     //init log files
-    JFLog.append(Paths.logs + "jpbx.log", true);
+    JFLog.append(Paths.logs + "jfpbx.log", true);
     JFLog.log("jfPBX/" + Service.getVersion() + " starting...");
 //    Service.test();
     service = new Service();

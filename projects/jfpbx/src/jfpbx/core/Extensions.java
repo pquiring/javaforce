@@ -32,7 +32,7 @@ public class Extensions implements Plugin, DialChain {
 //interface DialChain
   public int getPriority() {return pid;}
   public int onInvite(CallDetailsPBX cd, boolean src) {
-    JFLog.log("check invite" + cd.dialed);
+    JFLog.log("Extensions:onInvite:" + cd.dialed);
     if (cd.invited) {
       //reINVITE
       api.connect(cd);
@@ -54,20 +54,20 @@ public class Extensions implements Plugin, DialChain {
     //dial inbound to an extension
     ExtensionRow ext = Database.getExtension(cd.dialed);
     if (ext == null) {
-      JFLog.log("err0");
+      JFLog.log("Extensions:dialed is not an extension");
       return -1;
     }  //an extension is not being dialed
     if (cd.user.equals(cd.dialed)) {  //did someone call themself?
-      JFLog.log("err1");
+      JFLog.log("Extensions:extension dialed self");
       return -1;  //voicemail will handle this call
     }
     if (!api.isRegistered(cd.dialed)) {
-      JFLog.log("err2");
+      JFLog.log("Extensions:extension not registered");
       return -1;  //phone is not online
     }
     Extension x = api.getExtension(cd.dialed);
     if (x == null) {
-      JFLog.log("err3");
+      JFLog.log("Extensions:exension not found");
       return -1;  //phone is not online
     }
     cd.pbxdst.contact = cd.src.contact;

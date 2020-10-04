@@ -5,6 +5,7 @@ package jfpbx.db;
  * @author pquiring
  */
 
+import javaforce.*;
 import javaforce.db.*;
 
 public class ExtensionRow extends Row {
@@ -36,6 +37,7 @@ public class ExtensionRow extends Row {
     super.readObject();
     int ver = readInt();
     type = readInt();
+    number = readString();
     display = readString();
     switch (type) {
       case EXT:
@@ -52,12 +54,16 @@ public class ExtensionRow extends Row {
         agents = readString();
         message = readString();
         break;
+      default:
+        JFLog.log("Error:ExtensionRow:readObject():type=" + type);
+        break;
     }
   }
   public void writeObject() throws Exception {
     super.writeObject();
     writeInt(version);
     writeInt(type);
+    writeString(number);
     writeString(display);
     switch (type) {
       case EXT:
@@ -73,6 +79,9 @@ public class ExtensionRow extends Row {
       case QUEUE:
         writeString(agents);
         writeString(message);
+        break;
+      default:
+        JFLog.log("Error:ExtensionRow:writeObject():type=" + type);
         break;
     }
   }

@@ -50,6 +50,9 @@ public class Database {
       RouteTableRow def = new RouteTableRow();
       def.name = "default";
       addOutRouteTable(def);
+      setConfig("port", "5060");
+      setConfig("rtpmin", "32768");
+      setConfig("rtpmax", "65535");
     }
   }
 
@@ -270,16 +273,18 @@ public class Database {
   }
 
   public static TrunkRow[] getTrunks(RouteRow route) {
+    JFLog.log("Get Trunks for route:" + route.name + ":" + route.trunks);
     String[] routeTrunks = route.trunks.split(",");
     ArrayList<TrunkRow> rows = new ArrayList<TrunkRow>();
     for(TrunkRow row : trunks.getRows()) {
       for(int a=0;a<routeTrunks.length;a++) {
-        if (row.name == routeTrunks[a]) {
+        if (row.name.equals(routeTrunks[a])) {
           rows.add(row);
           break;
         }
       }
     }
+    JFLog.log("Trunks:" + rows.size());
     return rows.toArray(new TrunkRow[rows.size()]);
   }
 

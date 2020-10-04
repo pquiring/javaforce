@@ -444,10 +444,13 @@ public class Service implements SIPServerInterface, PBXAPI {
       }
     }
     if (routetable == null) {
-      routetable = "@outbound";
+      routetable = "default";
     }
     RouteRow[] routes = Database.getOutRoutes(routetable);
-    if (routes == null) return null;
+    if (routes == null) {
+      JFLog.log("Service:routetable not found:" + routetable);
+      return null;
+    }
     String patterns[];
     String newdialed;
     for(int a=0;a<routes.length;a++) {
@@ -455,6 +458,7 @@ public class Service implements SIPServerInterface, PBXAPI {
       for(int b=0;b<patterns.length;b++) {
         newdialed = patternMatches(patterns[b], dialed.number);
         if (newdialed == null) continue;
+        JFLog.log("PatternMatched:" + patterns[b]);
         dialed.number = newdialed;
         return Database.getTrunks(routes[a]);
       }
@@ -480,6 +484,7 @@ public class Service implements SIPServerInterface, PBXAPI {
  x|y = removes 'x' if 'xy' matches
  x+y = add 'x' if 'y' matches
 */
+    JFLog.log("PatternMatch:pattern=" + pattern + ":dialed=" + dialed);
     char cap[] = pattern.toCharArray();
     char cad[] = dialed.toCharArray();
     int plus = pattern.indexOf('+');

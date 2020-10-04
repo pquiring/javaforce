@@ -14,7 +14,6 @@ import javaforce.*;
 public class Paths {
   public static String sounds;  //where to find wav files (prompts)
   public static String lang;  //"en" (english)
-  public static String plugins;  //where to find plugin jars
   public static String logs;  //stores log files
   public static String lib;  //used to store voicemail
   public static String etc;  //used to store WebSecure key
@@ -37,7 +36,6 @@ public class Paths {
       }
       base += "/jfpbx";
       sounds = base + "/sounds/";
-      plugins = base + "/plugins/";
       logs = base + "/logs/";
       lib = base + "/";
       etc = base + "/";
@@ -45,7 +43,6 @@ public class Paths {
     } else {
       //Linux
       sounds = "/usr/share/sounds/jpbx/";
-      plugins = "/usr/share/java/jpbx/plugins/";
       logs = "/var/log/jpbx/";
       lib = "/var/lib/jpbx/";
       etc = "/etc/";

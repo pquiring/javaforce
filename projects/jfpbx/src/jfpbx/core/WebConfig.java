@@ -976,8 +976,12 @@ public class WebConfig implements WebHandler {
 
     if (table.length() == 0) verb = "";
     if (verb.equals("deltable")) {
-      Database.deleteOutRouteTable(table);
-      msg = "Table deleted";
+      if (table.equals("default")) {
+        msg = "Can not delete default table";
+      } else {
+        Database.deleteOutRouteTable(table);
+        msg = "Table deleted";
+      }
       table = "";
     }
     if (verb.equals("addtable")) {
