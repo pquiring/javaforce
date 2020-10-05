@@ -99,7 +99,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       data = handler.getResource(url);
       res.addHeader("Cache-Control: no-store");
     } else {
-      data = getResource("javaforce/webui" + url);
+      data = getResource("javaforce/webui/static" + url);
     }
     if (data == null) {
       res.setStatus(404, "Resource not found");
