@@ -14,6 +14,8 @@
 
   <property environment="env"/>
 
+  <property file="jars/version.props"/>
+
   <import file="base.xml"/>
 
   <available property="have_glfw" file="native/glfw/src/window.c"/>
@@ -35,7 +37,20 @@
     <unzip src="jfcodecs-mac64.zip" dest="ffmpeg"/>
   </target>
 
-  <target name="depjars" depends="depnatives,glfw">
+  <condition property="jars.uptodate">
+    <equals arg1="${version}" arg2="${jars.version}"/>
+  </condition>
+
+  <target name="jars" unless="jars.uptodate" description="download jf jars">
+    <echo message="version=${version}"/>
+    <echo message="jars.version=${jars.version}"/>
+    <echo message="Downloading: jf-jars.zip"/>
+    <get src="https://github.com/pquiring/javaforce/releases/download/${version}/jf-jars.zip" dest="jf-jars.zip"/>
+    <mkdir dir="jars"/>
+    <unzip src="jf-jars.zip" dest="jars"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,jars,glfw">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
