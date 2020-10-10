@@ -23,18 +23,19 @@ import org.llrp.ltk.generated.interfaces.*;
 import org.llrp.ltk.generated.enumerations.*;
 
 public class LLRP implements LLRPEndpoint {
-  public static int delay = 10;
-  public static int rospecid = 101;
-  public static int inventoryparamid = 102;
-  public static int accessid = 103;
-  public static int opspecid = 104;
+  private static int delay = 10;
+  private static int rospecid = 101;
+  private static int inventoryparamid = 102;
+  private static int accessid = 103;
+  private static int opspecid = 104;
+
+  private ROSpec rospec;
+  private AccessSpec accessspec;
+  private LLRPConnector llrp;
+  private LLRPEvent events;
+  private String ip;
 
   public boolean active;
-  public ROSpec rospec;
-  public AccessSpec accessspec;
-  public LLRPConnector llrp;
-  public LLRPEvent events;
-  public String ip;
 
   public boolean connect(String ip) {
     this.ip = ip;
@@ -206,8 +207,8 @@ public class LLRP implements LLRPEndpoint {
    * @param powerLevel = power level for each antenna
    *
    */
-  public boolean writeTag(short[] oldEPC, short[] newEPC, int[] powerLevel) {
-    return writeTag(oldEPC, newEPC, powerLevel, 2);
+  public boolean startWriteTag(short[] oldEPC, short[] newEPC, int[] powerLevel) {
+    return startWriteTag(oldEPC, newEPC, powerLevel, 2);
   }
 
   /** Write RFID Tag(s).
@@ -219,7 +220,7 @@ public class LLRP implements LLRPEndpoint {
    * @param powerLevel = power level for each antenna
    * @param wordOffset = beginning of EPC memory bank to write newEPC (default = 2)
    */
-  public boolean writeTag(short[] oldEPC, short[] newEPC, int[] powerLevel, int wordOffset) {
+  public boolean startWriteTag(short[] oldEPC, short[] newEPC, int[] powerLevel, int wordOffset) {
     if (llrp == null) return false;
     if (active) return false;
     try {
