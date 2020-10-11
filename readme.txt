@@ -102,6 +102,7 @@ The other jars in /jars each have their own licensing.
   jcifs.jar - LGPL (http://jcifs.samba.org)
   jsp-api.jar & servlet-api.jar - Apache License 2.0 (http://tomcat.apache.org)
   jsch.jar & jzlib.jar - BSD license (http://www.jcraft.com)
+  llrp.jar - Apache License 2.0 (http://llrp.org)
 
 Enjoy!
 
