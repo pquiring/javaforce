@@ -1449,7 +1449,7 @@ public class WebConfig implements WebHandler {
     html.append("<tr><td> Host: </td><td> <input name=host value=" + SQL.quote(host) + "></td><td>domain_or_ip[:port] (default port = 5060)</td></tr>");
     html.append("<tr><td> External IP: </td><td> <input name=xip value=" + SQL.quote(xip) + "></td><td>(optional) (default = auto detect)</td></tr>");
     html.append("<tr><td nowrap> Override Caller ID: </td><td> <input name=cid value=" + SQL.quote(cid) + "></td><td>(optional)</td></tr>");
-    html.append("<tr><td> Register String: </td><td> <input name=register value=" + SQL.quote(register) + "></td><td>(optional) [user:pass@host/did]</td></tr>");
+    html.append("<tr><td> Register String: </td><td> <input name=register value=" + SQL.quote(register) + "></td><td>(optional) user:pass@host[:port][/did]</td></tr>");
     html.append("<tr><td> <input type=checkbox name=doregister " + (doregister.equals("on") ? "checked" : "") + "> Register with trunk (optional)</td></tr>");
     html.append("<tr><td> Dial Out Rules: </td><td> <textarea name=outrules cols=20 rows=10>");
       String lns[] = outrules.split(":");
