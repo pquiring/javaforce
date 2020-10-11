@@ -52,13 +52,11 @@ compile : compile projects java files
 jar : build the projects main jar file
 depjars : copy dependant jar files into project folder
 install : install files into proper folders (Linux only)
- - for the main JavaForce library you MUST specify -Dbits=32|64
- - requires root access
- - example : "sudo ant install -Dbits=64"
+ - requires root access : "sudo ant install"
 deb : build Debian deb file (after install)
 rpm : build Fedora rpm file (after install)
  - linux packaging requires files.lst and linux stub (/stubs/linux)
-msi : build Windows msi file with JRE bundled (64bit)
+msi : build Windows msi file with JRE bundled
  - msi creation requires:
   - wixtoolset in path (http://wixtoolset.org)
   - wix64.xml file

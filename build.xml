@@ -77,7 +77,7 @@
     <copy file="jars/bouncycastle.jar" todir="/usr/share/java"/>
     <copy file="jars/filters.jar" todir="/usr/share/java"/>
 
-    <copy file="native/jfnative${bits}.so" todir="/usr/lib"/>
+    <copy file="native/jfnative64.so" todir="/usr/lib"/>
 
     <copy file="lnxbin/jbus-call" todir="/usr/bin"/>
     <chmod file="/usr/bin/jbus-call" perm="+x"/>

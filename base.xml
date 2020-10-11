@@ -27,7 +27,6 @@
   <!--these should be set before importing this file to override default behavior-->
   <property name="ico" value="${app}.ico"/>
   <property name="msi" value="${app}"/>
-  <property name="bits" value="64"/>
   <property name="cfg" value="${app}.cfg"/>
   <property name="candle_extra" value=""/>
   <property name="light_extra" value=""/>
@@ -123,7 +122,7 @@
         <arg value="**/vcruntime*.dll"/>
       </java>
       <exec command="candle -o msvcrt.obj msvcrt.xml"/>
-      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -ext WixUtilExtension -cultures:en-us -b ${home} -b ${jre} -b ${jre}\\bin -b ${home}/ffmpeg -dWixUILicenseRtf=${home}/license.rtf -o ${msi}-${version}-win${bits}.msi wix.obj jre.obj ffmpeg.obj msvcrt.obj"/>
+      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -ext WixUtilExtension -cultures:en-us -b ${home} -b ${jre} -b ${jre}\\bin -b ${home}/ffmpeg -dWixUILicenseRtf=${home}/license.rtf -o ${msi}-${version}-win64.msi wix.obj jre.obj ffmpeg.obj msvcrt.obj"/>
       <delete file="wix.obj"/>
       <delete file="jre.obj"/>
       <delete file="jre.xml"/>
@@ -131,8 +130,8 @@
       <delete file="ffmpeg.xml"/>
       <delete file="msvcrt.obj"/>
       <delete file="msvcrt.xml"/>
-      <delete file="${msi}-${version}-win${bits}.wixpdb"/>
-      <move unless:set="nomove" file="${msi}-${version}-win${bits}.msi" todir="${home}/release"/>
+      <delete file="${msi}-${version}-win64.wixpdb"/>
+      <move unless:set="nomove" file="${msi}-${version}-win64.msi" todir="${home}/release"/>
     </sequential>
   </target>
 
