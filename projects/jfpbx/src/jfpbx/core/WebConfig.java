@@ -1335,6 +1335,20 @@ public class WebConfig implements WebHandler {
     return html.toString();
   }
 
+  private boolean validRegister(String reg) {
+    int i1 = reg.indexOf(':');
+    if (i1 == -1) return false;
+    int i2 = reg.substring(i1+1).indexOf('@');
+    if (i2 == -1) return false;
+    String user = reg.substring(0, i1);
+    if (user.length() == 0) return false;
+    String pass = reg.substring(i1+1, i2);
+    if (pass.length() == 0) return false;
+    String host = reg.substring(i2+1);
+    if (host.length() == 0) return false;
+    return true;
+  }
+
   private String doTrunksPage(String args[]) {
     String verb = "", name = "", cid = "", host = "", xip = "", register = "", doregister = "", msg = "", outrules = "", inrules = "", edittrunk= "", sure = "";
     for(int a=0;a<args.length;a++) {
@@ -1373,6 +1387,12 @@ public class WebConfig implements WebHandler {
         inrules = row.inrules;
         register = row.register;
         doregister = row.doRegister() ? "on" : "";
+      }
+    }
+    if (verb.equals("add") || verb.equals("edit")) {
+      if (!validRegister(register)) {
+        msg = "Invalid Register";
+        verb = "view";
       }
     }
     if (verb.equals("add")) {
