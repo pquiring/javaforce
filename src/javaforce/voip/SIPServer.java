@@ -468,7 +468,7 @@ public class SIPServer extends SIP implements SIPInterface {
             if (cd.cmd.equals("INVITE")) {
               cd.cmd = "ACK";
               issue(cd, null, false, src);
-              cd.cmd = "REGISTER";
+              cd.cmd = "INVITE";
             }
             String key = remoteip + ":" + remoteport;
             Trunk trunk = trunks.get(key);
