@@ -207,6 +207,26 @@ public class Trunks implements Plugin, DialChain {
     cd.pbxdst.from = cd.pbxdst.from.clone();
     cd.trunkok = false;
     cd.authsent = false;
+    String reg = trunk.register;
+    idx = reg.indexOf('@');
+    if (idx != -1) {
+      reg = reg.substring(0, idx);
+    }
+    String user, pass;
+    idx = reg.indexOf(':');
+    if (idx != -1) {
+      user = reg.substring(0, idx);
+      pass = reg.substring(idx+1);
+      cd.pbxdst.from[0] = "";
+      cd.pbxdst.from[1] = user;
+    }
+    if (trunk.cid.length() > 0) {
+      cd.pbxdst.from[0] = "";
+      cd.pbxdst.from[1] = trunk.cid;
+    }
+    if (trunk.xip.length() > 0) {
+      cd.pbxdst.from[2] = trunk.xip;
+    }
     api.issue(cd, null, true, false);
     setTimer(cd);
   }

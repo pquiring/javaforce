@@ -13,6 +13,7 @@ public class TrunkRow extends Row {
   public String host;
   public String cid;
   public String inrules, outrules;
+  public String xip;
   public int flags;
 
   public static int FLAG_REGISTER = 1;
@@ -27,6 +28,7 @@ public class TrunkRow extends Row {
     cid = readString();
     inrules = readString();
     outrules = readString();
+    xip = readString();
     flags = readInt();
   }
   public void writeObject() throws Exception {
@@ -38,6 +40,7 @@ public class TrunkRow extends Row {
     writeString(cid);
     writeString(inrules);
     writeString(outrules);
+    writeString(xip);
     writeInt(flags);
   }
 

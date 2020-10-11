@@ -1336,7 +1336,7 @@ public class WebConfig implements WebHandler {
   }
 
   private String doTrunksPage(String args[]) {
-    String verb = "", name = "", cid = "", host = "", register = "", doregister = "", msg = "", outrules = "", inrules = "", edittrunk= "", sure = "";
+    String verb = "", name = "", cid = "", host = "", xip = "", register = "", doregister = "", msg = "", outrules = "", inrules = "", edittrunk= "", sure = "";
     for(int a=0;a<args.length;a++) {
       int x = args[a].indexOf("=") + 1;
       if (args[a].startsWith("verb=")) verb = args[a].substring(x);
@@ -1344,6 +1344,7 @@ public class WebConfig implements WebHandler {
       if (args[a].startsWith("edittrunk=")) edittrunk = args[a].substring(x);
       if (args[a].startsWith("cid=")) cid = args[a].substring(x);
       if (args[a].startsWith("host=")) host = args[a].substring(x);
+      if (args[a].startsWith("xip=")) xip = args[a].substring(x);
       if (args[a].startsWith("register=")) register = args[a].substring(x);
       if (args[a].startsWith("doregister=")) doregister = args[a].substring(x);
       if (args[a].startsWith("outrules=")) outrules = args[a].substring(x);
@@ -1366,6 +1367,7 @@ public class WebConfig implements WebHandler {
       TrunkRow row = Database.getTrunk(name);
       if (row != null) {
         host = row.host;
+        xip = row.xip;
         cid = row.cid;
         outrules = row.outrules;
         inrules = row.inrules;
@@ -1382,6 +1384,7 @@ public class WebConfig implements WebHandler {
       TrunkRow row = new TrunkRow();
       row.name = name;
       row.host = host;
+      row.xip = xip;
       row.cid = cid;
       row.inrules = inrules;
       row.outrules = outrules;
@@ -1391,6 +1394,7 @@ public class WebConfig implements WebHandler {
       msg = "Trunk added";
       name = "";
       host = "";
+      xip = "";
       cid = "";
       register = "";
       doregister = "";
@@ -1407,6 +1411,7 @@ public class WebConfig implements WebHandler {
       if (row != null) {
         row.name = name;
         row.host = host;
+        row.xip = xip;
         row.cid = cid;
         row.inrules = inrules;
         row.outrules = outrules;
@@ -1416,6 +1421,7 @@ public class WebConfig implements WebHandler {
         msg = "Trunk edited";
         name = "";
         host = "";
+        xip = "";
         cid = "";
         register = "";
         doregister = "";
@@ -1441,6 +1447,7 @@ public class WebConfig implements WebHandler {
     html.append("<table>");
     html.append("<tr><td> Trunk: </td><td> <input name=trunk value=" + SQL.quote(name) + "</td></tr>");
     html.append("<tr><td> Host: </td><td> <input name=host value=" + SQL.quote(host) + "></td><td>domain_or_ip[:port] (default port = 5060)</td></tr>");
+    html.append("<tr><td> External IP: </td><td> <input name=xip value=" + SQL.quote(xip) + "></td><td>(optional) (default = auto detect)</td></tr>");
     html.append("<tr><td nowrap> Override Caller ID: </td><td> <input name=cid value=" + SQL.quote(cid) + "></td><td>(optional)</td></tr>");
     html.append("<tr><td> Register String: </td><td> <input name=register value=" + SQL.quote(register) + "></td><td>(optional) [user:pass@host/did]</td></tr>");
     html.append("<tr><td> <input type=checkbox name=doregister " + (doregister.equals("on") ? "checked" : "") + "> Register with trunk (optional)</td></tr>");

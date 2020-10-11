@@ -44,10 +44,10 @@ public class TableList<ROW extends Row> extends SerialObject {
   }
 
   public boolean load(String folder) {
+    this.folder = folder;
     try {
       File file = new File(folder + "/0.dat");
       if (!file.exists()) {
-        this.folder = folder;
         return false;
       }
       String filename = folder + "/0.dat";

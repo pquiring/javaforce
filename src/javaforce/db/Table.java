@@ -37,8 +37,8 @@ public class Table<ROW extends Row> extends SerialObject {
 
   public boolean load(String filename) {
     rows.clear();
+    this.filename = filename;
     if (!new File(filename).exists()) {
-      this.filename = filename;
       return false;
     }
     try {
@@ -46,7 +46,6 @@ public class Table<ROW extends Row> extends SerialObject {
       ObjectReader ois = new ObjectReader(fis);
       ois.readObject(this);
       fis.close();
-      this.filename = filename;
       return true;
     } catch (Exception e) {
       JFLog.log(e);
