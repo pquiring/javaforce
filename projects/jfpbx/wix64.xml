@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
   <Product Id="*" UpgradeCode="{511FB535-1B0D-4745-AC9D-0D0920AFFE46}" Version="0.30" Language="1033" Name="jfPBX" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
@@ -31,7 +31,32 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{A1E62DA3-6388-437B-AADD-4FFCCC947D15}" Win64="yes">
-        <File Id="jfpbx.exe" Source="jfpbx.exe" KeyPath="yes"/>
+        <File Id="jfpbx.exe" Source="jfpbx.exe" KeyPath="yes">
+          <fire:FirewallException
+            Id="FirewallRuleSIP"
+            Name="jfPBX(SIP)"
+            Protocol="udp"
+            Port="5060"
+            Scope="any"
+            IgnoreFailure="yes"
+            Profile="all" />
+          <fire:FirewallException
+            Id="FirewallRuleRTP"
+            Name="jfPBX(RTP)"
+            Protocol="udp"
+            Port="32768-65535"
+            Scope="any"
+            IgnoreFailure="yes"
+            Profile="all" />
+          <fire:FirewallException
+            Id="FirewallRuleWEB"
+            Name="jfPBX(WEB)"
+            Protocol="tcp"
+            Port="80"
+            Scope="any"
+            IgnoreFailure="yes"
+            Profile="all" />
+        </File>
         <File Id="jfpbxcore.jar" Source="jfpbxcore.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="bouncycastle.jar" Source="bouncycastle.jar"/>
