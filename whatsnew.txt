@@ -1,5 +1,13 @@
 What's new...
 
+Oct 14/2020 : JF 29.0 released
+  - jfPBX/0.30
+    - revamped database (upgrade not possible)
+    - many VoIP fixes
+  - new : added LLRP client to read/write RFID tags
+      using compatible readers (impinj)
+  - new : added MQTT service
+
 Sept 28/2020 : JF 28.0 released
   - MODBUS : added support for IR and HR tags
     - jfDataLogger/0.27
