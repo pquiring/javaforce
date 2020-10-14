@@ -1,5 +1,9 @@
 CHANGELOG
 =========
+10-14-2020 : v0.30 released
+ - new : updated database to jfDB
+   - upgrade not possible
+ - fix : many VoIP bugs fixed
 3-18-2020 : v0.28 released
  - fix : win64 loader now loads msvcrt dlls properly
 9-21-2018 : v0.27 released
