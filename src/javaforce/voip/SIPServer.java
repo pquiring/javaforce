@@ -465,10 +465,12 @@ public class SIPServer extends SIP implements SIPInterface {
               setCallDetailsServer(callid, null);
               break;
             }
+            boolean sdp = false;
             if (cd.cmd.equals("INVITE")) {
               cd.cmd = "ACK";
               issue(cd, null, false, src);
               cd.cmd = "INVITE";
+              sdp = true;
             }
             String key = remoteip + ":" + remoteport;
             Trunk trunk = trunks.get(key);
@@ -486,7 +488,7 @@ public class SIPServer extends SIP implements SIPInterface {
             }
             cdsd.cseq++;
             cd.authsent = true;
-            issue(cd, epass, false, src);
+            issue(cd, epass, sdp, src);
             break;
           case 407:
             //BUG : Should the cdsd.contact be changed to:
