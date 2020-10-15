@@ -6,8 +6,8 @@ function build {
   fi
   cd $1
   ant jar
-  sudo ant install -Dbits=$2
-  ant deb -Dbits=$2 -Darch=$3 -Darchext=$4
+  sudo ant install
+  ant deb -Darch=$2 -Darchext=$3
   cd ..
 }
 
@@ -18,7 +18,6 @@ if [ "$1" == "" ]; then
 fi
 
 ARCH=$1
-BITS=${ARCH:1:2}
 
 case $1 in
 x32)
@@ -41,6 +40,6 @@ esac
 
 for i in *; do
   if [ -d $i ]; then
-    build $i $BITS $ARCH $ARCHEXT
+    build $i $ARCH $ARCHEXT
   fi
 done

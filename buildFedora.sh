@@ -1,7 +1,7 @@
 function build {
   ant jar
-  sudo ant install -Dbits=$1
-  ant rpm -Dbits=$1 -Darch=$2 -Darchext=$3
+  sudo ant install
+  ant rpm -Darch=$1 -Darchext=$2
 }
 
 if [ "$1" == "" ]; then
@@ -11,7 +11,6 @@ if [ "$1" == "" ]; then
 fi
 
 ARCH=$1
-BITS=${ARCH:1:2}
 
 case $1 in
 x32)
@@ -32,4 +31,4 @@ a64)
   ;;
 esac
 
-build $BITS $ARCH $ARCHEXT
+build $ARCH $ARCHEXT

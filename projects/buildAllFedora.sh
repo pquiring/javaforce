@@ -7,11 +7,11 @@ function build {
   fi
   cd $1
   ant jar
-  sudo ant install -Dbits=$2
+  sudo ant install
   if [ "$1" == "jflogon" ]; then
-    sudo ant rpm -Dbits=$2 -Darch=$3 -Darchext=$4
+    sudo ant rpm -Darch=$2 -Darchext=$3
   else
-    ant rpm -Dbits=$2 -Darch=$3 -Darchext=$4
+    ant rpm -Darch=$2 -Darchext=$3
   fi
   cd ..
 }
@@ -23,7 +23,6 @@ if [ "$1" == "" ]; then
 fi
 
 ARCH=$1
-BITS=${ARCH:1:2}
 
 case $1 in
 x32)
@@ -46,8 +45,6 @@ esac
 
 for i in *; do
   if [ -d $i ]; then
-    build $i $BITS $ARCH $ARCHEXT
+    build $i $ARCH $ARCHEXT
   fi
 done
-
-
