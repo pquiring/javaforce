@@ -1,3 +1,6 @@
+Oct 19/2020 : v0.28 released
+  - new : added tag descriptions
+
 Sept 28/2020 : v0.27 released
   - new : modbus now supports IR and HR tags
 

@@ -4,8 +4,9 @@
  * @author pquiring
  */
 
-import java.awt.Color;
-import javax.swing.JColorChooser;
+import java.awt.*;
+import java.net.*;
+import javax.swing.*;
 
 import javaforce.*;
 import javaforce.controls.*;
@@ -50,6 +51,8 @@ public class TagDialog extends javax.swing.JDialog {
     jLabel8 = new javax.swing.JLabel();
     color = new javax.swing.JButton();
     help = new javax.swing.JButton();
+    jLabel3 = new javax.swing.JLabel();
+    desc = new javax.swing.JTextField();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Tag Properties");
@@ -120,6 +123,8 @@ public class TagDialog extends javax.swing.JDialog {
       }
     });
 
+    jLabel3.setText("desc");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -150,13 +155,15 @@ public class TagDialog extends javax.swing.JDialog {
               .addComponent(jLabel4)
               .addComponent(l_max)
               .addComponent(l_min)
-              .addComponent(jLabel8))
+              .addComponent(jLabel8)
+              .addComponent(jLabel3))
             .addGap(11, 11, 11)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(color, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
               .addComponent(size, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
               .addComponent(max)
-              .addComponent(min))))
+              .addComponent(min)
+              .addComponent(desc))))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -190,6 +197,10 @@ public class TagDialog extends javax.swing.JDialog {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel8)
           .addComponent(color))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel3)
+          .addComponent(desc, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(ok)
@@ -244,10 +255,12 @@ public class TagDialog extends javax.swing.JDialog {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton cancel;
   private javax.swing.JButton color;
+  private javax.swing.JTextField desc;
   private javax.swing.JButton help;
   private javax.swing.JTextField host;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
+  private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel7;
   private javax.swing.JLabel jLabel8;
@@ -293,6 +306,13 @@ public class TagDialog extends javax.swing.JDialog {
     }
     color.setBackground(new Color(in.color));
     clr = in.color;
+    try {
+      if (in.desc != null) {
+        desc.setText(URLDecoder.decode(in.desc, "UTF-8"));
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public void bitOnly() {
@@ -328,6 +348,12 @@ public class TagDialog extends javax.swing.JDialog {
         out.fmax = Float.valueOf(max.getText());
       }
       out.color = clr;
+      try {
+        out.desc = URLEncoder.encode(desc.getText(), "UTF-8");
+      } catch (Exception e) {
+        JFLog.log(e);
+        out.desc = "";
+      }
     } catch (Exception e) {
       JFLog.log(e);
       return false;

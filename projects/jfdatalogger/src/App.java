@@ -6,6 +6,7 @@
 import java.io.*;
 import java.util.*;
 import java.awt.*;
+import java.net.*;
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -14,7 +15,7 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.27";
+  public static String version = "0.28";
 
   public static int delays[] = new int[] {
     5, 10, 25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
@@ -653,6 +654,16 @@ public class App extends javax.swing.JFrame {
       tag.max = Integer.valueOf(f[5]);
     }
     tag.color = Integer.valueOf(f[6], 16);
+    if (f.length > 7) {
+      try {
+        tag.desc = URLDecoder.decode(f[7], "UTF-8");
+      } catch (Exception e) {
+        JFLog.log(e);
+        tag.desc = "";
+      }
+    } else {
+      tag.desc = "";
+    }
   }
 
   public String tag_save_short(Tag tag) {
@@ -698,7 +709,15 @@ public class App extends javax.swing.JFrame {
       case TagType.float32: size = "float32"; break;
       case TagType.float64: size = "float64"; break;
     }
-    return tag.host + "|" + ctrl + "|" + tag + "|" + size + "|" + tag.getmin() + "|" + tag.getmax() + "|" + Integer.toUnsignedString(tag.color, 16);
+    if (tag.desc == null) tag.desc = "";
+    String desc = "";
+    try {
+      desc = URLEncoder.encode(tag.desc, "UTF-8");
+    } catch (Exception e) {
+      JFLog.log(e);
+      desc = "";
+    }
+    return tag.host + "|" + ctrl + "|" + tag + "|" + size + "|" + tag.getmin() + "|" + tag.getmax() + "|" + Integer.toUnsignedString(tag.color, 16) + "|" + desc;
   }
 
   public void save_project() {

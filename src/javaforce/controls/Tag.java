@@ -28,6 +28,8 @@ public class Tag {
   public float fmin, fmax;
   /** Speed to poll data (delay = ms delay between polls) (min = 25ms) */
   public int delay;
+  /** User defined description */
+  public String desc;
 
   private byte pending[];
   private Object pendingLock = new Object();
@@ -160,6 +162,9 @@ public class Tag {
     }
     if (type == ControllerType.MIC) {
       return "MIC:" + host;
+    }
+    if (desc != null && desc.length() > 0) {
+      return tag + " - " + desc;
     }
     return tag;
   }
