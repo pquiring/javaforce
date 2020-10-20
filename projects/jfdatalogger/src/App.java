@@ -686,7 +686,7 @@ public class App extends javax.swing.JFrame {
       case TagType.float32: size = "float32"; break;
       case TagType.float64: size = "float64"; break;
     }
-    return tag.host + "|" + ctrl + "|" + tag + "|" + size;
+    return tag.host + "|" + ctrl + "|" + tag.tag + "|" + size;
   }
 
   public String tag_save(Tag tag) {
@@ -717,7 +717,7 @@ public class App extends javax.swing.JFrame {
       JFLog.log(e);
       desc = "";
     }
-    return tag.host + "|" + ctrl + "|" + tag + "|" + size + "|" + tag.getmin() + "|" + tag.getmax() + "|" + Integer.toUnsignedString(tag.color, 16) + "|" + desc;
+    return tag.host + "|" + ctrl + "|" + tag.tag + "|" + size + "|" + tag.getmin() + "|" + tag.getmax() + "|" + Integer.toUnsignedString(tag.color, 16) + "|" + desc;
   }
 
   public void save_project() {
@@ -988,6 +988,19 @@ public class App extends javax.swing.JFrame {
     }
   }
 
+  public String getColNames() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("timestamp,");
+    int cnt = tags.size();
+    for(int a=0;a<cnt;a++) {
+      if (a > 0) sb.append(",");
+      Tag tag = tags.get(a);
+      sb.append(tag.toString());
+    }
+    sb.append("\r\n");
+    return sb.toString();
+  }
+
   public void csv_save() {
     String file = JFAWT.getSaveAsFile(JF.getCurrentPath(), csv_filters);
     if (file == null) return;
@@ -997,6 +1010,7 @@ public class App extends javax.swing.JFrame {
     int rows = tableModel.getRowCount();
     int cols = tableModel.getColumnCount();
     StringBuilder sb = new StringBuilder();
+    sb.append(getColNames());
     for(int row=0;row<rows;row++) {
       for(int col=0;col<cols;col++) {
         if (col > 0) sb.append(",");
@@ -1088,6 +1102,7 @@ public class App extends javax.swing.JFrame {
       if (logFile != null) {
         try {
           logger = new FileOutputStream(logFile);
+          logger.write(getColNames().getBytes());
         } catch (Exception e) {
           e.printStackTrace();
           logger = null;
