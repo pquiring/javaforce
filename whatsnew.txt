@@ -1,5 +1,9 @@
 What's new...
 
+Oct 20/2020 : JF 29.1 released
+  - jfDataLogger/0.28
+    - new : added tag descriptions
+
 Oct 14/2020 : JF 29.0 released
   - jfPBX/0.30
     - revamped database (upgrade not possible)
