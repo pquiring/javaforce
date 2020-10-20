@@ -795,30 +795,32 @@ public class App extends javax.swing.JFrame {
     }
   }
 
-  public static int scaleInt(Tag tag, int value) {
+  public static double scaleInt(Tag tag, int value) {
     if (value < tag.min) return 0;
     if (value > tag.max) return 100;
-    float delta = tag.max - tag.min;
-    return (int)((value - tag.min) / delta * 100.0);
+    double delta = tag.max - tag.min;
+    double fval = value;
+    double fmin = tag.min;
+    return ((fval - fmin) / delta * 100.0);
   }
-  public static int scaleFloat(Tag tag, float value) {
+  public static double scaleFloat(Tag tag, float value) {
     if (value < tag.fmin) return 0;
-    if (value > tag.fmax) return 100;
-    float delta = tag.fmax - tag.fmin;
-    float fval = value;
-    float fmin = tag.fmin;
-    return (int)((fval - fmin) / delta * 100.0);
+    if (value > tag.fmax) return 500;
+    double delta = tag.fmax - tag.fmin;
+    double fval = value;
+    double fmin = tag.fmin;
+    return ((fval - fmin) / delta * 100.0);
   }
-  public static int scaleDouble(Tag tag, double value) {
+  public static double scaleDouble(Tag tag, double value) {
     if (value < tag.fmin) return 0;
     if (value > tag.fmax) return 100;
     double delta = tag.fmax - tag.fmin;
     double fval = value;
     double fmin = tag.fmin;
-    return (int)((fval - fmin) / delta * 100.0);
+    return ((fval - fmin) / delta * 100.0);
   }
 
-  public int getValue(Tag tag, String value) {
+  public double getValue(Tag tag, String value) {
     if (value == null) value = "0";
     int iv;
     float fv;
@@ -856,8 +858,8 @@ public class App extends javax.swing.JFrame {
   public void updateFullImage() {
     int rows = tableModel.getRowCount();
     int tickCounter = 0;
-    int sv = 0;
-    int lsv = 0;
+    double sv = 0;
+    double lsv = 0;
     int tagCount = tags.size();
     logImage.setSize(rows, 510);
     logImage.fill(0, 0, rows, 510, 0xffffffff);
@@ -868,12 +870,12 @@ public class App extends javax.swing.JFrame {
       for(int x=0;x<rows;x++) {
         String value = (String)tableModel.getValueAt(x, tagIdx+1);
         sv = getValue(tag, value);
-        int y = 5 + 500 - (sv * 5);
-        if (y < 0) y = 0;
-        if (y >= 510) y = 510-1;
-        int ly = 5 + 500 - (lsv * 5);
-        if (ly < 0) ly = 0;
-        if (ly >= 510) ly = 510-1;
+        int y = 5 + 500 - (int)(sv * 5.0);
+        if (y < 5) y = 5;
+        if (y >= 505) y = 505 - 1;
+        int ly = 5 + 500 - (int)(lsv * 5.0);
+        if (ly < 5) ly = 5;
+        if (ly >= 505) ly = 505 - 1;
         if (tag.size == TagType.bit) {
           if (!value.equals("0")) {
             logImage.putPixel(x, y, tag.color);
@@ -1320,7 +1322,7 @@ public class App extends javax.swing.JFrame {
         e.printStackTrace();
       }
     }
-    public int sv, lsv;
+    public double sv, lsv;
     public void getValues(Tag tag) {
       String value = tag.getValue();
       if (value == null) value = "0";
@@ -1343,7 +1345,7 @@ public class App extends javax.swing.JFrame {
           sv = scaleInt(tag, iv);
         }
       }
-      Integer lv = (Integer)tag.getData("last");
+      Double lv = (Double)tag.getData("last");
       if (lv != null) {
         lsv = lv;
       } else {
@@ -1360,10 +1362,10 @@ public class App extends javax.swing.JFrame {
       for(int a=0;a<cnt;a++) {
         Tag tag = tags.get(a);
         getValues(tag);
-        int y = 5 + 500 - (sv * 5);
+        int y = 5 + 500 - (int)(sv * 5.0);
         if (y < 0) y = 0;
         if (y >= 510) y = 510-1;
-        int ly = 5 + 500 - (lsv * 5);
+        int ly = 5 + 500 - (int)(lsv * 5.0);
         if (ly < 0) ly = 0;
         if (ly >= 510) ly = 510-1;
         if (tag.size == TagType.bit) {
