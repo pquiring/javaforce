@@ -805,7 +805,7 @@ public class App extends javax.swing.JFrame {
   }
   public static double scaleFloat(Tag tag, float value) {
     if (value < tag.fmin) return 0;
-    if (value > tag.fmax) return 500;
+    if (value > tag.fmax) return 100;
     double delta = tag.fmax - tag.fmin;
     double fval = value;
     double fmin = tag.fmin;
@@ -1363,11 +1363,11 @@ public class App extends javax.swing.JFrame {
         Tag tag = tags.get(a);
         getValues(tag);
         int y = 5 + 500 - (int)(sv * 5.0);
-        if (y < 0) y = 0;
-        if (y >= 510) y = 510-1;
+        if (y < 5) y = 5;
+        if (y >= 505) y = 505 - 1;
         int ly = 5 + 500 - (int)(lsv * 5.0);
-        if (ly < 0) ly = 0;
-        if (ly >= 510) ly = 510-1;
+        if (ly < 5) ly = 5;
+        if (ly >= 505) ly = 505 - 1;
         if (tag.size == TagType.bit) {
           if (!tag.getValue().equals("0")) {
             logImage.putPixel(x2, y, tag.color);
