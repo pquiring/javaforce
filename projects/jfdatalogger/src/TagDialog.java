@@ -5,7 +5,6 @@
  */
 
 import java.awt.*;
-import java.net.*;
 import javax.swing.*;
 
 import javaforce.*;
@@ -308,7 +307,7 @@ public class TagDialog extends javax.swing.JDialog {
     clr = in.color;
     try {
       if (in.desc != null) {
-        desc.setText(URLDecoder.decode(in.desc, "UTF-8"));
+        desc.setText(in.desc);
       }
     } catch (Exception e) {
       JFLog.log(e);
@@ -349,7 +348,7 @@ public class TagDialog extends javax.swing.JDialog {
       }
       out.color = clr;
       try {
-        out.desc = URLEncoder.encode(desc.getText(), "UTF-8");
+        out.desc = desc.getText();
       } catch (Exception e) {
         JFLog.log(e);
         out.desc = "";
