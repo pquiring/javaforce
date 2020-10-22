@@ -1,5 +1,9 @@
 What's new...
 
+Oct 22/2020 : JF 29.2 released
+  - jfDataLogger/0.29
+    - fix : editing tag descriptions
+
 Oct 20/2020 : JF 29.1 released
   - jfDataLogger/0.28
     - new : added tag descriptions
