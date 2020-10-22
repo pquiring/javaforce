@@ -15,7 +15,7 @@ import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {
 
-  public static String version = "0.28";
+  public static String version = "0.29";
 
   public static int delays[] = new int[] {
     5, 10, 25, 50, 100, 500, 1000, 3000, 5000, 10000, 30000, 60000, 300000
