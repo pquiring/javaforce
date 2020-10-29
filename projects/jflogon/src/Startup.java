@@ -16,8 +16,9 @@ import javaforce.linux.Linux;
 import javaforce.utils.monitordir;
 
 public class Startup implements ShellProcessListener{
-  private static ShellProcess x11process;
+  private static ShellProcess display_mgr;
   private static boolean rebootFlag, shutdownFlag;
+  private static boolean wayland = true;
 
   public static AutoMounter autoMounter;
   public static JBusClient jbusClient;
@@ -40,18 +41,23 @@ public class Startup implements ShellProcessListener{
       new DeviceMonitor().start();
       //stop plymouth
       hidePlymouth();
-      //start X
-      create_server_xauth();
+      if (!wayland) {
+        create_server_xauth();
+      }
       boolean retry;
       do {
         retry = false;
         try {
-          startx();
+          if (wayland) {
+            start(new String[] {"/usr/bin/mutter", "--wayland"});
+          } else {
+            start(new String[] {"/usr/bin/X"});
+          }
         } catch (Exception e) {
           JFLog.log(e);
-          return;
         }
-        JF.sleep(1500);  //wait for X to start
+        JF.sleep(1500);  //wait for display manager to start
+
         Runtime.getRuntime().exec(new String[] {"numlockx", "on"});
         try {
           if (new File("/etc/.live").exists()) {
@@ -67,11 +73,11 @@ public class Startup implements ShellProcessListener{
             JFLog.log("X Failed : Attempting to delete /etc/X11/xorg.conf and try again");
             xorgconf.delete();
           }
-          stopx();
+          stop();
           retry = true;
         } catch (Exception e) {
           JFLog.log(e);
-          stopx();
+          stop();
           retry = true;
         }
       } while (retry);
@@ -80,14 +86,14 @@ public class Startup implements ShellProcessListener{
     }
   }
 
-  private static void startx() throws Exception {
+  private static void start(final String[] cmds) throws Exception {
     new Thread() {
       public void run() {
-        x11process = new ShellProcess();
-        x11process.keepOutput(false);
-        x11process.addListener(new Startup());
+        display_mgr = new ShellProcess();
+        display_mgr.keepOutput(false);
+        display_mgr.addListener(new Startup());
         JFLog.log("Starting X Server...");
-        x11process.run(new String[] {"/usr/bin/X"}, true);
+        display_mgr.run(cmds, true);
         //some options lightdm uses
         // -core :0
         // -seat seat0
@@ -99,21 +105,21 @@ public class Startup implements ShellProcessListener{
     }.start();
   }
 
-  public static void stopx() throws Exception {
-    if (x11process != null) {
-      JFLog.log("Stopping X Server...");
-      x11process.destroy();
+  public static void stop() throws Exception {
+    if (display_mgr != null) {
+      JFLog.log("Stopping Display Manager...");
+      display_mgr.destroy();
       JF.sleep(500);
       for(int a=0;a<3;a++) {
-        if (!x11process.isAlive()) break;
+        if (!display_mgr.isAlive()) break;
         JF.sleep(1000);
       }
-      if (x11process.isAlive()) {
-        x11process.destroyForcibly();
+      if (display_mgr.isAlive()) {
+        display_mgr.destroyForcibly();
         JF.sleep(500);
       }
-      x11process = null;
-      JFLog.log("X Server stopped...");
+      display_mgr = null;
+      JFLog.log("Display Manager stopped...");
     }
   }
 
@@ -161,7 +167,7 @@ public class Startup implements ShellProcessListener{
       if (casperFlag != null) casper = casperFlag.trim().equals("true");
       //run session as live user
       runSession(user, "/usr/bin/jfdesktop", null, null, false);
-      stopx();
+      stop();
       JF.sleep(1000);
       System.out.println("" + (char)0x1b + "[2J");  //clear screen
       System.out.println("\n\n\n\n\n\t\tPlease remove installation media and reboot\n\n\n\n\n");
@@ -174,9 +180,11 @@ public class Startup implements ShellProcessListener{
   public static void runSession(String user, String session, String env_names[], String env_values[], boolean domainLogon) {
     try {
       getUserDetails(user);
-      String xauthFile = homePath + "/.Xauthority";
-      write_xauth(xauthFile);
-      chown_xauth(xauthFile, user);
+      if (!wayland) {
+        String xauthFile = homePath + "/.Xauthority";
+        write_xauth(xauthFile);
+        chown_xauth(xauthFile, user);
+      }
       if (!Linux.isMemberOf(user, "audio")) {
         //pulseaudio requires user to be member of 'audio' group
         Runtime.getRuntime().exec(new String[] {"usermod", "-aG", "audio", user});
@@ -262,7 +270,7 @@ public class Startup implements ShellProcessListener{
   /** Reboots PC */
   public static void reboot() {
     try {
-      stopx();
+      stop();
       showPlymouth();
       JFLog.log("Rebooting...");
       Runtime.getRuntime().exec("reboot");
@@ -276,7 +284,7 @@ public class Startup implements ShellProcessListener{
    */
   public static void shutdown(String type) {
     try {
-      stopx();
+      stop();
       showPlymouth();
       JFLog.log("Shutting down...,type=" + type);
       Runtime.getRuntime().exec("shutdown " + type + " now");
