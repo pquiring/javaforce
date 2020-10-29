@@ -49,7 +49,7 @@ public class Startup implements ShellProcessListener{
         retry = false;
         try {
           if (wayland) {
-            start(new String[] {"/usr/bin/mutter", "--wayland"});
+            start(new String[] {"/usr/bin/weston"});
           } else {
             start(new String[] {"/usr/bin/X"});
           }
@@ -92,15 +92,10 @@ public class Startup implements ShellProcessListener{
         display_mgr = new ShellProcess();
         display_mgr.keepOutput(false);
         display_mgr.addListener(new Startup());
-        JFLog.log("Starting X Server...");
+        display_mgr.addEnvironmentVariable("XDG_RUNNING_DIR", "/run/weston");
+        new File("/run/weston").mkdir();
+        JFLog.log("Starting Display Server...");
         display_mgr.run(cmds, true);
-        //some options lightdm uses
-        // -core :0
-        // -seat seat0
-        // -nolisten tcp
-        // vt7
-        // -novtswitch
-        // -auth /var/run/lightdm/root/:0
       }
     }.start();
   }
@@ -209,7 +204,9 @@ public class Startup implements ShellProcessListener{
       env.put("LOGNAME", user);
       env.put("SHELL", shellPath);
       env.put("HOME", homePath);
-      env.put("XAUTHORITY", homePath + "/.Xauthority");
+      if (!wayland) {
+        env.put("XAUTHORITY", homePath + "/.Xauthority");
+      }
       env.put("JID", jid);
       if (env_names != null) {
         for(int a=0;a<env_names.length;a++) {
