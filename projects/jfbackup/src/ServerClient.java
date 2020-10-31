@@ -301,7 +301,6 @@ public class ServerClient extends Thread {
     req.root = root;
     req.notify.notify(req);
   }
-  private static final int blocksize = 64 * 1024;
   private EntryFile readfile(Request req, String str) throws Exception {
     EntryFile file = new EntryFile();
     file.name = str;
@@ -310,7 +309,7 @@ public class ServerClient extends Thread {
       throw new Exception("get file error");
     }
     file.u = uncompressed;
-    long maxBlocks = (file.u / blocksize) + 4;
+    long maxBlocks = (file.u / BackupJob.blocksize) + 4;
     if (BackupJob.currentTape == null || BackupJob.currentTape.left < maxBlocks) {
       if (Status.backup.haveChanger) {
         if (!Status.backup.prepNextTape()) {
@@ -333,7 +332,7 @@ public class ServerClient extends Thread {
       compressed += chunk;
       int left = chunk;
       while (left > 0) {
-        int maxread = blocksize - len;
+        int maxread = BackupJob.blocksize - len;
         int toread = left > maxread ? maxread : left;
         int read = is.read(buffer, pos, toread);
         if (read == -1) throw new Exception("bad read");
@@ -341,8 +340,8 @@ public class ServerClient extends Thread {
           left -= read;
           len += read;
           pos += read;
-          if (len == blocksize) {
-            req.tape.write(buffer, 0, blocksize);
+          if (len == BackupJob.blocksize) {
+            req.tape.write(buffer, 0, BackupJob.blocksize);
             len = 0;
             pos = 0;
           }
@@ -352,12 +351,12 @@ public class ServerClient extends Thread {
     file.o = BackupJob.currentTape.position;
     file.t = Status.backup.catnfo.tapes.size();
     file.c = compressed;
-    file.b = file.c / blocksize;
-    if (file.c % blocksize != 0) {
+    file.b = file.c / BackupJob.blocksize;
+    if (file.c % BackupJob.blocksize != 0) {
       file.b++;
       //write last partial block to tape
-      Arrays.fill(buffer, pos, blocksize, (byte)0);
-      req.tape.write(buffer, 0, blocksize);
+      Arrays.fill(buffer, pos, BackupJob.blocksize, (byte)0);
+      req.tape.write(buffer, 0, BackupJob.blocksize);
     }
     BackupJob.currentTape.position += file.b;
     BackupJob.currentTape.left -= file.b;

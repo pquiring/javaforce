@@ -16,6 +16,10 @@ public class TapeDrive {
     WinNative.tapeClose(handle);
     handle = 0;
   }
+  public boolean format() {
+    if (handle == 0) return false;
+    return WinNative.tapeFormat(handle);
+  }
   public long getpos(int attempt) {
     return WinNative.tapeGetpos(handle);
   }
@@ -26,6 +30,7 @@ public class TapeDrive {
     MediaInfo info = new MediaInfo();
     if (!WinNative.tapeMedia(handle)) return null;
     info.capacity = WinNative.tapeMediaSize();
+    info.blocksize = WinNative.tapeMediaBlockSize();
     info.readonly = WinNative.tapeMediaReadOnly();
     return info;
   }
@@ -40,8 +45,10 @@ public class TapeDrive {
   public int read(byte data[], int offset, int length) {
     return WinNative.tapeRead(handle, data, offset, length);
   }
+  public int written;
   public boolean write(byte data[], int offset, int length) {
-    return WinNative.tapeWrite(handle, data, offset, length) == data.length;
+    int written = WinNative.tapeWrite(handle, data, offset, length);
+    return written == data.length;
   }
   public String lastError() {
     return String.format("0x%08x : Handle=0x%08x", WinNative.tapeLastError(), handle);

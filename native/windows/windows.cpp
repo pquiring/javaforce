@@ -1053,11 +1053,61 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_tapeClose
   CloseHandle((HANDLE)handle);
 }
 
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeFormat
+  (JNIEnv *e, jclass c, jlong handle)
+{
+  HANDLE dev = (HANDLE)handle;
+
+  TAPE_PREPARE tapePrepare;
+  tapePrepare.Operation = TAPE_FORMAT;
+  tapePrepare.Immediate = FALSE;
+  DWORD bytesReturn;
+  BOOL ret = DeviceIoControl(
+    dev,
+    IOCTL_TAPE_PREPARE,
+    &tapePrepare,
+    sizeof(tapePrepare),
+    nullptr,
+    0,
+    &bytesReturn,
+    nullptr
+  );
+  if (ret != TRUE) {
+    printf("TAPE_PREPARE Failed\r\n");
+    tapeLastError = GetLastError();
+    //return JNI_FALSE;  //ignore error - not supported on all drives
+  }
+
+  TAPE_SET_MEDIA_PARAMETERS tapeSetMediaParams;
+  tapeSetMediaParams.BlockSize = 64 * 1024;
+  ret = DeviceIoControl(
+    dev,
+    IOCTL_TAPE_SET_MEDIA_PARAMS,
+    &tapeSetMediaParams,
+    sizeof(tapeSetMediaParams),
+    nullptr,
+    0,
+    &bytesReturn,
+    nullptr
+  );
+  if (ret != TRUE) {
+    printf("TAPE_SET_MEDIA_PARAMETERS Failed\r\n");
+    tapeLastError = GetLastError();
+    return JNI_FALSE;
+  }
+
+  return JNI_TRUE;
+}
+
 JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeRead
   (JNIEnv *e, jclass c, jlong handle, jbyteArray ba, jint offset, jint length)
 {
   jboolean isCopy;
   jbyte *baptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
+  if (baptr == NULL) {
+    tapeLastError = -1;
+    return 0;
+  }
   int read = 0;
   ReadFile((HANDLE)handle, baptr + offset, length, (LPDWORD)&read, NULL);
   tapeLastError = GetLastError();
@@ -1070,6 +1120,10 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeWrite
 {
   jboolean isCopy;
   jbyte *baptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
+  if (baptr == NULL) {
+    tapeLastError = -1;
+    return 0;
+  }
   int write = 0;
   WriteFile((HANDLE)handle, baptr + offset, length, (LPDWORD)&write, NULL);
   tapeLastError = GetLastError();
@@ -1126,6 +1180,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeGetpos(JNIEnv *e, jclas
 }
 
 static jlong tape_media_size;
+static jint tape_media_blocksize;
 static jboolean tape_media_readonly;
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeMedia(JNIEnv *e, jclass c, jlong handle)
@@ -1148,6 +1203,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeMedia(JNIEnv *e, jcl
     return JNI_FALSE;
   }
   tape_media_size = params.Capacity.QuadPart;
+  tape_media_blocksize = params.BlockSize;
   tape_media_readonly = params.WriteProtected;
   return JNI_TRUE;
 }
@@ -1155,6 +1211,11 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeMedia(JNIEnv *e, jcl
 JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_tapeMediaSize(JNIEnv *e, jclass c)
 {
   return tape_media_size;
+}
+
+JNIEXPORT jint JNICALL Java_javaforce_jni_WinNative_tapeMediaBlockSize(JNIEnv *e, jclass c)
+{
+  return tape_media_blocksize;
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeMediaReadOnly(JNIEnv *e, jclass c)

@@ -9,6 +9,8 @@ import java.io.*;
 import javaforce.*;
 
 public class RestoreJob extends Thread {
+  public static final int blocksize = 64 * 1024;
+
   private long restoreid;
   private MediaChanger changer = new MediaChanger();
   private TapeDrive tape = new TapeDrive();
@@ -121,17 +123,21 @@ public class RestoreJob extends Thread {
         if (!verifyHeader()) return false;
       }
     }
+    log("setpos=" + file.o);  //test
     if (!setpos(file.o)) {
       log("Error:Failed to set tape position:" + file.o + ":Error=" + tape.lastError());
       return false;
     }
+    log("getpos");  //test
     long tapepos = getpos();
     if (tapepos != file.o) {
       log("Error:Failed to get tape position:Expected:" + file.o + " Returned:" + tapepos + ":Error=" + tape.lastError());
       return false;
     }
+    log("path=" + path);
     new File(path).mkdirs();
     String resfile = path + "\\" + file.name;
+    log("file=" + resfile);
     try {
       FileOutputStream fos = new FileOutputStream(resfile);
       PipedInputStream pis = new PipedInputStream();
@@ -139,6 +145,7 @@ public class RestoreJob extends Thread {
       Transfer transfer = new Transfer(pos, file.c);
       transfer.start();
       long uncompressed = Compression.decompress(pis, fos, file.c);
+      log("uncompressed=" + uncompressed);
       transfer.join();
       fos.close();
       if (uncompressed != file.u) return false;
@@ -150,16 +157,18 @@ public class RestoreJob extends Thread {
     Status.files++;
     return true;
   }
-  private static byte buffer[] = new byte[64 * 1024];
-  private static final int buffersize = 64 * 1024;
   public class Transfer extends Thread {
     private OutputStream os;
     private boolean active = true;
     public long copied;
     public long compressed;
+    private byte buffer[];
+    private int buffersize;
     public Transfer(OutputStream os, long compressed) {
       this.os = os;
       this.compressed = compressed;
+      buffer = new byte[blocksize];
+      buffersize = blocksize;
     }
     public void run() {
       long left = compressed;
@@ -167,9 +176,10 @@ public class RestoreJob extends Thread {
         while (active) {
           if (copied == compressed) break;
           int toread = left < buffersize ? (int)left : buffersize;
-          int read = tape.read(buffer, 0, toread);
+          int read = tape.read(buffer, 0, buffersize);
           if (read == -1) break;
           if (read == 0) continue;
+          if (read > toread) read = toread;
           os.write(buffer, 0, read);
           copied += read;
           left -= read;
@@ -260,6 +270,7 @@ public class RestoreJob extends Thread {
     return true;
   }
   private boolean updateList() {
+    log("Retrieving tape list...");
     elements = changer.list();
     if (elements == null) return false;
     driveIdx = -1;
@@ -297,6 +308,17 @@ public class RestoreJob extends Thread {
  */
   private boolean verifyHeader() {
     log("Verify tape:" + currentTape.barcode);
+    MediaInfo mediainfo = getMediaInfo();
+    if (mediainfo == null) {
+      log("Error:Tape get Media Info failed" + ":Error=" + tape.lastError());
+      return false;
+    }
+    if (mediainfo.blocksize != blocksize) {
+      log("Error:Tape blocksize not supported:" + mediainfo.blocksize);
+      return false;
+    }
+    log("Media:BlockSize=" + mediainfo.blocksize);
+    log("Rewinding tape...");
     if (!setpos(0)) {
       log("Error:Unable to rewind tape" + ":Error=" + tape.lastError());
       return false;
@@ -306,7 +328,7 @@ public class RestoreJob extends Thread {
       log("Error:Failed to rewind tape" + ":Error=" + tape.lastError());
       return false;
     }
-    byte data[] = new byte[64 * 1024];
+    byte data[] = new byte[blocksize];
     int read = tape.read(data, 0, data.length);
     if (read != data.length) {
       log("Error:Failed to read tape header:Expected=" + data.length + ":Actual=" + read + ":Error=" + tape.lastError());
@@ -352,13 +374,15 @@ public class RestoreJob extends Thread {
       log("Error:" + e.toString());
       return false;
     }
+    log("Tape Verified:" + currentTape.barcode);
     return true;
   }
   private boolean setpos(long pos) {
     //try 3 times
     for(int a=0;a<3;a++) {
       if (tape.setpos(pos, a+1)) return true;
-      JF.sleep(60 * 1000);  //wait 1 min
+      log("setpos() failed : Error=" + tape.lastError() + ", retrying...");
+      JF.sleep(10 * 1000);
     }
     return false;
   }
@@ -367,8 +391,19 @@ public class RestoreJob extends Thread {
     for(int a=0;a<3;a++) {
       long pos = tape.getpos(a+1);
       if (pos >= 0) return pos;
-      JF.sleep(60 * 1000);  //wait 1 min
+      log("getpos() failed : Error=" + tape.lastError() + ", retrying...");
+      JF.sleep(10 * 1000);
     }
     return -1;
+  }
+  private MediaInfo getMediaInfo() {
+    //try 3 times
+    for(int a=0;a<3;a++) {
+      MediaInfo info = tape.getMediaInfo();
+      if (info != null) return info;
+      log("getMediaInfo() failed : Error=" + tape.lastError() + ", retrying...");
+      JF.sleep(10 * 1000);
+    }
+    return null;
   }
 }

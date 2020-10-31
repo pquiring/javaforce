@@ -11,9 +11,9 @@ import java.util.*;
 import javaforce.*;
 
 public class BackupJob extends Thread {
+  public static final int blocksize = 64 * 1024;
+
   private EntryJob job;
-  //TODO : support other blocksize (are there others?)
-  private final static int blocksize = 64 * 1024;
   private long backupid;
   private long retentionid;
   private MediaChanger changer = new MediaChanger();
@@ -215,8 +215,9 @@ public class BackupJob extends Thread {
     if (haveChanger) {
       if (!loadEmptyTape()) return false;
     }
-    //rewind tape
+    log("Rewinding tape...");
     if (!setpos(0)) {
+      log("setpos() failed");
       return false;
     }
     long pos = getpos();
@@ -225,26 +226,17 @@ public class BackupJob extends Thread {
       return false;
     }
     currentTape = new EntryTape(barcode, backupid, retentionid, job.name, catnfo.tapes.size() + 1);
-    //get tape info
-    MediaInfo mediainfo = getMediaInfo();
-    if (mediainfo == null) {
-      log("Error:Tape get Media Info failed" + ":Error=" + tape.lastError());
-      return false;
-    }
-    currentTape.capacity = mediainfo.capacity / blocksize;
-    currentTape.left = mediainfo.capacity / blocksize;
-    if (mediainfo.readonly) {
-      log("Error:Tape is read only");
-      return false;
-    }
+
     //add tape to catalog
     catnfo.tapes.add(currentTape);
 
     //write header
-    writeHeader();
-    pos = getpos();
-    if (pos != 1) {
-      log("Error:Tape write header failed" + ":Error=" + tape.lastError());
+    if (!writeHeader()) {
+      return false;
+    }
+
+    if (!setpos(1)) {
+      log("setpos() failed");
       return false;
     }
     log("Tape ready for backup");
@@ -312,6 +304,7 @@ public class BackupJob extends Thread {
     return true;
   }
   private boolean updateList() {
+    log("Retrieving tape list...");
     elements = changer.list();
     if (elements == null) return false;
     driveIdx = -1;
@@ -334,7 +327,8 @@ public class BackupJob extends Thread {
     //try 3 times
     for(int a=0;a<3;a++) {
       if (tape.setpos(pos, a+1)) return true;
-      JF.sleep(60 * 1000);  //wait 1 min
+      log("setpos() failed : Error=" + tape.lastError() + ", retrying...");
+      JF.sleep(10 * 1000);
     }
     return false;
   }
@@ -343,7 +337,8 @@ public class BackupJob extends Thread {
     for(int a=0;a<3;a++) {
       long pos = tape.getpos(a+1);
       if (pos >= 0) return pos;
-      JF.sleep(60 * 1000);  //wait 1 min
+      log("getpos() failed : Error=" + tape.lastError() + ", retrying...");
+      JF.sleep(10 * 1000);
     }
     return -1;
   }
@@ -352,7 +347,8 @@ public class BackupJob extends Thread {
     for(int a=0;a<3;a++) {
       MediaInfo info = tape.getMediaInfo();
       if (info != null) return info;
-      JF.sleep(60 * 1000);  //wait 1 min
+      log("getMediaInfo() failed : Error=" + tape.lastError() + ", retrying...");
+      JF.sleep(10 * 1000);
     }
     return null;
   }
@@ -382,8 +378,41 @@ public class BackupJob extends Thread {
 
     log("WriteHeader to tape:" + barcode);
 
+    MediaInfo mediainfo = getMediaInfo();
+    if (mediainfo == null) {
+      log("Error:Tape get Media Info failed" + ":Error=" + tape.lastError());
+      return false;
+    }
+    if (mediainfo.readonly) {
+      log("Error:Tape is read only");
+      return false;
+    }
+
+    if (!tape.format()) {
+      log("Error:Tape format failed:Error=" + tape.lastError());
+      return false;
+    }
+
+    mediainfo = getMediaInfo();
+    if (mediainfo == null) {
+      log("Error:Tape get Media Info failed" + ":Error=" + tape.lastError());
+      return false;
+    }
+    if (mediainfo.blocksize != blocksize) {
+      log("Error:Tape blocksize is not supported:" + mediainfo.blocksize);
+      return false;
+    }
+    if (mediainfo.readonly) {
+      log("Error:Tape is read only");
+      return false;
+    }
+    currentTape.capacity = mediainfo.capacity / blocksize;
+    currentTape.left = mediainfo.capacity / blocksize;
+    log("Media:Capacity=" + mediainfo.capacity);
+    log("Media:BlockSize=" + mediainfo.blocksize);
+
     if (!tape.write(data, 0, data.length)) {
-      log("Error:Tape write failed" + ":Error=" + tape.lastError());
+      log("Error:Tape write failed:Error=" + tape.lastError() + " : Written=" + tape.written + " : Expected=" + data.length);
       return false;
     }
 
@@ -556,14 +585,16 @@ public class BackupJob extends Thread {
       return false;
     }
   }
-  private static byte buffer[] = new byte[64 * 1024];
-  private static final int bufferSize = 64 * 1024;
   public class Transfer extends Thread {
     private InputStream is;
     public long copied;
     public long compressed = -1;
+    public byte buffer[];
+    public int bufferSize;
     public Transfer(InputStream is) {
       this.is = is;
+      buffer = new byte[blocksize];
+      bufferSize = blocksize;
     }
     public void run() {
       int pos = 0;
@@ -580,7 +611,7 @@ public class BackupJob extends Thread {
           len += read;
           if (len == bufferSize) {
             if (!tape.write(buffer, 0, bufferSize)) {
-              throw new Exception("tape write failed");
+              throw new Exception("Error:Tape write failed:Error=" + tape.lastError() + " : Written=" + tape.written + " : Expected=" + bufferSize);
             }
             len = 0;
             pos = 0;
@@ -591,7 +622,7 @@ public class BackupJob extends Thread {
             Arrays.fill(buffer, pos, bufferSize, (byte)0);
           }
           if (!tape.write(buffer, 0, bufferSize)) {
-            throw new Exception("tape write failed");
+            throw new Exception("Error:Tape write failed:Error=" + tape.lastError() + " : Written=" + tape.written + " : Expected=" + bufferSize);
           }
         }
       } catch (Exception e) {

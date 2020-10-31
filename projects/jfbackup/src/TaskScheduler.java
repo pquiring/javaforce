@@ -41,6 +41,9 @@ public class TaskScheduler extends TimerTask {
           }
           break;
         }
+        case "manual": {
+          break;
+        }
         default: {
           System.out.println("Error:Unsupported task freq:" + job.freq);
           break;
