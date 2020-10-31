@@ -5,7 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class InnerPanel extends Container {
+public class InnerPanel extends Panel {
   public String header;
   public InnerPanel(String header) {
     this.header = header;

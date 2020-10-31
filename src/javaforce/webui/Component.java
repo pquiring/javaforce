@@ -283,6 +283,9 @@ public abstract class Component {
   public void setMaxWidth() {
     setStyle("width", "100%");
   }
+  public void setAutoWidth() {
+    setStyle("width", "auto");
+  }
   public int getY() {
     return y;
   }
@@ -296,6 +299,9 @@ public abstract class Component {
   }
   public void setMaxHeight() {
     setStyle("height", "100%");
+  }
+  public void setAutoHeight() {
+    setStyle("height", "auto");
   }
   public void setColor(int clr) {
     this.clr = clr;

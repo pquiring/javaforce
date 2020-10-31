@@ -104,19 +104,22 @@ public class ConfigService implements WebUIHandler {
 
   public Panel loginPanel() {
     Panel panel = new Panel();
+    panel.removeClass("column");
+    InnerPanel inner = new InnerPanel("jfBackup Login");
+    inner.setDisplay("inline");
+    inner.setAutoWidth();
+    inner.setAutoHeight();
+    panel.setAlign(Component.CENTER);
     Row row;
-    row = new Row();
-    row.add(new Label("jfBackup Login"));
-    panel.add(row);
     Label msg = new Label("");
-    panel.add(msg);
+    inner.add(msg);
     row = new Row();
     row.add(new Label("Password:"));
     TextField password = new TextField("");
     row.add(password);
     Button login = new Button("Login");
     row.add(login);
-    panel.add(row);
+    inner.add(row);
     login.addClickListener( (MouseEvent m, Component c) -> {
       String passTxt = password.getText();
       WebUIClient webclient = c.getClient();
@@ -128,6 +131,7 @@ public class ConfigService implements WebUIHandler {
         msg.setColor(Color.red);
       }
     });
+    panel.add(inner);
     return panel;
   }
 
