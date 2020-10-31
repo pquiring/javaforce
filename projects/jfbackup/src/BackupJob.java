@@ -128,10 +128,8 @@ public class BackupJob extends Thread {
       log("Please open support ticket at jfbackup.sf.net (provide tape drive info)");
       return false;
     }
-    if (!haveChanger) {
-      //prep current tape in drive
-      if (!prepNextTape()) return false;
-    }
+    //prep a tape
+    if (!prepNextTape()) return false;
     for(EntryJobVolume jobvol : job.backup) {
       currentjobvol = jobvol;
       if (jobvol.volume.length() == 0) {
