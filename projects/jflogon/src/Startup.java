@@ -18,7 +18,7 @@ import javaforce.utils.monitordir;
 public class Startup implements ShellProcessListener{
   private static ShellProcess display_mgr;
   private static boolean rebootFlag, shutdownFlag;
-  private static boolean wayland = true;
+  private static boolean wayland = false;
 
   public static AutoMounter autoMounter;
   public static JBusClient jbusClient;
