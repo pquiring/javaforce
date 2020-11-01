@@ -1058,6 +1058,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeFormat
 {
   HANDLE dev = (HANDLE)handle;
 
+/*  //not supported
   TAPE_PREPARE tapePrepare;
   tapePrepare.Operation = TAPE_FORMAT;
   tapePrepare.Immediate = FALSE;
@@ -1077,6 +1078,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeFormat
     tapeLastError = GetLastError();
     //return JNI_FALSE;  //ignore error - not supported on all drives
   }
+*/
 
   TAPE_SET_MEDIA_PARAMETERS tapeSetMediaParams;
   tapeSetMediaParams.BlockSize = 64 * 1024;
