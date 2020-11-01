@@ -49,7 +49,7 @@ public class Startup implements ShellProcessListener{
         retry = false;
         try {
           if (wayland) {
-            start(new String[] {"/usr/bin/weston"});
+            start(new String[] {"/usr/bin/weston" , "--config=/etc/weston-logon.ini", "--xwayland"});
           } else {
             start(new String[] {"/usr/bin/X"});
           }
