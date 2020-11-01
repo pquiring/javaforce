@@ -21,6 +21,7 @@ public class Client extends Thread {
   public static boolean reading_files;
 
   public void run() {
+    cleanMounts();
     while (Status.active && active) {
       try {
         JFLog.log("Client Connecting to:" + Config.current.server_host);
@@ -173,27 +174,13 @@ public class Client extends Thread {
     }
     byte[] arg = read(arglen);
     String vol = new String(arg);
-    //remove old mount if exists
-    if (new File(Paths.vssPath).exists()) {
-      VSS.unmountShadow(Paths.vssPath);
-      new File(Paths.vssPath).delete();
-    }
-    //delete all old shadow copies
-    String shadows[] = VSS.listShadows();
-    for(String shadow : shadows) {
-      VSS.deleteShadow(shadow.substring(0, 2));
-    }
-    //remove old mount if exists (2nd attempt)
-    if (new File(Paths.vssPath).exists()) {
-      VSS.unmountShadow(Paths.vssPath);
-      new File(Paths.vssPath).delete();
-    }
+    cleanMounts();
     if (!VSS.createShadow(vol)) {
       writeLength(4);
       os.write("FAIL".getBytes());
       return;
     }
-    shadows = VSS.listShadows();
+    String[] shadows = VSS.listShadows();
     for(String shadow : shadows) {
       if (shadow.startsWith(vol)) {
         if (VSS.mountShadow(Paths.vssPath, shadow.substring(3))) {
@@ -232,6 +219,23 @@ public class Client extends Thread {
       synchronized(lock) {
         mounts.remove(vol);
       }
+    }
+  }
+  private void cleanMounts() {
+    //remove old mount if exists
+    if (new File(Paths.vssPath).exists()) {
+      VSS.unmountShadow(Paths.vssPath);
+      new File(Paths.vssPath).delete();
+    }
+    //delete all old shadow copies
+    String shadows[] = VSS.listShadows();
+    for(String shadow : shadows) {
+      VSS.deleteShadow(shadow.substring(0, 2));
+    }
+    //remove old mount if exists (2nd attempt)
+    if (new File(Paths.vssPath).exists()) {
+      VSS.unmountShadow(Paths.vssPath);
+      new File(Paths.vssPath).delete();
     }
   }
   private boolean isValid(String name) {
