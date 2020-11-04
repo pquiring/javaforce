@@ -1,5 +1,10 @@
 What's new...
 
+Nov 4/2020 : JF 29.3 released
+  - jfBackup/0.19
+    - fix tape formatting issues
+    - fix client volume mounting issues
+
 Oct 22/2020 : JF 29.2 released
   - jfDataLogger/0.29
     - fix : editing tag descriptions
