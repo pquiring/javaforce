@@ -69,6 +69,7 @@ public class Client extends Thread {
       } catch (Exception e) {
         JFLog.log(e);
         JF.sleep(3000);  //try again in 3 seconds
+        cleanMounts();
       }
     }
   }

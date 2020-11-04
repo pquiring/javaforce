@@ -1,5 +1,7 @@
-Oct 31/2020 : 0.19 released
+Nov 4/2020 : 0.19 released
   - new : always prep first tape before mounting first volume
+  - new : set tape block size to 64k
+  - new : improve client mount cleanup
 
 Sept 19/2020 : 0.18 released
   - fix : add "<no label>" when changer is unable to read bar code label
