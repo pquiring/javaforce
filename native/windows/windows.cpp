@@ -1057,13 +1057,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeFormat
   (JNIEnv *e, jclass c, jlong handle)
 {
   HANDLE dev = (HANDLE)handle;
+  DWORD bytesReturn;
+  BOOL ret;
 
 /*  //not supported
   TAPE_PREPARE tapePrepare;
   tapePrepare.Operation = TAPE_FORMAT;
   tapePrepare.Immediate = FALSE;
-  DWORD bytesReturn;
-  BOOL ret = DeviceIoControl(
+  ret = DeviceIoControl(
     dev,
     IOCTL_TAPE_PREPARE,
     &tapePrepare,

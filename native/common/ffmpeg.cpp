@@ -55,6 +55,7 @@ const char* (*_avcodec_get_name)(AVCodecID id);
 void (*_av_packet_rescale_ts)(AVPacket *pkt, AVRational src, AVRational dst);
 int (*_avcodec_parameters_to_context)(AVCodecContext *ctx, const AVCodecParameters *par);
 int (*_avcodec_parameters_from_context)(AVCodecParameters *par, const AVCodecContext *ctx);
+int (*_avcodec_version)();
 
 //avdevice functions
 void (*_avdevice_register_all)();
@@ -88,6 +89,7 @@ int (*_av_write_frame)(AVFormatContext *fc, AVPacket *pkt);
 int (*_avio_flush)(void* io_ctx);
 void (*_av_dump_format)(AVFormatContext *fmt_ctx, int index, const char* url, int is_output);
 int (*_av_write_trailer)(AVFormatContext *fc);
+int (*_avformat_version)();
 
 //avutil functions
 void (*_av_image_copy)(uint8_t* dst_data[],int dst_linesizes[]
@@ -121,6 +123,7 @@ int (*_av_frame_get_buffer)(AVFrame *frame, int align);
 AVFrame* (*_av_frame_alloc)();
 void (*_av_frame_free)(void** frame);
 void (*_av_buffer_unref)(AVBufferRef **buf);
+int (*_avutil_version)();
 
 //swresample functions (ffmpeg.org)
 void* (*_swr_alloc)();
@@ -275,6 +278,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(codec, (void**)&_av_packet_rescale_ts, "av_packet_rescale_ts");
   getFunction(codec, (void**)&_avcodec_parameters_to_context, "avcodec_parameters_to_context");
   getFunction(codec, (void**)&_avcodec_parameters_from_context, "avcodec_parameters_from_context");
+  getFunction(codec, (void**)&_avcodec_version, "avcodec_version");
 
   getFunction(device, (void**)&_avdevice_register_all, "avdevice_register_all");
 
@@ -302,6 +306,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(format, (void**)&_avio_flush, "avio_flush");
   getFunction(format, (void**)&_av_dump_format, "av_dump_format");
   getFunction(format, (void**)&_av_write_trailer, "av_write_trailer");
+  getFunction(format, (void**)&_avformat_version, "avformat_version");
 
   getFunction(util, (void**)&_av_image_copy, "av_image_copy");
   getFunction(util, (void**)&_av_get_bytes_per_sample, "av_get_bytes_per_sample");
@@ -332,6 +337,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(util, (void**)&_av_frame_alloc, "av_frame_alloc");
   getFunction(util, (void**)&_av_frame_free, "av_frame_free");
   getFunction(util, (void**)&_av_buffer_unref, "av_buffer_unref");
+  getFunction(util, (void**)&_avutil_version, "avutil_version");
 
   getFunction(scale, (void**)&_sws_getContext, "sws_getContext");
   getFunction(scale, (void**)&_sws_scale, "sws_scale");
@@ -358,6 +364,21 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   (*_avfilter_register_all)();
   (*_av_register_all)();
   register_vpx();
+
+  //print version info
+  union {
+    int v32;
+    struct {
+      unsigned char major, minor, micro;
+    } v8;
+  } version;
+
+  version.v32 = (*_avutil_version)();
+  printf("avutil_version=%d.%d.%d\n", version.v8.micro, version.v8.minor, version.v8.major);
+  version.v32 = (*_avcodec_version)();
+  printf("avcodec_version=%d.%d.%d\n", version.v8.micro, version.v8.minor, version.v8.major);
+  version.v32 = (*_avformat_version)();
+  printf("avformat_version=%d.%d.%d\n", version.v8.micro, version.v8.minor, version.v8.major);
 
   return JNI_TRUE;
 }
