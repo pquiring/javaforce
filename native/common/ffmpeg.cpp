@@ -369,16 +369,16 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   union {
     int v32;
     struct {
-      unsigned char major, minor, micro;
+      unsigned char micro, minor, major;
     } v8;
   } version;
 
   version.v32 = (*_avutil_version)();
-  printf("avutil_version=%d.%d.%d\n", version.v8.micro, version.v8.minor, version.v8.major);
+  printf("avutil_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
   version.v32 = (*_avcodec_version)();
-  printf("avcodec_version=%d.%d.%d\n", version.v8.micro, version.v8.minor, version.v8.major);
+  printf("avcodec_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
   version.v32 = (*_avformat_version)();
-  printf("avformat_version=%d.%d.%d\n", version.v8.micro, version.v8.minor, version.v8.major);
+  printf("avformat_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
 
   return JNI_TRUE;
 }
