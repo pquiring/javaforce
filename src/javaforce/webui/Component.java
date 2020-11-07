@@ -368,7 +368,7 @@ public abstract class Component {
     return sb.toString();
   }
 
-  private String display = "flex";
+  private String display = "block";  //TODO : default should be inline-block or block ???
   private boolean isVisible = true;
 
   public void setVisible(boolean state) {

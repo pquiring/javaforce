@@ -251,7 +251,9 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(5);
     panel.add(row);
 
-    panel.add(new Label("Status:"));
+    row = new Row();
+    row.add(new Label("Status:"));
+    panel.add(row);
 
     TextArea text = new TextArea("Loading...");
     text.setReadonly(true);

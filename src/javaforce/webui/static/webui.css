@@ -94,12 +94,13 @@ input {
 }
 
 .panel {
-  width: 100%;
+  display: block;
   height: 100%;
 }
 
 .innerpanel {
-  display: flex;
+  display: block;
+  height: auto;
 }
 
 .button {
@@ -109,43 +110,38 @@ input {
 }
 
 .label {
-  display: flex;
+  display: inline-block;
   box-sizing: border-box;
 }
 
 .row {
-  display: flex;
-  flex-direction: row;
+  display: block;
 }
 
 .row-item {
-  display: flex;
-  flex-shrink: 0;
+  display: inline-block;
   vertical-align: top;
   padding: 0px;
 }
 
 .row-end {
-  flex-grow: 1;
+  display: inline-block;
 }
 
 .column {
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
 .column-item {
-  display: flex;
-  flex-shrink: 0;
+  display: block;
 }
 
 .column-end {
-  flex-grow: 1;
+  display: block;
 }
 
 .pad {
-  display: flex;
-  flex-grow: 1;
+  display: inline-block;
 }
 
 .tab {
@@ -178,7 +174,7 @@ input {
 }
 
 .tabcontentshown {
-  display: flex;
+  display: block;
   padding: 0px;
   border-top: none;
 }
@@ -187,13 +183,18 @@ input {
   user-select: none;
 }
 
+.splitPanelTop {
+  overflow: hidden;
+  display: block;
+}
+
 .splitPanel {
   overflow: hidden;
-  display: flex;
+  display: inline-block;
 }
 
 .splitDivider {
-  display: flex;
+  display: inline-block;
   cursor: default;
 }
 
@@ -220,23 +221,23 @@ input {
 
 .container {
   overflow: hidden;
-  display: flex;
+  display: block;
 }
 
 .menubar {
   background-color: #ccc;
-  display: flex;
-  flex-direction: row;
+  display: block;
 }
 
 .menu {
-  display: flex;
+  display: inline-block;
   background-color: #ccc;
   padding-right: 10px;
   cursor: default;
 }
 
 .menuitem {
+  display: block;
   background-color: #ccc;
   cursor: default;
 }
@@ -245,7 +246,6 @@ input {
   position: fixed;
   display: none;
   background-color: #ccc;
-  flex-direction: column;
   z-index: 1;
 }
 
@@ -262,8 +262,7 @@ input {
   background-color: #00e;
   width: 100%;
   cursor: default;
-  display: flex;
-  flex-direction: row;
+  display: block;
 }
 
 .defaultcursor {

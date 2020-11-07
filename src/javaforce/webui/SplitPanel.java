@@ -50,6 +50,7 @@ public class SplitPanel extends Container {
     top.add(b1);  //left/top component
     top.add(div);
     top.add(b2);  //right/bottom component
+    top.addClass("splitPanelTop");
     add(top);
   }
 
