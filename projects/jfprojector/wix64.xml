@@ -56,6 +56,7 @@
       <ComponentRef Id="ApplicationShortcut" />
       <ComponentRef Id="ApplicationShortcut2" />
       <ComponentGroupRef Id="JRE" />
+      <ComponentGroupRef Id="FFMPEG" />
     </Feature>
   </Product>
 </Wix>
