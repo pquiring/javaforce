@@ -700,7 +700,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     exit = new MenuItem("Exit");
     exit.addActionListener(this);
     popup.add(exit);
-    icon = new TrayIcon(scaled.getImage(), "Passwords", popup);
+    icon = new TrayIcon(scaled.getImage(), "Socks", popup);
     icon.addActionListener(this);
     try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
   }
