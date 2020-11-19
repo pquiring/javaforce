@@ -137,7 +137,7 @@ public class JF {
     return (File.separatorChar == '\\');
   }
 
-  /** Checks is system is Unix based (includes : Unix, Linux, Mac, jfLinux) */
+  /** Checks if system is Unix based (includes : Unix, Linux, Mac, jfLinux) */
   public static boolean isUnix() {
     return (File.separatorChar == '/');
   }

@@ -12,8 +12,11 @@ import java.io.*;
 import javaforce.jni.*;
 
 public class ConsoleOutput extends OutputStream {
-
   private int low = -1;
+  private boolean isWindows;
+  public ConsoleOutput() {
+    isWindows = JF.isWindows();
+  }
   public void write(int b) throws IOException {
     b &= 0xff;
     if (low == -1) {
@@ -22,9 +25,9 @@ public class ConsoleOutput extends OutputStream {
       b <<= 8;
       b |= low;
       char c = ASCII8.convertUTF16(b);
-      if (JF.isWindows()) {
+      if (isWindows) {
         WinNative.writeConsole(c);
-      } else if (JF.isUnix()) {
+      } else {
         LnxNative.writeConsole(c);
       }
       low = -1;

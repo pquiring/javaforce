@@ -35,7 +35,7 @@ public class FindReplace {
     System.out.println("Usage : jfr [options] oldstr newstr filespec");
     System.out.println(" strings may contain C-style codes (\\n\\r\\t\\xHH\\DDD)");
     System.out.println("   HH=hex DDD=decimal ascii codes");
-    System.out.println(" place \"quotes\" around str if it starts with '-' or spaces");
+    System.out.println(" place \"quotes\" around strings if they start with '-' or contain spaces");
     System.out.println(" -asis = do not process C-style codes");
     System.out.println(" -i = case insensitive comparison");
     System.out.println(" -r = recursive");
