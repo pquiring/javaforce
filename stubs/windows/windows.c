@@ -234,8 +234,12 @@ char* DetectGC() {
   void* func = GetProcAddress(dll, "VirtualAlloc2");
   FreeLibrary(dll);
   if (func == NULL) {
-    //TODO : detect if using Oracle JDK which doesn't include Shenandoah (recommend AdoptOpenJDK)
-    return (char*)"-XX:+UseShenandoahGC";
+    func = GetProcAddress(jvm_dll, "??_7VM_ShenandoahFullGC@@6B@");
+    if (func == NULL) {
+      return (char*)"-XX:+UseG1GC";  //default
+    } else {
+      return (char*)"-XX:+UseShenandoahGC";
+    }
   } else {
     return (char*)"-XX:+UseZGC";
   }
