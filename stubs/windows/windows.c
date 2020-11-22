@@ -1,6 +1,5 @@
 //Java Launcher Win32/64
 
-// version 1.9
 // - supports passing command line options to java main()
 // - loads CLASSPATH and MAINCLASS from PE-EXE resource
 // - globbs arguments (see ExpandStringArray())
@@ -8,6 +7,7 @@
 // - supports windows services (type "s")
 // - define java.app.home to find exe/dll files
 // - support graal
+// - support selecting best concurrent GC (Shenandoah or Zero)
 
 #include <windows.h>
 #include <io.h>
@@ -226,6 +226,21 @@ int InvokeMethod(char *_method, jobjectArray args, char *sign) {
   return 1;
 }
 
+char* DetectGC() {
+  //detects best GC to use : Shenandoah or Zero
+  //Zero requires VirtualAlloc2 from kernelbase.dll (1803 or better)
+  HMODULE dll = NULL;
+  dll = LoadLibrary("kernelbase.dll");
+  void* func = GetProcAddress(dll, "VirtualAlloc2");
+  FreeLibrary(dll);
+  if (func == NULL) {
+    //TODO : detect if using Oracle JDK which doesn't include Shenandoah (recommend AdoptOpenJDK)
+    return (char*)"-XX:+UseShenandoahGC";
+  } else {
+    return (char*)"-XX:+UseZGC";
+  }
+}
+
 JavaVMInitArgs *BuildArgs() {
   JavaVMInitArgs *args;
   JavaVMOption *options;
@@ -237,7 +252,6 @@ JavaVMInitArgs *BuildArgs() {
     nOpts++;
 
     opts[0] = CreateClassPath();
-printf("%s\n", opts[0]);
     if (strlen(xoptions) > 0) {
       char *x = xoptions;
       while (x != NULL) {
@@ -249,6 +263,7 @@ printf("%s\n", opts[0]);
         }
       }
     }
+    opts[nOpts++] = DetectGC();
   }
 
   args = malloc(sizeof(JavaVMInitArgs));
