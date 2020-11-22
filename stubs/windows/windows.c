@@ -253,9 +253,8 @@ JavaVMInitArgs *BuildArgs() {
   char *opts[64];
 
   if (!graal) {
-    nOpts++;
-
-    opts[0] = CreateClassPath();
+    opts[nOpts++] = CreateClassPath();
+    opts[nOpts++] = DetectGC();
     if (strlen(xoptions) > 0) {
       char *x = xoptions;
       while (x != NULL) {
@@ -267,7 +266,6 @@ JavaVMInitArgs *BuildArgs() {
         }
       }
     }
-    opts[nOpts++] = DetectGC();
   }
 
   args = malloc(sizeof(JavaVMInitArgs));

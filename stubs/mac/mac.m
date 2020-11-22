@@ -142,11 +142,11 @@ int JavaThread(void *ignore) {
   JavaVM *jvm = NULL;
   JNIEnv *env = NULL;
   JavaVMInitArgs args;
-  JavaVMOption options[2];
+  JavaVMOption options[3];
 
   memset(&args, 0, sizeof(args));
   args.version = JNI_VERSION_1_2;
-  args.nOptions = 2;
+  args.nOptions = 3;
   args.options = options;
   args.ignoreUnrecognized = JNI_FALSE;
 
@@ -154,6 +154,8 @@ int JavaThread(void *ignore) {
   options[0].extraInfo = NULL;
   options[1].optionString = "-Djava.app.home=.";
   options[1].extraInfo = NULL;
+  options[2].optionString = "-XX:+UseZGC";
+  options[2].extraInfo = NULL;
 
   if ((*CreateJavaVM)(&jvm, &env, &args) == -1) {
     error("Unable to create Java VM");

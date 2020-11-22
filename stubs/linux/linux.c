@@ -146,14 +146,21 @@ char *CreateClassPath() {
   return ExpandedClassPath;
 }
 
+char* DetectGC() {
+  //ZGC is always available under JDK15+
+  return (char*)"-XX:+UseZGC";
+}
+
 JavaVMInitArgs *BuildArgs() {
   JavaVMInitArgs *args;
   JavaVMOption *options;
-  int nOpts = 2;
+  int nOpts = 0;
   char *opts[64];
   int idx;
 
-  opts[0] = CreateClassPath();
+  opts[nOpts++] = CreateClassPath();
+  opts[nOpts++] = "-Djava.app.home=/usr/bin";
+  opts[nOpts++] = DetectGC();
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
     while (x != NULL) {
@@ -165,7 +172,6 @@ JavaVMInitArgs *BuildArgs() {
       }
     }
   }
-  opts[1] = "-Djava.app.home=/usr/bin";
 
   args = malloc(sizeof(JavaVMInitArgs));
   memset(args, 0, sizeof(JavaVMInitArgs));
