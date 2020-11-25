@@ -1,5 +1,12 @@
 What's new...
 
+Nov 25/2020 : JF 30.0 released
+  - native launchers now select best available concurrent GC
+    - for windows this is either Zero or Shenandoah (which is only available in AdoptOpenJDK)
+    - for Linux/Mac this is always Zero
+  - jfDVR/0.12
+    - new native launcher adds support for Windows < 1803
+
 Nov 4/2020 : JF 29.3 released
   - jfBackup/0.19
     - fix tape formatting issues
