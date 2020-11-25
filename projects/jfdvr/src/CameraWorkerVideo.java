@@ -21,6 +21,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private final static boolean debug_motion = false;
   private final static boolean debug_motion_image = false;
   private final static boolean debug_short_clips = false;
+  private final static boolean debug_log = false;
 
   private RTSPClient client;
   private SDP sdp;
@@ -314,7 +315,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   public CameraWorkerVideo(Camera camera) {
     log = nextLog();
-    JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + ".log", false);
+    JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + ".log", debug_log);
     JFLog.setRetention(log, 5);
     JFLog.log(log, "Camera=" + camera.name);
     this.camera = camera;
@@ -496,7 +497,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     this.url = "rtsp://" + remotehost + ":" + remoteport + uri;
     JFLog.log(log, camera.name + " : Connecting");
     if (!client.init(remotehost, remoteport, getLocalPort(), this, TransportType.TCP)) {
-      System.out.println("RTSP init failed");
+      JFLog.log(log, "RTSP init failed");
       return false;
     }
     if (user != null && pass != null) client.setUserPass(user, pass);

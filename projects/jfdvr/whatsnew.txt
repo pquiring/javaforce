@@ -1,3 +1,7 @@
+Nov 25, 2020 : 0.12 released!
+  - new : launcher now selects best GC
+    - adds support for Windows < 1803
+
 Sept 28, 2020 : 0.11 released!
   - new : PLC tag : modbus now supports IR and HR tags
 
