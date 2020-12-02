@@ -7,12 +7,13 @@
  *
  */
 
-import javaforce.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
+
 import javax.swing.*;
-import java.util.*;
+
+import javaforce.*;
 
 public class Hex extends JComponent implements KeyListener {
 

@@ -1,5 +1,8 @@
 What's new...
 
+Dec 2/2020 : jfHexBig
+  - created ANSI editor for HexBig
+
 Nov 25/2020 : JF 30.0 released
   - native launchers now select best available concurrent GC
     - for windows this is either Zero or Shenandoah (which is only available in AdoptOpenJDK)

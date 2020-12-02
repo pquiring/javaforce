@@ -366,7 +366,7 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
   private void initApp() {
     setTitle("jfhexbig");
     pages = new Vector<Page>();
-    loadcfg();
+    loadcfg(true);
     setSize(Settings.WindowXSize, Settings.WindowYSize);
     setLocation(Settings.WindowXPos, Settings.WindowYPos);
     if (Settings.bWindowMax) setExtendedState(MAXIMIZED_BOTH);
@@ -377,7 +377,7 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
     tabs.setSelectedIndex(0);
     pages.get(0).hex.grabFocus();
   }
-  public void loadcfg() {
+  public static void loadcfg(boolean gui) {
     XML xml = new XML();
     String filename = JF.getUserPath() + "/.jhex.xml";
     File file = new File(filename);
@@ -385,7 +385,9 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
     if (!xml.read(filename)) return;  //bad cfg
     if (!xml.root.name.equals("jhex")) return;  //bad cfg
     xml.writeClass(xml.root, new Settings());
-    Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
+    if (gui) {
+      Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
+    }
   }
   public void savecfg() {
     XML xml = new XML();

@@ -1,5 +1,5 @@
 /*
- * Hex.java
+ * Hex.java (big edition)
  *
  * Created on May 30, 2008, 4:45 PM
  *
