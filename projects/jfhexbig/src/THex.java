@@ -578,14 +578,8 @@ public class THex implements KeyEvents {
     public boolean readBlock() {
       try {
         RandomAccessFile raf = new RandomAccessFile(this.filename, "rw");
-        long fileLength = raf.length();
-        if (fileLength >= 512) {
-          length = 512;
-        } else {
-          length = (int)fileLength;
-        }
         raf.seek(block * 512);
-        raf.read(data, 0, length);
+        length = raf.read(data, 0, 512);
         raf.close();
         return true;
       } catch (Exception e) {
@@ -841,7 +835,7 @@ public class THex implements KeyEvents {
     Tab tab = tabs.get(tabidx);
     ansi.setForeColor(0xffffff);
     ansi.setBackColor(0x0000ff);
-    System.out.print("Block:" + tab.block + " of " + tab.blocks);
+    System.out.print("Block:" + (tab.block+1) + " of " + tab.blocks);
   }
 
   private String text_normal = ANSI.makeBackColor(0x0000ff) + ANSI.makeForeColor(0xffffff);
