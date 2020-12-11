@@ -27,7 +27,7 @@ import org.bouncycastle.asn1.pkcs.*;
 import org.bouncycastle.crypto.util.*;
 
 public class SRTPChannel extends RTPChannel {
-  protected SRTPChannel(RTP rtp, int ssrc, SDP.Stream stream) {
+  public SRTPChannel(RTP rtp, int ssrc, SDP.Stream stream) {
     super(rtp,ssrc,stream);
   }
   private boolean have_keys = false;

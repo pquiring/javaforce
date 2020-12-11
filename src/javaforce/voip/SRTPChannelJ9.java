@@ -28,7 +28,7 @@ public class SRTPChannelJ9 extends RTPChannel {
   private boolean server;
   public static String local_icepwd;  //TODO
 
-  protected SRTPChannelJ9(RTP rtp, int ssrc, SDP.Stream stream, boolean server) {
+  public SRTPChannelJ9(RTP rtp, int ssrc, SDP.Stream stream, boolean server) {
     super(rtp,ssrc,stream);
     this.server = server;
   }

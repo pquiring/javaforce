@@ -79,14 +79,12 @@
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenGraal" fork="true">
         <arg value="${MAINCLASS}"/>
       </java>
-      <exec executable="native-image.cmd">
+      <exec executable="native-image">
         <arg value="-cp"/>
         <arg value="${CLASSPATH}"/>
         <arg value="${MAINCLASS}"/>
         <arg value="-H:JNIConfigurationFiles=graal.json"/>
         <arg value="--shared"/>
-        <arg value="--initialize-at-run-time=sun.awt.dnd.SunDropTargetContextPeer$EventDispatcher"/>
-        <arg value="-H:NativeLinkerOption=prefs.lib"/>
       </exec>
       <delete file="graal.json"/>
     </sequential>
