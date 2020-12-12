@@ -85,6 +85,8 @@
         <arg value="${MAINCLASS}"/>
         <arg value="-H:JNIConfigurationFiles=graal.json"/>
         <arg value="--shared"/>
+        <arg value="--enable-all-security-services"/>
+        <arg value="--allow-incomplete-classpath"/>
       </exec>
       <delete file="graal.json"/>
     </sequential>
