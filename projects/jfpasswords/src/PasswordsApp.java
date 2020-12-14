@@ -161,29 +161,10 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
       }
       panel.checkTimestamp();
       setVisible(true);
-      removeTrayIcon();
-      addTrayIcon();
     }
   }
 
   private void addTrayIcon() {
-    tray = SystemTray.getSystemTray();
-    Dimension size = tray.getTrayIconSize();
-    JFImage scaled = new JFImage(size.width, size.height);
-    scaled.fill(0, 0, size.width, size.height, 0x00000000, true);  //fill with alpha transparent
-    if (false) {
-      //scaled image (looks bad sometimes)
-      scaled.getGraphics().drawImage(trayicon.getImage()
-        , 0, 0, size.width, size.height
-        , 0, 0, trayicon.getWidth(), trayicon.getHeight()
-        , null);
-    } else {
-      //center image
-      scaled.getGraphics().drawImage(trayicon.getImage()
-        , (size.width - trayicon.getWidth()) / 2
-        , (size.height - trayicon.getHeight()) / 2
-        , null);
-    }
     //create tray icon
     PopupMenu popup = new PopupMenu();
     show = new MenuItem("Show");
@@ -193,20 +174,12 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
     exit = new MenuItem("Exit");
     exit.addActionListener(this);
     popup.add(exit);
-    icon = new TrayIcon(scaled.getImage(), "Passwords", popup);
-    icon.addActionListener(this);
-    try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
-  }
-
-  private void removeTrayIcon() {
-    if (tray != null) {
-      tray.remove(icon);
-    }
+    icon = new JFIcon();
+    icon.create(trayicon, popup, this, "Passwords");
   }
 
   private JFImage trayicon;
   private MainPanel panel;
-  public SystemTray tray;
-  public TrayIcon icon;
+  private JFIcon icon;
   public MenuItem exit, show;
 }
