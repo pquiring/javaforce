@@ -435,4 +435,16 @@ public class JFAWT {
       e.printStackTrace();
     }
   }
+
+  public static double getScaling() {
+    GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    return device.getDisplayMode().getWidth() / (double) device.getDefaultConfiguration().getBounds().width;
+  }
+
+  public static void main(String[] args) {
+    while (true) {
+      System.out.println("scaling=" + getScaling());
+      JF.sleep(1000);
+    }
+  }
 }
