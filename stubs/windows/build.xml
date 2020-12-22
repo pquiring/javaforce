@@ -11,6 +11,21 @@
     <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' /D_JF_SERVICE windows.c user32.lib advapi32.lib /Fe: ../win64s.exe /link /subsystem:console"/>
   </target>
 
+  <target name="get-bin" description="download pre-built binaries">
+    <sequential>
+      <get src="http://javaforce.sourceforge.net/jf-stubs-win64.zip" dest="../jf-stubs-win64.zip" usetimestamp="true"/>
+      <unzip src="../jf-stubs-win64.zip" dest=".."/>
+    </sequential>
+  </target>
+
+  <target name="zip-bin" description="zip pre-built binaries">
+    <zip destfile="../jf-stubs-win64.zip">
+      <fileset dir="..">
+        <include name="*.exe"/>
+      </fileset>
+    </zip>
+  </target>
+
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.exe"/>

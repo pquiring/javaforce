@@ -11,4 +11,19 @@
     </delete>
   </target>
 
+  <target name="get-bin" description="download pre-built binaries">
+    <sequential>
+      <get src="http://javaforce.sourceforge.net/jf-lib-win64.zip" dest="../jf-lib-win64.zip" usetimestamp="true"/>
+      <unzip src="../jf-lib-win64.zip" dest=".."/>
+    </sequential>
+  </target>
+
+  <target name="zip-bin" description="zip pre-built binaries">
+    <zip destfile="../jf-lib-win64.zip">
+      <fileset dir="..">
+        <include name="*.dll"/>
+      </fileset>
+    </zip>
+  </target>
+
 </project>
