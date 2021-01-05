@@ -2,7 +2,7 @@ package javaforce;
 
 /** System Tray icon
  *
- * Fixes Java Bug JDK-8255439 where icons become blurry after screen scaling changes.
+ * Fixes Java Bug JDK-8255439 where icons become blurry after screen scaling or resolution changes.
  *
  * @author pquiring
  */
@@ -14,6 +14,7 @@ import java.util.*;
 public class JFIcon extends TimerTask {
   private Timer timer;
   private double scaling;
+  private int width,height;
   private SystemTray tray;
   private TrayIcon icon;
   private PopupMenu menu;
@@ -25,6 +26,8 @@ public class JFIcon extends TimerTask {
     timer = new Timer();
     timer.schedule(this, 1000, 1000);
     scaling = JFAWT.getScaling();
+    width = JFAWT.getWidth();
+    height = JFAWT.getHeight();
     this.image = image;
     this.menu = menu;
     this.listener = listener;
@@ -78,8 +81,12 @@ public class JFIcon extends TimerTask {
 
   public void run() {
     double scaling_now = JFAWT.getScaling();
-    if (scaling_now == scaling) return;
+    int width_now = JFAWT.getWidth();
+    int height_now = JFAWT.getHeight();
+    if ((scaling_now == scaling) && (width_now == width) && (height_now == height)) return;
     scaling = scaling_now;
+    width = width_now;
+    height = height_now;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
         remove();

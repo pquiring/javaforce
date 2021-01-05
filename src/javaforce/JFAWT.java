@@ -436,6 +436,18 @@ public class JFAWT {
     }
   }
 
+  /** Returns current screen width. */
+  public static int getWidth() {
+    GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    return device.getDisplayMode().getWidth();
+  }
+
+  /** Returns current screen height. */
+  public static int getHeight() {
+    GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    return device.getDisplayMode().getWidth();
+  }
+
   public static double getScaling() {
     GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
     return device.getDisplayMode().getWidth() / (double) device.getDefaultConfiguration().getBounds().width;
