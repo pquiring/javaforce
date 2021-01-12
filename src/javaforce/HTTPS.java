@@ -1,0 +1,55 @@
+package javaforce;
+
+/** HTTPS Client.
+ *
+ * @author pquiring
+ */
+
+public class HTTPS extends HTTP {
+  static {
+    JF.initHttps();
+  }
+  public boolean open(String host) {
+    return open(host, 443);
+  }
+  public boolean open(String host, int port) {
+    this.host = host;
+    this.port = port;
+    try {
+      s = JF.connectSSL(host, port);
+      os = s.getOutputStream();
+      is = s.getInputStream();
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+    return true;
+  }
+  /** Test HTTPS */
+  public static void main(String[] args) {
+    HTTPS http = new HTTPS();
+    String html;
+    boolean print = false;
+    if (args.length > 0 && args[0].equals("print")) print = true;
+
+    HTTP.debug = true;
+
+    http.open("google.com");
+    html = http.getString("/");
+    http.close();
+    if (html == null || html.length() == 0) {
+      System.out.println("Error:HTTPS.get() failed");
+      return;
+    }
+    if (print) System.out.println(html);
+
+    http.open("www.google.com");
+    html = http.getString("/");
+    http.close();
+    if (html == null || html.length() == 0) {
+      System.out.println("Error:HTTPS.get() failed");
+      return;
+    }
+    if (print) System.out.println(html);
+  }
+}

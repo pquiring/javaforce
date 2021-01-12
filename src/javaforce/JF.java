@@ -935,8 +935,12 @@ public class JF {
     return newArray;
   }
 
+  private static boolean initedHttps = false;
+
   /** This allows connections to untrusted hosts when using https:// with URLConnection. */
   public static void initHttps() {
+    if (initedHttps) return;
+    initedHttps = true;
     TrustManager[] trustAllCerts = new TrustManager[] {
       new X509TrustManager() {
         public X509Certificate[] getAcceptedIssuers() {
