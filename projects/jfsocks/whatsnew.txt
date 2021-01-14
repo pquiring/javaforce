@@ -1,5 +1,8 @@
 Whats new ???
 
+Jan 14, 2021 : 0.6
+  - new : added IP networks allowed (ipnet)
+
 Sept 28, 2020 : 0.5
   - new : log retention set to 30 days
 
