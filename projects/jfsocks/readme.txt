@@ -10,6 +10,7 @@ Supports:
  - domain names
  - Secure SSL
  - SOCKS5 auth type 0x02 only (plain text:therefore use secure mode if using authentication)
+ - allowed IP networks/IP addresses list
 
 Not supported:
  - IP6
