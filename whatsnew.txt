@@ -1,5 +1,9 @@
 What's new...
 
+Jan 14/2021 : jfSOCKS
+  - jfSOCKS/0.6
+    - added support for IP allowed lists
+
 Dec 2/2020 : jfHexBig
   - created ANSI editor for HexBig
 
