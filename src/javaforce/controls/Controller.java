@@ -39,6 +39,8 @@ public class Controller {
 
   public Exception lastException;
 
+  public static boolean debug;
+
   public void setRate(float rate) {
     this.rate = rate;
   }
@@ -53,10 +55,10 @@ public class Controller {
    *
    */
   public boolean connect(String url) {
-    JFLog.log("Controller.connect():" + url);
+    if (debug) JFLog.log("Controller.connect():" + url);
     connected = false;
     if (url == null) {
-      JFLog.log("Error:url == null");
+      JFLog.log("Controller:connect():url == null");
       return false;
     }
     if (url.startsWith("S7:")) {
@@ -369,11 +371,11 @@ public class Controller {
           return true;
         }
         case ControllerType.NI: {
-          JFLog.log("NI write() not implemented");
+          JFLog.log("Controller:write():NI not implemented");
           return false;
         }
         case ControllerType.MIC: {
-          JFLog.log("MIC write() not implemented");
+          JFLog.log("Controller:write():MIC not supported");
           return false;
         }
       }
