@@ -353,7 +353,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
         if (now - lastPacket > 10*1000) {
           JFLog.log(log, camera.name + " : Reconnecting");
           disconnect();
-          connect();
+          if (!connect()) {
+            JF.sleep(1000);
+            continue;
+          }
           idle = false;
         } else if (now - lastKeepAlive > 55*1000) {
           JFLog.log(log, camera.name + " : keep alive");
@@ -498,6 +501,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     JFLog.log(log, camera.name + " : Connecting");
     if (!client.init(remotehost, remoteport, getLocalPort(), this, TransportType.TCP)) {
       JFLog.log(log, "RTSP init failed");
+      client = null;
       return false;
     }
     if (user != null && pass != null) client.setUserPass(user, pass);
@@ -509,7 +513,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   }
 
   public void disconnect() {
-    client.uninit();
+    if (client != null) {
+      client.uninit();
+      client = null;
+    }
     if (decoder != null) {
       decoder.stop();
       decoder = null;
