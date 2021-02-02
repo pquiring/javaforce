@@ -3,6 +3,7 @@ package javaforce;
 /** LLRP API read/write tags from LLRP compatible controllers.
  *
  * Uses the LLRP Toolkit (https://sourceforge.net/projects/llrp-toolkit/)
+ * Javadoc : http://llrp.org/docs/javaapidoc/
  *
  * v1.0 - init version
  * v1.1 - added AccessSpec to read tags during inventory scan.
