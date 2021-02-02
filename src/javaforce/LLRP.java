@@ -297,6 +297,45 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
+  private int[] powerLevels;
+
+  /** Retrieves power levels. */
+  private int[] getPowerLevels() {
+    if (llrp == null) return null;
+    if (active) return null;
+    powerLevels = null;
+    try {
+      //reset reader
+      {
+        SET_READER_CONFIG msg = new SET_READER_CONFIG();
+        msg.setResetToFactoryDefault(new Bit(true));
+//        JFLog.log("reset_reader");
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
+      {
+        GET_READER_CAPABILITIES caps = new GET_READER_CAPABILITIES();
+        caps.setRequestedData(new GetReaderCapabilitiesRequestedData(GetReaderCapabilitiesRequestedData.All));
+//        JFLog.log("get_reader_caps");
+        llrp.send(caps);
+        JF.sleep(delay);
+      }
+      int max = 12;
+      while (powerLevels == null) {
+        JF.sleep(1000);
+        max--;
+        if (max == 0) {
+          JFLog.log("LLRP:Error:getPowerLevels():timeout");
+          return null;
+        }
+      }
+      return powerLevels;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
   private static ROSpec createROSpec(int[] powerLevel) {
     ROSpec rospec;
     ROBoundarySpec roboundaryspec;
@@ -550,7 +589,18 @@ public class LLRP implements LLRPEndpoint {
           }
         }
       }
-      if (events != null) {
+      if (llrpm instanceof GET_READER_CAPABILITIES_RESPONSE) {
+        GET_READER_CAPABILITIES_RESPONSE caps = (GET_READER_CAPABILITIES_RESPONSE)llrpm;
+        List<TransmitPowerLevelTableEntry> list = caps.getRegulatoryCapabilities().getUHFBandCapabilities().getTransmitPowerLevelTableEntryList();
+        int[] levels = new int[list.size()];
+        int index = 0;
+        for(TransmitPowerLevelTableEntry entry : list) {
+          levels[index++] = entry.getTransmitPowerValue().intValue();
+        }
+        this.powerLevels = levels;
+        return;
+      }
+      if (events != null && (epc_read != null || epc_scan != null)) {
         events.tagRead(epc_read != null && epc_read.length() > 0 ? epc_read : epc_scan);
       }
     } catch (Exception e) {
@@ -561,5 +611,48 @@ public class LLRP implements LLRPEndpoint {
   public void errorOccured(String string) {
     JFLog.log("error:" + string);
     active = false;
+  }
+
+  private static void usage() {
+    System.out.println("usage : LLRP controller_ip cmd");
+    System.out.println("where : cmd = READ | POWERLEVELS");
+  }
+
+  public static void main(String[] args) {
+    if (args.length != 2) {
+      usage();
+      return;
+    }
+    boolean active = true;
+    String ctrl = args[0];
+    String cmd = args[1];
+    int[] powerLevels = new int[] {50};
+    switch (cmd) {
+      case "READ": {
+        LLRP llrp = new LLRP();
+        llrp.connect(ctrl);
+        llrp.startInventoryScan(powerLevels, true);
+        while (active) {
+          JF.sleep(100);
+        }
+        break;
+      }
+      case "POWERLEVELS": {
+        LLRP llrp = new LLRP();
+        llrp.connect(ctrl);
+        int[] levels = llrp.getPowerLevels();
+        if (levels == null) {
+          System.out.println("Error:getPowerLevels()==null");
+          break;
+        }
+        System.out.println("# Power Levels = " + levels.length);
+        int index = 0;
+        for(int level : levels) {
+          System.out.println("PowerLevel:index=" + index + ":level=" + levels[index]);
+          index++;
+        }
+        break;
+      }
+    }
   }
 }
