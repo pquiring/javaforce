@@ -109,11 +109,10 @@ public class HTTP {
 
     public byte[] toArray() {
       if (count != buf.length) {
-        return Arrays.copyOfRange(buf, pos, count);
+        return Arrays.copyOfRange(buf, pos, pos + count);
       }
       return buf;
     }
-
   }
 
   public boolean open(String host) {
@@ -246,10 +245,9 @@ public class HTTP {
     return value;
   }
 
-  private byte[] getReply() throws Exception {
+  private boolean getReply(OutputStream os) throws Exception {
     Buffer buf = new Buffer();
     Buffer req = new Buffer();
-    Buffer data = new Buffer();
     //read headers
     reply_headers.clear();
     do {
@@ -289,41 +287,43 @@ public class HTTP {
     int i1 = reply.indexOf(' ');
     if (i1 == -1) {
       JFLog.log("HTTP:Error:Invalid Reply");
-      return null;
+      return false;
     }
     int i2 = reply.substring(i1+1).indexOf(' ');
     if (i2 == -1) {
       JFLog.log("HTTP:Error:Invalid Reply");
-      return null;
+      return false;
     }
     code = Integer.valueOf(reply.substring(i1+1, i1+i2+1));
     boolean disconn = reply.endsWith("1.0");
     if (length == 0) {
       if (disconn) close();
-      return new byte[0];
+      return true;
     }
     //read data
     if (length != -1) {
       if (debug) System.out.println("HTTP:Reading Length:" + length);
       //read length data
-      data.setLength((int)length);
+      int total = 0;
       if (buf.count > 0) {
-        data.append(buf);
+        total += buf.count;
+        os.write(buf.toArray());
+        buf.consumeAll();
       }
-      while (data.count < length) {
+      while (total < length) {
         int toread = bufsiz;
         if (toread > length) {
           toread = (int)length;
         }
         int read = read(buf, toread);
         if (read > 0) {
-          System.arraycopy(buf, 0, data, data.pos, read);
-          data.pos += read;
-          data.count += read;
+          total += read;
+          os.write(buf.toArray());
+          buf.consumeAll();
         }
       }
       if (disconn) close();
-      return data.toArray();
+      return true;
     } else if (chunked) {
       if (debug) System.out.println("HTTP:Reading Chunked reply");
       //read chunked data
@@ -335,15 +335,16 @@ public class HTTP {
           if (buf.count > 0) {
             int toCopy = buf.count;
             if (toCopy > chunkLength) toCopy = chunkLength;
-            data.append(buf, toCopy);
+            os.write(buf.buf, buf.pos, toCopy);
             chunkLength -= toCopy;
+            buf.consume(toCopy);
           }
           while (chunkLength > 0) {
             int toread = chunkLength;
             if (toread > bufsiz) toread = bufsiz;
             int read = read(buf, toread);
             if (read > 0) {
-              data.append(buf, read);
+              os.write(buf.buf, buf.pos, read);
               chunkLength -= read;
               buf.consumeAll();
             }
@@ -355,7 +356,7 @@ public class HTTP {
           buf.consume(2);
           if (endOfChunks) {
             if (disconn) close();
-            return data.toArray();
+            return true;
           }
         }
         read(buf, bufsiz);
@@ -365,11 +366,12 @@ public class HTTP {
       //read till carrier is dropped
       do {
         if (buf.count > 0) {
-          data.append(buf);
+          os.write(buf.toArray());
+          buf.consumeAll();
         }
       } while (read(buf, bufsiz) >= 0);
       if (disconn) close();
-      return data.toArray();
+      return true;
     }
   }
 
@@ -382,10 +384,12 @@ public class HTTP {
     }
   }
 
-  /** HTTP GET using url. */
-  public byte[] get(String url) {
+  /** HTTP GET using url.
+   * Writes content to OutputStream.
+   */
+  public boolean get(String url, OutputStream os) {
     code = -1;
-    if (s == null) return null;
+    if (s == null) return false;
     StringBuilder req = new StringBuilder();
     req.append("GET " + url + " HTTP/1.1\r\n");
     req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
@@ -395,22 +399,35 @@ public class HTTP {
     req.append("\r\n");
     try {
       sendRequest(req.toString());
-      return getReply();
+      return getReply(os);
     } catch (Exception e) {
       JFLog.log(e);
-      return null;
+      return false;
     }
   }
+
+  /** HTTP GET using url.
+   * Returns as a byte[]
+   */
+  public byte[] get(String url) {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    if (!get(url, baos)) return null;
+    return baos.toByteArray();
+  }
+
   /** HTTP GET using url.
    * Returns as a String.
    */
   public String getString(String url) {
     return new String(get(url));
   }
-  /** HTTP POST using url and post data encoding with mimeType. */
-  public byte[] post(String url, byte[] data, String mimeType) {
+
+  /** HTTP POST using url with post data encoding with mimeType.
+   * Writes content to OutputStream.
+   */
+  public boolean post(String url, byte[] data, String mimeType, OutputStream os) {
     code = -1;
-    if (s == null) return null;
+    if (s == null) return false;
     StringBuilder req = new StringBuilder();
     req.append("POST " + url + " HTTP/1.1\r\n");
     req.append("Host: " + host + (port != 80 ? (":" + port) : "") + "\r\n");
@@ -422,14 +439,24 @@ public class HTTP {
     try {
       sendRequest(req.toString());
       sendData(data);
-      return getReply();
+      return getReply(os);
     } catch (Exception e) {
       JFLog.log(e);
-      return null;
+      return false;
     }
   }
-  /** HTTP POST using url.
-   * Returns as a String.
+
+  /** HTTP POST using url with post data encoding with mimeType.
+   * Returns content as byte[]
+   */
+  public byte[] post(String url, byte[] data, String mimeType) {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    if (!post(url, data, mimeType, baos)) return null;
+    return baos.toByteArray();
+  }
+
+  /** HTTP POST using url with post data encoding with mimeType.
+   * Returns content as String.
    */
   public String postString(String url, byte[] data, String mimeType) {
     return new String(post(url, data, mimeType));
