@@ -646,6 +646,11 @@ public class LLRP implements LLRPEndpoint {
     switch (cmd) {
       case "READ": {
         LLRP llrp = new LLRP();
+        llrp.setEventsListener(new LLRPEvent() {
+          public void tagRead(String epc) {
+            System.out.println("EPC=" + epc);
+          }
+        });
         llrp.connect(ctrl);
         llrp.startInventoryScan(powerLevels, true);
         while (active) {
