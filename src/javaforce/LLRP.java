@@ -398,9 +398,25 @@ public class LLRP implements LLRPEndpoint {
     invspec.setProtocolID(new AirProtocols(AirProtocols.EPCGlobalClass1Gen2));
     ArrayList<AntennaConfiguration> antennaConfigurationList = new ArrayList<AntennaConfiguration>();
 
+    ArrayList<AirProtocolInventoryCommandSettings> commands = new ArrayList<AirProtocolInventoryCommandSettings>();
+    C1G2InventoryCommand command = new C1G2InventoryCommand();
+    C1G2RFControl rfcontrol = new C1G2RFControl();
+    rfcontrol.setModeIndex(new UnsignedShort(1002));
+    rfcontrol.setTari(new UnsignedShort(0));
+    command.setC1G2RFControl(rfcontrol);
+    C1G2SingulationControl singulationcontrol = new C1G2SingulationControl();
+    TwoBitField session = new TwoBitField();  //NOTE : TwoBitField stored bits in reverse order
+    session.set(0);  //set bit 0 (MSB) (value=2)
+    singulationcontrol.setSession(session);
+    singulationcontrol.setTagPopulation(new UnsignedShort(32));
+    singulationcontrol.setTagTransitTime(new UnsignedInteger(0));
+    command.setC1G2SingulationControl(singulationcontrol);
+    command.setTagInventoryStateAware(new Bit(false));
+    commands.add(command);
+
     for(int a=0;a<powerLevel.length;a++) {
       AntennaConfiguration antennaConfiguration = new AntennaConfiguration();
-      antennaConfiguration.setAirProtocolInventoryCommandSettingsList(new ArrayList<AirProtocolInventoryCommandSettings>());
+      antennaConfiguration.setAirProtocolInventoryCommandSettingsList(commands);
       antennaConfiguration.setAntennaID(new UnsignedShort(a+1));
       RFReceiver rfrec = new RFReceiver();
       rfrec.setReceiverSensitivity(new UnsignedShort(1));
@@ -432,8 +448,7 @@ public class LLRP implements LLRPEndpoint {
   private static AccessSpec createReadAccessSpec(UnsignedInteger rospecid) {
     AccessSpec as = new AccessSpec();
     TwoBitField mb = new TwoBitField();
-    mb.set(1);  //0=private 1=EPC 2=TID 3=user
-
+    mb.set(1);  //set bit 1 (LSB) (value : 0=private 1=EPC 2=TID 3=user)
     AccessCommand accessCommand = new AccessCommand();
     ArrayList<AccessCommandOpSpec> accessCommandOpSpecList = new ArrayList<AccessCommandOpSpec>();
     C1G2Read read = new C1G2Read();
@@ -498,7 +513,7 @@ public class LLRP implements LLRPEndpoint {
   private static AccessSpec createWriteAccessSpec(UnsignedInteger rospecid, short[] oldEPC, short[] newEPC, int offset) {
     AccessSpec as = new AccessSpec();
     TwoBitField mb = new TwoBitField();
-    mb.set(1);  //0=private 1=EPC 2=TID 3=user
+    mb.set(1);  //set bit 1 (LSB) (value:0=private 1=EPC 2=TID 3=user)
     int oldBits = oldEPC.length * 16;
     int newBits = newEPC.length * 16;
     if (oldBits != newBits) {
@@ -642,6 +657,7 @@ public class LLRP implements LLRPEndpoint {
         LLRP llrp = new LLRP();
         llrp.connect(ctrl);
         int[] levels = llrp.getPowerLevels();
+        llrp.stop();
         if (levels == null) {
           System.out.println("Error:getPowerLevels()==null");
           break;
