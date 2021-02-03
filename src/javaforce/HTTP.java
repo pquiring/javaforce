@@ -19,10 +19,21 @@ public class HTTP {
   private HashMap<String, String> reply_headers = new HashMap<>();
   private int code = -1;
   protected static boolean debug = false;
+  private Progress progress;
 
   public static final String formType = "application/x-www-form-urlencoded";
 
   private final static int bufsiz = 1024;
+
+  /** Progress Listener */
+  public static interface Progress {
+    /** Invoked to update download progress.
+     * @param downloaded = progress so far
+     * @param length = total length (-1 = unknown)
+     */
+    public void progress(long downloaded, long length);
+  }
+
   protected static class Buffer {
     public byte[] buf;
     public int pos;
@@ -144,8 +155,14 @@ public class HTTP {
     }
   }
 
+  /** Returns connection status. */
   public boolean isConnected() {
     return s != null;
+  }
+
+  /** Registers a download progress listener. */
+  public void setProgressListener(Progress progress) {
+    this.progress = progress;
   }
 
   /** Set a request header. */
@@ -300,24 +317,27 @@ public class HTTP {
       if (disconn) close();
       return true;
     }
+    long copied = 0;
     //read data
     if (length != -1) {
       if (debug) System.out.println("HTTP:Reading Length:" + length);
       //read length data
-      int total = 0;
       if (buf.count > 0) {
-        total += buf.count;
+        copied += buf.count;
         os.write(buf.toArray());
         buf.consumeAll();
       }
-      while (total < length) {
+      while (copied < length) {
         int toread = bufsiz;
         if (toread > length) {
           toread = (int)length;
         }
         int read = read(buf, toread);
         if (read > 0) {
-          total += read;
+          copied += read;
+          if (progress != null) {
+            progress.progress(copied, length);
+          }
           os.write(buf.toArray());
           buf.consumeAll();
         }
@@ -338,12 +358,17 @@ public class HTTP {
             os.write(buf.buf, buf.pos, toCopy);
             chunkLength -= toCopy;
             buf.consume(toCopy);
+            copied += toCopy;
           }
           while (chunkLength > 0) {
             int toread = chunkLength;
             if (toread > bufsiz) toread = bufsiz;
             int read = read(buf, toread);
             if (read > 0) {
+              copied += read;
+              if (progress != null) {
+                progress.progress(copied, -1);
+              }
               os.write(buf.buf, buf.pos, read);
               chunkLength -= read;
               buf.consumeAll();
@@ -366,6 +391,10 @@ public class HTTP {
       //read till carrier is dropped
       do {
         if (buf.count > 0) {
+          copied += buf.count;
+          if (progress != null) {
+            progress.progress(copied, -1);
+          }
           os.write(buf.toArray());
           buf.consumeAll();
         }
