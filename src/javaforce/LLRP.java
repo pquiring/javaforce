@@ -39,6 +39,7 @@ public class LLRP implements LLRPEndpoint {
 
   public boolean active;
   public boolean debug;
+  public int log_id;
 
   /** Connects to LLRP Controller. */
   public boolean connect(String ip) {
@@ -49,7 +50,7 @@ public class LLRP implements LLRPEndpoint {
       return true;
     } catch (Exception e) {
       llrp = null;
-      JFLog.log(e);
+      if (debug) JFLog.log(log_id, e);
       return false;
     }
   }
@@ -71,7 +72,7 @@ public class LLRP implements LLRPEndpoint {
         JF.sleep(delay);
       }
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debug) JFLog.log(log_id, e);
       active = false;
     }
   }
@@ -90,6 +91,15 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
+  public void enableDebugLogging(int log_id) {
+    debug = true;
+    this.log_id = log_id;
+  }
+
+  public void disableDebugLogging() {
+    debug = false;
+    log_id = 0;
+  }
 
   /** Starts reading RFID tags with inventory scans.
    *
@@ -175,7 +185,7 @@ public class LLRP implements LLRPEndpoint {
       }
       return true;
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debug) JFLog.log(log_id, e);
       return false;
     }
   }
@@ -309,7 +319,7 @@ public class LLRP implements LLRPEndpoint {
       }
       return true;
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debug) JFLog.log(log_id, e);
       return false;
     }
   }
@@ -344,13 +354,13 @@ public class LLRP implements LLRPEndpoint {
         JF.sleep(1000);
         max--;
         if (max == 0) {
-          JFLog.log("LLRP:Error:getPowerLevels():timeout");
+          JFLog.log(log_id, "LLRP:Error:getPowerLevels():timeout");
           return null;
         }
       }
       return powerLevels;
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debug) JFLog.log(log_id, e);
       return null;
     }
   }
@@ -630,7 +640,7 @@ public class LLRP implements LLRPEndpoint {
           }
           if (events != null && (epc_read != null || epc_scan != null)) {
             String epc = epc_read != null && epc_read.length() > 0 ? epc_read : epc_scan;
-            if (debug) JFLog.log("EPC=" + epc + ":RSSI=" + tag_rssi);
+            if (debug) JFLog.log(log_id, "EPC=" + epc + ":RSSI=" + tag_rssi);
             if (rssi_threshold == 0 || (tag_rssi != 0 && tag_rssi > rssi_threshold)) {
               events.tagRead(epc);
             }
@@ -653,8 +663,8 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
-  public void errorOccured(String string) {
-    JFLog.log("error:" + string);
+  public void errorOccured(String msg) {
+    JFLog.log(log_id, "LLRP:Error:" + msg);
     active = false;
   }
 
