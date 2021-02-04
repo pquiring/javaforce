@@ -35,9 +35,12 @@ public class LLRP implements LLRPEndpoint {
   private LLRPConnector llrp;
   private LLRPEvent events;
   private String ip;
+  private int rssi_threshold;  //0=disabled
 
   public boolean active;
+  public boolean debug;
 
+  /** Connects to LLRP Controller. */
   public boolean connect(String ip) {
     this.ip = ip;
     llrp = new LLRPConnector(this, ip);
@@ -51,11 +54,13 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
+  /** Disconnects from LLRP Controller. */
   public void disconnect() {
     if (llrp == null) return;
     llrp.disconnect();
   }
 
+  /** Pings LLRP Controller to keep connection alive. */
   public void ping() {
     if (llrp == null) return;
     try {
@@ -71,8 +76,18 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
+  /** Sets Event Listener to read tags. */
   public void setEventsListener(LLRPEvent events) {
     this.events = events;
+  }
+
+  /** Sets RSSI threshold.  Tags below this value are ignored.
+   * @param value = RSSI threshold (negative) (zero to disable) (positive is invalid)
+   */
+  public void setRSSIThreshold(int value) {
+    if (value <= 0) {
+      rssi_threshold = value;
+    }
   }
 
 
@@ -165,6 +180,7 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
+  /** Stop reading or writing tags. */
   public void stop() {
     try {
       //disable RO spec
@@ -300,7 +316,9 @@ public class LLRP implements LLRPEndpoint {
 
   private int[] powerLevels;
 
-  /** Retrieves power levels. */
+  /** Retrieves power levels from LLRP Controller.
+   * Power Levels are indexes into a table of dBm * 100 values.
+   */
   private int[] getPowerLevels() {
     if (llrp == null) return null;
     if (active) return null;
@@ -377,6 +395,7 @@ public class LLRP implements LLRPEndpoint {
     selector.setEnableLastSeenTimestamp(new Bit(false));
     selector.setEnableTagSeenCount(new Bit(false));
     selector.setEnableAccessSpecID(new Bit(true));
+    selector.setEnablePeakRSSI(new Bit(true));
     roreportspec.setTagReportContentSelector(selector);
 
     ArrayList<SpecParameter> specParameterList = new ArrayList<SpecParameter>();
@@ -579,12 +598,18 @@ public class LLRP implements LLRPEndpoint {
 
   public void messageReceived(LLRPMessage llrpm) {
     try {
-      int idx;
-      String epc_scan = null, epc_read = null;
       if (llrpm instanceof RO_ACCESS_REPORT) {
+        int idx;
         RO_ACCESS_REPORT report = (RO_ACCESS_REPORT)llrpm;
         List<TagReportData> tags = report.getTagReportDataList();
         for(TagReportData tag : tags) {
+          String epc_scan = null;
+          String epc_read = null;
+          int tag_rssi = 0;
+          PeakRSSI peak_rssi = tag.getPeakRSSI();
+          if (peak_rssi != null) {
+            tag_rssi = peak_rssi.getPeakRSSI().intValue();
+          }
           epc_scan = tag.getEPCParameter().toString();
           idx = epc_scan.lastIndexOf(':');
           if (idx > 0) {
@@ -603,6 +628,13 @@ public class LLRP implements LLRPEndpoint {
               epc_read = epc_read.replaceAll(" ", "").trim();
             }
           }
+          if (events != null && (epc_read != null || epc_scan != null)) {
+            String epc = epc_read != null && epc_read.length() > 0 ? epc_read : epc_scan;
+            if (debug) JFLog.log("EPC=" + epc + ":RSSI=" + tag_rssi);
+            if (rssi_threshold == 0 || (tag_rssi != 0 && tag_rssi > rssi_threshold)) {
+              events.tagRead(epc);
+            }
+          }
         }
       }
       if (llrpm instanceof GET_READER_CAPABILITIES_RESPONSE) {
@@ -616,9 +648,6 @@ public class LLRP implements LLRPEndpoint {
         this.powerLevels = levels;
         return;
       }
-      if (events != null && (epc_read != null || epc_scan != null)) {
-        events.tagRead(epc_read != null && epc_read.length() > 0 ? epc_read : epc_scan);
-      }
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -630,22 +659,45 @@ public class LLRP implements LLRPEndpoint {
   }
 
   private static void usage() {
-    System.out.println("usage : LLRP controller_ip cmd");
-    System.out.println("where : cmd = READ | POWERLEVELS");
+    System.out.println("usage : LLRP controller_ip cmd [args]");
+    System.out.println("where : cmd = read | powerlevels");
+    System.out.println("      : read [power=w[,x[,y[,z]]]] [rssi=threshold]");
+    System.out.println("      : powerlevels");
   }
 
   public static void main(String[] args) {
-    if (args.length != 2) {
+    if (args.length < 2) {
       usage();
       return;
     }
     boolean active = true;
     String ctrl = args[0];
     String cmd = args[1];
-    int[] powerLevels = new int[] {50};
+    int[] powerLevels = new int[] {80, 80, 80, 80};
+    int rssi = 0;
     switch (cmd) {
-      case "READ": {
+      case "read": {
+        for(int a=2;a<args.length;a++) {
+          String arg = args[a];
+          int idx = arg.indexOf('=');
+          if (idx == -1) continue;
+          String key = arg.substring(0, idx);
+          String value = arg.substring(idx + 1);
+          switch (key) {
+            case "power":
+              String[] lvls = value.split("[,]");
+              powerLevels = new int[lvls.length];
+              for(int b=0;b<lvls.length;b++) {
+                powerLevels[b] = Integer.valueOf(lvls[b]);
+              }
+              break;
+            case "rssi":
+              rssi = Integer.valueOf(value);
+              break;
+          }
+        }
         LLRP llrp = new LLRP();
+        llrp.debug = true;
         llrp.setEventsListener(new LLRPEvent() {
           public void tagRead(String epc) {
             System.out.println("EPC=" + epc);
@@ -658,8 +710,9 @@ public class LLRP implements LLRPEndpoint {
         }
         break;
       }
-      case "POWERLEVELS": {
+      case "powerlevels": {
         LLRP llrp = new LLRP();
+        llrp.debug = true;
         llrp.connect(ctrl);
         int[] levels = llrp.getPowerLevels();
         llrp.stop();
@@ -673,6 +726,10 @@ public class LLRP implements LLRPEndpoint {
           System.out.println("PowerLevel:index=" + index + ":level=" + levels[index]);
           index++;
         }
+        break;
+      }
+      default: {
+        usage();
         break;
       }
     }
