@@ -427,6 +427,9 @@ public class Controller {
               s7.length = (short)(left / S7Types.getTypeSize(s7.data_type, (short)1));
             }
             byte part[] = readPartial(s7);
+            if (part == null) {
+              return null;
+            }
             System.arraycopy(part, 0, data, offset, part.length);
             left -= part.length;
             read += part.length;
