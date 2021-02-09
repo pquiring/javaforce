@@ -404,6 +404,7 @@ public class Controller {
       return null;
     }
     s7 = S7Packet.decodePacket(Arrays.copyOf(reply, replySize));
+    if (s7 == null) return null;
     return s7.data;
   }
 

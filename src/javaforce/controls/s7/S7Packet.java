@@ -217,7 +217,9 @@ public class S7Packet {
       header.read(packet, offset);
       offset += header.size();
       S7Params params = new S7Params();
-      params.read(packet, offset, data);
+      if (!params.read(packet, offset, data)) {
+        return null;
+      }
       return data;
     } catch (Exception e) {
       e.printStackTrace();
