@@ -9,6 +9,7 @@ package javaforce;
  * v1.1 - added AccessSpec to read tags during inventory scan.
  * v1.2 - added write tag operation
  * v1.3 - added wordOffset to writeTag operation and fixed TargetTag spec
+ * v1.4 - added RSSI threshold
  *
  * @author Peter Quiring
  */
@@ -29,6 +30,7 @@ public class LLRP implements LLRPEndpoint {
   private static int inventoryparamid = 102;
   private static int accessid = 103;
   private static int opspecid = 104;
+  private static int[] powerIndexes;
 
   private ROSpec rospec;
   private AccessSpec accessspec;
@@ -91,6 +93,13 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
+  /** Sets power indexes for each antenna (see getPowerLevels())
+   *
+   */
+  public void setPowerIndexes(int[] powerIndexes) {
+    this.powerIndexes = powerIndexes;
+  }
+
   public void enableDebugLogging(int log_id) {
     debug = true;
     this.log_id = log_id;
@@ -105,15 +114,15 @@ public class LLRP implements LLRPEndpoint {
    *
    * Use stop() to stop scanning.
    *
-   * @param powerLevel = power level for each antenna
+   * @param powerIndexes = power index for each antenna (see getPowerLevels())
    * @param readTags = read each tag during inventory scan (can return more bits that tag is configured to return during inventory scan)
    * @return scanning active
    */
-  public boolean startInventoryScan(int[] powerLevel, boolean readTags) {
+  public boolean startInventoryScan(int[] powerIndexes, boolean readTags) {
     if (llrp == null) return false;
     active = true;
     try {
-      rospec = createROSpec(powerLevel);
+      rospec = createROSpec(powerIndexes);
       if (readTags) {
         accessspec = createReadAccessSpec(rospec.getROSpecID());
       } else {
@@ -188,6 +197,17 @@ public class LLRP implements LLRPEndpoint {
       if (debug) JFLog.log(log_id, e);
       return false;
     }
+  }
+
+  /** Starts reading RFID tags with inventory scans.
+   *
+   * Use stop() to stop scanning.
+   *
+   * @return scanning active
+   */
+  public boolean startInventoryScan() {
+    if (powerIndexes == null) return false;
+    return startInventoryScan(powerIndexes, false);
   }
 
   /** Stop reading or writing tags. */
@@ -322,6 +342,33 @@ public class LLRP implements LLRPEndpoint {
       if (debug) JFLog.log(log_id, e);
       return false;
     }
+  }
+
+  /** Write RFID Tag(s).
+   *
+   * Use stop() to stop writing tags.
+   *
+   * @param oldEPC = old EPC code
+   * @param newEPC = new EPC code
+   *
+   */
+  public boolean startWriteTag(short[] oldEPC, short[] newEPC) {
+    if (powerIndexes == null) return false;
+    return startWriteTag(oldEPC, newEPC, powerIndexes, 2);
+  }
+
+  /** Write RFID Tag(s).
+   *
+   * Use stop() to stop writing tags.
+   *
+   * @param oldEPC = old EPC code
+   * @param newEPC = new EPC code
+   * @param wordOffset = beginning of EPC memory bank to write newEPC (default = 2)
+   *
+   */
+  public boolean startWriteTag(short[] oldEPC, short[] newEPC, int wordOffset) {
+    if (powerIndexes == null) return false;
+    return startWriteTag(oldEPC, newEPC, powerIndexes, wordOffset);
   }
 
   private int[] powerLevels;
