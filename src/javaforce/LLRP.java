@@ -251,11 +251,11 @@ public class LLRP implements LLRPEndpoint {
    *
    * @param oldEPC = old EPC code
    * @param newEPC = new EPC code
-   * @param powerLevel = power level for each antenna
+   * @param powerIndexes = power index for each antenna
    *
    */
-  public boolean startWriteTag(short[] oldEPC, short[] newEPC, int[] powerLevel) {
-    return startWriteTag(oldEPC, newEPC, powerLevel, 2);
+  public boolean startWriteTag(short[] oldEPC, short[] newEPC, int[] powerIndexes) {
+    return startWriteTag(oldEPC, newEPC, powerIndexes, 2);
   }
 
   /** Write RFID Tag(s).
@@ -264,14 +264,14 @@ public class LLRP implements LLRPEndpoint {
    *
    * @param oldEPC = old EPC code
    * @param newEPC = new EPC code
-   * @param powerLevel = power level for each antenna
+   * @param powerIndexes = power index for each antenna
    * @param wordOffset = beginning of EPC memory bank to write newEPC (default = 2)
    */
-  public boolean startWriteTag(short[] oldEPC, short[] newEPC, int[] powerLevel, int wordOffset) {
+  public boolean startWriteTag(short[] oldEPC, short[] newEPC, int[] powerIndexes, int wordOffset) {
     if (llrp == null) return false;
     if (active) return false;
     try {
-      rospec = createROSpec(powerLevel);
+      rospec = createROSpec(powerIndexes);
       accessspec = createWriteAccessSpec(rospec.getROSpecID(), oldEPC, newEPC, wordOffset);
       //reset reader
       {
