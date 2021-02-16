@@ -38,6 +38,13 @@ public class LLRP implements LLRPEndpoint {
   private LLRPEvent events;
   private String ip;
   private int rssi_threshold;  //0=disabled
+  private int impinj_search_mode = -1;  //-1 = disabled
+
+  public static final int IMPINJ_SEARCH_MODE_SINGLE = 1;
+  public static final int IMPINJ_SEARCH_MODE_DUAL = 2;
+  public static final int IMPINJ_SEARCH_MODE_FOCUS = 3;
+  public static final int IMPINJ_SEARCH_MODE_SINGLE_RESET = 5;
+  public static final int IMPINJ_SEARCH_MODE_DUAL_B_TO_A = 6;
 
   public boolean active;
   public boolean debug;
@@ -85,6 +92,7 @@ public class LLRP implements LLRPEndpoint {
   }
 
   /** Sets RSSI threshold.  Tags below this value are ignored.
+   * NOTE : This is SOFTWARE threshold. (hardware coming soon)
    * @param value = RSSI threshold (negative) (zero to disable) (positive is invalid)
    */
   public void setRSSIThreshold(int value) {
@@ -98,6 +106,13 @@ public class LLRP implements LLRPEndpoint {
    */
   public void setPowerIndexes(int[] powerIndexes) {
     this.powerIndexes = powerIndexes;
+  }
+
+  /** Sets Impinj Search Mode (custom parameter)
+   * @mode = 1-6 (see IMPINJ_SEARCH_MODE_...)  (-1 = disabled)
+   */
+  public void setImpinjSearchMode(int mode) {
+    impinj_search_mode = mode;
   }
 
   public void enableDebugLogging(int log_id) {
@@ -412,7 +427,7 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
-  private static ROSpec createROSpec(int[] powerLevel) {
+  private ROSpec createROSpec(int[] powerLevel) {
     ROSpec rospec;
     ROBoundarySpec roboundaryspec;
     ROSpecStartTrigger rospecstarttrigger;
@@ -488,6 +503,15 @@ public class LLRP implements LLRPEndpoint {
     singulationcontrol.setTagTransitTime(new UnsignedInteger(0));
     command.setC1G2SingulationControl(singulationcontrol);
     command.setTagInventoryStateAware(new Bit(false));
+    if (impinj_search_mode != -1) {
+      ArrayList<Custom> customList = new ArrayList<Custom>();
+      Custom search_mode = new Custom();
+      search_mode.setVendorIdentifier(new UnsignedInteger(25882));
+      search_mode.setParameterSubtype(new UnsignedInteger(23));
+      search_mode.setData(new BytesToEnd_HEX(String.format("%04x", impinj_search_mode)));
+      customList.add(search_mode);
+      command.setCustomList(customList);
+    }
     commands.add(command);
 
     for(int a=0;a<powerLevel.length;a++) {
@@ -755,6 +779,7 @@ public class LLRP implements LLRPEndpoint {
         }
         LLRP llrp = new LLRP();
         llrp.debug = true;
+        llrp.setImpinjSearchMode(IMPINJ_SEARCH_MODE_FOCUS);
         llrp.setEventsListener(new LLRPEvent() {
           public void tagRead(String epc) {
             System.out.println("EPC=" + epc);
