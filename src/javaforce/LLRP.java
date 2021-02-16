@@ -167,6 +167,15 @@ public class LLRP implements LLRPEndpoint {
         llrp.send(msg);
         JF.sleep(delay);
       }
+      if (impinj_search_mode != -1) {
+        //enable impinj extensions
+        CUSTOM_MESSAGE msg = new CUSTOM_MESSAGE();
+        msg.setVendorIdentifier(new UnsignedInteger(25882));
+        msg.setMessageSubtype(new UnsignedByte(21));
+        msg.setData(new BytesToEnd_HEX("00000000"));
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
       //add RO (read operation) spec
       {
         ADD_ROSPEC msg = new ADD_ROSPEC();
