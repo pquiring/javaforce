@@ -203,18 +203,34 @@ public class LLRP implements LLRPEndpoint {
         llrp.send(msg);
         JF.sleep(delay);
       }
-      if (gpi != -1) {
+      {
         SET_READER_CONFIG msg = new SET_READER_CONFIG();
         msg.setResetToFactoryDefault(new Bit(false));
-        ArrayList<GPIPortCurrentState> list = new ArrayList<GPIPortCurrentState>();
-        for(int a=1;a<=4;a++) {
-          GPIPortCurrentState state = new GPIPortCurrentState();
-          state.setConfig(new Bit(true));
-          state.setGPIPortNum(new UnsignedShort(a));
-          state.setState(new GPIPortState(0));
-          list.add(state);
+        if (gpi != -1) {
+          ArrayList<GPIPortCurrentState> list = new ArrayList<GPIPortCurrentState>();
+          for(int a=1;a<=4;a++) {
+            GPIPortCurrentState state = new GPIPortCurrentState();
+            state.setConfig(new Bit(true));
+            state.setGPIPortNum(new UnsignedShort(a));
+            state.setState(new GPIPortState(0));
+            list.add(state);
+          }
+          msg.setGPIPortCurrentStateList(list);
         }
-        msg.setGPIPortCurrentStateList(list);
+        ReaderEventNotificationSpec events = new ReaderEventNotificationSpec();
+        List<EventNotificationState> eventsList = new ArrayList<EventNotificationState>();
+        if (gpi != -1) {
+          EventNotificationState gpi_events = new EventNotificationState();
+          gpi_events.setEventType(new NotificationEventType(NotificationEventType.GPI_Event));
+          gpi_events.setNotificationState(new Bit(true));
+          eventsList.add(gpi_events);
+        }
+        EventNotificationState ro_events = new EventNotificationState();
+        ro_events.setEventType(new NotificationEventType(NotificationEventType.ROSpec_Event));
+        ro_events.setNotificationState(new Bit(true));
+        eventsList.add(ro_events);
+        events.setEventNotificationStateList(eventsList);
+        msg.setReaderEventNotificationSpec(events);
 //        JFLog.log("reset_reader");
         llrp.send(msg);
         JF.sleep(delay);
@@ -467,7 +483,7 @@ public class LLRP implements LLRPEndpoint {
       rospecstarttrigger.setROSpecStartTriggerType(new ROSpecStartTriggerType(ROSpecStartTriggerType.GPI));
       GPITriggerValue gpiValue = new GPITriggerValue();
       gpiValue.setGPIPortNum(new UnsignedShort(gpi));
-      gpiValue.setGPIEvent(new Bit(false));
+      gpiValue.setGPIEvent(new Bit(false)); //false=trigger when beam is broken:true=trigger when beam is restored
       gpiValue.setTimeout(new UnsignedInteger(0));
       rospecstarttrigger.setGPITriggerValue(gpiValue);
     } else {
@@ -774,6 +790,29 @@ public class LLRP implements LLRPEndpoint {
         }
         this.powerLevels = levels;
       }
+      else if (llrpm instanceof READER_EVENT_NOTIFICATION) {
+        READER_EVENT_NOTIFICATION event = (READER_EVENT_NOTIFICATION)llrpm;
+        ReaderEventNotificationData data = event.getReaderEventNotificationData();
+        int type = 0;
+        if (data.getGPIEvent() != null) type = 248;
+        if (data.getROSpecEvent() != null) type = 249;
+        switch (type) {
+          case 248: {  //GPIEVent
+            GPIEvent gpiEvent = data.getGPIEvent();
+            events.gpiEvent(gpiEvent.getGPIPortNumber().toShort(), gpiEvent.getGPIEvent().toBoolean());
+            break;
+          }
+          case 249: {  //ROSpec
+            ROSpecEvent roEvent = data.getROSpecEvent();
+            ROSpecEventType roEventType = roEvent.getEventType();
+            int roType = roEventType.toInteger();
+            switch (roType) {
+              case 0: events.readStarted(); break;
+              case 1: events.readEnded(); break;
+            }
+          }
+        }
+      }
       else {
         JFLog.log("LLRP:Unknown message:" + llrpm);
       }
@@ -858,7 +897,16 @@ public class LLRP implements LLRPEndpoint {
         }
         llrp.setEventsListener(new LLRPEvent() {
           public void tagRead(String epc) {
-//            System.out.println("EPC=" + epc);
+            System.out.println("EPC=" + epc);
+          }
+          public void gpiEvent(int port, boolean event) {
+            System.out.println("GPI:" + port + ":" + event);
+          }
+          public void readStarted() {
+            System.out.println("readStarted");
+          }
+          public void readEnded() {
+            System.out.println("readEnded");
           }
         });
         llrp.setPowerIndexes(powerLevels);
