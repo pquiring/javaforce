@@ -42,6 +42,7 @@ public class LLRP implements LLRPEndpoint {
   private int impinj_search_mode = -1;  //-1 = disabled
   private int period = -1;
   private int duration = -1;
+  private int gpi = -1;
   private boolean enableAccessSpec = false;
 
   public static final int IMPINJ_SEARCH_MODE_SINGLE = 1;
@@ -119,6 +120,11 @@ public class LLRP implements LLRPEndpoint {
    */
   public void setPeriod(int period, int duration) {
     this.period = period;
+    this.duration = duration;
+  }
+
+  public void setGPITrigger(int port, int duration) {
+    gpi = port;
     this.duration = duration;
   }
 
@@ -427,11 +433,18 @@ public class LLRP implements LLRPEndpoint {
       periodValue.setPeriod(new UnsignedInteger(period));
       periodValue.setOffset(new UnsignedInteger(0));
       rospecstarttrigger.setPeriodicTriggerValue(periodValue);
+    } else if (gpi != -1) {
+      rospecstarttrigger.setROSpecStartTriggerType(new ROSpecStartTriggerType(ROSpecStartTriggerType.GPI));
+      GPITriggerValue gpiValue = new GPITriggerValue();
+      gpiValue.setGPIPortNum(new UnsignedShort(gpi));
+      gpiValue.setGPIEvent(new Bit(false));
+      gpiValue.setTimeout(new UnsignedInteger(0));
+      rospecstarttrigger.setGPITriggerValue(gpiValue);
     } else {
       rospecstarttrigger.setROSpecStartTriggerType(new ROSpecStartTriggerType(ROSpecStartTriggerType.Null));
     }
     rospecstoptrigger = new ROSpecStopTrigger();
-    if (period != -1) {
+    if (period != -1 || gpi != -1) {
       rospecstoptrigger.setROSpecStopTriggerType(new ROSpecStopTriggerType(ROSpecStopTriggerType.Duration));
       rospecstoptrigger.setDurationTriggerValue(new UnsignedInteger(duration));
     } else {
@@ -740,7 +753,7 @@ public class LLRP implements LLRPEndpoint {
   private static void usage() {
     System.out.println("usage : LLRP controller_ip cmd [args]");
     System.out.println("where : cmd = read | powerlevels");
-    System.out.println("      : read [power=p1[,p2[,p3[,p4]]]] [rssi=threshold] [period=value]");
+    System.out.println("      : read [power=p1[,p2[,p3[,p4]]]] [rssi=threshold] [period=ms] [gpi=port] [duration=ms]");
     System.out.println("      : powerlevels");
   }
 
@@ -756,6 +769,7 @@ public class LLRP implements LLRPEndpoint {
     int rssi = 0;
     int period = 0;
     int duration = 500;
+    int gpi = 0;
     switch (cmd) {
       case "read": {
         for(int a=2;a<args.length;a++) {
@@ -781,6 +795,9 @@ public class LLRP implements LLRPEndpoint {
             case "duration":
               duration = Integer.valueOf(value);
               break;
+            case "gpi":
+              gpi = Integer.valueOf(value);
+              break;
           }
         }
         LLRP llrp = new LLRP();
@@ -788,6 +805,9 @@ public class LLRP implements LLRPEndpoint {
 //        llrp.setImpinjSearchMode(IMPINJ_SEARCH_MODE_FOCUS);
         if (period != 0) {
           llrp.setPeriod(period, duration);
+        }
+        if (gpi != 0) {
+          llrp.setGPITrigger(gpi, duration);
         }
         if (rssi != 0) {
           llrp.setRSSIThreshold(rssi);
