@@ -2,14 +2,9 @@ package javaforce;
 
 /** LLRP API read/write tags from LLRP compatible controllers.
  *
- * Uses the LLRP Toolkit (https://sourceforge.net/projects/llrp-toolkit/)
- * Javadoc : http://llrp.org/docs/javaapidoc/
+ * Uses the LLRP Toolkit: https://sourceforge.net/projects/llrp-toolkit
  *
- * v1.0 - init version
- * v1.1 - added AccessSpec to read tags during inventory scan.
- * v1.2 - added write tag operation
- * v1.3 - added wordOffset to writeTag operation and fixed TargetTag spec
- * v1.4 - added RSSI threshold
+ * Javadoc : http://llrp.org/docs/javaapidoc
  *
  * @author Peter Quiring
  */
@@ -38,8 +33,8 @@ public class LLRP implements LLRPEndpoint {
   private LLRPEvent events;
   private String ip;
   private int[] powerIndexes = new int[50];
-  private int rssi_threshold;  //0=disabled
-  private int impinj_search_mode = -1;  //-1 = disabled
+  private int rssi_threshold = 0;  //0=disabled
+  private int impinj_search_mode = -1;
   private int period = -1;
   private int duration = -1;
   private int gpi = -1;
@@ -108,6 +103,8 @@ public class LLRP implements LLRPEndpoint {
 
   /** Sets power indexes for each antenna (see getPowerLevels())
    *
+   * Default = new int[] {50}
+   *
    */
   public void setPowerIndexes(int[] powerIndexes) {
     this.powerIndexes = powerIndexes;
@@ -123,11 +120,28 @@ public class LLRP implements LLRPEndpoint {
     this.duration = duration;
   }
 
+  /** Set GPI as start trigger.
+   *
+   * @param port = GPI port (1-65535)
+   */
+  public void setGPITrigger(int port) {
+    gpi = port;
+  }
+
+  /** Set GPI as start trigger with duration.
+   *
+   * @param port = GPI port (1-65535)
+   * @param duration = duration in ms
+   */
   public void setGPITrigger(int port, int duration) {
     gpi = port;
     this.duration = duration;
   }
 
+  /** Include an Access Spec with RO Spec during inventory scan.
+   *
+   * Access Spec can provide deep EPC memory reads.
+   */
   public void setEnableAccessSpec(boolean access) {
     this.enableAccessSpec = access;
   }
@@ -231,7 +245,7 @@ public class LLRP implements LLRPEndpoint {
         JF.sleep(delay);
       }
       //start RO spec
-      if (period == -1) {
+      if (period == -1 && gpi == -1) {
         START_ROSPEC msg = new START_ROSPEC();
         msg.setROSpecID(rospec.getROSpecID());
 //        JFLog.log("start RO spec");
@@ -444,7 +458,7 @@ public class LLRP implements LLRPEndpoint {
       rospecstarttrigger.setROSpecStartTriggerType(new ROSpecStartTriggerType(ROSpecStartTriggerType.Null));
     }
     rospecstoptrigger = new ROSpecStopTrigger();
-    if (period != -1 || gpi != -1) {
+    if (duration != -1) {
       rospecstoptrigger.setROSpecStopTriggerType(new ROSpecStopTriggerType(ROSpecStopTriggerType.Duration));
       rospecstoptrigger.setDurationTriggerValue(new UnsignedInteger(duration));
     } else {
