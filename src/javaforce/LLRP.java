@@ -209,7 +209,7 @@ public class LLRP implements LLRPEndpoint {
         ArrayList<GPIPortCurrentState> list = new ArrayList<GPIPortCurrentState>();
         for(int a=1;a<=4;a++) {
           GPIPortCurrentState state = new GPIPortCurrentState();
-          state.setConfig(new Bit(gpi == a));
+          state.setConfig(new Bit(true));
           state.setGPIPortNum(new UnsignedShort(a));
           state.setState(new GPIPortState(0));
           list.add(state);
@@ -737,6 +737,11 @@ public class LLRP implements LLRPEndpoint {
           }
           epc_scan = epc_scan.replaceAll(" ", "").trim();
           List<AccessCommandOpSpecResult> list = tag.getAccessCommandOpSpecResultList();
+          if (list.size() == 0) {
+            if (events != null) {
+              events.tagRead(null);
+            }
+          }
           for(AccessCommandOpSpecResult res : list) {
             if (res instanceof C1G2ReadOpSpecResult) {
               C1G2ReadOpSpecResult readop = (C1G2ReadOpSpecResult)res;
@@ -759,7 +764,7 @@ public class LLRP implements LLRPEndpoint {
           }
         }
       }
-      if (llrpm instanceof GET_READER_CAPABILITIES_RESPONSE) {
+      else if (llrpm instanceof GET_READER_CAPABILITIES_RESPONSE) {
         GET_READER_CAPABILITIES_RESPONSE caps = (GET_READER_CAPABILITIES_RESPONSE)llrpm;
         List<TransmitPowerLevelTableEntry> list = caps.getRegulatoryCapabilities().getUHFBandCapabilities().getTransmitPowerLevelTableEntryList();
         int[] levels = new int[list.size()];
@@ -768,7 +773,9 @@ public class LLRP implements LLRPEndpoint {
           levels[index++] = entry.getTransmitPowerValue().intValue();
         }
         this.powerLevels = levels;
-        return;
+      }
+      else {
+        JFLog.log("LLRP:Unknown message:" + llrpm);
       }
     } catch (Exception e) {
       e.printStackTrace();
