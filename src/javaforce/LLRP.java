@@ -782,7 +782,7 @@ public class LLRP implements LLRPEndpoint {
     int[] powerLevels = new int[] {80, 80, 80, 80};
     int rssi = 0;
     int period = 0;
-    int duration = 500;
+    int duration = 0;
     int gpi = 0;
     switch (cmd) {
       case "read": {
@@ -805,6 +805,9 @@ public class LLRP implements LLRPEndpoint {
               break;
             case "period":
               period = Integer.valueOf(value);
+              if (duration == 0) {
+                duration = 500;
+              }
               break;
             case "duration":
               duration = Integer.valueOf(value);
@@ -821,7 +824,11 @@ public class LLRP implements LLRPEndpoint {
           llrp.setPeriod(period, duration);
         }
         if (gpi != 0) {
-          llrp.setGPITrigger(gpi, duration);
+          if (duration != 0) {
+            llrp.setGPITrigger(gpi, duration);
+          } else {
+            llrp.setGPITrigger(gpi);
+          }
         }
         if (rssi != 0) {
           llrp.setRSSIThreshold(rssi);
