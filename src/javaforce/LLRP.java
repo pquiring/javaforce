@@ -203,6 +203,22 @@ public class LLRP implements LLRPEndpoint {
         llrp.send(msg);
         JF.sleep(delay);
       }
+      if (gpi != -1) {
+        SET_READER_CONFIG msg = new SET_READER_CONFIG();
+        msg.setResetToFactoryDefault(new Bit(false));
+        ArrayList<GPIPortCurrentState> list = new ArrayList<GPIPortCurrentState>();
+        for(int a=1;a<=4;a++) {
+          GPIPortCurrentState state = new GPIPortCurrentState();
+          state.setConfig(new Bit(gpi == a));
+          state.setGPIPortNum(new UnsignedShort(a));
+          state.setState(new GPIPortState(0));
+          list.add(state);
+        }
+        msg.setGPIPortCurrentStateList(list);
+//        JFLog.log("reset_reader");
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
       if (impinj_search_mode != -1) {
         //enable impinj extensions
         CUSTOM_MESSAGE msg = new CUSTOM_MESSAGE();
