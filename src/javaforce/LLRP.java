@@ -26,19 +26,23 @@ import org.llrp.ltk.generated.enumerations.*;
 
 public class LLRP implements LLRPEndpoint {
   private static int delay = 10;
+
   private static int rospecid = 101;
   private static int inventoryparamid = 102;
   private static int accessid = 103;
   private static int opspecid = 104;
-  private static int[] powerIndexes;
 
   private ROSpec rospec;
   private AccessSpec accessspec;
   private LLRPConnector llrp;
   private LLRPEvent events;
   private String ip;
+  private int[] powerIndexes = new int[50];
   private int rssi_threshold;  //0=disabled
   private int impinj_search_mode = -1;  //-1 = disabled
+  private int period = -1;
+  private int duration = -1;
+  private boolean enableAccessSpec = false;
 
   public static final int IMPINJ_SEARCH_MODE_SINGLE = 1;
   public static final int IMPINJ_SEARCH_MODE_DUAL = 2;
@@ -108,6 +112,20 @@ public class LLRP implements LLRPEndpoint {
     this.powerIndexes = powerIndexes;
   }
 
+  /** Set period of start trigger and duration of stop trigger.
+   *
+   * @param period = period in ms (-1 = disabled)
+   * @param duration = duration is ms
+   */
+  public void setPeriod(int period, int duration) {
+    this.period = period;
+    this.duration = duration;
+  }
+
+  public void setEnableAccessSpec(boolean access) {
+    this.enableAccessSpec = access;
+  }
+
   /** Sets Impinj Search Mode (custom parameter)
    * @mode = 1-6 (see IMPINJ_SEARCH_MODE_...)  (-1 = disabled)
    */
@@ -129,16 +147,14 @@ public class LLRP implements LLRPEndpoint {
    *
    * Use stop() to stop scanning.
    *
-   * @param powerIndexes = power index for each antenna (see getPowerLevels())
-   * @param readTags = read each tag during inventory scan (can return more bits that tag is configured to return during inventory scan)
    * @return scanning active
    */
-  public boolean startInventoryScan(int[] powerIndexes, boolean readTags) {
+  public boolean startInventoryScan() {
     if (llrp == null) return false;
     active = true;
     try {
-      rospec = createROSpec(powerIndexes);
-      if (readTags) {
+      rospec = createROSpec();
+      if (enableAccessSpec) {
         accessspec = createReadAccessSpec(rospec.getROSpecID());
       } else {
         accessspec = null;
@@ -185,7 +201,7 @@ public class LLRP implements LLRPEndpoint {
         JF.sleep(delay);
       }
       //add ACCESS spec
-      if (readTags) {
+      if (enableAccessSpec) {
         ADD_ACCESSSPEC msg = new ADD_ACCESSSPEC();
         msg.setAccessSpec(accessspec);
 //        JFLog.log("add ACCESS spec");
@@ -201,7 +217,7 @@ public class LLRP implements LLRPEndpoint {
         JF.sleep(delay);
       }
       //enable Access spec
-      if (readTags) {
+      if (enableAccessSpec) {
         ENABLE_ACCESSSPEC msg = new ENABLE_ACCESSSPEC();
         msg.setAccessSpecID(accessspec.getAccessSpecID());
 //        JFLog.log("enable ACCESS spec");
@@ -209,7 +225,7 @@ public class LLRP implements LLRPEndpoint {
         JF.sleep(delay);
       }
       //start RO spec
-      {
+      if (period == -1) {
         START_ROSPEC msg = new START_ROSPEC();
         msg.setROSpecID(rospec.getROSpecID());
 //        JFLog.log("start RO spec");
@@ -221,17 +237,6 @@ public class LLRP implements LLRPEndpoint {
       if (debug) JFLog.log(log_id, e);
       return false;
     }
-  }
-
-  /** Starts reading RFID tags with inventory scans.
-   *
-   * Use stop() to stop scanning.
-   *
-   * @return scanning active
-   */
-  public boolean startInventoryScan() {
-    if (powerIndexes == null) return false;
-    return startInventoryScan(powerIndexes, false);
   }
 
   /** Stop reading or writing tags. */
@@ -275,27 +280,13 @@ public class LLRP implements LLRPEndpoint {
    *
    * @param oldEPC = old EPC code
    * @param newEPC = new EPC code
-   * @param powerIndexes = power index for each antenna
-   *
-   */
-  public boolean startWriteTag(short[] oldEPC, short[] newEPC, int[] powerIndexes) {
-    return startWriteTag(oldEPC, newEPC, powerIndexes, 2);
-  }
-
-  /** Write RFID Tag(s).
-   *
-   * Use stop() to stop writing tags.
-   *
-   * @param oldEPC = old EPC code
-   * @param newEPC = new EPC code
-   * @param powerIndexes = power index for each antenna
    * @param wordOffset = beginning of EPC memory bank to write newEPC (default = 2)
    */
-  public boolean startWriteTag(short[] oldEPC, short[] newEPC, int[] powerIndexes, int wordOffset) {
+  public boolean startWriteTag(short[] oldEPC, short[] newEPC, int wordOffset) {
     if (llrp == null) return false;
     if (active) return false;
     try {
-      rospec = createROSpec(powerIndexes);
+      rospec = createROSpec();
       accessspec = createWriteAccessSpec(rospec.getROSpecID(), oldEPC, newEPC, wordOffset);
       //reset reader
       {
@@ -377,23 +368,9 @@ public class LLRP implements LLRPEndpoint {
    *
    */
   public boolean startWriteTag(short[] oldEPC, short[] newEPC) {
-    if (powerIndexes == null) return false;
-    return startWriteTag(oldEPC, newEPC, powerIndexes, 2);
+    return startWriteTag(oldEPC, newEPC, 2);
   }
 
-  /** Write RFID Tag(s).
-   *
-   * Use stop() to stop writing tags.
-   *
-   * @param oldEPC = old EPC code
-   * @param newEPC = new EPC code
-   * @param wordOffset = beginning of EPC memory bank to write newEPC (default = 2)
-   *
-   */
-  public boolean startWriteTag(short[] oldEPC, short[] newEPC, int wordOffset) {
-    if (powerIndexes == null) return false;
-    return startWriteTag(oldEPC, newEPC, powerIndexes, wordOffset);
-  }
 
   private int[] powerLevels;
 
@@ -436,7 +413,7 @@ public class LLRP implements LLRPEndpoint {
     }
   }
 
-  private ROSpec createROSpec(int[] powerLevel) {
+  private ROSpec createROSpec() {
     ROSpec rospec;
     ROBoundarySpec roboundaryspec;
     ROSpecStartTrigger rospecstarttrigger;
@@ -444,13 +421,23 @@ public class LLRP implements LLRPEndpoint {
     AISpec aispec;
     ROReportSpec roreportspec;
     rospecstarttrigger = new ROSpecStartTrigger();
-    rospecstarttrigger.setROSpecStartTriggerType(new ROSpecStartTriggerType(ROSpecStartTriggerType.Null));  //Immediate ???
-//    PeriodicTriggerValue period = new PeriodicTriggerValue();
-//    period.setPeriod(new UnsignedInteger(1));
-//    rospecstarttrigger.setPeriodicTriggerValue(period);
+    if (period != -1) {
+      rospecstarttrigger.setROSpecStartTriggerType(new ROSpecStartTriggerType(ROSpecStartTriggerType.Periodic));
+      PeriodicTriggerValue periodValue = new PeriodicTriggerValue();
+      periodValue.setPeriod(new UnsignedInteger(period));
+      periodValue.setOffset(new UnsignedInteger(0));
+      rospecstarttrigger.setPeriodicTriggerValue(periodValue);
+    } else {
+      rospecstarttrigger.setROSpecStartTriggerType(new ROSpecStartTriggerType(ROSpecStartTriggerType.Null));
+    }
     rospecstoptrigger = new ROSpecStopTrigger();
-    rospecstoptrigger.setROSpecStopTriggerType(new ROSpecStopTriggerType(ROSpecStopTriggerType.Null));
-    rospecstoptrigger.setDurationTriggerValue(new UnsignedInteger(0));
+    if (period != -1) {
+      rospecstoptrigger.setROSpecStopTriggerType(new ROSpecStopTriggerType(ROSpecStopTriggerType.Duration));
+      rospecstoptrigger.setDurationTriggerValue(new UnsignedInteger(duration));
+    } else {
+      rospecstoptrigger.setROSpecStopTriggerType(new ROSpecStopTriggerType(ROSpecStopTriggerType.Null));
+      rospecstoptrigger.setDurationTriggerValue(new UnsignedInteger(0));
+    }
     roboundaryspec = new ROBoundarySpec();
     roboundaryspec.setROSpecStartTrigger(rospecstarttrigger);
     roboundaryspec.setROSpecStopTrigger(rospecstoptrigger);
@@ -482,7 +469,7 @@ public class LLRP implements LLRPEndpoint {
     ArrayList<SpecParameter> specParameterList = new ArrayList<SpecParameter>();
     aispec = new AISpec();
     UnsignedShortArray IDs = new UnsignedShortArray();
-    for(int a=0;a<powerLevel.length;a++) {
+    for(int a=0;a<powerIndexes.length;a++) {
       IDs.add(new UnsignedShort(a+1));
     }
     aispec.setAntennaIDs(IDs);
@@ -523,7 +510,7 @@ public class LLRP implements LLRPEndpoint {
     }
     commands.add(command);
 
-    for(int a=0;a<powerLevel.length;a++) {
+    for(int a=0;a<powerIndexes.length;a++) {
       AntennaConfiguration antennaConfiguration = new AntennaConfiguration();
       antennaConfiguration.setAirProtocolInventoryCommandSettingsList(commands);
       antennaConfiguration.setAntennaID(new UnsignedShort(a+1));
@@ -533,7 +520,7 @@ public class LLRP implements LLRPEndpoint {
       RFTransmitter rftrans = new RFTransmitter();
       rftrans.setHopTableID(new UnsignedShort(1));
       rftrans.setChannelIndex(new UnsignedShort(1));
-      rftrans.setTransmitPower(new UnsignedShort(powerLevel[a]));
+      rftrans.setTransmitPower(new UnsignedShort(powerIndexes[a]));
       antennaConfiguration.setRFTransmitter(rftrans);
       antennaConfigurationList.add(antennaConfiguration);
     }
@@ -720,7 +707,9 @@ public class LLRP implements LLRPEndpoint {
           }
           if (events != null && (epc_read != null || epc_scan != null)) {
             String epc = epc_read != null && epc_read.length() > 0 ? epc_read : epc_scan;
-            if (debug) JFLog.log(log_id, "EPC=" + epc + ":RSSI=" + tag_rssi);
+            if (debug) {
+              JFLog.log(log_id, "[" + System.currentTimeMillis() + "] EPC=" + epc + ":RSSI=" + tag_rssi);
+            }
             if (rssi_threshold == 0 || (tag_rssi != 0 && tag_rssi > rssi_threshold)) {
               events.tagRead(epc);
             }
@@ -751,7 +740,7 @@ public class LLRP implements LLRPEndpoint {
   private static void usage() {
     System.out.println("usage : LLRP controller_ip cmd [args]");
     System.out.println("where : cmd = read | powerlevels");
-    System.out.println("      : read [power=w[,x[,y[,z]]]] [rssi=threshold]");
+    System.out.println("      : read [power=p1[,p2[,p3[,p4]]]] [rssi=threshold] [period=value]");
     System.out.println("      : powerlevels");
   }
 
@@ -765,6 +754,8 @@ public class LLRP implements LLRPEndpoint {
     String cmd = args[1];
     int[] powerLevels = new int[] {80, 80, 80, 80};
     int rssi = 0;
+    int period = 0;
+    int duration = 500;
     switch (cmd) {
       case "read": {
         for(int a=2;a<args.length;a++) {
@@ -784,18 +775,31 @@ public class LLRP implements LLRPEndpoint {
             case "rssi":
               rssi = Integer.valueOf(value);
               break;
+            case "period":
+              period = Integer.valueOf(value);
+              break;
+            case "duration":
+              duration = Integer.valueOf(value);
+              break;
           }
         }
         LLRP llrp = new LLRP();
         llrp.debug = true;
-        llrp.setImpinjSearchMode(IMPINJ_SEARCH_MODE_FOCUS);
+//        llrp.setImpinjSearchMode(IMPINJ_SEARCH_MODE_FOCUS);
+        if (period != 0) {
+          llrp.setPeriod(period, duration);
+        }
+        if (rssi != 0) {
+          llrp.setRSSIThreshold(rssi);
+        }
         llrp.setEventsListener(new LLRPEvent() {
           public void tagRead(String epc) {
-            System.out.println("EPC=" + epc);
+//            System.out.println("EPC=" + epc);
           }
         });
+        llrp.setPowerIndexes(powerLevels);
         llrp.connect(ctrl);
-        llrp.startInventoryScan(powerLevels, true);
+        llrp.startInventoryScan();
         while (active) {
           JF.sleep(100);
         }
