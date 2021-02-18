@@ -138,6 +138,23 @@ public class LLRP implements LLRPEndpoint {
     this.duration = duration;
   }
 
+  /** Set GPO port to state.
+   *
+   * @param port = GPO port (1-65535)
+   * @parma state = value to write
+   */
+  public void setGPOState(int port, boolean state) {
+    SET_READER_CONFIG msg = new SET_READER_CONFIG();
+    msg.setResetToFactoryDefault(new Bit(false));
+    GPOWriteData write = new GPOWriteData();
+    write.setGPOPortNumber(new UnsignedShort(port));
+    write.setGPOData(new Bit(state));
+    ArrayList<GPOWriteData> list = new ArrayList<GPOWriteData>();
+    list.add(write);
+    msg.setGPOWriteDataList(list);
+    llrp.send(msg);
+  }
+
   /** Include an Access Spec with RO Spec during inventory scan.
    *
    * Access Spec can provide deep EPC memory reads.
@@ -212,7 +229,7 @@ public class LLRP implements LLRPEndpoint {
             GPIPortCurrentState state = new GPIPortCurrentState();
             state.setConfig(new Bit(true));
             state.setGPIPortNum(new UnsignedShort(a));
-            state.setState(new GPIPortState(0));
+            state.setState(new GPIPortState(GPIPortState.Low));
             list.add(state);
           }
           msg.setGPIPortCurrentStateList(list);
@@ -600,7 +617,7 @@ public class LLRP implements LLRPEndpoint {
     return rospec;
   }
 
-  private static AccessSpec createReadAccessSpec(UnsignedInteger rospecid) {
+  private AccessSpec createReadAccessSpec(UnsignedInteger rospecid) {
     AccessSpec as = new AccessSpec();
     TwoBitField mb = new TwoBitField();
     mb.set(1);  //set bit 1 (LSB) (value : 0=private 1=EPC 2=TID 3=user)
@@ -657,7 +674,7 @@ public class LLRP implements LLRPEndpoint {
     return as;
   }
 
-  private static String shortArrayToHexString(short[] epc) {
+  private String shortArrayToHexString(short[] epc) {
     StringBuilder sb = new StringBuilder();
     for(int a=0;a<epc.length;a++) {
       sb.append(String.format("%04x", epc[a]));
@@ -665,7 +682,7 @@ public class LLRP implements LLRPEndpoint {
     return sb.toString();
   }
 
-  private static AccessSpec createWriteAccessSpec(UnsignedInteger rospecid, short[] oldEPC, short[] newEPC, int offset) {
+  private AccessSpec createWriteAccessSpec(UnsignedInteger rospecid, short[] oldEPC, short[] newEPC, int offset) {
     AccessSpec as = new AccessSpec();
     TwoBitField mb = new TwoBitField();
     mb.set(1);  //set bit 1 (LSB) (value:0=private 1=EPC 2=TID 3=user)
