@@ -414,7 +414,7 @@ public class LLRP implements LLRPEndpoint {
         JF.sleep(delay);
       }
       //start RO spec
-      {
+      if (period == -1 && gpi == -1) {
         START_ROSPEC msg = new START_ROSPEC();
         msg.setROSpecID(rospec.getROSpecID());
 //        JFLog.log("start RO spec");
@@ -440,6 +440,89 @@ public class LLRP implements LLRPEndpoint {
     return startWriteTag(oldEPC, newEPC, 2);
   }
 
+  /** Kill RFID Tag.
+   *
+   * Use stop() to stop killing tag.
+   *
+   * @param targetEPC = target EPC code
+   * @param password = kill password
+   */
+  public boolean startKillTag(short[] targetEPC, int password) {
+    if (llrp == null) return false;
+    if (active) return false;
+    try {
+      rospec = createROSpec();
+      accessspec = createKillAccessSpec(rospec.getROSpecID(), targetEPC, password);
+      //reset reader
+      {
+        SET_READER_CONFIG msg = new SET_READER_CONFIG();
+        msg.setResetToFactoryDefault(new Bit(true));
+//        JFLog.log("reset_reader");
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
+      //delete all RO specs
+      {
+        DELETE_ROSPEC msg = new DELETE_ROSPEC();
+        msg.setROSpecID(new UnsignedInteger(0));
+//        JFLog.log("delete all RO specs");
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
+      //delete all Access Specs
+      {
+        DELETE_ACCESSSPEC msg = new DELETE_ACCESSSPEC();
+        msg.setAccessSpecID(new UnsignedInteger(0));
+//        JFLog.log("delete all ACCESS specs");
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
+      //add RO (read operation) spec
+      {
+        ADD_ROSPEC msg = new ADD_ROSPEC();
+        msg.setROSpec(rospec);
+//        JFLog.log("add RO spec");
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
+      //add ACCESS spec
+      {
+        ADD_ACCESSSPEC msg = new ADD_ACCESSSPEC();
+        msg.setAccessSpec(accessspec);
+//        JFLog.log("add ACCESS spec");
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
+      //enable RO spec
+      {
+        ENABLE_ROSPEC msg = new ENABLE_ROSPEC();
+        msg.setROSpecID(rospec.getROSpecID());
+//        JFLog.log("enable RO spec");
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
+      //enable Access spec
+      {
+        ENABLE_ACCESSSPEC msg = new ENABLE_ACCESSSPEC();
+        msg.setAccessSpecID(accessspec.getAccessSpecID());
+//        JFLog.log("enable ACCESS spec");
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
+      //start RO spec
+      if (period == -1 && gpi == -1) {
+        START_ROSPEC msg = new START_ROSPEC();
+        msg.setROSpecID(rospec.getROSpecID());
+//        JFLog.log("start RO spec");
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
+      return true;
+    } catch (Exception e) {
+      if (debug) JFLog.log(log_id, e);
+      return false;
+    }
+  }
 
   private int[] powerLevels;
 
@@ -721,6 +804,59 @@ public class LLRP implements LLRPEndpoint {
     }
     tt.setTagMask(mask);
     BitArray_HEX data = new BitArray_HEX(shortArrayToHexString(oldEPC));
+    tt.setTagData(data);
+    targetTagList.add(tt);
+    tagSpec.setC1G2TargetTagList(targetTagList);
+    accessCommand.setAirProtocolTagSpec(tagSpec);
+    as.setAccessCommand(accessCommand);
+
+    AccessReportSpec accessReportSpec = new AccessReportSpec();
+    accessReportSpec.setAccessReportTrigger(new AccessReportTriggerType(AccessReportTriggerType.Whenever_ROReport_Is_Generated));
+    as.setAccessReportSpec(accessReportSpec);
+
+    AccessSpecStopTrigger accessSpecStopTrigger = new AccessSpecStopTrigger();
+    accessSpecStopTrigger.setAccessSpecStopTrigger(new AccessSpecStopTriggerType(AccessSpecStopTriggerType.Null));
+    accessSpecStopTrigger.setOperationCountValue(new UnsignedShort(1));
+    as.setAccessSpecStopTrigger(accessSpecStopTrigger);
+
+    as.setAntennaID(new UnsignedShort(1));
+
+    as.setCurrentState(new AccessSpecState(AccessSpecState.Disabled));
+
+    AirProtocols airProtocols = new AirProtocols();
+    airProtocols.set(AirProtocols.EPCGlobalClass1Gen2);
+    as.setProtocolID(airProtocols);
+
+    as.setROSpecID(rospecid);
+    as.setAccessSpecID(new UnsignedInteger(accessid));
+    return as;
+  }
+
+  private AccessSpec createKillAccessSpec(UnsignedInteger rospecid, short[] targetEPC, int password) {
+    AccessSpec as = new AccessSpec();
+    TwoBitField mb = new TwoBitField();
+    mb.set(1);  //set bit 1 (LSB) (value:0=private 1=EPC 2=TID 3=user)
+    int oldBits = targetEPC.length * 16;
+
+    AccessCommand accessCommand = new AccessCommand();
+    ArrayList<AccessCommandOpSpec> accessCommandOpSpecList = new ArrayList<AccessCommandOpSpec>();
+    C1G2Kill kill = new C1G2Kill();
+    kill.setOpSpecID(new UnsignedShort(opspecid));
+    kill.setKillPassword(new UnsignedInteger(password));
+    accessCommandOpSpecList.add(kill);
+    accessCommand.setAccessCommandOpSpecList(accessCommandOpSpecList);
+    C1G2TagSpec tagSpec = new C1G2TagSpec();
+    ArrayList<C1G2TargetTag> targetTagList = new ArrayList<C1G2TargetTag>();
+    C1G2TargetTag tt = new C1G2TargetTag();
+    tt.setMB(mb);
+    tt.setMatch(new Bit(true));
+    tt.setPointer(new UnsignedShort(2 * 16));  //pointer is in BITS not WORDS
+    BitArray_HEX mask = new BitArray_HEX(oldBits);
+    for(int a=0;a<oldBits;a++) {
+      mask.set(a);
+    }
+    tt.setTagMask(mask);
+    BitArray_HEX data = new BitArray_HEX(shortArrayToHexString(targetEPC));
     tt.setTagData(data);
     targetTagList.add(tt);
     tagSpec.setC1G2TargetTagList(targetTagList);
