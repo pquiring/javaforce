@@ -38,6 +38,7 @@ public class LLRP implements LLRPEndpoint {
   private int period = -1;
   private int duration = -1;
   private int gpi = -1;
+  private int mode = 1002;
   private boolean enableAccessSpec = false;
 
   public static final int IMPINJ_SEARCH_MODE_SINGLE = 1;
@@ -108,6 +109,17 @@ public class LLRP implements LLRPEndpoint {
    */
   public void setPowerIndexes(int[] powerIndexes) {
     this.powerIndexes = powerIndexes;
+  }
+
+  /** Set reader mode index (0-5,1000-1005)
+   * See : https://support.impinj.com/hc/en-us/articles/360000046899-Reader-Modes-Made-Easy
+   *
+   * Default = 1002
+   *
+   * @param mode
+   */
+  public void setModeIndex(int mode) {
+    this.mode = mode;
   }
 
   /** Set period of start trigger and duration of stop trigger.
@@ -647,7 +659,7 @@ public class LLRP implements LLRPEndpoint {
     ArrayList<AirProtocolInventoryCommandSettings> commands = new ArrayList<AirProtocolInventoryCommandSettings>();
     C1G2InventoryCommand command = new C1G2InventoryCommand();
     C1G2RFControl rfcontrol = new C1G2RFControl();
-    rfcontrol.setModeIndex(new UnsignedShort(1002));
+    rfcontrol.setModeIndex(new UnsignedShort(mode));
     rfcontrol.setTari(new UnsignedShort(0));
     command.setC1G2RFControl(rfcontrol);
     C1G2SingulationControl singulationcontrol = new C1G2SingulationControl();
