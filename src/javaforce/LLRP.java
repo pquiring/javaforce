@@ -33,12 +33,12 @@ public class LLRP implements LLRPEndpoint {
   private LLRPEvent events;
   private String ip;
   private int[] powerIndexes = new int[50];
-  private int rssi_threshold = 0;  //0=disabled
   private int impinj_search_mode = -1;
   private int period = -1;
   private int duration = -1;
   private int gpi = -1;
   private int mode = 1002;
+  private int sensitivity = 1;
   private boolean enableAccessSpec = false;
 
   public static final int IMPINJ_SEARCH_MODE_SINGLE = 1;
@@ -93,13 +93,10 @@ public class LLRP implements LLRPEndpoint {
   }
 
   /** Sets RSSI threshold.  Tags below this value are ignored.
-   * NOTE : This is SOFTWARE threshold. (hardware coming soon)
-   * @param value = RSSI threshold (negative) (zero to disable) (positive is invalid)
+   * @param value = RSSI threshold index (default = 1)
    */
   public void setRSSIThreshold(int value) {
-    if (value <= 0) {
-      rssi_threshold = value;
-    }
+    sensitivity = value;
   }
 
   /** Sets power indexes for each antenna (see getPowerLevels())
@@ -324,11 +321,12 @@ public class LLRP implements LLRPEndpoint {
   public void stop() {
     try {
       //disable RO spec
-      {
+      if (rospec != null) {
         DISABLE_ROSPEC msg = new DISABLE_ROSPEC();
         msg.setROSpecID(rospec.getROSpecID());
 //        JFLog.log("disable RO spec");
         llrp.send(msg);
+        rospec = null;
       }
       //delete RO spec
       {
@@ -342,6 +340,7 @@ public class LLRP implements LLRPEndpoint {
         msg.setAccessSpecID(accessspec.getROSpecID());
 //        JFLog.log("disable RO spec");
         llrp.send(msg);
+        accessspec = null;
       }
       {
         DELETE_ACCESSSPEC msg = new DELETE_ACCESSSPEC();
@@ -537,11 +536,12 @@ public class LLRP implements LLRPEndpoint {
   }
 
   private int[] powerLevels;
+  private boolean reading_power_levels;
 
   /** Retrieves power levels from LLRP Controller.
    * Power Levels are indexes into a table of dBm * 100 values.
    */
-  private int[] getPowerLevels() {
+  public int[] getPowerLevels() {
     if (llrp == null) return null;
     if (active) return null;
     powerLevels = null;
@@ -554,6 +554,7 @@ public class LLRP implements LLRPEndpoint {
         llrp.send(msg);
         JF.sleep(delay);
       }
+      reading_power_levels = true;
       {
         GET_READER_CAPABILITIES caps = new GET_READER_CAPABILITIES();
         caps.setRequestedData(new GetReaderCapabilitiesRequestedData(GetReaderCapabilitiesRequestedData.All));
@@ -570,7 +571,52 @@ public class LLRP implements LLRPEndpoint {
           return null;
         }
       }
+      reading_power_levels = false;
       return powerLevels;
+    } catch (Exception e) {
+      if (debug) JFLog.log(log_id, e);
+      return null;
+    }
+  }
+
+  private int[] sensitivityLevels;
+  private boolean reading_sensitivity_levels;
+
+  /** Retrieves sensitivity levels from LLRP Controller.
+   * Sensitivity Levels are indexes into a table of dB values.
+   */
+  public int[] getSensitivityLevels() {
+    if (llrp == null) return null;
+    if (active) return null;
+    sensitivityLevels = null;
+    try {
+      //reset reader
+      {
+        SET_READER_CONFIG msg = new SET_READER_CONFIG();
+        msg.setResetToFactoryDefault(new Bit(true));
+//        JFLog.log("reset_reader");
+        llrp.send(msg);
+        JF.sleep(delay);
+      }
+      reading_sensitivity_levels = true;
+      {
+        GET_READER_CAPABILITIES caps = new GET_READER_CAPABILITIES();
+        caps.setRequestedData(new GetReaderCapabilitiesRequestedData(GetReaderCapabilitiesRequestedData.All));
+//        JFLog.log("get_reader_caps");
+        llrp.send(caps);
+        JF.sleep(delay);
+      }
+      int max = 12;
+      while (sensitivityLevels == null) {
+        JF.sleep(1000);
+        max--;
+        if (max == 0) {
+          JFLog.log(log_id, "LLRP:Error:getSensitivityLevels():timeout");
+          return null;
+        }
+      }
+      reading_sensitivity_levels = false;
+      return sensitivityLevels;
     } catch (Exception e) {
       if (debug) JFLog.log(log_id, e);
       return null;
@@ -686,7 +732,7 @@ public class LLRP implements LLRPEndpoint {
       antennaConfiguration.setAirProtocolInventoryCommandSettingsList(commands);
       antennaConfiguration.setAntennaID(new UnsignedShort(a+1));
       RFReceiver rfrec = new RFReceiver();
-      rfrec.setReceiverSensitivity(new UnsignedShort(1));
+      rfrec.setReceiverSensitivity(new UnsignedShort(sensitivity));
       antennaConfiguration.setRFReceiver(rfrec);
       RFTransmitter rftrans = new RFTransmitter();
       rftrans.setHopTableID(new UnsignedShort(1));
@@ -939,21 +985,30 @@ public class LLRP implements LLRPEndpoint {
             if (debug) {
               JFLog.log(log_id, "[" + System.currentTimeMillis() + "] EPC=" + epc + ":RSSI=" + tag_rssi);
             }
-            if (rssi_threshold == 0 || (tag_rssi != 0 && tag_rssi > rssi_threshold)) {
-              events.tagRead(epc);
-            }
+            events.tagRead(epc);
           }
         }
       }
       else if (llrpm instanceof GET_READER_CAPABILITIES_RESPONSE) {
         GET_READER_CAPABILITIES_RESPONSE caps = (GET_READER_CAPABILITIES_RESPONSE)llrpm;
-        List<TransmitPowerLevelTableEntry> list = caps.getRegulatoryCapabilities().getUHFBandCapabilities().getTransmitPowerLevelTableEntryList();
-        int[] levels = new int[list.size()];
-        int index = 0;
-        for(TransmitPowerLevelTableEntry entry : list) {
-          levels[index++] = entry.getTransmitPowerValue().intValue();
+        if (reading_power_levels) {
+          List<TransmitPowerLevelTableEntry> list = caps.getRegulatoryCapabilities().getUHFBandCapabilities().getTransmitPowerLevelTableEntryList();
+          int[] levels = new int[list.size() + 1];
+          int index = 1;
+          for(TransmitPowerLevelTableEntry entry : list) {
+            levels[index++] = entry.getTransmitPowerValue().intValue();
+          }
+          this.powerLevels = levels;
         }
-        this.powerLevels = levels;
+        if (reading_sensitivity_levels) {
+          List<ReceiveSensitivityTableEntry> list = caps.getGeneralDeviceCapabilities().getReceiveSensitivityTableEntryList();
+          int[] levels = new int[list.size() + 1];
+          int index = 1;
+          for(ReceiveSensitivityTableEntry entry : list) {
+            levels[index++] = entry.getReceiveSensitivityValue().toShort();
+          }
+          this.sensitivityLevels = levels;
+        }
       }
       else if (llrpm instanceof READER_EVENT_NOTIFICATION) {
         READER_EVENT_NOTIFICATION event = (READER_EVENT_NOTIFICATION)llrpm;
@@ -993,9 +1048,10 @@ public class LLRP implements LLRPEndpoint {
 
   private static void usage() {
     System.out.println("usage : LLRP controller_ip cmd [args]");
-    System.out.println("where : cmd = read | powerlevels");
+    System.out.println("where : cmd = read | powerlevels | rssilevels");
     System.out.println("      : read [power=p1[,p2[,p3[,p4]]]] [rssi=threshold] [period=ms] [gpi=port] [duration=ms]");
     System.out.println("      : powerlevels");
+    System.out.println("      : rssilevels");
   }
 
   public static void main(String[] args) {
@@ -1096,6 +1152,24 @@ public class LLRP implements LLRPEndpoint {
         int index = 0;
         for(int level : levels) {
           System.out.println("PowerLevel:index=" + index + ":level=" + levels[index]);
+          index++;
+        }
+        break;
+      }
+      case "rssilevels": {
+        LLRP llrp = new LLRP();
+        llrp.debug = true;
+        llrp.connect(ctrl);
+        int[] levels = llrp.getSensitivityLevels();
+        llrp.stop();
+        if (levels == null) {
+          System.out.println("Error:getSensitivityLevels()==null");
+          break;
+        }
+        System.out.println("# Sensitivty Levels = " + levels.length);
+        int index = 0;
+        for(int level : levels) {
+          System.out.println("SensitivtyLevel:index=" + index + ":level=" + levels[index]);
           index++;
         }
         break;
