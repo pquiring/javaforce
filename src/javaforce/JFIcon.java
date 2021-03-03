@@ -19,6 +19,7 @@ public class JFIcon extends TimerTask {
   private TrayIcon icon;
   private PopupMenu menu;
   private JFImage image;
+  private JFImage scaled;
   private ActionListener listener;
   private String tooltip;
 
@@ -58,7 +59,8 @@ public class JFIcon extends TimerTask {
   private void create() {
     tray = SystemTray.getSystemTray();
     Dimension size = tray.getTrayIconSize();
-    JFImage scaled = new JFImage(size.width, size.height);
+//    JFLog.log("TrayIconSize=" + size.width + "x" + size.height);
+    scaled = new JFImage(size.width, size.height);
     scaled.fill(0, 0, size.width, size.height, 0x00000000, true);  //fill with alpha transparent
     if (false) {
       //scaled image (looks bad sometimes)
@@ -75,6 +77,7 @@ public class JFIcon extends TimerTask {
     }
     //create tray icon
     icon = new TrayIcon(scaled.getImage(), tooltip, menu);
+    icon.setImageAutoSize(true);
     icon.addActionListener(listener);
     try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
   }
@@ -89,8 +92,12 @@ public class JFIcon extends TimerTask {
     height = height_now;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
-        remove();
-        create();
+        if (true) {
+          icon.setImage(scaled.getImage());
+        } else {
+          destroy();
+          create();
+        }
       }
     });
   }
