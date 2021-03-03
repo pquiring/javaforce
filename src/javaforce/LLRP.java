@@ -39,6 +39,7 @@ public class LLRP implements LLRPEndpoint {
   private int gpi = -1;
   private int mode = 1002;
   private int sensitivity = 1;
+  private int session = 1;
   private boolean enableAccessSpec = false;
 
   public static final int IMPINJ_SEARCH_MODE_SINGLE = 1;
@@ -709,9 +710,9 @@ public class LLRP implements LLRPEndpoint {
     rfcontrol.setTari(new UnsignedShort(0));
     command.setC1G2RFControl(rfcontrol);
     C1G2SingulationControl singulationcontrol = new C1G2SingulationControl();
-    TwoBitField session = new TwoBitField();  //NOTE : TwoBitField stored bits in reverse order
-    session.set(0);  //set bit 0 (MSB) (value=2)
-    singulationcontrol.setSession(session);
+    TwoBitField session_bits = new TwoBitField();  //NOTE : TwoBitField stored bits in reverse order
+    session_bits.set(1);  //set bit 1 (LSB) (value=1)
+    singulationcontrol.setSession(session_bits);
     singulationcontrol.setTagPopulation(new UnsignedShort(32));
     singulationcontrol.setTagTransitTime(new UnsignedInteger(0));
     command.setC1G2SingulationControl(singulationcontrol);
