@@ -120,6 +120,15 @@ public class LLRP implements LLRPEndpoint {
     this.mode = mode;
   }
 
+  /** Sets reader session (default = 1)
+   *
+   * @param session (0-3)
+   *
+   */
+  public void setSession(int session) {
+    this.session = session;
+  }
+
   /** Set period of start trigger and duration of stop trigger.
    *
    * @param period = period in ms (-1 = disabled)
@@ -710,8 +719,16 @@ public class LLRP implements LLRPEndpoint {
     rfcontrol.setTari(new UnsignedShort(0));
     command.setC1G2RFControl(rfcontrol);
     C1G2SingulationControl singulationcontrol = new C1G2SingulationControl();
-    TwoBitField session_bits = new TwoBitField();  //NOTE : TwoBitField stored bits in reverse order
-    session_bits.set(1);  //set bit 1 (LSB) (value=1)
+    TwoBitField session_bits = new TwoBitField();
+    //NOTE : TwoBitField stores bits in reverse order
+    boolean session_bit_0 = (session & 0x01) == 0x01;
+    boolean session_bit_1 = (session & 0x02) == 0x02;
+    if (session_bit_0) {
+      session_bits.set(1);  //set bit 1 (LSB)
+    }
+    if (session_bit_1) {
+      session_bits.set(0);  //set bit 0 (MSB)
+    }
     singulationcontrol.setSession(session_bits);
     singulationcontrol.setTagPopulation(new UnsignedShort(32));
     singulationcontrol.setTagTransitTime(new UnsignedInteger(0));
@@ -762,6 +779,7 @@ public class LLRP implements LLRPEndpoint {
   private AccessSpec createReadAccessSpec(UnsignedInteger rospecid) {
     AccessSpec as = new AccessSpec();
     TwoBitField mb = new TwoBitField();
+    //NOTE : TwoBitField stores bits in reverse order
     mb.set(1);  //set bit 1 (LSB) (value : 0=private 1=EPC 2=TID 3=user)
     AccessCommand accessCommand = new AccessCommand();
     ArrayList<AccessCommandOpSpec> accessCommandOpSpecList = new ArrayList<AccessCommandOpSpec>();
@@ -827,6 +845,7 @@ public class LLRP implements LLRPEndpoint {
   private AccessSpec createWriteAccessSpec(UnsignedInteger rospecid, short[] oldEPC, short[] newEPC, int offset) {
     AccessSpec as = new AccessSpec();
     TwoBitField mb = new TwoBitField();
+    //NOTE : TwoBitField stores bits in reverse order
     mb.set(1);  //set bit 1 (LSB) (value:0=private 1=EPC 2=TID 3=user)
     int oldBits = oldEPC.length * 16;
     int newBits = newEPC.length * 16;
@@ -894,6 +913,7 @@ public class LLRP implements LLRPEndpoint {
   private AccessSpec createKillAccessSpec(UnsignedInteger rospecid, short[] targetEPC, int password) {
     AccessSpec as = new AccessSpec();
     TwoBitField mb = new TwoBitField();
+    //NOTE : TwoBitField stores bits in reverse order
     mb.set(1);  //set bit 1 (LSB) (value:0=private 1=EPC 2=TID 3=user)
     int oldBits = targetEPC.length * 16;
 
