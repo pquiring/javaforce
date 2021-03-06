@@ -191,6 +191,7 @@ public class HTTP {
   }
 
   private int read(Buffer buf, int length) throws Exception {
+    if (buf.count >= length) return length;
     int maxlength = buf.buf.length - buf.pos - buf.count;
     if (length > maxlength) {
       if (buf.pos > 0) {
@@ -319,32 +320,7 @@ public class HTTP {
     }
     long copied = 0;
     //read data
-    if (length != -1) {
-      if (debug) System.out.println("HTTP:Reading Length:" + length);
-      //read length data
-      if (buf.count > 0) {
-        copied += buf.count;
-        os.write(buf.toArray());
-        buf.consumeAll();
-      }
-      while (copied < length) {
-        int toread = bufsiz;
-        if (toread > length) {
-          toread = (int)length;
-        }
-        int read = read(buf, toread);
-        if (read > 0) {
-          copied += read;
-          if (progress != null) {
-            progress.progress(copied, length);
-          }
-          os.write(buf.toArray());
-          buf.consumeAll();
-        }
-      }
-      if (disconn) close();
-      return true;
-    } else if (chunked) {
+    if (chunked) {
       if (debug) System.out.println("HTTP:Reading Chunked reply");
       //read chunked data
       while (true) {
@@ -371,7 +347,7 @@ public class HTTP {
               }
               os.write(buf.buf, buf.pos, read);
               chunkLength -= read;
-              buf.consumeAll();
+              buf.consume(read);
             }
           }
           //read \r\n
@@ -383,9 +359,35 @@ public class HTTP {
             if (disconn) close();
             return true;
           }
+        } else {
+          read(buf, bufsiz);
         }
-        read(buf, bufsiz);
       }
+    } else if (length != -1) {
+      if (debug) System.out.println("HTTP:Reading Length:" + length);
+      //read length data
+      if (buf.count > 0) {
+        copied += buf.count;
+        os.write(buf.toArray());
+        buf.consumeAll();
+      }
+      while (copied < length) {
+        int toread = bufsiz;
+        if (toread > length) {
+          toread = (int)length;
+        }
+        int read = read(buf, toread);
+        if (read > 0) {
+          copied += read;
+          if (progress != null) {
+            progress.progress(copied, length);
+          }
+          os.write(buf.toArray());
+          buf.consume(read);
+        }
+      }
+      if (disconn) close();
+      return true;
     } else {
       if (debug) System.out.println("HTTP:Reading till carrier dropped");
       //read till carrier is dropped
