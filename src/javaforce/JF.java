@@ -1353,4 +1353,52 @@ public class JF {
       JFLog.log(e);
     }
   }
+
+  /** Determines local IP address for an inbound DatagramPacket */
+  public static InetAddress getLocalAddress(DatagramPacket packet) {
+    try {
+      SocketAddress remoteAddress = packet.getSocketAddress();
+      DatagramSocket sock = new DatagramSocket();
+      //DatagramSocket.connect() will send an ICMP packet to determine if port is open
+      sock.connect(remoteAddress);
+      InetAddress localAddress = sock.getLocalAddress();
+      sock.disconnect();
+      sock.close();
+      return localAddress;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  /** Returns MAC address for a given IP4 address.
+   * Supports only clients on same LAN.
+   * Uses the 'arp' command.
+   */
+  public static String getRemoteMAC(String ip) {
+    ShellProcess shell = new ShellProcess();
+    String output;
+    int macidx;
+    char macdelimit;
+    if (isWindows()) {
+      output = shell.run(new String[] {"arp", "-a"}, false);
+      //Internet Address      Physical Address      Type
+      macidx = 1;
+      macdelimit = '-';
+    } else {
+      output = shell.run(new String[] {"arp", "-n"}, false);
+      //Address                  HWtype  HWaddress           Flags Mask            Iface
+      macidx = 2;
+      macdelimit = ':';
+    }
+    String[] lns = output.split("\n");
+    for(String ln : lns) {
+      String[] f = ln.split(" +");
+      if (f[0].equals(ip)) {
+        return f[macidx].replaceAll("[" + macdelimit + "]", "");
+      }
+    }
+    JFLog.log("JF.getRemoteMac():Error:IP not found:" + ip);
+    return null;
+  }
 }
