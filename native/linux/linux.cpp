@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <fcntl.h>  //open
 #include <termios.h>  //com ports
-#include <unistd.h>  //close select
+#include <unistd.h>  //close select stat
 #include <stdio.h>
 #ifndef __FreeBSD__
 #include <linux/videodev2.h>  //V4L2
@@ -10,6 +10,8 @@
 #include <sys/ioctl.h>  //ioctl
 #include <sys/mman.h>  //mmap
 #include <sys/inotify.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <signal.h>
 #include <errno.h>
 #include <string.h>  //memcpy
@@ -1610,6 +1612,16 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_setenv
   setenv(cname, cvalue, 1);
   e->ReleaseStringUTFChars(name, cname);
   e->ReleaseStringUTFChars(value, cvalue);
+}
+
+JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_filemode
+  (JNIEnv *e, jclass c, jstring name)
+{
+  struct stat s;
+  const char *cname = e->GetStringUTFChars(name,NULL);
+  ::stat((const char *)cname, (struct stat*)&s);
+  e->ReleaseStringUTFChars(name, cname);
+  return s.st_mode;
 }
 
 JNIEXPORT jintArray JNICALL Java_javaforce_jni_LnxNative_getConsoleSize

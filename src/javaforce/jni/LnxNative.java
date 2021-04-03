@@ -105,4 +105,7 @@ public class LnxNative {
   public static native boolean peekConsole();
   public static native void writeConsole(int ch);
   public static native void writeConsoleArray(byte[] ch, int off, int len);
+
+  //file
+  public static native int filemode(String path);
 }
