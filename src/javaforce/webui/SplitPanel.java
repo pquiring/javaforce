@@ -5,7 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class SplitPanel extends Container {
+public class SplitPanel extends Panel {
   private int dir;
   private int pos = 50;  //pixels of left/top component
 
