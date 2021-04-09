@@ -1401,4 +1401,26 @@ public class JF {
     JFLog.log("JF.getRemoteMac():Error:IP not found:" + ip);
     return null;
   }
+
+  /** Filter regex for any letter. */
+  public static String filter_alpha = "[a-zA-Z]";
+  /** Filter regex for any number. */
+  public static String filter_numeric = "[0-9]";
+  /** Filter regex for any letter or number. */
+  public static String filter_alpha_numeric = "[a-zA-Z0-9]";
+
+  /** Filters a string using a regex that is matched against each character.
+   * See filter_alpha, filter_alpha_number, etc.
+   */
+  public static String filter(String str, String regex) {
+    StringBuilder sb = new StringBuilder();
+    int len = str.length();
+    for(int idx = 0; idx < len; idx++) {
+      String ch = str.substring(idx, idx+1);
+      if (ch.matches(regex)) {
+        sb.append(ch);
+      }
+    }
+    return sb.toString();
+  }
 }
