@@ -31,6 +31,7 @@ public class Container extends Component {
       get(a).events();
     }
   }
+  /** Get Component by user assigned name. */
   public Component getComponent(String name) {
     if (this.name != null && this.name.equals(name)) {
       return this;
@@ -54,14 +55,15 @@ public class Container extends Component {
   public Component get(int idx) {
     return components.get(idx);
   }
-  public Component get(String name) {
+  /** Get Component by id. */
+  public Component get(String id) {
     int cnt = count();
     for(int a=0;a<cnt;a++) {
       Component comp = get(a);
-      if (comp.id.equals(name)) return comp;
+      if (comp.id.equals(id)) return comp;
       if (comp instanceof Container) {
         Container container = (Container)comp;
-        comp = container.get(name);
+        comp = container.get(id);
         if (comp != null) return comp;
       }
     }
