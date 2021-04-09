@@ -94,40 +94,17 @@ public class SQL {
 
   /** Returns only numbers in string. */
   public static String numbers(String str) {
-    char strca[] = str.toCharArray();
-    int len = 0;
-    for(int a=0;a<strca.length;a++) {
-      if (Character.isDigit(strca[a])) len++;
-    }
-    if (len == 0) return "";
-    char newstrca[] = new char[len];
-    int pos = 0;
-    for(int a=0;a<strca.length;a++) {
-      if (Character.isDigit(strca[a])) {
-        newstrca[pos++] = strca[a];
-      }
-    }
-    return new String(newstrca);
+    return JF.filter(str, JF.filter_numeric);
   }
 
   /** Returns only letters in quotes in string. */
   public static String letters(String str) {
-    char[] strca = str.toCharArray();
-    int len = 0;
-    for(int a=0;a<strca.length;a++) {
-      if (Character.isLetter(strca[a])) len++;
-    }
-    len += 2;
-    char[] newstrca = new char[len];
-    int pos = 0;
-    newstrca[pos++] = '\'';
-    for(int a=0;a<strca.length;a++) {
-      if (Character.isLetter(strca[a])) {
-        newstrca[pos++] = strca[a];
-      }
-    }
-    newstrca[pos++] = '\'';
-    return new String(newstrca);
+    return "\'" + JF.filter(str, JF.filter_alpha)+ "\'";
+  }
+
+  /** Returns only letters or numbers in quotes in string. */
+  public static String letters_numbers(String str) {
+    return "\'" + JF.filter(str, JF.filter_alpha_numeric)+ "\'";
   }
 
   /** Executes a SQL query (no return data). */
