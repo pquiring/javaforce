@@ -47,7 +47,7 @@ public class Main implements WebUIHandler {
     APIService.main();
     //start webui server
     server = new WebUIServer();
-    server.start(new Main(), 34000, false);
+    server.start(new Main(), 80, false);
   }
 
   public Panel getRootPanel(WebUIClient client) {
