@@ -17,14 +17,14 @@ Not Supported (yet):
   - Restore in place (restored files need to be moved back into place)
 
 Web Interface:
-  - http://your_host_name:34003
+  - http://your_host_name
 
 Tested hardware:
   - Quantum Superloader 3
   - 1.5TB LTO-5 tapes
 
 TCP Ports:
-  - 33200 & 34003
+  - 33200 & 80
 
 Notes:
   - tapetool.exe - is an easy to use command line interface to use tape drive/media changer.

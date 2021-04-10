@@ -6,7 +6,7 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
 
-    <SetProperty Id="URL" Value="http://localhost:34003" Sequence="execute" Before="CreateShortcuts" />
+    <SetProperty Id="URL" Value="http://localhost" Sequence="execute" Before="CreateShortcuts" />
     <Icon Id="icon.ico" SourceFile="jfbackup.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
 
@@ -35,7 +35,7 @@
             Id="FirewallRule2"
             Name="jfBackupWEB"
             Protocol="tcp"
-            Port="34003"
+            Port="80"
             Scope="any"
             IgnoreFailure="yes"
             Profile="all" />
