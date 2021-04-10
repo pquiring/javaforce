@@ -16,7 +16,7 @@ public class ConfigService implements WebUIHandler {
   public WebUIServer server;
   public void start() {
     server = new WebUIServer();
-    server.start(this, 34002, false);
+    server.start(this, 80, false);
   }
 
   public void stop() {
