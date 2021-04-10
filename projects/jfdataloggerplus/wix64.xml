@@ -6,7 +6,7 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
 
-    <SetProperty Id="URL" Value="http://localhost:34001" Sequence="execute" Before="CreateShortcuts" />
+    <SetProperty Id="URL" Value="http://localhost" Sequence="execute" Before="CreateShortcuts" />
     <Icon Id="icon.ico" SourceFile="jfdataloggerplus.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
 
