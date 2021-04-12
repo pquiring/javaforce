@@ -1054,7 +1054,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_tapeClose
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeFormat
-  (JNIEnv *e, jclass c, jlong handle)
+  (JNIEnv *e, jclass c, jlong handle, jint blocksize)
 {
   HANDLE dev = (HANDLE)handle;
   DWORD bytesReturn;
@@ -1082,7 +1082,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_tapeFormat
 */
 
   TAPE_SET_MEDIA_PARAMETERS tapeSetMediaParams;
-  tapeSetMediaParams.BlockSize = 64 * 1024;
+  tapeSetMediaParams.BlockSize = blocksize;
   ret = DeviceIoControl(
     dev,
     IOCTL_TAPE_SET_MEDIA_PARAMS,

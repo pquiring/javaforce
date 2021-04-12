@@ -51,7 +51,7 @@ public class WinNative {
   //Tape drive
   public static native long tapeOpen(String name);
   public static native void tapeClose(long handle);
-  public static native boolean tapeFormat(long handle);
+  public static native boolean tapeFormat(long handle, int blocksize);
   public static native int tapeRead(long handle, byte buf[], int offset, int length);
   public static native int tapeWrite(long handle, byte buf[], int offset, int length);
   public static native boolean tapeSetpos(long handle, long pos);

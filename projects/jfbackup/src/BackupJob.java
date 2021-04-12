@@ -388,7 +388,7 @@ public class BackupJob extends Thread {
       return false;
     }
 
-    if (!tape.format()) {
+    if (!tape.format(blocksize)) {
       log("Error:Tape format failed:Error=" + tape.lastError());
       return false;
     }

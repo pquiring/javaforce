@@ -16,9 +16,9 @@ public class TapeDrive {
     WinNative.tapeClose(handle);
     handle = 0;
   }
-  public boolean format() {
+  public boolean format(int blocksize) {
     if (handle == 0) return false;
-    return WinNative.tapeFormat(handle);
+    return WinNative.tapeFormat(handle, blocksize);
   }
   public long getpos(int attempt) {
     return WinNative.tapeGetpos(handle);
