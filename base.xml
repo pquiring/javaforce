@@ -95,15 +95,10 @@
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenGraal" fork="true">
         <arg value="${MAINCLASS}"/>
       </java>
-      <exec executable="native-image">
-        <arg value="-cp"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ExecGraal" fork="true">
         <arg value="${CLASSPATH}"/>
         <arg value="${MAINCLASS}"/>
-        <arg value="-H:JNIConfigurationFiles=graal.json"/>
-        <arg value="--shared"/>
-        <arg value="--enable-all-security-services"/>
-        <arg value="--allow-incomplete-classpath"/>
-      </exec>
+      </java>
       <delete file="graal.json"/>
     </sequential>
   </target>
