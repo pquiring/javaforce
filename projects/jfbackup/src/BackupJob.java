@@ -124,9 +124,7 @@ public class BackupJob extends Thread {
       return false;
     }
     if (info.defaultBlockSize != blocksize) {
-      log("Error:drive block size not supported:" + info.defaultBlockSize);
-      log("Please open support ticket at jfbackup.sf.net (provide tape drive info)");
-      return false;
+      log("Warning:drive default block size may not be supported:" + info.defaultBlockSize);
     }
     //prep a tape
     if (!prepNextTape()) return false;
