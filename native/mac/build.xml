@@ -8,6 +8,8 @@
     <exec command="gcc ${opt} -I ${env.FFMPEG_HOME} -I ${env.JAVA_HOME} -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/darwin -I ../headers mac.mm -c -o mac.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include glfw.m -c -o glfw.o -fPIC"/>
     <exec command="g++ -l objc -framework AVFoundation -framework CoreMedia -framework CoreVideo -framework Foundation -framework OpenGL -framework Cocoa -framework IOKit -shared mac.o glfw.o  -o ../jfnative64.dylib"/>
+	  <exec command="ar r ../jfnative64.a mac.o glfw.o"/>
+
     <delete file="mac.o"/>
     <delete file="glfw.o"/>
   </target>
