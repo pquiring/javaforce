@@ -3,6 +3,7 @@
   <!-- set global properties for this build -->
   <property name="app" value="filesplitter"/>
   <property name="apptype" value="c"/>
+  <property name="graal" value="true"/>
   <property name="cfg" value="cfg/filesplitter.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>
