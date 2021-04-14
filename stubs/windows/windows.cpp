@@ -8,6 +8,7 @@
 // - define java.app.home to find exe/dll files
 // - support graal
 // - support selecting best concurrent GC (Shenandoah or Zero)
+// - native functions are now included in executable
 
 #include <windows.h>
 #include <io.h>
@@ -22,6 +23,18 @@
 #include <stddef.h>
 
 #include <jni.h>
+
+#include "../../native/headers/javaforce_controls_ni_DAQmx.h"
+#include "../../native/headers/javaforce_gl_GL.h"
+#include "../../native/headers/javaforce_gl_GLWindow.h"
+#include "../../native/headers/javaforce_jni_JFNative.h"
+#include "../../native/headers/javaforce_jni_WinNative.h"
+#include "../../native/headers/javaforce_media_Camera.h"
+#include "../../native/headers/javaforce_media_MediaCoder.h"
+#include "../../native/headers/javaforce_media_MediaDecoder.h"
+#include "../../native/headers/javaforce_media_MediaEncoder.h"
+#include "../../native/headers/javaforce_media_MediaVideoDecoder.h"
+#include "../../native/headers/javaforce_media_VideoBuffer.h"
 
 /* Global variables */
 HKEY key, subkey;
@@ -54,7 +67,7 @@ int graal = 0;
 
 /* Prototypes */
 void error(char *msg);
-int JavaStart(void *ignore);
+int JavaThread(void *ignore);
 int loadProperties();
 
 /** Displays the error message in a dialog box. */
@@ -74,33 +87,33 @@ void printLastError() {
 
 void printException(JNIEnv *env) {
   jthrowable exc;
-  exc = (*env)->ExceptionOccurred(env);
+  exc = env->ExceptionOccurred();
   if (exc == NULL) return;
   jclass newExcCls;
-  (*env)->ExceptionDescribe(env);
-  (*env)->ExceptionClear(env);
+  env->ExceptionDescribe();
+  env->ExceptionClear();
 }
 
 /** Converts array of C strings into array of Java strings */
-jobjectArray
+jobject
 ConvertStringArray(JNIEnv *env, int strc, char **strv)
 {
-  jarray cls;
-  jarray outArray;
+  jclass cls;
+  jobjectArray outArray;
   jstring str;
   int i;
 
-  cls = (*env)->FindClass(env, "java/lang/String");
+  cls = env->FindClass("java/lang/String");
   if (cls == 0) {
     printException(g_env);
     error("Unable to find String class");
     return 0;
   }
-  outArray = (*env)->NewObjectArray(env, strc, cls, 0);
+  outArray = env->NewObjectArray(strc, cls, 0);
   for (i = 0; i < strc; i++) {
-    str = (*env)->NewStringUTF(env, *strv++);
-    (*env)->SetObjectArrayElement(env, outArray, i, str);
-    (*env)->DeleteLocalRef(env, str);
+    str = env->NewStringUTF(*strv++);
+    env->SetObjectArrayElement(outArray, i, str);
+    env->DeleteLocalRef(str);
   }
   return outArray;
 }
@@ -108,51 +121,51 @@ ConvertStringArray(JNIEnv *env, int strc, char **strv)
 /** Expands array of arguments (globbing)
  * Also releases inArray.
  */
-jobjectArray
-ExpandStringArray(JNIEnv *env, jobjectArray inArray) {
-  jarray cls;
+jobject
+ExpandStringArray(JNIEnv *env, jobject inArray) {
+  jclass cls;
   jmethodID mid;
-  jarray outArray;
+  jobject outArray;
 
-  cls = (*env)->FindClass(env, "javaforce/JF");
+  cls = env->FindClass("javaforce/JF");
   if (cls == 0) {
     printException(g_env);
     error("Unable to find javaforce.JF class");
     return 0;
   }
-  mid = (*env)->GetStaticMethodID(env, cls, "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;");
+  mid = env->GetStaticMethodID(cls, "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;");
   if (mid == 0) {
     printException(g_env);
     error("Unable to find javaforce.JF.expandArgs method");
     return 0;
   }
-  outArray = (*env)->CallStaticObjectMethod(env, cls, mid, inArray);
-  (*env)->DeleteLocalRef(env, inArray);
+  outArray = env->CallStaticObjectMethod(cls, mid, inArray);
+  env->DeleteLocalRef(inArray);
   return outArray;
 }
 
 int setJavaAppHome(JNIEnv *env, char *java_app_home) {
-  jarray cls;
+  jclass cls;
   jmethodID mid;
   jstring name, value;
 
-  cls = (*env)->FindClass(env, "java/lang/System");
+  cls = env->FindClass("java/lang/System");
   if (cls == 0) {
     printException(g_env);
     error("Unable to find java.lang.System class");
     return 0;
   }
-  mid = (*env)->GetStaticMethodID(env, cls, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
+  mid = env->GetStaticMethodID(cls, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
   if (mid == 0) {
     printException(g_env);
     error("Unable to find java.lang.System.setProperty method");
     return 0;
   }
-  name = (*env)->NewStringUTF(env, "java.app.home");
-  value = (*env)->NewStringUTF(env, java_app_home);
-  (*env)->CallStaticObjectMethod(env, cls, mid, name, value);
-  (*env)->DeleteLocalRef(env, name);
-  (*env)->DeleteLocalRef(env, value);
+  name = env->NewStringUTF("java.app.home");
+  value = env->NewStringUTF(java_app_home);
+  env->CallStaticObjectMethod(cls, mid, name, value);
+  env->DeleteLocalRef(name);
+  env->DeleteLocalRef(value);
   return 1;
 }
 
@@ -162,7 +175,7 @@ char *DOption = "-Djava.class.path=";
 char *CreateClassPath() {
   char *ClassPath;
   int sl = strlen(classpath);
-  ClassPath = malloc(sl + 1);
+  ClassPath = (char*)malloc(sl + 1);
   strcpy(ClassPath, classpath);
   int ml = strlen(exepath) + 1;
   char *jar[32];
@@ -181,7 +194,7 @@ char *CreateClassPath() {
     int env_len = strlen(env_classpath);
     len += env_len + 1;
   }
-  char *ExpandedClassPath = malloc(len);
+  char *ExpandedClassPath = (char*)malloc(len);
   ExpandedClassPath[0] = 0;
   strcat(ExpandedClassPath, DOption);
   for(a=0;a<cnt;a++) {
@@ -206,22 +219,22 @@ void convertClass(char *cls) {
   }
 }
 
-int InvokeMethod(char *_method, jobjectArray args, char *sign) {
+int InvokeMethod(char *_method, jobject args, char *sign) {
   convertClass(mainclass);
-  jclass cls = (*g_env)->FindClass(g_env, mainclass);
+  jclass cls = g_env->FindClass(mainclass);
   if (cls == 0) {
     printException(g_env);
     error("Unable to find main class");
     return 0;
   }
-  jmethodID mid = (*g_env)->GetStaticMethodID(g_env, cls, _method, sign);
+  jmethodID mid = g_env->GetStaticMethodID(cls, _method, sign);
   if (mid == 0) {
     printException(g_env);
     error("Unable to find main method");
     return 0;
   }
 
-  (*g_env)->CallStaticVoidMethod(g_env, cls, mid, args);
+  g_env->CallStaticVoidMethod(cls, mid, args);
 
   return 1;
 }
@@ -268,9 +281,9 @@ JavaVMInitArgs *BuildArgs() {
     }
   }
 
-  args = malloc(sizeof(JavaVMInitArgs));
+  args = (JavaVMInitArgs*)malloc(sizeof(JavaVMInitArgs));
   memset(args, 0, sizeof(JavaVMInitArgs));
-  options = malloc(sizeof(JavaVMOption) * nOpts);
+  options = (JavaVMOption*)malloc(sizeof(JavaVMOption) * nOpts);
   memset(options, 0, sizeof(JavaVMOption) * nOpts);
 
   for(idx=0;idx<nOpts;idx++) {
@@ -309,16 +322,78 @@ int CreateJVM() {
 
 /** Attachs current thread to JVM. */
 void AttachJVM() {
-  (*g_jvm)->AttachCurrentThread(g_jvm, (void**)&g_env, NULL);
+  g_jvm->AttachCurrentThread((void**)&g_env, NULL);
+}
+
+#include "../common/register.cpp"
+
+//Windows native methods
+static JNINativeMethod javaforce_jni_WinNative[] = {
+  {"winInit", "()Z", (void *)&Java_javaforce_jni_WinNative_winInit},
+  {"comOpen", "(Ljava/lang/String;I)J", (void *)&Java_javaforce_jni_WinNative_comOpen},
+  {"comClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_comClose},
+  {"comRead", "(J[B)I", (void *)&Java_javaforce_jni_WinNative_comRead},
+  {"comWrite", "(J[B)I", (void *)&Java_javaforce_jni_WinNative_comWrite},
+  {"getWindowRect", "(Ljava/lang/String;[I)Z", (void *)&Java_javaforce_jni_WinNative_getWindowRect},
+  {"peBegin", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_peBegin},
+  {"peAddIcon", "(J[B)V", (void *)&Java_javaforce_jni_WinNative_peAddIcon},
+  {"peAddString", "(JII[B)V", (void *)&Java_javaforce_jni_WinNative_peAddString},
+  {"peEnd", "(J)V", (void *)&Java_javaforce_jni_WinNative_peEnd},
+  {"impersonateUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_impersonateUser},
+  {"findJDKHome", "()Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_findJDKHome},
+  {"enableConsoleMode", "()V", (void *)&Java_javaforce_jni_WinNative_enableConsoleMode},
+  {"disableConsoleMode", "()V", (void *)&Java_javaforce_jni_WinNative_disableConsoleMode},
+  {"getConsoleSize", "()[I", (void *)&Java_javaforce_jni_WinNative_getConsoleSize},
+  {"getConsolePos", "()[I", (void *)&Java_javaforce_jni_WinNative_getConsolePos},
+  {"readConsole", "()C", (void *)&Java_javaforce_jni_WinNative_readConsole},
+  {"peekConsole", "()Z", (void *)&Java_javaforce_jni_WinNative_peekConsole},
+  {"writeConsole", "(I)V", (void *)&Java_javaforce_jni_WinNative_writeConsole},
+  {"writeConsoleArray", "([BII)V", (void *)&Java_javaforce_jni_WinNative_writeConsoleArray},
+  {"tapeOpen", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_tapeOpen},
+  {"tapeClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_tapeClose},
+  {"tapeFormat", "(JI)Z", (void *)&Java_javaforce_jni_WinNative_tapeFormat},
+  {"tapeRead", "(J[BII)I", (void *)&Java_javaforce_jni_WinNative_tapeRead},
+  {"tapeWrite", "(J[BII)I", (void *)&Java_javaforce_jni_WinNative_tapeWrite},
+  {"tapeSetpos", "(JJ)Z", (void *)&Java_javaforce_jni_WinNative_tapeSetpos},
+  {"tapeGetpos", "(J)J", (void *)&Java_javaforce_jni_WinNative_tapeGetpos},
+  {"tapeMedia", "(J)Z", (void *)&Java_javaforce_jni_WinNative_tapeMedia},
+  {"tapeMediaSize", "()J", (void *)&Java_javaforce_jni_WinNative_tapeMediaSize},
+  {"tapeMediaBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeMediaBlockSize},
+  {"tapeMediaReadOnly", "()Z", (void *)&Java_javaforce_jni_WinNative_tapeMediaReadOnly},
+  {"tapeDrive", "(J)Z", (void *)&Java_javaforce_jni_WinNative_tapeDrive},
+  {"tapeDriveMinBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeDriveMinBlockSize},
+  {"tapeDriveMaxBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeDriveMaxBlockSize},
+  {"tapeDriveDefaultBlockSize", "()I", (void *)&Java_javaforce_jni_WinNative_tapeDriveDefaultBlockSize},
+  {"tapeLastError", "()I", (void *)&Java_javaforce_jni_WinNative_tapeLastError},
+  {"changerOpen", "(Ljava/lang/String;)J", (void *)&Java_javaforce_jni_WinNative_changerOpen},
+  {"changerClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_changerClose},
+  {"changerList", "(J)[Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_changerList},
+  {"changerMove", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_changerMove},
+  {"add", "(II)I", (void *)&Java_javaforce_jni_WinNative_add},
+  {"hold", "([II)V", (void *)&Java_javaforce_jni_WinNative_hold},
+};
+
+/** Register natives embedded with executable. */
+void registerNatives(JNIEnv *env) {
+  jclass cls;
+
+  registerCommonNatives(env);
+
+  cls = env->FindClass("javaforce/jni/WinNative");
+  env->RegisterNatives(cls, javaforce_jni_WinNative, sizeof(javaforce_jni_WinNative)/sizeof(JNINativeMethod));
 }
 
 /** Invokes the main method in a new thread. */
-int JavaStart(void *ignore) {
+int JavaThread(void *ignore) {
   CreateJVM();
 
   if (!setJavaAppHome(g_env, exepath)) {
     return 0;
   }
+
+  registerNatives(g_env);
+
+  g_env->FindClass("javaforce/jni/Startup");
 
   char **argv = g_argv;
   int argc = g_argc;
@@ -327,7 +402,7 @@ int JavaStart(void *ignore) {
   argc--;
   InvokeMethod(method, ExpandStringArray(g_env, ConvertStringArray(g_env, argc, argv)), "([Ljava/lang/String;)V");
 
-  (*g_jvm)->DestroyJavaVM(g_jvm);  //waits till all threads are complete
+  g_jvm->DestroyJavaVM();  //waits till all threads are complete
 
   return 1;
 }
@@ -351,7 +426,7 @@ int loadProperties() {
   if (global == NULL) {error("Unable to LoadResource"); return 0;}
   data = LockResource(global);
   if (data == NULL) {error("Unable to LockResource"); return 0;}
-  str = malloc(size+1);
+  str = (char*)malloc(size+1);
   memcpy(str, data, size);
   str[size] = 0;  //NULL terminate
   FreeResource(global);
@@ -453,7 +528,7 @@ int findJavaHomeRegistry() {
   }
 
   size = MAX_PATH;
-  if (RegQueryValueEx(key, "CurrentVersion", 0, 0, version, (LPDWORD)&size) != 0) {
+  if (RegQueryValueEx(key, "CurrentVersion", 0, 0, (LPBYTE)version, (LPDWORD)&size) != 0) {
     sprintf(err_msg, "Unable to load CurrentVersion registry key");
     return 0;
   }
@@ -470,7 +545,7 @@ int findJavaHomeRegistry() {
   }
 
   size = MAX_PATH;
-  if (RegQueryValueEx(subkey, "JavaHome", 0, 0, javahome, (LPDWORD)&size) != 0) {
+  if (RegQueryValueEx(subkey, "JavaHome", 0, 0, (LPBYTE)javahome, (LPDWORD)&size) != 0) {
     sprintf(err_msg, "Unable to load JavaHome registry key");
     return 0;
   }
@@ -517,7 +592,7 @@ void __stdcall ServiceMain(int argc, char **argv) {
   CreateJVM();
   setJavaAppHome(g_env, exepath);
   InvokeMethod("serviceStart", ConvertStringArray(g_env, argc, argv), "([Ljava/lang/String;)V");
-  (*g_jvm)->DestroyJavaVM(g_jvm);
+  g_jvm->DestroyJavaVM();
 }
 
 #endif
@@ -602,7 +677,7 @@ int main(int argc, char **argv)
   ServiceTable[3] = NULL;
   StartServiceCtrlDispatcher((LPSERVICE_TABLE_ENTRY)&ServiceTable);  //does not return until all services have been stopped
 #else
-  thread_handle = CreateThread(NULL, 64 * 1024, (LPTHREAD_START_ROUTINE)&JavaStart, NULL, 0, (LPDWORD)&thread_id);
+  thread_handle = CreateThread(NULL, 64 * 1024, (LPTHREAD_START_ROUTINE)&JavaThread, NULL, 0, (LPDWORD)&thread_id);
   WaitForSingleObject(thread_handle, INFINITE);
 #endif
 

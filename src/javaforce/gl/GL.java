@@ -17,25 +17,17 @@ package javaforce.gl;
  */
 
 import javaforce.*;
-import javaforce.jni.*;
 
 public class GL {
   static {
-    JFNative.load();
     if (JF.isWindows()) {
       os = OS.WINDOWS;
-      WinNative.load();
     } else if (JF.isMac()) {
       os = OS.MAC;
-      MacNative.load();
     } else {
       os = OS.LINUX;
-      LnxNative.load();
     }
   }
-
-  /** Loads native code. */
-  public static void load() {}
 
   /** Loads OpenGL functions.
    *

@@ -26,7 +26,6 @@
         <File Id="jfmedia.jar" Source="jfmedia.jar" KeyPath="yes"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="jfmedia.exe" Source="jfmedia.exe"/>
-        <File Id="jfnative64.dll" Source="jfnative64.dll"/>
       </Component>
     </DirectoryRef>
 

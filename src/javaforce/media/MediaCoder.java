@@ -20,15 +20,6 @@ public class MediaCoder {
   private long ctx = 0;
   private static boolean inited = false;
   public static boolean loaded = false;
-  static {
-    if (!inited) {
-      JFNative.load();
-      if (JFNative.loaded) {
-        init();
-        inited = true;
-      }
-    }
-  }
   /** Loads the media framework native libraries. */
   public static boolean init() {
     if (loaded) return true;

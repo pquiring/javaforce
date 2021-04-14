@@ -7,12 +7,7 @@ package javaforce.pi;
  * @author pquiring
  */
 
-import javaforce.jni.JFNative;
-
 public class I2C {
-  static {
-    JFNative.load();
-  }
   public native static boolean init();
   public native static boolean setSlave(int addr);
   public native static boolean write(byte[] data);

@@ -4,11 +4,11 @@
 
   <!-- Requires cygwin/mingw in PATH -->
   <target name="windows" description="create windows stubs">
-    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' windows.c user32.lib advapi32.lib /Fe: ../win64.exe /link /subsystem:windows /entry:mainCRTStartup"/>
+    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' windows.cpp ../../native/jfnative64.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64.exe /link /subsystem:windows /entry:mainCRTStartup"/>
 
-    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' windows.c user32.lib advapi32.lib /Fe: ../win64c.exe /link /subsystem:console"/>
+    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' windows.cpp ../../native/jfnative64.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64c.exe /link /subsystem:console"/>
 
-    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' /D_JF_SERVICE windows.c user32.lib advapi32.lib /Fe: ../win64s.exe /link /subsystem:console"/>
+    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' /D_JF_SERVICE windows.cpp ../../native/jfnative64.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64s.exe /link /subsystem:console"/>
   </target>
 
   <target name="get-bin" description="download pre-built binaries">

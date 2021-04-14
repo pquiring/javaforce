@@ -26,7 +26,6 @@
         <File Id="jfrecordcamera.jar" Source="jfrecordcamera.jar" KeyPath="yes"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="jfrecordcamera.exe" Source="jfrecordcamera.exe"/>
-        <File Id="jfnative64.dll" Source="jfnative64.dll"/>
       </Component>
     </DirectoryRef>
 

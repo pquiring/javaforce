@@ -42,7 +42,6 @@
 				</File>
         <File Id="jfbackup.jar" Source="jfbackup.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <File Id="jfnative64.dll" Source="jfnative64.dll"/>
         <File Id="tapetool.exe" Source="tapetool.exe"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"

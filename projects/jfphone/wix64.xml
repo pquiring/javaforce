@@ -28,7 +28,6 @@
         <File Id="bouncycastle.jar" Source="bouncycastle.jar"/>
         <File Id="jfphone.exe" Source="jfphone.exe"/>
         <File Id="run.bat" Source="run.bat"/>
-        <File Id="jfnative64.dll" Source="jfnative64.dll"/>
       </Component>
     </DirectoryRef>
 

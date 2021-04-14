@@ -3,11 +3,11 @@
   <property environment="env"/>
 
   <target name="linux" description="create linux stubs">
-    <exec command="gcc -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux linux.c -ldl -lpthread -o ../linux64.bin"/>
+    <exec command="gcc -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/linux -L /usr/lib/x86_64-linux-gnu -Wno-write-strings linux.cpp ../../native/jfnative64.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64.bin"/>
   </target>
 
   <target name="freebsd" description="create linux stubs">
-    <exec command="gcc -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/freebsd linux.c -ldl -lpthread -o ../linux64.bin"/>
+    <exec command="gcc -I ${env.JAVA_HOME}/include -I ${env.JAVA_HOME}/include/freebsd -L /usr/lib/x86_64-linux-gnu -Wno-write-strings linux.cpp ../../native/jfnative64.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64.bin"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

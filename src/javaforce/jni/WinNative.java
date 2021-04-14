@@ -6,14 +6,12 @@ package javaforce.jni;
  */
 
 public class WinNative {
-  static {
+  public static void load() {
     JFNative.load();  //ensure native library is loaded
     if (JFNative.loaded) {
       winInit();
     }
   }
-
-  public static void load() {}  //ensure native library is loaded
 
   private static native boolean winInit();
 

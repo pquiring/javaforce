@@ -33,6 +33,8 @@
 
 #include <jni.h>
 
+JNIEXPORT void JNICALL Java_javaforce_jni_JFNative_test(JNIEnv *, jclass);
+
 /* Global variables */
 int type;
 char version[MAX_PATH];
@@ -161,6 +163,8 @@ int JavaThread(void *ignore) {
     error("Unable to create Java VM");
     return -1;
   }
+
+  Java_javaforce_jni_JFNative_test(env, NULL);
 
   jclass cls = (*env)->FindClass(env, mainclass);
   if (cls == NULL) {

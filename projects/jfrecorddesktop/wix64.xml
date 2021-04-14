@@ -26,7 +26,6 @@
         <File Id="jfrecorddesktop.jar" Source="jfrecorddesktop.jar" KeyPath="yes"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="jfrecorddesktop.exe" Source="jfrecorddesktop.exe"/>
-        <File Id="jfnative64.dll" Source="jfnative64.dll"/>
       </Component>
     </DirectoryRef>
 

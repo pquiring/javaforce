@@ -98,6 +98,7 @@
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ExecGraal" fork="true">
         <arg value="${CLASSPATH}"/>
         <arg value="${MAINCLASS}"/>
+        <arg value="${home}"/>
       </java>
       <delete file="graal.json"/>
     </sequential>

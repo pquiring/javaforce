@@ -28,7 +28,6 @@
         <File Id="jsch.jar" Source="jsch.jar"/>
         <File Id="jzlib.jar" Source="jzlib.jar"/>
         <File Id="jfterm.exe" Source="jfterm.exe"/>
-        <File Id="jfnative64.dll" Source="jfnative64.dll"/>
       </Component>
     </DirectoryRef>
 

@@ -15,23 +15,20 @@ package javaforce.controls.ni;
  * @author pquiring
  */
 
-import javaforce.BE;
+import javaforce.*;
 import javaforce.jni.*;
 import javaforce.controls.*;
 
 public class DAQmx {
-  static {
+  public static void load() {
+    if (loaded) return;
     JFNative.load();  //ensure native library is loaded
     if (JFNative.loaded) {
       loaded = daqInit();
-    } else {
-      loaded = false;
     }
   }
 
   public static boolean loaded;
-
-  public static boolean load() {return loaded;}  //ensure native library is loaded
 
   private static native boolean daqInit();
 
@@ -122,7 +119,7 @@ public class DAQmx {
       handle = 0;
     }
   }
-  
+
   public byte[] read() {
     int read = 0;
     byte out[] = null;

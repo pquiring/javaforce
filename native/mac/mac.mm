@@ -9,6 +9,7 @@
 
 #include <jni.h>
 
+#include "javaforce_jni_JFNative.h"
 #include "javaforce_jni_MacNative.h"
 #include "javaforce_gl_GL.h"
 #include "javaforce_gl_GLWindow.h"
@@ -18,6 +19,8 @@
 #include "javaforce_media_MediaEncoder.h"
 #include "javaforce_media_MediaVideoDecoder.h"
 #include "javaforce_controls_ni_DAQmx.h"
+
+JNIEXPORT void JNICALL Java_javaforce_jni_JFNative_test (JNIEnv *, jclass) {}
 
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"

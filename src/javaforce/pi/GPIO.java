@@ -13,9 +13,6 @@ import javaforce.*;
 import javaforce.jni.*;
 
 public class GPIO {
-  static {
-    JFNative.load();
-  }
   public static boolean init() {
     try {
       File file = new File("/proc/iomem");

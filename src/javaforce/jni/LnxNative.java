@@ -11,7 +11,7 @@ import java.awt.*;
 import javaforce.linux.*;
 
 public class LnxNative {
-  static {
+  public static void load() {
     JFNative.load();  //ensure native library is loaded
     if (JFNative.loaded && JFNative.load_ffmpeg) {
       Library libs[] = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
@@ -37,8 +37,6 @@ public class LnxNative {
       lnxInit(libs[0].path, libs[1].path, libs[2].path);
     }
   }
-
-  public static void load() {}  //ensure native library is loaded
 
   private static native boolean lnxInit(String libX11, String libGL, String libv4l2);
 

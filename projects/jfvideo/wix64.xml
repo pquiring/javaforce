@@ -27,7 +27,6 @@
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="filters.jar" Source="filters.jar"/>
         <File Id="jfvideo.exe" Source="jfvideo.exe"/>
-        <File Id="jfnative64.dll" Source="jfnative64.dll"/>
       </Component>
     </DirectoryRef>
 

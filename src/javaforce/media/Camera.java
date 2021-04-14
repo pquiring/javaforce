@@ -1,12 +1,5 @@
 package javaforce.media;
 
-import javaforce.JF;
-
-import javaforce.jni.JFNative;
-import javaforce.jni.LnxNative;
-import javaforce.jni.MacNative;
-import javaforce.jni.WinNative;
-
 /**
  * Web Camera API
  *
@@ -17,16 +10,6 @@ import javaforce.jni.WinNative;
 
 public class Camera {
   private long ctx = 0;
-  static {
-    JFNative.load();
-    if (JF.isWindows()) {
-      WinNative.load();
-    } else if (JF.isMac()) {
-      MacNative.load();
-    } else {
-      LnxNative.load();
-    }
-  }
 
   //web camera (no context - only one use per app)
   private native boolean cameraInit();
@@ -39,7 +22,6 @@ public class Camera {
   private native int cameraGetHeight();
 
   public boolean init() {
-    if (!JFNative.loaded) return false;
     return cameraInit();
   }
 

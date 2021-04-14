@@ -24,6 +24,7 @@
 #include <jawt.h>
 #include <jawt_md.h>
 
+#include "javaforce_jni_JFNative.h"
 #include "javaforce_jni_LnxNative.h"
 #include "javaforce_gl_GL.h"
 #include "javaforce_gl_GLWindow.h"
@@ -34,6 +35,8 @@
 #include "javaforce_media_MediaVideoDecoder.h"
 #include "javaforce_controls_ni_DAQmx.h"
 #include "javaforce_media_VideoBuffer.h"
+
+JNIEXPORT void JNICALL Java_javaforce_jni_JFNative_test (JNIEnv *, jclass) {}
 
 #ifdef __arm__
   #define __RASPBERRY_PI__
@@ -181,6 +184,12 @@ static long getX11ID(JNIEnv *e, jobject c) {
 #include "../common/glfw.cpp"
 
 #include "../common/gl.cpp"
+
+JNIEXPORT void JNICALL Java_javaforce_gl_GLWindow_nseticon
+  (JNIEnv *e, jclass c, jlong id, jstring filename, jint x, jint y)
+{
+  //TODO
+}
 
 //this func must be called only when a valid OpenGL context is set
 JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
@@ -1763,13 +1772,13 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_peekConsole
   }
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_writeConsole
-  (JNIEnv *e, jclass c, jbyte ch)
+JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsole
+  (JNIEnv *e, jclass c, jint ch)
 {
   printf("%c", ch);
 }
 
-JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_writeConsoleArray
+JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
   (JNIEnv *e, jclass c, jbyteArray ba, jint off, jint len)
 {
   jbyte tmp[128];

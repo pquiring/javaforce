@@ -11,7 +11,36 @@ import java.io.*;
 import java.util.*;
 
 public class JFNative {
-  static {
+
+  /** Loads JavaForce native library. */
+  public static void load() {
+    if (loaded) return;
+    try {
+      test();
+      JFLog.log("JFNative:Running on executable with native code embedded!");
+      loaded = true;
+    } catch (Throwable t) {
+      JFLog.log("JFNative:Loading external native library!");
+      loadNative();
+    }
+    if (!loaded) return;
+    if (JF.isWindows()) {
+      WinNative.load();
+    }
+    if (JF.isUnix() && !JF.isMac()) {
+      LnxNative.load();
+    }
+    if (JF.isMac()) {
+      MacNative.load();
+    }
+  }
+
+  /** Indicates if native library is loaded. */
+  public static boolean loaded;
+  /** Specify if ffmpeg is needed? */
+  public static boolean load_ffmpeg = true;
+
+  private static void loadNative() {
     try {
       String path = System.getProperty("java.app.home");
       if (path == null) {
@@ -43,10 +72,8 @@ public class JFNative {
       JFLog.log("Error:" + t);
     }
   }
-  public static void load() {}  //ensure native library is loaded
-  public static boolean loaded;
-  /** Specify if ffmpeg is needed? */
-  public static boolean load_ffmpeg = true;
+
+  private static native void test();
 
   /** Find native libraries in folder (recursive). */
   public static boolean findLibraries(File folders[], Library libs[], String ext, int needed) {

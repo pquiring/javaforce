@@ -1,9 +1,9 @@
 //Java Launcher Linux
 
-// version 1.8
-// supports passing command line options to java main()
-// now loads CLASSPATH and MAINCLASS from embedded resource file (*.cfg)
-// now globbs arguments (see ExpandStringArray())
+// - supports passing command line options to java main()
+// - now loads CLASSPATH and MAINCLASS from embedded resource file (*.cfg)
+// - now globbs arguments (see ExpandStringArray())
+// - native functions are now included in executable
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -24,6 +24,18 @@
 #endif
 
 #include <jni.h>
+
+#include "../../native/headers/javaforce_controls_ni_DAQmx.h"
+#include "../../native/headers/javaforce_gl_GL.h"
+#include "../../native/headers/javaforce_gl_GLWindow.h"
+#include "../../native/headers/javaforce_jni_JFNative.h"
+#include "../../native/headers/javaforce_jni_LnxNative.h"
+#include "../../native/headers/javaforce_media_Camera.h"
+#include "../../native/headers/javaforce_media_MediaCoder.h"
+#include "../../native/headers/javaforce_media_MediaDecoder.h"
+#include "../../native/headers/javaforce_media_MediaEncoder.h"
+#include "../../native/headers/javaforce_media_MediaVideoDecoder.h"
+#include "../../native/headers/javaforce_media_VideoBuffer.h"
 
 /* Global variables */
 int type;
@@ -49,12 +61,12 @@ char xoptions[MAX_PATH];
 char cfgargs[1024];
 
 /* Prototypes */
-void error(char *msg);
+void error(const char *msg);
 int JavaThread(void *ignore);
 int loadProperties();
 
 /** Displays the error message in a dialog box. */
-void error(char *msg) {
+void error(const char *msg) {
   printf("Failed to start Java\nPlease visit www.java.com and install Java\nError:%s\n", msg);
   exit(0);
 }
@@ -63,8 +75,8 @@ void error(char *msg) {
 jobjectArray
 ConvertStringArray(JNIEnv *env, char **strv, int strc)
 {
-  jarray cls;
-  jarray outArray;
+  jclass cls;
+  jobjectArray outArray;
   jstring str;
   int i;
   int cfgargscnt = 0;
@@ -74,17 +86,17 @@ ConvertStringArray(JNIEnv *env, char **strv, int strc)
     cfgargscnt++;
   }
 
-  cls = (*env)->FindClass(env, "java/lang/String");
-  outArray = (*env)->NewObjectArray(env, strc + cfgargscnt, cls, 0);
+  cls = env->FindClass("java/lang/String");
+  outArray = env->NewObjectArray(strc + cfgargscnt, cls, 0);
   for (i = 0; i < cfgargscnt; i++) {
-    str = (*env)->NewStringUTF(env, cfgargs);
-    (*env)->SetObjectArrayElement(env, outArray, p++, str);
-    (*env)->DeleteLocalRef(env, str);
+    str = env->NewStringUTF(cfgargs);
+    env->SetObjectArrayElement(outArray, p++, str);
+    env->DeleteLocalRef(str);
   }
   for (i = 0; i < strc; i++) {
-    str = (*env)->NewStringUTF(env, *strv++);
-    (*env)->SetObjectArrayElement(env, outArray, p++, str);
-    (*env)->DeleteLocalRef(env, str);
+    str = env->NewStringUTF(*strv++);
+    env->SetObjectArrayElement(outArray, p++, str);
+    env->DeleteLocalRef(str);
   }
   return outArray;
 }
@@ -92,26 +104,26 @@ ConvertStringArray(JNIEnv *env, char **strv, int strc)
 /** Expands array of arguments (globbing)
  * Also releases inArray.
  */
-jobjectArray
+jobject
 ExpandStringArray(JNIEnv *env, jobjectArray inArray) {
-  jarray cls;
+  jclass cls;
   jmethodID mid;
-  jarray outArray;
+  jobject outArray;
 
-  cls = (*env)->FindClass(env, "javaforce/JF");
-  mid = (*env)->GetStaticMethodID(env, cls, "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;");
-  outArray = (*env)->CallStaticObjectMethod(env, cls, mid, inArray);
-  (*env)->DeleteLocalRef(env, inArray);
+  cls = env->FindClass("javaforce/JF");
+  mid = env->GetStaticMethodID(cls, "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;");
+  outArray = env->CallStaticObjectMethod(cls, mid, inArray);
+  env->DeleteLocalRef(inArray);
   return outArray;
 }
 
-char *DOption = "-Djava.class.path=";
+const char *DOption = "-Djava.class.path=";
 
 /** Create class path adding /usr/share/java to each element, and change ; to : */
 char *CreateClassPath() {
   char *ClassPath;
   int sl = strlen(classpath);
-  ClassPath = malloc(sl + 1);
+  ClassPath = (char*)malloc(sl + 1);
   strcpy(ClassPath, classpath);
   int ml = strlen("/usr/share/java/");
   char *jar[32];
@@ -129,7 +141,7 @@ char *CreateClassPath() {
   if (env_classpath != NULL) {
     len += strlen(env_classpath) + 1;
   }
-  char *ExpandedClassPath = malloc(len);
+  char *ExpandedClassPath = (char*)malloc(len);
   ExpandedClassPath[0] = 0;
   strcat(ExpandedClassPath, DOption);
   for(a=0;a<cnt;a++) {
@@ -159,7 +171,7 @@ JavaVMInitArgs *BuildArgs() {
   int idx;
 
   opts[nOpts++] = CreateClassPath();
-  opts[nOpts++] = "-Djava.app.home=/usr/bin";
+  opts[nOpts++] = (char*)"-Djava.app.home=/usr/bin";
   opts[nOpts++] = DetectGC();
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
@@ -173,9 +185,9 @@ JavaVMInitArgs *BuildArgs() {
     }
   }
 
-  args = malloc(sizeof(JavaVMInitArgs));
+  args = (JavaVMInitArgs*)malloc(sizeof(JavaVMInitArgs));
   memset(args, 0, sizeof(JavaVMInitArgs));
-  options = malloc(sizeof(JavaVMOption) * nOpts);
+  options = (JavaVMOption*)malloc(sizeof(JavaVMOption) * nOpts);
   memset(options, 0, sizeof(JavaVMOption) * nOpts);
 
   for(idx=0;idx<nOpts;idx++) {
@@ -201,11 +213,11 @@ void FreeArgs(JavaVMInitArgs *args) {
 
 void printException(JNIEnv *env) {
   jthrowable exc;
-  exc = (*env)->ExceptionOccurred(env);
+  exc = env->ExceptionOccurred();
   if (exc == NULL) return;
   jclass newExcCls;
-  (*env)->ExceptionDescribe(env);
-  (*env)->ExceptionClear(env);
+  env->ExceptionDescribe();
+  env->ExceptionClear();
 }
 
 void convertClass(char *cls) {
@@ -213,6 +225,69 @@ void convertClass(char *cls) {
     if (*cls == '.') *cls = '/';
     cls++;
   }
+}
+
+#include "../common/register.cpp"
+
+//Linux native methods
+static JNINativeMethod javaforce_jni_LnxNative[] = {
+  {"lnxInit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_lnxInit},
+  {"comOpen", "(Ljava/lang/String;I)I", (void *)&Java_javaforce_jni_LnxNative_comOpen},
+  {"comClose", "(I)V", (void *)&Java_javaforce_jni_LnxNative_comClose},
+  {"comRead", "(I[B)I", (void *)&Java_javaforce_jni_LnxNative_comRead},
+  {"comWrite", "(I[B)I", (void *)&Java_javaforce_jni_LnxNative_comWrite},
+  {"ptyAlloc", "()J", (void *)&Java_javaforce_jni_LnxNative_ptyAlloc},
+  {"ptyFree", "(J)V", (void *)&Java_javaforce_jni_LnxNative_ptyFree},
+  {"ptyOpen", "(J)Ljava/lang/String;", (void *)&Java_javaforce_jni_LnxNative_ptyOpen},
+  {"ptyClose", "(J)V", (void *)&Java_javaforce_jni_LnxNative_ptyClose},
+  {"ptyRead", "(J[B)I", (void *)&Java_javaforce_jni_LnxNative_ptyRead},
+  {"ptyWrite", "(J[B)V", (void *)&Java_javaforce_jni_LnxNative_ptyWrite},
+  {"ptySetSize", "(JII)V", (void *)&Java_javaforce_jni_LnxNative_ptySetSize},
+  {"ptyChildExec", "(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;[Ljava/lang/String;)J", (void *)&Java_javaforce_jni_LnxNative_ptyChildExec},
+  {"inotify_init", "()I", (void *)&Java_javaforce_jni_LnxNative_inotify_1init},
+  {"inotify_add_watch", "(ILjava/lang/String;I)I", (void *)&Java_javaforce_jni_LnxNative_inotify_1add_1watch},
+  {"inotify_rm_watch", "(II)I", (void *)&Java_javaforce_jni_LnxNative_inotify_1rm_1watch},
+  {"inotify_read", "(I)[B", (void *)&Java_javaforce_jni_LnxNative_inotify_1read},
+  {"inotify_close", "(I)V", (void *)&Java_javaforce_jni_LnxNative_inotify_1close},
+  {"x11_get_id", "(Ljava/awt/Window;)J", (void *)&Java_javaforce_jni_LnxNative_x11_1get_1id},
+  {"x11_set_desktop", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1desktop},
+  {"x11_set_dock", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1dock},
+  {"x11_set_strut", "(JIIIII)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1strut},
+  {"x11_tray_main", "(JIII)V", (void *)&Java_javaforce_jni_LnxNative_x11_1tray_1main},
+  {"x11_tray_reposition", "(III)V", (void *)&Java_javaforce_jni_LnxNative_x11_1tray_1reposition},
+  {"x11_tray_width", "()I", (void *)&Java_javaforce_jni_LnxNative_x11_1tray_1width},
+  {"x11_tray_stop", "()V", (void *)&Java_javaforce_jni_LnxNative_x11_1tray_1stop},
+  {"x11_set_listener", "(Ljavaforce/linux/X11Listener;)V", (void *)&Java_javaforce_jni_LnxNative_x11_1set_1listener},
+  {"x11_window_list_main", "()V", (void *)&Java_javaforce_jni_LnxNative_x11_1window_1list_1main},
+  {"x11_window_list_stop", "()V", (void *)&Java_javaforce_jni_LnxNative_x11_1window_1list_1stop},
+  {"x11_minimize_all", "()V", (void *)&Java_javaforce_jni_LnxNative_x11_1minimize_1all},
+  {"x11_raise_window", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1raise_1window},
+  {"x11_map_window", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1map_1window},
+  {"x11_unmap_window", "(J)V", (void *)&Java_javaforce_jni_LnxNative_x11_1unmap_1window},
+  {"x11_keysym_to_keycode", "(C)I", (void *)&Java_javaforce_jni_LnxNative_x11_1keysym_1to_1keycode},
+  {"x11_send_event", "(IZ)Z", (void *)&Java_javaforce_jni_LnxNative_x11_1send_1event__IZ},
+  {"x11_send_event", "(JIZ)Z", (void *)&Java_javaforce_jni_LnxNative_x11_1send_1event__JIZ},
+  {"authUser", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_authUser},
+  {"setenv", "(Ljava/lang/String;Ljava/lang/String;)V", (void *)&Java_javaforce_jni_LnxNative_setenv},
+  {"enableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_enableConsoleMode},
+  {"disableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_disableConsoleMode},
+  {"getConsoleSize", "()[I", (void *)&Java_javaforce_jni_LnxNative_getConsoleSize},
+  {"getConsolePos", "()[I", (void *)&Java_javaforce_jni_LnxNative_getConsolePos},
+  {"readConsole", "()C", (void *)&Java_javaforce_jni_LnxNative_readConsole},
+  {"peekConsole", "()Z", (void *)&Java_javaforce_jni_LnxNative_peekConsole},
+  {"writeConsole", "(I)V", (void *)&Java_javaforce_jni_LnxNative_writeConsole},
+  {"writeConsoleArray", "([BII)V", (void *)&Java_javaforce_jni_LnxNative_writeConsoleArray},
+  {"filemode", "(Ljava/lang/String;)I", (void *)&Java_javaforce_jni_LnxNative_filemode},
+};
+
+/** Register natives embedded with executable. */
+void registerNatives(JNIEnv *env) {
+  jclass cls;
+
+  registerCommonNatives(env);
+
+  cls = env->FindClass("javaforce/jni/LnxNative");
+  env->RegisterNatives(cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
 }
 
 /** Continues loading the JVM in a new Thread. */
@@ -225,14 +300,18 @@ int JavaThread(void *ignore) {
     return -1;
   }
 
+  registerNatives(env);
+
+  env->FindClass("javaforce/jni/Startup");
+
   convertClass(mainclass);
-  jclass cls = (*env)->FindClass(env, mainclass);
+  jclass cls = env->FindClass(mainclass);
   if (cls == NULL) {
     printException(env);
     error("Unable to find main class");
     return -1;
   }
-  jmethodID mid = (*env)->GetStaticMethodID(env, cls, method, "([Ljava/lang/String;)V");
+  jmethodID mid = env->GetStaticMethodID(cls, method, "([Ljava/lang/String;)V");
   if (mid == NULL) {
     error("Unable to find main method");
     return -1;
@@ -242,12 +321,13 @@ int JavaThread(void *ignore) {
   //skip argv[0]
   argv++;
   argc--;
-  (*env)->CallStaticVoidMethod(env, cls, mid, ExpandStringArray(env, ConvertStringArray(env, argv, argc)));
-  (*jvm)->DestroyJavaVM(jvm);  //waits till all threads are complete
+  env->CallStaticVoidMethod(cls, mid, ExpandStringArray(env, ConvertStringArray(env, argv, argc)));
+  jvm->DestroyJavaVM();  //waits till all threads are complete
   //NOTE : Swing creates the EDT to keep Java alive until all windows are disposed
+  return 0;
 }
 
-char *resolvelink(char *in) {
+char *resolvelink(const char *in) {
   strcpy(link1, in);
   do {
     //with alternatives this can resolve a few times

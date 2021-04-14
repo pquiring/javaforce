@@ -8,10 +8,6 @@ import javaforce.jni.JFNative;
  */
 
 public class GLWindow {
-  static {
-    GL.load();
-  }
-
   public static final int MOUSE_BUTTON_LEFT = 1;
   public static final int MOUSE_BUTTON_RIGHT = 2;
   public static final int MOUSE_BUTTON_MIDDLE = 3;
@@ -36,7 +32,6 @@ public class GLWindow {
 
   private static native boolean ninit();
   public static boolean init() {
-    if (!JFNative.loaded) return false;
     return ninit();
   }
 

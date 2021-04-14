@@ -27,6 +27,7 @@ public class WinPE {
 
   public static void main(String args[]) {
     if (!JF.isWindows()) {System.out.println("For windows only"); return;}
+    WinNative.load();
     if (args == null || args.length < 2) usage();
     String exeFile = args[0];
     for(int a=1;a<args.length;a++) {
