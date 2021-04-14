@@ -79,19 +79,20 @@ jre-base : pre-link JRE for creating native packages (msi, dmg)
 jre-base-desktop : pre-link JRE with desktop support
 jre-base-javac : pre-link JRE with java compiler support
 
-Building native launchers
--------------------------
-Native Launchers are in /stubs
-Windows:Requires Visual C++ in your PATH.
-  - you can run 'ant get-bin' to download pre-built binaries for Win64
-Linux:Debian/Ubuntu:run 'ant deb' to install required packages.
-Linux:RedHat/Fedora:run 'ant rpm' to install required packages.
-
 Building native library (ffmpeg, OpenGL, Camera)
 ------------------------------------------------
 Native Library is in /native
 See readme.txt in each platform folder for more info.
   - you can run 'ant get-bin' to download pre-built binaries for Win64
+
+Building native launchers
+-------------------------
+Native Launchers are in /stubs
+They require the native library be build first.
+Windows:Requires Visual C++ in your PATH.
+  - you can run 'ant get-bin' to download pre-built binaries for Win64
+Linux:Debian/Ubuntu:run 'ant deb' to install required packages.
+Linux:RedHat/Fedora:run 'ant rpm' to install required packages.
 
 Requirements
 ------------
