@@ -90,7 +90,7 @@
     <ant antfile="${project5}.xml" target="graal" inheritAll="false"/>
   </target>
 
-  <target name="graal" depends="jar,depjars,graal2,graal3,graal4,graal5" description="generate aot library">
+  <target name="graal" if="graal" depends="jar,depjars,graal2,graal3,graal4,graal5" description="generate aot library">
     <sequential>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenGraal" fork="true">
         <arg value="${MAINCLASS}"/>
@@ -98,7 +98,6 @@
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ExecGraal" fork="true">
         <arg value="${CLASSPATH}"/>
         <arg value="${MAINCLASS}"/>
-        <arg value="${home}"/>
       </java>
       <delete file="graal.json"/>
     </sequential>
@@ -106,7 +105,7 @@
 
   <!-- Windows targets -->
 
-  <target name="msi" depends="executable" description="create msi installer file 64bit">
+  <target name="msi" depends="executable,graal" description="create msi installer file 64bit">
     <sequential>
       <exec command="candle -ext WixFirewallExtension -ext WixUtilExtension ${candle_extra} -o wix.obj wix64.xml"/>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
@@ -149,7 +148,7 @@
 
   <!-- Linux targets -->
 
-  <target name="deb" depends="executable" description="create deb package">
+  <target name="deb" depends="executable,graal" description="create deb package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true">
       <arg value="${app}-${version}_${archext}.deb"/>
       <arg value="${arch}"/>
@@ -157,7 +156,7 @@
     <copy file="${app}-${version}_${archext}.deb" todir="${home}/repo/debian" overwrite="true"/>
   </target>
 
-  <target name="rpm" depends="executable" description="create rpm package">
+  <target name="rpm" depends="executable,graal" description="create rpm package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenRPM" fork="true">
       <arg value="${app}-${version}-1.${archext}.rpm"/>
       <arg value="${arch}"/>
@@ -165,7 +164,7 @@
     <copy file="${app}-${version}-1.${archext}.rpm" todir="${home}/repo/fedora" overwrite="true"/>
   </target>
 
-  <target name="pac" depends="executable" description="create pac package">
+  <target name="pac" depends="executable,graal" description="create pac package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true">
       <arg value="${app}-${version}-${archext}.pkg.tar.xz"/>
       <arg value="${arch}"/>
@@ -175,7 +174,7 @@
 
   <!-- MacOSX targets -->
 
-  <target name="dmg" depends="executable" description="create dmg package">
+  <target name="dmg" depends="executable,graal" description="create dmg package">
     <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenDMG" fork="true">
       <arg value="${app}"/>
       <arg value="${app}-${version}.dmg"/>
