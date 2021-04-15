@@ -1,5 +1,11 @@
 What's new...
 
+Apr 15/2021 : JF 31.0 released
+  - jfBackup/0.20
+    - added support for drives whose default blocksize is not 64k
+  - improved native support by loading native functions into the native launchers
+    so the dll/so file is no longer needed in distribution packages (msi/deb)
+
 Jan 14/2021 : jfSOCKS
   - jfSOCKS/0.6
     - added support for IP allowed lists
