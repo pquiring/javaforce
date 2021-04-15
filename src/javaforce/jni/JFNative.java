@@ -17,10 +17,8 @@ public class JFNative {
     if (loaded) return;
     try {
       test();
-      JFLog.log("JFNative:Running on executable with native code embedded!");
       loaded = true;
     } catch (Throwable t) {
-      JFLog.log("JFNative:Loading external native library!");
       loadNative();
     }
     if (!loaded) return;

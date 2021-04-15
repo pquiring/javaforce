@@ -275,20 +275,24 @@ public class ConfigService implements WebUIHandler {
         sb.append("\r\n");
         if (!Status.running && Config.current.changerDevice.length() > 0) {
           //load changer status
-          MediaChanger changer = new MediaChanger();
-          changer.open(Config.current.changerDevice);
-          Element elements[] = changer.list();
-          if (elements != null) {
-            sb.append("Media Changer:\r\n\r\n");
-            for(int a=0;a<elements.length;a++) {
-              Element element = elements[a];
-              sb.append(element.name + ":" + element.barcode);
-              sb.append("\r\n\r\n");
+          try {
+            MediaChanger changer = new MediaChanger();
+            changer.open(Config.current.changerDevice);
+            Element elements[] = changer.list();
+            if (elements != null) {
+              sb.append("Media Changer:\r\n\r\n");
+              for(int a=0;a<elements.length;a++) {
+                Element element = elements[a];
+                sb.append(element.name + ":" + element.barcode);
+                sb.append("\r\n\r\n");
+              }
+            } else {
+              sb.append("Media Changer Error\r\n");
             }
-          } else {
-            sb.append("Media Changer Error\r\n");
+            changer.close();
+          } catch (Throwable t) {
+            sb.append(t);
           }
-          changer.close();
         }
         sb.append("Online Clients:\r\n\r\n");
         for(String host : Config.current.hosts) {

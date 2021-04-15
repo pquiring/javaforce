@@ -591,6 +591,8 @@ void __stdcall ServiceMain(int argc, char **argv) {
   ServiceStatus(SERVICE_RUNNING);
   CreateJVM();
   setJavaAppHome(g_env, exepath);
+  registerNatives(g_env);
+  g_env->FindClass("javaforce/jni/Startup");
   InvokeMethod("serviceStart", ConvertStringArray(g_env, argc, argv), "([Ljava/lang/String;)V");
   g_jvm->DestroyJavaVM();
 }

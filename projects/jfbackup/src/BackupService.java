@@ -4,6 +4,7 @@
  */
 
 import javaforce.*;
+import javaforce.jni.*;
 
 public class BackupService extends Thread {
   public static ConfigService configService;
@@ -19,6 +20,7 @@ public class BackupService extends Thread {
     backupService.cancel();
   }
   public static void main(String args[]) {
+    JFNative.load();
     if (backupService != null) return;
     backupService = new BackupService();
     backupService.start();
