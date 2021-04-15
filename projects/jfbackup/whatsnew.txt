@@ -1,4 +1,4 @@
-Apr 14/2021 : 0.20 released
+Apr 15/2021 : 0.20 released
   - new : support drives whose default blocksize is not 64k
 
 Nov 4/2020 : 0.19 released
