@@ -25,6 +25,7 @@ public class GenPkgInfo {
   private static XML xml;
   private static String app, desc, archtype, ver;
   private static long size;  //in bytes
+  private static boolean graal;
 
   public static void main(String args[]) {
     if (args == null || args.length < 3) {
@@ -42,6 +43,7 @@ public class GenPkgInfo {
     app = getProperty("app");
     desc = getTag("description");
     ver = getProperty("version");
+    graal = getProperty("graal").equals("true");
     switch (distro) {
       case "debian": debian(); break;
       case "fedora": fedora(); break;
@@ -111,7 +113,9 @@ public class GenPkgInfo {
   private static String[] getDepends(String tagName) {
     ArrayList<String> depends = new ArrayList<String>();
     String list[] = getProperty(tagName).split(",");
-    if (!app.equals("javaforce")) depends.add("javaforce");
+    if (!graal) {
+      if (!app.equals("javaforce")) depends.add("javaforce");
+    }
     for(int a=0;a<list.length;a++) {
       String depend = list[a].trim();
       if (depend.length() == 0) continue;
@@ -155,13 +159,21 @@ public class GenPkgInfo {
       //generate deb/postinst if not present
       if (!new File("deb/postinst").exists()) {
         FileOutputStream fos = new FileOutputStream("deb/postinst");
-        fos.write("#!/bin/sh\nset -e\nupdate-desktop-database\n".getBytes());
+        if (graal) {
+          fos.write("#!/bin/sh\n".getBytes());
+        } else {
+          fos.write("#!/bin/sh\nset -e\nupdate-desktop-database\n".getBytes());
+        }
         fos.close();
       }
       //generate deb/postrm if not present
       if (!new File("deb/postrm").exists()) {
         FileOutputStream fos = new FileOutputStream("deb/postrm");
-        fos.write("#!/bin/sh\nset -e\nupdate-desktop-database\n".getBytes());
+        if (graal) {
+          fos.write("#!/bin/sh\n".getBytes());
+        } else {
+          fos.write("#!/bin/sh\nset -e\nupdate-desktop-database\n".getBytes());
+        }
         fos.close();
       }
       System.out.println("Debian package info created");
