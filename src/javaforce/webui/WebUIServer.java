@@ -39,7 +39,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     web = new Web();
     web.setWebSocketHandler(this);
     web.start(this, port, secure);
-    System.out.println("WebUI Server listing on port " + port);
+    JFLog.log("WebUI Server starting on port " + port + "...");
   }
 
   public void stop() {
