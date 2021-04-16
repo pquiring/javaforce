@@ -23,6 +23,7 @@ public class MediaCoder {
   /** Loads the media framework native libraries. */
   public static boolean init() {
     if (loaded) return true;
+    JFNative.load();
     boolean libav_org = false;
     File[] sysFolders;
     String ext = "";
