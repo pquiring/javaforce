@@ -41,7 +41,7 @@ public class ComboBox extends Component {
 
   public void clear() {
     for(int a=0;a<values.size();a++) {
-      sendEvent("removeoption", new String[] {"idx=" + a});
+      sendEvent("removeoption", new String[] {"idx=0"});
     }
     index = -1;
     values.clear();
