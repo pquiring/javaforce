@@ -32,6 +32,7 @@ public class GLWindow {
 
   private static native boolean ninit();
   public static boolean init() {
+    JFNative.load();  //ensure native library is loaded
     return ninit();
   }
 
