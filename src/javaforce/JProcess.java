@@ -106,7 +106,7 @@ public class JProcess implements Runnable {
       windowList.get(a).dispose();
     }
     windowList.clear();
-    threadGroup.stop();
+//    threadGroup.stop();  //TODO : find native method replacement
     return true;
   }
 
