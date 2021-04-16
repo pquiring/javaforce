@@ -172,7 +172,7 @@ JavaVMInitArgs *BuildArgs() {
 
   opts[nOpts++] = CreateClassPath();
   opts[nOpts++] = (char*)"-Djava.app.home=/usr/bin";
-  opts[nOpts++] = DetectGC();
+//  opts[nOpts++] = DetectGC();  //not supported yet
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
     while (x != NULL) {
@@ -371,7 +371,7 @@ int loadProperties() {
   }
   lseek(file, fs - 8 - header.size, SEEK_SET);
   data = (char*)malloc(size + 1);
-  read(file, data, fs);
+  read(file, data, header.size);
   close(file);
   data[header.size] = 0;
   ln1 = data;
