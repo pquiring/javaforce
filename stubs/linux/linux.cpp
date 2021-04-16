@@ -59,6 +59,7 @@ char mainclass[MAX_PATH];
 char method[MAX_PATH];
 char xoptions[MAX_PATH];
 char cfgargs[1024];
+int graal = 0;
 
 /* Prototypes */
 void error(const char *msg);
@@ -412,14 +413,23 @@ int loadProperties() {
   return 0;
 }
 
-/** Main entry point. */
-int main(int argc, char **argv) {
-  void *retval;
-  g_argv = argv;
-  g_argc = argc;
+char* strlwr(char* str) {
+  for(int i = 0; str[i]; i++){
+    str[i] = tolower(str[i]);
+  }
+  return str;
+}
 
-  loadProperties();
+int try_graal() {
+  strcpy(dll, "/usr/lib/");
+  strcat(dll, mainclass);
+  strcat(dll, ".so");
+  strlwr(dll);
+  jvm_dll = dlopen(dll, RTLD_NOW);
+  return jvm_dll == NULL ? 0 : 1;
+}
 
+int try_jvm() {
   //get java home
   strcpy(javahome, resolvelink("/usr/bin/java"));
 
@@ -446,6 +456,24 @@ int main(int argc, char **argv) {
   jawt_dll = dlopen(dll, RTLD_NOW);
   if (jawt_dll == NULL) {
     error("Unable to open libjawt.so");
+  }
+  return 1;
+}
+
+/** Main entry point. */
+int main(int argc, char **argv) {
+  void *retval;
+  g_argv = argv;
+  g_argc = argc;
+
+  loadProperties();
+
+  if (try_graal() == 1) {
+    graal = 1;
+  } else {
+    if (try_jvm() == 0) {
+      return 2;
+    }
   }
 
   CreateJavaVM = (int (*)(void*,void*,void*)) dlsym(jvm_dll, "JNI_CreateJavaVM");
