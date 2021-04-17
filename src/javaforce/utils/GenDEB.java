@@ -8,12 +8,14 @@ package javaforce.utils;
  */
 
 import java.io.*;
-import javaforce.JF;
+import java.nio.file.*;
+
+import javaforce.*;
 
 public class GenDEB {
   public static void main(String args[]) {
-    if (args.length < 2) {
-      System.out.println("Usage:GenDEB output.deb arch");
+    if (args.length != 3) {
+      System.out.println("Usage:GenDEB app version home");
       System.exit(1);
     }
     String files = "files.lst";
@@ -24,8 +26,10 @@ public class GenDEB {
       System.out.println("Error:files.lst not found");
       System.exit(1);
     }
-    String out = args[0];
-    String arch = args[1];
+    String arch = getArch();
+    String archext = getArchExt();
+    String out = args[0] + "-" + args[1] + "_" + archext + ".deb";
+    String home = args[2];
 
     String control = "control.tar.gz";
     String data = "data.tar.bz2";
@@ -57,10 +61,24 @@ public class GenDEB {
       JF.deletePathEx("deb");
 
       System.out.println(out + " created!");
+      Files.copy(new File(out).toPath(), new File(home + "/repo/debian/" + out).toPath(), StandardCopyOption.REPLACE_EXISTING);
       System.exit(0);
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
     }
+  }
+
+  public static String getArch() {
+    String arch = System.getenv("HOSTTYPE");
+    switch (arch) {
+      case "x86_64": return "amd64";
+      case "aarch64": return "arm64";
+    }
+    return arch;
+  }
+
+  public static String getArchExt() {
+    return getArch();
   }
 }

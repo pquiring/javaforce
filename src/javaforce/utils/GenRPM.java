@@ -8,12 +8,14 @@ package javaforce.utils;
  */
 
 import java.io.*;
-import javaforce.JF;
+import java.nio.file.*;
+
+import javaforce.*;
 
 public class GenRPM {
   public static void main(String args[]) {
-    if (args.length < 2) {
-      System.out.println("Usage:GenRPM output.rpm arch");
+    if (args.length != 3) {
+      System.out.println("Usage:GenRPM app version home");
       System.exit(1);
     }
     String files = "files.lst";
@@ -24,19 +26,10 @@ public class GenRPM {
       System.out.println("Error:files.lst not found");
       System.exit(1);
     }
-    String out = args[0];
-    String arch = args[1];
-    String archext = null;
-    switch (arch) {
-      case "x32": archext = "i686"; break;
-      case "x64": archext = "x86_64"; break;
-      case "a32": archext = "armv7hl"; break;
-      case "a64": archext = "aarch64"; break;
-    }
-    if (archext == null) {
-      System.out.println("Error:Unknown arch type");
-      System.exit(1);
-    }
+    String arch = getArch();
+    String archext = getArchExt();
+    String out = args[0] + "-" + args[1] + "-1." + archext + ".rpm";
+    String home = args[2];
 
     String data = "data.tar.bz2";
     String tmpdir = "/tmp/jfrpm.tmp";
@@ -61,10 +54,24 @@ public class GenRPM {
       new File("rpm.spec").delete();
       rt.exec(new String[] {"mv", "/root/rpmbuild/RPMS/" + archext + "/*.rpm", ".", tmpdir}).waitFor();
       System.out.println(out + " created!");
+      Files.copy(new File(out).toPath(), new File(home + "/repo/fedora/" + out).toPath(), StandardCopyOption.REPLACE_EXISTING);
       System.exit(0);
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
     }
+  }
+
+  public static String getArch() {
+    String arch = System.getenv("HOSTTYPE");
+    switch (arch) {
+      case "x86_64": return "amd64";
+      case "aarch64": return "arm64";
+    }
+    return arch;
+  }
+
+  public static String getArchExt() {
+    return getArch();
   }
 }

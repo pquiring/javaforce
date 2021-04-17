@@ -8,12 +8,14 @@ package javaforce.utils;
  */
 
 import java.io.*;
-import javaforce.JF;
+import java.nio.file.*;
+
+import javaforce.*;
 
 public class GenPAC {
   public static void main(String args[]) {
-    if (args.length < 2) {
-      System.out.println("Usage:GenPAC output.pac arch");
+    if (args.length != 3) {
+      System.out.println("Usage:GenPAC app version home");
       System.exit(1);
     }
     String files = "files.lst";
@@ -21,13 +23,10 @@ public class GenPAC {
       System.out.println("Error:files.lst not found");
       System.exit(1);
     }
-    String out = args[0];
-    String arch = args[1];
-    String archext = null;
-    if (archext == null) {
-      System.out.println("Error:Unknown arch type");
-      System.exit(1);
-    }
+    String arch = getArch();
+    String archext = getArchExt();
+    String out = args[0] + "-" + args[1] + "-" + archext + ".pkg.tar.xz";
+    String home = args[2];
 
     String files_tmp = ".files.tmp";
     String data = ".MTREE";
@@ -54,10 +53,24 @@ public class GenPAC {
       new File(data).delete();
       new File(files_tmp).delete();
       System.out.println(out + " created!");
+      Files.copy(new File(out).toPath(), new File(home + "/repo/arch/" + out).toPath(), StandardCopyOption.REPLACE_EXISTING);
       System.exit(0);
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
     }
+  }
+
+  public static String getArch() {
+    String arch = System.getenv("HOSTTYPE");
+    switch (arch) {
+      case "x86_64": return "amd64";
+      case "aarch64": return "arm64";
+    }
+    return arch;
+  }
+
+  public static String getArchExt() {
+    return getArch();
   }
 }

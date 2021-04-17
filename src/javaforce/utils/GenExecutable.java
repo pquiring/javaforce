@@ -45,8 +45,8 @@ public class GenExecutable {
         chmod(app);
       } else {
         //linux
-        copy(home + "/stubs/linux64.bin", "/usr/bin/" + app);
-        ResourceManager.main(new String[] {"/usr/bin/" + app, cfg});
+        copy(home + "/stubs/linux64.bin", app + ".bin");
+        ResourceManager.main(new String[] {app + ".bin", cfg});
         chmod("/usr/bin/" + app);
       }
       System.out.println("Native Executable generated!");

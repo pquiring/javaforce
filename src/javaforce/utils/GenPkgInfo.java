@@ -23,7 +23,7 @@ public class GenPkgInfo {
   }
 
   private static XML xml;
-  private static String app, desc, archtype, ver;
+  private static String app, desc, arch, ver;
   private static long size;  //in bytes
   private static boolean graal;
 
@@ -31,12 +31,11 @@ public class GenPkgInfo {
     if (args == null || args.length < 3) {
       System.out.println("genpkginfo : build linux package info files");
       System.out.println("  Usage : jpkginfo distro archtype files.list");
-      System.out.println("    distro = debian fedora arch");
-      System.out.println("    archtype = x32 x64 a32 a64");
+      System.out.println("    distro = debian fedora");
       System.exit(1);
     }
     String distro = args[0];
-    archtype = args[1];
+    arch = getArch();
     size = calcSize(args[2]);
     //load build.xml and extract app , desc , etc.
     xml = loadXML();
@@ -50,6 +49,15 @@ public class GenPkgInfo {
       case "arch": arch(); break;
       default: error("Unknown distro:" + distro);
     }
+  }
+
+  public static String getArch() {
+    String arch = System.getenv("HOSTTYPE");
+    switch (arch) {
+      case "x86_64": return "amd64";
+      case "aarch64": return "arm64";
+    }
+    return arch;
   }
 
   private static long calcSize(String files_list) {
@@ -131,13 +139,7 @@ public class GenPkgInfo {
       sb.append("Package: " + app + "\n");
       sb.append("Version: " + ver + "\n");
       sb.append("Architecture: ");
-      switch (archtype) {
-        case "any": sb.append("noarch"); break;
-        case "x32": sb.append("i386"); break;
-        case "x64": sb.append("amd64"); break;
-        case "a32": sb.append("armhf"); break;
-        case "a64": sb.append("aarch64"); break;
-      }
+      sb.append(arch);
       sb.append("\n");
       sb.append("Description: " + desc + "\n");
       sb.append("Maintainer: Peter Quiring <pquiring@gmail.com>\n");
@@ -242,13 +244,7 @@ public class GenPkgInfo {
       sb.append("size = " + size + "\n");
       sb.append("license = LGPL\n");
       sb.append("arch = ");
-      switch (archtype) {
-        case "any": sb.append("any"); break;
-        case "x32": sb.append("i686"); break;
-        case "x64": sb.append("x86_64"); break;
-        case "a32": sb.append("arm"); break;
-        case "a64": sb.append("aarch64"); break;
-      }
+      sb.append(arch);
       sb.append("\n");
       String[] depends = getDepends("arch.depends");
       for(int a=0;a<depends.length;a++) {

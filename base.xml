@@ -149,27 +149,36 @@
   <!-- Linux targets -->
 
   <target name="deb" depends="executable,graal" description="create deb package">
-    <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true">
-      <arg value="${app}-${version}_${archext}.deb"/>
-      <arg value="${arch}"/>
-    </java>
-    <copy file="${app}-${version}_${archext}.deb" todir="${home}/repo/debian" overwrite="true"/>
+    <sequential>
+      <exec command="sudo ant install"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true">
+        <arg value="${app}"/>
+        <arg value="${version}"/>
+        <arg value="${home}"/>
+      </java>
+    </sequential>
   </target>
 
   <target name="rpm" depends="executable,graal" description="create rpm package">
-    <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenRPM" fork="true">
-      <arg value="${app}-${version}-1.${archext}.rpm"/>
-      <arg value="${arch}"/>
-    </java>
-    <copy file="${app}-${version}-1.${archext}.rpm" todir="${home}/repo/fedora" overwrite="true"/>
+    <sequential>
+      <exec command="sudo ant install"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenRPM" fork="true">
+        <arg value="${app}"/>
+        <arg value="${version}"/>
+        <arg value="${home}"/>
+      </java>
+    </sequential>
   </target>
 
   <target name="pac" depends="executable,graal" description="create pac package">
-    <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true">
-      <arg value="${app}-${version}-${archext}.pkg.tar.xz"/>
-      <arg value="${arch}"/>
-    </java>
-    <copy file="${app}-${version}-${archext}.pkg.tar.xz" todir="${home}/repo/arch/${arch}" overwrite="true"/>
+    <sequential>
+      <exec command="sudo ant install"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true">
+        <arg value="${app}"/>
+        <arg value="${version}"/>
+        <arg value="${home}"/>
+      </java>
+    </sequential>
   </target>
 
   <!-- MacOSX targets -->
