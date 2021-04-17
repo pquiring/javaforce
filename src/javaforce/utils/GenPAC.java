@@ -63,10 +63,6 @@ public class GenPAC {
 
   public static String getArch() {
     String arch = System.getenv("HOSTTYPE");
-    switch (arch) {
-      case "x86_64": return "amd64";
-      case "aarch64": return "arm64";
-    }
     return arch;
   }
 

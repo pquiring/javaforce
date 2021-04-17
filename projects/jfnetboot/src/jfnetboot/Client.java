@@ -223,8 +223,13 @@ public class Client {
     StringBuilder sb = new StringBuilder();
     sb.append(
       "#!/bin/bash\n" +
-      "apt update\n" +
-      "apt install --no-install-recommends xorg xinput openbox lightdm chromium chromium-sandbox pulseaudio openssh-server sudo\n" +
+      "if [ -f /usr/bin/apt ]; then\n" +
+      "  apt update\n" +
+      "  apt install --no-install-recommends xorg xinput openbox lightdm chromium chromium-sandbox pulseaudio openssh-server sudo\n" +
+      "fi\n" +
+      "if [ -f /usr/bin/dnf ]; then\n" +
+      "  dnf install --setopt=install_weak_deps=False xorg-x11-server-Xorg xinput openbox lightdm chromium pulseaudio openssh-server sudo\n" +
+      "fi\n" +
       "cp autostart /etc/xdg/autostart\n" +
       "#change OSKey + E = open terminal\n" +
       "sed -i -- 's/kfmclient openProfile filemanagement/x-terminal-emulator/g' /etc/xdg/openbox/rc.xml\n" +

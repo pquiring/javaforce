@@ -51,12 +51,16 @@ public class GenPkgInfo {
     }
   }
 
-  public static String getArch() {
-    String arch = System.getenv("HOSTTYPE");
+  public static String convertArch(String arch) {
     switch (arch) {
       case "x86_64": return "amd64";
       case "aarch64": return "arm64";
     }
+    return arch;
+  }
+
+  public static String getArch() {
+    String arch = System.getenv("HOSTTYPE");
     return arch;
   }
 
@@ -133,6 +137,7 @@ public class GenPkgInfo {
   }
 
   private static void debian() {
+    arch = convertArch(arch);
     try {
       StringBuffer sb = new StringBuffer();
       //mandatory
