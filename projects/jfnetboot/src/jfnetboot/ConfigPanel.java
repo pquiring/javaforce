@@ -128,6 +128,11 @@ public class ConfigPanel extends Panel {
       form1_confirm.setText("Create");
       form1.setVisible(true);
     });
+    Button help = new Button("Help");
+    opts.add(help);
+    help.addClickListener( (MouseEvent me, Component c) -> {
+      c.getClient().openURL("http://jfnetboot.sf.net/help_filesystems.php");
+    });
     //list file systems : [Delete]
     FileSystem[] list = FileSystems.getFileSystems();
     Table table = new Table(100,32,3,list.length);
@@ -163,12 +168,6 @@ public class ConfigPanel extends Panel {
     return panel;
   }
 
-  private Component getGap() {
-    Block b = new Block();
-    b.setWidth(25);
-    return b;
-  }
-
   private Panel createClientsPanel() {
     Panel panel = new Panel();
     Column col = new Column();
@@ -179,10 +178,10 @@ public class ConfigPanel extends Panel {
     //add buttons on top : [Help]
     Row opts = new Row();
     col.add(opts);
-    Button help = new Button("Create");
-    //opts.add(create);
+    Button help = new Button("Help");
+    opts.add(help);
     help.addClickListener( (MouseEvent me, Component c) -> {
-      c.getClient().openURL("http://jfnetboot.sf.net/help/clients.php");
+      c.getClient().openURL("http://jfnetboot.sf.net/help_clients.php");
     });
     //list clients [Edit] [Clone] [Purge] [Shutdown] [Reboot] [Delete]
     Client[] clients = Clients.getClients();
@@ -312,7 +311,7 @@ public class ConfigPanel extends Panel {
     //add top Label
     col.add(new Label("Commands"));
     col.add(new HTML("hr"));
-    //add buttons on top : [Create]
+    //add buttons on top : [Create] [Help]
     Row opts = new Row();
     col.add(opts);
     Button create = new Button("Create");
@@ -338,6 +337,11 @@ public class ConfigPanel extends Panel {
       form2_value.setText("");
       form2_confirm.setText("Create");
       form2.setVisible(true);
+    });
+    Button help = new Button("Help");
+    opts.add(help);
+    help.addClickListener( (MouseEvent me, Component c) -> {
+      c.getClient().openURL("http://jfnetboot.sf.net/help_commands.php");
     });
     //list commands : [Edit] [Delete]
     Command[] cmds = Commands.getCommands();
