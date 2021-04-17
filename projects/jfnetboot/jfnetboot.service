@@ -1,0 +1,8 @@
+[Unit]
+Description=JavaForce Net Boot Service
+
+[Service]
+ExecStart=/usr/bin/jfnetboot
+Restart=always
+
+[Install]

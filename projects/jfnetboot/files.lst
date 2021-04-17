@@ -1,0 +1,3 @@
+/usr/bin/jfnetboot
+/usr/lib/jfnetboot.service.so
+/lib/systemd/system/jfnetboot.service
