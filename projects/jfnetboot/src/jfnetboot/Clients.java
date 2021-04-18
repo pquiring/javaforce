@@ -34,7 +34,7 @@ public class Clients {
       if (idx == -1) continue;
       String serial = name.substring(0, idx);
       String arch = name.substring(idx + 1);
-      getClient(Integer.valueOf(serial), arch);
+      getClient(Long.valueOf(serial, 16).intValue(), arch);
     }
   }
 
