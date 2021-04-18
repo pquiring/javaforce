@@ -34,15 +34,16 @@ public class ConfigPanel extends Panel {
   private Button form2_confirm;
 
   private Label form_client_serial;
-  ComboBox form_client_command;
-  TextField form_client_opts;
-  TextField form_client_hostname;
-  CheckBox form_client_ts;
-  TextField form_client_ts_x;
-  TextField form_client_ts_y;
-  CheckBox form_client_vm;
-  TextField form_client_vm_group;
-  TextField form_client_vm_mode;
+  private ComboBox form_client_filesystem;
+  private ComboBox form_client_command;
+  private TextField form_client_opts;
+  private TextField form_client_hostname;
+  private CheckBox form_client_ts;
+  private TextField form_client_ts_x;
+  private TextField form_client_ts_y;
+  private CheckBox form_client_vm;
+  private TextField form_client_vm_group;
+  private TextField form_client_vm_mode;
 
   public ConfigPanel() {
     split = new SplitPanel(SplitPanel.VERTICAL);
@@ -198,7 +199,24 @@ public class ConfigPanel extends Panel {
       table.add(edit, 2, tidx);
       edit.addClickListener( (MouseEvent me, Component c) -> {
         form_client_serial.setText(client.getSerial());
-        int idx = 0, selected = -1;
+        int idx, selected;
+
+        idx = 0;
+        selected = -1;
+        FileSystem[] fss = FileSystems.getFileSystems();
+        form_client_filesystem.clear();
+        for(FileSystem fs : fss) {
+          if (!fs.arch.equals("arm")) continue;
+          form_client_filesystem.add(fs.name, fs.name);
+          if (fs.name.equals(client.filesystem)) {
+            selected = idx;
+          }
+          idx++;
+        }
+        form_client_filesystem.setSelectedIndex(selected);
+
+        idx = 0;
+        selected = -1;
         Command[] cmds = Commands.getCommands();
         form_client_command.clear();
         for(Command cmd : cmds) {
@@ -494,6 +512,17 @@ public class ConfigPanel extends Panel {
     form_client_serial = new Label("?");
     row1.add(form_client_serial);
 
+    Row row2a = new Row();
+    popup.add(row2a);
+    row2a.add(new Label("FileSystem:"));
+    form_client_filesystem = new ComboBox();
+    FileSystem[] fss = FileSystems.getFileSystems();
+    for(FileSystem fs : fss) {
+      if (!fs.arch.equals("arm")) continue;
+      form_client_filesystem.add(fs.name, fs.name);
+    }
+    row2a.add(form_client_filesystem);
+
     Row row2 = new Row();
     popup.add(row2);
     row2.add(new Label("Command:"));
@@ -544,7 +573,10 @@ public class ConfigPanel extends Panel {
     popup.add(row5);
     Button form2_client_save = new Button("Save");
     form2_client_save.addClickListener( (MouseEvent me, Component c) -> {
+      edit_client.filesystem = form_client_filesystem.getSelectedText();
+      if (edit_client.filesystem == null) edit_client.filesystem = "default";
       edit_client.cmd = form_client_command.getSelectedText();
+      if (edit_client.cmd == null) edit_client.cmd = "default";
       edit_client.opts = form_client_opts.getText();
       edit_client.hostname = form_client_hostname.getText();
       if (form_client_ts.isSelected()) {
