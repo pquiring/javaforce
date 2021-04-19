@@ -14,12 +14,14 @@ import javaforce.*;
 
 public class FileOps {
 
+  private static boolean debug = false;
+
   public static boolean exists(String path) {
     return Files.exists(new File(path).toPath(), LinkOption.NOFOLLOW_LINKS);
   }
 
   public static void copyFile(String src, String dst) {
-    JFLog.log("CopyFile:" + src + " to " + dst);
+    if (debug) JFLog.log("CopyFile:" + src + " to " + dst);
     try {
       File fsrc = new File(src);
       File fdst = new File(dst);
@@ -30,7 +32,7 @@ public class FileOps {
   }
 
   public static void renameFile(String src, String dst) {
-    JFLog.log("RenameFile:" + src + " to " + dst);
+    if (debug) JFLog.log("RenameFile:" + src + " to " + dst);
     try {
       File fsrc = new File(src);
       File fdst = new File(dst);
