@@ -292,7 +292,7 @@ public class TFTP extends Thread {
     int fidx = filename.indexOf("/");
     int lidx = filename.lastIndexOf("/");
     if (fidx == -1 || fidx != lidx || filename.startsWith("boot")) {
-      JFLog.log("TFTP:Error:File not found:" + filename);
+      if (debugMsgs) JFLog.log("TFTP:Error:File not found:" + filename);
       sendErrorNotFound(src);
       return;
     }
@@ -353,10 +353,12 @@ public class TFTP extends Thread {
       StringBuilder sb = new StringBuilder();
       Client client = Clients.getClient(serial, arch);
       //generate grub.cfg
+      sb.append("set default=\"0\"\n");
+      sb.append("set timeout=3\n");
       sb.append("menuentry 'boot' {\n");
       sb.append("  linux boot/vmlinuz root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%08x", serial) + "/x86,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts + "\n");
       sb.append("  initrd boot/initrd.img\n");
-      sb.append("}");
+      sb.append("}\n");
       imgfile = new ImageFile();
       imgfile.data = sb.toString().getBytes();
       imgfile.name = "grub.cfg";
@@ -364,7 +366,7 @@ public class TFTP extends Thread {
       imgfile = getFile(serial, arch, filename, src.getAddress().getHostAddress());
     }
     if (imgfile == null) {
-      JFLog.log("TFTP:Error:File not found:" + filename);
+      if (debugMsgs) JFLog.log("TFTP:Error:File not found:" + filename);
       sendErrorNotFound(src);
       return;
     }
