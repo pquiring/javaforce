@@ -62,8 +62,8 @@ Then type these commands:
   echo /var/netboot/filesystems/default-arm/1.img /var/netboot/filesystems/default-arm/root ext4 ro 0 0 >> fstab
   reboot
 
-Setup default filesystem for x86 clients:
------------------------------------------
+Setup default filesystem for BIOS-x86 clients:
+----------------------------------------------
 Type these commands on the server:
   apt install pxelinux syslinux-common debootstrap
   cd /var/netboot/filesystems/default-x86
@@ -71,6 +71,27 @@ Type these commands on the server:
   mkdir root
   cp /usr/lib/PXELINUX/pxelinux.0 boot
   cp /usr/lib/syslinux/modules/bios/* boot
+  cp /boot/initrd.img-*-amd64 boot/initrd.img
+  cp /boot/vmlinuz-*-amd64 boot/vmlinuz
+  cd root
+  debootstrap buster .
+  cp /etc/passwd etc
+  cp /etc/group etc
+  cp /etc/shadow etc
+  chroot .
+  passwd -d root
+  exit
+
+Setup default filesystem for UEFI-x86 clients:
+----------------------------------------------
+Type these commands on the server:
+  apt install pxelinux syslinux-common debootstrap debian-installer-10-netboot-amd64
+  cd /var/netboot/filesystems/default-x86
+  mkdir boot
+  mkdir root
+  cp /usr/lib/debian-installer/images/10/amd64/text/debian-installer/amd64/bootnetx64.efi boot/pxelinux.0
+  cp /usr/lib/debian-installer/images/10/amd64/text/debian-installer/amd64/grubx64.efi boot
+  cp /usr/lib/syslinux/modules/efi64/* boot
   cp /boot/initrd.img-*-amd64 boot/initrd.img
   cp /boot/vmlinuz-*-amd64 boot/vmlinuz
   cd root

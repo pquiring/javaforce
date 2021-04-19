@@ -35,6 +35,7 @@ public class TFTP extends Thread {
   private static final int err_bad_tid = 5;
   private static final int err_already_exists = 6;
   private static final int err_unknown_user = 7;
+  private static final int err_option_neg_failed = 8;
 
   private static Object next_port_lock = new Object();
   private static int next_port = 4096;
@@ -50,6 +51,7 @@ public class TFTP extends Thread {
     public int block;
     public int blocksize;
     public boolean done;
+    public boolean tsize;
     public DatagramSocket cs;
     public boolean active;
     public int this_port;
@@ -89,7 +91,7 @@ public class TFTP extends Thread {
           DatagramPacket p = new DatagramPacket(data, data.length);
           cs.receive(p);
           int opCode = BE.getuint16(data, 0);
-          if (debugMsgs) JFLog.log("TFTP:Client:opCode=" + opCode);
+//          if (debugMsgs) JFLog.log("TFTP:Client:opCode=" + opCode);
           try {
             switch (opCode) {
               case oc_ack:
@@ -167,7 +169,7 @@ public class TFTP extends Thread {
         s.receive(p);
         //check if new request
         int opCode = BE.getuint16(data, 0);
-        if (debugMsgs) JFLog.log("TFTP:opCode=" + opCode);
+//        if (debugMsgs) JFLog.log("TFTP:opCode=" + opCode);
         try {
           switch (opCode) {
             case oc_read:
@@ -274,6 +276,14 @@ public class TFTP extends Thread {
       }
       filename = serial + "/" + filename;
       arch = "x86";
+    } else if (filename.endsWith("grub.cfg")) {
+      //UEFI grub.cfg
+      String remote_ip = src.getAddress().getHostAddress().toString();
+      String mac = JF.getRemoteMAC(remote_ip);
+      //serial # is lower 32bits of MAC address
+      String serial = mac.substring(4);
+      filename = serial + "/grub.cfg";
+      arch = "x86";
     } else {
       //Raspberry PI4
       arch = "arm";
@@ -282,6 +292,7 @@ public class TFTP extends Thread {
     int fidx = filename.indexOf("/");
     int lidx = filename.lastIndexOf("/");
     if (fidx == -1 || fidx != lidx || filename.startsWith("boot")) {
+      JFLog.log("TFTP:Error:File not found:" + filename);
       sendErrorNotFound(src);
       return;
     }
@@ -289,7 +300,7 @@ public class TFTP extends Thread {
     serial = Long.valueOf(filename.substring(0, fidx), 16).intValue();
     filename = filename.substring(lidx+1);
     if (serial == -1) {
-      JFLog.log("TFTP:Error:PI Serial not detected:" + filename);
+      JFLog.log("TFTP:Error:Serial not detected:" + filename);
       sendErrorNotFound(src);
       return;
     }
@@ -336,10 +347,24 @@ public class TFTP extends Thread {
       imgfile = new ImageFile();
       imgfile.data = sb.toString().getBytes();
       imgfile.name = "pxelinux.cfg";
+    } else if (filename.equals("grub.cfg")) {
+      InetAddress server_address = JF.getLocalAddress(src);
+      String server_ip = server_address.getHostAddress();
+      StringBuilder sb = new StringBuilder();
+      Client client = Clients.getClient(serial, arch);
+      //generate grub.cfg
+      sb.append("menuentry 'boot' {\n");
+      sb.append("  linux boot/vmlinuz root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%08x", serial) + "/x86,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts + "\n");
+      sb.append("  initrd boot/initrd.img\n");
+      sb.append("}");
+      imgfile = new ImageFile();
+      imgfile.data = sb.toString().getBytes();
+      imgfile.name = "grub.cfg";
     } else {
       imgfile = getFile(serial, arch, filename, src.getAddress().getHostAddress());
     }
     if (imgfile == null) {
+      JFLog.log("TFTP:Error:File not found:" + filename);
       sendErrorNotFound(src);
       return;
     }
@@ -356,6 +381,7 @@ public class TFTP extends Thread {
     c.ip = src.getAddress().getHostAddress();
     c.imgfile = imgfile;
     c.blocksize = blocksize;
+    c.tsize = index(data, idx, "tsize".getBytes()) != -1;
     c.block = 1;
     c.serial = serial;
     if (!c.init()) {
@@ -372,12 +398,30 @@ public class TFTP extends Thread {
     String blksize = Integer.toString(c.blocksize);
     String tsize = Integer.toString(c.imgfile.data.length);
 
-    byte[] data = new byte[2 + 7 + 1 + blksize.length() + 1 + 5 + 1 + tsize.length() + 1];
+    int len = 2 + 7 + 1 + blksize.length() + 1;
+    if (c.tsize) {
+      len += 5 + 1 + tsize.length() + 1;
+    }
+    byte[] data = new byte[len];
 
     int idx = 0;
 
     BE.setuint16(data, idx, oc_optack);
     idx += 2;
+
+    if (c.tsize) {
+      BE.setString(data, idx, 5, "tsize");
+      idx += 5;
+
+      data[idx] = 0;
+      idx++;
+
+      BE.setString(data, idx, tsize.length(), tsize);
+      idx += tsize.length();
+
+      data[idx] = 0;
+      idx++;
+    }
 
     BE.setString(data, idx, 7, "blksize");
     idx += 7;
@@ -387,18 +431,6 @@ public class TFTP extends Thread {
 
     BE.setString(data, idx, blksize.length(), blksize);
     idx += blksize.length();
-
-    data[idx] = 0;
-    idx++;
-
-    BE.setString(data, idx, 5, "tsize");
-    idx += 5;
-
-    data[idx] = 0;
-    idx++;
-
-    BE.setString(data, idx, tsize.length(), tsize);
-    idx += tsize.length();
 
     data[idx] = 0;
     idx++;
