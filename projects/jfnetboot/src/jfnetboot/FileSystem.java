@@ -545,7 +545,7 @@ public class FileSystem implements Cloneable {
     synchronized(lock) {
       RandomAccessFile raf = getOpenFile(file.handle);
       if (write && !file.rw) {
-        JFLog.log("MakeCopy:" + file.local);
+        if (debug) JFLog.log("MakeCopy:" + file.local);
         if (file.symlink != null) {
           JFLog.log("MakeCopy:Error:symlink???");
         }
@@ -563,7 +563,7 @@ public class FileSystem implements Cloneable {
       } else {
         path = resolveSymlink(file);
         if (path == null) return null;
-        JFLog.log("ResolveSymLink=" + path);
+        if (debug) JFLog.log("ResolveSymLink=" + path);
       }
       if (!new File(path).exists()) return null;
       try {

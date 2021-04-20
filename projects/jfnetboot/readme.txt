@@ -58,8 +58,7 @@ Then type these commands:
   7z x debian_?
   cd boot
   7z x ../0.fat
-  cd /etc
-  echo /var/netboot/filesystems/default-arm/1.img /var/netboot/filesystems/default-arm/root ext4 ro 0 0 >> fstab
+  echo /var/netboot/filesystems/default-arm/1.img /var/netboot/filesystems/default-arm/root ext4 ro 0 0 >> /etc/fstab
   reboot
 
 Setup default filesystem for BIOS-x86 clients:
