@@ -230,6 +230,9 @@ public class Client {
       "if [ -f /usr/bin/dnf ]; then\n" +
       "  dnf install --setopt=install_weak_deps=False xorg-x11-server-Xorg xinput openbox lightdm chromium pulseaudio openssh-server sudo\n" +
       "fi\n" +
+      "if [ -f /usr/bin/pacman ]; then\n" +
+      "  pacman -S xorg-server xorg-xinput openbox lightdm chromium pulseaudio openssh sudo\n" +
+      "fi\n" +
       "cp autostart /etc/xdg/autostart\n" +
       "#change OSKey + E = open terminal\n" +
       "sed -i -- 's/kfmclient openProfile filemanagement/x-terminal-emulator/g' /etc/xdg/openbox/rc.xml\n" +

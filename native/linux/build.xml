@@ -58,7 +58,7 @@
   </target>
 
   <target name="pac" description="install arch prerequisites">
-    <exec command="pacman -S jdk11-openjdk apache-ant fuse pam ffmpeg mesa xproto libxcursor libxrandr libxinerama libxi libxt"/>
+    <exec command="pacman -S jdk11-openjdk apache-ant fuse pam ffmpeg mesa libxcursor libxrandr libxinerama libxi libxt"/>
   </target>
 
   <target name="pkg" description="install freebsd prerequisites">

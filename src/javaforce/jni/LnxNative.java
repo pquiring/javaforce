@@ -15,7 +15,7 @@ public class LnxNative {
     JFNative.load();  //ensure native library is loaded
     if (JFNative.loaded && JFNative.load_ffmpeg) {
       Library libs[] = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
-      if (!JFNative.findLibraries(new File[] {new File("/usr/lib/x86_64-linux-gnu")}, libs, ".so", libs.length)) {
+      if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File("/usr/lib/x86_64-linux-gnu")}, libs, ".so", libs.length)) {
         for(int a=0;a<libs.length;a++) {
           if (libs[a].path == null) {
             System.out.println("Warning:Unable to find library:" + libs[a].name + ".so");
