@@ -17,15 +17,15 @@ import java.util.*;
 import javaforce.*;
 
 public class GenPkgInfo {
-  private static void error(String msg) {
+  private void error(String msg) {
     System.out.print(msg);
     System.exit(1);
   }
 
-  private static XML xml;
-  private static String app, desc, arch, ver;
-  private static long size;  //in bytes
-  private static boolean graal;
+  private XML xml;
+  private String app, desc, arch, ver;
+  private long size;  //in bytes
+  private boolean graal;
 
   public static void main(String args[]) {
     if (args == null || args.length < 3) {
@@ -34,6 +34,10 @@ public class GenPkgInfo {
       System.out.println("    distro = debian fedora");
       System.exit(1);
     }
+    new GenPkgInfo().run(args);
+  }
+
+  public void run(String args[]) {
     String distro = args[0];
     arch = getArch();
     size = calcSize(args[2]);
@@ -51,7 +55,7 @@ public class GenPkgInfo {
     }
   }
 
-  public static String convertArch(String arch) {
+  public String convertArch(String arch) {
     switch (arch) {
       case "x86_64": return "amd64";
       case "aarch64": return "arm64";
@@ -59,12 +63,12 @@ public class GenPkgInfo {
     return arch;
   }
 
-  public static String getArch() {
+  public String getArch() {
     String arch = System.getenv("HOSTTYPE");
     return arch;
   }
 
-  private static long calcSize(String files_list) {
+  private long calcSize(String files_list) {
     try {
       String files[] = new String(JF.readAll(new FileInputStream(files_list))).replaceAll("\r", "").split("\n");
       long size = 0;
@@ -79,7 +83,7 @@ public class GenPkgInfo {
     }
   }
 
-  private static XML loadXML() {
+  private XML loadXML() {
     XML xml = new XML();
     try {
       xml.read(new FileInputStream("build.xml"));
@@ -91,13 +95,13 @@ public class GenPkgInfo {
     return null;
   }
 
-  private static String getTag(String name) {
+  private String getTag(String name) {
     XML.XMLTag tag = xml.getTag(new String[] {"project", name});
     if (tag == null) return "";
     return tag.content;
   }
 
-  private static String getProperty(String name) {
+  private String getProperty(String name) {
     //<project> <property name="name" value="value">
     int cnt = xml.root.getChildCount();
     for(int a=0;a<cnt;a++) {
@@ -122,7 +126,7 @@ public class GenPkgInfo {
     return "";
   }
 
-  private static String[] getDepends(String tagName) {
+  private String[] getDepends(String tagName) {
     ArrayList<String> depends = new ArrayList<String>();
     String list[] = getProperty(tagName).split(",");
     if (!graal) {
@@ -136,7 +140,7 @@ public class GenPkgInfo {
     return depends.toArray(new String[0]);
   }
 
-  private static void debian() {
+  private void debian() {
     arch = convertArch(arch);
     try {
       StringBuffer sb = new StringBuffer();
@@ -190,7 +194,7 @@ public class GenPkgInfo {
     }
   }
 
-  private static void fedora() {
+  private void fedora() {
     try {
       StringBuffer sb = new StringBuffer();
       sb.append("Buildroot: /.\n");
@@ -238,7 +242,7 @@ public class GenPkgInfo {
     }
   }
 
-  private static void arch() {
+  private void arch() {
     try {
       StringBuffer sb = new StringBuffer();
       sb.append("pkgname = " + app + "\n");

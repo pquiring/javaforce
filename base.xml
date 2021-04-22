@@ -103,6 +103,16 @@
     </sequential>
   </target>
 
+  <target name="graalagent">
+    <sequential>
+      <mkdir dir="META-INF/native-image"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ExecGraalAgent" fork="true">
+        <arg value="${CLASSPATH}"/>
+        <arg value="${MAINCLASS}"/>
+      </java>
+    </sequential>
+  </target>
+
   <!-- Windows targets -->
 
   <target name="msi" depends="executable,graal" description="create msi installer file 64bit">
