@@ -715,8 +715,8 @@ public class FileSystem implements Cloneable {
         }
         if (to.rw) {
           closeOpenFile((NFile)to);
+          FileOps.delete(to.local);
         }
-        FileOps.delete(to.local);
         to_folder.cfiles.remove(to);
         all_files.remove(to.handle);
         all_names.remove(to.path);
@@ -758,7 +758,14 @@ public class FileSystem implements Cloneable {
         FileOps.renameFile(from.local, to.local);
       } else {
         //from is on read-only file system, need to make a read-write copy
-        FileOps.copyFile(from.local, to.local);
+        if (from.symlink != null) {
+          FileOps.createSymbolicLink(to.local, from.symlink);
+        } else {
+          FileOps.copyFile(from.local, to.local);
+        }
+      }
+      if (from.symlink != null) {
+        to.symlink = from.symlink;
       }
     } else {
       FileOps.renameFile(from.local, to.local);
