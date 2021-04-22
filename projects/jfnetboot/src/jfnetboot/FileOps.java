@@ -11,6 +11,7 @@ import java.nio.file.attribute.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.jni.*;
 
 public class FileOps {
 
@@ -69,7 +70,7 @@ public class FileOps {
 
   public static int getMode(String local) {
     if (true) {
-      return javaforce.jni.LnxNative.filemode(local);
+      return LnxNative.fileGetMode(local);
     } else {
       try {
         int mode = 0;
@@ -117,44 +118,49 @@ public class FileOps {
   }
 
   public static boolean setMode(String local, int mode) {
-    try {
-      EnumSet<PosixFilePermission> set = EnumSet.noneOf(PosixFilePermission.class);
-
-      if ((mode & 0400) != 0) {
-        set.add(PosixFilePermission.OWNER_READ);
-      }
-      if ((mode & 0200) != 0) {
-        set.add(PosixFilePermission.OWNER_WRITE);
-      }
-      if ((mode & 0100) != 0) {
-        set.add(PosixFilePermission.OWNER_EXECUTE);
-      }
-
-      if ((mode & 040) != 0) {
-        set.add(PosixFilePermission.GROUP_READ);
-      }
-      if ((mode & 020) != 0) {
-        set.add(PosixFilePermission.GROUP_WRITE);
-      }
-      if ((mode & 010) != 0) {
-        set.add(PosixFilePermission.GROUP_EXECUTE);
-      }
-
-      if ((mode & 04) != 0) {
-        set.add(PosixFilePermission.OTHERS_READ);
-      }
-      if ((mode & 02) != 0) {
-        set.add(PosixFilePermission.OTHERS_WRITE);
-      }
-      if ((mode & 01) != 0) {
-        set.add(PosixFilePermission.OTHERS_EXECUTE);
-      }
-
-      Files.setAttribute(new File(local).toPath(), "unix:permissions", set, LinkOption.NOFOLLOW_LINKS);
+    if (true) {
+      LnxNative.fileSetMode(local, mode);
       return true;
-    } catch (Exception e) {
-      JFLog.log(e);
-      return false;
+    } else {
+      try {
+        EnumSet<PosixFilePermission> set = EnumSet.noneOf(PosixFilePermission.class);
+
+        if ((mode & 0400) != 0) {
+          set.add(PosixFilePermission.OWNER_READ);
+        }
+        if ((mode & 0200) != 0) {
+          set.add(PosixFilePermission.OWNER_WRITE);
+        }
+        if ((mode & 0100) != 0) {
+          set.add(PosixFilePermission.OWNER_EXECUTE);
+        }
+
+        if ((mode & 040) != 0) {
+          set.add(PosixFilePermission.GROUP_READ);
+        }
+        if ((mode & 020) != 0) {
+          set.add(PosixFilePermission.GROUP_WRITE);
+        }
+        if ((mode & 010) != 0) {
+          set.add(PosixFilePermission.GROUP_EXECUTE);
+        }
+
+        if ((mode & 04) != 0) {
+          set.add(PosixFilePermission.OTHERS_READ);
+        }
+        if ((mode & 02) != 0) {
+          set.add(PosixFilePermission.OTHERS_WRITE);
+        }
+        if ((mode & 01) != 0) {
+          set.add(PosixFilePermission.OTHERS_EXECUTE);
+        }
+
+        Files.setAttribute(new File(local).toPath(), "unix:permissions", set, LinkOption.NOFOLLOW_LINKS);
+        return true;
+      } catch (Exception e) {
+        JFLog.log(e);
+        return false;
+      }
     }
   }
 
@@ -218,11 +224,15 @@ public class FileOps {
     }
   }
 
-  public static boolean setMTime(String local, UnixTime ut) {
+  public static boolean setMTime(String local, long ts) {
     try {
-      long ts = ut.secs * 1000L + ut.nsecs / 1000000L;
-      FileTime ft = FileTime.fromMillis(ts);
-      Files.setAttribute(new File(local).toPath(), "basic:lastModifiedTime", ft, LinkOption.NOFOLLOW_LINKS);
+      if (true) {
+        LnxNative.fileSetModifiedTime(local, ts);
+      } else {
+        //fails with symlinks
+        FileTime ft = FileTime.fromMillis(ts);
+        Files.setAttribute(new File(local).toPath(), "basic:lastModifiedTime", ft, LinkOption.NOFOLLOW_LINKS);
+      }
       return true;
     } catch (Exception e) {
       JFLog.log(e);
@@ -243,11 +253,15 @@ public class FileOps {
     }
   }
 
-  public static boolean setATime(String local, UnixTime ut) {
+  public static boolean setATime(String local, long ts) {
     try {
-      long ts = ut.secs * 1000L + ut.nsecs / 1000000L;
-      FileTime ft = FileTime.fromMillis(ts);
-      Files.setAttribute(new File(local).toPath(), "basic:lastAccessTime", ft, LinkOption.NOFOLLOW_LINKS);
+      if (true) {
+        LnxNative.fileSetAccessTime(local, ts);
+      } else {
+        //fails with symlinks
+        FileTime ft = FileTime.fromMillis(ts);
+        Files.setAttribute(new File(local).toPath(), "basic:lastAccessTime", ft, LinkOption.NOFOLLOW_LINKS);
+      }
       return true;
     } catch (Exception e) {
       JFLog.log(e);

@@ -43,6 +43,9 @@ public class NFile extends NHandle {
 
   public void makeCopy(String newBase) {
     if (rw) return;
+    if (symlink != null) {
+      JFLog.log("Error:makeCopy() with symlink:" + path);
+    }
     rw = true;
     String newLocal = newBase + path;
     try {

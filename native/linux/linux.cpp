@@ -15,6 +15,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <string.h>  //memcpy
+#include <utime.h>
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <security/pam_appl.h>
@@ -1623,7 +1624,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_setenv
   e->ReleaseStringUTFChars(value, cvalue);
 }
 
-JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_filemode
+JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_fileGetMode
   (JNIEnv *e, jclass c, jstring name)
 {
   struct stat s;
@@ -1631,6 +1632,40 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_filemode
   ::stat((const char *)cname, (struct stat*)&s);
   e->ReleaseStringUTFChars(name, cname);
   return s.st_mode;
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_fileSetMode
+  (JNIEnv *e, jclass c, jstring name, jint mode)
+{
+  const char *cname = e->GetStringUTFChars(name,NULL);
+  ::chmod((const char *)cname, mode);
+  e->ReleaseStringUTFChars(name, cname);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_fileSetAccessTime
+  (JNIEnv *e, jclass c, jstring name, jlong ts)
+{
+  struct stat s;
+  struct utimbuf tb;
+  const char *cname = e->GetStringUTFChars(name,NULL);
+  ::stat((const char *)cname, (struct stat*)&s);
+  tb.actime = ts / 1000L;
+  tb.modtime = s.st_mtime;
+  ::utime((const char *)cname, &tb);
+  e->ReleaseStringUTFChars(name, cname);
+}
+
+JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_fileSetModifiedTime
+  (JNIEnv *e, jclass c, jstring name, jlong ts)
+{
+  struct stat s;
+  struct utimbuf tb;
+  const char *cname = e->GetStringUTFChars(name,NULL);
+  ::stat((const char *)cname, (struct stat*)&s);
+  tb.actime = s.st_atime;
+  tb.modtime = ts / 1000L;
+  ::utime((const char *)cname, &tb);
+  e->ReleaseStringUTFChars(name, cname);
 }
 
 JNIEXPORT jintArray JNICALL Java_javaforce_jni_LnxNative_getConsoleSize

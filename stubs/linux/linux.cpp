@@ -278,7 +278,10 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"peekConsole", "()Z", (void *)&Java_javaforce_jni_LnxNative_peekConsole},
   {"writeConsole", "(I)V", (void *)&Java_javaforce_jni_LnxNative_writeConsole},
   {"writeConsoleArray", "([BII)V", (void *)&Java_javaforce_jni_LnxNative_writeConsoleArray},
-  {"filemode", "(Ljava/lang/String;)I", (void *)&Java_javaforce_jni_LnxNative_filemode},
+  {"fileGetMode", "(Ljava/lang/String;)I", (void *)&Java_javaforce_jni_LnxNative_fileGetMode},
+  {"fileSetMode", "(Ljava/lang/String;I)V", (void *)&Java_javaforce_jni_LnxNative_fileSetMode},
+  {"fileSetAccessTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetAccessTime},
+  {"fileSetModifiedTime", "(Ljava/lang/String;J)V", (void *)&Java_javaforce_jni_LnxNative_fileSetModifiedTime},
 };
 
 /** Register natives embedded with executable. */

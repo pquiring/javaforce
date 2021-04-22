@@ -105,5 +105,8 @@ public class LnxNative {
   public static native void writeConsoleArray(byte[] ch, int off, int len);
 
   //file
-  public static native int filemode(String path);
+  public static native int fileGetMode(String path);
+  public static native void fileSetMode(String path, int mode);
+  public static native void fileSetAccessTime(String path, long ts);
+  public static native void fileSetModifiedTime(String path, long ts);
 }

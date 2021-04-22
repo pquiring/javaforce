@@ -435,6 +435,7 @@ public class RPC extends Thread {
         }
         case 2: {  //SETATTR
           CHandle handle = readHandle();
+          FileAttrs fa = readAttrs();
           NHandle nhandle = handle.fs.getHandle(handle.handle);
           boolean exists = nhandle != null && nhandle.exists();
           if (exists) {
@@ -446,7 +447,9 @@ public class RPC extends Thread {
             writeInt(ERR_NOENT);
             writeInt(0);  //before
           }
-          setattr(handle, exists);
+          if (exists) {
+            setattr(handle, fa);
+          }
           // read guard
           int has_guard = readInt();
           if (has_guard != 0) {
@@ -597,7 +600,7 @@ public class RPC extends Thread {
                 //no break
               case 1:  //guarded
                 //new file attributes
-                setattr(handle, true);
+                setattr(handle, readAttrs());
                 break;
               case 2:  //exclusive
                 long verf = readLong();
@@ -617,7 +620,7 @@ public class RPC extends Thread {
                 //no break
               case 1:  //guarded
                 //new file attributes
-                setattr(null, false);
+                readAttrs();
                 break;
               case 2:  //exclusive
                 long verf = readLong();
@@ -632,31 +635,7 @@ public class RPC extends Thread {
         case 9: {  //MKDIR
           CHandle dir = readHandle();
           String name = readString();
-          //read attributes
-          int has_mode = readInt();
-          if (has_mode != 0) {
-            int mode = readInt();
-          }
-          int has_uid = readInt();
-          if (has_uid != 0) {
-            int uid = readInt();
-          }
-          int has_gid = readInt();
-          if (has_gid != 0) {
-            int gid = readInt();
-          }
-          int has_size = readInt();
-          if (has_size != 0) {
-            long size = readLong();
-          }
-          int has_atime = readInt();
-          if (has_atime > 1) {
-            long atime = readLong();
-          }
-          int has_mtime = readInt();
-          if (has_mtime > 1) {
-            long mtime = readLong();
-          }
+          FileAttrs fa = readAttrs();
 
           if (!dir.fs.exists(dir.handle)) {
             if (debug) JFLog.log("MKDIR:Not Found:" + dir);
@@ -672,6 +651,7 @@ public class RPC extends Thread {
           if (fs_handle != -1) {
             writeInt(ERR_SUCCESS);
             CHandle handle = new CHandle(dir.serial, dir.arch, fs_handle);
+            setattr(handle, fa);
             writeInt(1);  //follows
             writeHandle(handle);
             writeInt(1);  //follows
@@ -688,31 +668,7 @@ public class RPC extends Thread {
         case 10: {  //SYMLINK
           CHandle where = readHandle();
           String where_name = readString();
-          //read attributes
-          int has_mode = readInt();
-          if (has_mode != 0) {
-            int mode = readInt();
-          }
-          int has_uid = readInt();
-          if (has_uid != 0) {
-            int uid = readInt();
-          }
-          int has_gid = readInt();
-          if (has_gid != 0) {
-            int gid = readInt();
-          }
-          int has_size = readInt();
-          if (has_size != 0) {
-            long size = readLong();
-          }
-          int has_atime = readInt();
-          if (has_atime > 1) {
-            long atime = readLong();
-          }
-          int has_mtime = readInt();
-          if (has_mtime > 1) {
-            long mtime = readLong();
-          }
+          FileAttrs fa = readAttrs();
           String to = readString();
 
           if (!where.fs.exists(where.handle)) {
@@ -729,6 +685,7 @@ public class RPC extends Thread {
             if (debugLinks) JFLog.log("SYMLINK:" + where + ":" + getLocalPath(where) + "/" + where_name + " -> " + to);
             writeInt(ERR_SUCCESS);
             CHandle handle = new CHandle(where.serial, where.arch, new_handle);
+            setattr(handle, fa);
             writeInt(1);  //follows
             writeHandle(handle);
             writeInt(1);  //follows
@@ -935,8 +892,8 @@ public class RPC extends Thread {
             writeInt(1);  //wtmult
             writeInt(1024);  //dtpref
             writeLong(0x7fffffffffffffffL);  //maxfilesize
-            writeInt(0);  //time delta : seconds
-            writeInt(1000000);  //time delta : nano seconds (milli seconds)
+            writeInt(1);  //time delta : seconds
+            writeInt(0);  //time delta : nano seconds
             writeInt(0x1b);  //props bits
           } else {
             writeInt(ERR_BAD_HANDLE);
@@ -1084,39 +1041,24 @@ public class RPC extends Thread {
       }
     }
 
-    private void setattr(CHandle handle, boolean exists) {
+    private FileAttrs readAttrs() {
+      FileAttrs fa = new FileAttrs();
       // read attributes changes (sattr3)
       int has_mode = readInt();
       if (has_mode != 0) {
-        int mode = readInt();
-        if (exists) {
-          if (debug) JFLog.log("SETATTR:" + handle + ":mode=0" + Integer.toString(mode, 8));
-          handle.fs.setattr_mode(handle.handle, mode);
-        }
+        fa.mode = readInt();
       }
       int has_uid = readInt();
       if (has_uid != 0) {
-        int uid = readInt();
-        if (exists) {
-          if (debug) JFLog.log("SETATTR:" + handle + ":uid=" + uid);
-          handle.fs.setattr_uid(handle.handle, uid);
-        }
+        fa.uid = readInt();
       }
       int has_gid = readInt();
       if (has_gid != 0) {
-        int gid = readInt();
-        if (exists) {
-          if (debug) JFLog.log("SETATTR:" + handle + ":gid=" + gid);
-          handle.fs.setattr_gid(handle.handle, gid);
-        }
+        fa.gid = readInt();
       }
       int has_size = readInt();
       if (has_size != 0) {
-        long size = readLong();
-        if (exists) {
-          if (debug) JFLog.log("SETATTR:" + handle + ":size=" + size);
-          handle.fs.setattr_size(handle.handle, size);
-        }
+        fa.size = readLong();
       }
       int has_atime = readInt();
       //has_atime = 0 (no value)
@@ -1124,15 +1066,11 @@ public class RPC extends Thread {
       if (has_atime > 0) {
         int secs, nsecs;
         if (has_atime == 1) {
-          long ts = System.currentTimeMillis();
-          secs = (int)(ts / 1000L);
-          nsecs = (int)((ts % 1000L) * 1000000L);
+          fa.atime = System.currentTimeMillis();
         } else {
           secs = readInt();
           nsecs = readInt();
-        }
-        if (exists) {
-          handle.fs.setattr_atime(handle.handle, new UnixTime(secs, nsecs));
+          fa.atime = secs * 1000 + nsecs / 1000000L;
         }
       }
       int has_mtime = readInt();
@@ -1141,16 +1079,39 @@ public class RPC extends Thread {
       if (has_mtime > 0) {
         int secs, nsecs;
         if (has_mtime == 1) {
-          long ts = System.currentTimeMillis();
-          secs = (int)(ts / 1000L);
-          nsecs = (int)((ts % 1000L) * 1000000L);
+          fa.mtime = System.currentTimeMillis();
         } else {
           secs = readInt();
           nsecs = readInt();
+          fa.mtime = secs * 1000 + nsecs / 1000000L;
         }
-        if (exists) {
-          handle.fs.setattr_mtime(handle.handle, new UnixTime(secs, nsecs));
-        }
+      }
+      return fa;
+    }
+
+    private void setattr(CHandle handle, FileAttrs fa) {
+      // read attributes changes (sattr3)
+      if (fa.mode != -1) {
+        if (debug) JFLog.log("SETATTR:" + handle + ":mode=0" + Integer.toString(fa.mode, 8));
+        handle.fs.setattr_mode(handle.handle, fa.mode);
+      }
+      if (fa.uid != -1) {
+        if (debug) JFLog.log("SETATTR:" + handle + ":uid=" + fa.uid);
+        handle.fs.setattr_uid(handle.handle, fa.uid);
+      }
+      if (fa.gid != -1) {
+        if (debug) JFLog.log("SETATTR:" + handle + ":gid=" + fa.gid);
+        handle.fs.setattr_gid(handle.handle, fa.gid);
+      }
+      if (fa.size != -1) {
+        if (debug) JFLog.log("SETATTR:" + handle + ":size=" + fa.size);
+        handle.fs.setattr_size(handle.handle, fa.size);
+      }
+      if (fa.atime != -1) {
+        handle.fs.setattr_atime(handle.handle, fa.atime);
+      }
+      if (fa.mtime != -1) {
+        handle.fs.setattr_mtime(handle.handle, fa.mtime);
       }
     }
   }

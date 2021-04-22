@@ -643,6 +643,7 @@ public class FileSystem implements Cloneable {
     if (!FileOps.createSymbolicLink(link_local, to)) return -1;
     long handle = createHandle(where, where_name);
     NFile cfile = new NFile(handle, getRootPath() + pfolder.path + "/" + where_name, pfolder.path + "/" + where_name, where_name);
+    cfile.rw = true;
     cfile.parent = pfolder;
     cfile.symlink = to;
     pfolder.cfiles.add(cfile);
@@ -825,26 +826,56 @@ public class FileSystem implements Cloneable {
 
   public boolean setattr_mode(long handle, int mode) {
     NHandle nhandle = getHandle(handle);
+    if (!nhandle.rw) {
+      if (nhandle.isFile()) {
+        NFile file = (NFile)nhandle;
+        file.makeCopy(getRootPath());
+      }
+    }
     return FileOps.setMode(nhandle.local, mode);
   }
 
   public boolean setattr_uid(long handle, int id) {
     NHandle nhandle = getHandle(handle);
+    if (!nhandle.rw) {
+      if (nhandle.isFile()) {
+        NFile file = (NFile)nhandle;
+        file.makeCopy(getRootPath());
+      }
+    }
     return FileOps.setUID(nhandle.local, id);
   }
 
   public boolean setattr_gid(long handle, int id) {
     NHandle nhandle = getHandle(handle);
+    if (!nhandle.rw) {
+      if (nhandle.isFile()) {
+        NFile file = (NFile)nhandle;
+        file.makeCopy(getRootPath());
+      }
+    }
     return FileOps.setUID(nhandle.local, id);
   }
 
-  public boolean setattr_atime(long handle, UnixTime ut) {
+  public boolean setattr_atime(long handle, long ts) {
     NHandle nhandle = getHandle(handle);
-    return FileOps.setATime(nhandle.local, ut);
+    if (!nhandle.rw) {
+      if (nhandle.isFile()) {
+        NFile file = (NFile)nhandle;
+        file.makeCopy(getRootPath());
+      }
+    }
+    return FileOps.setATime(nhandle.local, ts);
   }
 
-  public boolean setattr_mtime(long handle, UnixTime ut) {
+  public boolean setattr_mtime(long handle, long ts) {
     NHandle nhandle = getHandle(handle);
-    return FileOps.setMTime(nhandle.local, ut);
+    if (!nhandle.rw) {
+      if (nhandle.isFile()) {
+        NFile file = (NFile)nhandle;
+        file.makeCopy(getRootPath());
+      }
+    }
+    return FileOps.setMTime(nhandle.local, ts);
   }
 }
