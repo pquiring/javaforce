@@ -959,6 +959,28 @@ public class RPC extends Thread {
           writeInt(0);  //total default acl entries
           break;
         }
+        case 2: {  //SETACL
+          CHandle handle = readHandle();
+          int mask = readInt();
+          int cnt = readInt();
+          int cnt2 = readInt();
+          for(int a=0;a<cnt2;a++) {
+            int type = readInt();
+            int uid = readInt();
+            int perms = readInt();
+          }
+          int defcnt = readInt();
+          int defcnt2 = readInt();
+          for(int a=0;a<defcnt2;a++) {
+            int type = readInt();
+            int uid = readInt();
+            int perms = readInt();
+          }
+
+          writeInt(ERR_SUCCESS);
+          writeInt(0);  //follows : 0 = none
+          break;
+        }
         default:
           if (debug) JFLog.log("RPC:NFSACL:Error:Unknown proc:" + req_proc);
           break;
@@ -1070,7 +1092,7 @@ public class RPC extends Thread {
         } else {
           secs = readInt();
           nsecs = readInt();
-          fa.atime = secs * 1000 + nsecs / 1000000L;
+          fa.atime = secs * 1000L;  // + nsecs / 1000000L;
         }
       }
       int has_mtime = readInt();
@@ -1083,7 +1105,7 @@ public class RPC extends Thread {
         } else {
           secs = readInt();
           nsecs = readInt();
-          fa.mtime = secs * 1000 + nsecs / 1000000L;
+          fa.mtime = secs * 1000L;  // + nsecs / 1000000L;
         }
       }
       return fa;

@@ -1649,7 +1649,8 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_fileSetAccessTime
   struct utimbuf tb;
   const char *cname = e->GetStringUTFChars(name,NULL);
   ::stat((const char *)cname, (struct stat*)&s);
-  tb.actime = ts / 1000L;
+  ts /= 1000L;
+  tb.actime = ts;
   tb.modtime = s.st_mtime;
   ::utime((const char *)cname, &tb);
   e->ReleaseStringUTFChars(name, cname);
@@ -1662,8 +1663,9 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_fileSetModifiedTime
   struct utimbuf tb;
   const char *cname = e->GetStringUTFChars(name,NULL);
   ::stat((const char *)cname, (struct stat*)&s);
+  ts /= 1000L;
   tb.actime = s.st_atime;
-  tb.modtime = ts / 1000L;
+  tb.modtime = ts;
   ::utime((const char *)cname, &tb);
   e->ReleaseStringUTFChars(name, cname);
 }

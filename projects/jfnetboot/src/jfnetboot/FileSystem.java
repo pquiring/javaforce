@@ -29,7 +29,7 @@ public class FileSystem implements Cloneable {
   private Object lock = new Object();
   private HashMap<Long, RandomAccessFile> files = new HashMap<>();
 
-  private static boolean debug = true;
+  private static boolean debug = false;
 
   /** File System
    * @param name = file system path

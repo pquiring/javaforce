@@ -81,6 +81,13 @@ Type these commands on the server:
   cp /etc/group etc
   cp /etc/shadow etc
   chroot .
+  ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
+  hwclock --systohc
+  echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
+  echo LANG=en_US.UTF-8 >> /etc/locale.conf
+  apt update
+  apt install locales
+  locale-gen
   passwd -d root
   cd ..
   umount root
@@ -108,6 +115,13 @@ Type these commands on the server:
   cp /etc/group etc
   cp /etc/shadow etc
   chroot .
+  ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
+  hwclock --systohc
+  echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
+  echo LANG=en_US.UTF-8 >> /etc/locale.conf
+  apt update
+  apt install locales
+  locale-gen
   passwd -d root
   cd ..
   umount root

@@ -70,7 +70,10 @@ public class FileOps {
 
   public static int getMode(String local) {
     if (true) {
-      return LnxNative.fileGetMode(local);
+      //Linux returns type + mode
+      //type = S_IFMT = 0170000;
+      //mode = 07777;
+      return LnxNative.fileGetMode(local) & 07777;
     } else {
       try {
         int mode = 0;
@@ -216,7 +219,7 @@ public class FileOps {
       FileTime ft = (FileTime)Files.getAttribute(new File(local).toPath(), "basic:lastModifiedTime", LinkOption.NOFOLLOW_LINKS);
       long ts = ft.toMillis();
       int secs = (int)(ts / 1000L);
-      int nsecs = (int)((ts % 1000L) * 1000000L);
+      int nsecs = 0;  //(int)((ts % 1000L) * 1000000L);
       return new UnixTime(secs, nsecs);
     } catch (Exception e) {
       JFLog.log(e);
@@ -245,7 +248,7 @@ public class FileOps {
       FileTime ft = (FileTime)Files.getAttribute(new File(local).toPath(), "basic:lastAccessTime", LinkOption.NOFOLLOW_LINKS);
       long ts = ft.toMillis();
       int secs = (int)(ts / 1000L);
-      int nsecs = (int)((ts % 1000L) * 1000000L);
+      int nsecs = 0;  //(int)((ts % 1000L) * 1000000L);
       return new UnixTime(secs, nsecs);
     } catch (Exception e) {
       JFLog.log(e);
@@ -274,7 +277,7 @@ public class FileOps {
       FileTime ft = (FileTime)Files.getAttribute(new File(local).toPath(), "basic:creationTime", LinkOption.NOFOLLOW_LINKS);
       long ts = ft.toMillis();
       int secs = (int)(ts / 1000L);
-      int nsecs = (int)((ts % 1000L) * 1000000L);
+      int nsecs = 0;  //(int)((ts % 1000L) * 1000000L);
       return new UnixTime(secs, nsecs);
     } catch (Exception e) {
       JFLog.log(e);
