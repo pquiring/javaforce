@@ -157,6 +157,33 @@ public class Client {
     deleteFileRecursive(regex, fs.getRootFolder());
   }
 
+  private void patchFile(String path, String regex, String replace) {
+    //see if local copy exists
+    String local = fs.getRootPath() + path;
+    if (!new File(local).exists()) {
+      //does not exist - copy from derived file system
+      String derived_local = fs.getDerived().getRootPath() + path;
+      if (!new File(derived_local).exists()) {
+        JFLog.log("ERROR:Unable to patch file:" + derived_local);
+        return;
+      }
+      FileOps.copyFile(derived_local, local);
+      //create file
+      fs.create(fs.getHandle(fs.getRootHandle(), "etc"), "passwd");
+    }
+    try {
+      FileInputStream fis = new FileInputStream(local);
+      byte[] data = fis.readAllBytes();
+      fis.close();
+      data = new String(data).replaceAll(regex, replace).getBytes();
+      FileOutputStream fos = new FileOutputStream(local);
+      fos.write(data);
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+
   private void replaceFiles() {
     JFLog.log("Client.FileSystem.local=" + fs.getRootPath());
     //create replacement files before indexing
@@ -179,6 +206,8 @@ public class Client {
     replaceFile("/netboot/default.html", getHTML());
     replaceFile("/netboot/config.sh", getConfigScript());
     replaceFile("/netboot/autostart", getAutostartScript());
+    //delete root password for live systems
+    patchFile("/etc/shadow", "root[:][*][:]", "root::");
     //delete all rpi*.service files
     deleteFileRecursive("rpi.*[.]service");
   }

@@ -102,6 +102,11 @@ public class FileSystem implements Cloneable {
     return arch;
   }
 
+  public FileSystem getDerived() {
+    if (derived_from == null) return null;
+    return FileSystems.get(derived_from, arch);
+  }
+
   public static String getConfigFile(String name, String arch) {
     return Paths.filesystems + "/" + name + "-" + arch + ".cfg";
   }
