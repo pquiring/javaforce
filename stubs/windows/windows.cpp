@@ -379,7 +379,7 @@ void registerNatives(JNIEnv *env) {
 
   registerCommonNatives(env);
 
-  cls = env->FindClass("javaforce/jni/WinNative");
+  cls = findClass(env, "javaforce/jni/WinNative");
   env->RegisterNatives(cls, javaforce_jni_WinNative, sizeof(javaforce_jni_WinNative)/sizeof(JNINativeMethod));
 }
 
