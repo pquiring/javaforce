@@ -184,45 +184,54 @@ static JNINativeMethod javaforce_pi_I2C[] = {
 };
 #endif
 
+jclass findClass(JNIEnv *env, const char *clsname) {
+  jclass cls = env->FindClass(clsname);
+  if (cls == NULL) {
+    printf("Error:Class not found:%s\n", clsname);
+    exit(1);
+  }
+  return cls;
+}
+
 void registerCommonNatives(JNIEnv *env) {
   jclass cls;
 
   //JFNative must be first to register. Other classes static{} function will call JFNative.load()
-  cls = env->FindClass("javaforce/jni/JFNative");
+  cls = findClass(env, "javaforce/jni/JFNative");
   env->RegisterNatives(cls, javaforce_jni_JFNative, sizeof(javaforce_jni_JFNative)/sizeof(JNINativeMethod));
 
-  cls = env->FindClass("javaforce/controls/ni/DAQmx");
+  cls = findClass(env, "javaforce/controls/ni/DAQmx");
   env->RegisterNatives(cls, javaforce_controls_ni_DAQmx, sizeof(javaforce_controls_ni_DAQmx)/sizeof(JNINativeMethod));
 
-  cls = env->FindClass("javaforce/gl/GL");
+  cls = findClass(env, "javaforce/gl/GL");
   env->RegisterNatives(cls, javaforce_gl_GL, sizeof(javaforce_gl_GL)/sizeof(JNINativeMethod));
 
-  cls = env->FindClass("javaforce/gl/GLWindow");
+  cls = findClass(env, "javaforce/gl/GLWindow");
   env->RegisterNatives(cls, javaforce_gl_GLWindow, sizeof(javaforce_gl_GLWindow)/sizeof(JNINativeMethod));
 
-  cls = env->FindClass("javaforce/media/Camera");
+  cls = findClass(env, "javaforce/media/Camera");
   env->RegisterNatives(cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
 
-  cls = env->FindClass("javaforce/media/MediaCoder");
+  cls = findClass(env, "javaforce/media/MediaCoder");
   env->RegisterNatives(cls, javaforce_media_MediaCoder, sizeof(javaforce_media_MediaCoder)/sizeof(JNINativeMethod));
 
-  cls = env->FindClass("javaforce/media/MediaDecoder");
+  cls = findClass(env, "javaforce/media/MediaDecoder");
   env->RegisterNatives(cls, javaforce_media_MediaDecoder, sizeof(javaforce_media_MediaDecoder)/sizeof(JNINativeMethod));
 
-  cls = env->FindClass("javaforce/media/MediaEncoder");
+  cls = findClass(env, "javaforce/media/MediaEncoder");
   env->RegisterNatives(cls, javaforce_media_MediaEncoder, sizeof(javaforce_media_MediaEncoder)/sizeof(JNINativeMethod));
 
-  cls = env->FindClass("javaforce/media/MediaVideoDecoder");
+  cls = findClass(env, "javaforce/media/MediaVideoDecoder");
   env->RegisterNatives(cls, javaforce_media_MediaVideoDecoder, sizeof(javaforce_media_MediaVideoDecoder)/sizeof(JNINativeMethod));
 
-  cls = env->FindClass("javaforce/media/VideoBuffer");
+  cls = findClass(env, "javaforce/media/VideoBuffer");
   env->RegisterNatives(cls, javaforce_media_VideoBuffer, sizeof(javaforce_media_VideoBuffer)/sizeof(JNINativeMethod));
 
 #ifdef __RASPBERRY_PI__
-  cls = env->FindClass("javaforce/pi/GPIO");
+  cls = findClass(env, "javaforce/pi/GPIO");
   env->RegisterNatives(cls, javaforce_pi_GPIO, sizeof(javaforce_pi_GPIO)/sizeof(JNINativeMethod));
 
-  cls = env->FindClass("javaforce/pi/I2C");
+  cls = findClass(env, "javaforce/pi/I2C");
   env->RegisterNatives(cls, javaforce_pi_I2C, sizeof(javaforce_pi_I2C)/sizeof(JNINativeMethod));
 #endif
 }
