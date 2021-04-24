@@ -113,6 +113,15 @@
     </sequential>
   </target>
 
+  <target name="run">
+    <sequential>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ExecProject" fork="true">
+        <arg value="${CLASSPATH}"/>
+        <arg value="${MAINCLASS}"/>
+      </java>
+    </sequential>
+  </target>
+
   <!-- Windows targets -->
 
   <target name="msi" depends="executable,graal" description="create msi installer file 64bit">
