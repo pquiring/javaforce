@@ -14,7 +14,6 @@ package javaforce.service;
  */
 
 import java.io.*;
-import java.nio.*;
 import java.net.*;
 import java.util.*;
 
@@ -523,9 +522,9 @@ public class DHCP extends Thread {
     private Host host;
 
     private byte req[];
+    private int reqOffset;
     private byte reply[];
-    private int replyOffset;  //offset while encoding name
-    private ByteBuffer replyBuffer;
+    private int replyOffset;
 
     private Pool pool;
 
@@ -537,28 +536,29 @@ public class DHCP extends Thread {
       try {
         JFLog.log("Received request from:" + packet.getSocketAddress());
         req = packet.getData();
-        ByteBuffer bb = ByteBuffer.wrap(req);
-        bb.order(ByteOrder.BIG_ENDIAN);
-        byte opcode = req[0];
+        reqOffset = 0;
+
+        byte opcode = getByte();
         if (opcode != DHCP_OPCODE_REQUEST) throw new Exception("not a request");
-        byte hwtype = req[1];
+        byte hwtype = getByte();
 //        if (hwtype != 1) throw new Exception("not ethernet");
-        byte hwlen = req[2];
+        byte hwlen = getByte();
 //        if (hwlen != 6) throw new Exception("bad hardware length");
         byte hop = req[3];
-        int id = bb.getInt(4);
-        short seconds = bb.getShort(8);
-        short flags = bb.getShort(10);
-        int cip = bb.getInt(12);  //client ip
-        int yip = bb.getInt(16);  //your ip
-        int sip = bb.getInt(20);  //server ip
-        int rip = bb.getInt(24);  //relay ip
+        int id = getInt();
+        short seconds = getShort();
+        short flags = getShort();
+        int cip = getInt();  //client ip
+        int yip = getInt();  //your ip
+        int sip = getInt();  //server ip
+        int rip = getInt();  //relay ip
         int msgType = -1;
         int yipOffset = -1;
         //detect pool
         int cnt = pools.size();
         int from_ip = rip;
         short pxe_arch = -1;
+        byte[] req_list = new byte[0];
         if (from_ip == 0) {
           String src = packet.getAddress().getHostAddress();
           from_ip = IP4toInt(src);
@@ -586,24 +586,24 @@ public class DHCP extends Thread {
         }
         //28 = 16 bytes = client hardware address (ethernet : 6 bytes)
         byte[] mac = new byte[6];
-        bb.get(mac, 0, 6);
+        getBytes(mac);
         //44 = 64 bytes = server host name (ignored)
         //108 = 128 bytes = boot filename (ignored)
         //236 = 4 bytes = cookie (0x63825363)
         //240 = options...
-        int offset = 240;
+        reqOffset = 240;
         while (true) {
-          byte opt = req[offset++];
+          byte opt = getByte();
           if (opt == OPT_PAD) continue;
-          byte len = req[offset++];
+          int len = getByte() & 0xff;
           switch (opt) {
             case OPT_DHCP_MSG_TYPE:
               if (len != 1) throw new Exception("bad dhcp msg type (size != 1)");
-              msgType = req[offset];
+              msgType = getByte();
               break;
             case OPT_REQUEST_IP:
               if (len != 4) throw new Exception("bad request ip (size != 4)");
-              yip = bb.getInt(offset);
+              yip = getInt();
               if ((yip & pool.mask_int) == (pool.pool_first_int & pool.mask_int)) {
                 yipOffset = yip - pool.pool_first_int;
               } else {
@@ -612,11 +612,18 @@ public class DHCP extends Thread {
               break;
             case OPT_CLIENT_ARCH:
               if (len != 2) throw new Exception("bad arch id");
-              pxe_arch = bb.getShort();
+              pxe_arch = getShort();
+              break;
+            case OPT_PARAM_REQ_LIST:
+              req_list = new byte[len];
+              System.arraycopy(req, reqOffset, req_list, 0, len);
+              reqOffset += len;
+              break;
+            default:
+              reqOffset += len;
               break;
           }
           if (opt == OPT_END) break;
-          offset += len;
         }
         if (msgType == -1) throw new Exception("no dhcp msg type");
         JFLog.log("MsgType=" + getMsgType(msgType));
@@ -628,7 +635,7 @@ public class DHCP extends Thread {
               if (notify != null) {
                 notify.dhcpEvent(DHCPDISCOVER, MACtoString(mac), IP4toString(yip), pxe_arch);
               }
-              sendReply(new byte[4], DHCPOFFER, id, pool, rip);
+              sendReply(new byte[4], DHCPOFFER, id, pool, rip, req_list);
               break;
             }
             synchronized(pool.lock) {
@@ -652,7 +659,7 @@ public class DHCP extends Thread {
                     if (notify != null) {
                       notify.dhcpEvent(DHCPDISCOVER, MACtoString(mac), IP4toString(yip), pxe_arch);
                     }
-                    sendReply(addr, DHCPOFFER, id, pool, rip);
+                    sendReply(addr, DHCPOFFER, id, pool, rip, req_list);
                     pool.next = i+1;
                     if (pool.next == pool.count) pool.next = 0;
                     return;
@@ -671,7 +678,7 @@ public class DHCP extends Thread {
               if (notify != null) {
                 notify.dhcpEvent(DHCPREQUEST, MACtoString(mac), IP4toString(yip), pxe_arch);
               }
-              sendReply(new byte[4], DHCPACK, id, pool, rip);
+              sendReply(new byte[4], DHCPACK, id, pool, rip, req_list);
               break;
             }
             //mark ip as used and send ack or nak if already in use
@@ -698,10 +705,10 @@ public class DHCP extends Thread {
                 if (notify != null) {
                   notify.dhcpEvent(DHCPREQUEST, MACtoString(mac), IP4toString(yip), pxe_arch);
                 }
-                sendReply(addr, DHCPACK, id, pool, rip);
+                sendReply(addr, DHCPACK, id, pool, rip, req_list);
               } else {
                 //send NAK
-                sendReply(addr, DHCPNAK, id, pool, rip);
+                sendReply(addr, DHCPNAK, id, pool, rip, req_list);
               }
             }
             break;
@@ -750,11 +757,16 @@ public class DHCP extends Thread {
       }
     }
 
-    private void sendReply(byte yip[], int msgType /*offer,ack,nak*/, int id, Pool pool, int rip) {
+    private boolean req_opt(byte[] req_list, byte req) {
+      for(int a=0;a<req_list.length;a++) {
+        if (req_list[a] == req) return true;
+      }
+      return false;
+    }
+
+    private void sendReply(byte yip[], int msgType /*offer,ack,nak*/, int id, Pool pool, int rip, byte[] req_list) {
       JFLog.log("ReplyFor:" + IP4toString(yip) + ":" + getMsgType(msgType));
       reply = new byte[maxmtu];
-      replyBuffer = ByteBuffer.wrap(reply);
-      replyBuffer.order(ByteOrder.BIG_ENDIAN);
       replyOffset = 0;
       reply[replyOffset++] = DHCP_OPCODE_REPLY;  //reply opcode
       reply[replyOffset++] = req[1];  //hwtype
@@ -826,13 +838,13 @@ public class DHCP extends Thread {
         putInt(pool.leaseTime);
       }
 
-      if (pool.pxe_server != null) {
+      if (pool.pxe_server != null && req_opt(req_list, OPT_PXE_SERVER)) {
         reply[replyOffset++] = OPT_PXE_SERVER;
         reply[replyOffset++] = (byte)pool.pxe_server.length();
         putByteArray(pool.pxe_server.getBytes());
       }
 
-      if (pool.pxe_bootfile != null) {
+      if (pool.pxe_bootfile != null && req_opt(req_list, OPT_PXE_BOOTFILE)) {
         reply[replyOffset++] = OPT_PXE_BOOTFILE;
         reply[replyOffset++] = (byte)pool.pxe_bootfile.length();
         putByteArray(pool.pxe_bootfile.getBytes());
@@ -871,6 +883,28 @@ public class DHCP extends Thread {
       sendReply(reply, replyOffset, rip);
     }
 
+    private byte getByte() {
+      return req[reqOffset++];
+    }
+
+    private short getShort() {
+      short value = (short)BE.getuint16(req, reqOffset);
+      reqOffset += 2;
+      return value;
+    }
+
+    private int getInt() {
+      int value = BE.getuint32(req, reqOffset);
+      reqOffset += 4;
+      return value;
+    }
+
+    private void getBytes(byte[] out) {
+      for(int a=0;a<out.length;a++) {
+        out[a] = getByte();
+      }
+    }
+
     private void putByteArray(byte[] ba) {
       for(int a=0;a<ba.length;a++) {
         reply[replyOffset++] = ba[a];
@@ -896,12 +930,12 @@ public class DHCP extends Thread {
     }
 
     private void putShort(short value) {
-      replyBuffer.putShort(replyOffset, value);
+      BE.setuint16(reply, replyOffset, value);
       replyOffset += 2;
     }
 
     private void putInt(int value) {
-      replyBuffer.putInt(replyOffset, value);
+      BE.setuint32(reply, replyOffset, value);
       replyOffset += 4;
     }
   }
