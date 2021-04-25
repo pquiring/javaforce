@@ -834,8 +834,8 @@ public class DHCP extends Thread {
 
       if (pool.pxe_bootfile != null) {
         reply[replyOffset++] = OPT_PXE_BOOTFILE;
-        reply[replyOffset++] = (byte)pool.pxe_server.length();
-        putByteArray(pool.pxe_server.getBytes());
+        reply[replyOffset++] = (byte)pool.pxe_bootfile.length();
+        putByteArray(pool.pxe_bootfile.getBytes());
       }
 
       //add custom options
