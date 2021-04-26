@@ -632,6 +632,7 @@ public class DHCP extends Thread {
           case DHCPDISCOVER:
             if (pool.pxe_proxy) {
               //only send PXE info, no IP address
+              if (!req_opt(req_list, OPT_PXE_SERVER)) break;  //client is not requesting PXE info
               if (notify != null) {
                 notify.dhcpEvent(DHCPDISCOVER, MACtoString(mac), IP4toString(yip), pxe_arch);
               }
