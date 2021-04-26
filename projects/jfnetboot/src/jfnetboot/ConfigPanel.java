@@ -5,7 +5,10 @@ package jfnetboot;
  * @author pquiring
  */
 
+import java.io.*;
+
 import javaforce.*;
+import javaforce.service.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 
@@ -82,6 +85,11 @@ public class ConfigPanel extends Panel {
     list.add(opt4);
     opt4.addClickListener( (MouseEvent me, Component c) -> {
       split.setRightComponent(createCommandsPanel());
+    });
+    Button opt5 = new Button("DHCP");
+    list.add(opt5);
+    opt5.addClickListener( (MouseEvent me, Component c) -> {
+      split.setRightComponent(createDHCPPanel());
     });
     panel.add(list);
     panel.setMaxWidth();
@@ -412,6 +420,59 @@ public class ConfigPanel extends Panel {
       });
       tidx++;
     }
+    return panel;
+  }
+
+  private Panel createDHCPPanel() {
+    Panel panel = new Panel();
+    Column col = new Column();
+    panel.add(col);
+    //add top Label
+    col.add(new Label("DHCP"));
+    col.add(new HTML("hr"));
+    //add buttons on top : [Help]
+    Row opts = new Row();
+    col.add(opts);
+    Button help = new Button("Help");
+    opts.add(help);
+    help.addClickListener( (MouseEvent me, Component c) -> {
+      c.getClient().openURL("http://jfnetboot.sf.net/help_dhcp.php");
+    });
+    String dhcp_config_file = JF.getConfigPath() + "/jfdhcp.cfg";
+    String dhcp_config = null;
+    try {
+      FileInputStream fis = new FileInputStream(dhcp_config_file);
+      dhcp_config = new String(fis.readAllBytes());
+      fis.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+    TextArea config = new TextArea(dhcp_config);
+    config.setWidth(400);
+    config.setHeight(400);
+    col.add(config);
+    Row save_msg = new Row();
+    col.add(save_msg);
+    Button save = new Button("Save");
+    save_msg.add(save);
+    Label msg = new Label("");
+    save_msg.add(msg);
+    save.addClickListener( (MouseEvent me, Component c) -> {
+      msg.setText("Saving...");
+      String new_config = config.getText();
+      try {
+        FileOutputStream fos = new FileOutputStream(dhcp_config_file);
+        fos.write(new_config.getBytes());
+        fos.close();
+        Service.dhcp.close();
+        Service.dhcp = new DHCP();
+        Service.dhcp.start();
+        msg.setText("Saved!");
+      } catch (Exception e) {
+        JFLog.log(e);
+        msg.setText("Error! See Logs.");
+      }
+    });
     return panel;
   }
 
