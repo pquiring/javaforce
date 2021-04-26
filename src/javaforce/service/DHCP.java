@@ -544,7 +544,7 @@ public class DHCP extends Thread {
 //        if (hwtype != 1) throw new Exception("not ethernet");
         byte hwlen = getByte();
 //        if (hwlen != 6) throw new Exception("bad hardware length");
-        byte hop = req[3];
+        byte hop = getByte();
         int id = getInt();
         short seconds = getShort();
         short flags = getShort();
