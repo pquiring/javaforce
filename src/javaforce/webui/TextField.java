@@ -26,8 +26,7 @@ public class TextField extends TextComponent {
   }
   public void onChanged(String args[]) {
     int idx = args[0].indexOf("=");
-    //TODO : better JSON.stringify() support
-    text = args[0].substring(idx+1).replaceAll("\\\\\\\\", "\\\\");
+    text = destringify(args[0].substring(idx+1));
     super.onChanged(args);
   }
 }
