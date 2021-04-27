@@ -63,8 +63,8 @@ public class LnxPty {
     ArrayList<String> cmdline = new ArrayList<String>();
     cmdline.add("java");
     cmdline.add("-cp");
-    cmdline.add("/usr/share/java/javaforce.jar:/usr/share/java/jna.jar");
-    cmdline.add("javaforce.jna.LnxPty");
+    cmdline.add("/usr/share/java/javaforce.jar");
+    cmdline.add("javaforce.jni.lnx.LnxPty");
     cmdline.add(slaveName);
     cmdline.add(cmd);
     cmdline.add("" + (args.length-1));  //# args

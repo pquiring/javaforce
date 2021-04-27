@@ -242,9 +242,9 @@
   <keybind key="A-space">
     <action name="ShowMenu"><menu>client-menu</menu></action>
   </keybind>
-  <!-- Take a screenshot of the current window with jcapture when Alt+Print are pressed -->
+  <!-- Take a screenshot of the current window with jfcapture when Alt+Print are pressed -->
   <keybind key="A-Print">
-    <action name="Execute"><command>jcapture-window</command></action>
+    <action name="Execute"><command>jfcapture-window</command></action>
   </keybind>
 
   <keybind key="A-F1">
@@ -260,11 +260,11 @@
   </keybind>
 
   <keybind key="W-e">
-    <action name="Execute"><command>jfile</command></action>
+    <action name="Execute"><command>jffile</command></action>
   </keybind>
 
   <keybind key="C-A-t">
-    <action name="Execute"><command>jterm</command></action>
+    <action name="Execute"><command>jfterm</command></action>
   </keybind>
 
   <keybind key="XF86AudioRaiseVolume">
@@ -335,9 +335,9 @@
     </action>
   </keybind>
 
-  <!-- Launch jcapture when Print is pressed -->
+  <!-- Launch jfcapture when Print is pressed -->
   <keybind key="Print">
-    <action name="Execute"><command>jcapture-screen</command></action>
+    <action name="Execute"><command>jfcapture-screen</command></action>
   </keybind>
 </keyboard>
 
