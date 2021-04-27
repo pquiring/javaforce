@@ -58,7 +58,7 @@ public class DHCP extends Thread {
     public String name;
     public String server_ip;  //dhcp server ip
     public int server_ip_int;
-    public String bind_ip;  //bind ip (0.0.0.0 = all interfaces)
+    public String bind_ip;  //bind ip
     public int bind_ip_int;
     public String pool_first;  //pool first ip
     public int pool_first_int;  //pool first ip (as int)
@@ -187,7 +187,7 @@ public class DHCP extends Thread {
     + "\n"
     + "#[pool_192_168_0_x]\n"
     + "#server_ip=192.168.0.2\n"
-    + "#bind_ip=192.168.0.2\n"
+    + "#bind_ip=0.0.0.0\n"
     + "#pool_first=192.168.0.100\n"
     + "#pool_last=192.168.0.199\n"
     + "#mask=255.255.255.0\n"
@@ -202,7 +202,7 @@ public class DHCP extends Thread {
     + "\n"
     + "#[pool_192_168_1_x]\n"
     + "#server_ip=192.168.1.2\n"
-    + "#bind_ip=192.168.1.2\n"
+    + "#bind_ip=0.0.0.0\n"
     + "#pool_first=192.168.1.100\n"
     + "#pool_last=192.168.1.250\n"
     + "#mask=255.255.255.0\n"
@@ -212,7 +212,7 @@ public class DHCP extends Thread {
     + "\n"
     + "#[pool_10_1_1_x_for_relay_agents_only]\n"
     + "#server_ip=192.168.2.2\n"
-    + "#bind_ip=0.0.0.0  #bind to all interfaces\n"
+    + "#bind_ip=192.168.2.2\n"
     + "#pool_first=10.1.1.100\n"
     + "#pool_last=10.1.1.250\n"
     + "#mask=255.255.255.0\n"
@@ -220,7 +220,7 @@ public class DHCP extends Thread {
     + "\n"
     + "#[pool_192_168_3_x_pxe]\n"
     + "#server_ip=192.168.3.2\n"
-    + "#bind_ip=192.168.3.2\n"
+    + "#bind_ip=0.0.0.0\n"
     + "#pool_first=192.168.3.100\n"
     + "#pool_last=192.168.3.250\n"
     + "#mask=255.255.255.0\n"
@@ -230,7 +230,7 @@ public class DHCP extends Thread {
     + "\n"
     + "#[pool_192_168_4_x_pxe_proxy]\n"
     + "#server_ip=192.168.4.2\n"
-    + "#bind_ip=192.168.4.2\n"
+    + "#bind_ip=0.0.0.0\n"
     + "#pxe_proxy=true\n"
     + "#pxe_server=192.168.4.50\n"
     + "#pxe_bootfile=boot/pxelinux\n"
@@ -375,7 +375,11 @@ public class DHCP extends Thread {
         pool.pool_time = new long[pool.count];
         pool.pool_hwlen = new int[pool.count];
         pool.pool_hwaddr = new byte[pool.count][16];
-        JFLog.log("pool:" + IP4toString(pool.pool_first_int) + "-" + IP4toString(pool.pool_last_int) + ":" + pool.count + " IPs");
+        if (pool.pxe_proxy) {
+          JFLog.log("pool:pxe_proxy:" + pool.pxe_server);
+        } else {
+          JFLog.log("pool:" + IP4toString(pool.pool_first_int) + "-" + IP4toString(pool.pool_last_int) + ":" + pool.count + " IPs");
+        }
       }
       for(int a=0;a<cnt;a++) {
         Pool poola = pools.get(a);
@@ -537,7 +541,7 @@ public class DHCP extends Thread {
     }
     public void run() {
       try {
-        JFLog.log("Received request from:" + packet.getSocketAddress());
+        JFLog.log("Received request from:" + packet.getAddress().getHostAddress() + ":" + packet.getPort());
         req = packet.getData();
         reqOffset = 0;
 
@@ -754,8 +758,8 @@ public class DHCP extends Thread {
           out.setAddress(Inet4Address.getByAddress(new byte[] {(byte)(rip >> 24), (byte)((rip >> 16) & 0xff), (byte)((rip >> 8) & 0xff), (byte)(rip & 0xff)}));
         int port = packet.getPort();
         out.setPort(port);
+        JFLog.log("ReplyTo:" + out.getAddress().getHostAddress() + ":" + out.getPort() + ":data.length=" + outDataLength);
         host.ds.send(out);
-        JFLog.log("ReplyTo:" + IP4toString(rip) + ":" + port);
       } catch (Exception e) {
         JFLog.log(e);
       }
