@@ -51,7 +51,6 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
     <copy file="${app}.service" todir="/lib/systemd/system"/>
-    <copy file="${app}.bin" tofile="/usr/bin/${app}"/>
     <copy file="${app}.service.so" todir="/usr/lib"/>
   </target>
 

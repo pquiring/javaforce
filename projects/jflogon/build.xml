@@ -47,7 +47,6 @@
   <target name="install" description="install files">
     <copy file="jflogon.jar" todir="/usr/share/java"/>
     <copy file="jflogon.sh" todir="/usr/sbin"/>
-    <copy file="jflogon.bin" tofile="/usr/bin/jflogon"/>
     <chmod file="/usr/sbin/jflogon.sh" perm="+x"/>
     <copy file="jflogon-runsession" todir="/usr/sbin"/>
     <chmod file="/usr/sbin/jflogon-runsession" perm="+x"/>
