@@ -31,12 +31,13 @@ public class Service {
     rpc = new RPC();
     rpc.start();
     dhcp = new DHCP();
+    dhcp.setNotify(tftp);
     dhcp.start();
     config = new Config();
     config.init();
   }
 
   public static void serviceStop() {
-
+    //TODO
   }
 }

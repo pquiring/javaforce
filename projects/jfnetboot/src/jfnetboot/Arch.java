@@ -6,18 +6,20 @@ package jfnetboot;
  */
 
 public class Arch {
-  public static int toInt(String arch) {
+  public static short toShort(String arch) {
     switch (arch) {
-      case "arm": return 1;
-      case "x86": return 2;
+      case "bios": return 0;
+      case "x86": return 7;
+      case "arm": return 11;
     }
-    return 0;
+    return -1;
   }
 
-  public static String toString(int arch) {
+  public static String toString(short arch) {
     switch (arch) {
-      case 1: return "arm";
-      case 2: return "x86";
+      case 0: return "bios";
+      case 7: return "x86";
+      case 11: return "arm";
     }
     return null;
   }

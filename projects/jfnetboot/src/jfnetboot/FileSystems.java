@@ -11,8 +11,6 @@ import java.util.*;
 import javaforce.*;
 
 public class FileSystems {
-  private static FileSystem defX86 = new FileSystem("default", "x86");
-  private static FileSystem defARM = new FileSystem("default", "arm");
   private static HashMap<String, FileSystem> map = new HashMap<>();
 
   public static int getCount() {
@@ -41,6 +39,15 @@ public class FileSystems {
       try {
         FileOutputStream fos = new FileOutputStream(Paths.filesystems + "/default-x86.cfg");
         fos.write("#default filesystem\narch=x86\n".getBytes());
+        fos.close();
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+    }
+    if (!new File(Paths.filesystems + "/default-bios.cfg").exists()) {
+      try {
+        FileOutputStream fos = new FileOutputStream(Paths.filesystems + "/default-bios.cfg");
+        fos.write("#default filesystem\narch=bios\n".getBytes());
         fos.close();
       } catch (Exception e) {
         JFLog.log(e);

@@ -11,7 +11,7 @@ import java.util.*;
 import javaforce.*;
 
 public class Client {
-  public int serial;
+  public long serial;  //mac address
   public String filesystem;  //file system name
   public String arch;  //arm or x86
   public String cmd;  //command name to execute on startup (see Commands) (inserted into /command.sh)
@@ -23,7 +23,7 @@ public class Client {
   private FileSystem fs;  //file system instance
   private String ip;
 
-  public Client(int serial, String arch) {
+  public Client(long serial, String arch) {
     this.serial = serial;
     this.arch = arch;
     filesystem = "default";
@@ -34,8 +34,8 @@ public class Client {
     touchscreen = "";
   }
 
-  public static String getConfigFile(int serial, String arch) {
-    return Paths.clients + "/" + String.format("%08x", serial) + "-" + arch + ".dat";
+  public static String getConfigFile(long serial, String arch) {
+    return Paths.clients + "/" + getSerial(serial) + "-" + arch + ".dat";
   }
 
   private static String getProperty(Properties props, String key, String def) {
@@ -44,7 +44,7 @@ public class Client {
     return value;
   }
 
-  public static Client load(int serial, String arch) {
+  public static Client load(long serial, String arch) {
     try {
       FileInputStream fis = new FileInputStream(getConfigFile(serial, arch));
       Properties props = new Properties();
@@ -200,7 +200,7 @@ public class Client {
       replaceFile("/boot/firmware/config.txt", getFirmwareConfig());
     }
     //SERIAL environment variable for scripts (might not need this)
-    replaceFile("/etc/environment", "SERIAL=" + Integer.toString(serial, 16) + "\n");
+    replaceFile("/etc/environment", "SERIAL=" + getSerial() + "\n");
     //create netboot files
     replaceFile("/netboot/command.sh", getCommand());
     replaceFile("/netboot/default.html", getHTML());
@@ -346,7 +346,8 @@ public class Client {
         StringBuilder sb = new StringBuilder();
         sb.append("#jfNetBoot : DO NOT EDIT\n");
         sb.append("/dev/nfs   /          nfs    tcp,nolock  0   0\n");
-        sb.append("proc       /proc      proc   defaults    0   1\n");
+        sb.append("proc       /proc      proc   defaults    0   0\n");
+        sb.append("sysfs      /sys       sysfs  defaults    0   0\n");
         sb.append("tmpfs      /tmp       tmpfs  defaults    0   0\n");
         sb.append("tmpfs      /var/log   tmpfs  defaults    0   0\n");
         sb.append("tmpfs      /var/tmp   tmpfs  defaults    0   0\n");
@@ -356,7 +357,8 @@ public class Client {
         StringBuilder sb = new StringBuilder();
         sb.append("#jfNetBoot : DO NOT EDIT\n");
         sb.append("/dev/nfs   /          nfs    tcp,nolock  0   0\n");
-        sb.append("proc       /proc      proc   defaults    0   1\n");
+        sb.append("proc       /proc      proc   defaults    0   0\n");
+        sb.append("sysfs      /sys       sysfs  defaults    0   0\n");
         sb.append("tmpfs      /tmp       tmpfs  defaults    0   0\n");
         sb.append("tmpfs      /var/log   tmpfs  defaults    0   0\n");
         sb.append("tmpfs      /var/tmp   tmpfs  defaults    0   0\n");
@@ -367,7 +369,11 @@ public class Client {
   }
 
   public String getSerial() {
-    return String.format("%08x", serial);
+    return String.format("%012x", serial);
+  }
+
+  public static String getSerial(long serial) {
+    return String.format("%012x", serial);
   }
 
   public String getHostname() {

@@ -466,6 +466,7 @@ public class ConfigPanel extends Panel {
         fos.close();
         Service.dhcp.close();
         Service.dhcp = new DHCP();
+        Service.dhcp.setNotify(Service.tftp);
         Service.dhcp.start();
         msg.setText("Saved!");
       } catch (Exception e) {

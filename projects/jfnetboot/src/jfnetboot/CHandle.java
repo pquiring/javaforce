@@ -6,14 +6,14 @@ package jfnetboot;
  */
 
 public class CHandle {
-  public int serial;  //client serial
-  public int arch;  //client arch (1=arm 2=x86)
+  public long serial;  //client serial
+  public short arch;  //client arch
   public long handle;  //file system handle
 
   public Client client;
   public FileSystem fs;
 
-  public CHandle(int serial, int arch, long handle) {
+  public CHandle(long serial, short arch, long handle) {
     this.serial = serial;
     this.arch = arch;
     this.handle = handle;

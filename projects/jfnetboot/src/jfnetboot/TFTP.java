@@ -12,10 +12,11 @@ import java.util.*;
 import java.net.*;
 
 import javaforce.*;
+import javaforce.service.*;
 
-public class TFTP extends Thread {
+public class TFTP extends Thread implements DHCP.Notify {
 
-  public static boolean debugMsgs = false;
+  public static boolean debugMsgs = true;
   public static boolean debugException = true;
 
   /* Opcodes */
@@ -55,7 +56,7 @@ public class TFTP extends Thread {
     public DatagramSocket cs;
     public boolean active;
     public int this_port;
-    public int serial;
+    public long serial;
 
     public boolean init() {
       try {
@@ -153,10 +154,16 @@ public class TFTP extends Thread {
     }
   }
 
+  private static class PXEClient {
+    public String mac;
+    public short arch;
+  }
+
   private DatagramSocket s;
   private static boolean active;
   private ArrayList<TFTPClient> clients = new ArrayList<>();
   private ArrayList<ImageFile> files = new ArrayList<>();
+  private HashMap<String, PXEClient> pxe_clients = new HashMap<>();
 
   public void run() {
     active = true;
@@ -192,11 +199,23 @@ public class TFTP extends Thread {
     }
   }
 
-  private ImageFile readFile(int serial, String arch, String filename, String ip) {
+  public void registerClient(String mac, String ip, short arch) {
+    JFLog.log("PXE Client:" + ip + ":" + mac + ":" + Arch.toString(arch));
+    PXEClient client = new PXEClient();
+    client.mac = mac;
+    client.arch = arch;
+    pxe_clients.put(mac, client);
+  }
+
+  public PXEClient getPXEClient(String mac) {
+    return pxe_clients.get(mac);
+  }
+
+  private ImageFile readFile(long serial, String arch, String filename, String ip) {
     Client client = Clients.getClient(serial, arch);
     client.reinitCommand();
     client.setIP(ip);
-    String full = client.getFileSystem().getBootPath() + "/" + filename;
+    String full = client.getFileSystem().getBase().getRootPath() + "/" + filename;
     if (debugMsgs) JFLog.log("read file:" + full);
     File file = new File(full);
     if (!file.exists()) {
@@ -237,7 +256,7 @@ public class TFTP extends Thread {
     return -1;
   }
 
-  private ImageFile getFile(int serial, String arch, String filename, String ip) {
+  private ImageFile getFile(long serial, String arch, String filename, String ip) {
     synchronized(files) {
       for(ImageFile file : files) {
         if (file.name.equals(filename)) return file;
@@ -261,78 +280,28 @@ public class TFTP extends Thread {
       return;
     }
     String filename = new String(data, 2, idx - 2);
-    String arch;
-    if (filename.startsWith("boot/")) {
-      //Intel Boot Agent V1.5.x
-      String remote_ip = src.getAddress().getHostAddress().toString();
-      String mac = JF.getRemoteMAC(remote_ip);
-      //serial # is lower 32bits of MAC address
-      String serial = mac.substring(4);
-      //remove boot/
-      filename = filename.substring(5);
-      if (filename.startsWith("pxelinux.cfg")) {
-        //strip off UUID
-        filename = "pxelinux.cfg";
-      }
-      filename = serial + "/" + filename;
-      arch = "x86";
-    } else if (filename.endsWith("grub.cfg")) {
-      //UEFI grub.cfg
-      String remote_ip = src.getAddress().getHostAddress().toString();
-      String mac = JF.getRemoteMAC(remote_ip);
-      //serial # is lower 32bits of MAC address
-      String serial = mac.substring(4);
-      filename = serial + "/grub.cfg";
-      arch = "x86";
-    } else {
-      //Raspberry PI4
-      arch = "arm";
+    String remote_ip = src.getAddress().getHostAddress();
+    String remote_mac = JF.getRemoteMAC(remote_ip);
+    PXEClient pxe_client = getPXEClient(remote_mac);
+    if (pxe_client == null) {
+      JFLog.log("PXE Client not found:" + remote_ip);
+      return;
     }
     if (debugMsgs) JFLog.log("TFTP:filename=" + filename);
-    int fidx = filename.indexOf("/");
-    int lidx = filename.lastIndexOf("/");
-    if (fidx == -1 || fidx != lidx || filename.startsWith("boot")) {
-      if (debugMsgs) JFLog.log("TFTP:Error:File not found:" + filename);
-      sendErrorNotFound(src);
-      return;
-    }
-    int serial = -1;
-    serial = Long.valueOf(filename.substring(0, fidx), 16).intValue();
-    filename = filename.substring(lidx+1);
-    if (serial == -1) {
-      JFLog.log("TFTP:Error:Serial not detected:" + filename);
-      sendErrorNotFound(src);
-      return;
-    }
+    long serial = Long.valueOf(pxe_client.mac, 16);
+    String arch = Arch.toString(pxe_client.arch);
     ImageFile imgfile = null;
-    if (filename.equals("cmdline.txt")) {
+    if (filename.endsWith("cmdline.txt")) {
       //RPi
       InetAddress server_address = JF.getLocalAddress(src);
       String server_ip = server_address.getHostAddress();
       Client client = Clients.getClient(serial, arch);
-      String cmdline = "console=tty0 root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%08x", serial) + "/arm,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts;
+      String cmdline = "console=tty0 root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%012x", serial) + "/arm,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts;
       imgfile = new ImageFile();
       imgfile.data = cmdline.getBytes();
       imgfile.name = "cmdline.txt";
-/*
-    } else if (filename.equals("config.txt")) {
-      //RPi
-      //need to modify hardware config
-      //see https://www.raspberrypi.org/forums/viewtopic.php?t=276264
-      imgfile = getFile(serial, filename);
-      String lns[] = new String(imgfile.data).split("\n");
-      StringBuilder sb = new StringBuilder();
-      for(String ln : lns) {
-        if (ln.startsWith("enable_uart")) continue;
-        sb.append(ln);
-        sb.append("\n");
-      }
-      sb.append("dtparam=sd_poll_once\n");
-      imgfile.data = sb.toString().getBytes();
-      //none of this makes a difference
-*/
-    } else if (filename.equals("pxelinux.cfg")) {
-      //x86
+    } else if (filename.endsWith("pxelinux.cfg")) {
+      //BIOS-x86
       InetAddress server_address = JF.getLocalAddress(src);
       String server_ip = server_address.getHostAddress();
       StringBuilder sb = new StringBuilder();
@@ -343,11 +312,12 @@ public class TFTP extends Thread {
       sb.append("LABEL PXE\n");
       sb.append("  MENU LABEL PXE\n");
       sb.append("  KERNEL vmlinuz\n");
-      sb.append("  APPEND initrd=initrd.img root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%08x", serial) + "/x86,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts + "\n");
+      sb.append("  APPEND initrd=initrd.img root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%012x", serial) + "/x86,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts + "\n");
       imgfile = new ImageFile();
       imgfile.data = sb.toString().getBytes();
       imgfile.name = "pxelinux.cfg";
-    } else if (filename.equals("grub.cfg")) {
+    } else if (filename.equals("/grub/grub.cfg")) {
+      //UEFI
       InetAddress server_address = JF.getLocalAddress(src);
       String server_ip = server_address.getHostAddress();
       StringBuilder sb = new StringBuilder();
@@ -356,8 +326,8 @@ public class TFTP extends Thread {
       sb.append("set default=\"0\"\n");
       sb.append("set timeout=3\n");
       sb.append("menuentry 'boot' {\n");
-      sb.append("  linux boot/vmlinuz root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%08x", serial) + "/x86,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts + "\n");
-      sb.append("  initrd boot/initrd.img\n");
+      sb.append("  linux vmlinuz root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%012x", serial) + "/x86,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts + "\n");
+      sb.append("  initrd initrd.img\n");
       sb.append("}\n");
       imgfile = new ImageFile();
       imgfile.data = sb.toString().getBytes();
@@ -456,6 +426,12 @@ public class TFTP extends Thread {
       s.send(reply);
     } catch (Exception e) {
       if (debugException) JFLog.log(e);
+    }
+  }
+
+  public void dhcpEvent(int type, String mac, String ip, short arch) {
+    if (type == DHCP.DHCPDISCOVER) {
+      registerClient(mac, ip, arch);
     }
   }
 }

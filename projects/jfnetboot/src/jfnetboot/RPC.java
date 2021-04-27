@@ -143,9 +143,8 @@ public class RPC extends Thread {
     private void writeHandle(CHandle handle) {
       writeInt(32);  //size in bytes (8 ints) (4 longs)
       writeLong(0);
-      writeLong(0);
-      writeInt(handle.serial);
-      writeInt(handle.arch);
+      writeLong(handle.arch);
+      writeLong(handle.serial);
       writeLong(handle.handle);
     }
 
@@ -252,9 +251,8 @@ public class RPC extends Thread {
         return null;
       }
       readLong();
-      readLong();
-      int serial = readInt();
-      int arch = readInt();
+      short arch = (short)readLong();
+      long serial = readLong();
       long handle = readLong();
       return new CHandle(serial, arch, handle);
     }
@@ -369,8 +367,8 @@ public class RPC extends Thread {
           }
           String[] p = mnt.split("/");
           // 0 / 1=serial / 2=arch
-          int serial = Long.valueOf(p[1], 16).intValue();
-          int arch = Arch.toInt(p[2]);
+          long serial = Long.valueOf(p[1], 16);
+          short arch = Arch.toShort(p[2]);
           writeInt(0);  //mount = 0 (SUCCESS)
           writeHandle(getRootHandle(serial, arch));
           writeInt(1);  //flavors = 1
@@ -987,7 +985,7 @@ public class RPC extends Thread {
       }
     }
 
-    private CHandle getRootHandle(int serial, int arch) {
+    private CHandle getRootHandle(long serial, short arch) {
       FileSystem fs = Clients.getClient(serial, Arch.toString(arch)).getFileSystem();
       return new CHandle(serial, arch, fs.getRootHandle());
     }

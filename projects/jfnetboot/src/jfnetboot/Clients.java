@@ -10,7 +10,7 @@ import java.util.*;
 
 public class Clients {
 
-  public static HashMap<Integer, Client> clients = new HashMap();
+  public static HashMap<Long, Client> clients = new HashMap();
 
   public static int getCount() {
     return clients.size();
@@ -34,11 +34,11 @@ public class Clients {
       if (idx == -1) continue;
       String serial = name.substring(0, idx);
       String arch = name.substring(idx + 1);
-      getClient(Long.valueOf(serial, 16).intValue(), arch);
+      getClient(Long.valueOf(serial, 16), arch);
     }
   }
 
-  public static Client getClient(int serial, String arch) {
+  public static Client getClient(long serial, String arch) {
     Client client = clients.get(serial);
     if (client == null) {
       //try to load client from disk
