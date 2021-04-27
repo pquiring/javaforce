@@ -259,7 +259,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private void SleepActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SleepActionPerformed
     try {
-      Runtime.getRuntime().exec("pm-suspend");
+      JF.exec(new String[] {"pm-suspend"});
     } catch (Exception e) {
       JFLog.log(e);
     }

@@ -154,7 +154,7 @@ public class AutoMounter extends Thread implements monitordir.Listener {
   public void umount(Mount mount) {
     if (mount.dev != null) {
       String cmd[] = {"umount", mount.dev};
-      try {Runtime.getRuntime().exec(cmd);} catch (Exception e) {JFLog.log(e);}
+      try {JF.exec(cmd);} catch (Exception e) {JFLog.log(e);}
     }
     JF.sleep(500);  //give kernel some time
     File folder = new File(mount.media);

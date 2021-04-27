@@ -1423,4 +1423,12 @@ public class JF {
     }
     return sb.toString();
   }
+
+  public static void exec(String[] cmd) {
+    try {
+      Runtime.getRuntime().exec(cmd);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
 }

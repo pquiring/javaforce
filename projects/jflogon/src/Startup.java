@@ -58,7 +58,7 @@ public class Startup implements ShellProcessListener{
         }
         JF.sleep(1500);  //wait for display manager to start
 
-        Runtime.getRuntime().exec(new String[] {"numlockx", "on"});
+        JF.exec(new String[] {"numlockx", "on"});
         try {
           if (new File("/etc/.live").exists()) {
             doLiveLogon();
@@ -143,7 +143,7 @@ public class Startup implements ShellProcessListener{
 
   private static void chown_xauth(String fn, String user) throws Exception {
     try {
-      Runtime.getRuntime().exec(new String[] {"chown", user+":"+user, fn});
+      JF.exec(new String[] {"chown", user+":"+user, fn});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -182,15 +182,15 @@ public class Startup implements ShellProcessListener{
       }
       if (!Linux.isMemberOf(user, "audio")) {
         //pulseaudio requires user to be member of 'audio' group
-        Runtime.getRuntime().exec(new String[] {"usermod", "-aG", "audio", user});
+        JF.exec(new String[] {"usermod", "-aG", "audio", user});
       }
       if (!Linux.isMemberOf(user, "sambashare")) {
         //net usershare requires user to be member of 'sambashare' group
-        Runtime.getRuntime().exec(new String[] {"usermod", "-aG", "sambashare", user});
+        JF.exec(new String[] {"usermod", "-aG", "sambashare", user});
       }
       if (!Linux.isMemberOf(user, "video")) {
         //video4linux requires user to be a member of 'video' group
-        Runtime.getRuntime().exec(new String[] {"usermod", "-aG", "video", user});
+        JF.exec(new String[] {"usermod", "-aG", "video", user});
       }
       String jid = "j" + Math.abs(new Random().nextInt());
       String cmd[] = new String[] {"/usr/bin/sudo", "-E", "-u", user,
@@ -218,7 +218,7 @@ public class Startup implements ShellProcessListener{
       p.waitFor();
       JFLog.log("Session has terminated");
       JFLog.log("Killing all processes for user " + user);
-      Runtime.getRuntime().exec(new String[] {"killall", "-u", user});  //ensure session ended
+      JF.exec(new String[] {"killall", "-u", user});  //ensure session ended
       JF.sleep(1500);  //wait for windows to close
       if (!globalConfig.disableSleep) {
         if (rebootFlag) {
@@ -270,7 +270,7 @@ public class Startup implements ShellProcessListener{
       stop();
       showPlymouth();
       JFLog.log("Rebooting...");
-      Runtime.getRuntime().exec("reboot");
+      JF.exec(new String[] {"reboot"});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -284,7 +284,7 @@ public class Startup implements ShellProcessListener{
       stop();
       showPlymouth();
       JFLog.log("Shutting down...,type=" + type);
-      Runtime.getRuntime().exec("shutdown " + type + " now");
+      JF.exec(new String[] {"shutdown " + type + " now"});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -304,7 +304,7 @@ public class Startup implements ShellProcessListener{
   private static void hidePlymouth() {
     if (new File("/bin/plymouth").exists()) {
       try {
-        Runtime.getRuntime().exec(new String[] {"/bin/plymouth","--quit"});
+        JF.exec(new String[] {"/bin/plymouth","--quit"});
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -315,7 +315,7 @@ public class Startup implements ShellProcessListener{
   private static void showPlymouth() {
     if (new File("/bin/plymouth").exists()) {
       try {
-//        Runtime.getRuntime().exec(new String[] {"/bin/plymouth","--show-splash"});  //causes reboot to fail
+//        JF.exec(new String[] {"/bin/plymouth","--show-splash"});  //causes reboot to fail
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -385,7 +385,7 @@ public class Startup implements ShellProcessListener{
     public void sleep() {
       if (globalConfig.disableSleep) return;
       try {
-        Runtime.getRuntime().exec(new String[] {"systemctl", "suspend"});
+        JF.exec(new String[] {"systemctl", "suspend"});
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -448,7 +448,7 @@ public class Startup implements ShellProcessListener{
       JF.sleep(500);  //just in case
       //change name
       String cmd[] = {mount.fs + "fslabel", mount.dev, newName};
-      try {Runtime.getRuntime().exec(cmd);} catch (Exception e) {JFLog.log(e);}
+      try {JF.exec(cmd);} catch (Exception e) {JFLog.log(e);}
       JF.sleep(500);  //this is needed
       //mount it back
       Startup.autoMounter.mount(mount.dev);
