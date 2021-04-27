@@ -130,6 +130,7 @@ public class LnxPty {
     }
 
     try {
+      JFNative.load();
       LnxNative.ptyChildExec(slaveName, cmd, process_args.toArray(new String[0]), process_env.toArray(new String[0]));
       System.exit(0);  //should not happen
     } catch (Exception e) {

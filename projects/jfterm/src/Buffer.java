@@ -861,14 +861,14 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
         , LnxPty.makeEnvironment(new String[] {"TERM=" + Settings.settings.termType}));
       if (pty == null) throw new Exception("pty failed");
       in = new InputStream() {
-        public int read() {return -1;}
-        public int read(byte buf[]) {
+        public int read() throws IOException {return -1;}
+        public int read(byte buf[]) throws IOException {
           return pty.read(buf);
         }
       };
       out = new OutputStream() {
-        public void write(int x) {};
-        public void write(byte buf[]) {
+        public void write(int x) throws IOException {};
+        public void write(byte buf[]) throws IOException {
           pty.write(buf);
         }
       };
