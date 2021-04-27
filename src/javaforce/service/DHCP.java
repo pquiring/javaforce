@@ -379,9 +379,11 @@ public class DHCP extends Thread {
       }
       for(int a=0;a<cnt;a++) {
         Pool poola = pools.get(a);
+        if (poola.pxe_proxy) continue;
         for(int b=0;b<cnt;b++) {
           if (b == a) continue;
           Pool poolb = pools.get(b);
+          if (poolb.pxe_proxy) continue;
           if ((poola.pool_first_int & poola.mask_int) == (poolb.pool_first_int & poolb.mask_int)) {
             throw new Exception("multiple pools overlap");
           }
@@ -421,6 +423,7 @@ public class DHCP extends Thread {
   }
 
   private static int IP4toInt(String ip) {
+    if (ip == null) return 0;
     String o[] = ip.split("[.]");
     int ret = 0;
     for(int a=0;a<4;a++) {
