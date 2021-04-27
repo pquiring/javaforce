@@ -31,11 +31,13 @@ Known issues
    it's a buggy broadcom ethernet driver in linux (always seeing bcmgenet_rx_poll in the trace log)
 	 until this is resolved this project is mostly useless
  - The config.sh scripts are not compatible with Ubuntu (use Debian only)
+ - The DHCP in PXE Proxy mode is not working for me.  Could be hardware issue, your milage may vary. Recommend putting PXE options into a full DHCP server.
+   Note : The DHCP server must be enabled to track clients.  Use the proxy option if needed.
 
 FAQ:
 ----
 Q : What is the client ID?
-A : The lower 32bits of the MAC address of the client.
+A : The MAC address of the client.
 
 Q : Is the Pi3 supported?
 A : Probably if it's firmware is updated, but it only has a 100MB NIC so performance would be poor.  The Pi4 has a gigabit NIC.
