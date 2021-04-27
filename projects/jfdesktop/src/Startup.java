@@ -49,8 +49,8 @@ public class Startup {
           new Dock().setVisible(true);
           JFLog.log("Creating Desktop");
           new Desktop().setVisible(true);
-        } catch (Exception e) {
-          JFLog.log(e);
+        } catch (Throwable t) {
+          JFLog.log(t);
         }
       }
     });
