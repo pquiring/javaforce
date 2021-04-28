@@ -103,7 +103,7 @@ public class FileSystems {
     }
   }
 
-  public static boolean add(String name, String arch, String derived_from) {
+  public static boolean create(String name, String arch, String derived_from) {
     if (map.get(name + "-" + arch) != null) {
       return false;
     }
@@ -120,8 +120,8 @@ public class FileSystems {
     return true;
   }
 
-  public static boolean add(String name, String arch) {
-    return add(name, arch, null);
+  public static boolean create(String name, String arch) {
+    return FileSystems.create(name, arch, null);
   }
 
   public static boolean remove(String name, String arch) {

@@ -124,9 +124,9 @@ public class ConfigPanel extends Panel {
         public void run() {
           String newName = JF.filter(form1_name.getText(), JF.filter_alpha_numeric);
           if (newName.length() == 0) return;
-          FileSystems.add(newName, "bios");
-          FileSystems.add(newName, "arm");
-          FileSystems.add(newName, "x86");
+          FileSystems.create(newName, "bios");
+          FileSystems.create(newName, "arm");
+          FileSystems.create(newName, "x86");
           form1.setVisible(false);
           split.setRightComponent(createFileSystemsPanel());
         }
