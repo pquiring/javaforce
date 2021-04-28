@@ -23,14 +23,6 @@ public class FileOps {
 
   public static void copyFile(String src, String dst) {
     if (debug) JFLog.log("CopyFile:" + src + " to " + dst);
-    if (dst.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to copy to filesystems file:" + dst);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return;
-    }
     try {
       File fsrc = new File(src);
       File fdst = new File(dst);
@@ -42,14 +34,6 @@ public class FileOps {
 
   public static void renameFile(String src, String dst) {
     if (debug) JFLog.log("RenameFile:" + src + " to " + dst);
-    if (src.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to rename filesystems file:" + src);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return;
-    }
     try {
       File fsrc = new File(src);
       File fdst = new File(dst);
@@ -60,26 +44,10 @@ public class FileOps {
   }
 
   public static void delete(String filename) {
-    if (filename.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to delete filesystems file:" + filename);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return;
-    }
     new File(filename).delete();
   }
 
   public static void create(String filename) {
-    if (filename.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to create filesystems file:" + filename);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return;
-    }
     try {
       File file = new File(filename);
       if (file.exists()) {
@@ -93,26 +61,10 @@ public class FileOps {
   }
 
   public static void mkdir(String folder) {
-    if (folder.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to mkdir in filesystems:" + folder);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return;
-    }
     new File(folder).mkdir();
   }
 
   public static void rmdir(String folder) {
-    if (folder.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to rmdir in filesystems:" + folder);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return;
-    }
     new File(folder).delete();
   }
 
@@ -169,14 +121,6 @@ public class FileOps {
   }
 
   public static boolean setMode(String local, int mode) {
-    if (local.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to setMode in filesystems:" + local);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return false;
-    }
     if (true) {
       LnxNative.fileSetMode(local, mode);
       return true;
@@ -242,14 +186,6 @@ public class FileOps {
   }
 
   public static boolean setUID(String local, int id) {
-    if (local.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to setUID in filesystems:" + local);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return false;
-    }
     try {
       Files.setAttribute(new File(local).toPath(), "unix:uid", id, LinkOption.NOFOLLOW_LINKS);
       return true;
@@ -269,14 +205,6 @@ public class FileOps {
   }
 
   public static boolean setGID(String local, int id) {
-    if (local.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to setGID in filesystems:" + local);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return false;
-    }
     try {
       Files.setAttribute(new File(local).toPath(), "unix:gid", id, LinkOption.NOFOLLOW_LINKS);
       return true;
@@ -300,14 +228,6 @@ public class FileOps {
   }
 
   public static boolean setMTime(String local, long ts) {
-    if (local.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to setMTime in filesystems:" + local);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return false;
-    }
     try {
       if (true) {
         LnxNative.fileSetModifiedTime(local, ts);
@@ -337,14 +257,6 @@ public class FileOps {
   }
 
   public static boolean setATime(String local, long ts) {
-    if (local.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to setATime in filesystems:" + local);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return false;
-    }
     try {
       if (true) {
         LnxNative.fileSetAccessTime(local, ts);
@@ -392,14 +304,6 @@ public class FileOps {
   }
 
   public static boolean createSymbolicLink(String link, String target) {
-    if (link.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to createSymbolicLink in filesystems:" + link);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return false;
-    }
     try {
       Files.createSymbolicLink(new File(link).toPath(), new File(target).toPath());
       return true;
@@ -410,14 +314,6 @@ public class FileOps {
   }
 
   public static boolean createLink(String link, String target) {
-    if (link.startsWith(Paths.filesystems)) {
-      try {
-        throw new Exception ("Error:Attempting to createLink in filesystems:" + link);
-      } catch (Exception e) {
-        JFLog.log(e);
-      }
-      return false;
-    }
     try {
       Files.createLink(new File(link).toPath(), new File(target).toPath());
       return true;

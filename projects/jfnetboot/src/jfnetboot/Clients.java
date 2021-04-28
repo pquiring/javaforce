@@ -26,7 +26,6 @@ public class Clients {
     for(File file : files) {
       if (file.isDirectory()) continue;
       String name = file.getName();
-      if (name.length() > 16) continue;
       int idx = name.indexOf(".dat");
       if (idx == -1) continue;
       name = name.substring(0, idx);

@@ -40,6 +40,29 @@ public class FileSystem implements Cloneable {
     local = Paths.filesystems + "/" + name + "-" + arch;
     boot_path = local + "/boot";
     root_path = local + "/root";
+    mkdirs();
+    this.rootFolder = new NFolder();
+  }
+
+  /** File System : ctor to create derived copy.
+   * @param that = FileSystem to clone
+   * @param derived_local = derived file system
+   */
+  public FileSystem(String local, String name, FileSystem that) {
+    this.name = name;
+    this.arch = that.arch;
+    this.derived_from = that.derived_from;
+    this.local = local;
+    boot_path = that.boot_path;  //read-only
+    root_path = this.local + "/root";
+    mkdirs();
+    this.rootFolder = that.rootFolder.clone(root_path);
+    this.base_id = that.base_id + clone_id;
+    this.next_id = base_id;
+    cloneBuildFolder(this.rootFolder);
+  }
+
+  private void mkdirs() {
     new File(local).mkdir();
     new File(getRootPath()).mkdir();
     if (true) {
@@ -52,24 +75,6 @@ public class FileSystem implements Cloneable {
       //seperate boot folder (deprecated)
       new File(getBootPath()).mkdir();
     }
-    this.rootFolder = new NFolder();
-  }
-
-  /** File System : ctor to create derived copy.
-   * @param that = FileSystem to clone
-   * @param derived_local = derived file system
-   */
-  public FileSystem(String local, String name, FileSystem that) {
-    this.name = name;
-    this.arch = that.arch;
-    this.derived_from = that.name;
-    this.local = local;
-    boot_path = that.boot_path;  //read-only
-    root_path = this.local + "/root";
-    this.rootFolder = that.rootFolder.clone(root_path);
-    this.base_id = that.base_id + clone_id;
-    this.next_id = base_id;
-    cloneBuildFolder(this.rootFolder);
   }
 
   /** Build hashes after a clone. */
@@ -90,12 +95,18 @@ public class FileSystem implements Cloneable {
   /** Creates a clone for a Client. */
   public FileSystem clone(Client client) {
     String name = client.getSerial();
-    return new FileSystem(Paths.clients + "/" + name, name, this);
+    return new FileSystem(Paths.clients + "/" + name + "-" + arch, name, this);
   }
 
   /** Creates a clone for a new FileSystem. */
-  public FileSystem clone(String name, FileSystem derived) {
-    return new FileSystem(Paths.filesystems + "/" + name, name, this);
+  public FileSystem clone(String name, FileSystem derived, Runnable notify) {
+    FileSystem clone = new FileSystem(Paths.filesystems + "/" + name + "-" + arch, name, this);
+    clone.save();
+    FileSystems.add(clone);
+    if (notify != null) {
+      notify.run();
+    }
+    return clone;
   }
 
   public boolean canIndex() {
@@ -168,6 +179,7 @@ public class FileSystem implements Cloneable {
   public void delete() {
     if (!isClientFileSystem()) {
       new File(getConfigFile(name, arch)).delete();
+      FileSystems.remove(name, arch);
     }
     new Thread() {
       public void run() {
@@ -177,7 +189,6 @@ public class FileSystem implements Cloneable {
         }
       }
     }.start();
-    FileSystems.remove(name, arch);
   }
 
   private void deleteFiles(File path) {

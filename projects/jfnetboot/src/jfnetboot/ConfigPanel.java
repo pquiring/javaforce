@@ -235,6 +235,8 @@ public class ConfigPanel extends Panel {
     help.addClickListener( (MouseEvent me, Component c) -> {
       c.getClient().openURL("http://jfnetboot.sf.net/help_clients.php");
     });
+    Label status = new Label("");
+    opts.add(status);
     //list clients [Edit] [Clone] [Purge] [Shutdown] [Reboot] [Delete]
     Client[] clients = Clients.getClients();
     Table table = new Table(100, 32, 8, clients.length + 1);
@@ -326,9 +328,16 @@ public class ConfigPanel extends Panel {
             String newName = JF.filter(form1_name.getText(), JF.filter_alpha_numeric);
             if (newName.length() == 0) return;
             form1.setVisible(false);
-            //TODO : create progress bar popup window
-            client.clone(newName);
-            split.setRightComponent(createFileSystemsPanel());
+            status.setText("Clone in progress, please wait...");
+            new Thread() {
+              public void run() {
+                client.clone(newName, new Runnable() {
+                  public void run() {
+                    status.setText("Clone complete!");
+                  }
+                });
+              }
+            }.start();
           }
         };
         form1.setTitle("Clone Client File System");
@@ -368,6 +377,7 @@ public class ConfigPanel extends Panel {
         form0_confirm.setText("Delete Forever");
         form0.setVisible(true);
       });
+      tidx++;
     }
     return panel;
   }
@@ -661,7 +671,7 @@ public class ConfigPanel extends Panel {
     row4.add(form_client_ts_y);
 
     Row row4a = new Row();
-    popup.add(row4a);
+//    popup.add(row4a);  //no longer supported
     row4a.add(new Label("VideoMode:"));
     form_client_vm = new CheckBox("");
     row4a.add(form_client_vm);

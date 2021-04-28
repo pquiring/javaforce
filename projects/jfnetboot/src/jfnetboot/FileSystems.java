@@ -97,6 +97,9 @@ public class FileSystems {
       int after_size = derived.size();
       if (before_size == after_size) {
         JFLog.log("Error:Unable to init all file systems");
+        for(FileSystem fs : derived) {
+          JFLog.log("Remaining:" + fs.name + "-" + fs.arch + ":derived=" + fs.derived_from);
+        }
         JFLog.log("Reason:either a base file system was deleted or a circular dependancy was created some how");
         System.exit(1);
       }
@@ -122,6 +125,10 @@ public class FileSystems {
 
   public static boolean create(String name, String arch) {
     return FileSystems.create(name, arch, null);
+  }
+
+  public static void add(FileSystem fs) {
+    map.put(fs.name + "-" + fs.arch, fs);
   }
 
   public static boolean remove(String name, String arch) {

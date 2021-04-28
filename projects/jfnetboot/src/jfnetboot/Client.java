@@ -98,8 +98,8 @@ public class Client {
     fs.purge();
   }
 
-  public void clone(String newName) {
-    fs.clone(newName, fs);
+  public void clone(String newName, Runnable notify) {
+    fs.clone(newName, fs, notify);
   }
 
   public boolean index() {

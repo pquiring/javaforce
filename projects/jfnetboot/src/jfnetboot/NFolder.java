@@ -29,6 +29,7 @@ public class NFolder extends NHandle {
     this.path = that.path;
     this.name = that.name;
     this.symlink = that.symlink;
+    FileOps.mkdir(this.local);
     //copy cfolders (clones)
     for(NFolder child : that.cfolders) {
       this.cfolders.add(child.clone(nlocal, this));
@@ -37,7 +38,9 @@ public class NFolder extends NHandle {
     for(NFile cfile : that.cfiles) {
       NFile clone = cfile.clone();
       if (cfile.rw) {
-        FileOps.copyFile(cfile.local, nlocal + cfile.path);
+        if (cfile.symlink == null) {
+          FileOps.copyFile(cfile.local, nlocal + cfile.path);
+        }
         clone.local = nlocal + clone.path;
       }
       this.cfiles.add(clone);
