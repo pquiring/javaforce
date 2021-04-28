@@ -124,6 +124,7 @@ public class ConfigPanel extends Panel {
         public void run() {
           String newName = JF.filter(form1_name.getText(), JF.filter_alpha_numeric);
           if (newName.length() == 0) return;
+          FileSystems.add(newName, "bios");
           FileSystems.add(newName, "arm");
           FileSystems.add(newName, "x86");
           form1.setVisible(false);
@@ -142,9 +143,41 @@ public class ConfigPanel extends Panel {
     help.addClickListener( (MouseEvent me, Component c) -> {
       c.getClient().openURL("http://jfnetboot.sf.net/help_filesystems.php");
     });
-    //list file systems : [Delete]
+    //default file system
+    Row row1 = new Row();
+    col.add(row1);
+    row1.add(new Label("Default FileSystem:"));
+    ComboBox cb = new ComboBox();
+    String[] fss = FileSystems.getFileSystemNames();
+    int idx = -1;
+    int pos = 0;
+    for(String fs : fss) {
+      cb.add(fs, fs);
+      if (fs.equals(Settings.current.defaultFileSystem)) {
+        idx = pos;
+      }
+      pos++;
+    }
+    if (idx != -1) {
+      cb.setSelectedIndex(idx);
+    }
+    row1.add(cb);
+    Button save = new Button("Save");
+    row1.add(save);
+    Label saved = new Label("");
+    row1.add(saved);
+    save.addClickListener( (MouseEvent me, Component c) -> {
+      String opt = cb.getSelectedText();
+      Settings.current.defaultFileSystem = opt;
+      Settings.current.save();
+      saved.setText("Saved!");
+    });
+
+    //list file systems : <name> <arch> [Archive] [Delete]
     FileSystem[] list = FileSystems.getFileSystems();
-    Table table = new Table(100,32,3,list.length);
+    Label status = new Label("");
+    col.add(status);
+    Table table = new Table(100,32,4,list.length);
     table.add(new Label("Name"), 0, 0);
     table.add(new Label("Arch"), 1, 0);
     table.add(new Label("Actions"), 2, 0);
@@ -155,9 +188,19 @@ public class ConfigPanel extends Panel {
       table.add(new Label(name), 0, tidx);
       String arch = fs.getArch();
       table.add(new Label(arch), 1, tidx);
+      Button archive = new Button("Archive");
+      table.add(archive, 2, tidx);
+      archive.addClickListener( (MouseEvent me, Component c) -> {
+        status.setText("Archiving:" + fs.name + ":" + fs.arch);
+        fs.archive(new Runnable() {
+          public void run() {
+            status.setText("Archive Complete:" + fs.name + ":" + fs.arch);
+          }
+        });
+      });
       if (!name.equals("default")) {
         Button delete = new Button("Delete");
-        table.add(delete, 2, tidx);
+        table.add(delete, 3, tidx);
         delete.addClickListener( (MouseEvent me, Component c) -> {
           action0 = new Runnable() {
             public void run() {
@@ -211,12 +254,11 @@ public class ConfigPanel extends Panel {
 
         idx = 0;
         selected = -1;
-        FileSystem[] fss = FileSystems.getFileSystems();
+        String[] fss = FileSystems.getFileSystemNames();
         form_client_filesystem.clear();
-        for(FileSystem fs : fss) {
-          if (!fs.arch.equals("arm")) continue;
-          form_client_filesystem.add(fs.name, fs.name);
-          if (fs.name.equals(client.filesystem)) {
+        for(String fs : fss) {
+          form_client_filesystem.add(fs, fs);
+          if (fs.equals(client.filesystem)) {
             selected = idx;
           }
           idx++;
@@ -578,10 +620,9 @@ public class ConfigPanel extends Panel {
     popup.add(row2a);
     row2a.add(new Label("FileSystem:"));
     form_client_filesystem = new ComboBox();
-    FileSystem[] fss = FileSystems.getFileSystems();
-    for(FileSystem fs : fss) {
-      if (!fs.arch.equals("arm")) continue;
-      form_client_filesystem.add(fs.name, fs.name);
+    String[] fss = FileSystems.getFileSystemNames();
+    for(String fs : fss) {
+      form_client_filesystem.add(fs, fs);
     }
     row2a.add(form_client_filesystem);
 

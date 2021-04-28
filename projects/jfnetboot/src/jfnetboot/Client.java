@@ -26,7 +26,7 @@ public class Client {
   public Client(long serial, String arch) {
     this.serial = serial;
     this.arch = arch;
-    filesystem = "default";
+    filesystem = Settings.current.defaultFileSystem;
     cmd = "";
     opts = "";
     hostname = getSerial();
@@ -51,7 +51,7 @@ public class Client {
       props.load(fis);
       fis.close();
       Client client = new Client(serial, arch);
-      client.filesystem = getProperty(props, "file-system", "default");
+      client.filesystem = getProperty(props, "file-system", Settings.current.defaultFileSystem);
       client.arch = getProperty(props, "arch", arch);
       client.cmd = getProperty(props, "cmd", "");
       client.opts = getProperty(props, "kernel-opts", "");

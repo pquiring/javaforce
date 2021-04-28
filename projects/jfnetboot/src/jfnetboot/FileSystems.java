@@ -25,6 +25,16 @@ public class FileSystems {
     return map.values().toArray(new FileSystem[0]);
   }
 
+  public static String[] getFileSystemNames() {
+    ArrayList<String> names = new ArrayList<>();
+    FileSystem[] fss = getFileSystems();
+    for(FileSystem fs : fss) {
+      if (names.contains(fs.name)) continue;
+      names.add(fs.name);
+    }
+    return names.toArray(new String[names.size()]);
+  }
+
   public static void init() {
     if (!new File(Paths.filesystems + "/default-arm.cfg").exists()) {
       try {

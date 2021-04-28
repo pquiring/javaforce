@@ -220,6 +220,34 @@ public class FileSystem implements Cloneable {
     save();
   }
 
+  public boolean archiving;
+  public Runnable notify;
+
+  public void archive(Runnable notify) {
+    if (archiving) return;
+    this.notify = notify;
+    new Thread() {
+      public void run() {
+        archiving = true;
+        Calendar c = Calendar.getInstance();
+        String file = String.format("%s/archive-%04d-%02d-%02d_%02d-%02d-%02d.tar.xz"
+          , local
+          , c.get(Calendar.YEAR)
+          , c.get(Calendar.MONTH + 1)
+          , c.get(Calendar.DAY_OF_MONTH)
+          , c.get(Calendar.HOUR_OF_DAY)
+          , c.get(Calendar.MINUTE)
+          , c.get(Calendar.SECOND)
+        );
+        JF.exec(new String[] {"tar", "cf", file, local + "/root"});
+        archiving = false;
+        if (notify != null) {
+          notify.run();
+        }
+      }
+    }.start();
+  }
+
   private Object hash_lock = new Object();
   private static final long clone_id = 0x0001000000000000L;
   private long base_id = clone_id;
