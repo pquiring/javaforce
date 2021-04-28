@@ -118,7 +118,7 @@ public class Client {
   private String getHTML() {
     StringBuilder sb = new StringBuilder();
     sb.append("<center>");
-    sb.append("<h1>Serial:" + serial + "</h1>");
+    sb.append("<h1>Serial:" + getSerial() + "</h1>");
     sb.append("This client is not configured yet!<br>");
     sb.append("Please log into jfNetBoot console, configure and then reboot.");
     sb.append("</center>");
