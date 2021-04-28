@@ -118,9 +118,12 @@ public class Client {
   private String getHTML() {
     StringBuilder sb = new StringBuilder();
     sb.append("<center>");
+    sb.append("<h1>jfNetBoot Thin Client</h1>");
+    sb.append("<br>");
     sb.append("<h1>Serial:" + getSerial() + "</h1>");
-    sb.append("This client is not configured yet!<br>");
-    sb.append("Please log into jfNetBoot console, configure and then reboot.");
+    sb.append("<br>");
+    sb.append("<h2>This client is not configured yet!</h2>");
+    sb.append("<h2>Please log into jfNetBoot console, configure and then reboot.</h2>");
     sb.append("</center>");
     return sb.toString();
   }

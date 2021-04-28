@@ -45,7 +45,9 @@ public class FileSystem implements Cloneable {
     if (true) {
       //symlink : boot -> root/boot
       new File(getRootPath() + "/boot").mkdir();
-      FileOps.createSymbolicLink(getBootPath(), getRootPath() + "/boot");
+      if (!new File(getBootPath()).exists()) {
+        FileOps.createSymbolicLink(getBootPath(), getRootPath() + "/boot");
+      }
     } else {
       //seperate boot folder (deprecated)
       new File(getBootPath()).mkdir();
