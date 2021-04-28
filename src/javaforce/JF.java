@@ -1426,7 +1426,8 @@ public class JF {
 
   public static void exec(String[] cmd) {
     try {
-      Runtime.getRuntime().exec(cmd);
+      Process p = Runtime.getRuntime().exec(cmd);
+      p.waitFor();
     } catch (Exception e) {
       JFLog.log(e);
     }
