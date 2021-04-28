@@ -262,7 +262,7 @@ public class Client {
       "if [ -f /usr/bin/pacman ]; then\n" +
       "  pacman -S xorg-server xorg-xinput openbox lightdm chromium pulseaudio openssh sudo\n" +
       "fi\n" +
-      "cp autostart /etc/xdg/autostart\n" +
+      "cp autostart /etc/xdg/openbox\n" +
       "#change OSKey + E = open terminal\n" +
       "sed -i -- 's/kfmclient openProfile filemanagement/x-terminal-emulator/g' /etc/xdg/openbox/rc.xml\n" +
       "#enable auto login : username=user\n" +
