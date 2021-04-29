@@ -26,7 +26,7 @@ public class Clients {
     for(File file : files) {
       if (file.isDirectory()) continue;
       String name = file.getName();
-      int idx = name.indexOf(".dat");
+      int idx = name.indexOf(".cfg");
       if (idx == -1) continue;
       name = name.substring(0, idx);
       idx = name.indexOf("-");

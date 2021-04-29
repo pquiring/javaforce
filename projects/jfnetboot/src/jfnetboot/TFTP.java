@@ -16,8 +16,8 @@ import javaforce.service.*;
 
 public class TFTP extends Thread implements DHCP.Notify {
 
-  public static boolean debugMsgs = true;
-  public static boolean debugException = true;
+  public static boolean debugMsgs = false;
+  public static boolean debugException = false;
 
   /* Opcodes */
   private static final int oc_read = 1;
@@ -325,7 +325,7 @@ public class TFTP extends Thread implements DHCP.Notify {
       //generate grub.cfg
       sb.append("set default=\"0\"\n");
       sb.append("set timeout=3\n");
-      sb.append("menuentry 'boot' {\n");
+      sb.append("menuentry 'jfnetboot' {\n");
       sb.append("  linux vmlinuz root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%012x", serial) + "/x86,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts + "\n");
       sb.append("  initrd initrd.img\n");
       sb.append("}\n");

@@ -116,7 +116,7 @@ public class FileSystems {
     } else {
       FileSystem base = map.get(derived_from + "-" + arch);
       if (base == null) return false;
-      fs = new FileSystem(Paths.filesystems + "/" + name, name, base);
+      fs = new FileSystem(Paths.filesystems + "/" + name + "-" + arch, name, base, false);
     }
     fs.index();
     map.put(name + "-" + arch, fs);

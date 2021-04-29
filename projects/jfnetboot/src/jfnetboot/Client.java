@@ -35,7 +35,7 @@ public class Client {
   }
 
   public static String getConfigFile(long serial, String arch) {
-    return Paths.clients + "/" + getSerial(serial) + "-" + arch + ".dat";
+    return Paths.clients + "/" + getSerial(serial) + "-" + arch + ".cfg";
   }
 
   private static String getProperty(Properties props, String key, String def) {
@@ -109,6 +109,7 @@ public class Client {
       return false;
     }
     fs = derived.clone(this);
+    JFLog.log("fs=" + fs);
     replaceFiles();  //must replace files before index() but after clone()
     fs.index();
     return true;
@@ -165,11 +166,19 @@ public class Client {
     String local = fs.getRootPath() + path;
     if (!new File(local).exists()) {
       //does not exist - copy from derived file system
-      String derived_local = fs.getDerived().getRootPath() + path;
-      if (!new File(derived_local).exists()) {
-        JFLog.log("ERROR:Unable to patch file:" + derived_local);
-        return;
-      }
+      FileSystem derived = fs.getDerived();
+      String derived_local = null;
+      do {
+        if (derived == null) {
+          JFLog.log("ERROR:Unable to patch file:" + local);
+          return;
+        }
+        derived_local = derived.getRootPath() + path;
+        if (new File(derived_local).exists()) {
+          break;
+        }
+        derived = derived.getDerived();
+      } while (true);
       FileOps.copyFile(derived_local, local);
       //create file
       fs.create(fs.getHandle(fs.getRootHandle(), "etc"), "passwd");

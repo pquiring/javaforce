@@ -48,10 +48,10 @@ public class FileSystem implements Cloneable {
    * @param that = FileSystem to clone
    * @param derived_local = derived file system
    */
-  public FileSystem(String local, String name, FileSystem that) {
+  public FileSystem(String local, String name, FileSystem that, boolean copy) {
     this.name = name;
     this.arch = that.arch;
-    this.derived_from = that.derived_from;
+    this.derived_from = that.name;
     this.local = local;
     boot_path = that.boot_path;  //read-only
     root_path = this.local + "/root";
@@ -59,6 +59,10 @@ public class FileSystem implements Cloneable {
     this.rootFolder = that.rootFolder.clone(root_path);
     this.base_id = that.base_id + clone_id;
     this.next_id = base_id;
+    if (copy) {
+      JFLog.log("cp -r " + that.getRootPath() + " " + this.getRootPath());
+      JF.exec(new String[] {"cp", "-r", that.getRootPath(), this.getRootPath()});
+    }
     cloneBuildFolder(this.rootFolder);
   }
 
@@ -95,12 +99,17 @@ public class FileSystem implements Cloneable {
   /** Creates a clone for a Client. */
   public FileSystem clone(Client client) {
     String name = client.getSerial();
-    return new FileSystem(Paths.clients + "/" + name + "-" + arch, name, this);
+    //this will only copy folders
+    return new FileSystem(Paths.clients + "/" + name + "-" + arch, name, this, false);
   }
 
-  /** Creates a clone for a new FileSystem. */
+  /** Creates a clone of a Client. */
   public FileSystem clone(String name, FileSystem derived, Runnable notify) {
-    FileSystem clone = new FileSystem(Paths.filesystems + "/" + name + "-" + arch, name, this);
+    String dest = Paths.filesystems + "/" + name + "-" + arch;
+    if (new File(dest).exists()) return null;
+    //this will copy all folders/files
+    FileSystem clone = new FileSystem(Paths.filesystems + "/" + name + "-" + arch, name, this, true);
+    clone.derived_from = derived_from;  //does NOT derive from Client FileSystem
     clone.save();
     FileSystems.add(clone);
     if (notify != null) {
@@ -151,8 +160,11 @@ public class FileSystem implements Cloneable {
       fis.close();
       FileSystem fs = new FileSystem(name, arch);
       fs.derived_from = props.getProperty("derived-from");
+      fs.next_id = Long.valueOf(props.getProperty("next-id"), 16);
+      fs.base_id = Long.valueOf(props.getProperty("base-id"), 16);
       return fs;
     } catch (Exception e) {
+      JFLog.log(e);
       return null;
     }
   }
@@ -168,6 +180,7 @@ public class FileSystem implements Cloneable {
         props.setProperty("derived-from", derived_from);
       }
       props.setProperty("next-id", Long.toUnsignedString(next_id, 16));
+      props.setProperty("base-id", Long.toUnsignedString(base_id, 16));
       FileOutputStream fos = new FileOutputStream(getConfigFile(name, arch));
       props.store(fos, "FileSystem Settings");
       fos.close();

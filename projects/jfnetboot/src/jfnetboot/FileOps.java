@@ -28,6 +28,7 @@ public class FileOps {
       File fdst = new File(dst);
       Files.copy(fsrc.toPath(), fdst.toPath(), StandardCopyOption.COPY_ATTRIBUTES, LinkOption.NOFOLLOW_LINKS);
     } catch (Exception e) {
+      JFLog.log("CopyFile:" + src + " -> " + dst);
       JFLog.log(e);
     }
   }
@@ -39,6 +40,7 @@ public class FileOps {
       File fdst = new File(dst);
       Files.move(fsrc.toPath(), fdst.toPath(), StandardCopyOption.ATOMIC_MOVE, LinkOption.NOFOLLOW_LINKS);
     } catch (Exception e) {
+      JFLog.log("RenameFile:" + src + " -> " + dst);
       JFLog.log(e);
     }
   }
@@ -56,6 +58,7 @@ public class FileOps {
       Path path = file.toPath();
       Files.createFile(path);
     } catch (Exception e) {
+      JFLog.log("CreateFile:" + filename);
       JFLog.log(e);
     }
   }
@@ -308,6 +311,7 @@ public class FileOps {
       Files.createSymbolicLink(new File(link).toPath(), new File(target).toPath());
       return true;
     } catch (Exception e) {
+      JFLog.log("CreateSymbolicLink:" + link + " -> " + target);
       JFLog.log(e);
       return false;
     }
@@ -318,6 +322,7 @@ public class FileOps {
       Files.createLink(new File(link).toPath(), new File(target).toPath());
       return true;
     } catch (Exception e) {
+      JFLog.log("CreateLink:" + link + " -> " + target);
       JFLog.log(e);
       return false;
     }

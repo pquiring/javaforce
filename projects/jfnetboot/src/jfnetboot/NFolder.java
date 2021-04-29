@@ -37,12 +37,6 @@ public class NFolder extends NHandle {
     //copy cfiles (clones)
     for(NFile cfile : that.cfiles) {
       NFile clone = cfile.clone();
-      if (cfile.rw) {
-        if (cfile.symlink == null) {
-          FileOps.copyFile(cfile.local, nlocal + cfile.path);
-        }
-        clone.local = nlocal + clone.path;
-      }
       this.cfiles.add(clone);
     }
   }
