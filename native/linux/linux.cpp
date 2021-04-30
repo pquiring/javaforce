@@ -1629,7 +1629,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_fileGetMode
 {
   struct stat s;
   const char *cname = e->GetStringUTFChars(name,NULL);
-  ::stat((const char *)cname, (struct stat*)&s);
+  ::lstat((const char *)cname, (struct stat*)&s);
   e->ReleaseStringUTFChars(name, cname);
   return s.st_mode;
 }
@@ -1648,7 +1648,7 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_fileSetAccessTime
   struct stat s;
   struct utimbuf tb;
   const char *cname = e->GetStringUTFChars(name,NULL);
-  ::stat((const char *)cname, (struct stat*)&s);
+  ::lstat((const char *)cname, (struct stat*)&s);
   ts /= 1000L;
   tb.actime = ts;
   tb.modtime = s.st_mtime;
@@ -1662,12 +1662,22 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_fileSetModifiedTime
   struct stat s;
   struct utimbuf tb;
   const char *cname = e->GetStringUTFChars(name,NULL);
-  ::stat((const char *)cname, (struct stat*)&s);
+  ::lstat((const char *)cname, (struct stat*)&s);
   ts /= 1000L;
   tb.actime = s.st_atime;
   tb.modtime = ts;
   ::utime((const char *)cname, &tb);
   e->ReleaseStringUTFChars(name, cname);
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_jni_LnxNative_fileGetID
+  (JNIEnv *e, jclass c, jstring name)
+{
+  struct stat s;
+  const char *cname = e->GetStringUTFChars(name,NULL);
+  ::lstat((const char *)cname, (struct stat*)&s);
+  e->ReleaseStringUTFChars(name, cname);
+  return s.st_ino;
 }
 
 JNIEXPORT jintArray JNICALL Java_javaforce_jni_LnxNative_getConsoleSize

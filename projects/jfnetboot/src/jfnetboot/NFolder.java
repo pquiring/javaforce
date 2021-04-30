@@ -10,7 +10,6 @@ import java.util.*;
 public class NFolder extends NHandle {
   public ArrayList<NFolder> cfolders = new ArrayList();
   public ArrayList<NFile> cfiles = new ArrayList();
-  public boolean converted;  //see FileSystem.doFolderDerived()
 
   public NFolder() {
   }
@@ -20,33 +19,6 @@ public class NFolder extends NHandle {
     this.local = local;
     this.path = path;
     this.name = name;
-  }
-
-  private NFolder(String nlocal, NFolder parent, NFolder that) {
-    this.parent = parent;
-    this.handle = that.handle;
-    this.local = nlocal + that.path;
-    this.path = that.path;
-    this.name = that.name;
-    this.symlink = that.symlink;
-    FileOps.mkdir(this.local);
-    //copy cfolders (clones)
-    for(NFolder child : that.cfolders) {
-      this.cfolders.add(child.clone(nlocal, this));
-    }
-    //copy cfiles (clones)
-    for(NFile cfile : that.cfiles) {
-      NFile clone = cfile.clone();
-      this.cfiles.add(clone);
-    }
-  }
-
-  public NFolder clone(String nlocal, NFolder parent) {
-    return new NFolder(nlocal, parent, this);
-  }
-
-  public NFolder clone(String nlocal) {
-    return clone(nlocal, null);
   }
 
   public boolean isFile() {
@@ -83,13 +55,6 @@ public class NFolder extends NHandle {
     NFolder folder = getFolder(name);
     if (folder != null) return folder;
     return getFile(name);
-  }
-
-  public boolean touch(String newLocalPath) {
-    if (rw) return false;
-    rw = true;
-    local = newLocalPath;
-    return true;
   }
 
   public void add(NHandle node) {

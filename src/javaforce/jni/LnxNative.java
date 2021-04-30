@@ -109,4 +109,5 @@ public class LnxNative {
   public static native void fileSetMode(String path, int mode);
   public static native void fileSetAccessTime(String path, long ts);
   public static native void fileSetModifiedTime(String path, long ts);
+  public static native long fileGetID(String path);
 }

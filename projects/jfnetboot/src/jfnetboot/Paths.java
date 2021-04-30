@@ -11,17 +11,9 @@ import javaforce.*;
 
 public class Paths {
   public static void init() {
-    if (JF.isWindows()) {
-      //not supported yet
-      String root = JF.getConfigPath().replaceAll("\\\\", "/");
-      filesystems = root + "/netboot/filesystems";
-      clients = root + "/netboot/clients";
-      config = root + "/netboot/config";
-    } else {
-      filesystems = "/var/netboot/filesystems";
-      clients = "/var/netboot/clients";
-      config = "/etc/netboot";
-    }
+    filesystems = "/var/netboot/filesystems";
+    clients = "/var/netboot/clients";
+    config = "/etc/netboot";
     logs = JF.getLogPath() + "/netboot";
     new File(filesystems).mkdirs();
     new File(clients).mkdirs();

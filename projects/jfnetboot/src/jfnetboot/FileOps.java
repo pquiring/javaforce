@@ -49,17 +49,19 @@ public class FileOps {
     new File(filename).delete();
   }
 
-  public static void create(String filename) {
+  public static long create(String local) {
     try {
-      File file = new File(filename);
+      File file = new File(local);
       if (file.exists()) {
         file.delete();
       }
       Path path = file.toPath();
       Files.createFile(path);
+      return getID(local);
     } catch (Exception e) {
-      JFLog.log("CreateFile:" + filename);
+      JFLog.log("CreateFile:" + local);
       JFLog.log(e);
+      return -1;
     }
   }
 
@@ -326,5 +328,9 @@ public class FileOps {
       JFLog.log(e);
       return false;
     }
+  }
+
+  public static long getID(String local) {
+    return LnxNative.fileGetID(local);
   }
 }

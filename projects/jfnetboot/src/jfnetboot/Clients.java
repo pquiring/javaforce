@@ -48,7 +48,7 @@ public class Clients {
         client = new Client(serial, arch);
         client.save();
       }
-      client.index();
+      client.mount();
       clients.put(serial, client);
     }
     return client;

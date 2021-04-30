@@ -164,7 +164,7 @@ public class RPC extends Thread {
     private void writeObjAttr(CHandle handle) {
       int type;
       NHandle nhandle = handle.fs.getHandle(handle.handle);
-      if (nhandle.symlink != null) {
+      if (FileOps.isSymlink(new File(nhandle.local))) {
         type = TYPE_LNK;
       } else if (nhandle.isFolder()) {
         type = TYPE_DIR;
@@ -187,7 +187,7 @@ public class RPC extends Thread {
       writeLong(size);  //used (actual space used on disk)
       writeLong(0);  //rdev
       writeLong(0x12345678);  //fsid (file system id)
-      writeLong(handle.handle);  //fileid
+      writeLong(handle.handle & NHandle.INODE_MASK);  //fileid
       writeTime(FileOps.getATime(local));  //atime
       writeTime(FileOps.getMTime(local));  //mtime
       writeTime(FileOps.getCTime(local));  //ctime
@@ -516,7 +516,7 @@ public class RPC extends Thread {
             writeInt(0);  //no follows
             break;
           }
-          String path = nhandle.symlink;
+          String path = FileOps.readSymlink(new File(nhandle.local));
           if (debug) JFLog.log("READLINK:" + handle + ":" + getLocalPath(handle) + " -> " + path);
           writeInt(ERR_SUCCESS);
           writeInt(1);  //follows
@@ -830,7 +830,7 @@ public class RPC extends Thread {
             }
             if (debug) JFLog.log("READIR:entry=" + nhandle.local + ":" + nhandle.toString());
             writeInt(1);  //follows
-            writeLong(file);  //fileid
+            writeLong(file & NHandle.INODE_MASK);  //fileid
             if (a == 0) {
               writeString(".");
             } else if (a == 1) {
@@ -1012,9 +1012,6 @@ public class RPC extends Thread {
       }
       if (nhandle.isFolder()) {
         return 4096;
-      }
-      if (nhandle.symlink != null) {
-        return nhandle.symlink.length();
       }
       NFile file = (NFile)nhandle;
       return new File(file.local).length();

@@ -99,19 +99,43 @@ public class Client {
   }
 
   public void clone(String newName, Runnable notify) {
-    fs.clone(newName, fs, notify);
+    fs.clone(newName, notify);
   }
 
-  public boolean index() {
-    FileSystem derived = FileSystems.get(filesystem, arch);
-    if (derived == null) {
-      JFLog.log("Client:Error:FileSystem not found:" + filesystem + "-" + arch);
+  public boolean mount() {
+    FileSystem lower = FileSystems.get(filesystem, arch);
+    if (lower == null) {
+      JFLog.log("Client:Error:Lower FileSystem not found:" + filesystem + "-" + arch);
       return false;
     }
-    fs = derived.clone(this);
-    JFLog.log("fs=" + fs);
-    replaceFiles();  //must replace files before index() but after clone()
+    fs = new FileSystem(getSerial(), arch, this);
+    new File(fs.local + "/upper").mkdir();
+    new File(fs.local + "/work").mkdir();
+    // mount -t overlay overlay -o lowerdir=/lower,upperdir=/upper,workdir=/work /merged
+    JF.exec(new String[] {"mount", "-t", "overlay", "overlay", "-o", "lowerdir=" + lower.getRootPath() + ",upperdir=" + fs.local + "/upper" + ",workdir=" + fs.local + "/work", fs.getRootPath()});
+    if (!new File(fs.getRootPath() + "/etc/passwd").exists()) {
+      JFLog.log("Client:Failed to mount overlay filesystem");
+      return false;
+    }
+    replaceFiles();  //must replace files before index() but after mount()
     fs.index();
+    return true;
+  }
+
+  public boolean umount() {
+    fs.closeAllFiles();
+    int max = 10;
+    while (new File(fs.getRootPath() + "/etc/passwd").exists()) {
+      JF.sleep(500);
+      JF.exec(new String[] {"umount", fs.getRootPath()});
+      JF.sleep(500);
+      max--;
+      if (max == 0) {
+        JFLog.log("Error:Client.umount() failed!");
+        break;
+      }
+    }
+    fs = null;
     return true;
   }
 
@@ -162,27 +186,7 @@ public class Client {
   }
 
   private void patchFile(String path, String regex, String replace) {
-    //see if local copy exists
     String local = fs.getRootPath() + path;
-    if (!new File(local).exists()) {
-      //does not exist - copy from derived file system
-      FileSystem derived = fs.getDerived();
-      String derived_local = null;
-      do {
-        if (derived == null) {
-          JFLog.log("ERROR:Unable to patch file:" + local);
-          return;
-        }
-        derived_local = derived.getRootPath() + path;
-        if (new File(derived_local).exists()) {
-          break;
-        }
-        derived = derived.getDerived();
-      } while (true);
-      FileOps.copyFile(derived_local, local);
-      //create file
-      fs.create(fs.getHandle(fs.getRootHandle(), "etc"), "passwd");
-    }
     try {
       FileInputStream fis = new FileInputStream(local);
       byte[] data = fis.readAllBytes();
@@ -218,10 +222,6 @@ public class Client {
     replaceFile("/netboot/default.html", getHTML());
     replaceFile("/netboot/config.sh", getConfigScript());
     replaceFile("/netboot/autostart", getAutostartScript());
-    //delete root password for live systems
-    patchFile("/etc/shadow", "root[:][*][:]", "root::");
-    //delete all rpi*.service files
-    deleteFileRecursive("rpi.*[.]service");
   }
 
   private String getCommand() {

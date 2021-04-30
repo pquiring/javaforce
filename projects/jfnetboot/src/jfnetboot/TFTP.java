@@ -215,7 +215,7 @@ public class TFTP extends Thread implements DHCP.Notify {
     Client client = Clients.getClient(serial, arch);
     client.reinitCommand();
     client.setIP(ip);
-    String full = client.getFileSystem().getBase().getRootPath() + "/" + filename;
+    String full = client.getFileSystem().getRootPath() + "/" + filename;
     if (debugMsgs) JFLog.log("read file:" + full);
     File file = new File(full);
     if (!file.exists()) {

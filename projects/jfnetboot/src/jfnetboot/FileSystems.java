@@ -63,7 +63,6 @@ public class FileSystems {
         JFLog.log(e);
       }
     }
-    ArrayList<FileSystem> derived = new ArrayList();
     File[] files = new File(Paths.filesystems).listFiles();
     for(File file : files) {
       if (file.isDirectory()) continue;
@@ -74,57 +73,20 @@ public class FileSystems {
       if (idx == -1) continue;
       String arch = name.substring(idx + 1);
       name = name.substring(0, idx);
-      FileSystem fs = FileSystem.load(name, arch);
-      if (fs.canIndex()) {
-        fs.index();
-        map.put(fs.name + "-" + fs.arch, fs);
-      } else {
-        derived.add(fs);
-      }
+      FileSystem fs = new FileSystem(name, arch);
+      fs.index();
+      map.put(fs.name + "-" + fs.arch, fs);
     }
-    //now load derived file systems
-    while (derived.size() > 0) {
-      int before_size = derived.size();
-      for(int a=0;a<derived.size();a++) {
-        FileSystem fs = derived.get(a);
-        if (fs.canIndex()) {
-          fs.index();
-          map.put(fs.name + "-" + fs.arch, fs);
-          derived.remove(a);
-          break;
-        }
-      }
-      int after_size = derived.size();
-      if (before_size == after_size) {
-        JFLog.log("Error:Unable to init all file systems");
-        for(FileSystem fs : derived) {
-          JFLog.log("Remaining:" + fs.name + "-" + fs.arch + ":derived=" + fs.derived_from);
-        }
-        JFLog.log("Reason:either a base file system was deleted or a circular dependancy was created some how");
-        System.exit(1);
-      }
-    }
-  }
-
-  public static boolean create(String name, String arch, String derived_from) {
-    if (map.get(name + "-" + arch) != null) {
-      return false;
-    }
-    FileSystem fs;
-    if (derived_from == null) {
-      fs = new FileSystem(name, arch);
-    } else {
-      FileSystem base = map.get(derived_from + "-" + arch);
-      if (base == null) return false;
-      fs = new FileSystem(Paths.filesystems + "/" + name + "-" + arch, name, base, false);
-    }
-    fs.index();
-    map.put(name + "-" + arch, fs);
-    return true;
   }
 
   public static boolean create(String name, String arch) {
-    return FileSystems.create(name, arch, null);
+    if (map.get(name + "-" + arch) != null) {
+      return false;
+    }
+    FileSystem fs = new FileSystem(name, arch);
+    fs.index();
+    map.put(name + "-" + arch, fs);
+    return true;
   }
 
   public static void add(FileSystem fs) {
@@ -137,13 +99,6 @@ public class FileSystems {
     }
     if (Clients.isFileSystemInUse(name)) {
       return false;
-    }
-    for(FileSystem other : map.values()) {
-      if (other.derived_from == null) continue;
-      if (other.derived_from.equals(name) && other.arch.equals(arch)) {
-        //is base to a derived filesystem
-        return false;
-      }
     }
     String key = name + "-" + arch;
     map.remove(key);

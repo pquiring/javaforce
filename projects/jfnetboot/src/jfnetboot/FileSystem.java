@@ -17,11 +17,9 @@ public class FileSystem implements Cloneable {
   public String name;
   public String local;
   public String arch;  //x86 or arm
-  public String derived_from;
+  public Client client;  //client file system
 
-  private NFolder rootFolder;
-  private String boot_path;
-  private String root_path;
+  private NFolder root;
   private HashMap<Long, NFile> all_files = new HashMap();
   private HashMap<Long, NFolder> all_folders = new HashMap();
   private HashMap<Long, NHandle> all_handles = new HashMap();
@@ -37,90 +35,34 @@ public class FileSystem implements Cloneable {
   public FileSystem(String name, String arch) {
     this.name = name;
     this.arch = arch;
-    local = Paths.filesystems + "/" + name + "-" + arch;
-    boot_path = local + "/boot";
-    root_path = local + "/root";
-    mkdirs();
-    this.rootFolder = new NFolder();
-  }
-
-  /** File System : ctor to create derived copy.
-   * @param that = FileSystem to clone
-   * @param derived_local = derived file system
-   */
-  public FileSystem(String local, String name, FileSystem that, boolean copy) {
-    this.name = name;
-    this.arch = that.arch;
-    this.derived_from = that.name;
-    this.local = local;
-    boot_path = that.boot_path;  //read-only
-    root_path = this.local + "/root";
-    mkdirs();
-    this.rootFolder = that.rootFolder.clone(root_path);
-    this.base_id = that.base_id + clone_id;
-    this.next_id = base_id;
-    if (copy) {
-      JFLog.log("cp -r " + that.getRootPath() + " " + this.getRootPath());
-      JF.exec(new String[] {"cp", "-r", that.getRootPath(), this.getRootPath()});
-    }
-    cloneBuildFolder(this.rootFolder);
-  }
-
-  private void mkdirs() {
+    this.local = Paths.filesystems + "/" + name + "-" + arch;
+    this.root = new NFolder();
     new File(local).mkdir();
     new File(getRootPath()).mkdir();
-    if (true) {
-      //symlink : boot -> root/boot
-      new File(getRootPath() + "/boot").mkdir();
-      if (!new File(getBootPath()).exists()) {
-        FileOps.createSymbolicLink(getBootPath(), getRootPath() + "/boot");
-      }
-    } else {
-      //seperate boot folder (deprecated)
-      new File(getBootPath()).mkdir();
-    }
   }
 
-  /** Build hashes after a clone. */
-  private void cloneBuildFolder(NFolder pfolder) {
-    all_folders.put(pfolder.handle, pfolder);
-    all_handles.put(pfolder.handle, pfolder);
-    all_names.put(pfolder.path, pfolder.handle);
-    for(NFolder cfolder : pfolder.cfolders) {
-      cloneBuildFolder(cfolder);
-    }
-    for(NFile cfile : pfolder.cfiles) {
-      all_files.put(cfile.handle, cfile);
-      all_handles.put(cfile.handle, cfile);
-      all_names.put(cfile.path, cfile.handle);
-    }
-  }
-
-  /** Creates a clone for a Client. */
-  public FileSystem clone(Client client) {
-    String name = client.getSerial();
-    //this will only copy folders
-    return new FileSystem(Paths.clients + "/" + name + "-" + arch, name, this, false);
+  public FileSystem(String name, String arch, Client client) {
+    this.name = name;
+    this.arch = arch;
+    this.local = Paths.clients + "/" + name + "-" + arch;
+    this.root = new NFolder();
+    this.client = client;
+    new File(local).mkdir();
+    new File(getRootPath()).mkdir();
   }
 
   /** Creates a clone of a Client. */
-  public FileSystem clone(String name, FileSystem derived, Runnable notify) {
+  public FileSystem clone(String name, Runnable notify) {
     String dest = Paths.filesystems + "/" + name + "-" + arch;
     if (new File(dest).exists()) return null;
     //this will copy all folders/files
-    FileSystem clone = new FileSystem(Paths.filesystems + "/" + name + "-" + arch, name, this, true);
-    clone.derived_from = derived_from;  //does NOT derive from Client FileSystem
-    clone.save();
+    FileSystem clone = new FileSystem(Paths.filesystems + "/" + name + "-" + arch, name);
+    JFLog.log("cp -a " + this.getRootPath() + " " + clone.getRootPath());
     FileSystems.add(clone);
     if (notify != null) {
       notify.run();
     }
     return clone;
-  }
-
-  public boolean canIndex() {
-    if (derived_from == null) return true;
-    return FileSystems.get(derived_from, arch) != null;
   }
 
   public String getName() {
@@ -131,67 +73,8 @@ public class FileSystem implements Cloneable {
     return arch;
   }
 
-  public FileSystem getDerived() {
-    if (derived_from == null) return null;
-    return FileSystems.get(derived_from, arch);
-  }
-
-  public FileSystem getBase() {
-    FileSystem fs = this;
-    FileSystem derived = this;
-    do {
-      derived = derived.getDerived();
-      if (derived != null) {
-        fs = derived;
-      }
-    } while (derived != null);
-    return fs;
-  }
-
-  public static String getConfigFile(String name, String arch) {
-    return Paths.filesystems + "/" + name + "-" + arch + ".cfg";
-  }
-
-  public static FileSystem load(String name, String arch) {
-    try {
-      FileInputStream fis = new FileInputStream(getConfigFile(name, arch));
-      Properties props = new Properties();
-      props.load(fis);
-      fis.close();
-      FileSystem fs = new FileSystem(name, arch);
-      fs.derived_from = props.getProperty("derived-from");
-      fs.next_id = Long.valueOf(props.getProperty("next-id"), 16);
-      fs.base_id = Long.valueOf(props.getProperty("base-id"), 16);
-      return fs;
-    } catch (Exception e) {
-      JFLog.log(e);
-      return null;
-    }
-  }
-
-  public void save() {
-    if (isClientFileSystem()) {
-      //Client filesystem - do not save
-      return;
-    }
-    try {
-      Properties props = new Properties();
-      if (derived_from != null) {
-        props.setProperty("derived-from", derived_from);
-      }
-      props.setProperty("next-id", Long.toUnsignedString(next_id, 16));
-      props.setProperty("base-id", Long.toUnsignedString(base_id, 16));
-      FileOutputStream fos = new FileOutputStream(getConfigFile(name, arch));
-      props.store(fos, "FileSystem Settings");
-      fos.close();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
   public void delete() {
     if (!isClientFileSystem()) {
-      new File(getConfigFile(name, arch)).delete();
       FileSystems.remove(name, arch);
     }
     new Thread() {
@@ -221,36 +104,16 @@ public class FileSystem implements Cloneable {
     deleteFiles(new File(getRootPath()));
   }
 
-  public String getBootPath() {
-    return boot_path;
-  }
-
   public String getRootPath() {
-    return root_path;
+    return local + "/root";
   }
 
   public NFolder getRootFolder() {
-    return rootFolder;
+    return root;
   }
 
   private boolean isClientFileSystem() {
-    return local.startsWith(Paths.clients);
-  }
-
-  /** Index a file system.
-   */
-  public void index() {
-    JFLog.log("FileSystem.index():name=" + name + ":derived_from=" + derived_from + ":arch=" + arch);
-    if (derived_from == null) {
-      synchronized(lock) {
-        doFolder(getRootPath(), "", rootFolder);
-      }
-    } else {
-      synchronized(lock) {
-        doFolderDerived(getRootPath(), "", rootFolder, false);
-      }
-    }
-    save();
+    return client != null;
   }
 
   public boolean archiving;
@@ -281,22 +144,16 @@ public class FileSystem implements Cloneable {
     }.start();
   }
 
-  private Object hash_lock = new Object();
-  private static final long clone_id = 0x0001000000000000L;
-  private long base_id = clone_id;
-  private long next_id = clone_id;
-
-  /** Creates unique id for path. */
-  private long hash(String path) {
-    //BUG : during index() and rename() can not use hash() to generate a new handle (fileid) : client expects handle to not change
-    //    : but if the server is restarted the handles are all regenerated and the clients will most likely need to restart as well
-    //    : or else the client will most likely complain that fileid's have changed
-    synchronized(hash_lock) {
-      return next_id++;
+  /** Index a file system.
+   */
+  public void index() {
+    JFLog.log("FileSystem.index():name=" + name + ":arch=" + arch);
+    synchronized(lock) {
+      indexFolder(getRootPath(), "", root);
     }
   }
 
-  private void doFolder(String pfull, String pname, NFolder pfolder) {
+  private void indexFolder(String pfull, String pname, NFolder pfolder) {
     pfolder.name = pname;
     if (pfolder.parent != null) {
       //sub folder
@@ -306,15 +163,13 @@ public class FileSystem implements Cloneable {
       pfolder.path = pname;
     }
     pfolder.local = pfull;
-    pfolder.handle = hash(pfolder.path);
-    if (all_handles.get(pfolder.handle) == null) {
-      all_folders.put(pfolder.handle, pfolder);
-      all_handles.put(pfolder.handle, pfolder);
-      all_names.put(pfolder.path, pfolder.handle);
-    } else {
-      JFLog.log("Warning:duplicate hash code folder:" + pfolder.path);
-      return;
+    pfolder.handle = FileOps.getID(pfolder.local);
+    while (all_handles.get(pfolder.handle) != null) {
+      pfolder.handle += NHandle.HARD_LINK;
     }
+    all_folders.put(pfolder.handle, pfolder);
+    all_handles.put(pfolder.handle, pfolder);
+    all_names.put(pfolder.path, pfolder.handle);
     File file = new File(pfull);
     File[] children = file.listFiles();
     for(File child : children) {
@@ -326,7 +181,7 @@ public class FileSystem implements Cloneable {
         NFolder cfolder = new NFolder();
         cfolder.parent = pfolder;
         pfolder.cfolders.add(cfolder);
-        doFolder(cfull, cname, cfolder);
+        indexFolder(cfull, cname, cfolder);
       } else {
         String cfull = pfull + "/" + cname;
         NFile cfile = new NFile();
@@ -334,116 +189,22 @@ public class FileSystem implements Cloneable {
         cfile.name = cname;
         cfile.path = pfolder.path + "/" + cname;
         cfile.local = cfull;
-        long chandle = hash(cfile.path);
-        if (symlink) {
-          cfile.symlink = FileOps.readSymlink(child);
+        cfile.handle = FileOps.getID(cfile.local);
+        while (all_handles.get(cfile.handle) != null) {
+          cfile.handle += NHandle.HARD_LINK;
         }
-        if (all_handles.get(chandle) == null) {
-          cfile.handle = chandle;
-          all_files.put(chandle, cfile);
-          all_handles.put(chandle, cfile);
-          all_names.put(cfile.path, chandle);
-          pfolder.cfiles.add(cfile);
-        } else {
-          JFLog.log("Warning:duplicate hash code file:" + cfile.path);
-        }
+        cfile.handle = cfile.handle;
+        all_files.put(cfile.handle, cfile);
+        all_handles.put(cfile.handle, cfile);
+        all_names.put(cfile.path, cfile.handle);
+        pfolder.cfiles.add(cfile);
       }
-    }
-  }
-
-  private void doFolderDerived(String pfull, String pname, NFolder pfolder, boolean newFolder) {
-    pfolder.local = pfull;  //MUST use derived folder
-    new File(pfolder.local).mkdir();  //MUST create all folders in derived file system so new files can be created and folders can be renamed
-    pfolder.converted = true;
-    for(NFolder cfolder : pfolder.cfolders) {
-      cfolder.converted = false;
-    }
-    if (newFolder) {
-      pfolder.name = pname;
-      if (pfolder.parent != null) {
-        //sub folder
-        pfolder.path = pfolder.parent.path + "/" + pname;
-      } else {
-        //root folder
-        pfolder.path = pname;
-      }
-      pfolder.handle = hash(pfolder.path);
-      if (all_handles.get(pfolder.handle) == null) {
-        all_folders.put(pfolder.handle, pfolder);
-        all_handles.put(pfolder.handle, pfolder);
-        all_names.put(pfolder.path, pfolder.handle);
-      } else {
-        JFLog.log("Warning(2):duplicate hash code folder:" + pfolder.path);
-        return;
-      }
-    }
-    File file = new File(pfull);
-    File[] children = file.listFiles();
-    for(File child : children) {
-      String cname = child.getName();
-      boolean folder = child.isDirectory();
-      boolean symlink = FileOps.isSymlink(child);
-      if (folder && !symlink) {
-        String cfull = pfull + "/" + cname;
-        NFolder cfolder;
-        boolean childNewFolder;
-        NFile cfile = pfolder.getFile(cname);
-        if (cfile != null) {
-          if (cfile.symlink != null) {
-            JFLog.log("Warning:symlink in base filesystem has real folder in derived system:" + cfull + " (ignoring)");
-          }
-          continue;
-        }
-        cfolder = pfolder.getFolder(cname);
-        if (cfolder == null) {
-          childNewFolder = true;
-          cfolder = new NFolder();
-          pfolder.cfolders.add(cfolder);
-        } else {
-          childNewFolder = false;
-        }
-        cfolder.parent = pfolder;
-        doFolderDerived(cfull, cname, cfolder, childNewFolder);
-      } else {
-        String cfull = pfull + "/" + cname;
-        NFile cfile;
-        cfile = pfolder.getFile(cname);
-        if (cfile == null) {
-          cfile = new NFile();
-          cfile.name = cname;
-          cfile.path = pfolder.path + "/" + cname;
-          cfile.local = cfull;
-          long chandle = hash(cfile.path);
-          if (symlink) {
-            cfile.symlink = FileOps.readSymlink(child);
-          }
-          if (all_handles.get(chandle) == null) {
-            cfile.handle = chandle;
-            all_files.put(chandle, cfile);
-            all_handles.put(chandle, cfile);
-            all_names.put(cfile.path, chandle);
-            pfolder.cfiles.add(cfile);
-          } else {
-            JFLog.log("Warning(2):duplicate hash code file:" + cfile.path);
-          }
-        } else {
-          cfile.local = cfull;
-        }
-        cfile.rw = true;
-        cfile.parent = pfolder;
-      }
-    }
-    //convert remaining folders to derived folders
-    for(NFolder cfolder : pfolder.cfolders) {
-      if (cfolder.converted) continue;
-      String cfull = pfull + "/" + cfolder.name;
-      doFolderDerived(cfull, cfolder.name, cfolder, false);
     }
   }
 
   /** Return root handle. */
   public long getRootHandle() {
-    return rootFolder.handle;
+    return root.handle;
   }
 
   /** Checks if a file/folder exists. */
@@ -564,12 +325,6 @@ public class FileSystem implements Cloneable {
     return all;
   }
 
-  private long createHandle(long dir, String file) {
-    String path = getPath(dir);
-    String full = path + "/" + file;
-    return hash(full);
-  }
-
   public boolean isDirectory(long handle) {
     synchronized(lock) {
       NHandle folder = all_folders.get(handle);
@@ -578,74 +333,13 @@ public class FileSystem implements Cloneable {
     }
   }
 
-  //not really needed - the client will resolve symlinks on it's own
-  private String resolveSymlink(NFile file) {
-    if (file.symlink == null) return null;
-    String symlink = file.symlink;
-    String[] parts = symlink.split("[/]");
-    NHandle target;
-    if (symlink.startsWith("/")) {
-      target = rootFolder;
-    } else {
-      target = file.parent;
-      if (target == null) {
-        JFLog.log("FileSystem:Failed to resolve symlink(1):" + file.symlink);
-        return null;
-      }
-    }
-    for(int a=0;a<parts.length;a++) {
-      String part = parts[a];
-      if (part.length() == 0) continue;
-      if (part.equals(".")) continue;
-      if (part.equals("..")) {
-        target = target.parent;
-        if (target == null) {
-          JFLog.log("FileSystem:Failed to resolve symlink(2):" + file.symlink);
-          return null;
-        }
-        continue;
-      }
-      if (!target.isFolder()) {
-        JFLog.log("FileSystem:Failed to resolve symlink(3):" + file.symlink);
-        return null;
-      }
-      NFolder folder = (NFolder)target;
-      target = folder.getHandle(part);
-      if (target == null) {
-        JFLog.log("FileSystem:Failed to resolve symlink(4):" + file.symlink);
-        return null;
-      }
-    }
-    return target.local;
-  }
-
   public RandomAccessFile openFile(NFile file, boolean write) {
     synchronized(lock) {
       RandomAccessFile raf = getOpenFile(file.handle);
-      if (write && !file.rw) {
-        if (debug) JFLog.log("MakeCopy:" + file.local);
-        if (file.symlink != null) {
-          JFLog.log("MakeCopy:Error:symlink???");
-        }
-        file.makeCopy(getRootPath());
-        if (raf != null) {
-          try { raf.close(); } catch (Exception e) {}
-          removeOpenFile(file.handle);
-          raf = null;
-        }
-      }
       if (raf != null) return raf;
-      String path;
-      if (file.symlink == null) {
-        path = file.local;
-      } else {
-        path = resolveSymlink(file);
-        if (path == null) return null;
-        if (debug) JFLog.log("ResolveSymLink=" + path);
-      }
-      if (!new File(path).exists()) return null;
+      if (!new File(file.local).exists()) return null;
       try {
-        raf = new RandomAccessFile(path, write | file.rw ? "rw" : "r");
+        raf = new RandomAccessFile(file.local, "rw");
       } catch (Exception e) {
         JFLog.log(e);
         return null;
@@ -684,13 +378,25 @@ public class FileSystem implements Cloneable {
     }
   }
 
+  public void closeAllFiles() {
+    synchronized(lock) {
+      RandomAccessFile[] rafs = files.values().toArray(new RandomAccessFile[0]);
+      for(RandomAccessFile raf : rafs) {
+        try {raf.close();} catch (Exception e) {JFLog.log(e);}
+      }
+      files.clear();
+    }
+  }
+
   public long create(long dir, String filename) {
     NFolder pfolder = getFolder(dir);
     if (pfolder == null) return -1;
-    long handle = createHandle(dir, filename);
-    NFile cfile = new NFile(handle, getRootPath() + pfolder.path + "/" + filename, pfolder.path + "/" + filename, filename);
-    cfile.rw = true;
-    FileOps.create(cfile.local);
+    String nlocal = getRootPath() + pfolder.path + "/" + filename;
+    long handle = FileOps.create(nlocal);
+    while (all_handles.get(handle) != null) {
+      handle += NHandle.HARD_LINK;
+    }
+    NFile cfile = new NFile(handle, nlocal, pfolder.path + "/" + filename, filename);
     cfile.parent = pfolder;
     pfolder.cfiles.add(cfile);
     all_files.put(handle, cfile);
@@ -702,10 +408,13 @@ public class FileSystem implements Cloneable {
   public long mkdir(long dir, String filename) {
     NFolder pfolder = getFolder(dir);
     if (pfolder == null) return -1;
-    long handle = createHandle(dir, filename);
-    NFolder cfolder = new NFolder(handle, getRootPath() + pfolder.path + "/" + filename, pfolder.path + "/" + filename, filename);
-    new File(cfolder.local).mkdir();
-    cfolder.rw = true;
+    String nlocal = getRootPath() + pfolder.path + "/" + filename;
+    new File(nlocal).mkdir();
+    long handle = FileOps.getID(nlocal);
+    while (all_handles.get(handle) != null) {
+      handle += NHandle.HARD_LINK;
+    }
+    NFolder cfolder = new NFolder(handle, nlocal, pfolder.path + "/" + filename, filename);
     pfolder.cfolders.add(cfolder);
     all_folders.put(handle, cfolder);
     all_names.put(cfolder.path, handle);
@@ -719,11 +428,12 @@ public class FileSystem implements Cloneable {
     if (pfolder.getFile(where_name) != null) return -1;
     String link_local = getLocalPath(where) + "/" + where_name;
     if (!FileOps.createSymbolicLink(link_local, to)) return -1;
-    long handle = createHandle(where, where_name);
+    long handle = FileOps.getID(link_local);
+    while (all_handles.get(handle) != null) {
+      handle += NHandle.HARD_LINK;
+    }
     NFile cfile = new NFile(handle, getRootPath() + pfolder.path + "/" + where_name, pfolder.path + "/" + where_name, where_name);
-    cfile.rw = true;
     cfile.parent = pfolder;
-    cfile.symlink = to;
     pfolder.cfiles.add(cfile);
     all_files.put(handle, cfile);
     all_names.put(cfile.path, cfile.handle);
@@ -735,10 +445,7 @@ public class FileSystem implements Cloneable {
     NFolder pfolder = getFolder(where);
     NFile file = pfolder.getFile(name);
     if (file == null) return false;
-    if (file.rw) {
-      closeOpenFile(file);
-      FileOps.delete(file.local);
-    }
+    FileOps.delete(file.local);
     pfolder.cfiles.remove(file);
     all_files.remove(file.handle);
     all_names.remove(file.path);
@@ -791,10 +498,8 @@ public class FileSystem implements Cloneable {
           if (debug) JFLog.log("RENAME:not compatible:file->folder");
           return false;
         }
-        if (to.rw) {
-          closeOpenFile((NFile)to);
-          FileOps.delete(to.local);
-        }
+        closeOpenFile((NFile)to);
+        FileOps.delete(to.local);
         to_folder.cfiles.remove(to);
         all_files.remove(to.handle);
         all_names.remove(to.path);
@@ -822,32 +527,14 @@ public class FileSystem implements Cloneable {
       }
       to = new NFolder(to_handle, getRootPath() + to_folder.path + "/" + to_name, to_folder.path + "/" + to_name, to_name);
     }
-    to.rw = true;
 
     //close from
-    if (from.isFile() && from.rw) {
+    if (from.isFile()) {
       closeOpenFile((NFile)from);
     }
 
-    //rename/copy file
-    if (from.isFile()) {
-      if (from.rw) {
-        //from is on read-write file system so just actually rename it
-        FileOps.renameFile(from.local, to.local);
-      } else {
-        //from is on read-only file system, need to make a read-write copy
-        if (from.symlink != null) {
-          FileOps.createSymbolicLink(to.local, from.symlink);
-        } else {
-          FileOps.copyFile(from.local, to.local);
-        }
-      }
-      if (from.symlink != null) {
-        to.symlink = from.symlink;
-      }
-    } else {
-      FileOps.renameFile(from.local, to.local);
-    }
+    //rename it
+    FileOps.renameFile(from.local, to.local);
 
     //add to
     to_folder.add(to);
@@ -864,15 +551,14 @@ public class FileSystem implements Cloneable {
   /** create hard link */
   public boolean create_link(long target, long link_dir, String link_name) {
     NHandle ntarget = getHandle(target);
-    if (ntarget.isFile() && !ntarget.rw) {
-      NFile nfile = (NFile)ntarget;
-      nfile.makeCopy(getRootPath());
-    }
     NFolder linkdir = getFolder(link_dir);
     String link_local = linkdir.local + "/" + link_name;
     String link_path = linkdir.path + "/" + link_name;
     if (!FileOps.createLink(link_local, ntarget.local)) return false;
-    long handle = createHandle(link_dir, link_name);
+    long handle = FileOps.getID(link_local);
+    while (all_handles.get(handle) != null) {
+      handle += NHandle.HARD_LINK;
+    }
     NHandle nlink;
     if (ntarget.isFile()) {
       //add file
@@ -881,7 +567,6 @@ public class FileSystem implements Cloneable {
       //add folder
       nlink = new NFolder(handle, link_local, link_path, link_name);
     }
-    nlink.rw = true;
     nlink.parent = linkdir;
     linkdir.add(nlink);
 
@@ -911,56 +596,26 @@ public class FileSystem implements Cloneable {
 
   public boolean setattr_mode(long handle, int mode) {
     NHandle nhandle = getHandle(handle);
-    if (!nhandle.rw) {
-      if (nhandle.isFile()) {
-        NFile file = (NFile)nhandle;
-        file.makeCopy(getRootPath());
-      }
-    }
     return FileOps.setMode(nhandle.local, mode);
   }
 
   public boolean setattr_uid(long handle, int id) {
     NHandle nhandle = getHandle(handle);
-    if (!nhandle.rw) {
-      if (nhandle.isFile()) {
-        NFile file = (NFile)nhandle;
-        file.makeCopy(getRootPath());
-      }
-    }
     return FileOps.setUID(nhandle.local, id);
   }
 
   public boolean setattr_gid(long handle, int id) {
     NHandle nhandle = getHandle(handle);
-    if (!nhandle.rw) {
-      if (nhandle.isFile()) {
-        NFile file = (NFile)nhandle;
-        file.makeCopy(getRootPath());
-      }
-    }
     return FileOps.setUID(nhandle.local, id);
   }
 
   public boolean setattr_atime(long handle, long ts) {
     NHandle nhandle = getHandle(handle);
-    if (!nhandle.rw) {
-      if (nhandle.isFile()) {
-        NFile file = (NFile)nhandle;
-        file.makeCopy(getRootPath());
-      }
-    }
     return FileOps.setATime(nhandle.local, ts);
   }
 
   public boolean setattr_mtime(long handle, long ts) {
     NHandle nhandle = getHandle(handle);
-    if (!nhandle.rw) {
-      if (nhandle.isFile()) {
-        NFile file = (NFile)nhandle;
-        file.makeCopy(getRootPath());
-      }
-    }
     return FileOps.setMTime(nhandle.local, ts);
   }
 }
