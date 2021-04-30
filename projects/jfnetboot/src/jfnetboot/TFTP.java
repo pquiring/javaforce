@@ -17,7 +17,8 @@ import javaforce.service.*;
 public class TFTP extends Thread implements DHCP.Notify {
 
   public static boolean debugMsgs = false;
-  public static boolean debugException = false;
+  public static boolean debugClient = false;
+  public static boolean debugException = true;
 
   /* Opcodes */
   private static final int oc_read = 1;
@@ -44,6 +45,7 @@ public class TFTP extends Thread implements DHCP.Notify {
   public static class ImageFile {
     public String name;
     public byte[] data;
+    public String arch;
   }
 
   public class TFTPClient extends Thread {
@@ -56,7 +58,7 @@ public class TFTP extends Thread implements DHCP.Notify {
     public DatagramSocket cs;
     public boolean active;
     public int this_port;
-    public long serial;
+    public String serial;
 
     public boolean init() {
       try {
@@ -75,7 +77,7 @@ public class TFTP extends Thread implements DHCP.Notify {
     }
 
     public void close() {
-      if (debugMsgs) JFLog.log("TFTP:Client:close:" + this_port);
+      if (debugClient) JFLog.log("TFTP:Client:close:" + this_port);
       active = false;
       if (cs != null) {
         cs.close();
@@ -84,7 +86,7 @@ public class TFTP extends Thread implements DHCP.Notify {
     }
 
     public void run() {
-      if (debugMsgs) JFLog.log("TFTP:Client:run:" + this_port + ":file=" + imgfile.name);
+      if (debugClient) JFLog.log("TFTP:Client:run:" + this_port + ":file=" + imgfile.name);
       active = true;
       try {
         while (active) {
@@ -211,15 +213,15 @@ public class TFTP extends Thread implements DHCP.Notify {
     return pxe_clients.get(mac);
   }
 
-  private ImageFile readFile(long serial, String arch, String filename, String ip) {
+  private ImageFile readFile(String serial, String arch, String filename, String ip) {
     Client client = Clients.getClient(serial, arch);
     client.reinitCommand();
     client.setIP(ip);
     String full = client.getFileSystem().getRootPath() + "/" + filename;
-    if (debugMsgs) JFLog.log("read file:" + full);
+    if (debugMsgs) JFLog.log("TFTP:local=" + full);
     File file = new File(full);
     if (!file.exists()) {
-      if (debugMsgs) JFLog.log("file not found:" + full);
+      if (debugMsgs) JFLog.log("TFTP:file not found:" + full);
       return null;
     }
     try {
@@ -227,6 +229,7 @@ public class TFTP extends Thread implements DHCP.Notify {
       ImageFile imgfile = new ImageFile();
       imgfile.name = filename;
       imgfile.data = fis.readAllBytes();
+      imgfile.arch = arch;
       fis.close();
       return imgfile;
     } catch (Exception e) {
@@ -256,10 +259,10 @@ public class TFTP extends Thread implements DHCP.Notify {
     return -1;
   }
 
-  private ImageFile getFile(long serial, String arch, String filename, String ip) {
+  private ImageFile getFile(String serial, String arch, String filename, String ip) {
     synchronized(files) {
       for(ImageFile file : files) {
-        if (file.name.equals(filename)) return file;
+        if (file.name.equals(filename) && file.arch.equals(arch)) return file;
       }
       ImageFile file = readFile(serial, arch, filename, ip);
       if (file == null) {
@@ -268,6 +271,14 @@ public class TFTP extends Thread implements DHCP.Notify {
       }
       files.add(file);
       return file;
+    }
+  }
+
+  private String getNFSPath(Client client) {
+    if (Service.nfs_server) {
+      return client.getFileSystem().getRootPath();
+    } else {
+      return "/" + client.serial + "/" + client.arch;
     }
   }
 
@@ -288,19 +299,10 @@ public class TFTP extends Thread implements DHCP.Notify {
       return;
     }
     if (debugMsgs) JFLog.log("TFTP:filename=" + filename);
-    long serial = Long.valueOf(pxe_client.mac, 16);
+    String serial = pxe_client.mac;
     String arch = Arch.toString(pxe_client.arch);
     ImageFile imgfile = null;
-    if (filename.endsWith("cmdline.txt")) {
-      //RPi
-      InetAddress server_address = JF.getLocalAddress(src);
-      String server_ip = server_address.getHostAddress();
-      Client client = Clients.getClient(serial, arch);
-      String cmdline = "console=tty0 root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%012x", serial) + "/arm,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts;
-      imgfile = new ImageFile();
-      imgfile.data = cmdline.getBytes();
-      imgfile.name = "cmdline.txt";
-    } else if (filename.endsWith("pxelinux.cfg")) {
+    if (filename.endsWith("pxelinux.cfg")) {
       //BIOS-x86
       InetAddress server_address = JF.getLocalAddress(src);
       String server_ip = server_address.getHostAddress();
@@ -312,10 +314,11 @@ public class TFTP extends Thread implements DHCP.Notify {
       sb.append("LABEL PXE\n");
       sb.append("  MENU LABEL PXE\n");
       sb.append("  KERNEL vmlinuz\n");
-      sb.append("  APPEND initrd=initrd.img root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%012x", serial) + "/x86,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts + "\n");
+      sb.append("  APPEND initrd=initrd.img root=/dev/nfs nfsroot=" + server_ip + ":" + getNFSPath(client) + ",vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts + "\n");
       imgfile = new ImageFile();
       imgfile.data = sb.toString().getBytes();
       imgfile.name = "pxelinux.cfg";
+      imgfile.arch = arch;
     } else if (filename.equals("/grub/grub.cfg")) {
       //UEFI
       InetAddress server_address = JF.getLocalAddress(src);
@@ -326,12 +329,13 @@ public class TFTP extends Thread implements DHCP.Notify {
       sb.append("set default=\"0\"\n");
       sb.append("set timeout=3\n");
       sb.append("menuentry 'jfnetboot' {\n");
-      sb.append("  linux vmlinuz root=/dev/nfs nfsroot=" + server_ip + ":/" + String.format("%012x", serial) + "/x86,vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts + "\n");
+      sb.append("  linux vmlinuz root=/dev/nfs nfsroot=" + server_ip + ":" + getNFSPath(client) + ",vers=3,tcp rw ip=dhcp rootwait elevator=deadline " + client.opts + "\n");
       sb.append("  initrd initrd.img\n");
       sb.append("}\n");
       imgfile = new ImageFile();
       imgfile.data = sb.toString().getBytes();
       imgfile.name = "grub.cfg";
+      imgfile.arch = arch;
     } else {
       imgfile = getFile(serial, arch, filename, src.getAddress().getHostAddress());
     }

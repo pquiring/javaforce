@@ -8,9 +8,11 @@ package jfnetboot;
 import java.io.*;
 import java.util.*;
 
+import javaforce.*;
+
 public class Clients {
 
-  public static HashMap<Long, Client> clients = new HashMap();
+  public static HashMap<String, Client> clients = new HashMap();
 
   public static int getCount() {
     return clients.size();
@@ -33,12 +35,13 @@ public class Clients {
       if (idx == -1) continue;
       String serial = name.substring(0, idx);
       String arch = name.substring(idx + 1);
-      getClient(Long.valueOf(serial, 16), arch);
+      JFLog.log("Client:init:" + serial + "-" + arch);
+      getClient(serial, arch);
     }
   }
 
-  public static Client getClient(long serial, String arch) {
-    Client client = clients.get(serial);
+  public static Client getClient(String serial, String arch) {
+    Client client = clients.get(serial + "-" + arch);
     if (client == null) {
       //try to load client from disk
       if (arch == null) return null;
@@ -49,13 +52,13 @@ public class Clients {
         client.save();
       }
       client.mount();
-      clients.put(serial, client);
+      clients.put(serial + "-" + arch, client);
     }
     return client;
   }
 
   public static void remove(Client client) {
-    clients.remove(client.serial);
+    clients.remove(client.serial + "-" + client.arch);
   }
 
   public static boolean isFileSystemInUse(String name) {

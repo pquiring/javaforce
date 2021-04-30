@@ -6,14 +6,14 @@ package jfnetboot;
  */
 
 public class CHandle {
-  public long serial;  //client serial
+  public String serial;  //client serial
   public short arch;  //client arch
   public long handle;  //file system handle
 
   public Client client;
   public FileSystem fs;
 
-  public CHandle(long serial, short arch, long handle) {
+  public CHandle(String serial, short arch, long handle) {
     this.serial = serial;
     this.arch = arch;
     this.handle = handle;
@@ -23,6 +23,6 @@ public class CHandle {
   }
 
   public String toString() {
-    return String.format("%08x:%s:%016x", serial, Arch.toString(arch), handle);
+    return String.format("%s:%s:%016x", serial, Arch.toString(arch), handle);
   }
 }

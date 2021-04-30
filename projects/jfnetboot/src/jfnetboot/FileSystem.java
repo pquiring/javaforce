@@ -424,10 +424,18 @@ public class FileSystem implements Cloneable {
 
   public long create_symlink(long where, String where_name, String to) {
     NFolder pfolder = getFolder(where);
-    if (pfolder == null) return -1;
-    if (pfolder.getFile(where_name) != null) return -1;
+    if (pfolder == null) {
+      JFLog.log("Error:FileSystem.create_symlink():folder not found:" + where_name);
+      return -1;
+    }
+    if (pfolder.getFile(where_name) != null) {
+      JFLog.log("Error:FileSystem.create_symlink():file not found:" + where_name);
+      return -1;
+    }
     String link_local = getLocalPath(where) + "/" + where_name;
-    if (!FileOps.createSymbolicLink(link_local, to)) return -1;
+    if (!FileOps.createSymbolicLink(link_local, to)) {
+      return -1;
+    }
     long handle = FileOps.getID(link_local);
     while (all_handles.get(handle) != null) {
       handle += NHandle.HARD_LINK;
@@ -443,8 +451,15 @@ public class FileSystem implements Cloneable {
 
   public boolean remove(long where, String name) {
     NFolder pfolder = getFolder(where);
+    if (pfolder == null) {
+      JFLog.log("Error:FileSystem.remove():folder not found:" + pfolder.path);
+      return false;
+    }
     NFile file = pfolder.getFile(name);
-    if (file == null) return false;
+    if (file == null) {
+      JFLog.log("Error:FileSystem.remove():file not found:" + pfolder.path + "/" + name);
+      return false;
+    }
     FileOps.delete(file.local);
     pfolder.cfiles.remove(file);
     all_files.remove(file.handle);

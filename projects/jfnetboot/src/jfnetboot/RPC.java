@@ -17,10 +17,13 @@ public class RPC extends Thread {
   private ServerSocket ss;
   private boolean active;
   private static boolean debug = false;
+  private static boolean debugExceptions = true;
   private static boolean debugRead = false;
   private static boolean debugWrite = false;
   private static boolean debugCreate = false;
   private static boolean debugLinks = false;
+  private static boolean debugRename = false;
+  private static boolean debugRemove = false;
 
   public void run() {
     JFLog.log("RPC starting on port 111...");
@@ -34,7 +37,7 @@ public class RPC extends Thread {
         c.start();
       }
     } catch (Exception e) {
-      if (debug) JFLog.log(e);
+      if (debugExceptions) JFLog.log(e);
     }
   }
 
@@ -89,7 +92,7 @@ public class RPC extends Thread {
         }
         close();
       } catch (Exception e) {
-        if (debug) JFLog.log(e);
+        if (debugExceptions) JFLog.log(e);
         close();
       }
     }
@@ -144,7 +147,7 @@ public class RPC extends Thread {
       writeInt(32);  //size in bytes (8 ints) (4 longs)
       writeLong(0);
       writeLong(handle.arch);
-      writeLong(handle.serial);
+      writeLong(Long.valueOf(handle.serial, 16));
       writeLong(handle.handle);
     }
 
@@ -252,7 +255,7 @@ public class RPC extends Thread {
       }
       readLong();
       short arch = (short)readLong();
-      long serial = readLong();
+      String serial = Long.toString(readLong(), 16);
       long handle = readLong();
       return new CHandle(serial, arch, handle);
     }
@@ -324,7 +327,7 @@ public class RPC extends Thread {
         os.write(reply, 0, reply_size);
         os.flush();
       } catch (Exception e) {
-        if (debug) JFLog.log(e);
+        if (debugExceptions) JFLog.log(e);
       }
     }
 
@@ -367,7 +370,7 @@ public class RPC extends Thread {
           }
           String[] p = mnt.split("/");
           // 0 / 1=serial / 2=arch
-          long serial = Long.valueOf(p[1], 16);
+          String serial = p[1];
           short arch = Arch.toShort(p[2]);
           writeInt(0);  //mount = 0 (SUCCESS)
           writeHandle(getRootHandle(serial, arch));
@@ -405,7 +408,7 @@ public class RPC extends Thread {
 
     private static final int CREATE_MODE_UNCHECKED = 0;
     private static final int CREATE_MODE_GUARDED = 1;
-    private static final int CREATE_MODE_EXCLUSIVE = 3;
+    private static final int CREATE_MODE_EXCLUSIVE = 2;
 
     private static final int ACCESS_READ    = 0x0001;
     private static final int ACCESS_LOOKUP  = 0x0002;
@@ -480,7 +483,7 @@ public class RPC extends Thread {
             writeInt(0);  //dir attr : no follows
             break;
           }
-          if (debug) JFLog.log("LOOKUP:" + dir + ":" + child + ":" + getLocalPath(child));
+          if (debug) JFLog.log("LOOKUP:" + getLocalPath(child));
           writeInt(ERR_SUCCESS);
           writeHandle(child);
           writeInt(1);  //value follows = 1
@@ -581,26 +584,37 @@ public class RPC extends Thread {
           int create_mode = readInt();
 
           if (!dir.fs.exists(dir.handle)) {
+            if (debugCreate) JFLog.log("CREATE:" + getLocalPath(dir) + "/" + name + ":Folder doesn't exist");
             writeInt(ERR_NOENT);
             writeInt(0);  //dir before
             writeInt(0);  //dir after
             break;
           }
 
+          if (create_mode == CREATE_MODE_GUARDED) {
+            if (debugCreate) JFLog.log("CREATE:" + getLocalPath(dir) + "/" + name + ":File already exists (guarded)");
+            if (dir.fs.exists(dir.handle, name)) {
+              writeInt(ERR_EXIST);
+              writeInt(0);  //dir before
+              writeInt(0);  //dir after
+              break;
+            }
+          }
+
           long fs_handle = dir.fs.create(dir.handle, name);
-          if (debugCreate) JFLog.log("CREATE:" + dir + ":" + getLocalPath(dir) + "/" + name + ":" + Long.toUnsignedString(fs_handle, 16));
+          if (debugCreate) JFLog.log("CREATE:" + getLocalPath(dir) + "/" + name + ":" + Long.toUnsignedString(fs_handle, 16));
 
           if (fs_handle != -1) {
             CHandle handle = new CHandle(dir.serial, dir.arch, fs_handle);
 
             switch (create_mode) {
-              case 0:  //unchecked
+              case CREATE_MODE_UNCHECKED:
                 //no break
-              case 1:  //guarded
+              case CREATE_MODE_GUARDED:
                 //new file attributes
                 setattr(handle, readAttrs());
                 break;
-              case 2:  //exclusive
+              case CREATE_MODE_EXCLUSIVE:
                 long verf = readLong();
                 break;
             }
@@ -614,13 +628,13 @@ public class RPC extends Thread {
             writeAfter(dir);
           } else {
             switch (create_mode) {
-              case 0:  //unchecked
+              case CREATE_MODE_UNCHECKED:
                 //no break
-              case 1:  //guarded
+              case CREATE_MODE_GUARDED:
                 //new file attributes
                 readAttrs();
                 break;
-              case 2:  //exclusive
+              case CREATE_MODE_EXCLUSIVE:
                 long verf = readLong();
                 break;
             }
@@ -644,7 +658,7 @@ public class RPC extends Thread {
           }
 
           long fs_handle = dir.fs.mkdir(dir.handle, name);
-          if (debug) JFLog.log("MKDIR:" + dir + ":" + getLocalPath(dir) + "/" + name + ":" + Long.toUnsignedString(fs_handle));
+          if (debug) JFLog.log("MKDIR:" + getLocalPath(dir) + "/" + name + ":" + Long.toUnsignedString(fs_handle));
 
           if (fs_handle != -1) {
             writeInt(ERR_SUCCESS);
@@ -709,7 +723,7 @@ public class RPC extends Thread {
             writeInt(0);  //dir after
             break;
           }
-          if (debugWrite) JFLog.log("REMOVE:" + dir + ":" + getLocalPath(dir) + "/" + name);
+          if (debugRemove) JFLog.log("REMOVE:" + getLocalPath(dir) + "/" + name);
 
           boolean ok = dir.fs.remove(dir.handle, name);
 
@@ -735,7 +749,7 @@ public class RPC extends Thread {
             writeInt(0);  //dir after
             break;
           }
-          if (debug) JFLog.log("RMDIR:" + dir + ":" + getLocalPath(dir) + "/" + name);
+          if (debug) JFLog.log("RMDIR:" + getLocalPath(dir) + "/" + name);
 
           dir.fs.rmdir(dir.handle, name);
 
@@ -749,6 +763,8 @@ public class RPC extends Thread {
           String from_name = readString();
           CHandle to_dir = readHandle();
           String to_name = readString();
+
+          if (debugRename) JFLog.log("RENAME:" + from_name + "->" + to_name);
 
           if (!from_dir.fs.exists(from_dir.handle)) {
             if (debug) JFLog.log("RENAME:from_dir not found:" + from_dir);
@@ -788,7 +804,6 @@ public class RPC extends Thread {
           if (debugLinks) JFLog.log("LINK:" + where_dir + ":" + getLocalPath(where_dir) + "/" + where_name + " to " + target + ":" + getLocalPath(target));
           boolean ok;
 
-          //BUG : link may have issues - a derived file system would make multiple copies of file (this bug is benign and would just waste disk space)
           ok = where_dir.fs.create_link(target.handle, where_dir.handle, where_name);
 
           writeInt(ok ? ERR_SUCCESS : ERR_IO);
@@ -812,7 +827,7 @@ public class RPC extends Thread {
           } else {
             max = 0x7fff;
           }
-          if (debug) JFLog.log("READDIR:folder=" + dir + ":" + getLocalPath(dir));
+          if (debug) JFLog.log("READDIR:" + getLocalPath(dir));
 
           writeInt(ERR_SUCCESS);
           writeInt(1);  //follows = 1
@@ -985,7 +1000,7 @@ public class RPC extends Thread {
       }
     }
 
-    private CHandle getRootHandle(long serial, short arch) {
+    private CHandle getRootHandle(String serial, short arch) {
       FileSystem fs = Clients.getClient(serial, Arch.toString(arch)).getFileSystem();
       return new CHandle(serial, arch, fs.getRootHandle());
     }
@@ -1013,8 +1028,12 @@ public class RPC extends Thread {
       if (nhandle.isFolder()) {
         return 4096;
       }
-      NFile file = (NFile)nhandle;
-      return new File(file.local).length();
+      NFile nfile = (NFile)nhandle;
+      File file = new File(nfile.local);
+      if (FileOps.isSymlink(file)) {
+        return FileOps.readSymlink(file).length();
+      }
+      return file.length();
     }
 
     private RandomAccessFile openFile(CHandle handle, boolean write) {
@@ -1039,7 +1058,7 @@ public class RPC extends Thread {
         writeInt(read);  //data.length
         writeBytes(data, 0, read);
       } catch (Exception e) {
-        if (debug) JFLog.log(e);
+        if (debugExceptions) JFLog.log(e);
         writeInt(0);  //count
         writeInt(0);  //eof
         writeInt(0);  //data.length
@@ -1053,7 +1072,7 @@ public class RPC extends Thread {
         raf.write(data);
         return length;
       } catch (Exception e) {
-        if (debug) JFLog.log(e);
+        if (debugExceptions) JFLog.log(e);
         return 0;
       }
     }

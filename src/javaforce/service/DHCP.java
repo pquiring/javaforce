@@ -24,6 +24,8 @@ public class DHCP extends Thread {
 
   public final static String busPack = "net.sf.jfdhcp";
 
+  public static boolean debug = false;
+
   /** DHCP Notification interface. */
   public static interface Notify {
     /** DHCP Event.
@@ -376,9 +378,9 @@ public class DHCP extends Thread {
         pool.pool_hwlen = new int[pool.count];
         pool.pool_hwaddr = new byte[pool.count][16];
         if (pool.pxe_proxy) {
-          JFLog.log("pool:pxe_proxy:" + pool.pxe_server);
+          if (debug) JFLog.log("pool:pxe_proxy:" + pool.pxe_server);
         } else {
-          JFLog.log("pool:" + IP4toString(pool.pool_first_int) + "-" + IP4toString(pool.pool_last_int) + ":" + pool.count + " IPs");
+          if (debug) JFLog.log("pool:" + IP4toString(pool.pool_first_int) + "-" + IP4toString(pool.pool_last_int) + ":" + pool.count + " IPs");
         }
       }
       for(int a=0;a<cnt;a++) {
@@ -541,7 +543,7 @@ public class DHCP extends Thread {
     }
     public void run() {
       try {
-        JFLog.log("Received request from:" + packet.getAddress().getHostAddress() + ":" + packet.getPort());
+        if (debug) JFLog.log("Received request from:" + packet.getAddress().getHostAddress() + ":" + packet.getPort());
         req = packet.getData();
         reqOffset = 0;
 
@@ -579,7 +581,7 @@ public class DHCP extends Thread {
         if (from_ip == 0) {
           throw new Exception("can not determine pool for request");
         }
-        JFLog.log("ip=" + IP4toString(from_ip));
+        if (debug) JFLog.log("DHCP:from_ip=" + IP4toString(from_ip));
         for(int a=0;a<cnt;a++) {
           pool = pools.get(a);
           if ((pool.pool_first_int & pool.mask_int) == (from_ip & pool.mask_int)) {
@@ -614,7 +616,7 @@ public class DHCP extends Thread {
               if ((yip & pool.mask_int) == (pool.pool_first_int & pool.mask_int)) {
                 yipOffset = yip - pool.pool_first_int;
               } else {
-                JFLog.log("invalid requested ip:" + IP4toString(yip));
+                JFLog.log("DHCP:invalid requested ip:" + IP4toString(yip));
               }
               break;
             case OPT_CLIENT_ARCH:
@@ -633,7 +635,7 @@ public class DHCP extends Thread {
           if (opt == OPT_END) break;
         }
         if (msgType == -1) throw new Exception("no dhcp msg type");
-        JFLog.log("MsgType=" + getMsgType(msgType));
+        if (debug) JFLog.log("DHCP:MsgType=" + getMsgType(msgType));
         long now = System.currentTimeMillis();
         switch (msgType) {
           case DHCPDISCOVER:
@@ -661,7 +663,7 @@ public class DHCP extends Thread {
                     //IP still in use!
                     //this could happen if DHCP service is restarted since leases are only saved in memory
                     pool.pool_time[i] = now + (pool.leaseTime * 1000);
-                    JFLog.log("warning:IP in use but not in database:" + IP4toString(addr));
+                    JFLog.log("DHCP:warning:IP in use but not in database:" + IP4toString(addr));
                   } else {
                     //offer this
                     if (notify != null) {
@@ -679,7 +681,7 @@ public class DHCP extends Thread {
               }
             }
             //nothing left in pool to send an offer (ignore request)
-            JFLog.log("no free IPs in pool for request");
+            JFLog.log("DHCP:no free IPs in pool for request");
             break;
           case DHCPREQUEST:
             if (pool.pxe_proxy) {
@@ -691,7 +693,7 @@ public class DHCP extends Thread {
             }
             //mark ip as used and send ack or nak if already in use
             if (yipOffset < 0 || yipOffset >= pool.count) {
-              JFLog.log("request out of range:" + yipOffset);
+              JFLog.log("DHCP:request out of range:" + yipOffset);
               break;
             }
             synchronized(pool.lock) {
@@ -726,7 +728,7 @@ public class DHCP extends Thread {
               notify.dhcpEvent(DHCPRELEASE, MACtoString(mac), IP4toString(yip), pxe_arch);
             }
             if (yipOffset < 0 || yipOffset >= pool.count) {
-              JFLog.log("release out of range");
+              JFLog.log("DHCP:release out of range");
               break;
             }
             synchronized(pool.lock) {
@@ -758,7 +760,7 @@ public class DHCP extends Thread {
           out.setAddress(Inet4Address.getByAddress(new byte[] {(byte)(rip >> 24), (byte)((rip >> 16) & 0xff), (byte)((rip >> 8) & 0xff), (byte)(rip & 0xff)}));
         int port = packet.getPort();
         out.setPort(port);
-        JFLog.log("ReplyTo:" + out.getAddress().getHostAddress() + ":" + out.getPort() + ":data.length=" + outDataLength);
+        if (debug) JFLog.log("DHCP:ReplyTo:" + out.getAddress().getHostAddress() + ":" + out.getPort() + ":data.length=" + outDataLength);
         host.ds.send(out);
       } catch (Exception e) {
         JFLog.log(e);
@@ -773,7 +775,7 @@ public class DHCP extends Thread {
     }
 
     private void sendReply(byte yip[], int msgType /*offer,ack,nak*/, int id, Pool pool, int rip, byte[] req_list) {
-      JFLog.log("ReplyFor:" + IP4toString(yip) + ":" + getMsgType(msgType));
+      if (debug) JFLog.log("DHCP:ReplyFor:" + IP4toString(yip) + ":" + getMsgType(msgType));
       reply = new byte[maxmtu];
       replyOffset = 0;
       reply[replyOffset++] = DHCP_OPCODE_REPLY;  //reply opcode
