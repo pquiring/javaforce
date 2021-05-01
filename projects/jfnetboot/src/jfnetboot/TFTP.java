@@ -215,7 +215,6 @@ public class TFTP extends Thread implements DHCP.Notify {
 
   private ImageFile readFile(String serial, String arch, String filename, String ip) {
     Client client = Clients.getClient(serial, arch);
-    client.reinitCommand();
     client.setIP(ip);
     String full = client.getFileSystem().getRootPath() + "/" + filename;
     if (debugMsgs) JFLog.log("TFTP:local=" + full);
@@ -275,7 +274,8 @@ public class TFTP extends Thread implements DHCP.Notify {
   }
 
   private String getNFSPath(Client client) {
-    return client.getFileSystem().getRootPath();
+    String path = client.getFileSystem().getRootPath();
+    return path;
   }
 
   private void doRead(DatagramPacket src) {
@@ -333,7 +333,14 @@ public class TFTP extends Thread implements DHCP.Notify {
       imgfile.name = "grub.cfg";
       imgfile.arch = arch;
     } else {
-      imgfile = getFile(serial, arch, filename, src.getAddress().getHostAddress());
+      if (filename.equals("boot/pxelinux")) {
+        //this is the first file requested during a bootup
+        Client client = Clients.getClient(serial, arch);
+        client.umount();
+        client.setIP(remote_ip);
+        client.mount();
+      }
+      imgfile = getFile(serial, arch, filename, remote_ip);
     }
     if (imgfile == null) {
       if (debugMsgs) JFLog.log("TFTP:Error:File not found:" + filename);

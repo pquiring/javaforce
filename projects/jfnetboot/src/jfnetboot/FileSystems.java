@@ -39,7 +39,7 @@ public class FileSystems {
     if (!new File(Paths.filesystems + "/default-arm.cfg").exists()) {
       try {
         FileOutputStream fos = new FileOutputStream(Paths.filesystems + "/default-arm.cfg");
-        fos.write("#default filesystem\narch=arm\n".getBytes());
+        fos.write("#filesystem\nname=default\narch=arm\n".getBytes());
         fos.close();
       } catch (Exception e) {
         JFLog.log(e);
@@ -48,7 +48,7 @@ public class FileSystems {
     if (!new File(Paths.filesystems + "/default-x86.cfg").exists()) {
       try {
         FileOutputStream fos = new FileOutputStream(Paths.filesystems + "/default-x86.cfg");
-        fos.write("#default filesystem\narch=x86\n".getBytes());
+        fos.write("#filesystem\nname=default\narch=x86\n".getBytes());
         fos.close();
       } catch (Exception e) {
         JFLog.log(e);
@@ -57,7 +57,7 @@ public class FileSystems {
     if (!new File(Paths.filesystems + "/default-bios.cfg").exists()) {
       try {
         FileOutputStream fos = new FileOutputStream(Paths.filesystems + "/default-bios.cfg");
-        fos.write("#default filesystem\narch=bios\n".getBytes());
+        fos.write("#filesystem\nname=default\narch=bios\n".getBytes());
         fos.close();
       } catch (Exception e) {
         JFLog.log(e);
@@ -73,6 +73,7 @@ public class FileSystems {
       if (idx == -1) continue;
       String arch = name.substring(idx + 1);
       name = name.substring(0, idx);
+      JFLog.log("FileSystem:" + name + "-" + arch);
       FileSystem fs = new FileSystem(name, arch);
       map.put(fs.name + "-" + fs.arch, fs);
     }

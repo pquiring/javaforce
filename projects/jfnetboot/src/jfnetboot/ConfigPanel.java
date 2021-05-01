@@ -37,7 +37,7 @@ public class ConfigPanel extends Panel {
   private Button form2_confirm;
 
   private Label form_client_serial;
-  private ComboBox form_client_filesystem;
+//  private ComboBox form_client_filesystem;
   private ComboBox form_client_command;
   private TextField form_client_opts;
   private TextField form_client_hostname;
@@ -254,6 +254,7 @@ public class ConfigPanel extends Panel {
         form_client_serial.setText(client.getSerial());
         int idx, selected;
 
+/*
         idx = 0;
         selected = -1;
         String[] fss = FileSystems.getFileSystemNames();
@@ -266,6 +267,7 @@ public class ConfigPanel extends Panel {
           idx++;
         }
         form_client_filesystem.setSelectedIndex(selected);
+*/
 
         idx = 0;
         selected = -1;
@@ -626,6 +628,7 @@ public class ConfigPanel extends Panel {
     form_client_serial = new Label("?");
     row1.add(form_client_serial);
 
+/*
     Row row2a = new Row();
     popup.add(row2a);
     row2a.add(new Label("FileSystem:"));
@@ -635,6 +638,7 @@ public class ConfigPanel extends Panel {
       form_client_filesystem.add(fs, fs);
     }
     row2a.add(form_client_filesystem);
+*/
 
     Row row2 = new Row();
     popup.add(row2);
@@ -686,7 +690,7 @@ public class ConfigPanel extends Panel {
     popup.add(row5);
     Button form2_client_save = new Button("Save");
     form2_client_save.addClickListener( (MouseEvent me, Component c) -> {
-      edit_client.filesystem = form_client_filesystem.getSelectedText();
+//      edit_client.filesystem = form_client_filesystem.getSelectedText();
       if (edit_client.filesystem == null) edit_client.filesystem = "default";
       edit_client.cmd = form_client_command.getSelectedText();
       if (edit_client.cmd == null) edit_client.cmd = "default";

@@ -22,6 +22,8 @@ public class Client {
 
   private FileSystem fs;  //file system instance
   private String ip;
+  private boolean mounted;
+  private boolean exported;
 
   public Client(String serial, String arch) {
     this.serial = serial;
@@ -32,6 +34,12 @@ public class Client {
     hostname = getSerial();
     videomode = "";
     touchscreen = "";
+  }
+
+  public void init() {
+    fs = new FileSystem(getSerial(), arch, this);
+    new File(fs.local + "/upper").mkdir();
+    new File(fs.local + "/work").mkdir();
   }
 
   public static String getConfigFile(String serial, String arch) {
@@ -58,6 +66,7 @@ public class Client {
       client.hostname = getProperty(props, "hostname", client.getSerial());
       client.videomode = getProperty(props, "videomode", "");
       client.touchscreen = getProperty(props, "touch-screen", "");
+      client.init();
       return client;
     } catch (Exception e) {
       return null;
@@ -107,31 +116,32 @@ public class Client {
   }
 
   public boolean mount() {
+    if (mounted) {
+      umount();
+    }
     FileSystem lower = FileSystems.get(filesystem, arch);
     if (lower == null) {
       JFLog.log("Client:Error:Lower FileSystem not found:" + filesystem + "-" + arch);
       return false;
     }
-    fs = new FileSystem(getSerial(), arch, this);
+    // mount -t overlay overlay -o lowerdir=/lower,upperdir=/upper,workdir=/work /merged
+    JF.exec(new String[] {"mount", "-t", "overlay", "overlay", "-o", "lowerdir=" + lower.getRootPath() + ",upperdir=" + fs.local + "/upper" + ",workdir=" + fs.local + "/work",
+      "-o", "nfs_export=on",
+      "-o", "index=on",
+      fs.getRootPath()});
     if (!new File(fs.getRootPath() + "/etc/passwd").exists()) {
-      new File(fs.local + "/upper").mkdir();
-      new File(fs.local + "/work").mkdir();
-      // mount -t overlay overlay -o lowerdir=/lower,upperdir=/upper,workdir=/work /merged
-      JF.exec(new String[] {"mount", "-t", "overlay", "overlay", "-o", "lowerdir=" + lower.getRootPath() + ",upperdir=" + fs.local + "/upper" + ",workdir=" + fs.local + "/work",
-        "-o", "nfs_export=on",
-        "-o", "index=on",
-        fs.getRootPath()});
-      if (!new File(fs.getRootPath() + "/etc/passwd").exists()) {
-        JFLog.log("Client:Failed to mount overlay filesystem");
-        return false;
-      }
+      JFLog.log("Client:Failed to mount overlay filesystem");
+      return false;
     }
-    replaceFiles();  //must replace files before index() but after mount()
-    JF.exec(new String[] {"exportfs", "-o", "rw,sync,no_root_squash,insecure", "*:" + fs.getRootPath()});
+    mounted = true;
+    replaceFiles();
+    JF.exec(new String[] {"exportfs", "-o", "rw,sync,no_root_squash,insecure", ip + ":" + fs.getRootPath()});
+    exported = true;
     return true;
   }
 
   public boolean umount() {
+    if (!mounted) return true;
     int max = 10;
     while (new File(fs.getRootPath() + "/etc/passwd").exists()) {
       JF.sleep(500);
@@ -143,8 +153,9 @@ public class Client {
         break;
       }
     }
-    JF.exec(new String[] {"exportfs", "-u", "*:" + fs.getRootPath()});
-    fs = null;
+    mounted = false;
+    JF.exec(new String[] {"exportfs", "-u", ip + ":" + fs.getRootPath()});
+    exported = false;
     return true;
   }
 
@@ -181,7 +192,6 @@ public class Client {
   }
 
   private void replaceFiles() {
-    JFLog.log("Client.FileSystem.local=" + fs.getRootPath());
     //create replacement files before indexing
     mkdirs("/etc");
     if (arch.equals("arm")) {
@@ -235,10 +245,6 @@ public class Client {
     sb.append(Commands.getCmd(cmd));
     sb.append("\n");
     return sb.toString();
-  }
-
-  public void reinitCommand() {
-    replaceFile("/netboot/command.sh", getCommand());
   }
 
   private String getConfigScript() {

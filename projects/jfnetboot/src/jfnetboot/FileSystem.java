@@ -32,10 +32,10 @@ public class FileSystem implements Cloneable {
     new File(getRootPath()).mkdir();
   }
 
-  public FileSystem(String name, String arch, Client client) {
-    this.name = name;
+  public FileSystem(String serial, String arch, Client client) {
+    this.name = serial;
     this.arch = arch;
-    this.local = Paths.clients + "/" + name + "-" + arch;
+    this.local = Paths.clients + "/" + serial + "-" + arch;
     this.client = client;
     new File(local).mkdir();
     new File(getRootPath()).mkdir();
@@ -47,12 +47,23 @@ public class FileSystem implements Cloneable {
     if (new File(dest).exists()) return null;
     //this will copy all folders/files
     FileSystem clone = new FileSystem(name, arch);
+    clone.save();
     JF.exec(new String[] {"cp", "-a", this.getRootPath(), clone.getLocalPath()});
     FileSystems.add(clone);
     if (notify != null) {
       notify.run();
     }
     return clone;
+  }
+
+  private void save() {
+    try {
+      FileOutputStream fos = new FileOutputStream(Paths.filesystems + "/" + name + "-" + arch + ".cfg");
+      fos.write(("#filesystem\nname=" + name + "\narch=" + arch + "\n").getBytes());
+      fos.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
   public String getName() {

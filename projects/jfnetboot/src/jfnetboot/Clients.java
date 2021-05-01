@@ -35,7 +35,7 @@ public class Clients {
       if (idx == -1) continue;
       String serial = name.substring(0, idx);
       String arch = name.substring(idx + 1);
-      JFLog.log("Client:init:" + serial + "-" + arch);
+      JFLog.log("Client:" + serial + "-" + arch);
       getClient(serial, arch);
     }
   }
@@ -56,9 +56,9 @@ public class Clients {
       if (client == null) {
         //create new client with default filesystem
         client = new Client(serial, arch);
+        client.init();
         client.save();
       }
-      client.mount();
       clients.put(serial + "-" + arch, client);
     }
     return client;
