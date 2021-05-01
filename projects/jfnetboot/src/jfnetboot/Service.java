@@ -15,8 +15,6 @@ public class Service {
   public static Config config;
   public static DHCP dhcp;
 
-  public static boolean nfs_server = false;  //use linux built in kernel NFS server
-
   public static void main(String[] args) {
     serviceStart(args);
   }
@@ -28,12 +26,12 @@ public class Service {
     FileSystems.init();
     Commands.init();
     Clients.init();
-    if (nfs_server) {
+    if (Settings.current.nfs_server) {
       JF.exec(new String[] {"exportfs", "-ua"});
     }
     tftp = new TFTP();
     tftp.start();
-    if (!nfs_server) {
+    if (!Settings.current.nfs_server) {
       rpc = new RPC();
       rpc.start();
     }

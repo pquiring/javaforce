@@ -148,6 +148,7 @@ public class FileSystem implements Cloneable {
    */
   public void index() {
     JFLog.log("FileSystem.index():name=" + name + ":arch=" + arch);
+    if (Settings.current.nfs_server) return;
     synchronized(lock) {
       indexFolder(getRootPath(), "", root);
     }

@@ -123,7 +123,7 @@ public class Client {
       }
     }
     replaceFiles();  //must replace files before index() but after mount()
-    if (Service.nfs_server) {
+    if (Settings.current.nfs_server) {
       JF.exec(new String[] {"exportfs", "-o", "rw,sync,no_root_squash,insecure", "*:" + fs.getRootPath()});
     } else {
       fs.index();
@@ -144,7 +144,7 @@ public class Client {
         break;
       }
     }
-    if (Service.nfs_server) {
+    if (Settings.current.nfs_server) {
       JF.exec(new String[] {"exportfs", "-u", "*:" + fs.getRootPath()});
     }
     fs = null;
