@@ -38,8 +38,6 @@ public class Client {
 
   public void init() {
     fs = new FileSystem(getSerial(), arch, this);
-    new File(fs.local + "/upper").mkdir();
-    new File(fs.local + "/work").mkdir();
   }
 
   public static String getConfigFile(String serial, String arch) {
@@ -131,7 +129,7 @@ public class Client {
       "-o", "nfs_export=on",
       "-o", "index=on",
       fs.getRootPath()});
-    if (!new File(fs.getRootPath() + "/etc/passwd").exists()) {
+    if (!mounted()) {
       JFLog.log("Client:Failed to mount overlay filesystem");
       return false;
     }

@@ -28,8 +28,7 @@ public class FileSystem implements Cloneable {
     this.name = name;
     this.arch = arch;
     this.local = Paths.filesystems + "/" + name + "-" + arch;
-    new File(local).mkdir();
-    new File(getRootPath()).mkdir();
+    mkdirs();
   }
 
   public FileSystem(String serial, String arch, Client client) {
@@ -37,8 +36,16 @@ public class FileSystem implements Cloneable {
     this.arch = arch;
     this.local = Paths.clients + "/" + serial + "-" + arch;
     this.client = client;
+    mkdirs();
+  }
+
+  private void mkdirs() {
     new File(local).mkdir();
     new File(getRootPath()).mkdir();
+    if (client != null) {
+      new File(local + "/upper").mkdir();
+      new File(local + "/work").mkdir();
+    }
   }
 
   /** Creates a clone of a Client. */
@@ -104,6 +111,8 @@ public class FileSystem implements Cloneable {
     //delete all 'files' recursively
     if (!isClientFileSystem()) return;
     deleteFiles(new File(getUpperPath()));
+    deleteFiles(new File(getWorkPath()));
+    mkdirs();
   }
 
   public String getLocalPath() {
