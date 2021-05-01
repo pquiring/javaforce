@@ -389,10 +389,18 @@ public class Client {
       public void run() {
         ArrayList<String> cmd = new ArrayList<>();
         cmd.add("ssh");
+        cmd.add("-f");
+        cmd.add("-q");
+        cmd.add("-o");
+        cmd.add("BatchMode=yes");
+        cmd.add("-o");
+        cmd.add("StrictHostKeyChecking=no");
+        cmd.add("-o");
+        cmd.add("UserKnownHostsFile=/dev/null");
         cmd.add("-i");
         cmd.add(fs.getRootPath() + "/root/.ssh/id_dsa");
         cmd.add("root@" + ip);
-        cmd.add("\"shutdown -h now\"");
+        cmd.add("\"/usr/sbin/shutdown -h now\"");
         try {
           Runtime.getRuntime().exec(cmd.toArray(new String[0]));
         } catch (Exception e) {
@@ -408,10 +416,18 @@ public class Client {
       public void run() {
         ArrayList<String> cmd = new ArrayList<>();
         cmd.add("ssh");
+        cmd.add("-f");
+        cmd.add("-q");
+        cmd.add("-o");
+        cmd.add("BatchMode=yes");
+        cmd.add("-o");
+        cmd.add("StrictHostKeyChecking=no");
+        cmd.add("-o");
+        cmd.add("UserKnownHostsFile=/dev/null");
         cmd.add("-i");
         cmd.add(fs.getRootPath() + "/root/.ssh/id_dsa");
         cmd.add("root@" + ip);
-        cmd.add("\"reboot\"");
+        cmd.add("\"/usr/sbin/reboot\"");
         try {
           Runtime.getRuntime().exec(cmd.toArray(new String[0]));
         } catch (Exception e) {
