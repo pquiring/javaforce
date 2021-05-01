@@ -93,6 +93,7 @@ public class FileSystem implements Cloneable {
     for(File file : files) {
       if (file.isDirectory()) {
         deleteFiles(file);
+        file.delete();
       } else {
         file.delete();
       }
@@ -102,7 +103,7 @@ public class FileSystem implements Cloneable {
   public void purge() {
     //delete all 'files' recursively
     if (!isClientFileSystem()) return;
-    deleteFiles(new File(getRootPath()));
+    deleteFiles(new File(getUpperPath()));
   }
 
   public String getLocalPath() {
@@ -111,6 +112,14 @@ public class FileSystem implements Cloneable {
 
   public String getRootPath() {
     return local + "/root";
+  }
+
+  public String getUpperPath() {
+    return local + "/upper";
+  }
+
+  public String getWorkPath() {
+    return local + "/work";
   }
 
   private boolean isClientFileSystem() {

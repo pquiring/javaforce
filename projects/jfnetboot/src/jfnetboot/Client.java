@@ -108,6 +108,8 @@ public class Client {
   }
 
   public void purge() {
+    umount();
+    if (mounted()) return;
     fs.purge();
   }
 
@@ -140,10 +142,14 @@ public class Client {
     return true;
   }
 
+  public boolean mounted() {
+    return new File(fs.getRootPath() + "/etc/passwd").exists();
+  }
+
   public boolean umount() {
     if (!mounted) return true;
     int max = 10;
-    while (new File(fs.getRootPath() + "/etc/passwd").exists()) {
+    while (mounted()) {
       JF.sleep(500);
       JF.exec(new String[] {"umount", fs.getRootPath()});
       JF.sleep(500);

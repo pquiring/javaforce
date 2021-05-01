@@ -191,7 +191,7 @@ public class ConfigPanel extends Panel {
       Button archive = new Button("Archive");
       table.add(archive, 2, tidx);
       archive.addClickListener( (MouseEvent me, Component c) -> {
-        status.setText("Archiving:" + fs.name + ":" + fs.arch);
+        status.setText("Archiving:" + fs.name + ":" + fs.arch + ":please wait...");
         fs.archive(new Runnable() {
           public void run() {
             status.setText("Archive Complete:" + fs.name + ":" + fs.arch);
