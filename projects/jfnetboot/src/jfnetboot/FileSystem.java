@@ -46,8 +46,8 @@ public class FileSystem implements Cloneable {
     String dest = Paths.filesystems + "/" + name + "-" + arch;
     if (new File(dest).exists()) return null;
     //this will copy all folders/files
-    FileSystem clone = new FileSystem(Paths.filesystems + "/" + name + "-" + arch, name);
-    JFLog.log("cp -a " + this.getRootPath() + " " + clone.getRootPath());
+    FileSystem clone = new FileSystem(name, arch);
+    JF.exec(new String[] {"cp", "-a", this.getRootPath(), clone.getLocalPath()});
     FileSystems.add(clone);
     if (notify != null) {
       notify.run();
@@ -92,6 +92,10 @@ public class FileSystem implements Cloneable {
     //delete all 'files' recursively
     if (!isClientFileSystem()) return;
     deleteFiles(new File(getRootPath()));
+  }
+
+  public String getLocalPath() {
+    return local;
   }
 
   public String getRootPath() {
