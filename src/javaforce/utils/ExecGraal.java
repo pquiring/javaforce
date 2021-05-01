@@ -34,7 +34,6 @@ public class ExecGraal implements ShellProcessListener {
       cmd.add(args[0].replaceAll("[;]", ":"));  //CLASSPATH
     }
     cmd.add(args[1]);  //MAINCLASS
-    cmd.add("-H:JNIConfigurationFiles=graal.json");
     cmd.add("--shared");
     cmd.add("--enable-all-security-services");
     cmd.add("--allow-incomplete-classpath");
