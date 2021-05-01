@@ -40,9 +40,22 @@ public class Service {
     dhcp.start();
     config = new Config();
     config.init();
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        serviceStop();
+      }
+    });
   }
 
   public static void serviceStop() {
-    //TODO
+    if (dhcp != null) {
+      dhcp.close();
+      dhcp = null;
+    }
+    if (rpc != null) {
+      rpc.close();
+      rpc = null;
+    }
+    Clients.close();
   }
 }

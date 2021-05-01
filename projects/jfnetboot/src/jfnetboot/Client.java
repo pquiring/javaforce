@@ -88,6 +88,10 @@ public class Client {
     }
   }
 
+  public void close() {
+    umount();
+  }
+
   public void delete() {
     new File(getConfigFile(serial, arch)).delete();
     Clients.remove(this);

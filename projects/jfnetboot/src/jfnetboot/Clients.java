@@ -40,6 +40,13 @@ public class Clients {
     }
   }
 
+  public static void close() {
+    Client[] clients = getClients();
+    for(Client client : clients) {
+      client.close();
+    }
+  }
+
   public static Client getClient(String serial, String arch) {
     Client client = clients.get(serial + "-" + arch);
     if (client == null) {
