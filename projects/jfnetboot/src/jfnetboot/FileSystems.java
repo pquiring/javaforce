@@ -74,7 +74,6 @@ public class FileSystems {
       String arch = name.substring(idx + 1);
       name = name.substring(0, idx);
       FileSystem fs = new FileSystem(name, arch);
-      fs.index();
       map.put(fs.name + "-" + fs.arch, fs);
     }
   }
@@ -84,7 +83,6 @@ public class FileSystems {
       return false;
     }
     FileSystem fs = new FileSystem(name, arch);
-    fs.index();
     map.put(name + "-" + arch, fs);
     return true;
   }

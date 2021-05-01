@@ -11,7 +11,7 @@
   <property name="version" value="0.1"/>
   <property name="graal" value="true"/>
 
-  <property name="debian.depends" value="libxcursor1,libv4l-0"/>
+  <property name="debian.depends" value="nfs-kernel-server"/>
 
   <import file="../../base.xml"/>
 

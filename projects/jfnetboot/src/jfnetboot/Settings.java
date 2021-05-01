@@ -15,7 +15,6 @@ public class Settings {
   public static Settings current = new Settings();
 
   public String defaultFileSystem = "default";
-  public boolean nfs_server = false;  //use linux built in kernel NFS server
 
   private static String configFile() {
     return Paths.config + "/settings.cfg";
@@ -26,7 +25,6 @@ public class Settings {
       FileOutputStream fos = new FileOutputStream(configFile());
       Properties props = new Properties();
       props.setProperty("defaultFileSystem", defaultFileSystem);
-      props.setProperty("nfs_server", nfs_server ? "true" : "false");
       props.store(fos, "jfNetBoot");
       fos.close();
       current.defaultFileSystem = props.getProperty("defaultFileSystem");
@@ -49,7 +47,6 @@ public class Settings {
       props.load(fis);
       fis.close();
       current.defaultFileSystem = getProperty(props, "defaultFileSystem");
-      current.nfs_server = getProperty(props, "nfs_server").equals("true");
     } catch (FileNotFoundException e) {
       current = new Settings();
     } catch (Exception e) {

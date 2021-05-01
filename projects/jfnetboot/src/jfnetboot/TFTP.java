@@ -275,11 +275,7 @@ public class TFTP extends Thread implements DHCP.Notify {
   }
 
   private String getNFSPath(Client client) {
-    if (Settings.current.nfs_server) {
-      return client.getFileSystem().getRootPath();
-    } else {
-      return "/" + client.serial + "/" + client.arch;
-    }
+    return client.getFileSystem().getRootPath();
   }
 
   private void doRead(DatagramPacket src) {

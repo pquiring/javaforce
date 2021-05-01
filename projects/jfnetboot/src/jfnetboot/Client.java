@@ -127,16 +127,11 @@ public class Client {
       }
     }
     replaceFiles();  //must replace files before index() but after mount()
-    if (Settings.current.nfs_server) {
-      JF.exec(new String[] {"exportfs", "-o", "rw,sync,no_root_squash,insecure", "*:" + fs.getRootPath()});
-    } else {
-      fs.index();
-    }
+    JF.exec(new String[] {"exportfs", "-o", "rw,sync,no_root_squash,insecure", "*:" + fs.getRootPath()});
     return true;
   }
 
   public boolean umount() {
-    fs.closeAllFiles();
     int max = 10;
     while (new File(fs.getRootPath() + "/etc/passwd").exists()) {
       JF.sleep(500);
@@ -148,9 +143,7 @@ public class Client {
         break;
       }
     }
-    if (Settings.current.nfs_server) {
-      JF.exec(new String[] {"exportfs", "-u", "*:" + fs.getRootPath()});
-    }
+    JF.exec(new String[] {"exportfs", "-u", "*:" + fs.getRootPath()});
     fs = null;
     return true;
   }
@@ -183,39 +176,6 @@ public class Client {
     }
   }
 
-  private void deleteFileRecursive(String regex, NFolder pfolder) {
-    for(int idx = 0;idx < pfolder.cfiles.size();) {
-      NFile cfile = pfolder.cfiles.get(idx);
-      if (cfile.name.matches(regex)) {
-        fs.remove(pfolder.handle, cfile.name);
-      } else {
-        idx++;
-      }
-    }
-    for(NFolder cfolder : pfolder.cfolders) {
-      deleteFileRecursive(regex, cfolder);
-    }
-  }
-
-  private void deleteFileRecursive(String regex) {
-    deleteFileRecursive(regex, fs.getRootFolder());
-  }
-
-  private void patchFile(String path, String regex, String replace) {
-    String local = fs.getRootPath() + path;
-    try {
-      FileInputStream fis = new FileInputStream(local);
-      byte[] data = fis.readAllBytes();
-      fis.close();
-      data = new String(data).replaceAll(regex, replace).getBytes();
-      FileOutputStream fos = new FileOutputStream(local);
-      fos.write(data);
-      fos.close();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
   private void chmod(String mode, String path) {
     JF.exec(new String[] {"chmod", mode, getFileSystem().getRootPath() + path});
   }
@@ -242,7 +202,7 @@ public class Client {
     replaceFile("/netboot/default.html", getHTML());
     replaceFile("/netboot/config.sh", getConfigScript());
     replaceFile("/netboot/autostart", getAutostartScript());
-    chmod("+x", "/netboot/*.sh");
+    chmod("+x", "/netboot/config.sh");
   }
 
   private String getCommand() {

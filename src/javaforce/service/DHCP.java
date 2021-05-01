@@ -743,6 +743,10 @@ public class DHCP extends Thread {
               }
             }
             break;
+          case DHCPINFORM:
+            break;
+          case DHCPDECLINE:
+            break;
           default:
             throw new Exception("unsupported dhcp msg type");
         }

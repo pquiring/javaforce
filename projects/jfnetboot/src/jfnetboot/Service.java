@@ -11,7 +11,6 @@ import javaforce.service.*;
 
 public class Service {
   public static TFTP tftp;
-  public static RPC rpc;
   public static Config config;
   public static DHCP dhcp;
 
@@ -20,21 +19,16 @@ public class Service {
   }
 
   public static void serviceStart(String[] args) {
-    JFLog.append("boot.log", true);  //test
-    JFNative.load();
     Paths.init();
+    JFLog.append(Paths.logs + "/jfnetboot.log", true);
+    JFLog.log("jfNetBoot " + Settings.version + " starting...");
+    Settings.load();
+    JF.exec(new String[] {"exportfs", "-ua"});
     FileSystems.init();
     Commands.init();
     Clients.init();
-    if (Settings.current.nfs_server) {
-      JF.exec(new String[] {"exportfs", "-ua"});
-    }
     tftp = new TFTP();
     tftp.start();
-    if (!Settings.current.nfs_server) {
-      rpc = new RPC();
-      rpc.start();
-    }
     dhcp = new DHCP();
     dhcp.setNotify(tftp);
     dhcp.start();
@@ -48,13 +42,10 @@ public class Service {
   }
 
   public static void serviceStop() {
+    JFLog.log("jfNetBoot stopping...");
     if (dhcp != null) {
       dhcp.close();
       dhcp = null;
-    }
-    if (rpc != null) {
-      rpc.close();
-      rpc = null;
     }
     Clients.close();
   }
