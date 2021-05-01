@@ -405,6 +405,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     String str;
     int num;
     try {
+      saveProfile();
       if (server != null) {
         server.close();
         server = null;
