@@ -352,17 +352,47 @@ public class ConfigPanel extends Panel {
       Button purge = new Button("Purge");
       table.add(purge, 4, tidx);
       purge.addClickListener( (MouseEvent me, Component c) -> {
-        client.purge();
+        action0 = new Runnable() {
+          public void run() {
+            form0.setVisible(false);
+            client.purge();
+            split.setRightComponent(createClientsPanel());
+          }
+        };
+        form0.setTitle("Purge Client Data");
+        form0_msg.setText("Confirm you want to purge client:" + client.getSerial());
+        form0_confirm.setText("Purge");
+        form0.setVisible(true);
       });
       Button shutdown = new Button("Shutdown");
       table.add(shutdown, 5, tidx);
       shutdown.addClickListener( (MouseEvent me, Component c) -> {
-        client.shutdown();
+        action0 = new Runnable() {
+          public void run() {
+            form0.setVisible(false);
+            client.shutdown();
+            split.setRightComponent(createClientsPanel());
+          }
+        };
+        form0.setTitle("Shutdown Client");
+        form0_msg.setText("Confirm you want to shutdown client:" + client.getSerial());
+        form0_confirm.setText("Shutdown");
+        form0.setVisible(true);
       });
       Button reboot = new Button("Reboot");
       table.add(reboot, 6, tidx);
       reboot.addClickListener( (MouseEvent me, Component c) -> {
-        client.reboot();
+        action0 = new Runnable() {
+          public void run() {
+            form0.setVisible(false);
+            client.reboot();
+            split.setRightComponent(createClientsPanel());
+          }
+        };
+        form0.setTitle("Reboot Client");
+        form0_msg.setText("Confirm you want to reboot client:" + client.getSerial());
+        form0_confirm.setText("Reboot");
+        form0.setVisible(true);
       });
       Button delete = new Button("Delete");
       table.add(delete, 7, tidx);
@@ -374,7 +404,7 @@ public class ConfigPanel extends Panel {
             split.setRightComponent(createClientsPanel());
           }
         };
-        form0.setTitle("Delete Client Data");
+        form0.setTitle("Delete Client");
         form0_msg.setText("Confirm you want to delete client:" + client.getSerial());
         form0_confirm.setText("Delete Forever");
         form0.setVisible(true);
