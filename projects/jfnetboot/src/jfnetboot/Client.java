@@ -146,20 +146,23 @@ public class Client {
 
   public boolean umount() {
     if (!mounted) return true;
+    JF.exec(new String[] {"exportfs", "-u", ip + ":" + fs.getRootPath()});
+    exported = false;
     int max = 10;
-    while (mounted()) {
+    while (true) {
       JF.sleep(500);
       JF.exec(new String[] {"umount", fs.getRootPath()});
       JF.sleep(500);
+      if (!mounted()) break;
       max--;
       if (max == 0) {
         JFLog.log("Error:Client.umount() failed!");
         break;
+      } else {
+        JFLog.log("Warning:Client.umount() attempt failed");
       }
     }
     mounted = false;
-    JF.exec(new String[] {"exportfs", "-u", ip + ":" + fs.getRootPath()});
-    exported = false;
     return true;
   }
 
