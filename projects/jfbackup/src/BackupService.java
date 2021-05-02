@@ -14,16 +14,21 @@ public class BackupService extends Thread {
   public static Client client;
 
   public static void serviceStart(String args[]) {
-    main(args);
+    JFNative.load();
+    if (backupService != null) return;
+    backupService = new BackupService();
+    backupService.start();
   }
   public static void serviceStop() {
     backupService.cancel();
   }
   public static void main(String args[]) {
-    JFNative.load();
-    if (backupService != null) return;
-    backupService = new BackupService();
-    backupService.start();
+    serviceStart(args);
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        serviceStop();
+      }
+    });
   }
 
   public void cancel() {
@@ -43,6 +48,7 @@ public class BackupService extends Thread {
     Paths.init();
     //load current config
     Config.load();
+    Settings.load();
     //load tapes config
     Tapes.load();
     //start config service
