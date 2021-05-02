@@ -182,7 +182,7 @@
   <target name="installapp" depends="executable,graal,installapp2,installapp3,installapp4,installapp5">
     <sequential>
       <exec command="sudo cp ${app}.bin /usr/bin/${app}"/>
-      <exec command="sudo ant install"/>
+      <exec command="sudo ant -f ${ant.file} install"/>
     </sequential>
   </target>
 
