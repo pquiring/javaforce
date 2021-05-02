@@ -4,3 +4,6 @@ Description=jfControls
 [Service]
 ExecStart=/usr/bin/jfcontrols
 Restart=always
+
+[Install]
+WantedBy=multi-user.target

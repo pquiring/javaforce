@@ -7,3 +7,4 @@ ExecStart=/usr/bin/jfdhcpsvc
 Restart=always
 
 [Install]
+WantedBy=multi-user.target

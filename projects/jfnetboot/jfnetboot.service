@@ -6,3 +6,4 @@ ExecStart=/usr/bin/jfnetboot
 Restart=always
 
 [Install]
+WantedBy=multi-user.target

@@ -7,3 +7,4 @@ ExecStart=/usr/bin/jpbxlite
 Restart=always
 
 [Install]
+WantedBy=multi-user.target

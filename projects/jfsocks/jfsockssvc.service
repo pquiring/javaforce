@@ -7,3 +7,4 @@ ExecStart=/usr/bin/jfsocks
 Restart=always
 
 [Install]
+WantedBy=multi-user.target
