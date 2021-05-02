@@ -12,7 +12,7 @@ public class Config implements WebUIHandler {
 
   public void init() {
     web = new WebUIServer();
-    web.start(this, Settings.current.webPort, false);
+    web.start(this, Settings.current.web_port, false);
   }
 
   public Panel getRootPanel(WebUIClient client) {

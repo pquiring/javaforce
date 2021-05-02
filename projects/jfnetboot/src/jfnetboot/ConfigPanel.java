@@ -153,7 +153,7 @@ public class ConfigPanel extends Panel {
     int pos = 0;
     for(String fs : fss) {
       cb.add(fs, fs);
-      if (fs.equals(Settings.current.defaultFileSystem)) {
+      if (fs.equals(Settings.current.filesystem_default)) {
         idx = pos;
       }
       pos++;
@@ -168,7 +168,7 @@ public class ConfigPanel extends Panel {
     row1.add(saved);
     save.addClickListener( (MouseEvent me, Component c) -> {
       String opt = cb.getSelectedText();
-      Settings.current.defaultFileSystem = opt;
+      Settings.current.filesystem_default = opt;
       Settings.current.save();
       saved.setText("Saved!");
     });

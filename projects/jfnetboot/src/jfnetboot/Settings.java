@@ -14,8 +14,8 @@ public class Settings {
   public static String version = "0.1";
   public static Settings current = new Settings();
 
-  public String defaultFileSystem = "default";
-  public int webPort = 80;
+  public String filesystem_default = "default";
+  public int web_port = 80;
 
   private static String configFile() {
     return Paths.config + "/settings.cfg";
@@ -25,11 +25,10 @@ public class Settings {
     try {
       FileOutputStream fos = new FileOutputStream(configFile());
       Properties props = new Properties();
-      props.setProperty("defaultFileSystem", defaultFileSystem);
-      props.setProperty("webPort", Integer.toString(webPort));
+      props.setProperty("filesystem.default", filesystem_default);
+      props.setProperty("web.port", Integer.toString(web_port));
       props.store(fos, "jfNetBoot");
       fos.close();
-      current.defaultFileSystem = props.getProperty("defaultFileSystem");
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -48,8 +47,8 @@ public class Settings {
       Properties props = new Properties();
       props.load(fis);
       fis.close();
-      current.defaultFileSystem = getProperty(props, "defaultFileSystem", "default");
-      current.webPort = Integer.valueOf(getProperty(props, "webPort", "80"));
+      current.filesystem_default = getProperty(props, "filesystem.default", "default");
+      current.web_port = Integer.valueOf(getProperty(props, "web.port", "80"));
     } catch (FileNotFoundException e) {
       current = new Settings();
     } catch (Exception e) {
