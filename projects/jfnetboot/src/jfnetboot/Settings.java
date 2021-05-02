@@ -15,6 +15,7 @@ public class Settings {
   public static Settings current = new Settings();
 
   public String defaultFileSystem = "default";
+  public int webPort = 80;
 
   private static String configFile() {
     return Paths.config + "/settings.cfg";
@@ -25,6 +26,7 @@ public class Settings {
       FileOutputStream fos = new FileOutputStream(configFile());
       Properties props = new Properties();
       props.setProperty("defaultFileSystem", defaultFileSystem);
+      props.setProperty("webPort", Integer.toString(webPort));
       props.store(fos, "jfNetBoot");
       fos.close();
       current.defaultFileSystem = props.getProperty("defaultFileSystem");
@@ -33,9 +35,9 @@ public class Settings {
     }
   }
 
-  private static String getProperty(Properties p, String k) {
+  private static String getProperty(Properties p, String k, String def) {
     String v = p.getProperty(k);
-    if (v == null) v = "";
+    if (v == null) v = def;
     return v;
   }
 
@@ -46,7 +48,8 @@ public class Settings {
       Properties props = new Properties();
       props.load(fis);
       fis.close();
-      current.defaultFileSystem = getProperty(props, "defaultFileSystem");
+      current.defaultFileSystem = getProperty(props, "defaultFileSystem", "default");
+      current.webPort = Integer.valueOf(getProperty(props, "webPort", "80"));
     } catch (FileNotFoundException e) {
       current = new Settings();
     } catch (Exception e) {
