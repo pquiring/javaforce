@@ -4,7 +4,7 @@
   <property name="app" value="jfsockssvc"/>
   <property name="apptype" value="s"/>
   <property name="home" location="../.."/>
-
+  <property name="graal" value="true"/>
   <import file="../../base.xml"/>
 
   <target name="depjars" description="jar">
@@ -12,5 +12,11 @@
   </target>
 
   <target name="jar" depends="depjars" description="jar">
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <copy file="jfsockssvc.service" todir="/lib/systemd/system"/>
+    <copy file="javaforce.service.socks.so" todir="/usr/bin"/>
   </target>
 </project>

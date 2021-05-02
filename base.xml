@@ -163,7 +163,23 @@
 
   <!-- Linux targets -->
 
-  <target name="installapp" depends="executable,graal">
+  <target name="installapp2" depends="check-builds" if="project2.present">
+    <ant antfile="${project2}.xml" target="installapp" inheritAll="false"/>
+  </target>
+
+  <target name="installapp3" depends="check-builds" if="project3.present">
+    <ant antfile="${project3}.xml" target="installapp" inheritAll="false"/>
+  </target>
+
+  <target name="installapp4" depends="check-builds" if="project4.present">
+    <ant antfile="${project4}.xml" target="installapp" inheritAll="false"/>
+  </target>
+
+  <target name="installapp5" depends="check-builds" if="project5.present">
+    <ant antfile="${project5}.xml" target="installapp" inheritAll="false"/>
+  </target>
+
+  <target name="installapp" depends="executable,graal,installapp2,installapp3,installapp4,installapp5">
     <sequential>
       <exec command="sudo cp ${app}.bin /usr/bin/${app}"/>
       <exec command="sudo ant install"/>

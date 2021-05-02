@@ -1,7 +1,7 @@
 <project name="jfsocks-client" default="jar" basedir=".">
   <description>SOCKS Client</description>
   <!-- set global properties for this build -->
-  <property name="app" value="client"/>
+  <property name="app" value="jfsocks-client"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
@@ -33,5 +33,10 @@
         <attribute name="Codebase" value="${app}.sourceforge.net"/>
       </manifest>
     </jar>
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <copy file="jfsocks-client.jar" todir="/usr/share/java"/>
   </target>
 </project>

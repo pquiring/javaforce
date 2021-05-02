@@ -567,6 +567,15 @@ public class SOCKS extends Thread {
     socks.close();
   }
 
+  public static void main(String[] args) {
+    serviceStart(args);
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        serviceStop();
+      }
+    });
+  }
+
   private static JBusServer busServer;
   private JBusClient busClient;
   private String config;

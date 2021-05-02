@@ -1,4 +1,6 @@
 /usr/bin/jfsocks
-/lib/systemd/system/jfsocks.service
-
-
+/usr/bin/jfsocks-client
+/usr/bin/jfsockssvc
+/usr/bin/javaforce.service.socks.so
+/lib/systemd/system/jfsockssvc.service
+/usr/share/java/jfsocks-client.jar

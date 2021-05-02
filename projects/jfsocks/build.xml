@@ -1,5 +1,5 @@
 <project name="jfsocks-config" default="jar" basedir=".">
-  <description>SOCKS Server</description>
+  <description>SOCKS Server Config Tool</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfsocks"/>
   <property name="home" location="../.."/>
@@ -16,5 +16,9 @@
   </target>
 
   <target name="jar" depends="depjars" description="jar">
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
   </target>
 </project>
