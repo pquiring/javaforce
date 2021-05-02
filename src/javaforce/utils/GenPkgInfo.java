@@ -170,21 +170,13 @@ public class GenPkgInfo {
       //generate deb/postinst if not present
       if (!new File("deb/postinst").exists()) {
         FileOutputStream fos = new FileOutputStream("deb/postinst");
-        if (graal) {
-          fos.write("#!/bin/sh\n".getBytes());
-        } else {
-          fos.write("#!/bin/sh\nset -e\nupdate-desktop-database\n".getBytes());
-        }
+        fos.write("#!/bin/sh\n".getBytes());
         fos.close();
       }
       //generate deb/postrm if not present
       if (!new File("deb/postrm").exists()) {
         FileOutputStream fos = new FileOutputStream("deb/postrm");
-        if (graal) {
-          fos.write("#!/bin/sh\n".getBytes());
-        } else {
-          fos.write("#!/bin/sh\nset -e\nupdate-desktop-database\n".getBytes());
-        }
+        fos.write("#!/bin/sh\n".getBytes());
         fos.close();
       }
       System.out.println("Debian package info created");
@@ -225,11 +217,9 @@ public class GenPkgInfo {
       sb.append("%post\n");
       sb.append("#!/bin/sh\n");
       sb.append("set -e\n");
-      sb.append("update-desktop-database\n");
       sb.append("%pre\n");
       sb.append("#!/bin/sh\n");
       sb.append("set -e\n");
-      sb.append("update-desktop-database\n");
       sb.append("%files\n");
       //files.lst is added by jfrpm
       FileOutputStream fos = new FileOutputStream("rpm.spec");
