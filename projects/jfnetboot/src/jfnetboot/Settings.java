@@ -51,6 +51,7 @@ public class Settings {
       current.web_port = Integer.valueOf(getProperty(props, "web.port", "80"));
     } catch (FileNotFoundException e) {
       current = new Settings();
+      current.save();
     } catch (Exception e) {
       JFLog.log(e);
       current = new Settings();
