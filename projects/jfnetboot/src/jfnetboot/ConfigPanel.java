@@ -16,8 +16,9 @@ public class ConfigPanel extends Panel {
   private SplitPanel split;
   private Panel nav;
 
-  private PopupPanel form0, form1, form2, form_client;
+  private PopupPanel form0, form1, form2, form_client, form_purge;
   private Client edit_client;
+  private Client purge_client;
 
   private Runnable action0, action1, action2;
 
@@ -37,7 +38,6 @@ public class ConfigPanel extends Panel {
   private Button form2_confirm;
 
   private Label form_client_serial;
-//  private ComboBox form_client_filesystem;
   private ComboBox form_client_command;
   private TextField form_client_opts;
   private TextField form_client_hostname;
@@ -47,6 +47,8 @@ public class ConfigPanel extends Panel {
   private CheckBox form_client_vm;
   private TextField form_client_vm_group;
   private TextField form_client_vm_mode;
+
+  private ComboBox form_purge_filesystem;
 
   public ConfigPanel() {
     split = new SplitPanel(SplitPanel.VERTICAL);
@@ -59,6 +61,7 @@ public class ConfigPanel extends Panel {
     add(form1 = createForm1PopupPanel());
     add(form2 = createForm2PopupPanel());
     add(form_client = createEditClientPopupPanel());
+    add(form_purge = createPurgeClientPopupPanel());
   }
 
   private Panel createMenuPanel() {
@@ -254,21 +257,6 @@ public class ConfigPanel extends Panel {
         form_client_serial.setText(client.getSerial());
         int idx, selected;
 
-/*
-        idx = 0;
-        selected = -1;
-        String[] fss = FileSystems.getFileSystemNames();
-        form_client_filesystem.clear();
-        for(String fs : fss) {
-          form_client_filesystem.add(fs, fs);
-          if (fs.equals(client.filesystem)) {
-            selected = idx;
-          }
-          idx++;
-        }
-        form_client_filesystem.setSelectedIndex(selected);
-*/
-
         idx = 0;
         selected = -1;
         Command[] cmds = Commands.getCommands();
@@ -352,17 +340,21 @@ public class ConfigPanel extends Panel {
       Button purge = new Button("Purge");
       table.add(purge, 4, tidx);
       purge.addClickListener( (MouseEvent me, Component c) -> {
-        action0 = new Runnable() {
-          public void run() {
-            form0.setVisible(false);
-            client.purge();
-            split.setRightComponent(createClientsPanel());
+        int idx = 0;
+        int selected = -1;
+        String[] fss = FileSystems.getFileSystemNames();
+        form_purge_filesystem.clear();
+        for(String fs : fss) {
+          form_purge_filesystem.add(fs, fs);
+          if (fs.equals(client.filesystem)) {
+            selected = idx;
           }
-        };
-        form0.setTitle("Purge Client Data");
-        form0_msg.setText("Confirm you want to purge client:" + client.getSerial());
-        form0_confirm.setText("Purge");
-        form0.setVisible(true);
+          idx++;
+        }
+        form_purge_filesystem.setSelectedIndex(selected);
+
+        purge_client = client;
+        form_purge.setVisible(true);
       });
       Button shutdown = new Button("Shutdown");
       table.add(shutdown, 5, tidx);
@@ -739,6 +731,40 @@ public class ConfigPanel extends Panel {
       edit_client.save();
       form_client.setVisible(false);
       split.setRightComponent(createClientsPanel());
+    });
+    row5.add(form2_client_save);
+    Button cancel = new Button("Cancel");
+    cancel.addClickListener( (MouseEvent me, Component c) -> {
+      popup.setVisible(false);
+    });
+    row5.add(cancel);
+
+    popup.setModal(true);
+    return popup;
+  }
+
+  /** Custom popup panel to purge client. */
+  private PopupPanel createPurgeClientPopupPanel() {
+    PopupPanel popup = new PopupPanel("Purge Client");
+
+    Row row2a = new Row();
+    popup.add(row2a);
+    row2a.add(new Label("FileSystem:"));
+    form_purge_filesystem = new ComboBox();
+    String[] fss = FileSystems.getFileSystemNames();
+    for(String fs : fss) {
+      form_purge_filesystem.add(fs, fs);
+    }
+    row2a.add(form_purge_filesystem);
+
+    Row row5 = new Row();
+    popup.add(row5);
+    Button form2_client_save = new Button("Purge");
+    form2_client_save.addClickListener( (MouseEvent me, Component c) -> {
+      popup.setVisible(false);
+      purge_client.purge();  //long process
+      purge_client.filesystem = form_purge_filesystem.getSelectedText();
+      purge_client.save();
     });
     row5.add(form2_client_save);
     Button cancel = new Button("Cancel");
