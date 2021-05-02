@@ -34,8 +34,8 @@
             Profile="all" />
         </File>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <File Id="jfsocks-client.exe" Source="jfsocks-client.exe"/>
-        <File Id="jfsocks-client.jar" Source="jfsocks-client.jar"/>
+        <File Id="jfsocks_client.exe" Source="jfsocks-client.exe"/>
+        <File Id="jfsocks_client.jar" Source="jfsocks-client.jar"/>
         <File Id="jfsocks.exe" Source="jfsocks.exe"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"

@@ -74,7 +74,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     jLabel13 = new javax.swing.JLabel();
     profiles = new javax.swing.JComboBox<>();
     save = new javax.swing.JButton();
-    jButton1 = new javax.swing.JButton();
+    delete = new javax.swing.JButton();
 
     jLabel7.setText("jLabel7");
 
@@ -177,10 +177,10 @@ public class Main extends javax.swing.JFrame implements ActionListener {
       }
     });
 
-    jButton1.setText("Delete");
-    jButton1.addActionListener(new java.awt.event.ActionListener() {
+    delete.setText("Delete");
+    delete.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton1ActionPerformed(evt);
+        deleteActionPerformed(evt);
       }
     });
 
@@ -226,7 +226,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(save)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButton1))
+            .addComponent(delete))
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(jLabel1)
@@ -250,7 +250,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
           .addComponent(jLabel13)
           .addComponent(profiles, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(save)
-          .addComponent(jButton1))
+          .addComponent(delete))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel2)
@@ -311,9 +311,9 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     saveProfile();
   }//GEN-LAST:event_saveActionPerformed
 
-  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+  private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
     deleteProfile();
-  }//GEN-LAST:event_jButton1ActionPerformed
+  }//GEN-LAST:event_deleteActionPerformed
 
   /**
    * @param args the command line arguments
@@ -330,8 +330,8 @@ public class Main extends javax.swing.JFrame implements ActionListener {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.JButton connect;
+  private javax.swing.JButton delete;
   private javax.swing.JButton genkeys;
-  private javax.swing.JButton jButton1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel11;
@@ -455,6 +455,9 @@ public class Main extends javax.swing.JFrame implements ActionListener {
   }
 
   public void setState(boolean state) {
+    profiles.setEnabled(state);
+    save.setEnabled(state);
+    delete.setEnabled(state);
     socks_server.setEditable(state);
     socks_port.setEditable(state);
     socks4.setEnabled(state);
