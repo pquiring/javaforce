@@ -1,3 +1,6 @@
+May 3/2021 : 0.21 released
+  - new : added option to change web port (see \programdata\jfbackup\settings.cfg)
+
 Apr 15/2021 : 0.20 released
   - new : support drives whose default blocksize is not 64k
 

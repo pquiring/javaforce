@@ -1,5 +1,8 @@
 Whats new ???
 
+May 3, 2021 : 0.7
+  - new : added profiles
+
 Jan 14, 2021 : 0.6
   - new : added IP networks allowed (ipnet)
 

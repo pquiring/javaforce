@@ -1,5 +1,13 @@
 What's new...
 
+May 3/2021 : JF 32.0 released
+  - jfNetBoot/0.1
+    - PXE Server for Thin clients (Raspberry PI4, x86 UEFI/BIOS systems)
+  - jfBackup/0.21
+    - added config option to change web port
+  - jfSocks/0.7
+    - added profiles
+
 Apr 15/2021 : JF 31.0 released
   - jfBackup/0.20
     - added support for drives whose default blocksize is not 64k
