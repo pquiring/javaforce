@@ -7,7 +7,7 @@ package jfnetboot;
 
 import javaforce.webui.*;
 
-public class Config implements WebUIHandler {
+public class ConfigService implements WebUIHandler {
   private WebUIServer web;
 
   public void init() {
@@ -16,7 +16,7 @@ public class Config implements WebUIHandler {
   }
 
   public Panel getRootPanel(WebUIClient client) {
-    return new ConfigPanel();
+    return new LoginPanel();
   }
 
   public byte[] getResource(String url) {

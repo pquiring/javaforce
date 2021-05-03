@@ -16,7 +16,13 @@ public class ConfigPanel extends Panel {
   private SplitPanel split;
   private Panel nav;
 
-  private PopupPanel form0, form1, form2, form_client, form_purge;
+  private PopupPanel form0;
+  private PopupPanel form1;
+  private PopupPanel form2;
+  private PopupPanel form_client;
+  private PopupPanel form_purge;
+  private PopupPanel form_password;
+
   private Client edit_client;
   private Client purge_client;
 
@@ -62,6 +68,7 @@ public class ConfigPanel extends Panel {
     add(form2 = createForm2PopupPanel());
     add(form_client = createEditClientPopupPanel());
     add(form_purge = createPurgeClientPopupPanel());
+    add(form_password = createChangePasswordPopupPanel());
   }
 
   private Panel createMenuPanel() {
@@ -107,6 +114,14 @@ public class ConfigPanel extends Panel {
     col.add(new HTML("hr"));
     col.add(new Label("FileSystems:" + FileSystems.getCount()));
     col.add(new Label("Clients:" + Clients.getCount()));
+    Row row = new Row();
+    row.add(new Label("Password:"));
+    Button change = new Button("Change");
+    change.addClickListener( (MouseEvent me, Component c) -> {
+      form_password.setVisible(true);
+    });
+    row.add(change);
+    col.add(row);
     return panel;
   }
 
@@ -759,14 +774,14 @@ public class ConfigPanel extends Panel {
 
     Row row5 = new Row();
     popup.add(row5);
-    Button form2_client_save = new Button("Purge");
-    form2_client_save.addClickListener( (MouseEvent me, Component c) -> {
+    Button purge = new Button("Purge");
+    purge.addClickListener( (MouseEvent me, Component c) -> {
       popup.setVisible(false);
       purge_client.purge();  //long process
       purge_client.filesystem = form_purge_filesystem.getSelectedText();
       purge_client.save();
     });
-    row5.add(form2_client_save);
+    row5.add(purge);
     Button cancel = new Button("Cancel");
     cancel.addClickListener( (MouseEvent me, Component c) -> {
       popup.setVisible(false);
@@ -776,4 +791,68 @@ public class ConfigPanel extends Panel {
     popup.setModal(true);
     return popup;
   }
+
+  /** Custom popup panel to change password. */
+  private PopupPanel createChangePasswordPopupPanel() {
+    PopupPanel popup = new PopupPanel("Change Password");
+
+    Row row1 = new Row();
+    popup.add(row1);
+    row1.add(new Label("Current Password:"));
+    TextField old_password = new TextField("");
+    row1.add(old_password);
+
+    Row row2 = new Row();
+    popup.add(row2);
+    row2.add(new Label("New Password:"));
+    TextField new_password = new TextField("");
+    row2.add(new_password);
+
+    Row row3 = new Row();
+    popup.add(row3);
+    row3.add(new Label("Confirm Password:"));
+    TextField confirm_password = new TextField("");
+    row3.add(confirm_password);
+
+    Row row4 = new Row();
+    popup.add(row4);
+    Label msg = new Label("");
+    msg.setColor(Color.red);
+    row4.add(msg);
+
+    Row row5 = new Row();
+    popup.add(row5);
+    Button change = new Button("Change");
+    change.addClickListener( (MouseEvent me, Component c) -> {
+      String oldPass = Settings.encodePassword(old_password.getText());
+      String newPass = new_password.getText();
+      String conPass = confirm_password.getText();
+      if (!Settings.current.password.equals(oldPass)) {
+        msg.setText("Wrong password");
+        return;
+      }
+      if (newPass.length() < 4) {
+        msg.setText("Min length is 4");
+        return;
+      }
+      if (!newPass.equals(conPass)) {
+        msg.setText("Passwords do not match");
+        return;
+      }
+      Settings.current.password = Settings.encodePassword(newPass);
+      Settings.current.save();
+      msg.setText("");
+      popup.setVisible(false);
+    });
+    row5.add(change);
+    Button cancel = new Button("Cancel");
+    cancel.addClickListener( (MouseEvent me, Component c) -> {
+      popup.setVisible(false);
+    });
+    row5.add(cancel);
+
+    popup.setModal(true);
+    return popup;
+  }
+
 }

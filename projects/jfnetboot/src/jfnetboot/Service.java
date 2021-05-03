@@ -11,7 +11,7 @@ import javaforce.service.*;
 
 public class Service {
   public static TFTP tftp;
-  public static Config config;
+  public static ConfigService config;
   public static DHCP dhcp;
 
   public static void main(String[] args) {
@@ -32,7 +32,7 @@ public class Service {
     dhcp = new DHCP();
     dhcp.setNotify(tftp);
     dhcp.start();
-    config = new Config();
+    config = new ConfigService();
     config.init();
     Runtime.getRuntime().addShutdownHook(new Thread() {
       public void run() {
