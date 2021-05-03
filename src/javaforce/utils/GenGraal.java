@@ -33,10 +33,7 @@ public class GenGraal {
     sb.append("  ]");
     sb.append("},{");
     sb.append("  \"name\":\"" + args[0] + "\",");
-    sb.append("  \"methods\":");
-    sb.append("  [");
-    sb.append("    {\"name\":\"main\"}");
-    sb.append("  ]");
+    sb.append("  \"allDeclaredMethods\" : true");
     sb.append("},{");
     sb.append("  \"name\":\"javaforce.gl.GLWindow\",");
     sb.append("  \"allDeclaredMethods\" : true");
@@ -96,7 +93,8 @@ public class GenGraal {
     sb.append("{");
     sb.append("  \"resources\": {");
     sb.append("    \"includes\": [");
-    sb.append("      {\"pattern\": \"javaforce/webui/static/.*\"}");
+    sb.append("      {\"pattern\": \"javaforce/webui/static/.*\"},");
+    sb.append("      {\"pattern\": \"javaforce/icons/.*\"}");
     sb.append("    ]");
     sb.append("  }");
     sb.append("}");
