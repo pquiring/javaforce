@@ -4,7 +4,6 @@
   <property name="app" value="jfsockssvc"/>
   <property name="apptype" value="s"/>
   <property name="home" location="../.."/>
-  <property name="graal" value="true"/>
   <import file="../../base.xml"/>
 
   <target name="depjars" description="jar">

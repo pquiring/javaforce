@@ -5,6 +5,7 @@ package javaforce.utils;
  * @author pquiring
  */
 
+import java.io.*;
 import java.util.*;
 
 import javaforce.*;
@@ -35,7 +36,17 @@ public class ExecGraal implements ShellProcessListener {
     }
     cmd.add(args[1].replaceAll("/", "."));  //MAINCLASS
     cmd.add("-H:JNIConfigurationFiles=graal_jni.json");
+    String app_jni = args[1] + "_jni.json";
+    if (new File(app_jni).exists()) {
+      JFLog.log("Using:" + app_jni);
+      cmd.add("-H:JNIConfigurationFiles=" + app_jni);
+    }
     cmd.add("-H:ResourceConfigurationFiles=graal_res.json");
+    String app_res = args[1] + "_res.json";
+    if (new File(app_res).exists()) {
+      JFLog.log("Using:" + app_res);
+      cmd.add("-H:ResourceConfigurationFiles=" + app_res);
+    }
 //    cmd.add("-H:Log=registerResource");
     cmd.add("--shared");
     cmd.add("--enable-all-security-services");

@@ -33,7 +33,6 @@
             IgnoreFailure="yes"
             Profile="all" />
         </File>
-        <File Id="javaforce_service_socks.dll" Source="javaforce.service.socks.dll"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="jfsocks_client.exe" Source="jfsocks-client.exe"/>
         <File Id="jfsocks_client.jar" Source="jfsocks-client.jar"/>
