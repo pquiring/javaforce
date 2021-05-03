@@ -176,7 +176,7 @@ public class VPNPanel extends javax.swing.JPanel {
 
   private DefaultListModel model = new DefaultListModel();
   private Config config;
-  private String configFile = "/etc/jconfig.d/vpn.xml";
+  private String configFile = "/etc/jfconfig.d/vpn.xml";
 
   private void loadConfig() {
     defaultConfig();

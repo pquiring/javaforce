@@ -35,7 +35,7 @@ public class NetLinkMonitor extends Thread implements ShellProcessListener {
         int i1 = lns[a].indexOf(" ");
         int i2 = lns[a].substring(i1+1).indexOf(":");
         String dev = lns[a].substring(i1+1).substring(0, i2);
-        JFLog.log("jnetworkmgr:link down:" + dev);
+        JFLog.log("jfnetworkmgr:link down:" + dev);
         Interface iface = Server.This.getInterface(dev);
         iface.link = false;
         if (iface.dhcp4 || iface.dhcp6) {
@@ -46,7 +46,7 @@ public class NetLinkMonitor extends Thread implements ShellProcessListener {
         int i1 = lns[a].indexOf(" ");
         int i2 = lns[a].substring(i1+1).indexOf(":");
         String dev = lns[a].substring(i1+1).substring(0, i2);
-        JFLog.log("jnetworkmgr:link up:" + dev);
+        JFLog.log("jfnetworkmgr:link up:" + dev);
         Interface iface = Server.This.getInterface(dev);
         iface.link = true;
         if (iface.dhcp4 || iface.dhcp6) {

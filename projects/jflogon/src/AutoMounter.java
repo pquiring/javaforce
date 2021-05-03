@@ -125,13 +125,13 @@ public class AutoMounter extends Thread implements monitordir.Listener {
         mounts.add(mount);
       }
       //broadcast /media change
-      Startup.jbusClient.broadcast("org.jflinux.jfile", "rescanMedia", "");
+      Startup.jbusClient.broadcast("org.jflinux.jffile", "rescanMedia", "");
     }
   }
 
   public void umount(String dev) {
     if (paused < 0) return;
-    //Normally user umount's from jfile - this should just clean up the /media folder
+    //Normally user umount's from jffile - this should just clean up the /media folder
     boolean ok = false;
     Mount mount = null;
     synchronized(lock) {
@@ -160,7 +160,7 @@ public class AutoMounter extends Thread implements monitordir.Listener {
     File folder = new File(mount.media);
     folder.delete();
     //broadcast /media change
-    Startup.jbusClient.broadcast("org.jflinux.jfile", "rescanMedia", "");
+    Startup.jbusClient.broadcast("org.jflinux.jffile", "rescanMedia", "");
   }
 
   public String getVolumeName(String dev, Mount mount) {

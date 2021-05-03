@@ -296,7 +296,7 @@ public class SambaPanel extends javax.swing.JPanel {
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
     try {
-      Runtime.getRuntime().exec("jhelp jconfig-samba");
+      Runtime.getRuntime().exec("jfhelp jfconfig-samba");
     } catch (Exception e) {
 
     }
@@ -340,7 +340,7 @@ public class SambaPanel extends javax.swing.JPanel {
   }
 
   private Config config;
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "samba.xml";
 
   private void loadConfig() {

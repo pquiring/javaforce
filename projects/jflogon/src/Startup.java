@@ -356,7 +356,7 @@ public class Startup implements ShellProcessListener{
     public boolean disableSleep;
   }
   private static GlobalConfig globalConfig = new GlobalConfig();
-  private String globalConfigFolder = "/etc/jconfig.d/";
+  private String globalConfigFolder = "/etc/jfconfig.d/";
   private String globalConfigFile = "global.xml";
 
   public void loadGlobalConfig() {

@@ -1,4 +1,4 @@
-jfile
+jffile
 =====
 
 Java File Manager.  Built using the JavaForce SDK.

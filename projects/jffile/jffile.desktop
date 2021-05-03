@@ -2,12 +2,12 @@
 Name=File Manager
 Comment=Manage your files.
 
-Icon=jfile
+Icon=jffile
 
 Type=Application
 Categories=Utility
 
-Exec=jfile
+Exec=jffile
 StartupNotify=false
 Terminal=false
 MimeType=

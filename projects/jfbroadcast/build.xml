@@ -58,7 +58,7 @@
     <copy file="jfbroadcast.jar" todir="/usr/share/java"/>
     <copy file="jfbroadcast.desktop" todir="/usr/share/applications"/>
     <copy file="jfbroadcast.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfbroadcast.html" todir="/usr/share/jhelp"/>
+    <copy file="jfbroadcast.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="javadoc" description="generate java documentation">

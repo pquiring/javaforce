@@ -3,7 +3,7 @@ Description=JavaForce PBX Server
 After=jfbusserver.service
 
 [Service]
-ExecStart=/usr/bin/jpbxlite
+ExecStart=/usr/bin/jfpbxlite
 Restart=always
 
 [Install]

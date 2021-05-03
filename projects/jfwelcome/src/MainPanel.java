@@ -25,7 +25,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       String pack = "org.jflinux.jfwelcome." + jid;
       jbusClient = new JBusClient(pack, new JBusMethods());
       jbusClient.start();
-      jbusClient.call("org.jflinux.jdesktop." + jid, "getWelcome", "\"" + pack + "\"");
+      jbusClient.call("org.jflinux.jfdesktop." + jid, "getWelcome", "\"" + pack + "\"");
     }
     addButtons();
   }
@@ -100,7 +100,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   }//GEN-LAST:event_closeActionPerformed
 
   private void runItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_runItemStateChanged
-    jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "setWelcome", "\"" + run.isSelected() + "\"");
+    jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "setWelcome", "\"" + run.isSelected() + "\"");
   }//GEN-LAST:event_runItemStateChanged
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -140,25 +140,25 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   }
 
   private void addButtons() {
-    //jinstall
-    if (new File("/usr/bin/jinstall").exists()) {
-      addButton("/usr/bin/jinstall", "Installer", "jinstall.png");
+    //jfinstall
+    if (new File("/usr/bin/jfinstall").exists()) {
+      addButton("/usr/bin/jfinstall", "Installer", "jfinstall.png");
     }
-    //japps
-    if (new File("/usr/bin/japps").exists()) {
-      addButton("/usr/bin/japps", "Add/Remove Programs", "zip.png");
+    //jfapps
+    if (new File("/usr/bin/jfapps").exists()) {
+      addButton("/usr/bin/jfapps", "Add/Remove Programs", "zip.png");
     }
-    //jconfig
-    if (new File("/usr/bin/jconfig").exists()) {
-      addButton("/usr/bin/jconfig", "Configure System", "jconfig.png");
+    //jfconfig
+    if (new File("/usr/bin/jfconfig").exists()) {
+      addButton("/usr/bin/jfconfig", "Configure System", "jfconfig.png");
     }
-    //jrepo
-    if (new File("/usr/bin/jrepo").exists()) {
-      addButton("/usr/bin/jrepo", "Select Repository", "zip.png");
+    //jfrepo
+    if (new File("/usr/bin/jfrepo").exists()) {
+      addButton("/usr/bin/jfrepo", "Select Repository", "zip.png");
     }
-    //jhelp
-    if (new File("/usr/bin/jhelp").exists()) {
-      addButton("/usr/bin/jhelp", "Help System", "jhelp.png");
+    //jfhelp
+    if (new File("/usr/bin/jfhelp").exists()) {
+      addButton("/usr/bin/jfhelp", "Help System", "jfhelp.png");
     }
   }
 }

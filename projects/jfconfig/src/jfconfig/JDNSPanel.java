@@ -122,7 +122,7 @@ public class JDNSPanel extends javax.swing.JPanel {
 
   private void loadConfig() {
     try {
-      FileInputStream fis = new FileInputStream("/etc/jdns.cfg");
+      FileInputStream fis = new FileInputStream("/etc/jfdns.cfg");
       byte cfg[] = JF.readAll(fis);
       fis.close();
       config.setText(new String(cfg));
@@ -133,7 +133,7 @@ public class JDNSPanel extends javax.swing.JPanel {
 
   private void saveConfig() {
     try {
-      FileOutputStream fos = new FileOutputStream("/etc/jdns.cfg");
+      FileOutputStream fos = new FileOutputStream("/etc/jfdns.cfg");
       fos.write(config.getText().getBytes());
       fos.close();
     } catch (Exception e) {
@@ -142,7 +142,7 @@ public class JDNSPanel extends javax.swing.JPanel {
   }
 
   private void restartServer() {
-    if (Linux.restartService("jdns"))
+    if (Linux.restartService("jfdns"))
       JFAWT.showMessage("Notice", "DNS Service Restarted");
     else
       JFAWT.showError("Error", "Failed to Restart DNS Service");

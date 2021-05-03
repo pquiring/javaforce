@@ -27,12 +27,12 @@ public class Desktop extends javax.swing.JWindow {
       arrangeAuto.setSelected(Dock.dock.config.arrangeIconsAuto);
       browser = new JFileBrowser(JFileBrowser.VIEW_ICONS, JF.getUserPath() + "/Desktop"
         , DesktopMenu, IconMenu, Dock.dock.config.desktopFile, Dock.dock.config.desktopMode
-        , true, "jfile", "jfopen", Dock.dock.config.bc, Dock.dock.config.fc
+        , true, "jffile", "jfopen", Dock.dock.config.bc, Dock.dock.config.fc
         , false, true, false, Dock.dock.config.arrangeIconsAuto, Dock.jbusClient, true, Dock.dock);
       setContentPane(browser);
       browser.refresh();
       if (!new File(JF.getUserPath() + "/Desktop/Home.desktop").exists()) {
-        browser.createIcon("Home", "jfile " + JF.getUserPath(), "jfdesktop-home", JF.getUserPath() + "/Desktop/Home.desktop", true);
+        browser.createIcon("Home", "jffile " + JF.getUserPath(), "jfdesktop-home", JF.getUserPath() + "/Desktop/Home.desktop", true);
       }
       x11id = Linux.x11_get_id(this);
       JFLog.log("Desktop.window=0x" + Long.toString(x11id, 16));
@@ -244,7 +244,7 @@ public class Desktop extends javax.swing.JWindow {
       i++;
     } while (new File(fn).exists());
     try {
-      FileEntry entry = browser.createIcon(name, "", "jfile-file", fn, false);
+      FileEntry entry = browser.createIcon(name, "", "jffile-file", fn, false);
       JFileProperties dialog = new JFileProperties(entry, true);
       dialog.setVisible(true);
     } catch (Exception e) {
@@ -315,7 +315,7 @@ public class Desktop extends javax.swing.JWindow {
 
   private void desktopResolutionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_desktopResolutionActionPerformed
     try {
-      Runtime.getRuntime().exec(new String[] {"jconfig", "display"});
+      Runtime.getRuntime().exec(new String[] {"jfconfig", "display"});
     } catch (Exception e) {
       JFLog.log(e);
     }

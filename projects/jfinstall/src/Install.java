@@ -445,7 +445,7 @@ public class Install extends IPanel implements ShellProcessListener {
         FileOutputStream fos = new FileOutputStream(tmpFile);
         fos.write(("<network>\n  <hostname>" + Data.localhost + "</hostname>\n  <domain>" + Data.localdomain + "</domain>\n</network>\n").getBytes());
         fos.close();
-        if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/mnt/install/etc/jconfig.d/network.xml")) {
+        if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/mnt/install/etc/jfconfig.d/network.xml")) {
           throw new Exception("file io error");
         }
         tmpFile.delete();

@@ -361,7 +361,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void ControlCenterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ControlCenterActionPerformed
     try {
-      Runtime.getRuntime().exec("jconfig");
+      Runtime.getRuntime().exec("jfconfig");
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -386,7 +386,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void SettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SettingsActionPerformed
     try {
-      Runtime.getRuntime().exec(new String[] {"jconfig", "sound"});
+      Runtime.getRuntime().exec(new String[] {"jfconfig", "sound"});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -394,7 +394,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void AdjustTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AdjustTimeActionPerformed
     try {
-      Runtime.getRuntime().exec(new String[] {"jconfig", "datetime"});
+      Runtime.getRuntime().exec(new String[] {"jfconfig", "datetime"});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -402,7 +402,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void HelpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HelpActionPerformed
     try {
-      Runtime.getRuntime().exec(new String[] {"jhelp", "jfdesktop"});
+      Runtime.getRuntime().exec(new String[] {"jfhelp", "jfdesktop"});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -413,7 +413,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   }//GEN-LAST:event_RunActionPerformed
 
   private void UpgradesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpgradesActionPerformed
-    try { Runtime.getRuntime().exec("jupgrade"); } catch (Exception e) {JFLog.log(e);}
+    try { Runtime.getRuntime().exec("jfupgrade"); } catch (Exception e) {JFLog.log(e);}
   }//GEN-LAST:event_UpgradesActionPerformed
 
   private void BatterySettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BatterySettingsActionPerformed
@@ -430,7 +430,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void TaskMgrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskMgrActionPerformed
     try {
-      Runtime.getRuntime().exec("jtaskmgr");
+      Runtime.getRuntime().exec("jftaskmgr");
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -521,7 +521,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   public Config config = new Config();
   private String configFile = ".jfdesktop.xml";
   private GlobalConfig globalConfig = new GlobalConfig();
-  private String globalConfigFolder = "/etc/jconfig.d/";
+  private String globalConfigFolder = "/etc/jfconfig.d/";
   private String globalConfigFile = "global.xml";
   private int appIdx = 0;  //where to insert next button
   private int viewIdx = 0;  //first app to show if not all fit on dock
@@ -834,11 +834,11 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     config.bc = Color.BLUE;
     config.fc = Color.WHITE;
     config.dockSize = 48;
-    //add jfile
-    addAppIfExists("jfile");
-    //add jinstall
+    //add jffile
+    addAppIfExists("jffile");
+    //add jfinstall
     if (new File("/etc/.live").exists()) {
-      addAppIfExists("jinstall");
+      addAppIfExists("jfinstall");
     }
     //add Chrome (if installed)
     addAppIfExists("chromium-browser");
@@ -850,8 +850,8 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     addAppIfExists("libreoffice-startcenter");
     addAppIfExists("libreoffice-writer");
     addAppIfExists("libreoffice-calc");
-    //add japps
-    addAppIfExists("japps");
+    //add jfapps
+    addAppIfExists("jfapps");
     saveConfig();
   }
 
@@ -1354,7 +1354,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       }
       if (action.equals("#vpn-configure")) {
         try {
-          Runtime.getRuntime().exec(new String[] {"jconfig", "vpn"});
+          Runtime.getRuntime().exec(new String[] {"jfconfig", "vpn"});
         } catch (Exception e) {
           JFLog.log(e);
         }
@@ -1400,7 +1400,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       }
       if (action.equals("#trash")) {
         try {
-          Runtime.getRuntime().exec(new String[] {"jfile", JF.getUserPath() + "/.local/share/Trash"});
+          Runtime.getRuntime().exec(new String[] {"jffile", JF.getUserPath() + "/.local/share/Trash"});
         } catch (Exception e) {}
         return;
       }
@@ -1426,7 +1426,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
         return;
       }
       if (action.equals("#wap-disconnect")) {
-        jbusClient.call("org.jflinux.jnetworkmgr", "disconnectWAP" ,"");
+        jbusClient.call("org.jflinux.jfnetworkmgr", "disconnectWAP" ,"");
         return;
       }
       Object obj = ae.getSource();
@@ -1444,8 +1444,8 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       }
       File file = new File(action);
       if (file.isDirectory()) {
-        //open with jfile
-        Runtime.getRuntime().exec(new String[] {"jfile", action});
+        //open with jffile
+        Runtime.getRuntime().exec(new String[] {"jffile", action});
         return;
       }
       if (action.endsWith(".lnk")) {
@@ -1515,11 +1515,11 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   }
 
   private void getWAPList() {
-    jbusClient.call("org.jflinux.jnetworkmgr", "getWAPList", JBusClient.quote(jbusClient.pack));
+    jbusClient.call("org.jflinux.jfnetworkmgr", "getWAPList", JBusClient.quote(jbusClient.pack));
   }
 
   private void getVPNList() {
-    jbusClient.call("org.jflinux.jnetworkmgr", "getVPNList", JBusClient.quote(jbusClient.pack));
+    jbusClient.call("org.jflinux.jfnetworkmgr", "getVPNList", JBusClient.quote(jbusClient.pack));
   }
 
   private static class WAP {
@@ -2215,7 +2215,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   }
 
   private void disconnectVPN(String name) {
-    jbusClient.call("org.jflinux.jnetworkmgr", "disconnectVPN", JBusClient.quote(name));
+    jbusClient.call("org.jflinux.jfnetworkmgr", "disconnectVPN", JBusClient.quote(name));
   }
 
   private void connectVPN(String name) {
@@ -2223,12 +2223,12 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       disconnectVPN(name.substring(0, name.length() - 2));
     } else {
       startNetworkTimer("cancelVPN");
-      jbusClient.call("org.jflinux.jnetworkmgr", "connectVPN", JBusClient.quote(jbusClient.pack) + "," + JBusClient.quote(name));
+      jbusClient.call("org.jflinux.jfnetworkmgr", "connectVPN", JBusClient.quote(jbusClient.pack) + "," + JBusClient.quote(name));
     }
   }
 
   private void disconnectWAP(String ssid) {
-    jbusClient.call("org.jflinux.jnetworkmgr", "disconnectWAP" , JBusClient.quote(ssid));
+    jbusClient.call("org.jflinux.jfnetworkmgr", "disconnectWAP" , JBusClient.quote(ssid));
   }
 
   private void connectWAP(String dev, String ssid, String encType) {
@@ -2242,7 +2242,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
         key = JFAWT.getString("Enter WPA pass phrase", "");
       }
       startNetworkTimer("cancelWAP");
-      jbusClient.call("org.jflinux.jnetworkmgr", "connectWAP",
+      jbusClient.call("org.jflinux.jfnetworkmgr", "connectWAP",
         JBusClient.quote(jbusClient.pack) + "," + JBusClient.quote(dev) + "," + JBusClient.quote(ssid) + "," + JBusClient.quote(encType) + "," + JBusClient.quote(key));
     }
   }
@@ -2350,7 +2350,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   private void cancelNetworkConnection() {
     if (cancelNetworkMethod == null) return;
     stopNetworkTimer();
-    jbusClient.call("org.jflinux.jnetworkmgr", cancelNetworkMethod, "");
+    jbusClient.call("org.jflinux.jfnetworkmgr", cancelNetworkMethod, "");
     cancelNetworkMethod = null;
     showNetworkFailed();
   }
@@ -2361,7 +2361,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void showWelcome() {
     try {
-      Runtime.getRuntime().exec("jwelcome");
+      Runtime.getRuntime().exec("jfwelcome");
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -2803,8 +2803,8 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       setupClockTimer();
     }
     public void videoChanged(String reason) {
-      //TODO : popup window asking to load jconfig:display
-      if (reason.equals("jconfig")) {
+      //TODO : popup window asking to load jfconfig:display
+      if (reason.equals("jfconfig")) {
         updateConfig();
       } else {
         //else udev event : need to call x11_rr_auto first
@@ -2843,7 +2843,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       vpnList = list;
       showNetworkPopup();
     }
-    //jfile : file ops (should use clipboard)
+    //jffile : file ops (should use clipboard)
     public void setFileSelection(String selection) {
       JFLog.log("setSelection:" + selection);
       fileSelection = selection;

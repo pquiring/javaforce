@@ -42,9 +42,9 @@ public class Paths {
       db = base + "/db";
     } else {
       //Linux
-      sounds = "/usr/share/sounds/jpbx/";
-      logs = "/var/log/jpbx/";
-      lib = "/var/lib/jpbx/";
+      sounds = "/usr/share/sounds/jfpbx/";
+      logs = "/var/log/jfpbx/";
+      lib = "/var/lib/jfpbx/";
       etc = "/etc/";
       db = lib + "/db";
     }

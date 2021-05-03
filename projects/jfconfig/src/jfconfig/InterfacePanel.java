@@ -166,7 +166,7 @@ public class InterfacePanel extends javax.swing.JPanel {
   }
 
   private Config config;
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "network.xml";
 
   private void loadConfig() {
@@ -272,8 +272,8 @@ public class InterfacePanel extends javax.swing.JPanel {
       ShellProcess sp = new ShellProcess();
       String output = sp.run(new String[] {"sudo", "ifconfig", eth, (active ? "down" : "up")}, false);
     } else {
-      //use jnetworkmgr instead
-      ConfigApp.jbusClient.call("org.jflinux.jnetworkmgr", (active ? "ifDown" : "ifUp"), '\"' + eth + '\"');
+      //use jfnetworkmgr instead
+      ConfigApp.jbusClient.call("org.jflinux.jfnetworkmgr", (active ? "ifDown" : "ifUp"), '\"' + eth + '\"');
       JF.sleep(250);
     }
     isInterfaceActive();

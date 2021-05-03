@@ -386,7 +386,7 @@ public class TomcatPanel extends javax.swing.JPanel {
     int idx = services.getSelectedIndex();
     if (idx == -1) return;
     Service service = config.service[idx];
-    String folder = "/etc/jconfig.d/tomcat/" + service.name;
+    String folder = "/etc/jfconfig.d/tomcat/" + service.name;
     OpenSSLApp dialog = new OpenSSLApp(new String[] {folder, "tomcat"});
     dialog.setVisible(true);
   }//GEN-LAST:event_sslKeysActionPerformed
@@ -427,7 +427,7 @@ public class TomcatPanel extends javax.swing.JPanel {
 
   private DefaultListModel servicesModel = new DefaultListModel();
   private DefaultListModel hostsModel = new DefaultListModel();
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "tomcat.xml";
   public static class Host {
     public String name, domain, appPath;
@@ -667,12 +667,12 @@ public class TomcatPanel extends javax.swing.JPanel {
 //      os.write("    <Executor name='tomcatThreadPool' namePrefix='catalina-exec-' maxThreads='150' minSpareThreads='4'/>\n".getBytes());
 //      os.write(("    <Connector executor='tomcatThreadPool' port='" + service.port + "' protocol='HTTP/1.1' connectionTimeout='20000' URIEncoding='UTF-8' redirectPort='" + service.sslPort + "' />\n").getBytes());
 //      if (service.sslEnabled) {
-//        os.write(("    <Connector executor='tomcatThreadPool' port='" + service.sslPort + "' protocol='HTTP/1.1' SSLEnabled='true' maxThreads='150' scheme='https' secure='true' clientAuth='false' sslProtocol='TLS' keystoreFile='/etc/jconfig.d/tomcat/" + service.name + "/.keystore'/>\n").getBytes());
+//        os.write(("    <Connector executor='tomcatThreadPool' port='" + service.sslPort + "' protocol='HTTP/1.1' SSLEnabled='true' maxThreads='150' scheme='https' secure='true' clientAuth='false' sslProtocol='TLS' keystoreFile='/etc/jfconfig.d/tomcat/" + service.name + "/.keystore'/>\n").getBytes());
 //      }
 //    } else {
     os.write(("    <Connector port='" + service.port + "' protocol='HTTP/1.1' connectionTimeout='20000' URIEncoding='UTF-8' redirectPort='" + service.sslPort + "' />\n").getBytes());
     if (service.sslEnabled) {
-      os.write(("    <Connector port='" + service.sslPort + "' protocol='HTTP/1.1' SSLEnabled='true' maxThreads='150' scheme='https' secure='true' clientAuth='false' sslProtocol='TLS' keystoreFile='/etc/jconfig.d/tomcat/" + service.name + "/.keystore'/>\n").getBytes());
+      os.write(("    <Connector port='" + service.sslPort + "' protocol='HTTP/1.1' SSLEnabled='true' maxThreads='150' scheme='https' secure='true' clientAuth='false' sslProtocol='TLS' keystoreFile='/etc/jfconfig.d/tomcat/" + service.name + "/.keystore'/>\n").getBytes());
     }
 //    }
 

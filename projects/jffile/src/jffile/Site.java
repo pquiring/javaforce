@@ -378,7 +378,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     localLabel.setText("Folder:");
     jToolBar1.add(localLabel);
 
-    local_cdup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jffile/jfile-up.png"))); // NOI18N
+    local_cdup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jffile/jffile-up.png"))); // NOI18N
     local_cdup.setFocusable(false);
     local_cdup.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     local_cdup.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -425,7 +425,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     remoteLabel.setText("Folder:");
     jToolBar2.add(remoteLabel);
 
-    remote_cdup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jffile/jfile-up.png"))); // NOI18N
+    remote_cdup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jffile/jffile-up.png"))); // NOI18N
     remote_cdup.setFocusable(false);
     remote_cdup.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     remote_cdup.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -875,15 +875,15 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
 
   public static class SiteFileClipboard implements FileClipboard {
     public void get() {
-      FileApp.jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "getFileSelection", JBusClient.quote(FileApp.jbusClient.pack));
+      FileApp.jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "getFileSelection", JBusClient.quote(FileApp.jbusClient.pack));
     }
 
     public void set(String fileset) {
-      FileApp.jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "setFileSelection", JBusClient.quote(JBusClient.encodeString(fileset)));
+      FileApp.jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "setFileSelection", JBusClient.quote(JBusClient.encodeString(fileset)));
     }
 
     public void clear() {
-      FileApp.jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "clearFileSelection", "");
+      FileApp.jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "clearFileSelection", "");
     }
   }
 

@@ -11,7 +11,7 @@
             <properties/>
             <folders>
                 <source-folder>
-                    <label>jconfig</label>
+                    <label>jfconfig</label>
                     <location>.</location>
                     <encoding>UTF-8</encoding>
                 </source-folder>

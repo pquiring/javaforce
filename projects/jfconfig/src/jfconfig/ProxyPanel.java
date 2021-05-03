@@ -247,7 +247,7 @@ http_access allow [<url_name>] <src_name>
   }
 
   private Config config;
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "proxy.xml";
 
   private void loadRules() {

@@ -21,10 +21,10 @@ public class ConfigApp extends javax.swing.JFrame {
    */
   public ConfigApp() {
     initComponents();
-    JFLog.init(JF.getUserPath() + "/.jconfig.log", true);
+    JFLog.init(JF.getUserPath() + "/.jfconfig.log", true);
     This = this;
     if (!JF.isWindows()) {
-      jbusClient = new JBusClient("org.jflinux.jconfig." + new Random().nextInt(0x7fffff), new JBusMethods());
+      jbusClient = new JBusClient("org.jflinux.jfconfig." + new Random().nextInt(0x7fffff), new JBusMethods());
       jbusClient.start();
     }
     JF.initHttps();

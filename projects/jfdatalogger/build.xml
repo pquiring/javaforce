@@ -45,7 +45,7 @@
     <copy file="jfdatalogger.jar" todir="/usr/share/java"/>
     <copy file="jfdatalogger.desktop" todir="/usr/share/applications"/>
     <copy file="jfdatalogger.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfdatalogger.html" todir="/usr/share/jhelp"/>
+    <copy file="jfdatalogger.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

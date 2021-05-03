@@ -55,7 +55,7 @@
     <copy file="jfrecorddesktop.jar" todir="/usr/share/java"/>
     <copy file="jfrecorddesktop.desktop" todir="/usr/share/applications"/>
     <copy file="jfrecorddesktop.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfrecorddesktop.html" todir="/usr/share/jhelp"/>
+    <copy file="jfrecorddesktop.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

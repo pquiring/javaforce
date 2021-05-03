@@ -54,7 +54,7 @@
     <chmod file="/usr/bin/${app}Maker" perm="+x"/>
     <copy file="${app}.desktop" todir="/usr/share/applications"/>
     <copy file="${app}.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="${app}.html" todir="/usr/share/jhelp"/>
+    <copy file="${app}.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

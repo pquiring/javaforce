@@ -56,7 +56,7 @@
     <copy file="jfprojector.jar" todir="/usr/share/java"/>
     <copy file="jfprojector.desktop" todir="/usr/share/applications"/>
     <copy file="jfprojector.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfprojector.html" todir="/usr/share/jhelp"/>
+    <copy file="jfprojector.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

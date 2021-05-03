@@ -65,7 +65,7 @@
     <mkdir dir="/var/lib/jfpbx/voicemail"/>
     <mkdir dir="/usr/share/sounds/jfpbx/en"/>
 
-    <copy file="jfpbx.html" todir="/usr/share/jhelp"/>
+    <copy file="jfpbx.html" todir="/usr/share/jfhelp"/>
     <copy file="${app}.service" todir="/lib/systemd/system"/>
     <copy todir="/usr/share/java/jfpbx">
       <fileset file="*.jar"/>

@@ -63,7 +63,7 @@
     <copy file="jfphone.jar" todir="/usr/share/java"/>
     <copy file="jfphone.desktop" todir="/usr/share/applications"/>
     <copy file="jfphone.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfphone.html" todir="/usr/share/jhelp"/>
+    <copy file="jfphone.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="javadoc" description="generate java documentation">

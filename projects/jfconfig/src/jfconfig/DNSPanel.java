@@ -345,7 +345,7 @@ public class DNSPanel extends javax.swing.JPanel {
   private DefaultListModel entriesModel = new DefaultListModel();
 
   private Config config;
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "dns.xml";
 
   private void loadZones() {

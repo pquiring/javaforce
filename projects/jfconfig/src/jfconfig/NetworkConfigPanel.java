@@ -191,7 +191,7 @@ public class NetworkConfigPanel extends javax.swing.JPanel {
   }
 
   private Config config;
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "network.xml";
 
   private void loadConfig() {

@@ -309,14 +309,14 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
       for(int m=0;m<monitors.length;m++) {
         Monitor monitor = monitors[m];
         if (monitor.mirror) continue;
-        JMonitor jmonitor = null, adjacent = null;
+        JMonitor jfmonitor = null, adjacent = null;
         for(int j=0;j<list.length;j++) {
           JMonitor test = list[j];
-          if (test.monitor.name.equals(monitor.name)) jmonitor = test;
+          if (test.monitor.name.equals(monitor.name)) jfmonitor = test;
           if (test.monitor.name.equals(monitor.relName)) adjacent = test;
         }
-        if (jmonitor == null) continue;
-        if (jmonitor.layout) continue;
+        if (jfmonitor == null) continue;
+        if (jfmonitor.layout) continue;
         if (m == 0) {
           monitor.relName = "";
           monitor.relpos = P_NONE;
@@ -325,56 +325,56 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
         switch (monitor.relpos) {
           case P_NONE:
           case P_SAME:
-            jmonitor.x = x;
-            jmonitor.y = y;
+            jfmonitor.x = x;
+            jfmonitor.y = y;
             break;
           case P_LEFT:
-            jmonitor.x = adjacent.x - BOXSIZE;
-            jmonitor.y = adjacent.y;
+            jfmonitor.x = adjacent.x - BOXSIZE;
+            jfmonitor.y = adjacent.y;
             break;
           case P_RIGHT:
-            jmonitor.x = adjacent.x + BOXSIZE;
-            jmonitor.y = adjacent.y;
+            jfmonitor.x = adjacent.x + BOXSIZE;
+            jfmonitor.y = adjacent.y;
             break;
           case P_ABOVE:
-            jmonitor.x = adjacent.x;
-            jmonitor.y = adjacent.y - BOXSIZE;
+            jfmonitor.x = adjacent.x;
+            jfmonitor.y = adjacent.y - BOXSIZE;
             break;
           case P_BELOW:
-            jmonitor.x = adjacent.x;
-            jmonitor.y = adjacent.y + BOXSIZE;
+            jfmonitor.x = adjacent.x;
+            jfmonitor.y = adjacent.y + BOXSIZE;
             break;
         }
-        jmonitor.setBounds(jmonitor.x,jmonitor.y,BOXSIZE,BOXSIZE);
-        if (jmonitor.x < nx) nx = jmonitor.x;
-        if (jmonitor.y < ny) ny = jmonitor.y;
-        jmonitor.layout = true;
+        jfmonitor.setBounds(jfmonitor.x,jfmonitor.y,BOXSIZE,BOXSIZE);
+        if (jfmonitor.x < nx) nx = jfmonitor.x;
+        if (jfmonitor.y < ny) ny = jfmonitor.y;
+        jfmonitor.layout = true;
       }
     } while (redo);
     if (nx < 0 || ny < 0) {
       //need to shift everything
       for(int j=0;j<list.length;j++) {
-        JMonitor jmonitor = list[j];
-        jmonitor.x -= nx;
-        jmonitor.y -= ny;
-        jmonitor.setBounds(jmonitor.x,jmonitor.y,BOXSIZE,BOXSIZE);
+        JMonitor jfmonitor = list[j];
+        jfmonitor.x -= nx;
+        jfmonitor.y -= ny;
+        jfmonitor.setBounds(jfmonitor.x,jfmonitor.y,BOXSIZE,BOXSIZE);
       }
     }
   }
 
-  private void moveMonitor(JMonitor jmonitor) {
-    if (jmonitor.monitor == monitors[0]) return;
-    int x = jmonitor.getX();
-    int y = jmonitor.getY();
+  private void moveMonitor(JMonitor jfmonitor) {
+    if (jfmonitor.monitor == monitors[0]) return;
+    int x = jfmonitor.getX();
+    int y = jfmonitor.getY();
     int bestlen = 0x7fffffff;
     JMonitor adjacent = null;
     int pos = 0;
     int dx,dy,len;
-    Monitor monitor = jmonitor.monitor;
+    Monitor monitor = jfmonitor.monitor;
     JMonitor list[] = getJMonitors();
     for(int j=0;j<list.length;j++) {
       JMonitor test = list[j];
-      if (test == jmonitor) continue;
+      if (test == jfmonitor) continue;
       dx = (test.x - BOXSIZE) - x;
       dy = test.y - y;
       len = (int)Math.sqrt(dx * dx + dy * dy);
@@ -409,12 +409,12 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
       }
     }
     if (adjacent == null) return;
-    if (adjacent.monitor.name.equals(jmonitor.monitor.name) && adjacent.monitor.relName.equals(jmonitor.monitor.name)) {
+    if (adjacent.monitor.name.equals(jfmonitor.monitor.name) && adjacent.monitor.relName.equals(jfmonitor.monitor.name)) {
       adjacent.monitor.relpos = monitor.relpos;
       adjacent.monitor.relName = monitor.relName;
     }
-    jmonitor.monitor.relpos = pos;
-    jmonitor.monitor.relName = adjacent.monitor.name;
+    jfmonitor.monitor.relpos = pos;
+    jfmonitor.monitor.relName = adjacent.monitor.name;
   }
 
   private void removeMonitors() {
@@ -422,13 +422,13 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
   }
 
   private JMonitor makeJMonitor(Monitor monitor) {
-    JMonitor jmonitor = new JMonitor(monitor.name);
-    jmonitor.monitor = monitor;
-    jmonitor.addMouseListener(this);
-    jmonitor.addMouseMotionListener(this);
-    jmonitor.setBorder(javax.swing.BorderFactory.createEtchedBorder());
-    jmonitor.setHorizontalAlignment(SwingConstants.CENTER);
-    return jmonitor;
+    JMonitor jfmonitor = new JMonitor(monitor.name);
+    jfmonitor.monitor = monitor;
+    jfmonitor.addMouseListener(this);
+    jfmonitor.addMouseMotionListener(this);
+    jfmonitor.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+    jfmonitor.setHorizontalAlignment(SwingConstants.CENTER);
+    return jfmonitor;
   }
 
   private final int BOXSIZE = 100;  //monitor width/height
@@ -438,8 +438,8 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
     for(int m=0;m<monitors.length;m++) {
       Monitor monitor = monitors[m];
 //      if (monitor.mirror) continue;
-      JMonitor jmonitor = makeJMonitor(monitor);
-      layout.add(jmonitor);
+      JMonitor jfmonitor = makeJMonitor(monitor);
+      layout.add(jfmonitor);
     }
     layoutMonitors();
     layout.repaint();
@@ -461,7 +461,7 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
       JFAWT.showError("Error", "Failed to apply configuration");
       return;
     }
-    ConfigApp.jbusClient.call("org.jflinux.jfsystemmgr", "broadcastVideoChanged", quote("jconfig"));
+    ConfigApp.jbusClient.call("org.jflinux.jfsystemmgr", "broadcastVideoChanged", quote("jfconfig"));
   }
 
   private void saveMonitor() {
@@ -532,20 +532,20 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
 
   public void mousePressed(MouseEvent me) {
     if (layout.getComponentCount() == 1) return;  //nothing to move to
-    JMonitor jmonitor = (JMonitor)me.getSource();
-    ix = jmonitor.getX();
-    iy = jmonitor.getY();
+    JMonitor jfmonitor = (JMonitor)me.getSource();
+    ix = jfmonitor.getX();
+    iy = jfmonitor.getY();
     sx = me.getXOnScreen();
     sy = me.getYOnScreen();
     drag = true;
 //    System.out.println("pressed:" + sx + "," + sy);
-    selectMonitor(jmonitor.monitor);
+    selectMonitor(jfmonitor.monitor);
  }
 
   public void mouseReleased(MouseEvent me) {
     if (drag) {
-      JMonitor jmonitor = (JMonitor)me.getSource();
-      moveMonitor(jmonitor);
+      JMonitor jfmonitor = (JMonitor)me.getSource();
+      moveMonitor(jfmonitor);
       layoutMonitors();
       layout.repaint();
       drag = false;
@@ -560,11 +560,11 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
 
   public void mouseDragged(MouseEvent me) {
     if (!drag) return;
-    JMonitor jmonitor = (JMonitor)me.getSource();
+    JMonitor jfmonitor = (JMonitor)me.getSource();
     int x = me.getXOnScreen();
     int y = me.getYOnScreen();
 //    System.out.println("dragged:" + x + "," + y);
-    jmonitor.setLocation(ix + (x - sx), iy + (y - sy));
+    jfmonitor.setLocation(ix + (x - sx), iy + (y - sy));
   }
 
   public void mouseMoved(MouseEvent me) {

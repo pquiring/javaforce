@@ -4,7 +4,7 @@ package jffile;
  * FileApp.java
  *
  * Created on Jan 2, 2011, 9:28:14 PM
- * Modified for jfile : Mar 22, 2012
+ * Modified for jffile : Mar 22, 2012
  *
  * @author pquiring
  */
@@ -35,13 +35,13 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     monitordir.init();
     initDND();
     int rid = Math.abs(new Random().nextInt());
-    JFLog.init(JF.getUserPath() + "/.jfile.log", true);
+    JFLog.init(JF.getUserPath() + "/.jffile.log", true);
     Settings.loadSettings();
     if (Settings.settings.defaultView == JFileBrowser.VIEW_LIST) List.setSelected(true);
     if (Settings.settings.defaultView == JFileBrowser.VIEW_DETAILS) Details.setSelected(true);
     NetworkShares.loadShares();
     if (!JF.isWindows()) {
-      jbusClient = new JBusClient("org.jflinux.jfile.j" + rid, new JBusMethods());
+      jbusClient = new JBusClient("org.jflinux.jffile.j" + rid, new JBusMethods());
       jbusClient.start();
     }
     localSite = new SiteDetails();
@@ -143,7 +143,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     placesMenu.add(rename);
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-    setTitle("jfile");
+    setTitle("jffile");
     addWindowListener(new java.awt.event.WindowAdapter() {
       public void windowClosing(java.awt.event.WindowEvent evt) {
         formWindowClosing(evt);
@@ -457,7 +457,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
 
     private void aboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aboutActionPerformed
       inDialog = true;
-      JFAWT.showMessage("About", "jfile/" + version + "\nFile manager.\nBy : Peter Quiring(pquiring@jflinux.org)");
+      JFAWT.showMessage("About", "jffile/" + version + "\nFile manager.\nBy : Peter Quiring(pquiring@jflinux.org)");
       inDialog = false;
     }//GEN-LAST:event_aboutActionPerformed
 
@@ -530,7 +530,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
 
   private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
     try {
-      Runtime.getRuntime().exec("jhelp jfile");
+      Runtime.getRuntime().exec("jfhelp jffile");
     } catch (Exception e) {
       JFLog.log(e);
     }

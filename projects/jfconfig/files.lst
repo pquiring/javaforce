@@ -1,8 +1,8 @@
 /usr/share/java/jfconfig.jar
 /usr/bin/jfconfig
 /usr/bin/jfopenssl
-/usr/share/jhelp/jfconfig.html
-/usr/share/jhelp/jfconfig-samba.html
-/usr/share/jhelp/jfopenssl.html
+/usr/share/jfhelp/jfconfig.html
+/usr/share/jfhelp/jfconfig-samba.html
+/usr/share/jfhelp/jfopenssl.html
 /usr/share/applications/jfconfig.desktop
 /usr/share/icons/hicolor/48x48/apps/jfconfig.png

@@ -45,7 +45,7 @@ public class MainPanel extends javax.swing.JPanel {
     parted = new javax.swing.JButton();
 
     users.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-    users.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-users.png"))); // NOI18N
+    users.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-users.png"))); // NOI18N
     users.setText("Users");
     users.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     users.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -56,7 +56,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     servers.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-    servers.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-servers.png"))); // NOI18N
+    servers.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-servers.png"))); // NOI18N
     servers.setText("Servers");
     servers.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     servers.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -67,7 +67,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     groups.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-    groups.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-users.png"))); // NOI18N
+    groups.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-users.png"))); // NOI18N
     groups.setText("Groups");
     groups.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     groups.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -78,7 +78,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     network.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-    network.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-network.png"))); // NOI18N
+    network.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-network.png"))); // NOI18N
     network.setText("Network");
     network.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     network.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -89,7 +89,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     fixStuff.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-    fixStuff.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-fix.png"))); // NOI18N
+    fixStuff.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-fix.png"))); // NOI18N
     fixStuff.setText("Fix Stuff");
     fixStuff.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     fixStuff.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -100,7 +100,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     display.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-    display.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-display.png"))); // NOI18N
+    display.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-display.png"))); // NOI18N
     display.setText("Display");
     display.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     display.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -111,7 +111,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     sound.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-    sound.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-sound.png"))); // NOI18N
+    sound.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-sound.png"))); // NOI18N
     sound.setText("Sound");
     sound.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     sound.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -122,7 +122,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     sound1.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-    sound1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-datetime.png"))); // NOI18N
+    sound1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-datetime.png"))); // NOI18N
     sound1.setText("Date/Time");
     sound1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     sound1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -133,7 +133,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     global.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-    global.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-global.png"))); // NOI18N
+    global.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-global.png"))); // NOI18N
     global.setText("Global");
     global.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     global.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -144,7 +144,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     backup.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-    backup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-backup.png"))); // NOI18N
+    backup.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-backup.png"))); // NOI18N
     backup.setText("Backup");
     backup.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     backup.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -155,7 +155,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     printers.setFont(new java.awt.Font("Ubuntu", 0, 15)); // NOI18N
-    printers.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-printers.png"))); // NOI18N
+    printers.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-printers.png"))); // NOI18N
     printers.setText("Printers");
     printers.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     printers.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -166,7 +166,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     certs.setFont(new java.awt.Font("Ubuntu", 0, 14)); // NOI18N
-    certs.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-certificates.png"))); // NOI18N
+    certs.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-certificates.png"))); // NOI18N
     certs.setText("Certificates");
     certs.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     certs.setMargin(new java.awt.Insets(2, 0, 2, 0));
@@ -178,7 +178,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     apps.setFont(new java.awt.Font("Ubuntu", 0, 14)); // NOI18N
-    apps.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-apps.png"))); // NOI18N
+    apps.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-apps.png"))); // NOI18N
     apps.setText("Apps");
     apps.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     apps.setMargin(new java.awt.Insets(2, 0, 2, 0));
@@ -190,7 +190,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     repo.setFont(new java.awt.Font("Ubuntu", 0, 14)); // NOI18N
-    repo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-repo.png"))); // NOI18N
+    repo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-repo.png"))); // NOI18N
     repo.setText("Repository");
     repo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     repo.setMargin(new java.awt.Insets(2, 0, 2, 0));
@@ -202,7 +202,7 @@ public class MainPanel extends javax.swing.JPanel {
     });
 
     parted.setFont(new java.awt.Font("Ubuntu", 0, 14)); // NOI18N
-    parted.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-parted.png"))); // NOI18N
+    parted.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-parted.png"))); // NOI18N
     parted.setText("Disk Manager");
     parted.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     parted.setMargin(new java.awt.Insets(2, 0, 2, 0));

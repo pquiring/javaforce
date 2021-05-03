@@ -113,7 +113,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActionPerformed
     try {
-      String cmd[] = {"jpaint", filename};
+      String cmd[] = {"jfpaint", filename};
       Runtime.getRuntime().exec(cmd);
     } catch (Exception e) {
       JFAWT.showError("Error", "Failed to execute jPaint");

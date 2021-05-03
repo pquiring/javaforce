@@ -49,7 +49,7 @@
     <copy file="jfrepo-fedora.list" todir="/etc"/>
     <copy file="jfrepo.desktop" todir="/usr/share/applications"/>
     <copy file="jfrepo.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfrepo.html" todir="/usr/share/jhelp"/>
+    <copy file="jfrepo.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

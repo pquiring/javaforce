@@ -26,7 +26,7 @@
   </item>
   <separator /> -->
   <item label="Display Properties">
-    <action name="Execute"><execute>jconfig display</execute></action>
+    <action name="Execute"><execute>jfconfig display</execute></action>
   </item>
 </menu>
 

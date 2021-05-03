@@ -32,8 +32,8 @@ public class Server {
   private static final boolean bluez3 = false;  //no longer available
   
   public static void main(String args[]) {
-    //this is currently not used : unless jnetworkmgr becomes a seperate package
-    JFLog.init("/var/log/jnetworkmgr.log", true);
+    //this is currently not used : unless jfnetworkmgr becomes a seperate package
+    JFLog.init("/var/log/jfnetworkmgr.log", true);
     new Server().start();
   }
 
@@ -41,7 +41,7 @@ public class Server {
     try {
       This = this;
       startup = true;
-      jbusClient = new JBusClient("org.jflinux.jnetworkmgr", new JBusMethods());
+      jbusClient = new JBusClient("org.jflinux.jfnetworkmgr", new JBusMethods());
       jbusClient.start();
       loadConfig();
       Interface iface = getInterface("static");  //psuedo-interface for static values
@@ -109,7 +109,7 @@ public class Server {
   }
 
   private Config config;
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "network.xml";
   private Interface highestRoute = null;  //interface with highest priority
   private Interface highestDNS = null;  //interface with highest priority
@@ -203,11 +203,11 @@ public class Server {
   }
 
   private void startIF(String dev) {
-    JFLog.log("jnetworkmgr:Starting:" + dev);
+    JFLog.log("jfnetworkmgr:Starting:" + dev);
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"ifconfig", dev, "up"}, true);
     if (sp.getErrorLevel() != 0) {
-      JFLog.log("jnetworkmgr:Failed to start interface:" + dev + ":Output=" + output);
+      JFLog.log("jfnetworkmgr:Failed to start interface:" + dev + ":Output=" + output);
       return;
     }
     Interface iface = getInterface(dev);
@@ -221,7 +221,7 @@ public class Server {
   public void setupInterface(Interface iface) {
     //ensure interface link is active
     if (!iface.link) {
-      JFLog.log("Warning:jnetworkmgr:setting up interface but link is down:" + iface.dev);
+      JFLog.log("Warning:jfnetworkmgr:setting up interface but link is down:" + iface.dev);
     }
     ShellProcess sp = new ShellProcess();
     if (iface.dhcp4) {
@@ -259,13 +259,13 @@ public class Server {
   }
 
   private void stopIF(String dev) {
-    JFLog.log("jnetworkmgr:Stoping:" + dev);
+    JFLog.log("jfnetworkmgr:Stoping:" + dev);
     Interface iface = getInterface(dev);
     ShellProcess sp = new ShellProcess();
     sp.run(new String[] {"ifconfig", dev, "0.0.0.0"}, true);  //remove IP first
     String output = sp.run(new String[] {"ifconfig", dev, "down"}, true);
     if (sp.getErrorLevel() != 0) {
-      JFLog.log("jnetworkmgr:Failed to stop interface:" + dev + ":Output=" + output);
+      JFLog.log("jfnetworkmgr:Failed to stop interface:" + dev + ":Output=" + output);
     }
     tearDownInterface(dev);
     iface.active = false;
@@ -447,7 +447,7 @@ public class Server {
       if (args[a].startsWith("old_routers=")) {old_routers = args[a].substring(12); continue;}
       if (args[a].startsWith("old_static_routes=")) {old_static_routes = args[a].substring(18); continue;}
     }
-    JFLog.log("jnetworkmgr.script:" + reason + " on " + ifaceName);
+    JFLog.log("jfnetworkmgr.script:" + reason + " on " + ifaceName);
     Interface iface = getInterface(ifaceName);
     if (reason.equals("MEDIUM")) {
       //ifconfig $interface medium $medium
@@ -603,7 +603,7 @@ public class Server {
   }
 
   private VPNConfig vpnConfig;
-  private String vpnConfigFile = "/etc/jconfig.d/vpn.xml";
+  private String vpnConfigFile = "/etc/jfconfig.d/vpn.xml";
 
   private synchronized void loadVPNConfig() {
     defaultVPNConfig();

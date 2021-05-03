@@ -59,9 +59,9 @@
     <copy file="jfconfig.jar" todir="/usr/share/java"/>
     <copy file="jfconfig.desktop" todir="/usr/share/applications"/>
     <copy file="jfconfig.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfconfig.html" todir="/usr/share/jhelp"/>
-    <copy file="jfconfig-samba.html" todir="/usr/share/jhelp"/>
-    <copy file="jfopenssl.html" todir="/usr/share/jhelp"/>
+    <copy file="jfconfig.html" todir="/usr/share/jfhelp"/>
+    <copy file="jfconfig-samba.html" todir="/usr/share/jfhelp"/>
+    <copy file="jfopenssl.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

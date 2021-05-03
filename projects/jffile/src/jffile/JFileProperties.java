@@ -687,7 +687,7 @@ public class JFileProperties extends javax.swing.JFrame {
   }
   public static void main(String args[]) {
     if (args.length != 1) {
-      System.out.println("Usage : jfileprops file");
+      System.out.println("Usage : jffileprops file");
       return;
     }
     FileEntry entry = new FileEntry();

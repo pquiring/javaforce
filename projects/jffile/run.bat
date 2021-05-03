@@ -1,2 +1,2 @@
 @echo off
-java -cp javaforce.jar;jfile.jar jfile.FileApp %*
+java -cp javaforce.jar;jffile.jar jffile.FileApp %*

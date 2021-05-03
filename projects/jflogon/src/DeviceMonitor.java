@@ -48,11 +48,11 @@ public class DeviceMonitor extends Thread implements ShellProcessListener {
       String msg = output.substring(0, idx);
       output.delete(0, idx+1);
       if (msg.endsWith("(drm)")) {
-        Startup.jbusClient.broadcast("org.jflinux.jdesktop.", "videoChanged", quote("udev"));
-        Startup.jbusClient.broadcast("org.jflinux.jconfig.", "videoChanged", quote("udev"));
+        Startup.jbusClient.broadcast("org.jflinux.jfdesktop.", "videoChanged", quote("udev"));
+        Startup.jbusClient.broadcast("org.jflinux.jfconfig.", "videoChanged", quote("udev"));
       }
       if (msg.endsWith("(power_supply)")) {
-        Startup.jbusClient.broadcast("org.jflinux.jdesktop.", "powerChanged", "");
+        Startup.jbusClient.broadcast("org.jflinux.jfdesktop.", "powerChanged", "");
       }
       if (msg.endsWith("(block)")) {
         //could be an audio cd-rom inserted

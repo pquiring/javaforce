@@ -309,13 +309,13 @@ public class NetworkDialog extends javax.swing.JDialog {
 
   private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
     try {
-      Runtime.getRuntime().exec(new String[] {"jhelp", "jfqemu"});
+      Runtime.getRuntime().exec(new String[] {"jfhelp", "jfqemu"});
     } catch (Exception e) {}
   }//GEN-LAST:event_helpActionPerformed
 
   private void netmgrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_netmgrActionPerformed
     try {
-      Runtime.getRuntime().exec(new String[] {"jconfig", "interfaces"});
+      Runtime.getRuntime().exec(new String[] {"jfconfig", "interfaces"});
     } catch (Exception e) {}
   }//GEN-LAST:event_netmgrActionPerformed
 

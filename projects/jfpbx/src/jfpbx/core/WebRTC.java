@@ -21,7 +21,7 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
   public void init() {
     try {
       char password[] = "password".toCharArray();
-      FileInputStream fis = new FileInputStream(Paths.etc + "jpbx.key");
+      FileInputStream fis = new FileInputStream(Paths.etc + "jfpbx.key");
       KeyMgmt key = new KeyMgmt();
       key.open(fis, password);
       fis.close();

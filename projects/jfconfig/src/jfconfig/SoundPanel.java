@@ -269,7 +269,7 @@ public class SoundPanel extends javax.swing.JPanel {
     }
     PulseAudio.Sink sink = PulseAudio.sinks.get(idx);
     sink.volume = volume;
-    ConfigApp.jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "soundSinkVolumeChanged", sidx + ",\"" + volume + "\"");
+    ConfigApp.jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "soundSinkVolumeChanged", sidx + ",\"" + volume + "\"");
   }//GEN-LAST:event_outputVolumeStateChanged
 
   private void inputVolumeStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_inputVolumeStateChanged
@@ -284,7 +284,7 @@ public class SoundPanel extends javax.swing.JPanel {
     }
     PulseAudio.Source source = PulseAudio.sources.get(idx);
     source.volume = volume;
-    ConfigApp.jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "soundSourceVolumeChanged", sidx + ",\"" + volume + "\"");
+    ConfigApp.jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "soundSourceVolumeChanged", sidx + ",\"" + volume + "\"");
   }//GEN-LAST:event_inputVolumeStateChanged
 
   private void outputListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_outputListValueChanged
@@ -490,7 +490,7 @@ public class SoundPanel extends javax.swing.JPanel {
         } catch (Exception e) {
           JFLog.log(e);
         }
-        ConfigApp.jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "soundSinkPortChanged", sidx + ",\"" + port + "\"");
+        ConfigApp.jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "soundSinkPortChanged", sidx + ",\"" + port + "\"");
         break;
       case 1:
         i1 = inputList.getSelectedIndex();
@@ -509,7 +509,7 @@ public class SoundPanel extends javax.swing.JPanel {
         } catch (Exception e) {
           JFLog.log(e);
         }
-        ConfigApp.jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "soundSourcePortChanged", sidx + ",\"" + port + "\"");
+        ConfigApp.jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "soundSourcePortChanged", sidx + ",\"" + port + "\"");
         break;
       case 2:
         i1 = cards.getSelectedIndex();
@@ -528,7 +528,7 @@ public class SoundPanel extends javax.swing.JPanel {
         } catch (Exception e) {
           JFLog.log(e);
         }
-        ConfigApp.jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "soundProfileChanged", cidx + ",\"" + profile + "\"");
+        ConfigApp.jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "soundProfileChanged", cidx + ",\"" + profile + "\"");
         break;
     }
     listAll();

@@ -265,10 +265,10 @@ public class MainPanel extends javax.swing.JPanel {
     String p = port.getText();
     if (!p.equals("0")) host += ":" + p;
     try {
-      String cmd[] = {"jvnc", host};
+      String cmd[] = {"jfvnc", host};
       Runtime.getRuntime().exec(cmd);
     } catch (Exception e) {
-      JFAWT.showError("Error", "Failed to execute jvnc");
+      JFAWT.showError("Error", "Failed to execute jfvnc");
     }
   }
 

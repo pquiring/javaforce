@@ -122,7 +122,7 @@ public class JDHCPPanel extends javax.swing.JPanel {
 
   private void loadConfig() {
     try {
-      FileInputStream fis = new FileInputStream("/etc/jdhcp.cfg");
+      FileInputStream fis = new FileInputStream("/etc/jfdhcp.cfg");
       byte cfg[] = JF.readAll(fis);
       fis.close();
       config.setText(new String(cfg));
@@ -133,7 +133,7 @@ public class JDHCPPanel extends javax.swing.JPanel {
 
   private void saveConfig() {
     try {
-      FileOutputStream fos = new FileOutputStream("/etc/jdhcp.cfg");
+      FileOutputStream fos = new FileOutputStream("/etc/jfdhcp.cfg");
       fos.write(config.getText().getBytes());
       fos.close();
     } catch (Exception e) {
@@ -142,7 +142,7 @@ public class JDHCPPanel extends javax.swing.JPanel {
   }
 
   private void restartServer() {
-    if (Linux.restartService("jdhcp"))
+    if (Linux.restartService("jfdhcp"))
       JFAWT.showMessage("Notice", "DHCP Service Restarted");
     else
       JFAWT.showError("Error", "Failed to Restart DHCP Service");

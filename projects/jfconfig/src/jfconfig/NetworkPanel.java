@@ -47,7 +47,7 @@ public class NetworkPanel extends javax.swing.JPanel {
     });
     jToolBar1.add(back);
 
-    routing.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-servers.png"))); // NOI18N
+    routing.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-servers.png"))); // NOI18N
     routing.setText("Routing");
     routing.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     routing.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -57,7 +57,7 @@ public class NetworkPanel extends javax.swing.JPanel {
       }
     });
 
-    firewall.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-servers.png"))); // NOI18N
+    firewall.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-servers.png"))); // NOI18N
     firewall.setText("Firewall");
     firewall.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     firewall.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -67,7 +67,7 @@ public class NetworkPanel extends javax.swing.JPanel {
       }
     });
 
-    interfaces.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-servers.png"))); // NOI18N
+    interfaces.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-servers.png"))); // NOI18N
     interfaces.setText("Interfaces");
     interfaces.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     interfaces.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -77,7 +77,7 @@ public class NetworkPanel extends javax.swing.JPanel {
       }
     });
 
-    vpn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-servers.png"))); // NOI18N
+    vpn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-servers.png"))); // NOI18N
     vpn.setText("VPN");
     vpn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     vpn.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -87,7 +87,7 @@ public class NetworkPanel extends javax.swing.JPanel {
       }
     });
 
-    routing1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jconfig-servers.png"))); // NOI18N
+    routing1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/jfconfig/jfconfig-servers.png"))); // NOI18N
     routing1.setText("Config");
     routing1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
     routing1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);

@@ -1,7 +1,7 @@
-jpbxlite/0.30
+jfpbxlite/0.30
 =============
 
-Welcome to jpbxlite.
+Welcome to jfpbxlite.
 Java VoIP/SIP PBX.
 Supports:
   - extensions
@@ -28,8 +28,8 @@ Recommend using MSI package to install Windows service.
 
 Linux
 =====
-Using jfLinux.org : install the deb/rpm packages and use 'jservice jpbxlite start'.
-Otherwise use install.sh to place files into required folders and run /usr/bin/jpbxlite to start the server.
+Using jfLinux.org : install the deb/rpm packages and use 'jservice jfpbxlite start'.
+Otherwise use install.sh to place files into required folders and run /usr/bin/jfpbxlite to start the server.
 
 Web Based Configuration
 =======================
@@ -63,8 +63,8 @@ Secure Web Server
 In upcoming releases a secure web server may become required, to support WebRTC.
 See the General Settings page to automatically generate a self-signed key.
 To manually generate the self-signed key using keytool run:
-  keytool -genkey -keyalg RSA -alias jpbxlite -keystore jpbx.key -storepass password -validity 3650 -keysize 2048 -dname "CN=jpbxlite.sourceforge.net, OU=jpbxlite, O=JavaForce, C=CA"
-For Windows the keystore is stored in %ProgramData%\jpbxlite
+  keytool -genkey -keyalg RSA -alias jfpbxlite -keystore jfpbx.key -storepass password -validity 3650 -keysize 2048 -dname "CN=jfpbxlite.sourceforge.net, OU=jfpbxlite, O=JavaForce, C=CA"
+For Windows the keystore is stored in %ProgramData%\jfpbxlite
 For Linux the keystore should be stored in /etc
 Restart the server and the Web Server will start on the secure port.
 To create a key for signing by a cert auth, refer to keytool for help.
@@ -80,4 +80,4 @@ Enjoy!
 
 by : Peter Quiring (pquiring at gmail dot com)
 
-http://jpbxlite.sourceforge.net
+http://jfpbxlite.sourceforge.net

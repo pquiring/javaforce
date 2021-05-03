@@ -439,7 +439,7 @@ public class MainPanel extends javax.swing.JPanel {
   private void connectVMasService(int idx) {
     VM vm = vms.get(idx);
     //use a java-based vnc client of course
-    String cmd[] = {"jvnc", "127.0.0.1:" + vm.serviceID};
+    String cmd[] = {"jfvnc", "127.0.0.1:" + vm.serviceID};
     try {
       Runtime.getRuntime().exec(cmd);
     } catch (Exception e) {

@@ -6,7 +6,7 @@
 /etc/jfdesktop/openbox.xml
 /etc/jfdesktop/openbox-menu.xml
 /usr/share/xsessions/jfdesktop.desktop
-/usr/share/jhelp/jfdesktop.html
+/usr/share/jfhelp/jfdesktop.html
 /usr/share/icons/hicolor/48x48/apps/jfdesktop-arrow.png
 /usr/share/icons/hicolor/48x48/apps/jfdesktop-battery.png
 /usr/share/icons/hicolor/48x48/apps/jfdesktop-config.png

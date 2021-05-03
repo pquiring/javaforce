@@ -252,7 +252,7 @@ public class FirewallPanel extends javax.swing.JPanel {
   }
 
   private Config config;
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "firewall.xml";
 
   private void loadRules() {
@@ -373,7 +373,7 @@ public class FirewallPanel extends javax.swing.JPanel {
   }
 
   private void applyRules() {
-    //save previewRules() to /etc/jconfig.d/firewall.sh
+    //save previewRules() to /etc/jfconfig.d/firewall.sh
     try {
       File tmpFile = File.createTempFile("firewall", ".sh");
       FileOutputStream fos = new FileOutputStream(tmpFile);
@@ -382,31 +382,31 @@ public class FirewallPanel extends javax.swing.JPanel {
       String rules = previewRules();
       fos.write(rules.getBytes());
       fos.close();
-      if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/jconfig.d/firewall.sh")) {
+      if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/jfconfig.d/firewall.sh")) {
         tmpFile.delete();
         throw new Exception("file io error");
       }
-      if (!Linux.setExec("/etc/jconfig.d/firewall.sh")) {
+      if (!Linux.setExec("/etc/jfconfig.d/firewall.sh")) {
         tmpFile.delete();
         throw new Exception("file io error");
       }
       tmpFile.delete();
     } catch (Exception e) {
       JFLog.log(e);
-      JFAWT.showError("Error", "Failed to save rules to /etc/jconfig.d/firewall.sh");
+      JFAWT.showError("Error", "Failed to save rules to /etc/jfconfig.d/firewall.sh");
       return;
     }
-    //exec /etc/jconfig.d/firewall.sh to apply now
+    //exec /etc/jfconfig.d/firewall.sh to apply now
     try {
       ShellProcess sp = new ShellProcess();
-      String cmd[] = {"sudo", "/etc/jconfig.d/firewall.sh"};
+      String cmd[] = {"sudo", "/etc/jfconfig.d/firewall.sh"};
       sp.run(cmd, false);
     } catch (Exception e) {
       JFLog.log(e);
-      JFAWT.showError("Error", "Failed to exec /etc/jconfig.d/firewall.sh");
+      JFAWT.showError("Error", "Failed to exec /etc/jfconfig.d/firewall.sh");
       return;
     }
-    //add /etc/jconfig.d/firewall.sh to /etc/rc.local for next reboot
+    //add /etc/jfconfig.d/firewall.sh to /etc/rc.local for next reboot
     try {
       FileInputStream fis = new FileInputStream("/etc/rc.local");
       byte data[] = JF.readAll(fis);
@@ -415,20 +415,20 @@ public class FirewallPanel extends javax.swing.JPanel {
       int exitIdx = -1;
       for(int a=0;a<lns.length;a++) {
         if (lns[a].startsWith("exit ")) exitIdx = a;
-        if (lns[a].indexOf("/etc/jconfig.d/firewall.sh") != -1) return;  //already done
+        if (lns[a].indexOf("/etc/jfconfig.d/firewall.sh") != -1) return;  //already done
       }
 
       File tmpFile = File.createTempFile("rc_local", ".tmp");
       FileOutputStream fos = new FileOutputStream(tmpFile);
       for(int a=0;a<lns.length;a++) {
         if (a == exitIdx) {
-          fos.write("/etc/jconfig.d/firewall.sh\n".getBytes());
+          fos.write("/etc/jfconfig.d/firewall.sh\n".getBytes());
         }
         fos.write(lns[a].getBytes());
         fos.write("\n".getBytes());
       }
       if (exitIdx == -1) {
-        fos.write("/etc/jconfig.d/firewall.sh\n".getBytes());
+        fos.write("/etc/jfconfig.d/firewall.sh\n".getBytes());
       }
       fos.close();
       if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/rc.local")) {
@@ -456,7 +456,7 @@ public class FirewallPanel extends javax.swing.JPanel {
  * spec: --sport <sourceport>[:<sourceportrange>]
  * spec: --dport <destport>[:<destportrange>]
  *
- * Config file : /etc/jconfig.d/firewall.sh (run from /etc/rc.local)
+ * Config file : /etc/jfconfig.d/firewall.sh (run from /etc/rc.local)
  */
 
   private String getOpt(String opt, String opts) {

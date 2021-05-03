@@ -38,15 +38,15 @@ public class Settings {
   public Folder sites = new Folder();
 
   public static void loadSettings() {
-    String fn = JF.getUserPath() + "/.jfile.xml";
+    String fn = JF.getUserPath() + "/.jffile.xml";
     XML xml = new XML();
     xml.read(fn);
     xml.writeClass(xml.root, settings);
   }
   public static void saveSettings() {
-    String fn = JF.getUserPath() + "/.jfile.xml";
+    String fn = JF.getUserPath() + "/.jffile.xml";
     XML xml = new XML();
-    xml.root.setName("jfile");
+    xml.root.setName("jffile");
     xml.readClass(xml.root, settings);
     xml.write(fn);
   }

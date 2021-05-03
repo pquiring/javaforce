@@ -212,7 +212,7 @@ public class CalculatorApp extends javax.swing.JFrame {
 
   private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
     try {
-      Runtime.getRuntime().exec("jhelp jfcalc");
+      Runtime.getRuntime().exec("jfhelp jfcalc");
     } catch (Exception e) {
     }
   }//GEN-LAST:event_helpActionPerformed

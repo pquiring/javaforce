@@ -106,7 +106,7 @@ public class GlobalPanel extends javax.swing.JPanel {
   }
 
   private Config config = new Config();
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "global.xml";
 
   private void loadConfig() {

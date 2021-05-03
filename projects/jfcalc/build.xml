@@ -44,7 +44,7 @@
     <copy file="jfcalc.jar" todir="/usr/share/java"/>
     <copy file="jfcalc.desktop" todir="/usr/share/applications"/>
     <copy file="jfcalc.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfcalc.html" todir="/usr/share/jhelp"/>
+    <copy file="jfcalc.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

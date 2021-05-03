@@ -62,8 +62,8 @@
     <copy todir="/usr/share/icons/hicolor/48x48/apps">
       <fileset dir="." includes="*.png"/>
     </copy>
-    <mkdir dir="/usr/share/jhelp"/>
-    <copy file="jfdesktop.html" todir="/usr/share/jhelp"/>
+    <mkdir dir="/usr/share/jfhelp"/>
+    <copy file="jfdesktop.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

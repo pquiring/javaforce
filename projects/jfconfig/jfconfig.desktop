@@ -2,12 +2,12 @@
 Name=Configure System
 Comment=Configure System
 
-Icon=jconfig
+Icon=jfconfig
 
 Type=Application
 Categories=Settings
 
-Exec=jconfig
+Exec=jfconfig
 StartupNotify=false
 Terminal=false
 MimeType=

@@ -35,7 +35,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
     if (fn != null) loadConfig(fn);
     calcMaxLength();
     if (JF.isWindows()) {
-      //requires jMedia : TODO : detect if installed in ..\jmedia
+      //requires jMedia : TODO : detect if installed in ..\jfmedia
       toolbar.remove(play);
       toolbar.remove(playSeparator);
     }
@@ -439,7 +439,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
       return;
     }
     try {
-      Runtime.getRuntime().exec(new String[] {"jmedia", renderFile});
+      Runtime.getRuntime().exec(new String[] {"jfmedia", renderFile});
     } catch (Exception e) {
       JFLog.log(e);
     }

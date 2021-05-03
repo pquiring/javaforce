@@ -241,7 +241,7 @@ public class VPNServerPanel extends javax.swing.JPanel {
     public String auth;  //user,pass;user,pass...
     public String dns1;
   }
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "vpnserver.xml";
   private Config config = new Config();
 

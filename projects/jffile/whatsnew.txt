@@ -1,8 +1,8 @@
-jfile
+jffile
 =====
 
 Mar 22, 2012 - version 0.3
-  - new : project renamed to jfile
+  - new : project renamed to jffile
   - new : aimed to replace system file explorer
 
 Mar 15, 2011 - version 0.2.1

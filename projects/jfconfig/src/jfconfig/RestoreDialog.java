@@ -57,7 +57,7 @@ public class RestoreDialog extends javax.swing.JDialog {
     systemOpts = new javax.swing.JPanel();
     jLabel3 = new javax.swing.JLabel();
     dest = new javax.swing.JComboBox();
-    jparted = new javax.swing.JButton();
+    jfparted = new javax.swing.JButton();
     jLabel5 = new javax.swing.JLabel();
     refresh = new javax.swing.JButton();
 
@@ -143,10 +143,10 @@ public class RestoreDialog extends javax.swing.JDialog {
 
     dest.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
-    jparted.setText("Partition Editor");
-    jparted.addActionListener(new java.awt.event.ActionListener() {
+    jfparted.setText("Partition Editor");
+    jfparted.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jpartedActionPerformed(evt);
+        jfpartedActionPerformed(evt);
       }
     });
 
@@ -173,7 +173,7 @@ public class RestoreDialog extends javax.swing.JDialog {
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, systemOptsLayout.createSequentialGroup()
             .addComponent(refresh)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jparted))
+            .addComponent(jfparted))
           .addGroup(systemOptsLayout.createSequentialGroup()
             .addComponent(jLabel5)
             .addGap(0, 25, Short.MAX_VALUE)))
@@ -190,7 +190,7 @@ public class RestoreDialog extends javax.swing.JDialog {
         .addComponent(jLabel5)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 22, Short.MAX_VALUE)
         .addGroup(systemOptsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jparted)
+          .addComponent(jfparted)
           .addComponent(refresh))
         .addContainerGap())
     );
@@ -266,9 +266,9 @@ public class RestoreDialog extends javax.swing.JDialog {
     listBackups();
   }//GEN-LAST:event_srcItemStateChanged
 
-  private void jpartedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jpartedActionPerformed
-    try { Runtime.getRuntime().exec("jparted"); } catch (Exception e) {}
-  }//GEN-LAST:event_jpartedActionPerformed
+  private void jfpartedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jfpartedActionPerformed
+    try { Runtime.getRuntime().exec("jfparted"); } catch (Exception e) {}
+  }//GEN-LAST:event_jfpartedActionPerformed
 
   private void refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshActionPerformed
     listDest();
@@ -294,7 +294,7 @@ public class RestoreDialog extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel5;
-  private javax.swing.JButton jparted;
+  private javax.swing.JButton jfparted;
   private javax.swing.JCheckBox overwrite;
   private javax.swing.JPanel personalOpts;
   private javax.swing.JButton refresh;

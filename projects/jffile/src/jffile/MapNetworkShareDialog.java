@@ -25,7 +25,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
     setPosition();
     listDrives();
     Mappings.loadMaps();
-    jbusClient = new JBusClient("org.jflinux.jfile." + Math.abs(new Random().nextInt())
+    jbusClient = new JBusClient("org.jflinux.jffile." + Math.abs(new Random().nextInt())
       , new JBusMethods());
     jbusClient.start();
     JFAWT.assignHotKey(this, accept, KeyEvent.VK_ENTER);
@@ -211,7 +211,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
       link = getDrive(drive);
     }
     dialog = this;
-    jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "mount",
+    jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "mount",
       quote(jbusClient.pack) + "," + quote(uri) + "," + quote(target) + ","
       + quote(pass) + "," + quote(link));
   }//GEN-LAST:event_acceptActionPerformed
@@ -348,11 +348,11 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
       link = "null";
     }
     isMain = true;
-    JBusClient jbusClient = new JBusClient("org.jflinux.jfile." + Math.abs(new Random().nextInt())
+    JBusClient jbusClient = new JBusClient("org.jflinux.jffile." + Math.abs(new Random().nextInt())
       , new JBusMethods());
     jbusClient.start();
-    JFLog.log("mount:calling:" + "org.jflinux.jdesktop." + System.getenv("JID"));
-    jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "mount",
+    JFLog.log("mount:calling:" + "org.jflinux.jfdesktop." + System.getenv("JID"));
+    jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "mount",
       quote(jbusClient.pack) + "," + quote(uri) + "," + quote(target) + ","
       + quote(pass) + "," + quote(link));
   }

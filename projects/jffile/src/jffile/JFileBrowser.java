@@ -451,7 +451,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
         }
       }
       if (name == null) JFLog.log("Warning:No NAME field for icon:" + fn);
-      if (icon == null) icon = "jfile-404";
+      if (icon == null) icon = "jffile-404";
       int i1 = fn.lastIndexOf(File.separatorChar);
       name = fn.substring(i1+1, fn.length() - 8);  //.desktop
       return addNewIcon(icon, name, fn);
@@ -503,7 +503,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
 
   private void addFolder(String fn) {
     JFileIcon fi = null;
-    String icon = NetworkShares.isShared(fn) ? "jfile-folder-shared" : "jfile-folder";
+    String icon = NetworkShares.isShared(fn) ? "jffile-folder-shared" : "jffile-folder";
     switch (view) {
       case VIEW_ICONS:
       case VIEW_LIST:
@@ -1397,7 +1397,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
       setSelectedTransparent(true);
       dragicon = false;
       repaint();
-      jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "show", "");
+      jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "show", "");
 /*      if (dragOverlay != null) {
         panel.remove(dragOverlay);
         dragOverlay = null;
@@ -1424,7 +1424,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
         setSelectedTransparent(true);
         dragicon = false;
         repaint();
-        jbusClient.call("org.jflinux.jdesktop." + System.getenv("JID"), "show", "");
+        jbusClient.call("org.jflinux.jfdesktop." + System.getenv("JID"), "show", "");
 /*        if (dragOverlay != null) {
           panel.remove(dragOverlay);
           dragOverlay = null;
@@ -1504,7 +1504,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     panel.repaint();
   }
 
-  //use clipboard or jdesktop
+  //use clipboard or jfdesktop
 
   public void cut() {
     FileEntry list[] = getSelected();

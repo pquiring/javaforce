@@ -23,7 +23,7 @@ CHANGELOG
  - new : added Queues (ACD : Automatic Call Distributor)
 6-26-2014 : v0.18 released
  - new : created MSI package for Windows
- - new : the database is now stored in %ProgramData%\jpbxDB (for windows) or /var/lib/jpbxDB (unix)
+ - new : the database is now stored in %ProgramData%\jfpbxDB (for windows) or /var/lib/jfpbxDB (unix)
  - new : the database is now auto created on first run
 3-12-2014 : v0.17 released
  - fix : Java8 compatible

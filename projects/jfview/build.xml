@@ -45,7 +45,7 @@
     <copy file="jfview.jar" todir="/usr/share/java"/>
     <copy file="jfview.desktop" todir="/usr/share/applications"/>
     <copy file="jfview.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfview.html" todir="/usr/share/jhelp"/>
+    <copy file="jfview.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

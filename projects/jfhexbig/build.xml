@@ -45,7 +45,7 @@
     <copy file="jfhexbig.jar" todir="/usr/share/java"/>
     <copy file="jfhexbig.desktop" todir="/usr/share/applications"/>
     <copy file="jfhexbig.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfhexbig.html" todir="/usr/share/jhelp"/>
+    <copy file="jfhexbig.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="release" depends="jar" description="create release zip file">

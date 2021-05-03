@@ -428,7 +428,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     sp.run(new String[] {"ntlm_auth", "--domain=" + domain, "--username=" + user}, true);
     if (sp.getErrorLevel() != 0) return false;
     //create user and set password
-    if (!new File("/home/" + domainUser + "/.jdesktop.xml").exists()) {
+    if (!new File("/home/" + domainUser + "/.jfdesktop.xml").exists()) {
       sp = new ShellProcess();
       sp.run(new String[] {"useradd", "-m", "-U", domainUser}, false);
       if (sp.getErrorLevel() != 0) {
@@ -518,11 +518,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   private void getWAPList() {
-    jbusClient.call("org.jflinux.jnetworkmgr", "getWAPList", quote(jbusClient.pack));
+    jbusClient.call("org.jflinux.jfnetworkmgr", "getWAPList", quote(jbusClient.pack));
   }
 
   private void getVPNList() {
-    jbusClient.call("org.jflinux.jnetworkmgr", "getVPNList", quote(jbusClient.pack));
+    jbusClient.call("org.jflinux.jfnetworkmgr", "getVPNList", quote(jbusClient.pack));
   }
 
   private static class WAP {
@@ -660,7 +660,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private void cancelNetworkConnection() {
     if (cancelNetworkMethod == null) return;
-    jbusClient.call("org.jflinux.jnetworkmgr", cancelNetworkMethod, "");
+    jbusClient.call("org.jflinux.jfnetworkmgr", cancelNetworkMethod, "");
     cancelNetworkMethod = null;
     showNetworkFailed();
   }
@@ -670,7 +670,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   }
 
   private void disconnectVPN(String name) {
-    jbusClient.call("org.jflinux.jnetworkmgr", "disconnectVPN", quote(name));
+    jbusClient.call("org.jflinux.jfnetworkmgr", "disconnectVPN", quote(name));
   }
 
   private void connectVPN(String name) {
@@ -678,12 +678,12 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
       disconnectVPN(name.substring(0, name.length() - 2));
     } else {
       startNetworkTimer("cancelVPN");
-      jbusClient.call("org.jflinux.jnetworkmgr", "connectVPN", quote(jbusClient.pack) + "," + quote(name));
+      jbusClient.call("org.jflinux.jfnetworkmgr", "connectVPN", quote(jbusClient.pack) + "," + quote(name));
     }
   }
 
   private void disconnectWAP(String ssid) {
-    jbusClient.call("org.jflinux.jnetworkmgr", "disconnectWAP" , quote(ssid));
+    jbusClient.call("org.jflinux.jfnetworkmgr", "disconnectWAP" , quote(ssid));
   }
 
   private void connectWAP(String dev, String ssid, String encType) {
@@ -697,7 +697,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
         key = JFAWT.getString("Enter WPA pass phrase", "");
       }
       startNetworkTimer("cancelWAP");
-      jbusClient.call("org.jflinux.jnetworkmgr", "connectWAP",
+      jbusClient.call("org.jflinux.jfnetworkmgr", "connectWAP",
         quote(jbusClient.pack) + "," + quote(dev) + "," + quote(ssid) + "," + quote(encType) + "," + quote(key));
     }
   }

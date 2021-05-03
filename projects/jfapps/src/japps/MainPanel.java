@@ -153,7 +153,7 @@ public class MainPanel extends javax.swing.JPanel {
       {"Chrome", "Google Chrome Web Browser (flash)", "google-chrome-stable", "google-chrome-stable"},
       {"Firefox", "Firefox Web Browser", "firefox", "firefox"},
       {"Flash", "Flash media plugin", "flashplugin-installer", "flash-plugin"},
-      {"Torrent", "Torrent Client", "jtorrent", "jtorrent"},
+      {"Torrent", "Torrent Client", "jftorrent", "jftorrent"},
 //      {"Java Web Plugin", "Java Applet support", "icedtea-6-plugin", "icedtea-web"},  //no java 8 support???
     },
     //Office
@@ -164,50 +164,50 @@ public class MainPanel extends javax.swing.JPanel {
     },
     //Graphics
     {
-      {"Paint", "Edit images", "jpaint", "jpaint"},
+      {"Paint", "Edit images", "jfpaint", "jfpaint"},
     },
     //MultiMedia
     {
-      {"Media Player", "Play Media files", "jmedia", "jmedia"},
-      {"Audio Editor", "Edit audio files", "jaudio", "jaudio"},
-      {"Video Creator", "Create video files", "jvideo", "jvideo"},
-      {"Music Composer", "Create music", "jmusic", "jmusic"},
-      {"Record Desktop", "Records your desktop or window to a video file", "jrecorddesktop", "jrecorddesktop"},
-      {"Record Camera", "Records your camera to a video file", "jrecordcamera", "jrecordcamera"},
+      {"Media Player", "Play Media files", "jfmedia", "jfmedia"},
+      {"Audio Editor", "Edit audio files", "jfaudio", "jfaudio"},
+      {"Video Creator", "Create video files", "jfvideo", "jfvideo"},
+      {"Music Composer", "Create music", "jfmusic", "jfmusic"},
+      {"Record Desktop", "Records your desktop or window to a video file", "jfrecorddesktop", "jfrecorddesktop"},
+      {"Record Camera", "Records your camera to a video file", "jfrecordcamera", "jfrecordcamera"},
       {"Audacity", "Edit audio files", "audacity", "audacity"},
     },
     //Communications
     {
-      {"jPhoneLite", "VoIP/SIP Phone", "jphonelite", "jphonelite"},
-      {"jPBXLite", "VoIP/SIP PBX", "jpbxlite", "jpbxlite"},
+      {"jfPhone", "VoIP/SIP Phone", "jfphone", "jfphone"},
+      {"jfPBX", "VoIP/SIP PBX", "jfpbx", "jfpbx"},
     },
     //System
     {
-      {"Archive Manager", "Manipulate Archive files (zip, tar)", "jarchive", "jarchive"},
-      {"Calculator", "Perform calculations", "jcalc", "jcalc"},
-      {"FTP Manager", "Manage files thru FTP", "jftp", "jftp"},
-      {"Help System", "Integrated help system", "jhelp", "jhelp"},
+      {"Archive Manager", "Manipulate Archive files (zip, tar)", "jfarchive", "jfarchive"},
+      {"Calculator", "Perform calculations", "jfcalc", "jfcalc"},
+      {"FTP Manager", "Manage files thru FTP", "jfftp", "jfftp"},
+      {"Help System", "Integrated help system", "jfhelp", "jfhelp"},
       {"nVidia Drivers", "Improved 3D Graphics support for nVidia hardware", "nvidia-current", null},
       {"nVidia Settings", "Configure nVidia hardware", "nvidia-settings", null},
-      {"Partition Editor", "Modify partition tables", "jparted", "jparted"},
-      {"QEMU Manager", "Virtual Machine Manager", "jqemu", "jqemu"},
-      {"Remote Desktop Manager", "Make connections to RDP/VNC remote desktops", "jremote", "jremote"},
-      {"Repository Selector", "Select your repo geo-graphically", "jrepo", null},
-      {"Terminal Emulator", "Access system shell (local or remote)", "jterm", "jterm"},
-      {"Task Manager", "View running tasks and resources", "jtaskmgr", "jtaskmgr"},
-      {"Text Editor", "Edit text files", "jtxtedit", "jtxtedit"},
+      {"Partition Editor", "Modify partition tables", "jfparted", "jfparted"},
+      {"QEMU Manager", "Virtual Machine Manager", "jfqemu", "jfqemu"},
+      {"Remote Desktop Manager", "Make connections to RDP/VNC remote desktops", "jfremote", "jfremote"},
+      {"Repository Selector", "Select your repo geo-graphically", "jfrepo", null},
+      {"Terminal Emulator", "Access system shell (local or remote)", "jfterm", "jfterm"},
+      {"Task Manager", "View running tasks and resources", "jftaskmgr", "jftaskmgr"},
+      {"Text Editor", "Edit text files", "jftxtedit", "jftxtedit"},
       {"Wine", "Run MS-Windows apps", "wine", "wine"},
       {"DosBox", "Run MS-DOS apps", "dosbox", "dosbox"},
       {"Darling", "Run Mac OSX apps", "darling-amd64", null},
     },
     //Development
     {
-      {"Java JDK 8", "Java Development Kit", "openjdk-8-jdk", null},
+      {"Java JDK 8", "Java Development Kit", "default-jdk", null},
       {"NetBeans", "Extensible Java IDE", "netbeans", "netbeans-platform"},
       {"ant", "Build Java projects", "ant", "ant"},
-      {"VisualVM", "Java Developement Tool", "jvisualvm", "jvisualvm"},
-      {"hex", "hex editor", "jhex", "jhex"},
-      {"hexbig", "hexbig editor (for very large files)", "jhexbig", "jhexbig"},
+      {"VisualVM", "Java Developement Tool", "jvisualvm", "jfvisualvm"},
+      {"hex", "hex editor", "jfhex", "jfhex"},
+      {"hexbig", "hexbig editor (for very large files)", "jfhexbig", "jfhexbig"},
     },
   };
 

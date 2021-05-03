@@ -58,7 +58,7 @@
     <copy file="jfmusic.jar" todir="/usr/share/java"/>
     <copy file="jfmusic.desktop" todir="/usr/share/applications"/>
     <copy file="jfmusic.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfmusic.html" todir="/usr/share/jhelp"/>
+    <copy file="jfmusic.html" todir="/usr/share/jfhelp"/>
     <copy file="gm.dls" todir="/usr/bin"/>
   </target>
 

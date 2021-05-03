@@ -30,8 +30,8 @@ public class WebConfig implements WebHandler {
     JFLog.log("Starting Web Server on port " + http_port);
     http = new Web();
     http.start(this, http_port, false);
-    if (new File(Paths.etc + "jpbx.key").exists()) {
-      System.setProperty("javax.net.ssl.keyStore", Paths.etc + "jpbx.key");
+    if (new File(Paths.etc + "jfpbx.key").exists()) {
+      System.setProperty("javax.net.ssl.keyStore", Paths.etc + "jfpbx.key");
       System.setProperty("javax.net.ssl.keyStorePassword", "password");
       JFLog.log("Starting Web Server on port " + https_port + " (secure)");
       https = new Web();
@@ -1240,7 +1240,7 @@ public class WebConfig implements WebHandler {
     if (verb.equals("sslSelf")) {
       if (KeyMgmt.keytool(new String[] {
         "-genkey", "-debug", "-alias", "jfpbx", "-keypass", "password", "-storepass", "password",
-        "-keystore", Paths.etc + "jpbx.key", "-validity", valid, "-dname", dname,
+        "-keystore", Paths.etc + "jfpbx.key", "-validity", valid, "-dname", dname,
         "-keyalg" , "RSA", "-keysize", "2048"
       })) {
         msg = "Generated self-signed SSL Certificate";

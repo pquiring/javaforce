@@ -82,7 +82,7 @@
     <Component class="javax.swing.JButton" name="routing">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/jfconfig/jconfig-servers.png"/>
+          <Image iconType="3" name="/jfconfig/jfconfig-servers.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Routing"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -95,7 +95,7 @@
     <Component class="javax.swing.JButton" name="firewall">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/jfconfig/jconfig-servers.png"/>
+          <Image iconType="3" name="/jfconfig/jfconfig-servers.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Firewall"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -108,7 +108,7 @@
     <Component class="javax.swing.JButton" name="interfaces">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/jfconfig/jconfig-servers.png"/>
+          <Image iconType="3" name="/jfconfig/jfconfig-servers.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Interfaces"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -121,7 +121,7 @@
     <Component class="javax.swing.JButton" name="vpn">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/jfconfig/jconfig-servers.png"/>
+          <Image iconType="3" name="/jfconfig/jfconfig-servers.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="VPN"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>
@@ -134,7 +134,7 @@
     <Component class="javax.swing.JButton" name="routing1">
       <Properties>
         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-          <Image iconType="3" name="/jfconfig/jconfig-servers.png"/>
+          <Image iconType="3" name="/jfconfig/jfconfig-servers.png"/>
         </Property>
         <Property name="text" type="java.lang.String" value="Config"/>
         <Property name="horizontalTextPosition" type="int" value="0"/>

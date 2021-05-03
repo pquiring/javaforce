@@ -108,7 +108,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActionPerformed
     try {
-      Runtime.getRuntime().exec(new String[] {"jpaint", filename});
+      Runtime.getRuntime().exec(new String[] {"jfpaint", filename});
     } catch (Exception e) {
       JFAWT.showError("Error", "Failed to edit file");
     }

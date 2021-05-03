@@ -10,19 +10,19 @@ echo This will place files into required location
 echo Press Enter to Continue?
 read
 
-mkdir -p /usr/share/java/jpbx
-mkdir -p /var/log/jpbx
-mkdir -p /var/lib/jpbx/voicemail
-mkdir -p /usr/share/java/jpbx/plugins
-mkdir -p /usr/share/sounds/jpbx/en
+mkdir -p /usr/share/java/jfpbx
+mkdir -p /var/log/jfpbx
+mkdir -p /var/lib/jfpbx/voicemail
+mkdir -p /usr/share/java/jfpbx/plugins
+mkdir -p /usr/share/sounds/jfpbx/en
 
 cp javaforce.jar /usr/share/java
-cp *.jar /usr/share/java/jpbx
-cp run.sh /usr/bin/jpbxlite
-chmod +x /usr/bin/jpbxlite
+cp *.jar /usr/share/java/jfpbx
+cp run.sh /usr/bin/jfpbxlite
+chmod +x /usr/bin/jfpbxlite
 
-cp plugins/*.jar /usr/share/java/jpbx/plugins
+cp plugins/*.jar /usr/share/java/jfpbx/plugins
 
-cp sounds/en/*.wav /usr/share/sounds/jpbx/en
+cp sounds/en/*.wav /usr/share/sounds/jfpbx/en
 
-echo Install complete! Run jpbxlite to start server.
+echo Install complete! Run jfpbxlite to start server.

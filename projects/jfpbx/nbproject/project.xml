@@ -11,7 +11,7 @@
             <properties/>
             <folders>
                 <source-folder>
-                    <label>jpbxlite</label>
+                    <label>jfpbxlite</label>
                     <location>.</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>

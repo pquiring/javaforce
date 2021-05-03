@@ -543,8 +543,8 @@ public class ServersPanel extends javax.swing.JPanel implements ActionListener {
       {null, install_smtp, "SMTPPanel", "SMTP Server", "sendmail", "sendmail"},
       {null, install_imap, "IMAPPanel", "IMAP Server", "dovecot-imapd", "dovecot"},
       {config_samba, null, "SambaPanel", "Samba Server", null, null},
-      {config_j_dhcp, install_j_dhcp, "JDHCPPanel", "DHCP Server", "jdhcp", "jdhcp"},
-      {config_j_dns, install_j_dns, "JDNSPanel", "DNS Server", "jdns", "jdns"},
+      {config_j_dhcp, install_j_dhcp, "JDHCPPanel", "DHCP Server", "jfdhcp", "jfdhcp"},
+      {config_j_dns, install_j_dns, "JDNSPanel", "DNS Server", "jfdns", "jfdns"},
       {config_j_proxy, install_j_proxy, "JProxyPanel", "Proxy Server", "jproxy", "jproxy"},
 //      {config_asterisk, install_asterisk, "AsteriskPanel", "Asterisk VoIP Server", "asterisk"}
     };

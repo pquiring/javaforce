@@ -283,7 +283,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
 
   private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
     try {
-      Runtime.getRuntime().exec(new String[] {"jhelp", "jopenssl"});
+      Runtime.getRuntime().exec(new String[] {"jfhelp", "jopenssl"});
     } catch (Exception e) {
       JFLog.log(e);
     }

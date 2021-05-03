@@ -74,7 +74,7 @@
     <copy file="jfterm.jar" todir="/usr/share/java"/>
     <copy file="jfterm.desktop" todir="/usr/share/applications"/>
     <copy file="jfterm.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfterm.html" todir="/usr/share/jhelp"/>
+    <copy file="jfterm.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

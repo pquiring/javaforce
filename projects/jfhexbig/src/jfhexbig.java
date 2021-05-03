@@ -379,11 +379,11 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
   }
   public static void loadcfg(boolean gui) {
     XML xml = new XML();
-    String filename = JF.getUserPath() + "/.jhex.xml";
+    String filename = JF.getUserPath() + "/.jfhex.xml";
     File file = new File(filename);
     if (!file.exists()) return;  //doesn't exist
     if (!xml.read(filename)) return;  //bad cfg
-    if (!xml.root.name.equals("jhex")) return;  //bad cfg
+    if (!xml.root.name.equals("jfhex")) return;  //bad cfg
     xml.writeClass(xml.root, new Settings());
     if (gui) {
       Settings.fnt = JFAWT.getMonospacedFont(0, Settings.fontSize);
@@ -392,9 +392,9 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
   public void savecfg() {
     XML xml = new XML();
     XML.XMLTag tag;
-    xml.root.name = "jhex";
+    xml.root.name = "jfhex";
     xml.readClass(xml.root, new Settings());
-    String filename = JF.getUserPath() + "/.jhex.xml";
+    String filename = JF.getUserPath() + "/.jfhex.xml";
     xml.write(filename);
   }
 //find data

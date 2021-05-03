@@ -19,7 +19,7 @@ all="$all,old_static_routes=$old_static_routes"
 
 #all="$all,=$"
 
-jbus-call "org.jflinux.jnetworkmgr.script(\"$all\")"
+jbus-call "org.jflinux.jfnetworkmgr.script(\"$all\")"
 
 #TODO : support TIMEOUT
 if [ $reason = "TIMEOUT" ]; then

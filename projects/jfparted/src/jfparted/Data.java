@@ -6,7 +6,7 @@ import javaforce.*;
 
 /** Contains all static data and partition related functions
  *
- *  NOTE : This code is shared with jinstall
+ *  NOTE : This code is shared with jfinstall
  *
  *  "Humor, I Love it, weeeeee" - Data
  *

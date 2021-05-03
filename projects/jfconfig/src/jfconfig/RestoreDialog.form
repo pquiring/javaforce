@@ -231,7 +231,7 @@
                           <Group type="102" alignment="1" attributes="0">
                               <Component id="refresh" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="jparted" min="-2" max="-2" attributes="0"/>
+                              <Component id="jfparted" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
@@ -254,7 +254,7 @@
                       <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                       <EmptySpace pref="22" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="jparted" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="jfparted" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="refresh" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
@@ -280,12 +280,12 @@
                 </Property>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="jparted">
+            <Component class="javax.swing.JButton" name="jfparted">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Partition Editor"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jpartedActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jfpartedActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel5">

@@ -286,7 +286,7 @@ public class RoutingPanel extends javax.swing.JPanel {
   }
 
   private Config config;
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "routing.xml";
 //  private boolean dirty = false;
 
@@ -464,7 +464,7 @@ public class RoutingPanel extends javax.swing.JPanel {
 
   private void apply() {
     saveConfig();
-    //save to /etc/jconfig.d/routing.sh
+    //save to /etc/jfconfig.d/routing.sh
     try {
       File tmpFile = File.createTempFile("routing", ".sh");
       FileOutputStream fos = new FileOutputStream(tmpFile);
@@ -473,30 +473,30 @@ public class RoutingPanel extends javax.swing.JPanel {
         fos.write(applyRoute(config.route[a]).getBytes());
       }
       fos.close();
-      if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/jconfig.d/routing.sh")) {
+      if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/jfconfig.d/routing.sh")) {
         tmpFile.delete();
         throw new Exception("file io error");
       }
       tmpFile.delete();
-      if (!Linux.setExec("/etc/jconfig.d/routing.sh")) {
+      if (!Linux.setExec("/etc/jfconfig.d/routing.sh")) {
         throw new Exception("file io error");
       }
     } catch (Exception e) {
       JFLog.log(e);
-      JFAWT.showError("Error", "Failed to save rules to /etc/jconfig.d/routing.sh");
+      JFAWT.showError("Error", "Failed to save rules to /etc/jfconfig.d/routing.sh");
       return;
     }
-    //exec /etc/jconfig.d/routing.sh to apply now
+    //exec /etc/jfconfig.d/routing.sh to apply now
     try {
       ShellProcess sp = new ShellProcess();
-      sp.run(new String[] {"sudo", "/etc/jconfig.d/routing.sh"}, false);
+      sp.run(new String[] {"sudo", "/etc/jfconfig.d/routing.sh"}, false);
       if (sp.getErrorLevel() != 0) throw new Exception("routing failed");
     } catch (Exception e) {
       JFLog.log(e);
-      JFAWT.showError("Error", "Failed to exec /etc/jconfig.d/routing.sh");
+      JFAWT.showError("Error", "Failed to exec /etc/jfconfig.d/routing.sh");
       return;
     }
-    //add /etc/jconfig.d/routing.sh to /etc/rc.local for next reboot
+    //add /etc/jfconfig.d/routing.sh to /etc/rc.local for next reboot
     try {
       FileInputStream fis = new FileInputStream("/etc/rc.local");
       byte data[] = JF.readAll(fis);
@@ -505,7 +505,7 @@ public class RoutingPanel extends javax.swing.JPanel {
       int exitIdx = -1;
       for(int a=0;a<lns.length;a++) {
         if (lns[a].startsWith("exit ")) exitIdx = a;
-        if (lns[a].indexOf("/etc/jconfig.d/routing.sh") != -1) {
+        if (lns[a].indexOf("/etc/jfconfig.d/routing.sh") != -1) {
           //already done
           JFAWT.showMessage("Notice", "Routing table updated!");
           return;
@@ -515,13 +515,13 @@ public class RoutingPanel extends javax.swing.JPanel {
       FileOutputStream fos = new FileOutputStream(tmpFile);
       for(int a=0;a<lns.length;a++) {
         if (a == exitIdx) {
-          fos.write("/etc/jconfig.d/routing.sh\n".getBytes());
+          fos.write("/etc/jfconfig.d/routing.sh\n".getBytes());
         }
         fos.write(lns[a].getBytes());
         fos.write("\n".getBytes());
       }
       if (exitIdx == -1) {
-        fos.write("/etc/jconfig.d/routing.sh\n".getBytes());
+        fos.write("/etc/jfconfig.d/routing.sh\n".getBytes());
       }
       fos.close();
       if (!Linux.copyFile(tmpFile.getAbsolutePath(), "/etc/rc.local")) {

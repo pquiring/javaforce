@@ -355,7 +355,7 @@ public class ApachePanel extends javax.swing.JPanel {
       return;
     }
     Host host = config.host[idx];
-    String folder = "/etc/jconfig.d/apache/" + host.name;
+    String folder = "/etc/jfconfig.d/apache/" + host.name;
     OpenSSLApp dialog = new OpenSSLApp(new String[]{folder, "apache"});
     dialog.setVisible(true);
   }//GEN-LAST:event_jButton1ActionPerformed
@@ -427,7 +427,7 @@ public class ApachePanel extends javax.swing.JPanel {
   }//GEN-LAST:event_runWizardActionPerformed
 
   private void manageFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_manageFilesActionPerformed
-    JFAWT.showError("Note", "Not implemented yet");  //pending jfile
+    JFAWT.showError("Note", "Not implemented yet");  //pending jffile
   }//GEN-LAST:event_manageFilesActionPerformed
 
   private void enableSSLActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enableSSLActionPerformed
@@ -472,7 +472,7 @@ public class ApachePanel extends javax.swing.JPanel {
   // End of variables declaration//GEN-END:variables
 
   private DefaultListModel hostsModel = new DefaultListModel();
-  private String configFolder = "/etc/jconfig.d/";
+  private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "apache.xml";
   public static class Host {
     public boolean enabled, cgi, ssl;
@@ -636,8 +636,8 @@ public class ApachePanel extends javax.swing.JPanel {
     str = str.replaceAll("[$]PORT", "" + host.port);
     str = str.replaceAll("[$]EMAIL", "webmaster@localhost");
     str = str.replaceAll("[$]DOCPATH", host.docPath);
-    str = str.replaceAll("[$]PUBLICKEY", "/etc/jconfig.d/apache/" + host.name + "/public.crt");
-    str = str.replaceAll("[$]PRIVATEKEY", "/etc/jconfig.d/apache/" + host.name + "/private.key");
+    str = str.replaceAll("[$]PUBLICKEY", "/etc/jfconfig.d/apache/" + host.name + "/public.crt");
+    str = str.replaceAll("[$]PRIVATEKEY", "/etc/jfconfig.d/apache/" + host.name + "/private.key");
     if (host.cgi) {
       byte cgi[] = JF.readAll(this.getClass().getClassLoader().getResourceAsStream("apache-cgi.conf"));
       str = str.replaceAll("[$]CGI", new String(cgi));

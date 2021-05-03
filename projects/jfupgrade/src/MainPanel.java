@@ -171,8 +171,8 @@ public class MainPanel extends javax.swing.JPanel {
   private Object needReboot[][] = {
     {"linux-headers-.+", SHOULD},
     {"linux-image-.+", SHOULD},
-    {"jdesktop", MUST},
-    {"jlogon", MUST},
+    {"jfdesktop", MUST},
+    {"jflogon", MUST},
   };
 
   private void listUpgrades() {

@@ -141,7 +141,7 @@ public class AddAppWindow extends javax.swing.JFrame {
   private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
     browser = new JFileBrowser(JFileBrowser.VIEW_ICONS, "/usr/share/applications"
       , DesktopMenu, IconMenu, null, -1
-      , false, "jfile", "jfopen", Color.white, Color.black
+      , false, "jffile", "jfopen", Color.white, Color.black
       , true, true, false, true, Dock.jbusClient, false, Dock.dock);
     panel.add(browser);
     revalidate();
