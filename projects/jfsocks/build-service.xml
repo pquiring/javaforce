@@ -16,6 +16,5 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
     <copy file="jfsockssvc.service" todir="/lib/systemd/system"/>
-    <copy file="javaforce.service.socks.so" todir="/usr/lib"/>
   </target>
 </project>
