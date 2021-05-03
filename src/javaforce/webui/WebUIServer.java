@@ -52,6 +52,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   public byte[] getResource(String name) {
     InputStream is = getClass().getClassLoader().getResourceAsStream(name);
     if (is == null) {
+      JFLog.log("WebUIServer:Resource not found:" + name);
       return null;
     }
     return JF.readAll(is);

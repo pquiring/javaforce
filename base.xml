@@ -99,7 +99,8 @@
         <arg value="${CLASSPATH}"/>
         <arg value="${MAINCLASS}"/>
       </java>
-      <delete file="graal.json"/>
+      <delete file="graal_jni.json"/>
+      <delete file="graal_res.json"/>
     </sequential>
   </target>
 

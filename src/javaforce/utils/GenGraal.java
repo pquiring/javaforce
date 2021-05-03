@@ -13,6 +13,10 @@ public class GenGraal {
       System.out.println("usage:GenGraal mainclass");
       System.exit(1);
     }
+    jni(args);
+    resources(args);
+  }
+  public static void jni(String[] args) {
     StringBuilder sb = new StringBuilder();
     sb.append("[");
     sb.append("{");
@@ -79,10 +83,28 @@ public class GenGraal {
     sb.append("}");
     sb.append("]");
     try {
-      FileOutputStream fos = new FileOutputStream("graal.json");
+      FileOutputStream fos = new FileOutputStream("graal_jni.json");
       fos.write(sb.toString().getBytes());
       fos.close();
-      System.out.println("graal.json created");
+      System.out.println("graal_jni.json created");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+  public static void resources(String[] args) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("{");
+    sb.append("  \"resources\": {");
+    sb.append("    \"includes\": [");
+    sb.append("      {\"pattern\": \"javaforce/webui/static/.*\"}");
+    sb.append("    ]");
+    sb.append("  }");
+    sb.append("}");
+    try {
+      FileOutputStream fos = new FileOutputStream("graal_res.json");
+      fos.write(sb.toString().getBytes());
+      fos.close();
+      System.out.println("graal_res.json created");
     } catch (Exception e) {
       e.printStackTrace();
     }

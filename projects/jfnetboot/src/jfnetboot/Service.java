@@ -19,6 +19,7 @@ public class Service {
   }
 
   public static void serviceStart(String[] args) {
+    System.setProperty("java.net.preferIPv4Addresses", "true");
     Paths.init();
     JFLog.append(Paths.logs + "/jfnetboot.log", true);
     JFLog.log("jfNetBoot " + Settings.version + " starting...");
