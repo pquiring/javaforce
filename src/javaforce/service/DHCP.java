@@ -93,6 +93,7 @@ public class DHCP extends Thread {
   }
   private ArrayList<Host> hosts = new ArrayList<Host>();
   private Object close = new Object();
+  private static boolean stopping;
 
   public static enum State {Loading, Running, Error, Stopped};
   public State state = State.Loading;
@@ -166,6 +167,8 @@ public class DHCP extends Thread {
           host.ds.receive(packet);
           new RequestWorker(packet, host).start();
         }
+      } catch (SocketException e) {
+        if (!stopping) JFLog.log(e);
       } catch (Exception e) {
         JFLog.log(e);
       }
@@ -989,6 +992,11 @@ public class DHCP extends Thread {
 
   public static void main(String[] args) {
     serviceStart(args);
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+
+      }
+    });
   }
 
   //Win32 Service
@@ -1009,6 +1017,7 @@ public class DHCP extends Thread {
 
   public static void serviceStop() {
     JFLog.log("Stopping service");
+    stopping = true;
     dhcp.close();
   }
 }
