@@ -17,8 +17,6 @@ Go to http://jfnetboot.sf.net/help.php for installation help.
 Paths:
 ------
 /var/netboot/filesystems = filesystems
-  /*/boot = boot images (TFTP)
-  /*/root = NFS file systems
 /var/netboot/clients = client write cache filesystems
 
 Known issues
