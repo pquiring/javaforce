@@ -1,5 +1,9 @@
 What's new...
 
+May 4/2021 : JF 32.1 released
+  - jfNetBoot/0.2
+    - fixed DHCP pxe proxy mode
+
 May 3/2021 : JF 32.0 released
   - jfNetBoot/0.1
     - PXE Server for Thin clients (Raspberry PI4, x86 UEFI/BIOS systems)

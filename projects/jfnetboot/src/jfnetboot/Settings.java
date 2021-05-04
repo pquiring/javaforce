@@ -11,7 +11,7 @@ import java.util.*;
 import javaforce.*;
 
 public class Settings {
-  public static String version = "0.1";
+  public static String version = "0.2";
   public static Settings current = new Settings();
 
   public String filesystem_default = "default";
