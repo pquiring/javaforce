@@ -21,7 +21,7 @@ Paths:
 
 Known issues
 ------------
- - The config.sh scripts are not compatible with Ubuntu (use Debian only)
+ - Ubuntu is not supported due to lightdm auto login not working (use Debian only)
 
 FAQ:
 ----
@@ -32,5 +32,6 @@ Q : Is the Pi3 supported?
 A : Probably if it's firmware is updated, but it only has a 100MB NIC so performance would be poor.  The Pi4 has a gigabit NIC.
 
 Q : Could I run the server on a Raspberry Pi?
-A : Probably (untested), but you wouldn't be able to support x86 clients (unless you used qemu just as the arm64 filesystem is done on an amd64 system).
+A : Probably (untested), but you wouldn't be able to support x86 clients
+    (unless you used qemu to build the x86 file system just as the arm64 filesystem is done on amd64 systems)
     And you would need to build from source, only binaries for amd64 are released.
