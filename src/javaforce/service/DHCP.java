@@ -91,7 +91,6 @@ public class DHCP extends Thread {
     public int ip_int;
     public int port;  //67 or 4011
     public DatagramSocket ds;
-    public DatagramSocket proxy;
   }
   private ArrayList<Host> hosts = new ArrayList<Host>();
   private Object close = new Object();
@@ -148,8 +147,6 @@ public class DHCP extends Thread {
     for(int a=0;a<cnt;a++) {
       DatagramSocket ds;
       ds = hosts.get(a).ds;
-      if (ds != null) ds.close();
-      ds = hosts.get(a).proxy;
       if (ds != null) ds.close();
     }
     if (busClient != null) busClient.close();
