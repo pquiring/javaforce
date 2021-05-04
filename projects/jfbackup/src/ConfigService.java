@@ -1799,9 +1799,9 @@ public class ConfigService implements WebUIHandler {
           msg.setText("Host invalid");
           return;
         }
-        if (passTxt.length() < 8) {
+        if (passTxt.length() < 4) {
           msg.setColor(Color.red);
-          msg.setText("Password too short (8 chars min)");
+          msg.setText("Password too short (4 chars min)");
           return;
         }
         msg.setColor(Color.black);
