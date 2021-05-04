@@ -100,8 +100,11 @@ public class TFTP extends Thread implements DHCP.Notify {
               case oc_ack:
                 doAck(p);
                 break;
+              case oc_error:
+                close();
+                break;
               default:
-                doError(p);
+                doError(p, "Unknown opCode:" + opCode);
                 break;
             }
           } catch (Exception e) {
@@ -111,6 +114,7 @@ public class TFTP extends Thread implements DHCP.Notify {
       } catch (Exception e) {
         if (debugException) JFLog.log(e);
       }
+      if (active) close();
     }
 
     private void sendNextBlock(DatagramPacket src) {
@@ -135,6 +139,7 @@ public class TFTP extends Thread implements DHCP.Notify {
       BE.setuint16(data, 2, block+1);  //one based
       System.arraycopy(imgfile.data, offset, data, 4, toSend);
       DatagramPacket reply = new DatagramPacket(data, data.length, src.getAddress(), src.getPort());
+      if (debugClient) JFLog.log("TFTP:Client:sendTo:" + src.getAddress() + ":" + src.getPort());
       try {
         cs.send(reply);
       } catch (Exception e) {
@@ -148,7 +153,8 @@ public class TFTP extends Thread implements DHCP.Notify {
       sendNextBlock(src);
     }
 
-    private void doError(DatagramPacket src) {
+    private void doError(DatagramPacket src, String msg) {
+      JFLog.log("TFTP:Error:" + msg);
       synchronized(clients) {
         close();
         clients.remove(this);
@@ -437,7 +443,7 @@ public class TFTP extends Thread implements DHCP.Notify {
   }
 
   public void dhcpEvent(int type, String mac, String ip, short arch) {
-    if (type == DHCP.DHCPDISCOVER) {
+    if (type == DHCP.DHCPREQUEST) {
       registerClient(mac, ip, arch);
     }
   }

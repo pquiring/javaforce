@@ -89,7 +89,9 @@ public class DHCP extends Thread {
   private static class Host {
     public String ip;
     public int ip_int;
+    public int port;  //67 or 4011
     public DatagramSocket ds;
+    public DatagramSocket proxy;
   }
   private ArrayList<Host> hosts = new ArrayList<Host>();
   private Object close = new Object();
@@ -140,10 +142,14 @@ public class DHCP extends Thread {
 
   /** Stop the DHCP Service. */
   public void close() {
+    JFLog.log("DHCP : Stopping service");
+    stopping = true;
     int cnt = hosts.size();
     for(int a=0;a<cnt;a++) {
       DatagramSocket ds;
       ds = hosts.get(a).ds;
+      if (ds != null) ds.close();
+      ds = hosts.get(a).proxy;
       if (ds != null) ds.close();
     }
     if (busClient != null) busClient.close();
@@ -158,9 +164,9 @@ public class DHCP extends Thread {
       this.host = host;
     }
     public void run() {
-      JFLog.log("Starting HostWorker on : " + host.ip);
+      JFLog.log("DHCP starting on : " + host.ip + ":" + host.port + "...");
       try {
-        host.ds = new DatagramSocket(67, Inet4Address.getByName(host.ip));
+        host.ds = new DatagramSocket(host.port, Inet4Address.getByName(host.ip));
         while (true) {
           byte data[] = new byte[maxmtu];
           DatagramPacket packet = new DatagramPacket(data, maxmtu);
@@ -400,15 +406,25 @@ public class DHCP extends Thread {
       }
       for(int a=0;a<cnt;a++) {
         Pool pool = pools.get(a);
-        boolean hasHost = false;
+        boolean hasHost_67 = false;
+        boolean hasHost_4011 = false;
         for(int b=0;b<hosts.size();b++) {
           Host host = hosts.get(b);
-          if (host.ip == pool.bind_ip) {hasHost = true; break;}
+          if (host.ip == pool.bind_ip && host.port == 67) {hasHost_67 = true; break;}
+          if (host.ip == pool.bind_ip && host.port == 4011) {hasHost_4011 = true; break;}
         }
-        if (!hasHost) {
+        if (!hasHost_67) {
           Host host = new Host();
           host.ip = pool.bind_ip;
           host.ip_int = IP4toInt(host.ip);
+          host.port = 67;
+          hosts.add(host);
+        }
+        if (!hasHost_4011) {
+          Host host = new Host();
+          host.ip = pool.bind_ip;
+          host.ip_int = IP4toInt(host.ip);
+          host.port = 4011;
           hosts.add(host);
         }
       }
@@ -560,10 +576,12 @@ public class DHCP extends Thread {
         int id = getInt();
         short seconds = getShort();
         short flags = getShort();
+        boolean broadcast = (flags & 0x8000) == 0x8000;
         int cip = getInt();  //client ip
         int yip = getInt();  //your ip
         int sip = getInt();  //server ip
         int rip = getInt();  //relay ip
+        int server_ip = 0;
         int msgType = -1;
         int yipOffset = -1;
         //detect pool
@@ -571,6 +589,7 @@ public class DHCP extends Thread {
         int from_ip = rip;
         short pxe_arch = -1;
         byte[] req_list = new byte[0];
+        byte[] client_id = new byte[17];
         if (from_ip == 0) {
           String src = packet.getAddress().getHostAddress();
           from_ip = IP4toInt(src);
@@ -609,26 +628,36 @@ public class DHCP extends Thread {
           if (opt == OPT_PAD) continue;
           int len = getByte() & 0xff;
           switch (opt) {
-            case OPT_DHCP_MSG_TYPE:
+            case OPT_DHCP_MSG_TYPE:  //53
               if (len != 1) throw new Exception("bad dhcp msg type (size != 1)");
               msgType = getByte();
               break;
-            case OPT_REQUEST_IP:
+            case OPT_REQUEST_IP:  //50
               if (len != 4) throw new Exception("bad request ip (size != 4)");
               yip = getInt();
+              cip = yip;
               if ((yip & pool.mask_int) == (pool.pool_first_int & pool.mask_int)) {
                 yipOffset = yip - pool.pool_first_int;
               } else {
                 JFLog.log("DHCP:invalid requested ip:" + IP4toString(yip));
               }
               break;
-            case OPT_CLIENT_ARCH:
+            case OPT_CLIENT_ARCH:  //93
               if (len != 2) throw new Exception("bad arch id");
               pxe_arch = getShort();
               break;
-            case OPT_PARAM_REQ_LIST:
+            case OPT_PARAM_REQ_LIST:  //55
               req_list = new byte[len];
               System.arraycopy(req, reqOffset, req_list, 0, len);
+              reqOffset += len;
+              break;
+            case OPT_DHCP_SERVER_IP:
+              if (len != 4) throw new Exception("bad request dhcp server ip (size != 4)");
+              server_ip = getInt();
+              break;
+            case OPT_CLIENT_ID:
+              if (len != 17) throw new Exception("invalid client uuid");
+              System.arraycopy(req, reqOffset, client_id, 0, len);
               reqOffset += len;
               break;
             default:
@@ -646,9 +675,9 @@ public class DHCP extends Thread {
               //only send PXE info, no IP address
               if (!req_opt(req_list, OPT_PXE_SERVER)) break;  //client is not requesting PXE info
               if (notify != null) {
-                notify.dhcpEvent(DHCPDISCOVER, MACtoString(mac), IP4toString(yip), pxe_arch);
+                notify.dhcpEvent(DHCPDISCOVER, MACtoString(mac), IP4toString(cip), pxe_arch);
               }
-              sendReply(new byte[4], DHCPOFFER, id, pool, rip, req_list);
+              sendReply(new byte[4], DHCPOFFER, id, pool, cip, rip, req_list, client_id);
               break;
             }
             synchronized(pool.lock) {
@@ -670,9 +699,9 @@ public class DHCP extends Thread {
                   } else {
                     //offer this
                     if (notify != null) {
-                      notify.dhcpEvent(DHCPDISCOVER, MACtoString(mac), IP4toString(yip), pxe_arch);
+                      notify.dhcpEvent(DHCPDISCOVER, MACtoString(mac), IP4toString(cip), pxe_arch);
                     }
-                    sendReply(addr, DHCPOFFER, id, pool, rip, req_list);
+                    sendReply(addr, DHCPOFFER, id, pool, cip, rip, req_list, client_id);
                     pool.next = i+1;
                     if (pool.next == pool.count) pool.next = 0;
                     return;
@@ -688,10 +717,12 @@ public class DHCP extends Thread {
             break;
           case DHCPREQUEST:
             if (pool.pxe_proxy) {
+              if (!req_opt(req_list, OPT_PXE_SERVER)) break;  //client is not requesting PXE info
+              if (broadcast && server_ip != pool.server_ip_int) break;  //not proxy request
               if (notify != null) {
-                notify.dhcpEvent(DHCPREQUEST, MACtoString(mac), IP4toString(yip), pxe_arch);
+                notify.dhcpEvent(DHCPREQUEST, MACtoString(mac), IP4toString(cip), pxe_arch);
               }
-              sendReply(new byte[4], DHCPACK, id, pool, rip, req_list);
+              sendReply(new byte[4], DHCPACK, id, pool, cip, rip, req_list, client_id);
               break;
             }
             //mark ip as used and send ack or nak if already in use
@@ -716,19 +747,19 @@ public class DHCP extends Thread {
                 pool.pool_hwlen[yipOffset] = hwlen;
                 System.arraycopy(req, 28, pool.pool_hwaddr[yipOffset], 0, 16);
                 if (notify != null) {
-                  notify.dhcpEvent(DHCPREQUEST, MACtoString(mac), IP4toString(yip), pxe_arch);
+                  notify.dhcpEvent(DHCPREQUEST, MACtoString(mac), IP4toString(cip), pxe_arch);
                 }
-                sendReply(addr, DHCPACK, id, pool, rip, req_list);
+                sendReply(addr, DHCPACK, id, pool, cip, rip, req_list, client_id);
               } else {
                 //send NAK
-                sendReply(addr, DHCPNAK, id, pool, rip, req_list);
+                sendReply(addr, DHCPNAK, id, pool, cip, rip, req_list, client_id);
               }
             }
             break;
           case DHCPRELEASE:
             //mark ip as unused
             if (notify != null) {
-              notify.dhcpEvent(DHCPRELEASE, MACtoString(mac), IP4toString(yip), pxe_arch);
+              notify.dhcpEvent(DHCPRELEASE, MACtoString(mac), IP4toString(cip), pxe_arch);
             }
             if (yipOffset < 0 || yipOffset >= pool.count) {
               JFLog.log("DHCP:release out of range");
@@ -781,7 +812,7 @@ public class DHCP extends Thread {
       return false;
     }
 
-    private void sendReply(byte yip[], int msgType /*offer,ack,nak*/, int id, Pool pool, int rip, byte[] req_list) {
+    private void sendReply(byte yip[], int msgType /*offer,ack,nak*/, int id, Pool pool, int cip, int rip, byte[] req_list, byte[] client_id) {
       if (debug) JFLog.log("DHCP:ReplyFor:" + IP4toString(yip) + ":" + getMsgType(msgType));
       reply = new byte[maxmtu];
       replyOffset = 0;
@@ -792,7 +823,7 @@ public class DHCP extends Thread {
       putInt(id);
       putShort((short)0);  //seconds
       putShort((short)0x8000);  //flags  (bit 15 = broadcast)
-      putInt(0);  //client IP
+      putInt(cip);  //client IP
       putByteArray(yip);  //your IP
       putIP4(pool.server_ip);  //server ip
       putInt(rip);  //relay ip
@@ -831,11 +862,9 @@ public class DHCP extends Thread {
         putByteArray(yip);  //your IP
       }
 
-      if (!pool.pxe_proxy) {
-        reply[replyOffset++] = OPT_DHCP_SERVER_IP;
-        reply[replyOffset++] = 4;
-        putIP4(pool.server_ip);
-      }
+      reply[replyOffset++] = OPT_DHCP_SERVER_IP;
+      reply[replyOffset++] = 4;
+      putIP4(pool.server_ip);
 
       if (!pool.pxe_proxy) {
         reply[replyOffset++] = OPT_RENEWAL_TIME;
@@ -853,6 +882,16 @@ public class DHCP extends Thread {
         reply[replyOffset++] = OPT_LEASE_TIME;
         reply[replyOffset++] = 4;
         putInt(pool.leaseTime);
+      }
+
+      if (pool.pxe_server != null) {
+        //send OPT_VENDOR_CLASS (60) and OPT_CLIENT_ID (97)
+        reply[replyOffset++] = OPT_VENDOR_CLASS;
+        reply[replyOffset++] = 9;
+        putByteArray("PXEClient".getBytes());
+        reply[replyOffset++] = OPT_CLIENT_ID;
+        reply[replyOffset++] = 17;
+        putByteArray(client_id);
       }
 
       if (pool.pxe_server != null && req_opt(req_list, OPT_PXE_SERVER)) {
@@ -994,7 +1033,7 @@ public class DHCP extends Thread {
     serviceStart(args);
     Runtime.getRuntime().addShutdownHook(new Thread() {
       public void run() {
-
+        serviceStop();
       }
     });
   }
@@ -1016,8 +1055,6 @@ public class DHCP extends Thread {
   }
 
   public static void serviceStop() {
-    JFLog.log("Stopping service");
-    stopping = true;
     dhcp.close();
   }
 }
