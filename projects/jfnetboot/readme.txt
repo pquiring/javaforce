@@ -7,8 +7,7 @@ Server runs on any Debian based amd64 system (recommend a VM)
 
 Provides :
   - TFTP server for the clients to load the boot system.
-  - NFS server for the root file system.
-  - Each client has persistent file caching on server.
+  - Each client has persistent file caching on server (mount overlays)
 
 Each client's connection to the NFS server maintains a cache of changed (written) files.
 This allows unlimited clients to run off of one NFS file system.
@@ -24,15 +23,7 @@ Paths:
 
 Known issues
 ------------
- - Currently a blank SD card must be left in the Pi or you get warnings that popup every 10 seconds (and flood the system logs).
-   see : https://www.raspberrypi.org/forums/viewtopic.php?t=276264
- - the RPi kernel panics a lot during boot up (usually when it first connects to the RPC service and queries ports)
-   reboot, reboot, reboot (always reboot 3 times just to be sure)
-   it's a buggy broadcom ethernet driver in linux (always seeing bcmgenet_rx_poll in the trace log)
-	 until this is resolved this project is mostly useless
  - The config.sh scripts are not compatible with Ubuntu (use Debian only)
- - The DHCP in PXE Proxy mode is not working for me.  Could be hardware issue, your milage may vary. Recommend putting PXE options into a full DHCP server.
-   Note : The DHCP server must be enabled to track clients.  Use the proxy option if needed.
 
 FAQ:
 ----
