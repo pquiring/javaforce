@@ -94,7 +94,7 @@
     <ant antfile="build-jservice.xml" inheritAll="false"/>
     <ant antfile="build-jf-monitor-dir.xml" inheritAll="false"/>
 <!--    <ant antfile="build-web.xml" inheritAll="false"/>  -->
-    <ant antfile="build-jcp.xml" inheritAll="false"/>
+    <ant antfile="build-jfcp.xml" inheritAll="false"/>
     <ant antfile="build-jmv.xml" inheritAll="false"/>
     <ant antfile="build-jrm.xml" inheritAll="false"/>
     <ant antfile="build-jfver.xml" inheritAll="false"/>

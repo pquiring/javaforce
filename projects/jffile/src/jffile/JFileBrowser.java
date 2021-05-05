@@ -1105,7 +1105,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
         }
         if (cmd.isEmpty()) return false;
         if (copy) {
-          cmd.add(0, "jcp");
+          cmd.add(0, "jfcp");
         } else if (move) {
           cmd.add(0, "jmv");
         } else {
@@ -1539,7 +1539,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
       cmd.add("jmv");
     } else if (f[0].equals("copy")) {
       //copy
-      cmd.add("jcp");
+      cmd.add("jfcp");
     } else {
       JFLog.log("Error:unknown clipboard operation=" + f[0]);
     }

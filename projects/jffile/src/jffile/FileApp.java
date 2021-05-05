@@ -1076,7 +1076,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
         }
         if (cmd.isEmpty()) return false;
         if (copy) {
-          cmd.add(0, "jcp");
+          cmd.add(0, "jfcp");
         } else if (move) {
           cmd.add(0, "jmv");
         } else {

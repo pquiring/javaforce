@@ -1,9 +1,9 @@
-<project name="jcp" default="executable" basedir=".">
-  <description>jcp</description>
+<project name="jfcp" default="executable" basedir=".">
+  <description>jfcp</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jcp"/>
+  <property name="app" value="jfcp"/>
   <property name="apptype" value="c"/>
-  <property name="cfg" value="cfg/jcp.cfg"/>
+  <property name="cfg" value="cfg/jfcp.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>
 
