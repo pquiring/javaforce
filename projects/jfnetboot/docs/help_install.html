@@ -1,0 +1,53 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfNetBoot</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfNetBoot</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+Installation:
+-------------
+
+Download the .deb file, install pre-requisites and then jfNetBoot:
+  apt install nfs-kernel-server
+  dpkg -i jfnetboot*.deb
+
+There is a repo for JavaForce packages but is not well maintained.
+
+Disable IPv6 (otherwise the web service may only listen to IPv6 sockets):
+
+  vi /etc/sysctl.conf
+    net.ipv6.conf.all.disable_ipv6 = 1
+    net.ipv6.conf.default.disable_ipv6 = 1
+    net.ipv6.conf.lo.disable_ipv6 = 1
+  reboot
+
+Then the service needs to be enabled/started:
+  systemctl enable jfnetboot
+  systemctl start jfnetboot
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfnetboot">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="http://sourceforge.net/projects/jfnetboot/files">Download</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Installation Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfnetboot">GitHub</a>
+
+</pre>
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>

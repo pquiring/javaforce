@@ -1,0 +1,60 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfNetBoot</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfNetBoot</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+Setup default filesystem for BIOS-x86 clients (type 0):
+-------------------------------------------------------
+Type these commands on the server:
+  apt install debootstrap
+  cd /var/netboot/filesystems/default-bios
+  mkdir root
+  cd root
+  debootstrap $(lsb_release -sc) .
+  echo proc /proc proc defaults 0 0 > etc/fstab
+  echo sysfs /sys sysfs defaults 0 0 >> etc/fstab
+  chroot .
+  mount -a
+  ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
+  echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
+  echo LANG=en_US.UTF-8 >> /etc/locale.conf
+  apt update
+  apt install locales
+  apt install keyboard-configuration pxelinux syslinux-common
+  apt install --no-install-recommends linux-image-amd64 firmware-linux-free
+  passwd -d root
+  exit
+  umount proc
+  umount sys
+  cp usr/lib/PXELINUX/pxelinux.0 boot/pxelinux
+  cp usr/lib/syslinux/modules/bios/* boot
+  cp boot/initrd.img-*-amd64 boot/initrd.img
+  cp boot/vmlinuz-*-amd64 boot/vmlinuz
+  cd ..
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfnetboot">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="http://sourceforge.net/projects/jfnetboot/files">Download</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Installation Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfnetboot">GitHub</a>
+
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>

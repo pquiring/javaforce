@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfNetBoot</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfNetBoot</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+Clients are based on a file system which are all read-only.
+The changes each client makes to it's file system are stored in a unique location on the server.
+As new clients connect to the service a folder is automatically created for them on the server and the default file system is assigned to them.
+
+Actions:
+--------
+<b>Edit</b>: Edit client settings, such as hostname, bootup command, etc.
+<b>Clone</b>: Clones a clients file system make it available as a file system for other new clients.
+  The client must be shutdown during a clone operaton.
+<b>Purge</b>: Deletes all files the client has changed giving it a new fresh copy of it's base file system.
+  The client must be shutdown during a purge operaton.
+  You can also rebase the client to a different file system after the purge operation.
+<b>Shutdown</b>: Shuts down the client.
+<b>Reboot</b>: Reboots the client.
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfnetboot">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="http://sourceforge.net/projects/jfnetboot/files">Download</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Installation Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfnetboot">GitHub</a>
+
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>

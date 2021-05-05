@@ -1,0 +1,59 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfNetBoot</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfNetBoot</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+Setup default filesystem for UEFI-ARM clients (type 11):
+--------------------------------------------------------
+Type these commands on the server:
+  apt install qemu qemu-user-static debootstrap
+  cd /var/netboot/filesystems/default-arm
+  mkdir root
+  cd root
+  debootstrap --arch arm64 $(lsb_release -sc) .
+  echo proc /proc proc defaults 0 0 > etc/fstab
+  echo sysfs /sys sysfs defaults 0 0 >> etc/fstab
+  cp /usr/bin/qemu-aarch64-static usr/bin
+  chroot . qemu-aarch64-static /usr/bin/bash
+  mount -a
+  ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
+  echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
+  echo LANG=en_US.UTF-8 >> /etc/locale.conf
+  apt update
+  apt install locales
+  apt install keyboard-configuration
+  apt install --no-install-recommends linux-image-arm64 firmware-linux-free
+  apt install grub-efi-arm64-bin
+  passwd -d root
+  exit
+  umount proc
+  umount sys
+  cp usr/lib/grub/arm64-efi/monolithic/grubnetaa64.efi boot/pxelinux
+  cd ..
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfnetboot">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="http://sourceforge.net/projects/jfnetboot/files">Download</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Installation Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfnetboot">GitHub</a>
+
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>

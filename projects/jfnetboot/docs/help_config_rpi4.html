@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfNetBoot</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfNetBoot</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+Configuring a Pi4 for network booting:
+--------------------------------------
+Download v1.16 release from <a href="https://github.com/pftf/RPi4">github.com/pftf/RPi4</a>
+Extract files to SD card with one FAT32 partition.
+
+Edit config.txt and setup a video mode that all your screens will support.
+Other wise if the PI boots up while the screen is off it will be in a mode that no screen supports.
+See <a href="https://www.raspberrypi.org/documentation/configuration/config-txt">Raspberry PI Config.txt</a>
+Example video mode 1360x768:
+
+  hdmi_force_hotplug=1
+  hdmi_group=2
+  hdmi_mode=39
+
+This will boot the Raspberry PI into a UEFI system to perform proper PXE Network Booting.
+You will need to press ESC to enter setup and delete all boot options except for PXE UEFI IPv4.
+
+Notes:
+
+  v1.17+ is broken (grub will print "can't send network packet")
+
+  The Raspberry PI4 does include network booting that is disabled by default, but is non-compliant.
+  It identifies itself as a BIOS-x86 system (type 0) during DHCP discovery.
+  This is probably because it is NOT UEFI but some proprietary boot process, which there is no identifier for.
+  Also the images from raspberrypi.org and raspi.debian.org will kernel panic frequenently when used for PXE booting.
+  jfNetBoot supported this custom boot process during early development but now requires the UEFI drivers instead.
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfnetboot">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="http://sourceforge.net/projects/jfnetboot/files">Download</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Installation Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfnetboot">GitHub</a>
+
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>

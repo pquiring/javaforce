@@ -1,0 +1,51 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfNetBoot</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfNetBoot</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+Configuring DHCP:
+-----------------
+The embedded DHCP server MUST be configured as either:
+  - a full DHCP server
+    - assigning IP address and PXE options
+  - a DHCP Proxy server
+    - IP address is assigned by the networks existing DHCP server
+    - the embedded DHCP server sends PXE options without an IP address to PXE clients (proxy request)
+
+In the DHCP options, the last two pools define a full DHCP server or a proxy server.
+Uncomment the pool the fits your setup and change the values as needed.
+
+pxe_server (Option 66) is required to specify the TFTP Server (jfNetBoot IP address)
+pxe_bootfile (Option 67) MUST be 'boot/pxelinux'
+
+Note:
+  - Currently due to a bug in grub, if you are using the DHCP proxy option
+    you MUST still define the pxe_server (option 66) in your networks existing DHCP server.
+  - jfNetBoot needs the DHCP information to known which client is connecting from which IP address.
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfnetboot">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="http://sourceforge.net/projects/jfnetboot/files">Download</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Installation Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfnetboot">GitHub</a>
+
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>

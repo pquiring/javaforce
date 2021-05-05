@@ -1,0 +1,57 @@
+<html>
+  <head>
+    <link rel=stylesheet href="style.css" type="text/css">
+    <title>jfNetBoot</title>
+  </head>
+  <body>
+  <div class=title>
+    <div class=title_content_center>jfNetBoot</div>
+  </div>
+  <div class=content>
+
+<pre>
+
+Preparing first client:
+-----------------------
+After your first client boots up, login as root and run /netboot/config.sh:
+  cd /netboot
+  . ./config.sh
+This script will automate the installation of required packages, config them and setup other boot up scripts.
+Installation is VERY slow, but once the thin client reboots, the startup is acceptable.
+Here you can install other packages you might need such as java or vlc which can be used by the commands.
+Then reboot and shutdown the client.
+Now from the console you can clone the client's file system (while it's shutdown) so that other clients can use the same file system.
+To allow new clients to use the new file system, change the default on the FileSystems screen.
+This allows for build once, use many.
+
+Setup for remote reboot/shutdown
+--------------------------------
+On the server you need to add an option to the ssh_config to enable the reboot/shutdown options.
+  echo PubkeyAcceptedKeyTypes +ssh-dss* >> /etc/ssh/ssh_config
+
+Setup files
+-----------
+/netboot/config.sh - installs packages, configures them and installs autostart
+/netboot/autostart - openbox autostart script (executes /netboot/command.sh)
+/netboot/command.sh - client specifc file (see Commands in web console)
+/netboot/default.html - default HTML content to display if no command is configured
+
+</pre>
+<br><br>
+
+<a href="http://sourceforge.net/projects/jfnetboot">Project Page</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="http://sourceforge.net/projects/jfnetboot/files">Download</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="help.html">Installation Help</a>
+ <img valign="center" src="/img/vr.gif" width=2 height=12>
+<a href="https://github.com/pquiring/javaforce/tree/master/projects/jfnetboot">GitHub</a>
+
+<br><br>
+
+<!--  </div>  -->
+  </body>
+</html>
+
+<script type="text/javascript" src="/style.js"></script>
+
