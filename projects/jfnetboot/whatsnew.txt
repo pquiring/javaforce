@@ -1,3 +1,6 @@
+5/5/2021 : 0.3 released
+  - fix : moved online help files to github
+
 5/4/2021 : 0.2 released
   - fix : DHCP pxe proxy mode
 
