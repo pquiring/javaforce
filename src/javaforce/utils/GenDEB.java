@@ -36,16 +36,19 @@ public class GenDEB {
     String debian_binary = "debian-binary";
 
     Runtime rt = Runtime.getRuntime();
+    int ret;
     try {
       GenPkgInfo.main(new String[] {"debian", arch, files});
       if (new File(control).exists()) {
         new File(control).delete();
       }
-      rt.exec(new String[] {"tar", "czf", control, "-C", "deb", "."}).waitFor();
+      ret = rt.exec(new String[] {"tar", "czf", control, "-C", "deb", "."}).waitFor();
+      if (ret != 0) throw new Exception("Failed to build control.tar.gz");
       if (new File(data).exists()) {
         new File(data).delete();
       }
-      rt.exec(new String[] {"tar", "cjf", data, "-T", files}).waitFor();
+      ret = rt.exec(new String[] {"tar", "cjf", data, "-T", files}).waitFor();
+      if (ret != 0) throw new Exception("Failed to build data.tar.bz2");
       if (new File(out).exists()) {
         new File(out).delete();
       }
@@ -53,7 +56,8 @@ public class GenDEB {
       bin.write("2.0\n".getBytes());
       bin.close();
       //NOTE : debian-binary MUST be listed first
-      rt.exec(new String[] {"ar", "mc", out, debian_binary, control, data}).waitFor();
+      ret = rt.exec(new String[] {"ar", "mc", out, debian_binary, control, data}).waitFor();
+      if (ret != 0) throw new Exception("Failed to build " + out);
 
       new File(debian_binary).delete();
       new File(control).delete();
