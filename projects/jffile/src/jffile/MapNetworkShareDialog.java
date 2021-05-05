@@ -322,9 +322,9 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
   private static String target, uri, link, pass;
 
   public static void main(String args[]) {
-    //usage : jmapshare server share [x:]
+    //usage : jfmapshare server share [x:]
     if (args.length < 2) {
-      System.out.println("Usage: jmapshare server share [x:] [--user=user] [--pass=pass]");
+      System.out.println("Usage: jfmapshare server share [x:] [--user=user] [--pass=pass]");
       System.out.println(" Note: DOMAINNAME and PASSWORD environment variables are used by default");
       System.exit(1);
     }

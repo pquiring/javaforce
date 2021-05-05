@@ -13,9 +13,9 @@ if [ -f logon.sh ]; then rm -f logon.sh; fi
 jfsmbget smb://$SERVER/sysvol/logon.sh
 
 #alternate method to get logon.sh
-#jmapshare $SERVER sysvol
+#jfmapshare $SERVER sysvol
 #cp ".local/mounts/sysvol@$SERVER/logon.sh" ~
-#junmapshare $SERVER sysvol
+#jfunmapshare $SERVER sysvol
 
 if [ -f logon.sh ]; then
   chmod +x logon.sh
