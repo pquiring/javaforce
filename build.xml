@@ -90,7 +90,7 @@
 <!--    <ant antfile="build-findreplace.xml" inheritAll="false"/>  -->
     <ant antfile="build-pngalpha.xml" inheritAll="false"/>
     <ant antfile="build-jf-update-desktop-database.xml" inheritAll="false"/>
-    <ant antfile="build-jsmbget.xml" inheritAll="false"/>
+    <ant antfile="build-jfsmbget.xml" inheritAll="false"/>
     <ant antfile="build-jfservice.xml" inheritAll="false"/>
     <ant antfile="build-jf-monitor-dir.xml" inheritAll="false"/>
 <!--    <ant antfile="build-web.xml" inheritAll="false"/>  -->

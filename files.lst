@@ -10,7 +10,7 @@
 /usr/bin/jfsudo
 /usr/bin/jfsudo-ask
 /usr/bin/jfopen
-/usr/bin/jsmbget
+/usr/bin/jfsmbget
 /usr/bin/jfservice
 /usr/bin/jfshare
 /usr/bin/jfcp
