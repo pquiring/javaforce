@@ -159,7 +159,7 @@ public class ConfigPanel extends Panel {
     Button help = new Button("Help");
     opts.add(help);
     help.addClickListener( (MouseEvent me, Component c) -> {
-      c.getClient().openURL("http://jfnetboot.sf.net/help_filesystems.php");
+      c.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfnetboot/docs/help_filesystems.html");
     });
     //default file system
     Row row1 = new Row();
@@ -251,7 +251,7 @@ public class ConfigPanel extends Panel {
     Button help = new Button("Help");
     opts.add(help);
     help.addClickListener( (MouseEvent me, Component c) -> {
-      c.getClient().openURL("http://jfnetboot.sf.net/help_clients.php");
+      c.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfnetboot/docs/help_clients.html");
     });
     Label status = new Label("");
     opts.add(status);
@@ -458,7 +458,7 @@ public class ConfigPanel extends Panel {
     Button help = new Button("Help");
     opts.add(help);
     help.addClickListener( (MouseEvent me, Component c) -> {
-      c.getClient().openURL("http://jfnetboot.sf.net/help_commands.php");
+      c.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfnetboot/docs/help_commands.html");
     });
     //list commands : [Edit] [Delete]
     Command[] cmds = Commands.getCommands();
@@ -527,7 +527,7 @@ public class ConfigPanel extends Panel {
     Button help = new Button("Help");
     opts.add(help);
     help.addClickListener( (MouseEvent me, Component c) -> {
-      c.getClient().openURL("http://jfnetboot.sf.net/help_dhcp.php");
+      c.getClient().openURL("https://pquiring.github.io/javaforce/projects/jfnetboot/docs/help_dhcp.html");
     });
     String dhcp_config_file = JF.getConfigPath() + "/jfdhcp.cfg";
     String dhcp_config = null;
