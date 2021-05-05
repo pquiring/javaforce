@@ -48,6 +48,7 @@ public class ExecGraal implements ShellProcessListener {
       cmd.add("-H:ResourceConfigurationFiles=" + app_res);
     }
 //    cmd.add("-H:Log=registerResource");
+//    cmd.add("-H:+TraceNativeToolUsage");
     cmd.add("--shared");
     cmd.add("--enable-all-security-services");
     cmd.add("--allow-incomplete-classpath");
