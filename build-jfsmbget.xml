@@ -1,9 +1,9 @@
-<project name="jsmbget" default="executable" basedir=".">
-  <description>jsmbget</description>
+<project name="jfsmbget" default="executable" basedir=".">
+  <description>jfsmbget</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jsmbget"/>
+  <property name="app" value="jfsmbget"/>
   <property name="apptype" value="c"/>
-  <property name="cfg" value="cfg/jsmbget.cfg"/>
+  <property name="cfg" value="cfg/jfsmbget.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>
 
