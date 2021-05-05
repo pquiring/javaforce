@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 32.1
+Version 32.2
 
 What is it?
 ===========
@@ -124,5 +124,3 @@ pquiring@gmail.com
 Web : pquiring.github.io/javaforce
 
 Git : github.com/pquiring/javaforce
-
-Released : May 4, 2021
