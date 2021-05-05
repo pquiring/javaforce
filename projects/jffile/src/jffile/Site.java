@@ -1244,7 +1244,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     pathTrash.mkdirs();
 //    System.out.println("mkdirs:" + pathTrash.getAbsolutePath());
     try {
-      JFileBrowser.runCmd(null, new String[] {"jmv", file.getAbsolutePath(), pathTrash.getAbsolutePath()});
+      JFileBrowser.runCmd(null, new String[] {"jfmv", file.getAbsolutePath(), pathTrash.getAbsolutePath()});
 //      System.out.println("move:" + file.getAbsolutePath() + " to " + pathTrash.getAbsolutePath());
     } catch (Exception e) {
       JFLog.log(e);

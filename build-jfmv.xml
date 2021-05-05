@@ -1,9 +1,9 @@
-<project name="jmv" default="executable" basedir=".">
-  <description>jmv</description>
+<project name="jfmv" default="executable" basedir=".">
+  <description>jfmv</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jmv"/>
+  <property name="app" value="jfmv"/>
   <property name="apptype" value="c"/>
-  <property name="cfg" value="cfg/jmv.cfg"/>
+  <property name="cfg" value="cfg/jfmv.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>
 
