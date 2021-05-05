@@ -11,7 +11,7 @@
 /usr/bin/jfsudo-ask
 /usr/bin/jfopen
 /usr/bin/jsmbget
-/usr/bin/jservice
+/usr/bin/jfservice
 /usr/bin/jfshare
 /usr/bin/jfcp
 /usr/bin/jfmv

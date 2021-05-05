@@ -91,7 +91,7 @@
     <ant antfile="build-pngalpha.xml" inheritAll="false"/>
     <ant antfile="build-jf-update-desktop-database.xml" inheritAll="false"/>
     <ant antfile="build-jsmbget.xml" inheritAll="false"/>
-    <ant antfile="build-jservice.xml" inheritAll="false"/>
+    <ant antfile="build-jfservice.xml" inheritAll="false"/>
     <ant antfile="build-jf-monitor-dir.xml" inheritAll="false"/>
 <!--    <ant antfile="build-web.xml" inheritAll="false"/>  -->
     <ant antfile="build-jfcp.xml" inheritAll="false"/>
