@@ -12,7 +12,7 @@ Provides :
 Each client's connection to the NFS server maintains a cache of changed (written) files.
 This allows unlimited clients to run off of one NFS file system.
 
-Go to http://jfnetboot.sf.net/help.php for installation help.
+Go to https://pquiring.github.io/javaforce/projects/jfnetboot/docs/help.html for installation help.
 
 Paths:
 ------
