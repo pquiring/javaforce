@@ -96,7 +96,7 @@
 <!--    <ant antfile="build-web.xml" inheritAll="false"/>  -->
     <ant antfile="build-jfcp.xml" inheritAll="false"/>
     <ant antfile="build-jfmv.xml" inheritAll="false"/>
-    <ant antfile="build-jrm.xml" inheritAll="false"/>
+    <ant antfile="build-jfrm.xml" inheritAll="false"/>
     <ant antfile="build-jfver.xml" inheritAll="false"/>
     <ant antfile="build-jfresmgr.xml" inheritAll="false"/>
   </target>

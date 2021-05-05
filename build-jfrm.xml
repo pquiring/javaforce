@@ -1,9 +1,9 @@
-<project name="jrm" default="executable" basedir=".">
-  <description>jrm</description>
+<project name="jfrm" default="executable" basedir=".">
+  <description>jfrm</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jrm"/>
+  <property name="app" value="jfrm"/>
   <property name="apptype" value="c"/>
-  <property name="cfg" value="cfg/jrm.cfg"/>
+  <property name="cfg" value="cfg/jfrm.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>
 

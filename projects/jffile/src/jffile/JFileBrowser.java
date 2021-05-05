@@ -1242,7 +1242,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     FileEntry list[] = getSelected();
     if ((list == null) || (list.length == 0)) return;
     ArrayList<String> cmd = new ArrayList<String>();
-    cmd.add("jrm");
+    cmd.add("jfrm");
     for(int a=0;a<list.length;a++) cmd.add(list[a].file);
     runCmd(this, cmd.toArray(new String[0]));
   }

@@ -1621,7 +1621,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     File file = new File(System.getenv("HOME") + "/.local/share/Trash");
     //glob files
     ArrayList<String> cmd = new ArrayList<String>();
-    cmd.add("jrm");
+    cmd.add("jfrm");
     File files[] = file.listFiles();
     if (files == null) return;
     for(int a=0;a<files.length;a++) {
