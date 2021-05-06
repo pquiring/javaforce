@@ -1424,12 +1424,14 @@ public class JF {
     return sb.toString();
   }
 
-  public static void exec(String[] cmd) {
+  /** Executes a command and returns the exit code. */
+  public static int exec(String[] cmd) {
     try {
       Process p = Runtime.getRuntime().exec(cmd);
-      p.waitFor();
+      return p.waitFor();
     } catch (Exception e) {
       JFLog.log(e);
+      return -1;
     }
   }
 }
