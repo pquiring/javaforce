@@ -82,23 +82,23 @@
     <copy file="lnxbin/jbus-client" todir="/usr/bin"/>
     <chmod file="/usr/bin/jbus-client" perm="+x"/>
 
-    <ant antfile="build-jfsudo.xml" inheritAll="false"/>
-    <ant antfile="build-jfsudo-ask.xml" inheritAll="false"/>
-    <ant antfile="build-jfopen.xml" inheritAll="false"/>
-<!--    <ant antfile="build-filesplitter.xml" inheritAll="false"/>  -->
-    <ant antfile="build-imageconvert.xml" inheritAll="false"/>
-<!--    <ant antfile="build-findreplace.xml" inheritAll="false"/>  -->
-    <ant antfile="build-pngalpha.xml" inheritAll="false"/>
-    <ant antfile="build-jf-update-desktop-database.xml" inheritAll="false"/>
-    <ant antfile="build-jfsmbget.xml" inheritAll="false"/>
-    <ant antfile="build-jfservice.xml" inheritAll="false"/>
-    <ant antfile="build-jf-monitor-dir.xml" inheritAll="false"/>
-<!--    <ant antfile="build-web.xml" inheritAll="false"/>  -->
-    <ant antfile="build-jfcp.xml" inheritAll="false"/>
-    <ant antfile="build-jfmv.xml" inheritAll="false"/>
-    <ant antfile="build-jfrm.xml" inheritAll="false"/>
-    <ant antfile="build-jfver.xml" inheritAll="false"/>
-    <ant antfile="build-jfresmgr.xml" inheritAll="false"/>
+    <ant antfile="build-jfsudo.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfsudo-ask.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfopen.xml" target="installapp" inheritAll="false"/>
+<!--    <ant antfile="build-filesplitter.xml" target="installapp" inheritAll="false"/>  -->
+    <ant antfile="build-imageconvert.xml" target="installapp" inheritAll="false"/>
+<!--    <ant antfile="build-findreplace.xml" target="installapp" inheritAll="false"/>  -->
+    <ant antfile="build-pngalpha.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jf-update-desktop-database.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfsmbget.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfservice.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jf-monitor-dir.xml" target="installapp" inheritAll="false"/>
+<!--    <ant antfile="build-web.xml" target="installapp" inheritAll="false"/>  -->
+    <ant antfile="build-jfcp.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfmv.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfrm.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfver.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfresmgr.xml" target="installapp" inheritAll="false"/>
   </target>
 
   <target name="utils" depends="jar" description="build exe for utils 64bit">

@@ -19,4 +19,8 @@
 
   <target name="jar" depends="depjars,compile" description="build jar file">
   </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+  </target>
 </project>
