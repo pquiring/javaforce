@@ -167,18 +167,45 @@ public class GenPkgInfo {
         fos.write(sb.toString().getBytes());
         fos.close();
       }
+
+      //generate deb/preinst if not present
+      if (!new File("deb/preinst").exists()) {
+        FileOutputStream fos = new FileOutputStream("deb/postinst");
+        fos.write("#!/bin/sh\n".getBytes());
+        if (new File("folders.lst").exists()) {
+          FileInputStream fis = new FileInputStream("folders.lst");
+          String[] lns = new String(fis.readAllBytes()).replaceAll("\\r", "").split("\n");
+          fis.close();
+          for(String ln : lns) {
+            ln = ln.trim();
+            if (ln.length() == 0) continue;
+            fos.write(("mkdir -p " + ln + "\n").getBytes());
+          }
+        }
+        fos.close();
+      }
+//install package here
       //generate deb/postinst if not present
       if (!new File("deb/postinst").exists()) {
         FileOutputStream fos = new FileOutputStream("deb/postinst");
         fos.write("#!/bin/sh\n".getBytes());
         fos.close();
       }
+
+      //generate deb/prerm if not present
+      if (!new File("deb/prerm").exists()) {
+        FileOutputStream fos = new FileOutputStream("deb/postinst");
+        fos.write("#!/bin/sh\n".getBytes());
+        fos.close();
+      }
+//remove package here
       //generate deb/postrm if not present
       if (!new File("deb/postrm").exists()) {
         FileOutputStream fos = new FileOutputStream("deb/postrm");
         fos.write("#!/bin/sh\n".getBytes());
         fos.close();
       }
+
       System.out.println("Debian package info created");
     } catch (Exception e) {
       e.printStackTrace();
