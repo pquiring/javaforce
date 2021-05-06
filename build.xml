@@ -85,15 +85,15 @@
     <ant antfile="build-jfsudo.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsudo-ask.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfopen.xml" target="installapp" inheritAll="false"/>
-<!--    <ant antfile="build-filesplitter.xml" target="installapp" inheritAll="false"/>  -->
+    <ant antfile="build-filesplitter.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-imageconvert.xml" target="installapp" inheritAll="false"/>
-<!--    <ant antfile="build-findreplace.xml" target="installapp" inheritAll="false"/>  -->
+    <ant antfile="build-findreplace.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-pngalpha.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jf-update-desktop-database.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsmbget.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfservice.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jf-monitor-dir.xml" target="installapp" inheritAll="false"/>
-<!--    <ant antfile="build-web.xml" target="installapp" inheritAll="false"/>  -->
+    <ant antfile="build-web.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfcp.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfmv.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfrm.xml" target="installapp" inheritAll="false"/>
