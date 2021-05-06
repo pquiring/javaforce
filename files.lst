@@ -3,8 +3,8 @@
 /usr/share/java/filters.jar
 /usr/bin/jbus-call
 /usr/bin/jbus-client
-/usr/bin/jfs
-/usr/bin/jfr
+/usr/bin/filesplitter
+/usr/bin/findreplace
 /usr/bin/pngalpha
 /usr/bin/jf-update-desktop-database
 /usr/bin/jfsudo
@@ -12,10 +12,10 @@
 /usr/bin/jfopen
 /usr/bin/jfsmbget
 /usr/bin/jfservice
-/usr/bin/jfshare
+/usr/bin/web
 /usr/bin/jfcp
 /usr/bin/jfmv
 /usr/bin/jfrm
 /usr/bin/jfver
-/usr/bin/jimgconvert
+/usr/bin/imageconvert
 /usr/lib/jfnative64.so
