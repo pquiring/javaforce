@@ -51,7 +51,7 @@ public class GitRepo {
   private static boolean same(String p1, String p2) {
     int i1 = p1.indexOf(d1);
     if (i1 == -1) return false;
-    int i2 = p1.indexOf(d1);
+    int i2 = p2.indexOf(d1);
     if (i2 == -1) return false;
     return p1.substring(0, i1).equals(p2.substring(0, i2));
   }
