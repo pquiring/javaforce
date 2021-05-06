@@ -41,7 +41,6 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
     <copy file="jfapps.jar" todir="/usr/share/java"/>
     <copy file="jfapps.desktop" todir="/usr/share/applications"/>
     <copy file="jfapps.png" todir="/usr/share/icons/hicolor/48x48/apps"/>

@@ -57,7 +57,7 @@
             IgnoreFailure="yes"
             Profile="all" />
         </File>
-        <File Id="jfpbxcore.jar" Source="jfpbxcore.jar"/>
+        <File Id="jfpbx.jar" Source="jfpbx.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="bouncycastle.jar" Source="bouncycastle.jar"/>
         <ServiceInstall Id="ServiceInstaller"

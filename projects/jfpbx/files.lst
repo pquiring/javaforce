@@ -1,11 +1,6 @@
-/lib/systemd/system/jfpbxlite.service
-/usr/share/jfhelp/jfpbxlite.html
-/usr/share/java/jfpbx/jfpbxcore.jar
-/usr/share/java/jfpbx/plugins/extensions.jar
-/usr/share/java/jfpbx/plugins/trunks.jar
-/usr/share/java/jfpbx/plugins/voicemail.jar
-/usr/share/java/jfpbx/plugins/ivrs.jar
-/usr/share/java/jfpbx/plugins/queues.jar
+/lib/systemd/system/jfpbx.service
+/usr/share/jfhelp/jfpbx.html
+/usr/share/java/jfpbx.jar
 /usr/share/sounds/jfpbx/en/conf-admin-left.wav
 /usr/share/sounds/jfpbx/en/conf-no-admin.wav
 /usr/share/sounds/jfpbx/en/vm-0.wav
