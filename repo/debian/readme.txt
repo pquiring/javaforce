@@ -1,7 +1,7 @@
 This is the JavaForce DEB Repository.
 
 You will need to install dpkg-dev package:
-  sudo apt-get install dpkg-dev
+  sudo apt install dpkg-dev
 
 Run gpg to create the key to sign the packages (Note:gnupg 2.1+ generates kbx files unless pubring.gpg already exists)
   mkdir ~/.gnupg
