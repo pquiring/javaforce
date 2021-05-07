@@ -1,1 +1,0 @@
-deb http://javaforce.sourceforge.net/debian/$(ARCH)/ ./

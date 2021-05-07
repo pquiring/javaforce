@@ -35,6 +35,10 @@
     <unzip src="jfcodecs-mac64.zip" dest="ffmpeg"/>
   </target>
 
+  <target name="repo" description="download repo">
+    <exec command="git clone https://github.com/pquiring/repo"/>
+  </target>
+
   <target name="depjars" depends="depnatives,glfw">
   </target>
 

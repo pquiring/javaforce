@@ -55,7 +55,7 @@ public class GenPkgInfo {
     }
   }
 
-  public String convertArch(String arch) {
+  public static String convertArch(String arch) {
     switch (arch) {
       case "x86_64": return "amd64";
       case "aarch64": return "arm64";
@@ -63,7 +63,7 @@ public class GenPkgInfo {
     return arch;
   }
 
-  public String getArch() {
+  public static String getArch() {
     String arch = System.getenv("HOSTTYPE");
     return arch;
   }
