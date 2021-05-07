@@ -8,7 +8,7 @@ package javaforce.utils;
  */
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.*;
 
 import javaforce.*;
 
@@ -20,12 +20,15 @@ public class GitRepo {
       JFLog.log("Usage: GitRepo package_ext");
       System.exit(1);
     }
+    String ext = args[0];
     //deb : app - version _ arch . deb
     //rpm : app - version - 1.arch .rpm
     //pac : app - version - arch .pkg.tar.gz
     if (args[0].equals("deb")) {
       d2 = '_';
     }
+    //git add *.ext
+    JF.exec(new String[] {"git", "add", "*." + ext});
     String[] files = new File(".").list();
     Arrays.sort(files);
     String last = null;
@@ -42,12 +45,23 @@ public class GitRepo {
       }
       last = file;
     }
+    //files were deleted - update repo
+    JF.exec(new String[] {"git", "commit" , "-m", getDate()});
     //git reflog expire --expire=now --all
     JF.exec(new String[] {"git", "reflog", "expire", "--expire=now", "--all"});
     //git gc --prune=now --aggressive
     JF.exec(new String[] {"git", "gc", "--prune=now", "--aggressive"});
     //update.sh
     JF.exec(new String[] {"bash", "update.sh"});
+  }
+
+  private static String getDate() {
+    Calendar c = Calendar.getInstance();
+    return String.format("\"%04d/%02d/%02d\"",
+      c.get(Calendar.YEAR),
+      c.get(Calendar.MONTH) + 1,
+      c.get(Calendar.DAY_OF_MONTH)
+    );
   }
 
   private static boolean same(String p1, String p2) {
@@ -85,6 +99,7 @@ public class GitRepo {
   }
 
   private static void delete(String p) {
+    new File(p).delete();
     JF.exec(new String[] {"java", "-jar", "bfg.jar", "-D", p});
   }
 }
