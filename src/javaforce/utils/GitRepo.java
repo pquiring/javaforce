@@ -46,6 +46,8 @@ public class GitRepo {
     JF.exec(new String[] {"git", "reflog", "expire", "--expire=now", "--all"});
     //git gc --prune=now --aggressive
     JF.exec(new String[] {"git", "gc", "--prune=now", "--aggressive"});
+    //update.sh
+    JF.exec(new String[] {"bash", "update.sh"});
   }
 
   private static boolean same(String p1, String p2) {
