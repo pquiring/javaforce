@@ -33,7 +33,7 @@ public class GitRepo {
     Arrays.sort(files);
     String last = null;
     for(String file : files) {
-      if (!file.endsWith(args[0])) continue;
+      if (!file.endsWith(ext)) continue;
       if (last == null) {last = file; continue;}
       if (same(last, file)) {
         if (older(last, file)) {
