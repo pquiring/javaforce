@@ -13,8 +13,10 @@ public class GenGraal {
       System.out.println("usage:GenGraal mainclass");
       System.exit(1);
     }
+    new File("META-INF/native-image/javaforce").mkdirs();
     jni(args);
     resources(args);
+    System.out.println("JavaForce graal config created");
   }
   public static void jni(String[] args) {
     StringBuilder sb = new StringBuilder();
@@ -77,13 +79,16 @@ public class GenGraal {
     sb.append("},{");
     sb.append("  \"name\" : \"javaforce.controls.ni.DAQmx\",");
     sb.append("  \"allDeclaredConstructors\" : true");
+    sb.append("},{");
+    sb.append("  \"name\" : \"java.awt.Toolkit\",");
+    sb.append("  \"allDeclaredConstructors\" : true,");
+    sb.append("  \"allDeclaredMethods\" : true");
     sb.append("}");
     sb.append("]");
     try {
-      FileOutputStream fos = new FileOutputStream("graal_jni.json");
+      FileOutputStream fos = new FileOutputStream("META-INF/native-image/javaforce/jni-config.json");
       fos.write(sb.toString().getBytes());
       fos.close();
-      System.out.println("graal_jni.json created");
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -99,10 +104,9 @@ public class GenGraal {
     sb.append("  }");
     sb.append("}");
     try {
-      FileOutputStream fos = new FileOutputStream("graal_res.json");
+      FileOutputStream fos = new FileOutputStream("META-INF/native-image/javaforce/resource-config.json");
       fos.write(sb.toString().getBytes());
       fos.close();
-      System.out.println("graal_res.json created");
     } catch (Exception e) {
       e.printStackTrace();
     }

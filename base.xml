@@ -92,21 +92,18 @@
 
   <target name="graal" if="graal" depends="jar,depjars,graal2,graal3,graal4,graal5" description="generate aot library">
     <sequential>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenGraal" fork="true">
-        <arg value="${MAINCLASS}"/>
-      </java>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ExecGraal" fork="true">
         <arg value="${CLASSPATH}"/>
         <arg value="${MAINCLASS}"/>
       </java>
-      <delete file="graal_jni.json"/>
-      <delete file="graal_res.json"/>
     </sequential>
   </target>
 
   <target name="graalagent">
     <sequential>
-      <mkdir dir="META-INF/native-image"/>
+      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenGraal" fork="true">
+        <arg value="${MAINCLASS}"/>
+      </java>
       <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ExecGraalAgent" fork="true">
         <arg value="${CLASSPATH}"/>
         <arg value="${MAINCLASS}"/>
