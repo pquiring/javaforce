@@ -860,8 +860,8 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     if ((f1 == KeyEvent.VK_F8) && (f2 == 0)) { shift_right('\t'); return; }
     if ((f1 == KeyEvent.VK_F9) && (f2 == 0)) { lowercase(); return; }
     if ((f1 == KeyEvent.VK_F10) && (f2 == 0)) { uppercase(); evt.consume(); return; }
-    if ((f1 == KeyEvent.VK_PAGE_UP) && (f2 == KeyEvent.CTRL_MASK)) { prevtab(); return; }
-    if ((f1 == KeyEvent.VK_PAGE_DOWN) && (f2 == KeyEvent.CTRL_MASK)) { nexttab(); return; }
+    if ((f1 == KeyEvent.VK_PAGE_UP) && (f2 == KeyEvent.CTRL_MASK)) { prevtab(); evt.consume(); return; }
+    if ((f1 == KeyEvent.VK_PAGE_DOWN) && (f2 == KeyEvent.CTRL_MASK)) { nexttab(); evt.consume(); return; }
     if ((f1 == KeyEvent.VK_N) && (f2 == KeyEvent.CTRL_MASK)) { addpage("untitled"); return; }
     if ((f1 == KeyEvent.VK_S) && (f2 == KeyEvent.CTRL_MASK)) { savepage(); return; }
     if ((f1 == KeyEvent.VK_Q) && (f2 == KeyEvent.CTRL_MASK)) { savepageas(); return; }
