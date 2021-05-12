@@ -77,6 +77,9 @@ public class GenGraal {
     sb.append("  \"name\" : \"javaforce.jni.LnxNative\",");
     sb.append("  \"allDeclaredConstructors\" : true");
     sb.append("},{");
+    sb.append("  \"name\" : \"javaforce.jni.Startup\",");
+    sb.append("  \"allDeclaredConstructors\" : true");
+    sb.append("},{");
     sb.append("  \"name\" : \"javaforce.controls.ni.DAQmx\",");
     sb.append("  \"allDeclaredConstructors\" : true");
     sb.append("},{");

@@ -173,6 +173,9 @@ JavaVMInitArgs *BuildArgs() {
 
   opts[nOpts++] = CreateClassPath();
   opts[nOpts++] = (char*)"-Djava.app.home=/usr/bin";
+  if (graal) {
+    opts[nOpts++] = (char*)"-Djava.home=/usr/bin";
+  }
 //  opts[nOpts++] = DetectGC();  //not supported yet
   if (strlen(xoptions) > 0) {
     char *x = xoptions;

@@ -37,8 +37,6 @@ public class ExecGraal implements ShellProcessListener {
     cmd.add(args[1].replaceAll("/", "."));  //MAINCLASS
     cmd.add("--shared");
     cmd.add("--enable-all-security-services");
-    cmd.add("--allow-incomplete-classpath");
-//    cmd.add("--verbose");
     sp.run(cmd.toArray(new String[0]), true);
   }
 
