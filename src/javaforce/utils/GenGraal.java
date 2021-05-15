@@ -82,14 +82,10 @@ public class GenGraal {
     sb.append("},{");
     sb.append("  \"name\" : \"javaforce.controls.ni.DAQmx\",");
     sb.append("  \"allDeclaredConstructors\" : true");
-    sb.append("},{");
-    sb.append("  \"name\" : \"java.awt.Toolkit\",");
-    sb.append("  \"allDeclaredConstructors\" : true,");
-    sb.append("  \"allDeclaredMethods\" : true");
     sb.append("}");
     sb.append("]");
     try {
-      FileOutputStream fos = new FileOutputStream("META-INF/native-image/javaforce/jni-config.json");
+      FileOutputStream fos = new FileOutputStream("javaforce-jni-config.json");
       fos.write(sb.toString().getBytes());
       fos.close();
     } catch (Exception e) {
@@ -107,7 +103,7 @@ public class GenGraal {
     sb.append("  }");
     sb.append("}");
     try {
-      FileOutputStream fos = new FileOutputStream("META-INF/native-image/javaforce/resource-config.json");
+      FileOutputStream fos = new FileOutputStream("javaforce-resource-config.json");
       fos.write(sb.toString().getBytes());
       fos.close();
     } catch (Exception e) {

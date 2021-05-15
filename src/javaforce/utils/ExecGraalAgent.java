@@ -29,7 +29,7 @@ public class ExecGraalAgent implements ShellProcessListener {
     sp.addListener(this);
     ArrayList<String> cmd = new ArrayList<String>();
     cmd.add("java");
-    cmd.add("-agentlib:native-image-agent=config-output-dir=META-INF/native-image");
+    cmd.add("-agentlib:native-image-agent=config-output-dir=.");
     cmd.add("-cp");
     if (JF.isWindows()) {
       cmd.add(args[0]);  //CLASSPATH
