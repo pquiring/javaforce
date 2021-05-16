@@ -3,7 +3,7 @@
   <property environment="env"/>
 
   <target name="windows" description="create windows native dll">
-    <exec command="cl /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' /I '${env.FFMPEG_HOME}' /I '../headers' windows.cpp /c /Fo: win64.obj"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '${env.FFMPEG_HOME}' /I '../headers' windows.cpp /c /Fo: win64.obj"/>
     <exec command="cl /I '../glfw/include' glfw.c /c /Fo: glfw64.obj"/>
     <exec command="cl /LD win64.obj glfw64.obj gdi32.lib user32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../jfnative64.dll"/>
     <exec command="lib /nologo /out:../jfnative64.lib win64.obj glfw64.obj"/>

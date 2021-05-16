@@ -11,5 +11,4 @@ To compile:
 
 Required environment variables:
 
-- JAVA_HOME = JDK home path
 - FFMPEG_HOME = FFMPEG home path

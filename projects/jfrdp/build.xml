@@ -52,8 +52,8 @@
   </target>
 
   <target name="native">
-    <exec command="cl /LD /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' /I headers server.cpp user32.lib ole32.lib oleaut32.lib /Fe: server64.dll"/>
-    <exec command="cl /LD /I '${env.JAVA_HOME}/include' /I '${env.JAVA_HOME}/include/win32' /I headers client.cpp user32.lib ole32.lib oleaut32.lib /Fe: client64.dll"/>
+    <exec command="cl /LD /I '${java.home}/include' /I '${java.home}/include/win32' /I headers server.cpp user32.lib ole32.lib oleaut32.lib /Fe: server64.dll"/>
+    <exec command="cl /LD /I '${java.home}/include' /I '${java.home}/include/win32' /I headers client.cpp user32.lib ole32.lib oleaut32.lib /Fe: client64.dll"/>
   </target>
 
   <target name="clean" description="deletes compiled files">
