@@ -98,7 +98,8 @@ public class GenGraal {
     sb.append("  \"resources\": {");
     sb.append("    \"includes\": [");
     sb.append("      {\"pattern\": \"javaforce/webui/static/.*\"},");
-    sb.append("      {\"pattern\": \"javaforce/icons/.*\"}");
+    sb.append("      {\"pattern\": \"javaforce/icons/.*\"},");
+    sb.append("      {\"pattern\": \".*[.]gif\"}");  //some awt bundles are missing resources
     sb.append("    ]");
     sb.append("  }");
     sb.append("}");
