@@ -14,7 +14,9 @@ public class DVRService extends Thread {
   public static ConfigService configService;
   public final static boolean debug = false;
   public static void serviceStart(String args[]) {
-    main(args);
+    if (dvrService != null) return;
+    dvrService = new DVRService();
+    dvrService.start();
   }
 
   public static void serviceStop() {
@@ -22,9 +24,12 @@ public class DVRService extends Thread {
   }
 
   public static void main(String args[]) {
-    if (dvrService != null) return;
-    dvrService = new DVRService();
-    dvrService.start();
+    serviceStart(args);
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        serviceStop();
+      }
+    });
   }
 
   public void run() {

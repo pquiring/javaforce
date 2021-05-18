@@ -26,5 +26,6 @@ public class Paths {
     JFLog.append(logsPath + "/system.log", true);
     JFLog.setRetention(5);
     JFLog.log("jfDVR starting...");
+    JFLog.log("pid=" + ProcessHandle.current().pid());
   }
 }
