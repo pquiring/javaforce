@@ -36,6 +36,8 @@ public class ExecGraal implements ShellProcessListener {
     }
     cmd.add(args[1].replaceAll("/", "."));  //MAINCLASS
     cmd.add("--shared");
+    cmd.add("--allow-incomplete-classpath");  //some apps are incomplete (jfdvr)
+    cmd.add("--no-fallback");
     cmd.add("--enable-all-security-services");
     JFLog.log("Using:javaforce-jni-config.json");
     cmd.add("-H:JNIConfigurationFiles=javaforce-jni-config.json");
