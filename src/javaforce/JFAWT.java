@@ -7,7 +7,7 @@ package javaforce;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
+import java.io.*;
 import java.lang.reflect.*;
 import java.security.*;
 import javax.swing.*;
@@ -463,7 +463,10 @@ public class JFAWT {
   /** Loads font config for graal apps. */
   public static void loadFontConfig() {
     try {
-      sun.awt.FontConfiguration.loadBinary(Class.forName("javaforce.JFAWT").getClassLoader().getResourceAsStream("fontconfig.bfc"));
+      InputStream fontconfig = Class.forName("javaforce.JFAWT").getClassLoader().getResourceAsStream("fontconfig.bfc");
+      Class<?> fontconfiguration = Class.forName("sun.awt.FontConfiguration");
+      Method mid = fontconfiguration.getMethod("loadBinary", new Class[] {InputStream.class});
+      mid.invoke(null, fontconfig);
     } catch (Exception e) {
       e.printStackTrace();
     }
