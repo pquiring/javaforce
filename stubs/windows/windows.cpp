@@ -164,13 +164,21 @@ int setJavaAppHome(JNIEnv *env, char *java_app_home) {
   name = env->NewStringUTF("java.app.home");
   value = env->NewStringUTF(java_app_home);
   env->CallStaticObjectMethod(cls, mid, name, value);
-  if (graal) {
-    env->DeleteLocalRef(name);
-    name = env->NewStringUTF("java.home");
-    env->CallStaticObjectMethod(cls, mid, name, value);
-  }
   env->DeleteLocalRef(name);
   env->DeleteLocalRef(value);
+  if (graal) {
+    name = env->NewStringUTF("java.home");
+    value = env->NewStringUTF(java_app_home);
+    env->CallStaticObjectMethod(cls, mid, name, value);
+    env->DeleteLocalRef(name);
+    env->DeleteLocalRef(value);
+
+    name = env->NewStringUTF("java.graal");
+    value = env->NewStringUTF("true");
+    env->CallStaticObjectMethod(cls, mid, name, value);
+    env->DeleteLocalRef(name);
+    env->DeleteLocalRef(value);
+  }
   return 1;
 }
 
