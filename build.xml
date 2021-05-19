@@ -63,6 +63,9 @@
         <include name="**/*.js"/>
         <include name="**/*.css"/>
       </fileset>
+      <fileset dir="${java.home}/lib">
+        <include name="*.bfc"/>
+      </fileset>
     </jar>
     <copy file="jars/javaforce.jar" todir="."/>
   </target>

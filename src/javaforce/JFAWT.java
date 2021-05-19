@@ -459,4 +459,13 @@ public class JFAWT {
       JF.sleep(1000);
     }
   }
+
+  /** Loads font config for graal apps. */
+  public static void loadFontConfig() {
+    try {
+      sun.awt.FontConfiguration.loadBinary(Class.forName("javaforce.JFAWT").getClassLoader().getResourceAsStream("fontconfig.bfc"));
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 }
