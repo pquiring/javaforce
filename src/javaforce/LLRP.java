@@ -1054,6 +1054,10 @@ public class LLRP implements LLRPEndpoint {
           }
         }
       }
+      else if (llrpm instanceof ERROR_MESSAGE) {
+        ERROR_MESSAGE msg = (ERROR_MESSAGE)llrpm;
+        //TODO : handle error message
+      }
       else {
         JFLog.log("LLRP:Unknown message:" + llrpm);
       }
