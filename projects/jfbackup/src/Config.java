@@ -11,10 +11,10 @@ import javaforce.*;
 public class Config implements Serializable {
   public static final long serialVersionUID = 1;
 
-  public static final String AppVersion = "0.21";
+  public static final String AppVersion = "0.22";
 
-  public static final String APIVersion = "V003";
-  public static final int APIVersionMin = 2;
+  public static final String APIVersion = "V004";
+  public static final int APIVersionMin = 4;
   public static final int APIVersionReadFolders = 3;
 
   public static Config current;

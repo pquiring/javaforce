@@ -63,6 +63,7 @@ public class ExecGraal implements ShellProcessListener {
       JFLog.log("Using:" + app_res);
       cmd.add("-H:ResourceConfigurationFiles=" + app_res);
     }
+//    cmd.add("-H:TempDirectory=temp");
     sp.run(cmd.toArray(new String[0]), true);
   }
 

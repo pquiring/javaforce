@@ -21,6 +21,7 @@ public class ServerClient extends Thread {
   private ArrayList<Request> queue = new ArrayList<Request>();
   private Request request;
   private int version;
+  private Reader reader;
 
   public ServerClient(Socket s) {
     this.s = s;
@@ -43,8 +44,9 @@ public class ServerClient extends Thread {
     try {
       is = s.getInputStream();
       os = s.getOutputStream();
-      host = s.getInetAddress().toString();  //temp hostname = ip address
+      host = s.getInetAddress().getHostAddress();
       port = s.getPort();
+      JFLog.log("Client : " + host + " : connecting...");
       if (!version()) {
         JFLog.log("Client : " + host + " : rejected : unsupported version");
         throw new Exception("bad client");
@@ -62,13 +64,15 @@ public class ServerClient extends Thread {
         throw new Exception("bad client");
       }
       JFLog.log("Client : " + host + ":" + port + " : accepted");
+      reader = new Reader();
+      reader.start();
       while (active) {
         if (queue.isEmpty()) {
           pingCount += 250;
           JF.sleep(250);
           if (pingCount > 60 * 1000) {
             pingCount = 0;
-            ping();
+            writeString("ping");
           }
           continue;
         }
@@ -83,37 +87,62 @@ public class ServerClient extends Thread {
           writeLength(data.length);
           os.write(data);
         }
-        switch (request.cmd) {
-          case "listvolumes":  //list volumes
-            listvolumes(request);
-            break;
-          case "mount":  //mount volume
-            mount(request);
-            break;
-          case "unmount":  //unmount volume
-            unmount(request);
-            break;
-          case "listfolder":  //list folder
-            listfolder(request);
-            break;
-          case "readfile":  //read file
-            readfile(request);
-            break;
-          case "readfolders":  //read files/folders recursively (faster)
-            readfolders(request);
-            break;
-        }
-        request = null;
       }
     } catch (Exception e) {
       JFLog.log(e);
       if (request != null) {
         request.notify.notify(null);  //signal an error
       }
-      JFLog.log("Client : " + host + " : disconnected");
-      try { s.close(); } catch (Exception e2) {}
+      if (s != null) {
+        try {s.close();} catch (Exception e2) {}
+        s = null;
+      }
     }
+    active = false;
+    JFLog.log("Client : " + host + " : disconnected");
+    try { s.close(); } catch (Exception e) {}
     BackupService.server.removeClient(this);
+  }
+  private class Reader extends Thread {
+    public void run() {
+      try {
+        while (active) {
+          int length = readLength();
+          byte[] req = read(length);
+          String cmd = new String(req);
+          switch (cmd) {
+            case "listvolumes":  //list volumes
+              listvolumes(request);
+              break;
+            case "mount":  //mount volume
+              mount(request);
+              break;
+            case "unmount":  //unmount volume
+              unmount(request);
+              break;
+            case "listfolder":  //list folder
+              listfolder(request);
+              break;
+            case "readfile":  //read file
+              readfile(request);
+              break;
+            case "readfolders":  //read files/folders recursively (faster)
+              readfolders(request);
+              break;
+            case "ping":
+              writeString("pong");
+              break;
+            case "pong":
+              break;
+          }
+          if (!cmd.equals("ping")) {
+            request = null;
+          }
+        }
+      } catch (Exception e) {
+        active = false;
+      }
+    }
   }
   private byte[] read(int size) throws Exception {
     byte[] data = new byte[size];
@@ -137,6 +166,11 @@ public class ServerClient extends Thread {
   private void writeLength64(long len) throws Exception {
     byte[] data = new byte[8];
     LE.setuint64(data, 0, len);
+    os.write(data);
+  }
+  private void writeString(String str) throws Exception {
+    byte[] data = str.getBytes("utf-8");
+    writeLength(data.length);
     os.write(data);
   }
   private int readLength() throws Exception {
@@ -168,10 +202,10 @@ public class ServerClient extends Thread {
   private boolean authenticate() throws Exception {
     MD5 md5 = new MD5();
     Random r = new Random();
-    String key = String.format("%016x", r.nextLong());
+    String key = String.format("%016x", r.nextLong());  //16 chars
     String pwd_key = Config.current.password + key;
     md5.add(pwd_key);
-    String challenge = md5.toString();
+    String challenge = md5.toString();  //32 chars
     //send password challenge
     os.write(key.getBytes());
     //read password reply
@@ -199,10 +233,6 @@ public class ServerClient extends Thread {
     host = new String(stringchars);
     ready = true;
     return true;
-  }
-  private void ping() throws Exception {
-    writeLength(0);
-    read(4);
   }
   private void listvolumes(Request req) throws Exception {
     int length = readLength();

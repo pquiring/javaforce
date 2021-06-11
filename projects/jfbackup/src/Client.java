@@ -14,6 +14,7 @@ public class Client extends Thread {
   private InputStream is;
   private OutputStream os;
   private boolean active = true;
+  private KeepAlive pinger = new KeepAlive();
 
   //status
   public static ArrayList<String> mounts = new ArrayList<String>();
@@ -31,45 +32,84 @@ public class Client extends Thread {
         if (!version()) throw new Exception("version not accepted");
         if (!authenticate()) throw new Exception("wrong password");
         sendHost();
+        JFLog.log("Connection accepted!");
+        pinger = new KeepAlive();
+        pinger.start();
         while (Status.active) {
           int length = readLength();
-          if (length == 0) {
-            writeLength(0);  //pong
-            continue;
-          }
           if (length > 11) {
             throw new Exception("bad cmd length");
           }
           byte cmd[] = read(length);
-          switch (new String(cmd)) {
-            case "listvolumes":  //list volumes
-              listvolumes();
-              break;
-            case "mount":  //mount volume
-              mount();
-              break;
-            case "unmount":  //unmount volume
-              unmount();
-              break;
-            case "listfolder":  //list folder
-              listfolder();
-              break;
-            case "readfile":  //read file
-              reading_files = true;
-              readfile();
-              reading_files = false;
-              break;
-            case "readfolders":  //read all files in folder
-              reading_files = true;
-              readfolders();
-              reading_files = false;
-              break;
+          synchronized(lock) {
+            switch (new String(cmd)) {
+              case "listvolumes":  //list volumes
+                writeString("listvolumes");
+                listvolumes();
+                break;
+              case "mount":  //mount volume
+                writeString("mount");
+                mount();
+                break;
+              case "unmount":  //unmount volume
+                writeString("unmount");
+                unmount();
+                break;
+              case "listfolder":  //list folder
+                writeString("listfolder");
+                listfolder();
+                break;
+              case "readfile":  //read file
+                writeString("readfile");
+                reading_files = true;
+                readfile();
+                reading_files = false;
+                break;
+              case "readfolders":  //read all files in folder
+                writeString("readfolders");
+                reading_files = true;
+                readfolders();
+                reading_files = false;
+                break;
+              case "ping":
+                writeString("pong");
+                break;
+              case "pong":
+                break;
+            }
           }
         }
       } catch (Exception e) {
         JFLog.log(e);
         JF.sleep(3000);  //try again in 3 seconds
         cleanMounts();
+      }
+      if (s != null) {
+        try {s.close();} catch (Exception e) {}
+        s = null;
+      }
+      if (pinger != null) {
+        try {pinger.active = false;} catch (Exception e) {}
+        pinger = null;
+      }
+    }
+  }
+  private class KeepAlive extends Thread {
+    public boolean active;
+    public void run() {
+      active = true;
+      try {
+        while(Status.active && active) {
+          //wait 60 seconds
+          for(int a=0;a<600;a++) {
+            JF.sleep(100);
+          }
+          synchronized(lock) {
+            writeString("ping");
+          }
+        }
+      } catch (Exception e) {
+        active = false;
       }
     }
   }
@@ -91,7 +131,14 @@ public class Client extends Thread {
   }
   public void close() {
     active = false;
-    try {s.close();} catch (Exception e) {}
+    if (s != null) {
+      try {s.close();} catch (Exception e) {}
+      s = null;
+    }
+    if (pinger != null) {
+      try {pinger.active = false;} catch (Exception e) {}
+      pinger = null;
+    }
   }
   private byte[] read(int size) throws Exception {
     byte[] data = new byte[size];
@@ -115,13 +162,14 @@ public class Client extends Thread {
     return true;
   }
   private boolean authenticate() throws Exception {
-    byte key[] = read(16);
+    JFLog.log("Authenticating");
+    byte key[] = read(16);  //16 chars
     MD5 md5 = new MD5();
     String pwd_key = Config.current.password + new String(key);
     md5.add(pwd_key);
     String response = md5.toString();
     //send password reply
-    os.write(response.getBytes());
+    os.write(response.getBytes());  //32 chars
     //read reply
     byte[] data = read(4);
     String reply = new String(data);
@@ -131,6 +179,7 @@ public class Client extends Thread {
     return false;
   }
   private void sendHost() throws Exception {
+    JFLog.log("Sending host");
     writeLength(Config.current.this_host.length());
     os.write(Config.current.this_host.getBytes());
   }
