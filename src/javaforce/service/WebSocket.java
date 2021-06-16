@@ -8,7 +8,9 @@ package javaforce.service;
  */
 
 import java.io.*;
-import javaforce.JFLog;
+import java.net.*;
+
+import javaforce.*;
 
 public class WebSocket {
   protected InputStream is;
@@ -16,6 +18,7 @@ public class WebSocket {
   protected String url;
 
   private boolean connected = true;
+  private String host;
 
   public static final int TYPE_CONT = 0x0;  //do not use
   public static final int TYPE_TEXT = 0x1;
@@ -27,6 +30,10 @@ public class WebSocket {
 
   public static final int FIN = 0x80;
   public static final int MASK = 0x80;
+
+  public WebSocket(String host) {
+    this.host = host;
+  }
 
   /** Free to use data */
   public Object userobj;
@@ -79,6 +86,9 @@ public class WebSocket {
         os.write(header);
       }
       os.write(msg);
+    } catch (SocketException e) {
+      connected = false;
+      JFLog.log("WebSocket closed:" + host);
     } catch (Exception e) {
       connected = false;
       JFLog.log(e);

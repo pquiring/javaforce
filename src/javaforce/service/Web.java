@@ -95,7 +95,7 @@ public class Web {
             req.fields0 = req.fields[0].split(" ");
             req.init(res);
             if (isWebSocketRequest(req)) {
-              WebSocket socket = new WebSocket();
+              WebSocket socket = new WebSocket(s.getInetAddress().getHostAddress());
               socket.is = is;
               socket.os = res.os;
               socket.url = req.fields0[1];
