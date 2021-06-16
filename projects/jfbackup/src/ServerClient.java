@@ -89,7 +89,7 @@ public class ServerClient extends Thread {
         }
       }
     } catch (Exception e) {
-      JFLog.log(e);
+      JFLog.log("Client : " + host + ":" + e);
       if (request != null) {
         request.notify.notify(null);  //signal an error
       }
@@ -110,33 +110,37 @@ public class ServerClient extends Thread {
           int length = readLength();
           byte[] req = read(length);
           String cmd = new String(req);
+          JFLog.log("Client : " + host + " : Command=" + cmd);
           switch (cmd) {
             case "listvolumes":  //list volumes
               listvolumes(request);
+              request = null;
               break;
             case "mount":  //mount volume
               mount(request);
+              request = null;
               break;
             case "unmount":  //unmount volume
               unmount(request);
+              request = null;
               break;
             case "listfolder":  //list folder
               listfolder(request);
+              request = null;
               break;
             case "readfile":  //read file
               readfile(request);
+              request = null;
               break;
             case "readfolders":  //read files/folders recursively (faster)
               readfolders(request);
+              request = null;
               break;
             case "ping":
               writeString("pong");
               break;
             case "pong":
               break;
-          }
-          if (!cmd.equals("ping")) {
-            request = null;
           }
         }
       } catch (Exception e) {

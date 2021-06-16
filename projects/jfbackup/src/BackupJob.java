@@ -462,7 +462,7 @@ public class BackupJob extends Thread {
     log("Unmount:" + jobvol.host + ":" + jobvol.volume);
     ServerClient client = getClient(jobvol);
     if (client == null) {
-      JFLog.log("Error:unmountValue:Client disconnected!");
+      JFLog.log("Error:unmountVolume:Client disconnected!");
       return false;
     }
     Object lock = new Object();

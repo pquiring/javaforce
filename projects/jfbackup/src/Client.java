@@ -40,9 +40,11 @@ public class Client extends Thread {
           if (length > 11) {
             throw new Exception("bad cmd length");
           }
-          byte cmd[] = read(length);
+          byte req[] = read(length);
+          String cmd = new String(req);
+          JFLog.log("Request=" + cmd);
           synchronized(lock) {
-            switch (new String(cmd)) {
+            switch (cmd) {
               case "listvolumes":  //list volumes
                 writeString("listvolumes");
                 listvolumes();
