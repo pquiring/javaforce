@@ -1,4 +1,4 @@
-June 9/2021 : 0.22 released
+June 23/2021 : 0.22 released
   - fix : connection issues (added ping client->server)
         : this required changes to API so older versions are not supported
         : all servers/clients MUST be upgraded

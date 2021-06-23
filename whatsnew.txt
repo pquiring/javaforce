@@ -1,5 +1,9 @@
 What's new...
 
+Jun 23/2021 : JF 32.3 released
+  - jfBackup/0.22
+    - fix connection issues
+
 May 5/2021 : JF 32.2 released
   - jfNetBoot/0.3
     - moved online help files to github
