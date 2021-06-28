@@ -1,5 +1,7 @@
 #include <windows.h>
+#ifndef _NTDDTAPE_
 #include <ntddtape.h>
+#endif
 
 #include <objbase.h>
 #include <dshow.h>
@@ -92,8 +94,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_gl_GL_glInit
 
 #ifdef __GNUC__
   //define missing from Mingw headers
-  DEFINE_GUID(CLSID_SampleGrabber, 0xc1f400a0, 0x3f08, 0x11d3, 0x9f,0x0b, 0x00,0x60,0x08,0x03,0x9e,0x37);
-  DEFINE_GUID(CLSID_NullRenderer , 0xc1f400a4, 0x3f08, 0x11d3, 0x9f,0x0b, 0x00,0x60,0x08,0x03,0x9e,0x37);
+//  DEFINE_GUID(CLSID_SampleGrabber, 0xc1f400a0, 0x3f08, 0x11d3, 0x9f,0x0b, 0x00,0x60,0x08,0x03,0x9e,0x37);
+//  DEFINE_GUID(CLSID_NullRenderer , 0xc1f400a4, 0x3f08, 0x11d3, 0x9f,0x0b, 0x00,0x60,0x08,0x03,0x9e,0x37);
 #endif
 
 #define MAX_NUM_CAMERAS 32
@@ -1318,7 +1320,7 @@ static int listType(HANDLE dev, _ELEMENT_TYPE type, const char* name) {
     if (status.ExceptionCode == ERROR_SLOT_NOT_PRESENT) break;
     BOOL hasTape = (status.Flags & ELEMENT_STATUS_FULL) != 0;
     BOOL noLabel = (status.ExceptionCode & ERROR_LABEL_UNREADABLE) != 0;
-    char* label = NULL;
+    const char* label = NULL;
     if (hasTape) {
       //trim barcode
       char *barcode = (char*)status.PrimaryVolumeID;

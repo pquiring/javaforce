@@ -1,5 +1,7 @@
 #ifdef _M_AMD64  //Microsoft VC++
-  #define __amd64__
+  #ifndef __amd64__
+    #define __amd64__
+  #endif
 #endif
 
 #ifdef __amd64__
