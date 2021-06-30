@@ -1739,6 +1739,19 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Server=" + Config.current.server_host));
     panel.add(row);
 
+    row = new Row();
+    Button unmount = new Button("Unmount Drives");
+    row.add(unmount);
+    unmount.addClickListener((MouseEvent me, Component c) -> {
+      new Thread() {
+        public void run() {
+          Client.cleanMounts();
+        }
+      }.start();
+      msg.setText("Unmount started, see status page.");
+    });
+    panel.add(row);
+
     return panel;
   }
 

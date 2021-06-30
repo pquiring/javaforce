@@ -80,6 +80,9 @@ public class ServerClient extends Thread {
           request = queue.remove(0);
         }
         pingCount = 0;
+        if (!request.cmd.startsWith("p")) {
+          JFLog.log("Client : " + host + " : Send Command=" + request.cmd);
+        }
         writeLength(request.cmd.length());
         os.write(request.cmd.getBytes());
         if (request.arg != null) {
@@ -110,7 +113,9 @@ public class ServerClient extends Thread {
           int length = readLength();
           byte[] req = read(length);
           String cmd = new String(req);
-          JFLog.log("Client : " + host + " : Command=" + cmd);
+          if (!cmd.startsWith("p")) {
+            JFLog.log("Client : " + host + " : Received Command=" + cmd);
+          }
           switch (cmd) {
             case "listvolumes":  //list volumes
               listvolumes(request);

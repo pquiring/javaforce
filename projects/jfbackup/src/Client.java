@@ -13,6 +13,7 @@ public class Client extends Thread {
   private Socket s;
   private InputStream is;
   private OutputStream os;
+  private String host;
   private boolean active = true;
   private KeepAlive pinger = new KeepAlive();
 
@@ -22,6 +23,7 @@ public class Client extends Thread {
   public static boolean reading_files;
 
   public void run() {
+    host = Config.current.this_host;
     cleanMounts();
     while (Status.active && active) {
       try {
@@ -42,7 +44,9 @@ public class Client extends Thread {
           }
           byte req[] = read(length);
           String cmd = new String(req);
-          JFLog.log("Request=" + cmd);
+          if (!cmd.startsWith("p")) {
+            JFLog.log("Client : " + host + " : Received Command=" + cmd);
+          }
           synchronized(lock) {
             switch (cmd) {
               case "listvolumes":  //list volumes
@@ -273,7 +277,7 @@ public class Client extends Thread {
       }
     }
   }
-  private void cleanMounts() {
+  public static void cleanMounts() {
     //remove old mount if exists
     if (new File(Paths.vssPath).exists()) {
       VSS.unmountShadow(Paths.vssPath);

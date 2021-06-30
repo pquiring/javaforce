@@ -11,7 +11,7 @@ import javaforce.*;
 public class Config implements Serializable {
   public static final long serialVersionUID = 1;
 
-  public static final String AppVersion = "0.22";
+  public static final String AppVersion = "0.23";
 
   public static final String APIVersion = "V004";
   public static final int APIVersionMin = 4;
