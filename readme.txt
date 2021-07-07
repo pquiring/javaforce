@@ -101,7 +101,8 @@ Requirements
     - the native launchers select garbage collectors only available on JDK15 or better
   - ANT 1.9.8+
   - Windows : VisualC++ compiler (64bit)
-  - FFMpeg 4.2+ sources(headers) + shared libraries
+  - FFMpeg 4.2+ sources(headers) + shared libraries (license : various)
+  - glfw for OpenGL support (http://github.com/glfw/glfw) (license : zlib/libpng)
 
 License
 =======
