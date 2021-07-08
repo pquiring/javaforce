@@ -1,3 +1,7 @@
+June 30/2021 : 0.23 released
+  - new : added button to unmount drives on client side
+  - fix : improve logging
+
 June 23/2021 : 0.22 released
   - fix : connection issues (added ping client->server)
         : this required changes to API so older versions are not supported
