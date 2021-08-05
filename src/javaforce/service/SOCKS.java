@@ -37,34 +37,69 @@ public class SOCKS extends Thread {
 
   private ServerSocket ss;
   private volatile boolean active;
-  private static ArrayList<Session> sessions = new ArrayList<Session>();
+  private static ArrayList<SocksWorker> socks_workers = new ArrayList<SocksWorker>();
+  private static ArrayList<ForwardWorker> forward_workers = new ArrayList<ForwardWorker>();
   private static Object lock = new Object();
   private static boolean socks4 = true, socks5 = false;
-  private int port = 1080;
+  private IP4Port bind = new IP4Port();
   private boolean secure = false;
   private static ArrayList<String> user_pass_list;
   private static ArrayList<Subnet> subnet_list;
+  private static ArrayList<Forward> forward_list;
 
   public SOCKS() {
   }
 
   public SOCKS(int port, boolean secure) {
-    this.port = port;
+    bind.port = port;
     this.secure = secure;
   }
 
   private static class IP4 {
     public short[] ip = new short[4];
-    public boolean set(String str) {
+    public boolean setIP(String str) {
       String[] ips = str.split("[.]");
-      if (ips.length != 4) return false;
+      if (ips.length != 4) {
+        JFLog.log("invalid ip:" + str);
+        return false;
+      }
       for(int a=0;a<4;a++) {
         ip[a] = Short.valueOf(ips[a]);
       }
       return true;
     }
-    public String toString() {
+    public InetAddress toInetAddress() {
+      try {
+        return InetAddress.getByName(toIP4String());
+      } catch (Exception e) {
+        JFLog.log("Error:IP4.toInetAddress() failed:" + toIP4String());
+        return null;
+      }
+    }
+    private String toIP4String() {
       return String.format("%d.%d.%d.%d", ip[0] & 0xff, ip[1] & 0xff, ip[2] & 0xff, ip[3] & 0xff);
+    }
+    public String toString() {
+      return toIP4String();
+    }
+  }
+
+  private static class IP4Port extends IP4 {
+    public int port;
+    public boolean setPort(String str) {
+      port = JF.atoi(str);
+      if (port < 1 || port > 65535) {
+        JFLog.log("invalid port:" + port);
+        port = -1;
+        return false;
+      }
+      return true;
+    }
+    public InetSocketAddress toInetSocketAddress() {
+      return new InetSocketAddress(toInetAddress(), port);
+    }
+    public String toString() {
+      return super.toString() + ":" + port;
     }
   }
 
@@ -93,20 +128,46 @@ public class SOCKS extends Thread {
     }
   }
 
+  private static class Forward {
+    public IP4Port from = new IP4Port();
+    public IP4Port to = new IP4Port();
+    public boolean set_from(String ip_port) {
+      int idx = ip_port.indexOf(':');
+      if (idx == -1) return false;
+      String ip = ip_port.substring(0, idx);
+      String port = ip_port.substring(idx+1);
+      if (!from.setIP(ip)) return false;
+      if (!from.setPort(port)) return false;
+      return true;
+    }
+    public boolean set_to(String ip_port) {
+      int idx = ip_port.indexOf(':');
+      if (idx == -1) return false;
+      String ip = ip_port.substring(0, idx);
+      String port = ip_port.substring(idx+1);
+      if (!to.setIP(ip)) return false;
+      if (!to.setPort(port)) return false;
+      return true;
+    }
+    public String toString() {
+      return from.toString() + " -> " + to.toString();
+    }
+  }
+
   public void addUserPass(String user, String pass) {
     String user_pass = user + ":" + pass;
     user_pass_list.add(user_pass);
   }
 
-  public static void addSession(Session sess) {
+  public static void addSession(SocksWorker sess) {
     synchronized(lock) {
-      sessions.add(sess);
+      socks_workers.add(sess);
     }
   }
 
-  public static void removeSession(Session sess) {
+  public static void removeSession(SocksWorker sess) {
     synchronized(lock) {
-      sessions.remove(sess);
+      socks_workers.remove(sess);
     }
   }
 
@@ -117,6 +178,7 @@ public class SOCKS extends Thread {
   public void run() {
     JFLog.append(JF.getLogPath() + "/jfsocks.log", true);
     JFLog.setRetention(30);
+    JFLog.log("jfSocks starting...");
     try {
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());
@@ -132,14 +194,20 @@ public class SOCKS extends Thread {
         } else {
           JFLog.log("Warning:Server SSL Keys not generated!");
         }
-        ss = JF.createServerSocketSSL(port, keys);
+        ss = JF.createServerSocketSSL(keys);
       } else {
-        ss = new ServerSocket(port);
+        ss = new ServerSocket();
       }
+      ss.bind(bind.toInetSocketAddress());
       active = true;
+      for(Forward f : forward_list) {
+        ForwardWorker fw = new ForwardWorker(f);
+        fw.start();
+        forward_workers.add(fw);
+      }
       while (active) {
         Socket s = ss.accept();
-        Session sess = new Session(s);
+        SocksWorker sess = new SocksWorker(s);
         addSession(sess);
         sess.start();
       }
@@ -152,11 +220,17 @@ public class SOCKS extends Thread {
     active = false;
     try { ss.close(); } catch (Exception e) {}
     synchronized(lock) {
-      Session[] list = sessions.toArray(new Session[0]);
-      for(int a=0;a<list.length;a++) {
-        list[a].close();
+      SocksWorker[] socks = socks_workers.toArray(new SocksWorker[0]);
+      for(SocksWorker s : socks) {
+        s.close();
       }
-      sessions.clear();
+      socks_workers.clear();
+
+      ForwardWorker[] forwards = forward_workers.toArray(new ForwardWorker[0]);
+      for(ForwardWorker f : forwards) {
+        f.close();
+      }
+      forward_workers.clear();
     }
   }
 
@@ -165,18 +239,23 @@ public class SOCKS extends Thread {
   private final static String defaultConfig
     = "[global]\n"
     + "port=1080\n"
+    + "#bind=192.168.100.2\n"
     + "secure=false\n"
     + "socks4=true\n"
     + "socks5=false\n"
     + "#auth=user:pass\n"
-    + "#ipnet=192.168.0.0/255.255.255.0\r\n"
-    + "#ip=192.168.5.6\r\n";
+    + "#ipnet=192.168.0.0/255.255.255.0\n"
+    + "#ip=192.168.5.6\n"
+    + "#forward=192.168.100.2:80,192.168.200.2:80\n";
 
   private void loadConfig() {
     JFLog.log("loadConfig");
     user_pass_list = new ArrayList<String>();
     subnet_list = new ArrayList<Subnet>();
+    forward_list = new ArrayList<Forward>();
     Section section = Section.None;
+    bind.setIP("0.0.0.0");  //bind to all interfaces
+    bind.port = 1080;
     try {
       BufferedReader br = new BufferedReader(new FileReader(getConfigFile()));
       StringBuilder cfg = new StringBuilder();
@@ -201,7 +280,13 @@ public class SOCKS extends Thread {
           case Global:
             switch (key) {
               case "port":
-                port = Integer.valueOf(ln.substring(5));
+                bind.port = Integer.valueOf(ln.substring(5));
+                break;
+              case "bind":
+                if (!bind.setIP(value)) {
+                  JFLog.log("SOCKS:bind:Invalid IP:" + value);
+                  break;
+                }
                 break;
               case "secure":
                 secure = value.equals("true");
@@ -224,11 +309,11 @@ public class SOCKS extends Thread {
                 }
                 String ip = value.substring(0, idx);
                 String mask = value.substring(idx + 1);
-                if (!subnet.ip.set(ip)) {
+                if (!subnet.ip.setIP(ip)) {
                   JFLog.log("SOCKS:Invalid IP:" + ip);
                   break;
                 }
-                if (!subnet.mask.set(mask)) {
+                if (!subnet.mask.setIP(mask)) {
                   JFLog.log("SOCKS:Invalid netmask:" + mask);
                   break;
                 }
@@ -239,14 +324,32 @@ public class SOCKS extends Thread {
               }
               case "ip": {
                 Subnet subnet = new Subnet();
-                if (!subnet.ip.set(value)) {
+                if (!subnet.ip.setIP(value)) {
                   JFLog.log("SOCKS:Invalid IP:" + value);
                   break;
                 }
-                subnet.mask.set("255.255.255.255");
+                subnet.mask.setIP("255.255.255.255");
                 JFLog.log("Allow IP Address=" + subnet.toString());
                 subnet.maskIP();
                 subnet_list.add(subnet);
+                break;
+              }
+              case "forward": {
+                String[] p = value.split(",");
+                if (p.length != 2) {
+                  JFLog.log("forward:Invalid option:" + value);
+                  break;
+                }
+                Forward forward = new Forward();
+                if (!forward.set_from(p[0])) {
+                  JFLog.log("forward:Invalid from:" + p[0]);
+                  break;
+                }
+                if (!forward.set_to(p[1])) {
+                  JFLog.log("forward:Invalid to:" + p[1]);
+                  break;
+                }
+                forward_list.add(forward);
                 break;
               }
             }
@@ -258,7 +361,6 @@ public class SOCKS extends Thread {
     } catch (FileNotFoundException e) {
       //create default config
       JFLog.log("config not found, creating defaults.");
-      port = 1080;
       try {
         FileOutputStream fos = new FileOutputStream(getConfigFile());
         fos.write(defaultConfig.getBytes());
@@ -275,7 +377,7 @@ public class SOCKS extends Thread {
   private static boolean ip_allowed(String ip4) {
     if (subnet_list.size() == 0) return true;
     IP4 target = new IP4();
-    if (!target.set(ip4)) return false;
+    if (!target.setIP(ip4)) return false;
     for(Subnet net : subnet_list) {
       if (net.matches(target)) {
         return true;
@@ -284,7 +386,7 @@ public class SOCKS extends Thread {
     return false;
   }
 
-  public static class Session extends Thread {
+  public static class SocksWorker extends Thread {
     private Socket c;
     private Socket o;
     private ProxyData pd1, pd2;
@@ -293,7 +395,7 @@ public class SOCKS extends Thread {
     private OutputStream cos = null;
     private byte[] req = new byte[1500];
     private int reqSize = 0;
-    public Session(Socket s) {
+    public SocksWorker(Socket s) {
       c = s;
     }
     public void close() {
@@ -320,7 +422,7 @@ public class SOCKS extends Thread {
         //read request
         while (c.isConnected()) {
           int read = cis.read(req, reqSize, 1500 - reqSize);
-          if (read < 0) throw new Exception("bad read");
+          if (read < 0) break;
           reqSize += read;
           if (reqSize == 0) continue;
           if (req[0] == 0x04) {
@@ -359,7 +461,7 @@ public class SOCKS extends Thread {
           default: throw new Exception("bad request:not SOCKS4/5 request");
         }
       } catch (Exception e) {
-        JFLog.log(e);
+        if (!(e instanceof SocketException)) JFLog.log(e);
         if (!connected) {
           byte[] reply = new byte[8];
           reply[0] = 0x00;
@@ -405,9 +507,9 @@ public class SOCKS extends Thread {
       reply[1] = 0x5a;  //success
       cos.write(reply);
       //now just proxy data back and forth
-      pd1 = new ProxyData(c,o,"1");
+      pd1 = new ProxyData(c,o,"s4-1");
       pd1.start();
-      pd2 = new ProxyData(o,c,"2");
+      pd2 = new ProxyData(o,c,"s4-2");
       pd2.start();
       pd1.join();
       pd2.join();
@@ -435,7 +537,7 @@ public class SOCKS extends Thread {
       reqSize = 0;
       while (c.isConnected()) {
         int read = cis.read(req, reqSize, 1500 - reqSize);
-        if (read < 0) throw new Exception("bad read");
+        if (read < 0) break;
         reqSize += read;
         if (reqSize < 5) continue;
         if (req[0] != 0x01) throw new Exception("SOCKS5:invalid auth request");
@@ -462,7 +564,7 @@ public class SOCKS extends Thread {
       int toRead = 10;
       while (c.isConnected()) {
         int read = cis.read(req, reqSize, toRead - reqSize);
-        if (read < 0) throw new Exception("bad read");
+        if (read < 0) break;
         reqSize += read;
         if (reqSize < 10) continue;
         int dest_type = req[3] & 0xff;
@@ -505,13 +607,44 @@ public class SOCKS extends Thread {
       o = new Socket(dest, port);
       connected = true;
       //now just proxy data back and forth
-      pd1 = new ProxyData(c,o,"1");
+      pd1 = new ProxyData(c,o,"s5-1");
       pd1.start();
-      pd2 = new ProxyData(o,c,"2");
+      pd2 = new ProxyData(o,c,"s5-2");
       pd2.start();
       pd1.join();
       pd2.join();
       JFLog.log("SOCKS5:Session end");
+    }
+  }
+
+  public class ForwardWorker extends Thread {
+    private Forward forward;
+    private ServerSocket ss;
+    public ForwardWorker(Forward forward) {
+      this.forward = forward;
+    }
+    public void run() {
+      try {
+        ss = new ServerSocket();
+        ss.bind(forward.from.toInetSocketAddress());
+        while (active) {
+          Socket from = ss.accept();
+          try {
+            Socket to = new Socket(forward.to.toInetAddress(), forward.to.port);
+            ProxyData pd1 = new ProxyData(from, to, "f-1");
+            pd1.start();
+            ProxyData pd2 = new ProxyData(to, from, "f-2");
+            pd2.start();
+          } catch (Exception e) {
+            if (!(e instanceof SocketException)) JFLog.log(e);
+          }
+        }
+      } catch (Exception e) {
+        if (!(e instanceof SocketException)) JFLog.log(e);
+      }
+    }
+    public void close() {
+      try { ss.close(); } catch (Exception e) {}
     }
   }
 
@@ -533,7 +666,7 @@ public class SOCKS extends Thread {
         active = true;
         while (active) {
           int read = is.read(buf);
-          if (read < 0) throw new Exception("bad read:pd" + name);
+          if (read < 0) break;
           if (read > 0) {
             os.write(buf, 0, read);
           }
@@ -541,7 +674,7 @@ public class SOCKS extends Thread {
       } catch (Exception e) {
         try {sRead.close();} catch (Exception e2) {}
         try {sWrite.close();} catch (Exception e2) {}
-        JFLog.log(e);
+        if (!(e instanceof SocketException)) JFLog.log(e);
       }
     }
     public void close() {

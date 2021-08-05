@@ -1004,6 +1004,7 @@ public class JF {
     }
   }
 
+  //creates SSL socket bound to port
   public static ServerSocket createServerSocketSSL(int port, KeyMgmt keys) {
     TrustManager[] trustAllCerts = new TrustManager[] {
       new X509TrustManager() {
@@ -1023,6 +1024,35 @@ public class JF {
       ctx.init(kmf.getKeyManagers(), trustAllCerts, new SecureRandom());
       SSLServerSocketFactory sslfactory = ctx.getServerSocketFactory();  //this method will work with untrusted certs
       SSLServerSocket ssl = (SSLServerSocket) sslfactory.createServerSocket(port);
+//      ssl.setEnabledProtocols(protocols);
+//      ssl.setEnabledCipherSuites(cipher_suites);
+      return ssl;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  //creates unbound SSL socket
+  public static ServerSocket createServerSocketSSL(KeyMgmt keys) {
+    TrustManager[] trustAllCerts = new TrustManager[] {
+      new X509TrustManager() {
+        public X509Certificate[] getAcceptedIssuers() {
+          return null;
+        }
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+      }
+    };
+    // Let us create the factory where we can set some parameters for the connection
+    try {
+      SSLContext ctx = SSLContext.getInstance("TLSv1.3");
+      KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+      KeyStore ks = keys.getKeyStore();
+      kmf.init(ks, keys.getPassword());
+      ctx.init(kmf.getKeyManagers(), trustAllCerts, new SecureRandom());
+      SSLServerSocketFactory sslfactory = ctx.getServerSocketFactory();  //this method will work with untrusted certs
+      SSLServerSocket ssl = (SSLServerSocket) sslfactory.createServerSocket();
 //      ssl.setEnabledProtocols(protocols);
 //      ssl.setEnabledCipherSuites(cipher_suites);
       return ssl;
