@@ -3,7 +3,7 @@
   <!-- set global properties for this build -->
   <property name="app" value="jfsocks"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.7"/>
+  <property name="version" value="0.8"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
 
   <property name="project2" value="build-service"/>
