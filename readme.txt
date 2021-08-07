@@ -51,9 +51,8 @@ Common Ant tasks:
 compile : compile projects java files
 jar : build the projects main jar file
 depjars : copy dependant jar files into project folder
-install : install files into proper folders (Linux only)
- - requires root access : "sudo ant install"
 deb : build Debian deb file (after install)
+ - requires bzip2, binutils, sudo
 rpm : build Fedora rpm file (after install)
  - linux packaging requires files.lst and linux stub (/stubs/linux)
 msi : build Windows msi file with JRE bundled

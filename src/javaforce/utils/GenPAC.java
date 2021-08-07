@@ -63,6 +63,7 @@ public class GenPAC {
 
   public static String getArch() {
     String arch = System.getenv("HOSTTYPE");
+    if (arch == null) JFLog.log("Error:HOSTTYPE not defined");
     return arch;
   }
 

@@ -43,12 +43,12 @@ public class GenDEB {
         new File(control).delete();
       }
       ret = rt.exec(new String[] {"tar", "czf", control, "-C", "deb", "."}).waitFor();
-      if (ret != 0) throw new Exception("Failed to build control.tar.gz");
+      if (ret != 0) throw new Exception("Failed to build control.tar.gz : ret = " + ret);
       if (new File(data).exists()) {
         new File(data).delete();
       }
       ret = rt.exec(new String[] {"tar", "cjf", data, "-T", files}).waitFor();
-      if (ret != 0) throw new Exception("Failed to build data.tar.bz2");
+      if (ret != 0) throw new Exception("Failed to build data.tar.bz2 : ret = " + ret);
       if (new File(out).exists()) {
         new File(out).delete();
       }
@@ -57,7 +57,7 @@ public class GenDEB {
       bin.close();
       //NOTE : debian-binary MUST be listed first
       ret = rt.exec(new String[] {"ar", "mc", out, debian_binary, control, data}).waitFor();
-      if (ret != 0) throw new Exception("Failed to build " + out);
+      if (ret != 0) throw new Exception("Failed to build " + out + " : ret = " + ret);
 
       new File(debian_binary).delete();
       new File(control).delete();
@@ -77,6 +77,7 @@ public class GenDEB {
 
   public static String getArch() {
     String arch = System.getenv("HOSTTYPE");
+    if (arch == null) JFLog.log("Error:HOSTTYPE not defined");
     switch (arch) {
       case "x86_64": return "amd64";
       case "aarch64": return "arm64";
