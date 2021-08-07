@@ -8,7 +8,7 @@
   <property name="version" value="32.3"/>
   <property name="noelf" value="true"/>
 
-  <property name="debian.depends" value="default-jre-headless, libjsch-java, libjzlib-java, libjcifs-java, libv4l-0, desktop-file-utils"/>
+  <property name="debian.depends" value="default-jre-headless, libjsch-java, libjzlib-java, libjcifs-java, libv4l-0, desktop-file-utilsm, libxcursor1"/>
   <property name="fedora.depends" value="java-1.8.0-openjdk, jsch, jzlib, jcifs, libv4l, desktop-file-utils"/>
   <property name="arch.depends" value="jre8-openjdk, java-jsch, v4l-utils, desktop-file-utils"/>  <!-- missing jzlib jcifs -->
 

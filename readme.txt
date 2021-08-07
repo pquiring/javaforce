@@ -45,6 +45,7 @@ Building
 ========
 All projects are built with Apache Ant (http://ant.apache.org).
 Make sure to run ant in the main folder to build the /src folder and then in any of the apps in /projects.
+Do not run ant in a sudo environment, some environment variables such as HOSTTYPE are missing.
 
 Common Ant tasks:
 -----------------

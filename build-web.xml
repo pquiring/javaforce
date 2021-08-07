@@ -1,9 +1,8 @@
-<project name="web" default="graal" basedir=".">
+<project name="web" default="executable" basedir=".">
   <description>web</description>
   <!-- set global properties for this build -->
   <property name="app" value="web"/>
   <property name="apptype" value="c"/>
-  <property name="graal" value="true"/>
   <property name="cfg" value="cfg/web.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>

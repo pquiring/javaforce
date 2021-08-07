@@ -1,9 +1,8 @@
-<project name="findreplace" default="graal" basedir=".">
+<project name="findreplace" default="executable" basedir=".">
   <description>findreplace</description>
   <!-- set global properties for this build -->
   <property name="app" value="findreplace"/>
   <property name="apptype" value="c"/>
-  <property name="graal" value="true"/>
   <property name="cfg" value="cfg/findreplace.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>
