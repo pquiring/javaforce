@@ -7,6 +7,8 @@ import java.util.*;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.jni.*;
+import javaforce.media.*;
 import javaforce.voip.RTP;
 
 public class DVRService extends Thread {
@@ -33,6 +35,11 @@ public class DVRService extends Thread {
   }
 
   public void run() {
+    //setup native
+    WinNative.load();
+    //setup codecs
+    MediaCoder.init();
+    //init Paths
     Paths.init();
     //load current config
     Config.load();
