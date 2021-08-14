@@ -70,6 +70,7 @@ public class LLRP implements LLRPEndpoint {
   public void disconnect() {
     if (llrp == null) return;
     llrp.disconnect();
+    llrp = null;
   }
 
   /** Pings LLRP Controller to keep connection alive. */
