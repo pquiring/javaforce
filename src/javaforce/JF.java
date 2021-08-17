@@ -21,7 +21,7 @@ public class JF {
     return "32.3";
   }
 
-  public static final boolean isGraal = Boolean.getBoolean("com.oracle.graalvm.isaot");
+  public static final boolean isGraal = Boolean.getBoolean("java.graal");
 
   public static final boolean isGraal() {
     return isGraal;
