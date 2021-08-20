@@ -20,8 +20,6 @@
 #include "javaforce_media_MediaVideoDecoder.h"
 #include "javaforce_controls_ni_DAQmx.h"
 
-JNIEXPORT void JNICALL Java_javaforce_jni_JFNative_test (JNIEnv *, jclass) {}
-
 #ifdef __GNUC__
   #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
 #endif
@@ -320,3 +318,5 @@ JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
 #include "../common/ffmpeg.cpp"
 
 #include "../common/ni.cpp"
+
+#include "../common/jfnative.cpp"

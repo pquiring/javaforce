@@ -37,8 +37,6 @@
 #include "javaforce_controls_ni_DAQmx.h"
 #include "javaforce_media_VideoBuffer.h"
 
-JNIEXPORT void JNICALL Java_javaforce_jni_JFNative_test (JNIEnv *, jclass) {}
-
 #ifdef __arm__
   #define __RASPBERRY_PI__
 #endif
@@ -1859,3 +1857,5 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
 #ifndef __FreeBSD__
 #include "../common/ni.cpp"
 #endif
+
+#include "../common/jfnative.cpp"
