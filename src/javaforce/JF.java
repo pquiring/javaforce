@@ -22,6 +22,7 @@ public class JF {
   }
 
   public static final boolean isGraal = Boolean.getBoolean("java.graal");
+  public static final boolean useGraal = false;  //currently not working
 
   public static final boolean isGraal() {
     return isGraal;

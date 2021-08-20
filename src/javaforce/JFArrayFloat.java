@@ -9,7 +9,7 @@ package javaforce;
 
 import java.util.*;
 
-public class JFArrayFloat {
+public class JFArrayFloat extends JFArray<float[]> {
   private float buf[];
   private int count;
 
@@ -18,6 +18,7 @@ public class JFArrayFloat {
   public JFArrayFloat() {
     count = 0;
     buf = new float[initSize];
+    obtainPointer();
   }
 
   public int size() {
@@ -26,13 +27,17 @@ public class JFArrayFloat {
 
   public void clear() {
     count = 0;
-    if (buf.length != initSize) buf = new float[initSize];
+    if (buf.length != initSize) {
+      buf = new float[initSize];
+      updatePointer();
+    }
   }
 
   public void append(float f) {
     int newcount = count + 1;
     if (newcount > buf.length) {
       buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));
+      updatePointer();
     }
     buf[count] = f;
     count = newcount;
@@ -42,6 +47,7 @@ public class JFArrayFloat {
     int newcount = count + f.length;
     if (newcount > buf.length) {
       buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));
+      updatePointer();
     }
     System.arraycopy(f, 0, buf, count, f.length);
     count = newcount;

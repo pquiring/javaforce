@@ -9,7 +9,7 @@ package javaforce;
 
 import java.util.*;
 
-public class JFArrayInt {
+public class JFArrayInt extends JFArray<int[]> {
   private int buf[];
   private int count;
 
@@ -18,6 +18,7 @@ public class JFArrayInt {
   public JFArrayInt() {
     count = 0;
     buf = new int[initSize];
+    obtainPointer();
   }
 
   public int size() {
@@ -26,13 +27,17 @@ public class JFArrayInt {
 
   public void clear() {
     count = 0;
-    if (buf.length != initSize) buf = new int[initSize];
+    if (buf.length != initSize) {
+      buf = new int[initSize];
+      updatePointer();
+    }
   }
 
   public void append(int s) {
     int newcount = count + 1;
     if (newcount > buf.length) {
       buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));
+      updatePointer();
     }
     buf[count] = s;
     count = newcount;
@@ -42,6 +47,7 @@ public class JFArrayInt {
     int newcount = count + s.length;
     if (newcount > buf.length) {
       buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));
+      updatePointer();
     }
     System.arraycopy(s, 0, buf, count, s.length);
     count = newcount;

@@ -9,7 +9,7 @@ package javaforce;
 
 import java.util.*;
 
-public class JFArrayDouble {
+public class JFArrayDouble extends JFArray<double[]> {
   private double buf[];
   private int count;
 
@@ -18,6 +18,7 @@ public class JFArrayDouble {
   public JFArrayDouble() {
     count = 0;
     buf = new double[initSize];
+    obtainPointer();
   }
 
   public int size() {
@@ -26,13 +27,17 @@ public class JFArrayDouble {
 
   public void clear() {
     count = 0;
-    if (buf.length != initSize) buf = new double[initSize];
+    if (buf.length != initSize) {
+      buf = new double[initSize];
+      updatePointer();
+    }
   }
 
   public void append(double f) {
     int newcount = count + 1;
     if (newcount > buf.length) {
       buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));
+      updatePointer();
     }
     buf[count] = f;
     count = newcount;
@@ -42,6 +47,7 @@ public class JFArrayDouble {
     int newcount = count + f.length;
     if (newcount > buf.length) {
       buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));
+      updatePointer();
     }
     System.arraycopy(f, 0, buf, count, f.length);
     count = newcount;
