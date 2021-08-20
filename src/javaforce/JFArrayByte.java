@@ -82,6 +82,7 @@ public class JFArrayByte extends JFArray<byte[]> {
   Z : Fails after 1 min (deadlock)
   Shenandoah : Fails after 6 mins (OutOfMemory exception)
   OpenJ9 : Fails after 1 min (exceptions)
+  GraalVM : Fails after 6 mins (OutOfMemory)
   jfdk.sf.net : Passes
 
   */
