@@ -42,6 +42,7 @@ public class JFNative {
       } catch (Exception e) {
         e.printStackTrace();
       }
+      init(JF.isGraal);
     }
     if (JF.isWindows()) {
       WinNative.load();
@@ -119,7 +120,9 @@ public class JFNative {
   }
 
   private static native void test();
-  private static native void init();
+  private static native void init(boolean isGraal);
+  public static native int sum1(byte[] array);
+  public static native int sum2(JFArrayByte array);
 
   /** Find native libraries in folder (recursive). */
   public static boolean findLibraries(File folders[], Library libs[], String ext, int needed) {

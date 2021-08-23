@@ -88,15 +88,40 @@ public class JFArrayByte extends JFArray<byte[]> {
   */
   public static void main(String[] args) {
     javaforce.jni.JFNative.load();
+//    javaforce.jni.JFNative.init(false);
     System.out.println("isGraal = " + JF.isGraal());
     JFArrayByte[] arrs = new JFArrayByte[1024];
     Random r = new Random();
+/*
     while (true) {
       int idx = r.nextInt(1024);
       int size = r.nextInt(1024);
       arrs[idx] = new JFArrayByte();
       arrs[idx].append(new byte[size]);
       System.out.println("pointer = 0x" + Long.toString(arrs[idx].getPointer(), 16));
+    }
+*/
+    {
+      long start = System.currentTimeMillis();
+      long sum = 0;
+      byte[] array = new byte[1024];
+      for(int a=0;a<1024 * 1024;a++) {
+        sum += javaforce.jni.JFNative.sum1(array);
+      }
+      long stop = System.currentTimeMillis();
+      System.out.println("delta=" + (stop - start));
+    }
+    {
+      long start = System.currentTimeMillis();
+      long sum = 0;
+      byte[] array = new byte[1024];
+      JFArrayByte bytearray = new JFArrayByte();
+      bytearray.append(array);
+      for(int a=0;a<1024 * 1024;a++) {
+        sum += javaforce.jni.JFNative.sum2(bytearray);
+      }
+      long stop = System.currentTimeMillis();
+      System.out.println("delta=" + (stop - start));
     }
   }
 }
