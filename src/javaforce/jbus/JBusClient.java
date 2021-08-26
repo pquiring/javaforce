@@ -1,6 +1,12 @@
 package javaforce.jbus;
 
 /**
+ * JBusClient is the client side of inter-process communications (RPC).
+ *
+ * Each client has a package name in dot notation (ie: client001.example.net)
+ * The client will have methods (functions) that other clients can invoke.
+ * Arguments must be "strings" or integers (ie: "\"test\",123")
+ *
  * Created : Apr 9, 2012
  *
  * @author pquiring
@@ -25,6 +31,10 @@ public class JBusClient extends Thread {
   private boolean quiet = false;
   private int port = 777;
 
+  /** Creates new client.
+   * @param pack = client name in dot notation
+   * @param obj = object with methods to invoke for RPC calls
+   */
   public JBusClient(String pack, Object obj) {
     if ((pack == null) || (obj == null)) {
       return;
@@ -34,10 +44,12 @@ public class JBusClient extends Thread {
     cls = obj.getClass();
   }
 
+  /** Enable logging exceptions to console. */
   public void setQuiet(boolean state) {
     quiet = state;
   }
 
+  /** Set server port.  Must be called before start(). */
   public void setPort(int port) {
     this.port = port;
   }
@@ -150,10 +162,19 @@ public class JBusClient extends Thread {
     return ret.toArray();
   }
 
+  /** Invoke function in another client.
+   * @param pack = other clients name (package)
+   * @param func = method to invoke
+   * @param args = comma list of arguments to pass ("strings" or integers only)
+   */
   public boolean call(String pack, String func, String args) {
     return call(pack + "." + func + "(" + args + ")\n");
   }
 
+  /** Invoke function in another client using condensed package.function.args format.
+   * @param pfa = package.function(args)
+   * There should be no quote around args (just around strings if there are any)
+   */
   public boolean call(String pfa) {
     while (!ready) {
       readyCnt++;
@@ -171,15 +192,22 @@ public class JBusClient extends Thread {
       return false;
     }
   }
-  
+
+  /** Invoke function in all client matching package.
+   * @param pack = other clients name (package) if client.package.startsWith(pack) it will receive message
+   * @param func = method to invoke
+   * @param args = comma list of arguments to pass ("strings" or integers only)
+   */
   public boolean broadcast(String pack, String func, String args) {
     return call("cmd.broadcast=" + pack + "." + func + "(" + args + ")\n");
   }
 
+  /** Returns if client is connected to server and ready. */
   public boolean ready() {
     return ready;
   }
 
+  /** Closes connection to server. */
   public void close() {
     try {
       s.close();
@@ -188,10 +216,12 @@ public class JBusClient extends Thread {
     s = null;
   }
 
+  /** Quotes a string. */
   public static String quote(String str) {
     return "\"" + str + "\"";
   }
 
+  /** Encode a string if it contains quotes, etc. */
   public static String encodeString(String in) {
     try {
       return URLEncoder.encode(in, "UTF-8");
@@ -200,6 +230,7 @@ public class JBusClient extends Thread {
     }
   }
 
+  /** Decode a string if it contains quotes, etc. */
   public static String decodeString(String in) {
     try {
       return URLDecoder.decode(in, "UTF-8");

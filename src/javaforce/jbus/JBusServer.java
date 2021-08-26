@@ -1,6 +1,8 @@
 package javaforce.jbus;
 
 /**
+ * JBusServer is a server for inter-process communications (RPC).
+ *
  * Created : Apr 9, 2012
  *
  * @author pquiring
@@ -20,10 +22,12 @@ public class JBusServer extends Thread {
   private ServerSocket ss;
   private Object lock = new Object();
 
+  /** Create new server on port 777. */
   public JBusServer() {
     port = 777;
   }
 
+  /** Create new server on specified port. */
   public JBusServer(int port) {
     this.port = port;
   }
@@ -54,6 +58,7 @@ public class JBusServer extends Thread {
     }
   }
 
+  /** Close down server. */
   public void close() {
     if (ss == null) {
       return;
@@ -64,6 +69,11 @@ public class JBusServer extends Thread {
     } catch (Exception e) {
     }
     ss = null;
+  }
+
+  /** Returns server ready state. */
+  public boolean ready() {
+    return ready;
   }
 
   private class Client extends Thread {
@@ -121,12 +131,12 @@ public class JBusServer extends Thread {
         else if (cmd.startsWith("cmd.broadcast=")) {
           broadcast = true;
           cmd = cmd.substring(14);
-        }  
+        }
         else {
           //unknown cmd
           JFLog.log("JBus : unknown cmd:" + cmd);
-          return; 
-        }  
+          return;
+        }
       }
       //must be a remote function call
       //general format : org.package.func(args)
@@ -198,7 +208,7 @@ public class JBusServer extends Thread {
     }
     return present;
   }
-  
+
 
   public static void main(String args[]) {
     serviceStart(args);
