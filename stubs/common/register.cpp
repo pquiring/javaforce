@@ -111,6 +111,7 @@ static JNINativeMethod javaforce_media_Camera[] = {
   {"cameraInit", "()Z", (void *)&Java_javaforce_media_Camera_cameraInit},
   {"cameraUninit", "()Z", (void *)&Java_javaforce_media_Camera_cameraUninit},
   {"cameraListDevices", "()[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListDevices},
+  {"cameraListModes", "(I)[Ljava/lang/String;", (void *)&Java_javaforce_media_Camera_cameraListModes},
   {"cameraStart", "(III)Z", (void *)&Java_javaforce_media_Camera_cameraStart},
   {"cameraStop", "()Z", (void *)&Java_javaforce_media_Camera_cameraStop},
   {"cameraGetFrame", "()[I", (void *)&Java_javaforce_media_Camera_cameraGetFrame},

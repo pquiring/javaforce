@@ -9,6 +9,7 @@ package javaforce.utils;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.jni.*;
 import javaforce.media.*;
 
 public class TestCamera extends javax.swing.JFrame {
@@ -17,6 +18,7 @@ public class TestCamera extends javax.swing.JFrame {
    * Creates new form Test2
    */
   public TestCamera() {
+    JFNative.load();
     initComponents();
     setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
   }

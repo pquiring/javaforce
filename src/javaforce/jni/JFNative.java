@@ -40,7 +40,7 @@ public class JFNative {
         WordBase_rawValue = WordBase.getMethod("rawValue");
         inited = true;
       } catch (Exception e) {
-        e.printStackTrace();
+//        e.printStackTrace();
       }
     }
     if (JF.isWindows()) {

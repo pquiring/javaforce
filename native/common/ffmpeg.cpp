@@ -115,8 +115,8 @@ int (*_av_samples_alloc)(uint8_t* audio_data[],int linesize[],int nb_channels,in
 int64_t (*_av_rescale_q)(int64_t a, AVRational bq, AVRational cq);
 int (*_av_samples_get_buffer_size)(void* linesize, int chs, int samples, int sample_fmt, int align);
 int (*_av_log_set_level)(int lvl);
-void* (*_av_dict_get)(void* dict, const char* key, void* prev, int flags);
-int (*_av_dict_set)(void** dictref, const char* key, const char* value, int flags);
+void* (*_av_dict_get)(AVDictionary* dict, const char* key, void* prev, int flags);
+int (*_av_dict_set)(AVDictionary** dictref, const char* key, const char* value, int flags);
 int (*_av_frame_make_writable)(AVFrame *frame);
 int (*_av_compare_ts)(int64_t ts_a, AVRational tb_a, int64_t ts_b, AVRational tb_b);
 int (*_av_frame_get_buffer)(AVFrame *frame, int align);
@@ -1650,6 +1650,8 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
       return JNI_FALSE;
     }
   }
+  //enable DASH support
+//  (*_av_dict_set)( &ctx->fmt_ctx->metadata, "movflags", "faststart", 0);
   int ret = (*_avformat_write_header)(ctx->fmt_ctx, NULL);
   if (ret < 0) {
     printf("avformat_write_header failed! %d\n", ret);

@@ -15,6 +15,7 @@ public class Camera {
   private native boolean cameraInit();
   private native boolean cameraUninit();
   private native String[] cameraListDevices();
+  private native String[] cameraListModes(int deviceIdx);
   private native boolean cameraStart(int deviceIdx, int width, int height);
   private native boolean cameraStop();
   private native int[] cameraGetFrame();
@@ -31,6 +32,10 @@ public class Camera {
 
   public String[] listDevices() {
     return cameraListDevices();
+  }
+
+  public String[] listModes(int deviceIdx) {
+    return cameraListModes(deviceIdx);
   }
 
   public boolean start(int deviceIdx, int width, int height) {

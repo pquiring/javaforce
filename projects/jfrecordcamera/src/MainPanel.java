@@ -6,14 +6,28 @@
  */
 
 import java.io.*;
+import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.service.*;
 import javaforce.media.*;
 
 public class MainPanel extends javax.swing.JPanel implements MediaIO {
 
   public static String version = "0.9";
+  public static String file_codec = "avi";
+  public static String file_ext = ".avi";
+
+  //webm/vp9 (works)
+  public static String bc_codec = "webm";
+  public static String bc_ext = ".webm";
+  public static String bc_mime = "video/webm; codecs=\"vp9\"";
+
+  //video/mp4 (not working)
+  public static String bc_codec_mp4 = "mp4";
+  public static String bc_ext_mp4 = ".mp4";
+  public static String bc_mime_mp4 = "video/mp4; codecs=\\\"avc1.42E01E, mp4a.40.2\\\"";
 
   /**
    * Creates new form MainPanel
@@ -34,6 +48,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
 
     buttonGroup1 = new javax.swing.ButtonGroup();
     buttonGroup2 = new javax.swing.ButtonGroup();
+    buttonGroup3 = new javax.swing.ButtonGroup();
     jLabel1 = new javax.swing.JLabel();
     cameraDevices = new javax.swing.JComboBox();
     audio = new javax.swing.JRadioButton();
@@ -61,8 +76,24 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     next = new javax.swing.JButton();
     jLabel8 = new javax.swing.JLabel();
     jLabel9 = new javax.swing.JLabel();
+    protocol = new javax.swing.JComboBox<>();
+    record = new javax.swing.JRadioButton();
+    broadcast = new javax.swing.JRadioButton();
+    jLabel10 = new javax.swing.JLabel();
+    port = new javax.swing.JTextField();
+    jLabel11 = new javax.swing.JLabel();
+    segmentSecs = new javax.swing.JTextField();
+    jLabel12 = new javax.swing.JLabel();
+    resolution = new javax.swing.JComboBox<>();
+    jButton1 = new javax.swing.JButton();
 
     jLabel1.setText("Camera Device");
+
+    cameraDevices.addItemListener(new java.awt.event.ItemListener() {
+      public void itemStateChanged(java.awt.event.ItemEvent evt) {
+        cameraDevicesItemStateChanged(evt);
+      }
+    });
 
     buttonGroup1.add(audio);
     audio.setSelected(true);
@@ -139,70 +170,124 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
 
     jLabel9.setText("bits/sec");
 
+    protocol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "HTTP" }));
+
+    buttonGroup3.add(record);
+    record.setSelected(true);
+    record.setText("Record to file");
+
+    buttonGroup3.add(broadcast);
+    broadcast.setText("Broadcast ");
+
+    jLabel10.setText("Port");
+
+    port.setText("80");
+
+    jLabel11.setText("Segment Size (secs)");
+
+    segmentSecs.setText("5");
+
+    jLabel12.setText("Resolution");
+
+    resolution.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "640x480", "1280x720" }));
+
+    jButton1.setText("Refresh");
+    jButton1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton1ActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addComponent(jLabel6)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel9)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(start))
-          .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel1)
-              .addComponent(jLabel4))
-            .addGap(13, 13, 13)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-              .addComponent(cameraDevices, 0, 206, Short.MAX_VALUE)
-              .addComponent(audioDevices, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-          .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(layout.createSequentialGroup()
-                .addComponent(audio)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel7))
-              .addComponent(noaudio))
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(freq, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addGap(18, 18, 18)
-            .addComponent(mono)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(stereo))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel3)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(fps, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(stopMotion)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(next))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(timeLapse)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(seconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel2))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel5)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel8)))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addComponent(preview)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(previewVideo, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createSequentialGroup()
+                  .addComponent(jLabel6)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(jLabel9))
+                .addGroup(layout.createSequentialGroup()
+                  .addComponent(stopMotion)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                  .addComponent(next))
+                .addGroup(layout.createSequentialGroup()
+                  .addComponent(timeLapse)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(seconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(jLabel2))
+                .addGroup(layout.createSequentialGroup()
+                  .addComponent(jLabel5)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(jLabel8))
+                .addGroup(layout.createSequentialGroup()
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                      .addComponent(jLabel3)
+                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                      .addComponent(fps, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                      .addComponent(jLabel12)
+                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                      .addComponent(resolution, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                      .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                          .addComponent(audio)
+                          .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                          .addComponent(jLabel7))
+                        .addComponent(noaudio))
+                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                      .addComponent(freq, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                      .addGap(18, 18, 18)
+                      .addComponent(mono)))
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                  .addComponent(stereo)))
+              .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                  .addComponent(jLabel1)
+                  .addComponent(jLabel4))
+                .addGap(13, 13, 13)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                  .addComponent(cameraDevices, 0, 206, Short.MAX_VALUE)
+                  .addComponent(audioDevices, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(preview)
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(previewVideo, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(previewAudio, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(record)
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(broadcast)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(previewAudio, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel10)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+            .addComponent(jLabel11)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(start)))
+        .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -211,7 +296,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel1)
           .addComponent(cameraDevices, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(preview))
+          .addComponent(preview)
+          .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -220,7 +306,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(fps, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(jLabel3))
+              .addComponent(jLabel3)
+              .addComponent(jLabel12)
+              .addComponent(resolution, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(audio)
@@ -248,15 +336,25 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(jLabel6)
               .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(start)
               .addComponent(jLabel9))
-            .addGap(5, 5, 5))
+            .addGap(7, 7, 7))
           .addGroup(layout.createSequentialGroup()
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(previewAudio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
               .addComponent(previewVideo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-        .addContainerGap(12, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addComponent(record)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(broadcast)
+          .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(start)
+          .addComponent(jLabel10)
+          .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel11)
+          .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -270,16 +368,30 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     }
   }//GEN-LAST:event_nextActionPerformed
 
+  private void cameraDevicesItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cameraDevicesItemStateChanged
+    listModes();
+  }//GEN-LAST:event_cameraDevicesItemStateChanged
+
+  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    listCameras();
+  }//GEN-LAST:event_jButton1ActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JComboBox aBitRate;
   private javax.swing.JRadioButton audio;
   private javax.swing.JComboBox audioDevices;
+  private javax.swing.JRadioButton broadcast;
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.ButtonGroup buttonGroup2;
+  private javax.swing.ButtonGroup buttonGroup3;
   private javax.swing.JComboBox cameraDevices;
   private javax.swing.JSpinner fps;
   private javax.swing.JComboBox freq;
+  private javax.swing.JButton jButton1;
   private javax.swing.JLabel jLabel1;
+  private javax.swing.JLabel jLabel10;
+  private javax.swing.JLabel jLabel11;
+  private javax.swing.JLabel jLabel12;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
@@ -291,10 +403,15 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
   private javax.swing.JRadioButton mono;
   private javax.swing.JButton next;
   private javax.swing.JRadioButton noaudio;
+  private javax.swing.JTextField port;
   private javax.swing.JCheckBox preview;
   private javax.swing.JProgressBar previewAudio;
   private javax.swing.JLabel previewVideo;
+  private javax.swing.JComboBox<String> protocol;
+  private javax.swing.JRadioButton record;
+  private javax.swing.JComboBox<String> resolution;
   private javax.swing.JSpinner seconds;
+  private javax.swing.JTextField segmentSecs;
   private javax.swing.JButton start;
   private javax.swing.JRadioButton stereo;
   private javax.swing.JRadioButton stopMotion;
@@ -305,6 +422,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
   private Camera camera;
   private AudioInput mic;
   private RandomAccessFile raf;
+  private MediaEncoder encoder;
+  private Broadcast broadcaster;
+  private ArrayList<String> tempFiles = new ArrayList<>();
   private boolean active = false;
   private boolean working = false;
   private Object doNext = new Object();
@@ -320,8 +440,28 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
       JFAWT.showError("Error", "No camera detected");
       return;
     }
-    for(int a=0;a<list.length;a++) {
-      cameraDevices.addItem(list[a]);
+    for(String device : list) {
+      cameraDevices.addItem(device);
+    }
+    listModes();
+  }
+
+  public void listModes() {
+    resolution.removeAllItems();
+    int idx = cameraDevices.getSelectedIndex();
+    if (idx == -1) return;
+    camera = new Camera();
+    camera.init();
+    camera.listDevices();
+    String list[] = camera.listModes(idx);
+    camera.uninit();
+    camera = null;
+    if (list == null) {
+      JFAWT.showError("Error", "No camera modes");
+      return;
+    }
+    for(String mode : list) {
+      resolution.addItem(mode);
     }
   }
 
@@ -342,12 +482,17 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     audio.setEnabled(state);
     noaudio.setEnabled(state);
     timeLapse.setEnabled(state);
+    stopMotion.setEnabled(state);
     seconds.setEnabled(state);
     mono.setEnabled(state);
     stereo.setEnabled(state);
     freq.setEnabled(state);
     fps.setEnabled(state);
     preview.setEnabled(state);
+    record.setEnabled(state);
+    broadcast.setEnabled(state);
+    protocol.setEnabled(state);
+    port.setEnabled(state);
   }
 
   public void start() {
@@ -390,83 +535,148 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     }
   }
 
+  private int frameRate;
+  private int audioRate;
+  private boolean doAudio;
+  private boolean doRecord;
+  private boolean doImage;
+  private int chs;
+  private int width, height;
+  private int timeLapseSecondsDelay;
+  private int samples;
+  private int segment;
+  private int segmentTimeMax;
+  private String mediaFile;
+  private byte[] image;
+  private boolean encoder_start() {
+    return encoder.start(this, width, height, frameRate, chs, audioRate, doRecord ? file_codec : bc_codec, true, doAudio);
+  }
+  private boolean create_file() {
+    try {
+      raf = new RandomAccessFile(mediaFile, "rw");
+      raf.setLength(0);
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      failed("Unable to create output file");
+      return false;
+    }
+  }
+
+  private void close_file() {
+    if (raf != null) {
+      try {raf.close();} catch (Exception e) {}
+      raf = null;
+    }
+  }
+
   public class Worker extends Thread {
     public void run() {
+      doRecord = record.isSelected();
+      segmentTimeMax = JF.atoi(segmentSecs.getText());
+      if (segmentTimeMax < 0) {
+        segmentTimeMax = 1;
+      }
+      if (segmentTimeMax > 60) {
+        segmentTimeMax = 60;
+      }
+      segmentTimeMax *= 1000;
+      JFLog.log("segmentTimeMax=" + segmentTimeMax);
+      tempFiles.clear();
       int idx = cameraDevices.getSelectedIndex();
       if (idx == -1) {
         failed("Please select a camera device");
         return;
       }
       setState(false);
+      segment = 1;
 
-      JFileChooser chooser = new JFileChooser();
-      chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-      chooser.setMultiSelectionEnabled(false);
-      chooser.setCurrentDirectory(new File(JF.getUserPath() + "/Videos"));
-      javax.swing.filechooser.FileFilter ffAVI = new javax.swing.filechooser.FileFilter() {
-        public boolean accept(File file) {
-          if (file.isDirectory()) return true;
-          if (file.getName().endsWith(".avi")) return true;
-          return false;
+      if (doRecord) {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        chooser.setCurrentDirectory(new File(JF.getUserPath() + "/Videos"));
+        javax.swing.filechooser.FileFilter ffAVI = new javax.swing.filechooser.FileFilter() {
+          public boolean accept(File file) {
+            if (file.isDirectory()) return true;
+            if (file.getName().endsWith(".avi")) return true;
+            return false;
+          }
+          public String getDescription() {
+            return "AVI (*.avi)";
+          }
+          public String toString() {
+            return ".avi";
+          }
+        };
+        chooser.addChoosableFileFilter(ffAVI);
+        chooser.setFileFilter(ffAVI);
+        if (chooser.showSaveDialog(MainPanel.this) != JFileChooser.APPROVE_OPTION) {
+          setState(true);
+          working = false;
+          return;
         }
-        public String getDescription() {
-          return "AVI (*.avi)";
+        mediaFile = chooser.getSelectedFile().getAbsolutePath();
+        String fnlc = mediaFile.toLowerCase();
+        if ((!fnlc.endsWith(".avi"))) {
+    //      javax.swing.filechooser.FileFilter ff = chooser.getFileFilter();
+    //      fn += ff.toString();
+          mediaFile += ".avi";
         }
-        public String toString() {
-          return ".avi";
-        }
-      };
-      chooser.addChoosableFileFilter(ffAVI);
-      chooser.setFileFilter(ffAVI);
-      if (chooser.showSaveDialog(MainPanel.this) != JFileChooser.APPROVE_OPTION) {
-        setState(true);
-        working = false;
-        return;
+      } else {
+        mediaFile = getTempFile();
       }
-      String fn = chooser.getSelectedFile().getAbsolutePath();
-      String fnlc = fn.toLowerCase();
-      if ((!fnlc.endsWith(".avi"))) {
-  //      javax.swing.filechooser.FileFilter ff = chooser.getFileFilter();
-  //      fn += ff.toString();
-        fn += ".avi";
+      doAudio = audio.isSelected();
+      if (!doRecord) {
+        doAudio = false;  //not working
       }
-      boolean doAudio = audio.isSelected();
-      int audioRate = JF.atoi((String)freq.getSelectedItem());
+      if (timeLapse.isSelected() || stopMotion.isSelected()) {
+        doImage = true;
+        doAudio = false;
+      } else {
+        doImage = false;
+      }
+      audioRate = JF.atoi((String)freq.getSelectedItem());
       if (audioRate < 8000 || audioRate > 44100) audioRate = 44100;
-      int chs = mono.isSelected() ? 1 : 2;
-      int frameRate = (Integer)fps.getValue();
-      int secondsDelay = (Integer)seconds.getValue();
-      int samples = audioRate * chs / frameRate;
-      try {
-        raf = new RandomAccessFile(fn, "rw");
-        raf.setLength(0);
-      } catch (Exception e) {
-        JFLog.log(e);
-        failed("Unable to create output file");
-        return;
+      if (!doRecord) {
+        audioRate = 48000;  //opus codec only accepts 8k, 16k, 24k, 48k
       }
+      chs = mono.isSelected() ? 1 : 2;
+      frameRate = (Integer)fps.getValue();
+      timeLapseSecondsDelay = (Integer)seconds.getValue();
+      samples = audioRate * chs / frameRate;
+      if (!doImage) {
+        if (!create_file()) return;
+      }
+
+      String res = (String)resolution.getSelectedItem();
+      String[] resParts = res.split("x");
+      int res_width = JF.atoi(resParts[0]);
+      int res_height = JF.atoi(resParts[1]);
 
       camera = new Camera();
       camera.init();
       camera.listDevices();
-      if (!camera.start(cameraDevices.getSelectedIndex(), 640, 480)) {
+      if (!camera.start(cameraDevices.getSelectedIndex(), res_width, res_height)) {
         failed("Unable to start recording from camera");
         return;
       }
 
-      MediaEncoder encoder = new MediaEncoder();
-      encoder.setAudioBitRate(getAudioBitRate());
-      encoder.setVideoBitRate(getVideoBitRate());
-      int width = camera.getWidth();
-      int height = camera.getHeight();
+      width = camera.getWidth();
+      height = camera.getHeight();
       JFLog.log("size=" + width + "," + height);
       JFLog.log("frameRate=" + frameRate);
       JFLog.log("audioRate=" + audioRate + ",chs=" + chs);
-      if (!encoder.start(MainPanel.this, width, height, frameRate, chs
-        , audioRate, "avi", true, doAudio))
-      {
-        failed("Unable to create output file");
-        return;
+
+      if (!doImage) {
+        encoder = new MediaEncoder();
+        encoder.setAudioBitRate(getAudioBitRate());
+        encoder.setVideoBitRate(getVideoBitRate());
+        if (!encoder_start())
+        {
+          failed("Unable to start encoder");
+          return;
+        }
       }
       if (doAudio) {
         mic = new AudioInput();
@@ -492,8 +702,10 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         }
       } while (active && !ready);
 
-      double current = System.currentTimeMillis();
-      double delay = 1000.0 / frameRate;
+      long currentTime = System.currentTimeMillis();
+      long segmentTime = currentTime;
+      long delayTime = 1000 / frameRate;
+      JFLog.log("delayTime=" + delayTime);
       int px[] = null;
       boolean doPreview = preview.isSelected();
       int previewWidth = previewVideo.getWidth();
@@ -506,14 +718,26 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         next.setEnabled(true);
       }
 
+      if (!doRecord) {
+        broadcaster = new Broadcast();
+        broadcaster.start();
+      }
+
       while (active) {
         if (!skip_frame) {
           px = camera.getFrame();
-          if (px != null && doPreview) {
+          if (px != null) {
             videoImg.putPixels(px, 0,0,width,height,0);
-            previewImg.putJFImageScale(videoImg, 0, 0, previewWidth, previewHeight);
-            previewVideo.setIcon(previewImg);
-            previewVideo.repaint();
+            if (doPreview) {
+              previewImg.putJFImageScale(videoImg, 0, 0, previewWidth, previewHeight);
+              previewVideo.setIcon(previewImg);
+              previewVideo.repaint();
+            }
+            if (doImage) {
+              ByteArrayOutputStream baos = new ByteArrayOutputStream();
+              videoImg.saveJPG(baos);
+              image = baos.toByteArray();
+            }
           }
         } else {
           skip_frame = false;
@@ -523,7 +747,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
           JF.sleep(5);
           continue;
         }
-        encoder.addVideo(px);
+        if (!doImage) {
+          encoder.addVideo(px);
+        }
         if (doAudio) {
           while (mic.read(sams8)) {
             swapEndian(sams8, sams16);
@@ -540,31 +766,59 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
           continue;
         }
         if (timeLapse.isSelected()) {
-          for(int a=0;a<secondsDelay;a++) {
+          for(int a=0;a<timeLapseSecondsDelay;a++) {
             JF.sleep(1000);
             if (!active) break;
           }
         } else {
-          double now = System.currentTimeMillis();
-          int sleep = (int)(delay - (now - current));
+          long nowTime = System.currentTimeMillis();
+          int sleep = (int)(delayTime - (nowTime - currentTime));
           if (sleep > 0) {
             JF.sleep(sleep);
           } else {
             JFLog.log("sleep <= 0");
             skip_frame = true;  //system too slow
           }
-          current += delay;
+          //currentTime += delayTime;  //too slow
+          currentTime = nowTime;
+          if (!doRecord && !doImage) {
+            long duration = nowTime - segmentTime;
+            if (duration > segmentTimeMax) {
+              JFLog.log("    nowTime=" + nowTime);
+              JFLog.log("currentTime=" + currentTime);
+              JFLog.log("segmentTime=" + segmentTime);
+              JFLog.log("duratioTime=" + duration);
+              //stop segment and start new segment
+              encoder.stop();
+              close_file();
+              JFLog.log("AddSegment:" + mediaFile);
+              tempFiles.add(mediaFile);
+              segment++;
+              mediaFile = getTempFile();
+              create_file();
+              encoder_start();
+              segmentTime = currentTime;
+            }
+          }
         }
       }
-      encoder.stop();
+      if (!doImage) {
+        encoder.stop();
+      }
       camera.stop();
       camera.uninit();
       camera = null;
       if (doAudio) mic.stop();
-      try {
-        raf.close();
-      } catch (Exception e) {
-        JFLog.log(e);
+      if (!doImage) {
+        close_file();
+      }
+      if (!doRecord) {
+        broadcaster.stop();
+        broadcaster = null;
+        //delete all temp files
+        for(String file : tempFiles) {
+          new File(file).delete();
+        }
       }
       working = false;
       if (stopMotion.isSelected()) next.setEnabled(false);
@@ -574,6 +828,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     }
   }
 
+  //MediaIO interface
   public int read(MediaCoder coder, byte[] bytes) {
     return 0;
   }
@@ -624,5 +879,196 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
 
   private int getVideoBitRate() {
     return getRate((String)vBitRate.getSelectedItem());
+  }
+
+  private String getTempFile() {
+    return JF.getTempPath() + "/segment-" + segment + bc_ext;
+  }
+
+  public class Broadcast implements WebHandler {
+    private Web web;
+
+    public void start() {
+      int webport = JF.atoi(port.getText());
+      if (webport < 1) {
+        webport = 80;
+      }
+      if (webport > 65535) {
+        webport = 80;
+      }
+      web = new Web();
+      web.start(this, webport, false);
+    }
+
+    public void stop() {
+      web.stop();
+      web = null;
+    }
+
+    public void doPost(WebRequest req, WebResponse res) {
+      doGet(req, res);
+    }
+
+    public void doGet(WebRequest req, WebResponse res) {
+      String url = req.getURL();
+      if (url.length() == 0) url = "/";
+      if (url.equals("/")) {
+        String html;
+        if (doImage) {
+          html = getHTMLImage();
+        } else {
+          html = getHTMLVideo(true);
+        }
+        try {
+          res.write(html.getBytes());
+        } catch (Exception e) {}
+      }
+      if (url.endsWith(bc_ext)) {
+        //send segment
+        String file = JF.getTempPath() + url;
+        if (!tempFiles.contains(file)) {
+          JFLog.log("WebMediaNotFound:" + file);
+          res.setStatus(404, "File not found");
+          return;
+        }
+        try {
+          res.setContentType(bc_mime);
+          FileInputStream fis = new FileInputStream(file);
+          byte[] data = fis.readAllBytes();
+          fis.close();
+          res.write(data);
+        } catch (Exception e) {}
+      }
+      if (url.endsWith(".jpg")) {
+        if (image == null) {
+          res.setStatus(404, "Not Ready");
+          return;
+        }
+        try {
+          res.write(image);
+        } catch (Exception e) {}
+      }
+    }
+
+    private String getHTMLVideo(boolean dash) {
+      StringBuilder html = new StringBuilder();
+      if (dash) {
+//DASH format (limited support)
+        html.append(
+"<script>" +
+"var segment=" + segment + ";\n" +
+"var media;\n" +
+"var buffer;\n" +
+"var video;\n" +
+"var error;\n" +
+"function appendSegment(buf) {\n" +
+"  console.log('appendSegment:buf=' + buf + ':segment=' + segment);\n" +
+"  console.log('appendSegment:media.readyState=' + media.readyState);\n" +
+"  buffer.appendBuffer(new Uint8Array(buf));\n" +
+"}\n" +
+"function loadSegment() {\n" +
+"  console.log('loadSegment');\n" +
+"  var req = new XMLHttpRequest();\n" +
+"  var url = 'segment-' + segment + '." + bc_codec + "';\n" +
+"  req.open('get', url);\n" +
+"  req.responseType = 'arraybuffer';\n" +
+"  req.onload = function () {\n" +
+"    console.log('req.status=' + req.status);\n" +
+"    if (req.status == 200) {appendSegment(req.response);}\n" +
+"    if (req.status == 404) {loadSegmentError(req.response);}\n" +
+"  }\n" +
+"  req.send();\n" +
+"}\n" +
+"function loadNextSegment() {\n" +
+"  console.log('loadNextSegment');\n" +
+"  segment = segment + 1;\n" +
+"  loadSegment();\n" +
+"}\n" +
+"function loadSegmentError(err) {\n" +
+"  console.log('loadSegmentError:' + err);\n" +
+"  setTimeout(loadSegment, 1000);\n" +
+"  error = err;\n" +
+"}\n" +
+"function sourceOpen() {\n" +
+"  console.log('sourceOpen');\n" +
+"  console.log('start segment=' + segment);\n" +
+"  buffer = media.addSourceBuffer('" + bc_mime + "');\n" +
+"  buffer.mode = 'sequence';" +  //timestamps not used
+"  buffer.addEventListener('updateend', loadNextSegment);\n" +
+//"  buffer.addEventListener('error', loadSegmentError);\n" +
+"}\n" +
+"</script>" +
+"<video id=video width=100% height=100% controls onplay='loadSegment();'></video>" +
+"<script>" +
+"media = new MediaSource();\n" +
+"video = document.getElementById('video');\n" +
+"media.addEventListener('sourceopen', sourceOpen);\n" +
+"video.src = URL.createObjectURL(media);\n" +
+"</script>"
+          );
+        } else {
+//very simply choppy method
+          html.append(
+"<script>" +
+"var segment=" + segment + ";\n" +
+"function start() {\n" +
+"  var video = document.getElementById('video');\n" +
+"  var url = 'segment-' + segment + '." + bc_codec + "';\n" +
+"  console.log('Playing:' + url);\n" +
+"  video.src = url;\n" +
+"  video.load();\n" +
+"  video.play();\n" +
+"}\n" +
+"function delaystart() {\n" +
+"setTimeout(start, " + segmentTimeMax + ");\n" +
+"}\n" +
+"function next() {\n" +
+"  segment = segment + 1;\n" +
+"  start();\n" +
+"}\n" +
+"</script>" +
+"<video id=video width=100% height=100% onclick='start();'></video>" +
+"<script>" +
+"var video = document.getElementById('video');\n" +
+"video.addEventListener('ended', next, false);\n" +
+"video.addEventListener('error', delaystart, false);\n" +
+"</script>"
+          );
+        }
+      return html.toString();
+    }
+
+    private String getHTMLImage() {
+      StringBuilder html = new StringBuilder();
+      html.append(
+"<script>" +
+"var image;\n" +
+"function assignImage(blob) {\n" +
+"  var imageURL = URL.createObjectURL(blob);\n" +
+"  image.src = imageURL;\n" +
+"  setTimeout(loadImage, " + (timeLapseSecondsDelay * 1000) + ");\n" +
+"}\n" +
+"function loadImage() {\n" +
+"  console.log('loadImage');\n" +
+"  var req = new XMLHttpRequest();\n" +
+"  var url = 'image.jpg';\n" +
+"  req.open('get', url);\n" +
+"  req.responseType = 'blob';\n" +
+"  req.onload = function () {\n" +
+"    console.log('req.status=' + req.status);\n" +
+"    if (req.status == 200) {assignImage(req.response);}\n" +
+"    if (req.status == 404) {setTimeOut(loadImage, " + (timeLapseSecondsDelay * 1000) + ");}\n" +
+"  }\n" +
+"  req.send();\n" +
+"}\n" +
+"</script>" +
+"<img id=image width=100% height=100%></img>" +
+"<script>" +
+"image = document.getElementById('image');\n" +
+"setTimeout(loadImage, " + (timeLapseSecondsDelay * 1000) + ");\n" +
+"</script>"
+      );
+      return html.toString();
+    }
   }
 }

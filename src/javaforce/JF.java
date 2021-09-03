@@ -169,6 +169,14 @@ public class JF {
     return System.getProperty("user.name");
   }
 
+  public static String getTempPath() {
+    if (JF.isWindows()) {
+      return System.getenv("TEMP");
+    } else {
+      return "/tmp";
+    }
+  }
+
   private static String user_dir = null;
 
   public static synchronized String getCurrentPath() {
