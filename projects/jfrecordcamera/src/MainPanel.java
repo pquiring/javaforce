@@ -15,7 +15,7 @@ import javaforce.media.*;
 
 public class MainPanel extends javax.swing.JPanel implements MediaIO {
 
-  public static String version = "0.9";
+  public static String version = "0.10";
   public static String file_codec = "avi";
   public static String file_ext = ".avi";
 
@@ -27,7 +27,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
   //video/mp4 (not working)
   public static String bc_codec_mp4 = "mp4";
   public static String bc_ext_mp4 = ".mp4";
-  public static String bc_mime_mp4 = "video/mp4; codecs=\\\"avc1.42E01E, mp4a.40.2\\\"";
+  public static String bc_mime_mp4 = "video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"";
 
   /**
    * Creates new form MainPanel

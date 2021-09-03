@@ -1,5 +1,10 @@
 What's new ??
 
+Sept 3/2021 : version 0.10 released
+  - new : added broadcast option
+    - video support is still in development and not working
+    - timelapse/stopmotion is recommended for broadcasting
+
 Apr 21/2020 : version 0.9 released
   - fix : support resolution not multiple of 4
 
