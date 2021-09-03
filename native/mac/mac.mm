@@ -189,6 +189,12 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListDevices
   return strs;
 }
 
+JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraListModes
+  (JNIEnv *e, jobject c, jint deviceIdx)
+{
+  return NULL;
+}
+
 JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
   (JNIEnv *e, jobject c, jint deviceIdx, jint desiredWidth, jint desiredHeight)
 {

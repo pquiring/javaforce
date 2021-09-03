@@ -1,5 +1,10 @@
 What's new...
 
+Sept 3/2021 : JF 32.4 released
+  - jfRecordCamera/0.10
+    - added some experimental web broadcasting support
+  - javaforce.media.Camera supports listModes() on Windows only
+
 Jun 23/2021 : JF 32.3 released
   - jfBackup/0.22
     - fix connection issues
