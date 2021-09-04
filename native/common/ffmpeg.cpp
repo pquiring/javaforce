@@ -1450,10 +1450,6 @@ static jboolean encoder_add_stream(FFContext *ctx, int codec_id) {
       codec_ctx->gop_size = ctx->config_gop_size;
       codec_ctx->keyint_min = ctx->config_gop_size;
       codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
-      if (codec_ctx->codec_id == AV_CODEC_ID_H264) {
-        (*_av_opt_set)(codec_ctx->priv_data, "profile", "baseline", 0);
-        (*_av_opt_set)(codec_ctx->priv_data, "preset", "slow", 0);
-      }
 
       ctx->video_stream = stream;
       ctx->video_codec = codec;
@@ -1517,6 +1513,14 @@ static jboolean encoder_init_video(FFContext *ctx) {
   if (ret < 0) {
     printf("av_frame_get_buffer() failed! %d\n", ret);
     return JNI_FALSE;
+  }
+  //set profile options
+  if (ctx->video_codec_ctx->codec_id == AV_CODEC_ID_H264) {
+    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "baseline", 0);
+    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "slow", 0);
+  }
+  if (ctx->video_codec_ctx->codec_id == AV_CODEC_ID_VP9) {
+    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "quality", "realtime", 0);
   }
   //copy params
   ret = (*_avcodec_parameters_from_context)(ctx->video_stream->codecpar, ctx->video_codec_ctx);
