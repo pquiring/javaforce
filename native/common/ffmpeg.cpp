@@ -539,6 +539,8 @@ struct FFContext {
 
   jboolean dash;
 
+  int compressionLevel;
+
   void GetMediaIO() {
     cls_mio = e->GetObjectClass(mio);
     mid_ff_read = e->GetMethodID(cls_mio, "read", "(Ljavaforce/media/MediaCoder;[B)I");
@@ -1482,6 +1484,9 @@ static int get_size_alignment(int width, int height) {
 static jboolean encoder_init_video(FFContext *ctx) {
   int ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
   if (ret < 0) return JNI_FALSE;
+  if (ctx->compressionLevel != -1) {
+    ctx->video_codec_ctx->compression_level = ctx->compressionLevel;
+  }
   if (ctx->video_codec_ctx->pix_fmt != AV_PIX_FMT_BGRA) {
     ctx->scaleVideo = JNI_TRUE;
   }
@@ -1693,12 +1698,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
   jfieldID fid_framesPerKeyFrame = e->GetFieldID(cls_encoder, "framesPerKeyFrame", "I");
   jfieldID fid_videoBitRate = e->GetFieldID(cls_encoder, "videoBitRate", "I");
   jfieldID fid_audioBitRate = e->GetFieldID(cls_encoder, "audioBitRate", "I");
+  jfieldID fid_compressionLevel = e->GetFieldID(cls_encoder, "compressionLevel", "I");
 
   ctx->fps_1000_1001 = e->GetBooleanField(c, fid_fps_1000_1001);
   ctx->config_gop_size = e->GetIntField(c, fid_framesPerKeyFrame);
   ctx->config_video_bit_rate = e->GetIntField(c, fid_videoBitRate);
   ctx->config_audio_bit_rate = e->GetIntField(c, fid_audioBitRate);
   ctx->dash = e->GetBooleanField(c, fid_dash);
+  ctx->compressionLevel = e->GetIntField(c, fid_compressionLevel);
 
   ctx->org_width = width;
   ctx->org_height = height;

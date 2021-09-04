@@ -12,6 +12,7 @@ public class MediaEncoder extends MediaCoder {
   public int framesPerKeyFrame = 12;
   public int videoBitRate = 400000;
   public int audioBitRate = 128000;
+  public int compressLevel = -1;
   public native boolean start(MediaIO io, int width, int height, int fps, int chs, int freq, String codec,
     boolean doVideo, boolean doAudio);
   /** Sets frame rate = fps * 1000 / 1001 (default = false) */
@@ -33,6 +34,10 @@ public class MediaEncoder extends MediaCoder {
   /** Sets audio bit rate (default = 128000) */
   public void setAudioBitRate(int rate) {
     audioBitRate = rate;
+  }
+  /** Sets compression level (meaning varies per codec) (default = -1) */
+  public void setCompressLevel(int level) {
+    compressLevel = level;
   }
   public native boolean addAudio(short sams[], int offset, int length);
   public boolean addAudio(short sams[]) {

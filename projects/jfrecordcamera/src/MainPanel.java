@@ -679,6 +679,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         encoder.setVideoBitRate(getVideoBitRate());
         if (!doRecord) {
           encoder.setDASH(true);
+          encoder.setCompressLevel(2);  //faster compression for vp9
         }
         if (!encoder_start())
         {
