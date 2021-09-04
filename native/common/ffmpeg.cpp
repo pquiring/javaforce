@@ -1478,6 +1478,7 @@ static int get_size_alignment(int width, int height) {
 }
 
 static jboolean encoder_init_video(FFContext *ctx) {
+  printf("encoder_init_video(type=0x%x,ctx.id=0x%x,id=0x%x)\r\n", ctx->video_codec_ctx->codec_type, ctx->video_codec_ctx->codec_id, ctx->video_codec->id);
   int ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
   if (ret < 0) return JNI_FALSE;
   if (ctx->compressionLevel != -1) {
@@ -1566,7 +1567,6 @@ static jboolean encoder_init_audio(FFContext *ctx) {
     ctx->audio_buffer_size = 0;
   }
   //copy params
-  printf("codec_type=%d\r\n", ctx->audio_codec_ctx->codec_type);
   ret = (*_avcodec_parameters_from_context)(ctx->audio_stream->codecpar, ctx->audio_codec_ctx);
   if (ret < 0) {
     printf("avcodec_parameters_from_context() failed!\n");
