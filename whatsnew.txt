@@ -1,5 +1,8 @@
 What's new...
 
+Sept 4/2021 : ffmpeg upgrade
+  - upgraded to ffmpeg/4.4
+
 Sept 3/2021 : JF 32.4 released
   - jfRecordCamera/0.10
     - added some experimental web broadcasting support
