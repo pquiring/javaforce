@@ -537,6 +537,8 @@ struct FFContext {
    */
   int config_audio_bit_rate;
 
+  jboolean dash;
+
   void GetMediaIO() {
     cls_mio = e->GetObjectClass(mio);
     mid_ff_read = e->GetMethodID(cls_mio, "read", "(Ljavaforce/media/MediaCoder;[B)I");
@@ -1650,8 +1652,9 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
       return JNI_FALSE;
     }
   }
-  //enable DASH support
-//  (*_av_dict_set)( &ctx->fmt_ctx->metadata, "movflags", "faststart", 0);
+  if (ctx->dash) {
+    (*_av_dict_set)(&ctx->fmt_ctx->metadata, "movflags", "faststart", 0);
+  }
   int ret = (*_avformat_write_header)(ctx->fmt_ctx, NULL);
   if (ret < 0) {
     printf("avformat_write_header failed! %d\n", ret);
@@ -1686,6 +1689,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
 
   jclass cls_encoder = e->FindClass("javaforce/media/MediaEncoder");
   jfieldID fid_fps_1000_1001 = e->GetFieldID(cls_encoder, "fps_1000_1001", "Z");
+  jfieldID fid_dash = e->GetFieldID(cls_encoder, "dash", "Z");
   jfieldID fid_framesPerKeyFrame = e->GetFieldID(cls_encoder, "framesPerKeyFrame", "I");
   jfieldID fid_videoBitRate = e->GetFieldID(cls_encoder, "videoBitRate", "I");
   jfieldID fid_audioBitRate = e->GetFieldID(cls_encoder, "audioBitRate", "I");
@@ -1694,6 +1698,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
   ctx->config_gop_size = e->GetIntField(c, fid_framesPerKeyFrame);
   ctx->config_video_bit_rate = e->GetIntField(c, fid_videoBitRate);
   ctx->config_audio_bit_rate = e->GetIntField(c, fid_audioBitRate);
+  ctx->dash = e->GetBooleanField(c, fid_dash);
+
   ctx->org_width = width;
   ctx->org_height = height;
   if (((width & 3) != 0) || ((height & 3) != 0)) {

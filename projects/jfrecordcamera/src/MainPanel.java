@@ -16,18 +16,21 @@ import javaforce.media.*;
 public class MainPanel extends javax.swing.JPanel implements MediaIO {
 
   public static String version = "0.10";
+
   public static String file_codec = "avi";
   public static String file_ext = ".avi";
+  public static String file_desc = "AVI (*.avi)";
 
-  //webm/vp9 (works)
+  //webm/vp9 (works but encoding is very slow)
   public static String bc_codec = "webm";
   public static String bc_ext = ".webm";
-  public static String bc_mime = "video/webm; codecs=\"vp9\"";
+  public static String bc_mime = "video/webm; codecs=\"vp9,opus\"";
 
-  //video/mp4 (not working)
+  //video/mp4 (not working - requires ISO BMFF packetization)
   public static String bc_codec_mp4 = "mp4";
   public static String bc_ext_mp4 = ".mp4";
   public static String bc_mime_mp4 = "video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"";
+  public static String bc_m4s_mp4 = "video/iso.segment";
 
   /**
    * Creates new form MainPanel
@@ -548,8 +551,13 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
   private int segmentTimeMax;
   private String mediaFile;
   private byte[] image;
+  private byte[] mpd;
   private boolean encoder_start() {
+    encoder.setFramesPerKeyFrame(frameRate);
     return encoder.start(this, width, height, frameRate, chs, audioRate, doRecord ? file_codec : bc_codec, true, doAudio);
+  }
+  private void encoder_stop() {
+    encoder.stop();
   }
   private boolean create_file() {
     try {
@@ -599,14 +607,14 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         javax.swing.filechooser.FileFilter ffAVI = new javax.swing.filechooser.FileFilter() {
           public boolean accept(File file) {
             if (file.isDirectory()) return true;
-            if (file.getName().endsWith(".avi")) return true;
+            if (file.getName().endsWith(file_ext)) return true;
             return false;
           }
           public String getDescription() {
-            return "AVI (*.avi)";
+            return file_desc;
           }
           public String toString() {
-            return ".avi";
+            return file_ext;
           }
         };
         chooser.addChoosableFileFilter(ffAVI);
@@ -618,18 +626,15 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         }
         mediaFile = chooser.getSelectedFile().getAbsolutePath();
         String fnlc = mediaFile.toLowerCase();
-        if ((!fnlc.endsWith(".avi"))) {
+        if ((!fnlc.endsWith(file_ext))) {
     //      javax.swing.filechooser.FileFilter ff = chooser.getFileFilter();
     //      fn += ff.toString();
-          mediaFile += ".avi";
+          mediaFile += file_ext;
         }
       } else {
         mediaFile = getTempFile();
       }
       doAudio = audio.isSelected();
-      if (!doRecord) {
-        doAudio = false;  //not working
-      }
       if (timeLapse.isSelected() || stopMotion.isSelected()) {
         doImage = true;
         doAudio = false;
@@ -672,6 +677,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         encoder = new MediaEncoder();
         encoder.setAudioBitRate(getAudioBitRate());
         encoder.setVideoBitRate(getVideoBitRate());
+        if (!doRecord) {
+          encoder.setDASH(true);
+        }
         if (!encoder_start())
         {
           failed("Unable to start encoder");
@@ -684,6 +692,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
           failed("Unable to start recording audio");
           return;
         }
+      }
+      if (!doRecord) {
+        mpd = getMPD();
       }
 
       active = true;
@@ -789,21 +800,22 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
               JFLog.log("segmentTime=" + segmentTime);
               JFLog.log("duratioTime=" + duration);
               //stop segment and start new segment
-              encoder.stop();
+//              encoder_stop();
               close_file();
               JFLog.log("AddSegment:" + mediaFile);
               tempFiles.add(mediaFile);
               segment++;
               mediaFile = getTempFile();
               create_file();
-              encoder_start();
+//              encoder_start();
               segmentTime = currentTime;
             }
           }
         }
       }
       if (!doImage) {
-        encoder.stop();
+        encoder_stop();
+        encoder = null;
       }
       camera.stop();
       camera.uninit();
@@ -885,6 +897,23 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     return JF.getTempPath() + "/segment-" + segment + bc_ext;
   }
 
+  private byte[] getMPD() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(
+"<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" minBufferTime=\"PT1.500S\" type=\"dynamic\" minimumUpdatePeriod=\"PT0H0M4.000S\" \n" +
+"maxSegmentDuration=\"PT0H0M1.167S\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\">\n" +
+" <Period id=\"DID1\" start=\"PT0H0M0.000S\">\n" +
+"  <AdaptationSet segmentAlignment=\"true\" maxWidth=\"" + width + "\" maxHeight=\"" + height + "\" maxFrameRate=\"" + frameRate + "\" par=\"16:9\" lang=\"und\" startWithSAP=\"1\">\n" +
+"   <SegmentTemplate media=\"'$RepresentationID$_$Number%03d$'.m4s\" initialization=\"'$RepresentationID$_'.mp4\" timescale=\"12288\" startNumber=\"1\" duration=\"12288\"/>\n" +
+"   <Representation id=\"1\" mimeType=\"video/mp4\" codecs=\"avc1.42C01F\" width=\"" + width + "\" height=\"" + height + "\" frameRate=\"12288/508\" sar=\"1:1\" bandwidth=\"1208374\">\n" +
+"   </Representation>\n" +
+"  </AdaptationSet>\n" +
+" </Period>\n" +
+"</MPD>"
+    );
+    return sb.toString().getBytes();
+  }
+
   public class Broadcast implements WebHandler {
     private Web web;
 
@@ -948,6 +977,15 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
           res.write(image);
         } catch (Exception e) {}
       }
+      if (url.endsWith(".mpd")) {
+        if (mpd == null) {
+          res.setStatus(404, "Not Ready");
+          return;
+        }
+        try {
+          res.write(mpd);
+        } catch (Exception e) {}
+      }
     }
 
     private String getHTMLVideo(boolean dash) {
@@ -965,6 +1003,19 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
 "  console.log('appendSegment:buf=' + buf + ':segment=' + segment);\n" +
 "  console.log('appendSegment:media.readyState=' + media.readyState);\n" +
 "  buffer.appendBuffer(new Uint8Array(buf));\n" +
+"}\n" +
+"function loadMPD() {\n" +
+"  console.log('loadMPD');\n" +
+"  var req = new XMLHttpRequest();\n" +
+"  var url = 'video.mpd';\n" +
+"  req.open('get', url);\n" +
+"  req.responseType = 'arraybuffer';\n" +
+"  req.onload = function () {\n" +
+"    console.log('req.status=' + req.status);\n" +
+"    if (req.status == 200) {appendSegment(req.response);}\n" +
+"    if (req.status == 404) {loadSegmentError(req.response);}\n" +
+"  }\n" +
+"  req.send();\n" +
 "}\n" +
 "function loadSegment() {\n" +
 "  console.log('loadSegment');\n" +

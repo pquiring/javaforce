@@ -8,6 +8,7 @@ package javaforce.media;
 public class MediaEncoder extends MediaCoder {
   //these must be set BEFORE you call start()
   public boolean fps_1000_1001;
+  public boolean dash;
   public int framesPerKeyFrame = 12;
   public int videoBitRate = 400000;
   public int audioBitRate = 128000;
@@ -16,6 +17,10 @@ public class MediaEncoder extends MediaCoder {
   /** Sets frame rate = fps * 1000 / 1001 (default = false) */
   public void set1000over1001(boolean state) {
     fps_1000_1001 = state;
+  }
+  /** Enables encoding for DASH. (default = false) */
+  public void setDASH(boolean state) {
+    dash = state;
   }
   /** Sets frames per key frame (gop) (default = 12) */
   public void setFramesPerKeyFrame(int count) {
