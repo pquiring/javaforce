@@ -1521,7 +1521,8 @@ static jboolean encoder_init_video(FFContext *ctx) {
     (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "slow", 0);
   }
   if (ctx->video_codec_ctx->codec_id == AV_CODEC_ID_VP9) {
-    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "quality", "realtime", 0);
+    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "deadline", "realtime", 0);
+    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "cpu-used", "4", 0);
   }
   //copy params
   ret = (*_avcodec_parameters_from_context)(ctx->video_stream->codecpar, ctx->video_codec_ctx);

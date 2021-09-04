@@ -94,6 +94,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     jButton1 = new javax.swing.JButton();
     codec = new javax.swing.JComboBox<>();
     jLabel13 = new javax.swing.JLabel();
+    stats = new javax.swing.JLabel();
 
     jLabel1.setText("Camera Device");
 
@@ -222,6 +223,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 
     jLabel13.setText("Codec");
 
+    stats.setText("Stats:...");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -308,14 +311,17 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(preview)
             .addGroup(layout.createSequentialGroup()
               .addComponent(previewVideo, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
               .addComponent(previewAudio, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)))
-          .addComponent(start, javax.swing.GroupLayout.Alignment.TRAILING))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addComponent(stats, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(start)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -330,11 +336,13 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(previewAudio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(previewVideo, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+              .addComponent(previewVideo, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
+              .addComponent(previewAudio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(start))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(start)
+              .addComponent(stats)))
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(jLabel4)
@@ -386,7 +394,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
               .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(jLabel11)
               .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(0, 0, Short.MAX_VALUE)))
+            .addGap(0, 9, Short.MAX_VALUE)))
         .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
@@ -456,6 +464,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
   private javax.swing.JSpinner seconds;
   private javax.swing.JTextField segmentSecs;
   private javax.swing.JButton start;
+  private javax.swing.JLabel stats;
   private javax.swing.JRadioButton stereo;
   private javax.swing.JRadioButton stopMotion;
   private javax.swing.JRadioButton timeLapse;
@@ -815,7 +824,11 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
           continue;
         }
         if (!doImage) {
+          long start = System.currentTimeMillis();
           encoder.addVideo(px);
+          long stop = System.currentTimeMillis();
+          long delta = stop - start;
+          stats.setText("Stats:encode:" + delta);
         }
         if (doAudio) {
           while (mic.read(sams8)) {
