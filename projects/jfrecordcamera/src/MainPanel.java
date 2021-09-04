@@ -13,24 +13,27 @@ import javaforce.*;
 import javaforce.service.*;
 import javaforce.media.*;
 
-public class MainPanel extends javax.swing.JPanel implements MediaIO {
+public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler {
 
   public static String version = "0.10";
 
-  public static String file_codec = "avi";
-  public static String file_ext = ".avi";
-  public static String file_desc = "AVI (*.avi)";
+  public static class Codec {
+    public String codec, ext, desc, mime;
+    public Codec(String codec, String mime) {
+      this.codec = codec;
+      this.ext = "." + codec;
+      this.desc = codec.toUpperCase() + " (*." + codec + ")";
+      this.mime = mime;
+    }
+  }
 
-  //webm/vp9 (works but encoding is very slow)
-  public static String bc_codec = "webm";
-  public static String bc_ext = ".webm";
-  public static String bc_mime = "video/webm; codecs=\"vp9,opus\"";
+  public Codec avi = new Codec("avi", "application/ms-avi");
+  public Codec mp4 = new Codec("mp4", "video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"");
+  public Codec webm = new Codec("webm", "video/webm; codecs=\"vp9,opus\"");
 
-  //video/mp4 (not working - requires ISO BMFF packetization)
-  public static String bc_codec_mp4 = "mp4";
-  public static String bc_ext_mp4 = ".mp4";
-  public static String bc_mime_mp4 = "video/mp4; codecs=\"avc1.42E01E, mp4a.40.2\"";
-  public static String bc_m4s_mp4 = "video/iso.segment";
+  public static String m4s_mimetype = "video/iso.segment";
+
+  public Codec selected_codec;
 
   /**
    * Creates new form MainPanel
@@ -89,6 +92,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     jLabel12 = new javax.swing.JLabel();
     resolution = new javax.swing.JComboBox<>();
     jButton1 = new javax.swing.JButton();
+    codec = new javax.swing.JComboBox<>();
+    jLabel13 = new javax.swing.JLabel();
 
     jLabel1.setText("Camera Device");
 
@@ -140,6 +145,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
 
     previewVideo.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
     previewVideo.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+    previewVideo.setFocusable(false);
+    previewVideo.setInheritsPopupMenu(false);
 
     previewAudio.setOrientation(1);
     previewAudio.setToolTipText("");
@@ -178,9 +185,19 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     buttonGroup3.add(record);
     record.setSelected(true);
     record.setText("Record to file");
+    record.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        recordActionPerformed(evt);
+      }
+    });
 
     buttonGroup3.add(broadcast);
     broadcast.setText("Broadcast ");
+    broadcast.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        broadcastActionPerformed(evt);
+      }
+    });
 
     jLabel10.setText("Port");
 
@@ -201,6 +218,10 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
       }
     });
 
+    codec.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "AVI", "MP4", "WEBM" }));
+
+    jLabel13.setText("Codec");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -212,27 +233,11 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                 .addGroup(layout.createSequentialGroup()
-                  .addComponent(jLabel6)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(jLabel9))
-                .addGroup(layout.createSequentialGroup()
-                  .addComponent(stopMotion)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                  .addComponent(next))
-                .addGroup(layout.createSequentialGroup()
                   .addComponent(timeLapse)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(seconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(jLabel2))
-                .addGroup(layout.createSequentialGroup()
-                  .addComponent(jLabel5)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                  .addComponent(jLabel8))
                 .addGroup(layout.createSequentialGroup()
                   .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
@@ -255,7 +260,32 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
                       .addGap(18, 18, 18)
                       .addComponent(mono)))
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                  .addComponent(stereo)))
+                  .addComponent(stereo))
+                .addGroup(layout.createSequentialGroup()
+                  .addComponent(jLabel6)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(jLabel9))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(stopMotion)
+                    .addGroup(layout.createSequentialGroup()
+                      .addComponent(jLabel5)
+                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                      .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                      .addComponent(jLabel8)
+                      .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                      .addComponent(jLabel13)))
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                      .addGap(0, 0, Short.MAX_VALUE)
+                      .addComponent(next))
+                    .addGroup(layout.createSequentialGroup()
+                      .addComponent(codec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                      .addGap(0, 0, Short.MAX_VALUE)))))
               .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                   .addComponent(jLabel1)
@@ -265,30 +295,29 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
                   .addComponent(cameraDevices, 0, 206, Short.MAX_VALUE)
                   .addComponent(audioDevices, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1)))
+                .addComponent(jButton1))
+              .addComponent(record)
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(broadcast)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel11)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
               .addComponent(preview)
               .addGroup(layout.createSequentialGroup()
-                .addComponent(previewVideo, javax.swing.GroupLayout.PREFERRED_SIZE, 216, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(previewVideo, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(previewAudio, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE))))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(record)
-            .addGap(0, 0, Short.MAX_VALUE))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(broadcast)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel10)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(jLabel11)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGap(0, 0, Short.MAX_VALUE)
             .addComponent(start)))
         .addContainerGap())
     );
@@ -301,7 +330,14 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
           .addComponent(cameraDevices, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(preview)
           .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(layout.createSequentialGroup()
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(previewAudio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+              .addComponent(previewVideo, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(start))
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(jLabel4)
@@ -334,30 +370,26 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(jLabel5)
               .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addComponent(jLabel8))
+              .addComponent(jLabel8)
+              .addComponent(codec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(jLabel13))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(jLabel6)
               .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(jLabel9))
-            .addGap(7, 7, 7))
-          .addGroup(layout.createSequentialGroup()
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(previewAudio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(previewVideo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(record)
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(broadcast)
-          .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(start)
-          .addComponent(jLabel10)
-          .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jLabel11)
-          .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(record)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+              .addComponent(broadcast)
+              .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(jLabel10)
+              .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+              .addComponent(jLabel11)
+              .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGap(0, 0, Short.MAX_VALUE)))
+        .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
 
@@ -379,6 +411,14 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     listCameras();
   }//GEN-LAST:event_jButton1ActionPerformed
 
+  private void recordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordActionPerformed
+    listCodecs();
+  }//GEN-LAST:event_recordActionPerformed
+
+  private void broadcastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_broadcastActionPerformed
+    listCodecs();
+  }//GEN-LAST:event_broadcastActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JComboBox aBitRate;
   private javax.swing.JRadioButton audio;
@@ -388,6 +428,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
   private javax.swing.ButtonGroup buttonGroup2;
   private javax.swing.ButtonGroup buttonGroup3;
   private javax.swing.JComboBox cameraDevices;
+  private javax.swing.JComboBox<String> codec;
   private javax.swing.JSpinner fps;
   private javax.swing.JComboBox freq;
   private javax.swing.JButton jButton1;
@@ -395,6 +436,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
   private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel11;
   private javax.swing.JLabel jLabel12;
+  private javax.swing.JLabel jLabel13;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
@@ -426,7 +468,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
   private AudioInput mic;
   private RandomAccessFile raf;
   private MediaEncoder encoder;
-  private Broadcast broadcaster;
+  private Web broadcaster;
   private ArrayList<String> tempFiles = new ArrayList<>();
   private boolean active = false;
   private boolean working = false;
@@ -466,6 +508,15 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     for(String mode : list) {
       resolution.addItem(mode);
     }
+  }
+
+  public void listCodecs() {
+    codec.removeAllItems();
+    if (record.isSelected()) {
+      codec.addItem("AVI");  //does not support streaming
+      codec.addItem("MP4");  //does not work with broadcast yet (need ISO BMFF packetization)
+    }
+    codec.addItem("WEBM");
   }
 
   public void listAudioDevices() {
@@ -554,7 +605,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
   private byte[] mpd;
   private boolean encoder_start() {
     encoder.setFramesPerKeyFrame(frameRate);
-    return encoder.start(this, width, height, frameRate, chs, audioRate, doRecord ? file_codec : bc_codec, true, doAudio);
+    return encoder.start(this, width, height, frameRate, chs, audioRate, selected_codec.codec, true, doAudio);
   }
   private void encoder_stop() {
     encoder.stop();
@@ -599,6 +650,13 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
       setState(false);
       segment = 1;
 
+      //get selected codec
+      switch ((String)codec.getSelectedItem()) {
+        case "AVI": selected_codec = avi; break;
+        case "MP4": selected_codec = mp4; break;
+        case "WEBM": selected_codec = webm; break;
+      }
+
       if (doRecord) {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -607,14 +665,14 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         javax.swing.filechooser.FileFilter ffAVI = new javax.swing.filechooser.FileFilter() {
           public boolean accept(File file) {
             if (file.isDirectory()) return true;
-            if (file.getName().endsWith(file_ext)) return true;
+            if (file.getName().endsWith(selected_codec.ext)) return true;
             return false;
           }
           public String getDescription() {
-            return file_desc;
+            return selected_codec.desc;
           }
           public String toString() {
-            return file_ext;
+            return selected_codec.ext;
           }
         };
         chooser.addChoosableFileFilter(ffAVI);
@@ -626,10 +684,10 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         }
         mediaFile = chooser.getSelectedFile().getAbsolutePath();
         String fnlc = mediaFile.toLowerCase();
-        if ((!fnlc.endsWith(file_ext))) {
+        if ((!fnlc.endsWith(selected_codec.ext))) {
     //      javax.swing.filechooser.FileFilter ff = chooser.getFileFilter();
     //      fn += ff.toString();
-          mediaFile += file_ext;
+          mediaFile += selected_codec.ext;
         }
       } else {
         mediaFile = getTempFile();
@@ -643,7 +701,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
       }
       audioRate = JF.atoi((String)freq.getSelectedItem());
       if (audioRate < 8000 || audioRate > 44100) audioRate = 44100;
-      if (!doRecord) {
+      if (selected_codec.codec.equals("webm")) {
         audioRate = 48000;  //opus codec only accepts 8k, 16k, 24k, 48k
       }
       chs = mono.isSelected() ? 1 : 2;
@@ -679,7 +737,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         encoder.setVideoBitRate(getVideoBitRate());
         if (!doRecord) {
           encoder.setDASH(true);
-          encoder.setCompressLevel(2);  //faster compression for vp9
+          encoder.setCompressLevel(1);  //faster compression for vp9
         }
         if (!encoder_start())
         {
@@ -731,8 +789,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
       }
 
       if (!doRecord) {
-        broadcaster = new Broadcast();
-        broadcaster.start();
+        broadcaster_start();
       }
 
       while (active) {
@@ -818,6 +875,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
         encoder_stop();
         encoder = null;
       }
+      if (broadcaster != null) {
+        broadcaster_stop();
+      }
       camera.stop();
       camera.uninit();
       camera = null;
@@ -895,7 +955,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
   }
 
   private String getTempFile() {
-    return JF.getTempPath() + "/segment-" + segment + bc_ext;
+    return JF.getTempPath() + "/segment-" + segment + selected_codec.ext;
   }
 
   private byte[] getMPD() {
@@ -915,85 +975,82 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
     return sb.toString().getBytes();
   }
 
-  public class Broadcast implements WebHandler {
-    private Web web;
-
-    public void start() {
-      int webport = JF.atoi(port.getText());
-      if (webport < 1) {
-        webport = 80;
-      }
-      if (webport > 65535) {
-        webport = 80;
-      }
-      web = new Web();
-      web.start(this, webport, false);
+  public void broadcaster_start() {
+    int webport = JF.atoi(port.getText());
+    if (webport < 1) {
+      webport = 80;
     }
-
-    public void stop() {
-      web.stop();
-      web = null;
+    if (webport > 65535) {
+      webport = 80;
     }
+    broadcaster = new Web();
+    broadcaster.start(this, webport, false);
+  }
 
-    public void doPost(WebRequest req, WebResponse res) {
-      doGet(req, res);
+  public void broadcaster_stop() {
+    broadcaster.stop();
+    broadcaster = null;
+  }
+
+  public void doPost(WebRequest req, WebResponse res) {
+    doGet(req, res);
+  }
+
+  public void doGet(WebRequest req, WebResponse res) {
+    String url = req.getURL();
+    if (url.length() == 0) url = "/";
+    if (url.equals("/")) {
+      String html;
+      if (doImage) {
+        html = getHTMLImage();
+      } else {
+        html = getHTMLVideo(true);
+      }
+      try {
+        res.write(html.getBytes());
+      } catch (Exception e) {}
     }
-
-    public void doGet(WebRequest req, WebResponse res) {
-      String url = req.getURL();
-      if (url.length() == 0) url = "/";
-      if (url.equals("/")) {
-        String html;
-        if (doImage) {
-          html = getHTMLImage();
-        } else {
-          html = getHTMLVideo(true);
-        }
-        try {
-          res.write(html.getBytes());
-        } catch (Exception e) {}
+    if (url.endsWith(selected_codec.ext)) {
+      //send segment
+      String file = JF.getTempPath() + url;
+      if (!tempFiles.contains(file)) {
+        JFLog.log("WebMediaNotFound:" + file);
+        res.setStatus(404, "File not found");
+        return;
       }
-      if (url.endsWith(bc_ext)) {
-        //send segment
-        String file = JF.getTempPath() + url;
-        if (!tempFiles.contains(file)) {
-          JFLog.log("WebMediaNotFound:" + file);
-          res.setStatus(404, "File not found");
-          return;
-        }
-        try {
-          res.setContentType(bc_mime);
-          FileInputStream fis = new FileInputStream(file);
-          byte[] data = fis.readAllBytes();
-          fis.close();
-          res.write(data);
-        } catch (Exception e) {}
-      }
-      if (url.endsWith(".jpg")) {
-        if (image == null) {
-          res.setStatus(404, "Not Ready");
-          return;
-        }
-        try {
-          res.write(image);
-        } catch (Exception e) {}
-      }
-      if (url.endsWith(".mpd")) {
-        if (mpd == null) {
-          res.setStatus(404, "Not Ready");
-          return;
-        }
-        try {
-          res.write(mpd);
-        } catch (Exception e) {}
-      }
+      try {
+        res.setContentType(selected_codec.mime);
+        FileInputStream fis = new FileInputStream(file);
+        byte[] data = fis.readAllBytes();
+        fis.close();
+        res.write(data);
+      } catch (Exception e) {}
     }
+    if (url.endsWith(".jpg")) {
+      if (image == null) {
+        res.setStatus(404, "Not Ready");
+        return;
+      }
+      try {
+        res.write(image);
+      } catch (Exception e) {}
+    }
+    if (url.endsWith(".mpd")) {
+      if (mpd == null) {
+        res.setStatus(404, "Not Ready");
+        return;
+      }
+      try {
+        res.write(mpd);
+      } catch (Exception e) {}
+    }
+  }
 
-    private String getHTMLVideo(boolean dash) {
-      StringBuilder html = new StringBuilder();
-      if (dash) {
+  private String getHTMLVideo(boolean dash) {
+    StringBuilder html = new StringBuilder();
+    if (dash) {
 //DASH format (limited support)
-        html.append(
+      html.append(
 "<script>" +
 "var segment=" + segment + ";\n" +
 "var media;\n" +
@@ -1021,7 +1078,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
 "function loadSegment() {\n" +
 "  console.log('loadSegment');\n" +
 "  var req = new XMLHttpRequest();\n" +
-"  var url = 'segment-' + segment + '." + bc_codec + "';\n" +
+"  var url = 'segment-' + segment + '." + selected_codec.codec + "';\n" +
 "  req.open('get', url);\n" +
 "  req.responseType = 'arraybuffer';\n" +
 "  req.onload = function () {\n" +
@@ -1044,7 +1101,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
 "function sourceOpen() {\n" +
 "  console.log('sourceOpen');\n" +
 "  console.log('start segment=' + segment);\n" +
-"  buffer = media.addSourceBuffer('" + bc_mime + "');\n" +
+"  buffer = media.addSourceBuffer('" + selected_codec.mime + "');\n" +
 "  buffer.mode = 'sequence';" +  //timestamps not used
 "  buffer.addEventListener('updateend', loadNextSegment);\n" +
 //"  buffer.addEventListener('error', loadSegmentError);\n" +
@@ -1057,15 +1114,15 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
 "media.addEventListener('sourceopen', sourceOpen);\n" +
 "video.src = URL.createObjectURL(media);\n" +
 "</script>"
-          );
-        } else {
+        );
+      } else {
 //very simply choppy method
-          html.append(
+        html.append(
 "<script>" +
 "var segment=" + segment + ";\n" +
 "function start() {\n" +
 "  var video = document.getElementById('video');\n" +
-"  var url = 'segment-' + segment + '." + bc_codec + "';\n" +
+"  var url = 'segment-' + segment + '." + selected_codec.codec + "';\n" +
 "  console.log('Playing:' + url);\n" +
 "  video.src = url;\n" +
 "  video.load();\n" +
@@ -1085,14 +1142,14 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
 "video.addEventListener('ended', next, false);\n" +
 "video.addEventListener('error', delaystart, false);\n" +
 "</script>"
-          );
-        }
-      return html.toString();
-    }
+        );
+      }
+    return html.toString();
+  }
 
-    private String getHTMLImage() {
-      StringBuilder html = new StringBuilder();
-      html.append(
+  private String getHTMLImage() {
+    StringBuilder html = new StringBuilder();
+    html.append(
 "<script>" +
 "var image;\n" +
 "function assignImage(blob) {\n" +
@@ -1119,8 +1176,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO {
 "image = document.getElementById('image');\n" +
 "setTimeout(loadImage, " + (timeLapseSecondsDelay * 1000) + ");\n" +
 "</script>"
-      );
-      return html.toString();
-    }
+    );
+    return html.toString();
   }
 }
