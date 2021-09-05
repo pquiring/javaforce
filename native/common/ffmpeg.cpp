@@ -1480,18 +1480,29 @@ static int get_size_alignment(int width, int height) {
 static jboolean encoder_init_video(FFContext *ctx) {
   printf("encoder_init_video(type=0x%x,ctx.id=0x%x,id=0x%x)\r\n", ctx->video_codec_ctx->codec_type, ctx->video_codec_ctx->codec_id, ctx->video_codec->id);
   //set video codec options
-  if (ctx->video_codec_ctx->codec_id == AV_CODEC_ID_H264) {
-    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "baseline", 0);
-    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "slow", 0);
-  }
-  if (ctx->video_codec_ctx->codec_id == AV_CODEC_ID_VP9) {
-    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "veryfast", 0);
-    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "deadline", "realtime", 0);
-    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "cpu-used", 8, 0);
-//    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-columns", 4, 0);
-//    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-rows", 4, 0);
-    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "crf", 10, 0);
-//    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "threads", 4, 0);
+  switch (ctx->video_codec_ctx->codec_id) {
+    case AV_CODEC_ID_MPEG4: {
+      break;
+    }
+    case AV_CODEC_ID_H264: {
+      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "baseline", 0);
+      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "slow", 0);
+      break;
+    }
+    case AV_CODEC_ID_VP9: {
+      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "veryfast", 0);
+      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "deadline", "realtime", 0);
+      (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "cpu-used", 8, 0);
+//      (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-columns", 4, 0);
+//      (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-rows", 4, 0);
+      (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "crf", 10, 0);
+//      (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "threads", 4, 0);
+      break;
+    }
+    default: {
+      printf("Unknown video codec:0x%x\n", ctx->video_codec_ctx->codec_id);
+      break;
+    }
   }
   ctx->video_codec_ctx->qmin = 2;
   ctx->video_codec_ctx->qmax = 40;
@@ -1542,10 +1553,23 @@ static jboolean encoder_init_video(FFContext *ctx) {
 }
 
 static jboolean encoder_init_audio(FFContext *ctx) {
-  //audio_codec_ctx = AVCodecContext
-  //audio_codec = AVCodec
   printf("encoder_init_audio(type=0x%x,ctx.id=0x%x,id=0x%x)\r\n", ctx->audio_codec_ctx->codec_type, ctx->audio_codec_ctx->codec_id, ctx->audio_codec->id);
   //set audio codec options
+  switch (ctx->audio_codec_ctx->codec_id) {
+    case AV_CODEC_ID_MP3: {
+      break;
+    }
+    case AV_CODEC_ID_AAC: {
+      break;
+    }
+    case AV_CODEC_ID_OPUS: {
+      break;
+    }
+    default: {
+      printf("Unknown audio codec:0x%x\n", ctx->audio_codec_ctx->codec_id);
+      break;
+    }
+  }
   if (ctx->compressionLevel != -1) {
     ctx->video_codec_ctx->compression_level = ctx->compressionLevel;
   }
