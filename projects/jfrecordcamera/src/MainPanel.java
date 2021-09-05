@@ -611,7 +611,6 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
   private byte[] image;
   private byte[] mpd;
   private boolean encoder_start() {
-    encoder.setFramesPerKeyFrame(frameRate);
     return encoder.start(this, width, height, frameRate, chs, audioRate, selected_codec.codec, true, doAudio);
   }
   private void encoder_stop() {
@@ -742,6 +741,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
         encoder = new MediaEncoder();
         encoder.setAudioBitRate(getAudioBitRate());
         encoder.setVideoBitRate(getVideoBitRate());
+        encoder.setFramesPerKeyFrame(frameRate);
         if (!doRecord) {
           encoder.setDASH(true);
           encoder.setCompressLevel(1);  //faster compression for vp9

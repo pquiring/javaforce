@@ -1464,7 +1464,7 @@ static jboolean encoder_add_stream(FFContext *ctx, int codec_id) {
   }
 
   if ((ctx->out_fmt->flags & AVFMT_GLOBALHEADER) != 0) {
-//    codec_ctx->flags |= CODEC_FLAG_GLOBAL_HEADER;
+    codec_ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
   }
 
   return JNI_TRUE;
@@ -1515,15 +1515,22 @@ static jboolean encoder_init_video(FFContext *ctx) {
     printf("av_frame_get_buffer() failed! %d\n", ret);
     return JNI_FALSE;
   }
-  //set profile options
+  //set video codec options
   if (ctx->video_codec_ctx->codec_id == AV_CODEC_ID_H264) {
     (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "baseline", 0);
     (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "slow", 0);
   }
   if (ctx->video_codec_ctx->codec_id == AV_CODEC_ID_VP9) {
+    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "faster", 0);
     (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "deadline", "realtime", 0);
-    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "cpu-used", "4", 0);
+    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "cpu-used", 4, 0);
+    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-columns", 2, 0);
+    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-rows", 2, 0);
+    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "crf", 50, 0);
+    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "threads", 4, 0);
   }
+  ctx->video_codec_ctx->qmin = 4;
+  ctx->video_codec_ctx->qmax = 48;
   //copy params
   ret = (*_avcodec_parameters_from_context)(ctx->video_stream->codecpar, ctx->video_codec_ctx);
   if (ret < 0) {
