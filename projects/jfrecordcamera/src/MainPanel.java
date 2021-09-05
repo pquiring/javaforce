@@ -1108,19 +1108,20 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 "  req.send();\n" +
 "}\n" +
 "function loadFirstSegment() {\n" +
-"  console.log('loadSegment:' + segment);\n" +
+"  console.log('loadFirstSegment:' + segment);\n" +
 "  var req = new XMLHttpRequest();\n" +
 "  var url = 'segment-' + segment + '." + selected_codec.codec + "';\n" +
 "  req.open('get', url);\n" +
 "  req.responseType = 'arraybuffer';\n" +
 "  req.onload = function () {\n" +
 "    console.log('req.status=' + req.status);\n" +
-"    if (req.status == 200) {appendSegment(req.response);getSegment();}\n" +
+"    if (req.status == 200) {appendSegment(req.response);}\n" +
 "    if (req.status == 404) {loadSegmentError(req.response);}\n" +
 "  }\n" +
 "  req.send();\n" +
 "}\n" +
 "function loadSegment() {\n" +
+"  if (segment == 1) {getSegment(); return;}\n" +
 "  console.log('loadSegment:' + segment);\n" +
 "  var req = new XMLHttpRequest();\n" +
 "  var url = 'segment-' + segment + '." + selected_codec.codec + "';\n" +
