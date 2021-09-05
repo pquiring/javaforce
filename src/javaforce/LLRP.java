@@ -1073,6 +1073,9 @@ public class LLRP implements LLRPEndpoint {
       else if (llrpm instanceof START_ROSPEC_RESPONSE) {
         //TODO
       }
+      else if (llrpm instanceof DISABLE_ROSPEC_RESPONSE) {
+        //TODO
+      }
       else if (llrpm instanceof ERROR_MESSAGE) {
         ERROR_MESSAGE msg = (ERROR_MESSAGE)llrpm;
         //TODO : handle error message
