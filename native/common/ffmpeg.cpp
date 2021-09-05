@@ -1488,13 +1488,13 @@ static jboolean encoder_init_video(FFContext *ctx) {
     (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "veryfast", 0);
     (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "deadline", "realtime", 0);
     (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "cpu-used", 8, 0);
-    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-columns", 4, 0);
+//    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-columns", 4, 0);
 //    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-rows", 4, 0);
-    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "crf", 30, 0);
-    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "threads", 4, 0);
+    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "crf", 10, 0);
+//    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "threads", 4, 0);
   }
   ctx->video_codec_ctx->qmin = 2;
-  ctx->video_codec_ctx->qmax = 30;
+  ctx->video_codec_ctx->qmax = 40;
   if (ctx->compressionLevel != -1) {
     ctx->video_codec_ctx->compression_level = ctx->compressionLevel;
   }
