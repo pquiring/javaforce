@@ -874,7 +874,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
               JFLog.log("AddSegment:" + mediaFile);
               tempFiles.add(mediaFile);
               if (tempFiles.size() > 10) {
-                String oldFile = tempFiles.remove(0);
+                //keep segment # 1
+                String oldFile = tempFiles.remove(1);
                 new File(oldFile).delete();
               }
               segment++;
@@ -1072,7 +1073,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     StringBuilder html = new StringBuilder();
     html.append(
 "<script>" +
-"var segment=" + segment + ";\n" +
+"var segment=1;\n" +
 "var media;\n" +
 "var buffer;\n" +
 "var video;\n" +
@@ -1102,6 +1103,19 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 "  req.onload = function () {\n" +
 "    console.log('req.status=' + req.status);\n" +
 "    if (req.status == 200) {appendSegment(req.response);}\n" +
+"    if (req.status == 404) {loadSegmentError(req.response);}\n" +
+"  }\n" +
+"  req.send();\n" +
+"}\n" +
+"function loadFirstSegment() {\n" +
+"  console.log('loadSegment:' + segment);\n" +
+"  var req = new XMLHttpRequest();\n" +
+"  var url = 'segment-' + segment + '." + selected_codec.codec + "';\n" +
+"  req.open('get', url);\n" +
+"  req.responseType = 'arraybuffer';\n" +
+"  req.onload = function () {\n" +
+"    console.log('req.status=' + req.status);\n" +
+"    if (req.status == 200) {appendSegment(req.response);getSegment();}\n" +
 "    if (req.status == 404) {loadSegmentError(req.response);}\n" +
 "  }\n" +
 "  req.send();\n" +
@@ -1138,7 +1152,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 //"  buffer.addEventListener('error', loadSegmentError);\n" +
 "}\n" +
 "</script>" +
-"<video id=video width=100% height=100% controls onplay='getSegment();'></video>" +
+"<video id=video width=100% height=100% controls onplay='loadFirstSegment();'></video>" +
 "<script>" +
 "media = new MediaSource();\n" +
 "video = document.getElementById('video');\n" +
