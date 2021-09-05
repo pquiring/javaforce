@@ -1479,11 +1479,34 @@ static int get_size_alignment(int width, int height) {
 
 static jboolean encoder_init_video(FFContext *ctx) {
   printf("encoder_init_video(type=0x%x,ctx.id=0x%x,id=0x%x)\r\n", ctx->video_codec_ctx->codec_type, ctx->video_codec_ctx->codec_id, ctx->video_codec->id);
-  int ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
-  if (ret < 0) return JNI_FALSE;
+  //set video codec options
+  if (ctx->video_codec_ctx->codec_id == AV_CODEC_ID_H264) {
+    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "baseline", 0);
+    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "slow", 0);
+  }
+  if (ctx->video_codec_ctx->codec_id == AV_CODEC_ID_VP9) {
+    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "veryfast", 0);
+    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "deadline", "realtime", 0);
+    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "cpu-used", 8, 0);
+    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-columns", 4, 0);
+//    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-rows", 4, 0);
+    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "crf", 30, 0);
+    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "threads", 4, 0);
+  }
+  ctx->video_codec_ctx->qmin = 2;
+  ctx->video_codec_ctx->qmax = 30;
   if (ctx->compressionLevel != -1) {
     ctx->video_codec_ctx->compression_level = ctx->compressionLevel;
   }
+  //copy params
+  int ret = (*_avcodec_parameters_from_context)(ctx->video_stream->codecpar, ctx->video_codec_ctx);
+  if (ret < 0) {
+    printf("avcodec_parameters_from_context() failed!\n");
+    return JNI_FALSE;
+  }
+  //open video codec
+  ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
+  if (ret < 0) return JNI_FALSE;
   if (ctx->video_codec_ctx->pix_fmt != AV_PIX_FMT_BGRA) {
     ctx->scaleVideo = JNI_TRUE;
   }
@@ -1515,28 +1538,6 @@ static jboolean encoder_init_video(FFContext *ctx) {
     printf("av_frame_get_buffer() failed! %d\n", ret);
     return JNI_FALSE;
   }
-  //set video codec options
-  if (ctx->video_codec_ctx->codec_id == AV_CODEC_ID_H264) {
-    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "baseline", 0);
-    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "slow", 0);
-  }
-  if (ctx->video_codec_ctx->codec_id == AV_CODEC_ID_VP9) {
-    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "faster", 0);
-    (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "deadline", "realtime", 0);
-    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "cpu-used", 4, 0);
-    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-columns", 2, 0);
-    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "tile-rows", 2, 0);
-    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "crf", 50, 0);
-    (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "threads", 4, 0);
-  }
-  ctx->video_codec_ctx->qmin = 4;
-  ctx->video_codec_ctx->qmax = 48;
-  //copy params
-  ret = (*_avcodec_parameters_from_context)(ctx->video_stream->codecpar, ctx->video_codec_ctx);
-  if (ret < 0) {
-    printf("avcodec_parameters_from_context() failed!\n");
-    return JNI_FALSE;
-  }
   return JNI_TRUE;
 }
 
@@ -1544,7 +1545,18 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   //audio_codec_ctx = AVCodecContext
   //audio_codec = AVCodec
   printf("encoder_init_audio(type=0x%x,ctx.id=0x%x,id=0x%x)\r\n", ctx->audio_codec_ctx->codec_type, ctx->audio_codec_ctx->codec_id, ctx->audio_codec->id);
-  int ret = (*_avcodec_open2)(ctx->audio_codec_ctx, ctx->audio_codec, NULL);
+  //set audio codec options
+  if (ctx->compressionLevel != -1) {
+    ctx->video_codec_ctx->compression_level = ctx->compressionLevel;
+  }
+  //copy params
+  int ret = (*_avcodec_parameters_from_context)(ctx->audio_stream->codecpar, ctx->audio_codec_ctx);
+  if (ret < 0) {
+    printf("avcodec_parameters_from_context() failed!\n");
+    return JNI_FALSE;
+  }
+  //open audio codec
+  ret = (*_avcodec_open2)(ctx->audio_codec_ctx, ctx->audio_codec, NULL);
   if (ret < 0) {
     printf("avcodec_open2() failed!\n");
     return JNI_FALSE;
@@ -1573,12 +1585,6 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   if (!ctx->audio_frame_size_variable) {
     ctx->audio_buffer = (short*)(*_av_malloc)(ctx->audio_frame_size * 2);
     ctx->audio_buffer_size = 0;
-  }
-  //copy params
-  ret = (*_avcodec_parameters_from_context)(ctx->audio_stream->codecpar, ctx->audio_codec_ctx);
-  if (ret < 0) {
-    printf("avcodec_parameters_from_context() failed!\n");
-    return JNI_FALSE;
   }
   if (ctx->audio_codec_ctx->sample_fmt == AV_SAMPLE_FMT_S16) {
     return JNI_TRUE;
