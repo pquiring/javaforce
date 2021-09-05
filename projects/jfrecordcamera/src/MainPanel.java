@@ -828,7 +828,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
           encoder.addVideo(px);
           long stop = System.currentTimeMillis();
           long delta = stop - start;
-          stats.setText("Stats:encode:" + delta);
+          stats.setText(String.format("Stats:encode:%02d:segment:%02d", delta, segment));
         }
         if (doAudio) {
           while (mic.read(sams8)) {
@@ -873,6 +873,10 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
               close_file();
               JFLog.log("AddSegment:" + mediaFile);
               tempFiles.add(mediaFile);
+              if (tempFiles.size() > 10) {
+                String oldFile = tempFiles.remove(0);
+                new File(oldFile).delete();
+              }
               segment++;
               mediaFile = getTempFile();
               create_file();
@@ -897,8 +901,6 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
         close_file();
       }
       if (!doRecord) {
-        broadcaster.stop();
-        broadcaster = null;
         //delete all temp files
         for(String file : tempFiles) {
           new File(file).delete();
@@ -1015,7 +1017,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
       if (doImage) {
         html = getHTMLImage();
       } else {
-        html = getHTMLVideo(true);
+        html = getHTMLVideo();
       }
       try {
         res.write(html.getBytes());
@@ -1055,19 +1057,37 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
         res.write(mpd);
       } catch (Exception e) {}
     }
+    if (url.endsWith(".idx")) {
+      int idx = segment;
+      if (tempFiles.size() > 1) {
+        idx -= tempFiles.size() - 1;
+      }
+      try {
+        res.write(Integer.toString(idx).getBytes());
+      } catch (Exception e) {}
+    }
   }
 
-  private String getHTMLVideo(boolean dash) {
+  private String getHTMLVideo() {
     StringBuilder html = new StringBuilder();
-    if (dash) {
-//DASH format (limited support)
-      html.append(
+    html.append(
 "<script>" +
 "var segment=" + segment + ";\n" +
 "var media;\n" +
 "var buffer;\n" +
 "var video;\n" +
 "var error;\n" +
+"function getSegment() {\n" +
+"  console.log('getSegment');\n" +
+"  var req = new XMLHttpRequest();\n" +
+"  var url = 'segment.idx';\n" +
+"  req.open('get', url);\n" +
+"  req.onload = function () {\n" +
+"    console.log('req.status=' + req.status);\n" +
+"    if (req.status == 200) {segment = parseInt(req.response); loadSegment();}\n" +
+"  }\n" +
+"  req.send();\n" +
+"}\n" +
 "function appendSegment(buf) {\n" +
 "  console.log('appendSegment:buf=' + buf + ':segment=' + segment);\n" +
 "  console.log('appendSegment:media.readyState=' + media.readyState);\n" +
@@ -1087,7 +1107,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 "  req.send();\n" +
 "}\n" +
 "function loadSegment() {\n" +
-"  console.log('loadSegment');\n" +
+"  console.log('loadSegment:' + segment);\n" +
 "  var req = new XMLHttpRequest();\n" +
 "  var url = 'segment-' + segment + '." + selected_codec.codec + "';\n" +
 "  req.open('get', url);\n" +
@@ -1118,43 +1138,14 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 //"  buffer.addEventListener('error', loadSegmentError);\n" +
 "}\n" +
 "</script>" +
-"<video id=video width=100% height=100% controls onplay='loadSegment();'></video>" +
+"<video id=video width=100% height=100% controls onplay='getSegment();'></video>" +
 "<script>" +
 "media = new MediaSource();\n" +
 "video = document.getElementById('video');\n" +
 "media.addEventListener('sourceopen', sourceOpen);\n" +
 "video.src = URL.createObjectURL(media);\n" +
 "</script>"
-        );
-      } else {
-//very simply choppy method
-        html.append(
-"<script>" +
-"var segment=" + segment + ";\n" +
-"function start() {\n" +
-"  var video = document.getElementById('video');\n" +
-"  var url = 'segment-' + segment + '." + selected_codec.codec + "';\n" +
-"  console.log('Playing:' + url);\n" +
-"  video.src = url;\n" +
-"  video.load();\n" +
-"  video.play();\n" +
-"}\n" +
-"function delaystart() {\n" +
-"setTimeout(start, " + segmentTimeMax + ");\n" +
-"}\n" +
-"function next() {\n" +
-"  segment = segment + 1;\n" +
-"  start();\n" +
-"}\n" +
-"</script>" +
-"<video id=video width=100% height=100% onclick='start();'></video>" +
-"<script>" +
-"var video = document.getElementById('video');\n" +
-"video.addEventListener('ended', next, false);\n" +
-"video.addEventListener('error', delaystart, false);\n" +
-"</script>"
-        );
-      }
+    );
     return html.toString();
   }
 
