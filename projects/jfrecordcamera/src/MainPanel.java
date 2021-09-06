@@ -1074,6 +1074,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     html.append(
 "<script>" +
 "var segment=1;\n" +
+"var loaded=0;\n" +
 "var media;\n" +
 "var buffer;\n" +
 "var video;\n" +
@@ -1093,6 +1094,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 "  console.log('appendSegment:buf=' + buf + ':segment=' + segment);\n" +
 "  console.log('appendSegment:media.readyState=' + media.readyState);\n" +
 "  buffer.appendBuffer(new Uint8Array(buf));\n" +
+"  loaded++;\n" +
 "}\n" +
 "function loadMPD() {\n" +
 "  console.log('loadMPD');\n" +
@@ -1107,21 +1109,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 "  }\n" +
 "  req.send();\n" +
 "}\n" +
-"function loadFirstSegment() {\n" +
-"  console.log('loadFirstSegment:' + segment);\n" +
-"  var req = new XMLHttpRequest();\n" +
-"  var url = 'segment-' + segment + '." + selected_codec.codec + "';\n" +
-"  req.open('get', url);\n" +
-"  req.responseType = 'arraybuffer';\n" +
-"  req.onload = function () {\n" +
-"    console.log('req.status=' + req.status);\n" +
-"    if (req.status == 200) {appendSegment(req.response);}\n" +
-"    if (req.status == 404) {loadSegmentError(req.response);}\n" +
-"  }\n" +
-"  req.send();\n" +
-"}\n" +
 "function loadSegment() {\n" +
-"  if (segment == 1) {getSegment(); return;}\n" +
 "  console.log('loadSegment:' + segment);\n" +
 "  var req = new XMLHttpRequest();\n" +
 "  var url = 'segment-' + segment + '." + selected_codec.codec + "';\n" +
@@ -1130,30 +1118,29 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 "  req.onload = function () {\n" +
 "    console.log('req.status=' + req.status);\n" +
 "    if (req.status == 200) {appendSegment(req.response);}\n" +
-"    if (req.status == 404) {loadSegmentError(req.response);}\n" +
+"    if (req.status == 404) {if (loaded == 0) return; getSegment();}\n" +
 "  }\n" +
 "  req.send();\n" +
 "}\n" +
-"function loadNextSegment() {\n" +
-"  console.log('loadNextSegment');\n" +
+"function incrementSegment() {\n" +
+"  console.log('incrementSegment');\n" +
+"  if (loaded == 0) {loadSegment(); return;}\n" +
+"  if (segment == 1) {getSegment(); return;}\n" +
 "  segment = segment + 1;\n" +
 "  loadSegment();\n" +
-"}\n" +
-"function loadSegmentError(err) {\n" +
-"  console.log('loadSegmentError:' + err);\n" +
-"  setTimeout(loadSegment, 1000);\n" +
-"  error = err;\n" +
 "}\n" +
 "function sourceOpen() {\n" +
 "  console.log('sourceOpen');\n" +
 "  console.log('start segment=' + segment);\n" +
 "  buffer = media.addSourceBuffer('" + selected_codec.mime + "');\n" +
 "  buffer.mode = 'sequence';" +  //timestamps not used
-"  buffer.addEventListener('updateend', loadNextSegment);\n" +
-//"  buffer.addEventListener('error', loadSegmentError);\n" +
+"}\n" +
+"function start() {\n" +
+"  loadSegment();\n" +
+"  setInterval(incrementSegment, " + segmentTimeMax + ");\n" +
 "}\n" +
 "</script>" +
-"<video id=video width=100% height=100% controls onplay='loadFirstSegment();'></video>" +
+"<video id=video width=100% height=100% controls onplay='start();'></video>" +
 "<script>" +
 "media = new MediaSource();\n" +
 "video = document.getElementById('video');\n" +
