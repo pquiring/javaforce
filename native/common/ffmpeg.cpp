@@ -1563,12 +1563,14 @@ static jboolean encoder_init_audio(FFContext *ctx) {
       break;
     }
     case AV_CODEC_ID_OPUS: {
-      //opus only supports 48k
-      ctx->audio_codec_ctx->sample_rate = 48000;
-      ctx->audio_stream->time_base.num = 1;
-      ctx->audio_stream->time_base.den = 48000;
-      ctx->audio_ratio.num = 1;
-      ctx->audio_ratio.den = 48000;
+      if (ctx->freq != 48000) {
+        //opus only supports 48k
+        ctx->audio_codec_ctx->sample_rate = 48000;
+        ctx->audio_stream->time_base.num = 1;
+        ctx->audio_stream->time_base.den = 48000;
+        ctx->audio_ratio.num = 1;
+        ctx->audio_ratio.den = 48000;
+      }
       break;
     }
     default: {
