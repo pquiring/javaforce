@@ -288,13 +288,15 @@
     <Component class="javax.swing.JComboBox" name="freq">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
-          <StringArray count="4">
-            <StringItem index="0" value="44100"/>
-            <StringItem index="1" value="22050"/>
-            <StringItem index="2" value="11025"/>
-            <StringItem index="3" value="8000"/>
+          <StringArray count="5">
+            <StringItem index="0" value="48000"/>
+            <StringItem index="1" value="44100"/>
+            <StringItem index="2" value="22050"/>
+            <StringItem index="3" value="11025"/>
+            <StringItem index="4" value="8000"/>
           </StringArray>
         </Property>
+        <Property name="selectedIndex" type="int" value="1"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JRadioButton" name="mono">

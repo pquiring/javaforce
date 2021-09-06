@@ -121,7 +121,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
       }
     });
 
-    freq.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "44100", "22050", "11025", "8000" }));
+    freq.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "48000", "44100", "22050", "11025", "8000" }));
+    freq.setSelectedIndex(1);
 
     buttonGroup2.add(mono);
     mono.setSelected(true);
