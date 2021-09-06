@@ -707,9 +707,6 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
       }
       audioRate = JF.atoi((String)freq.getSelectedItem());
       if (audioRate < 8000 || audioRate > 44100) audioRate = 44100;
-      if (selected_codec.codec.equals("webm")) {
-        audioRate = 48000;  //opus codec only accepts 8k, 16k, 24k, 48k
-      }
       chs = mono.isSelected() ? 1 : 2;
       frameRate = (Integer)fps.getValue();
       timeLapseSecondsDelay = (Integer)seconds.getValue();

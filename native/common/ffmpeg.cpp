@@ -1563,6 +1563,12 @@ static jboolean encoder_init_audio(FFContext *ctx) {
       break;
     }
     case AV_CODEC_ID_OPUS: {
+      //opus only supports 48k
+      ctx->audio_codec_ctx->sample_rate = 48000;
+      ctx->audio_stream->time_base.num = 1;
+      ctx->audio_stream->time_base.den = 48000;
+      ctx->audio_ratio.num = 1;
+      ctx->audio_ratio.den = 48000;
       break;
     }
     default: {
@@ -1610,7 +1616,7 @@ static jboolean encoder_init_audio(FFContext *ctx) {
     ctx->audio_buffer = (short*)(*_av_malloc)(ctx->audio_frame_size * 2);
     ctx->audio_buffer_size = 0;
   }
-  if (ctx->audio_codec_ctx->sample_fmt == AV_SAMPLE_FMT_S16) {
+  if (ctx->audio_codec_ctx->sample_fmt == AV_SAMPLE_FMT_S16 && ctx->audio_codec_ctx->sample_rate == ctx->freq) {
     return JNI_TRUE;
   }
   //create audio conversion context
@@ -1623,7 +1629,7 @@ static jboolean encoder_init_audio(FFContext *ctx) {
     (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_rate",        ctx->freq, 0);
     (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "in_sample_fmt",  AV_SAMPLE_FMT_S16, 0);
     (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_count",     ctx->chs, 0);
-    (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       ctx->freq, 0);
+    (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       ctx->audio_codec_ctx->sample_rate, 0);
     (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->audio_codec_ctx->sample_fmt, 0);
   } else {
     ctx->swr_ctx = (*_swr_alloc_set_opts)(ctx->swr_ctx,
