@@ -1,5 +1,10 @@
 What's new ??
 
+Sept 7/2021 : version 0.11 released
+  - added more options for codec selection
+  - many fixes to codec support
+  - video streaming is still experimental and stops after a while
+
 Sept 3/2021 : version 0.10 released
   - new : added broadcast option
     - video support is still in development and not working
