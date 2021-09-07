@@ -1,5 +1,11 @@
 What's new...
 
+Sept 7/2021 : JF 33.0 released
+  - many ffmpeg improvements
+  - jfRecordCamera/0.11
+    - new codec selection
+    - video streaming is still experimental
+
 Sept 4/2021 : ffmpeg upgrade
   - upgraded to ffmpeg/4.4
 
