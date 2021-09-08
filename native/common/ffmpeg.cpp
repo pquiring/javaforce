@@ -1600,7 +1600,6 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   }
   ctx->audio_frame->format = ctx->audio_codec_ctx->sample_fmt;
   ctx->audio_frame->sample_rate = ctx->freq;
-  ctx->audio_codec_ctx->sample_rate = ctx->freq;
   ctx->audio_frame->channel_layout = ctx->audio_codec_ctx->channel_layout;
   ctx->audio_frame->channels = ctx->chs;
   if (ctx->audio_codec_ctx->frame_size == 0) {
@@ -1635,8 +1634,8 @@ static jboolean encoder_init_audio(FFContext *ctx) {
     (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->audio_codec_ctx->sample_fmt, 0);
   } else {
     ctx->swr_ctx = (*_swr_alloc_set_opts)(ctx->swr_ctx,
-      ctx->audio_codec_ctx->channel_layout, ctx->audio_codec_ctx->sample_fmt, ctx->freq,
-      ctx->audio_codec_ctx->channel_layout, AV_SAMPLE_FMT_S16, ctx->freq,
+      ctx->audio_codec_ctx->channel_layout, ctx->audio_codec_ctx->sample_fmt, ctx->audio_codec_ctx->sample_rate,  //output
+      ctx->audio_codec_ctx->channel_layout, AV_SAMPLE_FMT_S16, ctx->freq,  //input
       0, NULL);
   }
 

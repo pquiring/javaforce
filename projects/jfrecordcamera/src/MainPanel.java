@@ -63,7 +63,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     audio = new javax.swing.JRadioButton();
     jLabel7 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
-    jButton1 = new javax.swing.JButton();
+    refresh = new javax.swing.JButton();
     cameraDevices = new javax.swing.JComboBox();
     protocol = new javax.swing.JComboBox<>();
     jLabel6 = new javax.swing.JLabel();
@@ -117,10 +117,10 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 
     jLabel2.setText("Seconds delay per frame");
 
-    jButton1.setText("Refresh");
-    jButton1.addActionListener(new java.awt.event.ActionListener() {
+    refresh.setText("Refresh");
+    refresh.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton1ActionPerformed(evt);
+        refreshActionPerformed(evt);
       }
     });
 
@@ -278,7 +278,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
               .addComponent(cameraDevices, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
               .addComponent(audioDevices, javax.swing.GroupLayout.PREFERRED_SIZE, 206, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButton1))
+            .addComponent(refresh))
           .addComponent(record)
           .addGroup(jPanel1Layout.createSequentialGroup()
             .addComponent(broadcast)
@@ -301,7 +301,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel1)
           .addComponent(cameraDevices, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(refresh, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel4)
           .addComponent(audioDevices, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -448,9 +448,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     listModes();
   }//GEN-LAST:event_cameraDevicesItemStateChanged
 
-  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+  private void refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshActionPerformed
     listCameras();
-  }//GEN-LAST:event_jButton1ActionPerformed
+  }//GEN-LAST:event_refreshActionPerformed
 
   private void recordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordActionPerformed
     listCodecs();
@@ -472,7 +472,6 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
   private javax.swing.JComboBox<String> codec;
   private javax.swing.JSpinner fps;
   private javax.swing.JComboBox freq;
-  private javax.swing.JButton jButton1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel11;
@@ -497,6 +496,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
   private javax.swing.JLabel previewVideo;
   private javax.swing.JComboBox<String> protocol;
   private javax.swing.JRadioButton record;
+  private javax.swing.JButton refresh;
   private javax.swing.JComboBox<String> resolution;
   private javax.swing.JSpinner seconds;
   private javax.swing.JTextField segmentSecs;
@@ -576,6 +576,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     start.setEnabled(state);
     if (state) start.setText("Start");
     cameraDevices.setEnabled(state);
+    refresh.setEnabled(state);
     audioDevices.setEnabled(state);
     audio.setEnabled(state);
     noaudio.setEnabled(state);
@@ -586,7 +587,11 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     stereo.setEnabled(state);
     freq.setEnabled(state);
     fps.setEnabled(state);
+    resolution.setEnabled(state);
     preview.setEnabled(state);
+    vBitRate.setEnabled(state);
+    aBitRate.setEnabled(state);
+    codec.setEnabled(state);
     record.setEnabled(state);
     broadcast.setEnabled(state);
     protocol.setEnabled(state);
