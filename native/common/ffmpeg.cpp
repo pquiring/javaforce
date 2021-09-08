@@ -514,7 +514,6 @@ struct FFContext {
   int audio_buffer_size;
   int64_t audio_pts;
   int64_t video_pts;
-  AVRational audio_ratio;
 
   uint8_t* audio_src_data[4];
 
@@ -1416,17 +1415,15 @@ static jboolean encoder_add_stream(FFContext *ctx, int codec_id) {
       codec_ctx->bit_rate = ctx->config_audio_bit_rate;
       codec_ctx->sample_rate = ctx->freq;
       codec_ctx->channels = ctx->chs;
-      printf("audio:%d %d %d\n", ctx->config_audio_bit_rate, ctx->freq, ctx->chs);
       switch (ctx->chs) {
         case 1: codec_ctx->channel_layout = AV_CH_LAYOUT_MONO; break;
         case 2: codec_ctx->channel_layout = AV_CH_LAYOUT_STEREO; break;
         case 4: codec_ctx->channel_layout = AV_CH_LAYOUT_QUAD; break;
       }
+      codec_ctx->time_base.num = 1;
+      codec_ctx->time_base.den = ctx->freq;
       stream->time_base.num = 1;
       stream->time_base.den = ctx->freq;
-
-      ctx->audio_ratio.num = 1;
-      ctx->audio_ratio.den = ctx->freq;
 
       ctx->audio_stream = stream;
       ctx->audio_codec = codec;
@@ -1441,11 +1438,15 @@ static jboolean encoder_add_stream(FFContext *ctx, int codec_id) {
         codec_ctx->time_base.den = ctx->fps * 1001;
         stream->time_base.num = 1000;
         stream->time_base.den = ctx->fps * 1001;
+        codec_ctx->framerate.num = 1000;
+        codec_ctx->framerate.num = ctx->fps * 10010;
       } else {
         codec_ctx->time_base.num = 1;
         codec_ctx->time_base.den = ctx->fps;
         stream->time_base.num = 1;
         stream->time_base.den = ctx->fps;
+        codec_ctx->framerate.num = 1;
+        codec_ctx->framerate.num = ctx->fps;
       }
       codec_ctx->gop_size = ctx->config_gop_size;
       codec_ctx->keyint_min = ctx->config_gop_size;
@@ -1478,7 +1479,7 @@ static int get_size_alignment(int width, int height) {
 }
 
 static jboolean encoder_init_video(FFContext *ctx) {
-  printf("encoder_init_video(type=0x%x,ctx.id=0x%x,id=0x%x)\r\n", ctx->video_codec_ctx->codec_type, ctx->video_codec_ctx->codec_id, ctx->video_codec->id);
+  printf("encoder_init_video(id=0x%x)\r\n", ctx->video_codec->id);
   //set video codec options
   switch (ctx->video_codec_ctx->codec_id) {
     case AV_CODEC_ID_MPEG4: {
@@ -1515,6 +1516,7 @@ static jboolean encoder_init_video(FFContext *ctx) {
     printf("avcodec_parameters_from_context() failed!\n");
     return JNI_FALSE;
   }
+
   //open video codec
   ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
   if (ret < 0) return JNI_FALSE;
@@ -1553,23 +1555,24 @@ static jboolean encoder_init_video(FFContext *ctx) {
 }
 
 static jboolean encoder_init_audio(FFContext *ctx) {
-  printf("encoder_init_audio(type=0x%x,ctx.id=0x%x,id=0x%x)\r\n", ctx->audio_codec_ctx->codec_type, ctx->audio_codec_ctx->codec_id, ctx->audio_codec->id);
+  printf("encoder_init_audio(id=0x%x)\r\n", ctx->audio_codec->id);
   //set audio codec options
   switch (ctx->audio_codec_ctx->codec_id) {
     case AV_CODEC_ID_MP3: {
       break;
     }
     case AV_CODEC_ID_AAC: {
+      ctx->audio_codec_ctx->frame_size = 2048 * 2;  //default frame size per channel
       break;
     }
     case AV_CODEC_ID_OPUS: {
       if (ctx->freq != 48000) {
         //opus only supports 48k
         ctx->audio_codec_ctx->sample_rate = 48000;
+        ctx->audio_codec_ctx->time_base.num = 1;
+        ctx->audio_codec_ctx->time_base.den = 48000;
         ctx->audio_stream->time_base.num = 1;
         ctx->audio_stream->time_base.den = 48000;
-        ctx->audio_ratio.num = 1;
-        ctx->audio_ratio.den = 48000;
       }
       break;
     }
@@ -1602,9 +1605,6 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   ctx->audio_frame->sample_rate = ctx->freq;
   ctx->audio_frame->channel_layout = ctx->audio_codec_ctx->channel_layout;
   ctx->audio_frame->channels = ctx->chs;
-  if (ctx->audio_codec_ctx->frame_size == 0) {
-    ctx->audio_codec_ctx->frame_size = 2048 * ctx->chs * 2;  //default frame size
-  }
   ctx->audio_frame_size = ctx->audio_codec_ctx->frame_size * ctx->chs;  //max samples that encoder will accept
   ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) != 0;
   ctx->audio_frame->nb_samples = ctx->audio_codec_ctx->frame_size;
@@ -1639,7 +1639,6 @@ static jboolean encoder_init_audio(FFContext *ctx) {
       0, NULL);
   }
 
-  printf("conversion:%d to %d\n", AV_SAMPLE_FMT_S16, ctx->audio_codec_ctx->sample_fmt);
   if (libav_org)
     ret = (*_avresample_open)(ctx->swr_ctx);
   else
@@ -1720,6 +1719,17 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
     ctx->video_pts = 0;
   }
   (*_av_dump_format)(ctx->fmt_ctx, 0, "dump.avi", 1);
+  if (doAudio) {
+    printf("audio:codec->time_base=%d/%d stream->time_base=%d/%d\n", ctx->audio_codec_ctx->time_base.num, ctx->audio_codec_ctx->time_base.den, ctx->audio_stream->time_base.num, ctx->audio_stream->time_base.den);
+    printf("audio:bitrate=%d samplerate=%d channels=%d\n", ctx->config_audio_bit_rate, ctx->freq, ctx->chs);
+    printf("audio:framesize=%d\n", ctx->audio_frame_size);
+    printf("audio:conversion=%d to %d\n", AV_SAMPLE_FMT_S16, ctx->audio_codec_ctx->sample_fmt);
+  }
+  if (doVideo) {
+    printf("video:codec->time_base=%d/%d stream->time_base=%d/%d\n", ctx->video_codec_ctx->time_base.num, ctx->video_codec_ctx->time_base.den, ctx->video_stream->time_base.num, ctx->video_stream->time_base.den);
+    printf("video:bitrate=%d fps=%d\n", ctx->config_video_bit_rate, ctx->fps);
+    printf("video:ticks=%d\n", ctx->video_codec_ctx->ticks_per_frame);
+  }
   return JNI_TRUE;
 }
 
@@ -1822,7 +1832,7 @@ static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, i
     return JNI_FALSE;
   }
   int got_frame = 0;
-  ctx->audio_frame->pts = (*_av_rescale_q)(ctx->audio_pts, ctx->audio_ratio, ctx->audio_codec_ctx->time_base);
+  ctx->audio_frame->pts = ctx->audio_pts;  //(*_av_rescale_q)(ctx->audio_pts, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
   int ret = (*_avcodec_encode_audio2)(ctx->audio_codec_ctx, pkt, ctx->audio_frame, &got_frame);
   if (ret < 0) {
     printf("avcodec_encode_audio2() failed!%d\n", ret);
@@ -1924,29 +1934,12 @@ static jboolean encoder_addVideo(FFContext *ctx, int *px)
   AVPacket *pkt = AVPacket_New();
   (*_av_init_packet)(pkt);
   int got_frame = 0;
-  ctx->video_frame->pts = (*_av_rescale_q)(ctx->video_pts, ctx->video_stream->time_base, ctx->video_codec_ctx->time_base);
+  ctx->video_frame->pts = ctx->video_pts;  //(*_av_rescale_q)(ctx->video_pts, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
   int ret = (*_avcodec_encode_video2)(ctx->video_codec_ctx, pkt, ctx->video_frame, &got_frame);
   if (ret < 0) {
     printf("avcodec_encode_video2() failed!\n");
     return JNI_FALSE;
   }
-/*
-  printf("pts=%lld dts=%lld data=%p size=%d flags=%x side_data=%p, duration=%lld pos=%lld\n"
-    ,pkt->pts,pkt->dts,pkt->data,pkt->size,pkt->flags,pkt->side_data,pkt->duration,pkt->pos
-  );
-  uint8_t* data = pkt->data;
-  int size = pkt->size;
-  for(int a=0;a<size-4;a++,data++) {
-    uint32_t* data32 = (uint32_t*)data;
-    if (((*data32) & 0xffffff) == 0x010000) {
-      for(int b=0;b<4;b++) {
-        printf("%02x ", data[b]);
-      }
-      printf("...");
-    }
-  }
-  printf(" [%d]\n", size);
-*/
 
   if (got_frame != 0 && pkt->size > 0) {
     pkt->stream_index = ctx->video_stream->index;
@@ -1986,25 +1979,9 @@ static jboolean encoder_addAudioEncoded(FFContext *ctx, jbyte* data, jint size) 
   pkt->data = (uint8_t*)data;
   pkt->size = size;
   pkt->stream_index = ctx->audio_stream->index;
-  pkt->pts = ctx->audio_pts;
-  pkt->dts = ctx->audio_pts;
+  pkt->pts = ctx->audio_pts;  //(*_av_rescale_q)(ctx->audio_pts, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
+  pkt->dts = pkt->pts;
   (*_av_packet_rescale_ts)(pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
-
-/*
-  printf("pts=%lld dts=%lld data=%p size=%d flags=%x side_data=%p, duration=%lld pos=%lld\n"
-    ,pkt->pts,pkt->dts,pkt->data,pkt->size,pkt->flags,pkt->side_data,pkt->duration,pkt->pos
-  );
-  for(int a=0;a<size-4;a++,data++) {
-    uint32_t* data32 = (uint32_t*)data;
-    if (((*data32) & 0xffffff) == 0x010000) {
-      for(int b=0;b<4;b++) {
-        printf("%02x ", data[b]);
-      }
-      printf("...");
-    }
-  }
-  printf(" [%d]\n", size);
-*/
 
   int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
   pkt->data = NULL;
@@ -2036,28 +2013,12 @@ static jboolean encoder_addVideoEncoded(FFContext *ctx, jbyte* data, jint size, 
   pkt->data = (uint8_t*)data;
   pkt->size = size;
   pkt->stream_index = ctx->video_stream->index;
-  pkt->pts = ctx->video_pts;
-  pkt->dts = ctx->video_pts;
+  pkt->pts = ctx->video_pts;  //(*_av_rescale_q)(ctx->video_pts, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
+  pkt->dts = pkt->pts;
   if (key_frame) {
     pkt->flags = AV_PKT_FLAG_KEY;
   }
   (*_av_packet_rescale_ts)(pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
-
-/*
-  printf("pts=%lld dts=%lld data=%p size=%d flags=%x side_data=%p, duration=%lld pos=%lld\n"
-    ,pkt->pts,pkt->dts,pkt->data,pkt->size,pkt->flags,pkt->side_data,pkt->duration,pkt->pos
-  );
-  for(int a=0;a<size-4;a++,data++) {
-    uint32_t* data32 = (uint32_t*)data;
-    if (((*data32) & 0xffffff) == 0x010000) {
-      for(int b=0;b<4;b++) {
-        printf("%02x ", data[b]);
-      }
-      printf("...");
-    }
-  }
-  printf(" [%d]\n", size);
-*/
 
   int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
   pkt->data = NULL;
