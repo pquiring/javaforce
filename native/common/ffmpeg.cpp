@@ -1925,7 +1925,7 @@ static jboolean encoder_addVideo(FFContext *ctx, int *px)
   AVPacket *pkt = AVPacket_New();
   (*_av_init_packet)(pkt);
   int got_frame = 0;
-  ctx->video_frame->pts = ctx->video_pts;
+  ctx->video_frame->pts = (*_av_rescale_q)(ctx->video_pts, ctx->video_stream->time_base, ctx->video_codec_ctx->time_base);
   int ret = (*_avcodec_encode_video2)(ctx->video_codec_ctx, pkt, ctx->video_frame, &got_frame);
   if (ret < 0) {
     printf("avcodec_encode_video2() failed!\n");

@@ -312,17 +312,15 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 6, Short.MAX_VALUE)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(preview)
             .addGroup(layout.createSequentialGroup()
               .addComponent(previewVideo, javax.swing.GroupLayout.PREFERRED_SIZE, 256, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
               .addComponent(previewAudio, javax.swing.GroupLayout.PREFERRED_SIZE, 9, javax.swing.GroupLayout.PREFERRED_SIZE)))
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addComponent(stats, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(start)))
+          .addComponent(start, javax.swing.GroupLayout.Alignment.TRAILING)
+          .addComponent(stats, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 269, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -340,10 +338,10 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
               .addComponent(previewVideo, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
               .addComponent(previewAudio, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(stats)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-              .addComponent(start)
-              .addComponent(stats)))
+            .addComponent(start))
           .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
               .addComponent(jLabel4)
@@ -395,7 +393,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
               .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
               .addComponent(jLabel11)
               .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGap(0, 9, Short.MAX_VALUE)))
+            .addGap(0, 29, Short.MAX_VALUE)))
         .addContainerGap())
     );
   }// </editor-fold>//GEN-END:initComponents
@@ -773,13 +771,22 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
       do{
         ready = camera.getFrame() != null;
         if (doAudio) {
-          while (mic.read(sams8)) {}
+          int max = 10;
+          while (!mic.read(sams8)) {
+            max--;
+            if (max == 0) break;
+            JF.sleep(100);
+          }
         }
       } while (active && !ready);
 
       long currentTime = System.currentTimeMillis();
       long segmentTime = currentTime;
-      long delayTime = 1000 / frameRate;
+      double delayTime = 1000.0 / frameRate;
+      double countTime = 0.0;
+      long secondTime = currentTime / 1000;
+      int frameCount = 0;
+      int avgFrameRate = frameRate;
       JFLog.log("delayTime=" + delayTime);
       int px[] = null;
       boolean doPreview = preview.isSelected();
@@ -826,8 +833,13 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
           encoder.addVideo(px);
           long stop = System.currentTimeMillis();
           long delta = stop - start;
-          stats.setText(String.format("Stats:encode:%02d:segment:%02d", delta, segment));
+          if (!doRecord) {
+            stats.setText(String.format("Stats:encode=%02d:segment=%02d:fps=%02d", delta, segment, avgFrameRate));
+          } else {
+            stats.setText(String.format("Stats:encode=%02d:fps=%02d", delta, avgFrameRate));
+          }
         }
+        frameCount++;
         if (doAudio) {
           while (mic.read(sams8)) {
             swapEndian(sams8, sams16);
@@ -848,40 +860,49 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
             JF.sleep(1000);
             if (!active) break;
           }
+          continue;
+        }
+        long nowTime = System.currentTimeMillis();
+        int sleep = (int)(delayTime - (nowTime - currentTime));
+        long nowSecondTime = nowTime / 1000;
+        if (nowSecondTime != secondTime) {
+          secondTime = nowSecondTime;
+          avgFrameRate = frameCount;
+          frameCount = 0;
+        }
+        if (sleep > 0) {
+          JFLog.log("sleep = " + sleep);
+          JF.sleep(sleep);
         } else {
-          long nowTime = System.currentTimeMillis();
-          int sleep = (int)(delayTime - (nowTime - currentTime));
-          if (sleep > 0) {
-            JF.sleep(sleep);
-          } else {
-            JFLog.log("sleep <= 0");
-            skip_frame = true;  //system too slow
-          }
-          //currentTime += delayTime;  //too slow
-          currentTime = nowTime;
-          if (!doRecord && !doImage) {
-            long duration = nowTime - segmentTime;
-            if (duration > segmentTimeMax) {
-              JFLog.log("    nowTime=" + nowTime);
-              JFLog.log("currentTime=" + currentTime);
-              JFLog.log("segmentTime=" + segmentTime);
-              JFLog.log("duratioTime=" + duration);
-              //stop segment and start new segment
+          JFLog.log("sleep <= 0");
+          skip_frame = true;  //system too slow
+        }
+        countTime += delayTime;
+        long ms = (long)countTime;
+        countTime -= ms;
+        currentTime += ms;
+        if (!doRecord && !doImage) {
+          long duration = nowTime - segmentTime;
+          if (duration > segmentTimeMax) {
+            JFLog.log("    nowTime=" + nowTime);
+            JFLog.log("currentTime=" + currentTime);
+            JFLog.log("segmentTime=" + segmentTime);
+            JFLog.log("duratioTime=" + duration);
+            //stop segment and start new segment
 //              encoder_stop();
-              close_file();
-              JFLog.log("AddSegment:" + mediaFile);
-              tempFiles.add(mediaFile);
-              if (tempFiles.size() > 10) {
-                //keep segment # 1
-                String oldFile = tempFiles.remove(1);
-                new File(oldFile).delete();
-              }
-              segment++;
-              mediaFile = getTempFile();
-              create_file();
-//              encoder_start();
-              segmentTime = currentTime;
+            close_file();
+            JFLog.log("AddSegment:" + mediaFile);
+            tempFiles.add(mediaFile);
+            if (tempFiles.size() > 10) {
+              //keep segment # 1
+              String oldFile = tempFiles.remove(1);
+              new File(oldFile).delete();
             }
+            segment++;
+            mediaFile = getTempFile();
+            create_file();
+//              encoder_start();
+            segmentTime = currentTime;
           }
         }
       }

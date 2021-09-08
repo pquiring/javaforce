@@ -126,7 +126,7 @@
                   </Group>
               </Group>
               <EmptySpace pref="6" max="32767" attributes="0"/>
-              <Group type="103" groupAlignment="0" max="-2" attributes="0">
+              <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="103" alignment="1" groupAlignment="0" attributes="0">
                       <Component id="preview" min="-2" max="-2" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
@@ -135,11 +135,8 @@
                           <Component id="previewAudio" min="-2" pref="9" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <Group type="102" alignment="1" attributes="0">
-                      <Component id="stats" max="32767" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="start" min="-2" max="-2" attributes="0"/>
-                  </Group>
+                  <Component id="start" alignment="1" min="-2" max="-2" attributes="0"/>
+                  <Component id="stats" alignment="1" min="-2" pref="269" max="-2" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -162,11 +159,10 @@
                           <Component id="previewVideo" pref="256" max="32767" attributes="0"/>
                           <Component id="previewAudio" max="32767" attributes="0"/>
                       </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Component id="stats" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="start" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="stats" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="start" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="3" attributes="0">
@@ -228,7 +224,7 @@
                           <Component id="jLabel11" alignment="3" min="-2" max="-2" attributes="0"/>
                           <Component id="segmentSecs" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="0" pref="9" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="29" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
