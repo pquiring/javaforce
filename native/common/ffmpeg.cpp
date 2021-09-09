@@ -1922,6 +1922,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudio
 static jboolean encoder_addVideo(FFContext *ctx, int *px)
 {
   int length = ctx->org_width * ctx->org_height * 4;
+  (*_av_frame_make_writable)(ctx->video_frame);  //ensure we can write to it now
   if (ctx->scaleVideo) {
     //copy px -> ctx->src_pic->data[0];
     memcpy(ctx->src_pic->data[0], px, length);
