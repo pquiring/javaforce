@@ -1508,8 +1508,8 @@ static jboolean encoder_init_video(FFContext *ctx) {
       break;
     }
     case AV_CODEC_ID_H264: {
-//      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "baseline", 0);
-//      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "slow", 0);
+      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "baseline", 0);
+      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "slow", 0);
       break;
     }
     case AV_CODEC_ID_VP9: {

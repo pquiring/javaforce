@@ -18,7 +18,6 @@ import javaforce.webui.event.*;
 
 public class MediaCoder {
   private long ctx = 0;
-  private static boolean inited = false;
   public static boolean loaded = false;
   /** Loads the media framework native libraries. */
   public static boolean init() {
@@ -89,7 +88,7 @@ public class MediaCoder {
   public static final int SEEK_CUR = 1;
   public static final int SEEK_END = 2;
 
-  //for use with VideoDecoder
+  //video codecs (VideoDecoder)
   public static final int AV_CODEC_ID_NONE = 0;
   public static final int AV_CODEC_ID_MPEG1VIDEO = 1;
   public static final int AV_CODEC_ID_MPEG2VIDEO = 2;
@@ -99,10 +98,18 @@ public class MediaCoder {
   public static final int AV_CODEC_ID_THEORA = 30;
   public static final int AV_CODEC_ID_VP8 = 139;
   public static final int AV_CODEC_ID_VP9 = 167;
+  public static final int AV_CODEC_ID_H265 = 173;
 
-  //a few audio codecs
+  //audio codecs
   public static final int AV_CODEC_ID_PCM_S16LE = 0x10000;  //wav file
+  public static final int AV_CODEC_ID_MP2 = 0x15000;
+  public static final int AV_CODEC_ID_MP3 = 0x15001;
+  public static final int AV_CODEC_ID_AAC = 0x15002;
+  public static final int AV_CODEC_ID_AC3 = 0x15003;
+  public static final int AV_CODEC_ID_VORBIS = 0x15005;
   public static final int AV_CODEC_ID_FLAC = 0x1500c;
+  public static final int AV_CODEC_ID_GSM_MS = 0x1501e;
+  public static final int AV_CODEC_ID_OPUS = 0x1503c;
 
   //returned by MediaDecoder.read()
   public static final int END_FRAME = -1;
