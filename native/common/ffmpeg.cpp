@@ -903,6 +903,10 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx->pkt == NULL) {
+    printf("MediaDecoder.read():pkt==NULL\n");
+    return END_FRAME;
+  }
   //read another frame
   if ((*_av_read_frame)(ctx->fmt_ctx, ctx->pkt) >= 0) {
     ctx->pkt_key_frame = ((ctx->pkt->flags & 0x0001) == 0x0001);
@@ -941,7 +945,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
     }
     _av_free_packet(ctx->pkt);
     while (1) {
-      ret = (*_avcodec_receive_frame)(ctx->audio_codec_ctx, ctx->audio_frame);
+      ret = (*_avcodec_receive_frame)(ctx->audio_codec_ctx, ctx->frame);
       if (ret < 0) break;
   //    int unpadded_linesize = frame.nb_samples * avutil.av_get_bytes_per_sample(audio_codec_ctx.sample_fmt);
       //convert to new format
@@ -2104,7 +2108,7 @@ static jboolean encoder_flush(FFContext *ctx, AVCodecContext *codec_ctx, AVStrea
 
 static void encoder_stop(FFContext *ctx)
 {
-  //flush audio encoder
+  //flush encoders
   if (ctx->audio_stream != NULL) {
     encoder_flush(ctx, ctx->audio_codec_ctx, ctx->audio_stream);
   }
