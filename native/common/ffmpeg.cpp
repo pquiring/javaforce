@@ -2078,21 +2078,21 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaEncoder_getAudioFramesize
   return ctx->audio_codec_ctx->frame_size;
 }
 
-static jboolean encoder_flush(FFContext *ctx) {
-  if (ctx->audio_frame == NULL) return JNI_FALSE;
+static jboolean encoder_flush(FFContext *ctx, AVCodecContext *codec_ctx, AVStream *stream) {
   AVPacket *pkt = AVPacket_New();
   (*_av_init_packet)(pkt);
 
-  int got_frame = 0;
-  int ret = (*_avcodec_send_frame)(ctx->audio_codec_ctx, NULL);
+  //signal end of input
+  int ret = (*_avcodec_send_frame)(codec_ctx, NULL);
   if (ret < 0) {
-    printf("avcodec_encode_audio2() failed!\n");
+    printf("avcodec_send_frame() failed!\n");
     return JNI_FALSE;
   }
   while (1) {
-    ret = (*_avcodec_receive_packet)(ctx->video_codec_ctx, pkt);
+    ret = (*_avcodec_receive_packet)(codec_ctx, pkt);
     if (ret < 0) break;
-    pkt->stream_index = ctx->audio_stream->index;
+    pkt->stream_index = stream->index;
+    (*_av_packet_rescale_ts)(pkt, codec_ctx->time_base, stream->time_base);
     ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
     if (ret < 0) {
       printf("av_interleaved_write_frame() failed!\n");
@@ -2105,7 +2105,12 @@ static jboolean encoder_flush(FFContext *ctx) {
 static void encoder_stop(FFContext *ctx)
 {
   //flush audio encoder
-  encoder_flush(ctx);
+  if (ctx->audio_stream != NULL) {
+    encoder_flush(ctx, ctx->audio_codec_ctx, ctx->audio_stream);
+  }
+  if (ctx->video_stream != NULL) {
+    encoder_flush(ctx, ctx->video_codec_ctx, ctx->video_stream);
+  }
   int ret = (*_av_write_trailer)(ctx->fmt_ctx);
   if (ret < 0) {
     printf("av_write_trailer() failed! %d\n", ret);
