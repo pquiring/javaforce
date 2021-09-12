@@ -1,5 +1,10 @@
 What's new...
 
+Sept 12/2021 : JF 33.1 released
+  - fixed more ffmpeg bugs (encoding mp4, flushing properly)
+  - jfRecordCamera/0.12
+    - fixed most issues
+
 Sept 7/2021 : JF 33.0 released
   - many ffmpeg improvements
   - jfRecordCamera/0.11
