@@ -1,5 +1,9 @@
 What's new ??
 
+Sept 12/2021 : version 0.12 released
+  - fixed mp4 encoding
+  - video streaming is *almost* perfect (buffers once in a while)
+
 Sept 7/2021 : version 0.11 released
   - added more options for codec selection
   - many fixes to codec support

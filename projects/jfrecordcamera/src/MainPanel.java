@@ -15,7 +15,7 @@ import javaforce.media.*;
 
 public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler {
 
-  public static String version = "0.11";
+  public static String version = "0.12";
 
   public static class Codec {
     public String codec, ext, desc, mime;
