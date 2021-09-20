@@ -1,4 +1,4 @@
-package javaforce;
+package javaforce.awt;
 
 import java.net.*;
 import java.lang.reflect.*;

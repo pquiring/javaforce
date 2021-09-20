@@ -1,4 +1,4 @@
-package javaforce;
+package javaforce.awt;
 
 import java.awt.*;
 import java.awt.event.*;
