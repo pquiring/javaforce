@@ -12,6 +12,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class TrackPanel extends javax.swing.JPanel {
 

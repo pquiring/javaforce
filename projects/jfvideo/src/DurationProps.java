@@ -5,6 +5,8 @@
  * Created : Oct 2, 2013
  */
 
+import javaforce.awt.*;
+
 public class DurationProps extends javax.swing.JPanel {
 
   /**

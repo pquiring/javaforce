@@ -9,6 +9,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class CaptureApp {
   public static void main(String args[]) {

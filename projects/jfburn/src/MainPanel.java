@@ -8,6 +8,8 @@ import java.io.*;
 import javaforce.*;
 import javax.swing.*;
 
+import javaforce.awt.*;
+
 public class MainPanel extends javax.swing.JPanel {
 
   /**

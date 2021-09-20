@@ -7,6 +7,7 @@
 import java.awt.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class TorrentApp extends javax.swing.JFrame {
 

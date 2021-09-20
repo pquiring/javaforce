@@ -8,6 +8,7 @@ package jffile;
 import java.awt.event.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class QuickConnect extends javax.swing.JDialog {
 

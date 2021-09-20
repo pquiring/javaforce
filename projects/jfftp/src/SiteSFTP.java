@@ -11,6 +11,7 @@ import java.util.*;
 import com.jcraft.jsch.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
   private ChannelSftp channel;

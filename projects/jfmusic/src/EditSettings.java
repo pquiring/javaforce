@@ -12,6 +12,7 @@ import java.awt.event.*;
 import javax.sound.midi.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class EditSettings extends javax.swing.JDialog {
 

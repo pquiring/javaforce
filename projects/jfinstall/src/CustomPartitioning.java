@@ -8,6 +8,7 @@
 import jfparted.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class CustomPartitioning extends PartitionEditorPanel {
 

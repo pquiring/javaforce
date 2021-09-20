@@ -17,10 +17,12 @@
  * Some VK_...: VK_ENTER, VK_TAB, VK_SPACE, etc.<br>
  */
 
-import javaforce.*;
 import java.lang.reflect.*;
 import java.io.*;
 import javax.swing.*;
+
+import javaforce.*;
+import javaforce.awt.*;
 
 public class Script {
   private Script() {}  //private ctor - must call load()

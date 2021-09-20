@@ -11,6 +11,7 @@ import java.util.Arrays;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.*;
 
 public class ProxyPanel extends javax.swing.JPanel {

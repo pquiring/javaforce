@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.voip.*;
 
 /** Keeps current settings and provides methods to load/save settings to an XML file. */

@@ -7,6 +7,7 @@
  */
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class EditSettings extends javax.swing.JDialog {
 

@@ -8,6 +8,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class SiteFTP extends Site implements FTP.ProgressListener {
   public FTP ftp;

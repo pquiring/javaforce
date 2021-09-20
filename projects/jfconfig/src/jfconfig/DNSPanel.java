@@ -11,6 +11,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.*;
 
 public class DNSPanel extends javax.swing.JPanel {

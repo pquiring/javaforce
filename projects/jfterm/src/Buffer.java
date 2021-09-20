@@ -17,6 +17,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.jni.*;
 import javaforce.jni.lnx.*;
 import javaforce.jni.win.*;

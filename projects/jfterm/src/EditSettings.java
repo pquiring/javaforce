@@ -6,9 +6,11 @@
  * @author  pquiring
  */
 
-import javaforce.*;
 import java.awt.*;
 import java.awt.event.*;
+
+import javaforce.*;
+import javaforce.awt.*;
 
 public class EditSettings extends javax.swing.JDialog {
 

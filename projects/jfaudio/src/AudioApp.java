@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.*;
 
 public class AudioApp extends javax.swing.JFrame implements KeyEventDispatcher {

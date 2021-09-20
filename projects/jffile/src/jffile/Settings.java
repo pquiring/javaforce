@@ -13,6 +13,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class Settings {
   public static class Site {

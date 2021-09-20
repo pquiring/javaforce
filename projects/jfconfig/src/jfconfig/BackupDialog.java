@@ -10,6 +10,7 @@ import java.awt.*;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class BackupDialog extends javax.swing.JDialog {
 

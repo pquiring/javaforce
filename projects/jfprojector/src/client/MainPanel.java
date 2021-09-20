@@ -14,6 +14,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.*;
 
 import common.Config;

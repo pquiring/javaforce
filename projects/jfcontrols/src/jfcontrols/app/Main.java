@@ -6,7 +6,9 @@ package jfcontrols.app;
  */
 
 import java.io.ByteArrayOutputStream;
+
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.webui.*;
 
 import jfcontrols.api.*;

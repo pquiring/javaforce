@@ -9,7 +9,9 @@ package jfconfig;
 import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+
 import javaforce.*;
+import javaforce.awt.*;
 
 public class GetPasswordDialog extends javax.swing.JDialog {
 

@@ -8,6 +8,7 @@ import java.net.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.controls.*;
 
 public class CameraWorkerPictures extends Thread implements CameraWorker {

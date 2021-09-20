@@ -16,6 +16,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class TermApp extends javax.swing.JFrame implements KeyEventDispatcher {
 

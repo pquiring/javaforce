@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.tree.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class ProjectDialog extends javax.swing.JDialog {
 

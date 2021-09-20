@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class BackupPanel extends javax.swing.JPanel {
 

@@ -4,6 +4,7 @@
 */
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class Main {
   public static void main(String args[]) {

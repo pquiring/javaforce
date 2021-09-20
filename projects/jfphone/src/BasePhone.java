@@ -16,6 +16,7 @@ import java.util.*;
 import java.lang.reflect.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.voip.*;
 import javaforce.media.*;
 

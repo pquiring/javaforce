@@ -9,6 +9,8 @@ import java.io.*;
 import javaforce.*;
 import javax.swing.*;
 
+import javaforce.awt.*;
+
 public class OptionsDialog extends javax.swing.JDialog {
 
   /**

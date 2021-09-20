@@ -8,6 +8,7 @@
 import java.awt.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.*;
 
 public class RecordDesktopApp extends javax.swing.JFrame {

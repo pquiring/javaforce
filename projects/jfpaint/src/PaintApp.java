@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class PaintApp extends JFrame implements WindowListener {
   public static String args[];

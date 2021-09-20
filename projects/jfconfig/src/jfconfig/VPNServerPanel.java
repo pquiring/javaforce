@@ -10,6 +10,7 @@ import java.io.*;
 import javax.swing.table.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.Linux;
 
 public class VPNServerPanel extends javax.swing.JPanel {

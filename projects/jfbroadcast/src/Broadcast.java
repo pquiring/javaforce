@@ -20,6 +20,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.voip.*;
 
 public class Broadcast extends javax.swing.JFrame implements SIPClientInterface, RTPInterface, ActionListener {

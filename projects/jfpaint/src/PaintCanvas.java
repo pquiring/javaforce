@@ -6,6 +6,7 @@ import java.awt.image.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 import com.jhlabs.image.*;
 

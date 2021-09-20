@@ -5,10 +5,11 @@
  * Created : Oct 11, 2013
  */
 
-import javaforce.*;
-
 import java.awt.event.*;
 import javax.swing.*;
+
+import javaforce.*;
+import javaforce.awt.*;
 
 public class Menu {
   private static MainPanel panel;

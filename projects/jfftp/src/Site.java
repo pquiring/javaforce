@@ -16,6 +16,7 @@ import javax.swing.tree.*;
 import javax.swing.table.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public abstract class Site extends javax.swing.JPanel implements FTP.ProgressListener {
 

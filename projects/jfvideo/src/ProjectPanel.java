@@ -13,6 +13,7 @@ import javax.swing.*;
 import javax.swing.tree.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.*;
 import javaforce.gl.*;
 

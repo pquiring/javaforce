@@ -10,7 +10,9 @@ package jfparted;
 import java.awt.*;
 import java.awt.font.*;
 import java.awt.geom.*;
+
 import javaforce.*;
+import javaforce.awt.*;
 
 public class DeviceImage extends JFImage {
   private Data.Device device;

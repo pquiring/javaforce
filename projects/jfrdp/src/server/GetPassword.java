@@ -1,6 +1,7 @@
 package server;
 
-import javaforce.JFAWT;
+import javaforce.awt.JFAWT;
+import javaforce.awt.*;
 
 /**
  *

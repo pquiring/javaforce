@@ -8,6 +8,7 @@
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class Settings {
   private static String filename = JF.getUserPath() + "/.jfaudio.xml";

@@ -4,7 +4,9 @@
  */
 
 import jfparted.*;
+
 import javaforce.*;
+import javaforce.awt.*;
 
 public class InstallTypes extends IPanel {
 

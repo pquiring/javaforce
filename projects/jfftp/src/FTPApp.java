@@ -10,6 +10,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class FTPApp extends javax.swing.JFrame {
 

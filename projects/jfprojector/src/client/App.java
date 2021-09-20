@@ -11,6 +11,7 @@ import java.awt.*;
 import java.io.InputStream;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.*;
 
 public class App extends javax.swing.JFrame {

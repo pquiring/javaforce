@@ -1,7 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.MediaCoder;
 
 /** Entry point for jfPhone application. */

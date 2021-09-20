@@ -7,7 +7,9 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
 import javaforce.*;
+import javaforce.awt.*;
 
 public class MainPanel extends javax.swing.JPanel {
 

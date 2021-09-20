@@ -9,6 +9,7 @@
 import java.awt.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class TextProps extends javax.swing.JPanel {
 

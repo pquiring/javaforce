@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.*;
 
 public class RoutingPanel extends javax.swing.JPanel {

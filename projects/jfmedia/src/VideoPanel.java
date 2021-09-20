@@ -8,6 +8,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class VideoPanel extends javax.swing.JPanel {
 

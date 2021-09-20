@@ -9,12 +9,14 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 
-import javaforce.*;
-import javaforce.linux.*;
-import javaforce.jbus.*;
 import javax.swing.Icon;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+
+import javaforce.*;
+import javaforce.awt.*;
+import javaforce.linux.*;
+import javaforce.jbus.*;
 
 public class Logon extends javax.swing.JFrame implements ActionListener {
 

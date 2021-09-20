@@ -12,6 +12,7 @@ import javax.swing.table.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class PartitionEditorPanel extends IPanel {
 

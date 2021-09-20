@@ -9,6 +9,7 @@ package jfconfig;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.*;
 
 public class SoundPanel extends javax.swing.JPanel {

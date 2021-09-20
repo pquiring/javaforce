@@ -21,6 +21,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 
+import javaforce.awt.*;
+
 public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener {
 
   /** Creates new form jfhex */

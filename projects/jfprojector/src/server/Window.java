@@ -8,6 +8,7 @@ package server;
 import java.awt.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class Window extends javax.swing.JFrame {
 

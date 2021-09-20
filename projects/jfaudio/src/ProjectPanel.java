@@ -10,6 +10,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.*;
 
 public class ProjectPanel extends javax.swing.JPanel {

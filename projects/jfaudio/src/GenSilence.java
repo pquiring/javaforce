@@ -8,6 +8,7 @@
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class GenSilence extends javax.swing.JDialog {
 

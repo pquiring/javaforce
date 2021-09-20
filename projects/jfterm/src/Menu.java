@@ -9,6 +9,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class Menu {
   private static JTabbedPane tabs;

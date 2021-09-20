@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.voip.*;
 
 public class EditContact extends javax.swing.JDialog {

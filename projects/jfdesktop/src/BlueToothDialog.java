@@ -8,6 +8,7 @@ import java.awt.*;
 import javax.swing.table.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class BlueToothDialog extends javax.swing.JFrame {
 

@@ -9,6 +9,8 @@ import java.io.*;
 import javaforce.*;
 import javax.swing.*;
 
+import javaforce.awt.*;
+
 public class ExtractDialog extends javax.swing.JDialog implements ShellProcessListener {
 
   /**

@@ -4,6 +4,8 @@
  * @author pquiring
  */
 
+import javaforce.awt.*;
+
 public class ImageProps extends javax.swing.JPanel {
 
   /**

@@ -13,6 +13,7 @@ import java.awt.Rectangle;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class ShareDialog extends javax.swing.JDialog {
 

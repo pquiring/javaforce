@@ -10,6 +10,7 @@ import java.awt.Font;
 import java.awt.Color;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.jni.*;
 import javaforce.jni.win.*;
 import javaforce.jni.lnx.*;

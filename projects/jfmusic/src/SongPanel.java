@@ -16,6 +16,7 @@ import javax.swing.filechooser.*;
 import javax.sound.midi.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.*;
 import javaforce.jni.*;
 

@@ -10,7 +10,6 @@
  * @author  pquiring
  */
 
-import javaforce.*;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
@@ -18,6 +17,9 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
+
+import javaforce.*;
+import javaforce.awt.*;
 
 public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener {
 

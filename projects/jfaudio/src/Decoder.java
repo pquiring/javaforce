@@ -8,6 +8,7 @@
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.*;
 
 public class Decoder implements MediaIO {

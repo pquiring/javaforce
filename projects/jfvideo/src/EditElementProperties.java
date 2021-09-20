@@ -5,6 +5,7 @@
 import java.awt.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class EditElementProperties extends javax.swing.JDialog {
 

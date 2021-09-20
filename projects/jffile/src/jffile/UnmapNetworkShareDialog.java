@@ -11,6 +11,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class UnmapNetworkShareDialog extends javax.swing.JDialog implements ActionListener {
 

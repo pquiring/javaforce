@@ -12,6 +12,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class FirewallRuleDialog extends javax.swing.JDialog implements KeyListener {
 

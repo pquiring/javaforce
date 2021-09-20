@@ -16,6 +16,7 @@ import javax.net.ssl.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.*;
 
 public class MainPanel extends javax.swing.JPanel implements MouseListener, MouseMotionListener {

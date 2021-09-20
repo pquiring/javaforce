@@ -6,6 +6,7 @@ import javax.swing.*;
 import jcifs.smb.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 /**
  *

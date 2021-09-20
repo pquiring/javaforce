@@ -10,6 +10,7 @@ package jfconfig;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.Linux;
 
 public class JProxyPanel extends javax.swing.JPanel {

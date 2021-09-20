@@ -9,6 +9,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class TableCell extends JComponent {
   private static Font fnt;

@@ -7,7 +7,9 @@
 //  /mnt/d/downloads/iso/DellWinXP_Pro_SP3.iso
 
 import java.awt.*;
+
 import javaforce.*;
+import javaforce.awt.*;
 
 public class BurnProgressDialog extends javax.swing.JDialog implements ShellProcessListener {
 

@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class Paths {
   public static File getTempFile(String name, String ext) {

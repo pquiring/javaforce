@@ -9,6 +9,7 @@ package jffile;
 import java.awt.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class JFileIcon extends javax.swing.JComponent {
 

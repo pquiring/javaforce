@@ -9,6 +9,7 @@ package jfrepo;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class RepoApp extends javax.swing.JFrame {
 

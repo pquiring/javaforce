@@ -9,6 +9,7 @@ package jfconfig;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.*;
 
 public class NetworkConfigPanel extends javax.swing.JPanel {

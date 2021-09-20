@@ -11,7 +11,8 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 
-import javaforce.*;;
+import javaforce.*;
+import javaforce.awt.*;
 
 public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListener {
 

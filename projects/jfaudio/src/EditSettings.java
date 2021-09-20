@@ -6,6 +6,7 @@
  */
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.*;
 
 public class EditSettings extends javax.swing.JDialog {

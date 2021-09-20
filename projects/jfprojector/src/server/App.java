@@ -11,6 +11,7 @@ import java.awt.event.*;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 import common.Config;
 

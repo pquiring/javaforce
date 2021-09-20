@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.controls.*;
 
 public class App extends javax.swing.JFrame {

@@ -7,6 +7,7 @@
 import java.awt.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class RunDialog extends javax.swing.JDialog {
 

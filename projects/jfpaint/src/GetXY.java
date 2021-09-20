@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class GetXY extends javax.swing.JDialog {
 

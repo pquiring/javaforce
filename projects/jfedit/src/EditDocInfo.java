@@ -6,6 +6,7 @@
 import java.awt.event.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class EditDocInfo extends javax.swing.JDialog {
 

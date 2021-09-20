@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.service.*;
 
 public class Service implements WebHandler {

@@ -4,6 +4,7 @@
  */
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class SiteFTPS extends SiteFTP {
   @Override

@@ -16,6 +16,7 @@ import javax.swing.tree.*;
 import javax.swing.table.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.jbus.*;
 import javaforce.utils.*;
 

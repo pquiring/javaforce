@@ -14,6 +14,7 @@ import java.util.Calendar;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.*;
 
 public class JFileProperties extends javax.swing.JFrame {

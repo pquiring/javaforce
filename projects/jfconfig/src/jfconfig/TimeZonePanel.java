@@ -14,6 +14,7 @@ import java.io.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class TimeZonePanel extends javax.swing.JPanel implements MouseListener, MouseMotionListener {
 

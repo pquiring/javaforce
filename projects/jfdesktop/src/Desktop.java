@@ -9,6 +9,7 @@ import java.io.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.*;
 
 import jffile.*;

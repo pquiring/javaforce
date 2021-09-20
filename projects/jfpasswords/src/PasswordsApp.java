@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
 

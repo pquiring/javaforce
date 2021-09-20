@@ -13,6 +13,7 @@ import javax.swing.tree.*;
 import javax.swing.table.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class MainPanel extends javax.swing.JPanel {
 

@@ -11,6 +11,7 @@ import java.awt.event.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.*;
 
 public class ServersPanel extends javax.swing.JPanel implements ActionListener {

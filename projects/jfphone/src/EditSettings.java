@@ -12,6 +12,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.voip.*;
 import javaforce.media.*;
 

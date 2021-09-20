@@ -8,9 +8,11 @@
  * @author  pquiring
  */
 
-import javaforce.*;
 import java.awt.*;
 import java.awt.event.*;
+
+import javaforce.*;
+import javaforce.awt.*;
 
 public class TermAppletSingle extends javax.swing.JApplet implements KeyEventDispatcher {
 

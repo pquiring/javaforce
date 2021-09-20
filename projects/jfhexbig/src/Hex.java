@@ -14,6 +14,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class Hex extends JComponent implements KeyListener/*, MouseListener*/ {
 

@@ -10,7 +10,9 @@ import java.awt.Dimension;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.io.FileInputStream;
+
 import javaforce.*;
+import javaforce.awt.*;
 
 public class UserAddDialog extends javax.swing.JDialog {
 

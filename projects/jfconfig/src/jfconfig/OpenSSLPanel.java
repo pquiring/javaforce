@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.*;
 
 /*

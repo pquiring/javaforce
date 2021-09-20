@@ -10,6 +10,7 @@ import java.awt.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class PrintersAddDialog extends javax.swing.JDialog {
 

@@ -6,10 +6,11 @@
 
 import java.io.*;
 import java.util.*;
-
-import javaforce.*;
 import javax.swing.*;
 import javax.swing.tree.*;
+
+import javaforce.*;
+import javaforce.awt.*;
 
 public class MainPanel extends javax.swing.JPanel {
 

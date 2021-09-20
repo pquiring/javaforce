@@ -10,6 +10,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class PrintersPanel extends javax.swing.JPanel {
 

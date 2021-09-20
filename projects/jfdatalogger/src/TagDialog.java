@@ -8,6 +8,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.controls.*;
 
 public class TagDialog extends javax.swing.JDialog {

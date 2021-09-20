@@ -17,6 +17,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.gl.*;
 
 public class MainPanel extends javax.swing.JPanel implements MouseListener, MouseMotionListener, KeyListener, KeyEventDispatcher, ActionListener {

@@ -10,6 +10,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class Backend implements KeyEventDispatcher {
   public Display display;

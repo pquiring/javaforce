@@ -7,7 +7,9 @@ package jfconfig;
  */
 
 import javax.swing.*;
+
 import javaforce.*;
+import javaforce.awt.*;
 
 public class MainPanel extends javax.swing.JPanel {
 

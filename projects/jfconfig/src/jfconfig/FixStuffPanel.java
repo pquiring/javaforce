@@ -11,6 +11,7 @@ import java.util.*;
 import javaforce.*;
 
 import javaforce.linux.*;
+import javaforce.awt.*;
 
 public class FixStuffPanel extends javax.swing.JPanel {
 

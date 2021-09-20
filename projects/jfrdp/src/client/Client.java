@@ -11,6 +11,7 @@ import java.util.*;
 import javax.net.ssl.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class Client extends javax.swing.JFrame {
 

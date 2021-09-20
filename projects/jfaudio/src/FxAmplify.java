@@ -5,6 +5,7 @@
  */
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class FxAmplify extends javax.swing.JDialog {
 

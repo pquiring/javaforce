@@ -7,8 +7,9 @@
 import java.awt.*;
 import java.io.*;
 
-import javaforce.media.*;
 import javaforce.*;
+import javaforce.awt.*;
+import javaforce.media.*;
 
 public class MediaApp extends javax.swing.JFrame {
 

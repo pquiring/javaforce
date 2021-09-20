@@ -8,6 +8,7 @@ package jfcontrols.panels;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.webui.*;
 
 import jfcontrols.db.*;

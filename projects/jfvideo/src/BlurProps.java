@@ -6,6 +6,7 @@
  */
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class BlurProps extends javax.swing.JPanel {
 

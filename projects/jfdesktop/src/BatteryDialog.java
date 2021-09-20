@@ -11,6 +11,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class BatteryDialog extends javax.swing.JDialog {
 

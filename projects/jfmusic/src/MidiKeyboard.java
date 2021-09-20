@@ -10,6 +10,7 @@ import java.util.*;
 import javax.sound.midi.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.*;
 
 public class MidiKeyboard extends javax.swing.JDialog implements Receiver {

@@ -13,6 +13,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class Server extends javax.swing.JFrame implements ActionListener {
 

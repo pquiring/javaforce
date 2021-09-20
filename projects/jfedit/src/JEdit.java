@@ -19,6 +19,7 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent, DocumentListener, ActionListener {
 
