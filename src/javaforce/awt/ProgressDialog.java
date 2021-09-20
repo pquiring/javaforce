@@ -1,12 +1,15 @@
-package javaforce;
+package javaforce.awt;
 
 /**
  * Created : Mar 12, 2012
  *
  * @author pquiring
  */
+
 import java.awt.*;
 import java.awt.event.KeyEvent;
+
+import javaforce.*;
 
 public class ProgressDialog extends javax.swing.JDialog implements JFTaskListener {
 

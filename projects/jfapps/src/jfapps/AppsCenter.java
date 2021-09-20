@@ -8,6 +8,7 @@ package jfapps;
 
 import java.awt.*;
 import javaforce.*;
+import javaforce.awt.*;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;

@@ -3,9 +3,9 @@
  *
  * Created on July 29, 2007, 4:04 PM
  */
-package javaforce;
+package javaforce.awt;
 
-import javaforce.FindEvent;
+import javaforce.awt.FindEvent;
 import java.awt.event.KeyEvent;
 
 /**

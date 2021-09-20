@@ -1,6 +1,4 @@
-package javaforce;
-
-import javaforce.FindDialog;
+package javaforce.awt;
 
 /**
  * Interface to allow handling of FindDialog events.

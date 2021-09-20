@@ -1,4 +1,4 @@
-package javaforce;
+package javaforce.awt;
 
 /*
  * GetPassword.java
@@ -7,6 +7,7 @@ package javaforce;
  *
  * @author  pquiring
  */
+
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GraphicsEnvironment;

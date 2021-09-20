@@ -1,6 +1,4 @@
-package javaforce;
-
-import javaforce.ReplaceDialog;
+package javaforce.awt;
 
 /**
  * The interface used by ReplaceDialog for event handling.

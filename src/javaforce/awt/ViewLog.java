@@ -1,4 +1,4 @@
-package javaforce;
+package javaforce.awt;
 
 /** View Log File
  *
@@ -6,6 +6,8 @@ package javaforce;
  */
 
 import java.io.*;
+
+import javaforce.*;
 
 public class ViewLog extends javax.swing.JFrame {
 

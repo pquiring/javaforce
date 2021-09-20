@@ -1,4 +1,4 @@
-package javaforce;
+package javaforce.awt;
 
 /** Deprecated AWT/Swing functions
  *
@@ -12,6 +12,8 @@ import java.lang.reflect.*;
 import java.security.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
+
+import javaforce.*;
 
 public class JFAWT {
 

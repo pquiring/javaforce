@@ -1,9 +1,10 @@
+package javaforce.awt;
+
 /**
  *
  * JFontChooser - from jfontchooser.sourceforge.net
  *
  */
-package javaforce;
 
 import java.awt.*;
 import java.awt.event.*;

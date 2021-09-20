@@ -1,11 +1,11 @@
+package javaforce.awt;
+
 /*
  * ReplaceDialog.java
  *
  * Created on July 29, 2007, 4:04 PM
  */
-package javaforce;
 
-import javaforce.ReplaceEvent;
 import java.awt.event.KeyEvent;
 
 /**
