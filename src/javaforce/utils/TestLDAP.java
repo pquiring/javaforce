@@ -4,7 +4,7 @@ import java.util.*;
 import javax.naming.*;
 import javax.naming.directory.*;
 
-import javaforce.JFAWT;
+import javaforce.awt.*;
 
 /**
  *

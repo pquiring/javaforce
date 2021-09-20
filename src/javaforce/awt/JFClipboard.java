@@ -1,4 +1,4 @@
-package javaforce;
+package javaforce.awt;
 
 /** Clipboard
  *
@@ -15,6 +15,8 @@ import java.awt.event.*;
 import java.awt.datatransfer.*;
 import java.io.*;
 import javax.swing.*;
+
+import javaforce.*;
 
 public class JFClipboard {
   public static class ImageTransferable implements Transferable

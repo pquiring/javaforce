@@ -11,6 +11,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.jbus.*;
 
 public class ProxyApp extends javax.swing.JFrame {

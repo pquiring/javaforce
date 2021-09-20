@@ -1,4 +1,4 @@
-package javaforce;
+package javaforce.awt;
 
 import java.awt.*;
 import java.awt.image.*;
@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 import javax.imageio.*;
+
+import javaforce.*;
 
 /**
  * Encapsules BufferedImage to provide more functions.

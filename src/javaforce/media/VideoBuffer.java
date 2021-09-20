@@ -9,6 +9,7 @@ package javaforce.media;
  */
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class VideoBuffer {
   private JFImage images[];

@@ -7,6 +7,7 @@ package javaforce.webui;
 
 import javaforce.webui.event.*;
 import javaforce.gl.*;
+import javaforce.awt.*;
 
 public class TestGL implements WebUIHandler {
   public Resource img;

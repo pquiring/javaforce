@@ -8,7 +8,7 @@ package javaforce.utils;
 import java.io.*;
 import java.util.*;
 
-import javaforce.*;
+import javaforce.awt.*;
 
 public class FileDialog extends javax.swing.JFrame {
 

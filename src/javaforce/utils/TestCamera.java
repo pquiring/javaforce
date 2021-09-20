@@ -9,6 +9,7 @@ package javaforce.utils;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.jni.*;
 import javaforce.media.*;
 

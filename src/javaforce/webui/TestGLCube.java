@@ -9,6 +9,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.gl.*;
+import javaforce.awt.*;
 
 public class TestGLCube implements WebUIHandler {
   public TestGLCube() {

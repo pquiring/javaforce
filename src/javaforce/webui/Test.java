@@ -8,6 +8,7 @@ package javaforce.webui;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.webui.event.*;
 
 public class Test implements WebUIHandler {
@@ -198,7 +199,7 @@ public class Test implements WebUIHandler {
 
     Image i2 = new Image(img);
     row3.add(i2);
-    
+
     //add forth row
     Row row4 = new Row();
     panel.add(row4);

@@ -15,11 +15,11 @@ import java.io.OutputStream;
  */
 public class svg {
 
-  protected static int[] load(InputStream in, Dimension size) {
+  public static int[] load(InputStream in, Dimension size) {
     return null;  //not implemented yet - batik???
   }
 
-  protected static boolean save(OutputStream out, byte png_data[], Dimension size) {
+  public static boolean save(OutputStream out, byte png_data[], Dimension size) {
     int w = size.width;
     int h = size.height;
     try {

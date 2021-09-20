@@ -1,6 +1,7 @@
 package javaforce.utils;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class pngalpha {
 

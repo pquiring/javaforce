@@ -10,6 +10,7 @@ package javaforce.linux;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.utils.*;  //for jfopen
 
 public class IconCache {

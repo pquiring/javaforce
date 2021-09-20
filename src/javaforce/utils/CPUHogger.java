@@ -2,7 +2,7 @@ package javaforce.utils;
 
 import java.util.*;
 
-import javaforce.JFAWT;
+import javaforce.awt.*;
 
 /**
  *

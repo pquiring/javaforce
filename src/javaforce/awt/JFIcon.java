@@ -1,4 +1,4 @@
-package javaforce;
+package javaforce.awt;
 
 /** System Tray icon
  *
@@ -10,6 +10,8 @@ package javaforce;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+
+import javaforce.*;
 
 public class JFIcon extends TimerTask {
   private Timer timer;

@@ -3,6 +3,7 @@ package javaforce.gl;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import static javaforce.gl.GL.*;
 
 /** Stores a texture (image).

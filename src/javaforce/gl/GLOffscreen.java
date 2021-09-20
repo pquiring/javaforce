@@ -6,7 +6,7 @@ package javaforce.gl;
 
 import java.awt.Image;
 
-import javaforce.JFImage;
+import javaforce.awt.*;
 
 import static javaforce.gl.GL.*;
 

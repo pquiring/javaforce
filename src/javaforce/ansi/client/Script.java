@@ -19,10 +19,12 @@
 
 package javaforce.ansi.client;
 
-import javaforce.*;
 import java.lang.reflect.*;
 import java.io.*;
 import javax.swing.*;
+
+import javaforce.awt.*;
+import javaforce.*;
 
 public class Script {
   private Script() {}  //private ctor - must call load()

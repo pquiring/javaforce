@@ -1,6 +1,7 @@
 package javaforce.utils;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class ImageConvert {
   public static void main(String[] args) {

@@ -5,6 +5,8 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.awt.Window;
 
+import javaforce.awt.*;
+
 /**
  * JProcess represents one process within a JVM.<br> Each JProcess has its own
  * ThreadGroup, ClassLoader.<br> You must use JProcessManager to create

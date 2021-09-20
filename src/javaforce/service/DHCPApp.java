@@ -13,6 +13,7 @@ import java.util.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.jbus.*;
 
 public class DHCPApp extends javax.swing.JFrame {
