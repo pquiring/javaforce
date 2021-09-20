@@ -10,6 +10,7 @@
 import javax.swing.table.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.jbus.*;
 import javaforce.linux.*;
 
