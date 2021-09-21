@@ -206,7 +206,7 @@ public class JBusServer extends Thread {
   /** Checks if a JBusServer is running. */
   public static boolean present() {
     JBusClient client = new JBusClient(null, null);
-    client.setQuiet(true);
+    client.setDebug(true);
     client.start();
     boolean present = client.ready();
     if (present) {

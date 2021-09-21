@@ -28,7 +28,7 @@ public class JBusClient extends Thread {
   private OutputStream os;
   private volatile boolean ready;
   private int readyCnt = 0;
-  private boolean quiet = false;
+  private boolean debug = false;
   private int port = 777;
 
   /** Creates new client.
@@ -45,8 +45,8 @@ public class JBusClient extends Thread {
   }
 
   /** Enable logging exceptions to console. */
-  public void setQuiet(boolean state) {
-    quiet = state;
+  public void setDebug(boolean state) {
+    debug = state;
   }
 
   /** Set server port.  Must be called before start(). */
@@ -63,7 +63,7 @@ public class JBusClient extends Thread {
       if (pack != null) {
         os.write(("cmd.package=" + pack + "\n").getBytes());
         os.flush();
-//        JFLog.log("JBus Client registered as : " + pack);
+        if (debug) JFLog.log("JBus Client registered as : " + pack);
       }
       ready = true;
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
@@ -86,9 +86,9 @@ public class JBusClient extends Thread {
         }
       }
     } catch (SocketException e2) {
-      if (!quiet) JFLog.log("JBus Client closed : " + pack);
+      if (debug) JFLog.log("JBus Client closed : " + pack);
     } catch (Exception e3) {
-      if (!quiet) JFLog.log(e3);
+      if (debug) JFLog.log(e3);
     }
   }
 
