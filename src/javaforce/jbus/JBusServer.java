@@ -32,6 +32,12 @@ public class JBusServer extends Thread {
     this.port = port;
   }
 
+  public int getClientCount() {
+    synchronized(lock) {
+      return clients.size();
+    }
+  }
+
   public void run() {
     try {
       ss = new ServerSocket(port, 1024, InetAddress.getByName("127.0.0.1"));
