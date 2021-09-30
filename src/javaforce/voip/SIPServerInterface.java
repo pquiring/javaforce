@@ -13,6 +13,8 @@ public interface SIPServerInterface {
 
   public void onRegister(String user, int expires, String remoteip, int remoteport);
 
+  public void onOptions(CallDetailsServer cd, boolean src);
+
   public void onInvite(CallDetailsServer cd, boolean src);
 
   public void onCancel(CallDetailsServer cd, boolean src);

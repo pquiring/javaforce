@@ -411,8 +411,7 @@ public class SIPServer extends SIP implements SIPInterface {
               break;
             }
             if (req.equalsIgnoreCase("OPTIONS")) {
-              //send 200 and ignore
-              reply(cd, 200, "OK", null, false, src);
+              iface.onOptions(cd, src);
               break;
             }
             if (req.equalsIgnoreCase("SUBSCRIBE")) {
