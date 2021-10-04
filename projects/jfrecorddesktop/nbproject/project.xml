@@ -11,14 +11,14 @@
             <properties/>
             <folders>
                 <source-folder>
-                    <label>src</label>
-                    <type>java</type>
-                    <location>src</location>
+                    <label>jfrecorddesktop</label>
+                    <location>.</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>
                 <source-folder>
-                    <label>jfrecorddesktop</label>
-                    <location>.</location>
+                    <label>src</label>
+                    <type>java</type>
+                    <location>src</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>
             </folders>
@@ -52,11 +52,11 @@
             </view>
             <subprojects/>
         </general-data>
-        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/5">
             <compilation-unit>
                 <package-root>src</package-root>
                 <classpath mode="compile">javaforce.jar</classpath>
-                <source-level>1.5</source-level>
+                <source-level>11</source-level>
             </compilation-unit>
         </java-data>
     </configuration>
