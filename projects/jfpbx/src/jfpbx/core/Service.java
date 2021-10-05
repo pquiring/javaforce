@@ -161,6 +161,10 @@ public class Service implements SIPServerInterface, PBXAPI {
       extList.put(ext, new Extension(ext, getNow() + expires, remoteip, remoteport));
     }
   }
+  public void onOptions(CallDetailsServer cd, boolean src) {
+    //send 200 and ignore
+    reply(cd, 200, "OK", null, false, src);
+  }
   public void onInvite(CallDetailsServer cd, boolean src) {
     cd.pid = onInvite(cd, src, cd.pid);
   }
