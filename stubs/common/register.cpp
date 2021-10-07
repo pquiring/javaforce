@@ -222,6 +222,12 @@ void registerCommonNatives(JNIEnv *env) {
   cls = findClass(env, "javaforce/gl/GLWindow");
   env->RegisterNatives(cls, javaforce_gl_GLWindow, sizeof(javaforce_gl_GLWindow)/sizeof(JNINativeMethod));
 
+  cls = findClass(env, "javaforce/ui/Font");
+  env->RegisterNatives(cls, javaforce_ui_Font, sizeof(javaforce_ui_Font)/sizeof(JNINativeMethod));
+
+  cls = findClass(env, "javaforce/ui/Image");
+  env->RegisterNatives(cls, javaforce_ui_Image, sizeof(javaforce_ui_Image)/sizeof(JNINativeMethod));
+
   cls = findClass(env, "javaforce/media/Camera");
   env->RegisterNatives(cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
 
