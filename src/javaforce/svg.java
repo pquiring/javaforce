@@ -1,10 +1,10 @@
 package javaforce;
 
 //SVG - scaled vector graphics
+import java.io.*;
+
 import javaforce.*;
-import java.awt.Dimension;
-import java.io.InputStream;
-import java.io.OutputStream;
+import javaforce.ui.*;
 
 /**
  * Internal class to provide SVG file support.

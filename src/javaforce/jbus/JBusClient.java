@@ -113,7 +113,7 @@ public class JBusClient extends Thread {
       throw new Exception("package mismatch");  //error : should not happen
     }
     String call_func = packFunc.substring(idx + 1);
-//    JFLog.log("call:" + call_pack + "." + call_func + "(" + argsString + ")");  //test
+    if (debug) JFLog.log("call:" + call_pack + "." + call_func + "(" + argsString + ")");
     Object args[] = parseArgs(argsString);
     int argsLength = args.length;
     Class types[] = new Class[argsLength];

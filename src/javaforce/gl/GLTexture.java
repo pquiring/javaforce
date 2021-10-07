@@ -3,7 +3,7 @@ package javaforce.gl;
 import java.io.*;
 
 import javaforce.*;
-import javaforce.awt.*;
+import javaforce.ui.*;
 import static javaforce.gl.GL.*;
 
 /** Stores a texture (image).
@@ -11,9 +11,9 @@ import static javaforce.gl.GL.*;
  * All model's share the same set of textures. */
 
 public class GLTexture {
-  public JFImage bitmap;
+  public Image image;
   public int refcnt;
-  public int glid;
+  public int tid;
   public boolean loaded;
   public int idx;  //GL texture unit
   public String name;
@@ -22,21 +22,45 @@ public class GLTexture {
 
   public GLTexture(int idx) {
     refcnt = 0;
-    glid = -1;
-    bitmap = new JFImage();
+    tid = -1;
+    image = new Image();
     loaded = false;
     this.idx = idx;
   }
 
-  public void set(int pixels[], int x, int y) {
-    bitmap.setSize(x,y);
-    bitmap.putPixels(pixels, 0, 0, x, y, 0);
+  public GLTexture(int idx, int width, int height) {
+    refcnt = 0;
+    tid = -1;
+    image = new Image(width, height);
+    loaded = false;
+    this.idx = idx;
   }
 
-  public boolean load(String filename) {
+  public Image getImage() {
+    return image;
+  }
+
+  public int getWidth() {
+    return image.getWidth();
+  }
+
+  public int getHeight() {
+    return image.getHeight();
+  }
+
+  public void set(int pixels[], int x, int y) {
+    image.setSize(x,y);
+    image.putPixels(pixels, 0, 0, x, y, 0);
+  }
+
+  public void setImage(Image img) {
+    image = img;
+  }
+
+  public boolean loadPNG(String filename) {
     JFLog.log("Loading Texture:" + filename.toString());
     try {
-      return load(new FileInputStream(filename));
+      return loadPNG(new FileInputStream(filename));
     } catch (FileNotFoundException e) {
       JFLog.log("File not found:" + filename);
       return false;
@@ -46,22 +70,15 @@ public class GLTexture {
     }
   }
 
-  public boolean load(InputStream is) {
-    if (!bitmap.load(is)) {
+  public boolean loadPNG(InputStream is) {
+    if (!image.loadPNG(is)) {
       return false;
     }
-/* //test
-    int px[] = bitmap.getBuffer();
-    java.util.Random r = new java.util.Random();
-    for(int p=0;p<px.length;p++) {
-      px[p] = r.nextInt() | 0xff000000;
-    }
-*/
     return true;
   }
 
   public boolean load() {
-    if (glid == -1) {
+    if (tid == -1) {
       int[] id = new int[1];
       id[0] = -1;
       glGenTextures(1, id);
@@ -69,31 +86,47 @@ public class GLTexture {
         JFLog.log("glGenTextures failed:Error=0x" + Integer.toString(glGetError(), 16));
         return false;
       }
-      glid = id[0];
+      tid = id[0];
+      if (debug) {
+        JFLog.log("GLTexture:id=" + tid);
+      }
     }
     if (loaded) {
       return true;
     }
-    glActiveTexture(GL.GL_TEXTURE0 + idx);
-    glBindTexture(GL.GL_TEXTURE_2D, glid);
-    glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_REPEAT);
-    glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_REPEAT);
+    glActiveTexture(GL_TEXTURE0 + idx);
+    glBindTexture(GL_TEXTURE_2D, tid);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     if (mipmaps) {
-      glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST_MIPMAP_NEAREST);
-      glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST_MIPMAP_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
     } else {
-      glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_NEAREST);
-      glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     }
-    glTexImage2D(GL.GL_TEXTURE_2D, 0, 4, bitmap.getWidth(), bitmap.getHeight(), 0, GL.GL_BGRA
-      , GL.GL_UNSIGNED_BYTE, bitmap.getPixels());
+    if (debug) {
+      JFLog.log("GLTexture.load:" + image.getWidth() + "x" + image.getHeight());
+    }
+    glTexImage2D(GL_TEXTURE_2D, 0, 4, image.getWidth(), image.getHeight(), 0, GL_BGRA
+      , GL_UNSIGNED_BYTE, image.getBuffer());
     loaded = true;
     return true;
   }
 
+  public void unload() {
+    if (tid == -1) return;
+    int[] id = new int[1];
+    id[0] = tid;
+    glDeleteTextures(1, id);
+    tid = -1;
+  }
+
   public void bind() {
-    glActiveTexture(GL.GL_TEXTURE0 + idx);
-    glBindTexture(GL.GL_TEXTURE_2D, glid);
+    if (debug) {
+      JFLog.log("GLTexture.bind:" + tid + "," + idx);
+    }
+    glActiveTexture(GL_TEXTURE0 + idx);
+    glBindTexture(GL_TEXTURE_2D, tid);
   }
 }
-

@@ -96,7 +96,7 @@ static JNINativeMethod javaforce_gl_GLWindow[] = {
   {"ndestroy", "(J)V", (void *)&Java_javaforce_gl_GLWindow_ndestroy},
   {"nsetcurrent", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nsetcurrent},
   {"nseticon", "(JLjava/lang/String;II)V", (void *)&Java_javaforce_gl_GLWindow_nseticon},
-  {"pollEvents", "()V", (void *)&Java_javaforce_gl_GLWindow_pollEvents},
+  {"pollEvents", "(I)V", (void *)&Java_javaforce_gl_GLWindow_pollEvents},
   {"nshow", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nshow},
   {"nhide", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nhide},
   {"nswap", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nswap},
@@ -105,6 +105,17 @@ static JNINativeMethod javaforce_gl_GLWindow[] = {
   {"nlockcursor", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nlockcursor},
   {"ngetpos", "(J[I)V", (void *)&Java_javaforce_gl_GLWindow_ngetpos},
   {"nsetpos", "(JII)V", (void *)&Java_javaforce_gl_GLWindow_nsetpos},
+};
+
+static JNINativeMethod javaforce_ui_Font[] = {
+  {"loadFont", "([BI[I[I[I[I[BII)I", (void *)&Java_javaforce_ui_Font_loadFont}
+};
+
+static JNINativeMethod javaforce_ui_Image[] = {
+  {"nloadPNG", "([B[I)[I", (void *)&Java_javaforce_ui_Image_nloadPNG},
+  {"nsavePNG", "([III)[B", (void *)&Java_javaforce_ui_Image_nsavePNG},
+  {"nloadJPG", "([B[I)[I", (void *)&Java_javaforce_ui_Image_nloadJPG},
+  {"nsaveJPG", "([IIII)[B", (void *)&Java_javaforce_ui_Image_nloadJPG}
 };
 
 static JNINativeMethod javaforce_media_Camera[] = {

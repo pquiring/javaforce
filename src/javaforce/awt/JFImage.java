@@ -319,7 +319,7 @@ public class JFImage extends JComponent implements Icon {
 
   public boolean loadBMP(InputStream in, int index) {
     int buf[];
-    Dimension size = new Dimension(0, 0);
+    javaforce.ui.Dimension size = new javaforce.ui.Dimension(0, 0);
     buf = bmp.load(in, size, index);
     try {in.close();} catch (Exception e) {e.printStackTrace();}
     if (buf == null) {
@@ -338,7 +338,7 @@ public class JFImage extends JComponent implements Icon {
   public boolean saveBMP(OutputStream out) {
     int pixels[];
     pixels = getPixels(0, 0, getWidth(), getHeight());
-    Dimension size = new Dimension(getWidth(), getHeight());
+    javaforce.ui.Dimension size = new javaforce.ui.Dimension(getWidth(), getHeight());
     return bmp.save24(out, pixels, size, false, false);
   }
 
@@ -355,7 +355,7 @@ public class JFImage extends JComponent implements Icon {
   public boolean saveICO(OutputStream out) {
     int pixels[];
     pixels = getPixels(0, 0, getWidth(), getHeight());
-    Dimension size = new Dimension(getWidth(), getHeight());
+    javaforce.ui.Dimension size = new javaforce.ui.Dimension(getWidth(), getHeight());
     return bmp.save32(out, pixels, size, false, true);
   }
 
@@ -448,7 +448,7 @@ public class JFImage extends JComponent implements Icon {
 
   public boolean loadSVG(InputStream in) {
     int[] buf;
-    Dimension size = new Dimension(0, 0);
+    javaforce.ui.Dimension size = new javaforce.ui.Dimension(0, 0);
     buf = svg.load(in, size);
     try {in.close();} catch (Exception e) {}
     if (buf == null) {
@@ -465,7 +465,7 @@ public class JFImage extends JComponent implements Icon {
   public boolean saveSVG(OutputStream out) {
     ByteArrayOutputStream png_data = new ByteArrayOutputStream();
     savePNG(png_data);
-    Dimension size = new Dimension(getWidth(), getHeight());
+    javaforce.ui.Dimension size = new javaforce.ui.Dimension(getWidth(), getHeight());
     boolean ret = svg.save(out, png_data.toByteArray(), size);
     try {out.close();} catch (Exception e) {}
     return ret;
@@ -481,7 +481,7 @@ public class JFImage extends JComponent implements Icon {
 
   public boolean loadXPM(InputStream in) {
     int[] buf;
-    Dimension size = new Dimension(0, 0);
+    javaforce.ui.Dimension size = new javaforce.ui.Dimension(0, 0);
     buf = new xpm().load(in, size);
     if (buf == null) {
       return false;
@@ -509,7 +509,7 @@ public class JFImage extends JComponent implements Icon {
   /** Puts pixels blending using img alpha (dest alpha is ignored) */
   public void putJFImageBlend(JFImage img, int x, int y, boolean keepAlpha) {
     int px[] = img.getPixels(0, 0, img.getWidth(), img.getHeight());
-    putPixelsBlend(px, x, y, img.getWidth(), img.getHeight(), 0, keepAlpha);
+    putPixelsBlend(px, x, y, img.getWidth(), img.getHeight(), 0, img.getWidth(), keepAlpha);
   }
 
   /** Puts pixels scaling image to fit */
@@ -665,9 +665,8 @@ public class JFImage extends JComponent implements Icon {
    * if keepAlpha is true then dest alpha is preserved.
    * if keepAlpha is false then src alpha is copied to dest.
    */
-  public void putPixelsBlend(int[] px, int x, int y, int w, int h, int offset, boolean keepAlpha) {
+  public void putPixelsBlend(int[] px, int x, int y, int w, int h, int srcOffset, int srcScansize, boolean keepAlpha) {
     //do clipping
-    int scansize = w;
     int bw = getWidth();
     int bh = getHeight();
     if (y < 0) {
@@ -676,7 +675,7 @@ public class JFImage extends JComponent implements Icon {
       if (h <= 0) {
         return;
       }
-      offset += y * scansize;
+      srcOffset += y * srcScansize;
       y = 0;
     }
     if (x < 0) {
@@ -685,7 +684,7 @@ public class JFImage extends JComponent implements Icon {
       if (w <= 0) {
         return;
       }
-      offset += x;
+      srcOffset += x;
       x = 0;
     }
     if (x + w > bw) {
@@ -704,7 +703,7 @@ public class JFImage extends JComponent implements Icon {
     int sp, slvl, dp, dlvl, sa, da;
     for(int i=0;i<h;i++) {
       for(int j=0;j<w;j++) {
-        sp = px[offset + j];
+        sp = px[srcOffset + j];
         sa = sp & ALPHA_MASK;
         sp &= RGB_MASK;
         slvl = sa >>> 24;
@@ -723,7 +722,7 @@ public class JFImage extends JComponent implements Icon {
           + ((((sp & GREEN_MASK) * slvl) >> 8) & GREEN_MASK)
           + ((((sp & BLUE_MASK) * slvl) >> 8) & BLUE_MASK);
       }
-      offset += scansize;
+      srcOffset += srcScansize;
       dst += bw;
     }
   }
@@ -732,9 +731,8 @@ public class JFImage extends JComponent implements Icon {
    * if keepAlpha is true then dest alpha is preserved.
    * if keepAlpha is false then src alpha is copied to dest.
    */
-  public void putPixelsBlendKeyClr(int[] px, int x, int y, int w, int h, int offset, boolean keepAlpha, int keyclr) {
+  public void putPixelsBlendKeyClr(int[] px, int x, int y, int w, int h, int srcOffset, int srcScansize, boolean keepAlpha, int keyclr) {
     //do clipping
-    int scansize = w;
     int bw = getWidth();
     int bh = getHeight();
     if (y < 0) {
@@ -743,7 +741,7 @@ public class JFImage extends JComponent implements Icon {
       if (h <= 0) {
         return;
       }
-      offset += y * scansize;
+      srcOffset += y * srcScansize;
       y = 0;
     }
     if (x < 0) {
@@ -752,7 +750,7 @@ public class JFImage extends JComponent implements Icon {
       if (w <= 0) {
         return;
       }
-      offset += x;
+      srcOffset += x;
       x = 0;
     }
     if (x + w > bw) {
@@ -771,7 +769,7 @@ public class JFImage extends JComponent implements Icon {
     int sp, slvl, dp, dlvl, sa, da;
     for(int i=0;i<h;i++) {
       for(int j=0;j<w;j++) {
-        sp = px[offset + j];
+        sp = px[srcOffset + j];
         sa = sp & ALPHA_MASK;
         sp &= RGB_MASK;
         if (sp == keyclr) continue;
@@ -791,7 +789,7 @@ public class JFImage extends JComponent implements Icon {
           + ((((sp & GREEN_MASK) * slvl) >> 8) & GREEN_MASK)
           + ((((sp & BLUE_MASK) * slvl) >> 8) & BLUE_MASK);
       }
-      offset += scansize;
+      srcOffset += srcScansize;
       dst += bw;
     }
   }

@@ -14,7 +14,7 @@ public class GLObject implements Cloneable {
   public JFArrayInt vil;  //vertex index list
   public int vpb = -1, vib = -1;  //GL Buffers
 
-  public int type = GL.GL_TRIANGLES;  //GL_TRIANGLES or GL_QUADS
+  public int type = GL_TRIANGLES;  //GL_TRIANGLES or GL_QUADS
 
   public ArrayList<GLUVMap> maps = new ArrayList<GLUVMap>();
 
@@ -149,9 +149,15 @@ public class GLObject implements Cloneable {
     if (vpb == -1) {
       glGenBuffers(1, ids);
       vpb = ids[0];
+      if (debug) {
+        JFLog.log("GLObject:vpb=" + vpb);
+      }
     }
-    glBindBuffer(GL.GL_ARRAY_BUFFER, vpb);
-    glBufferData(GL.GL_ARRAY_BUFFER, vpl.size() * 4, vpl.toArray(), GL.GL_STATIC_DRAW);
+    if (debug) {
+      JFLog.log("GLObject.copyBuffers:vertex:" + vpb + "," + vpl.size());
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, vpb);
+    glBufferData(GL_ARRAY_BUFFER, vpl.size() * 4, vpl.toArray(), GL_STATIC_DRAW);
 
     for(int a=0;a<maps.size();a++) {
       maps.get(a).copyBuffers();
@@ -160,32 +166,60 @@ public class GLObject implements Cloneable {
     if (vib == -1) {
       glGenBuffers(1, ids);
       vib = ids[0];
+      if (debug) {
+        JFLog.log("GLObject:vib=" + vib);
+      }
     }
-    glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, vib);
-    glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, vil.size() * 4, vil.toArray(), GL.GL_STREAM_DRAW);
+    if (debug) {
+      JFLog.log("GLObject.copyBuffers:index:" + vib + "," + vil.size());
+    }
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vib);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, vil.size() * 4, vil.toArray(), GL_STREAM_DRAW);
     needCopyBuffers = false;
   }
   public void bindBuffers(GLScene scene) {
-    glBindBuffer(GL.GL_ARRAY_BUFFER, vpb);
-    glVertexAttribPointer(scene.vpa, 3, GL.GL_FLOAT, GL.GL_FALSE, 0, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, vpb);
+    glVertexAttribPointer(scene.vpa, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     for(int m=0;m<maps.size();m++) {
       maps.get(m).bindBuffers(scene);
     }
 
-    glBindBuffer(GL.GL_ELEMENT_ARRAY_BUFFER, vib);
+    if (debug) {
+      JFLog.log("GLObject.bindBuffers:" + vib);
+    }
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vib);
   }
   public void render(GLScene scene) {
     if (vpl.size() == 0 || vil.size() == 0) return;  //crashes if empty ???
     int uvcnt = maps.size();
     glUniform1i(scene.uUVMaps, uvcnt);
-    GL.glEnableVertexAttribArray(scene.tca[0]);
+    glEnableVertexAttribArray(scene.tca[0]);
     if (uvcnt > 1) {
-      GL.glEnableVertexAttribArray(scene.tca[1]);
+      glEnableVertexAttribArray(scene.tca[1]);
     } else {
-      GL.glDisableVertexAttribArray(scene.tca[1]);
+      glDisableVertexAttribArray(scene.tca[1]);
     }
-    glDrawElements(type, vil.size(), GL.GL_UNSIGNED_INT, 0);
+    if (debug) {
+      JFLog.log("GLObject.render:" + vil.size() + "," + type);
+    }
+    glDrawElements(type, vil.size(), GL_UNSIGNED_INT, 0);
+  }
+  public void freeBuffers() {
+    int[] ids = new int[1];
+    if (vpb != -1) {
+      ids[0] = vpb;
+      glDeleteBuffers(1, ids);
+      vpb = -1;
+    }
+    if (vib != -1) {
+      ids[0] = vib;
+      glDeleteBuffers(1, ids);
+      vib = -1;
+    }
+    for(int m=0;m<maps.size();m++) {
+      maps.get(m).freeBuffers();
+    }
   }
   public GLUVMap createUVMap() {
     GLUVMap map = new GLUVMap(maps.size());
@@ -216,10 +250,10 @@ public class GLObject implements Cloneable {
     int vi[] = vil.toArray();
     for(int a=0;a<vi.length;) {
       switch (type) {
-        case GL.GL_TRIANGLES:
+        case GL_TRIANGLES:
           System.out.println(String.format("i[%d]=%d,%d,%d", a/3, vi[a++], vi[a++], vi[a++]));
           break;
-        case GL.GL_QUADS:
+        case GL_QUADS:
           System.out.println(String.format("i[%d]=%d,%d,%d,%d", a/4, vi[a++], vi[a++], vi[a++], vi[a++]));
           break;
       }

@@ -6,7 +6,7 @@ package javaforce.gl;
  * @author pquiring
  */
 
-import javaforce.JFArrayFloat;
+import javaforce.*;
 import static javaforce.gl.GL.*;
 
 public class GLUVMap {
@@ -34,13 +34,31 @@ public class GLUVMap {
     if (uvb == -1) {
       glGenBuffers(1, ids);
       uvb = ids[0];
+      if (debug) {
+        JFLog.log("GLUVMap:uvb=" + uvb);
+      }
     }
-    glBindBuffer(GL.GL_ARRAY_BUFFER, uvb);
-    glBufferData(GL.GL_ARRAY_BUFFER, uvl.size() * 4, uvl.toArray(), GL.GL_STATIC_DRAW);
+    if (debug) {
+      JFLog.log("GLUVMap.copyBuffer:" + uvb + "," + idx);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, uvb);
+    glBufferData(GL_ARRAY_BUFFER, uvl.size() * 4, uvl.toArray(), GL_STATIC_DRAW);
   }
 
   public void bindBuffers(GLScene scene) {
-    glBindBuffer(GL.GL_ARRAY_BUFFER, uvb);
-    glVertexAttribPointer(scene.tca[idx], 2, GL.GL_FLOAT, GL.GL_FALSE, 0, 0);
+    if (debug) {
+      JFLog.log("GLUVMap.bindBuffer:" + uvb + "," + idx);
+    }
+    glBindBuffer(GL_ARRAY_BUFFER, uvb);
+    glVertexAttribPointer(scene.tca[idx], 2, GL_FLOAT, GL_FALSE, 0, 0);
+  }
+
+  public void freeBuffers() {
+    int[] ids = new int[1];
+    if (uvb != -1) {
+      ids[0] = uvb;
+      glDeleteBuffers(1, ids);
+      uvb = -1;
+    }
   }
 }

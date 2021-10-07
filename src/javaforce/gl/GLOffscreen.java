@@ -6,6 +6,7 @@ package javaforce.gl;
 
 import java.awt.Image;
 
+import javaforce.*;
 import javaforce.awt.*;
 
 import static javaforce.gl.GL.*;
@@ -52,6 +53,27 @@ public class GLOffscreen {
     return os_fpx;
   }
 
+  private void createBuffers(int width, int height) {
+    int[] ids = new int[1];
+    glGenRenderbuffers(1, ids);
+    os_clr_rb = ids[0];
+    if (debug) {
+      JFLog.log("GLOffscreen:os_clr_rb=" + os_clr_rb);
+    }
+    glBindRenderbuffer(GL_RENDERBUFFER, os_clr_rb);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, os_clr_rb);
+
+    glGenRenderbuffers(1, ids);
+    os_depth_rb = ids[0];
+    if (debug) {
+      JFLog.log("GLOffscreen:os_depth_rb=" + os_depth_rb);
+    }
+    glBindRenderbuffer(GL_RENDERBUFFER, os_depth_rb);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, os_depth_rb);
+  }
+
   /** Resize offscreen buffer dimensions. */
   public void resizeOffscreen(int width, int height) {
     os_width = width;
@@ -64,18 +86,7 @@ public class GLOffscreen {
 
     int ids[] = {os_clr_rb, os_depth_rb};
     glDeleteRenderbuffers(2, ids);
-
-    glGenRenderbuffers(1, ids);
-    os_clr_rb = ids[0];
-    glBindRenderbuffer(GL_RENDERBUFFER, os_clr_rb);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, os_clr_rb);
-
-    glGenRenderbuffers(1, ids);
-    os_depth_rb = ids[0];
-    glBindRenderbuffer(GL_RENDERBUFFER, os_depth_rb);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, os_depth_rb);
+    createBuffers(width, height);
   }
 
   /** Creates an offscreen buffer to where rendering is directly to. */
@@ -87,17 +98,7 @@ public class GLOffscreen {
     os_fb = ids[0];
     glBindFramebuffer(GL_FRAMEBUFFER, os_fb);
 
-    glGenRenderbuffers(1, ids);
-    os_clr_rb = ids[0];
-    glBindRenderbuffer(GL_RENDERBUFFER, os_clr_rb);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, os_clr_rb);
-
-    glGenRenderbuffers(1, ids);
-    os_depth_rb = ids[0];
-    glBindRenderbuffer(GL_RENDERBUFFER, os_depth_rb);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, width, height);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, os_depth_rb);
+    createBuffers(width, height);
 
     glBindFramebuffer(GL_FRAMEBUFFER, os_fb);
 

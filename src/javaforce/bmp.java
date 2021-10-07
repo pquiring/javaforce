@@ -1,12 +1,11 @@
 package javaforce;
 
 //BMP - M$-Windows Bitmap file format
-import java.awt.Dimension;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import javaforce.*;
-import javaforce.awt.*;
+import javaforce.ui.*;
 
 /**
  * Internal class to provide BMP file support.
@@ -183,7 +182,7 @@ public class bmp {
 
       for (int y = 0; y < bmp_y; y++) {
         for (int x = 0; x < bmp_x; x++) {
-          ret[didx++] = (((int) simg[sidx + x * 3 + 2] & 0xff) << 16 | ((int) simg[sidx + x * 3 + 1] & 0xff) << 8 | (int) simg[sidx + x * 3] & 0xff) | JFImage.OPAQUE;
+          ret[didx++] = (((int) simg[sidx + x * 3 + 2] & 0xff) << 16 | ((int) simg[sidx + x * 3 + 1] & 0xff) << 8 | (int) simg[sidx + x * 3] & 0xff) | Color.OPAQUE;
         }
         sidx -= slsiz;
       }

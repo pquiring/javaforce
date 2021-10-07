@@ -40,33 +40,32 @@ public class GLScene {
   public int uUVMaps;
   public int mpu, mmu, mvu;  //uniform matrix'es (perspective, model, view)
 
-//code
   public void init(String vertex, String fragment) {  //must give size of render window
-    glFrontFace(GL.GL_CCW);  //3DS uses GL_CCW
-    glEnable(GL.GL_CULL_FACE);  //don't draw back sides
-    glEnable(GL.GL_DEPTH_TEST);
-    glDepthFunc(GL.GL_LEQUAL);
-    glEnable(GL.GL_BLEND);
-    glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
-    glPixelStorei(GL.GL_UNPACK_ALIGNMENT, 1);
-    glEnable(GL.GL_TEXTURE_2D);
-    glActiveTexture(GL.GL_TEXTURE0);
+    glFrontFace(GL_CCW);  //3DS uses GL_CCW
+    glEnable(GL_CULL_FACE);  //don't draw back sides
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+    glEnable(GL_TEXTURE_2D);
+    glActiveTexture(GL_TEXTURE0);
 
-    vertexShader = glCreateShader(GL.GL_VERTEX_SHADER);
+    vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, new String[] {vertex}, null);
     glCompileShader(vertexShader);
-    JFLog.log("vertex log=" + glGetShaderInfoLog(vertexShader));
+    if (debug) JFLog.log("vertex log=" + glGetShaderInfoLog(vertexShader));
 
-    fragShader = glCreateShader(GL.GL_FRAGMENT_SHADER);
+    fragShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragShader, 1, new String[] {fragment}, null);
     glCompileShader(fragShader);
-    JFLog.log("fragment log=" + glGetShaderInfoLog(fragShader));
+    if (debug) JFLog.log("fragment log=" + glGetShaderInfoLog(fragShader));
 
     program = glCreateProgram();
     glAttachShader(program, vertexShader);
     glAttachShader(program, fragShader);
     glLinkProgram(program);
-    JFLog.log("program log=" + glGetProgramInfoLog(program));
+    if (debug) JFLog.log("program log=" + glGetProgramInfoLog(program));
     glUseProgram(program);
 
     vpa = glGetAttribLocation(program, "aVertexPosition");
@@ -87,8 +86,10 @@ public class GLScene {
     mvu = glGetUniformLocation(program, "uVMatrix");
     uUVMaps = glGetUniformLocation(program, "uUVMaps");
 
-//    JFLog.log("attribs=" + vpa + "," + tca[0] + "," + tca[1]);
-//    JFLog.log("uniforms=" + mpu + "," + mmu + "," + mvu + "," + uUVMaps + "," + uSampler1 + "," /*+ uSampler2*/);
+    if (debug) {
+      JFLog.log("attribs=" + vpa + "," + tca[0] + "," + tca[1]);
+      JFLog.log("uniforms=" + mpu + "," + mmu + "," + mvu + "," + uUVMaps + "," + uSampler1 + "," + uSampler2);
+    }
 
     initTextures();
 
@@ -108,9 +109,9 @@ public class GLScene {
     while (iter.hasNext()) {
       texidx = (String)iter.next();
       tex = tl.get(texidx);
-      if (tex.glid != -1) {
-        releaseTexture(tex.glid);
-        tex.glid = -1;
+      if (tex.tid != -1) {
+        releaseTexture(tex.tid);
+        tex.tid = -1;
       }
     }
   }
@@ -155,7 +156,7 @@ public class GLScene {
     needinittex = true;
     tex = new GLTexture(idx);
     tex.name = fn;
-    if (!tex.load(fn)) {
+    if (!tex.loadPNG(fn)) {
       JFLog.log("Error:Failed to load texture:" + fn);
       return false;
     }
@@ -176,13 +177,19 @@ public class GLScene {
     needinittex = true;
     return false;
   }
+  //directly load a texture
+  public boolean setTexture(String fn, GLTexture tex) {
+    tl.put(fn, tex);
+    needinittex = true;
+    return false;
+  }
 //load textures into video memory (texture objects)
   boolean initTextures() {
     if (!needinittex) {
       return true;
     }
     //setup blankTexture
-    if (blankTexture.glid == -1) initTexture(blankTexture);
+    if (blankTexture.tid == -1) initTexture(blankTexture);
     //first uninit any that have been deleted
     if (freeglidlist.size() > 0) uninitTextures();
     //scan thru object list and load them all
@@ -218,7 +225,7 @@ public class GLScene {
     String texidx;
     while (iter.hasNext()) {
       texidx = (String)iter.next();
-      if (tl.get(texidx).refcnt == 0) releaseTexture(tl.get(texidx).glid);
+      if (tl.get(texidx).refcnt == 0) releaseTexture(tl.get(texidx).tid);
     }
   }
   /** Release a cloned model @ index.

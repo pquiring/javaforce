@@ -58,18 +58,18 @@ public class GLRender {
     //setup model view
     //setup background clr
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT | GL.GL_STENCIL_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     //render models
     int size_ml = scene.ml.size();
     mat.setIdentity();
     mat.perspective(fovy, ratio, zNear, zFar);
-    glUniformMatrix4fv(scene.mpu, 1, GL.GL_FALSE, mat.m);  //perspective matrix
+    glUniformMatrix4fv(scene.mpu, 1, GL_FALSE, mat.m);  //perspective matrix
     for(int a=0;a<size_ml;a++) {
       mod = scene.ml.get(a);
       if (!mod.visible) continue;
       mat.setIdentity();
       mat.mult4x4(m_camera);
-      glUniformMatrix4fv(scene.mvu, 1, GL.GL_FALSE, mat.m);  //view matrix
+      glUniformMatrix4fv(scene.mvu, 1, GL_FALSE, mat.m);  //view matrix
       int size_ol = mod.ol.size();
       for(int b=0;b<size_ol;b++) {
         obj = mod.ol.get(b);
@@ -82,7 +82,7 @@ public class GLRender {
         mat.mult4x4(m_model);
         mat.mult4x4(mod.m);
         mat.mult4x4(obj.m);
-        glUniformMatrix4fv(scene.mmu, 1, GL.GL_FALSE, mat.m);  //model matrix
+        glUniformMatrix4fv(scene.mmu, 1, GL_FALSE, mat.m);  //model matrix
 
         for(int m=0;m<obj.maps.size();m++) {
           GLUVMap map = obj.maps.get(m);

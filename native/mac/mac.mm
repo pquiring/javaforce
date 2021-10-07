@@ -326,3 +326,9 @@ JNIEXPORT jint JNICALL Java_javaforce_media_Camera_cameraGetHeight
 #include "../common/ni.cpp"
 
 #include "../common/jfnative.cpp"
+
+#include "../common/types.h"
+
+#include "../common/font.cpp"
+
+#include "../common/image.cpp"

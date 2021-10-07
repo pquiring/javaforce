@@ -1,11 +1,15 @@
 package javaforce.gl;
 
-import javaforce.jni.JFNative;
-
 /** OpenGL Window.
  *
  * @author pquiring
  */
+
+import java.util.*;
+
+import javaforce.jni.*;
+import javaforce.ui.*;
+import static javaforce.gl.GL.*;
 
 public class GLWindow {
   public static final int MOUSE_BUTTON_LEFT = 1;
@@ -37,10 +41,20 @@ public class GLWindow {
   }
 
   private long id;
+  private int width, height;
 
   private KeyEvents keys;
   private MouseEvents mouse;
   private WindowEvents window;
+  private boolean visible;
+  private GLTexture texture;
+//  private GLModel model;
+  private GLObject object;
+  private boolean active = true;
+  private Component content;
+
+  private static ArrayList<Canvas> canvasList = new ArrayList<>();
+  private static ArrayList<GLWindow> windows = new ArrayList<>();
 
   private static final int KEY_TYPED = 1;
   private static final int KEY_PRESS = 2;
@@ -62,7 +76,7 @@ public class GLWindow {
       case MOUSE_DOWN: if (mouse != null) mouse.mouseDown(v1); break;
       case MOUSE_UP: if (mouse != null) mouse.mouseUp(v1); break;
       case MOUSE_SCROLL: if (mouse != null) mouse.mouseScroll(v1, v2); break;
-      case WIN_RESIZE: if (window != null) window.windowResize(v1, v2); break;
+      case WIN_RESIZE: resize(v1, v2); if (window != null) window.windowResize(v1, v2); break;
       case WIN_CLOSING: if (window != null) window.windowClosing(); break;
     }
   }
@@ -74,7 +88,14 @@ public class GLWindow {
 
   private static native long ncreate(int style, String title, int width, int height, GLWindow eventMgr, long shared);
   public boolean create(int style, String title, int width, int height, GLWindow shared) {
+    this.width = width;
+    this.height = height;
     id = ncreate(style, title, width, height, this, shared == null ? 0 : shared.id);
+    if (id != 0) {
+      synchronized(windows) {
+        windows.add(this);
+      }
+    }
     return id != 0;
   }
 
@@ -82,8 +103,12 @@ public class GLWindow {
   /** Show the window. */
   public void destroy() {
     if (id == 0) return;
+    active = false;
     ndestroy(id);
     id = 0;
+    synchronized(windows) {
+      windows.remove(this);
+    }
   }
 
   private static native void nsetcurrent(long id);
@@ -114,19 +139,31 @@ public class GLWindow {
     this.window = window;
   }
 
-  /** Polls for events. */
-  public static native void pollEvents();
+  /** Polls for events.
+   * @param wait = time to wait for event to occur
+   *   -1 = wait forever
+   *    0 = do not wait
+   *    x = wait x milliseconds
+   */
+  public static native void pollEvents(int wait);
+
+  /** Polls for events. Does not wait for an event.  Same as pollEvents(0); */
+  public static void pollEvents() {
+    pollEvents(0);
+  }
 
   private static native void nshow(long id);
   /** Show the window. */
   public void show() {
     nshow(id);
+    visible = true;
   }
 
   private static native void nhide(long id);
   /** Hide the window. */
   public void hide() {
     nhide(id);
+    visible = false;
   }
 
   private static native void nswap(long id);
@@ -171,5 +208,86 @@ public class GLWindow {
    */
   public void setPosition(int x,int y) {
     nsetpos(id, x, y);
+  }
+
+  public int getWidth() {
+    return width;
+  }
+
+  public int getHeight() {
+    return height;
+  }
+
+  public static GLWindow[] getWindows() {
+    synchronized(windows) {
+      return windows.toArray(new GLWindow[0]);
+    }
+  }
+
+  public Component getContent() {
+    return content;
+  }
+
+  public void setContent(Component content) {
+    this.content = content;
+  }
+
+  public void resize(int w, int h) {
+    width = w;
+    height = h;
+    if (content != null) {
+      content.layout(new LayoutMetrics(w, h));
+    }
+  }
+
+  public static void registerCanvas(Canvas canvas) {
+    canvasList.add(canvas);
+  }
+
+  public void render(GLScene scene) {
+    System.out.println("GLWindow.render()");
+    if (texture == null || texture.getWidth() != getWidth() || texture.getHeight() != getHeight()) {
+      if (texture != null) {
+        texture.unload();
+        texture = null;
+      }
+      if (object != null) {
+        object.freeBuffers();
+        object = null;
+      }
+      texture = new GLTexture(0, getWidth(), getHeight());
+    }
+//    if (model == null) {
+//      model = new GLModel();
+//    }
+    if (object == null) {
+      object = new GLObject();
+      object.createUVMap();
+      //add vertex ccw
+      int z = -1;
+      object.addVertex(new float[] {0,0,z}, new float[] {0,1});
+      object.addVertex(new float[] {1,0,z}, new float[] {1,1});
+      object.addVertex(new float[] {1,1,z}, new float[] {1,0});
+      object.addVertex(new float[] {0,1,z}, new float[] {0,0});
+      //add triangle ccw
+      object.addPoly(new int[] {0,1,3});
+      object.addPoly(new int[] {1,2,3});
+      object.copyBuffers();
+    }
+    canvasList.clear();
+    content.render(texture.getImage());
+    setCurrent();
+    clear(Color.black, getWidth(), getHeight());
+    texture.loaded = false;
+    texture.load();
+    object.bindBuffers(scene);
+    texture.bind();
+    object.render(scene);
+    glFlush();
+    swap();
+  }
+
+  public Canvas[] getCanvasList() {
+    return canvasList.toArray(new Canvas[0]);
   }
 }

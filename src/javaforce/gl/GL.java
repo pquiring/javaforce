@@ -38,7 +38,7 @@ public class GL {
    */
   public static native boolean glInit();
 
-  private static final boolean debug = false;
+  public static final boolean debug = true;  //enable to see lots of debug info
 
   //common data
   private enum OS {WINDOWS, LINUX, MAC};
@@ -172,9 +172,12 @@ public class GL {
     g /= 256.0f;
     float b = (clr & 0xff);
     b /= 256.0f;
+    if (debug) {
+      JFLog.log("clear:" + r + "," + g + "," + b + ":" + width + "x" + height);
+    }
     glViewport(0, 0, width, height);
-    glClearColor(r, g, b, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(r, g, b, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
   }
 
   public static native void glActiveTexture(int i1);

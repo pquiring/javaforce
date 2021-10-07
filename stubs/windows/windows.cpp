@@ -27,6 +27,8 @@
 #include "../../native/headers/javaforce_controls_ni_DAQmx.h"
 #include "../../native/headers/javaforce_gl_GL.h"
 #include "../../native/headers/javaforce_gl_GLWindow.h"
+#include "../../native/headers/javaforce_ui_Font.h"
+#include "../../native/headers/javaforce_ui_Image.h"
 #include "../../native/headers/javaforce_jni_JFNative.h"
 #include "../../native/headers/javaforce_jni_WinNative.h"
 #include "../../native/headers/javaforce_media_Camera.h"

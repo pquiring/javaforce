@@ -8,7 +8,8 @@ package javaforce;
  */
 
 import java.io.*;
-import java.awt.*;
+
+import javaforce.ui.*;
 
 public class xpm {
   private int pos = 0;

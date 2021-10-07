@@ -25,6 +25,8 @@
 #include "javaforce_media_MediaVideoDecoder.h"
 #include "javaforce_controls_ni_DAQmx.h"
 #include "javaforce_media_VideoBuffer.h"
+#include "javaforce_ui_Font.h"
+#include "javaforce_ui_Image.h"
 
 HMODULE wgl = NULL;
 
@@ -558,7 +560,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
     return JNI_FALSE;
   }
 
-  if (!ctx->listModes) { 
+  if (!ctx->listModes) {
     res = ctx->mediaControl->Run();
     if (res == S_FALSE) res = S_OK;  //S_FALSE = preparing to run but not ready yet
     if (res != S_OK) {
@@ -1634,3 +1636,9 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 #include "../common/ni.cpp"
 
 #include "../common/jfnative.cpp"
+
+#include "../common/types.h"
+
+#include "../common/font.cpp"
+
+#include "../common/image.cpp"

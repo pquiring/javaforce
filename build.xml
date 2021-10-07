@@ -21,6 +21,11 @@
     <exec command="git clone https://github.com/glfw/glfw.git native/glfw"/>
   </target>
 
+  <available property="have_stb" file="native/stb/stb_truetype.h"/>
+  <target name="stb" unless="have_stb" description="download stb">
+    <exec command="git clone https://github.com/nothings/stb.git native/stb"/>
+  </target>
+
   <target name="ffmpeg-win64" description="download ffmpeg for Win64">
     <echo message="Downloading: jfcodecs-win64.zip"/>
     <get src="http://javaforce.sourceforge.net/jfcodecs-win64.zip" dest="jfcodecs-win64.zip"/>
@@ -39,7 +44,7 @@
     <exec command="git clone https://github.com/pquiring/repo"/>
   </target>
 
-  <target name="depjars" depends="depnatives,glfw">
+  <target name="depjars" depends="depnatives,glfw,stb">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
@@ -62,6 +67,7 @@
         <include name="**/*.html"/>
         <include name="**/*.js"/>
         <include name="**/*.css"/>
+        <include name="**/*.ttf"/>
       </fileset>
       <fileset dir="${java.home}/lib">
         <include name="*.bfc"/>

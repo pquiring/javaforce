@@ -1865,3 +1865,9 @@ JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_writeConsoleArray
 #endif
 
 #include "../common/jfnative.cpp"
+
+#include "../common/types.h"
+
+#include "../common/font.cpp"
+
+#include "../common/image.cpp"

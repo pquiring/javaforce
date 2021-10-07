@@ -140,10 +140,24 @@ JNIEXPORT void JNICALL Java_javaforce_gl_GLWindow_nsetcurrent
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GLWindow_pollEvents
-  (JNIEnv *e, jclass c)
+  (JNIEnv *e, jclass c, jint wait)
 {
   ge = e;
-  glfwPollEvents();
+  switch (wait) {
+    case -1: {
+      glfwWaitEvents();
+      break;
+    }
+    case 0: {
+      glfwPollEvents();
+      break;
+    }
+    default: {
+      double wait_d = wait;
+      glfwWaitEventsTimeout(wait_d / 1000.0);
+      break;
+    }
+  }
 }
 
 JNIEXPORT void JNICALL Java_javaforce_gl_GLWindow_nshow
