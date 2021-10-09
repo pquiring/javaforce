@@ -169,7 +169,9 @@ public class Font {
     int y2 = coords[cp * 4 + 3];
     int w = x2 - x1 + 1;
     int h = y2 - y1 + 1;
-    JFLog.log("drawChar:" + x + "," + y + ":" + ch + "@" + x1 + "," + y1 + ":" + x2 + "," + y2 + ":" + ascent);
+    if (debug) {
+      JFLog.log("drawChar:" + x + "," + y + ":" + ch + "@" + x1 + "," + y1 + ":" + x2 + "," + y2 + ":" + ascent);
+    }
     Image fontImage = getImage();
     int fontWidth = fontImage.getWidth();
     if (false) {
