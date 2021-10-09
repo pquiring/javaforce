@@ -115,7 +115,8 @@ input {
 }
 
 .row {
-  display: block;
+  display: flex;
+  flex-direction: row;
 }
 
 .row-item {
@@ -129,7 +130,8 @@ input {
 }
 
 .column {
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 .column-item {
@@ -138,6 +140,10 @@ input {
 
 .column-end {
   display: block;
+}
+
+.flexitem {
+  flex: auto;
 }
 
 .pad {

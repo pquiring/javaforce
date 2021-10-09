@@ -118,6 +118,10 @@ public class Test implements WebUIHandler {
     //add : checkbox
     CheckBox checkBox = new CheckBox("Enable Option");
     row1.add(checkBox);
+    //add : flexbox
+    row1.add(new FlexBox());
+    //add : button
+    row1.add(new Button("Far Right"));
     //add second row
     Row row2 = new Row();
     panel.add(row2);
