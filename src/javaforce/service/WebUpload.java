@@ -11,7 +11,7 @@ import java.io.*;
 import java.util.*;
 import javaforce.JF;
 
-/** A class to handle file uploads (max 64MBs) */
+/** A class to handle file uploads (default max 64MBs) */
 public class WebUpload {
   public static boolean isMultipartContent(WebRequest req) {
     //Content-Type: multipart/form-data; boundary=----WebKitFormBoundary...\r\n
@@ -32,8 +32,10 @@ public class WebUpload {
     }
     public String getName() {return name;}
   }
-  private WebFile[] list;
   private static int maxlength = 64 * 1024 * 1024;  //64MBs
+  public static void setMaxLength(int maxlength) {
+    WebUpload.maxlength = maxlength;
+  }
   private boolean cmp(byte[] s1, int p1, byte[] s2, int p2, int len) {
     while (len > 0) {
       if (s1[p1++] != s2[p2++]) return false;
