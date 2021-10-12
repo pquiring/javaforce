@@ -90,21 +90,21 @@ static JNINativeMethod javaforce_gl_GL[] = {
   {"glViewport", "(IIII)V", (void *)&Java_javaforce_gl_GL_glViewport},
 };
 
-static JNINativeMethod javaforce_gl_GLWindow[] = {
-  {"ninit", "()Z", (void *)&Java_javaforce_gl_GLWindow_ninit},
-  {"ncreate", "(ILjava/lang/String;IILjavaforce/gl/GLWindow;J)J", (void *)&Java_javaforce_gl_GLWindow_ncreate},
-  {"ndestroy", "(J)V", (void *)&Java_javaforce_gl_GLWindow_ndestroy},
-  {"nsetcurrent", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nsetcurrent},
-  {"nseticon", "(JLjava/lang/String;II)V", (void *)&Java_javaforce_gl_GLWindow_nseticon},
-  {"pollEvents", "(I)V", (void *)&Java_javaforce_gl_GLWindow_pollEvents},
-  {"nshow", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nshow},
-  {"nhide", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nhide},
-  {"nswap", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nswap},
-  {"nhidecursor", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nhidecursor},
-  {"nshowcursor", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nshowcursor},
-  {"nlockcursor", "(J)V", (void *)&Java_javaforce_gl_GLWindow_nlockcursor},
-  {"ngetpos", "(J[I)V", (void *)&Java_javaforce_gl_GLWindow_ngetpos},
-  {"nsetpos", "(JII)V", (void *)&Java_javaforce_gl_GLWindow_nsetpos},
+static JNINativeMethod javaforce_ui_Window[] = {
+  {"ninit", "()Z", (void *)&Java_javaforce_ui_Window_ninit},
+  {"ncreate", "(ILjava/lang/String;IILjavaforce/gl/GLWindow;J)J", (void *)&Java_javaforce_ui_Window_ncreate},
+  {"ndestroy", "(J)V", (void *)&Java_javaforce_ui_Window_ndestroy},
+  {"nsetcurrent", "(J)V", (void *)&Java_javaforce_ui_Window_nsetcurrent},
+  {"nseticon", "(JLjava/lang/String;II)V", (void *)&Java_javaforce_ui_Window_nseticon},
+  {"pollEvents", "(I)V", (void *)&Java_javaforce_ui_Window_pollEvents},
+  {"nshow", "(J)V", (void *)&Java_javaforce_ui_Window_nshow},
+  {"nhide", "(J)V", (void *)&Java_javaforce_ui_Window_nhide},
+  {"nswap", "(J)V", (void *)&Java_javaforce_ui_Window_nswap},
+  {"nhidecursor", "(J)V", (void *)&Java_javaforce_ui_Window_nhidecursor},
+  {"nshowcursor", "(J)V", (void *)&Java_javaforce_ui_Window_nshowcursor},
+  {"nlockcursor", "(J)V", (void *)&Java_javaforce_ui_Window_nlockcursor},
+  {"ngetpos", "(J[I)V", (void *)&Java_javaforce_ui_Window_ngetpos},
+  {"nsetpos", "(JII)V", (void *)&Java_javaforce_ui_Window_nsetpos},
 };
 
 static JNINativeMethod javaforce_ui_Font[] = {
@@ -220,7 +220,7 @@ void registerCommonNatives(JNIEnv *env) {
   env->RegisterNatives(cls, javaforce_gl_GL, sizeof(javaforce_gl_GL)/sizeof(JNINativeMethod));
 
   cls = findClass(env, "javaforce/gl/GLWindow");
-  env->RegisterNatives(cls, javaforce_gl_GLWindow, sizeof(javaforce_gl_GLWindow)/sizeof(JNINativeMethod));
+  env->RegisterNatives(cls, javaforce_ui_Window, sizeof(javaforce_ui_Window)/sizeof(JNINativeMethod));
 
   cls = findClass(env, "javaforce/ui/Font");
   env->RegisterNatives(cls, javaforce_ui_Font, sizeof(javaforce_ui_Font)/sizeof(JNINativeMethod));

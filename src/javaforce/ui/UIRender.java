@@ -40,9 +40,9 @@ public class UIRender {
     scene.init(GLVertexShader.source, GLFragmentShader.source);
     while (true) {
       setContext();
-      GLWindow[] windowList = GLWindow.getWindows();
+      Window[] windowList = Window.getWindows();
       if (windowList.length == 0) break;
-      for(GLWindow window : windowList) {
+      for(Window window : windowList) {
         window.render(scene);
         Canvas[] canvasList = window.getCanvasList();
         for(Canvas c : canvasList) {
@@ -50,7 +50,7 @@ public class UIRender {
           setContext();
         }
       }
-      GLWindow.pollEvents(wait);
+      Window.pollEvents(wait);
     }
   }
 }

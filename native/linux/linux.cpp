@@ -28,7 +28,6 @@
 #include "javaforce_jni_JFNative.h"
 #include "javaforce_jni_LnxNative.h"
 #include "javaforce_gl_GL.h"
-#include "javaforce_gl_GLWindow.h"
 #include "javaforce_media_Camera.h"
 #include "javaforce_media_MediaCoder.h"
 #include "javaforce_media_MediaDecoder.h"
@@ -36,6 +35,9 @@
 #include "javaforce_media_MediaVideoDecoder.h"
 #include "javaforce_controls_ni_DAQmx.h"
 #include "javaforce_media_VideoBuffer.h"
+#include "javaforce_ui_Font.h"
+#include "javaforce_ui_Image.h"
+#include "javaforce_ui_Window.h"
 
 #ifdef __arm__
   #define __RASPBERRY_PI__
@@ -184,7 +186,7 @@ static long getX11ID(JNIEnv *e, jobject c) {
 
 #include "../common/gl.cpp"
 
-JNIEXPORT void JNICALL Java_javaforce_gl_GLWindow_nseticon
+JNIEXPORT void JNICALL Java_javaforce_ui_Window_nseticon
   (JNIEnv *e, jclass c, jlong id, jstring filename, jint x, jint y)
 {
   //TODO

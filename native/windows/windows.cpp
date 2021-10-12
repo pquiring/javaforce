@@ -17,7 +17,6 @@
 #include "javaforce_jni_JFNative.h"
 #include "javaforce_jni_WinNative.h"
 #include "javaforce_gl_GL.h"
-#include "javaforce_gl_GLWindow.h"
 #include "javaforce_media_Camera.h"
 #include "javaforce_media_MediaCoder.h"
 #include "javaforce_media_MediaDecoder.h"
@@ -27,6 +26,7 @@
 #include "javaforce_media_VideoBuffer.h"
 #include "javaforce_ui_Font.h"
 #include "javaforce_ui_Image.h"
+#include "javaforce_ui_Window.h"
 
 HMODULE wgl = NULL;
 
@@ -55,7 +55,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_winInit
 
 #include "../glfw/include/GLFW/glfw3native.h"
 
-JNIEXPORT void JNICALL Java_javaforce_gl_GLWindow_nseticon
+JNIEXPORT void JNICALL Java_javaforce_ui_Window_nseticon
   (JNIEnv *e, jclass c, jlong id, jstring filename, jint x, jint y)
 {
   GLFWContext *ctx = (GLFWContext*)id;
