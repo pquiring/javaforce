@@ -27,7 +27,7 @@ public class Object3 implements Cloneable {
   public int frameIndex;
   public Matrix m;  //current rotation, translation, scale
   public float color[];  //RGBA (default = 1.0f,1.0f,1.0f,1.0f)
-  public Vertex org;  //origin (default = 0.0f,0.0f,0.0f)
+  public Vertex3 org;  //origin (default = 0.0f,0.0f,0.0f)
   public String name;
   public int parent;  //a 3ds file field (not used)
   public int maxframeCount;
@@ -41,7 +41,7 @@ public class Object3 implements Cloneable {
     color = new float[4];
     for(int a=0;a<4;a++) color[a] = 1.0f;
     visible = true;
-    org = new Vertex();
+    org = new Vertex3();
     parent = -1;
     maxframeCount = 0;
     m = new Matrix();
@@ -66,7 +66,7 @@ public class Object3 implements Cloneable {
     return cln;
   }
   public void setVisible(boolean state) {visible = state;}
-  public void addRotate(float angle, float x, float y, float z, Vertex org) {
+  public void addRotate(float angle, float x, float y, float z, Vertex3 org) {
     Matrix tmp = new Matrix();
     //rotates relative to org
     tmp.setAA(angle, x, y, z);  //set rotation
@@ -123,7 +123,7 @@ public class Object3 implements Cloneable {
     maps.get(0).uvl.append(uv1);
     maps.get(1).uvl.append(uv2);
   }
-  public void addVertex(Vertex v) {
+  public void addVertex(Vertex3 v) {
     vpl.append(v.x);
     vpl.append(v.y);
     vpl.append(v.z);
