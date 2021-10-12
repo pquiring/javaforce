@@ -9,7 +9,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.lang.reflect.*;
-import java.security.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
 
@@ -243,48 +242,6 @@ public class JFAWT {
     Dimension d = window.getSize();
     Rectangle s = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
     window.setLocation(s.width/2 - d.width/2, s.height/2 - d.height/2);
-  }
-
-  //taken from JOGL GLCanvas.java
-  //NOTE : should place this in addNotify() and call it before super on X11 and after for Windows.
-  private static boolean disableBackgroundEraseInitialized;
-  private static Method  disableBackgroundEraseMethod;
-  public static void disableBackgroundErase(Component comp) {
-    final Component _comp = comp;
-    if (!disableBackgroundEraseInitialized) {
-      try {
-        AccessController.doPrivileged(new PrivilegedAction<Object>() {
-            @Override
-            public Object run() {
-              try {
-                Class<?> clazz = _comp.getToolkit().getClass();
-                while (clazz != null && disableBackgroundEraseMethod == null) {
-                  try {
-                    disableBackgroundEraseMethod =
-                      clazz.getDeclaredMethod("disableBackgroundErase",
-                                              new Class[] { Canvas.class });
-                    disableBackgroundEraseMethod.setAccessible(true);
-                  } catch (Exception e) {
-                    clazz = clazz.getSuperclass();
-                  }
-                }
-              } catch (Exception e) {
-              }
-              return null;
-            }
-          });
-      } catch (Exception e) {
-      }
-      disableBackgroundEraseInitialized = true;
-    }
-    if (disableBackgroundEraseMethod != null) {
-      Throwable t=null;
-      try {
-        disableBackgroundEraseMethod.invoke(comp.getToolkit(), new Object[] { comp });
-      } catch (Exception e) {
-        t = e;
-      }
-    }
   }
 
   /** Modifies a JPanel so it can use a JMenuBar.
