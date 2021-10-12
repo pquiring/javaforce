@@ -10,10 +10,10 @@ import static javaforce.gl.GL.*;
 
 public class UIRender {
 
-  private GLScene scene;
-  public GLMatrix m_ortho;  //perspective matrix
-  public GLMatrix m_view;  //view matrix
-  public GLMatrix m_model;  //model matrix
+  private Scene scene;
+  public Matrix m_ortho;  //perspective matrix
+  public Matrix m_view;  //view matrix
+  public Matrix m_model;  //model matrix
 
   public float s = 1.0f;
 
@@ -29,15 +29,15 @@ public class UIRender {
   }
 
   public void run(int wait) {
-    scene = new GLScene();
-    m_ortho = new GLMatrix();
+    scene = new Scene();
+    m_ortho = new Matrix();
     //+x right : +y up : +z toward user
     m_ortho.ortho(0, 1, 0, 1, 0.1f, 10f);  //left right bottom top near far
-    m_view = new GLMatrix();
+    m_view = new Matrix();
 //    m_view.setIdentity();
-    m_model = new GLMatrix();
+    m_model = new Matrix();
 //    m_model.setIdentity();
-    scene.init(GLVertexShader.source, GLFragmentShader.source);
+    scene.init(VertexShader.source, FragmentShader.source);
     while (true) {
       setContext();
       Window[] windowList = Window.getWindows();

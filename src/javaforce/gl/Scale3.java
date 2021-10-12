@@ -2,10 +2,10 @@ package javaforce.gl;
 
 /** Stores scale. */
 
-public class GLScale {
+public class Scale3 {
   public float x, y, z;
-  public GLScale() {}
-  public GLScale(float x, float y, float z) {
+  public Scale3() {}
+  public Scale3(float x, float y, float z) {
     this.x = x;
     this.y = y;
     this.z = z;

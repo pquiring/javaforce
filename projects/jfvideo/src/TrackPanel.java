@@ -363,7 +363,7 @@ public class TrackPanel extends javax.swing.JPanel {
                 , project.config.width, project.config.height, 0);
               e.applyAlpha(gldata.image3d);
               image.putPixelsBlend(gldata.image3d.getBuffer(), 0, 0
-                , project.config.width, project.config.height, 0, true);
+                , project.config.width, project.config.height, 0, project.config.width, true);
             }
           });
         } else {

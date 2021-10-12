@@ -1,32 +1,35 @@
 package javaforce.gl;
 
+import javaforce.gl.model.GL_JF3D;
+import javaforce.gl.model.GL_BLEND;
+import javaforce.gl.model.GL_3DS;
 import java.util.*;
 
 import javaforce.*;
 import static javaforce.gl.GL.*;
 
-/** GLScene is a primitive 3D framework.
+/** Scene is a primitive 3D framework.
  * Holds all loaded 3D meshes and related resources.
  */
 
-public class GLScene {
+public class Scene {
   private static final boolean DEBUG = false;
 
   private boolean needinittex = true;
 
-  ArrayList<GLModel> ml;
-  HashMap<String, GLTexture> tl; //texture list
-  HashMap<String, GLModel> mtl; //model templates list
+  ArrayList<Model> ml;
+  HashMap<String, Texture> tl; //texture list
+  HashMap<String, Model> mtl; //model templates list
 
   private ArrayList<Integer> freeglidlist;
 
-  GLTexture blankTexture;
+  Texture blankTexture;
 
-  public GLScene() {
+  public Scene() {
     freeglidlist = new ArrayList<Integer>();
     reset();
     texturePath = "";
-    blankTexture = new GLTexture(0);
+    blankTexture = new Texture(0);
     blankTexture.set(new int[] {-1},1,1);  //white pixel
   }
 
@@ -97,15 +100,15 @@ public class GLScene {
   }
   public void reset() {
     if (tl != null) releaseTextures();
-    ml = new ArrayList<GLModel>();
-    tl = new HashMap<String, GLTexture>();
-    mtl = new HashMap<String, GLModel>();
+    ml = new ArrayList<Model>();
+    tl = new HashMap<String, Texture>();
+    mtl = new HashMap<String, Model>();
   }
   private void releaseTextures() {
     Set keyset = tl.keySet();
     Iterator iter = keyset.iterator();
     String texidx;
-    GLTexture tex;
+    Texture tex;
     while (iter.hasNext()) {
       texidx = (String)iter.next();
       tex = tl.get(texidx);
@@ -122,8 +125,8 @@ public class GLScene {
   public boolean loadTextures() {
     //scan thru object list and load them all
     boolean ret = true;
-    GLObject obj;
-    GLModel mod;
+    Object3 obj;
+    Model mod;
     int modCnt = ml.size();
     for(int a=0;a<modCnt;a++) {
       mod = ml.get(a);
@@ -132,7 +135,7 @@ public class GLScene {
         obj = mod.ol.get(b);
         int mapCnt = obj.maps.size();
         for(int m=0;m<mapCnt;m++) {
-          GLUVMap map = obj.maps.get(m);
+          UVMap map = obj.maps.get(m);
           if (map.texloaded) continue;
           if (loadTexture(mod.getTexture(map.textureIndex), map.idx)) {
             map.texloaded = true;
@@ -146,7 +149,7 @@ public class GLScene {
   }
   private boolean loadTexture(String fn, int idx) {
     if (fn == null) return false;
-    GLTexture tex;
+    Texture tex;
 
     tex = tl.get(fn);
     if (tex != null) {
@@ -154,7 +157,7 @@ public class GLScene {
       return true;
     }
     needinittex = true;
-    tex = new GLTexture(idx);
+    tex = new Texture(idx);
     tex.name = fn;
     if (!tex.loadPNG(fn)) {
       JFLog.log("Error:Failed to load texture:" + fn);
@@ -166,9 +169,9 @@ public class GLScene {
   }
   //directly load a texture
   public boolean setTexture(String fn, int[] px, int w, int h, int idx) {
-    GLTexture tex = tl.get(fn);
+    Texture tex = tl.get(fn);
     if (tex == null) {
-      tex = new GLTexture(idx);
+      tex = new Texture(idx);
       tl.put(fn, tex);
     } else {
       tex.loaded = false;
@@ -178,7 +181,7 @@ public class GLScene {
     return false;
   }
   //directly load a texture
-  public boolean setTexture(String fn, GLTexture tex) {
+  public boolean setTexture(String fn, Texture tex) {
     tl.put(fn, tex);
     needinittex = true;
     return false;
@@ -203,7 +206,7 @@ public class GLScene {
     needinittex = false;
     return true;
   }
-  private boolean initTexture(GLTexture tex) {
+  private boolean initTexture(Texture tex) {
     return tex.load();
   }
   private boolean uninitTextures() {
@@ -231,25 +234,25 @@ public class GLScene {
   /** Release a cloned model @ index.
    */
   public void releaseModel(int idx) {
-    GLModel mod;
-    GLObject obj;
+    Model mod;
+    Object3 obj;
     mod = ml.get(idx);
     int size = mod.ol.size();
     for(int a=0;a<size;a++) {
       obj = mod.ol.get(a);
       for(int m=0;m<obj.maps.size();m++) {
-        GLUVMap map = obj.maps.get(m);
+        UVMap map = obj.maps.get(m);
         tl.get(mod.getTexture(map.textureIndex)).refcnt--;
       }
     }
     ml.remove(idx);
   }
   public int modelCount() { return ml.size(); }
-  public boolean addModel(GLModel mod) { return addModel(mod, 0); }  //places Model at start of list
-  public boolean addModel(GLModel mod, int idx) { if (mod == null) return false; ml.add(idx, mod); return true;}  //place Models with transparent textures last
-  public int indexOfModel(GLModel mod) { return ml.indexOf(mod); }
+  public boolean addModel(Model mod) { return addModel(mod, 0); }  //places Model at start of list
+  public boolean addModel(Model mod, int idx) { if (mod == null) return false; ml.add(idx, mod); return true;}  //place Models with transparent textures last
+  public int indexOfModel(Model mod) { return ml.indexOf(mod); }
   public void removeModel(int idx) { ml.remove(idx); }
-  public void removeModel(GLModel mod) { ml.remove(mod); }
+  public void removeModel(Model mod) { ml.remove(mod); }
   public void nextFrame(int objidx) { ml.get(objidx).nextFrame(); }
   public void setFrame(int objidx, int frame) { ml.get(objidx).setFrame(frame); }
   public void modelTranslate(int idx, float x, float y, float z) { ml.get(idx).translate(x,y,z); }
@@ -258,8 +261,8 @@ public class GLScene {
   /** Loads a .3DS file into the template array.
    * Use addModel() to add a clone into the render scene.
    */
-  public GLModel load3DS(String fn) {
-    GLModel mod;
+  public Model load3DS(String fn) {
+    Model mod;
 
     mod = mtl.get(fn);
     if (mod != null) {
@@ -272,15 +275,15 @@ public class GLScene {
     if (mod == null) return null;
     mtl.put(fn, mod);
     mod.refcnt = 1;
-    mod = (GLModel)mod.clone();
+    mod = (Model)mod.clone();
 
     return mod;
   }
   /** Loads a .blend file into the template array.
    * Use addModel() to add a clone into the render scene.
    */
-  public GLModel loadBlend(String fn) {
-    GLModel mod;
+  public Model loadBlend(String fn) {
+    Model mod;
 
     mod = mtl.get(fn);
     if (mod != null) {
@@ -293,15 +296,15 @@ public class GLScene {
     if (mod == null) return null;
     mtl.put(fn, mod);
     mod.refcnt = 1;
-    mod = (GLModel)mod.clone();
+    mod = (Model)mod.clone();
 
     return mod;
   }
   /** Loads a .JF3D file into the template array.
    * Use addModel() to add a clone into the render scene.
    */
-  public GLModel loadJF3D(String fn) {
-    GLModel mod;
+  public Model loadJF3D(String fn) {
+    Model mod;
 
     mod = mtl.get(fn);
     if (mod != null) {
@@ -314,20 +317,20 @@ public class GLScene {
     if (mod == null) return null;
     mtl.put(fn, mod);
     mod.refcnt = 1;
-    mod = (GLModel)mod.clone();
+    mod = (Model)mod.clone();
 
     return mod;
   }
   /** Clones a pre-loaded model.
    * Use addModel() to add into the render scene.
    */
-  public GLModel cloneModel(String fn) {
-    GLModel mod = mtl.get(fn);
+  public Model cloneModel(String fn) {
+    Model mod = mtl.get(fn);
     if (mod == null) return null;
     mod.refcnt++;
-    return (GLModel)mod.clone();
+    return (Model)mod.clone();
   }
-  public void unloadModel(GLModel mod) {
+  public void unloadModel(Model mod) {
     mod.refcnt--;
   }
   //this will release all unused models
@@ -335,7 +338,7 @@ public class GLScene {
     Set keyset = mtl.keySet();
     Iterator iter = keyset.iterator();
     String idx;
-    GLModel mod;
+    Model mod;
     while (iter.hasNext()) {
       idx = (String)iter.next();
       mod = mtl.get(idx);

@@ -4,15 +4,16 @@
  */
 
 import javaforce.*;
+import javaforce.ui.*;
 import javaforce.gl.*;
 
-public class Main implements GLWindow.WindowEvents {
-  public static GLWindow gl;
+public class Main implements WindowEvents {
+  public static Window gl;
   public static GLCode code;
   public static void main(String args[]) {
-    GLWindow.init();
-    gl = new GLWindow();
-    gl.create(GLWindow.STYLE_VISIBLE | GLWindow.STYLE_TITLEBAR | GLWindow.STYLE_RESIZABLE, "Test", 512, 512, null);
+    Window.init();
+    gl = new Window();
+    gl.create(Window.STYLE_VISIBLE | Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE, "Test", 512, 512, null);
     gl.show();
     gl.setWindowListener(new Main());
     GL.glInit();  //must call AFTER window is created

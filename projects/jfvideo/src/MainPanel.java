@@ -8,6 +8,7 @@ import java.io.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.ui.*;
 import javaforce.gl.*;
 
 public class MainPanel extends javax.swing.JPanel {
@@ -19,7 +20,7 @@ public class MainPanel extends javax.swing.JPanel {
     initComponents();
     Element.init();
     newProject();
-    gl = new GLWindow();
+    gl = new Window();
     gl.init();
     gl.create(0,"jfVideo",1,1,null);  //invisible window
     GL.glInit();
@@ -79,7 +80,7 @@ public class MainPanel extends javax.swing.JPanel {
   private javax.swing.JTabbedPane tabs;
   // End of variables declaration//GEN-END:variables
 
-  public static GLWindow gl;
+  public static Window gl;
 
   public void newProject() {
     tabs.add("New Project", new ProjectPanel(null));

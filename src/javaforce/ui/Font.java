@@ -65,8 +65,8 @@ public class Font {
       return false;
     }
   }
-  private GLTexture tex;
-  public GLTexture getTexture() {
+  private Texture tex;
+  public Texture getTexture() {
     if (tex == null) {
       Image img = new Image(size, size);
       int pos = 0;
@@ -104,7 +104,7 @@ public class Font {
         }
         img.savePNG("font.png");
       }
-      tex = new GLTexture(0);
+      tex = new Texture(0);
       tex.setImage(img);
       tex.load();
     }

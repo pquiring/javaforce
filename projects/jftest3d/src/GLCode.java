@@ -2,6 +2,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.ui.*;
 import javaforce.gl.*;
 import static javaforce.gl.GL.*;
 
@@ -19,10 +20,10 @@ public class GLCode {
 
   final int FPS = 65;
 
-  GLScene scene = new GLScene();
-  GLRender render = new GLRender();
-  GLModel mod;
-  GLObject box;
+  Scene scene = new Scene();
+  Render render = new Render();
+  Model mod;
+  Object3 box;
 
   boolean keys[] = new boolean[1024];
 
@@ -96,7 +97,7 @@ public class GLCode {
     int width = 512;
     int height = 512;
     System.out.println("size=" + width + "," + height);
-    scene.init(GLVertexShader.source, GLFragmentShader.source);
+    scene.init(VertexShader.source, FragmentShader.source);
     render.init(scene, width, height);
     resetPosition();
 
@@ -104,11 +105,11 @@ public class GLCode {
     y = -0.5f;
     z = -0.5f;
 
-    box = new GLObject();
-    GLUVMap map = box.createUVMap();
+    box = new Object3();
+    UVMap map = box.createUVMap();
     map.textureIndex = 0;
 
-    mod = new GLModel();
+    mod = new Model();
     mod.addObject(box);
     mod.addTexture("opengl.png");
     scene.addModel(mod);
@@ -126,7 +127,7 @@ public class GLCode {
     box.copyBuffers();
   }
 
-  public GLObject makeWall(float x,float y,float z,int side,GLObject obj) {
+  public Object3 makeWall(float x,float y,float z,int side,Object3 obj) {
     //use counter clock wise triangles
     float vp[];  //vertex coords (positions)
     vp = new float[] {
@@ -177,10 +178,10 @@ public class GLCode {
     obj.addPoly(new int[] {off + pts[0], off + pts[2], off + pts[3]});
     return obj;
   }
-  GLVector3 viewpoint = new GLVector3();
-  GLVector3 uppoint = new GLVector3();
-  GLVector3 leftpoint = new GLVector3();
-  GLVector3 boxCenter = new GLVector3();
+  Vector3 viewpoint = new Vector3();
+  Vector3 uppoint = new Vector3();
+  Vector3 leftpoint = new Vector3();
+  Vector3 boxCenter = new Vector3();
   public void processMovement() {
     viewpoint.set(0.0f, 0.0f, -1.0f);  //normally looking into monitor
     render.m_camera.mult(viewpoint);
@@ -189,29 +190,29 @@ public class GLCode {
     leftpoint.set(-1.0f, 0.0f, 0.0f);  //normally left is along x axis
     render.m_camera.mult(leftpoint);
 
-    if (keys[GLVK.VK_LEFT]) { rotateLR(-1.0f); }
-    if (keys[GLVK.VK_RIGHT]) { rotateLR(1.0f); }
-    if (keys[GLVK.VK_UP]) { rotateUD(1.0f); }
-    if (keys[GLVK.VK_DOWN]) { rotateUD(-1.0f); }
-    if (keys[GLVK.VK_Z]) { spin(1.0f); }
-    if (keys[GLVK.VK_X]) { spin(-1.0f); }
+    if (keys[KeyCode.VK_LEFT]) { rotateLR(-1.0f); }
+    if (keys[KeyCode.VK_RIGHT]) { rotateLR(1.0f); }
+    if (keys[KeyCode.VK_UP]) { rotateUD(1.0f); }
+    if (keys[KeyCode.VK_DOWN]) { rotateUD(-1.0f); }
+    if (keys[KeyCode.VK_Z]) { spin(1.0f); }
+    if (keys[KeyCode.VK_X]) { spin(-1.0f); }
 
-    if (keys[GLVK.VK_Q]) { resetPosition(); }
+    if (keys[KeyCode.VK_Q]) { resetPosition(); }
 
-    if (keys[GLVK.VK_F1]) { render.cameraRotate(10.0f, 1.0f, 0.0f, 0.0f); }
-    if (keys[GLVK.VK_F2]) { render.cameraRotate(10.0f, 0.0f, 1.0f, 0.0f); }
-    if (keys[GLVK.VK_F3]) { render.cameraRotate(10.0f, 0.0f, 0.0f, 1.0f); }
-    if (keys[GLVK.VK_F5]) { render.cameraRotate(-10.0f, 1.0f, 0.0f, 0.0f); }
-    if (keys[GLVK.VK_F6]) { render.cameraRotate(-10.0f, 0.0f, 1.0f, 0.0f); }
-    if (keys[GLVK.VK_F7]) { render.cameraRotate(-10.0f, 0.0f, 0.0f, 1.0f); }
+    if (keys[KeyCode.VK_F1]) { render.cameraRotate(10.0f, 1.0f, 0.0f, 0.0f); }
+    if (keys[KeyCode.VK_F2]) { render.cameraRotate(10.0f, 0.0f, 1.0f, 0.0f); }
+    if (keys[KeyCode.VK_F3]) { render.cameraRotate(10.0f, 0.0f, 0.0f, 1.0f); }
+    if (keys[KeyCode.VK_F5]) { render.cameraRotate(-10.0f, 1.0f, 0.0f, 0.0f); }
+    if (keys[KeyCode.VK_F6]) { render.cameraRotate(-10.0f, 0.0f, 1.0f, 0.0f); }
+    if (keys[KeyCode.VK_F7]) { render.cameraRotate(-10.0f, 0.0f, 0.0f, 1.0f); }
 
-    if (keys[GLVK.VK_9]) { render.fovy -= 10.0f; System.out.println("fovy = " + render.fovy); }
-    if (keys[GLVK.VK_0]) { render.fovy += 10.0f; System.out.println("fovy = " + render.fovy); }
+    if (keys[KeyCode.VK_9]) { render.fovy -= 10.0f; System.out.println("fovy = " + render.fovy); }
+    if (keys[KeyCode.VK_0]) { render.fovy += 10.0f; System.out.println("fovy = " + render.fovy); }
 
-    if (keys[GLVK.VK_S]) { move(1); }
-    if (keys[GLVK.VK_W]) { move(-1); }
-    if (keys[GLVK.VK_D]) { stride(1); }
-    if (keys[GLVK.VK_A]) { stride(-1); }
+    if (keys[KeyCode.VK_S]) { move(1); }
+    if (keys[KeyCode.VK_W]) { move(-1); }
+    if (keys[KeyCode.VK_D]) { stride(1); }
+    if (keys[KeyCode.VK_A]) { stride(-1); }
 
     //fade box in/out
     alpha += alphadir;

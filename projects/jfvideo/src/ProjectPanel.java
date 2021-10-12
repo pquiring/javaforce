@@ -1011,12 +1011,12 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
   private RandomAccessFile raf;
 
   public class GLData {
-    public GLScene scene;
-    public GLRender render;
-    public GLModel model;
-    public GLObject object;
+    public Scene scene;
+    public Render render;
+    public Model model;
+    public Object3 object;
     public JFImage image3d;
-    public GLOffscreen off;
+    public Offscreen off;
   }
 
   private GLData gldata;
@@ -1026,19 +1026,19 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
     MainPanel.runGL(new Runnable() {
       public void run() {
         MainPanel.gl.pollEvents();
-        gldata.scene = new GLScene();
-        gldata.off = new GLOffscreen();
+        gldata.scene = new Scene();
+        gldata.off = new Offscreen();
         gldata.off.createOffscreen(config.width, config.height);
-        gldata.scene.init(GLVertexShader.source, GLFragmentShader.source);
-        gldata.render = new GLRender();
+        gldata.scene.init(VertexShader.source, FragmentShader.source);
+        gldata.render = new Render();
         gldata.render.init(gldata.scene, config.width, config.height);
         gldata.image3d = new JFImage(config.width, config.height);
-        gldata.model = new GLModel();
-        gldata.object = new GLObject();
+        gldata.model = new Model();
+        gldata.object = new Object3();
         float z = 5.0f;
         float x = 2.0f;
         float y = 2.0f;
-        GLUVMap map = gldata.object.createUVMap();
+        UVMap map = gldata.object.createUVMap();
         map.textureIndex = 0;
         map.texloaded = true;  //direct loaded
         gldata.object.addVertex(new float[] {-x,-y,-z}, new float[] {0,1});

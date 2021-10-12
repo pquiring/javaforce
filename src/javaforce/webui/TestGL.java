@@ -73,9 +73,9 @@ public class TestGL implements WebUIHandler {
   public Panel getRootPanel(WebUIClient client) {
     Panel panel = new Panel() {
       public void onLoaded(String args[]) {
-        GLMatrix pMatrix = new GLMatrix();
+        Matrix pMatrix = new Matrix();
         pMatrix.perspective(45f, 640.0f/480.0f, 0.1f, 100.0f);
-        GLMatrix mMatrix = new GLMatrix();
+        Matrix mMatrix = new Matrix();
         mMatrix.addTranslate(0, 0, -4.0f);
         Canvas canvas = (Canvas)getProperty("canvas");
         //init gl resources

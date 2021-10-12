@@ -42,7 +42,7 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
     }
     width = 588; //previewImage.getWidth();
     height = 377;  //previewImage.getHeight();
-    off = new GLOffscreen();
+    off = new Offscreen();
     off.createOffscreen(width, height);
     offimage = new JFImage();
     offimage.setSize(width, height);
@@ -509,13 +509,13 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
   private javax.swing.JButton z_up;
   // End of variables declaration//GEN-END:variables
 
-  GLScene scene;
-  GLModel model;
-  GLObject object;
-  GLRender render;
+  Scene scene;
+  Model model;
+  Object3 object;
+  Render render;
   JFImage image;
   java.util.Timer timer;
-  GLOffscreen off;
+  Offscreen off;
   JFImage offimage;
   int width,height;
   enum buttons {NONE, P_UP, P_DOWN, P_LEFT, P_RIGHT, P_IN, P_OUT, R_UP, R_DOWN, R_LEFT, R_RIGHT, RZ_UP, RZ_DOWN};
@@ -545,20 +545,20 @@ public class GLProps extends javax.swing.JPanel implements KeyListener {
   private void initGL() {
     JFLog.log("GLProps.init()");
     MainPanel.gl.pollEvents();
-    scene = new GLScene();
-    scene.init(GLVertexShader.source, GLFragmentShader.source);
-    render = new GLRender();
+    scene = new Scene();
+    scene.init(VertexShader.source, FragmentShader.source);
+    render = new Render();
     render.init(scene, width, height);
-    model = new GLModel();
+    model = new Model();
     scene.addModel(model);
-    object = new GLObject();
+    object = new Object3();
     model.addObject(object);
     model.addTexture("0");
     //need to calc based on w,h,fov
     float z = 5.0f;
     float x = 2.0f;
     float y = 2.0f;
-    GLUVMap map = object.createUVMap();
+    UVMap map = object.createUVMap();
     map.textureIndex = 0;
     map.texloaded = true;  //direct loaded
     object.addVertex(new float[] {-x,-y,-z}, new float[] {0,1});

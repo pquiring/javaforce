@@ -6,11 +6,11 @@ import javaforce.*;
 import javaforce.ui.*;
 import static javaforce.gl.GL.*;
 
-/** Stores a texture (image).
+/** Stores a 2D Texture (image).
  * Textures are usually loaded after a new model is loaded.
  * All model's share the same set of textures. */
 
-public class GLTexture {
+public class Texture {
   public Image image;
   public int refcnt;
   public int tid;
@@ -20,7 +20,7 @@ public class GLTexture {
 
   private static boolean mipmaps = false;
 
-  public GLTexture(int idx) {
+  public Texture(int idx) {
     refcnt = 0;
     tid = -1;
     image = new Image();
@@ -28,7 +28,7 @@ public class GLTexture {
     this.idx = idx;
   }
 
-  public GLTexture(int idx, int width, int height) {
+  public Texture(int idx, int width, int height) {
     refcnt = 0;
     tid = -1;
     image = new Image(width, height);

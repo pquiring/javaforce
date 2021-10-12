@@ -5,49 +5,49 @@ import java.util.*;
 import javaforce.*;
 import static javaforce.gl.GL.*;
 
-/** <code>GLObject</code> consists of vertex points, and polygons (usually triangles).
+/** <code>Object3</code> consists of vertex points, and polygons (usually triangles).
  * All polygons share the same orientation (rotation, translation, scale).
  */
 
-public class GLObject implements Cloneable {
+public class Object3 implements Cloneable {
   public JFArrayFloat vpl;  //vertex position list
   public JFArrayInt vil;  //vertex index list
   public int vpb = -1, vib = -1;  //GL Buffers
 
   public int type = GL_TRIANGLES;  //GL_TRIANGLES or GL_QUADS
 
-  public ArrayList<GLUVMap> maps = new ArrayList<GLUVMap>();
+  public ArrayList<UVMap> maps = new ArrayList<UVMap>();
 
   public boolean visible = true;
   public boolean needCopyBuffers = true;
 //animation data
-  public HashMap<Integer, GLTranslate> tl;  //move list
-  public HashMap<Integer, GLRotate> rl;  //rotation list
-  public HashMap<Integer, GLScale> sl;  //scale list
+  public HashMap<Integer, Translate3> tl;  //move list
+  public HashMap<Integer, Rotate3> rl;  //rotation list
+  public HashMap<Integer, Scale3> sl;  //scale list
   public int frameIndex;
-  public GLMatrix m;  //current rotation, translation, scale
+  public Matrix m;  //current rotation, translation, scale
   public float color[];  //RGBA (default = 1.0f,1.0f,1.0f,1.0f)
-  public GLVertex org;  //origin (default = 0.0f,0.0f,0.0f)
+  public Vertex org;  //origin (default = 0.0f,0.0f,0.0f)
   public String name;
   public int parent;  //a 3ds file field (not used)
   public int maxframeCount;
-  public GLObject() {
+  public Object3() {
     frameIndex = 0;
     vpl = new JFArrayFloat();
     vil = new JFArrayInt();
-    tl = new HashMap<Integer, GLTranslate>();
-    rl = new HashMap<Integer, GLRotate>();
-    sl = new HashMap<Integer, GLScale>();
+    tl = new HashMap<Integer, Translate3>();
+    rl = new HashMap<Integer, Rotate3>();
+    sl = new HashMap<Integer, Scale3>();
     color = new float[4];
     for(int a=0;a<4;a++) color[a] = 1.0f;
     visible = true;
-    org = new GLVertex();
+    org = new Vertex();
     parent = -1;
     maxframeCount = 0;
-    m = new GLMatrix();
+    m = new Matrix();
   }
   public Object clone() {
-    GLObject cln = new GLObject();
+    Object3 cln = new Object3();
     cln.vpl = vpl;
     cln.vil = vil;
     cln.maps = maps;
@@ -56,7 +56,7 @@ public class GLObject implements Cloneable {
     cln.rl = rl;
     cln.sl = sl;
     cln.frameIndex = frameIndex;
-    cln.m = (GLMatrix)m.clone();  //super.clone() would use an assignment
+    cln.m = (Matrix)m.clone();  //super.clone() would use an assignment
     cln.color = new float[4];
     for(int a=0;a<4;a++) cln.color[a] = color[a];
     cln.org = org;
@@ -66,8 +66,8 @@ public class GLObject implements Cloneable {
     return cln;
   }
   public void setVisible(boolean state) {visible = state;}
-  public void addRotate(float angle, float x, float y, float z, GLVertex org) {
-    GLMatrix tmp = new GLMatrix();
+  public void addRotate(float angle, float x, float y, float z, Vertex org) {
+    Matrix tmp = new Matrix();
     //rotates relative to org
     tmp.setAA(angle, x, y, z);  //set rotation
     tmp.addTranslate(org.x, org.y, org.z);  //set translation
@@ -84,9 +84,9 @@ public class GLObject implements Cloneable {
     m.addScale(x,y,z);
   }
   public void setFrame(int idx) {  //0=init state
-    GLRotate _r;
-    GLTranslate _t;
-    GLScale _s;
+    Rotate3 _r;
+    Translate3 _t;
+    Scale3 _s;
     frameIndex = idx;
     if (idx == 0) {
       m.setIdentity();
@@ -123,11 +123,11 @@ public class GLObject implements Cloneable {
     maps.get(0).uvl.append(uv1);
     maps.get(1).uvl.append(uv2);
   }
-  public void addVertex(GLVertex v) {
+  public void addVertex(Vertex v) {
     vpl.append(v.x);
     vpl.append(v.y);
     vpl.append(v.z);
-    GLUVMap map = maps.get(0);
+    UVMap map = maps.get(0);
     map.uvl.append(v.u);
     map.uvl.append(v.v);
   }
@@ -177,7 +177,7 @@ public class GLObject implements Cloneable {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, vil.size() * 4, vil.toArray(), GL_STREAM_DRAW);
     needCopyBuffers = false;
   }
-  public void bindBuffers(GLScene scene) {
+  public void bindBuffers(Scene scene) {
     glBindBuffer(GL_ARRAY_BUFFER, vpb);
     glVertexAttribPointer(scene.vpa, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
@@ -190,7 +190,7 @@ public class GLObject implements Cloneable {
     }
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vib);
   }
-  public void render(GLScene scene) {
+  public void render(Scene scene) {
     if (vpl.size() == 0 || vil.size() == 0) return;  //crashes if empty ???
     int uvcnt = maps.size();
     glUniform1i(scene.uUVMaps, uvcnt);
@@ -221,17 +221,17 @@ public class GLObject implements Cloneable {
       maps.get(m).freeBuffers();
     }
   }
-  public GLUVMap createUVMap() {
-    GLUVMap map = new GLUVMap(maps.size());
+  public UVMap createUVMap() {
+    UVMap map = new UVMap(maps.size());
     maps.add(map);
     return map;
   }
-  public GLUVMap getUVMap(int idx) {
+  public UVMap getUVMap(int idx) {
     return maps.get(idx);
   }
-  public GLUVMap getUVMap(String name) {
+  public UVMap getUVMap(String name) {
     for(int a=0;a<maps.size();a++) {
-      GLUVMap map = maps.get(a);
+      UVMap map = maps.get(a);
       if (map.name.equals(name)) return map;
     }
     return null;
@@ -239,7 +239,7 @@ public class GLObject implements Cloneable {
   public int getUVMaps() {
     return maps.size();
   }
-  public void print(GLModel model) {
+  public void print(Model model) {
     System.out.println("Object:" + name);
     //print vertex data
     float vp[] = vpl.toArray();
@@ -260,7 +260,7 @@ public class GLObject implements Cloneable {
     }
     //print uv maps
     for(int m=0;m<maps.size();m++) {
-      GLUVMap map = maps.get(m);
+      UVMap map = maps.get(m);
       System.out.println("UVMap:" + map.name + ",texture=" + model.textures.get(map.textureIndex));
       float uv[] = map.uvl.toArray();
       for(int a=0;a<uv.length;) {

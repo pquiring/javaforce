@@ -142,7 +142,7 @@ public class TestGLCube implements WebUIHandler {
   }
   public static class Context extends TimerTask {
     public WebUIClient client;
-    public GLMatrix pMatrix, mMatrix;
+    public Matrix pMatrix, mMatrix;
     public Timer timer;
     public Canvas canvas;
 
@@ -156,9 +156,9 @@ public class TestGLCube implements WebUIHandler {
       canvas.sendEvent("matrix", new String[] {"idx=1"});
     }
     public void send() {
-      pMatrix = new GLMatrix();
+      pMatrix = new Matrix();
       pMatrix.perspective(45f, 640.0f/480.0f, 0.1f, 100.0f);
-      mMatrix = new GLMatrix();
+      mMatrix = new Matrix();
       mMatrix.addTranslate(0, 0, -4.0f);
       canvas = (Canvas)client.getProperty("canvas");
       //init gl resources

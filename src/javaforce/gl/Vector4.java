@@ -2,16 +2,16 @@ package javaforce.gl;
 
 /** Stores one vector. */
 
-public class GLVector4 {
+public class Vector4 {
   public float v[] = new float[4];
-  public GLVector4() { }
-  public GLVector4(float x, float y, float z) {
+  public Vector4() { }
+  public Vector4(float x, float y, float z) {
     this.v[0] = x;
     this.v[1] = y;
     this.v[2] = z;
     this.v[3] = 1.0f;
   }
-  public GLVector4(float x, float y, float z, float w) {
+  public Vector4(float x, float y, float z, float w) {
     this.v[0] = x;
     this.v[1] = y;
     this.v[2] = z;
@@ -30,13 +30,13 @@ public class GLVector4 {
     this.v[3] = w;
   }
   /** this = a - b */
-  public void sub(GLVector4 a, GLVector4 b) {
+  public void sub(Vector4 a, Vector4 b) {
     v[0] = a.v[0] - b.v[0];
     v[1] = a.v[1] - b.v[1];
     v[2] = a.v[2] - b.v[2];
   }
   /** this = a X b */
-  public void cross(GLVector4 a, GLVector4 b) {
+  public void cross(Vector4 a, Vector4 b) {
     v[0] = a.v[1] * b.v[2] - a.v[2] * b.v[1];
     v[1] = a.v[2] * b.v[0] - a.v[0] * b.v[2];
     v[2] = a.v[0] * b.v[1] - a.v[1] * b.v[0];
@@ -64,11 +64,11 @@ public class GLVector4 {
     v[1] /= d;
     v[2] /= d;
   }
-  public float dot(GLVector4 in) {
+  public float dot(Vector4 in) {
     return v[0] * in.v[0] + v[1] * in.v[1] + v[2] * in.v[2];
   }
   //length relative to another vertex
-  public float length(GLVector4 in) {
+  public float length(Vector4 in) {
     float _x = v[0] - in.v[0];
     float _y = v[1] - in.v[1];
     float _z = v[2] - in.v[2];

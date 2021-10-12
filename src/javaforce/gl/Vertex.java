@@ -2,29 +2,29 @@ package javaforce.gl;
 
 /** Store one vertex (point). */
 
-public class GLVertex {
+public class Vertex {
   public float x,y,z;
   public float u,v;  //texture coords
-  public GLVertex() { }
-  public GLVertex(float x, float y, float z) {
+  public Vertex() { }
+  public Vertex(float x, float y, float z) {
     this.x = x;
     this.y = y;
     this.z = z;
   }
-  public GLVertex(float x, float y, float z, float u, float v) {
+  public Vertex(float x, float y, float z, float u, float v) {
     this.x = x;
     this.y = y;
     this.z = z;
     this.u = u;
     this.v = v;
   }
-  public GLVertex set(float x, float y, float z) {
+  public Vertex set(float x, float y, float z) {
     this.x = x;
     this.y = y;
     this.z = z;
     return this;
   }
-  public GLVertex set(float x, float y, float z, float u, float v) {
+  public Vertex set(float x, float y, float z, float u, float v) {
     this.x = x;
     this.y = y;
     this.z = z;
@@ -33,13 +33,13 @@ public class GLVertex {
     return this;
   }
   /** this = a - b */
-  public void sub(GLVertex a, GLVertex b) {
+  public void sub(Vertex a, Vertex b) {
     x = a.x - b.x;
     y = a.y - b.y;
     z = a.z - b.z;
   }
   /** this = a X b */
-  public void cross(GLVertex a, GLVertex b) {
+  public void cross(Vertex a, Vertex b) {
     x = a.y * b.z - a.z * b.y;
     y = a.z * b.x - a.x * b.z;
     z = a.x * b.y - a.y * b.x;
@@ -61,11 +61,11 @@ public class GLVertex {
     y *= s;
     z *= s;
   }
-  public float dot(GLVertex v) {
+  public float dot(Vertex v) {
     return x * v.x + y * v.y + z * v.z;
   }
   //length relative to another vertex
-  public float length(GLVertex v) {
+  public float length(Vertex v) {
     float _x = x - v.x;
     float _y = y - v.y;
     float _z = z - v.z;

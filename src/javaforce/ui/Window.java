@@ -25,9 +25,9 @@ public class Window {
   private MouseEvents mouse;
   private WindowEvents window;
   private boolean visible;
-  private GLTexture texture;
+  private Texture texture;
 //  private GLModel model;
-  private GLObject object;
+  private Object3 object;
   private boolean active = true;
   private Component content;
 
@@ -227,7 +227,7 @@ public class Window {
     canvasList.add(canvas);
   }
 
-  public void render(GLScene scene) {
+  public void render(Scene scene) {
     if (debug) System.out.println("Window.render()");
     if (texture == null || texture.getWidth() != getWidth() || texture.getHeight() != getHeight()) {
       if (texture != null) {
@@ -238,13 +238,13 @@ public class Window {
         object.freeBuffers();
         object = null;
       }
-      texture = new GLTexture(0, getWidth(), getHeight());
+      texture = new Texture(0, getWidth(), getHeight());
     }
 //    if (model == null) {
 //      model = new GLModel();
 //    }
     if (object == null) {
-      object = new GLObject();
+      object = new Object3();
       object.createUVMap();
       //add vertex ccw
       int z = -1;

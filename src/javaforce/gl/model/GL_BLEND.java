@@ -1,8 +1,16 @@
-package javaforce.gl;
+package javaforce.gl.model;
 
 import java.io.*;
 import java.util.*;
 import javaforce.*;
+import javaforce.gl.GL;
+import javaforce.gl.GL;
+import javaforce.gl.Model;
+import javaforce.gl.Model;
+import javaforce.gl.Object3;
+import javaforce.gl.Object3;
+import javaforce.gl.UVMap;
+import javaforce.gl.UVMap;
 
 /**
  * Blender .blend reader
@@ -31,8 +39,8 @@ public class GL_BLEND {
   private boolean x64;  //64bit file format (else 32bit)
   private boolean le;  //little endian file format (else big endian)
 
-  private GLModel model;
-  private GLObject obj;
+  private Model model;
+  private Object3 obj;
 
   private float org[] = new float[3];
   private boolean haveDups;
@@ -138,7 +146,7 @@ public class GL_BLEND {
     return m.typelen;
   }
 
-  public GLModel load(String filename) {
+  public Model load(String filename) {
     try {
       return loadBlend(new FileInputStream(filename));
     } catch (Exception e) {
@@ -146,7 +154,7 @@ public class GL_BLEND {
       return null;
     }
   }
-  public GLModel load(InputStream is) {
+  public Model load(InputStream is) {
     try {
       return loadBlend(is);
     } catch (Exception e) {
@@ -258,14 +266,14 @@ public class GL_BLEND {
   private class Vertex {
     float[] xyz;
   }
-  private GLModel loadBlend(InputStream is) throws Exception {
+  private Model loadBlend(InputStream is) throws Exception {
     setData(JF.readAll(is));
 
     if (data.length < 12) {
       throw new Exception("GL_BLEND:File too small");
     }
 
-    model = new GLModel();
+    model = new Model();
 
     //load signature (12 bytes) "BLENDER_V100"
     if (!new String(data, 0, 7).equals("BLENDER")) {
@@ -419,7 +427,7 @@ public class GL_BLEND {
     bObj.read();
 //        JFLog.log("object.type=" + bObj.type);
     if (bObj.type != 1) return;  //not a mesh object (could be camera, light, etc.)
-    obj = new GLObject();
+    obj = new Object3();
     model.addObject(obj);
     obj.name = bObj.id.name.substring(2);
 //    JFLog.log("object=" + obj.name);
@@ -558,7 +566,7 @@ public class GL_BLEND {
           setData(imageChunk.raw);
           Image image = new Image();
           image.read();
-          GLUVMap map;
+          UVMap map;
           if (a < obj.getUVMaps())
             map = obj.getUVMap(a);
           else
