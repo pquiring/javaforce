@@ -5,7 +5,7 @@ package javaforce.ui;
  * @author pquiring
  */
 
-public interface KeyEvents {
+public interface KeyEvents extends KeyCode {
   public void keyTyped(char ch);
 
   public void keyPressed(int key);
