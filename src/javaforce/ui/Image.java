@@ -61,7 +61,7 @@ public class Image extends Component {
   private native byte[] nsavePNG(int[] pixels, int width, int height);
 
   public boolean savePNG(OutputStream os) {
-    byte[] data = nsavePNG(buffer, width, height);
+    byte[] data = nsavePNG(buffer, size.width, size.height);
     if (data == null) return false;
     try {
       os.write(data);
@@ -117,7 +117,7 @@ public class Image extends Component {
   public int jpeg_quality = 90;
 
   public boolean saveJPG(OutputStream os) {
-    byte[] data = nsaveJPG(buffer, width, height, jpeg_quality);
+    byte[] data = nsaveJPG(buffer, size.width, size.height, jpeg_quality);
     if (data == null) return false;
     try {
       os.write(data);
@@ -335,19 +335,19 @@ public class Image extends Component {
   }
 
   public int getPixel(int x, int y) {
-    return buffer[y * width + x] & Color.MASK_RGB;
+    return buffer[y * getWidth() + x] & Color.MASK_RGB;
   }
 
   public void putPixel(int x, int y, int c) {
-    buffer[y * width + x] = Color.OPAQUE | c;
+    buffer[y * getWidth() + x] = Color.OPAQUE | c;
   }
 
   public int getPixelA(int x, int y) {
-    return buffer[y * width + x];
+    return buffer[y * getWidth() + x];
   }
 
   public void putPixelA(int x, int y, int c) {
-    buffer[y * width + x] = c;
+    buffer[y * getWidth() + x] = c;
   }
 
   /** Returns a copy of the pixels buffer. */

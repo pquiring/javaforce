@@ -6,11 +6,11 @@ package javaforce.ui;
  */
 
 public class LayoutMetrics {
-  public int x, y;
-  public int width, height;
+  public Point pos = new Point();
+  public Dimension size = new Dimension();
 
   public LayoutMetrics(int width, int height) {
-    this.width = width;
-    this.height = height;
+    size.width = width;
+    size.height = height;
   }
 }

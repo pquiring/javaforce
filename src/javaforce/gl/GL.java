@@ -38,7 +38,7 @@ public class GL {
    */
   public static native boolean glInit();
 
-  public static final boolean debug = true;  //enable to see lots of debug info
+  public static final boolean debug = false;  //enable to see lots of debug info
 
   //common data
   private enum OS {WINDOWS, LINUX, MAC};

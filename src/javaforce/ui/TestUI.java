@@ -17,9 +17,24 @@ public class TestUI implements GLWindow.WindowEvents {
     window.show();
     window.setWindowListener(new TestUI());
     GL.glInit();
-    Label label = new Label("TestUI");
-    window.setContent(label);
+    window.setContent(createUI());
     render.run();
+  }
+
+  public static Component createUI() {
+    Column c = new Column();
+    Row r = new Row();
+    r.add(new Label("TopLeft"));
+    r.add(new FlexBox());
+    r.add(new Label("TopRight"));
+    c.add(r);
+    c.add(new FlexBox());
+    r = new Row();
+    r.add(new Label("BottomLeft"));
+    r.add(new FlexBox());
+    r.add(new Label("BottomRight"));
+    c.add(r);
+    return c;
   }
 
   public void windowResize(int x, int y) {

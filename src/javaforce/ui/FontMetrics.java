@@ -22,7 +22,7 @@ public class FontMetrics {
   }
 
   public int getHeight() {
-    return ascent + descent;
+    return -ascent + descent;
   }
 
   public void setDescent(int descent) {
@@ -30,7 +30,7 @@ public class FontMetrics {
   }
 
   public int getBaseline() {
-    return ascent;
+    return -ascent;
   }
 
   public void setBaseline(int baseline) {

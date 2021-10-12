@@ -230,13 +230,18 @@ public class GLWindow {
 
   public void setContent(Component content) {
     this.content = content;
+    layout();
+  }
+
+  private void layout() {
+    content.layout(new LayoutMetrics(width, height));
   }
 
   public void resize(int w, int h) {
     width = w;
     height = h;
     if (content != null) {
-      content.layout(new LayoutMetrics(w, h));
+      layout();
     }
   }
 

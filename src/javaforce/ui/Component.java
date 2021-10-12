@@ -5,12 +5,16 @@ package javaforce.ui;
  * @author pquiring
  */
 
+import javaforce.*;
+
 public class Component {
   protected Font font;
   protected Color foreClr, backClr;
-  protected int x, y;  //position
-  protected int width, height;  //size
-  protected int pwidth, pheight;  //preferred size
+  protected Point pos = new Point();
+  protected Dimension size = new Dimension();
+  public static final Dimension zero = new Dimension();
+
+  public static final boolean debug = true;
 
   /** Loads a complete form from a XML file (*.ui). */
   public static Component load(String fn) {
@@ -22,31 +26,63 @@ public class Component {
 
   }
 
-  public int getWidth() {return width;}
+  public Point getPosition() {
+    return pos;
+  }
 
-  public int getHeight() {return height;}
+  public int getX() {
+    return pos.x;
+  }
 
-  public void setSize(int width, int height) {
-    this.width = width;
-    this.height = height;
+  public int getY() {
+    return pos.y;
+  }
+
+  public void setPosition(Point pt) {
+    pos.x = pt.x;
+    pos.y = pt.y;
+  }
+
+  public void setPosition(int x, int y) {
+    pos.x = x;
+    pos.y = y;
   }
 
   public Dimension getSize() {
-    return new Dimension(width, height);
+    return size;
   }
 
-  public Dimension getPreferredSize() {
-    return new Dimension(width, height);
+  public int getWidth() {return size.width;}
+
+  public int getHeight() {return size.height;}
+
+  public void setSize(Dimension dim) {
+    size.width = dim.width;
+    size.height = dim.height;
+  }
+
+  public void setSize(int width, int height) {
+    size.width = width;
+    size.height = height;
+  }
+
+  public Dimension getMinSize() {
+    return size;
+  }
+
+  public int getMinWidth() {
+    return getMinSize().width;
+  }
+
+  public int getMinHeight() {
+    return getMinSize().height;
   }
 
   public void render(Image output) {}
 
   public void layout(LayoutMetrics metrics) {
-    x = metrics.x;
-    y = metrics.y;
-    Dimension size = getPreferredSize();
-    width = size.width;
-    height = size.height;
-    metrics.x += width;
+    if (debug) JFLog.log("Component.layout()" + metrics.pos.x + "," + metrics.pos.y + "@" + this);
+    pos.x = metrics.pos.x;
+    pos.y = metrics.pos.y;
   }
 }
