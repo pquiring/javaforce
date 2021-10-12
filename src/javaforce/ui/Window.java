@@ -12,28 +12,6 @@ import javaforce.gl.*;
 import static javaforce.gl.GL.*;
 
 public class Window {
-  public static final int MOUSE_BUTTON_LEFT = 1;
-  public static final int MOUSE_BUTTON_RIGHT = 2;
-  public static final int MOUSE_BUTTON_MIDDLE = 3;
-
-  public static interface KeyEvents {
-    public void keyTyped(char ch);
-    public void keyPressed(int key);
-    public void keyReleased(int key);
-  }
-
-  public static interface MouseEvents {
-    public void mouseMove(int x,int y);
-    public void mouseDown(int button);
-    public void mouseUp(int button);
-    public void mouseScroll(int x,int y);
-  }
-
-  public static interface WindowEvents {
-    public void windowResize(int x,int y);
-    public void windowClosing();
-  }
-
   private static native boolean ninit();
   public static boolean init() {
     JFNative.load();  //ensure native library is loaded

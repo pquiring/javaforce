@@ -8,7 +8,7 @@ package javaforce.ui;
 import javaforce.*;
 import javaforce.gl.*;
 
-public class TestUI implements Window.WindowEvents {
+public class TestUI implements WindowEvents {
   public static void main(String[] args) {
     Window.init();
     UIRender render = new UIRender();
