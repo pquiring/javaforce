@@ -46,6 +46,7 @@ public class UIRender {
         window.render(scene);
         Canvas[] canvasList = window.getCanvasList();
         for(Canvas c : canvasList) {
+          glViewport(c.pos.x, c.pos.y, c.size.width, c.size.height);
           c.render();
           setContext();
         }
