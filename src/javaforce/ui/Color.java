@@ -21,6 +21,12 @@ public class Color {
   public static int blue = 0x0000ff;
   public static int white = 0xffffff;
 
+  public static Color BLACK = new Color(black);
+  public static Color RED = new Color(red);
+  public static Color GREEN = new Color(green);
+  public static Color BLUE = new Color(blue);
+  public static Color WHITE = new Color(white);
+
   public Color() {
 
   }

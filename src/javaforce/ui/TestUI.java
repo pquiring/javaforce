@@ -7,6 +7,7 @@ package javaforce.ui;
 
 import javaforce.*;
 import javaforce.gl.*;
+import javaforce.ui.theme.Theme;
 
 public class TestUI implements WindowEvents {
   public static void main(String[] args) {
@@ -22,6 +23,7 @@ public class TestUI implements WindowEvents {
   }
 
   public static Component createUI() {
+    Theme.getTheme().setForeColor(Color.GREEN);
     Column c = new Column();
     Row r = new Row();
     r.add(new Label("TopLeft"));

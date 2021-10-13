@@ -9,6 +9,7 @@ import java.util.*;
 
 import javaforce.jni.*;
 import javaforce.gl.*;
+import javaforce.ui.theme.*;
 import static javaforce.gl.GL.*;
 
 public class Window {
@@ -26,7 +27,6 @@ public class Window {
   private WindowEvents window;
   private boolean visible;
   private Texture texture;
-//  private GLModel model;
   private Object3 object;
   private boolean active = true;
   private Component content;
@@ -240,9 +240,6 @@ public class Window {
       }
       texture = new Texture(0, getWidth(), getHeight());
     }
-//    if (model == null) {
-//      model = new GLModel();
-//    }
     if (object == null) {
       object = new Object3();
       object.createUVMap();
@@ -258,6 +255,7 @@ public class Window {
       object.copyBuffers();
     }
     canvasList.clear();
+    texture.getImage().fill(0, 0, width, height, Color.OPAQUE + Theme.getTheme().getBackColor().getColor());
     content.render(texture.getImage());
     setCurrent();
     clear(Color.black, getWidth(), getHeight());

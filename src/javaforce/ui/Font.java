@@ -158,7 +158,7 @@ public class Font {
     return glyphinfo[cp * 2 + 0];
   }
 
-  public void drawChar(int x, int y, char ch, Image image) {
+  public void drawChar(int x, int y, char ch, Image image, int clr) {
     int cp = ASCII8.convert(ch);
     if (cp >= 256) return;
     int ascent = getAscent(ch);
@@ -174,17 +174,13 @@ public class Font {
     }
     Image fontImage = getImage();
     int fontWidth = fontImage.getWidth();
-    if (false) {
-      image.putPixelsBlend(fontImage.getBuffer(), x, y, w, h, y1 * fontWidth + x1, fontWidth, true);
-    } else {
-      image.putPixels(fontImage.getBuffer(), x, y, w, h, y1 * fontWidth + x1, fontWidth);
-    }
+    image.putPixelsStencil(fontImage.getBuffer(), x, y, w, h, y1 * fontWidth + x1, fontWidth, true, clr);
   }
 
-  public void drawText(int x, int y, String txt, Image image) {
+  public void drawText(int x, int y, String txt, Image image, int clr) {
     char[] ca = txt.toCharArray();
     for(char ch : ca) {
-      drawChar(x,y,ch,image);
+      drawChar(x,y,ch,image,clr);
       x += getAdvance(ch);
     }
   }

@@ -13,17 +13,15 @@ import java.util.*;
 
 import javaforce.*;
 
-public class Image extends Component {
+public class Image extends TextComponent {
   private int[] buffer;
 
   public Image() {
-    font = Font.getSystemFont();
     buffer = new int[1];
     setSize(1, 1);
   }
 
   public Image(int width, int height) {
-    font = Font.getSystemFont();
     buffer = new int[width * height];
     setSize(width, height);
   }
@@ -326,14 +324,6 @@ public class Image extends Component {
     return true;
   }
 
-  public void setFont(Font font) {
-    this.font = font;
-  }
-
-  public Font getFont() {
-    return font;
-  }
-
   public int getPixel(int x, int y) {
     return buffer[y * getWidth() + x] & Color.MASK_RGB;
   }
@@ -547,6 +537,69 @@ public class Image extends Component {
     }
   }
 
+  /** Puts pixels using src as a stencil. */
+  public void putPixelsStencil(int[] px, int x, int y, int w, int h, int srcOffset, int srcScansize, boolean keepAlpha, int clr) {
+    //do clipping
+    int bw = getWidth();
+    int bh = getHeight();
+    if (y < 0) {
+      y *= -1;
+      h -= y;
+      if (h <= 0) {
+        return;
+      }
+      srcOffset += y * srcScansize;
+      y = 0;
+    }
+    if (x < 0) {
+      x *= -1;
+      w -= x;
+      if (w <= 0) {
+        return;
+      }
+      srcOffset += x;
+      x = 0;
+    }
+    if (x + w > bw) {
+      w = bw - x;
+      if (w <= 0) {
+        return;
+      }
+    }
+    if (y + h > bh) {
+      h = bh - y;
+      if (h <= 0) {
+        return;
+      }
+    }
+    int dst = y * bw + x;
+    int sp, slvl, dp, dlvl, sa, da;
+    for(int i=0;i<h;i++) {
+      for(int j=0;j<w;j++) {
+        sp = px[srcOffset + j];
+        sa = sp & Color.MASK_ALPHA;
+        sp = clr;
+        slvl = sa >>> 24;
+        if (slvl > 0) {
+          slvl++;
+        }
+        dlvl = 0x100 - slvl;
+        dp = buffer[dst + j];
+        da = dp & Color.MASK_ALPHA;
+        dp &= Color.MASK_RGB;
+        buffer[dst + j] = (keepAlpha ? da : sa)
+          + ((((dp & Color.MASK_RED) * dlvl) >> 8) & Color.MASK_RED)
+          + ((((dp & Color.MASK_GREEN) * dlvl) >> 8) & Color.MASK_GREEN)
+          + ((((dp & Color.MASK_BLUE) * dlvl) >> 8) & Color.MASK_BLUE)
+          + ((((sp & Color.MASK_RED) * slvl) >> 8) & Color.MASK_RED)
+          + ((((sp & Color.MASK_GREEN) * slvl) >> 8) & Color.MASK_GREEN)
+          + ((((sp & Color.MASK_BLUE) * slvl) >> 8) & Color.MASK_BLUE);
+      }
+      srcOffset += srcScansize;
+      dst += bw;
+    }
+  }
+
   /** Fills a rectangle with clr */
   public void fill(int x, int y, int w, int h, int clr) {
     fill(x, y, w, h, clr, false);
@@ -598,6 +651,6 @@ public class Image extends Component {
   }
 
   public void drawText(int x, int y, String txt) {
-    font.drawText(x,y,txt,this);
+    getFont().drawText(x, y, txt, this, foreClr.getColor());
   }
 }

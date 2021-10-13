@@ -6,15 +6,21 @@ package javaforce.ui;
  */
 
 import javaforce.*;
+import javaforce.ui.theme.*;
 
 public class Component {
-  protected Font font;
   protected Color foreClr, backClr;
   protected Point pos = new Point();
   protected Dimension size = new Dimension();
-  public static final Dimension zero = new Dimension();
 
+  public static final Dimension zero = new Dimension();
   public static final boolean debug = true;
+
+  public Component() {
+    Theme theme = Theme.getTheme();
+    foreClr = theme.getForeColor();
+    backClr = theme.getBackColor();
+  }
 
   /** Loads a complete form from a XML file (*.ui). */
   public static Component load(String fn) {
@@ -78,7 +84,9 @@ public class Component {
     return getMinSize().height;
   }
 
-  public void render(Image output) {}
+  public void render(Image output) {
+    output.fill(pos.x, pos.y, size.width, size.height, backClr.getColor());
+  }
 
   public void layout(LayoutMetrics metrics) {
     if (debug) JFLog.log("Component.layout()" + metrics.pos.x + "," + metrics.pos.y + "@" + this);
