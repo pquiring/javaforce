@@ -14,7 +14,8 @@ public class Label extends TextComponent {
     return new Dimension(metrics.getWidth(), metrics.getHeight());
   }
   public void render(Image image) {
-    getFont().drawText(pos.x, pos.y - getFont().getMaxAscent(), getText(), image, foreClr.getColor());
+    image.setForeColor(getForeColor());
+    image.drawText(pos.x, pos.y - getFont().getMaxAscent(), getText());
   }
   public String toString() {
     return "Label:" + getText();

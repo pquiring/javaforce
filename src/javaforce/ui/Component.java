@@ -9,7 +9,9 @@ import javaforce.*;
 import javaforce.ui.theme.*;
 
 public class Component implements KeyEvents, MouseEvents {
-  protected Color foreClr, backClr;
+  protected Color foreClr;
+  protected Color backClr;
+  protected Color disabledClr;
   protected Point pos = new Point();
   protected Dimension size = new Dimension();
   protected Component parent;
@@ -22,8 +24,9 @@ public class Component implements KeyEvents, MouseEvents {
 
   public Component() {
     Theme theme = Theme.getTheme();
-    foreClr = theme.getForeColor();
-    backClr = theme.getBackColor();
+    setForeColor(theme.getForeColor());
+    setBackColor(theme.getBackColor());
+    setDisabledColor(theme.getDisabledColor());
   }
 
   /** Loads a complete form from a XML file (*.ui). */
@@ -142,6 +145,38 @@ public class Component implements KeyEvents, MouseEvents {
 
   public boolean isFocusable() {
     return focusable;
+  }
+
+  public boolean isEnabled() {
+    return enabled;
+  }
+
+  public void setEnabled(boolean state) {
+    enabled = state;
+  }
+
+  public Color getForeColor() {
+    return foreClr;
+  }
+
+  public Color getBackColor() {
+    return backClr;
+  }
+
+  public Color getDisabledColor() {
+    return disabledClr;
+  }
+
+  public void setForeColor(Color clr) {
+    foreClr = clr;
+  }
+
+  public void setBackColor(Color clr) {
+    backClr = clr;
+  }
+
+  public void setDisabledColor(Color clr) {
+    disabledClr = clr;
   }
 
   public int mx, my;

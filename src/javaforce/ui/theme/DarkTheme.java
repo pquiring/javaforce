@@ -11,5 +11,6 @@ public class DarkTheme extends Theme {
   public DarkTheme() {
     setForeColor(Color.WHITE);
     setBackColor(Color.BLACK);
+    setDisabledColor(Color.GRAY);
   }
 }

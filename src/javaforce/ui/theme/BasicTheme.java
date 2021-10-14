@@ -11,5 +11,6 @@ public class BasicTheme extends Theme {
   public BasicTheme() {
     setForeColor(Color.BLACK);
     setBackColor(Color.WHITE);
+    setDisabledColor(Color.GRAY);
   }
 }

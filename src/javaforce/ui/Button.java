@@ -24,6 +24,11 @@ public class Button extends TextComponent {
     int w = size.width;
     int h = size.height;
     if (w == 0 || h == 0) return;
+    if (isEnabled()) {
+      image.setForeColor(getForeColor());
+    } else {
+      image.setForeColor(getDisabledColor());
+    }
     image.setLineStyle(LineStyle.SOLID);
     image.drawBox(x, y, w, h);
     if (isFocused()) {
@@ -31,12 +36,13 @@ public class Button extends TextComponent {
       image.drawBox(x + 1, y + 1, w - 2, h - 2);
       image.setLineStyle(LineStyle.SOLID);
     }
-    getFont().drawText(pos.x + 3, pos.y + 3 - getFont().getMaxAscent(), getText(), image, foreClr.getColor());
+    image.drawText(pos.x, pos.y - getFont().getMaxAscent(), getText());
   }
   public String toString() {
     return "Button:" + getText();
   }
   private void doAction() {
+    if (!isEnabled()) return;
     if (action != null) {
       action.actionPerformed(this);
     }

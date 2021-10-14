@@ -38,6 +38,7 @@ public class TestUI implements WindowEvents {
     });
     r.add(b1);
     Button b2 = new Button("Button2");
+    b2.setEnabled(false);
     b2.setActionListner(new ActionListener() {
       public void actionPerformed(Component cmp) {
         b2.setText("OK2");
