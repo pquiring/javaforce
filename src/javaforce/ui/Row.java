@@ -24,6 +24,8 @@ public class Row extends Container {
 
   /** Lay out components in a row. */
   public void layout(LayoutMetrics metrics) {
+    setPosition(metrics.pos);
+    setSize(metrics.size);
     int min_x = 0;
     int flex_count = 0;
     int flex_size = 0;

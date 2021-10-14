@@ -10,10 +10,12 @@ import javaforce.gl.*;
 import javaforce.ui.theme.Theme;
 
 public class TestUI implements WindowEvents {
+  public static UIRender render;
+  public static Window window;
   public static void main(String[] args) {
     Window.init();
-    UIRender render = new UIRender();
-    Window window = new Window();
+    render = new UIRender();
+    window = new Window();
     window.create(Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE, "TestUI", 512, 512, window);
     window.show();
     window.setWindowListener(new TestUI());
@@ -27,6 +29,14 @@ public class TestUI implements WindowEvents {
     Column c = new Column();
     Row r = new Row();
     r.add(new Label("TopLeft"));
+    Button b = new Button("Button");
+    b.setActionListner(new ActionListener() {
+      public void actionPerformed(Component cmp) {
+        b.setText("OK");
+        window.layout();
+      }
+    });
+    r.add(b);
     r.add(new FlexBox());
     r.add(new Label("TopRight"));
     c.add(r);

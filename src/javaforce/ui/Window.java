@@ -208,11 +208,15 @@ public class Window {
 
   public void setContent(Component content) {
     this.content = content;
+    keys = content;
+    mouse = content;
     layout();
   }
 
-  private void layout() {
-    content.layout(new LayoutMetrics(width, height));
+  public void layout() {
+    if (content != null) {
+      content.layout(new LayoutMetrics(width, height));
+    }
   }
 
   public void resize(int w, int h) {

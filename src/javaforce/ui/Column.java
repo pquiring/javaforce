@@ -24,6 +24,8 @@ public class Column extends Container {
 
   /** Lay out components in a column. */
   public void layout(LayoutMetrics metrics) {
+    setPosition(metrics.pos);
+    setSize(metrics.size);
     int min_y = 0;
     int flex_count = 0;
     int flex_size = 0;

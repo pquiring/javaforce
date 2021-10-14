@@ -27,9 +27,6 @@ public class Color {
   public static Color BLUE = new Color(blue);
   public static Color WHITE = new Color(white);
 
-  public Color() {
-
-  }
   public Color(int clr) {
     this.clr = clr;
   }

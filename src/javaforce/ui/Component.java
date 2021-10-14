@@ -8,7 +8,7 @@ package javaforce.ui;
 import javaforce.*;
 import javaforce.ui.theme.*;
 
-public class Component {
+public class Component implements KeyEvents, MouseEvents {
   protected Color foreClr, backClr;
   protected Point pos = new Point();
   protected Dimension size = new Dimension();
@@ -92,5 +92,38 @@ public class Component {
     if (debug) JFLog.log("Component.layout()" + metrics.pos.x + "," + metrics.pos.y + "@" + this);
     pos.x = metrics.pos.x;
     pos.y = metrics.pos.y;
+    size.width = getMinWidth();
+    size.height = getMinHeight();
+  }
+
+  public int mx, my;
+
+  public void keyTyped(char ch) {
+    //TODO : focus
+  }
+
+  public void keyPressed(int key) {
+    //TODO : focus
+  }
+
+  public void keyReleased(int key) {
+    //TODO : focus
+  }
+
+  public void mouseMove(int x, int y) {
+//    JFLog.log("mouse:" + x + "," + y);
+    mx = x;
+    my = y;
+  }
+
+  public void mouseDown(int button) {
+//    JFLog.log("mousedown:" + button);
+  }
+
+  public void mouseUp(int button) {
+//    JFLog.log("mouseup:" + button);
+  }
+
+  public void mouseScroll(int dx, int dy) {
   }
 }

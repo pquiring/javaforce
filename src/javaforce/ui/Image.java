@@ -325,18 +325,26 @@ public class Image extends TextComponent {
   }
 
   public int getPixel(int x, int y) {
+    if (x < 0 || x >= getWidth()) return 0;
+    if (y < 0 || y >= getHeight()) return 0;
     return buffer[y * getWidth() + x] & Color.MASK_RGB;
   }
 
   public void putPixel(int x, int y, int c) {
+    if (x < 0 || x >= getWidth()) return;
+    if (y < 0 || y >= getHeight()) return;
     buffer[y * getWidth() + x] = Color.OPAQUE | c;
   }
 
   public int getPixelA(int x, int y) {
+    if (x < 0 || x >= getWidth()) return 0;
+    if (y < 0 || y >= getHeight()) return 0;
     return buffer[y * getWidth() + x];
   }
 
   public void putPixelA(int x, int y, int c) {
+    if (x < 0 || x >= getWidth()) return;
+    if (y < 0 || y >= getHeight()) return;
     buffer[y * getWidth() + x] = c;
   }
 
@@ -652,5 +660,92 @@ public class Image extends TextComponent {
 
   public void drawText(int x, int y, String txt) {
     getFont().drawText(x, y, txt, this, foreClr.getColor());
+  }
+
+  public void drawPixel(int x, int y) {
+    putPixel(x, y, foreClr.getColor());
+  }
+
+  public void drawLine(int x1, int y1, int x2, int y2) {
+    int rise = y2 - y1;
+    int run = x2 - x1;
+    if (rise == 0 && run == 0) {
+      //dot
+      drawPixel(x1, y1);
+      return;
+    }
+    if (rise == 0) {
+      //vertical line
+      int dx = (x2 > x1) ? 1 : -1;
+      while (x1 != x2) {
+        drawPixel(x1, y1);
+        x1 += dx;
+      }
+      drawPixel(x1, y1);
+      return;
+    }
+    if (run == 0) {
+      //horizontal line
+      int dy = (y2 > y1) ? 1 : -1;
+      while (y1 != y2) {
+        drawPixel(x1, y1);
+        y1 += dy;
+      }
+      drawPixel(x1, y1);
+      return;
+    }
+    if (Math.abs(rise) == Math.abs(run)) {
+      //true diag line
+      int dx = (x2 > x1) ? 1 : -1;
+      int dy = (y2 > y1) ? 1 : -1;
+      while (y1 != y2) {
+        drawPixel(x1, y1);
+        x1 += dx;
+        y1 += dy;
+      }
+      drawPixel(x1, y1);
+      return;
+    }
+    //odd diag line
+    if (rise > run) {
+      //up/down diag line
+      float fx = x1;
+      float dx = (float)run / (float)rise;
+      int dy = (y2 > y1) ? 1 : -1;
+      while (y1 != y2) {
+        drawPixel((int)fx, y1);
+        fx += dx;
+        y1 += dy;
+      }
+      drawPixel((int)fx, y1);
+    } else {
+      //left/right diag line
+      float fy = y1;
+      float dy = (float)rise / (float)run;
+      int dx = (x2 > x1) ? 1 : -1;
+      while (x1 != x2) {
+        drawPixel(x1, (int)fy);
+        x1 += dx;
+        fy += dy;
+      }
+      drawPixel(x1, (int)fy);
+    }
+  }
+
+  public void drawBox(int x, int y, int width, int height) {
+    int x1 = x;
+    int y1 = y;
+    int x2 = x + width - 1;
+    int y2 = y + height - 1;
+    drawLine(x1, y1, x2, y1);
+    drawLine(x2, y1, x2, y2);
+    drawLine(x2, y2, x1, y2);
+    drawLine(x1, y2, x1, y1);
+
+    //draw an X for test
+    if (debug) {
+//      drawLine(x1, y1, x2, y2);
+//      drawLine(x1, y2, x2, y1);
+    }
   }
 }
