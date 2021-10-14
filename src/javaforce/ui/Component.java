@@ -12,6 +12,10 @@ public class Component implements KeyEvents, MouseEvents {
   protected Color foreClr, backClr;
   protected Point pos = new Point();
   protected Dimension size = new Dimension();
+  protected Component parent;
+  protected boolean enabled = true;
+  protected boolean focused = false;
+  protected boolean focusable = false;
 
   public static final Dimension zero = new Dimension();
   public static final boolean debug = true;
@@ -96,18 +100,59 @@ public class Component implements KeyEvents, MouseEvents {
     size.height = getMinHeight();
   }
 
+  public void setFocusable(boolean state) {
+    if (focusable == state) return;  //no change
+    focusable = state;
+/*/
+    if (focusable) {
+      //add to focus list
+      getTopContainer().addFocusable(this);
+    } else {
+      //remove from focus list
+      getTopContainer().removeFocusable(this);
+    }
+/*/
+  }
+
+  public Container getTopContainer() {
+    Component top = parent;
+    while (top.parent != null) {
+      top = parent.parent;
+    }
+    return (Container)top;
+  }
+
+  public void onFocus() {
+    JFLog.log("onFonus:" + this);
+    focused = true;
+  }
+
+  public void onBlur() {
+    JFLog.log("onBlur:" + this);
+    focused = false;
+  }
+
+  public void setFocus() {
+    getTopContainer().setFocus(this);
+  }
+
+  public boolean isFocused() {
+    return focused;
+  }
+
+  public boolean isFocusable() {
+    return focusable;
+  }
+
   public int mx, my;
 
   public void keyTyped(char ch) {
-    //TODO : focus
   }
 
   public void keyPressed(int key) {
-    //TODO : focus
   }
 
   public void keyReleased(int key) {
-    //TODO : focus
   }
 
   public void mouseMove(int x, int y) {

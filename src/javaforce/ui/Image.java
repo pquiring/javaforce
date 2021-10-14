@@ -15,6 +15,7 @@ import javaforce.*;
 
 public class Image extends TextComponent {
   private int[] buffer;
+  private int lineStyle = LineStyle.SOLID;
 
   public Image() {
     buffer = new int[1];
@@ -663,7 +664,16 @@ public class Image extends TextComponent {
   }
 
   public void drawPixel(int x, int y) {
+    switch (lineStyle) {
+      case LineStyle.DASH:
+        if ((x + y) % 2 == 0) return;
+        break;
+    }
     putPixel(x, y, foreClr.getColor());
+  }
+
+  public void setLineStyle(int style) {
+    lineStyle = style;
   }
 
   public void drawLine(int x1, int y1, int x2, int y2) {
@@ -741,11 +751,5 @@ public class Image extends TextComponent {
     drawLine(x2, y1, x2, y2);
     drawLine(x2, y2, x1, y2);
     drawLine(x1, y2, x1, y1);
-
-    //draw an X for test
-    if (debug) {
-//      drawLine(x1, y1, x2, y2);
-//      drawLine(x1, y2, x2, y1);
-    }
   }
 }

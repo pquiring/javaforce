@@ -19,13 +19,47 @@ public interface KeyCode {
   public static final int VK_SHIFT_R = 344;
 
   public static final int VK_HOME = 268;
-  public static final int VK_DELETE = 261;
   public static final int VK_END = 269;
-  public static final int VK_BACKSPACE = 259;
+  public static final int VK_INSERT = 260;
+  public static final int VK_DELETE = 261;
+
+  public static final int VK_PAGE_UP = 266;
+  public static final int VK_PAGE_DOWN = 267;
 
   public static final int VK_ESCAPE = 256;
   public static final int VK_ENTER = 257;
   public static final int VK_SPACE = 32;
+  public static final int VK_TAB = 258;
+  public static final int VK_TILDE = 96;
+  public static final int VK_DIVIDE = 47;
+  public static final int VK_BACKSPACE = 259;
+  public static final int VK_BACKSLASH = 92;
+  public static final int VK_COMMA = 44;
+  public static final int VK_PERIOD = 46;
+  public static final int VK_PAUSE = 284;
+  public static final int VK_MENU = 348;
+  public static final int VK_OS = 343;
+
+  public static final int VK_CAPS_LOCK = 280;
+  public static final int VK_SCROLL_LOCK = 281;
+  public static final int VK_KEYPAD_LOCK = 282;
+
+  public static final int VK_KEYPAD_ENTER = 335;
+  public static final int VK_KEYPAD_PERIOD = 330;
+  public static final int VK_KEYPAD_PLUS = 334;
+  public static final int VK_KEYPAD_MINUS = 333;
+  public static final int VK_KEYPAD_MULTIPLY = 332;
+  public static final int VK_KEYPAD_DIVIDE = 331;
+  public static final int VK_KEYPAD_0 = 320;
+  public static final int VK_KEYPAD_1 = 321;
+  public static final int VK_KEYPAD_2 = 322;
+  public static final int VK_KEYPAD_3 = 323;
+  public static final int VK_KEYPAD_4 = 324;
+  public static final int VK_KEYPAD_5 = 325;
+  public static final int VK_KEYPAD_6 = 326;
+  public static final int VK_KEYPAD_7 = 327;
+  public static final int VK_KEYPAD_8 = 328;
+  public static final int VK_KEYPAD_9 = 329;
 
   public static final int VK_0 = 48;
   public static final int VK_1 = 49;

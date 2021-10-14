@@ -29,14 +29,22 @@ public class TestUI implements WindowEvents {
     Column c = new Column();
     Row r = new Row();
     r.add(new Label("TopLeft"));
-    Button b = new Button("Button");
-    b.setActionListner(new ActionListener() {
+    Button b1 = new Button("Button1");
+    b1.setActionListner(new ActionListener() {
       public void actionPerformed(Component cmp) {
-        b.setText("OK");
+        b1.setText("OK1");
         window.layout();
       }
     });
-    r.add(b);
+    r.add(b1);
+    Button b2 = new Button("Button2");
+    b2.setActionListner(new ActionListener() {
+      public void actionPerformed(Component cmp) {
+        b2.setText("OK2");
+        window.layout();
+      }
+    });
+    r.add(b2);
     r.add(new FlexBox());
     r.add(new Label("TopRight"));
     c.add(r);

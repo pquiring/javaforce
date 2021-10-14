@@ -12,10 +12,11 @@ public class Button extends TextComponent {
 
   public Button(String text) {
     setText(text);
+    setFocusable(true);
   }
   public Dimension getMinSize() {
     FontMetrics metrics = getFont().getMetrics(getText());
-    return new Dimension(metrics.getWidth() + 6, metrics.getHeight() + 6);
+    return new Dimension(metrics.getWidth() + 8, metrics.getHeight() + 8);
   }
   public void render(Image image) {
     int x = pos.x;
@@ -23,7 +24,13 @@ public class Button extends TextComponent {
     int w = size.width;
     int h = size.height;
     if (w == 0 || h == 0) return;
-    image.drawBox(x + 1, y + 1, w, h);
+    image.setLineStyle(LineStyle.SOLID);
+    image.drawBox(x, y, w, h);
+    if (isFocused()) {
+      image.setLineStyle(LineStyle.DASH);
+      image.drawBox(x + 1, y + 1, w - 2, h - 2);
+      image.setLineStyle(LineStyle.SOLID);
+    }
     getFont().drawText(pos.x + 3, pos.y + 3 - getFont().getMaxAscent(), getText(), image, foreClr.getColor());
   }
   public String toString() {

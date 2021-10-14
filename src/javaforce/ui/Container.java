@@ -7,8 +7,11 @@ package javaforce.ui;
 
 import java.util.*;
 
+import javaforce.*;
+
 public abstract class Container extends Component {
   public ArrayList<Component> children;
+  public Component focus;
   public Dimension minSize = new Dimension();
 
   public Container() {
@@ -17,10 +20,12 @@ public abstract class Container extends Component {
 
   public void add(Component child) {
     children.add(child);
+    child.parent = this;
   }
 
   public void remove(Component child) {
     children.remove(child);
+    child.parent = null;
   }
 
   public abstract Dimension getMinSize();
@@ -35,13 +40,95 @@ public abstract class Container extends Component {
     }
   }
 
+  private Component firstFocus() {
+    JFLog.log("firstFocus:" + this);
+    for(Component child : children) {
+      if (child.isFocusable()) {
+        JFLog.log("Focus=" + child);
+        return child;
+      }
+      if (child instanceof Container) {
+        Component c = ((Container)child).firstFocus();
+        if (c != null) return c;
+      }
+    }
+    return null;
+  }
+
+  private Component nextFocus(Component focus, boolean found) {
+    JFLog.log("nextFocus:" + this);
+    for(Component child : children) {
+      if (!found) {
+        if (child == focus) {
+          found = true;
+        } else {
+          if (child instanceof Container) {
+            Component c = ((Container)child).nextFocus(focus, found);
+            if (c != null) return c;
+          }
+        }
+        continue;
+      }
+      if (child.isFocusable()) {
+        JFLog.log("Focus=" + child);
+        return child;
+      }
+      if (child instanceof Container) {
+        Component c = ((Container)child).nextFocus(focus, found);
+        if (c != null) return c;
+      }
+    }
+    return null;
+  }
+
+  private void nextFocus() {
+    JFLog.log("nextFocus");
+    if (focus != null) {
+      focus.onBlur();
+      focus = nextFocus(focus, false);
+      if (focus == null) {
+        focus = firstFocus();
+      }
+    } else {
+      focus = firstFocus();
+    }
+    if (focus != null) {
+      focus.onFocus();
+    }
+  }
+
+  public void setFocus(Component child) {
+    if (focus != null) {
+      focus.onBlur();
+    }
+    focus = child;
+    focus.onFocus();
+  }
+
   public void keyTyped(char ch) {
+    if (debug) JFLog.log("keyTyped:" + (int)ch);
+    if (focus != null) {
+      focus.keyTyped(ch);
+    }
   }
 
   public void keyPressed(int key) {
+    if (debug) JFLog.log("keyPressed:" + key);
+    switch (key) {
+      case KeyCode.VK_TAB:
+        nextFocus();
+        break;
+    }
+    if (focus != null) {
+      focus.keyPressed(key);
+    }
   }
 
   public void keyReleased(int key) {
+    if (debug) JFLog.log("keyReleased:" + key);
+    if (focus != null) {
+      focus.keyReleased(key);
+    }
   }
 
   public void mouseMove(int x, int y) {
