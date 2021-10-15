@@ -46,6 +46,8 @@ public class TestUI implements WindowEvents {
       }
     });
     r.add(b2);
+    ToggleButton b3 = new ToggleButton("ToggleButton");
+    r.add(b3);
     r.add(new FlexBox());
     r.add(new Label("TopRight"));
     c.add(r);

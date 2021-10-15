@@ -41,7 +41,7 @@ public class Button extends TextComponent {
   public String toString() {
     return "Button:" + getText();
   }
-  private void doAction() {
+  protected void doAction() {
     if (!isEnabled()) return;
     if (action != null) {
       action.actionPerformed(this);

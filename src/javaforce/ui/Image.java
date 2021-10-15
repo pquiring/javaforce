@@ -659,8 +659,13 @@ public class Image extends TextComponent {
     }
   }
 
+  /** Fills a rectangle with current fore color. */
+  public void fill(int x, int y, int w, int h) {
+    fill(x, y, w, h, getForeColor().getColor(), false);
+  }
+
   public void drawText(int x, int y, String txt) {
-    getFont().drawText(x, y, txt, this, foreClr.getColor());
+    getFont().drawText(x, y, txt, this, getForeColor().getColor());
   }
 
   public void drawPixel(int x, int y) {
@@ -669,7 +674,7 @@ public class Image extends TextComponent {
         if ((x + y) % 2 == 0) return;
         break;
     }
-    putPixel(x, y, foreClr.getColor());
+    putPixel(x, y, getForeColor().getColor());
   }
 
   public void setLineStyle(int style) {

@@ -12,6 +12,7 @@ public class Component implements KeyEvents, MouseEvents {
   protected Color foreClr;
   protected Color backClr;
   protected Color disabledClr;
+  protected Color selectedClr;
   protected Point pos = new Point();
   protected Dimension size = new Dimension();
   protected Component parent;
@@ -27,6 +28,7 @@ public class Component implements KeyEvents, MouseEvents {
     setForeColor(theme.getForeColor());
     setBackColor(theme.getBackColor());
     setDisabledColor(theme.getDisabledColor());
+    setSelectedColor(theme.getSelectedColor());
   }
 
   /** Loads a complete form from a XML file (*.ui). */
@@ -92,7 +94,7 @@ public class Component implements KeyEvents, MouseEvents {
   }
 
   public void render(Image output) {
-    output.fill(pos.x, pos.y, size.width, size.height, backClr.getColor());
+    output.fill(pos.x, pos.y, size.width, size.height, getBackColor().getColor());
   }
 
   public void layout(LayoutMetrics metrics) {
@@ -167,6 +169,10 @@ public class Component implements KeyEvents, MouseEvents {
     return disabledClr;
   }
 
+  public Color getSelectedColor() {
+    return selectedClr;
+  }
+
   public void setForeColor(Color clr) {
     foreClr = clr;
   }
@@ -177,6 +183,10 @@ public class Component implements KeyEvents, MouseEvents {
 
   public void setDisabledColor(Color clr) {
     disabledClr = clr;
+  }
+
+  public void setSelectedColor(Color clr) {
+    selectedClr = clr;
   }
 
   public int mx, my;
