@@ -26,7 +26,9 @@ public class TestUI implements WindowEvents {
 
   public static Component createUI() {
     Theme.getTheme().setForeColor(Color.GREEN);
+
     Column c = new Column();
+
     Row r = new Row();
     r.add(new Label("TopLeft"));
     Button b1 = new Button("Button1");
@@ -51,12 +53,20 @@ public class TestUI implements WindowEvents {
     r.add(new FlexBox());
     r.add(new Label("TopRight"));
     c.add(r);
+
+    r = new Row();
+    CheckBox b4 = new CheckBox("CheckBox");
+    r.add(b4);
+    c.add(r);
+
     c.add(new FlexBox());
+
     r = new Row();
     r.add(new Label("BottomLeft"));
     r.add(new FlexBox());
     r.add(new Label("BottomRight"));
     c.add(r);
+
     return c;
   }
 

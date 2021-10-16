@@ -18,6 +18,9 @@ public class Button extends TextComponent {
     FontMetrics metrics = getFont().getMetrics(getText());
     return new Dimension(metrics.getWidth() + 8, metrics.getHeight() + 8);
   }
+  protected void renderText(Image image, int dx, int dy) {
+    image.drawText(pos.x + dx, pos.y + dy - getFont().getMaxAscent(), getText());
+  }
   public void render(Image image) {
     int x = pos.x;
     int y = pos.y;
@@ -36,7 +39,7 @@ public class Button extends TextComponent {
       image.drawBox(x + 1, y + 1, w - 2, h - 2);
       image.setLineStyle(LineStyle.SOLID);
     }
-    image.drawText(pos.x, pos.y - getFont().getMaxAscent(), getText());
+    renderText(image, 4, 4);
   }
   public String toString() {
     return "Button:" + getText();
