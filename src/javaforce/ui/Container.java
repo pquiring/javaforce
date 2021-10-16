@@ -55,7 +55,9 @@ public abstract class Container extends Component {
     return null;
   }
 
-  private Component nextFocus(Component focus, boolean found) {
+  private static boolean found;
+
+  private Component nextFocus(Component focus) {
     JFLog.log("nextFocus:" + this);
     for(Component child : children) {
       if (!found) {
@@ -63,7 +65,7 @@ public abstract class Container extends Component {
           found = true;
         } else {
           if (child instanceof Container) {
-            Component c = ((Container)child).nextFocus(focus, found);
+            Component c = ((Container)child).nextFocus(focus);
             if (c != null) return c;
           }
         }
@@ -74,7 +76,7 @@ public abstract class Container extends Component {
         return child;
       }
       if (child instanceof Container) {
-        Component c = ((Container)child).nextFocus(focus, found);
+        Component c = ((Container)child).nextFocus(focus);
         if (c != null) return c;
       }
     }
@@ -85,7 +87,8 @@ public abstract class Container extends Component {
     JFLog.log("nextFocus");
     if (focus != null) {
       focus.onBlur();
-      focus = nextFocus(focus, false);
+      found = false;
+      focus = nextFocus(focus);
       if (focus == null) {
         focus = firstFocus();
       }
