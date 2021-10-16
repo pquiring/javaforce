@@ -11,7 +11,7 @@ public class CheckBox extends ToggleButton {
   }
   public Dimension getMinSize() {
     FontMetrics metrics = getFont().getMetrics(getText());
-    int w = metrics.getWidth() + 16 + 8;
+    int w = metrics.getWidth() + 16 + 7;
     int h = metrics.getHeight();
     if (h < 16) {
       h = 16;
@@ -30,7 +30,12 @@ public class CheckBox extends ToggleButton {
     } else {
       image.setForeColor(getDisabledColor());
     }
+    if (isFocused()) {
+      image.setLineStyle(LineStyle.DASH);
+      image.drawBox(x + 1, y + 1, w - 2, h - 2);
+    }
     image.setLineStyle(LineStyle.SOLID);
+    x += 3;
     y += (getHeight() - 16) / 2;
     //draw box
     image.drawBox(x + 0, y + 0, 16, 16);
@@ -39,6 +44,6 @@ public class CheckBox extends ToggleButton {
       image.drawLine(x + 0, y + 8 , x + 7 , y + 15);
       image.drawLine(x + 7, y + 15, x + 15, y + 0);
     }
-    renderText(image, 20, 4);
+    renderText(image, 20, 3);
   }
 }

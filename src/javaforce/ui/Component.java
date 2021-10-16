@@ -201,17 +201,17 @@ public class Component implements KeyEvents, MouseEvents {
   }
 
   public void mouseMove(int x, int y) {
-//    JFLog.log("mouse:" + x + "," + y);
     mx = x;
     my = y;
   }
 
   public void mouseDown(int button) {
-//    JFLog.log("mousedown:" + button);
+    if (isFocusable()) {
+      setFocus();
+    }
   }
 
   public void mouseUp(int button) {
-//    JFLog.log("mouseup:" + button);
   }
 
   public void mouseScroll(int dx, int dy) {
