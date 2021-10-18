@@ -92,7 +92,7 @@ static JNINativeMethod javaforce_gl_GL[] = {
 
 static JNINativeMethod javaforce_ui_Window[] = {
   {"ninit", "()Z", (void *)&Java_javaforce_ui_Window_ninit},
-  {"ncreate", "(ILjava/lang/String;IILjavaforce/gl/GLWindow;J)J", (void *)&Java_javaforce_ui_Window_ncreate},
+  {"ncreate", "(ILjava/lang/String;IILjavaforce/ui/Window;J)J", (void *)&Java_javaforce_ui_Window_ncreate},
   {"ndestroy", "(J)V", (void *)&Java_javaforce_ui_Window_ndestroy},
   {"nsetcurrent", "(J)V", (void *)&Java_javaforce_ui_Window_nsetcurrent},
   {"nseticon", "(JLjava/lang/String;II)V", (void *)&Java_javaforce_ui_Window_nseticon},
@@ -219,7 +219,7 @@ void registerCommonNatives(JNIEnv *env) {
   cls = findClass(env, "javaforce/gl/GL");
   env->RegisterNatives(cls, javaforce_gl_GL, sizeof(javaforce_gl_GL)/sizeof(JNINativeMethod));
 
-  cls = findClass(env, "javaforce/gl/GLWindow");
+  cls = findClass(env, "javaforce/ui/Window");
   env->RegisterNatives(cls, javaforce_ui_Window, sizeof(javaforce_ui_Window)/sizeof(JNINativeMethod));
 
   cls = findClass(env, "javaforce/ui/Font");
