@@ -37,8 +37,14 @@ public class GenGraal {
     sb.append("  \"name\":\"" + args[0] + "\",");
     sb.append("  \"allDeclaredMethods\" : true");
     sb.append("},{");
-    sb.append("  \"name\":\"javaforce.gl.GLWindow\",");
+    sb.append("  \"name\":\"javaforce.ui.Window\",");
     sb.append("  \"allDeclaredMethods\" : true");
+    sb.append("},{");
+    sb.append("  \"name\":\"javaforce.ui.Font\",");
+    sb.append("  \"allDeclaredConstructors\" : true");
+    sb.append("},{");
+    sb.append("  \"name\":\"javaforce.ui.Image\",");
+    sb.append("  \"allDeclaredConstructors\" : true");
     sb.append("},{");
     sb.append("  \"name\" : \"javaforce.gl.GL\",");
     sb.append("  \"allDeclaredConstructors\" : true,");
@@ -99,8 +105,14 @@ public class GenGraal {
     sb.append("    \"includes\": [");
     sb.append("      {\"pattern\": \"javaforce/webui/static/.*\"},");
     sb.append("      {\"pattern\": \"javaforce/icons/.*\"},");
-    sb.append("      {\"pattern\": \".*[.]gif\"},");  //some awt bundles are missing resources
-    sb.append("      {\"pattern\": \".*[.]bfc\"}");  //font config files
+    sb.append("      {\"pattern\": \"javaforce/icons/16/.*\"},");
+    sb.append("      {\"pattern\": \"javaforce/icons/32/.*\"},");
+    if (false) {
+      //awt resources (deprecated)
+      sb.append("      {\"pattern\": \".*[.]gif\"},");  //some awt bundles are missing resources
+      sb.append("      {\"pattern\": \".*[.]bfc\"},");  //font config files
+    }
+    sb.append("      {\"pattern\": \".*[.]ttf\"}");  //fonts
     sb.append("    ]");
     sb.append("  }");
     sb.append("}");
