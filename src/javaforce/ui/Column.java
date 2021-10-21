@@ -24,6 +24,7 @@ public class Column extends Container {
 
   /** Lay out components in a column. */
   public void layout(LayoutMetrics metrics) {
+    if (debug) JFLog.log("layout:" + metrics.size.width + "x" + metrics.size.height + "@" + metrics.pos.x + "," + metrics.pos.y + ":" + this);
     setPosition(metrics.pos);
     setSize(metrics.size);
     int min_y = 0;
@@ -51,6 +52,7 @@ public class Column extends Container {
         int org_height = metrics.size.height;
         int org_x = metrics.pos.x;
         int org_y = metrics.pos.y;
+        //width = full
         metrics.size.height = child.getMinHeight();
         child.layout(metrics);
         metrics.size.width = org_width;
@@ -59,9 +61,23 @@ public class Column extends Container {
         metrics.pos.y = org_y;
         metrics.pos.y += child.getMinHeight();
       } else {
+        int org_width = metrics.size.width;
+        int org_height = metrics.size.height;
+        int org_x = metrics.pos.x;
+        int org_y = metrics.pos.y;
+        metrics.size.width = child.getMinWidth();
+        metrics.size.height = child.getMinHeight();
         child.layout(metrics);
+        metrics.size.width = org_width;
+        metrics.size.height = org_height;
+        metrics.pos.x = org_x;
+        metrics.pos.y = org_y;
         metrics.pos.y += child.getMinHeight();
       }
     }
+  }
+
+  public String toString() {
+    return "Column";
   }
 }

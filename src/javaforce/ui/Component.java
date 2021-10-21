@@ -41,6 +41,19 @@ public class Component implements KeyEvents, MouseEvents {
 
   }
 
+  protected Image loadImage(String name) {
+    try {
+      Image image = new Image();
+      if (!image.loadPNG(getClass().getResourceAsStream(name))) {
+        throw new Exception("Load resource failed:" + name);
+      }
+      return image;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
   public Point getPosition() {
     return pos;
   }
@@ -72,8 +85,8 @@ public class Component implements KeyEvents, MouseEvents {
   public int getHeight() {return size.height;}
 
   public void setSize(Dimension dim) {
-    size.width = dim.width;
-    size.height = dim.height;
+    //NOTE : setSize(int,int) may be overrided
+    setSize(dim.width, dim.height);
   }
 
   public void setSize(int width, int height) {
@@ -93,16 +106,22 @@ public class Component implements KeyEvents, MouseEvents {
     return getMinSize().height;
   }
 
-  public void render(Image output) {
-    output.fill(pos.x, pos.y, size.width, size.height, getBackColor().getColor());
+  public boolean isInside(Point pt) {
+    int x1 = pos.x;
+    int y1 = pos.y;
+    int x2 = x1 + size.width - 1;
+    int y2 = y1 + size.height - 1;
+    return (pt.x >= x1 && pt.x <= x2 && pt.y >= y1 && pt.y <= y2);
+  }
+
+  public void render(Image image) {
+    image.fill(pos.x, pos.y, size.width, size.height, getBackColor().getColor());
   }
 
   public void layout(LayoutMetrics metrics) {
-    if (debug) JFLog.log("Component.layout()" + metrics.pos.x + "," + metrics.pos.y + "@" + this);
-    pos.x = metrics.pos.x;
-    pos.y = metrics.pos.y;
-    size.width = getMinWidth();
-    size.height = getMinHeight();
+    if (debug) JFLog.log("layout:" + metrics.size.width + "x" + metrics.size.height + "@" + metrics.pos.x + "," + metrics.pos.y + ":" + this);
+    setPosition(metrics.pos);
+    setSize(metrics.size);
   }
 
   public void setFocusable(boolean state) {
@@ -189,16 +208,40 @@ public class Component implements KeyEvents, MouseEvents {
     selectedClr = clr;
   }
 
-  public int mx, my;
+  public int getMouseX() {
+    return mx;
+  }
+
+  public int getMouseY() {
+    return my;
+  }
+
+  public boolean getKeyState(int vk) {
+    if (vk < 0 || vk >= 256) return false;
+    return keyState[vk];
+  }
+
+  private int mx, my;
+  private static boolean[] keyState = new boolean[256];
+
+  //keyboard input
 
   public void keyTyped(char ch) {
   }
 
   public void keyPressed(int key) {
+    if (key >= 0 && key < 256) {
+      keyState[key] = true;
+    }
   }
 
   public void keyReleased(int key) {
+    if (key >= 0 && key < 256) {
+      keyState[key] = false;
+    }
   }
+
+  //mouse input
 
   public void mouseMove(int x, int y) {
     mx = x;

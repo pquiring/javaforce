@@ -16,6 +16,7 @@ import javaforce.*;
 public class Image extends TextComponent {
   private int[] buffer;
   private int lineStyle = LineStyle.SOLID;
+  private int resizeOperation = ResizeOperation.CLEAR;
 
   public Image() {
     buffer = new int[1];
@@ -325,6 +326,34 @@ public class Image extends TextComponent {
     return true;
   }
 
+  public void setSize(int width, int height) {
+    int[] org_buffer = buffer;
+    int org_w = getWidth();
+    int org_h = getHeight();
+    super.setSize(width, height);
+    buffer = new int[width * height];
+    if (org_buffer != null) {
+      switch (resizeOperation) {
+        case ResizeOperation.CLEAR:
+          break;
+        case ResizeOperation.CHOP:
+          putPixels(org_buffer, 0, 0, org_w, org_h, 0, org_w);
+          break;
+        case ResizeOperation.SCALE:
+          //TODO
+          break;
+      }
+    }
+  }
+
+  public int getResizeOperation() {
+    return resizeOperation;
+  }
+
+  public void setResizeOperation(int op) {
+    resizeOperation = op;
+  }
+
   public int getPixel(int x, int y) {
     if (x < 0 || x >= getWidth()) return 0;
     if (y < 0 || y >= getHeight()) return 0;
@@ -371,6 +400,12 @@ public class Image extends TextComponent {
     //do clipping
     int bw = getWidth();
     int bh = getHeight();
+    if (w <= 0) {
+      return;
+    }
+    if (h <= 0) {
+      return;
+    }
     if (y < 0) {
       y *= -1;
       h -= y;
@@ -413,6 +448,60 @@ public class Image extends TextComponent {
     }
   }
 
+  /** Put Pixels unless src pixel == keyclr */
+  public void putPixelsKeyClr(int[] px, int x, int y, int w, int h, int offset, int keyclr) {
+    //do clipping
+    int scansize = w;
+    int bw = getWidth();
+    int bh = getHeight();
+    if (w <= 0) {
+      return;
+    }
+    if (h <= 0) {
+      return;
+    }
+    if (y < 0) {
+      y *= -1;
+      h -= y;
+      if (h <= 0) {
+        return;
+      }
+      offset += y * scansize;
+      y = 0;
+    }
+    if (x < 0) {
+      x *= -1;
+      w -= x;
+      if (w <= 0) {
+        return;
+      }
+      offset += x;
+      x = 0;
+    }
+    if (x + w > bw) {
+      w = bw - x;
+      if (w <= 0) {
+        return;
+      }
+    }
+    if (y + h > bh) {
+      h = bh - y;
+      if (h <= 0) {
+        return;
+      }
+    }
+    int dst = y * bw + x;
+    for(int i=0;i<h;i++) {
+      for(int j=0;j<w;j++) {
+        if ((px[offset + j] & Color.MASK_RGB) != keyclr) {
+          buffer[dst + j] = px[offset + j];
+        }
+      }
+      offset += scansize;
+      dst += bw;
+    }
+  }
+
   /** Puts pixels blending using src alpha (dest alpha is ignored).
    * if keepAlpha is true then dest alpha is preserved.
    * if keepAlpha is false then src alpha is copied to dest.
@@ -421,6 +510,12 @@ public class Image extends TextComponent {
     //do clipping
     int bw = getWidth();
     int bh = getHeight();
+    if (w <= 0) {
+      return;
+    }
+    if (h <= 0) {
+      return;
+    }
     if (y < 0) {
       y *= -1;
       h -= y;
@@ -487,6 +582,12 @@ public class Image extends TextComponent {
     //do clipping
     int bw = getWidth();
     int bh = getHeight();
+    if (w <= 0) {
+      return;
+    }
+    if (h <= 0) {
+      return;
+    }
     if (y < 0) {
       y *= -1;
       h -= y;
@@ -551,6 +652,12 @@ public class Image extends TextComponent {
     //do clipping
     int bw = getWidth();
     int bh = getHeight();
+    if (w <= 0) {
+      return;
+    }
+    if (h <= 0) {
+      return;
+    }
     if (y < 0) {
       y *= -1;
       h -= y;
@@ -620,6 +727,12 @@ public class Image extends TextComponent {
     int scansize = w;
     int bw = getWidth();
     int bh = getHeight();
+    if (w <= 0) {
+      return;
+    }
+    if (h <= 0) {
+      return;
+    }
     if (y < 0) {
       y *= -1;
       h -= y;
@@ -756,5 +869,17 @@ public class Image extends TextComponent {
     drawLine(x2, y1, x2, y2);
     drawLine(x2, y2, x1, y2);
     drawLine(x1, y2, x1, y1);
+  }
+
+  public void drawImage(Image img, int x, int y) {
+    putPixels(img.getBuffer(), x, y, img.getWidth(), img.getHeight(), 0);
+  }
+
+  public void drawImageKeyClr(Image img, int x, int y, int keyclr) {
+    putPixelsKeyClr(img.getBuffer(), x, y, img.getWidth(), img.getHeight(), 0, keyclr);
+  }
+
+  public void drawImageBlend(Image img, int x, int y, boolean keepAlpha) {
+    putPixelsBlend(img.getBuffer(), x, y, img.getWidth(), img.getHeight(), 0, img.getWidth(), keepAlpha);
   }
 }

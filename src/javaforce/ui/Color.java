@@ -39,6 +39,7 @@ public class Color {
   public static int orange = 0xffa500;
   public static int purple = 0x800080;
   public static int brown = 0xa52a2a;
+  public static int pink = 0xffc0cb;
 
   public static Color BLACK = new Color(black);
   public static Color LIGHT_RED = new Color(light_red);
@@ -62,6 +63,7 @@ public class Color {
   public static Color ORANGE = new Color(orange);
   public static Color PURPLE = new Color(purple);
   public static Color BROWN = new Color(brown);
+  public static Color PINK = new Color(pink);
 
   public Color(int clr) {
     this.clr = clr;

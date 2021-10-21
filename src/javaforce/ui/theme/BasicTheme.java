@@ -10,7 +10,8 @@ import javaforce.ui.Color;
 public class BasicTheme extends Theme {
   public BasicTheme() {
     setForeColor(Color.BLACK);
-    setBackColor(Color.WHITE);
+    setEditColor(Color.WHITE);
+    setBackColor(Color.LIGHT_GRAY);
     setDisabledColor(Color.GRAY);
     setSelectedColor(Color.LIGHT_BLUE);
   }

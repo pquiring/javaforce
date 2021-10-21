@@ -7,7 +7,7 @@ package javaforce.ui;
 
 import javaforce.*;
 import javaforce.gl.*;
-import javaforce.ui.theme.Theme;
+import javaforce.ui.theme.*;
 
 public class TestUI implements WindowEvents {
   public static UIRender render;
@@ -30,6 +30,8 @@ public class TestUI implements WindowEvents {
     Column c = new Column();
 
     Row r = new Row();
+    c.add(r);
+
     r.add(new Label("TopLeft"));
     Button b1 = new Button("Button1");
     b1.setActionListner(new ActionListener() {
@@ -52,20 +54,37 @@ public class TestUI implements WindowEvents {
     r.add(b3);
     r.add(new FlexBox());
     r.add(new Label("TopRight"));
-    c.add(r);
 
     r = new Row();
+    c.add(r);
+
     CheckBox b4 = new CheckBox("CheckBox");
     r.add(b4);
-    c.add(r);
+
+    ListBox list = new ListBox();
+    list.addItem("Item 1");
+    list.addItem("Item 2");
+    list.addItem("Item 3");
+    r.add(list);
+
+    ListBox list2 = new ListBox();
+    list2.addItem("Item 1");
+    list2.addItem("Item 2");
+    list2.addItem("Item 3");
+    list2.addItem("Item 4");
+    ScrollBox scroll = new ScrollBox(list2, Direction.VERTICAL);
+    scroll.setSize(list2.getMinWidth() + 16, list2.getRowSize() * 2);
+    scroll.setStepsize(list2.getRowSize());
+    r.add(scroll);
 
     c.add(new FlexBox());
 
     r = new Row();
+    c.add(r);
+
     r.add(new Label("BottomLeft"));
     r.add(new FlexBox());
     r.add(new Label("BottomRight"));
-    c.add(r);
 
     return c;
   }

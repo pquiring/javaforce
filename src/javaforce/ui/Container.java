@@ -28,6 +28,22 @@ public abstract class Container extends Component {
     child.parent = null;
   }
 
+  public Component getChild(int idx) {
+    return children.get(idx);
+  }
+
+  public int getChildCount() {
+    return children.size();
+  }
+
+  public Component[] getChildren() {
+    return children.toArray(new Component[children.size()]);
+  }
+
+  public <T> T[] getChildren(T[] array) {
+    return children.toArray(array);
+  }
+
   public abstract Dimension getMinSize();
 
   /** Lays out components. */
@@ -150,8 +166,8 @@ public abstract class Container extends Component {
   }
 
   public void mouseDown(int button) {
-    int x = mx;
-    int y = my;
+    int x = getMouseX();
+    int y = getMouseY();
     super.mouseDown(button);
     for(Component child : children) {
       Point pos = child.getPosition();
@@ -167,8 +183,8 @@ public abstract class Container extends Component {
   }
 
   public void mouseUp(int button) {
-    int x = mx;
-    int y = my;
+    int x = getMouseX();
+    int y = getMouseY();
     super.mouseUp(button);
     for(Component child : children) {
       Point pos = child.getPosition();
@@ -184,8 +200,8 @@ public abstract class Container extends Component {
   }
 
   public void mouseScroll(int dx, int dy) {
-    int x = mx;
-    int y = my;
+    int x = getMouseX();
+    int y = getMouseY();
     super.mouseScroll(dx, dy);
     for(Component child : children) {
       Point pos = child.getPosition();
