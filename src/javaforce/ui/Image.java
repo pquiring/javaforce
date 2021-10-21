@@ -19,12 +19,10 @@ public class Image extends TextComponent {
   private int resizeOperation = ResizeOperation.CLEAR;
 
   public Image() {
-    buffer = new int[1];
     setSize(1, 1);
   }
 
   public Image(int width, int height) {
-    buffer = new int[width * height];
     setSize(width, height);
   }
 
@@ -41,7 +39,7 @@ public class Image extends TextComponent {
     int[] dim = new int[2];
     buffer = nloadPNG(data, dim);
     if (buffer != null) {
-      setSize(dim[0], dim[1]);
+      super.setSize(dim[0], dim[1]);
     }
     return buffer != null;
   }
@@ -170,7 +168,7 @@ public class Image extends TextComponent {
       JFLog.log("loadBMP() failed! image size zero");
       return false;
     }
-    setSize(size.width, size.height);
+    super.setSize(size.width, size.height);
     return true;
   }
 
@@ -292,7 +290,7 @@ public class Image extends TextComponent {
     if (size.width == 0 || size.height == 0) {
       return false;
     }
-    setSize(size.width, size.height);
+    super.setSize(size.width, size.height);
     return true;
   }
 
