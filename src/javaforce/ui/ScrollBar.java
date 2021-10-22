@@ -140,6 +140,9 @@ public class ScrollBar extends Component {
         break;
       }
     }
+    //adjust v1/v2 to fullsize of scrollbar
+    v1 += 17;
+    v2 += 17;
   }
 
   private void move(int steps) {
@@ -150,6 +153,8 @@ public class ScrollBar extends Component {
   }
 
   private void moveTo(int newValue) {
+    if (newValue < 0) newValue = 0;
+    if (newValue + viewsize >= fullsize) newValue = fullsize - viewsize - 1;
     value = newValue;
     if (change != null) {
       change.changed(this);
@@ -180,7 +185,7 @@ public class ScrollBar extends Component {
           } else if (my <= v2) {
             //button
             dragging = true;
-            dragstart = mx;
+            dragstart = my;
           } else if (my <= h - 16) {
             //page down
             move(pageSize);
@@ -201,7 +206,7 @@ public class ScrollBar extends Component {
           } else if (mx <= v2) {
             //button
             dragging = true;
-            dragstart = my;
+            dragstart = mx;
           } else if (mx <= h - 16) {
             //page right
             move(pageSize);
@@ -235,12 +240,16 @@ public class ScrollBar extends Component {
       switch (dir) {
         case Direction.VERTICAL: {
           my -= y1;
-          //TODO
+          float p = my - dragstart;
+          p /= scale;
+          moveTo((int)p);
           break;
         }
         case Direction.HORIZONTAL: {
           mx -= x1;
-          //TODO
+          float p = mx - dragstart;
+          p /= scale;
+          moveTo((int)p);
           break;
         }
       }
