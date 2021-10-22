@@ -96,7 +96,7 @@ public class ScrollBar extends Component {
     int h = getHeight();
     switch (dir) {
       case Direction.VERTICAL: {
-        image.drawImage(arrow_up, x1, y1);
+        image.drawImageBlend(arrow_up, x1, y1, true);
 
         //draw bar/button
         y1 += 16;
@@ -114,11 +114,11 @@ public class ScrollBar extends Component {
         image.drawBox(x1 + 1,y1 + v1,14,v2 - v1 + 1);
         y1 += h - 33;
 
-        image.drawImage(arrow_down, x1, y1);
+        image.drawImageBlend(arrow_down, x1, y1, true);
         break;
       }
       case Direction.HORIZONTAL: {
-        image.drawImage(arrow_left, x1, y1);
+        image.drawImageBlend(arrow_left, x1, y1, true);
 
         //draw bar/button
         x1 += 16;
@@ -136,7 +136,7 @@ public class ScrollBar extends Component {
         image.drawBox(x1 + v1,y1 + 1,v2 - v1 + 1,14);
         x1 += w - 33;
 
-        image.drawImage(arrow_right, x1, y1);
+        image.drawImageBlend(arrow_right, x1, y1, true);
         break;
       }
     }
