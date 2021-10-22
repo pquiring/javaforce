@@ -16,11 +16,12 @@ public class TestUI implements WindowEvents {
     Window.init();
     render = new UIRender();
     window = new Window();
-    window.create(Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE, "TestUI", 512, 512, window);
+    window.create(Window.STYLE_TITLEBAR | Window.STYLE_RESIZABLE, "TestUI", 1024, 512, window);
     window.show();
     window.setWindowListener(new TestUI());
     GL.glInit();
     window.setContent(createUI());
+    window.setScale(2);
     render.run();
   }
 

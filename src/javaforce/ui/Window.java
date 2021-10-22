@@ -21,6 +21,7 @@ public class Window {
 
   private long id;
   private int width, height;
+  private int scale = 1;
 
   private KeyEvents keys;
   private MouseEvents mouse;
@@ -50,11 +51,11 @@ public class Window {
       case KEY_TYPED: if (keys != null) keys.keyTyped((char)v1); break;
       case KEY_PRESS: if (keys != null) keys.keyPressed((char)v1); break;
       case KEY_RELEASE: if (keys != null) keys.keyReleased((char)v1); break;
-      case MOUSE_MOVE: if (mouse != null) mouse.mouseMove(v1, v2); break;
+      case MOUSE_MOVE: if (mouse != null) mouse.mouseMove(v1 / scale, v2 / scale); break;
       case MOUSE_DOWN: if (mouse != null) mouse.mouseDown(v1); break;
       case MOUSE_UP: if (mouse != null) mouse.mouseUp(v1); break;
       case MOUSE_SCROLL: if (mouse != null) mouse.mouseScroll(v1, v2); break;
-      case WIN_RESIZE: resize(v1, v2); if (window != null) window.windowResize(v1, v2); break;
+      case WIN_RESIZE: resize(v1, v2); if (window != null) window.windowResize(v1 / scale, v2 / scale); break;
       case WIN_CLOSING: if (window != null) window.windowClosing(); break;
     }
   }
@@ -192,8 +193,16 @@ public class Window {
     return width;
   }
 
+  public int getWidthScaled() {
+    return width / scale;
+  }
+
   public int getHeight() {
     return height;
+  }
+
+  public int getHeightScaled() {
+    return height / scale;
   }
 
   public static Window[] getWindows() {
@@ -213,9 +222,20 @@ public class Window {
     layout();
   }
 
+  public int getScale() {
+    return scale;
+  }
+
+  public void setScale(int scale) {
+    if (scale < 1) scale = 1;
+    if (scale > 4) scale = 4;
+    this.scale = scale;
+    layout();
+  }
+
   public void layout() {
     if (content != null) {
-      content.layout(new LayoutMetrics(width, height));
+      content.layout(new LayoutMetrics(getWidthScaled(), getHeightScaled()));
     }
   }
 
@@ -233,7 +253,7 @@ public class Window {
 
   public void render(Scene scene) {
     if (debug) System.out.println("Window.render()");
-    if (texture == null || texture.getWidth() != getWidth() || texture.getHeight() != getHeight()) {
+    if (texture == null || texture.getWidth() != getWidthScaled() || texture.getHeight() != getHeightScaled()) {
       if (texture != null) {
         texture.unload();
         texture = null;
@@ -242,7 +262,7 @@ public class Window {
         object.freeBuffers();
         object = null;
       }
-      texture = new Texture(0, getWidth(), getHeight());
+      texture = new Texture(0, getWidthScaled(), getHeightScaled());
     }
     if (object == null) {
       object = new Object3();
