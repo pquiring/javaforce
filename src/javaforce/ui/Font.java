@@ -6,6 +6,7 @@ package javaforce.ui;
  */
 
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
@@ -29,8 +30,11 @@ public class Font {
   private int avg_ascent, avg_descent;
   private int linegap;
   private int max_ascent, max_descent;
+  private int max_advance;
 
   private int size = 512;
+  private Timer blinkTimer;
+  private boolean blink;
 
   private native static int loadFont(byte[] font, int ptSize, int[] fontinfo, int[] coords, int[] adv, int[] cps, byte[] pixels, int px, int py);
   public boolean load(byte[] font, int ptSize) {
@@ -51,6 +55,24 @@ public class Font {
       linegap = fontinfo[2];
       max_ascent = fontinfo[3];
       max_descent = fontinfo[4];
+    }
+    for(int a=0;a<256;a++) {
+      int adv = getAdvance(ASCII8.convert(a));
+      if (debug) {
+        JFLog.log("adv:" + a + "=" + adv);
+      }
+      if (adv > max_advance) {
+        max_advance = adv;
+      }
+    }
+    if (blinkTimer == null) {
+      blinkTimer = new Timer();
+      blinkTimer.schedule(new TimerTask() {
+        public void run() {
+          blink = !blink;
+          Window.redrawAll();
+        }
+      }, 500, 500);
     }
     return loaded;
   }
@@ -145,17 +167,33 @@ public class Font {
     return max_descent;
   }
 
+  public int getMaxAdvance() {
+    return max_advance;
+  }
+
+  public int getMaxHeight() {
+    return -max_ascent + max_descent;
+  }
+
+  public int getLineGap() {
+    return linegap;
+  }
+
   public int getAdvance(char ch) {
-    int cp = ASCII8.convert(ch);
+    int cp = ASCII8.convertUTF16(ch);
     if (cp >= 256) return 0;
     return glyphinfo[cp * 2 + 1];
   }
 
   /** Get font ascent.  Note : The ascent is usually negative relative to baseline. */
   public int getAscent(char ch) {
-    int cp = ASCII8.convert(ch);
+    int cp = ASCII8.convertUTF16(ch);
     if (cp >= 256) return 0;
     return glyphinfo[cp * 2 + 0];
+  }
+
+  public boolean showCursor() {
+    return blink;
   }
 
   public void drawChar(int x, int y, char ch, Image image, int clr) {

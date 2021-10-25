@@ -97,6 +97,7 @@ static JNINativeMethod javaforce_ui_Window[] = {
   {"nsetcurrent", "(J)V", (void *)&Java_javaforce_ui_Window_nsetcurrent},
   {"nseticon", "(JLjava/lang/String;II)V", (void *)&Java_javaforce_ui_Window_nseticon},
   {"pollEvents", "(I)V", (void *)&Java_javaforce_ui_Window_pollEvents},
+  {"postEvent", "()V", (void *)&Java_javaforce_ui_Window_postEvent},
   {"nshow", "(J)V", (void *)&Java_javaforce_ui_Window_nshow},
   {"nhide", "(J)V", (void *)&Java_javaforce_ui_Window_nhide},
   {"nswap", "(J)V", (void *)&Java_javaforce_ui_Window_nswap},

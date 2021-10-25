@@ -160,6 +160,12 @@ JNIEXPORT void JNICALL Java_javaforce_ui_Window_pollEvents
   }
 }
 
+JNIEXPORT void JNICALL Java_javaforce_ui_Window_postEvent
+  (JNIEnv *e, jclass c)
+{
+  glfwPostEmptyEvent();
+}
+
 JNIEXPORT void JNICALL Java_javaforce_ui_Window_nshow
   (JNIEnv *e, jclass c, jlong id)
 {

@@ -39,7 +39,6 @@ public class ScrollBox extends Component {
   }
 
   public void layout(LayoutMetrics metrics) {
-    if (debug) JFLog.log("layout:" + metrics.size.width + "x" + metrics.size.height + "@" + metrics.pos.x + "," + metrics.pos.y + ":" + this);
     //layout component
     cmp_metrics.setPosition(0, 0);
     cmp_metrics.setSize(cmp.getMinSize());

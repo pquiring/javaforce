@@ -17,6 +17,7 @@ public class Component implements KeyEvents, MouseEvents {
   protected Dimension size = new Dimension();
   protected Component parent;
   protected boolean enabled = true;
+  protected boolean editable = true;
   protected boolean focused = false;
   protected boolean focusable = false;
 
@@ -119,7 +120,6 @@ public class Component implements KeyEvents, MouseEvents {
   }
 
   public void layout(LayoutMetrics metrics) {
-    if (debug) JFLog.log("layout:" + metrics.size.width + "x" + metrics.size.height + "@" + metrics.pos.x + "," + metrics.pos.y + ":" + this);
     setPosition(metrics.pos);
     setSize(metrics.size);
   }
@@ -147,12 +147,10 @@ public class Component implements KeyEvents, MouseEvents {
   }
 
   public void onFocus() {
-    JFLog.log("onFonus:" + this);
     focused = true;
   }
 
   public void onBlur() {
-    JFLog.log("onBlur:" + this);
     focused = false;
   }
 
@@ -174,6 +172,14 @@ public class Component implements KeyEvents, MouseEvents {
 
   public void setEnabled(boolean state) {
     enabled = state;
+  }
+
+  public boolean isEditable() {
+    return editable;
+  }
+
+  public void setEditable(boolean state) {
+    editable = state;
   }
 
   public Color getForeColor() {
@@ -217,12 +223,12 @@ public class Component implements KeyEvents, MouseEvents {
   }
 
   public boolean getKeyState(int vk) {
-    if (vk < 0 || vk >= 256) return false;
+    if (vk < 0 || vk >= keyState.length) return false;
     return keyState[vk];
   }
 
   private int mx, my;
-  private static boolean[] keyState = new boolean[256];
+  private static boolean[] keyState = new boolean[512];
 
   //keyboard input
 
@@ -230,13 +236,13 @@ public class Component implements KeyEvents, MouseEvents {
   }
 
   public void keyPressed(int key) {
-    if (key >= 0 && key < 256) {
+    if (key >= 0 && key < keyState.length) {
       keyState[key] = true;
     }
   }
 
   public void keyReleased(int key) {
-    if (key >= 0 && key < 256) {
+    if (key >= 0 && key < keyState.length) {
       keyState[key] = false;
     }
   }

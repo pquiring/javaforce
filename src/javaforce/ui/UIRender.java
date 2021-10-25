@@ -43,11 +43,19 @@ public class UIRender {
       Window[] windowList = Window.getWindows();
       if (windowList.length == 0) break;
       for(Window window : windowList) {
-        window.render(scene);
+        try {
+          window.render(scene);
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
         Canvas[] canvasList = window.getCanvasList();
         for(Canvas c : canvasList) {
           glViewport(c.pos.x, c.pos.y, c.size.width, c.size.height);
-          c.render();
+          try {
+            c.render();
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
           setContext();
         }
       }

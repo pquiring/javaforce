@@ -394,7 +394,7 @@ public class Image extends TextComponent {
   }
 
   /** Puts pixels (supports padding at end of each scan line) */
-  public void putPixels(int[] src, int x, int y, int w, int h, int srcOffset, int srcScanSize) {
+  public void putPixels(int[] src, int x, int y, int w, int h, int srcOffset, int srcWidth) {
     //do clipping
     int bw = getWidth();
     int bh = getHeight();
@@ -410,7 +410,7 @@ public class Image extends TextComponent {
       if (h <= 0) {
         return;
       }
-      srcOffset += y * srcScanSize;
+      srcOffset += y * srcWidth;
       y = 0;
     }
     if (x < 0) {
@@ -435,12 +435,12 @@ public class Image extends TextComponent {
       }
     }
     int dstOffset = y * bw + x;
-    if (w == bw && srcScanSize == w) {
+    if (w == bw && srcWidth == w) {
       System.arraycopy(src, srcOffset, buffer, dstOffset, w * h);
     } else {
       for(int i=0;i<h;i++) {
         System.arraycopy(src, srcOffset, buffer, dstOffset, w);
-        srcOffset += srcScanSize;
+        srcOffset += srcWidth;
         dstOffset += bw;
       }
     }
@@ -449,7 +449,7 @@ public class Image extends TextComponent {
   /** Put Pixels unless src pixel == keyclr */
   public void putPixelsKeyClr(int[] px, int x, int y, int w, int h, int offset, int keyclr) {
     //do clipping
-    int scansize = w;
+    int srcWidth = w;
     int bw = getWidth();
     int bh = getHeight();
     if (w <= 0) {
@@ -464,7 +464,7 @@ public class Image extends TextComponent {
       if (h <= 0) {
         return;
       }
-      offset += y * scansize;
+      offset += y * srcWidth;
       y = 0;
     }
     if (x < 0) {
@@ -495,7 +495,7 @@ public class Image extends TextComponent {
           buffer[dst + j] = px[offset + j];
         }
       }
-      offset += scansize;
+      offset += srcWidth;
       dst += bw;
     }
   }
@@ -504,7 +504,7 @@ public class Image extends TextComponent {
    * if keepAlpha is true then dest alpha is preserved.
    * if keepAlpha is false then src alpha is copied to dest.
    */
-  public void putPixelsBlend(int[] px, int x, int y, int w, int h, int srcOffset, int srcScansize, boolean keepAlpha) {
+  public void putPixelsBlend(int[] px, int x, int y, int w, int h, int srcOffset, int srcWidth, boolean keepAlpha) {
     //do clipping
     int bw = getWidth();
     int bh = getHeight();
@@ -520,7 +520,7 @@ public class Image extends TextComponent {
       if (h <= 0) {
         return;
       }
-      srcOffset += y * srcScansize;
+      srcOffset += y * srcWidth;
       y = 0;
     }
     if (x < 0) {
@@ -567,7 +567,7 @@ public class Image extends TextComponent {
           + ((((sp & Color.MASK_GREEN) * slvl) >> 8) & Color.MASK_GREEN)
           + ((((sp & Color.MASK_BLUE) * slvl) >> 8) & Color.MASK_BLUE);
       }
-      srcOffset += srcScansize;
+      srcOffset += srcWidth;
       dst += bw;
     }
   }
@@ -576,7 +576,7 @@ public class Image extends TextComponent {
    * if keepAlpha is true then dest alpha is preserved.
    * if keepAlpha is false then src alpha is copied to dest.
    */
-  public void putPixelsBlendKeyClr(int[] px, int x, int y, int w, int h, int srcOffset, int srcScansize, boolean keepAlpha, int keyclr) {
+  public void putPixelsBlendKeyClr(int[] px, int x, int y, int w, int h, int srcOffset, int srcWidth, boolean keepAlpha, int keyclr) {
     //do clipping
     int bw = getWidth();
     int bh = getHeight();
@@ -592,7 +592,7 @@ public class Image extends TextComponent {
       if (h <= 0) {
         return;
       }
-      srcOffset += y * srcScansize;
+      srcOffset += y * srcWidth;
       y = 0;
     }
     if (x < 0) {
@@ -640,13 +640,13 @@ public class Image extends TextComponent {
           + ((((sp & Color.MASK_GREEN) * slvl) >> 8) & Color.MASK_GREEN)
           + ((((sp & Color.MASK_BLUE) * slvl) >> 8) & Color.MASK_BLUE);
       }
-      srcOffset += srcScansize;
+      srcOffset += srcWidth;
       dst += bw;
     }
   }
 
   /** Puts pixels using src as a stencil. */
-  public void putPixelsStencil(int[] px, int x, int y, int w, int h, int srcOffset, int srcScansize, boolean keepAlpha, int clr) {
+  public void putPixelsStencil(int[] px, int x, int y, int w, int h, int srcOffset, int srcWidth, boolean keepAlpha, int clr) {
     //do clipping
     int bw = getWidth();
     int bh = getHeight();
@@ -662,7 +662,7 @@ public class Image extends TextComponent {
       if (h <= 0) {
         return;
       }
-      srcOffset += y * srcScansize;
+      srcOffset += y * srcWidth;
       y = 0;
     }
     if (x < 0) {
@@ -709,7 +709,7 @@ public class Image extends TextComponent {
           + ((((sp & Color.MASK_GREEN) * slvl) >> 8) & Color.MASK_GREEN)
           + ((((sp & Color.MASK_BLUE) * slvl) >> 8) & Color.MASK_BLUE);
       }
-      srcOffset += srcScansize;
+      srcOffset += srcWidth;
       dst += bw;
     }
   }
@@ -722,7 +722,7 @@ public class Image extends TextComponent {
   /** Fills a rectangle with clr */
   public void fill(int x, int y, int w, int h, int clr, boolean hasAlpha) {
     if (!hasAlpha) clr |= Color.OPAQUE;
-    int scansize = w;
+    int srcWidth = w;
     int bw = getWidth();
     int bh = getHeight();
     if (w <= 0) {
@@ -760,7 +760,7 @@ public class Image extends TextComponent {
       }
     }
     int dst = y * bw + x;
-    if (w == bw && scansize == w) {
+    if (w == bw && srcWidth == w) {
       Arrays.fill(buffer, dst, dst + w * h, clr);
     } else {
       for(int i=0;i<h;i++) {

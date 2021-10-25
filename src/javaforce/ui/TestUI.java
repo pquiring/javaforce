@@ -78,6 +78,10 @@ public class TestUI implements WindowEvents {
     scroll.setStepsize(list2.getRowSize());
     r.add(scroll);
 
+    TextField tf = new TextField("Test");
+    tf.setSize(100, tf.getMinHeight());
+    r.add(tf);
+
     c.add(new FlexBox());
 
     r = new Row();

@@ -24,14 +24,17 @@ public class ASCII8 {
     "\u2261\u00B1\u2265\u2264\u2320\u2321\u00F7\u2248\u00B0\u2219\u00B7\u221A\u207F\u00B2\u25A0\u00A0"
   ).toCharArray();
 
+  /** Convert ASCII8 to UTF16 */
   public static char convert(char ascii) {
     if (ascii < 128) return ascii;
     if (ascii > 255) return ascii;
     return table[ascii-128];
   }
+  /** Convert ASCII8 to UTF16 */
   public static char convert(int ascii) {
     return convert((char)ascii);
   }
+  /** Convert UTF16 to ASCII8 */
   public static char convertUTF16(int utf16) {
     if (utf16 < 128) return (char)utf16;
     for(int a=0;a<table.length;a++) {

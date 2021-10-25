@@ -126,6 +126,9 @@ public class Window {
    */
   public static native void pollEvents(int wait);
 
+  /** Posts an empty event to wake main thread. */
+  public static native void postEvent();
+
   /** Polls for events. Does not wait for an event.  Same as pollEvents(0); */
   public static void pollEvents() {
     pollEvents(0);
@@ -294,5 +297,10 @@ public class Window {
 
   public Canvas[] getCanvasList() {
     return canvasList.toArray(new Canvas[0]);
+  }
+
+  public static void redrawAll() {
+    if (windows.size() == 0) return;
+    postEvent();
   }
 }

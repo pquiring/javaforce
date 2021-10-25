@@ -24,7 +24,6 @@ public class Row extends Container {
 
   /** Lay out components in a row. */
   public void layout(LayoutMetrics metrics) {
-    if (debug) JFLog.log("layout:" + metrics.size.width + "x" + metrics.size.height + "@" + metrics.pos.x + "," + metrics.pos.y + ":" + this);
     setPosition(metrics.pos);
     setSize(metrics.size);
     int min_x = 0;
@@ -41,7 +40,6 @@ public class Row extends Container {
     }
     if (flex_count > 0) {
       flex_size = (metrics.size.width - min_x) / flex_count;
-      if (debug) JFLog.log("Row:flex_size=" + flex_size + ",min_x=" + min_x);
     }
     for(Component child : children) {
       child.setPosition(metrics.pos);

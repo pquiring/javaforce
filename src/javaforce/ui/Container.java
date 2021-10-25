@@ -57,10 +57,8 @@ public abstract class Container extends Component {
   }
 
   private Component firstFocus() {
-    JFLog.log("firstFocus:" + this);
     for(Component child : children) {
       if (child.isFocusable()) {
-        JFLog.log("Focus=" + child);
         return child;
       }
       if (child instanceof Container) {
@@ -74,7 +72,6 @@ public abstract class Container extends Component {
   private static boolean found;
 
   private Component nextFocus(Component focus) {
-    JFLog.log("nextFocus:" + this);
     for(Component child : children) {
       if (!found) {
         if (child == focus) {
@@ -88,7 +85,6 @@ public abstract class Container extends Component {
         continue;
       }
       if (child.isFocusable()) {
-        JFLog.log("Focus=" + child);
         return child;
       }
       if (child instanceof Container) {
@@ -100,7 +96,6 @@ public abstract class Container extends Component {
   }
 
   private void nextFocus() {
-    JFLog.log("nextFocus");
     if (focus != null) {
       focus.onBlur();
       found = false;
@@ -125,14 +120,12 @@ public abstract class Container extends Component {
   }
 
   public void keyTyped(char ch) {
-    if (debug) JFLog.log("keyTyped:" + (int)ch);
     if (focus != null) {
       focus.keyTyped(ch);
     }
   }
 
   public void keyPressed(int key) {
-    if (debug) JFLog.log("keyPressed:" + key);
     switch (key) {
       case KeyCode.VK_TAB:
         nextFocus();
@@ -144,7 +137,6 @@ public abstract class Container extends Component {
   }
 
   public void keyReleased(int key) {
-    if (debug) JFLog.log("keyReleased:" + key);
     if (focus != null) {
       focus.keyReleased(key);
     }

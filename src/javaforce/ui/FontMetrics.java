@@ -36,4 +36,8 @@ public class FontMetrics {
   public void setBaseline(int baseline) {
     this.ascent = baseline;
   }
+
+  public Dimension toDimension() {
+    return new Dimension(getWidth(), getHeight());
+  }
 }
