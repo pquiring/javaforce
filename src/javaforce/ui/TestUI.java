@@ -82,6 +82,11 @@ public class TestUI implements WindowEvents {
     tf.setSize(100, tf.getMinHeight());
     r.add(tf);
 
+    TextField ptf = new TextField("");
+    ptf.setPassword(true);
+    ptf.setSize(100, ptf.getMinHeight());
+    r.add(ptf);
+
     r = new Row();
     c.add(r);
 

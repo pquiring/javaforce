@@ -10,6 +10,7 @@ import javaforce.*;
 public class TextField extends TextComponent {
 
   private Image buffer;
+  private boolean password;
 
   public TextField(String text) {
     super(false);
@@ -51,7 +52,16 @@ public class TextField extends TextComponent {
       buffer.fill(x1, 0, sel_width, size.height, getSelectedColor().getColor());
     }
     buffer.setForeColor(getForeColor());
-    buffer.drawText(0, -getFont().getMaxAscent(), getText());
+    if (password) {
+      int len = getLength();
+      StringBuilder stars = new StringBuilder();
+      for(int a=0;a<len;a++) {
+        stars.append('*');
+      }
+      buffer.drawText(0, -getFont().getMaxAscent(), stars.toString());
+    } else {
+      buffer.drawText(0, -getFont().getMaxAscent(), getText());
+    }
     //draw cursor on buffer
     if (isFocused() && getFont().showCursor()) {
       int cx1 = getCursorOffset() * adv;
@@ -68,5 +78,13 @@ public class TextField extends TextComponent {
       w = size.width - getViewX();
     }
     image.putPixelsBlend(buffer.getBuffer(), x + cx, y + cy, w, h, getViewX(), size.width, true);
+  }
+
+  public boolean isPassword() {
+    return password;
+  }
+
+  public void setPassword(boolean state) {
+    password = state;
   }
 }
