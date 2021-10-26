@@ -7,6 +7,7 @@ package javaforce.ui;
 
 public class Label extends TextComponent {
   public Label(String text) {
+    super(false);
     setText(text);
   }
   public Dimension getMinSize() {

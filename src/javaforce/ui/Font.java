@@ -248,11 +248,4 @@ public class Font {
     }
     return m;
   }
-
-  /** Font test. */
-  public static void main(String[] args) {
-    JFNative.load();
-    Font font = Font.getSystemFont();
-    System.out.println("Font test complete!");
-  }
 }

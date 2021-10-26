@@ -5,6 +5,8 @@ package javaforce.ui;
  * @author pquiring
  */
 
+import java.util.*;
+
 import javaforce.*;
 
 public class TextComponent extends FontComponent {
@@ -20,20 +22,74 @@ public class TextComponent extends FontComponent {
   //view offset (pixels)
   private int offx = 0;
   private int offy = 0;
+  private boolean multi;
   private boolean overwrite;
 
-  public TextComponent() {
+  public TextComponent(boolean multi) {
+    this.multi = multi;
     text = new char[1][0];
   }
 
-  public String getText() {return new String(text[cur_ln]);}
+  public String getText() {
+    return new String(text[cur_ln]);
+  }
+
+  public String getLineText(int line) {
+    return new String(text[line]);
+  }
 
   public void setText(String text) {
-    this.text[cur_ln] = text.toCharArray();
+    if (multi) {
+      String[] lns = text.replaceAll("\r", "").split("\n");
+      int lines = lns.length;
+      this.text = new char[lines][];
+      for(int line = 0;line < lines;line++) {
+        this.text[line] = lns[line].toCharArray();
+      }
+    } else {
+      this.text[cur_ln] = text.toCharArray();
+    }
+  }
+
+  public void setLineText(int line, String text) {
+    this.text[line] = text.toCharArray();
   }
 
   public int getLength() {
     return text[cur_ln].length;
+  }
+
+  public int getLineLength(int line) {
+    return text[line].length;
+  }
+
+  public int getMaxLength() {
+    int max = 0;
+    for(int a=0;a<text.length;a++) {
+      int length = text[a].length;
+      if (length > max) {
+        max = length;
+      }
+    }
+    return max;
+  }
+
+  public int getLineCount() {
+    return text.length;
+  }
+
+  private void insertLine(int line, char[] newLine) {
+    text = JF.copyOfInsert(text, line, newLine);
+  }
+
+  private void deleteLine(int line) {
+    text = JF.copyOfExcluding(text, line);
+  }
+
+  private void splitLine() {
+    char[] end = Arrays.copyOfRange(text[cur_ln], cur_off, getLength());
+    text[cur_ln] = Arrays.copyOfRange(text[cur_ln], 0, cur_off);
+    insertLine(cur_ln + 1, end);
   }
 
   public int getSelectionStartOffset() {
@@ -86,8 +142,25 @@ public class TextComponent extends FontComponent {
 
   private void deleteSelection() {
     if (!haveSelection()) return;
-    String text = getText();
-    setText(text.substring(0, getSelectionStartOffset()) + text.substring(getSelectionEndOffset()));
+    if (sel_start_ln == sel_end_ln) {
+      //single line selection
+      String text = getLineText(cur_ln);
+      setLineText(cur_ln, text.substring(0, getSelectionStartOffset()) + text.substring(getSelectionEndOffset()));
+    } else {
+      for(int line = sel_start_ln;line <= sel_end_ln; line++) {
+        if (line == sel_start_ln) {
+          //remove trailing part of line
+          text[line] = Arrays.copyOfRange(text[line], 0, sel_start_off);
+        } else if (line == sel_end_ln) {
+          //remove leading part of line
+          text[line] = Arrays.copyOfRange(text[line], sel_end_off, text[line].length);
+        } else {
+          //remove entire line
+          deleteLine(line);
+        }
+      }
+    }
+    cur_ln = sel_start_ln;
     cur_off = sel_start_off;
     clearSelection();
   }
@@ -99,6 +172,35 @@ public class TextComponent extends FontComponent {
   private void cutSelection() {
     copySelection();
     deleteSelection();
+  }
+
+  private void pasteSelection() {
+    insert("TODO");
+  }
+
+  private void checkSelection() {
+    if (sel_start_ln == sel_end_ln) {
+      if (sel_start_off == sel_end_off) {
+        clearSelection();
+        return;
+      }
+      if (sel_start_off > sel_end_off) {
+        //swap offsets
+        int tmp = sel_start_off;
+        sel_start_off = sel_end_off;
+        sel_end_off = tmp;
+      }
+    } else {
+      if (sel_start_ln > sel_end_ln) {
+        //swap start/end
+        int tmp_ln = sel_start_ln;
+        int tmp_off = sel_start_off;
+        sel_start_ln = sel_end_ln;
+        sel_start_off = sel_end_off;
+        sel_end_ln = tmp_ln;
+        sel_end_off = tmp_off;
+      }
+    }
   }
 
   public void clearSelection() {
@@ -115,13 +217,25 @@ public class TextComponent extends FontComponent {
     sel_end_ln = cur_ln;
   }
 
+  public void setMultiSelection(int start_line, int start_offset, int end_line, int end_offset) {
+    sel_start_off = start_offset;
+    sel_start_ln = start_line;
+    sel_end_off = end_offset;
+    sel_end_ln = end_line;
+  }
+
+  private void insert(char ch) {
+    String text = getLineText(cur_ln);
+    setLineText(cur_ln, text.substring(0, cur_off) + Character.toString(ch) + text.substring(cur_off));
+  }
+
   private void insert(String str) {
-    String text = getText();
-    setText(text.substring(0, cur_off) + str + text.substring(cur_off));
+    //TODO
   }
 
   public void showCursor() {
-    //ensure cursor is visible (adjust offx)
+    //ensure cursor is visible
+    //adjust offx
     int adv = getFont().getMaxAdvance();
     int cx1 = getCursorOffset() * adv;
     int cx2 = cx1 + adv - 1;
@@ -135,6 +249,21 @@ public class TextComponent extends FontComponent {
       //move view right (offx +)
       offx = cx1;
     }
+    if (!multi) return;
+    //adjust offy
+    int fonty = getFont().getMaxHeight();
+    int cy1 = getCursorLine() * fonty;
+    int cy2 = cy1 + fonty - 1;
+    int h = getHeight() - 2;
+    if (cy2 > offy + h) {
+      //move view up (offy -)
+      offy = cy2 - h;
+      if (offy < 0) offy = 0;
+    }
+    if (cy1 < offy) {
+      //move view down (offy +)
+      offy = cy1;
+    }
   }
 
   public void keyTyped(char ch) {
@@ -147,7 +276,7 @@ public class TextComponent extends FontComponent {
         keyPressed(KeyCode.VK_DELETE);
       }
     }
-    insert(Character.toString(ch));
+    insert(ch);
     cur_off++;
     showCursor();
   }
@@ -163,9 +292,9 @@ public class TextComponent extends FontComponent {
           deleteSelection();
           break;
         }
-        String text = getText();
+        String text = getLineText(cur_ln);
         if (text.length() > 0 && cur_off > 0) {
-          setText(text.substring(0, cur_off - 1) + text.substring(cur_off));
+          setLineText(cur_ln, text.substring(0, cur_off - 1) + text.substring(cur_off));
           cur_off--;
         }
         break;
@@ -176,9 +305,9 @@ public class TextComponent extends FontComponent {
           deleteSelection();
           break;
         }
-        String text = getText();
+        String text = getLineText(cur_ln);
         if (!isEOL()) {
-          setText(text.substring(0, cur_off) + text.substring(cur_off + 1));
+          setLineText(cur_ln, text.substring(0, cur_off) + text.substring(cur_off + 1));
         }
         break;
       }
@@ -228,6 +357,56 @@ public class TextComponent extends FontComponent {
         cur_off++;
         break;
       }
+      case KeyCode.VK_UP: {
+        if (!multi) break;
+        if (cur_ln == 0) break;
+        if (haveSelection()) {
+          if (shift) {
+            if (sel_start_ln == cur_ln) {
+              sel_start_ln--;
+            } else {
+              sel_end_ln--;
+            }
+            checkSelection();
+          } else {
+            clearSelection();
+          }
+        } else {
+          if (shift) {
+            setMultiSelection(cur_ln - 1, cur_off, cur_ln, cur_off);
+          }
+        }
+        cur_ln--;
+        if (cur_off > getLength()) {
+          cur_off = getLength();
+        }
+        break;
+      }
+      case KeyCode.VK_DOWN: {
+        if (!multi) break;
+        if (cur_ln == getLineCount() - 1) break;
+        if (haveSelection()) {
+          if (shift) {
+            if (sel_start_ln == cur_ln) {
+              sel_start_ln++;
+            } else {
+              sel_end_ln++;
+            }
+            checkSelection();
+          } else {
+            clearSelection();
+          }
+        } else {
+          if (shift) {
+            setMultiSelection(cur_ln, cur_off, cur_ln + 1, cur_off);
+          }
+        }
+        cur_ln++;
+        if (cur_off > getLength()) {
+          cur_off = getLength();
+        }
+        break;
+      }
       case KeyCode.VK_HOME: {
         if (cur_off == 0) break;
         if (haveSelection()) {
@@ -265,6 +444,32 @@ public class TextComponent extends FontComponent {
         setOverwrite(!isOverwrite());
         break;
       }
+      case KeyCode.VK_ENTER: {
+        if (!multi) break;
+        if (haveSelection()) {
+          deleteSelection();
+        }
+        if (isEOL()) {
+          //insert new line after
+          cur_ln++;
+          insertLine(cur_ln, new char[0]);
+        } else if (cur_off == 0) {
+          //insert new line before
+          insertLine(cur_ln, new char[0]);
+          cur_ln++;
+        } else {
+          //split current line
+          splitLine();
+          cur_ln++;
+        }
+        cur_off = 0;
+        break;
+      }
+      case 'x':
+        if (ctrl) {
+          cutSelection();
+        }
+        break;
       case 'c':
         if (ctrl) {
           copySelection();
@@ -272,7 +477,7 @@ public class TextComponent extends FontComponent {
         break;
       case 'v':
         if (ctrl) {
-          cutSelection();
+          pasteSelection();
         }
         break;
     }

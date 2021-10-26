@@ -82,6 +82,13 @@ public class TestUI implements WindowEvents {
     tf.setSize(100, tf.getMinHeight());
     r.add(tf);
 
+    r = new Row();
+    c.add(r);
+
+    TextBox tb = new TextBox("Test123\nTest456");
+    tb.setSize(100, 100);
+    r.add(tb);
+
     c.add(new FlexBox());
 
     r = new Row();

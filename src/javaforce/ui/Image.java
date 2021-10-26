@@ -13,7 +13,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class Image extends TextComponent {
+public class Image extends FontComponent {
   private int[] buffer;
   private int lineStyle = LineStyle.SOLID;
   private int resizeOperation = ResizeOperation.CLEAR;

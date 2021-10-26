@@ -12,6 +12,7 @@ public class TextField extends TextComponent {
   private Image buffer;
 
   public TextField(String text) {
+    super(false);
     setText(text);
     setFocusable(true);
     setEditable(true);

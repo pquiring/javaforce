@@ -7,6 +7,7 @@ package javaforce.ui;
 
 import java.util.*;
 
+import javaforce.*;
 import javaforce.jni.*;
 import javaforce.gl.*;
 import javaforce.ui.theme.*;
@@ -47,16 +48,20 @@ public class Window {
 
   /** This is called from native code to dispatch events. */
   private void dispatchEvent(int type, int v1, int v2) {
-    switch (type) {
-      case KEY_TYPED: if (keys != null) keys.keyTyped((char)v1); break;
-      case KEY_PRESS: if (keys != null) keys.keyPressed((char)v1); break;
-      case KEY_RELEASE: if (keys != null) keys.keyReleased((char)v1); break;
-      case MOUSE_MOVE: if (mouse != null) mouse.mouseMove(v1 / scale, v2 / scale); break;
-      case MOUSE_DOWN: if (mouse != null) mouse.mouseDown(v1); break;
-      case MOUSE_UP: if (mouse != null) mouse.mouseUp(v1); break;
-      case MOUSE_SCROLL: if (mouse != null) mouse.mouseScroll(v1, v2); break;
-      case WIN_RESIZE: resize(v1, v2); if (window != null) window.windowResize(v1 / scale, v2 / scale); break;
-      case WIN_CLOSING: if (window != null) window.windowClosing(); break;
+    try {
+      switch (type) {
+        case KEY_TYPED: if (keys != null) keys.keyTyped((char)v1); break;
+        case KEY_PRESS: if (keys != null) keys.keyPressed((char)v1); break;
+        case KEY_RELEASE: if (keys != null) keys.keyReleased((char)v1); break;
+        case MOUSE_MOVE: if (mouse != null) mouse.mouseMove(v1 / scale, v2 / scale); break;
+        case MOUSE_DOWN: if (mouse != null) mouse.mouseDown(v1); break;
+        case MOUSE_UP: if (mouse != null) mouse.mouseUp(v1); break;
+        case MOUSE_SCROLL: if (mouse != null) mouse.mouseScroll(v1, v2); break;
+        case WIN_RESIZE: resize(v1, v2); if (window != null) window.windowResize(v1 / scale, v2 / scale); break;
+        case WIN_CLOSING: if (window != null) window.windowClosing(); break;
+      }
+    } catch (Exception e) {
+      JFLog.log(e);
     }
   }
 

@@ -11,6 +11,7 @@ public class Button extends TextComponent {
   private ActionListener action;
 
   public Button(String text) {
+    super(false);
     setText(text);
     setFocusable(true);
   }

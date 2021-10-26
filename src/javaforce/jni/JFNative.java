@@ -31,7 +31,6 @@ public class JFNative {
     }
     if (!loaded) return;
     if (!inited) {
-      System.out.println("JFNative.init()");
       try {
         PinnedObject = (Class<Object>)Class.forName("org.graalvm.nativeimage.PinnedObject");
         PinnedObject_create = PinnedObject.getMethod("create", Object.class);

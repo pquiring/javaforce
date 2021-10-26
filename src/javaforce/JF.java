@@ -892,9 +892,10 @@ public class JF {
 
   //copies arrays excluding one element (something Arrays is missing)
 
-  public static Object[] copyOfExcluding(Object[] array, int idx) {
+  @SuppressWarnings("unchecked")
+  public static <T> T[] copyOfExcluding(T[] array, int idx) {
     Class<?> cls = array.getClass().getComponentType();
-    Object newArray[] = (Object[]) Array.newInstance(cls, array.length - 1);
+    T newArray[] = (T[]) Array.newInstance(cls, array.length - 1);
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx + 1, newArray, idx, array.length - idx - 1);
     return newArray;
@@ -946,6 +947,74 @@ public class JF {
     char newArray[] = new char[array.length - 1];
     System.arraycopy(array, 0, newArray, 0, idx);
     System.arraycopy(array, idx + 1, newArray, idx, array.length - idx - 1);
+    return newArray;
+  }
+
+  //copyOfInsert
+
+  @SuppressWarnings("unchecked")
+  public static <T> T[] copyOfInsert(T[] array, int idx, T insert) {
+    Class<?> cls = array.getClass().getComponentType();
+    T newArray[] = (T[]) Array.newInstance(cls, array.length + 1);
+    System.arraycopy(array, 0, newArray, 0, idx);
+    System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
+    newArray[idx] = insert;
+    return newArray;
+  }
+
+  public static boolean[] copyOfInsert(boolean[] array, int idx, boolean insert) {
+    boolean newArray[] = new boolean[array.length + 1];
+    System.arraycopy(array, 0, newArray, 0, idx);
+    System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
+    newArray[idx] = insert;
+    return newArray;
+  }
+
+  public static byte[] copyOfInsert(byte[] array, int idx, byte insert) {
+    byte newArray[] = new byte[array.length + 1];
+    System.arraycopy(array, 0, newArray, 0, idx);
+    System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
+    newArray[idx] = insert;
+    return newArray;
+  }
+
+  public static short[] copyOfInsert(short[] array, int idx, short insert) {
+    short newArray[] = new short[array.length + 1];
+    System.arraycopy(array, 0, newArray, 0, idx);
+    System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
+    newArray[idx] = insert;
+    return newArray;
+  }
+
+  public static int[] copyOfInsert(int[] array, int idx, int insert) {
+    int newArray[] = new int[array.length + 1];
+    System.arraycopy(array, 0, newArray, 0, idx);
+    System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
+    newArray[idx] = insert;
+    return newArray;
+  }
+
+  public static long[] copyOfInsert(long[] array, int idx, long insert) {
+    long newArray[] = new long[array.length + 1];
+    System.arraycopy(array, 0, newArray, 0, idx);
+    System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
+    newArray[idx] = insert;
+    return newArray;
+  }
+
+  public static float[] copyOfInsert(float[] array, int idx, float insert) {
+    float newArray[] = new float[array.length + 1];
+    System.arraycopy(array, 0, newArray, 0, idx);
+    System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
+    newArray[idx] = insert;
+    return newArray;
+  }
+
+  public static double[] copyOfInsert(double[] array, int idx, double insert) {
+    double newArray[] = new double[array.length + 1];
+    System.arraycopy(array, 0, newArray, 0, idx);
+    System.arraycopy(array, idx, newArray, idx + 1, array.length - idx);
+    newArray[idx] = insert;
     return newArray;
   }
 
