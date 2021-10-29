@@ -15,7 +15,8 @@ public class ScrollBar extends Component {
   private int v1, v2;
   private float scale;
   private boolean dragging;
-  private int dragstart;
+  private int dragstart_mouse;
+  private int dragstart_value;
   private int stepsize;
   private int pageSize;
   private ChangeListener change;
@@ -174,7 +175,8 @@ public class ScrollBar extends Component {
           } else if (my <= v2) {
             //button
             dragging = true;
-            dragstart = my;
+            dragstart_mouse = my;
+            dragstart_value = value;
           } else if (my <= h - 16) {
             //page down
             move(pageSize);
@@ -195,7 +197,8 @@ public class ScrollBar extends Component {
           } else if (mx <= v2) {
             //button
             dragging = true;
-            dragstart = mx;
+            dragstart_mouse = mx;
+            dragstart_value = value;
           } else if (mx <= h - 16) {
             //page right
             move(pageSize);
@@ -229,16 +232,16 @@ public class ScrollBar extends Component {
       switch (dir) {
         case Direction.VERTICAL: {
           my -= y1;
-          float p = my - dragstart;
+          float p = my - dragstart_mouse;
           p /= scale;
-          moveTo((int)p);
+          moveTo(dragstart_value + (int)p);
           break;
         }
         case Direction.HORIZONTAL: {
           mx -= x1;
-          float p = mx - dragstart;
+          float p = mx - dragstart_mouse;
           p /= scale;
-          moveTo((int)p);
+          moveTo(dragstart_value + (int)p);
           break;
         }
       }

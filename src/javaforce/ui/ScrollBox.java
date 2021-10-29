@@ -30,10 +30,6 @@ public class ScrollBox extends Component {
     }
   }
 
-  public boolean isContainer() {
-    return true;
-  }
-
   public Component getComponent() {
     return cmp;
   }

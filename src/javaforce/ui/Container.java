@@ -70,7 +70,7 @@ public abstract class Container extends Component {
       if (child.isFocusable()) {
         return child;
       }
-      if (child instanceof Container) {
+      if (child.isContainer()) {
         Component c = ((Container)child).firstFocus();
         if (c != null) return c;
       }
@@ -86,7 +86,7 @@ public abstract class Container extends Component {
         if (child == focus) {
           found = true;
         } else {
-          if (child instanceof Container) {
+        if (child.isContainer()) {
             Component c = ((Container)child).nextFocus(focus);
             if (c != null) return c;
           }
@@ -96,7 +96,7 @@ public abstract class Container extends Component {
       if (child.isFocusable()) {
         return child;
       }
-      if (child instanceof Container) {
+      if (child.isContainer()) {
         Component c = ((Container)child).nextFocus(focus);
         if (c != null) return c;
       }
