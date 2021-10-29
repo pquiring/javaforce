@@ -12,8 +12,9 @@ public class ComboBox extends Container {
   private Button button;
   private ListBox list;
   private ScrollBox scroll;
+  private ChangeListener change;
 
-  private int rows = 2;  //max visible rows in ListBox
+  private int rows = 3;  //max visible rows in ListBox
 
   public ComboBox(String txt) {
     text = new TextField(txt);
@@ -39,6 +40,9 @@ public class ComboBox extends Container {
         String txt = list.getSelectedItem();
         if (txt != null) {
           text.setText(txt);
+          if (change != null) {
+            change.changed(ComboBox.this);
+          }
         }
         scroll.setVisible(false);
       }
@@ -99,11 +103,29 @@ public class ComboBox extends Container {
     text.setEditable(state);
   }
 
+  /** Sets number of items visible in drop down list. */
+  public void setItemsVisible(int items) {
+    rows = items;
+  }
+
   public void setForeColor(Color clr) {
+    super.setForeColor(clr);
     if (text == null) return;
     text.setForeColor(clr);
     list.setForeColor(clr);
     button.setForeColor(clr);
+  }
+
+  public void setBackColor(Color clr) {
+    super.setBackColor(clr);
+    if (text == null) return;
+    text.setBackColor(clr);
+    list.setBackColor(clr);
+    button.setBackColor(clr);
+  }
+
+  public void setChangeListener(ChangeListener listener) {
+    change = listener;
   }
 
   public String toString() {
