@@ -40,6 +40,7 @@ public class ComboBox extends Container {
         String txt = list.getSelectedItem();
         if (txt != null) {
           text.setText(txt);
+          text.setCursorPosition(0, 0);
           if (change != null) {
             change.changed(ComboBox.this);
           }

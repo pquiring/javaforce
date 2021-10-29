@@ -49,10 +49,12 @@ public class TextComponent extends FontComponent {
     } else {
       this.text[cur_ln] = text.toCharArray();
     }
+    showCursor();
   }
 
   public void setLineText(int line, String text) {
     this.text[line] = text.toCharArray();
+    showCursor();
   }
 
   public int getLength() {
@@ -114,6 +116,22 @@ public class TextComponent extends FontComponent {
 
   public int getCursorLine() {
     return cur_ln;
+  }
+
+  public void setCursorPosition(int offset, int line) {
+    cur_ln = line;
+    cur_off = offset;
+    showCursor();
+  }
+
+  public void setCursorOffset(int offset) {
+    cur_off = offset;
+    showCursor();
+  }
+
+  public void setCursorLine(int line) {
+    cur_ln = line;
+    showCursor();
   }
 
   public int getViewX() {
@@ -234,6 +252,19 @@ public class TextComponent extends FontComponent {
   }
 
   public void showCursor() {
+    //ensure cursor is not beyond text
+    if (cur_ln < 0) {
+      cur_ln = 0;
+    }
+    if (cur_ln > text.length - 1) {
+      cur_ln = text.length - 1;
+    }
+    if (cur_off < 0) {
+      cur_off = 0;
+    }
+    if (cur_off > text[cur_ln].length) {
+      cur_off = text[cur_ln].length;
+    }
     //ensure cursor is visible
     //adjust offx
     int adv = getFont().getMaxAdvance();
