@@ -21,6 +21,7 @@ public class TransportTCPServer implements Transport {
   private Object clientsLock = new Object();
   private boolean active;
   private boolean error;
+  private static final int mtu = 1460;  //max size of packet
 
   public String getName() { return "TCP"; }
 
@@ -75,9 +76,9 @@ public class TransportTCPServer implements Transport {
         if (packets.size() == 0) {
           try{packetsLock.wait();} catch (Exception e) {}
         }
-//        if (packets.size() == 0) continue;
+        if (packets.size() == 0) continue;
         Packet tmp = packets.remove(0);
-        packet.data = tmp.data;
+        System.arraycopy(tmp.data, 0, packet.data, 0, mtu);
         packet.host = tmp.host;
         packet.length = tmp.length;
         packet.port = tmp.port;
@@ -156,7 +157,7 @@ public class TransportTCPServer implements Transport {
       }
       while (active) {
         try {
-          byte data[] = new byte[1500];
+          byte data[] = new byte[mtu];
           Packet packet = new Packet();
           packet.data = data;
 

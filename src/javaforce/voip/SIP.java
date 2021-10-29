@@ -1158,7 +1158,7 @@ public abstract class SIP {
     dnsCache.put(host, ip);
     return ip;
   }
-  private final int mtu = 1460;  //max size of packet
+  private static final int mtu = 1460;  //max size of packet
 
   /**
    * This thread handles reading incoming SIP packets and dispatches them thru
@@ -1176,7 +1176,7 @@ public abstract class SIP {
           if (pack.length <= 4) {
             continue;  //keep alive
           }
-          String msg[] = new String(data, 0, pack.length).replaceAll("\r", "").split("\n", -1);
+          String msg[] = new String(pack.data, 0, pack.length).replaceAll("\r", "").split("\n", -1);
           if (server) {
             WorkerPacket wp = new WorkerPacket(msg, pack.host, pack.port);
             wp.start();
