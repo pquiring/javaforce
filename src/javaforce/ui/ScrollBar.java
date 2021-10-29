@@ -136,6 +136,7 @@ public class ScrollBar extends Component {
   }
 
   private void move(int steps) {
+    if (fullsize <= viewsize) return;
     int newValue = value + (stepsize * steps);
     if (newValue < 0) newValue = 0;
     if (newValue + viewsize >= fullsize) newValue = fullsize - viewsize - 1;
@@ -143,8 +144,9 @@ public class ScrollBar extends Component {
   }
 
   private void moveTo(int newValue) {
-    if (newValue < 0) newValue = 0;
+    if (fullsize <= viewsize) return;
     if (newValue + viewsize >= fullsize) newValue = fullsize - viewsize - 1;
+    if (newValue < 0) newValue = 0;
     value = newValue;
     if (change != null) {
       change.changed(this);
