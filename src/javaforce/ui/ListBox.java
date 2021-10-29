@@ -8,6 +8,7 @@ package javaforce.ui;
 public class ListBox extends Column {
   private Font font;
   private boolean multiSelection;
+  private ChangeListener change;
 
   public ListBox() {
     font = Font.getSystemFont();
@@ -26,8 +27,8 @@ public class ListBox extends Column {
     return new Dimension(width, height);
   }
 
-  public int getRowSize() {
-    return font.getMetrics("Ay").getHeight();
+  public int getItemHeight() {
+    return font.getMaxHeight();
   }
 
   public boolean isMultiSelection() {
@@ -52,12 +53,19 @@ public class ListBox extends Column {
     removeItem(text);  //no duplicates
     ListItem item = new ListItem(text);
     item.setFont(font);
-    item.setActionListner((Component cmp) -> {
+    item.setActionListener((Component cmp) -> {
       if ((!multiSelection) || (!getKeyState(KeyCode.VK_CONTROL_L) && !getKeyState(KeyCode.VK_CONTROL_R))) {
         clearSelectionExcept((ListItem)cmp);
       }
+      if (change != null) {
+        change.changed(this);
+      }
     });
     add(item);
+  }
+
+  public void setChangeListener(ChangeListener listener) {
+    change = listener;
   }
 
   public void removeItem(String text) {
@@ -112,6 +120,13 @@ public class ListBox extends Column {
       idx++;
     }
     return list;
+  }
+
+  public String getSelectedItem() {
+    int idx = getSelectedIndex();
+    if (idx == -1) return null;
+    ListItem item = (ListItem)getChild(idx);
+    return item.getText();
   }
 
   public void setSelectedIndex(int index) {

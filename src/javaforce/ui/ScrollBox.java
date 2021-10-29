@@ -30,6 +30,10 @@ public class ScrollBox extends Component {
     }
   }
 
+  public boolean isContainer() {
+    return true;
+  }
+
   public Component getComponent() {
     return cmp;
   }
@@ -40,6 +44,7 @@ public class ScrollBox extends Component {
 
   public void layout(LayoutMetrics metrics) {
     //layout component
+    super.layout(metrics);
     cmp_metrics.setPosition(0, 0);
     cmp_metrics.setSize(cmp.getMinSize());
     cmp.layout(cmp_metrics);
@@ -108,11 +113,35 @@ public class ScrollBox extends Component {
     if (vBar != null) {
       dw -= 16;
     }
+    if (dw > sw) {
+      dw = sw;
+    }
     int dh = getHeight();
     if (hBar != null) {
       dh -= 16;
     }
+    if (dh > sh) {
+      dh = sh;
+    }
     image.putPixels(buffer.getBuffer(), dx, dy, dw, dh, sx + (sy * sw), sw);
+  }
+
+  public void setLayer(int layer) {
+    super.setLayer(layer);
+    if (vBar != null) vBar.setLayer(layer);
+    if (hBar != null) hBar.setLayer(layer);
+    cmp.setLayer(layer);
+  }
+
+  public void resetOffset() {
+    offx = 0;
+    if (vBar != null) {
+      vBar.setValue(0);
+    }
+    offy = 0;
+    if (hBar != null) {
+      hBar.setValue(0);
+    }
   }
 
   private static Point pt = new Point();

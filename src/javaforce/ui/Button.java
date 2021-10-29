@@ -9,13 +9,22 @@ import javaforce.*;
 
 public class Button extends TextComponent {
   private ActionListener action;
+  private Image icon;
 
   public Button(String text) {
     super(false);
     setText(text);
     setFocusable(true);
   }
+  public Button(Image image) {
+    super(false);
+    setImage(image);
+    setFocusable(true);
+  }
   public Dimension getMinSize() {
+    if (icon != null) {
+      return new Dimension(icon.getWidth() + 8, icon.getHeight() + 8);
+    }
     FontMetrics metrics = getFont().getMetrics(getText());
     return new Dimension(metrics.getWidth() + 8, metrics.getHeight() + 8);
   }
@@ -40,7 +49,16 @@ public class Button extends TextComponent {
       image.drawBox(x + 1, y + 1, w - 2, h - 2);
       image.setLineStyle(LineStyle.SOLID);
     }
-    renderText(image, 4, 4);
+    if (icon == null) {
+      //TODO : center text
+      renderText(image, 4, 4);
+    } else {
+      //TODO : center icon
+      image.drawImageBlend(icon, x + 1, y + 1, true);
+    }
+  }
+  public void setImage(Image image) {
+    icon = image;
   }
   public String toString() {
     return "Button:" + getText();

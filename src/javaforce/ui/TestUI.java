@@ -74,8 +74,8 @@ public class TestUI implements WindowEvents {
     list2.addItem("Item 3");
     list2.addItem("Item 4");
     ScrollBox scroll = new ScrollBox(list2, Direction.VERTICAL);
-    scroll.setSize(list2.getMinWidth() + 16, list2.getRowSize() * 2);
-    scroll.setStepsize(list2.getRowSize());
+    scroll.setSize(list2.getMinWidth() + 16, list2.getItemHeight() * 2);
+    scroll.setStepsize(list2.getItemHeight());
     r.add(scroll);
 
     TextField tf = new TextField("Test");
@@ -93,6 +93,15 @@ public class TestUI implements WindowEvents {
     TextBox tb = new TextBox("Test123\nTest456");
     tb.setSize(100, 100);
     r.add(tb);
+
+    ComboBox cb = new ComboBox("");
+    cb.addItem("Item 1");
+    cb.addItem("Item 2");
+    cb.addItem("Item 3");
+    cb.setForeColor(Color.RED);
+    cb.setSize(100, 16);
+    cb.setEditable(true);
+    r.add(cb);
 
     c.add(new FlexBox());
 

@@ -16,6 +16,11 @@ public abstract class Container extends Component {
 
   public Container() {
     children = new ArrayList<>();
+    setConsumer(false);
+  }
+
+  public boolean isContainer() {
+    return true;
   }
 
   public void add(Component child) {
@@ -51,8 +56,12 @@ public abstract class Container extends Component {
 
   public void render(Image output) {
     super.render(output);
-    for(Component child : children) {
-      child.render(output);
+    for(int layer=0;layer<=1;layer++) {
+      for(Component child : children) {
+        if (child.getLayer() != layer) continue;
+        if (!child.isVisible()) continue;
+        child.render(output);
+      }
     }
   }
 
@@ -144,66 +153,60 @@ public abstract class Container extends Component {
 
   public void mouseMove(int x, int y) {
     super.mouseMove(x, y);
-    for(Component child : children) {
-      Point pos = child.getPosition();
-      Dimension size = child.getSize();
-      int x1 = pos.x;
-      int y1 = pos.y;
-      int x2 = x1 + size.width - 1;
-      int y2 = y1 + size.height - 1;
-      if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
-        child.mouseMove(x, y);
+    Point pt = getMousePosition();
+    for(int layer=1;layer>=0;layer--) {
+      for(Component child : children) {
+        if (child.getLayer() != layer) continue;
+        if (!child.isVisible()) continue;
+        if (child.isInside(pt)) {
+          child.mouseMove(x, y);
+        }
       }
     }
   }
 
   public void mouseDown(int button) {
-    int x = getMouseX();
-    int y = getMouseY();
+    Point pt = getMousePosition();
     super.mouseDown(button);
-    for(Component child : children) {
-      Point pos = child.getPosition();
-      Dimension size = child.getSize();
-      int x1 = pos.x;
-      int y1 = pos.y;
-      int x2 = x1 + size.width - 1;
-      int y2 = y1 + size.height - 1;
-      if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
-        child.mouseDown(button);
+    for(int layer=1;layer>=0;layer--) {
+      for(Component child : children) {
+        if (child.getLayer() != layer) continue;
+        if (!child.isVisible()) continue;
+        if (child.isInside(pt)) {
+          child.mouseDown(button);
+          if (child.isConsumer()) {
+            return;
+          }
+        }
       }
     }
   }
 
   public void mouseUp(int button) {
-    int x = getMouseX();
-    int y = getMouseY();
+    Point pt = getMousePosition();
     super.mouseUp(button);
-    for(Component child : children) {
-      Point pos = child.getPosition();
-      Dimension size = child.getSize();
-      int x1 = pos.x;
-      int y1 = pos.y;
-      int x2 = x1 + size.width - 1;
-      int y2 = y1 + size.height - 1;
-      if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
-        child.mouseUp(button);
+    for(int layer=1;layer>=0;layer--) {
+      for(Component child : children) {
+        if (child.getLayer() != layer) continue;
+        if (!child.isVisible()) continue;
+        if (child.isInside(pt)) {
+          child.mouseUp(button);
+          if (child.isConsumer()) return;
+        }
       }
     }
   }
 
   public void mouseScroll(int dx, int dy) {
-    int x = getMouseX();
-    int y = getMouseY();
+    Point pt = getMousePosition();
     super.mouseScroll(dx, dy);
-    for(Component child : children) {
-      Point pos = child.getPosition();
-      Dimension size = child.getSize();
-      int x1 = pos.x;
-      int y1 = pos.y;
-      int x2 = x1 + size.width - 1;
-      int y2 = y1 + size.height - 1;
-      if (x >= x1 && x <= x2 && y >= y1 && y <= y2) {
-        child.mouseScroll(dx, dy);
+    for(int layer=0;layer<=1;layer++) {
+      for(Component child : children) {
+        if (child.getLayer() != layer) continue;
+        if (!child.isVisible()) continue;
+        if (child.isInside(pt)) {
+          child.mouseScroll(dx, dy);
+        }
       }
     }
   }

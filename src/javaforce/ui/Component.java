@@ -16,10 +16,14 @@ public class Component implements KeyEvents, MouseEvents {
   protected Point pos = new Point();
   protected Dimension size = new Dimension();
   protected Component parent;
+  protected int layer = 0;
   protected boolean enabled = true;
   protected boolean editable = true;
   protected boolean focused = false;
   protected boolean focusable = false;
+  protected boolean visible = true;
+  /** Component consumes mouse up/down events. */
+  protected boolean consumer = true;
 
   public static final Dimension zero = new Dimension();
   public static final boolean debug = true;
@@ -42,17 +46,16 @@ public class Component implements KeyEvents, MouseEvents {
 
   }
 
-  protected Image loadImage(String name) {
-    try {
-      Image image = new Image();
-      if (!image.loadPNG(getClass().getResourceAsStream(name))) {
-        throw new Exception("Load resource failed:" + name);
-      }
-      return image;
-    } catch (Exception e) {
-      JFLog.log(e);
-      return null;
-    }
+  public boolean isContainer() {
+    return false;
+  }
+
+  protected boolean isConsumer() {
+    return consumer;
+  }
+
+  protected void setConsumer(boolean consumes) {
+    consumer = consumes;
   }
 
   public Point getPosition() {
@@ -68,8 +71,7 @@ public class Component implements KeyEvents, MouseEvents {
   }
 
   public void setPosition(Point pt) {
-    pos.x = pt.x;
-    pos.y = pt.y;
+    setPosition(pt.x, pt.y);
   }
 
   public void setPosition(int x, int y) {
@@ -107,6 +109,13 @@ public class Component implements KeyEvents, MouseEvents {
     return getMinSize().height;
   }
 
+  public int getLayer() {return layer;}
+
+  /** Sets a component layer.  Default = 0.  Currently the only other supported layer is 1 for popup menus and lists. */
+  public void setLayer(int layer) {
+    this.layer = layer;
+  }
+
   public boolean isInside(Point pt) {
     int x1 = pos.x;
     int y1 = pos.y;
@@ -116,7 +125,12 @@ public class Component implements KeyEvents, MouseEvents {
   }
 
   public void render(Image image) {
+    if (!isVisible()) return;
     image.fill(pos.x, pos.y, size.width, size.height, getBackColor().getColor());
+  }
+
+  public void renderLayer(int layer, Image image) {
+    if (getLayer() == layer) render(image);
   }
 
   public void layout(LayoutMetrics metrics) {
@@ -138,10 +152,21 @@ public class Component implements KeyEvents, MouseEvents {
 /*/
   }
 
+  public boolean isVisible() {
+    return visible;
+  }
+
+  public void setVisible(boolean state) {
+    visible = state;
+  }
+
   public Container getTopContainer() {
     Component top = parent;
     while (top.parent != null) {
-      top = parent.parent;
+      if (top.parent == top) {
+        JFLog.logTrace("UI Loop detected");
+      }
+      top = top.parent;
     }
     return (Container)top;
   }
@@ -215,11 +240,15 @@ public class Component implements KeyEvents, MouseEvents {
   }
 
   public int getMouseX() {
-    return mx;
+    return mousePos.x;
   }
 
   public int getMouseY() {
-    return my;
+    return mousePos.y;
+  }
+
+  public Point getMousePosition() {
+    return mousePos;
   }
 
   public boolean getKeyState(int vk) {
@@ -227,7 +256,7 @@ public class Component implements KeyEvents, MouseEvents {
     return keyState[vk];
   }
 
-  private int mx, my;
+  private Point mousePos = new Point();
   private static boolean[] keyState = new boolean[512];
 
   //keyboard input
@@ -250,8 +279,8 @@ public class Component implements KeyEvents, MouseEvents {
   //mouse input
 
   public void mouseMove(int x, int y) {
-    mx = x;
-    my = y;
+    mousePos.x = x;
+    mousePos.y = y;
   }
 
   public void mouseDown(int button) {

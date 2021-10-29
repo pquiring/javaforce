@@ -33,6 +33,7 @@ public class TextField extends TextComponent {
     if (w == 0) return;
     int adv = getFont().getMaxAdvance();
     Dimension size = getFont().getMetrics(getText()).toDimension();
+    if (size.width < getWidth()) size.width = getWidth();
     size.width += adv;  //cursor
 
     if (buffer == null || buffer.getWidth() != size.width || buffer.getHeight() != size.height) {
@@ -86,5 +87,9 @@ public class TextField extends TextComponent {
 
   public void setPassword(boolean state) {
     password = state;
+  }
+
+  public String toString() {
+    return "TextField:" + getText();
   }
 }

@@ -20,18 +20,7 @@ public class ScrollBar extends Component {
   private int pageSize;
   private ChangeListener change;
 
-  private static Image arrow_up;
-  private static Image arrow_down;
-  private static Image arrow_left;
-  private static Image arrow_right;
-
   public ScrollBar(int dir) {
-    if (arrow_up == null) {
-      arrow_up = loadImage("/javaforce/icons/16/icon_up.png");
-      arrow_down = loadImage("/javaforce/icons/16/icon_down.png");
-      arrow_left = loadImage("/javaforce/icons/16/icon_left.png");
-      arrow_right = loadImage("/javaforce/icons/16/icon_right.png");
-    }
     this.dir = dir;
     value = 0;
     viewsize = 10;
@@ -96,7 +85,7 @@ public class ScrollBar extends Component {
     int h = getHeight();
     switch (dir) {
       case Direction.VERTICAL: {
-        image.drawImageBlend(arrow_up, x1, y1, true);
+        image.drawImageBlend(Icons.getArrowUp(), x1, y1, true);
 
         //draw bar/button
         y1 += 16;
@@ -114,11 +103,11 @@ public class ScrollBar extends Component {
         image.drawBox(x1 + 1,y1 + v1,14,v2 - v1 + 1);
         y1 += h - 33;
 
-        image.drawImageBlend(arrow_down, x1, y1, true);
+        image.drawImageBlend(Icons.getArrowDown(), x1, y1, true);
         break;
       }
       case Direction.HORIZONTAL: {
-        image.drawImageBlend(arrow_left, x1, y1, true);
+        image.drawImageBlend(Icons.getArrowLeft(), x1, y1, true);
 
         //draw bar/button
         x1 += 16;
@@ -136,7 +125,7 @@ public class ScrollBar extends Component {
         image.drawBox(x1 + v1,y1 + 1,v2 - v1 + 1,14);
         x1 += w - 33;
 
-        image.drawImageBlend(arrow_right, x1, y1, true);
+        image.drawImageBlend(Icons.getArrowRight(), x1, y1, true);
         break;
       }
     }

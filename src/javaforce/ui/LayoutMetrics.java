@@ -33,4 +33,8 @@ public class LayoutMetrics {
   public void setSize(Dimension dim) {
     setSize(dim.width, dim.height);
   }
+
+  public String toString() {
+    return "LayoutMetrics:pos=" + pos + ":size=" + size;
+  }
 }

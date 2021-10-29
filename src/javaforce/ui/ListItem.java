@@ -5,6 +5,8 @@ package javaforce.ui;
  * @author pquiring
  */
 
+import javaforce.*;
+
 public class ListItem extends Label {
   private boolean selected;
   private ActionListener action;
@@ -48,7 +50,7 @@ public class ListItem extends Label {
     selected = state;
   }
 
-  public void setActionListner(ActionListener action) {
+  public void setActionListener(ActionListener action) {
     this.action = action;
   }
 }
