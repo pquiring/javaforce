@@ -28,6 +28,8 @@ public class ScrollBox extends Component {
         offx = hBar.getValue();
       });
     }
+    cmp.setBorderStyle(LineStyle.NONE);
+    setBorderStyle(LineStyle.SOLID);
   }
 
   public Component getComponent() {
@@ -62,12 +64,12 @@ public class ScrollBox extends Component {
     if (vBar != null) {
       vBar.setSize(16, height - (hBar != null ? 16 : 0));
       vBar.setFullsize(cmp.getMinHeight());
-      vBar.setViewsize(getHeight() - (hBar != null ? 16 : 0));
+      vBar.setViewsize(getHeight() - (hBar != null ? 16 : 0) - (getBorderStyle() != LineStyle.NONE ? 2 : 0));
     }
     if (hBar != null) {
       hBar.setSize(width - (vBar != null ? 16 : 0), 16);
       hBar.setFullsize(cmp.getMinWidth());
-      hBar.setViewsize(getWidth() - (vBar != null ? 16 : 0));
+      hBar.setViewsize(getWidth() - (vBar != null ? 16 : 0) - (getBorderStyle() != LineStyle.NONE ? 2 : 0));
     }
   }
 
@@ -106,13 +108,23 @@ public class ScrollBox extends Component {
     int dx = getX();
     int dy = getY();
     int dw = getWidth();
+    int dh = getHeight();
+    if (getBorderStyle() != LineStyle.NONE) {
+      image.setForeColor(getForeColor());
+      image.setLineStyle(borderStyle);
+      image.drawBox(dx, dy, dw, dh);
+      image.setLineStyle(LineStyle.SOLID);
+      dx++;
+      dy++;
+      dw -= 2;
+      dh -= 2;
+    }
     if (vBar != null) {
       dw -= 16;
     }
     if (dw > sw) {
       dw = sw;
     }
-    int dh = getHeight();
     if (hBar != null) {
       dh -= 16;
     }

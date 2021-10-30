@@ -17,6 +17,7 @@ public class Component implements KeyEvents, MouseEvents {
   protected Dimension size = new Dimension();
   protected Component parent;
   protected int layer = 0;
+  protected int borderStyle = 0;
   protected boolean enabled = true;
   protected boolean editable = true;
   protected boolean focused = false;
@@ -127,6 +128,12 @@ public class Component implements KeyEvents, MouseEvents {
   public void render(Image image) {
     if (!isVisible()) return;
     image.fill(pos.x, pos.y, size.width, size.height, getBackColor().getColor());
+    if (borderStyle != LineStyle.NONE) {
+      image.setLineStyle(borderStyle);
+      image.setForeColor(foreClr);
+      image.drawBox(pos.x, pos.y, size.width, size.height);
+      image.setLineStyle(LineStyle.SOLID);
+    }
   }
 
   public void renderLayer(int layer, Image image) {
@@ -237,6 +244,14 @@ public class Component implements KeyEvents, MouseEvents {
 
   public void setSelectedColor(Color clr) {
     selectedClr = clr;
+  }
+
+  public int getBorderStyle() {
+    return borderStyle;
+  }
+
+  public void setBorderStyle(int lineStyle) {
+    borderStyle = lineStyle;
   }
 
   public int getMouseX() {

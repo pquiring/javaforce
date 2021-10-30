@@ -6,6 +6,7 @@ package javaforce.ui;
  */
 
 public class LineStyle {
-  public static final int SOLID = 0;
-  public static final int DASH = 1;
+  public static final int NONE = 0;
+  public static final int SOLID = 1;
+  public static final int DASH = 2;
 }

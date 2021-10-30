@@ -116,7 +116,6 @@ public class TestUI implements WindowEvents {
   }
 
   public void windowResize(int x, int y) {
-    System.out.println("resize:" + x + "," + y);
   }
 
   public void windowClosing() {

@@ -17,6 +17,10 @@ public class Row extends Container {
       width += size.width;
       if (size.height > height) height = size.height;
     }
+    if (getBorderStyle() != LineStyle.NONE) {
+      width += 2;
+      height += 2;
+    }
     minSize.width = width;
     minSize.height = height;
     return minSize;
@@ -26,6 +30,12 @@ public class Row extends Container {
   public void layout(LayoutMetrics metrics) {
     setPosition(metrics.pos);
     setSize(metrics.size);
+    if (getBorderStyle() != LineStyle.NONE) {
+      metrics.pos.x++;
+      metrics.pos.y++;
+      metrics.size.width -= 2;
+      metrics.size.height -= 2;
+    }
     int min_x = 0;
     int flex_count = 0;
     int flex_size = 0;

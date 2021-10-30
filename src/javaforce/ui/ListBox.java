@@ -12,6 +12,7 @@ public class ListBox extends Column {
 
   public ListBox() {
     font = Font.getSystemFont();
+    setBorderStyle(LineStyle.SOLID);
   }
 
   public Dimension getMinSize() {
@@ -23,6 +24,10 @@ public class ListBox extends Column {
         width = size.width;
       }
       height += size.height;
+    }
+    if (getBorderStyle() != LineStyle.NONE) {
+      width += 2;
+      height += 2;
     }
     return new Dimension(width, height);
   }
