@@ -54,7 +54,7 @@ public class Button extends TextComponent {
       renderText(image, 4, 4);
     } else {
       //TODO : center icon
-      image.drawImageBlend(icon, x + 1, y + 1, true);
+      image.drawImageBlend(icon, x + ((getWidth() - icon.getWidth()) / 2), y + ((getHeight() - icon.getHeight()) / 2), true);
     }
   }
   public void setImage(Image image) {
