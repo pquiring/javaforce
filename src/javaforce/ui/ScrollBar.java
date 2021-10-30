@@ -100,7 +100,6 @@ public class ScrollBar extends Component {
         v2 = (int)p2;
         image.drawBox(x1 + 0,y1     ,16,h - 32);
         y1++;
-        image.setForeColor(Color.RED);
         image.drawBox(x1 + 1,y1 + v1,14,v2 - v1 + 1);
         y1 += h - 33;
 

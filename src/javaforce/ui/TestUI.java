@@ -98,7 +98,6 @@ public class TestUI implements WindowEvents {
     cb.addItem("Item 1");
     cb.addItem("Item 2");
     cb.addItem("Item 3");
-    cb.setForeColor(Color.RED);
     cb.setSize(100, 16);
     cb.setEditable(true);
     r.add(cb);
