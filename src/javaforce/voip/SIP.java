@@ -664,6 +664,22 @@ public abstract class SIP {
           stream.addKey(f[1], key, salt);
         }
       }
+      else if (ln.startsWith("o=")) {
+        //o=- {count} {count} IN IP4 {host}
+        sdp.owner = ln.substring(2);
+      }
+      else if (ln.startsWith("s=")) {
+        //s=session_name
+        sdp.session = ln.substring(2);
+      }
+      else if (ln.startsWith("t=")) {
+        //t=START END
+        String[] f = ln.substring(2).split("[ ]");
+        if (f.length >= 2) {
+          sdp.time_start = f[0];
+          sdp.time_start = f[1];
+        }
+      }
     }
     if ((stream != null) && (stream.content == null)) {
       switch (stream.type) {
