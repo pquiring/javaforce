@@ -9,7 +9,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class TextComponent extends FontComponent {
+public class TextComponent extends FontComponent implements ScrollLink {
   private char[][] text;
   //selection (start = inclusive : end = exclusive) (similar to String.substring())
   private int sel_start_off = -1;
@@ -24,10 +24,27 @@ public class TextComponent extends FontComponent {
   private int offy = 0;
   private boolean multi;
   private boolean overwrite;
+  private ScrollBox link;
 
   public TextComponent(boolean multi) {
     this.multi = multi;
     text = new char[1][0];
+  }
+
+  private Dimension minsize = new Dimension();
+
+  public Dimension getMinSize() {
+    if (link == null) {
+      Dimension size = super.getMinSize();
+      minsize.width = size.width;
+      minsize.height = size.height;
+    } else {
+      int adv = getFont().getMaxAdvance();
+      int fonty = getFont().getMaxHeight();
+      minsize.width = getMaxLength() * adv;
+      minsize.height = getLineCount() * fonty;
+    }
+    return minsize;
   }
 
   public String getText() {
@@ -270,30 +287,52 @@ public class TextComponent extends FontComponent {
     int adv = getFont().getMaxAdvance();
     int cx1 = getCursorOffset() * adv;
     int cx2 = cx1 + adv - 1;
-    int w = getWidth() - 2;
+    int w = getWidth();
+    if (w == 0) return;
+    w -= 2;
+    boolean movedX = false;
     if (cx2 > offx + w) {
-      //move view left (offx -)
+      //move view right (offx +)
       offx = cx2 - w;
       if (offx < 0) offx = 0;
+      movedX = true;
     }
     if (cx1 < offx) {
-      //move view right (offx +)
+      //move view left (offx -)
       offx = cx1;
+      movedX = true;
+    }
+    if (movedX) {
+      if (link != null) {
+        link.setClientX(offx);
+      }
     }
     if (!multi) return;
     //adjust offy
     int fonty = getFont().getMaxHeight();
     int cy1 = getCursorLine() * fonty;
     int cy2 = cy1 + fonty - 1;
-    int h = getHeight() - 2;
+    int h = getHeight();
+    h -= 2;
+    boolean movedY = false;
     if (cy2 > offy + h) {
       //move view up (offy -)
       offy = cy2 - h;
       if (offy < 0) offy = 0;
+      movedY = true;
     }
     if (cy1 < offy) {
       //move view down (offy +)
       offy = cy1;
+      movedY = true;
+    }
+    if (movedY) {
+      if (link != null) {
+        link.setClientY(offy);
+      }
+    }
+    if (link != null) {
+      link.setFullsize(getMinSize());
     }
   }
 
@@ -513,5 +552,25 @@ public class TextComponent extends FontComponent {
         break;
     }
     showCursor();
+  }
+
+  public int getClientX() {
+    return offx;
+  }
+
+  public void setClientX(int value) {
+    offx = value;
+  }
+
+  public int getClientY() {
+    return offy;
+  }
+
+  public void setClientY(int value) {
+    offy = value;
+  }
+
+  public void setLink(ScrollBox link) {
+    this.link = link;
   }
 }

@@ -55,6 +55,10 @@ public class Component implements KeyEvents, MouseEvents {
     return consumer;
   }
 
+  protected void setParent(Component parent) {
+    this.parent = parent;
+  }
+
   protected void setConsumer(boolean consumes) {
     consumer = consumes;
   }

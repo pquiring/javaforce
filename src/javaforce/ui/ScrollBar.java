@@ -121,7 +121,6 @@ public class ScrollBar extends Component {
         v2 = (int)p2;
         image.drawBox(x1     ,y1 + 0,w - 16     ,16);
         x1++;
-        image.setForeColor(Color.RED);
         image.drawBox(x1 + v1,y1 + 1,v2 - v1 + 1,14);
         x1 += w - 33;
 
@@ -146,7 +145,7 @@ public class ScrollBar extends Component {
     if (fullsize <= viewsize) return;
     if (newValue + viewsize >= fullsize) newValue = fullsize - viewsize - 1;
     if (newValue < 0) newValue = 0;
-    value = newValue;
+    setValue(newValue);
     if (change != null) {
       change.changed(this);
     }

@@ -25,12 +25,12 @@ public abstract class Container extends Component {
 
   public void add(Component child) {
     children.add(child);
-    child.parent = this;
+    child.setParent(this);
   }
 
   public void remove(Component child) {
     children.remove(child);
-    child.parent = null;
+    child.setParent(null);
   }
 
   public Component getChild(int idx) {

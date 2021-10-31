@@ -33,6 +33,7 @@ public class TextBox extends TextComponent {
     }
     int bw = buffer.getWidth();
     int bh = buffer.getHeight();
+    super.render(image);
     image.setForeColor(getForeColor());
     image.drawBox(x1, y1, w, h);
     //remove border line
