@@ -677,7 +677,7 @@ public abstract class SIP {
         String[] f = ln.substring(2).split("[ ]");
         if (f.length >= 2) {
           sdp.time_start = f[0];
-          sdp.time_start = f[1];
+          sdp.time_end = f[1];
         }
       }
     }
