@@ -73,10 +73,10 @@ public class TestUI implements WindowEvents {
     list2.addItem("Item 2");
     list2.addItem("Item 3");
     list2.addItem("Item 4");
-//    ScrollBox scroll = new ScrollBox(list2, Direction.VERTICAL);
-//    scroll.setSize(list2.getMinWidth() + 16, list2.getItemHeight() * 2);
-//    scroll.setStepsize(list2.getItemHeight());
-//    r.add(scroll);
+    ScrollBox scroll = new ScrollBox(list2, Direction.VERTICAL);
+    scroll.setSize(list2.getMinWidth() + 16, list2.getItemHeight() * 2);
+    scroll.setStepsize(list2.getItemHeight());
+    r.add(scroll);
 
     TextField tf = new TextField("Test");
     tf.setSize(100, tf.getMinHeight());
@@ -90,16 +90,15 @@ public class TestUI implements WindowEvents {
     r = new Row();
     c.add(r);
 
-//    TextBox tb = new TextBox("Test123\nTest456");
-//    tb.setSize(100, 100);
-//    r.add(tb);
+    TextBox tb = new TextBox("Test123\nTest456");
+    tb.setSize(100, 100);
+    r.add(tb);
 
     TextBox tb2 = new TextBox("Test123\nTest456\nTest78900000000000000000\nL1\nL2\nL3\nL4");
     ScrollBox sb2 = new ScrollBox(tb2, Direction.BOTH);
     sb2.setSize(116, 116);
     r.add(sb2);
 
-/*
     ComboBox cb = new ComboBox("");
     cb.addItem("Item 1");
     cb.addItem("Item 2");
@@ -107,7 +106,6 @@ public class TestUI implements WindowEvents {
     cb.setSize(100, 16);
     cb.setEditable(true);
     r.add(cb);
-*/
 
     c.add(new FlexBox());
 
