@@ -124,7 +124,7 @@ public class SDP implements Cloneable {
   public Stream[] streams = new Stream[0];
   public String owner;
   public String session;
-  public String time_start, time_end;
+  public long time_start, time_stop;
 
   public Stream addStream(Type type) {
     JFLog.log(log, "SDP.addStream:" + type);

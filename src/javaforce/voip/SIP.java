@@ -673,11 +673,11 @@ public abstract class SIP {
         sdp.session = ln.substring(2);
       }
       else if (ln.startsWith("t=")) {
-        //t=START END
+        //t=START STOP
         String[] f = ln.substring(2).split("[ ]");
         if (f.length >= 2) {
-          sdp.time_start = f[0];
-          sdp.time_end = f[1];
+          sdp.time_start = Long.valueOf(f[0]);
+          sdp.time_stop = Long.valueOf(f[1]);
         }
       }
     }
@@ -1063,7 +1063,7 @@ public abstract class SIP {
     content.append("o=- " + cdsd.o1 + " " + cdsd.o2 + " IN IP4 " + cd.localhost + "\r\n");
     content.append("s=" + useragent + "\r\n");
     content.append("c=IN IP4 " + ip + "\r\n");
-    content.append("t=0 0\r\n");
+    content.append("t=" + sdp.time_start + " " + sdp.time_stop + "\r\n");
     if (sdp.iceufrag != null) content.append("a=ice-ufrag:" + sdp.iceufrag + "\r\n");
     if (sdp.icepwd != null) content.append("a=ice-pwd:" + sdp.icepwd + "\r\n");
     if (sdp.fingerprint != null) content.append("a=fingerprint:sha-256 " + sdp.fingerprint + "\r\n");
