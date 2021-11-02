@@ -136,6 +136,18 @@ public class TextComponent extends FontComponent implements ScrollLink {
   }
 
   public void setCursorPosition(int offset, int line) {
+    if (line < 0) {
+      line = 0;
+    }
+    if (line >= getLineCount()) {
+      line = getLineCount() - 1;
+    }
+    if (offset < 0) {
+      offset = 0;
+    }
+    if (offset > getLineLength(line)) {
+      offset = getLineLength(line);
+    }
     cur_ln = line;
     cur_off = offset;
     showCursor();
@@ -584,5 +596,16 @@ public class TextComponent extends FontComponent implements ScrollLink {
 
   public void setLink(ScrollBox link) {
     this.link = link;
+  }
+
+  public void mouseDown(int button) {
+    super.mouseDown(button);
+    //try to move cursor to mouse position
+    Point pt = getMousePosition();
+    int fontx = getFont().getMaxAdvance();
+    int fonty = getFont().getMaxHeight();
+    int dy = (pt.y - getY() + getClientY()) / fonty;
+    int dx = (pt.x - getX() + getClientX()) / fontx;
+    setCursorPosition(dx, dy);
   }
 }
