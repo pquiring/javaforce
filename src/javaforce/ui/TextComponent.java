@@ -366,6 +366,13 @@ public class TextComponent extends FontComponent implements ScrollLink {
         if (text.length() > 0 && cur_off > 0) {
           setLineText(cur_ln, text.substring(0, cur_off - 1) + text.substring(cur_off));
           cur_off--;
+        } else if (cur_ln > 0) {
+          //join with prev line
+          deleteLine(cur_ln);
+          cur_ln--;
+          String text1 = getLineText(cur_ln);
+          setLineText(cur_ln, text1 + text);
+          cur_off = text1.length();
         }
         break;
       }
@@ -378,6 +385,11 @@ public class TextComponent extends FontComponent implements ScrollLink {
         String text = getLineText(cur_ln);
         if (!isEOL()) {
           setLineText(cur_ln, text.substring(0, cur_off) + text.substring(cur_off + 1));
+        } else if (cur_ln < getLineCount() - 1) {
+          //join with next line
+          String text1 = getLineText(cur_ln + 1);
+          deleteLine(cur_ln + 1);
+          setLineText(cur_ln, text + text1);
         }
         break;
       }
