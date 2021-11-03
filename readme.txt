@@ -9,6 +9,10 @@ JavaForce is a Java library extending the capabilities of Java.
 
 The main library includes a VoIP stack and bindings for FFMPEG, OpenGL and Camera.
 
+Custom native launchers for Console/GUI apps and system services.
+
+Tasks to package apps (msi, deb, rpm, etc.)
+
 Includes many apps built around the library such as jfPhone, jfVideo Creator, jfAudio, jfMusic, etc.
 
 JF is also the core library in the Java infused Linux Operating system : http://jfLinux.sourceforge.net
@@ -58,7 +62,7 @@ rpm : build Fedora rpm file (after install)
  - linux packaging requires files.lst and linux stub (/stubs/linux)
 msi : build Windows msi file with JRE bundled
  - msi creation requires:
-  - wixtoolset in path (http://wixtoolset.org)
+  - wixtoolset v3 in path (http://wixtoolset.org)
   - wix64.xml file
   - jre pre-linked for native packaging (see below)
   - windows stub created (/stubs/windows)
@@ -100,7 +104,7 @@ Requirements
   - JDK 15+
     - the native launchers select garbage collectors only available on JDK15 or better
   - ANT 1.9.8+
-  - Windows : VisualC++ compiler (64bit)
+  - Windows : VisualC++ compiler (64bit), wixtoolset v3 (http://wixtoolset.org)
   - FFMpeg 4.2+ sources(headers) + shared libraries (license : various)
   - glfw for OpenGL support (http://github.com/glfw/glfw) (license : zlib/libpng)
 
