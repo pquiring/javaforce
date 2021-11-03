@@ -67,17 +67,17 @@ public class ABPacket {
 
   public static byte[] decodePacket(byte data[]) {
     ENIP ip = new ENIP();
-    CIP_Reply_Read cip_read = new CIP_Reply_Read();
-    CIP_Reply_Write cip_write = new CIP_Reply_Write();
     int offset = 0;
     try {
       ip.read(data, offset); offset += ip.size();
       if (ip.cmd == ENIP.CMD_GET_SESSION) return new byte[0];
       switch (data[offset]) {
         case (byte)0xcc:
+          CIP_Reply_Read cip_read = new CIP_Reply_Read();
           cip_read.read(data, offset);
           return cip_read.tagdata;
         case (byte)0xcd:
+          CIP_Reply_Write cip_write = new CIP_Reply_Write();
           cip_write.read(data, offset);
           return new byte[0];
       }
@@ -97,6 +97,7 @@ public class ABPacket {
 
   public static byte getType(Controller.datatype type) {
     switch (type) {
+      case INTEGER8: return ABTypes.SINT;
       case INTEGER16: return ABTypes.INT;
       case INTEGER32: return ABTypes.DINT;
       case FLOAT: return ABTypes.REAL;

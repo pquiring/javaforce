@@ -234,7 +234,7 @@ public class Controller {
 
   /** Data types for write() function.  Only AB protocol requires these. */
   public enum datatype {
-    ANY, INTEGER16, INTEGER32, FLOAT, BOOLEAN
+    ANY, INTEGER8, INTEGER16, INTEGER32, FLOAT, BOOLEAN
   }
 
   private boolean writePartial(S7Data s7) {
