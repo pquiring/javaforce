@@ -1,7 +1,7 @@
-jfpbxlite/0.30
-=============
+jfPBX/0.31
+==========
 
-Welcome to jfpbxlite.
+Welcome to jfpbx.
 Java VoIP/SIP PBX.
 Supports:
   - extensions
@@ -28,8 +28,8 @@ Recommend using MSI package to install Windows service.
 
 Linux
 =====
-Using jfLinux.org : install the deb/rpm packages and use 'jservice jfpbxlite start'.
-Otherwise use install.sh to place files into required folders and run /usr/bin/jfpbxlite to start the server.
+Using jfLinux.org : install the deb/rpm packages and use 'jservice jfpbx start'.
+Otherwise use install.sh to place files into required folders and run /usr/bin/jfpbx to start the server.
 
 Web Based Configuration
 =======================
@@ -42,7 +42,7 @@ It is strongly recommended to set the "Local IP" in the general settings page.
 
 First time installation
 =======================
-When you run jPBXlite the first time the database will be blank which means no plugins get loaded.
+When you run jPBX the first time the database will be blank which means no plugins get loaded.
 Log into the admin console and click on the "Database not init" message.
 This will populate the database, including the plugins and menus.
 Now "restart" the server and everything should be working.
@@ -63,8 +63,8 @@ Secure Web Server
 In upcoming releases a secure web server may become required, to support WebRTC.
 See the General Settings page to automatically generate a self-signed key.
 To manually generate the self-signed key using keytool run:
-  keytool -genkey -keyalg RSA -alias jfpbxlite -keystore jfpbx.key -storepass password -validity 3650 -keysize 2048 -dname "CN=jfpbxlite.sourceforge.net, OU=jfpbxlite, O=JavaForce, C=CA"
-For Windows the keystore is stored in %ProgramData%\jfpbxlite
+  keytool -genkey -keyalg RSA -alias jfpbx -keystore jfpbx.key -storepass password -validity 3650 -keysize 2048 -dname "CN=jfpbx.sourceforge.net, OU=jfpbx, O=JavaForce, C=CA"
+For Windows the keystore is stored in %ProgramData%\jfpbx
 For Linux the keystore should be stored in /etc
 Restart the server and the Web Server will start on the secure port.
 To create a key for signing by a cert auth, refer to keytool for help.
@@ -80,4 +80,4 @@ Enjoy!
 
 by : Peter Quiring (pquiring at gmail dot com)
 
-http://jfpbxlite.sourceforge.net
+http://jfpbx.sourceforge.net

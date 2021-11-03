@@ -7,7 +7,7 @@ How to
 To create a video conference, goto the IVR's page and load the "Video Conference" preset.  The only difference is the "enable video" command within the script.
 When users dial into the conference they can enable their video screen and start seeing other members.
 
-Video Conferencing has only been tested with jPhoneLite/1.4.0
+Video Conferencing has only been tested with jfPhone/1.4.0
 
 Tech Overview
 -------------
@@ -15,7 +15,7 @@ Tech Overview
 I don't know of any "standard" RFC to implement SIP based video conferencing so I created my own method.
 To start the video conferencing a reINVITE is sent back to each member that joins with multiple streams in the SDP packet (after user enters in correct PIN).
 Each stream has its own content (name).
-There will also be one "inactive" stream that points to the user himself (just to satisfy jphonelite).
+There will also be one "inactive" stream that points to the user himself (just to satisfy jfphone).
 When ever a member joins/leaves any members still present are sent a new reINVITE with all current members.
 Each stream in the SDP points to the video RTP of the other members, so members send video data directly to each other (the PBX doesn't touch video data).
 Some users may need to use STUN/TURN if they are behind a symmetric firewall.

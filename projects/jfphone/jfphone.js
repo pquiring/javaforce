@@ -1,4 +1,4 @@
-//jphonelite javascript sample
+//jfphone javascript sample
 
 function addDigit(digit) {
   var dial = document.getElementById('dial');
@@ -11,13 +11,13 @@ function clearDial() {
 }
 
 function end() {
-  document.jPhoneLiteApplet.getBasePhone().callEDT("end");
+  document.jfPhoneApplet.getBasePhone().callEDT("end");
 }
 
 function call() {
   var dial = document.getElementById('dial');
-  document.jPhoneLiteApplet.getBasePhone().callEDT("setDial", dial.value);
-  document.jPhoneLiteApplet.getBasePhone().callEDT("call");
+  document.jfPhoneApplet.getBasePhone().callEDT("setDial", dial.value);
+  document.jfPhoneApplet.getBasePhone().callEDT("call");
 }
 
 //NOTE : Don't use div.style.display = "none" cause this causes the applet to reload.
@@ -34,13 +34,13 @@ function toggleAppletVisible() {
 }
 
 function updateStatus() {
-  var value = document.jPhoneLiteApplet.getBasePhone().callEDTreturn("getLineStatus");
+  var value = document.jfPhoneApplet.getBasePhone().callEDTreturn("getLineStatus");
   var status = document.getElementById('status');
   status.value = value;
 }
 
 function init() {
-  var applet = document.jPhoneLiteApplet;
+  var applet = document.jfPhoneApplet;
   if (applet == null) {
     //give more time to load applet
     setTimeout("init()", 1000);

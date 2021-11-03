@@ -1,4 +1,6 @@
 CHANGELOG:
+11-3-2021 : v1.22 released
+  - fix : several voip issues
 9-28-2020 : v1.21 released
   - fix : transfer issue
   - new : added SIP logging

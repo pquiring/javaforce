@@ -1,15 +1,15 @@
 [Desktop Entry]
-Name=jPhoneLite
+Name=jfPhone
 Comment=VoIP/SIP SoftPhone
 
-Icon=jphonelite
+Icon=jfphone
 
 Type=Application
 Categories=Network
 
-Exec=jphonelite
+Exec=jfphone
 StartupNotify=false
 Terminal=false
 MimeType=
 
-Title=jPhoneLite
+Title=jfPhone

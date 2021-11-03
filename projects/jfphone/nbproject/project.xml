@@ -11,7 +11,7 @@
             <properties/>
             <folders>
                 <source-folder>
-                    <label>jphonelite</label>
+                    <label>jfphone</label>
                     <location>.</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>

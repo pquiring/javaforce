@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
-  <Product Id="*" UpgradeCode="{511FB535-1B0D-4745-AC9D-0D0920AFFE46}" Version="0.30" Language="1033" Name="jfPBX" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{511FB535-1B0D-4745-AC9D-0D0920AFFE46}" Version="0.31" Language="1033" Name="jfPBX" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />

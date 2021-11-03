@@ -1,5 +1,7 @@
 CHANGELOG
 =========
+11-3-2021 : v0.31 released
+ - fix several voip issues
 10-14-2020 : v0.30 released
  - new : updated database to jfDB
    - upgrade not possible

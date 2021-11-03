@@ -5,7 +5,7 @@ if [ $EUID -ne 0 ]; then
   exit 1
 fi
 
-echo jPBXlite manual install.
+echo jPBX manual install.
 echo This will place files into required location
 echo Press Enter to Continue?
 read
@@ -18,11 +18,11 @@ mkdir -p /usr/share/sounds/jfpbx/en
 
 cp javaforce.jar /usr/share/java
 cp *.jar /usr/share/java/jfpbx
-cp run.sh /usr/bin/jfpbxlite
-chmod +x /usr/bin/jfpbxlite
+cp run.sh /usr/bin/jfpbx
+chmod +x /usr/bin/jfpbx
 
 cp plugins/*.jar /usr/share/java/jfpbx/plugins
 
 cp sounds/en/*.wav /usr/share/sounds/jfpbx/en
 
-echo Install complete! Run jfpbxlite to start server.
+echo Install complete! Run jfpbx to start server.

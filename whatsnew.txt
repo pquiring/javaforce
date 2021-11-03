@@ -1,5 +1,16 @@
 What's new...
 
+Nov 3/2021 : JF 33.2 released
+  - several voip bugs fixed (github PR #7) (github issues #8, #9)
+  - jfPhone/1.22
+  - jfPBX/0.31
+  - began work on new UI toolkit to replace awt which will work better with graal
+    - see javaforce.ui
+    - test javaforce.ui.TestUI
+    - based on OpenGL (glfw)
+  - jfRecordDesktop/0.11
+    - added streaming options like those added to jfRecordCamera
+
 Sept 12/2021 : JF 33.1 released
   - fixed more ffmpeg bugs (encoding mp4, flushing properly)
   - jfRecordCamera/0.12
