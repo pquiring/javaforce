@@ -126,6 +126,9 @@ public class ScrollBox extends Component implements ScrollLink {
     if (size.width < clientWidth) {
       size.width = clientWidth;
     }
+    if (size.height < clientHeight) {
+      size.height = clientHeight;
+    }
     if (vBar != null) {
       vBar.setFullsize(size.height);
     }
