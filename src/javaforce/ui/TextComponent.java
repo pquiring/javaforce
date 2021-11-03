@@ -376,8 +376,9 @@ public class TextComponent extends FontComponent implements ScrollLink {
         }
         String text = getLineText(cur_ln);
         if (text.length() > 0 && cur_off > 0) {
+          boolean eol = isEOL();
           setLineText(cur_ln, text.substring(0, cur_off - 1) + text.substring(cur_off));
-          cur_off--;
+          if (!eol) cur_off--;
         } else if (cur_ln > 0) {
           //join with prev line
           deleteLine(cur_ln);
