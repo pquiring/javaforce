@@ -155,7 +155,10 @@ public class CIP_Request {
     for(int a=0;a<segs.length;a++) {
       String seg = segs[a];
       if (seg.endsWith("]")) {
-        len++;  //array index
+        int i1 = seg.indexOf('[');
+        int i2 = seg.indexOf(']');
+        String[] idxes = seg.substring(i1+1, i2).split("[,]");
+        len += idxes.length;
       }
     }
     segments = new TagSegment[len];
@@ -166,14 +169,17 @@ public class CIP_Request {
         int i1 = seg.indexOf('[');
         int i2 = seg.indexOf(']');
         String name = seg.substring(0, i1);
-        int idx = Integer.valueOf(seg.substring(i1+1, i2));
         segments[pos++] = new TagName(name);
-        if (idx < 256) {
-          segments[pos++] = new TagElement8((byte)idx);
-        } else if (idx < 65536) {
-          segments[pos++] = new TagElement16((short)idx);
-        } else {
-          segments[pos++] = new TagElement32(idx);
+        String[] idxes = seg.substring(i1+1, i2).split("[,]");
+        for(int b=0;b<idxes.length;b++) {
+          int idx = Integer.valueOf(idxes[b]);
+          if (idx < 256) {
+            segments[pos++] = new TagElement8((byte)idx);
+          } else if (idx < 65536) {
+            segments[pos++] = new TagElement16((short)idx);
+          } else {
+            segments[pos++] = new TagElement32(idx);
+          }
         }
       } else {
         segments[pos++] = new TagName(seg);

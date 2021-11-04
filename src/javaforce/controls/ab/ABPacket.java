@@ -9,6 +9,7 @@ package javaforce.controls.ab;
  *   MyTag
  *   MyTag.MyArray[0]
  *   MyTag.MyArray[0].MyElement
+ *   MyTag.MyArray[0,2]
  * Example Program Tags:
  *   Program:MainProgram.MyTag
  *   Program:MainProgram.MyUDT.Element1
