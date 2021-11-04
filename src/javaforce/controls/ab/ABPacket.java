@@ -100,7 +100,9 @@ public class ABPacket {
       case INTEGER8: return ABTypes.SINT;
       case INTEGER16: return ABTypes.INT;
       case INTEGER32: return ABTypes.DINT;
+      case INTEGER64: return ABTypes.LINT;
       case FLOAT: return ABTypes.REAL;
+      case DOUBLE: return ABTypes.LREAL;
       case BOOLEAN: return ABTypes.BOOL;
     }
     return 0;
