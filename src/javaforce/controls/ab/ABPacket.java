@@ -5,6 +5,15 @@ package javaforce.controls.ab;
  *
  * Captured examples using a Siemens HMI talking to AB PLC.
  *
+ * Example Controller Tags:
+ *   MyTag
+ *   MyTag.MyArray[0]
+ *   MyTag.MyArray[0].MyElement
+ * Example Program Tags:
+ *   Program:MainProgram.MyTag
+ *   Program:MainProgram.MyUDT.Element1
+ *   etc.
+ *
  * @author pquiring
  */
 

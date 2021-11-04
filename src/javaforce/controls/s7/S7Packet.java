@@ -4,6 +4,25 @@ package javaforce.controls.s7;
  *
  * Reference : snap7.sf.net
  *
+ * Example Tags:
+ *   DB100.DBX1.0
+ *   DB100.DBB1
+ *   DB100.DBW2
+ *   DB100.DBD4
+ *   DB700.DBB0 BYTE 16
+ *   M1.0
+ *   MB2
+ *   I3.0
+ *   IW4
+ *   Q5.0
+ *   QD6
+ *   etc.
+ *
+ * Not Supported (direct peripheral I/O bits):
+ *   PI1.0
+ *   PQ2.0
+ *   etc.
+ *
  * @author pquiring
  */
 
