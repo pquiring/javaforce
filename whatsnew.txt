@@ -1,5 +1,13 @@
 What's new...
 
+Nov 4/2021 : JF 34.0 released
+  - Controls logic now supports more complex Ethernet/IP CIP tag names:
+    - now supports: UDT elements, arrays, multi-dim arrays and program tags
+  - jfDataLogger/0.30
+  - jfDataLoggerPlus/0.12
+  - jfControls/0.9
+  - jfPLCBackup/0.2
+
 Nov 3/2021 : JF 33.2 released
   - several voip bugs fixed (github PR #7) (github issues #8, #9)
   - jfPhone/1.22

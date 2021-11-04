@@ -18,7 +18,7 @@ import java.security.cert.*;
 public class JF {
 
   public static String getVersion() {
-    return "33.2";
+    return "34.0";
   }
 
   public static final boolean isGraal = Boolean.getBoolean("java.graal");

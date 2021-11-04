@@ -1,3 +1,7 @@
+Nov 4/2021 : v0.12 released
+  - new : improved support for more Allen Bradley tags
+    - such as struct elements, arrays, program tags, etc.
+
 Sept 28/2020 : v0.11 released
   - new : added support for modbus IR and HR tags
 
