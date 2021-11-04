@@ -1,7 +1,6 @@
 package javaforce.controls.ab;
 
 import javaforce.LE;
-import javax.swing.text.Segment;
 
 /** CIP : Connection Manager : Request
  *
