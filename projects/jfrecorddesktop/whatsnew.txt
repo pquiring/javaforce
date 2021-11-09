@@ -1,5 +1,9 @@
 Whats new???
 
+Nov 9, 2021 : version 0.12 reelased!
+  - new : settings are persistent
+  - new : only one instance of app can start
+
 Oct 4, 2021 : version 0.11 released!
   - new : added timelapse option
   - new : added broadcasting option
