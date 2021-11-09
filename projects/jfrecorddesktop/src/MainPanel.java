@@ -41,6 +41,27 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
    */
   public MainPanel(JFrame frame) {
     initComponents();
+    lockfile = JF.getUserPath() + "/.jfrecorddesktop.lck";
+    if (!lock.lock(lockfile)) {
+      JFAWT.showError("Error", "Another instance of jfRecordDesktop is already running!");
+      System.exit(0);
+    }
+    Settings.load();
+    switch (Settings.current.mode) {
+      case "audio": audio.setSelected(true); break;
+      case "noaudio": noaudio.setSelected(true); break;
+      case "timelapse": timeLapse.setSelected(true); break;
+    }
+    stereo.setSelected(Settings.current.stereo);
+    seconds.setValue(Settings.current.timelapse);
+    vBitRate.setSelectedItem(Settings.current.videoBitRate);
+    aBitRate.setSelectedItem(Settings.current.audioBitRate);
+    switch (Settings.current.recording) {
+      case "file": record.setSelected(true); break;
+      case "broadcast": broadcast.setSelected(true); break;
+    }
+    port.setText(Integer.toString(Settings.current.port));
+    segmentSecs.setText(Integer.toString(Settings.current.segmentSecs));
     listAudioDevices();
     this.frame = frame;
     mouse = new JFImage();
@@ -212,81 +233,75 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel4)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(audioDevices, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addComponent(delay3seconds)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(trim3seconds)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(start))
+          .addGroup(layout.createSequentialGroup()
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel4)
-                .addGap(23, 23, 23)
-                .addComponent(audioDevices, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
               .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                   .addGroup(layout.createSequentialGroup()
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                      .addGroup(layout.createSequentialGroup()
-                        .addComponent(audio)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel7))
-                      .addComponent(noaudio))
-                    .addComponent(freq, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(mono)
+                    .addComponent(audio)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addComponent(stereo))
-                  .addGroup(layout.createSequentialGroup()
-                    .addComponent(jLabel3)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(fps, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 0, Short.MAX_VALUE)))
-            .addGap(22, 22, 22))
-          .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel7))
+                  .addComponent(noaudio))
+                .addComponent(freq, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mono)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(stereo))
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fps, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
               .addGroup(layout.createSequentialGroup()
                 .addComponent(timeLapse)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(seconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel9))
-              .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(delay3seconds)
+                .addComponent(jLabel9)))
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(trim3seconds)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(start)))
-            .addContainerGap())))
-      .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel5)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel1)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel13)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(codec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-          .addGroup(layout.createSequentialGroup()
-            .addComponent(jLabel6)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jLabel2))
-          .addComponent(showMouseCursor)
-          .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(record)
-            .addGroup(layout.createSequentialGroup()
-              .addComponent(broadcast)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(jLabel10)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-              .addComponent(jLabel11)
-              .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-              .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)))
+                .addComponent(vBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel13)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(codec, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addGroup(layout.createSequentialGroup()
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(aBitRate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel2))
+              .addComponent(showMouseCursor)
+              .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(record)
+                .addGroup(layout.createSequentialGroup()
+                  .addComponent(broadcast)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(protocol, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(jLabel10)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                  .addComponent(jLabel11)
+                  .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                  .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)))))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -350,6 +365,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   }// </editor-fold>//GEN-END:initComponents
 
   private void startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startActionPerformed
+    save();
     start();
   }//GEN-LAST:event_startActionPerformed
 
@@ -419,6 +435,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private boolean working = false;
   private JFrame frame;
   private JFImage mouse;
+  private String lockfile;
+  private JFLockFile lock = new JFLockFile();
 
   public void listAudioDevices() {
     mic = new AudioInput();
@@ -451,6 +469,21 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     broadcast.setEnabled(state);
     protocol.setEnabled(state);
     port.setEnabled(state);
+  }
+
+  public void save() {
+    if (audio.isSelected()) Settings.current.mode = "audio";
+    if (noaudio.isSelected()) Settings.current.mode = "noaudio";
+    if (timeLapse.isSelected()) Settings.current.mode = "timelapse";
+    Settings.current.stereo = stereo.isSelected();
+    Settings.current.timelapse = (Integer)seconds.getValue();
+    Settings.current.videoBitRate = (String)vBitRate.getSelectedItem();
+    Settings.current.audioBitRate = (String)aBitRate.getSelectedItem();
+    if (record.isSelected()) Settings.current.recording = "file";
+    if (broadcast.isSelected()) Settings.current.recording = "broadcast";
+    Settings.current.port = Integer.valueOf(port.getText());
+    Settings.current.segmentSecs = Integer.valueOf(segmentSecs.getText());
+    Settings.save();
   }
 
   public void start() {
@@ -524,7 +557,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
       return true;
     } catch (Exception e) {
       JFLog.log(e);
-      failed("Unable to create output file");
+      failed("Unable to create output file:" + mediaFile);
       return false;
     }
   }
@@ -607,6 +640,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
       samples = audioRate * chs / frameRate;
       timeLapseSecondsDelay = (Integer)seconds.getValue();
       if (!doImage) {
+        if (!doRecord) {
+          mediaFile = getTempFile();
+        }
         if (!create_file()) return;
       }
 
