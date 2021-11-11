@@ -175,12 +175,17 @@ public class DNS extends Thread {
   private static final int ERR_NO_ERROR     = 0x0000;  //no error
   private static final int ERR_NO_SUCH_NAME = 0x0003;  //404
 
-  private static final int A = 1;
-  private static final int CNAME = 5;
+  //DNS record types : see https://en.wikipedia.org/wiki/List_of_DNS_record_types
+  private static final int A = 1;  //IP4
+  private static final int NS = 2;  //name server
+  private static final int CNAME = 5;  //canonical name
   private static final int SOA = 6;  //start of auth
-  private static final int PTR = 12;
-  private static final int MX = 15;
-  private static final int AAAA = 28;
+  private static final int PTR = 12;  //pointer
+  private static final int MX = 15;  //mail exchange
+  private static final int TXT = 16;  //text
+  private static final int AAAA = 28;  //IP6
+  private static final int LOC = 29;  //location
+  private static final int SRV = 33;  //service
 
   private class Worker extends Thread {
     private DatagramPacket packet;
