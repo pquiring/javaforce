@@ -663,6 +663,9 @@ public abstract class SIP {
           byte salt[] = Arrays.copyOfRange(keys, 16, 16 + 14);
           stream.addKey(f[1], key, salt);
         }
+        else {
+	      sdp.otherAttributes.add(ln.substring(2));
+        }
       }
       else if (ln.startsWith("o=")) {
         //o=- {count} {count} IN IP4 {host}
