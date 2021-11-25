@@ -125,7 +125,7 @@ public class SDP implements Cloneable {
   public String owner;
   public String session;
   public long time_start, time_stop;
-  public List<String> otherAttributes = new ArrayList<String>();
+  public ArrayList<String> otherAttributes = new ArrayList<String>();  //list of unknown attributes
 
   public Stream addStream(Type type) {
     JFLog.log(log, "SDP.addStream:" + type);

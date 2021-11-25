@@ -664,7 +664,7 @@ public abstract class SIP {
           stream.addKey(f[1], key, salt);
         }
         else {
-	      sdp.otherAttributes.add(ln.substring(2));
+          sdp.otherAttributes.add(ln);
         }
       }
       else if (ln.startsWith("o=")) {
@@ -682,6 +682,9 @@ public abstract class SIP {
           sdp.time_start = Long.valueOf(f[0]);
           sdp.time_stop = Long.valueOf(f[1]);
         }
+      }
+      else {
+        sdp.otherAttributes.add(ln);
       }
     }
     if ((stream != null) && (stream.content == null)) {
