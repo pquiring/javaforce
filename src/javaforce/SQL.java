@@ -70,10 +70,6 @@ public class SQL {
     }
   }
 
-  public void finalize() {
-    close();
-  }
-
   /** Returns str with quotes around it (and replaces any pre-existing quotes with spaces). */
   public static String quote(String str) {
     char strca[] = str.toCharArray();
