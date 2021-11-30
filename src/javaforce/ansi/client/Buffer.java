@@ -36,10 +36,6 @@ public class Buffer {
     this.settings = settings;
   }
 
-  public void finalize() {
-    JFLog.log("Buffer.finalize()");
-  }
-
   public void init() {
     JFLog.log("Buffer.init start");
     try {

@@ -36,10 +36,6 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     changeFont();
   }
 
-  public void finalize() {
-    JFLog.log("Buffer.finalize()");
-  }
-
   private void init() {
     //now runs in the EDT
     JFLog.log("BufferViewer.init start");
