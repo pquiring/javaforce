@@ -30,10 +30,6 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
     changeFont();
   }
 
-  public void finalize() {
-    JFLog.log("Buffer.finalize()");
-  }
-
   private void init() {
     //now runs in the EDT
     JFLog.log("Buffer.init start");
