@@ -108,10 +108,6 @@ public class DAQmx {
     return false;
   }
 
-  public void finalize() {
-    close();
-  }
-
   public void close() {
     if (handle != 0) {
       stopTask(handle);
