@@ -49,6 +49,9 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       rotateImg = new JFImage();
       rotateImg.load(this.getClass().getResourceAsStream("rotate.png"));
       pixel = new JFImage(1,1);
+      for(int a=0;a<clips.length;a++) {
+        clips[a] = new Clip();
+      }
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -923,7 +926,8 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   public int init_x = 256, init_y = 256;
   public boolean haveSel;
   public int selX1, selY1, selX2, selY2;
-  public int clipBoard[], cbX, cbY;
+  public Clip clips[] = new Clip[10];
+  public int cidx = 0;
   public int cx[] = new int[4], cy[] = new int[4];  //curve points
   public int cpt = -1;  //current curve point (0-3)
   public int gx[] = new int[2], gy[] = new int[2];  //grad points
@@ -1468,19 +1472,19 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     if (selX1 > selX2) {tmp=selX1; selX1=selX2; selX2=tmp;}
     if (selY1 > selY2) {tmp=selY1; selY1=selY2; selY2=tmp;}
     int idx = getidx();
-    cbX = selX2-selX1+1;
-    cbY = selY2-selY1+1;
+    clips[cidx].x = selX2-selX1+1;
+    clips[cidx].y = selY2-selY1+1;
     PaintCanvas pc = imageTabs.get(idx).pc;
     pc.disableScale = true;
-    JFImage clip = new JFImage(cbX,cbY);
-    clipBoard = pc.img[pc.getImageLayer()].getPixels(selX1,selY1,cbX,cbY);
-    clip.putPixels(clipBoard,0,0,cbX,cbY,0);
+    JFImage clip = new JFImage(clips[cidx].x,clips[cidx].y);
+    clips[cidx].image = pc.img[pc.getImageLayer()].getPixels(selX1,selY1,clips[cidx].x,clips[cidx].y);
+    clip.putPixels(clips[cidx].image,0,0,clips[cidx].x,clips[cidx].y,0);
     try {JFClipboard.writeImage(clip.getImage());} catch (Exception e) {e.printStackTrace();}
     int layer = pc.getImageLayer();
     if (layer == 0) {
-      pc.img[layer].fill(selX1,selY1,cbX,cbY,backClr,!selFillAlpha.isSelected());
+      pc.img[layer].fill(selX1,selY1,clips[cidx].x,clips[cidx].y,backClr,!selFillAlpha.isSelected());
     } else {
-      pc.img[layer].fill(selX1,selY1,cbX,cbY,backClr,true);  //alpha = transparent
+      pc.img[layer].fill(selX1,selY1,clips[cidx].x,clips[cidx].y,backClr,true);  //alpha = transparent
     }
     pc.disableScale = false;
   }
@@ -1492,26 +1496,26 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     if (selX1 > selX2) {tmp=selX1; selX1=selX2; selX2=tmp;}
     if (selY1 > selY2) {tmp=selY1; selY1=selY2; selY2=tmp;}
     int idx = getidx();
-    cbX = selX2-selX1+1;
-    cbY = selY2-selY1+1;
+    clips[cidx].x = selX2-selX1+1;
+    clips[cidx].y = selY2-selY1+1;
     PaintCanvas pc = imageTabs.get(idx).pc;
-    JFImage clip = new JFImage(cbX,cbY);
-    clipBoard = pc.img[pc.getImageLayer()].getPixels(selX1,selY1,cbX,cbY);
-    clip.putPixels(clipBoard,0,0,cbX,cbY,0);
+    JFImage clip = new JFImage(clips[cidx].x, clips[cidx].y);
+    clips[cidx].image = pc.img[pc.getImageLayer()].getPixels(selX1,selY1,clips[cidx].x,clips[cidx].y);
+    clip.putPixels(clips[cidx].image,0,0,clips[cidx].x,clips[cidx].y,0);
     try {JFClipboard.writeImage(clip.getImage());} catch (Exception e) {e.printStackTrace();}
   }
 
   public void pasteSel(int x, int y, boolean sysClipBoard) {
     if (colorLayer.getSelectedIndex() != 0) return;
     rotate = 0f;
-    if (clipBoard == null || sysClipBoard) {
+    if (clips[cidx].image == null || sysClipBoard) {
       try {
         java.awt.Image img = JFClipboard.readImage();
         if (img == null) return;
         JFImage image = JFClipboard.convertImage(img);
-        cbX = image.getWidth();
-        cbY = image.getHeight();
-        clipBoard = image.getPixels();
+        clips[cidx].x = image.getWidth();
+        clips[cidx].y = image.getHeight();
+        clips[cidx].image = image.getPixels();
       } catch (Exception e) {
         e.printStackTrace();
       }
@@ -1524,11 +1528,11 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       selectTool(tools.selBox);
     }
     pc.disableScale = true;
-    minSize(pc, x + cbX, y + cbY);
+    minSize(pc, x + clips[cidx].x, y + clips[cidx].y);
     selX1 = x;
     selY1 = y;
-    selX2 = x+cbX;
-    selY2 = y+cbY;
+    selX2 = x + clips[cidx].x;
+    selY2 = y + clips[cidx].y;
     haveSel = true;
     foreDrawSel(pc);
     pc.drag = true;
@@ -1541,39 +1545,39 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }
 
   private void drawSel(PaintCanvas pc) {
-    if (cbX == 0 || cbY == 0) return;  //shouldn't happen ???
+    if (clips[cidx].x == 0 || clips[cidx].y == 0) return;  //shouldn't happen ???
     int px[];
     if (selkeyclr.isSelected()) {
-      int cnt = cbX * cbY;
+      int cnt = clips[cidx].x * clips[cidx].y;
       px = new int[cnt];
-      System.arraycopy(clipBoard, 0, px, 0, cnt);
+      System.arraycopy(clips[cidx].image, 0, px, 0, cnt);
       for(int a=0;a<cnt;a++) {
         if ((px[a] & JFImage.RGB_MASK) == backClr) {
           px[a] = 0;
         }
       }
     } else {
-      px = clipBoard;
+      px = clips[cidx].image;
     }
-    pc.putPixels(px, selX1, selY1, selX2 - selX1, selY2 - selY1, cbX, cbY, rotate);
+    pc.putPixels(px, selX1, selY1, selX2 - selX1, selY2 - selY1, clips[cidx].x, clips[cidx].y, rotate);
     pc.img[pc.getImageLayer()].repaint();
   }
 
   private void foreDrawSel(PaintCanvas pc) {
     int px[];
     if (selkeyclr.isSelected()) {
-      int cnt = cbX * cbY;
+      int cnt = clips[cidx].x * clips[cidx].y;
       px = new int[cnt];
-      System.arraycopy(clipBoard, 0, px, 0, cnt);
+      System.arraycopy(clips[cidx].image, 0, px, 0, cnt);
       for(int a=0;a<cnt;a++) {
         if ((px[a] & JFImage.RGB_MASK) == backClr) {
           px[a] = 0;
         }
       }
     } else {
-      px = clipBoard;
+      px = clips[cidx].image;
     }
-    pc.forePutPixels(px, selX1, selY1, selX2 - selX1, selY2 - selY1, cbX, cbY, rotate);
+    pc.forePutPixels(px, selX1, selY1, selX2 - selX1, selY2 - selY1, clips[cidx].x, clips[cidx].y, rotate);
     pc.foreDrawSelBox(selX1,selY1,selX2,selY2,rotate);
   }
 
@@ -2073,6 +2077,10 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       tabs.setSelectedIndex(idx);
       return;
     }
+    if ((f2 == KeyEvent.CTRL_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
+      cidx = f1 - KeyEvent.VK_0;
+      return;
+    }
     if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_MINUS)) {unselectTool(getidx()); tabs.setSelectedIndex(10);}
     if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_EQUALS)) {unselectTool(getidx()); tabs.setSelectedIndex(11);}
   }
@@ -2256,8 +2264,8 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         pc.createUndo();
         selX1 = x;
         selY1 = y;
-        selX2 = x + cbX;
-        selY2 = y + cbY;
+        selX2 = x + clips[cidx].x;
+        selY2 = y + clips[cidx].y;
         drawSel(imageTabs.get(getidx()).pc);
         pc.repaint();
         break;
