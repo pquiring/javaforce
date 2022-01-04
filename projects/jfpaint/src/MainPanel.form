@@ -21,7 +21,7 @@
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
           <Component id="toolbar2" alignment="0" max="32767" attributes="0"/>
-          <Component id="toolbar1" pref="639" max="32767" attributes="0"/>
+          <Component id="toolbar1" max="32767" attributes="0"/>
           <Component id="status" alignment="0" max="32767" attributes="0"/>
           <Component id="tabs" alignment="0" max="32767" attributes="0"/>
           <Component id="toolbar3" alignment="0" max="32767" attributes="0"/>
@@ -220,6 +220,23 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="subActionPerformed"/>
+          </Events>
+        </Component>
+        <Component class="javax.swing.JToggleButton" name="stamp">
+          <Properties>
+            <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+              <ComponentRef name="group"/>
+            </Property>
+            <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+              <Image iconType="3" name="/stamp.png"/>
+            </Property>
+            <Property name="toolTipText" type="java.lang.String" value="Substitute Box -  Changes backColor to foreColor within drawn Box (uses threshold)"/>
+            <Property name="focusable" type="boolean" value="false"/>
+            <Property name="horizontalTextPosition" type="int" value="0"/>
+            <Property name="verticalTextPosition" type="int" value="3"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="stampActionPerformed"/>
           </Events>
         </Component>
         <Component class="javax.swing.JLabel" name="jLabel3">
