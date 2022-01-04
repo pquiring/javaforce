@@ -2,7 +2,6 @@
   <description>stubs</description>
   <property environment="env"/>
 
-  <!-- Requires cygwin/mingw in PATH -->
   <target name="windows" description="create windows stubs">
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' windows.cpp ../../native/jfnative64.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64.exe /link /subsystem:windows /entry:mainCRTStartup"/>
 
