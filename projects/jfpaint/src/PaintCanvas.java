@@ -685,10 +685,10 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
     fimg.putPixelsKeyClr(px, x, y, w, h, offset, keyclr);
   }
   public void forePutPixelsBlend(int px[], int x, int y, int w, int h, int offset) {
-    fimg.putPixelsBlend(px, x, y, w, h, offset, true);
+    fimg.putPixelsBlend(px, x, y, w, h, offset, w, true);
   }
   public void forePutPixelsBlendKeyClr(int px[], int x, int y, int w, int h, int offset, int keyclr) {
-    fimg.putPixelsBlendKeyClr(px, x, y, w, h, offset, true, keyclr);
+    fimg.putPixelsBlendKeyClr(px, x, y, w, h, offset, w, true, keyclr);
   }
   public void foreDrawCurve(int cx[], int cy[]) {
     fimg.getGraphics2D().draw(new CubicCurve2D.Double(cx[0],cy[0], cx[2],cy[2], cx[3],cy[3], cx[1],cy[1]));

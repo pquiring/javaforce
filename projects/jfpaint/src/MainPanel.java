@@ -27,7 +27,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   /**
    * Creates new form PaintPanel
    */
-  public MainPanel(JFrame frame, JApplet applet) {
+  public MainPanel(JFrame frame) {
     try {
       this.frame = frame;
       PaintCanvas.mainPanel = this;
@@ -1974,9 +1974,9 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   public int getSelBoxPt(int x,int y) {
     if (!haveSel) return OUTSIDE;
     if (rotate != 0f) {
-      GLMatrix mat = new GLMatrix();
+      Matrix mat = new Matrix();
       mat.addRotate(rad2deg(rotate), 0, 0, 1);
-      GLVector3 vec = new GLVector3();
+      Vector3 vec = new Vector3();
       vec.v[0] = x - selX1;
       vec.v[1] = y - selY1;
       vec.v[2] = 0;  //z

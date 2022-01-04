@@ -25,7 +25,7 @@ public class PaintApp extends JFrame implements WindowListener {
   private Insets insets;
 
   private PaintApp() {
-    panel = new MainPanel(this, null);
+    panel = new MainPanel(this);
     addWindowListener(this);
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     setContentPane(panel);
