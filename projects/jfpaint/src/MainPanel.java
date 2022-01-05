@@ -2054,6 +2054,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         "CTRL-V = Paste\n" +
         "CTRL-Z = Undo\n" +
         "CTRL-Y = Redo\n" +
+        "CTRL-# = Select clipboard\n" +
         "ALT-# = Switch to document\n\n"
         , "Help", JOptionPane.INFORMATION_MESSAGE);
       return;
