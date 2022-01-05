@@ -2262,10 +2262,12 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         return;
       case stamp:
         pc.createUndo();
-        selX1 = x;
-        selY1 = y;
-        selX2 = x + clips[cidx].x;
-        selY2 = y + clips[cidx].y;
+        int cx = clips[cidx].x;
+        int cy = clips[cidx].y;
+        selX1 = x - (cx / 2);
+        selY1 = y - (cy / 2);
+        selX2 = selX1 + cx;
+        selY2 = selY1 + cy;
         drawSel(imageTabs.get(getidx()).pc);
         pc.repaint();
         break;
