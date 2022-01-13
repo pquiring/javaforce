@@ -11,6 +11,7 @@ import java.io.*;
 import javax.swing.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class VMDialog extends javax.swing.JDialog {
 

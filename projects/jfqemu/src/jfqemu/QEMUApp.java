@@ -9,6 +9,7 @@ package jfqemu;
 import java.awt.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.linux.*;
 
 public class QEMUApp extends javax.swing.JFrame {

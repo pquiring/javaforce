@@ -9,6 +9,7 @@ import java.awt.event.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.media.*;
 import javaforce.service.*;
 

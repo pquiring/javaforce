@@ -10,6 +10,7 @@ import java.awt.event.*;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class ProxyApp extends javax.swing.JFrame implements ActionListener, Logger {
 

@@ -22,7 +22,7 @@
     </jar>
   </target>
 
-  <target name="compile" description="compile the source">
+  <target name="compile" depends="depjars" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
     <javac srcdir="${src}" destdir="${build}" debug="true" includeantruntime="false">
