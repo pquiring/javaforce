@@ -60,7 +60,7 @@ auxiliary.show.customizer.message=<message>
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">../../classes</classpath>
+                <classpath mode="compile">javaforce.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
