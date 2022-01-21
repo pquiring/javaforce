@@ -1,5 +1,8 @@
 Whatsnew ...
 
+Jun 21, 2022 - v0.26 released!
+  - new : added stamp function and multiple clipboards (CTRL+#)
+
 Mar 18, 2020 - v0.25 released!
   - fix : win64 loader now loads msvcrt dlls properly
 

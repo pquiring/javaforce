@@ -1,5 +1,9 @@
 What's new...
 
+Jun 21/2022 : JF 34.1 released
+  - jfPaint : added stamp function and multiple clipboards
+  - fixed some projects that were broken
+
 Nov 4/2021 : JF 34.0 released
   - Controls logic now supports more complex Ethernet/IP CIP tag names:
     - now supports: UDT elements, arrays, multi-dim arrays and program tags
