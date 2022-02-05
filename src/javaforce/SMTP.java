@@ -227,7 +227,8 @@ public class SMTP {
 
   public static void main(String args[]) {
     if (args.length < 2) {
-      System.out.println("Usage:SMTP server[:port] msg.txt [user pass]");
+      System.out.println("Usage:SMTP server[:port] msg.txt [user pass [type]]");
+      System.out.println("  type=LOGIN(default) NTLM");
       System.out.println("msg.txt sample:\r\n");
       System.out.println("From: \"First Last\" <bob@example.com>");
       System.out.println("To: \"First Last\" <to@example.com>");
@@ -259,8 +260,15 @@ public class SMTP {
         smtp.connectSSL(host, port);
       }
       smtp.login();
-      if (args.length == 4) {
-        if (!smtp.auth(args[2], args[3], AUTH_NTLM)) {
+      if (args.length >= 4) {
+        String auth_type = AUTH_LOGIN;
+        if (args.length == 5) {
+          switch (args[4]) {
+            case "LOGIN": auth_type = AUTH_LOGIN; break;
+            case "NTLM": auth_type = AUTH_NTLM; break;
+          }
+        }
+        if (!smtp.auth(args[2], args[3], auth_type)) {
           throw new Exception("Login failed!");
         }
       }
