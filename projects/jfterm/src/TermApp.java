@@ -17,6 +17,7 @@ import javax.swing.*;
 
 import javaforce.*;
 import javaforce.awt.*;
+import javaforce.jni.JFNative;
 
 public class TermApp extends javax.swing.JFrame implements KeyEventDispatcher {
 
@@ -47,6 +48,7 @@ public class TermApp extends javax.swing.JFrame implements KeyEventDispatcher {
     JFImage icon = new JFImage();
     icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfterm.png"));
     setIconImage(icon.getImage());
+    JFNative.load();
   }
 
   /** This method is called from within the constructor to
