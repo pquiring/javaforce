@@ -27,6 +27,7 @@
 #include "javaforce_ui_Font.h"
 #include "javaforce_ui_Image.h"
 #include "javaforce_ui_Window.h"
+#include "javaforce_net_PacketCapture.h"
 
 HMODULE wgl = NULL;
 
@@ -1642,3 +1643,5 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 #include "../common/font.cpp"
 
 #include "../common/image.cpp"
+
+#include "../common/pcap.cpp"
