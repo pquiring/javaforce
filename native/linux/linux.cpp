@@ -38,6 +38,7 @@
 #include "javaforce_ui_Font.h"
 #include "javaforce_ui_Image.h"
 #include "javaforce_ui_Window.h"
+#include "javaforce_net_PacketCapture.h"
 
 #ifdef __arm__
   #define __RASPBERRY_PI__
