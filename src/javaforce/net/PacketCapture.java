@@ -49,6 +49,9 @@ public class PacketCapture {
   /** Stop processing. */
   public native void stop(long id);
 
+  /** Compile program. */
+  public native long compile(String program);
+
   /** Request MAC address from ip (ARP).  Timeout in ms. */
   public native String arp(long id, String ip, int timeout);
 

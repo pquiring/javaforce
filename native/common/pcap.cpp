@@ -2,8 +2,6 @@
 
 //pcap types
 
-struct pcap_addr;  //opaque type
-
 struct pcap_addr {
   struct pcap_addr *next;
   struct sockaddr *addr;      /* address */
@@ -31,14 +29,21 @@ struct pcap_if {
 #define PCAP_IF_CONNECTION_STATUS_CONNECTED       0x00000010  /* connected */
 #define PCAP_IF_CONNECTION_STATUS_DISCONNECTED    0x00000020  /* disconnected */
 #define PCAP_IF_CONNECTION_STATUS_NOT_APPLICABLE  0x00000030  /* not applicable */
+
+#define PCAP_NETMASK_UNKNOWN	0xffffffff
+
 typedef struct pcap_if pcap_if_t;
 
 struct pcap;  //opaque type
 
 typedef struct pcap pcap_t;
 
-typedef void (*pcap_handler)(u_char *, const struct pcap_pkthdr *,
-           const u_char *);
+typedef void (*pcap_handler)(u_char *, const struct pcap_pkthdr *, const u_char *);
+
+struct bpf_program {
+  int len;
+  void* bf_insns;  //opaque
+};
 
 //functions
 
@@ -49,14 +54,14 @@ int (*pcap_findalldevs)(pcap_if_t** devs, char *errbuf);
 void (*pcap_freealldevs)(pcap_if_t* devs);
 pcap_t* (*pcap_open_live)(const char* device, int snaplen, int promisc, int to_ms, char *errbuf);
 void (*pcap_close)(pcap_t* handle);
+int (*pcap_compile)(pcap_t *p, struct bpf_program *fp, const char *str, int optimize, int netmask);
+int (*pcap_setfilter)(pcap_t *p, struct bpf_program *fp);
 
 //other pcap functions not implemented yet
 //pcap_create();
 //pcap_activate();
 //pcap_lookupdev();
 //pcap_lookupnet();
-//pcap_compile();
-//pcap_setfilter();
 //pcap_next();
 //pcap_next_ex();
 //pcap_dispatch();
@@ -82,12 +87,14 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
   getFunction(library, (void**)(&pcap_open_live), "pcap_open_live");
   getFunction(library, (void**)(&pcap_findalldevs), "pcap_findalldevs");
   getFunction(library, (void**)(&pcap_freealldevs), "pcap_freealldevs");
+  getFunction(library, (void**)(&pcap_compile), "pcap_compile");
+  getFunction(library, (void**)(&pcap_setfilter), "pcap_setfilter");
 
   e->ReleaseStringUTFChars(lib, clib);
 
   int ret = (*pcap_init)(0, err);
   if (ret != 0) {
-    printf("Error:%d:%s\n", ret, err);
+    printf("Error:pcap_init:%d:%s\n", ret, err);
     library = NULL;
     return JNI_FALSE;
   }
@@ -111,7 +118,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_net_PacketCapture_listLocalInterfa
 
   int ret = (*pcap_findalldevs)(&list_elements, err);
   if (ret != 0) {
-    printf("Error:%d:%s\n", ret, err);
+    printf("Error:pcap_findalldevs:%d:%s\n", ret, err);
     return NULL;
   }
   if (list_elements == NULL) {
@@ -165,7 +172,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_net_PacketCapture_start
   e->ReleaseStringUTFChars(dev, cdev);
 
   if (handle == 0) {
-    printf("Error:%s\n", err);
+    printf("Error:pcal_open_live:%s\n", err);
   }
 
   return handle;
@@ -176,6 +183,29 @@ JNIEXPORT void JNICALL Java_javaforce_net_PacketCapture_stop
 {
   if (library == NULL) return;
   (*pcap_close)((pcap_t*)handle);
+}
+
+struct bpf_program cap_program;
+
+JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_compile
+  (JNIEnv *e, jobject obj, jlong handle, jstring program)
+{
+  const char *cprogram = e->GetStringUTFChars(program, NULL);
+
+  int ret = (*pcap_compile)((pcap_t*)handle, &cap_program, cprogram, 0, PCAP_NETMASK_UNKNOWN);
+
+  e->ReleaseStringUTFChars(program, cprogram);
+
+  if (ret != 0) {
+    printf("Error:pcap_compile:%d\n", ret);
+  } else {
+    ret = (*pcap_setfilter)((pcap_t*)handle, &cap_program);
+    if (ret != 0) {
+      printf("Error:pcap_setfilter:%d\n", ret);
+    }
+  }
+
+  return ret == 0;
 }
 
 JNIEXPORT jstring JNICALL Java_javaforce_net_PacketCapture_arp
