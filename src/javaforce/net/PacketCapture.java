@@ -50,10 +50,13 @@ public class PacketCapture {
   public native void stop(long id);
 
   /** Compile program. */
-  public native long compile(String program);
+  public native boolean compile(long handle, String program);
 
-  /** Request MAC address from ip (ARP).  Timeout in ms. */
-  public native String arp(long id, String ip, int timeout);
+  /** Read packet. */
+  public native byte[] read(long handle);
+
+  /** Write packet. */
+  public native boolean write(long handle, byte[] packet, int offset, int length);
 
   public static void main(String[] args) {
     if (args.length == 0) {
@@ -91,7 +94,7 @@ public class PacketCapture {
   public static void cmd_arp(String ip) {
     PacketCapture cap = new PacketCapture();
     long id = cap.start(null);  //start on default interface
-    String mac = cap.arp(id, ip, 2000);
+    String mac = null;  //TODO
     System.out.println(mac);
     cap.stop(id);
   }

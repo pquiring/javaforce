@@ -38,6 +38,12 @@ struct pcap;  //opaque type
 
 typedef struct pcap pcap_t;
 
+struct pcap_pkthdr {
+  struct timeval ts;
+  int caplen;
+  int len;
+};
+
 typedef void (*pcap_handler)(u_char *, const struct pcap_pkthdr *, const u_char *);
 
 struct bpf_program {
@@ -56,6 +62,8 @@ pcap_t* (*pcap_open_live)(const char* device, int snaplen, int promisc, int to_m
 void (*pcap_close)(pcap_t* handle);
 int (*pcap_compile)(pcap_t *p, struct bpf_program *fp, const char *str, int optimize, int netmask);
 int (*pcap_setfilter)(pcap_t *p, struct bpf_program *fp);
+int (*pcap_dispatch)(pcap_t *p, int cnt, pcap_handler handler, const char* user);
+int (*pcap_sendpacket)(pcap_t *p, void* ptr, int length);
 
 //other pcap functions not implemented yet
 //pcap_create();
@@ -89,6 +97,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
   getFunction(library, (void**)(&pcap_freealldevs), "pcap_freealldevs");
   getFunction(library, (void**)(&pcap_compile), "pcap_compile");
   getFunction(library, (void**)(&pcap_setfilter), "pcap_setfilter");
+  getFunction(library, (void**)(&pcap_dispatch), "pcap_dispatch");
+  getFunction(library, (void**)(&pcap_sendpacket), "pcap_sendpacket");
 
   e->ReleaseStringUTFChars(lib, clib);
 
@@ -208,8 +218,47 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_compile
   return ret == 0;
 }
 
-JNIEXPORT jstring JNICALL Java_javaforce_net_PacketCapture_arp
-  (JNIEnv *e, jobject obj, jlong, jstring, jint)
+static int cap_size = 0;
+static jbyte* cap_buffer = NULL;
+
+static void cap_callback(u_char *user, const struct pcap_pkthdr *pkt, const u_char *bytes)
 {
-  return NULL;
+  cap_size = pkt->caplen;
+  cap_buffer = (jbyte*)bytes;
+}
+
+JNIEXPORT jbyteArray JNICALL Java_javaforce_net_PacketCapture_read
+  (JNIEnv *e, jobject obj, jlong handle)
+{
+  cap_size = 0;
+  cap_buffer = NULL;
+
+  int cnt = (*pcap_dispatch)((pcap_t*)handle, 1, &cap_callback, NULL);
+
+  if (cnt > 0 && cap_size > 0) {
+    jbyteArray ba = e->NewByteArray(cap_size);
+
+    e->SetByteArrayRegion(ba, 0, cap_size, (jbyte*)cap_buffer);
+
+    return ba;
+  } else {
+    return NULL;
+  }
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_write
+  (JNIEnv *e, jobject obj, jlong handle, jbyteArray ba, jint offset, jint length)
+{
+  jboolean isCopy;
+  jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
+  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
+
+  int ret = (*pcap_sendpacket)((pcap_t*)handle, ba_ptr + offset, length);
+  if (ret != 0) {
+    printf("Error:pcap_sendpacket:%d\n", ret);
+  }
+
+  e->ReleasePrimitiveArrayCritical(ba, ba_ptr, JNI_ABORT);
+
+  return ret == 0;
 }
