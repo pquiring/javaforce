@@ -16,8 +16,9 @@ public class PacketCapture {
 
   public static boolean debug = false;
 
+  public static int TYPE_IP4 = 0x0800;
   public static int TYPE_ARP = 0x0806;
-  public static int TYPE_IP4 = 0x0004;
+  public static int TYPE_IP6 = 0x86dd;
 
   public static native boolean ninit(String lib);
 
