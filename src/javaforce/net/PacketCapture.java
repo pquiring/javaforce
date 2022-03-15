@@ -11,6 +11,7 @@ import java.util.*;
 
 import javaforce.jni.JFNative;
 import javaforce.*;
+import javaforce.jni.*;
 
 public class PacketCapture {
 
@@ -43,7 +44,9 @@ public class PacketCapture {
       return false;
     }
     if (JF.isUnix()) {
-      return ninit("/usr/lib/x86_64-linux-gnu/libpcap.so.0.8");
+      Library pcap = new Library("pcap");
+      JFNative.findLibraries(new File[] {new File("/usr/lib")}, new Library[] {pcap}, ".so", 1);
+      return ninit(pcap.path);
     }
     return false;
   }
