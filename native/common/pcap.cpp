@@ -93,6 +93,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
 
   getFunction(library, (void**)(&pcap_init), "pcap_init");
   getFunction(library, (void**)(&pcap_open_live), "pcap_open_live");
+  getFunction(library, (void**)(&pcap_close), "pcap_close");
   getFunction(library, (void**)(&pcap_findalldevs), "pcap_findalldevs");
   getFunction(library, (void**)(&pcap_freealldevs), "pcap_freealldevs");
   getFunction(library, (void**)(&pcap_compile), "pcap_compile");
@@ -157,6 +158,8 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_net_PacketCapture_listLocalInterfa
           strcat(name, ",");
           sprintf(ip, "%d.%d.%d.%d", addr->addr->sa_data[2] & 0xff, addr->addr->sa_data[3] & 0xff, addr->addr->sa_data[4] & 0xff, addr->addr->sa_data[5] & 0xff);
           strcat(name, ip);
+        } else {
+          printf("Unknown sockaddr:%x\n", addr->addr->sa_family);
         }
         addr = addr->next;
       }
@@ -170,7 +173,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_net_PacketCapture_listLocalInterfa
   return array;
 }
 
-JNIEXPORT jlong JNICALL Java_javaforce_net_PacketCapture_start
+JNIEXPORT jlong JNICALL Java_javaforce_net_PacketCapture_nstart
   (JNIEnv *e, jobject obj, jstring dev)
 {
   if (library == NULL) return 0;
@@ -223,6 +226,7 @@ static jbyte* cap_buffer = NULL;
 
 static void cap_callback(u_char *user, const struct pcap_pkthdr *pkt, const u_char *bytes)
 {
+  //printf("pkt.size:%d,%d\n", pkt->caplen, pkt->len);
   cap_size = pkt->caplen;
   cap_buffer = (jbyte*)bytes;
 }

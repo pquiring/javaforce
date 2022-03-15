@@ -6,11 +6,18 @@
 package javaforce.net;
 
 import java.io.*;
+import java.net.*;
+import java.util.*;
 
 import javaforce.jni.JFNative;
 import javaforce.*;
 
 public class PacketCapture {
+
+  public static boolean debug = false;
+
+  public static int TYPE_ARP = 0x0806;
+  public static int TYPE_IP4 = 0x0004;
 
   public static native boolean ninit(String lib);
 
@@ -40,11 +47,23 @@ public class PacketCapture {
     return false;
   }
 
-  /** List local interfaces. */
+  /** List local interfaces.
+   * Return is array of strings, each is comma delimited list.
+   * DeviceName,IP/MAC,IP/MAC,...
+   */
   public native String[] listLocalInterfaces();
 
+  private native long nstart(String local_interface);
+
+  private byte[] local_mac;
+  private byte[] local_ip;
+
   /** Start process on local interface. */
-  public native long start(String local_interface);
+  public long start(String local_interface, String local_ip) {
+    this.local_ip = decode_ip(local_ip);
+    this.local_mac = get_mac(local_ip);
+    return nstart(local_interface);
+  }
 
   /** Stop processing. */
   public native void stop(long id);
@@ -57,6 +76,160 @@ public class PacketCapture {
 
   /** Write packet. */
   public native boolean write(long handle, byte[] packet, int offset, int length);
+
+  public static void print_mac(byte[] mac) {
+    if (mac == null) {
+      System.out.println("null");
+      return;
+    }
+    for(int a=0;a<mac.length;a++) {
+      if (a > 0) System.out.print(":");
+      System.out.print(String.format("%02x", mac[a]));
+    }
+    System.out.println("");
+  }
+
+  public byte[] get_mac(String ip) {
+    try {
+      Enumeration<NetworkInterface> nics = NetworkInterface.getNetworkInterfaces();
+      while (nics.hasMoreElements()) {
+        NetworkInterface interf = nics.nextElement();
+        if (interf.isLoopback()) continue;
+        Enumeration<InetAddress> nic_ips = interf.getInetAddresses();
+        while (nic_ips.hasMoreElements()) {
+          String nic_ip = nic_ips.nextElement().getHostAddress();
+          if (nic_ip.equals(ip)) {
+            byte[] mac = interf.getHardwareAddress();
+            if (debug) {
+              System.out.println("IP=" + ip);
+              print_mac(mac);
+            }
+            return mac;
+          }
+        }
+      }
+      System.out.println("Error:mac not found:" + ip);
+      return mac_zero;
+    } catch (Exception e) {
+      System.out.println("Exception:" + e);
+      return null;
+    }
+  }
+
+  public static byte[] decode_ip(String ip) {
+    String[] ips = ip.split("[.]");
+    byte[] ret = new byte[ips.length];
+    for(int a=0;a<ips.length;a++) {
+      ret[a] = (byte)(int)Integer.valueOf(ips[a]);
+    }
+    return ret;
+  }
+
+  /** Build ethernet header. (14 bytes) */
+  public void build_ethernet(byte[] pkt, byte[] dest, byte[] src, int type) {
+    //dest MAC (6)
+    //src  MAC (6)
+    //type (2)
+    int offset = 0;
+    System.arraycopy(dest, 0, pkt, offset, 6); offset += 6;
+    System.arraycopy(src, 0, pkt, offset, 6); offset += 6;
+    BE.setuint16(pkt, offset, type); offset += 2;
+  }
+
+  public static int ethernet_size = 14;
+
+  public int get_ethernet_type(byte[] pkt) {
+    return BE.getuint16(pkt, 12);
+  }
+
+  public static byte[] mac_broadcast = {-1,-1,-1,-1,-1,-1};
+  public static byte[] mac_zero = {0,0,0,0,0,0};
+
+  public static byte[] ip_broadcast = {-1,-1,-1,-1};
+  public static byte[] ip_zero = {0,0,0,0};
+
+  public static int ARP_REQUEST = 0x0001;
+  public static int ARP_REPLY = 0x0002;
+
+  /** Build ARP header. (28 bytes) */
+  public void build_arp(byte[] pkt, byte[] src_mac, byte[] src_ip, byte[] request_ip) {
+    //hw_type (2) = 0x0001
+    //proto   (2) = 0x0800 (IP4)
+    //hw_size (1) = 6
+    //pt_size (1) = 4
+    //opcode  (2) = req=0x0001 reply=0x0002
+    //src MAC (6)
+    //src IP  (4)
+    //dst MAC (6) = all zeros
+    //dst IP  (4) = requested IP ?
+    int offset = ethernet_size;
+    BE.setuint16(pkt, offset, 0x0001); offset += 2;  //hw_type
+    BE.setuint16(pkt, offset, 0x0800); offset += 2; //proto (IP4)
+    pkt[offset] = 6; offset++;  //hw_size
+    pkt[offset] = 4; offset++; //pt_size
+    BE.setuint16(pkt, offset, ARP_REQUEST); offset += 2; //request
+    System.arraycopy(src_mac, 0, pkt, offset, 6); offset += 6;  //src MAC
+    System.arraycopy(src_ip, 0, pkt, offset, 4); offset += 4;  //src IP
+    System.arraycopy(mac_zero, 0, pkt, offset, 6); offset += 6;  //request MAC
+    System.arraycopy(request_ip, 0, pkt, offset, 4); offset += 4;  //request IP
+  }
+
+  public static int arp_size = 28;
+
+  public int get_arp_opcode(byte[] pkt) {
+    return BE.getuint16(pkt, ethernet_size + 6);
+  }
+
+  public boolean arp_ip_equals(byte[] pkt, byte[] ip) {
+    int pkt_offset = ethernet_size + arp_size - 14;
+    for(int a=0;a<ip.length;a++) {
+      if (pkt[pkt_offset++] != ip[a]) return false;
+    }
+    return true;
+  }
+
+  public byte[] get_arp_mac(byte[] pkt) {
+    int pkt_offset = ethernet_size + arp_size - 20;  //src_mac
+    byte[] ret = new byte[6];
+    System.arraycopy(pkt, pkt_offset, ret, 0, 6);
+    return ret;
+  }
+
+  /** Returns MAC address for IP address. */
+  public byte[] arp(long handle, String target_ip, int ms) {
+    //padding (packet must not be < 52 bytes)
+    byte[] ip = decode_ip(target_ip);
+    byte[] pkt = new byte[ethernet_size + arp_size + 18];  //18 = padding
+    build_ethernet(pkt, mac_broadcast, local_mac, TYPE_ARP);
+    build_arp(pkt, local_mac, local_ip, ip);
+    write(handle, pkt, 0, pkt.length);
+    int time = 0;
+    int pkt_length = ethernet_size + arp_size;  //min size
+    while (time < ms) {
+      do {
+        pkt = read(handle);
+        if (debug) {
+          System.out.println("pkt=" + pkt);
+        }
+        if (pkt != null) {
+          if (pkt.length >= pkt_length) {
+            if (get_ethernet_type(pkt) == TYPE_ARP) {
+              if (get_arp_opcode(pkt) == ARP_REPLY) {
+                if (arp_ip_equals(pkt, ip)) {
+                  return get_arp_mac(pkt);
+                }
+              }
+            } else {
+              System.out.println("NOT ARP");
+            }
+          }
+        }
+      } while (pkt != null);
+      JF.sleep(100);
+      time += 100;
+    }
+    return null;
+  }
 
   public static void main(String[] args) {
     if (args.length == 0) {
@@ -93,9 +266,16 @@ public class PacketCapture {
 
   public static void cmd_arp(String ip) {
     PacketCapture cap = new PacketCapture();
-    long id = cap.start(null);  //start on default interface
-    String mac = null;  //TODO
-    System.out.println(mac);
+    String[] ifs = cap.listLocalInterfaces();
+    //use first interface
+    //TODO : add -i <interface_ip> option
+    String sif = ifs[0];
+    String[] pif = sif.split(",");  //there may be multiple IPs
+    long id = cap.start(pif[0], pif[1]);
+    cap.compile(id, "arp");
+    byte[] mac = cap.arp(id, ip, 2000);
     cap.stop(id);
+    System.out.print("MAC=");
+    print_mac(mac);
   }
 }
