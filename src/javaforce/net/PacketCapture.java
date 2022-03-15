@@ -202,6 +202,9 @@ public class PacketCapture {
   /** Returns MAC address for IP address. */
   public byte[] arp(long handle, String target_ip, int ms) {
     //padding (packet must not be < 52 bytes)
+    if (debug) {
+      System.out.println("arp.timeout=" + ms);
+    }
     byte[] ip = decode_ip(target_ip);
     byte[] pkt = new byte[ethernet_size + arp_size + 18];  //18 = padding
     build_ethernet(pkt, mac_broadcast, local_mac, TYPE_ARP);
@@ -235,11 +238,31 @@ public class PacketCapture {
     return null;
   }
 
+  private static String nic_ip = null;
+  private static String timeout = "2000";
+
+  private static void parse_opts(String[] args) {
+    for(int a=0;a<args.length;a++) {
+      if (args[a].startsWith("-")) {
+        switch (args[a]) {
+          case "-i":
+            nic_ip = args[a+1];
+            break;
+          case "-t":
+            timeout = args[a+1];
+            break;
+        }
+      }
+    }
+  }
+
   public static void main(String[] args) {
     if (args.length == 0) {
-      System.out.println("Usage : PacketCapture cmd [...]");
-      System.out.println("      : arp {ip} [timeout]");
-      System.out.println("      : list");
+      System.out.println("Usage : PacketCapture cmd [...] [opts]");
+      System.out.println("  cmd : list");
+      System.out.println("      : arp {ip}");
+      System.out.println(" opts : -i interface_ip");
+      System.out.println("      : -t timeout");
       return;
     }
     JFNative.load();
@@ -247,16 +270,21 @@ public class PacketCapture {
       System.out.println("init failed");
       return;
     }
-    switch (args[0]) {
-      case "list":
-        cmd_list();
-        break;
-      case "arp":
-        cmd_arp(args[1]);
-        break;
-      default:
-        System.out.println("Unknown cmd:" + args[0]);
-        break;
+    try {
+      switch (args[0]) {
+        case "list":
+          cmd_list();
+          break;
+        case "arp":
+          parse_opts(args);
+          cmd_arp(args[1]);
+          break;
+        default:
+          System.out.println("Unknown cmd:" + args[0]);
+          break;
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
   }
 
@@ -270,14 +298,30 @@ public class PacketCapture {
 
   public static void cmd_arp(String ip) {
     PacketCapture cap = new PacketCapture();
-    String[] ifs = cap.listLocalInterfaces();
-    //use first interface
-    //TODO : add -i <interface_ip> option
-    String sif = ifs[0];
-    String[] pif = sif.split(",");  //there may be multiple IPs
+    String[] nics = cap.listLocalInterfaces();
+    int nicidx = 0;
+    if (nic_ip != null) {
+      nicidx = -1;
+      for(int a=0;a<nics.length;a++) {
+        String sif = nics[a];
+        String[] pif = sif.split(",");
+        for(int b=1;b<pif.length;b++) {
+          if (pif[b].equals(nic_ip)) {
+            nicidx = a;
+            break;
+          }
+        }
+      }
+    }
+    if (nicidx == -1) {
+      System.out.println("Interface not found for IP:" + nic_ip);
+      return;
+    }
+    String sif = nics[nicidx];
+    String[] pif = sif.split(",");
     long id = cap.start(pif[0], pif[1]);
     cap.compile(id, "arp");
-    byte[] mac = cap.arp(id, ip, 2000);
+    byte[] mac = cap.arp(id, ip, Integer.valueOf(timeout));
     cap.stop(id);
     System.out.print("MAC=");
     print_mac(mac);
