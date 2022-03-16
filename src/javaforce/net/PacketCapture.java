@@ -60,6 +60,20 @@ public class PacketCapture {
    */
   public native String[] listLocalInterfaces();
 
+  /** Find interface that contains IP address. */
+  public String findInterface(String ip) {
+    String[] ifs = listLocalInterfaces();
+    for(int a=0;a<ifs.length;a++) {
+      String[] dev_ips = ifs[a].split("[,]");
+      for(int b=1;b<dev_ips.length;b++) {
+        if (dev_ips[b].equals(ip)) {
+          return dev_ips[0];
+        }
+      }
+    }
+    return null;
+  }
+
   private native long nstart(String local_interface);
 
   private byte[] local_mac;
