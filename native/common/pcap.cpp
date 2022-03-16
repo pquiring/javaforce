@@ -44,7 +44,12 @@ struct pcap_pkthdr {
   int len;
 };
 
-typedef void (*pcap_handler)(u_char *, const struct pcap_pkthdr *, const u_char *);
+struct user_pkt_t {
+  jbyte* bytes;
+  int size;
+};
+
+typedef void (*pcap_handler)(struct user_pkt_t *, const struct pcap_pkthdr *, const u_char *);
 
 struct bpf_program {
   int len;
@@ -63,7 +68,7 @@ pcap_t* (*pcap_open_live)(const char* device, int snaplen, int promisc, int to_m
 void (*pcap_close)(pcap_t* handle);
 int (*pcap_compile)(pcap_t *p, struct bpf_program *fp, const char *str, int optimize, int netmask);
 int (*pcap_setfilter)(pcap_t *p, struct bpf_program *fp);
-int (*pcap_dispatch)(pcap_t *p, int cnt, pcap_handler handler, const char* user);
+int (*pcap_dispatch)(pcap_t *p, int cnt, pcap_handler handler, struct user_pkt_t* user);
 int (*pcap_sendpacket)(pcap_t *p, void* ptr, int length);
 
 #define PCAP_ERRBUF_SIZE 256
@@ -227,28 +232,25 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_compile
   return ret == 0;
 }
 
-static int cap_size = 0;
-static jbyte* cap_buffer = NULL;
-
-static void cap_callback(u_char *user, const struct pcap_pkthdr *pkt, const u_char *bytes)
+static void cap_callback(struct user_pkt_t *user_pkt, const struct pcap_pkthdr *pkt, const u_char *bytes)
 {
   //printf("pkt.size:%d,%d\n", pkt->caplen, pkt->len);
-  cap_size = pkt->caplen;
-  cap_buffer = (jbyte*)bytes;
+  user_pkt->size = pkt->caplen;
+  user_pkt->bytes = (jbyte*)bytes;
 }
 
 JNIEXPORT jbyteArray JNICALL Java_javaforce_net_PacketCapture_read
   (JNIEnv *e, jobject obj, jlong handle)
 {
-  cap_size = 0;
-  cap_buffer = NULL;
+  struct user_pkt_t user_pkt;
+  user_pkt.size = 0;
 
-  int cnt = (*pcap_dispatch)((pcap_t*)handle, 1, &cap_callback, NULL);
+  int cnt = (*pcap_dispatch)((pcap_t*)handle, 1, &cap_callback, &user_pkt);
 
-  if (cnt > 0 && cap_size > 0) {
-    jbyteArray ba = e->NewByteArray(cap_size);
+  if (cnt > 0 && user_pkt.size > 0) {
+    jbyteArray ba = e->NewByteArray(user_pkt.size);
 
-    e->SetByteArrayRegion(ba, 0, cap_size, (jbyte*)cap_buffer);
+    e->SetByteArrayRegion(ba, 0, user_pkt.size, user_pkt.bytes);
 
     return ba;
   } else {
