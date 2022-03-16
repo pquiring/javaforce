@@ -53,6 +53,7 @@ struct bpf_program {
 
 //functions
 
+JF_LIB_HANDLE lib_packet;
 JF_LIB_HANDLE library;
 
 int (*pcap_init)(int opts, char* errbuf);
@@ -65,29 +66,23 @@ int (*pcap_setfilter)(pcap_t *p, struct bpf_program *fp);
 int (*pcap_dispatch)(pcap_t *p, int cnt, pcap_handler handler, const char* user);
 int (*pcap_sendpacket)(pcap_t *p, void* ptr, int length);
 
-//other pcap functions not implemented yet
-//pcap_create();
-//pcap_activate();
-//pcap_lookupdev();
-//pcap_lookupnet();
-//pcap_next();
-//pcap_next_ex();
-//pcap_dispatch();
-//pcap_loop();
-//pcap_break_loop();
-//pcap_dispatch();
-//pcap_send_packet();
-
 #define PCAP_ERRBUF_SIZE 256
 
 JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
-  (JNIEnv *e, jclass cls, jstring lib)
+  (JNIEnv *e, jclass cls, jstring lib1, jstring lib2)
 {
   char err[PCAP_ERRBUF_SIZE];
-  const char *clib = e->GetStringUTFChars(lib, NULL);
+  const char *clib1 = e->GetStringUTFChars(lib1, NULL);
+  const char *clib2 = e->GetStringUTFChars(lib2, NULL);
 
-  library = JF_LIB_OPEN(clib JF_LIB_OPTS);
+  lib_packet = JF_LIB_OPEN(clib1 JF_LIB_OPTS);
+  if (lib_packet == NULL) {
+    printf("Error:library not found:%s\n", clib1);
+    return JNI_FALSE;
+  }
+  library = JF_LIB_OPEN(clib2 JF_LIB_OPTS);
   if (library == NULL) {
+    printf("Error:library not found:%s\n", clib2);
     return JNI_FALSE;
   }
 
@@ -101,7 +96,18 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
   getFunction(library, (void**)(&pcap_dispatch), "pcap_dispatch");
   getFunction(library, (void**)(&pcap_sendpacket), "pcap_sendpacket");
 
-  e->ReleaseStringUTFChars(lib, clib);
+  e->ReleaseStringUTFChars(lib1, clib1);
+  e->ReleaseStringUTFChars(lib2, clib2);
+
+  if (pcap_open_live == NULL) {
+    library = NULL;
+    return JNI_FALSE;
+  }
+
+  if (pcap_init == NULL) {
+    //older pcap version
+    return JNI_TRUE;
+  }
 
   int ret = (*pcap_init)(0, err);
   if (ret != 0) {

@@ -21,7 +21,7 @@ public class PacketCapture {
   public static int TYPE_ARP = 0x0806;
   public static int TYPE_IP6 = 0x86dd;
 
-  public static native boolean ninit(String lib);
+  public static native boolean ninit(String lib1, String lib2);
 
   /** Load native libraries. */
   public static boolean init() {
@@ -29,24 +29,27 @@ public class PacketCapture {
       String windir = System.getenv("windir").replaceAll("\\\\", "/");
       {
         //npcap
-        String dll = windir + "/system32/npcap/wpcap.dll";
-        if (new File(dll).exists()) {
-          return ninit(dll);
+        String dll1 = windir + "/system32/npcap/packet.dll";
+        String dll2 = windir + "/system32/npcap/wpcap.dll";
+        if (new File(dll1).exists() && new File(dll2).exists()) {
+          return ninit(dll1, dll2);
         }
       }
       {
         //pcap
-        String dll = windir + "/system32/pcap.dll";
-        if (new File(dll).exists()) {
-          return ninit(dll);
+        String dll1 = windir + "/system32/packet.dll";
+        String dll2 = windir + "/system32/wpcap.dll";
+        if (new File(dll1).exists() && new File(dll2).exists()) {
+          return ninit(dll1, dll2);
         }
       }
       return false;
     }
     if (JF.isUnix()) {
-      Library pcap = new Library("pcap");
-      JFNative.findLibraries(new File[] {new File("/usr/lib")}, new Library[] {pcap}, ".so", 1);
-      return ninit(pcap.path);
+      Library so1 = new Library("packet");
+      Library so2 = new Library("pcap");
+      JFNative.findLibraries(new File[] {new File("/usr/lib")}, new Library[] {so1, so2}, ".so", 2);
+      return ninit(so1.path, so2.path);
     }
     return false;
   }
