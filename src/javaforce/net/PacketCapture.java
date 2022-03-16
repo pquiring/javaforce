@@ -132,6 +132,23 @@ public class PacketCapture {
     return ret;
   }
 
+  public static String build_ip(byte[] ip) {
+    StringBuilder sb = new StringBuilder();
+    for(int a=0;a<ip.length;a++) {
+      if (a > 0) sb.append('.');
+      sb.append(String.format("%d", ip[a] & 0xff));
+    }
+    return sb.toString();
+  }
+
+  public static boolean compare_ip(byte[] ip1, byte[] ip2) {
+    if (ip1.length != ip2.length) return false;
+    for(int a=0;a<ip1.length;a++) {
+      if (ip1[a] != ip2[a]) return false;
+    }
+    return true;
+  }
+
   /** Build ethernet header. (14 bytes) */
   public void build_ethernet(byte[] pkt, byte[] dest, byte[] src, int type) {
     //dest MAC (6)
