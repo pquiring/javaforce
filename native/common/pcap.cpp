@@ -80,12 +80,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
   const char *clib1 = e->GetStringUTFChars(lib1, NULL);
   const char *clib2 = e->GetStringUTFChars(lib2, NULL);
 
-  lib_packet = JF_LIB_OPEN(clib1 JF_LIB_OPTS);
+  lib_packet = loadLibrary(clib1);
   if (lib_packet == NULL) {
     printf("Error:library not found:%s\n", clib1);
     return JNI_FALSE;
   }
-  library = JF_LIB_OPEN(clib2 JF_LIB_OPTS);
+  library = loadLibrary(clib2);
   if (library == NULL) {
     printf("Error:library not found:%s\n", clib2);
     return JNI_FALSE;

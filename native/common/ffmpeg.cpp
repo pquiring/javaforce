@@ -232,49 +232,49 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
 {
   //load libraries (order is important)
 
-  util = JF_LIB_OPEN(utilFile JF_LIB_OPTS);
+  util = loadLibrary(utilFile);
   if (util == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), utilFile);
     return JNI_FALSE;
   }
 
-  resample = JF_LIB_OPEN(resampleFile JF_LIB_OPTS);
+  resample = loadLibrary(resampleFile);
   if (resample == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), resampleFile);
     return JNI_FALSE;
   }
 
-  scale = JF_LIB_OPEN(scaleFile JF_LIB_OPTS);
+  scale = loadLibrary(scaleFile);
   if (scale == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), scaleFile);
     return JNI_FALSE;
   }
 
-  postproc = JF_LIB_OPEN(postFile JF_LIB_OPTS);
+  postproc = loadLibrary(postFile);
   if (postproc == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), postFile);
     return JNI_FALSE;
   }
 
-  codec = JF_LIB_OPEN(codecFile JF_LIB_OPTS);
+  codec = loadLibrary(codecFile);
   if (codec == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), codecFile);
     return JNI_FALSE;
   }
 
-  format = JF_LIB_OPEN(formatFile JF_LIB_OPTS);
+  format = loadLibrary(formatFile);
   if (format == NULL)  {
     printf("Could not find(0x%x):%s\n", GetLastError(), formatFile);
     return JNI_FALSE;
   }
 
-  ffilter = JF_LIB_OPEN(filterFile JF_LIB_OPTS);
+  ffilter = loadLibrary(filterFile);
   if (ffilter == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), filterFile);
     return JNI_FALSE;
   }
 
-  device = JF_LIB_OPEN(deviceFile JF_LIB_OPTS);
+  device = loadLibrary(deviceFile);
   if (device == NULL) {
     printf("Could not find(0x%x):%s\n", GetLastError(), deviceFile);
     return JNI_FALSE;

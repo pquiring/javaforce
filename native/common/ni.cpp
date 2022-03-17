@@ -34,7 +34,7 @@ int32 (*_DAQmxSetCICtrTimebaseRate)(TaskHandle taskHandle, const char channel[],
 JNIEXPORT jboolean JNICALL Java_javaforce_controls_ni_DAQmx_daqInit
   (JNIEnv *e, jclass cls)
 {
-  nidll = JF_LIB_OPEN(JF_LIB_NAME JF_LIB_OPTS);
+  nidll = loadLibrary(JF_LIB_NAME);
   if (nidll == NULL) {
     printf("Could not find:%s\n", JF_LIB_NAME);
     return JNI_FALSE;

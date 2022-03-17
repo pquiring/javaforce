@@ -10,6 +10,10 @@
   #define JF_LIB_GET_FUNC dlsym
 #endif
 
+static JF_LIB_HANDLE loadLibrary(const char* name) {
+  return JF_LIB_OPEN(name JF_LIB_OPTS);
+}
+
 static void getFunction(JF_LIB_HANDLE handle, void **funcPtr, const char *name) {
   void *func = (void*)JF_LIB_GET_FUNC(handle, name);
   if (func == NULL) {
