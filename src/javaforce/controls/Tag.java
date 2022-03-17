@@ -55,6 +55,7 @@ public class Tag {
     if (size == TagType.unknown) return false;
     if (type == ControllerType.UNKNOWN) return false;
     if (host == null || host.length() == 0) return false;
+    if (host.equalsIgnoreCase("null")) return false;
     return true;
   }
 
