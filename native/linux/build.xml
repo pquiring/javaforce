@@ -91,7 +91,6 @@
 
     <echo>ant linux : build intel x86 64bit (Debian/Ubuntu/Fedora/Arch)</echo>
     <echo>ant freebsd : build intel x86 64bit (FreeBSD)</echo>
-    <echo>ant arm32 : build ARM 32bit (Raspberry PI) (deprecated)</echo>
     <echo>ant arm64 : build ARM 64bit (Raspberry PI)</echo>
   </target>
 
