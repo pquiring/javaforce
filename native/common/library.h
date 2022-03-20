@@ -1,21 +1,24 @@
 #ifdef _WIN32
   #define JF_LIB_HANDLE HMODULE
-  #define JF_LIB_OPEN LoadLibrary
-  #define JF_LIB_OPTS
-  #define JF_LIB_GET_FUNC GetProcAddress
 #else
   #define JF_LIB_HANDLE void*
-  #define JF_LIB_OPEN dlopen
-  #define JF_LIB_OPTS ,RTLD_LAZY|RTLD_GLOBAL
-  #define JF_LIB_GET_FUNC dlsym
 #endif
 
 static JF_LIB_HANDLE loadLibrary(const char* name) {
-  return JF_LIB_OPEN(name JF_LIB_OPTS);
+#ifdef _WIN32
+  return LoadLibrary(name);
+#else
+  return dlopen(name,RTLD_LAZY|RTLD_GLOBAL);
+#endif
 }
 
 static void getFunction(JF_LIB_HANDLE handle, void **funcPtr, const char *name) {
-  void *func = (void*)JF_LIB_GET_FUNC(handle, name);
+  void *func;
+#ifdef _WIN32
+  func = (void*)GetProcAddress(handle, name);
+#else
+  func = (void*)dlsym(handle, name);
+#endif
   if (func == NULL) {
     printf("Error:Can not find function:%s\n", name);
   } else {
