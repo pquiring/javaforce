@@ -12,6 +12,36 @@
     <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -Wno-write-strings linux.cpp ../../native/jfnative64.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64.bin"/>
   </target>
 
+  <target name="get-bin-x86" description="download pre-built binaries for x86">
+    <sequential>
+      <get src="http://javaforce.sourceforge.net/jf-stubs-lnx64-x86.zip" dest="../jf-stubs-lnx64-x86.zip" usetimestamp="true"/>
+      <unzip src="../jf-stubs-lnx64-x86.zip" dest=".."/>
+    </sequential>
+  </target>
+
+  <target name="zip-bin-x86" description="zip pre-built binaries">
+    <zip destfile="../jf-stubs-lnx64-x86.zip">
+      <fileset dir="..">
+        <include name="*.bin"/>
+      </fileset>
+    </zip>
+  </target>
+
+  <target name="get-bin-arm" description="download pre-built binaries for arm">
+    <sequential>
+      <get src="http://javaforce.sourceforge.net/jf-stubs-lnx64-arm.zip" dest="../jf-stubs-lnx64-arm.zip" usetimestamp="true"/>
+      <unzip src="../jf-stubs-lnx64-arm.zip" dest=".."/>
+    </sequential>
+  </target>
+
+  <target name="zip-bin-arm" description="zip pre-built binaries">
+    <zip destfile="../jf-stubs-lnx64-arm.zip">
+      <fileset dir="..">
+        <include name="*.bin"/>
+      </fileset>
+    </zip>
+  </target>
+
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.bin"/>

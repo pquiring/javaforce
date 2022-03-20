@@ -26,18 +26,6 @@
     </delete>
   </target>
 
-  <target name="arm32" description="create linux native so for arm32">
-    <echo message="arm32 is deprecated and will be removed when arm64 is offically supported"/>
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include -I ${java.home}/include/linux -I /usr/include/arm-linux-gnueabihf -I ../headers linux.cpp -c -o linux32.o -fPIC"/>
-    <exec command="gcc ${opt} -I../glfw/include -I /usr/include/arm-linux-gnueabihf glfw.c -c -o glfw32.o -fPIC"/>
-    <exec command="gcc -shared linux32.o glfw32.o -L /usr/lib/arm-linux-gnueabihf -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative32.so"/>
-    <exec command="ar r ../jfnative32.a linux32.o glfw32.o"/>
-
-    <delete>
-      <fileset dir="." includes="*.o"/>
-    </delete>
-  </target>
-
   <target name="arm64" description="create linux native so for arm64">
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include -I ${java.home}/include/linux -I /usr/include/aarch64-linux-gnu -I ../headers linux.cpp -c -o linux64.o -fPIC"/>
     <exec command="gcc ${opt} -I../glfw/include -I /usr/include/aarch64-linux-gnu glfw.c -c -o glfw64.o -fPIC"/>
@@ -63,6 +51,36 @@
 
   <target name="pkg" description="install freebsd prerequisites">
     <exec command="pkg install gcc ffmpeg libX11 libXrandr libXcursor libXinerama libXi libXt ncurses mesa-libs"/>
+  </target>
+
+  <target name="get-bin-x86" description="download pre-built binaries for x86">
+    <sequential>
+      <get src="http://javaforce.sourceforge.net/jf-lib-lnx64-x86.zip" dest="../jf-lib-lnx64-x86.zip" usetimestamp="true"/>
+      <unzip src="../jf-lib-lnx64-x86.zip" dest=".."/>
+    </sequential>
+  </target>
+
+  <target name="zip-bin-x86" description="zip pre-built binaries">
+    <zip destfile="../jf-lib-lnx64-x86.zip">
+      <fileset dir="..">
+        <include name="*.so"/>
+      </fileset>
+    </zip>
+  </target>
+
+  <target name="get-bin-arm" description="download pre-built binaries for arm">
+    <sequential>
+      <get src="http://javaforce.sourceforge.net/jf-lib-lnx64-arm.zip" dest="../jf-lib-lnx64-arm.zip" usetimestamp="true"/>
+      <unzip src="../jf-lib-lnx64-arm.zip" dest=".."/>
+    </sequential>
+  </target>
+
+  <target name="zip-bin-arm" description="zip pre-built binaries">
+    <zip destfile="../jf-lib-lnx64-arm.zip">
+      <fileset dir="..">
+        <include name="*.so"/>
+      </fileset>
+    </zip>
   </target>
 
   <target name="help">
