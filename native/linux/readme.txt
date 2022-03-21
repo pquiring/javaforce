@@ -46,3 +46,5 @@ Raspberry Pi (Debian) (64bit):
   Compile:
     ant arm64
 
+get-bin-*:
+  These will download binaries for latest Debian release.
