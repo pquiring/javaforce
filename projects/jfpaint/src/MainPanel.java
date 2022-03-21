@@ -7,14 +7,17 @@
  *
  */
 
-import javax.swing.*;
-import javax.swing.filechooser.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import java.awt.font.*;
 import java.io.*;
 import java.util.*;
+import javax.swing.*;
+import javax.swing.filechooser.*;
+import javax.print.*;
+import javax.print.attribute.*;
+import javax.print.attribute.standard.*;
 
 import javaforce.*;
 import javaforce.awt.*;
@@ -1447,7 +1450,28 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   }
 
   private void print() {
-    //TODO
+    //print attribs
+    PrintRequestAttributeSet aset = new HashPrintRequestAttributeSet();
+    aset.add(new Copies(1));
+    aset.add(MediaSize.findMedia(11.0f, 8.5f, MediaSize.INCH));
+    aset.add(Sides.ONE_SIDED);
+    aset.add(OrientationRequested.LANDSCAPE);
+
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    int idx = getidx();
+    PaintCanvas pc = imageTabs.get(idx).pc;
+    JFImage img = pc.combineImageLayers();
+    img.savePNG(baos);
+
+    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+    Doc myDoc = new SimpleDoc(bais, DocFlavor.INPUT_STREAM.PNG, null);
+    PrintService def = PrintServiceLookup.lookupDefaultPrintService();
+    DocPrintJob job = def.createPrintJob();
+    try {
+      job.print(myDoc, aset);
+    } catch (PrintException e) {
+      e.printStackTrace();
+    }
   }
 
   public void delSel() {
