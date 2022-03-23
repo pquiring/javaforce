@@ -69,7 +69,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_ui_Window_ninit
 JNIEXPORT jlong JNICALL Java_javaforce_ui_Window_ncreate
   (JNIEnv *e, jclass c, jint style, jstring title, jint x, jint y, jobject events, jlong shared)
 {
-  GLFWContext *ctx = new GLFWContext();
+  GLFWContext *ctx = (GLFWContext*)malloc(sizeof(GLFWContext));
   ge = e;
   memset(ctx, 0, sizeof(GLFWContext));
   GLFWmonitor *monitor = NULL;
@@ -129,7 +129,7 @@ JNIEXPORT void JNICALL Java_javaforce_ui_Window_ndestroy
   glfwDestroyWindow(ctx->window);
   ctx->window = NULL;
   e->DeleteGlobalRef(ctx->obj);
-  delete ctx;
+  free(ctx);
 }
 
 JNIEXPORT void JNICALL Java_javaforce_ui_Window_nsetcurrent

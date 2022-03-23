@@ -247,7 +247,7 @@ CamContext* createCamContext(JNIEnv *e, jobject c) {
     printf("Camera ctx used twice\n");
     return NULL;
   }
-  ctx = new CamContext();
+  ctx = (CamContext*)malloc(sizeof(CamContext));
   memset(ctx, 0, sizeof(CamContext));
   e->SetLongField(c,fid_cam_ctx,(jlong)ctx);
   return ctx;
@@ -263,7 +263,7 @@ CamContext* getCamContext(JNIEnv *e, jobject c) {
 
 void deleteCamContext(JNIEnv *e, jobject c, CamContext *ctx) {
   if (ctx == NULL) return;
-  delete ctx;
+  free(ctx);
   jclass cls_camera = e->FindClass("javaforce/media/Camera");
   jfieldID fid_cam_ctx = e->GetFieldID(cls_camera, "ctx", "J");
   e->SetLongField(c,fid_cam_ctx,0);
