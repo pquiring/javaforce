@@ -58,7 +58,11 @@ jar : build the projects main jar file
 depjars : copy dependant jar files into project folder
 deb : build Debian deb file (after install)
  - requires bzip2, binutils, sudo
+ - linux packaging requires files.lst and linux stub (/stubs/linux)
 rpm : build Fedora rpm file (after install)
+ - requires rpm-build
+ - linux packaging requires files.lst and linux stub (/stubs/linux)
+pac : build Arch pac file (after install)
  - linux packaging requires files.lst and linux stub (/stubs/linux)
 msi : build Windows msi file with JRE bundled
  - msi creation requires:
@@ -97,6 +101,7 @@ Windows:Requires Visual C++ in your PATH.
   - you can run 'ant get-bin' to download pre-built binaries for Win64
 Linux:Debian/Ubuntu:run 'ant deb' to install required packages.
 Linux:RedHat/Fedora:run 'ant rpm' to install required packages.
+  - you can run 'ant get-bin-x86' or 'ant get-bin-arm' to download pre-build binaries for Linux64
 
 Requirements
 ------------
