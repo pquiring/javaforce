@@ -25,7 +25,7 @@ public class S7Types {
   public static final byte REAL = 8; //float (32bit)
   //etc...
 
-  public static short getTypeSize(byte data_type, short len) {
+  public static int getTypeSize(byte data_type, int len) {
     switch (data_type) {
       case S7Types.BIT:
         return (short)((len + 7) / 8);

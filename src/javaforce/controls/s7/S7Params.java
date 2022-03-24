@@ -100,7 +100,7 @@ public class S7Params {
   }
 
   /** Create a packet to write data. */
-  public void makeWrite(byte block_type, short block_number, byte data_type, int off/*24bit*/, short len, byte data[]) {
+  public void makeWrite(byte block_type, int block_number, byte data_type, int off/*24bit*/, int len, byte data[]) {
     func = WRITE;
     funcData = new byte[13 + 4 + data.length];
     funcData[0] = 1;  //count

@@ -146,7 +146,7 @@ public class S7Packet {
     if (addr.startsWith("DB")) {
       data.block_type = S7Types.DB;
       int idx = addr.indexOf('.');  //.DB?##[.#]
-      data.block_number = Short.valueOf(addr.substring(2, idx));
+      data.block_number = Integer.valueOf(addr.substring(2, idx));
       addr = addr.substring(idx+2);  //B?##[.#]
     } else if (addr.startsWith("M")) {
       data.block_type = S7Types.M;
@@ -179,42 +179,42 @@ public class S7Packet {
     data.length = 1;  //# of elements (not bytes)
     idx = addr.indexOf(" BIT ");
     if (idx != -1) {
-      data.length = Short.valueOf(addr.substring(idx+5));
+      data.length = Integer.valueOf(addr.substring(idx+5));
     }
     idx = addr.indexOf(" BYTE ");
     if (idx != -1) {
       data.data_type = S7Types.BYTE;
-      data.length = Short.valueOf(addr.substring(idx+6));
+      data.length = Integer.valueOf(addr.substring(idx+6));
     }
     idx = addr.indexOf(" CHAR ");
     if (idx != -1) {
       data.data_type = S7Types.CHAR;
-      data.length = Short.valueOf(addr.substring(idx+6));
+      data.length = Integer.valueOf(addr.substring(idx+6));
     }
     idx = addr.indexOf(" WORD ");
     if (idx != -1) {
       data.data_type = S7Types.WORD;
-      data.length = Short.valueOf(addr.substring(idx+6));
+      data.length = Integer.valueOf(addr.substring(idx+6));
     }
     idx = addr.indexOf(" INT ");
     if (idx != -1) {
       data.data_type = S7Types.INT;
-      data.length = Short.valueOf(addr.substring(idx+5));
+      data.length = Integer.valueOf(addr.substring(idx+5));
     }
     idx = addr.indexOf(" DWORD ");
     if (idx != -1) {
       data.data_type = S7Types.DWORD;
-      data.length = Short.valueOf(addr.substring(idx+7));
+      data.length = Integer.valueOf(addr.substring(idx+7));
     }
     idx = addr.indexOf(" DINT ");
     if (idx != -1) {
       data.data_type = S7Types.DINT;
-      data.length = Short.valueOf(addr.substring(idx+6));
+      data.length = Integer.valueOf(addr.substring(idx+6));
     }
     idx = addr.indexOf(" REAL ");
     if (idx != -1) {
       data.data_type = S7Types.REAL;
-      data.length = Short.valueOf(addr.substring(idx+6));
+      data.length = Integer.valueOf(addr.substring(idx+6));
     }
     return data;
   }

@@ -32,13 +32,6 @@ FreeBSD:
   Compile:
     ant freebsd
 
-Raspberry Pi (Debian) (32bit deprecated):
-
-  Same packages as Debian above.
-
-  Compile:
-    ant arm32
-
 Raspberry Pi (Debian) (64bit):
 
   Same packages as Debian above.
