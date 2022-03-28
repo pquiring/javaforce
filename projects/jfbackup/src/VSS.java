@@ -119,4 +119,78 @@ public class VSS {
     new File(mountPath).delete();
     return true;
   }
+
+  public static void usage() {
+    System.out.println("Usage : VSS {command}");
+    System.out.println(" listvols : list volumes");
+    System.out.println(" listshadows : list shadows");
+    System.out.println(" createshadow {drive} : create shadow");
+    System.out.println(" mountshadow {path} {shadow} : mount shadow");
+    System.out.println(" unmountshadow {path} : unmount shadow");
+    System.out.println(" deleteshadow {shadow} : delete shadow");
+    System.exit(1);
+  }
+
+  public static void main(String[] args) {
+    if (args.length == 0) usage();
+    switch (args[0]) {
+      case "listvols": listvols(args); break;
+      case "listshadows": listshadows(args); break;
+      case "createshadow": createshadow(args); break;
+      case "mountshadow": mountshadow(args); break;
+      case "unmountshadow": unmountshadow(args); break;
+      case "deleteshadow": deleteshadow(args); break;
+      default: usage();
+    }
+  }
+
+  public static void listvols(String[] args) {
+    String[] vols = listVolumes();
+    for(String vol : vols) {
+      System.out.println("Volume : " + vol);
+    }
+  }
+
+  public static void listshadows(String[] args) {
+    String[] shadows = listShadows();
+    for(String shadow : shadows) {
+      System.out.println("Volume : " + shadow);
+    }
+  }
+
+  public static void createshadow(String[] args) {
+    if (args.length != 2) usage();
+    if (createShadow(args[1])) {
+      System.out.println("Shadow creation successful!");
+    } else {
+      System.out.println("Shadow creation failed!");
+    }
+  }
+
+  public static void mountshadow(String[] args) {
+    if (args.length != 3) usage();
+    if (mountShadow(args[1], args[2])) {
+      System.out.println("Shadow mount successful!");
+    } else {
+      System.out.println("Shadow mount failed!");
+    }
+  }
+
+  public static void unmountshadow(String[] args) {
+    if (args.length != 2) usage();
+    if (unmountShadow(args[1])) {
+      System.out.println("Shadow unmount successful!");
+    } else {
+      System.out.println("Shadow unmount failed!");
+    }
+  }
+
+  public static void deleteshadow(String[] args) {
+    if (args.length != 2) usage();
+    if (deleteShadow(args[1])) {
+      System.out.println("Shadow deletion successful!");
+    } else {
+      System.out.println("Shadow deletion failed!");
+    }
+  }
 }
