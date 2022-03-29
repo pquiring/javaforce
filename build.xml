@@ -121,6 +121,7 @@
     <ant antfile="build-imageconvert.xml" inheritAll="false"/>
     <ant antfile="build-pngalpha.xml" inheritAll="false"/>
     <ant antfile="build-web.xml" inheritAll="false"/>
+    <ant antfile="build-vss.xml" inheritAll="false"/>
     <zip destfile="jfUtilities-${version}.zip">
       <fileset dir=".">
         <include name="*.exe"/>

@@ -8,6 +8,7 @@ import java.net.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.utils.*;
 
 public class Client extends Thread {
   private Socket s;
