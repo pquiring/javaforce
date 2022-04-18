@@ -277,8 +277,6 @@ public class PacketCapture {
                   return get_arp_mac(pkt);
                 }
               }
-            } else {
-              System.out.println("NOT ARP");
             }
           }
         }
