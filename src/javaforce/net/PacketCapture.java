@@ -162,6 +162,23 @@ public class PacketCapture {
     }
     return true;
   }
+  
+  public static void increment_ip(byte[] ip) {
+    int pos = ip.length - 1;
+    while ((ip[pos] & 0xff) == 255) {
+      ip[pos] = 0;
+      pos--;
+      if (pos == -1) pos = ip.length - 1;
+    }
+    ip[pos]++;
+  }
+  
+  public static int get_ip_range_length(byte[] ip_start, byte[] ip_end) {
+    int start32 = BE.getuint32(ip_start, 0);
+    int end32 = BE.getuint32(ip_end, 0);
+    if (end32 < start32) return -1;
+    return end32 - start32 + 1;
+  }
 
   /** Build ethernet header. (14 bytes) */
   public void build_ethernet(byte[] pkt, byte[] dest, byte[] src, int type) {
