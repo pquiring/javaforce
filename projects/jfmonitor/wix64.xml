@@ -22,7 +22,7 @@
     <!-- Step 2: Add files to your installer package -->
     <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
       <Component Id="appfiles" Guid="{8348B4E9-57C3-41C3-8F14-D86B96034CEF}" Win64="yes">
-        <File Id="jfmontiro.exe" Source="jfmonitor.exe" KeyPath="yes">
+        <File Id="jfmonitor.exe" Source="jfmonitor.exe" KeyPath="yes">
           <fire:FirewallException
             Id="FirewallRule1"
             Name="jfMonitorAPI"

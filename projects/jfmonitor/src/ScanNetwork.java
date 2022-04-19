@@ -1,4 +1,4 @@
-/**
+/** ScanNetwork
  *
  * @author pquiring
  */

@@ -1,4 +1,4 @@
-/** Simple end device (ping only)
+/** Network
  *
  * @author pquiring
  */
