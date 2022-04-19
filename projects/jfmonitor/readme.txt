@@ -1,7 +1,7 @@
 jfMonitor
 =========
 
-Enterprise Network /Storage Monitor Solution
+Enterprise Network / Storage Monitoring Solution
 
 Features:
   - Network Monitoring using ARP requests (PING requests can get blocked)
