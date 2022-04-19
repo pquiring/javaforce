@@ -43,7 +43,7 @@ public class ProgressBar extends Container {
         bar.setSize((int)(value / max * width), barWidth);
         break;
       case VERTICAL:
-        setSize(barWidth, width);
+        setSize(barWidth, height);
         bar.setSize(barWidth, (int)(value / max * height));
         break;
     }
@@ -83,7 +83,7 @@ public class ProgressBar extends Container {
     this.dir = dir;
     switch (dir) {
       case VERTICAL:
-        setClass("rotate");
+        setClass("");
         setStyle("margin-top", max + "px");
         break;
       case HORIZONTAL:
