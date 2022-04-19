@@ -181,6 +181,16 @@ static JNINativeMethod javaforce_media_VideoBuffer[] = {
   {"compareFrames", "([I[III)F", (void *)&Java_javaforce_media_VideoBuffer_compareFrames},
 };
 
+static JNINativeMethod javaforce_net_PacketCapture[] = {
+  {"ninit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_ninit},
+  {"listLocalInterfaces", "()[Ljava/lang/String;Ljava/lang/String;", (void *)&Java_javaforce_net_PacketCapture_listLocalInterfaces},
+  {"nstart", "(Ljava/lang/String;)J", (void *)&Java_javaforce_net_PacketCapture_nstart},
+  {"stop", "(J)Z", (void *)&Java_javaforce_net_PacketCapture_stop},
+  {"compile", "(JLjava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_compile},
+  {"read", "(J)[B", (void *)&Java_javaforce_net_PacketCapture_read},
+  {"write", "(J[BII)Z", (void *)&Java_javaforce_net_PacketCapture_write},
+};
+
 #ifdef __RASPBERRY_PI__
 static JNINativeMethod javaforce_pi_GPIO[] = {
   {"ninit", "(I)Z", (void *)&Java_javaforce_pi_GPIO_ninit},
@@ -246,6 +256,9 @@ void registerCommonNatives(JNIEnv *env) {
 
   cls = findClass(env, "javaforce/media/VideoBuffer");
   env->RegisterNatives(cls, javaforce_media_VideoBuffer, sizeof(javaforce_media_VideoBuffer)/sizeof(JNINativeMethod));
+
+  cls = findClass(env, "javaforce/net/PacketCapture");
+  env->RegisterNatives(cls, javaforce_net_PacketCapture, sizeof(javaforce_net_PacketCapture)/sizeof(JNINativeMethod));
 
 #ifdef __RASPBERRY_PI__
   cls = findClass(env, "javaforce/pi/GPIO");

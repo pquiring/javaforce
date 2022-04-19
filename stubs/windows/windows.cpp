@@ -37,6 +37,7 @@
 #include "../../native/headers/javaforce_ui_Font.h"
 #include "../../native/headers/javaforce_ui_Image.h"
 #include "../../native/headers/javaforce_ui_Window.h"
+#include "../../native/headers/javaforce_net_PacketCapture.h"
 
 /* Global variables */
 HKEY key, subkey;

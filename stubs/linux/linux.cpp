@@ -38,6 +38,7 @@
 #include "../../native/headers/javaforce_media_MediaEncoder.h"
 #include "../../native/headers/javaforce_media_MediaVideoDecoder.h"
 #include "../../native/headers/javaforce_media_VideoBuffer.h"
+#include "../../native/headers/javaforce_net_PacketCapture.h"
 
 /* Global variables */
 int type;
