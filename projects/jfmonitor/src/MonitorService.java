@@ -40,17 +40,18 @@ public class MonitorService extends Thread {
   }
 
   public void run() {
+    Status.active = true;
+    Paths.init();
+
     JFNative.load();
     capture = new PacketCapture();
     if (!capture.init()) {
-      System.out.println("pcap init failed");
+      JFLog.log("pcap init failed");
       return;
     } else {
-      System.out.println("pcap init successful");
+      JFLog.log("pcap init successful");
     }
 
-    Status.active = true;
-    Paths.init();
     //load current config
     Config.load();
     //start config service
