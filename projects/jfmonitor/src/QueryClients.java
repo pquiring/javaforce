@@ -10,7 +10,6 @@ import javaforce.*;
 public class QueryClients extends Thread {
   public void run() {
     while (Status.active) {
-      JF.sleep(Config.current.update_delay);
       ArrayList<ServerClient> clients = MonitorService.server.getClients();
       long now = System.currentTimeMillis();
       long past = now - (10 * 1000 * 60);  //10 mins ago
@@ -21,9 +20,11 @@ public class QueryClients extends Thread {
           continue;
         }
         client.last = now;
+        //query file systems
         try {
           client.writeString("fs");
         } catch (Exception e) {}
+        //query networks
         String client_host = client.getHost();
         for(Network network : Config.current.getNetworks()) {
           if (network.host.equals(client_host)) {

@@ -9,15 +9,15 @@ import javaforce.*;
 import javaforce.net.PacketCapture;
 
 public class ScanNetwork {
-  private String nic;
+  private String nifip;
   private String first;
   private String last;
 
-  private static final boolean debug = false;
+  private static final boolean debug = true;
 
-  public static byte[] scan(String nic, String first, String last) {
+  public static byte[] scan(String nifip, String first, String last) {
     ScanNetwork scan = new ScanNetwork();
-    scan.nic = nic;
+    scan.nifip = nifip;
     scan.first = first;
     scan.last = last;
     return scan.run();
@@ -25,7 +25,13 @@ public class ScanNetwork {
 
   public byte[] run() {
     PacketCapture cap = new PacketCapture();
-    long id = cap.start(cap.findInterface(nic), nic);
+    String nif = cap.findInterface(nifip);
+    if (nif == null) {
+      JFLog.log("Error:Network Interface not found for IP:" + nifip);
+      return null;
+    }
+    long id = cap.start(nif, nifip);
+    cap.compile(id, "arp");
     byte[] mac;
     byte[] ip_first = PacketCapture.decode_ip(first);
     byte[] ip_last = PacketCapture.decode_ip(last);

@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.net.*;
 import javaforce.webui.*;
 import javaforce.webui.event.*;
 
@@ -295,6 +296,66 @@ public class ConfigService implements WebUIHandler {
     return " Memory:Used:" + toEng(used) + " Max:" + toEng(max);
   }
 
+  private boolean valid(String nw_host, String nw_ip, String nw_first, String nw_last, String nw_dhcp_first, String nw_dhcp_last, Label msg) {
+    //validate form
+    if (nw_host.length() == 0) {
+      msg.setText("Invalid client");
+      return false;
+    }
+    if (!PacketCapture.valid_ip(nw_ip)) {
+      msg.setText("Invalid network interface IP");
+      return false;
+    }
+    if (!PacketCapture.valid_ip(nw_first)) {
+      msg.setText("Invalid first IP");
+      return false;
+    }
+    if (!PacketCapture.valid_ip(nw_last)) {
+      msg.setText("Invalid last IP");
+      return false;
+    }
+    byte[] b_first_ip = PacketCapture.decode_ip(nw_first);
+    int i_first_ip = BE.getuint32(b_first_ip, 0);
+    byte[] b_last_ip = PacketCapture.decode_ip(nw_last);
+    int i_last_ip = BE.getuint32(b_last_ip, 0);
+    int nw_length = PacketCapture.get_ip_range_length(b_first_ip, b_last_ip);
+    if (nw_length < 0) {
+      msg.setText("Invalid IP range");
+      return false;
+    }
+    if (nw_dhcp_first.length() > 0 && !PacketCapture.valid_ip(nw_dhcp_first)) {
+      msg.setText("Invalid first dhcp IP");
+      return false;
+    }
+    if (nw_dhcp_last.length() > 0 && !PacketCapture.valid_ip(nw_dhcp_last)) {
+      msg.setText("Invalid last dhcp IP");
+      return false;
+    }
+    if (nw_dhcp_first.length() == 0 && nw_dhcp_last.length() != 0) {
+      msg.setText("Invalid dhcp range");
+      return false;
+    }
+    if (nw_dhcp_first.length() != 0 && nw_dhcp_last.length() == 0) {
+      msg.setText("Invalid dhcp range");
+      return false;
+    }
+    if (nw_dhcp_first.length() > 0) {
+      byte[] b_dhcp_first_ip = PacketCapture.decode_ip(nw_dhcp_first);
+      int i_dhcp_first_ip = BE.getuint32(b_dhcp_first_ip, 0);
+      byte[] b_dhcp_last_ip = PacketCapture.decode_ip(nw_dhcp_last);
+      int i_dhcp_last_ip = BE.getuint32(b_dhcp_last_ip, 0);
+      int dhcp_length = PacketCapture.get_ip_range_length(b_dhcp_first_ip, b_dhcp_last_ip);
+      if (dhcp_length < 0 ||
+        i_dhcp_first_ip < i_first_ip || i_dhcp_first_ip > i_last_ip ||
+        i_dhcp_last_ip < i_first_ip || i_dhcp_last_ip > i_last_ip
+      ) {
+        msg.setText("Invalid dhcp range");
+        return false;
+      }
+    }
+    return true;
+  }
+
   public Panel serverConfigNetwork() {
     Panel panel = new Panel();
     Row row = new Row();
@@ -362,7 +423,10 @@ public class ConfigService implements WebUIHandler {
       String nw_dhcp_first = first_dhcp_ip.getText();
       String nw_dhcp_last = last_dhcp_ip.getText();
       String nw_desc = desc.getText();
-      //TODO : validate form
+      if (!valid(nw_host, nw_ip, nw_first, nw_last, nw_dhcp_first, nw_dhcp_last, msg)) {
+        return;
+      }
+
       Network nw = new Network();
       nw.host = nw_host;
       nw.ip_nic = nw_ip;
@@ -432,7 +496,9 @@ public class ConfigService implements WebUIHandler {
         String nw_dhcp_first = edit_first_dhcp_ip.getText();
         String nw_dhcp_last = edit_last_dhcp_ip.getText();
         String nw_desc = edit_desc.getText();
-        //TODO : validate form
+        if (!valid(nw.host, nw_ip, nw_first, nw_last, nw_dhcp_first, nw_dhcp_last, msg)) {
+          return;
+        }
         nw.ip_nic = nw_ip;
         nw.ip_first = nw_first;
         nw.ip_last = nw_last;

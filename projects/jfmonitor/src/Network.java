@@ -13,7 +13,7 @@ public class Network implements Serializable {
   public static final long serialVersionUID = 1;
 
   public String host;  //localhost or remote client ip
-  public String ip_nic;
+  public String ip_nic;  //network interface IP
   public String ip_first;
   public String ip_last;
   public String ip_dhcp_first;
