@@ -84,6 +84,7 @@ public class ServerClient extends Thread {
                 }
               }
             }
+            last = 0;  //allow next update on next interval
             break;
           case "fs":
             String fs = readString();
@@ -98,7 +99,6 @@ public class ServerClient extends Thread {
               store.size = Long.valueOf(total);
               store.free = Long.valueOf(free);
             }
-            last = 0;  //allow next update on next interval
             break;
         }
       }

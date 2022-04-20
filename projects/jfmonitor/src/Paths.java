@@ -18,12 +18,10 @@ public class Paths {
       dataPath = "/var/jfmonitor";
     }
     logsPath = dataPath + "/logs";
-//    tempPath = dataPath + "/temp";
     new File(dataPath).mkdirs();
     new File(logsPath).mkdirs();
-//    new File(tempPath).mkdirs();
-    JFLog.append(logsPath + "/system.log", true);  //0
-    JFLog.append(1, logsPath + "/service.log", true);
+    JFLog.append(logsPath + "/system.log", true);
+    JFLog.setRetention(30);
     JFLog.log("jfMonitor starting...");
   }
 }
