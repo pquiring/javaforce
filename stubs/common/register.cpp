@@ -182,11 +182,11 @@ static JNINativeMethod javaforce_media_VideoBuffer[] = {
 };
 
 static JNINativeMethod javaforce_net_PacketCapture[] = {
-  {"ninit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_ninit},
-  {"listLocalInterfaces", "()[Ljava/lang/String;Ljava/lang/String;", (void *)&Java_javaforce_net_PacketCapture_listLocalInterfaces},
+  {"ninit", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_ninit},
+  {"listLocalInterfaces", "()[Ljava/lang/String;", (void *)&Java_javaforce_net_PacketCapture_listLocalInterfaces},
   {"nstart", "(Ljava/lang/String;)J", (void *)&Java_javaforce_net_PacketCapture_nstart},
   {"stop", "(J)Z", (void *)&Java_javaforce_net_PacketCapture_stop},
-  {"compile", "(JLjava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_compile},
+  {"compile", "(JLjava/lang/String;)Z", (void *)&Java_javaforce_net_PacketCapture_compile},
   {"read", "(J)[B", (void *)&Java_javaforce_net_PacketCapture_read},
   {"write", "(J[BII)Z", (void *)&Java_javaforce_net_PacketCapture_write},
 };
