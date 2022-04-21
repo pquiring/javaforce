@@ -378,7 +378,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
 
     row = new Row();
-    row.add(new Label("Network Inerface IP:"));
+    row.add(new Label("Network Interface IP:"));
     TextField host_ip = new TextField("");
     row.add(host_ip);
     panel.add(row);
@@ -453,7 +453,7 @@ public class ConfigService implements WebUIHandler {
       panel.add(row);
 
       row = new Row();
-      row.add(new Label("Network Inerface IP:"));
+      row.add(new Label("Network Interface IP:"));
       TextField edit_host_ip = new TextField(nw.ip_nic);
       row.add(edit_host_ip);
       panel.add(row);
