@@ -390,7 +390,7 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
 };
 
 /** Register natives embedded with executable. */
-void registerNatives(JNIEnv *env) {
+void registerAllNatives(JNIEnv *env) {
   jclass cls;
 
   registerCommonNatives(env);
@@ -407,7 +407,7 @@ int JavaThread(void *ignore) {
     return 0;
   }
 
-  registerNatives(g_env);
+  registerAllNatives(g_env);
 
   g_env->FindClass("javaforce/jni/Startup");
 
@@ -607,7 +607,7 @@ void __stdcall ServiceMain(int argc, char **argv) {
   ServiceStatus(SERVICE_RUNNING);
   CreateJVM();
   setJavaAppHome(g_env, exepath);
-  registerNatives(g_env);
+  registerAllNatives(g_env);
   g_env->FindClass("javaforce/jni/Startup");
   InvokeMethod("serviceStart", ConvertStringArray(g_env, argc, argv), "([Ljava/lang/String;)V");
   g_jvm->DestroyJavaVM();

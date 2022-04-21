@@ -293,7 +293,7 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
 };
 
 /** Register natives embedded with executable. */
-void registerNatives(JNIEnv *env) {
+void registerAllNatives(JNIEnv *env) {
   jclass cls;
 
   registerCommonNatives(env);
@@ -312,7 +312,7 @@ int JavaThread(void *ignore) {
     return -1;
   }
 
-  registerNatives(env);
+  registerAllNatives(env);
 
   env->FindClass("javaforce/jni/Startup");
 
