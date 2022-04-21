@@ -727,6 +727,14 @@ public class ConfigService implements WebUIHandler {
     row.add(progress);
     panel.add(row);
 
+    row = new Row();
+    AutoScrollPanel scroll = new AutoScrollPanel();
+    //the contaner of the AutoScrollPanel must have a specified size
+    row.setStyle("width", "90%");
+    row.setStyle("height", "90%");
+    row.add(scroll);
+    panel.add(row);
+
     for(Network nw : Config.current.getNetworks()) {
       InnerPanel inner = new InnerPanel("Network:" + nw.desc);
       for(IP ip : nw.ips) {
@@ -792,7 +800,7 @@ public class ConfigService implements WebUIHandler {
         block.add(row);
         inner.add(block);
       }
-      panel.add(inner);
+      scroll.add(inner);
     }
 
 /*
