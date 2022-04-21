@@ -20,6 +20,7 @@ public class ServerClient extends Thread {
   private Object lock = new Object();
   private int version;
   public ArrayList<Storage> stores = new ArrayList<>();
+  public ArrayList<String> networks = new ArrayList<>();
 
   public long last;
 

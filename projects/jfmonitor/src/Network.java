@@ -54,6 +54,11 @@ public class Network implements Serializable {
     init();
   }
 
+  /** Returns unique ID for this network scan. */
+  public String getID() {
+    return ip_nic + "_" + ip_first + "_" + ip_last;
+  }
+
   public void update(byte[] map) {
     int pos = 0;
     for(IP ip : ips) {

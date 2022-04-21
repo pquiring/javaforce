@@ -29,15 +29,25 @@ public class QueryClients extends Thread {
         } catch (Exception e) {}
         //query networks
         String client_host = client.getHost();
+        boolean didScan = false;
         for(Network network : Config.current.getNetworks()) {
           if (network.host.equals(client_host)) {
-            try {
-              client.writeString("pn4");
-              client.writeString(network.ip_nic);
-              client.writeString(network.ip_first);
-              client.writeString(network.ip_last);
-            } catch (Exception e) {}
+            String id = network.getID();
+            if (!client.networks.contains(id)) {
+              didScan = true;
+              client.networks.add(id);
+              try {
+                client.writeString("pn4");
+                client.writeString(network.ip_nic);
+                client.writeString(network.ip_first);
+                client.writeString(network.ip_last);
+              } catch (Exception e) {}
+              break;
+            }
           }
+        }
+        if (!didScan) {
+          client.networks.clear();
         }
       }
       for(int a=0;a<60 && Status.active;a++) {
