@@ -396,7 +396,7 @@ void registerAllNatives(JNIEnv *env) {
   registerCommonNatives(env);
 
   cls = findClass(env, "javaforce/jni/WinNative");
-  env->RegisterNatives(cls, javaforce_jni_WinNative, sizeof(javaforce_jni_WinNative)/sizeof(JNINativeMethod));
+  registerNatives(env, cls, javaforce_jni_WinNative, sizeof(javaforce_jni_WinNative)/sizeof(JNINativeMethod));
 }
 
 /** Invokes the main method in a new thread. */

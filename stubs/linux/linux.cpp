@@ -299,7 +299,7 @@ void registerAllNatives(JNIEnv *env) {
   registerCommonNatives(env);
 
   cls = findClass(env, "javaforce/jni/LnxNative");
-  env->RegisterNatives(cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
+  registerNatives(env, cls, javaforce_jni_LnxNative, sizeof(javaforce_jni_LnxNative)/sizeof(JNINativeMethod));
 }
 
 /** Continues loading the JVM in a new Thread. */
