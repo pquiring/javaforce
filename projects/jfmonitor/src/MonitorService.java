@@ -47,9 +47,9 @@ public class MonitorService extends Thread {
     capture = new PacketCapture();
     if (!capture.init()) {
       JFLog.log("pcap init failed");
-      return;
     } else {
       JFLog.log("pcap init successful");
+      Config.pcap = true;
     }
 
     //load current config

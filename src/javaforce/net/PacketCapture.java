@@ -58,7 +58,7 @@ public class PacketCapture {
    * Return is array of strings, each is comma delimited list.
    * DeviceName,IP/MAC,IP/MAC,...
    */
-  public native String[] listLocalInterfaces();
+  public static native String[] listLocalInterfaces();
 
   /** Find interface that contains IP address. */
   public String findInterface(String ip) {
@@ -74,7 +74,7 @@ public class PacketCapture {
     return null;
   }
 
-  private native long nstart(String local_interface);
+  private static native long nstart(String local_interface);
 
   private byte[] local_mac;
   private byte[] local_ip;
@@ -87,27 +87,27 @@ public class PacketCapture {
   }
 
   /** Stop processing. */
-  public native void stop(long id);
+  public static native void stop(long id);
 
   /** Compile program. */
-  public native boolean compile(long handle, String program);
+  public static native boolean compile(long handle, String program);
 
   /** Read packet. */
-  public native byte[] read(long handle);
+  public static native byte[] read(long handle);
 
   /** Write packet. */
-  public native boolean write(long handle, byte[] packet, int offset, int length);
+  public static native boolean write(long handle, byte[] packet, int offset, int length);
 
   public static void print_mac(byte[] mac) {
     if (mac == null) {
-      System.out.println("null");
+      JFLog.log("null");
       return;
     }
     for(int a=0;a<mac.length;a++) {
       if (a > 0) System.out.print(":");
       System.out.print(String.format("%02x", mac[a]));
     }
-    System.out.println("");
+    JFLog.log("");
   }
 
   public byte[] get_mac(String ip) {
@@ -122,19 +122,28 @@ public class PacketCapture {
           if (nic_ip.equals(ip)) {
             byte[] mac = interf.getHardwareAddress();
             if (debug) {
-              System.out.println("IP=" + ip);
+              JFLog.log("IP=" + ip);
               print_mac(mac);
             }
             return mac;
           }
         }
       }
-      System.out.println("Error:mac not found:" + ip);
+      JFLog.log("Error:mac not found:" + ip);
       return mac_zero;
     } catch (Exception e) {
-      System.out.println("Exception:" + e);
+      JFLog.log("Exception:" + e);
       return null;
     }
+  }
+
+  public static String build_mac(byte[] mac) {
+    StringBuilder sb = new StringBuilder();
+    for(int a=0;a<mac.length;a++) {
+      if (a > 0) sb.append(':');
+      sb.append(String.format("%02x", mac[a] & 0xff));
+    }
+    return sb.toString();
   }
 
   public static boolean valid_ip(String ip) {
@@ -275,20 +284,26 @@ public class PacketCapture {
   public byte[] arp(long handle, String target_ip, int ms) {
     //padding (packet must not be < 52 bytes)
     if (debug) {
-      System.out.println("arp.timeout=" + ms);
+      JFLog.log("arp.timeout=" + ms);
     }
     byte[] ip = decode_ip(target_ip);
     byte[] pkt = new byte[ethernet_size + arp_size + 18];  //18 = padding
     build_ethernet(pkt, mac_broadcast, local_mac, TYPE_ARP);
     build_arp(pkt, local_mac, local_ip, ip);
+    if (debug) {
+      JFLog.log("arp.write()");
+    }
     write(handle, pkt, 0, pkt.length);
     int time = 0;
     int pkt_length = ethernet_size + arp_size;  //min size
     while (time < ms) {
       do {
+        if (debug) {
+          JFLog.log("arp.read()");
+        }
         pkt = read(handle);
         if (debug) {
-          System.out.println("pkt=" + pkt);
+          JFLog.log("arp.pkt=" + pkt);
         }
         if (pkt != null) {
           if (pkt.length >= pkt_length) {
@@ -328,16 +343,16 @@ public class PacketCapture {
 
   public static void main(String[] args) {
     if (args.length == 0) {
-      System.out.println("Usage : PacketCapture cmd [...] [opts]");
-      System.out.println("  cmd : list");
-      System.out.println("      : arp {ip}");
-      System.out.println(" opts : -i interface_ip");
-      System.out.println("      : -t timeout");
+      JFLog.log("Usage : PacketCapture cmd [...] [opts]");
+      JFLog.log("  cmd : list");
+      JFLog.log("      : arp {ip}");
+      JFLog.log(" opts : -i interface_ip");
+      JFLog.log("      : -t timeout");
       return;
     }
     JFNative.load();
     if (!init()) {
-      System.out.println("init failed");
+      JFLog.log("init failed");
       return;
     }
     try {
@@ -350,7 +365,7 @@ public class PacketCapture {
           cmd_arp(args[1]);
           break;
         default:
-          System.out.println("Unknown cmd:" + args[0]);
+          JFLog.log("Unknown cmd:" + args[0]);
           break;
       }
     } catch (Exception e) {
@@ -362,7 +377,7 @@ public class PacketCapture {
     PacketCapture cap = new PacketCapture();
     String[] ifs = cap.listLocalInterfaces();
     for(int a=0;a<ifs.length;a++) {
-      System.out.println(ifs[a]);
+      JFLog.log(ifs[a]);
     }
   }
 
@@ -384,7 +399,7 @@ public class PacketCapture {
       }
     }
     if (nicidx == -1) {
-      System.out.println("Interface not found for IP:" + nic_ip);
+      JFLog.log("Interface not found for IP:" + nic_ip);
       return;
     }
     String sif = nics[nicidx];

@@ -44,6 +44,10 @@ public class Client extends Thread {
               sendFileSystems();
               break;
             case "pn4":  //ping ip4 network
+              if (!Config.pcap) {
+                JFLog.log("Error:ping network request but pcap not installed!");
+                break;
+              }
               String nic = readString();
               String start = readString();
               String stop = readString();

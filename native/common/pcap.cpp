@@ -127,7 +127,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_ninit
 #define UP_RUNNING (PCAP_IF_UP | PCAP_IF_RUNNING | PCAP_IF_CONNECTION_STATUS_CONNECTED)
 
 JNIEXPORT jobjectArray JNICALL Java_javaforce_net_PacketCapture_listLocalInterfaces
-  (JNIEnv *e, jobject obj)
+  (JNIEnv *e, jclass obj)
 {
   char err[PCAP_ERRBUF_SIZE];
   int list_count = 0;
@@ -185,7 +185,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_net_PacketCapture_listLocalInterfa
 }
 
 JNIEXPORT jlong JNICALL Java_javaforce_net_PacketCapture_nstart
-  (JNIEnv *e, jobject obj, jstring dev)
+  (JNIEnv *e, jclass obj, jstring dev)
 {
   if (library == NULL) return 0;
   char err[PCAP_ERRBUF_SIZE];
@@ -203,7 +203,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_net_PacketCapture_nstart
 }
 
 JNIEXPORT void JNICALL Java_javaforce_net_PacketCapture_stop
-  (JNIEnv *e, jobject obj, jlong handle)
+  (JNIEnv *e, jclass obj, jlong handle)
 {
   if (library == NULL) return;
   (*pcap_close)((pcap_t*)handle);
@@ -212,7 +212,7 @@ JNIEXPORT void JNICALL Java_javaforce_net_PacketCapture_stop
 struct bpf_program cap_program;
 
 JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_compile
-  (JNIEnv *e, jobject obj, jlong handle, jstring program)
+  (JNIEnv *e, jclass obj, jlong handle, jstring program)
 {
   const char *cprogram = e->GetStringUTFChars(program, NULL);
 
@@ -240,7 +240,7 @@ static void cap_callback(struct user_pkt_t *user_pkt, const struct pcap_pkthdr *
 }
 
 JNIEXPORT jbyteArray JNICALL Java_javaforce_net_PacketCapture_read
-  (JNIEnv *e, jobject obj, jlong handle)
+  (JNIEnv *e, jclass obj, jlong handle)
 {
   struct user_pkt_t user_pkt;
   user_pkt.size = 0;
@@ -259,8 +259,9 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_net_PacketCapture_read
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_net_PacketCapture_write
-  (JNIEnv *e, jobject obj, jlong handle, jbyteArray ba, jint offset, jint length)
+  (JNIEnv *e, jclass obj, jlong handle, jbyteArray ba, jint offset, jint length)
 {
+  if (ba == NULL) return JNI_FALSE;
   jboolean isCopy;
   jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();

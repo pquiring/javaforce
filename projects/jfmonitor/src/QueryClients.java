@@ -9,6 +9,9 @@ import javaforce.*;
 
 public class QueryClients extends Thread {
   public void run() {
+    for(int a=0;a<5 && Status.active;a++) {
+      JF.sleep(1000);
+    }
     while (Status.active) {
       ArrayList<ServerClient> clients = MonitorService.server.getClients();
       long now = System.currentTimeMillis();
