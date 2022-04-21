@@ -729,7 +729,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     AutoScrollPanel scroll = new AutoScrollPanel();
-    //the contaner of the AutoScrollPanel must have a specified size
+    //the container of the AutoScrollPanel must have a specified size
     row.setStyle("width", "90%");
     row.setStyle("height", "90%");
     row.add(scroll);
