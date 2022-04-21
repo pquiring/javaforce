@@ -645,10 +645,11 @@ public class ConfigService implements WebUIHandler {
 
     if (file == null) {
       AutoScrollPanel scroll = new AutoScrollPanel();
-      scroll.setMaxWidth();
-      scroll.setMaxHeight();
+      scroll.setStyle("width", "90%");
+      scroll.setStyle("height", "90%");
       panel.setMaxWidth();
       row.setMaxWidth();
+      row.setMaxHeight();
       panel.add(scroll);
       //list log files (limit 1 year)
       File folder = new File(Paths.logsPath);
@@ -729,9 +730,11 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     AutoScrollPanel scroll = new AutoScrollPanel();
-    //the container of the AutoScrollPanel must have a specified size
-    row.setStyle("width", "90%");
-    row.setStyle("height", "90%");
+    scroll.setStyle("width", "90%");
+    scroll.setStyle("height", "90%");
+    panel.setMaxWidth();
+    row.setMaxWidth();
+    row.setMaxHeight();
     row.add(scroll);
     panel.add(row);
 
@@ -839,46 +842,61 @@ public class ConfigService implements WebUIHandler {
     row.add(progress);
     panel.add(row);
 
+    row = new Row();
+    AutoScrollPanel scroll = new AutoScrollPanel();
+    scroll.setStyle("width", "90%");
+    scroll.setStyle("height", "90%");
+    panel.setMaxWidth();
+    row.setMaxWidth();
+    row.setMaxHeight();
+    row.add(scroll);
+    panel.add(row);
+
     for(ServerClient client : Server.clients) {
       row = new Row();
       row.setBackColor(Color.blue);
       row.setHeight(5);
-      panel.add(row);
+      scroll.add(row);
 
       row = new Row();
       row.add(new Label("System:" + client.getHost()));
-      panel.add(row);
+      scroll.add(row);
 
       for(Storage store : client.stores) {
         row = new Row();
         row.add(new Label("File System:" + store.name));
-        panel.add(row);
+        scroll.add(row);
 
         row = new Row();
         row.add(new Label("Size:" + toEng(store.size)));
-        panel.add(row);
         float total = store.size;
 
-        row = new Row();
+        Label sp1 = new Label("");
+        sp1.setStyle("padding", "5px");
+        row.add(sp1);
+
         row.add(new Label("Used:" + toEng(store.size - store.free)));
-        panel.add(row);
         float used = (store.size - store.free);
 
-        row = new Row();
+        Label sp2 = new Label("");
+        sp2.setStyle("padding", "5px");
+        row.add(sp2);
+
         row.add(new Label("Free:" + toEng(store.free)));
-        panel.add(row);
+        scroll.add(row);
 
         row = new Row();
         ProgressBar bar = new ProgressBar(Component.HORIZONTAL, 100.0f, 16);
+        bar.setLevels(80, 90, 100);
+        bar.setColors(Color.green, Color.yellow, Color.red);
         bar.setValue((100.0f * used) / total);
         row.add(bar);
-        panel.add(row);
-
+        scroll.add(row);
 
         row = new Row();
         row.setBackColor(Color.blue);
         row.setHeight(3);
-        panel.add(row);
+        scroll.add(row);
 
       }
     }
