@@ -39,6 +39,7 @@ public class Network implements Serializable {
       ips.add(ip);
       PacketCapture.increment_ip(_ip_first);
     }
+    first = true;
   }
 
   public void validate() {
@@ -52,6 +53,7 @@ public class Network implements Serializable {
     //TODO : rebuild devices (copy over what is still in valid range)
     //for now just rebuild losing any notify bits
     init();
+    first = true;
   }
 
   /** Returns unique ID for this network scan. */
