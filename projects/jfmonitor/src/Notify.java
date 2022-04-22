@@ -11,7 +11,7 @@ public class Notify {
     if (str.length() == 0) return false;
     return true;
   }
-  public static void notify(String ip, boolean online) {
+  private static void notify_email(String subject, String message) {
     if (!isValid(Config.current.email_server)) return;
     if (!isValid(Config.current.emails)) return;
     log("Sending email notification");
@@ -42,7 +42,7 @@ public class Notify {
       if (isValid(Config.current.email_user)) {
         smtp.from(Config.current.email_user);
       } else {
-        smtp.from("jfBackup@" + Config.current.server_host);
+        smtp.from("jfMonitor@" + Config.current.server_host);
       }
       String emails[] = Config.current.emails.split(",");
       for(String email : emails) {
@@ -57,10 +57,10 @@ public class Notify {
       for(String email : emails) {
         msg.append("To: <" + email + ">\r\n");
       }
-      msg.append("Subject:Network Notification");
+      msg.append("Subject:");
+      msg.append(subject);
       msg.append("\r\n\r\n");
-      msg.append("Device IP:" + ip + "\r\n");
-      msg.append("Online:" + online + "\r\n");
+      msg.append(message);
       msg.append("Date:");
       msg.append(ConfigService.toDateTime(System.currentTimeMillis()));
       msg.append("\r\n");
@@ -74,6 +74,18 @@ public class Notify {
       log("SMTP response=" + smtp.getLastResponse());
       log(e);
     }
+  }
+  public static void notify_ip(String ip, boolean online) {
+    StringBuilder msg = new StringBuilder();
+    msg.append("Device IP:" + ip + "\r\n");
+    msg.append("Online:" + online + "\r\n");
+    notify_email("Network Event", msg.toString());
+  }
+  public static void notify_storage(String host, String volume, float percent) {
+    StringBuilder msg = new StringBuilder();
+    msg.append("Host/Storage:" + host + "/" + volume + "\r\n");
+    msg.append("Percent Full:" + percent + "\r\n");
+    notify_email("Storage Event", msg.toString());
   }
   private static void log(Exception e) {
     JFLog.log(3, e);

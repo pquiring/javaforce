@@ -10,4 +10,7 @@ public class Storage {
   public String name;  //C:, /mount, etc.
   public long size;
   public long free;
+  public long used;
+  public float percent;
+  public boolean notify;
 }

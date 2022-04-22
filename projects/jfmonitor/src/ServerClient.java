@@ -99,6 +99,18 @@ public class ServerClient extends Thread {
               Storage store = getStorage(name);
               store.size = Long.valueOf(total);
               store.free = Long.valueOf(free);
+              store.used = store.size - store.free;
+              store.percent = (100.0f * store.used) / (store.size * 1.0f);
+              if (store.percent >= 80.0f) {
+                if (!store.notify) {
+                  store.notify = true;
+                  Notify.notify_storage(getHost(), name, store.percent);
+                }
+              } else {
+                if (store.notify) {
+                  store.notify = false;
+                }
+              }
             }
             break;
         }

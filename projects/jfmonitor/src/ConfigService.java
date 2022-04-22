@@ -869,14 +869,12 @@ public class ConfigService implements WebUIHandler {
 
         row = new Row();
         row.add(new Label("Size:" + toEng(store.size)));
-        float total = store.size;
 
         Label sp1 = new Label("");
         sp1.setStyle("padding", "5px");
         row.add(sp1);
 
         row.add(new Label("Used:" + toEng(store.size - store.free)));
-        float used = (store.size - store.free);
 
         Label sp2 = new Label("");
         sp2.setStyle("padding", "5px");
@@ -889,7 +887,7 @@ public class ConfigService implements WebUIHandler {
         ProgressBar bar = new ProgressBar(Component.HORIZONTAL, 100.0f, 16);
         bar.setLevels(80, 90, 100);
         bar.setColors(Color.green, Color.yellow, Color.red);
-        bar.setValue((100.0f * used) / total);
+        bar.setValue(store.percent);
         row.add(bar);
         scroll.add(row);
 
