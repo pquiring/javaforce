@@ -52,7 +52,7 @@ public class Notify {
       if (isValid(Config.current.email_user)) {
         msg.append("From: <" + Config.current.email_user + ">\r\n");
       } else {
-        msg.append("From: <jfBackup@" + Config.current.server_host + ">\r\n");
+        msg.append("From: <jfMonitor@" + Config.current.server_host + ">\r\n");
       }
       for(String email : emails) {
         msg.append("To: <" + email + ">\r\n");
