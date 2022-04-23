@@ -36,6 +36,12 @@ public abstract class Component {
   public static final int TOP = 4;
   public static final int BOTTOM = 5;
 
+  //overflow constants
+  public static final int VISIBLE = 10;
+  public static final int HIDDEN = 11;
+  public static final int SCROLL = 12;
+  public static final int AUTO = 13;
+
   public static class Event {
     public String msg;
     public String[] args;
@@ -51,7 +57,9 @@ public abstract class Component {
    * @param parent = Panel
    * @param name = name of component
    */
-  public Component() {}
+  public Component() {
+    setStyle("display", display);
+  }
 
   /** Sets Component's name. */
   public void setName(String name) {
@@ -208,14 +216,14 @@ public abstract class Component {
 
   public void setVerticalAlign(int align) {
     switch (align) {
-      case LEFT:
-        setStyle("vertical-align", "left");
+      case TOP:
+        setStyle("vertical-align", "top");
         break;
       case CENTER:
         setStyle("vertical-align", "middle");
         break;
-      case RIGHT:
-        setStyle("vertical-align", "right");
+      case BOTTOM:
+        setStyle("vertical-align", "bottom");
         break;
     }
   }
@@ -368,7 +376,7 @@ public abstract class Component {
     return sb.toString();
   }
 
-  private String display = "block";  //TODO : default should be inline-block or block ???
+  private String display = "inline-block";
   private boolean isVisible = true;
 
   public void setVisible(boolean state) {

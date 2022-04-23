@@ -2,6 +2,46 @@ body {
   margin: 0px;
 }
 
+div {
+  white-space: nowrap;
+  margin: 0px;
+  box-sizing: border-box;
+}
+
+span {
+  margin: 0px;
+  box-sizing: border-box;
+}
+
+select {
+  margin: 0px;
+  vertical-align: top;
+}
+
+button {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+img {
+  box-sizing: border-box;
+}
+
+input {
+  box-sizing: border-box;
+  vertical-align: top;
+}
+
+table {
+  border-spacing: 0px;
+}
+
+td {
+  padding: 0px;
+}
+
 .logo1 {
   position: relative;
   width: 100px;
@@ -35,17 +75,6 @@ body {
   font-size: 20px;
 }
 
-div {
-  white-space: nowrap;
-  margin: 0px;
-  box-sizing: border-box;
-}
-
-span {
-  margin: 0px;
-  box-sizing: border-box;
-}
-
 .cell {
   vertical-align: middle;
   text-align: center;
@@ -64,27 +93,6 @@ span {
   position: relative;
 }
 
-select {
-  margin: 0px;
-  vertical-align: top;
-}
-
-button {
-  margin: 0px;
-  padding: 0px;
-  box-sizing: border-box;
-  vertical-align: top;
-}
-
-img {
-  box-sizing: border-box;
-}
-
-input {
-  box-sizing: border-box;
-  vertical-align: top;
-}
-
 .border {
   border: 1px solid black;
 }
@@ -94,13 +102,33 @@ input {
 }
 
 .panel {
-  display: block;
+  width: 100%;
   height: 100%;
 }
 
 .innerpanel {
-  display: block;
+  width: auto;
   height: auto;
+}
+
+.scrollpanel {
+  overflow: auto;
+}
+
+.overflow-visible {
+  overflow: visible;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-scroll {
+  overflow: scroll;
+}
+
+.overflow-auto {
+  overflow: auto;
 }
 
 .button {
@@ -110,44 +138,7 @@ input {
 }
 
 .label {
-  display: inline-block;
   box-sizing: border-box;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-}
-
-.row-item {
-  display: inline-block;
-  vertical-align: top;
-  padding: 0px;
-}
-
-.row-end {
-  display: inline-block;
-}
-
-.column {
-  display: flex;
-  flex-direction: column;
-}
-
-.column-item {
-  display: block;
-}
-
-.column-end {
-  display: block;
-}
-
-.flexitem {
-  flex: auto;
-}
-
-.pad {
-  display: inline-block;
 }
 
 .tab {
@@ -191,16 +182,15 @@ input {
 
 .splitPanelTop {
   overflow: hidden;
-  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .splitPanel {
   overflow: hidden;
-  display: inline-block;
 }
 
 .splitDivider {
-  display: inline-block;
   cursor: default;
 }
 
@@ -227,7 +217,6 @@ input {
 
 .container {
   overflow: hidden;
-  display: block;
 }
 
 .menubar {
@@ -276,14 +265,6 @@ input {
 }
 
 .close {
-
-}
-
-.scrollpanel {
-  overflow: auto;
-}
-
-.list {
 
 }
 
@@ -345,10 +326,6 @@ input {
 
 .height100 {
   height: 100%;
-}
-
-.autoscroll {
-  overflow: auto;
 }
 
 .right {

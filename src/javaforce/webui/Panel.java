@@ -6,20 +6,29 @@ package javaforce.webui;
  */
 
 public class Panel extends Container {
+  private int overflow = -1;
   public Panel() {
     addClass("panel");
-    addClass("column");
+    setOverflow(HIDDEN);
+    setDisplay("block");
   }
-  public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<div" + getAttrs() + ">");
-    int cnt = count();
-    for(int a=0;a<cnt;a++) {
-      sb.append(get(a).html());
+  public int getOverflow() {
+    return overflow;
+  }
+  public void setOverflow(int type) {
+    switch (overflow) {
+      case VISIBLE: removeClass("overflow-visible"); break;
+      case HIDDEN: removeClass("overflow-hidden"); break;
+      case SCROLL: removeClass("overflow-scroll"); break;
+      case AUTO: removeClass("overflow-auto"); break;
     }
-    sb.append("<div class='column-end'></div>");
-    sb.append("</div>");
-    return sb.toString();
+    overflow = type;
+    switch (overflow) {
+      case VISIBLE: addClass("overflow-visible"); break;
+      case HIDDEN: addClass("overflow-hidden"); break;
+      case SCROLL: addClass("overflow-scroll"); break;
+      case AUTO: addClass("overflow-auto"); break;
+    }
   }
   public void onLoaded(String[] args) {
     super.onLoaded(args);

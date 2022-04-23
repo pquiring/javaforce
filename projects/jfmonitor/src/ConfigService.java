@@ -254,7 +254,9 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(5);
     panel.add(row);
 
-    panel.add(new Label("Status:"));
+    row = new Row();
+    row.add(new Label("Status:"));
+    panel.add(row);
 
     TextArea text = new TextArea("Loading...");
     text.setReadonly(true);
@@ -357,7 +359,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel serverConfigNetwork() {
-    Panel panel = new Panel();
+    Panel panel = new ScrollPanel();
     Row row = new Row();
     Label label = new Label("jfMonitor/" + Config.AppVersion);
     row.add(label);
@@ -644,9 +646,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
 
     if (file == null) {
-      AutoScrollPanel scroll = new AutoScrollPanel();
-      scroll.setStyle("width", "90%");
-      scroll.setStyle("height", "90%");
+      ScrollPanel scroll = new ScrollPanel();
       panel.setMaxWidth();
       row.setMaxWidth();
       row.setMaxHeight();
@@ -711,8 +711,9 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel serverMonitorNetwork() {
-    Panel panel = new Panel();
+    Panel panel = new ScrollPanel();
     Row row = new Row();
+
     Label label = new Label("jfMonitor/" + Config.AppVersion);
     row.add(label);
     panel.add(row);
@@ -726,16 +727,6 @@ public class ConfigService implements WebUIHandler {
     row.add(new Label("Network Monitor:"));
     Label progress = new Label("");
     row.add(progress);
-    panel.add(row);
-
-    row = new Row();
-    AutoScrollPanel scroll = new AutoScrollPanel();
-    scroll.setStyle("width", "90%");
-    scroll.setStyle("height", "90%");
-    panel.setMaxWidth();
-    row.setMaxWidth();
-    row.setMaxHeight();
-    row.add(scroll);
     panel.add(row);
 
     for(Network nw : Config.current.getNetworks()) {
@@ -803,7 +794,7 @@ public class ConfigService implements WebUIHandler {
         block.add(row);
         inner.add(block);
       }
-      scroll.add(inner);
+      panel.add(inner);
     }
 
 /*
@@ -825,7 +816,7 @@ public class ConfigService implements WebUIHandler {
   }
 
   public Panel serverMonitorStorage() {
-    Panel panel = new Panel();
+    Panel panel = new ScrollPanel();
     Row row = new Row();
     Label label = new Label("jfMonitor/" + Config.AppVersion);
     row.add(label);
@@ -842,30 +833,20 @@ public class ConfigService implements WebUIHandler {
     row.add(progress);
     panel.add(row);
 
-    row = new Row();
-    AutoScrollPanel scroll = new AutoScrollPanel();
-    scroll.setStyle("width", "90%");
-    scroll.setStyle("height", "90%");
-    panel.setMaxWidth();
-    row.setMaxWidth();
-    row.setMaxHeight();
-    row.add(scroll);
-    panel.add(row);
-
     for(ServerClient client : Server.clients) {
       row = new Row();
       row.setBackColor(Color.blue);
       row.setHeight(5);
-      scroll.add(row);
+      panel.add(row);
 
       row = new Row();
       row.add(new Label("System:" + client.getHost()));
-      scroll.add(row);
+      panel.add(row);
 
       for(Storage store : client.stores) {
         row = new Row();
         row.add(new Label("File System:" + store.name));
-        scroll.add(row);
+        panel.add(row);
 
         row = new Row();
         row.add(new Label("Size:" + toEng(store.size)));
@@ -881,7 +862,7 @@ public class ConfigService implements WebUIHandler {
         row.add(sp2);
 
         row.add(new Label("Free:" + toEng(store.free)));
-        scroll.add(row);
+        panel.add(row);
 
         row = new Row();
         ProgressBar bar = new ProgressBar(Component.HORIZONTAL, 100.0f, 16);
@@ -889,12 +870,12 @@ public class ConfigService implements WebUIHandler {
         bar.setColors(Color.green, Color.yellow, Color.red);
         bar.setValue(store.percent);
         row.add(bar);
-        scroll.add(row);
+        panel.add(row);
 
         row = new Row();
         row.setBackColor(Color.blue);
         row.setHeight(3);
-        scroll.add(row);
+        panel.add(row);
 
       }
     }

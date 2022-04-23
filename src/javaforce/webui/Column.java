@@ -6,28 +6,16 @@ package javaforce.webui;
  */
 
 public class Column extends Container {
-  public Pad end;
   public Column() {
-    setClass("column");
-    end = new Pad();
-    end.addClass("column-end");
-    super.add(end);
+    setDisplay("block");
+    setMaxHeight();
   }
   public void add(Component comp) {
-    add(count() - 1, comp);
+    super.add(comp);
+    comp.setDisplay("blcok");
   }
   public void add(int idx, Component comp) {
     super.add(idx, comp);
-    comp.addClass("column-item");
-  }
-  public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<div" + getAttrs() + ">");
-    int cnt = count();
-    for(int a=0;a<cnt;a++) {
-      sb.append(get(a).html());
-    }
-    sb.append("</div>");
-    return sb.toString();
+    comp.setDisplay("block");
   }
 }

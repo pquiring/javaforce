@@ -6,28 +6,18 @@ package javaforce.webui;
  */
 
 public class Row extends Container {
-  public Pad end;
   public Row() {
-    addClass("row");
-    end = new Pad();
-    end.addClass("row-end");
-    super.add(end);
+    setDisplay("block");
+    setMaxWidth();
   }
   public void add(Component comp) {
-    add(count() - 1, comp);
+    super.add(comp);
+    comp.setDisplay("inline-block");
+    comp.setVerticalAlign(TOP);
   }
   public void add(int idx, Component comp) {
     super.add(idx, comp);
-    comp.addClass("row-item");
-  }
-  public String html() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("<div" + getAttrs() + ">");
-    int cnt = count();
-    for(int a=0;a<cnt;a++) {
-      sb.append(get(a).html());
-    }
-    sb.append("</div>");
-    return sb.toString();
+    comp.setDisplay("inline-block");
+    comp.setVerticalAlign(TOP);
   }
 }

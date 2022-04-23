@@ -156,6 +156,18 @@ function wsevent(event) {
     case "setheighttoparent":
       element.style.height = element.parentElement.offsetHeight;
       break;
+    case "setsizetoparent":
+      element.style.width = element.parentElement.offsetWidth;
+      element.style.height = element.parentElement.offsetHeight;
+      break;
+    case "setsizetoparent2":
+      element.style.width = element.parentElement.parentElement.offsetWidth;
+      element.style.height = element.parentElement.parentElement.offsetHeight;
+      break;
+    case "setsizetoparent3":
+      element.style.width = element.parentElement.parentElement.parentElement.offsetWidth;
+      element.style.height = element.parentElement.parentElement.parentElement.offsetHeight;
+      break;
     case "setclass":
       element.className = msg.cls;
       break;
@@ -439,6 +451,7 @@ function onresizeSplitDividerWidth(event, element, id1, id2, id3) {
   var maxWidth = width1;
   if (width2 > width1) maxWidth = width2;
   element3.style.width = maxWidth + "px";
+  element3.parentElement.style.width = maxWidth + "px";
 }
 
 function onresizeSplitDividerHeight(event, element, id1, id2, id3) {
@@ -450,6 +463,7 @@ function onresizeSplitDividerHeight(event, element, id1, id2, id3) {
   var maxHeight = height1;
   if (height2 > height1) maxHeight = height2;
   element3.style.height = maxHeight + "px";
+  element3.parentElement.style.height = maxHeight + "px";
 }
 
 function onmousedownSplitPanel(event, element, id1, id2, dir) {

@@ -5,4 +5,8 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class Block extends Container {}
+public class Block extends Container {
+  public Block() {
+    setDisplay("block");
+  }
+}

@@ -9,7 +9,7 @@ import javaforce.webui.event.*;
 
 public class List extends ScrollPanel implements Click {
   public List() {
-    addClass("list");
+    setDisplay("block");
   }
 
   public void add(String item) {
@@ -25,8 +25,8 @@ public class List extends ScrollPanel implements Click {
 
   public void add(Component item) {
     item.addClass("width100");
-    item.addClass("column-item");
     item.setProperty("selected", "false");
+    item.setDisplay("block");
     super.add(item);
   }
 
@@ -53,8 +53,8 @@ public class List extends ScrollPanel implements Click {
     int selCount = 0;
     int cnt = count();
     for(int idx=0;idx<cnt;idx++) {
-      Component c = get(idx);
-      if (c.getProperty("selected").equals("true")) selCount++;
+      Component cmp = get(idx);
+      if (cmp.getProperty("selected").equals("true")) selCount++;
     }
     return selCount;
   }
@@ -65,8 +65,8 @@ public class List extends ScrollPanel implements Click {
     int selPos = 0;
     int cnt = count();
     for(int idx=0;idx<cnt;idx++) {
-      Component c = get(idx);
-      if (c.getProperty("selected").equals("true")) {
+      Component cmp = get(idx);
+      if (cmp.getProperty("selected").equals("true")) {
         selIdx[selPos++] = idx;
       }
     }
@@ -76,12 +76,12 @@ public class List extends ScrollPanel implements Click {
   public String getSelectedItem() {
     int idx = getSelectedIndex();
     if (idx == -1) return null;
-    Component c = get(idx);
-    if (c instanceof Label) {
-      Label l = (Label)c;
+    Component cmp = get(idx);
+    if (cmp instanceof Label) {
+      Label l = (Label)cmp;
       return l.text;
     }
-    return c.toString();
+    return cmp.toString();
   }
 
   public Component getSelectedComponent() {

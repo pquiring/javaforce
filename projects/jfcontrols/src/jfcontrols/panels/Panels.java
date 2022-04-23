@@ -299,7 +299,7 @@ public class Panels {
     table.setTableSize(mx, my);
     for(int a=0;a<cells.length;a++) {
       Component cmp = cs[a];
-      if (cmp instanceof AutoScrollPanel) {
+      if (cmp instanceof ScrollPanel) {
         container.add(cs[a]);
       } else {
         if (rs[a].width == 1 && rs[a].height == 1)
@@ -1124,7 +1124,7 @@ public class Panels {
     //auto scroll components are placed below the main table
     ClientContext context = (ClientContext)client.getProperty("context");
     String name = v.name;
-    AutoScrollPanel panel = new AutoScrollPanel();
+    ScrollPanel panel = new ScrollPanel();
     JFLog.log("client.height=" + client.getHeight());
     panel.setHeight(client.getHeight() - (cellHeight * 2));
     client.addResizedListener((cmp, width, height) -> {

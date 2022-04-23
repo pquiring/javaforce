@@ -455,7 +455,7 @@ public class ConfigService implements WebUIHandler {
     row.add(msg);
     panel.add(row);
 
-    AutoScrollPanel scroll = new AutoScrollPanel();
+    ScrollPanel scroll = new ScrollPanel();
     scroll.setMaxWidth();
     scroll.setMaxHeight();
     panel.setMaxWidth();
@@ -977,7 +977,7 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(5);
     panel.add(row);
 
-    AutoScrollPanel scroll = new AutoScrollPanel();
+    ScrollPanel scroll = new ScrollPanel();
     scroll.setMaxWidth();
     scroll.setMaxHeight();
     panel.setMaxWidth();
@@ -1164,7 +1164,7 @@ public class ConfigService implements WebUIHandler {
       return panel;
     }
 
-    AutoScrollPanel scroll = new AutoScrollPanel();
+    ScrollPanel scroll = new ScrollPanel();
     scroll.setMaxWidth();
     scroll.setMaxHeight();
     panel.setMaxWidth();
@@ -1289,7 +1289,7 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(5);
     panel.add(row);
 
-    AutoScrollPanel scroll = new AutoScrollPanel();
+    ScrollPanel scroll = new ScrollPanel();
     scroll.setMaxWidth();
     scroll.setMaxHeight();
     panel.setMaxWidth();
@@ -1543,7 +1543,7 @@ public class ConfigService implements WebUIHandler {
     row.setHeight(2);
     panel.add(row);
 
-    AutoScrollPanel scroll = new AutoScrollPanel();
+    ScrollPanel scroll = new ScrollPanel();
     scroll.setMaxWidth();
     scroll.setMaxHeight();
     panel.setMaxWidth();
@@ -1589,7 +1589,7 @@ public class ConfigService implements WebUIHandler {
     panel.add(row);
 
     if (file == null) {
-      AutoScrollPanel scroll = new AutoScrollPanel();
+      ScrollPanel scroll = new ScrollPanel();
       scroll.setMaxWidth();
       scroll.setMaxHeight();
       panel.setMaxWidth();
