@@ -54,6 +54,7 @@ public class MonitorService extends Thread {
 
     //load current config
     Config.load();
+    Settings.load();
     //start config service
     configService = new ConfigService();
     configService.start();
