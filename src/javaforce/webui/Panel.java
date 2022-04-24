@@ -30,6 +30,16 @@ public class Panel extends Container {
       case AUTO: addClass("overflow-auto"); break;
     }
   }
+  public void init() {
+    super.init();
+    if (count() > 0) {
+      Component child = get(0);
+      if (child instanceof Panel) {
+        addEvent("onresize", "onresizePanel(event, this,\"" + child.id + "\");");
+      }
+    }
+  }
+
   public void onLoaded(String[] args) {
     super.onLoaded(args);
     if (parent == null) invokeOnLoaded(this);

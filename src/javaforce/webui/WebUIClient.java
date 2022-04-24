@@ -71,6 +71,7 @@ public class WebUIClient {
           isReady = true;
           String html = root.html();
           sendEvent("body", "sethtml", new String[] {"html=" + html});
+          sendEvent("body", "setroot", new String[] {"root=" + root.id});
           root.events();
           break;
         case "mousedown":

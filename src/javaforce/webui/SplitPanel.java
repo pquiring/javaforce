@@ -9,7 +9,6 @@ public class SplitPanel extends Panel {
   private int dir;
   private int pos = 50;  //pixels of left/top component
 
-  private Container top;
   private Container div;
   private Container t1, t2;  //NOTE:table-cells ignore specify sizes
   private Container c1, c2;
@@ -24,8 +23,7 @@ public class SplitPanel extends Panel {
     div.setBackColor(Color.grey);
     switch (dir) {
       case VERTICAL:
-        top = new Panel();
-        top.setDisplay("table");
+        setDisplay("table");
 
         t1 = new Panel();  //left component
         t1.setWidth(pos);
@@ -58,8 +56,7 @@ public class SplitPanel extends Panel {
         div.setDisplay("block");
         break;
       case HORIZONTAL:
-        top = new Panel();
-        top.setDisplay("table");
+        setDisplay("table");
 
         t1 = new Panel();  //top component
         t1.setHeight(pos);
@@ -92,13 +89,10 @@ public class SplitPanel extends Panel {
         div.setDisplay("block");
         break;
     }
-    top.add(t1);  //left/top component
-    top.add(div);
-    top.add(t2);  //right/bottom component
-    top.addClass("splitPanelTop");
-    top.setMaxWidth();
-    top.setMaxHeight();
-    add(top);
+    add(t1);  //left/top component
+    add(div);
+    add(t2);  //right/bottom component
+    addClass("splitPanelTop");
   }
 
   public void init() {
@@ -106,11 +100,11 @@ public class SplitPanel extends Panel {
     switch(dir) {
       case VERTICAL:
         div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + c1.id + "\",\"" + c2.id + "\", \"v\");");
-        top.addEvent("onresize", "onresizeSplitDividerWidth(event, this,\"" + c1.id + "\",\"" + c2.id + "\",\"" + div.id + "\")");
+        addEvent("onresize", "onresizeSplitDividerWidth(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\")");
         break;
       case HORIZONTAL:
         div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + c1.id + "\",\"" + c2.id + "\", \"h\");");
-        top.addEvent("onresize", "onresizeSplitDividerHeight(event, this,\"" + c1.id + "\",\"" + c2.id + "\",\"" + div.id + "\")");
+        addEvent("onresize", "onresizeSplitDividerHeight(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\")");
         break;
     }
   }

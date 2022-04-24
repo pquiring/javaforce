@@ -5,6 +5,7 @@ var bindata;
 var body = document.getElementById('body');
 var orghtml = body.innerHTML;
 var temp = document.createElement('div');
+var root;
 
 var delay = 500;
 
@@ -21,6 +22,28 @@ function alarm() {
   }
   audioOscillator.frequency.value = audioOscillatorFreq;
   setTimeout(alarm, 1000);
+}
+
+function getWidth(element) {
+  var str = element.style.width;
+  if (str === null || str.length === 0 || str.endsWith("%")) {
+    return element.offsetWidth;
+  }
+  if (str.endsWith("px")) {
+    str = str.substring(0, str.length - 2);
+  }
+  return parseInt(str);
+}
+
+function getHeight(element) {
+  var str = element.style.height;
+  if (str === null || str.length === 0 || str.endsWith("%")) {
+    return element.offsetHeight;
+  }
+  if (str.endsWith("px")) {
+    str = str.substring(0, str.length - 2);
+  }
+  return parseInt(str);
 }
 
 function load() {
@@ -87,6 +110,9 @@ function wsevent(event) {
     case "sethtml":
       element.innerHTML = msg.html;
       sendOnLoaded(msg.id);
+      break;
+    case "setroot":
+      root = document.getElementById(msg.root);
       break;
     case "setsrc":
       element.src = msg.src;
@@ -161,8 +187,8 @@ function wsevent(event) {
       element.style.height = element.parentElement.offsetHeight;
       break;
     case "setsizetoparent2":
-      element.style.width = element.parentElement.parentElement.offsetWidth;
-      element.style.height = element.parentElement.parentElement.offsetHeight;
+      element.style.width = getWidth(element.parentElement.parentElement);
+      element.style.height = getHeight(element.parentElement.parentElement);
       break;
     case "setsizetoparent3":
       element.style.width = element.parentElement.parentElement.parentElement.offsetWidth;
@@ -341,6 +367,18 @@ function onmousedownBody(event, element) {
 function onresizeBody(event, element) {
   if (ws === null) return;
   sendSize('body');
+  if (root !== null) {
+    var resize = new Event('resize');
+    root.dispatchEvent(resize);
+  }
+}
+
+function onresizePanel(event, element, childid) {
+  var child = document.getElementById(childid);
+  child.style.width = getWidth(element);
+  child.style.height = getHeight(element);
+  var resize = new Event('resize');
+  child.dispatchEvent(resize);
 }
 
 function onClick(event, element) {
@@ -446,24 +484,28 @@ function onresizeSplitDividerWidth(event, element, id1, id2, id3) {
   var element1 = document.getElementById(id1);
   var element2 = document.getElementById(id2);
   var element3 = document.getElementById(id3);
-  var width1 = element1.clientWidth;
-  var width2 = element2.clientWidth;
-  var maxWidth = width1;
-  if (width2 > width1) maxWidth = width2;
-  element3.style.width = maxWidth + "px";
-  element3.parentElement.style.width = maxWidth + "px";
+  var width = getWidth(element);
+  var width1 = element1.offsetWidth;
+  var width2 = element2.offsetWidth;
+  var width3 = width - width1 - width2;
+  element3.style.width = width3 + "px";  //c
+  element3.parentElement.style.width = width3 + "px";  //t
+  var resize = new Event('resize');
+  element3.dispatchEvent(resize);
 }
 
 function onresizeSplitDividerHeight(event, element, id1, id2, id3) {
   var element1 = document.getElementById(id1);
   var element2 = document.getElementById(id2);
   var element3 = document.getElementById(id3);
-  var height1 = element1.clientHeight;
-  var height2 = element2.clientHeight;
-  var maxHeight = height1;
-  if (height2 > height1) maxHeight = height2;
-  element3.style.height = maxHeight + "px";
-  element3.parentElement.style.height = maxHeight + "px";
+  var height = element.offsetHeight;
+  var height1 = element1.offsetHeight;
+  var height2 = element2.offsetHeight;
+  var height3 = height - height1 - height2;
+  element3.style.height = height3 + "px";
+  element3.parentElement.style.height = height3 + "px";
+  var resize = new Event('resize');
+  element3.dispatchEvent(resize);
 }
 
 function onmousedownSplitPanel(event, element, id1, id2, dir) {
