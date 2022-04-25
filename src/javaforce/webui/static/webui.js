@@ -491,8 +491,11 @@ function onresizeSplitPanelWidth(event, element, id1, id2, id3) {
   var width1 = element1.offsetWidth;
   var width2 = element2.offsetWidth;
   var width3 = width - width1 - width2;
-  element3.style.width = width3 + "px";  //c
-  element3.parentElement.style.width = width3 + "px";  //t
+  var height = getHeight(element);
+  element3.style.width = width3 + "px";
+  element3.style.height = height + "px";
+  element3.parentElement.style.width = width3 + "px";
+  element3.parentElement.style.height = height + "px";
   element3.dispatchEvent(new Event('resize'));
 }
 
@@ -500,12 +503,15 @@ function onresizeSplitPanelHeight(event, element, id1, id2, id3) {
   var element1 = document.getElementById(id1);
   var element2 = document.getElementById(id2);
   var element3 = document.getElementById(id3);
-  var height = element.offsetHeight;
+  var height = getHeight(element);
   var height1 = element1.offsetHeight;
   var height2 = element2.offsetHeight;
   var height3 = height - height1 - height2;
-  element3.style.height = height3 + "px";  //c
-  element3.parentElement.style.height = height3 + "px";  //t
+  var width = getWidth(element);
+  element3.style.width = width + "px";
+  element3.style.height = height3 + "px";
+  element3.parentElement.style.width = width + "px";
+  element3.parentElement.style.height = height3 + "px";
   element3.dispatchEvent(new Event('resize'));
 }
 
