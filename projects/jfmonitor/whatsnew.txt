@@ -1,2 +1,5 @@
-Apr ?/2022 : 0.1 released
+Apr 25/2022 : 0.2 released
+  - add support to change web config port
+
+Apr 23/2022 : 0.1 released
   - init public release
