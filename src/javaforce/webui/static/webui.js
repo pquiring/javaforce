@@ -113,7 +113,7 @@ function wsevent(event) {
       break;
     case "setroot":
       root = document.getElementById(msg.root);
-      onresizePanel2(new Event('resize'), root, root.firstChild);
+      root.dispatchEvent(new Event('resize'));
       break;
     case "setsrc":
       element.src = msg.src;
