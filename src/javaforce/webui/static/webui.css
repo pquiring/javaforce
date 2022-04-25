@@ -109,6 +109,8 @@ td {
 .innerpanel {
   width: auto;
   height: auto;
+  box-sizing: border-box;
+  margin: 0px;
 }
 
 .scrollpanel {

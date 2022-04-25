@@ -9,6 +9,7 @@ public class InnerPanel extends Panel {
   public String header;
   public InnerPanel(String header) {
     this.header = header;
+    removeClass("panel");
     addClass("innerpanel");
     setDisplay("block");
   }

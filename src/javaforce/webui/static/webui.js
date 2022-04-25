@@ -113,6 +113,7 @@ function wsevent(event) {
       break;
     case "setroot":
       root = document.getElementById(msg.root);
+      onresizePanel2(new Event('resize'), root, root.firstChild);
       break;
     case "setsrc":
       element.src = msg.src;
@@ -368,17 +369,19 @@ function onresizeBody(event, element) {
   if (ws === null) return;
   sendSize('body');
   if (root !== null) {
-    var resize = new Event('resize');
-    root.dispatchEvent(resize);
+    root.dispatchEvent(new Event('resize'));
   }
+}
+
+function onresizePanel2(event, element, child) {
+  child.style.width = getWidth(element);
+  child.style.height = getHeight(element);
+  child.dispatchEvent(new Event('resize'));
 }
 
 function onresizePanel(event, element, childid) {
   var child = document.getElementById(childid);
-  child.style.width = getWidth(element);
-  child.style.height = getHeight(element);
-  var resize = new Event('resize');
-  child.dispatchEvent(resize);
+  onresizePanel2(event, element, child);
 }
 
 function onClick(event, element) {
@@ -467,20 +470,20 @@ function onresizeTabPanel(event, tabsid) {
   var tabs = document.getElementById(tabsid);
   var nodes = tabs.childNodes;
   var cnt = nodes.length;
-  var maxWidth = tabs.clientWidth;
-  var maxHeight = tabs.clientHeight;
+  var maxWidth = tabs.offsetWidth;
+  var maxHeight = tabs.offsetHeight;
   var width, height;
   for(i = 0;i < cnt;i++) {
-    width = nodes[i].clientWidth;
+    width = nodes[i].offsetWidth;
     if (width > maxWidth) maxWidth = width;
-    height = nodes[i].clientHeight;
+    height = nodes[i].offsetHeight;
     if (height > maxHeight) maxHeight = height;
   }
   tabs.style.width = maxWidth;
   tabs.style.height = maxHeight;
 }
 
-function onresizeSplitDividerWidth(event, element, id1, id2, id3) {
+function onresizeSplitPanelWidth(event, element, id1, id2, id3) {
   var element1 = document.getElementById(id1);
   var element2 = document.getElementById(id2);
   var element3 = document.getElementById(id3);
@@ -490,11 +493,10 @@ function onresizeSplitDividerWidth(event, element, id1, id2, id3) {
   var width3 = width - width1 - width2;
   element3.style.width = width3 + "px";  //c
   element3.parentElement.style.width = width3 + "px";  //t
-  var resize = new Event('resize');
-  element3.dispatchEvent(resize);
+  element3.dispatchEvent(new Event('resize'));
 }
 
-function onresizeSplitDividerHeight(event, element, id1, id2, id3) {
+function onresizeSplitPanelHeight(event, element, id1, id2, id3) {
   var element1 = document.getElementById(id1);
   var element2 = document.getElementById(id2);
   var element3 = document.getElementById(id3);
@@ -502,27 +504,35 @@ function onresizeSplitDividerHeight(event, element, id1, id2, id3) {
   var height1 = element1.offsetHeight;
   var height2 = element2.offsetHeight;
   var height3 = height - height1 - height2;
-  element3.style.height = height3 + "px";
-  element3.parentElement.style.height = height3 + "px";
-  var resize = new Event('resize');
-  element3.dispatchEvent(resize);
+  element3.style.height = height3 + "px";  //c
+  element3.parentElement.style.height = height3 + "px";  //t
+  element3.dispatchEvent(new Event('resize'));
 }
 
-function onmousedownSplitPanel(event, element, id1, id2, dir) {
+function onmousedownSplitPanel(event, element, id1, id2, id3, top, dir) {
   event.preventDefault();
+  var top_element = document.getElementById(top);
   var element1 = document.getElementById(id1);
   var element2 = document.getElementById(id2);
+  var element3 = document.getElementById(id3);
   splitDragging = {
     //mouse coords
     mouseX: event.clientX,
     mouseY: event.clientY,
     //current size
-    startX: element1.clientWidth,
-    startY: element1.clientHeight,
+    startX: element1.offsetWidth,
+    startY: element1.offsetHeight,
     //elements
+    top_element: top_element,
     element: element,
     element1: element1,
     element2: element2,
+    element3: element3,
+    //ids
+    top : top,
+    id1 : id1,
+    id2 : id2,
+    id3 : id3,
     //direction
     dir: dir
   };
@@ -532,11 +542,17 @@ function onmousemoveSplitPanel(event, element) {
   switch (splitDragging.dir) {
     case 'h':
       var height = splitDragging.startY + (event.clientY - splitDragging.mouseY);
-      splitDragging.element1.style.height = height + "px";
+      splitDragging.element1.style.height = height + "px";  //c
+      splitDragging.element1.parentElement.style.height = height + "px";  //t
+      onresizePanel2(new Event('resize'), splitDragging.element1, splitDragging.element1.firstChild);
+      onresizeSplitPanelHeight(new Event('resize'), splitDragging.top_element, splitDragging.id1, splitDragging.id2, splitDragging.id3);
       break;
     case 'v':
       var width = splitDragging.startX + (event.clientX - splitDragging.mouseX);
-      splitDragging.element1.style.width = width + "px";
+      splitDragging.element1.style.width = width + "px";  //c
+      splitDragging.element1.parentElement.style.width = width + "px";  //t
+      onresizePanel2(new Event('resize'), splitDragging.element1, splitDragging.element1.firstChild);
+      onresizeSplitPanelWidth(new Event('resize'), splitDragging.top_element, splitDragging.id1, splitDragging.id2, splitDragging.id3);
       break;
   }
 }

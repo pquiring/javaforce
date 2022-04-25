@@ -93,18 +93,20 @@ public class SplitPanel extends Panel {
     add(div);
     add(t2);  //right/bottom component
     addClass("splitPanelTop");
+    setMaxWidth();
+    setMaxHeight();
   }
 
   public void init() {
     super.init();
     switch(dir) {
       case VERTICAL:
-        div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + c1.id + "\",\"" + c2.id + "\", \"v\");");
-        addEvent("onresize", "onresizeSplitDividerWidth(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\")");
+        div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\",\"" + this.id + "\", \"v\");");
+        addEvent("onresize", "onresizeSplitPanelWidth(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\")");
         break;
       case HORIZONTAL:
-        div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + c1.id + "\",\"" + c2.id + "\", \"h\");");
-        addEvent("onresize", "onresizeSplitDividerHeight(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\")");
+        div.addEvent("onmousedown", "onmousedownSplitPanel(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\",\"" + this.id + "\", \"h\");");
+        addEvent("onresize", "onresizeSplitPanelHeight(event, this,\"" + c1.id + "\",\"" + div.id + "\",\"" + c2.id + "\")");
         break;
     }
   }

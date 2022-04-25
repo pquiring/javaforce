@@ -103,11 +103,9 @@ public class ConfigService implements WebUIHandler {
 
   public Panel loginPanel() {
     Panel panel = new Panel();
-    panel.removeClass("column");
+    Container ctr = new Container();
     InnerPanel inner = new InnerPanel("jfMonitor Login");
     inner.setDisplay("inline");
-    inner.setAutoWidth();
-    inner.setAutoHeight();
     panel.setAlign(Component.CENTER);
     Row row;
     Label msg = new Label("");
@@ -130,7 +128,8 @@ public class ConfigService implements WebUIHandler {
         msg.setColor(Color.red);
       }
     });
-    panel.add(inner);
+    ctr.add(inner);
+    panel.add(ctr);
     return panel;
   }
 
