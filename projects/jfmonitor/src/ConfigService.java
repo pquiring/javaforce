@@ -165,7 +165,7 @@ public class ConfigService implements WebUIHandler {
   public Panel serverLeftPanel() {
     Panel panel = new Panel();
     //left side
-    List list = new List();
+    ListBox list = new ListBox();
     list.setName("list");
     //add menu options
     Button opt1 = new Button("Status");

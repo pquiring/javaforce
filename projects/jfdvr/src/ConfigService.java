@@ -82,7 +82,7 @@ public class ConfigService implements WebUIHandler {
     split.setRightComponent(right);
     panel.add(split);
     //left side
-    List list = new List();
+    ListBox list = new ListBox();
     list.setName("list");
     int cnt = Config.current.cameras.length;
     for(int a=0;a<cnt;a++) {

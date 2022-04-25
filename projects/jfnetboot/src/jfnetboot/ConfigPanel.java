@@ -74,7 +74,7 @@ public class ConfigPanel extends Panel {
   private Panel createMenuPanel() {
     Panel panel = new Panel();
     //left side
-    List list = new List();
+    ListBox list = new ListBox();
     //add menu options
     Button opt1 = new Button("Dashboard");
     list.add(opt1);

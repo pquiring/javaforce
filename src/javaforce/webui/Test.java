@@ -161,7 +161,7 @@ public class Test implements WebUIHandler {
     });
     col.add(ta1);
 
-    List list = new List();
+    ListBox list = new ListBox();
     list.setHeight(50);
     list.add("Option #1");
     list.add("Option #2");
