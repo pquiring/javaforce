@@ -23,6 +23,12 @@ Usage:
   - each client will report file system usage to the server
   - any client (or server) can also ping any locally connected network which requires pcap installed.
 
+FAQ:
+  - Q: Can I ping a remote network?
+  - A: No, the MAC address is used to identify devices and ARP requests are used instead of actual PING requests
+       since a PING can be blocked but ARP requests are generally not blocked.
+       This is why the network interface IP address is required in the network monitoring setup section.
+
 WebSite : http://jfmonitor.sf.net
 
 Source Code : https://github.com/pquiring/javaforce/tree/master/projects/jfmonitor
