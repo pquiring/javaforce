@@ -1,5 +1,9 @@
 What's new...
 
+Apr 25/2022 : JF 35.1 released
+  - jfMonitor/0.2
+    - added option to change web config port (settings.cfg)
+
 Apr 23/2022 : JF 35.0 released
   - new : javaforce.net.PacketCapture
     - native binding to libpcap
