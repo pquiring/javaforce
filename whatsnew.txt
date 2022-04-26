@@ -1,5 +1,9 @@
 What's new...
 
+Apr 26/2022 : JF 35.2 released
+  - jfMonitor/0.3
+    - added daily notification of unknown devices
+
 Apr 25/2022 : JF 35.1 released
   - jfMonitor/0.2
     - added option to change web config port (settings.cfg)
