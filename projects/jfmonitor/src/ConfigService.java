@@ -598,6 +598,14 @@ public class ConfigService implements WebUIHandler {
     }
     row.add(email_type);
     panel.add(row);
+
+    row = new Row();
+    row.add(new Label("Unknown Devices:"));
+    CheckBox unknowns = new CheckBox("Daily Notification Report");
+    unknowns.setSelected(Config.current.notify_unknown_device);
+    row.add(unknowns);
+    panel.add(row);
+
     row = new Row();
     Button email_save = new Button("Save");
     email_save.addClickListener((MouseEvent me, Component c) -> {
@@ -617,6 +625,7 @@ public class ConfigService implements WebUIHandler {
           case 1: Config.current.email_type = SMTP.AUTH_NTLM; break;
         }
         Config.current.emails = _emails;
+        Config.current.notify_unknown_device = unknowns.isSelected();
         Config.save();
         msg.setText("Updated Notification Settings");
         msg.setColor(Color.green);
@@ -896,40 +905,43 @@ public class ConfigService implements WebUIHandler {
 
   public Panel installPanel() {
     Row row;
+    Column col;
     Panel panel = new Panel();
-    Button client_next = new Button("Connect");
+    panel.setAlign(Component.CENTER);
     Button server_next = new Button("Save");
-    panel.add(new Label("jfMonitor has not been setup yet, please select client or server mode."));
-    row = new Row();
-    row.setBackColor(Color.blue);
-    row.setHeight(5);
-    panel.add(row);
+    Button client_next = new Button("Connect");
+    col = new Column();
+    panel.add(col);
+
+    col.add(new Label("jfMonitor has not been setup yet, please select client or server setup."));
     {
-      panel.add(new Label("Client Mode Setup:"));
+      InnerPanel client_panel = new InnerPanel("Client Setup");
+      col.add(client_panel);
+      client_panel.setDisplay("inline-block");
       Label msg = new Label("");
-      panel.add(msg);
+      client_panel.add(msg);
       row = new Row();
       row.add(new Label("Client Host/IP:"));
       TextField name = new TextField("");
       name.setName("name");
       row.add(name);
-      panel.add(row);
+      client_panel.add(row);
       row = new Row();
       row.add(new Label("Server Host/IP:"));
       TextField host = new TextField("");
       host.setName("host");
       row.add(host);
-      panel.add(row);
+      client_panel.add(row);
       row = new Row();
       row.add(new Label("Server Password:"));
       TextField pass = new TextField("");
       pass.setName("password");
 //      password.setPassword(true);  //login may be blocked - need to create HTTPS server instead
       row.add(pass);
-      panel.add(row);
+      client_panel.add(row);
       row = new Row();
       row.add(client_next);
-      panel.add(row);
+      client_panel.add(row);
       client_next.addClickListener( (MouseEvent e, Component c) -> {
         //connect to server
         WebUIClient webclient = c.getClient();
@@ -992,21 +1004,20 @@ public class ConfigService implements WebUIHandler {
         }.start();
       });
     }
-    row = new Row();
-    row.setBackColor(Color.blue);
-    row.setHeight(5);
-    panel.add(row);
+    col.add(new HTML("br"));
     {
-      panel.add(new Label("Server Mode Setup:"));
+      InnerPanel server_panel = new InnerPanel("Server Setup");
+      col.add(server_panel);
+      server_panel.setDisplay("inline-block");
       Label msg = new Label("");
       msg.setColor(Color.red);
-      panel.add(msg);
+      server_panel.add(msg);
 
       row = new Row();
       row.add(new Label("Server Host/IP:"));
       TextField name = new TextField("");
       row.add(name);
-      panel.add(row);
+      server_panel.add(row);
 
       row = new Row();
       row.add(new Label("Server Password:"));
@@ -1014,7 +1025,7 @@ public class ConfigService implements WebUIHandler {
       pass.setName("password");
 //      password.setPassword(true);  //login may be blocked - need to create HTTPS server
       row.add(pass);
-      panel.add(row);
+      server_panel.add(row);
 
       row = new Row();
       row.add(new Label("Confirm Password:"));
@@ -1022,11 +1033,11 @@ public class ConfigService implements WebUIHandler {
       confirm.setName("password");
 //      password.setPassword(true);  //login may be blocked - need to create HTTPS server
       row.add(confirm);
-      panel.add(row);
+      server_panel.add(row);
 
       row = new Row();
       row.add(server_next);
-      panel.add(row);
+      server_panel.add(row);
       server_next.addClickListener( (MouseEvent e, Component c) -> {
         //save server config
         WebUIClient webclient = c.getClient();

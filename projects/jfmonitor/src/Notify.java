@@ -3,6 +3,8 @@
  * @author pquiring
  */
 
+import java.util.*;
+
 import javaforce.*;
 
 public class Notify {
@@ -86,6 +88,44 @@ public class Notify {
     msg.append("Host/Storage:" + host + "/" + volume + "\r\n");
     msg.append("Percent Full:" + percent + "\r\n");
     notify_email("Storage Event", msg.toString());
+  }
+  private static long one_day = (24 * 60 * 60 * 1000);
+  public static void notify_unknowns() {
+    if (unknown_ts == 0) return;
+    StringBuilder msg = new StringBuilder();
+    synchronized(unknown_devs) {
+      //send out unknown devices report every 24 hours
+      long now = System.currentTimeMillis();
+      if ((now - unknown_ts) < one_day) return;
+      msg.append("Unknown Devices Report:\r\n");
+      for(Unknown u : unknown_devs) {
+        msg.append("MAC=" + u.mac + ":Network=" + u.net + "\r\n");
+      }
+      unknown_ts = 0;
+    }
+    notify_email("Daily Unknown Devices Report", msg.toString());
+  }
+
+  private static class Unknown {
+    public String mac;
+    public String net;
+  }
+
+  private static long unknown_ts;
+  private static ArrayList<Unknown> unknown_devs = new ArrayList<>();
+  public static void add_unknown_device(String mac, String net) {
+    synchronized(unknown_devs) {
+      if (unknown_ts == 0) {
+        unknown_ts = System.currentTimeMillis();
+      }
+      for(Unknown u : unknown_devs) {
+        if (u.mac.equals(mac) && u.net.equals(net)) {
+          return;
+        }
+      }
+      Unknown u = new Unknown();
+      unknown_devs.add(u);
+    }
   }
   private static void log(Exception e) {
     JFLog.log(3, e);

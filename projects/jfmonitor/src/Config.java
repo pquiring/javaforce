@@ -30,7 +30,7 @@ public class Config implements Serializable {
   //if server
   private ArrayList<Network> networks;  //ping only
   private ArrayList<Device> devices;  //known devices
-//  public boolean notify_unknown_device;  //TODO
+  public boolean notify_unknown_device;
   public transient ArrayList<String> hosts;  //clients (file systems)
 
   //notification settings

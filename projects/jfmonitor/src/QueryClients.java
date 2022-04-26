@@ -13,6 +13,9 @@ public class QueryClients extends Thread {
       JF.sleep(1000);
     }
     while (Status.active) {
+      if (Config.current.notify_unknown_device) {
+        Notify.notify_unknowns();
+      }
       ArrayList<ServerClient> clients = MonitorService.server.getClients();
       long now = System.currentTimeMillis();
       long past = now - (10 * 1000 * 60);  //10 mins ago
