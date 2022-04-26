@@ -1,3 +1,6 @@
+Apr 26/2022 : 0.3 released
+  - add unknown device daily notification
+
 Apr 25/2022 : 0.2 released
   - add support to change web config port
 

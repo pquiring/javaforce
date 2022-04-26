@@ -7,9 +7,7 @@ Features:
   - Network Monitoring using ARP requests (PING requests can get blocked)
   - Storage Monitoring
   - email notification
-
-Not Supported (yet):
-  - unknown device notification
+  - unknown device notification (daily report)
 
 Web Interface:
   - http://your_host_name
@@ -36,5 +34,5 @@ Source Code : https://github.com/pquiring/javaforce/tree/master/projects/jfmonit
 Author : Peter Quiring
 eMail : pquiring at gmail dot com
 
-Version : 0.2
-Date : 4/25/2022
+Version : 0.3
+Date : 4/26/2022
