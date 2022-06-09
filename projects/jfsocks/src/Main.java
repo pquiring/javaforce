@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 
 public class Main extends javax.swing.JFrame implements ActionListener {
 
