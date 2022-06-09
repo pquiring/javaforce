@@ -7,7 +7,6 @@
 
 import java.io.*;
 import java.net.*;
-import javax.net.ssl.*;
 
 import java.awt.*;
 import java.awt.event.*;

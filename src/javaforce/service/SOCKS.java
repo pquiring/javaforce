@@ -35,17 +35,20 @@ public class SOCKS extends Thread {
     }
   }
 
-  private ServerSocket ss;
-  private volatile boolean active;
+  private static ServerSocket ss;
+  private static volatile boolean active;
   private static ArrayList<SocksWorker> socks_workers = new ArrayList<SocksWorker>();
   private static ArrayList<ForwardWorker> forward_workers = new ArrayList<ForwardWorker>();
+  private static ArrayList<ForwardRemoteWorker> bind_forward_workers = new ArrayList<ForwardRemoteWorker>();
   private static Object lock = new Object();
   private static boolean socks4 = true, socks5 = false;
-  private IP4Port bind = new IP4Port();
-  private boolean secure = false;
+  private static IP4Port bind = new IP4Port();
+  private static IP4Port bind_cmd = new IP4Port();
+  private static boolean secure = false;
   private static ArrayList<String> user_pass_list;
   private static ArrayList<Subnet> subnet_list;
   private static ArrayList<Forward> forward_list;
+  private static ArrayList<ForwardRemote> bind_forward_list;
 
   public SOCKS() {
   }
@@ -81,6 +84,12 @@ public class SOCKS extends Thread {
     }
     public String toString() {
       return toIP4String();
+    }
+    public boolean isEmpty() {
+      for(int a=0;a<4;a++) {
+        if (ip[a] != 0) return false;
+      }
+      return true;
     }
   }
 
@@ -151,6 +160,42 @@ public class SOCKS extends Thread {
     }
     public String toString() {
       return from.toString() + " -> " + to.toString();
+    }
+  }
+
+  private static class ForwardRemote {
+    public String user, pass;
+    public IP4Port bind = new IP4Port();
+    public IP4 remote = new IP4();
+    public int port;
+    public IP4Port to = new IP4Port();
+    public boolean secure;
+    public boolean set_bind(String ip_port) {
+      int idx = ip_port.indexOf(':');
+      if (idx == -1) return false;
+      String ip = ip_port.substring(0, idx);
+      String port = ip_port.substring(idx+1);
+      if (!bind.setIP(ip)) return false;
+      if (!bind.setPort(port)) return false;
+      return true;
+    }
+    public boolean set_remote(String host) {
+      return remote.setIP(host);
+    }
+    public void set_port(int port) {
+      this.port = port;
+    }
+    public boolean set_to(String ip_port) {
+      int idx = ip_port.indexOf(':');
+      if (idx == -1) return false;
+      String ip = ip_port.substring(0, idx);
+      String port = ip_port.substring(idx+1);
+      if (!to.setIP(ip)) return false;
+      if (!to.setPort(port)) return false;
+      return true;
+    }
+    public String toString() {
+      return bind.toString() + " bind port " + port + " -> " + to.toString();
     }
   }
 
@@ -240,19 +285,22 @@ public class SOCKS extends Thread {
     = "[global]\n"
     + "port=1080\n"
     + "#bind=192.168.100.2\n"
+    + "#bindcmd=192.168.110.2\n"
     + "secure=false\n"
     + "socks4=true\n"
     + "socks5=false\n"
     + "#auth=user:pass\n"
     + "#ipnet=192.168.0.0/255.255.255.0\n"
     + "#ip=192.168.5.6\n"
-    + "#forward=192.168.100.2:80,192.168.200.2:80\n";
+    + "#forwardlocal=192.168.100.2:80,192.168.200.2:80\n"
+    + "#forwardremote=[user:pass@]192.168.110.2:1080,0.0.0.0,80,192.168.200.2:80[,true]\n";
 
   private void loadConfig() {
     JFLog.log("loadConfig");
     user_pass_list = new ArrayList<String>();
     subnet_list = new ArrayList<Subnet>();
     forward_list = new ArrayList<Forward>();
+    bind_forward_list = new ArrayList<ForwardRemote>();
     Section section = Section.None;
     bind.setIP("0.0.0.0");  //bind to all interfaces
     bind.port = 1080;
@@ -285,6 +333,12 @@ public class SOCKS extends Thread {
               case "bind":
                 if (!bind.setIP(value)) {
                   JFLog.log("SOCKS:bind:Invalid IP:" + value);
+                  break;
+                }
+                break;
+              case "bindcmd":
+                if (!bind_cmd.setIP(value)) {
+                  JFLog.log("SOCKS:bindcmd:Invalid IP:" + value);
                   break;
                 }
                 break;
@@ -334,22 +388,59 @@ public class SOCKS extends Thread {
                 subnet_list.add(subnet);
                 break;
               }
+              case "forwardlocal":  //alias
               case "forward": {
+                //src_ip:src_port,dest_ip:dest_port
                 String[] p = value.split(",");
                 if (p.length != 2) {
-                  JFLog.log("forward:Invalid option:" + value);
+                  JFLog.log(key + ":Invalid option:" + value);
                   break;
                 }
                 Forward forward = new Forward();
                 if (!forward.set_from(p[0])) {
-                  JFLog.log("forward:Invalid from:" + p[0]);
+                  JFLog.log(key + ":Invalid from:" + p[0]);
                   break;
                 }
                 if (!forward.set_to(p[1])) {
-                  JFLog.log("forward:Invalid to:" + p[1]);
+                  JFLog.log(key + ":Invalid to:" + p[1]);
                   break;
                 }
                 forward_list.add(forward);
+                break;
+              }
+              case "forwardremote": {
+                //[user:pass@]192.168.150.2:1080,0.0.0.0,80,192.168.200.2:80[,true]\n";
+                String[] p = value.split(",");
+                if (p.length < 4) {
+                  JFLog.log("bindforward:Invalid option:" + value);
+                  break;
+                }
+                ForwardRemote forward = new ForwardRemote();
+                String bind = p[0];
+                int atidx = bind.indexOf('@');
+                if (atidx != -1) {
+                  String user_pass = bind.substring(0, atidx);
+                  bind = bind.substring(atidx + 1);
+                  int colonidx = user_pass.indexOf(':');
+                  if (colonidx != -1) {
+                    forward.user = user_pass.substring(0, colonidx);
+                    forward.pass = user_pass.substring(colonidx + 1);
+                  }
+                }
+                if (!forward.set_bind(bind)) {
+                  JFLog.log("bindforward:Invalid bind address:" + p[0]);
+                  break;
+                }
+                forward.set_remote(p[1]);
+                forward.set_port(Integer.valueOf(p[2]));
+                if (!forward.set_to(p[3])) {
+                  JFLog.log("bindforward:Invalid to:" + p[3]);
+                  break;
+                }
+                if (p.length > 4) {
+                  forward.secure = p[4].equals("true");
+                }
+                bind_forward_list.add(forward);
                 break;
               }
             }
@@ -474,9 +565,16 @@ public class SOCKS extends Thread {
     }
 
     private void socks4() throws Exception {
-      JFLog.log("socks4 connection started");
-      if (req[1] != 0x01) throw new Exception("SOCKS4:bad request:not open socket request");
       if (!socks4) throw new Exception("SOCKS4:not enabled");
+      JFLog.log("socks4 connection started");
+      switch (req[1]) {
+        case 0x01: socks4_connect(); return;
+        case 0x02: socks4_bind(); return;
+      }
+      throw new Exception("SOCKS4:bad request");
+    }
+
+    private void socks4_connect() throws Exception {
       int port = BE.getuint16(req, 2);
       String user_id;  //ignored
       String ip3 = String.format("%d.%d.%d", req[4] & 0xff, req[5] & 0xff, req[6] & 0xff);
@@ -505,6 +603,53 @@ public class SOCKS extends Thread {
       byte[] reply = new byte[8];
       reply[0] = 0x00;
       reply[1] = 0x5a;  //success
+      cos.write(reply);
+      //now just proxy data back and forth
+      pd1 = new ProxyData(c,o,"s4-1");
+      pd1.start();
+      pd2 = new ProxyData(o,c,"s4-2");
+      pd2.start();
+      pd1.join();
+      pd2.join();
+      JFLog.log("SOCKS4:Session end");
+    }
+
+    private void socks4_bind() throws Exception {
+      int port = BE.getuint16(req, 2);
+      String src = String.format("%d.%d.%d.%d", req[4] & 0xff, req[5] & 0xff, req[6] & 0xff, req[7] & 0xff);
+      byte[] reply = new byte[8];
+      reply[0] = 0x00;
+      reply[1] = 0x5a;  //success
+      cos.write(reply);
+      ServerSocket ss;
+      if (bind_cmd.isEmpty()) {
+        ss = new ServerSocket(port);
+      } else {
+        synchronized (bind_cmd) {
+          ss = new ServerSocket();
+          bind_cmd.port = port;
+          ss.bind(bind_cmd.toInetSocketAddress());
+        }
+      }
+      o = ss.accept();
+      String src_addr = o.getRemoteSocketAddress().toString();
+      int src_port = o.getPort();
+      if (!src.equals("0.0.0.0")) {
+        if (!src.equals(src_addr)) {
+          throw new Exception("SOCKS4:bind:unexpected host connected");
+        }
+      }
+      connected = true;
+      reply[0] = 0x00;
+      reply[1] = 0x5a;  //success
+      IP4 src_ip = new IP4();
+      src_ip.setIP(src_addr);
+      //return src ip/port
+      reply[2] = (byte)(src_port & 0xff00 >> 8);
+      reply[3] = (byte)(src_port & 0xff);
+      for(int a=0;a<4;a++) {
+        reply[4 + a] = (byte)src_ip.ip[0 + a];
+      }
       cos.write(reply);
       //now just proxy data back and forth
       pd1 = new ProxyData(c,o,"s4-1");
@@ -583,7 +728,15 @@ public class SOCKS extends Thread {
         }
       }
       if (req[0] != 0x05) throw new Exception("SOCKS5:bad connection request:version != 0x05");
-      if (req[1] != 0x01) throw new Exception("SOCKS5:bad connection request:cmd not supported:" + req[1]);
+      switch (req[1]) {
+        case 0x01: socks5_connect(); return;
+        case 0x02: socks5_bind(); return;
+      }
+      throw new Exception("SOCKS5:cmd not supported:" + req[1]);
+    }
+
+    private void socks5_connect() throws Exception {
+      byte[] reply;
       //req[2] = reserved
       String dest = null;
       int port = BE.getuint16(req, reqSize - 2);
@@ -605,6 +758,56 @@ public class SOCKS extends Thread {
       cos.write(reply);
       JFLog.log("SOCKS5:Connect:" + dest + ":" + port);
       o = new Socket(dest, port);
+      connected = true;
+      //now just proxy data back and forth
+      pd1 = new ProxyData(c,o,"s5-1");
+      pd1.start();
+      pd2 = new ProxyData(o,c,"s5-2");
+      pd2.start();
+      pd1.join();
+      pd2.join();
+      JFLog.log("SOCKS5:Session end");
+    }
+    private void socks5_bind() throws Exception {
+      byte[] reply;
+      //req[2] = reserved
+      String src = null;
+      int port = BE.getuint16(req, reqSize - 2);
+      switch (req[3]) {
+        case 0x01:
+          src = String.format("%d.%d.%d.%d", req[4] & 0xff, req[5] & 0xff, req[6] & 0xff, req[7] & 0xff);
+          break;
+        case 0x03:
+          src = new String(req, 5, req[4] & 0xff);
+          src = InetAddress.getByName(src).getHostAddress();
+          break;
+        default:
+          throw new Exception("SOCKS5:bad connection request:addr type not supported:" + req[3]);
+      }
+      reply = new byte[reqSize];
+      System.arraycopy(req, 0, reply, 0, reqSize);
+      reply[1] = 0x00;  //success
+      cos.write(reply);
+      ServerSocket ss;
+      if (bind_cmd.isEmpty()) {
+        ss = new ServerSocket(port);
+      } else {
+        synchronized (bind_cmd) {
+          ss = new ServerSocket();
+          bind_cmd.port = port;
+          ss.bind(bind_cmd.toInetSocketAddress());
+        }
+      }
+      o = ss.accept();
+      String src_addr = o.getRemoteSocketAddress().toString();
+      int src_port = o.getPort();
+      if (!src.equals("0.0.0.0")) {
+        if (!src.equals(src_addr)) {
+          throw new Exception("SOCKS5:bind:unexpected host connected");
+        }
+      }
+      //TODO : fill in proper values (optional)
+      cos.write(reply);
       connected = true;
       //now just proxy data back and forth
       pd1 = new ProxyData(c,o,"s5-1");
@@ -637,6 +840,46 @@ public class SOCKS extends Thread {
             pd2.start();
           } catch (Exception e) {
             if (!(e instanceof SocketException)) JFLog.log(e);
+          }
+        }
+      } catch (Exception e) {
+        if (!(e instanceof SocketException)) JFLog.log(e);
+      }
+    }
+    public void close() {
+      try { ss.close(); } catch (Exception e) {}
+    }
+  }
+
+  public class ForwardRemoteWorker extends Thread {
+    private ForwardRemote forward;
+    public ForwardRemoteWorker(ForwardRemote forward) {
+      this.forward = forward;
+    }
+    public void run() {
+      try {
+        while (active) {
+          try {
+            Socket from = null;
+            if (forward.secure) {
+              from = JF.connectSSL(forward.bind.toInetAddress().toString(), forward.bind.port);
+              if (!javaforce.SOCKS.bind(from, forward.remote.toString(), forward.port, forward.user, forward.pass)) {
+                throw new Exception("SOCKS5:bind:failed");
+              }
+            } else {
+              from = new Socket(forward.bind.toInetAddress(), forward.bind.port);
+              if (!javaforce.SOCKS.bind(from, forward.remote.toString(), forward.port)) {
+                throw new Exception("SOCKS4:bind:failed");
+              }
+            }
+            Socket to = new Socket(forward.to.toInetAddress(), forward.to.port);
+            ProxyData pd1 = new ProxyData(from, to, "f-1");
+            pd1.start();
+            ProxyData pd2 = new ProxyData(to, from, "f-2");
+            pd2.start();
+          } catch (Exception e) {
+            if (!(e instanceof SocketException)) JFLog.log(e);
+            JF.sleep(5000);
           }
         }
       } catch (Exception e) {
