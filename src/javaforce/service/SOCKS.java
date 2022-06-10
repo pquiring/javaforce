@@ -874,11 +874,14 @@ public class SOCKS extends Thread {
             Socket from = null;
             if (forward.secure) {
               from = JF.connectSSL(forward.socks.toInetAddress().toString(), forward.socks.port);
+            } else {
+              from = new Socket(forward.socks.toInetAddress(), forward.socks.port);
+            }
+            if (forward.user != null && forward.pass != null) {
               if (!javaforce.SOCKS.bind(from, forward.from.toString(), forward.port, forward.user, forward.pass)) {
                 throw new Exception("SOCKS5:bind:failed");
               }
             } else {
-              from = new Socket(forward.socks.toInetAddress(), forward.socks.port);
               if (!javaforce.SOCKS.bind(from, forward.from.toString(), forward.port)) {
                 throw new Exception("SOCKS4:bind:failed");
               }
