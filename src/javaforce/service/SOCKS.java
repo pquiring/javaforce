@@ -81,7 +81,7 @@ public class SOCKS extends Thread {
         return null;
       }
     }
-    private String toIP4String() {
+    public String toIP4String() {
       return String.format("%d.%d.%d.%d", ip[0] & 0xff, ip[1] & 0xff, ip[2] & 0xff, ip[3] & 0xff);
     }
     public String toString() {
@@ -638,7 +638,7 @@ public class SOCKS extends Thread {
       pd2.start();
       pd1.join();
       pd2.join();
-      JFLog.log("SOCKS4:Session end");
+      JFLog.log("SOCKS4:connect() Session end");
     }
 
     private void socks4_bind() throws Exception {
@@ -649,45 +649,52 @@ public class SOCKS extends Thread {
       reply[0] = 0x00;
       reply[1] = 0x5a;  //success
       cos.write(reply);
-      ServerSocket ss;
-      if (bind_cmd.isEmpty()) {
-        ss = new ServerSocket(port);
-      } else {
-        synchronized (bind_cmd) {
-          ss = new ServerSocket();
-          bind_cmd.port = port;
-          ss.bind(bind_cmd.toInetSocketAddress());
+      ServerSocket ss = null;
+      try {
+        if (bind_cmd.isEmpty()) {
+          ss = new ServerSocket(port);
+        } else {
+          synchronized (bind_cmd) {
+            ss = new ServerSocket();
+            bind_cmd.port = port;
+            ss.bind(bind_cmd.toInetSocketAddress());
+          }
         }
-      }
-      ss.setSoTimeout(socks_bind_timeout);
-      o = ss.accept();
-      String src_addr = o.getRemoteSocketAddress().toString();
-      int src_port = o.getPort();
-      if (!src.equals("0.0.0.0")) {
-        if (!src.equals(src_addr)) {
-          throw new Exception("SOCKS4:bind:unexpected host connected");
+        ss.setSoTimeout(socks_bind_timeout);
+        o = ss.accept();
+        String src_addr = o.getRemoteSocketAddress().toString();
+        int src_port = o.getPort();
+        if (!src.equals("0.0.0.0")) {
+          if (!src.equals(src_addr)) {
+            throw new Exception("SOCKS4:bind:unexpected host connected");
+          }
         }
+        connected = true;
+        reply[0] = 0x00;
+        reply[1] = 0x5a;  //success
+        IP4 src_ip = new IP4();
+        src_ip.setIP(src_addr);
+        //return src ip/port
+        reply[2] = (byte)(src_port & 0xff00 >> 8);
+        reply[3] = (byte)(src_port & 0xff);
+        for(int a=0;a<4;a++) {
+          reply[4 + a] = (byte)src_ip.ip[0 + a];
+        }
+        cos.write(reply);
+        //now just proxy data back and forth
+        pd1 = new ProxyData(c,o,"s4-1");
+        pd1.start();
+        pd2 = new ProxyData(o,c,"s4-2");
+        pd2.start();
+        pd1.join();
+        pd2.join();
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-      connected = true;
-      reply[0] = 0x00;
-      reply[1] = 0x5a;  //success
-      IP4 src_ip = new IP4();
-      src_ip.setIP(src_addr);
-      //return src ip/port
-      reply[2] = (byte)(src_port & 0xff00 >> 8);
-      reply[3] = (byte)(src_port & 0xff);
-      for(int a=0;a<4;a++) {
-        reply[4 + a] = (byte)src_ip.ip[0 + a];
+      if (ss != null) {
+        try { ss.close(); } catch (Exception e2) {}
       }
-      cos.write(reply);
-      //now just proxy data back and forth
-      pd1 = new ProxyData(c,o,"s4-1");
-      pd1.start();
-      pd2 = new ProxyData(o,c,"s4-2");
-      pd2.start();
-      pd1.join();
-      pd2.join();
-      JFLog.log("SOCKS4:Session end");
+      JFLog.log("SOCKS4:bind() Session end");
     }
 
     private void socks5() throws Exception {
@@ -795,7 +802,7 @@ public class SOCKS extends Thread {
       pd2.start();
       pd1.join();
       pd2.join();
-      JFLog.log("SOCKS5:Session end");
+      JFLog.log("SOCKS5:connect() Session end");
     }
     private void socks5_bind() throws Exception {
       if (!socks_bind) throw new Exception("SOCKS.bind disabled!");
@@ -818,36 +825,43 @@ public class SOCKS extends Thread {
       System.arraycopy(req, 0, reply, 0, reqSize);
       reply[1] = 0x00;  //success
       cos.write(reply);
-      ServerSocket ss;
-      if (bind_cmd.isEmpty()) {
-        ss = new ServerSocket(port);
-      } else {
-        synchronized (bind_cmd) {
-          ss = new ServerSocket();
-          bind_cmd.port = port;
-          ss.bind(bind_cmd.toInetSocketAddress());
+      ServerSocket ss = null;
+      try {
+        if (bind_cmd.isEmpty()) {
+          ss = new ServerSocket(port);
+        } else {
+          synchronized (bind_cmd) {
+            ss = new ServerSocket();
+            bind_cmd.port = port;
+            ss.bind(bind_cmd.toInetSocketAddress());
+          }
         }
-      }
-      ss.setSoTimeout(socks_bind_timeout);
-      o = ss.accept();
-      String src_addr = o.getRemoteSocketAddress().toString();
-      int src_port = o.getPort();
-      if (!src.equals("0.0.0.0")) {
-        if (!src.equals(src_addr)) {
-          throw new Exception("SOCKS5:bind:unexpected host connected");
+        ss.setSoTimeout(socks_bind_timeout);
+        o = ss.accept();
+        String src_addr = o.getRemoteSocketAddress().toString();
+        int src_port = o.getPort();
+        if (!src.equals("0.0.0.0")) {
+          if (!src.equals(src_addr)) {
+            throw new Exception("SOCKS5:bind:unexpected host connected");
+          }
         }
+        //TODO : fill in proper values (optional)
+        cos.write(reply);
+        connected = true;
+        //now just proxy data back and forth
+        pd1 = new ProxyData(c,o,"s5-1");
+        pd1.start();
+        pd2 = new ProxyData(o,c,"s5-2");
+        pd2.start();
+        pd1.join();
+        pd2.join();
+      } catch (Exception e) {
+        JFLog.log(e);
       }
-      //TODO : fill in proper values (optional)
-      cos.write(reply);
-      connected = true;
-      //now just proxy data back and forth
-      pd1 = new ProxyData(c,o,"s5-1");
-      pd1.start();
-      pd2 = new ProxyData(o,c,"s5-2");
-      pd2.start();
-      pd1.join();
-      pd2.join();
-      JFLog.log("SOCKS5:Session end");
+      if (ss != null) {
+        try { ss.close(); } catch (Exception e2) {}
+      }
+      JFLog.log("SOCKS5:bind() Session end");
     }
   }
 
@@ -869,12 +883,14 @@ public class SOCKS extends Thread {
             pd1.start();
             ProxyData pd2 = new ProxyData(to, from, "f-2");
             pd2.start();
+            //TODO : join ProxyData threads
           } catch (Exception e) {
             if (!(e instanceof SocketException)) JFLog.log(e);
           }
         }
       } catch (Exception e) {
         if (!(e instanceof SocketException)) JFLog.log(e);
+        JF.sleep(1000);
       }
     }
     public void close() {
@@ -893,7 +909,7 @@ public class SOCKS extends Thread {
           try {
             Socket from = null;
             if (forward.secure) {
-              from = JF.connectSSL(forward.socks.toInetAddress().toString(), forward.socks.port);
+              from = JF.connectSSL(forward.socks.toIP4String(), forward.socks.port);
             } else {
               from = new Socket(forward.socks.toInetAddress(), forward.socks.port);
             }
@@ -911,9 +927,10 @@ public class SOCKS extends Thread {
             pd1.start();
             ProxyData pd2 = new ProxyData(to, from, "f-2");
             pd2.start();
+            //TODO : join ProxyData threads
           } catch (Exception e) {
             if (!(e instanceof SocketException)) JFLog.log(e);
-            JF.sleep(5000);
+            JF.sleep(1000);
           }
         }
       } catch (Exception e) {
@@ -949,10 +966,10 @@ public class SOCKS extends Thread {
           }
         }
       } catch (Exception e) {
-        try {sRead.close();} catch (Exception e2) {}
-        try {sWrite.close();} catch (Exception e2) {}
         if (!(e instanceof SocketException)) JFLog.log(e);
       }
+      try {sRead.close();} catch (Exception e) {}
+      try {sWrite.close();} catch (Exception e) {}
     }
     public void close() {
       active = false;
