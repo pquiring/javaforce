@@ -44,6 +44,7 @@ public class SOCKS extends Thread {
   private static boolean socks4 = true, socks5 = false;
   private static boolean socks_bind = false;
   private static int socks_bind_timeout = (2 * 60 * 1000);  //default 2 mins
+  private static int forward_remote_wait = (60 * 60 * 1000);  //default 1 hour
   private static IP4Port bind = new IP4Port();
   private static IP4Port bind_cmd = new IP4Port();
   private static boolean secure = false;
@@ -304,6 +305,7 @@ public class SOCKS extends Thread {
     + "socks5=false\n"
     + "socks.bind=false\n"
     + "#socks.bind.timeout=120000\n"
+    + "#forward.remote.wait=3600000\n"
     + "#auth=user:pass\n"
     + "#ipnet=192.168.0.0/255.255.255.0\n"
     + "#ip=192.168.5.6\n"
@@ -376,6 +378,15 @@ public class SOCKS extends Thread {
                 }
                 if (socks_bind_timeout > 86400000) {
                   socks_bind_timeout = 86400000;  //1 day
+                }
+                break;
+              case "forward.remote.wait":
+                forward_remote_wait = Integer.valueOf(value);
+                if (forward_remote_wait < 1000) {
+                  forward_remote_wait = 1000;  //1 sec
+                }
+                if (forward_remote_wait > 86400000) {
+                  forward_remote_wait = 86400000;  //1 day
                 }
                 break;
               case "auth":
@@ -906,6 +917,7 @@ public class SOCKS extends Thread {
     public void run() {
       try {
         while (active) {
+          boolean wait = true;
           try {
             Socket from = null;
             if (forward.secure) {
@@ -928,9 +940,18 @@ public class SOCKS extends Thread {
             ProxyData pd2 = new ProxyData(to, from, "f-2");
             pd2.start();
             //TODO : join ProxyData threads
+            wait = false;
           } catch (Exception e) {
             if (!(e instanceof SocketException)) JFLog.log(e);
             JF.sleep(1000);
+          }
+          if (wait) {
+            //abnormal exception - wait to avoid hammering server
+            int wait_time = 0;
+            while (active && wait_time < forward_remote_wait) {
+              JF.sleep(1000);
+              wait_time += 1000;
+            }
           }
         }
       } catch (Exception e) {
