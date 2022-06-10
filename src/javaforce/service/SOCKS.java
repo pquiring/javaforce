@@ -42,6 +42,7 @@ public class SOCKS extends Thread {
   private static ArrayList<ForwardRemoteWorker> forward_remote_workers = new ArrayList<ForwardRemoteWorker>();
   private static Object lock = new Object();
   private static boolean socks4 = true, socks5 = false;
+  private static boolean socks_bind = false;
   private static IP4Port bind = new IP4Port();
   private static IP4Port bind_cmd = new IP4Port();
   private static boolean secure = false;
@@ -300,6 +301,7 @@ public class SOCKS extends Thread {
     + "secure=false\n"
     + "socks4=true\n"
     + "socks5=false\n"
+    + "socks.bind=false\n"
     + "#auth=user:pass\n"
     + "#ipnet=192.168.0.0/255.255.255.0\n"
     + "#ip=192.168.5.6\n"
@@ -361,6 +363,9 @@ public class SOCKS extends Thread {
                 break;
               case "socks5":
                 socks5 = value.equals("true");
+                break;
+              case "socks.bind":
+                socks_bind = value.equals("true");
                 break;
               case "auth":
                 user_pass_list.add(value);
@@ -626,6 +631,7 @@ public class SOCKS extends Thread {
     }
 
     private void socks4_bind() throws Exception {
+      if (!socks_bind) throw new Exception("SOCKS.bind disabled!");
       int port = BE.getuint16(req, 2);
       String src = String.format("%d.%d.%d.%d", req[4] & 0xff, req[5] & 0xff, req[6] & 0xff, req[7] & 0xff);
       byte[] reply = new byte[8];
@@ -780,6 +786,7 @@ public class SOCKS extends Thread {
       JFLog.log("SOCKS5:Session end");
     }
     private void socks5_bind() throws Exception {
+      if (!socks_bind) throw new Exception("SOCKS.bind disabled!");
       byte[] reply;
       //req[2] = reserved
       String src = null;
