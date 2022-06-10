@@ -38,8 +38,8 @@ public class SOCKS extends Thread {
   private static ServerSocket ss;
   private static volatile boolean active;
   private static ArrayList<SocksWorker> socks_workers = new ArrayList<SocksWorker>();
-  private static ArrayList<ForwardWorker> forward_workers = new ArrayList<ForwardWorker>();
-  private static ArrayList<ForwardRemoteWorker> bind_forward_workers = new ArrayList<ForwardRemoteWorker>();
+  private static ArrayList<ForwardLocalWorker> forward_local_workers = new ArrayList<ForwardLocalWorker>();
+  private static ArrayList<ForwardRemoteWorker> forward_remote_workers = new ArrayList<ForwardRemoteWorker>();
   private static Object lock = new Object();
   private static boolean socks4 = true, socks5 = false;
   private static IP4Port bind = new IP4Port();
@@ -47,8 +47,8 @@ public class SOCKS extends Thread {
   private static boolean secure = false;
   private static ArrayList<String> user_pass_list;
   private static ArrayList<Subnet> subnet_list;
-  private static ArrayList<Forward> forward_list;
-  private static ArrayList<ForwardRemote> bind_forward_list;
+  private static ArrayList<ForwardLocal> forward_local_list;
+  private static ArrayList<ForwardRemote> forward_remote_list;
 
   public SOCKS() {
   }
@@ -137,7 +137,7 @@ public class SOCKS extends Thread {
     }
   }
 
-  private static class Forward {
+  private static class ForwardLocal {
     public IP4Port from = new IP4Port();
     public IP4Port to = new IP4Port();
     public boolean set_from(String ip_port) {
@@ -165,22 +165,22 @@ public class SOCKS extends Thread {
 
   private static class ForwardRemote {
     public String user, pass;
-    public IP4Port bind = new IP4Port();
-    public IP4 remote = new IP4();
+    public IP4Port socks = new IP4Port();
+    public IP4 from = new IP4();
     public int port;
     public IP4Port to = new IP4Port();
     public boolean secure;
-    public boolean set_bind(String ip_port) {
+    public boolean set_socks(String ip_port) {
       int idx = ip_port.indexOf(':');
       if (idx == -1) return false;
       String ip = ip_port.substring(0, idx);
       String port = ip_port.substring(idx+1);
-      if (!bind.setIP(ip)) return false;
-      if (!bind.setPort(port)) return false;
+      if (!socks.setIP(ip)) return false;
+      if (!socks.setPort(port)) return false;
       return true;
     }
-    public boolean set_remote(String host) {
-      return remote.setIP(host);
+    public boolean set_from(String host) {
+      return from.setIP(host);
     }
     public void set_port(int port) {
       this.port = port;
@@ -195,7 +195,7 @@ public class SOCKS extends Thread {
       return true;
     }
     public String toString() {
-      return bind.toString() + " bind port " + port + " -> " + to.toString();
+      return socks.toString() + " bind port " + port + " -> " + to.toString();
     }
   }
 
@@ -245,10 +245,15 @@ public class SOCKS extends Thread {
       }
       ss.bind(bind.toInetSocketAddress());
       active = true;
-      for(Forward f : forward_list) {
-        ForwardWorker fw = new ForwardWorker(f);
-        fw.start();
-        forward_workers.add(fw);
+      for(ForwardLocal fl : forward_local_list) {
+        ForwardLocalWorker flw = new ForwardLocalWorker(fl);
+        flw.start();
+        forward_local_workers.add(flw);
+      }
+      for(ForwardRemote fr : forward_remote_list) {
+        ForwardRemoteWorker frw = new ForwardRemoteWorker(fr);
+        frw.start();
+        forward_remote_workers.add(frw);
       }
       while (active) {
         Socket s = ss.accept();
@@ -271,11 +276,17 @@ public class SOCKS extends Thread {
       }
       socks_workers.clear();
 
-      ForwardWorker[] forwards = forward_workers.toArray(new ForwardWorker[0]);
-      for(ForwardWorker f : forwards) {
+      ForwardLocalWorker[] locals = forward_local_workers.toArray(new ForwardLocalWorker[0]);
+      for(ForwardLocalWorker f : locals) {
         f.close();
       }
-      forward_workers.clear();
+      forward_local_workers.clear();
+
+      ForwardRemoteWorker[] remotes = forward_remote_workers.toArray(new ForwardRemoteWorker[0]);
+      for(ForwardRemoteWorker f : remotes) {
+        f.close();
+      }
+      forward_remote_workers.clear();
     }
   }
 
@@ -299,8 +310,8 @@ public class SOCKS extends Thread {
     JFLog.log("loadConfig");
     user_pass_list = new ArrayList<String>();
     subnet_list = new ArrayList<Subnet>();
-    forward_list = new ArrayList<Forward>();
-    bind_forward_list = new ArrayList<ForwardRemote>();
+    forward_local_list = new ArrayList<ForwardLocal>();
+    forward_remote_list = new ArrayList<ForwardRemote>();
     Section section = Section.None;
     bind.setIP("0.0.0.0");  //bind to all interfaces
     bind.port = 1080;
@@ -388,15 +399,15 @@ public class SOCKS extends Thread {
                 subnet_list.add(subnet);
                 break;
               }
-              case "forwardlocal":  //alias
-              case "forward": {
+              case "forward":  //old alias
+              case "forwardlocal": {
                 //src_ip:src_port,dest_ip:dest_port
                 String[] p = value.split(",");
                 if (p.length != 2) {
                   JFLog.log(key + ":Invalid option:" + value);
                   break;
                 }
-                Forward forward = new Forward();
+                ForwardLocal forward = new ForwardLocal();
                 if (!forward.set_from(p[0])) {
                   JFLog.log(key + ":Invalid from:" + p[0]);
                   break;
@@ -405,7 +416,7 @@ public class SOCKS extends Thread {
                   JFLog.log(key + ":Invalid to:" + p[1]);
                   break;
                 }
-                forward_list.add(forward);
+                forward_local_list.add(forward);
                 break;
               }
               case "forwardremote": {
@@ -427,11 +438,11 @@ public class SOCKS extends Thread {
                     forward.pass = user_pass.substring(colonidx + 1);
                   }
                 }
-                if (!forward.set_bind(bind)) {
+                if (!forward.set_socks(bind)) {
                   JFLog.log("bindforward:Invalid bind address:" + p[0]);
                   break;
                 }
-                forward.set_remote(p[1]);
+                forward.set_from(p[1]);
                 forward.set_port(Integer.valueOf(p[2]));
                 if (!forward.set_to(p[3])) {
                   JFLog.log("bindforward:Invalid to:" + p[3]);
@@ -440,7 +451,7 @@ public class SOCKS extends Thread {
                 if (p.length > 4) {
                   forward.secure = p[4].equals("true");
                 }
-                bind_forward_list.add(forward);
+                forward_remote_list.add(forward);
                 break;
               }
             }
@@ -820,10 +831,10 @@ public class SOCKS extends Thread {
     }
   }
 
-  public class ForwardWorker extends Thread {
-    private Forward forward;
+  public class ForwardLocalWorker extends Thread {
+    private ForwardLocal forward;
     private ServerSocket ss;
-    public ForwardWorker(Forward forward) {
+    public ForwardLocalWorker(ForwardLocal forward) {
       this.forward = forward;
     }
     public void run() {
@@ -862,13 +873,13 @@ public class SOCKS extends Thread {
           try {
             Socket from = null;
             if (forward.secure) {
-              from = JF.connectSSL(forward.bind.toInetAddress().toString(), forward.bind.port);
-              if (!javaforce.SOCKS.bind(from, forward.remote.toString(), forward.port, forward.user, forward.pass)) {
+              from = JF.connectSSL(forward.socks.toInetAddress().toString(), forward.socks.port);
+              if (!javaforce.SOCKS.bind(from, forward.from.toString(), forward.port, forward.user, forward.pass)) {
                 throw new Exception("SOCKS5:bind:failed");
               }
             } else {
-              from = new Socket(forward.bind.toInetAddress(), forward.bind.port);
-              if (!javaforce.SOCKS.bind(from, forward.remote.toString(), forward.port)) {
+              from = new Socket(forward.socks.toInetAddress(), forward.socks.port);
+              if (!javaforce.SOCKS.bind(from, forward.from.toString(), forward.port)) {
                 throw new Exception("SOCKS4:bind:failed");
               }
             }

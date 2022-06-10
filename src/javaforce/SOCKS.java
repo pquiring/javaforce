@@ -231,7 +231,7 @@ public class SOCKS {
           if (read < 0) throw new Exception("bad read");
           if (read > 0) totalread += read;
         }
-        if (reply[1] == 0x00) return false;
+        if (reply[1] != 0x00) return false;
       }
       return true;
     } catch (Exception e) {
