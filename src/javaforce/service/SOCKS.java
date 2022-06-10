@@ -43,6 +43,7 @@ public class SOCKS extends Thread {
   private static Object lock = new Object();
   private static boolean socks4 = true, socks5 = false;
   private static boolean socks_bind = false;
+  private static int socks_bind_timeout = (2 * 60 * 1000);  //default 2 mins
   private static IP4Port bind = new IP4Port();
   private static IP4Port bind_cmd = new IP4Port();
   private static boolean secure = false;
@@ -302,6 +303,7 @@ public class SOCKS extends Thread {
     + "socks4=true\n"
     + "socks5=false\n"
     + "socks.bind=false\n"
+    + "#socks.bind.timeout=120000\n"
     + "#auth=user:pass\n"
     + "#ipnet=192.168.0.0/255.255.255.0\n"
     + "#ip=192.168.5.6\n"
@@ -366,6 +368,15 @@ public class SOCKS extends Thread {
                 break;
               case "socks.bind":
                 socks_bind = value.equals("true");
+                break;
+              case "socks.bind.timeout":
+                socks_bind_timeout = Integer.valueOf(value);
+                if (socks_bind_timeout < 60000) {
+                  socks_bind_timeout = 60000;  //1 min
+                }
+                if (socks_bind_timeout > 86400000) {
+                  socks_bind_timeout = 86400000;  //1 day
+                }
                 break;
               case "auth":
                 user_pass_list.add(value);
@@ -648,6 +659,7 @@ public class SOCKS extends Thread {
           ss.bind(bind_cmd.toInetSocketAddress());
         }
       }
+      ss.setSoTimeout(socks_bind_timeout);
       o = ss.accept();
       String src_addr = o.getRemoteSocketAddress().toString();
       int src_port = o.getPort();
@@ -816,6 +828,7 @@ public class SOCKS extends Thread {
           ss.bind(bind_cmd.toInetSocketAddress());
         }
       }
+      ss.setSoTimeout(socks_bind_timeout);
       o = ss.accept();
       String src_addr = o.getRemoteSocketAddress().toString();
       int src_port = o.getPort();
