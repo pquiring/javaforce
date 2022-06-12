@@ -116,7 +116,15 @@ public class SOCKS extends Thread {
   }
 
   private static class Subnet {
-    public IP4 ip = new IP4(), mask = new IP4();
+    private IP4 ip = new IP4(), mask = new IP4();
+    public boolean setIP(String ip) {
+      return this.ip.setIP(ip);
+    }
+    public boolean  setMask(String ip) {
+      if (!this.mask.setIP(ip)) return false;
+      maskIP();
+      return true;
+    }
     public boolean matches(IP4 in) {
       IP4 copy = new IP4();
       for(int a=0;a<4;a++) {
@@ -130,7 +138,7 @@ public class SOCKS extends Thread {
       }
       return true;
     }
-    public void maskIP() {
+    private void maskIP() {
       for(int a=0;a<4;a++) {
         ip.ip[a] &= mask.ip[a];
       }
@@ -401,28 +409,26 @@ public class SOCKS extends Thread {
                 }
                 String ip = value.substring(0, idx);
                 String mask = value.substring(idx + 1);
-                if (!subnet.ip.setIP(ip)) {
+                if (!subnet.setIP(ip)) {
                   JFLog.log("SOCKS:Invalid IP:" + ip);
                   break;
                 }
-                if (!subnet.mask.setIP(mask)) {
+                if (!subnet.setMask(mask)) {
                   JFLog.log("SOCKS:Invalid netmask:" + mask);
                   break;
                 }
                 JFLog.log("Allow IP Network=" + subnet.toString());
-                subnet.maskIP();
                 subnet_list.add(subnet);
                 break;
               }
               case "ip": {
                 Subnet subnet = new Subnet();
-                if (!subnet.ip.setIP(value)) {
+                if (!subnet.setIP(value)) {
                   JFLog.log("SOCKS:Invalid IP:" + value);
                   break;
                 }
-                subnet.mask.setIP("255.255.255.255");
+                subnet.setMask("255.255.255.255");
                 JFLog.log("Allow IP Address=" + subnet.toString());
-                subnet.maskIP();
                 subnet_list.add(subnet);
                 break;
               }
