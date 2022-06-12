@@ -63,6 +63,17 @@ public class SOCKS extends Thread {
 
   private static class IP4 {
     public short[] ip = new short[4];
+    public static boolean isIP(String str) {
+      String[] ips = str.split("[.]");
+      if (ips.length != 4) {
+        return false;
+      }
+      for(int a=0;a<4;a++) {
+        int val = JF.atoi(ips[a]);
+        if (val < 0 || val > 255) return false;
+      }
+      return true;
+    }
     public boolean setIP(String str) {
       String[] ips = str.split("[.]");
       if (ips.length != 4) {
@@ -117,11 +128,11 @@ public class SOCKS extends Thread {
 
   private static class Subnet {
     private IP4 ip = new IP4(), mask = new IP4();
-    public boolean setIP(String ip) {
-      return this.ip.setIP(ip);
+    public boolean setIP(String str) {
+      return ip.setIP(str);
     }
-    public boolean  setMask(String ip) {
-      if (!this.mask.setIP(ip)) return false;
+    public boolean setMask(String str) {
+      if (!mask.setIP(str)) return false;
       maskIP();
       return true;
     }
