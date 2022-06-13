@@ -5,15 +5,23 @@ package javaforce.net;
  * @author pquiring
  */
 
+import java.net.*;
+
 public class Subnet4 {
   private IP4 ip = new IP4(), mask = new IP4();
   public boolean setIP(String str) {
     return ip.setIP(str);
   }
+  public boolean setIP(InetAddress addr) {
+    return setIP(addr.getHostAddress());
+  }
   public boolean setMask(String str) {
     if (!mask.setIP(str)) return false;
     maskIP();
     return true;
+  }
+  public boolean setMask(InetAddress addr) {
+    return setMask(addr.getHostAddress());
   }
   public boolean matches(IP4 in) {
     IP4 copy = new IP4();
