@@ -694,7 +694,7 @@ public class SOCKS extends Thread {
         int src_port = o.getPort();
         if (!src.equals("0.0.0.0")) {
           if (!src.equals(src_addr)) {
-            throw new Exception("SOCKS4:bind:unexpected host connected");
+            throw new Exception("SOCKS4:bind:unexpected host connected:" + src_addr);
           }
         }
         connected = true;

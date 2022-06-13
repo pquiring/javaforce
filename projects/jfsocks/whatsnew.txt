@@ -1,5 +1,9 @@
 Whats new ???
 
+June 12, 2022 : 0.9
+  - new : added bind command support
+  - new : added forwardremote option
+
 Aug 7, 2021 : 0.8
   - new : added bind and forward options
 

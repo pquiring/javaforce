@@ -12,9 +12,10 @@ Supports:
  - SOCKS5 auth type 0x02 only (plain text:therefore use secure mode if using authentication)
  - allowed IP networks/IP addresses list
  - forward non-socks related local ports to another IP:port
+ - forward remote ports on another SOCKS server
 
 Not supported:
- - IP6
+ - IP6, UDP
 
 Notes:
  - if using socks5 authentication you should disable socks4 which doesn't require authorization.
