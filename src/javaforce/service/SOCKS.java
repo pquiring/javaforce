@@ -44,7 +44,7 @@ public class SOCKS extends Thread {
   private static boolean socks4 = true, socks5 = false;
   private static boolean socks_bind = false;
   private static int socks_bind_timeout = (2 * 60 * 1000);  //default 2 mins
-  private static int forward_remote_wait = (60 * 60 * 1000);  //default 1 hour
+  private static int forward_remote_wait = (2 * 60 * 1000);  //default 2 mins
   private static IP4Port bind = new IP4Port();
   private static IP4Port bind_cmd = new IP4Port();
   private static boolean secure = false;
@@ -708,6 +708,10 @@ public class SOCKS extends Thread {
         ss.setSoTimeout(socks_bind_timeout);
         o = ss.accept();
         String src_addr = o.getInetAddress().getHostAddress();
+        if (src_addr.equals("0:0:0:0:0:0:0:1")) {
+          //IP6 localhost
+          src_addr = "127.0.0.1";
+        }
         int src_port = o.getPort();
         if (!src.equals("0.0.0.0")) {
           if (!src.equals(src_addr)) {
@@ -884,10 +888,14 @@ public class SOCKS extends Thread {
         ss.setSoTimeout(socks_bind_timeout);
         o = ss.accept();
         String src_addr = o.getInetAddress().getHostAddress();
+        if (src_addr.equals("0:0:0:0:0:0:0:1")) {
+          //IP6 localhost
+          src_addr = "127.0.0.1";
+        }
         int src_port = o.getPort();
         if (!src.equals("0.0.0.0")) {
           if (!src.equals(src_addr)) {
-            throw new Exception("SOCKS5:bind:unexpected host connected");
+            throw new Exception("SOCKS5:bind:unexpected host connected:" + src_addr);
           }
         }
         reply = new byte[10];
@@ -995,6 +1003,12 @@ public class SOCKS extends Thread {
             //abnormal exception - wait to avoid hammering server
             int wait_time = 0;
             while (active && wait_time < forward_remote_wait) {
+              JF.sleep(1000);
+              wait_time += 1000;
+            }
+          } else {
+            int wait_time = 0;
+            while (active && wait_time < 5000) {
               JF.sleep(1000);
               wait_time += 1000;
             }

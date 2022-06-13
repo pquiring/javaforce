@@ -1,5 +1,11 @@
 What's new...
 
+June 13/2022 : jfSOCKS/0.10
+  - fix : bind command allowed host didn't work
+
+June 12/2022 : jfSOCKS/0.9
+  - new : added bind command support
+
 Apr 26/2022 : JF 35.2 released
   - jfMonitor/0.3
     - added daily notification of unknown devices

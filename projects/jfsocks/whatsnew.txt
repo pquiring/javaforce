@@ -1,5 +1,8 @@
 Whats new ???
 
+June 13, 2022 : 0.10
+  - fix : bind allowed host option didn't work
+
 June 12, 2022 : 0.9
   - new : added bind command support
   - new : added forwardremote option
