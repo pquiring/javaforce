@@ -64,6 +64,10 @@ public class SOCKS extends Thread {
   private static class IP4 {
     public short[] ip = new short[4];
     public static boolean isIP(String str) {
+      if (str.equals("0:0:0:0:0:0:0:1")) {
+        //IP6 localhost
+        str = "127.0.0.1";
+      }
       String[] ips = str.split("[.]");
       if (ips.length != 4) {
         return false;
@@ -75,6 +79,10 @@ public class SOCKS extends Thread {
       return true;
     }
     public boolean setIP(String str) {
+      if (str.equals("0:0:0:0:0:0:0:1")) {
+        //IP6 localhost
+        str = "127.0.0.1";
+      }
       String[] ips = str.split("[.]");
       if (ips.length != 4) {
         JFLog.log("invalid ip:" + str);
