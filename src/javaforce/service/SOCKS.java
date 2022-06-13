@@ -14,6 +14,7 @@ import java.net.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.net.*;
 import javaforce.jbus.*;
 
 public class SOCKS extends Thread {
@@ -49,7 +50,7 @@ public class SOCKS extends Thread {
   private static IP4Port bind_cmd = new IP4Port();
   private static boolean secure = false;
   private static ArrayList<String> user_pass_list;
-  private static ArrayList<Subnet> subnet_list;
+  private static ArrayList<Subnet4> subnet_list;
   private static ArrayList<ForwardLocal> forward_local_list;
   private static ArrayList<ForwardRemote> forward_remote_list;
 
@@ -59,120 +60,6 @@ public class SOCKS extends Thread {
   public SOCKS(int port, boolean secure) {
     bind.port = port;
     this.secure = secure;
-  }
-
-  private static class IP4 {
-    public short[] ip = new short[4];
-    public static boolean isIP(String str) {
-      if (str.equals("0:0:0:0:0:0:0:1")) {
-        //IP6 localhost
-        str = "127.0.0.1";
-      }
-      String[] ips = str.split("[.]");
-      if (ips.length != 4) {
-        return false;
-      }
-      for(int a=0;a<4;a++) {
-        int val = JF.atoi(ips[a]);
-        if (val < 0 || val > 255) return false;
-      }
-      return true;
-    }
-    public boolean setIP(String str) {
-      if (str.equals("0:0:0:0:0:0:0:1")) {
-        //IP6 localhost
-        str = "127.0.0.1";
-      }
-      String[] ips = str.split("[.]");
-      if (ips.length != 4) {
-        JFLog.log("invalid ip:" + str);
-        return false;
-      }
-      for(int a=0;a<4;a++) {
-        ip[a] = Short.valueOf(ips[a]);
-      }
-      return true;
-    }
-    public boolean setIP(InetAddress addr) {
-      return setIP(addr.getHostAddress());
-    }
-    public InetAddress toInetAddress() {
-      try {
-        return InetAddress.getByName(toIP4String());
-      } catch (Exception e) {
-        JFLog.log("Error:IP4.toInetAddress() failed:" + toIP4String());
-        return null;
-      }
-    }
-    public String toIP4String() {
-      return String.format("%d.%d.%d.%d", ip[0] & 0xff, ip[1] & 0xff, ip[2] & 0xff, ip[3] & 0xff);
-    }
-    public String toString() {
-      return toIP4String();
-    }
-    public boolean isEmpty() {
-      for(int a=0;a<4;a++) {
-        if (ip[a] != 0) return false;
-      }
-      return true;
-    }
-  }
-
-  private static class IP4Port extends IP4 {
-    public int port;
-    public boolean setPort(String str) {
-      port = JF.atoi(str);
-      if (port < 1 || port > 65535) {
-        JFLog.log("invalid port:" + port);
-        port = -1;
-        return false;
-      }
-      return true;
-    }
-    public boolean setIP_Port(InetSocketAddress addr) {
-      if (!setIP(addr.getAddress().getHostAddress())) return false;
-      port = addr.getPort();
-      return true;
-    }
-    public InetSocketAddress toInetSocketAddress() {
-      return new InetSocketAddress(toInetAddress(), port);
-    }
-    public String toString() {
-      return super.toString() + ":" + port;
-    }
-  }
-
-  private static class Subnet {
-    private IP4 ip = new IP4(), mask = new IP4();
-    public boolean setIP(String str) {
-      return ip.setIP(str);
-    }
-    public boolean setMask(String str) {
-      if (!mask.setIP(str)) return false;
-      maskIP();
-      return true;
-    }
-    public boolean matches(IP4 in) {
-      IP4 copy = new IP4();
-      for(int a=0;a<4;a++) {
-        copy.ip[a] = in.ip[a];
-      }
-      for(int a=0;a<4;a++) {
-        copy.ip[a] &= mask.ip[a];
-      }
-      for(int a=0;a<4;a++) {
-        if (copy.ip[a] != ip.ip[a]) return false;
-      }
-      return true;
-    }
-    private void maskIP() {
-      for(int a=0;a<4;a++) {
-        ip.ip[a] &= mask.ip[a];
-      }
-    }
-    public String toString() {
-      return ip.toString() + "/" + mask.toString();
-    }
   }
 
   private static class ForwardLocal {
@@ -350,7 +237,7 @@ public class SOCKS extends Thread {
   private void loadConfig() {
     JFLog.log("loadConfig");
     user_pass_list = new ArrayList<String>();
-    subnet_list = new ArrayList<Subnet>();
+    subnet_list = new ArrayList<Subnet4>();
     forward_local_list = new ArrayList<ForwardLocal>();
     forward_remote_list = new ArrayList<ForwardRemote>();
     Section section = Section.None;
@@ -428,7 +315,7 @@ public class SOCKS extends Thread {
                 user_pass_list.add(value);
                 break;
               case "ipnet": {
-                Subnet subnet = new Subnet();
+                Subnet4 subnet = new Subnet4();
                 idx = value.indexOf('/');
                 if (idx == -1) {
                   JFLog.log("SOCKS:Invalid IP Subnet:" + value);
@@ -449,7 +336,7 @@ public class SOCKS extends Thread {
                 break;
               }
               case "ip": {
-                Subnet subnet = new Subnet();
+                Subnet4 subnet = new Subnet4();
                 if (!subnet.setIP(value)) {
                   JFLog.log("SOCKS:Invalid IP:" + value);
                   break;
@@ -540,7 +427,7 @@ public class SOCKS extends Thread {
     if (subnet_list.size() == 0) return true;
     IP4 target = new IP4();
     if (!target.setIP(ip4)) return false;
-    for(Subnet net : subnet_list) {
+    for(Subnet4 net : subnet_list) {
       if (net.matches(target)) {
         return true;
       }
