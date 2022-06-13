@@ -85,6 +85,9 @@ public class SOCKS extends Thread {
       }
       return true;
     }
+    public boolean setIP(InetAddress addr) {
+      return setIP(addr.getHostAddress());
+    }
     public InetAddress toInetAddress() {
       try {
         return InetAddress.getByName(toIP4String());
@@ -116,6 +119,11 @@ public class SOCKS extends Thread {
         port = -1;
         return false;
       }
+      return true;
+    }
+    public boolean setIP_Port(InetSocketAddress addr) {
+      if (!setIP(addr.getAddress().getHostAddress())) return false;
+      port = addr.getPort();
       return true;
     }
     public InetSocketAddress toInetSocketAddress() {
@@ -690,7 +698,7 @@ public class SOCKS extends Thread {
         }
         ss.setSoTimeout(socks_bind_timeout);
         o = ss.accept();
-        String src_addr = o.getRemoteSocketAddress().toString();
+        String src_addr = o.getInetAddress().getHostAddress();
         int src_port = o.getPort();
         if (!src.equals("0.0.0.0")) {
           if (!src.equals(src_addr)) {
