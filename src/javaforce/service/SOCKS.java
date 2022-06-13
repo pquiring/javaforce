@@ -617,8 +617,17 @@ public class SOCKS extends Thread {
       } catch (Exception e) {
         if (!(e instanceof SocketException)) JFLog.log(e);
         if (!connected) {
-          byte[] reply = new byte[8];
-          reply[0] = 0x00;
+          byte[] reply = null;
+          switch (req[0]) {
+            case 0x04:
+              reply = new byte[8];
+              break;
+            case 0x05:
+              reply = new byte[10];
+              reply[3] = 0x01;  //IP4
+              break;
+          }
+          reply[0] = req[0];
           reply[1] = 0x5b;  //failed
           try {cos.write(reply);} catch (Exception e2) {}
         }
@@ -874,14 +883,26 @@ public class SOCKS extends Thread {
         }
         ss.setSoTimeout(socks_bind_timeout);
         o = ss.accept();
-        String src_addr = o.getRemoteSocketAddress().toString();
+        String src_addr = o.getInetAddress().getHostAddress();
         int src_port = o.getPort();
         if (!src.equals("0.0.0.0")) {
           if (!src.equals(src_addr)) {
             throw new Exception("SOCKS5:bind:unexpected host connected");
           }
         }
-        //TODO : fill in proper values (optional)
+        reply = new byte[10];
+        reply[0] = 0x05;  //version
+        reply[1] = 0x00;  //success
+        reply[2] = 0x00;  //reserved
+        reply[3] = 0x01;  //IP4
+        IP4 src_ip = new IP4();
+        src_ip.setIP(src_addr);
+        //return src ip/port
+        for(int a=0;a<4;a++) {
+          reply[4 + a] = (byte)src_ip.ip[0 + a];
+        }
+        reply[8] = (byte)(src_port & 0xff00 >> 8);
+        reply[9] = (byte)(src_port & 0xff);
         cos.write(reply);
         connected = true;
         //now just proxy data back and forth
