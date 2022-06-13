@@ -23,6 +23,9 @@ public class Subnet4 {
   public boolean setMask(InetAddress addr) {
     return setMask(addr.getHostAddress());
   }
+  /** Checks if IP address is within defined Subnet.
+   @param in = IP address to check
+   */
   public boolean matches(IP4 in) {
     IP4 copy = new IP4();
     for(int a=0;a<4;a++) {
