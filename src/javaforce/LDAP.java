@@ -11,6 +11,25 @@ import javax.naming.directory.*;
 
 public class LDAP {
   private DirContext ctx;
+
+  /*
+
+  LDAP Data Interchange Format
+  see https://en.wikipedia.org/wiki/LDAP_Data_Interchange_Format
+
+  dn = distinguished name (comma list of other attributes)
+  dc = domain component
+  ou = organizational unit
+  cn = common name
+  givenName = first name
+  sn = surname
+  mail = email address
+  telephoneNumber = full phone number
+  manager : manager in dn format
+
+  */
+
+
   /** Logins into a LDAP Server.  Returns DirContext if successful (null otherwise). */
   public boolean login(String server, String domain, String username, String password) {
     try {
