@@ -1200,7 +1200,7 @@ public class JF {
   }
 
   /** Upgrades existing socket to SSL. */
-  public static Socket connectSSL(Socket socket) {
+  public static Socket connectSSL(Socket socket, boolean server) {
     TrustManager[] trustAllCerts = new TrustManager[] {
       new X509TrustManager() {
         public X509Certificate[] getAcceptedIssuers() {
@@ -1216,6 +1216,9 @@ public class JF {
       ctx.init(null, trustAllCerts, new SecureRandom());
       SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
       SSLSocket ssl = (SSLSocket)sslsocketfactory.createSocket(socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
+      if (!server) {
+        ssl.setUseClientMode(false);
+      }
 //      ssl.setEnabledProtocols(protocols);
 //      ssl.setEnabledCipherSuites(cipher_suites);
       ssl.startHandshake();
@@ -1224,6 +1227,11 @@ public class JF {
       JFLog.log(e);
       return null;
     }
+  }
+
+  /** Upgrades existing socket to SSL (client side). */
+  public static Socket connectSSL(Socket socket) {
+    return connectSSL(socket, false);
   }
 
   /** Returns line # of calling method.
