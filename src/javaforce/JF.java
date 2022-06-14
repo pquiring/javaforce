@@ -1199,6 +1199,33 @@ public class JF {
     }
   }
 
+  /** Upgrades existing socket to SSL. */
+  public static Socket connectSSL(Socket socket) {
+    TrustManager[] trustAllCerts = new TrustManager[] {
+      new X509TrustManager() {
+        public X509Certificate[] getAcceptedIssuers() {
+          return null;
+        }
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+      }
+    };
+    // Let us create the factory where we can set some parameters for the connection
+    try {
+      SSLContext ctx = SSLContext.getInstance("TLSv1.3");
+      ctx.init(null, trustAllCerts, new SecureRandom());
+      SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
+      SSLSocket ssl = (SSLSocket)sslsocketfactory.createSocket(socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
+//      ssl.setEnabledProtocols(protocols);
+//      ssl.setEnabledCipherSuites(cipher_suites);
+      ssl.startHandshake();
+      return ssl;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
   /** Returns line # of calling method.
    * See http://stackoverflow.com/questions/115008/how-can-we-print-line-numbers-to-the-log-in-java
    */
