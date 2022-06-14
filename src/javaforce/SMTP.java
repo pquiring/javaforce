@@ -157,6 +157,18 @@ public class SMTP {
     os.write(cmd.getBytes());
   }
 
+  /** Secures connection using STARTTLS command. */
+  public void starttls() throws Exception {
+    cmd("STARTTLS");
+    getResponse();
+    if (!response[response.length - 1].startsWith("220")) {
+      throw new Exception("STARTTLS failed!");
+    }
+    s = JF.connectSSL(s);
+    is = s.getInputStream();
+    os = s.getOutputStream();
+  }
+
   public void from(String email) throws Exception {
     cmd("MAIL FROM:<" + email + ">");
     getResponse();
