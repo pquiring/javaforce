@@ -30,7 +30,8 @@ public class SMTP {
   public String response[];
 
   public static final int PORT = 25;  //default port
-  public static final int SSLPORT = 465;  //default SSL port
+  public static final int TLSPORT = 587;  //default SSL port (explicit)
+  public static final int SSLPORT = 465;  //default SSL port (implicit)
 
   public boolean connect(String host, int port) throws Exception {
     s = new Socket(host, port);
