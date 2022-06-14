@@ -10,8 +10,9 @@ import javax.naming.*;
 import javax.naming.directory.*;
 
 public class LDAP {
+  private DirContext ctx;
   /** Logins into a LDAP Server.  Returns DirContext if successful (null otherwise). */
-  public static DirContext login(String server, String domain, String username, String password) {
+  public boolean login(String server, String domain, String username, String password) {
     try {
       if (username.length() == 0) throw new Exception("invalid username");
       if (password.length() == 0) throw new Exception("invalid password");
@@ -26,22 +27,29 @@ public class LDAP {
       env.put(Context.SECURITY_CREDENTIALS, password);
 
       // Create the initial context
-      DirContext ctx = new InitialDirContext(env);
-      return ctx;
+      ctx = new InitialDirContext(env);
+      return true;
     } catch (Exception e) {
       JFLog.log(e);
-      return null;
+      return false;
+    }
+  }
+
+  public void close() {
+    if (ctx != null) {
+      try {ctx.close();} catch (Exception e) {}
+      ctx = null;
     }
   }
 
   /** Returns user object attributes.
-   * @param ctx = DirContext from login()
    * @param domain = domain in OU style (ie: DC=example,DC=com)
    * @param username = directory user account name
    * @param attrs = list of attributes to read
    * @return attributes in order of attrs
    */
-  public static String[] getAttributes(DirContext ctx, String domain, String username, String attrs[]) {
+  public String[] getAttributes(String domain, String username, String attrs[]) {
+    if (ctx == null) return null;
     String[] values = new String[attrs.length];
     try {
       SearchControls constraints = new SearchControls();
