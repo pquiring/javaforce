@@ -1,5 +1,8 @@
 What's new...
 
+June 14/2022 : JF/36.0
+  - jfSOCKS improvements
+
 June 13/2022 : jfSOCKS/0.10
   - fix : bind command allowed host didn't work
 
