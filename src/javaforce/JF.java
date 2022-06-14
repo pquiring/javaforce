@@ -8,6 +8,8 @@ import java.lang.reflect.*;
 import javax.net.ssl.*;
 import java.security.*;
 import java.security.cert.*;
+import javax.naming.*;
+import javax.naming.directory.*;
 
 /**
  * A collection of static methods. Many methods help reduce try/catch clutter by
@@ -1547,6 +1549,29 @@ public class JF {
     } catch (Exception e) {
       JFLog.log(e);
       return -1;
+    }
+  }
+
+  /** Login to an LDAP Server. */
+  public static boolean login(String server, String domain, String username, String password) {
+    try {
+      if (username.length() == 0) throw new Exception("invalid username");
+      if (password.length() == 0) throw new Exception("invalid password");
+      // Set up the environment for creating the initial context
+      Hashtable<String, String> env = new Hashtable<String, String>();
+      env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+      env.put(Context.PROVIDER_URL, "ldap://" + server + ":389");
+
+      // Authenticate as user and password
+      env.put(Context.SECURITY_AUTHENTICATION, "simple");
+      env.put(Context.SECURITY_PRINCIPAL, domain + "\\" + username);
+      env.put(Context.SECURITY_CREDENTIALS, password);
+
+      // Create the initial context
+      DirContext ctx = new InitialDirContext(env);
+      return true;
+    } catch (Exception e) {
+      return false;
     }
   }
 }
