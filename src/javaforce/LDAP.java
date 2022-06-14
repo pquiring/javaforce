@@ -62,7 +62,7 @@ public class LDAP {
   }
 
   /** Returns user object attributes.
-   * @param domain = domain in OU style (ie: DC=example,DC=com)
+   * @param domain = domain as dn (distinguished name) (ie: DC=example,DC=com)
    * @param username = directory user account name
    * @param attrs = list of attributes to read
    * @return attributes in order of attrs
@@ -75,7 +75,7 @@ public class LDAP {
       constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
       String[] attrIDs = attrs;
       constraints.setReturningAttributes(attrIDs);
-      NamingEnumeration answer = ctx.search("DC=YourDomain,DC=com", "SAMAccountName=" + username, constraints);
+      NamingEnumeration answer = ctx.search(domain, "SAMAccountName=" + username, constraints);
       if (answer.hasMore()) {
         Attributes results = ((SearchResult) answer.next()).getAttributes();
         for(int a=0;a<attrs.length;a++) {
