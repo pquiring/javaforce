@@ -12,6 +12,8 @@ import javax.naming.directory.*;
 public class LDAP {
   private DirContext ctx;
 
+  public Exception lastException;
+
   /*
 
   LDAP Data Interchange Format
@@ -49,6 +51,7 @@ public class LDAP {
       ctx = new InitialDirContext(env);
       return true;
     } catch (Exception e) {
+      lastException = e;
       JFLog.log(e);
       return false;
     }
@@ -86,8 +89,13 @@ public class LDAP {
       }
       return values;
     } catch (Exception e) {
+      lastException = e;
       JFLog.log(e);
       return null;
     }
+  }
+
+  public Exception getLastException() {
+    return lastException;
   }
 }
