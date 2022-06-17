@@ -66,18 +66,18 @@ public class LDAP {
 
   /** Returns user object attributes.
    * @param domain = domain as dn (distinguished name) (ie: DC=example,DC=com)
-   * @param username = directory user account name
+   * @param key = search key (ie: SAMAccountName=bob mail=bob@example.com)
    * @param attrs = list of attributes to read
    * @return attributes in order of attrs
    */
-  public String[] getAttributes(String domain, String username, String[] attrs) {
+  public String[] getAttributes(String domain, String key, String[] attrs) {
     if (ctx == null) return null;
     String[] values = new String[attrs.length];
     try {
       SearchControls constraints = new SearchControls();
       constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);  //resursive
       constraints.setReturningAttributes(attrs);
-      NamingEnumeration answer = ctx.search(domain, "SAMAccountName=" + username, constraints);
+      NamingEnumeration answer = ctx.search(domain, key, constraints);
       if (!answer.hasMore()) {
         throw new Exception("no results");
       }

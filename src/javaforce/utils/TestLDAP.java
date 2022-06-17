@@ -38,11 +38,10 @@ public class TestLDAP extends javax.swing.JFrame {
     jLabel5 = new javax.swing.JLabel();
     attr = new javax.swing.JTextField();
     query = new javax.swing.JButton();
-    jLabel6 = new javax.swing.JLabel();
-    acct = new javax.swing.JTextField();
+    keyValue = new javax.swing.JTextField();
     jLabel7 = new javax.swing.JLabel();
     ou = new javax.swing.JTextField();
-    jLabel8 = new javax.swing.JLabel();
+    keyType = new javax.swing.JComboBox<>();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("LDAP Test");
@@ -77,11 +76,9 @@ public class TestLDAP extends javax.swing.JFrame {
       }
     });
 
-    jLabel6.setText("Account");
-
     jLabel7.setText("OU");
 
-    jLabel8.setText("Attributes are comma list");
+    keyType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SAMAccountName", "mail" }));
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -90,32 +87,27 @@ public class TestLDAP extends javax.swing.JFrame {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addComponent(jLabel8)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 170, Short.MAX_VALUE)
-            .addComponent(query))
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGap(0, 0, Short.MAX_VALUE)
-            .addComponent(login))
-          .addGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(jLabel1)
-              .addComponent(jLabel2)
-              .addComponent(jLabel3)
-              .addComponent(jLabel4)
-              .addComponent(jLabel6)
-              .addComponent(jLabel5)
-              .addComponent(jLabel7))
-            .addGap(28, 28, 28)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(ou)
-              .addComponent(attr)
-              .addComponent(acct)
-              .addComponent(domain, javax.swing.GroupLayout.Alignment.TRAILING)
-              .addComponent(username, javax.swing.GroupLayout.Alignment.TRAILING)
-              .addComponent(password, javax.swing.GroupLayout.Alignment.TRAILING)
-              .addComponent(server, javax.swing.GroupLayout.Alignment.TRAILING))))
-        .addContainerGap())
+          .addComponent(jLabel1)
+          .addComponent(jLabel2)
+          .addComponent(jLabel3)
+          .addComponent(jLabel4)
+          .addComponent(jLabel7)
+          .addComponent(jLabel5)
+          .addComponent(keyType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(22, 22, 22)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+          .addComponent(keyValue, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
+          .addComponent(ou, javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(domain, javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(username, javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(password, javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(server, javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(attr))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(login)
+          .addComponent(query))
+        .addContainerGap(8, Short.MAX_VALUE))
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -135,24 +127,20 @@ public class TestLDAP extends javax.swing.JFrame {
         .addGap(18, 18, 18)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
-          .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addComponent(login)
-        .addGap(8, 8, 8)
+          .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(login))
+        .addGap(42, 42, 42)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel7)
           .addComponent(ou, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addGap(18, 18, 18)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel6)
-          .addComponent(acct, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+          .addComponent(keyValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(keyType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(18, 18, 18)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel5)
-          .addComponent(attr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-          .addComponent(jLabel8)
+          .addComponent(attr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
           .addComponent(query))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
@@ -185,7 +173,6 @@ public class TestLDAP extends javax.swing.JFrame {
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JTextField acct;
   private javax.swing.JTextField attr;
   private javax.swing.JTextField domain;
   private javax.swing.JLabel jLabel1;
@@ -193,9 +180,9 @@ public class TestLDAP extends javax.swing.JFrame {
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel5;
-  private javax.swing.JLabel jLabel6;
   private javax.swing.JLabel jLabel7;
-  private javax.swing.JLabel jLabel8;
+  private javax.swing.JComboBox<String> keyType;
+  private javax.swing.JTextField keyValue;
   private javax.swing.JButton login;
   private javax.swing.JTextField ou;
   private javax.swing.JPasswordField password;
@@ -228,7 +215,8 @@ public class TestLDAP extends javax.swing.JFrame {
     String svr = server.getText();
     String dom = domain.getText();
     String ou_dn = LDAP.build_dn(ou.getText());
-    String act = acct.getText();
+    String key_type = keyType.getSelectedItem().toString();
+    String key_value = keyValue.getText();
     String atr = attr.getText();
     try {
       LDAP ldap = new LDAP();
@@ -236,7 +224,7 @@ public class TestLDAP extends javax.swing.JFrame {
         throw ldap.lastException;
       }
       String[] atrs = atr.split("[,]");
-      String[] res = ldap.getAttributes(ou_dn, act, atrs);
+      String[] res = ldap.getAttributes(ou_dn, key_type + "=" + key_value, atrs);
       if (res == null) {
         JFAWT.showMessage("LDAP", "null result");
         return;
