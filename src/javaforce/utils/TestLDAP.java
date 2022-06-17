@@ -1,9 +1,6 @@
 package javaforce.utils;
 
-import java.util.*;
-import javax.naming.*;
-import javax.naming.directory.*;
-
+import javaforce.*;
 import javaforce.awt.*;
 
 /**
@@ -143,19 +140,10 @@ public class TestLDAP extends javax.swing.JFrame {
     String svr = server.getText();
     String dom = domain.getText();
     try {
-      // Set up the environment for creating the initial context
-      Hashtable<String, String> env = new Hashtable<String, String>();
-      env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-      env.put(Context.PROVIDER_URL, "ldap://" + svr + ":389");
-
-      // Authenticate as user and password
-      env.put(Context.SECURITY_AUTHENTICATION, "simple");
-      env.put(Context.SECURITY_PRINCIPAL, dom + "\\" + user);
-      env.put(Context.SECURITY_CREDENTIALS, pass);
-
-      // Create the initial context
-      DirContext ctx = new InitialDirContext(env);
-      System.out.println("ctx=" + ctx);
+      LDAP ldap = new LDAP();
+      if (!ldap.login(svr, dom, user, pass)) {
+        throw ldap.lastException;
+      }
       JFAWT.showMessage("LDAP", "Login Accepted");
     } catch (Exception e) {
       e.printStackTrace();
