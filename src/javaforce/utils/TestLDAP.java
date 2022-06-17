@@ -40,7 +40,7 @@ public class TestLDAP extends javax.swing.JFrame {
     query = new javax.swing.JButton();
     keyValue = new javax.swing.JTextField();
     jLabel7 = new javax.swing.JLabel();
-    ou = new javax.swing.JTextField();
+    dn = new javax.swing.JTextField();
     keyType = new javax.swing.JComboBox<>();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -76,7 +76,7 @@ public class TestLDAP extends javax.swing.JFrame {
       }
     });
 
-    jLabel7.setText("OU");
+    jLabel7.setText("DN");
 
     keyType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SAMAccountName", "mail" }));
 
@@ -97,7 +97,7 @@ public class TestLDAP extends javax.swing.JFrame {
         .addGap(22, 22, 22)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
           .addComponent(keyValue, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
-          .addComponent(ou, javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(dn, javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(domain, javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(username, javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(password, javax.swing.GroupLayout.Alignment.LEADING)
@@ -132,7 +132,7 @@ public class TestLDAP extends javax.swing.JFrame {
         .addGap(42, 42, 42)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel7)
-          .addComponent(ou, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(dn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addGap(18, 18, 18)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(keyValue, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -174,6 +174,7 @@ public class TestLDAP extends javax.swing.JFrame {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextField attr;
+  private javax.swing.JTextField dn;
   private javax.swing.JTextField domain;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
@@ -184,7 +185,6 @@ public class TestLDAP extends javax.swing.JFrame {
   private javax.swing.JComboBox<String> keyType;
   private javax.swing.JTextField keyValue;
   private javax.swing.JButton login;
-  private javax.swing.JTextField ou;
   private javax.swing.JPasswordField password;
   private javax.swing.JButton query;
   private javax.swing.JTextField server;
@@ -214,7 +214,7 @@ public class TestLDAP extends javax.swing.JFrame {
     String pass = new String(password.getPassword());
     String svr = server.getText();
     String dom = domain.getText();
-    String ou_dn = LDAP.build_dn(ou.getText());
+    String dif_dn = dn.getText();
     String key_type = keyType.getSelectedItem().toString();
     String key_value = keyValue.getText();
     String atr = attr.getText();
@@ -224,7 +224,7 @@ public class TestLDAP extends javax.swing.JFrame {
         throw ldap.lastException;
       }
       String[] atrs = atr.split("[,]");
-      String[] res = ldap.getAttributes(ou_dn, key_type + "=" + key_value, atrs);
+      String[] res = ldap.getAttributes(dif_dn, key_type + "=" + key_value, atrs);
       if (res == null) {
         JFAWT.showMessage("LDAP", "null result");
         return;
