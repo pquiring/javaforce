@@ -35,6 +35,14 @@ public class TestLDAP extends javax.swing.JFrame {
     server = new javax.swing.JTextField();
     domain = new javax.swing.JTextField();
     jLabel4 = new javax.swing.JLabel();
+    jLabel5 = new javax.swing.JLabel();
+    attr = new javax.swing.JTextField();
+    query = new javax.swing.JButton();
+    jLabel6 = new javax.swing.JLabel();
+    acct = new javax.swing.JTextField();
+    jLabel7 = new javax.swing.JLabel();
+    ou = new javax.swing.JTextField();
+    jLabel8 = new javax.swing.JLabel();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("LDAP Test");
@@ -54,6 +62,27 @@ public class TestLDAP extends javax.swing.JFrame {
 
     jLabel4.setText("Domain");
 
+    jLabel5.setText("Attribute(s)");
+
+    attr.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        attrActionPerformed(evt);
+      }
+    });
+
+    query.setText("Query");
+    query.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        queryActionPerformed(evt);
+      }
+    });
+
+    jLabel6.setText("Account");
+
+    jLabel7.setText("OU");
+
+    jLabel8.setText("Attributes are comma list");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -61,7 +90,11 @@ public class TestLDAP extends javax.swing.JFrame {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-          .addGroup(layout.createSequentialGroup()
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addComponent(jLabel8)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 170, Short.MAX_VALUE)
+            .addComponent(query))
+          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
             .addGap(0, 0, Short.MAX_VALUE)
             .addComponent(login))
           .addGroup(layout.createSequentialGroup()
@@ -69,13 +102,19 @@ public class TestLDAP extends javax.swing.JFrame {
               .addComponent(jLabel1)
               .addComponent(jLabel2)
               .addComponent(jLabel3)
-              .addComponent(jLabel4))
+              .addComponent(jLabel4)
+              .addComponent(jLabel6)
+              .addComponent(jLabel5)
+              .addComponent(jLabel7))
             .addGap(28, 28, 28)
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-              .addComponent(domain, javax.swing.GroupLayout.DEFAULT_SIZE, 304, Short.MAX_VALUE)
-              .addComponent(password)
-              .addComponent(username)
-              .addComponent(server))))
+              .addComponent(ou)
+              .addComponent(attr)
+              .addComponent(acct)
+              .addComponent(domain, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(username, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(password, javax.swing.GroupLayout.Alignment.TRAILING)
+              .addComponent(server, javax.swing.GroupLayout.Alignment.TRAILING))))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -97,9 +136,25 @@ public class TestLDAP extends javax.swing.JFrame {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
           .addComponent(server, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(login)
-        .addContainerGap())
+        .addGap(8, 8, 8)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel7)
+          .addComponent(ou, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addGap(18, 18, 18)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel6)
+          .addComponent(acct, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel5)
+          .addComponent(attr, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel8)
+          .addComponent(query))
+        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
     pack();
@@ -108,6 +163,14 @@ public class TestLDAP extends javax.swing.JFrame {
   private void loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginActionPerformed
     testLogin();
   }//GEN-LAST:event_loginActionPerformed
+
+  private void attrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attrActionPerformed
+    // TODO add your handling code here:
+  }//GEN-LAST:event_attrActionPerformed
+
+  private void queryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_queryActionPerformed
+    query();
+  }//GEN-LAST:event_queryActionPerformed
 
   /**
    * @param args the command line arguments
@@ -122,13 +185,21 @@ public class TestLDAP extends javax.swing.JFrame {
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JTextField acct;
+  private javax.swing.JTextField attr;
   private javax.swing.JTextField domain;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
+  private javax.swing.JLabel jLabel7;
+  private javax.swing.JLabel jLabel8;
   private javax.swing.JButton login;
+  private javax.swing.JTextField ou;
   private javax.swing.JPasswordField password;
+  private javax.swing.JButton query;
   private javax.swing.JTextField server;
   private javax.swing.JTextField username;
   // End of variables declaration//GEN-END:variables
@@ -151,4 +222,34 @@ public class TestLDAP extends javax.swing.JFrame {
     }
   }
 
+  public void query() {
+    String user = username.getText();
+    String pass = new String(password.getPassword());
+    String svr = server.getText();
+    String dom = domain.getText();
+    String ou_dn = LDAP.build_dn(ou.getText());
+    String act = acct.getText();
+    String atr = attr.getText();
+    try {
+      LDAP ldap = new LDAP();
+      if (!ldap.login(svr, dom, user, pass)) {
+        throw ldap.lastException;
+      }
+      String[] atrs = atr.split("[,]");
+      String[] res = ldap.getAttributes(ou_dn, act, atrs);
+      if (res == null) {
+        JFAWT.showMessage("LDAP", "null result");
+        return;
+      }
+      StringBuilder values = new StringBuilder();
+      for(int a=0;a<res.length;a++) {
+        values.append(res[a]);
+        values.append("\r\n");
+      }
+      JFAWT.showMessage("Results", values.toString());
+    } catch (Exception e) {
+      e.printStackTrace();
+      JFAWT.showMessage("LDAP", "Login Denied");
+    }
+  }
 }

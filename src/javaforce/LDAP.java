@@ -70,22 +70,22 @@ public class LDAP {
    * @param attrs = list of attributes to read
    * @return attributes in order of attrs
    */
-  public String[] getAttributes(String domain, String username, String attrs[]) {
+  public String[] getAttributes(String domain, String username, String[] attrs) {
     if (ctx == null) return null;
     String[] values = new String[attrs.length];
     try {
       SearchControls constraints = new SearchControls();
-      constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);
-      String[] attrIDs = attrs;
-      constraints.setReturningAttributes(attrIDs);
+      constraints.setSearchScope(SearchControls.SUBTREE_SCOPE);  //resursive
+      constraints.setReturningAttributes(attrs);
       NamingEnumeration answer = ctx.search(domain, "SAMAccountName=" + username, constraints);
-      if (answer.hasMore()) {
-        Attributes results = ((SearchResult) answer.next()).getAttributes();
-        for(int a=0;a<attrs.length;a++) {
-          values[a] = results.get(attrs[a]).toString();
-        }
-      } else {
-        throw new Exception("Invalid User");
+      if (!answer.hasMore()) {
+        throw new Exception("no results");
+      }
+      Attributes results = ((SearchResult) answer.next()).getAttributes();
+      for(int a=0;a<attrs.length;a++) {
+        Object value = results.get(attrs[a]);
+        if (value == null) value = "null";
+        values[a] = value.toString();
       }
       return values;
     } catch (Exception e) {
@@ -93,6 +93,17 @@ public class LDAP {
       JFLog.log(e);
       return null;
     }
+  }
+
+  public static String build_dn(String domain) {
+    StringBuilder dn = new StringBuilder();
+    String[] p = domain.split("[.]");
+    for(int a=0;a<p.length;a++) {
+      if (a > 0) dn.append(",");
+      dn.append("dc=");
+      dn.append(p[a]);
+    }
+    return dn.toString();
   }
 
   public Exception getLastException() {
