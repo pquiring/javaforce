@@ -191,6 +191,9 @@ public class SMTP extends Thread {
               case "account":
                 user_pass_list.add(value);
                 break;
+              case "domain":
+                domain = value;
+                break;
               case "ldap_server":
                 ldap_server = value;
                 break;
