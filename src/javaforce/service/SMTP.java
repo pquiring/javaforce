@@ -480,7 +480,7 @@ public class SMTP extends Thread {
       StringBuilder sb = new StringBuilder();
       sb.append("MAIL FROM:<" + from + ">\r\n");
       for(String t : to) {
-        sb.append("RCPT TO: <" + from + ">\r\n");
+        sb.append("RCPT TO:<" + from + ">\r\n");
       }
       return sb.toString();
     }
