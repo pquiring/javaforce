@@ -71,19 +71,23 @@ public class SMTP extends Thread {
   public SMTP() {
   }
 
-  public static void addSession(ClientWorker sess) {
+  public void setEvents(SMTPEvents events) {
+    SMTP.events = events;
+  }
+
+  private static void addSession(ClientWorker sess) {
     synchronized(lock) {
       clients.add(sess);
     }
   }
 
-  public static void removeSession(ClientWorker sess) {
+  private static void removeSession(ClientWorker sess) {
     synchronized(lock) {
       clients.remove(sess);
     }
   }
 
-  public static String getKeyFile() {
+  private static String getKeyFile() {
     return JF.getConfigPath() + "/jfsmtp.key";
   }
 
