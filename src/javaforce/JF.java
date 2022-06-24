@@ -1586,4 +1586,22 @@ public class JF {
       return -1;
     }
   }
+
+  private final static long KB = 1024;
+  private final static long MB = 1024 * 1024;
+  private final static long GB = 1024 * 1024 * 1024;
+  private final static long TB = 1024L * 1024L * 1024L * 1024L;
+
+  /** Converts long to engineering notation (KB, MB, GB, TB). */
+  public static String toEng(long size) {
+    if (size < MB) {
+      return String.format("%dKB", size / KB);
+    } else if (size < GB) {
+      return String.format("%dMB", size / MB);
+    } else if (size < TB) {
+      return String.format("%dGB", size / GB);
+    } else {
+      return String.format("%dTB", size / TB);
+    }
+  }
 }

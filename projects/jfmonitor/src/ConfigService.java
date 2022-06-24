@@ -278,23 +278,12 @@ public class ConfigService implements WebUIHandler {
     return panel;
   }
 
-  private final static long MB = 1024 * 1024;
-  private final static long GB = 1024 * 1024 * 1024;
-
-  public static String toEng(long size) {
-    if (size < GB) {
-      return String.format("%dMB", size / MB);
-    } else {
-      return String.format("%dGB", size / GB);
-    }
-  }
-
   private static String memoryUsage() {
     long total = Runtime.getRuntime().totalMemory();
     long free = Runtime.getRuntime().freeMemory();
     long max = Runtime.getRuntime().maxMemory();
     long used = total - free;
-    return " Memory:Used:" + toEng(used) + " Max:" + toEng(max);
+    return " Memory:Used:" + JF.toEng(used) + " Max:" + JF.toEng(max);
   }
 
   private boolean valid(String nw_host, String nw_ip, String nw_first, String nw_last, String nw_dhcp_first, String nw_dhcp_last, Label msg) {
@@ -857,19 +846,19 @@ public class ConfigService implements WebUIHandler {
         panel.add(row);
 
         row = new Row();
-        row.add(new Label("Size:" + toEng(store.size)));
+        row.add(new Label("Size:" + JF.toEng(store.size)));
 
         Label sp1 = new Label("");
         sp1.setStyle("padding", "5px");
         row.add(sp1);
 
-        row.add(new Label("Used:" + toEng(store.size - store.free)));
+        row.add(new Label("Used:" + JF.toEng(store.size - store.free)));
 
         Label sp2 = new Label("");
         sp2.setStyle("padding", "5px");
         row.add(sp2);
 
-        row.add(new Label("Free:" + toEng(store.free)));
+        row.add(new Label("Free:" + JF.toEng(store.free)));
         panel.add(row);
 
         row = new Row();
