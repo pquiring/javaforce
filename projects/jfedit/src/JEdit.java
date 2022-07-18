@@ -186,6 +186,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     boolean dirty;
     File filename;
     boolean bUnix;
+    long ts;
   };
   private Vector<page> pages;
   private boolean bLoading = false;
@@ -331,6 +332,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       FileOutputStream fos = new FileOutputStream(pages.get(idx).filename);
       fos.write(tmp.getBytes("UTF-8"));
       fos.close();
+      pages.get(idx).ts = pages.get(idx).filename.lastModified();
       tabs.setTitleAt(idx, pages.get(idx).filename.getName());
       pages.get(idx).dirty = false;
       return true;
@@ -376,6 +378,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     pages.remove(idx);
     tabs.remove(idx);
     if (pages.size() == 0) addpage("untitled");
+    checktab();
     return true;
   }
   private void openpage() {
@@ -433,6 +436,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       txt = new byte[size];
       fis.read(txt);
       fis.close();
+      pages.get(idx).ts = pages.get(idx).filename.lastModified();
       bLoading = true;
       String str = new String(txt, "UTF-8");
       boolean bUnix = Settings.settings.bUnix;
@@ -880,10 +884,32 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       if (idx == 0) idx = 9; else idx--;
       if (idx >= pages.size()) return;
       tabs.setSelectedIndex(idx);
+      checktab();
       return;
     }
-    if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_MINUS)) tabs.setSelectedIndex(10);
-    if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_EQUALS)) tabs.setSelectedIndex(11);
+    if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_MINUS)) {tabs.setSelectedIndex(10); checktab();}
+    if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_EQUALS)) {tabs.setSelectedIndex(11); checktab();}
+  }
+
+  private void checktab() {
+    int idx = tabs.getSelectedIndex();
+    if (pages.get(idx).filename.toString().equals("untitled")) return;
+    if (!pages.get(idx).filename.exists()) return;
+    long ts = pages.get(idx).filename.lastModified();
+    if (ts > pages.get(idx).ts) {
+      //file has been updated on disk - ask to reload
+      switch (JOptionPane.showConfirmDialog(this, "File has changed : '" + pages.get(idx).filename.toString() + "'\nReload file?", "Confirm",
+        JOptionPane.YES_NO_CANCEL_OPTION)) {
+        case JOptionPane.YES_OPTION:
+          loadpage(idx);
+          break;
+        case JOptionPane.NO_OPTION:
+          break;
+        default:
+        case JOptionPane.CANCEL_OPTION:
+          break;
+      }
+    }
   }
 
   private void prevtab() {
@@ -891,6 +917,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     idx--;
     if (idx == -1) idx = pages.size() - 1;
     tabs.setSelectedIndex(idx);
+    checktab();
   }
 
   private void nexttab() {
@@ -898,6 +925,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     idx++;
     if (idx == pages.size()) idx = 0;
     tabs.setSelectedIndex(idx);
+    checktab();
   }
 
   private enum Section {None, Folders, Files};
