@@ -774,6 +774,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
         "CTRL-L = Goto Line #\n" +
         "CTRL-E = Execute Command\n" +
         "CTRL-P = Print\n" +
+        "CTRL-D = Reload\n" +
         "ALT-# = Switch to document\n\n"
         , "Help", JOptionPane.INFORMATION_MESSAGE);
       return;
@@ -879,6 +880,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     if ((f1 == KeyEvent.VK_L) && (f2 == KeyEvent.CTRL_MASK)) { gotopos(); return; }
     if ((f1 == KeyEvent.VK_E) && (f2 == KeyEvent.CTRL_MASK)) { execute(); return; }
     if ((f1 == KeyEvent.VK_P) && (f2 == KeyEvent.CTRL_MASK)) { print(); return; }
+    if ((f1 == KeyEvent.VK_D) && (f2 == KeyEvent.CTRL_MASK)) { checktab(); return; }
     if ((f2 == KeyEvent.ALT_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
       idx = f1 - KeyEvent.VK_0;
       if (idx == 0) idx = 9; else idx--;
