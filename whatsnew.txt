@@ -1,5 +1,13 @@
 What's new...
 
+Aug 3/2022 : JF/36.1
+  - jfEdit/0.19
+    - added file change detection
+  - new : javaforce.service.SMTP
+    - simple SMTP service
+  - new : javaforce.LDAP
+    - LDAP client
+
 June 14/2022 : JF/36.0
   - jfSOCKS improvements
 
