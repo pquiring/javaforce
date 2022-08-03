@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+8-3-2022 : v0.19
+  - add : file change detection
+
 7-30-2020 : v0.18
   - fix : eol detection
 
