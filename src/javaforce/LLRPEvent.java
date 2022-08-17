@@ -7,7 +7,7 @@ package javaforce;
 
 public interface LLRPEvent {
   /** Provides EPC in hex format. */
-  public void tagRead(String epc);
+  public void tagRead(String epc, int rssi);
   /** Triggered when a GPI event occurs. */
   public void gpiEvent(int port, boolean event);
   /** Triggered when RO spec is started. */

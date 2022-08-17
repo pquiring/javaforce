@@ -988,7 +988,7 @@ public class LLRP implements LLRPEndpoint {
           List<AccessCommandOpSpecResult> list = tag.getAccessCommandOpSpecResultList();
           if (list.size() == 0) {
             if (events != null) {
-              events.tagRead(null);
+              events.tagRead(null, 0);
             }
           }
           for(AccessCommandOpSpecResult res : list) {
@@ -1007,7 +1007,7 @@ public class LLRP implements LLRPEndpoint {
             if (debug) {
               JFLog.log(log_id, "[" + System.currentTimeMillis() + "] EPC=" + epc + ":RSSI=" + tag_rssi);
             }
-            events.tagRead(epc);
+            events.tagRead(epc, tag_rssi);
           }
         }
       }
@@ -1164,8 +1164,8 @@ public class LLRP implements LLRPEndpoint {
           llrp.setRSSIThreshold(rssi);
         }
         llrp.setEventsListener(new LLRPEvent() {
-          public void tagRead(String epc) {
-            System.out.println("EPC=" + epc);
+          public void tagRead(String epc, int rssi) {
+            System.out.println("EPC=" + epc + ":RSSI=" + rssi);
           }
           public void gpiEvent(int port, boolean event) {
             System.out.println("GPI:" + port + ":" + event);
