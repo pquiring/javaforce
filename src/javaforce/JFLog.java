@@ -31,6 +31,7 @@ public class JFLog {
   }
 
   public static boolean init(int id, String filename, boolean append, PrintStream stdout) {
+    close(id);
     LogInstance log = new LogInstance();
     log.stdout = stdout;
     log.filename = filename.replaceAll("\\\\", "/");
