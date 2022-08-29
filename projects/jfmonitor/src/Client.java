@@ -158,6 +158,7 @@ public class Client extends Thread {
   public void sendFileSystems() throws Exception {
     StringBuilder sb = new StringBuilder();
     for(FileStore fs : FileSystems.getDefault().getFileStores()) {
+      if (fs.isReadOnly()) continue;  //do NOT report CD-ROMs, etc.
       //TODO : get better name that includes mount point
       sb.append(fs.name());
       sb.append(",");
