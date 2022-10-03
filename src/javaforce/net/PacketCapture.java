@@ -63,8 +63,14 @@ public class PacketCapture {
   /** Find interface that contains IP address. */
   public String findInterface(String ip) {
     String[] ifs = listLocalInterfaces();
+    if (debug) {
+      JFLog.log("local interfaces:" + ifs.length + " found");
+    }
     for(int a=0;a<ifs.length;a++) {
       String[] dev_ips = ifs[a].split("[,]");
+      if (debug) {
+        JFLog.log("local interface:" + dev_ips[0]);
+      }
       for(int b=1;b<dev_ips.length;b++) {
         if (dev_ips[b].equals(ip)) {
           return dev_ips[0];
