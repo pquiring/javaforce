@@ -1604,4 +1604,29 @@ public class JF {
       return String.format("%dTB", size / TB);
     }
   }
+
+  /** Converts engineering notation (KB, MB, GB, TB) value to long. */
+  public static long fromEng(String value) {
+    String cap = value.toUpperCase();
+    if (!cap.endsWith("B")) {
+      cap = cap + "B";
+    }
+    if (cap.endsWith("KB")) {
+      String val = cap.substring(0, cap.length() - 2);
+      return Long.valueOf(val) * KB;
+    }
+    if (cap.endsWith("MB")) {
+      String val = cap.substring(0, cap.length() - 2);
+      return Long.valueOf(val) * MB;
+    }
+    if (cap.endsWith("GB")) {
+      String val = cap.substring(0, cap.length() - 2);
+      return Long.valueOf(val) * GB;
+    }
+    if (cap.endsWith("TB")) {
+      String val = cap.substring(0, cap.length() - 2);
+      return Long.valueOf(val) * TB;
+    }
+    return Long.valueOf(value);
+  }
 }

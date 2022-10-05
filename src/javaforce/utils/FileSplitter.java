@@ -7,8 +7,8 @@ package javaforce.utils;
  Usage : filein fileout1 fileout2 [size_of_fileout1]
 
  /*/
+
 import java.io.*;
-import java.util.Random;
 
 import javaforce.*;
 
@@ -53,7 +53,7 @@ public class FileSplitter {
     int size = 0;
 
     if (pa.arg_names.size() == 4) {
-      size = JF.atoi(pa.arg_names.get(3));
+      size = (int)JF.fromEng(pa.arg_names.get(3));
     }
 
     byte buf[] = new byte[BUFSIZ];
