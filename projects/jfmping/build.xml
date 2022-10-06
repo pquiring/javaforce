@@ -7,7 +7,7 @@
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
-  <property name="version" value="0.30"/>
+  <property name="version" value="0.1"/>
 
   <import file="../../base.xml"/>
 
@@ -35,17 +35,9 @@
     <jar destfile="jfmping.jar" includes="*.class" basedir="${build}">
       <fileset dir="." includes="*.png"/>
       <manifest>
-        <attribute name="Main-Class" value="App"/>
+        <attribute name="Main-Class" value="Main"/>
       </manifest>
     </jar>
-  </target>
-
-  <!-- sudo ant install -->
-  <target name="install" description="install files">
-    <copy file="jfmping.jar" todir="/usr/share/java"/>
-    <copy file="jfmping.desktop" todir="/usr/share/applications"/>
-    <copy file="jfmping.png" todir="/usr/share/icons/hicolor/48x48/apps"/>
-    <copy file="jfmping.html" todir="/usr/share/jfhelp"/>
   </target>
 
   <target name="clean" description="deletes compiled files">
