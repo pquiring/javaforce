@@ -163,6 +163,7 @@ public class Main extends javax.swing.JFrame {
     private ArrayList<IP4> ips;
     private int pos;
     private int delay = 1000;
+    private int timeout = 2000;
     private PacketCapture pcap;
     private long id;
     public void run() {
@@ -191,6 +192,10 @@ public class Main extends javax.swing.JFrame {
               case "delay":
                 delay = Integer.valueOf(value);
                 System.out.println("delay=" + delay);
+                break;
+              case "timeout":
+                timeout = Integer.valueOf(value);
+                System.out.println("timeout=" + timeout);
                 break;
             }
           }
@@ -233,11 +238,12 @@ public class Main extends javax.swing.JFrame {
           updateImage();
           for(int a=0;a<ips.size();a++) {
             IP4 ip = ips.get(a);
-            byte[] mac = pcap.arp(id, ip.toString(), 2000);
+            byte[] mac = pcap.arp(id, ip.toString(), timeout);
             if (mac == null) {
               img.putPixel(pos, a, 0xff0000);  //red
             } else {
               img.putPixel(pos, a, 0x00ff00);  //green
+              JF.sleep(10);
             }
           }
           pos++;
