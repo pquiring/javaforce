@@ -9,10 +9,7 @@ import javaforce.JF;
 
 public class WDS {
   static {
-    if (JF.is64Bit())
-      System.loadLibrary("server64");
-    else
-      System.loadLibrary("server32");
+    System.loadLibrary("server64");
   }
   public static native long startServer(String user, String group, String pass, int numAttend, boolean viewOnly, int port);
   public static native String getConnectionString(long id);

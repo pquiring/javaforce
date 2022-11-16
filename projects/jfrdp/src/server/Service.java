@@ -22,7 +22,7 @@ public class Service implements WebHandler {
   private boolean viewOnly;
 
   private ServerSocket ss;
-
+  
   public void start(String webPass, String rdpPass, int maxUsers, boolean viewOnly) {
     if (webPass == null || rdpPass.length() == 0) {
       return;

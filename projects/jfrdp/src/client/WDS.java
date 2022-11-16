@@ -9,10 +9,7 @@ import javaforce.JF;
 
 public class WDS {
   static {
-    if (JF.is64Bit())
-      System.loadLibrary("client64");
-    else
-      System.loadLibrary("client32");
+    System.loadLibrary("client64");
   }
   public static native boolean startClient(String xml, String user, String pass);
 }
