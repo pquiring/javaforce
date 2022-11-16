@@ -1,1 +1,1 @@
-java -cp javaforce.jar;jfpasswords.jar PasswordsApp
+javaw -cp javaforce.jar;jfpasswords.jar PasswordsApp
