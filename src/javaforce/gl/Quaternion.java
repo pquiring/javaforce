@@ -9,13 +9,13 @@ package javaforce.gl;
 class Quaternion {
   public float x,y,z,w;
 
-  public static Quaternion toQuaternion(float roll, float pitch, float yaw) {
-    float cr = (float)Math.cos(roll * 0.5);
-    float sr = (float)Math.sin(roll * 0.5);
-    float cp = (float)Math.cos(pitch * 0.5);
-    float sp = (float)Math.sin(pitch * 0.5);
-    float cy = (float)Math.cos(yaw * 0.5);
-    float sy = (float)Math.sin(yaw * 0.5);
+  public static Quaternion toQuaternion(float x, float y, float z) {
+    float cr = (float)Math.cos(x * 0.5);
+    float sr = (float)Math.sin(x * 0.5);
+    float cp = (float)Math.cos(y * 0.5);
+    float sp = (float)Math.sin(y * 0.5);
+    float cy = (float)Math.cos(z * 0.5);
+    float sy = (float)Math.sin(z * 0.5);
 
     Quaternion q = new Quaternion();
     q.w = cr * cp * cy + sr * sp * sy;
