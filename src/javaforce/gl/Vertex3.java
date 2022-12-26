@@ -1,6 +1,6 @@
 package javaforce.gl;
 
-/** Store one vertex (point). */
+/** Store one vertex point (x,y,z) with texture coordinates (u,v). */
 
 public class Vertex3 {
   public float x,y,z;

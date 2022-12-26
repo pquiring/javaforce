@@ -9,6 +9,7 @@ package javaforce.gl;
 class Quaternion {
   public float x,y,z,w;
 
+  /** Create Quaternion from Euler Angles (x,y,z). */
   public static Quaternion toQuaternion(float x, float y, float z) {
     float cr = (float)Math.cos(x * 0.5);
     float sr = (float)Math.sin(x * 0.5);
@@ -26,7 +27,8 @@ class Quaternion {
     return q;
   }
 
-  public static Quaternion toQuaternion(Vector3 a3) {
+  /** Create Quaternion from Euler Angles (Angles3). */
+  public static Quaternion toQuaternion(Angles3 a3) {
     return toQuaternion(a3.v[0], a3.v[1], a3.v[2]);
   }
 };
