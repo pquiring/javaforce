@@ -9,8 +9,8 @@ package javaforce.gl;
 class Quaternion {
   public float x,y,z,w;
 
-  /** Create Quaternion from Euler Angles (x,y,z). */
-  public static Quaternion toQuaternion(float x, float y, float z) {
+  /** Set values based on Euler Angles (x,y,z). */
+  public void set(float x, float y, float z) {
     float cr = (float)Math.cos(x * 0.5);
     float sr = (float)Math.sin(x * 0.5);
     float cp = (float)Math.cos(y * 0.5);
@@ -18,17 +18,18 @@ class Quaternion {
     float cy = (float)Math.cos(z * 0.5);
     float sy = (float)Math.sin(z * 0.5);
 
-    Quaternion q = new Quaternion();
-    q.w = cr * cp * cy + sr * sp * sy;
-    q.x = sr * cp * cy - cr * sp * sy;
-    q.y = cr * sp * cy + sr * cp * sy;
-    q.z = cr * cp * sy - sr * sp * cy;
-
-    return q;
+    this.w = cr * cp * cy + sr * sp * sy;
+    this.x = sr * cp * cy - cr * sp * sy;
+    this.y = cr * sp * cy + sr * cp * sy;
+    this.z = cr * cp * sy - sr * sp * cy;
   }
 
-  /** Create Quaternion from Euler Angles (Angles3). */
-  public static Quaternion toQuaternion(Angles3 a3) {
-    return toQuaternion(a3.v[0], a3.v[1], a3.v[2]);
+  /** Set values based on Euler Angles (Angles3). */
+  public void set(Angles3 a3) {
+    set(a3.v[0], a3.v[1], a3.v[2]);
+  }
+
+  public String toString() {
+    return String.format("%.3f,%.3f,%.3f,%.3f\r\n", x, y, z, w);
   }
 };
