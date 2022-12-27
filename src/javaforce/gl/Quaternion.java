@@ -6,7 +6,7 @@
 
 package javaforce.gl;
 
-class Quaternion {
+public class Quaternion {
   public float x,y,z,w;
 
   /** Set values based on Euler Angles (x,y,z). */
