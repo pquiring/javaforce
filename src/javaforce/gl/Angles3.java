@@ -121,6 +121,7 @@ public class Angles3 {
 				break;
 			default:
         JFLog.log("Error:Angles3.set(Quaternion,Order):Unknown order");
+        break;
     }
   }
 
