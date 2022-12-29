@@ -123,6 +123,54 @@ public class Matrix implements Cloneable {
     m[2+2*4] = (one_c * zz) + c;
   }
 
+  /** Set rotation from Quaternion. */
+  public void set(Quaternion q) {
+    float x = q.x;
+    float y = q.y;
+    float z = q.z;
+    float w = q.w;
+
+    float x2 = x + x;
+    float y2 = y + y;
+    float z2 = z + z;
+
+    float xx = x * x2;
+    float xy = x * y2;
+    float xz = x * z2;
+
+    float yy = y * y2;
+    float yz = y * z2;
+    float zz = z * z2;
+
+    float wx = w * x2;
+    float wy = w * y2;
+    float wz = w * z2;
+
+    float sx = 1.0f;
+    float sy = 1.0f;
+    float sz = 1.0f;
+
+    m[ 0 ] = ( 1.0f - ( yy + zz ) ) * sx;
+		m[ 1 ] = ( xy + wz ) * sx;
+		m[ 2 ] = ( xz - wy ) * sx;
+		m[ 3 ] = 0.0f;
+
+		m[ 4 ] = ( xy - wz ) * sy;
+		m[ 5 ] = ( 1.0f - ( xx + zz ) ) * sy;
+		m[ 6 ] = ( yz + wx ) * sy;
+		m[ 7 ] = 0.0f;
+
+		m[ 8 ] = ( xz + wy ) * sz;
+		m[ 9 ] = ( yz - wx ) * sz;
+		m[ 10 ] = ( 1.0f - ( xx + yy ) ) * sz;
+		m[ 11 ] = 0.0f;
+
+		m[ 12 ] = 0.0f;  //pos x
+		m[ 13 ] = 0.0f;  //pos y
+		m[ 14 ] = 0.0f;  //pos z
+		m[ 15 ] = 1.0f;
+  }
+
   public void setAATranslate(float angle, float x, float y, float z, float tx, float ty, float tz) {
     setAA(angle,x,y,z);  //sets identity
     addTranslate(tx, ty, tz);
