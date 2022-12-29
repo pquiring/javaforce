@@ -21,18 +21,18 @@ public class Angles3 {
   /** Set angles based on Quaternion. */
   public void set(Quaternion q) {
     // roll (x-axis rotation)
-    float sinr_cosp = 2 * (q.w * q.x + q.y * q.z);
-    float cosr_cosp = 1 - 2 * (q.x * q.x + q.y * q.y);
+    float sinr_cosp = 2.0f * (q.w * q.x + q.y * q.z);
+    float cosr_cosp = 1.0f - 2.0f * (q.x * q.x + q.y * q.y);
     v[0] = (float)Math.atan2(sinr_cosp, cosr_cosp);
 
     // pitch (y-axis rotation)
-    float sinp = (float)Math.sqrt(1 + 2 * (q.w * q.x - q.y * q.z));
-    float cosp = (float)Math.sqrt(1 - 2 * (q.w * q.x - q.y * q.z));
+    float sinp = (float)Math.sqrt(1.0f + 2.0f * (q.w * q.x - q.y * q.z));
+    float cosp = (float)Math.sqrt(1.0f - 2.0f * (q.w * q.x - q.y * q.z));
     v[1] = 2.0f * (float)Math.atan2(sinp, cosp) - (float)Math.PI / 2.0f;
 
     // yaw (z-axis rotation)
-    float siny_cosp = 2 * (q.w * q.z + q.x * q.y);
-    float cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
+    float siny_cosp = 2.0f * (q.w * q.z + q.x * q.y);
+    float cosy_cosp = 1.0f - 2.0f * (q.y * q.y + q.z * q.z);
     v[2] = (float)Math.atan2(siny_cosp, cosy_cosp);
   }
 

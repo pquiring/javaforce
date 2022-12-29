@@ -30,6 +30,6 @@ public class Quaternion {
   }
 
   public String toString() {
-    return String.format("%.3f,%.3f,%.3f,%.3f\r\n", x, y, z, w);
+    return String.format("%.3f,%.3f,%.3f,%.3f\r\n", w, x, y, z);
   }
 };
