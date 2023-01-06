@@ -1,5 +1,13 @@
 What's new...
 
+Jan 6/2023 : JF/37.0
+  - jfMonitor/0.4
+    - ignore readonly file systems which usually appear 100% full
+  - jfmping
+    - new utility to monitor multiple devices
+  - added IPL printing
+  - added Quaternion and Euler (Angles3) math
+
 Aug 3/2022 : JF/36.1
   - jfEdit/0.19
     - added file change detection
