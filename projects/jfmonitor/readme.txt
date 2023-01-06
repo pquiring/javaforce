@@ -34,5 +34,5 @@ Source Code : https://github.com/pquiring/javaforce/tree/master/projects/jfmonit
 Author : Peter Quiring
 eMail : pquiring at gmail dot com
 
-Version : 0.3
-Date : 4/26/2022
+Version : 0.4
+Date : 1/6/2023

@@ -883,7 +883,7 @@ public class ConfigService implements WebUIHandler {
   public Panel clientPanel() {
     Panel panel = new Panel();
     //TODO : add options to reset config, disconnect from server, etc.
-    panel.add(new Label("jfMonitor is running in client mode."));
+    panel.add(new Label("jfMonitor/" + Config.AppVersion + " is running in client mode."));
     panel.add(new Label("There are no options to configure here."));
     panel.add(new Label("Use the server to add resources to monitor."));
     panel.add(new Label("This Host=" + Config.current.this_host));
