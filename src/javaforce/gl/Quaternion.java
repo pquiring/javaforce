@@ -2,7 +2,19 @@ package javaforce.gl;
 
 /** Quaternion
  *
+ * See : https://en.wikipedia.org/wiki/Quaternion
+ *
  * See : https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+ *
+ *  w = cos(ang/2)
+ *  x = sin(ang/2) * cos(xang/2)
+ *  y = sin(ang/2) * cos(yang/2)
+ *  z = sin(ang/2) * cos(zang/2)
+ *   where:
+ *     ang = simple direct angle
+ *     xang = angle in x plane
+ *     yang = angle in y plane
+ *     zang = angle in z plane
  *
  */
 
