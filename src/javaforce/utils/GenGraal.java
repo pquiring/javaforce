@@ -8,12 +8,13 @@ package javaforce.utils;
 import java.io.*;
 
 public class GenGraal {
+  private static String json_path = "META-INF/native-image";
   public static void main(String[] args) {
     if (args.length != 1) {
       System.out.println("usage:GenGraal mainclass");
       System.exit(1);
     }
-    new File("META-INF/native-image/javaforce").mkdirs();
+    new File(json_path).mkdirs();
     jni(args);
     resources(args);
     System.out.println("JavaForce graal config created");
@@ -22,28 +23,30 @@ public class GenGraal {
     StringBuilder sb = new StringBuilder();
     sb.append("[");
     sb.append("{");
-    sb.append("  \"name\":\"javaforce.JF\",");
+    sb.append("  \"name\" : \"javaforce.JF\",");
     sb.append("  \"methods\":");
     sb.append("  [");
-    sb.append("    {\"name\":\"expandArgs\"}");
+    sb.append("    {\"name\" : \"expandArgs\"}");
     sb.append("  ]");
+/*
     sb.append("},{");
-    sb.append("  \"name\":\"java.lang.System\",");
-    sb.append("  \"methods\":");
+    sb.append("  \"name\" : \"java.lang.System\",");
+    sb.append("  \"methods\" : ");
     sb.append("  [");
-    sb.append("    {\"name\":\"setProperty\"}");
+    sb.append("    {\"name\" : \"setProperty\"}");
     sb.append("  ]");
+*/
     sb.append("},{");
-    sb.append("  \"name\":\"" + args[0] + "\",");
+    sb.append("  \"name\" : \"" + args[0] + "\",");
     sb.append("  \"allDeclaredMethods\" : true");
     sb.append("},{");
-    sb.append("  \"name\":\"javaforce.ui.Window\",");
+    sb.append("  \"name\" : \"javaforce.ui.Window\",");
     sb.append("  \"allDeclaredMethods\" : true");
     sb.append("},{");
-    sb.append("  \"name\":\"javaforce.ui.Font\",");
+    sb.append("  \"name\" : \"javaforce.ui.Font\",");
     sb.append("  \"allDeclaredConstructors\" : true");
     sb.append("},{");
-    sb.append("  \"name\":\"javaforce.ui.Image\",");
+    sb.append("  \"name\" : \"javaforce.ui.Image\",");
     sb.append("  \"allDeclaredConstructors\" : true");
     sb.append("},{");
     sb.append("  \"name\" : \"javaforce.gl.GL\",");
@@ -74,6 +77,9 @@ public class GenGraal {
     sb.append("  \"name\" : \"javaforce.media.VideoBuffer\",");
     sb.append("  \"allDeclaredMethods\" : true");
     sb.append("},{");
+    sb.append("  \"name\" : \"javaforce.net.PacketCapture\",");
+    sb.append("  \"allDeclaredConstructors\" : true");
+    sb.append("},{");
     sb.append("  \"name\" : \"javaforce.jni.JFNative\",");
     sb.append("  \"allDeclaredConstructors\" : true");
     sb.append("},{");
@@ -91,7 +97,7 @@ public class GenGraal {
     sb.append("}");
     sb.append("]");
     try {
-      FileOutputStream fos = new FileOutputStream("javaforce-jni-config.json");
+      FileOutputStream fos = new FileOutputStream(json_path + "/javaforce-jni-config.json");
       fos.write(sb.toString().getBytes());
       fos.close();
     } catch (Exception e) {
@@ -117,7 +123,7 @@ public class GenGraal {
     sb.append("  }");
     sb.append("}");
     try {
-      FileOutputStream fos = new FileOutputStream("javaforce-resource-config.json");
+      FileOutputStream fos = new FileOutputStream(json_path + "/javaforce-resource-config.json");
       fos.write(sb.toString().getBytes());
       fos.close();
     } catch (Exception e) {

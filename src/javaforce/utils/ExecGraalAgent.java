@@ -5,6 +5,7 @@ package javaforce.utils;
  * @author pquiring
  */
 
+import java.io.*;
 import java.util.*;
 
 import javaforce.*;
@@ -25,11 +26,12 @@ public class ExecGraalAgent implements ShellProcessListener {
   }
 
   public void run(String[] args) {
+    new File("META-INF/native-image").mkdirs();
     ShellProcess sp = new ShellProcess();
     sp.addListener(this);
     ArrayList<String> cmd = new ArrayList<String>();
     cmd.add("java");
-    cmd.add("-agentlib:native-image-agent=config-output-dir=.");
+    cmd.add("-agentlib:native-image-agent=config-output-dir=META-INF/native-image");
     cmd.add("-cp");
     if (JF.isWindows()) {
       cmd.add(args[0]);  //CLASSPATH

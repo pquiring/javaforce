@@ -147,44 +147,6 @@ ExpandStringArray(JNIEnv *env, jobject inArray) {
   return outArray;
 }
 
-int setJavaAppHome(JNIEnv *env, char *java_app_home) {
-  jclass cls;
-  jmethodID mid;
-  jstring name, value;
-
-  cls = env->FindClass("java/lang/System");
-  if (cls == 0) {
-    printException(g_env);
-    error("Unable to find java.lang.System class");
-    return 0;
-  }
-  mid = env->GetStaticMethodID(cls, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;");
-  if (mid == 0) {
-    printException(g_env);
-    error("Unable to find java.lang.System.setProperty method");
-    return 0;
-  }
-  name = env->NewStringUTF("java.app.home");
-  value = env->NewStringUTF(java_app_home);
-  env->CallStaticObjectMethod(cls, mid, name, value);
-  env->DeleteLocalRef(name);
-  env->DeleteLocalRef(value);
-  if (graal) {
-    name = env->NewStringUTF("java.home");
-    value = env->NewStringUTF(java_app_home);
-    env->CallStaticObjectMethod(cls, mid, name, value);
-    env->DeleteLocalRef(name);
-    env->DeleteLocalRef(value);
-
-    name = env->NewStringUTF("java.graal");
-    value = env->NewStringUTF("true");
-    env->CallStaticObjectMethod(cls, mid, name, value);
-    env->DeleteLocalRef(name);
-    env->DeleteLocalRef(value);
-  }
-  return 1;
-}
-
 char *DOption = "-Djava.class.path=";
 
 /** Create class path adding exe path to each element (because the current path is not where the EXE is). */
@@ -274,6 +236,13 @@ char* DetectGC() {
   }
 }
 
+char* MakeString(char* fmt, char* path) {
+  int len = strlen(fmt) - 2 + strlen(path) + 1;
+  char* str = (char*)malloc(len);
+  sprintf(str, fmt, path);
+  return str;
+}
+
 JavaVMInitArgs *BuildArgs() {
   JavaVMInitArgs *args;
   JavaVMOption *options;
@@ -281,18 +250,22 @@ JavaVMInitArgs *BuildArgs() {
   int idx;
   char *opts[64];
 
-  if (!graal) {
+  opts[nOpts++] = MakeString("-Djava.app.home=%s", exepath);
+  if (graal) {
+    opts[nOpts++] = (char*)"-Djava.graal=true";
+    opts[nOpts++] = MakeString("-Djava.home=%s", exepath);
+  } else {
     opts[nOpts++] = CreateClassPath();
     opts[nOpts++] = DetectGC();
-    if (strlen(xoptions) > 0) {
-      char *x = xoptions;
-      while (x != NULL) {
-        opts[nOpts++] = x;
-        x = strchr(x, ' ');
-        if (x != NULL) {
-          *x = 0;
-          x++;
-        }
+  } 
+  if (strlen(xoptions) > 0) {
+    char *x = xoptions;
+    while (x != NULL) {
+      opts[nOpts++] = x;
+      x = strchr(x, ' ');
+      if (x != NULL) {
+        *x = 0;
+        x++;
       }
     }
   }
@@ -402,10 +375,6 @@ void registerAllNatives(JNIEnv *env) {
 /** Invokes the main method in a new thread. */
 int JavaThread(void *ignore) {
   CreateJVM();
-
-  if (!setJavaAppHome(g_env, exepath)) {
-    return 0;
-  }
 
   registerAllNatives(g_env);
 
@@ -606,7 +575,6 @@ void __stdcall ServiceMain(int argc, char **argv) {
   ServiceHandle = RegisterServiceCtrlHandler(service, (void (__stdcall *)(unsigned long))ServiceControl);
   ServiceStatus(SERVICE_RUNNING);
   CreateJVM();
-  setJavaAppHome(g_env, exepath);
   registerAllNatives(g_env);
   g_env->FindClass("javaforce/jni/Startup");
   InvokeMethod("serviceStart", ConvertStringArray(g_env, argc, argv), "([Ljava/lang/String;)V");

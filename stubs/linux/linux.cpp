@@ -174,13 +174,14 @@ JavaVMInitArgs *BuildArgs() {
   char *opts[64];
   int idx;
 
-  opts[nOpts++] = CreateClassPath();
   opts[nOpts++] = (char*)"-Djava.app.home=/usr/bin";
   if (graal) {
     opts[nOpts++] = (char*)"-Djava.graal=true";
     opts[nOpts++] = (char*)"-Djava.home=/usr/bin";
-  }
-//  opts[nOpts++] = DetectGC();  //not supported yet
+  } else {
+    opts[nOpts++] = CreateClassPath();
+//    opts[nOpts++] = DetectGC();  //not supported yet
+  } 
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
     while (x != NULL) {
