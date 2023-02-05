@@ -2,7 +2,6 @@
   <description>jfedit</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfedit"/>
-  <property name="apptype" value="c"/>
   <property name="home" location="../.."/>
   <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="src" location="src"/>
