@@ -1,4 +1,4 @@
-package javaforce.ansi.utils;
+package javaforce.utils;
 
 /** CopyPath
  *
@@ -7,9 +7,10 @@ package javaforce.ansi.utils;
 
 import java.io.*;
 import java.nio.file.*;
-import javaforce.ConsoleOutput;
 
+import javaforce.*;
 import javaforce.ansi.server.*;
+import javaforce.jni.*;
 
 public class CopyPath implements KeyEvents {
   public static String[] args;
@@ -30,6 +31,8 @@ public class CopyPath implements KeyEvents {
   }
 
   public static void main(String[] args) {
+    JFNative.load_ffmpeg = false;
+    JFNative.load();
     ANSI.enableConsoleMode();
     ConsoleOutput.install();
     CopyPath.args = args;
