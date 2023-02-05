@@ -28,11 +28,11 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   /** Creates new form jfedit */
   public JEdit() {
     initComponents();
+    folder.setModel(new DefaultListModel());
     initApp();
     JFImage icon = new JFImage();
     icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfedit.png"));
     setIconImage(icon.getImage());
-    loadProject();
     cut.addActionListener(this);
     copy.addActionListener(this);
     paste.addActionListener(this);
@@ -52,6 +52,10 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     copy = new javax.swing.JMenuItem();
     paste = new javax.swing.JMenuItem();
     delete = new javax.swing.JMenuItem();
+    tabs = new javax.swing.JTabbedPane();
+    split = new javax.swing.JSplitPane();
+    folderPane = new javax.swing.JScrollPane();
+    folder = new javax.swing.JList<>();
 
     FormListener formListener = new FormListener();
 
@@ -67,6 +71,16 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     delete.setText("Delete");
     popup.add(delete);
 
+    folder.setModel(new javax.swing.AbstractListModel<String>() {
+      String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+      public int getSize() { return strings.length; }
+      public String getElementAt(int i) { return strings[i]; }
+    });
+    folder.addMouseListener(formListener);
+    folder.addKeyListener(formListener);
+    folder.addListSelectionListener(formListener);
+    folderPane.setViewportView(folder);
+
     setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
     addComponentListener(formListener);
     addWindowStateListener(formListener);
@@ -78,7 +92,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
 
   // Code for dispatching events from components to event handlers.
 
-  private class FormListener implements java.awt.event.ComponentListener, java.awt.event.WindowListener, java.awt.event.WindowStateListener {
+  private class FormListener implements java.awt.event.ComponentListener, java.awt.event.KeyListener, java.awt.event.MouseListener, java.awt.event.WindowListener, java.awt.event.WindowStateListener, javax.swing.event.ListSelectionListener {
     FormListener() {}
     public void componentHidden(java.awt.event.ComponentEvent evt) {
     }
@@ -96,6 +110,36 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     }
 
     public void componentShown(java.awt.event.ComponentEvent evt) {
+    }
+
+    public void keyPressed(java.awt.event.KeyEvent evt) {
+    }
+
+    public void keyReleased(java.awt.event.KeyEvent evt) {
+    }
+
+    public void keyTyped(java.awt.event.KeyEvent evt) {
+      if (evt.getSource() == folder) {
+        JEdit.this.folderKeyTyped(evt);
+      }
+    }
+
+    public void mouseClicked(java.awt.event.MouseEvent evt) {
+      if (evt.getSource() == folder) {
+        JEdit.this.folderMouseClicked(evt);
+      }
+    }
+
+    public void mouseEntered(java.awt.event.MouseEvent evt) {
+    }
+
+    public void mouseExited(java.awt.event.MouseEvent evt) {
+    }
+
+    public void mousePressed(java.awt.event.MouseEvent evt) {
+    }
+
+    public void mouseReleased(java.awt.event.MouseEvent evt) {
     }
 
     public void windowActivated(java.awt.event.WindowEvent evt) {
@@ -127,6 +171,12 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
         JEdit.this.formWindowStateChanged(evt);
       }
     }
+
+    public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+      if (evt.getSource() == folder) {
+        JEdit.this.folderValueChanged(evt);
+      }
+    }
   }// </editor-fold>//GEN-END:initComponents
 
   private void formComponentMoved(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentMoved
@@ -150,6 +200,25 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
     exit();
   }//GEN-LAST:event_formWindowClosing
+
+  private void folderValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_folderValueChanged
+    if (false) {
+      openFileProjectList();
+    }
+  }//GEN-LAST:event_folderValueChanged
+
+  private void folderKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_folderKeyTyped
+    int key = evt.getKeyChar();
+    int mod = evt.getModifiers();
+    if (mod != 0) return;
+    switch (key) {
+      case KeyEvent.VK_ENTER: openFileProjectList(); break;
+    }
+  }//GEN-LAST:event_folderKeyTyped
+
+  private void folderMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_folderMouseClicked
+    openFileProjectList();
+  }//GEN-LAST:event_folderMouseClicked
 
   /**
    * @param args the command line arguments
@@ -175,8 +244,12 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private javax.swing.JMenuItem copy;
   private javax.swing.JMenuItem cut;
   private javax.swing.JMenuItem delete;
+  private javax.swing.JList<String> folder;
+  private javax.swing.JScrollPane folderPane;
   private javax.swing.JMenuItem paste;
   private javax.swing.JPopupMenu popup;
+  private javax.swing.JSplitPane split;
+  private javax.swing.JTabbedPane tabs;
   // End of variables declaration//GEN-END:variables
 
   private class page {
@@ -191,15 +264,21 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private Vector<page> pages;
   private boolean bLoading = false;
   private IndentBreakAction indentBreakAction = new IndentBreakAction();
-  private JTabbedPane tabs;
   private static java.awt.Font fnt;
+  private boolean projectOpen;
+  private boolean projectExists;
+  private boolean projectActive;
+  //new vars here
 
   private void initApp() {
-    tabs = new JTabbedPane();
-    setContentPane(tabs);
     tabs.addKeyListener(new java.awt.event.KeyAdapter() {
       public void keyPressed(java.awt.event.KeyEvent evt) {
-        tabsKeyPressed(evt);
+        keyPressedEvent(evt);
+      }
+    });
+    folder.addKeyListener(new java.awt.event.KeyAdapter() {
+      public void keyPressed(java.awt.event.KeyEvent evt) {
+        keyPressedEvent(evt);
       }
     });
     setTitle("jfedit");
@@ -214,6 +293,11 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     if (pages.size() == 0) addpage("untitled");
     tabs.setSelectedIndex(0);
     pages.get(0).txt.grabFocus();
+    split.setLeftComponent(folderPane);
+    if (projectExists()) {
+      loadProject();
+    }
+    setPane();
   }
   public static void loadcfg(boolean gui) {
     XML xml = new XML();
@@ -284,7 +368,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     txt.setLineWrap(Settings.settings.bLineWrap);
     txt.addKeyListener(new java.awt.event.KeyAdapter() {
       public void keyPressed(java.awt.event.KeyEvent evt) {
-        tabsKeyPressed(evt);
+        keyPressedEvent(evt);
       }
     });
     txt.getDocument().addDocumentListener(this);
@@ -458,11 +542,11 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
   private void notfound() {
     JOptionPane.showMessageDialog(this, "Unable to find match", "Notice", JOptionPane.ERROR_MESSAGE);
-//    tabs.repaint();  //FIX BUG ON MY COMPUTER (JAVA DOESN'T LIKE MY VIDEO CARD)
+    repaint();
   }
   private void find() {
     FindDialog.showFindDialog(this, false, findstr, findww, findcw, this);
-//    tabs.repaint();  //FIX BUG ON MY COMPUTER (JAVA DOESN'T LIKE MY VIDEO CARD)
+    repaint();
   }
   private boolean isChar(char ch) {
     //return true if ch is a char that would be a part of a whole word
@@ -497,7 +581,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private void replace() {
     int idx = getidx();
     ReplaceDialog.showReplaceDialog(this, true, findstr, repstr, findww, findcw, this);
-//    tabs.repaint();  //FIX BUG ON MY COMPUTER (JAVA DOESN'T LIKE MY VIDEO CARD)
+    repaint();
   }
   private boolean replace_find() {
     int idx = getidx();
@@ -746,155 +830,190 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     txt.setSelectionEnd(se);
   }
 
-  private void tabsKeyPressed(java.awt.event.KeyEvent evt) {
+  private void keyPressedEvent(java.awt.event.KeyEvent evt) {
     //Key Pressed
-    int f1 = evt.getKeyCode();
-    int f2 = evt.getModifiers();
+    int key = evt.getKeyCode();
+    int mod = evt.getModifiers();
+    Object source = evt.getSource();
+    boolean isText = source instanceof JFTextArea;
     int idx;
     JFTextArea txt;
-    if ((f1 == KeyEvent.VK_F1) && (f2 == 0)) {
-      JOptionPane.showMessageDialog(this,
-        "jfedit/" + getVersion() + "\n\n" +
-        "F1 = Help\n" +
-        "F2 = Edit Settings\n" +
-        "F4 = Document Info\n" +
-        "F5 = Shift Selection left 1 space\n" +
-        "F6 = Shift Selection right 1 space\n" +
-        "F7 = Shift Selection left 1 tab\n" +
-        "F8 = Shift Selection right 1 tab\n" +
-        "F9 = Lower case Selection\n" +
-        "F10 = Upper case Selection\n" +
-        "CTRL-O = Open\n" +
-        "CTRL-W = Close\n" +
-        "CTRL-S = Save\n" +
-        "CTRL-Q = Save As\n" +
-        "CTRL-F = Find\n" +
-        "CTRL-G/F3 = Find Again\n" +
-        "CTRL-R = Replace\n" +
-        "CTRL-L = Goto Line #\n" +
-        "CTRL-E = Execute Command\n" +
-        "CTRL-P = Print\n" +
-        "CTRL-D = Reload\n" +
-        "ALT-# = Switch to document\n\n"
-        , "Help", JOptionPane.INFORMATION_MESSAGE);
-      return;
-    }
-    if ((f1 == KeyEvent.VK_F2) && (f2 == 0)) {
-      EditSettings.editSettings(this, Settings.settings);
-      fnt = JFAWT.getMonospacedFont(0, Settings.settings.fontSize);
-      int cnt = pages.size();
-      for(int a=0;a<cnt;a++) {
-        txt = pages.get(a).txt;
-        txt.setFont(fnt);
-        txt.setTabSize(Settings.settings.tabSize);
-        txt.setLineWrap(Settings.settings.bLineWrap);
-      }
-      return;
-    }
-    if ((f1 == KeyEvent.VK_F4) && (f2 == 0)) {
-      idx = getidx();
-      page pg = pages.get(idx);
-      txt = pg.txt;
-      boolean bUnix = pg.bUnix;
-      int cp, px, py;
-      try {
-        cp = txt.getCaretPosition();
-        py = txt.getLineOfOffset(cp);
-        px = cp - txt.getLineStartOffset(py);
-      } catch (Exception e) {
-        py = -1;
-        px = -1;
-      }
-      px++;
-      py++;
-      if (false) {
-        StringBuilder info = new StringBuilder();
-        info.append("File : " + pg.filename + "\n");
-        info.append("Lines : " + txt.getLineCount() + "\n");
-        info.append("Current Position : " + px + "," + py + "\n");
-        info.append("Line Endings : " + (bUnix ? "LF" : "CRLF") + "\n");
-        JOptionPane.showMessageDialog(this, info.toString(), "Info", JOptionPane.INFORMATION_MESSAGE);
-      } else {
-        EditDocInfo info = new EditDocInfo(null, true, pg.filename.getAbsolutePath(), txt.getLineCount(), px, py, bUnix);
-        info.setVisible(true);
-        if (info.accepted) {
-          pg.bUnix = info.getUnix();
+    switch (mod) {
+      case 0:
+        switch (key) {
+          case KeyEvent.VK_F1: {
+            JOptionPane.showMessageDialog(this,
+              "jfedit/" + getVersion() + "\n\n" +
+              "F1 = Help\n" +
+              "F2 = Edit Settings\n" +
+              "F4 = Document Info\n" +
+              "F5 = Shift Selection left 1 space\n" +
+              "F6 = Shift Selection right 1 space\n" +
+              "F7 = Shift Selection left 1 tab\n" +
+              "F8 = Shift Selection right 1 tab\n" +
+              "F9 = Lower case Selection\n" +
+              "F10 = Upper case Selection\n" +
+              "CTRL-O = Open\n" +
+              "CTRL-W = Close\n" +
+              "CTRL-S = Save\n" +
+              "CTRL-Q = Save As\n" +
+              "CTRL-F = Find\n" +
+              "CTRL-G/F3 = Find Again\n" +
+              "CTRL-R = Replace\n" +
+              "CTRL-L = Goto Line #\n" +
+              "CTRL-E = Execute Command\n" +
+              "CTRL-P = Print\n" +
+              "CTRL-D = Reload\n" +
+              "ALT-# = Switch to Document\n" +
+              "CTRL-1 = Switch to Project List\n" +
+              "CTRL-2 = Switch to Document Tabs\n" +
+              "ALT-F1 = Toggle Project List\n" +
+              "ALT-F2 = Edit Project Settings\n"
+              , "Help", JOptionPane.INFORMATION_MESSAGE);
+            return;
+          }
+          case KeyEvent.VK_F2: {
+            EditSettings.editSettings(this, Settings.settings);
+            fnt = JFAWT.getMonospacedFont(0, Settings.settings.fontSize);
+            int cnt = pages.size();
+            for(int a=0;a<cnt;a++) {
+              txt = pages.get(a).txt;
+              txt.setFont(fnt);
+              txt.setTabSize(Settings.settings.tabSize);
+              txt.setLineWrap(Settings.settings.bLineWrap);
+            }
+            return;
+          }
+          case KeyEvent.VK_F4: {
+            if (!isText) return;
+            idx = getidx();
+            page pg = pages.get(idx);
+            txt = pg.txt;
+            boolean bUnix = pg.bUnix;
+            int cp, px, py;
+            try {
+              cp = txt.getCaretPosition();
+              py = txt.getLineOfOffset(cp);
+              px = cp - txt.getLineStartOffset(py);
+            } catch (Exception e) {
+              py = -1;
+              px = -1;
+            }
+            px++;
+            py++;
+            if (false) {
+              StringBuilder info = new StringBuilder();
+              info.append("File : " + pg.filename + "\n");
+              info.append("Lines : " + txt.getLineCount() + "\n");
+              info.append("Current Position : " + px + "," + py + "\n");
+              info.append("Line Endings : " + (bUnix ? "LF" : "CRLF") + "\n");
+              JOptionPane.showMessageDialog(this, info.toString(), "Info", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+              EditDocInfo info = new EditDocInfo(null, true, pg.filename.getAbsolutePath(), txt.getLineCount(), px, py, bUnix);
+              info.setVisible(true);
+              if (info.accepted) {
+                pg.bUnix = info.getUnix();
+              }
+            }
+            return;
+          }
+          case KeyEvent.VK_TAB: {
+            if (!isText) return;
+            idx = getidx();
+            page pg = pages.get(idx);
+            txt = pg.txt;
+            int start = txt.getSelectionStart();
+            int end = txt.getSelectionEnd();
+            if (start != end) {
+              for(int a=0;a<Settings.settings.tabSize;a++) {
+                shift_right(' ');
+              }
+              evt.consume();
+              return;
+            }
+            if (Settings.settings.bTabToSpaces) {
+              String spaces = "";
+              for(int a=0;a<Settings.settings.tabSize;a++) {
+                spaces += " ";
+              }
+              pg.txt.insert(spaces, pg.txt.getCaretPosition());
+              evt.consume();
+              return;
+            }
+          }
         }
-      }
-      return;
-    }
-    if ((f1 == KeyEvent.VK_TAB) && (f2 == 0)) {
-      idx = getidx();
-      page pg = pages.get(idx);
-      txt = pg.txt;
-      int start = txt.getSelectionStart();
-      int end = txt.getSelectionEnd();
-      if (start != end) {
-        for(int a=0;a<Settings.settings.tabSize;a++) {
-          shift_right(' ');
+        break;
+      case KeyEvent.SHIFT_MASK:
+        if (!isText) return;
+        switch (key) {
+          case KeyEvent.VK_TAB: {
+            idx = getidx();
+            page pg = pages.get(idx);
+            txt = pg.txt;
+            int start = txt.getSelectionStart();
+            int end = txt.getSelectionEnd();
+            if (start != end) {
+              for(int a=0;a<Settings.settings.tabSize;a++) {
+                shift_left(' ');
+              }
+              evt.consume();
+              return;
+            }
+          }
+          case KeyEvent.VK_F3: { findagain(false); return; }
+          case KeyEvent.VK_F5: { shift_left(' '); return; }
+          case KeyEvent.VK_F6: { shift_right(' '); return; }
+          case KeyEvent.VK_F7: { shift_left('\t'); return; }
+          case KeyEvent.VK_F8: { shift_right('\t'); return; }
+          case KeyEvent.VK_F9: { lowercase(); return; }
+          case KeyEvent.VK_F10: { uppercase(); evt.consume(); return; }
         }
-        evt.consume();
-        return;
-      }
-      if (Settings.settings.bTabToSpaces) {
-        String spaces = "";
-        for(int a=0;a<Settings.settings.tabSize;a++) {
-          spaces += " ";
+        break;
+      case KeyEvent.CTRL_MASK:
+        if (key == KeyEvent.VK_2) {switchToTabs(); return;}
+        if (!isText) return;
+        switch (key) {
+          case KeyEvent.VK_PAGE_UP: { prevtab(); evt.consume(); return; }
+          case KeyEvent.VK_PAGE_DOWN: { nexttab(); evt.consume(); return; }
+          case KeyEvent.VK_N: { addpage("untitled"); return; }
+          case KeyEvent.VK_S: { savepage(); return; }
+          case KeyEvent.VK_Q: { savepageas(); return; }
+          case KeyEvent.VK_W: { closepage(); return; }
+          case KeyEvent.VK_O: { openpage(); return; }
+          case KeyEvent.VK_F: { find(); return; }
+          case KeyEvent.VK_G: { findagain(false); return; }
+          case KeyEvent.VK_R: { replace(); return; }
+          case KeyEvent.VK_L: { gotopos(); return; }
+          case KeyEvent.VK_E: { execute(); return; }
+          case KeyEvent.VK_P: { print(); return; }
+          case KeyEvent.VK_D: { checktab(); return; }
+          case KeyEvent.VK_1: {switchToProject(); return;}
         }
-        pg.txt.insert(spaces, pg.txt.getCaretPosition());
-        evt.consume();
-        return;
-      }
-    }
-    if ((f1 == KeyEvent.VK_TAB) && (f2 == KeyEvent.SHIFT_MASK)) {
-      idx = getidx();
-      page pg = pages.get(idx);
-      txt = pg.txt;
-      int start = txt.getSelectionStart();
-      int end = txt.getSelectionEnd();
-      if (start != end) {
-        for(int a=0;a<Settings.settings.tabSize;a++) {
-          shift_left(' ');
+        break;
+      case KeyEvent.ALT_MASK:
+        switch (key) {
+          case KeyEvent.VK_F1: {toggleProject(); return;}
+          case KeyEvent.VK_F2: {editProject(); return;}
         }
-        evt.consume();
-        return;
-      }
+        if (!isText) return;
+        if ((key >= KeyEvent.VK_0) && (key <= KeyEvent.VK_9)) {
+          idx = key - KeyEvent.VK_0;
+          if (idx == 0) idx = 9; else idx--;
+          if (idx >= pages.size()) return;
+          tabs.setSelectedIndex(idx);
+          checktab();
+          return;
+        }
+        switch (key) {
+          case KeyEvent.VK_MINUS: {tabs.setSelectedIndex(10); checktab(); return;}
+          case KeyEvent.VK_EQUALS: {tabs.setSelectedIndex(11); checktab(); return;}
+        }
+        break;
     }
-    if ((f1 == KeyEvent.VK_F5) && (f2 == 0)) { shift_left(' '); return; }
-    if ((f1 == KeyEvent.VK_F6) && (f2 == 0)) { shift_right(' '); return; }
-    if ((f1 == KeyEvent.VK_F7) && (f2 == 0)) { shift_left('\t'); return; }
-    if ((f1 == KeyEvent.VK_F8) && (f2 == 0)) { shift_right('\t'); return; }
-    if ((f1 == KeyEvent.VK_F9) && (f2 == 0)) { lowercase(); return; }
-    if ((f1 == KeyEvent.VK_F10) && (f2 == 0)) { uppercase(); evt.consume(); return; }
-    if ((f1 == KeyEvent.VK_PAGE_UP) && (f2 == KeyEvent.CTRL_MASK)) { prevtab(); evt.consume(); return; }
-    if ((f1 == KeyEvent.VK_PAGE_DOWN) && (f2 == KeyEvent.CTRL_MASK)) { nexttab(); evt.consume(); return; }
-    if ((f1 == KeyEvent.VK_N) && (f2 == KeyEvent.CTRL_MASK)) { addpage("untitled"); return; }
-    if ((f1 == KeyEvent.VK_S) && (f2 == KeyEvent.CTRL_MASK)) { savepage(); return; }
-    if ((f1 == KeyEvent.VK_Q) && (f2 == KeyEvent.CTRL_MASK)) { savepageas(); return; }
-    if ((f1 == KeyEvent.VK_W) && (f2 == KeyEvent.CTRL_MASK)) { closepage(); return; }
-    if ((f1 == KeyEvent.VK_O) && (f2 == KeyEvent.CTRL_MASK)) { openpage(); return; }
-    if ((f1 == KeyEvent.VK_F) && (f2 == KeyEvent.CTRL_MASK)) { find(); return; }
-    if ((f1 == KeyEvent.VK_G) && (f2 == KeyEvent.CTRL_MASK)) { findagain(false); return; }
-    if ((f1 == KeyEvent.VK_F3) && (f2 == 0)) { findagain(false); return; }
-    if ((f1 == KeyEvent.VK_R) && (f2 == KeyEvent.CTRL_MASK)) { replace(); return; }
-    if ((f1 == KeyEvent.VK_L) && (f2 == KeyEvent.CTRL_MASK)) { gotopos(); return; }
-    if ((f1 == KeyEvent.VK_E) && (f2 == KeyEvent.CTRL_MASK)) { execute(); return; }
-    if ((f1 == KeyEvent.VK_P) && (f2 == KeyEvent.CTRL_MASK)) { print(); return; }
-    if ((f1 == KeyEvent.VK_D) && (f2 == KeyEvent.CTRL_MASK)) { checktab(); return; }
-    if ((f2 == KeyEvent.ALT_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
-      idx = f1 - KeyEvent.VK_0;
-      if (idx == 0) idx = 9; else idx--;
-      if (idx >= pages.size()) return;
-      tabs.setSelectedIndex(idx);
-      checktab();
-      return;
-    }
-    if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_MINUS)) {tabs.setSelectedIndex(10); checktab();}
-    if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_EQUALS)) {tabs.setSelectedIndex(11); checktab();}
   }
 
   private void checktab() {
-    int idx = tabs.getSelectedIndex();
+    int idx = getidx();
     if (pages.get(idx).filename.toString().equals("untitled")) return;
     if (!pages.get(idx).filename.exists()) return;
     long ts = pages.get(idx).filename.lastModified();
@@ -935,32 +1054,10 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private ArrayList<String> files = new ArrayList<String>();
 
   private void loadProject() {
-    if (!new File(".project").exists()) return;
-    try {
-      FileInputStream fis = new FileInputStream(".project");
-      String project = new String(JF.readAll(fis));
-      fis.close();
-      String lns[] = project.replaceAll("\r", "").split("\n");
-      Section sec = Section.None;
-      for(int a=0;a<lns.length;a++) {
-        String ln = lns[a].toLowerCase().trim();
-        switch (ln) {
-          case "[folders]": sec = Section.Folders; break;
-          case "[files]": sec = Section.Files; break;
-          default:
-            if (ln.length() == 0) break;
-            if (ln.charAt(0) == '[') break;
-            switch (sec) {
-              case Folders: folders.add(ln); break;
-              case Files: files.add(ln); break;
-            }
-            break;
-        }
-      }
-      //TODO : build Tree
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    Project.project = new Project();
+    Project.project.load();
+    projectExists = true;
+    projectOpen = true;
   }
 
   private void cut() {
@@ -995,5 +1092,114 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       case "Paste": paste(); break;
       case "Delete": delete(); break;
     }
+  }
+
+  private boolean projectExists() {
+    return new File(Project.filename).exists();
+  }
+
+  private void setPane() {
+    if (projectOpen) {
+      split.setRightComponent(tabs);
+      setContentPane(split);
+      listProjectFiles();
+    } else {
+      split.setRightComponent(null);
+      setContentPane(tabs);
+    }
+    validate();
+    repaint();
+    setFocus();
+  }
+
+  private void createProject() {
+    Project.project = new Project();
+    Project.project.save();
+  }
+
+  private void listProjectFiles() {
+    DefaultListModel model = (DefaultListModel)folder.getModel();
+    model.clear();
+    File[] files = new File(".").listFiles();
+    for(File file : files) {
+      if (!file.isFile()) continue;
+      String filename = file.getName();
+      boolean accept = false;
+      for(String wc : Project.project.fileMasks) {
+        if (JF.wildcardCompare(filename, wc, true)) {
+          accept = true;
+          break;
+        }
+      }
+      if (accept) {
+        model.addElement(filename);
+      }
+    }
+  }
+
+  private void switchToProject() {
+    projectActive = true;
+    listProjectFiles();
+    if (projectOpen) {
+      setFocus();
+      return;
+    }
+    if (projectExists) {
+      projectOpen = true;
+      setPane();
+      return;
+    }
+    createProject();
+    projectExists = true;
+    projectOpen = true;
+    setPane();
+  }
+
+  private void switchToTabs() {
+    projectActive = false;
+    setFocus();
+  }
+
+  private void setFocus() {
+    if (projectOpen && projectActive) {
+      folder.requestFocus();
+    } else {
+      int idx = getidx();
+      pages.get(idx).txt.requestFocus();
+    }
+  }
+
+  private void toggleProject() {
+    projectOpen = !projectOpen;
+    setPane();
+  }
+
+  private void editProject() {
+    EditProject.editProject(this, Project.project);
+    listProjectFiles();
+  }
+
+  private void openFileProjectList() {
+    String filename = folder.getSelectedValue();
+    File file = new File(filename);
+    String absfile = file.getAbsolutePath();
+    //search for file and switch to, else open file
+    int idx = -1;
+    int pos = 0;
+    for(page pg : pages) {
+      if (pg.filename.getAbsolutePath().equals(absfile)) {
+        idx = pos;
+        break;
+      }
+      pos++;
+    }
+    if (idx != -1) {
+      tabs.setSelectedIndex(idx);
+      checktab();
+    } else {
+      addpage(filename);
+      loadpage(tabs.getTabCount() - 1);
+    }
+    switchToTabs();
   }
 }

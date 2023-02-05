@@ -2,6 +2,7 @@
   <description>jfedit</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfedit"/>
+  <property name="apptype" value="c"/>
   <property name="home" location="../.."/>
   <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="src" location="src"/>
@@ -20,7 +21,7 @@
   <target name="compile" depends="depjars" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
-    <javac srcdir="${src}" destdir="${build}" target="1.7" source="1.7" debug="true" includeantruntime="false">
+    <javac srcdir="${src}" destdir="${build}" target="1.8" source="1.8" debug="true" includeantruntime="false">
       <classpath path="${classpath}"/>
     </javac>
   </target>
