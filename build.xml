@@ -120,6 +120,7 @@
     <ant antfile="build-filesplitter.xml" inheritAll="false"/>
     <ant antfile="build-imageconvert.xml" inheritAll="false"/>
     <ant antfile="build-pngalpha.xml" inheritAll="false"/>
+    <ant antfile="build-scriptex.xml" inheritAll="false"/>
     <ant antfile="build-web.xml" inheritAll="false"/>
     <ant antfile="build-vss.xml" inheritAll="false"/>
     <zip destfile="jfUtilities-${version}.zip">
