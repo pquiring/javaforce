@@ -56,6 +56,7 @@ Common Ant tasks:
 compile : compile projects java files
 jar : build the projects main jar file
 depjars : copy dependant jar files into project folder
+executable : build native launcher
 deb : build Debian deb file (after install)
  - requires bzip2, binutils, sudo
  - linux packaging requires files.lst and linux stub (/stubs/linux)
@@ -103,21 +104,33 @@ Linux:Debian/Ubuntu:run 'ant deb' to install required packages.
 Linux:RedHat/Fedora:run 'ant rpm' to install required packages.
   - you can run 'ant get-bin-x86' or 'ant get-bin-arm' to download pre-build binaries for Linux64
 
+Graal Support
+-------------
+JavaForce includes some support for building AOT executables using GraalVM (http://www.graalvm.org)
+To build a project using Graal you need to add a property to the build.xml
+  <property name="graal" value="true"/>
+Ant Tasks:
+  graal : build Graal native Library
+  graalagent : execute application to build native configuration files (sometimes not necessary)
+The ant task 'executable' will generate an executable that will look for the Graal Library before looking for a JVM.
+Library name should be the full class name where main() is defined.
+  ie: javaforce.ansi.utils.CopyPath.dll
+GraalVM support for AWT is still unfinished and probably will never be.
+
 Requirements
 ------------
 
-  - JDK 15+
-    - the native launchers select garbage collectors only available on JDK15 or better
-  - ANT 1.9.8+
-  - Windows : VisualC++ compiler (64bit), wixtoolset v3 (http://wixtoolset.org)
-  - FFMpeg 4.2+ sources(headers) + shared libraries (license : various)
-  - glfw for OpenGL support (http://github.com/glfw/glfw) (license : zlib/libpng)
+  - JDK 17+
+  - Apache Ant 1.9.8+
+  - Windows : VisualC++ compiler (64bit), wixtoolset v3
+  - FFMpeg 4.2+ sources(headers) + shared libraries
+  - glfw for OpenGL support
 
 License
 =======
 JavaForce itself is licensed under the LGPL license which can be read in license.txt.
 The MSI installers show the Common Public License 1.0 which is acceptable as well.
-The other jars in /jars each have their own licensing.
+The other jars in /jars each have their own licensing:
   filters.jar - Apache License 2.0 (http://www.jhlabs.com)
   bouncycastle.jar - MIT license? (http://www.bouncycastle.org)
   derby.jar - Apache License 2.0 (http://db.apache.org/derby)
@@ -125,6 +138,10 @@ The other jars in /jars each have their own licensing.
   jsp-api.jar & servlet-api.jar - Apache License 2.0 (http://tomcat.apache.org)
   jsch.jar & jzlib.jar - BSD license (http://www.jcraft.com)
   llrp.jar - Apache License 2.0 (http://llrp.org)
+Other components:
+  wixtoolset v3 - Microsoft Reciprocal License (MS-RL) (http://wixtoolset.org)
+  FFMpeg - various
+  glfw - zlib/libpng (http://github.com/glfw/glfw)
 
 Enjoy!
 
