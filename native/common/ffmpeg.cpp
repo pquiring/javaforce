@@ -1707,7 +1707,7 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
   ctx->io_ctx = (*_avio_alloc_context)(ctx->ff_buffer, ffiobufsiz, 1, (void*)ctx, read, write, seek);
   if (ctx->io_ctx == NULL) return JNI_FALSE;
   ctx->fmt_ctx->pb = ctx->io_ctx;
-  ctx->out_fmt = ctx->fmt_ctx->oformat;
+  ctx->out_fmt = (AVOutputFormat*)ctx->fmt_ctx->oformat;
   if ((ctx->out_fmt->video_codec != AV_CODEC_ID_NONE) && doVideo) {
     if (!encoder_add_stream(ctx, ctx->out_fmt->video_codec)) {
       printf("encoder_add_stream:video failed!\n");
