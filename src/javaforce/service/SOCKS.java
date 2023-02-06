@@ -45,7 +45,7 @@ public class SOCKS extends Thread {
   private static boolean socks4 = true, socks5 = false;
   private static boolean socks_bind = false;
   private static int socks_bind_timeout = (2 * 60 * 1000);  //default 2 mins
-  private static int forward_remote_wait = (2 * 60 * 1000);  //default 2 mins
+  private static int forward_remote_wait = (60 * 60 * 1000);  //default 60 mins
   private static IP4Port bind = new IP4Port();
   private static IP4Port bind_cmd = new IP4Port();
   private static boolean secure = false;
@@ -304,8 +304,8 @@ public class SOCKS extends Thread {
                 break;
               case "forward.remote.wait":
                 forward_remote_wait = Integer.valueOf(value);
-                if (forward_remote_wait < 1000) {
-                  forward_remote_wait = 1000;  //1 sec
+                if (forward_remote_wait < 60000) {
+                  forward_remote_wait = 60000;  //1 min
                 }
                 if (forward_remote_wait > 86400000) {
                   forward_remote_wait = 86400000;  //1 day
