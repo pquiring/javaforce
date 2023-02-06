@@ -77,7 +77,12 @@ public class GenDEB {
 
   public static String getArch() {
     String arch = System.getenv("HOSTTYPE");
-    if (arch == null) JFLog.log("Error:HOSTTYPE not defined");
+    if (arch == null) {
+      arch = System.getProperty("os.arch");
+      if (arch == null) {
+        JFLog.log("Error:Unable to detect CPU from env:HOSTTYPE or property:os.arch");
+      }
+    }
     switch (arch) {
       case "x86_64": return "amd64";
       case "aarch64": return "arm64";
