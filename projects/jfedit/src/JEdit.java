@@ -884,6 +884,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
             }
             return;
           }
+          case KeyEvent.VK_F3: { findagain(false); return; }
           case KeyEvent.VK_F4: {
             if (!isText) return;
             idx = getidx();
@@ -917,6 +918,12 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
             }
             return;
           }
+          case KeyEvent.VK_F5: { shift_left(' '); return; }
+          case KeyEvent.VK_F6: { shift_right(' '); return; }
+          case KeyEvent.VK_F7: { shift_left('\t'); return; }
+          case KeyEvent.VK_F8: { shift_right('\t'); return; }
+          case KeyEvent.VK_F9: { lowercase(); return; }
+          case KeyEvent.VK_F10: { uppercase(); evt.consume(); return; }
           case KeyEvent.VK_TAB: {
             if (!isText) return;
             idx = getidx();
@@ -960,13 +967,6 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
               return;
             }
           }
-          case KeyEvent.VK_F3: { findagain(false); return; }
-          case KeyEvent.VK_F5: { shift_left(' '); return; }
-          case KeyEvent.VK_F6: { shift_right(' '); return; }
-          case KeyEvent.VK_F7: { shift_left('\t'); return; }
-          case KeyEvent.VK_F8: { shift_right('\t'); return; }
-          case KeyEvent.VK_F9: { lowercase(); return; }
-          case KeyEvent.VK_F10: { uppercase(); evt.consume(); return; }
         }
         break;
       case KeyEvent.CTRL_MASK:
