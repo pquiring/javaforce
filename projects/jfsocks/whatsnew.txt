@@ -1,5 +1,8 @@
 Whats new ???
 
+Feb 6, 2023 : 0.11
+  - fix : change forward.remote.wait default/min values to resonable values
+
 June 13, 2022 : 0.10
   - fix : bind allowed host option didn't work
 
