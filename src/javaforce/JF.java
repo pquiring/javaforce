@@ -216,6 +216,18 @@ public class JF {
     }
   }
 
+  public static void printEnvironment() {
+    Map<String, String> env = System.getenv();
+
+    if (true) {
+      env.forEach((k, v) -> System.out.println(k + ":" + v));
+    } else {
+      for (Map.Entry<String, String> entry : env.entrySet()) {
+        System.out.println(entry.getKey() + " : " + entry.getValue());
+      }
+    }
+  }
+
 //file IO helper functions (these are little-endian format!!!)
 
   public static boolean eof(InputStream f) {
