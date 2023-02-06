@@ -228,6 +228,16 @@ public class JF {
     }
   }
 
+  public static void printProperties() {
+    Properties p = System.getProperties();
+    Enumeration keys = p.keys();
+    while (keys.hasMoreElements()) {
+      String key = (String)keys.nextElement();
+      String value = (String)p.get(key);
+      System.out.println(key + ": " + value);
+    }
+  }
+
 //file IO helper functions (these are little-endian format!!!)
 
   public static boolean eof(InputStream f) {
