@@ -227,12 +227,12 @@ public class SOCKS extends Thread {
     + "socks5=false\n"
     + "socks.bind=false\n"
     + "#socks.bind.timeout=120000\n"
-    + "#forward.remote.wait=3600000\n"
     + "#auth=user:pass\n"
     + "#ipnet=192.168.0.0/255.255.255.0\n"
     + "#ip=192.168.5.6\n"
     + "#forwardlocal=192.168.100.2:80,192.168.200.2:80\n"
-    + "#forwardremote=[user:pass@]192.168.110.2:1080,0.0.0.0,80,192.168.200.2:80[,true]\n";
+    + "#forwardremote=[user:pass@]192.168.110.2:1080,0.0.0.0,80,192.168.200.2:80[,true]\n"
+    + "#forwardremote.timeout=3600000\n";
 
   private void loadConfig() {
     JFLog.log("loadConfig");
@@ -302,7 +302,8 @@ public class SOCKS extends Thread {
                   socks_bind_timeout = 86400000;  //1 day
                 }
                 break;
-              case "forward.remote.wait":
+              case "forward.remote.wait":  //old alias
+              case "forwardremote.timeout":
                 forward_remote_wait = Integer.valueOf(value);
                 if (forward_remote_wait < 60000) {
                   forward_remote_wait = 60000;  //1 min
