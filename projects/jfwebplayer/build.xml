@@ -49,6 +49,10 @@
     </jar>
   </target>
 
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+  </target>
+
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>
