@@ -3,7 +3,7 @@ Description=JavaForce Bus Server
 After=
 
 [Service]
-ExecStart=/usr/sbin/jfbusserver
+ExecStart=/usr/bin/jfbusserver
 Restart=always
 
 [Install]
