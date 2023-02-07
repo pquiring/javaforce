@@ -39,6 +39,8 @@ public class JBusServer extends Thread {
   }
 
   public void run() {
+    JFLog.append(JF.getLogPath() + "/jfbusserver.log", false);
+    JFLog.setRetention(30);
     try {
       ss = new ServerSocket(port, 1024, InetAddress.getByName("127.0.0.1"));
       JFLog.log("JBusServer starting on port " + port);
