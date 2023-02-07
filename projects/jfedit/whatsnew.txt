@@ -1,6 +1,9 @@
 ChangeLog
 =========
 
+2-6-2023 : v0.20
+  - add : project panel
+
 8-3-2022 : v0.19
   - add : file change detection
 
