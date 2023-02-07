@@ -180,7 +180,7 @@ public class BackupJob extends Thread {
     if (haveChanger) {
       emptyDrive();
     }
-    log("Total:" + ConfigService.toEng(Status.copied) + " files " + Status.files);
+    log("Total:" + JF.toEng(Status.copied) + " files " + Status.files);
     return true;
   }
   public void log(Exception e) {
