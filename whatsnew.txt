@@ -1,5 +1,13 @@
 What's new...
 
+Feb 6/2023 : JF/37.1
+  - jfSOCKS/0.11
+    - minor fixes to config
+  - jfEdit/0.20
+    - add project panel
+  - add javaforce.utils.ScriptEx
+  - fix linux issues
+
 Jan 6/2023 : JF/37.0
   - jfMonitor/0.4
     - ignore readonly file systems which usually appear 100% full

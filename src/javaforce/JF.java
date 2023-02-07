@@ -20,7 +20,7 @@ import javax.naming.directory.*;
 public class JF {
 
   public static String getVersion() {
-    return "37.0";
+    return "37.1";
   }
 
   public static final boolean isGraal = Boolean.getBoolean("java.graal");
