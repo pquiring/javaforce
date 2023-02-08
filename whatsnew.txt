@@ -1,5 +1,9 @@
 What's new...
 
+Feb 8/2023 : JF/37.2
+  - fixed many linux packaging issues
+  - repo for Debian AMD64 + ARM64 are updated on sf.net
+
 Feb 6/2023 : JF/37.1
   - jfSOCKS/0.11
     - minor fixes to config
