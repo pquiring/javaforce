@@ -1,6 +1,6 @@
 static JNINativeMethod javaforce_jni_JFNative[] = {
   {"test", "()V", (void *)&Java_javaforce_jni_JFNative_test},
-  {"init", "(Z)V", (void *)&Java_javaforce_jni_JFNative_init},
+  {"init", "()V", (void *)&Java_javaforce_jni_JFNative_init},
 };
 
 static JNINativeMethod javaforce_controls_ni_DAQmx[] = {
