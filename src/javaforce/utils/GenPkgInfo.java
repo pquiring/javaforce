@@ -176,7 +176,7 @@ public class GenPkgInfo {
 
       //generate deb/preinst if not present
       if (!new File("deb/preinst").exists()) {
-        FileOutputStream fos = new FileOutputStream("deb/postinst");
+        FileOutputStream fos = new FileOutputStream("deb/preinst");
         fos.write("#!/bin/sh\n".getBytes());
         if (new File("folders.lst").exists()) {
           FileInputStream fis = new FileInputStream("folders.lst");
