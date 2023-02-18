@@ -764,7 +764,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
 
   int res = select(pty->master+1, &read_set, NULL, &error_set, &timeout);
   if (res == -1) {
-    printf("LnxPty:select() : unknown error\n");
+    printf("LnxPty:select() : unknown error:%d:%d\n", res ,errno);
     return -1;
   }
   if (res == 0) {
@@ -791,7 +791,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
     }
     return readAmt;
   }
-  printf("LnxPty:select() : unknown reason\n");
+  printf("LnxPty:select() : unknown reason:%d:%d\n", res, errno);
   return -1;
 }
 
