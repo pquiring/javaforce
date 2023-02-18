@@ -23,6 +23,10 @@ public class JF {
     return "37.2";
   }
 
+  public static void main(String[] args) {
+    System.out.println("javaforce/" + getVersion());
+  }
+
   public static final boolean isGraal = Boolean.getBoolean("java.graal");
 
   public static final boolean isGraal() {
