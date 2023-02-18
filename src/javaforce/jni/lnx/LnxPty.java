@@ -93,6 +93,7 @@ public class LnxPty {
           pb.directory(new File("/home/" + user));
         }
       }
+      if (debug) pb.redirectOutput(new File("debug.txt"));
       p = pb.start();
     } catch (Exception e) {
       JFLog.log(e);
