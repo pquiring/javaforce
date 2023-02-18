@@ -764,7 +764,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
 
   int res = select(pty->master+1, &read_set, NULL, &error_set, &timeout);
   if (res == -1) {
-    printf("LnxPty:select() : unknown error");
+    printf("LnxPty:select() : unknown error\n");
     return -1;
   }
   if (res == 0) {
@@ -773,21 +773,25 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
   }
 
   if (pty->closed) {
-    printf("LnxPty:select() : closed");
+    printf("LnxPty:select() : closed\n");
     return -1;
   }
 
   if (FD_ISSET(pty->master, &error_set)) {
-    printf("LnxPty:select() : error_set");
+    printf("LnxPty:select() : error_set\n");
     return -1;
   }
   if (FD_ISSET(pty->master, &read_set)) {
     jbyte *baptr = e->GetByteArrayElements(ba,NULL);
     int readAmt = read(pty->master, baptr, e->GetArrayLength(ba));
     e->ReleaseByteArrayElements(ba, baptr, 0);
+    if (readAmt < 0) {
+      printf("LnxPty:read() failed:%d:%d\n", readAmt, errno);
+      return -1;
+    }
     return readAmt;
   }
-  printf("LnxPty:select() : unknown reason");
+  printf("LnxPty:select() : unknown reason\n");
   return -1;
 }
 
