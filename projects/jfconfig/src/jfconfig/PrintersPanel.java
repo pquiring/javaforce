@@ -223,6 +223,7 @@ public class PrintersPanel extends javax.swing.JPanel {
     model.setRowCount(0);
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[] {"lpstat", "-p", "-d"}, false);
+    if (output == null) output = "";
     //printer $NAME disabled since ...
     //printer $NAME is idle. enabled since ...
     //printer $NAME is printing ... ???
