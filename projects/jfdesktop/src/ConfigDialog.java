@@ -187,7 +187,7 @@ public class ConfigDialog extends javax.swing.JDialog {
       }
     });
 
-    mountAudio.setText("Auto Mount Audio Discs (jMedia)");
+    mountAudio.setText("Auto Mount Audio Discs (jfMedia)");
 
     jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Dock"));
 

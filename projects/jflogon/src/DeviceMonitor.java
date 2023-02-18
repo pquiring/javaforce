@@ -23,7 +23,11 @@ public class DeviceMonitor extends Thread implements ShellProcessListener {
           byte data[] = new byte[1024];
           while (true) {
             int len = pty.read(data);
-            if (len > 0) shellProcessOutput(new String(data, 0, len));
+            if (len > 0) {
+              shellProcessOutput(new String(data, 0, len));
+            } else {
+              JF.sleep(250);
+            }
           }
         }
       }.start();

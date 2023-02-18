@@ -1,0 +1,15 @@
+To debug jfLinux:
+
+install JDK:
+  sudo apt install default-jdk
+
+modify jflogon to wait for debugger:
+  sudo vi /usr/sbin/jflogon.sh
+  add following line before jflogon:
+    export _JAVA_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=1044
+  save and reboot
+
+start debugger:
+  once jflogon starts you will see "waiting for debugger" message
+  from another screen (Ctrl+Alt+F3) type:
+    jdb -attach 1024
