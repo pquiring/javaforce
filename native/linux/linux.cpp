@@ -791,8 +791,8 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
     }
     return readAmt;
   }
-  printf("LnxPty:select() : unknown reason:%d:%d\n", res, errno);
-  return -1;
+  //printf("LnxPty:select() : unknown reason:%d:%d\n", res, errno);
+  return 0;
 }
 
 JNIEXPORT void JNICALL Java_javaforce_jni_LnxNative_ptyWrite
