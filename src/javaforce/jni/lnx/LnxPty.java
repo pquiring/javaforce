@@ -61,6 +61,7 @@ public class LnxPty {
     if (slaveName == null) return false;
 
     ArrayList<String> cmdline = new ArrayList<String>();
+    //BUG : this will not work with natives now built into executable ???
     cmdline.add("java");
     cmdline.add("-cp");
     cmdline.add("/usr/share/java/javaforce.jar");
