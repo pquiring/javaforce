@@ -764,7 +764,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
 
   int res = select(pty->master+1, &read_set, NULL, &error_set, &timeout);
   if (res == -1) {
-    //select error
+    printf("LnxPty:select() : unknown error");
     return -1;
   }
   if (res == 0) {
@@ -773,10 +773,12 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
   }
 
   if (pty->closed) {
+    printf("LnxPty:select() : closed");
     return -1;
   }
 
   if (FD_ISSET(pty->master, &error_set)) {
+    printf("LnxPty:select() : error_set");
     return -1;
   }
   if (FD_ISSET(pty->master, &read_set)) {
