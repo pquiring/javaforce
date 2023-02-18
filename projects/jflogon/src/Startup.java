@@ -208,6 +208,7 @@ public class Startup implements ShellProcessListener{
         env.put("XAUTHORITY", homePath + "/.Xauthority");
       }
       env.put("JID", jid);
+      JFLog.log("JID=" + jid);
       if (env_names != null) {
         for(int a=0;a<env_names.length;a++) {
           env.put(env_names[a], env_values[a]);
