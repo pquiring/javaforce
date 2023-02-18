@@ -21,7 +21,7 @@ public class IconCache {
     JFImage icon = icons.get(iconName);
     if (icon != null) return icon;
     icon = new JFImage();
-    if (iconName.startsWith("jfile-")) {
+    if (iconName.startsWith("jffile-")) {
       icon.loadPNG(icon.getClass().getClassLoader().getResourceAsStream(iconName + ".png"));
       icons.put(iconName, icon);
       return icon;
@@ -72,7 +72,7 @@ public class IconCache {
     }
     //not found - 404
     JFLog.log("icon not found:" + iconName);
-    icon.loadPNG(icon.getClass().getClassLoader().getResourceAsStream("jfile-404-icon.png"));
+    icon.loadPNG(icon.getClass().getClassLoader().getResourceAsStream("jffile-404-icon.png"));
     return icon;
   }
 
@@ -90,14 +90,14 @@ public class IconCache {
     int idx = fn.lastIndexOf("/");
     if (idx != -1) fn = fn.substring(idx+1);
     idx = fn.lastIndexOf(".");
-    if (idx == -1) return "jfile-file";  //no extension - use generic icon
+    if (idx == -1) return "jffile-file";  //no extension - use generic icon
     //find Icon file based on ext (mime type)
     String ext = fn.substring(idx+1);
     String icon = mimes.get(ext);
     if (icon != null) return icon;
     try {
       if (JF.isWindows()) {
-        icon = "jfile-file";  //TODO!!!
+        icon = "jffile-file";  //TODO!!!
       } else {
         String mime = OpenFile.getMimeType(ext);
         icon = OpenFile.getIcon(mime, "open");
@@ -105,7 +105,7 @@ public class IconCache {
     } catch (Exception e) {
       JFLog.log(e);
     }
-    if (icon == null) icon = "jfile-file";  //none found - use generic icon
+    if (icon == null) icon = "jffile-file";  //none found - use generic icon
     mimes.put(ext, icon);
     return icon;
   }
