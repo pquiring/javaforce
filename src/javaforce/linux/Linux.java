@@ -38,18 +38,18 @@ public class Linux {
       return true;
     }
     try {
-      //Ubuntu : /etc/lsb-release
-      File lsb = new File("/etc/lsb-release");
+      //Debian/Ubuntu : /etc/os-release
+      File lsb = new File("/etc/os-release");
       if (lsb.exists()) {
         FileInputStream fis = new FileInputStream(lsb);
         Properties props = new Properties();
         props.load(fis);
         fis.close();
-        String id = props.getProperty("DISTRIB_ID");
-        if (id.equals("Ubuntu")) {
+        String id = props.getProperty("ID");
+        if (id.equals("debian") || id.equals("ubuntu")) {
           distro = DistroTypes.Ubuntu;
-          ubuntuRelease = props.getProperty("DISTRIB_RELEASE");
-          ubuntuCodename = props.getProperty("DISTRIB_CODENAME");
+          ubuntuRelease = props.getProperty("DISTRIB_RELEASE");  //???
+          ubuntuCodename = props.getProperty("VERSION_CODENAME");
           return true;
         }
       }
