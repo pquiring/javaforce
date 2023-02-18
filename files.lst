@@ -1,6 +1,7 @@
 /usr/share/java/javaforce.jar
 /usr/share/java/bouncycastle.jar
 /usr/share/java/filters.jar
+/usr/bin/javaforce
 /usr/bin/jbus-call
 /usr/bin/jbus-client
 /usr/bin/filesplitter
