@@ -64,7 +64,7 @@ public class LnxPty {
     cmdline.add("/usr/bin/jfpty");
     cmdline.add(slaveName);
     cmdline.add(cmd);
-    cmdline.add("" + (args.length-1));  //# args
+    cmdline.add(Integer.toString(args.length-1));  //# args
     for(int a=0;a<args.length;a++) {
       if (args[a] == null) break;
       cmdline.add(args[a]);
