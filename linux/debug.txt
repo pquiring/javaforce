@@ -10,6 +10,6 @@ modify jflogon to wait for debugger:
   save and reboot
 
 start debugger:
-  once jflogon starts you will see "waiting for debugger" message
+  once jflogon starts you will see "Listening for transport dt_socket at address: 1044" message
   from another screen (Ctrl+Alt+F3) type:
-    jdb -attach 1024
+    jdb -attach 1044
