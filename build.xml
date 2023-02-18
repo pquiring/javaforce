@@ -95,6 +95,7 @@
     <copy file="lnxbin/jbus-client" todir="/usr/bin"/>
     <chmod file="/usr/bin/jbus-client" perm="+x"/>
 
+    <ant antfile="build-jfpty.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsudo.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfsudo-ask.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfopen.xml" target="installapp" inheritAll="false"/>

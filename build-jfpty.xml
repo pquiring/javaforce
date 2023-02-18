@@ -1,0 +1,26 @@
+<project name="jfpty" default="executable" basedir=".">
+  <description>jfpty</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfpty"/>
+  <property name="apptype" value="c"/>
+  <property name="cfg" value="cfg/jfpty.cfg"/>
+  <property name="ico" value="javaforce.ico"/>
+  <property name="home" value="."/>
+
+  <property environment="env"/>
+
+  <import file="base.xml"/>
+
+  <target name="depjars" depends="depnatives">
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+  </target>
+
+  <target name="jar" depends="depjars,compile" description="build jar file">
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+  </target>
+</project>

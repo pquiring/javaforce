@@ -61,11 +61,7 @@ public class LnxPty {
     if (slaveName == null) return false;
 
     ArrayList<String> cmdline = new ArrayList<String>();
-    //BUG : this will not work with natives now built into executable ???
-    cmdline.add("java");
-    cmdline.add("-cp");
-    cmdline.add("/usr/share/java/javaforce.jar");
-    cmdline.add("javaforce.jni.lnx.LnxPty");
+    cmdline.add("/usr/bin/jfpty");
     cmdline.add(slaveName);
     cmdline.add(cmd);
     cmdline.add("" + (args.length-1));  //# args
@@ -131,7 +127,7 @@ public class LnxPty {
     }
 
     try {
-      JFNative.load();
+      //JFNative.load();
       LnxNative.ptyChildExec(slaveName, cmd, process_args.toArray(new String[0]), process_env.toArray(new String[0]));
       System.exit(0);  //should not happen
     } catch (Exception e) {
