@@ -95,6 +95,7 @@ public class LnxPty {
       }
       if (debug) pb.redirectOutput(new File("debug.txt"));
       p = pb.start();
+      //BUG : need to wait until child process has opened pty or read's fail
     } catch (Exception e) {
       JFLog.log(e);
       return false;
