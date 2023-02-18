@@ -149,28 +149,37 @@ public class JBusServer extends Thread {
       //must be a remote function call
       //general format : org.package.func(args)
       //supported args : "String", int
-      int b1 = cmd.indexOf("(");
+      int b1 = cmd.indexOf('(');
       int b2 = cmd.length() - 1;
-//      String args = cmd.substring(b1+1, b2);
-      String packFunc = cmd.substring(0, b1);
-      int idx = packFunc.lastIndexOf('.');
+      String call_pack_func = cmd.substring(0, b1);
+      int idx = call_pack_func.lastIndexOf('.');
       if (idx == -1) {
         return;
       }
-      String call_pack = packFunc.substring(0, idx);
-      String call_func = packFunc.substring(idx + 1);
+      String call_pack = call_pack_func.substring(0, idx);
+      String call_func = call_pack_func.substring(idx + 1);
+      String call_args = cmd.substring(b1);
       cmd += "\n";
+      boolean sent = false;
       synchronized (lock) {
         for (int a = 0; a < clients.size(); a++) {
           Client client = clients.get(a);
-          if (client.pack.equals(call_pack) || (broadcast && client.pack.startsWith(call_pack))) {
+          if (client.pack.equals(call_pack)) {
             client.os.write(cmd.getBytes());
             client.os.flush();
-            return;
+            sent = true;
+          } else if ((broadcast && client.pack.startsWith(call_pack))) {
+            //need to use full package name
+            String fullcmd = client.pack + "." + call_func + call_args + "\n";
+            client.os.write(fullcmd.getBytes());
+            client.os.flush();
+            sent = true;
           }
         }
       }
-      JFLog.log("JBus : call to unregistered package.func:" + call_pack + "." + call_func);
+      if (!sent) {
+        JFLog.log("JBus : call to unregistered package.func:" + call_pack + "." + call_func);
+      }
     }
 
     public boolean call(String pack, String func, String args) {
