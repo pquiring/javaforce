@@ -791,6 +791,7 @@ JNIEXPORT jint JNICALL Java_javaforce_jni_LnxNative_ptyRead
     }
     return readAmt;
   }
+  //Warning:this does happen until the child process opens the pty
   //printf("LnxPty:select() : unknown reason:%d:%d\n", res, errno);
   return 0;
 }
