@@ -450,6 +450,10 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
         if (lns[a].startsWith("Icon=")) {
           icon = lns[a].substring(5);
         }
+        if (lns[a].startsWith("NoDisplay=")) {
+          String nodisplay = lns[a].substring(10).trim();
+          if (nodisplay.equals("true")) return null;
+        }
       }
       if (name == null) JFLog.log("Warning:No NAME field for icon:" + fn);
       if (icon == null) icon = "jffile-404";
