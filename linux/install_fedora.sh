@@ -31,7 +31,15 @@ fi
 cd /
 
 dnf update
-dnf -y install jflogon jfdesktop jfconfig jfapps
-systemctl enable jflogon.service
+dnf -y install javaforce
+
+read -p "Install jfLinux Desktop Environment? " -n 1 -r
+
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  dnf -y install jflogon jfdesktop jfconfig jfapps
+  systemctl enable jflogon.service
+  systemctl enable jfbusserver.service
+fi
 
 echo Install complete, please reboot!

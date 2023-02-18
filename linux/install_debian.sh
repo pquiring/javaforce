@@ -39,7 +39,15 @@ fi
 cd /
 
 apt update
-apt --yes install jflogon jfdesktop jfconfig jfapps
-systemctl enable jflogon.service
+apt --yes install javaforce
+
+read -p "Install jfLinux Desktop Environment? " -n 1 -r
+
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  apt --yes install jflogon jfdesktop jfconfig jfapps
+  systemctl enable jflogon.service
+  systemctl enable jfbusserver.service
+fi
 
 echo Install complete, please reboot!
