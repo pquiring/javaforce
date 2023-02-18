@@ -15,6 +15,8 @@ import javaforce.jni.*;
 
 public class LnxPty {
 
+  private static final boolean debug = true;
+
   public static boolean init() {
     return true;
   }
@@ -57,7 +59,9 @@ public class LnxPty {
    */
   private boolean fork(String cmd, String args[], String env[]) {
     ctx = LnxNative.ptyAlloc();
+    if (debug) JFLog.log("LnxPty:ctx=0x" + Long.toHexString(ctx));
     String slaveName = LnxNative.ptyOpen(ctx);
+    if (debug) JFLog.log("LnxPty:slaveName=" + slaveName);
     if (slaveName == null) return false;
 
     ArrayList<String> cmdline = new ArrayList<String>();
@@ -74,11 +78,11 @@ public class LnxPty {
       cmdline.add(env[a]);
     }
     String cl[] = cmdline.toArray(new String[0]);
-/*
-    for(int a=0;a<cl.length;a++) {
-      JFLog.log("cmd=" + cl[a]);
+    if (debug) {
+      for(int a=0;a<cl.length;a++) {
+        JFLog.log("cmd=" + cl[a]);
+      }
     }
-*/
     try {
       ProcessBuilder pb = new ProcessBuilder(cl);
       String user = System.getenv("USER");
@@ -139,6 +143,7 @@ public class LnxPty {
   /** Frees resources */
   public synchronized void close() {
     if (closed) return;
+    if (debug) JFLog.log("LnxPty:close()");
     LnxNative.ptyClose(ctx);
     closed = true;
   }
