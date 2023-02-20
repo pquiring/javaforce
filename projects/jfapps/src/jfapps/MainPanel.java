@@ -148,11 +148,12 @@ public class MainPanel extends javax.swing.JPanel {
   private int distroIdx = -1;
   //name, desc, ubuntu, fedora
   private String data[][][] = {
+      //name, desc, debian-package, fedora-package
     //Web
     {
-      {"Chromium", "Google Chromium Web Browser (no flash)", "chromium", null},
+      {"Chromium", "Google Chromium Web Browser (no flash)", "chromium", "chromium"},
       {"Chrome", "Google Chrome Web Browser (flash)", "google-chrome-stable", "google-chrome-stable"},
-      {"Firefox", "Firefox Web Browser", "firefox", "firefox-esr"},
+      {"Firefox", "Firefox Web Browser", "firefox-esr", "firefox"},
       {"Flash", "Flash media plugin", "flashplugin-installer", "flash-plugin"},
       {"Torrent", "Torrent Client", "jftorrent", "jftorrent"},
 //      {"Java Web Plugin", "Java Applet support", "icedtea-6-plugin", "icedtea-web"},  //no java 8 support???
@@ -203,12 +204,12 @@ public class MainPanel extends javax.swing.JPanel {
     },
     //Development
     {
-      {"Java JDK 8", "Java Development Kit", "default-jdk", null},
+      {"Java Development Kit", "Java Development Kit", "default-jdk", null},
       {"NetBeans", "Extensible Java IDE", "netbeans", "netbeans-platform"},
       {"ant", "Build Java projects", "ant", "ant"},
       {"VisualVM", "Java Developement Tool", "jvisualvm", "jfvisualvm"},
       {"hex", "hex editor", "jfhex", "jfhex"},
-      {"hexbig", "hexbig editor (for very large files)", "jfhexbig", "jfhexbig"},
+      {"hexbig", "hex big editor (for very large files)", "jfhexbig", "jfhexbig"},
     },
   };
 
