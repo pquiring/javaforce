@@ -16,7 +16,7 @@ public class ViewLog extends javax.swing.JFrame {
    */
   public ViewLog(String file) {
     initComponents();
-    JFAWT.centerWindow(this);
+    init();
     try {
       FileInputStream fis = new FileInputStream(file);
       byte[] txt = JF.readAll(fis);
@@ -28,12 +28,18 @@ public class ViewLog extends javax.swing.JFrame {
 
   public ViewLog(InputStream is) {
     initComponents();
+    init();
     load(JF.readAll(is));
   }
 
   public ViewLog(byte[] txt) {
     initComponents();
+    init();
     load(txt);
+  }
+
+  private void init() {
+    JFAWT.centerWindow(this);
   }
 
   /**

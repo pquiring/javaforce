@@ -241,6 +241,7 @@ public class Linux {
           return false;
         }
         JFLog.log(output);
+        setProperty("results", output);
         if (output.indexOf("Unable to locate package") != -1) {
           setLabel("Package not found");
           JFLog.log("Package not found");
@@ -278,6 +279,7 @@ public class Linux {
           return false;
         }
         JFLog.log(output);
+        setProperty("results", output);
         setLabel("Complete");
         setProgress(100);
         return true;

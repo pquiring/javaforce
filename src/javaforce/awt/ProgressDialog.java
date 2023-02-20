@@ -95,7 +95,13 @@ public class ProgressDialog extends javax.swing.JDialog implements JFTaskListene
     }// </editor-fold>//GEN-END:initComponents
 
   private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
-    task.abort();
+    String results = (String)task.getProperty("results");
+    if (results == null) {
+      task.abort();
+    } else {
+      ViewLog log = new ViewLog(results.getBytes());
+      log.setVisible(true);
+    }
   }//GEN-LAST:event_cancelActionPerformed
 
   private void closeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeActionPerformed
@@ -121,7 +127,11 @@ public class ProgressDialog extends javax.swing.JDialog implements JFTaskListene
       dispose();
       return;
     }
-    cancel.setEnabled(false);
+    if (task.getProperty("results") == null) {
+      cancel.setEnabled(false);
+    } else {
+      cancel.setText("Details");
+    }
     close.setEnabled(true);
     JFAWT.assignHotKey(this, close, KeyEvent.VK_ENTER);
   }
