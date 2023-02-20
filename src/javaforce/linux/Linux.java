@@ -28,7 +28,6 @@ public class Linux {
     Unknown, Ubuntu, Fedora
   };
   public static DistroTypes distro = DistroTypes.Unknown;
-  public static String ubuntuRelease, ubuntuCodename;
 
   /**
    * Detects Linux distribution type. (Support Ubuntu, Fedora currently)
@@ -48,23 +47,16 @@ public class Linux {
         String id = props.getProperty("ID");
         if (id.equals("debian") || id.equals("ubuntu")) {
           distro = DistroTypes.Ubuntu;
-          ubuntuRelease = props.getProperty("DISTRIB_RELEASE");  //???
-          ubuntuCodename = props.getProperty("VERSION_CODENAME");
+          JFLog.log("Detected Linux:debian");
           return true;
         }
-      }
-      //Fedora : /etc/fedora-release
-      File fedora = new File("/etc/fedora-release");
-      if (fedora.exists()) {
-        FileInputStream fis = new FileInputStream(fedora);
-        byte[] data = JF.readAll(fis);
-        fis.close();
-        String str = new String(data);
-        if (str.indexOf("Fedora") != -1) {
+        if (id.equals("fedora")) {
           distro = DistroTypes.Fedora;
+          JFLog.log("Detected Linux:fedora");
           return true;
         }
       }
+      JFLog.log("Error:Unknown distro");
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -220,7 +212,7 @@ public class Linux {
     ShellProcess sp = new ShellProcess();
     sp.removeEnvironmentVariable("TERM");
     sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");
-    String output = sp.run(new String[] {"sudo", "-E", "apt-get", "--yes", "update"}, true);
+    String output = sp.run(new String[] {"sudo", "-E", "apt", "--yes", "update"}, true);
     if (output == null) {
       return false;
     } else {
@@ -242,10 +234,10 @@ public class Linux {
         ShellProcess sp = new ShellProcess();
         sp.removeEnvironmentVariable("TERM");
         sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");
-        String output = sp.run(new String[]{"sudo", "-E", "apt-get", "--yes", action, pkg}, true);
+        String output = sp.run(new String[]{"sudo", "-E", "apt", "--yes", action, pkg}, true);
         if (output == null) {
-          setLabel("Failed to exec apt-get");
-          JFLog.log("Failed to exec apt-get");
+          setLabel("Failed to exec apt");
+          JFLog.log("Failed to exec apt");
           return false;
         }
         if (output.indexOf("Unable to locate package") != -1) {
