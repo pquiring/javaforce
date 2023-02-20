@@ -204,7 +204,7 @@ public class MainPanel extends javax.swing.JPanel {
     },
     //Development
     {
-      {"Java Development Kit", "Java Development Kit", "default-jdk", null},
+      {"Java Development Kit", "Java Development Kit", "default-jdk", "java-latest-openjdk-devel"},
       {"NetBeans", "Extensible Java IDE", "netbeans", "netbeans-platform"},
       {"ant", "Build Java projects", "ant", "ant"},
       {"VisualVM", "Java Developement Tool", "jvisualvm", "jfvisualvm"},
