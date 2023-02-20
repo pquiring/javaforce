@@ -659,6 +659,7 @@ public class Buffer extends JComponent implements KeyListener, MouseListener, Mo
             buflen = in.read(buf);
             if (buflen == -1) throw new Exception("read error");
             if (buflen > 0) input(byte2char(buf, buflen), buflen);
+            if (buflen == 0) JF.sleep(100);
           }
         } catch (Exception e) {
           JFLog.log(e);
