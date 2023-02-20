@@ -240,6 +240,7 @@ public class Linux {
           JFLog.log("Failed to exec apt");
           return false;
         }
+        JFLog.log(output);
         if (output.indexOf("Unable to locate package") != -1) {
           setLabel("Package not found");
           JFLog.log("Package not found");
@@ -276,6 +277,7 @@ public class Linux {
           JFLog.log("Failed to exec yum");
           return false;
         }
+        JFLog.log(output);
         setLabel("Complete");
         setProgress(100);
         return true;
