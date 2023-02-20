@@ -150,9 +150,9 @@ public class MainPanel extends javax.swing.JPanel {
   private String data[][][] = {
     //Web
     {
-      {"Chromium", "Google Chromium Web Browser (no flash)", "chromium-browser", null},
+      {"Chromium", "Google Chromium Web Browser (no flash)", "chromium", null},
       {"Chrome", "Google Chrome Web Browser (flash)", "google-chrome-stable", "google-chrome-stable"},
-      {"Firefox", "Firefox Web Browser", "firefox", "firefox"},
+      {"Firefox", "Firefox Web Browser", "firefox", "firefox-esr"},
       {"Flash", "Flash media plugin", "flashplugin-installer", "flash-plugin"},
       {"Torrent", "Torrent Client", "jftorrent", "jftorrent"},
 //      {"Java Web Plugin", "Java Applet support", "icedtea-6-plugin", "icedtea-web"},  //no java 8 support???
