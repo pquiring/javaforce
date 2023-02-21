@@ -1207,7 +1207,14 @@ public class Linux {
   private static long pam_responses;
 
   public static synchronized boolean authUser(String user, String pass) {
-    return LnxNative.authUser(user, pass);
+    String backend;
+    detectDistro();
+    switch (distro) {
+      case Ubuntu: backend = "passwd"; break;
+      case Fedora: backend = "password-auth"; break;
+      default: return false;
+    }
+    return LnxNative.authUser(user, pass, backend);
   }
 
   public static final int SIGKILL = 9;

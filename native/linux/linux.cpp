@@ -1560,8 +1560,9 @@ static int pam_callback(int num_msg, const struct pam_message** _pam_messages, s
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_authUser
-  (JNIEnv *e, jclass c, jstring user, jstring pass)
+  (JNIEnv *e, jclass c, jstring user, jstring pass, jstring backend)
 {
+  const char *cbackend = e->GetStringUTFChars(backend,NULL);
   pam_user = e->GetStringUTFChars(user,NULL);
   pam_pass = e->GetStringUTFChars(pass,NULL);
   pam_handle_t *handle;
@@ -1569,8 +1570,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_authUser
   conv.conv = &pam_callback;
   conv.appdata_ptr = NULL;
 
-  int res = pam_start("passwd", pam_user, &conv, &handle);
+  int res = pam_start(cbackend, pam_user, &conv, &handle);
   if (res != 0) {
+    e->ReleaseStringUTFChars(backend, cbackend);
+    e->ReleaseStringUTFChars(user, pam_user);
+    e->ReleaseStringUTFChars(pass, pam_pass);
+
     printf("pam_start() failed:%d:%d\n", res, errno);
     return JNI_FALSE;
   }
@@ -1582,6 +1587,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_authUser
     pam_responses = NULL;
   }
 
+  e->ReleaseStringUTFChars(backend, cbackend);
   e->ReleaseStringUTFChars(user, pam_user);
   e->ReleaseStringUTFChars(pass, pam_pass);
 

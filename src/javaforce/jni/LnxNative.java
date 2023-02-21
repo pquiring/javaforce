@@ -89,7 +89,7 @@ public class LnxNative {
   public static native boolean x11_send_event(long id, int keycode, boolean down);
 
   //PAM (Pluggable Authentication Modules for Linux)
-  public static native boolean authUser(String user, String pass);
+  public static native boolean authUser(String user, String pass, String backend);
 
   //setenv
   public static native void setenv(String name, String value);
