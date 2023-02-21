@@ -46,7 +46,7 @@ public class GenRPM {
         new File(out).delete();
       }
       new File(tmpdir).mkdir();
-      rt.exec(new String[] {"tar", "xjf", data, "-C", tmpdir, "."}).waitFor();
+      rt.exec(new String[] {"tar", "xjf", data, "-C", tmpdir}).waitFor();
       new File(data).delete();
       //Warning : rpmbuild nukes the buildroot
       rt.exec(new String[] {"rpmbuild", "-bb", "rpm.spec", "--buildroot", tmpdir}).waitFor();
@@ -55,7 +55,7 @@ public class GenRPM {
       rt.exec(new String[] {"mv", "/root/rpmbuild/RPMS/" + archext + "/*.rpm", ".", tmpdir}).waitFor();
       System.out.println(out + " created!");
       if (new File(home + "/repo/fedora/readme.txt").exists()) {
-        Files.copy(new File(out).toPath(), new File(home + "/repo/fedora/" + out).toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(new File(out).toPath(), new File(home + "/repo/fedora/" + archext + "/" + out).toPath(), StandardCopyOption.REPLACE_EXISTING);
       }
       System.exit(0);
     } catch (Exception e) {
