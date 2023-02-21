@@ -171,9 +171,9 @@ public class Linux {
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<String>();
     cmd.add("sudo");
-    cmd.add("service");
-    cmd.add(name);
+    cmd.add("systemctl");
     cmd.add("restart");
+    cmd.add(name);
     String output = sp.run(cmd, false);
     if (output == null) {
       JFLog.log("Failed to exec service");
@@ -193,12 +193,12 @@ public class Linux {
     ShellProcess sp = new ShellProcess();
     ArrayList<String> cmd = new ArrayList<String>();
     cmd.add("sudo");
-    cmd.add("jservice");
-    cmd.add(name);
+    cmd.add("jfservice");
     cmd.add("restart");
+    cmd.add(name);
     String output = sp.run(cmd, false);
     if (output == null) {
-      JFLog.log("Failed to exec jservice");
+      JFLog.log("Failed to exec jfservice");
       return false;
     }
     if (sp.getErrorLevel() != 0) {

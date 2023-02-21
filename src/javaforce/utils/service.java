@@ -13,7 +13,7 @@ import javaforce.jbus.*;
 public class service {
 
   public static void usage() {
-    System.out.println("jservice <name> <command>\n --status-all = show all services\n command = start | stop | status | restart\n");
+    System.out.println("jfservice <command> <service>\n --status-all = show all services\n command = start | stop | status | restart\n");
     System.exit(1);
   }
 
@@ -29,7 +29,7 @@ public class service {
     }
   }
 
-  public static void runCommand(String svc, String cmd) {
+  public static void runCommand(String cmd, String svc) {
     Random r = new Random();
     int id = Math.abs(r.nextInt());
     JBusClient client = new JBusClient("org.jflinux.servicemanager.j" + id, new JBusMethods());
