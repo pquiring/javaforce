@@ -1570,8 +1570,12 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_authUser
   conv.appdata_ptr = NULL;
 
   int res = pam_start("passwd", pam_user, &conv, &handle);
-  if (res != 0) return JNI_FALSE;
+  if (res != 0) {
+    printf("pam_start() failed:%d:%d\n", res, errno);
+    return JNI_FALSE;
+  }
   res = pam_authenticate(handle, PAM_SILENT);
+  printf("pam_authenticate():%d:%d\n", res, errno);
   pam_end(handle, 0);
   if (pam_responses != NULL) {
 //      free(pam_responses);  //crashes if password was wrong - memory leak for now???
