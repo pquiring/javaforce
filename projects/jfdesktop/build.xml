@@ -9,7 +9,7 @@
   <property name="version" value="0.28"/>
 
   <property name="debian.depends" value="jffile, jfhelp, openbox, obconf, acpi, pulseaudio, pulseaudio-utils, gnome-backgrounds, gnome-disk-utility"/>
-  <property name="fedora.depends" value="jffile, jfhelp, openbox, acpi, pulseaudio, pulseaudio-utils, gnome-backgrounds, gnome-disk-utility"/>
+  <property name="fedora.depends" value="jffile, jfhelp, openbox, acpi, pipewire, pulseaudio-utils, gnome-backgrounds, gnome-disk-utility"/>
   <property name="arch.depends" value="jffile, jfhelp, openbox, obconf, acpi, pulseaudio, gnome-backgrounds, gnome-disk-utility"/>
 
   <import file="../../base.xml"/>
