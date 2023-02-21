@@ -276,7 +276,7 @@ static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"x11_keysym_to_keycode", "(C)I", (void *)&Java_javaforce_jni_LnxNative_x11_1keysym_1to_1keycode},
   {"x11_send_event", "(IZ)Z", (void *)&Java_javaforce_jni_LnxNative_x11_1send_1event__IZ},
   {"x11_send_event", "(JIZ)Z", (void *)&Java_javaforce_jni_LnxNative_x11_1send_1event__JIZ},
-  {"authUser", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_authUser},
+  {"authUser", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_authUser},
   {"setenv", "(Ljava/lang/String;Ljava/lang/String;)V", (void *)&Java_javaforce_jni_LnxNative_setenv},
   {"enableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_enableConsoleMode},
   {"disableConsoleMode", "()V", (void *)&Java_javaforce_jni_LnxNative_disableConsoleMode},
