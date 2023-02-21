@@ -83,6 +83,7 @@ public class GenDEB {
         JFLog.log("Error:Unable to detect CPU from env:HOSTTYPE or property:os.arch");
       }
     }
+    //debian uses custom names
     switch (arch) {
       case "x86_64": return "amd64";
       case "aarch64": return "arm64";
