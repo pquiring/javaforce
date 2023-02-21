@@ -52,7 +52,7 @@ public class GenRPM {
       rt.exec(new String[] {"rpmbuild", "-bb", "rpm.spec", "--buildroot", tmpdir}).waitFor();
       JF.deletePathEx(tmpdir);
       new File("rpm.spec").delete();
-      rt.exec(new String[] {"mv", "/root/rpmbuild/RPMS/" + archext + "/*.rpm", ".", tmpdir}).waitFor();
+      rt.exec(new String[] {"mv", "/root/rpmbuild/RPMS/" + archext + "/*.rpm", "."}).waitFor();
       System.out.println(out + " created!");
       if (new File(home + "/repo/fedora/readme.txt").exists()) {
         Files.copy(new File(out).toPath(), new File(home + "/repo/fedora/" + archext + "/" + out).toPath(), StandardCopyOption.REPLACE_EXISTING);
