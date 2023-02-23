@@ -6,26 +6,13 @@ if [[ $EUID -ne 0 ]]; then
   exit 1
 fi
 
-case $HOSTTYPE in
-x86_64)
-  ARCH=amd64
-  ;;
-aarch64)
-  ARCHEXT=arm64
-  ;;
-*)
-  echo Invalid HOSTTYPE!
-  exit
-  ;;
-esac
-
 dnf -y install wget
 
 #configure JavaForce repository
 cd /etc/yum.repos.d
 if [ ! -f javaforce.repo ]; then
   echo Download javaforce.repo
-  wget http://javaforce.sf.net/fedora/$ARCHEXT/javaforce.repo
+  wget http://javaforce.sf.net/fedora/$HOSTTYPE/javaforce.repo
   chmod 644 javaforce.repo
 fi
 cd /
