@@ -42,7 +42,7 @@
   </target>
 
   <target name="rpm" description="install fedora prerequisites">
-    <exec command="dnf -y install gcc-c++ java-11-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-free-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel ncurses-devel"/>
+    <exec command="dnf -y install gcc-c++ java-11-openjdk-devel ant libX11-devel fuse-devel pam-devel ffmpeg-free-devel mesa-libGL-devel libXcursor-devel libXrandr-devel libXinerama-devel libXi-devel libXt-devel ncurses-devel rpm-build"/>
   </target>
 
   <target name="pac" description="install arch prerequisites">
