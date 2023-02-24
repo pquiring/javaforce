@@ -9,7 +9,7 @@
   <property name="noelf" value="true"/>
 
   <property name="debian.depends" value="default-jre-headless, libjsch-java, libjzlib-java, libjcifs-java, libv4l-0, desktop-file-utils, libxcursor1"/>
-  <property name="fedora.depends" value="java-1.8.0-openjdk, jsch, jzlib, libv4l, desktop-file-utils"/>  <!-- missing jcifs -->
+  <property name="fedora.depends" value="java-latest-openjdk-headless, jsch, jzlib, libv4l, desktop-file-utils"/>  <!-- missing jcifs -->
   <property name="arch.depends" value="jre-openjdk, java-jsch, v4l-utils, desktop-file-utils"/>  <!-- missing jzlib jcifs -->
 
   <property environment="env"/>
