@@ -6,6 +6,8 @@
 
   <target name="linux" description="create linux stubs">
     <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -Wno-write-strings linux.cpp ../../native/jfnative64.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64.bin"/>
+    <!-- fedora adds a build-id that conflicts each time the executable in found in a package -->
+    <exec command="strip -R .note.gnu.build-id ../linux64.bin"/>
   </target>
 
   <target name="freebsd" description="create linux stubs">
