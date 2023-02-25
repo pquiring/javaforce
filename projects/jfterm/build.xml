@@ -9,9 +9,9 @@
   <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="version" value="0.20"/>
 
-  <property name="debian.depends" value="libjsch-java, libjzlib-java, openssh-server"/>
-  <property name="fedora.depends" value="jsch, jzlib, openssh-server"/>
-  <property name="arch.depends" value="jsch, openssh"/>  <!-- missing jzlib -->
+  <property name="debian.depends" value="openssh-server"/>
+  <property name="fedora.depends" value="openssh-server"/>
+  <property name="arch.depends" value="openssh"/>
 
   <import file="../../base.xml"/>
 
