@@ -9,7 +9,9 @@
   <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="version" value="0.38"/>
 
-  <property name="debian.depends" value="libderby-java"/>
+  <property name="debian.depends" value="jfderby"/>
+  <property name="fedora.depends" value="jfderby"/>
+  <property name="arch.depends" value="jfderby"/>
 
   <import file="../../base.xml"/>
 
