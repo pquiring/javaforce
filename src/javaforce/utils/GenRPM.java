@@ -35,6 +35,8 @@ public class GenRPM {
     String tmpdir = "/tmp/jfrpm.tmp";
 
     Runtime rt = Runtime.getRuntime();
+    Process p;
+    boolean debug = System.getenv("DEBUG") != null;
     try {
       GenPkgInfo.main(new String[] {"fedora", arch, files});
       JF.copyAllAppend(files, "rpm.spec");
@@ -49,7 +51,11 @@ public class GenRPM {
       rt.exec(new String[] {"tar", "xjf", data, "-C", tmpdir}).waitFor();
       new File(data).delete();
       //Warning : rpmbuild nukes the buildroot
-      rt.exec(new String[] {"rpmbuild", "-bb", "rpm.spec", "--buildroot", tmpdir}).waitFor();
+      p = rt.exec(new String[] {"rpmbuild", "-bb", "rpm.spec", "--buildroot", tmpdir});
+      p.waitFor();
+      if (debug) {
+        System.out.println(new String(JF.readAll(p.getInputStream())));
+      }
       JF.deletePathEx(tmpdir);
       new File("rpm.spec").delete();
       rt.exec(new String[] {"mv", "/root/rpmbuild/RPMS/" + archext + "/" + out, "."}).waitFor();
