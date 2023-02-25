@@ -1,8 +1,11 @@
 #!/bin/bash
 
-function build {
-  ant deb
-}
+# build and package everything for Debian
 
-build
-
+ant repo
+ant deb
+cd projects
+./buildAllDebian.sh
+cd ../jars
+./buildAllDebian.sh
+cd ..

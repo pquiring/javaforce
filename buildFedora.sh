@@ -1,7 +1,11 @@
 #!/bin/bash
 
-function build {
-  ant rpm
-}
+# build and package everything for Fedora
 
-build
+ant repo
+ant rpm
+cd projects
+./buildAllFedora.sh
+cd ../jars
+./buildAllFedora.sh
+cd ..

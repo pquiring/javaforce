@@ -1,7 +1,11 @@
 #!/bin/bash
 
-function build {
-  ant pac
-}
+# build and package everything for Arch
 
-build
+ant repo
+ant pac
+cd projects
+./buildAllArch.sh
+cd ../jars
+./buildAllArch.sh
+cd ..
