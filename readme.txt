@@ -117,6 +117,10 @@ Library name should be the full class name where main() is defined.
   ie: javaforce.utils.CopyPath.dll
 GraalVM support for AWT is still unfinished and probably will never be.
 
+Building jfLinux
+----------------
+After building Javaforce, native and stubs (launchers) you can run build.sh to build and package everything.
+
 Requirements
 ------------
 

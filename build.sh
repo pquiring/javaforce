@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# build and package everything for Debian
+
+function detectos {
+  if [ ! -f /etc/os-release ]; then
+    echo Unable to detect os
+    echo /etc/os-release not found!
+    exit
+  fi
+  . /etc/os-release
+  case $ID in
+    debian | ubuntu)
+      pkg=deb
+      PKG=DEB
+      ;;
+    fedora)
+      pkg=rpm
+      PKG=RPM
+      ;;
+    arch)
+      pkg=pac
+      PKG=PAC
+      ;;
+    *)
+      echo Unknown os detected!
+      echo ID=%ID
+      exit
+      ;;
+  esac
+}
+
+detectos
+ant repo
+ant $pkg
+cd projects
+./build.sh
+cd ../jars
+./build.sh
+cd ..
