@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# build and package everything for Debian
+# build and package everything for Linux
 
 function detectos {
   if [ ! -f /etc/os-release ]; then
