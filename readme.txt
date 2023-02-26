@@ -120,6 +120,8 @@ GraalVM support for AWT is still unfinished and probably will never be.
 Building jfLinux
 ----------------
 After building Javaforce, native and stubs (launchers) you can run build.sh to build and package everything.
+Only Debian and Fedora (and their derivatives) are working.
+Partial support for Arch and FreeBSD are available.
 
 Requirements
 ------------
