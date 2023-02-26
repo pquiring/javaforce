@@ -50,7 +50,7 @@
   </target>
 
   <target name="pkg" description="install freebsd prerequisites">
-    <exec command="pkg install gcc ffmpeg libX11 libXrandr libXcursor libXinerama libXi libXt ncurses mesa-libs"/>
+    <exec command="pkg install -y gcc ffmpeg libX11 libXrandr libXcursor libXinerama libXi libXt ncurses mesa-libs"/>
   </target>
 
   <target name="get-bin-x86" description="download pre-built binaries for x86">
