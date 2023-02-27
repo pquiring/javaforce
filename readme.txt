@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 37.2
+Version 38.0
 
 What is it?
 ===========

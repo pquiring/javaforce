@@ -1,5 +1,13 @@
 What's new...
 
+Feb 26/2023 : JF/38.0
+  - jfLinux is Bourne Again!
+    - initially released in 2012 and updated in 2014 it's been nearly a decade since it's been working
+    - nearly 100 commits to revive this large project
+    - rather then release another ISO there are instructions in linux/readme.txt to install
+      the desktop environment on a minimal linux system (Debian or Fedora)
+    - Enjoy!
+
 Feb 8/2023 : JF/37.2
   - fixed many linux packaging issues
   - repo for Debian AMD64 + ARM64 are updated on sf.net

@@ -12,4 +12,8 @@ Steps:
 
 Follow prompts to install the JF Desktop Environment if desired.
 
+Currently supported:
+  debian : amd64
+  fedora : amd64
+
 Thanks!
