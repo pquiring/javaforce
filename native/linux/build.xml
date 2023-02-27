@@ -38,7 +38,7 @@
   </target>
 
   <target name="deb" description="install debian prerequisites">
-    <exec command="apt --yes install g++ default-jdk ant libx11-dev libfuse-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev libncurses-dev zlib1g-dev"/>
+    <exec command="apt --yes install g++ default-jdk ant libx11-dev libfuse-dev libpam0g-dev libavcodec-dev libavformat-dev libavutil-dev libswscale-dev mesa-common-dev libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libxt-dev libncurses-dev zlib1g-dev sudo"/>
   </target>
 
   <target name="rpm" description="install fedora prerequisites">

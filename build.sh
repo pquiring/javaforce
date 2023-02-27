@@ -31,10 +31,28 @@ function detectos {
 }
 
 detectos
+
+if [ ! -f jars/javaforce.jar ]; then
+  echo Please build javaforce first!
+  exit
+fi
+
+if [ ! -f native/jfnative64.so ]; then
+  echo Please build native library first!
+  exit
+fi
+
+if [ ! -f stubs/linux64.bin ]; then
+  echo Please build stub launcher first!
+  exit
+fi
+
 ant repo
 ant $pkg
 cd projects
+chmod +x build.sh
 ./build.sh
 cd ../jars
+chmod +x build.sh
 ./build.sh
 cd ..
