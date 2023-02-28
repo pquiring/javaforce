@@ -108,9 +108,18 @@ function fedora {
 }
 
 function arch {
+  case $HOSTTYPE in
+  x86_64)
+    ;;
+  *)
+    echo Invalid HOSTTYPE!
+    exit
+    ;;
+  esac
+
   echo "[javaforce]" >> /etc/pacman.conf
   echo "SigLevel = TrustAll" >> /etc/pacman.conf
-  echo "Server = http://javaforce.sourceforge.net/arch/$arch" >> /etc/pacman.conf
+  echo "Server = http://javaforce.sourceforge.net/arch/$HOSTTYPE" >> /etc/pacman.conf
 
   #update everything
   pacman -Syy
