@@ -23,6 +23,9 @@
     <javac srcdir="${src}" destdir="${build}" target="1.8" source="1.8" debug="true" includeantruntime="false">
       <classpath path="${classpath}"/>
     </javac>
+  </target>
+
+  <target name="win-tools" depends="depjars" description="compile windows tools">
     <exec command="cl src\tapetool.cpp"/>
   </target>
 
