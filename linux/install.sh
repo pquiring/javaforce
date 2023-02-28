@@ -107,6 +107,26 @@ function fedora {
   fi
 }
 
+function arch {
+  echo "[javaforce]" >> /etc/pacman.conf
+  echo "SigLevel = TrustAll" >> /etc/pacman.conf
+  echo "Server = http://javaforce.sourceforge.net/arch/$arch" >> /etc/pacman.conf
+
+  #update everything
+  pacman -Syy
+
+  pacman -S --noconfirm javaforce
+
+  read -p "Install jfLinux Desktop Environment? " -n 1 -r
+
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+    pacman -S --noconfirm jflogon jfdesktop jfconfig jfapps
+    systemctl enable jflogon.service
+    systemctl enable jfbusserver.service
+  fi
+}
+
 detectos
 
 case $OS in
@@ -115,6 +135,9 @@ case $OS in
     ;;
   fedora)
     fedora
+    ;;
+  arch)
+    arch
     ;;
   *)
     echo OS installation not available yet!
