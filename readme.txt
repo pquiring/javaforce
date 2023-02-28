@@ -45,11 +45,47 @@ Folders
  /classes   - javaforce compiled files
  /projects  - source for all sub-projects
 
-Building
-========
-All projects are built with Apache Ant (http://ant.apache.org).
-Make sure to run ant in the main folder to build the /src folder and then in any of the apps in /projects.
-Do not run ant in a sudo environment, some environment variables such as HOSTTYPE are missing.
+Getting Started
+===============
+First get some tools installed, all projects are built with Apache Ant (http://ant.apache.org):
+  debian:apt install git ant
+  fedora:yum install git ant
+  windows:install git, OpenJDK and ant from various sources (msys2, cygwin, oracle, etc.)
+Checkout Javaforce:
+  git clone http://github.com/pquiring/javaforce
+  cd javaforce
+  ant
+Next build the native library and the native launchers.
+
+Building native library (ffmpeg, OpenGL, Camera)
+------------------------------------------------
+Native Library is in /native
+See readme.txt in each platform folder for more info.
+  - you can run 'ant get-bin' to download pre-built binaries for Win64
+
+Building native launchers
+-------------------------
+Native Launchers are in /stubs
+They require the native library be build first.
+Windows:Requires Visual C++ in your PATH.
+  - you can run 'ant get-bin' to download pre-built binaries for Win64
+Linux:Debian/Ubuntu:run 'ant deb' to install required packages.
+Linux:RedHat/Fedora:run 'ant rpm' to install required packages.
+  - you can run 'ant get-bin-x86' or 'ant get-bin-arm' to download pre-build binaries for Linux64
+
+Building jfLinux
+----------------
+After building Javaforce, native library and stubs (launchers) you can run build.sh to build and package everything.
+Only Debian and Fedora (and their derivatives) are working.
+Partial support for Arch and FreeBSD are available.
+
+JavaForce Ant tasks:
+--------------------
+ffmpeg-win64 : Download ffmpeg libraries for Win64
+ffmpeg-mac64 : Download ffmpeg libraries for Mac64
+jre-base : pre-link JRE for creating native packages (msi, dmg)
+jre-base-desktop : pre-link JRE with desktop support
+jre-base-javac : pre-link JRE with java compiler support
 
 Common Ant tasks:
 -----------------
@@ -69,40 +105,16 @@ msi : build Windows msi file with JRE bundled
  - msi creation requires:
   - wixtoolset v3 in path (http://wixtoolset.org)
   - wix64.xml file
-  - jre pre-linked for native packaging (see below)
+  - jre pre-linked for native packaging (see above)
   - windows stub created (/stubs/windows)
 dmg : build Mac dmg file using hdiutil (mac only)
  - dmg creation requires:
-  - jre prep for native packaging (see below)
+  - jre prep for native packaging (see above)
   - Info.plist, ${app}.icns and macfiles.lst
   - see projects/jfedit or projects/jfpaint for only examples
   - jfimageconvert can convert images to .icns file format (mac icons)
   - mac stub created (/stubs/mac)
 javadoc : create javadoc api help files (open ./javadoc/index.html)
-
-JavaForce Ant tasks:
---------------------
-ffmpeg-win64 : Download ffmpeg libraries for Win64
-ffmpeg-mac64 : Download ffmpeg libraries for Mac64
-jre-base : pre-link JRE for creating native packages (msi, dmg)
-jre-base-desktop : pre-link JRE with desktop support
-jre-base-javac : pre-link JRE with java compiler support
-
-Building native library (ffmpeg, OpenGL, Camera)
-------------------------------------------------
-Native Library is in /native
-See readme.txt in each platform folder for more info.
-  - you can run 'ant get-bin' to download pre-built binaries for Win64
-
-Building native launchers
--------------------------
-Native Launchers are in /stubs
-They require the native library be build first.
-Windows:Requires Visual C++ in your PATH.
-  - you can run 'ant get-bin' to download pre-built binaries for Win64
-Linux:Debian/Ubuntu:run 'ant deb' to install required packages.
-Linux:RedHat/Fedora:run 'ant rpm' to install required packages.
-  - you can run 'ant get-bin-x86' or 'ant get-bin-arm' to download pre-build binaries for Linux64
 
 Graal Support
 -------------
@@ -116,12 +128,6 @@ The ant task 'executable' will generate an executable that will look for the Gra
 Library name should be the full class name where main() is defined.
   ie: javaforce.utils.CopyPath.dll
 GraalVM support for AWT is still unfinished and probably will never be.
-
-Building jfLinux
-----------------
-After building Javaforce, native and stubs (launchers) you can run build.sh to build and package everything.
-Only Debian and Fedora (and their derivatives) are working.
-Partial support for Arch and FreeBSD are available.
 
 Requirements
 ------------
