@@ -71,6 +71,11 @@ public class GenPkgInfo {
         JFLog.log("Error:Unable to detect CPU from env:HOSTTYPE or property:os.arch");
       }
     }
+    //use GNU names
+    switch (arch) {
+      case "amd64": return "x86_64";
+      case "arm64": return "aarch64";
+    }
     return arch;
   }
 
