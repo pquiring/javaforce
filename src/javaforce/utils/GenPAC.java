@@ -54,7 +54,7 @@ public class GenPAC {
       new File(files_tmp).delete();
       System.out.println(out + " created!");
       if (new File(home + "/repo/arch/readme.txt").exists()) {
-        Files.copy(new File(out).toPath(), new File(home + "/repo/arch/" + out).toPath(), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(new File(out).toPath(), new File(home + "/repo/arch/" + archext + "/" + out).toPath(), StandardCopyOption.REPLACE_EXISTING);
       }
       System.exit(0);
     } catch (Exception e) {
