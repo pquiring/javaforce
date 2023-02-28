@@ -56,3 +56,5 @@ cd ../jars
 chmod +x build.sh
 ./build.sh
 cd ..
+
+echo Build Complete!
