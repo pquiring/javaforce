@@ -121,6 +121,16 @@ function arch {
   echo "SigLevel = TrustAll" >> /etc/pacman.conf
   echo "Server = http://javaforce.sourceforge.net/arch/$HOSTTYPE" >> /etc/pacman.conf
 
+  if [ ! -f javaforce.gpg ]; then
+    echo Download javaforce.gpg
+    wget http://javaforce.sf.net/arch/$HOSTTYPE/javaforce.gpg
+    chmod 644 javaforce.gpg
+  fi
+
+  pacman-key --add javaforce.gpg
+  #gpg --show-key javaforce.gpg
+  pacman-key --lsign-key A67121E5285E7FE2290FCCB5DB9C4FA6AFF0CBDC
+
   #update everything
   pacman -Syy
 
