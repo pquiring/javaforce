@@ -235,12 +235,12 @@ public class App extends javax.swing.JPanel {
             }
 //            tmpFile.delete();  //test
 
-            //some apps need other packages, "apt-get -f install" will fix that
+            //some apps need other packages, "apt -f install" will fix that
             if (Linux.distro == Linux.DistroTypes.Ubuntu) {
               ShellProcess sp = new ShellProcess();
               sp.removeEnvironmentVariable("TERM");
               sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");
-              sp.run(new String[] {"sudo", "apt-get", "-f", "--yes", "install"}, false);
+              sp.run(new String[] {"sudo", "apt", "-f", "--yes", "install"}, false);
             }
 
             this.setLabel("Complete");

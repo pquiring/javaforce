@@ -196,7 +196,7 @@ public class MainPanel extends javax.swing.JPanel {
     ShellProcess sp = new ShellProcess();
     sp.removeEnvironmentVariable("TERM");
     sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");
-    String output = sp.run(new String[] {"sudo", "-E", "apt-get", "--yes", "upgrade", "-s"}, false);
+    String output = sp.run(new String[] {"sudo", "-E", "apt", "--yes", "upgrade", "-s"}, false);
     String lns[] = output.split("\n");
     int keptBack = -1;
     int upgrades = -1;
@@ -314,9 +314,9 @@ public class MainPanel extends javax.swing.JPanel {
     ShellProcess sp = new ShellProcess();
     sp.removeEnvironmentVariable("TERM");
     sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");
-    String output = sp.run(new String[] {"sudo", "-E", "apt-get", "--yes", "update"}, true);
+    String output = sp.run(new String[] {"sudo", "-E", "apt", "--yes", "update"}, true);
     if (output == null) {
-      JFAWT.showError("Error", "Failed to exec apt-get");
+      JFAWT.showError("Error", "Failed to exec apt");
       check.setEnabled(true);
       upgrade.setEnabled(true);
     } else {
@@ -384,9 +384,9 @@ public class MainPanel extends javax.swing.JPanel {
     ShellProcess sp = new ShellProcess();
     sp.removeEnvironmentVariable("TERM");
     sp.addEnvironmentVariable("DEBIAN_FRONTEND", "noninteractive");
-    sp.run(new String[] {"sudo", "-E", "apt-get", "--yes", (upgradeAll.isSelected() ? "dist-upgrade" : "upgrade")}, true);
+    sp.run(new String[] {"sudo", "-E", "apt", "--yes", (upgradeAll.isSelected() ? "dist-upgrade" : "upgrade")}, true);
     if (sp.getErrorLevel() != 0) {
-      JFAWT.showError("Error", "Failed to exec apt-get");
+      JFAWT.showError("Error", "Failed to exec apt");
       check.setEnabled(true);
       upgrade.setEnabled(true);
       return false;

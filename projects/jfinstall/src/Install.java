@@ -675,7 +675,7 @@ public class Install extends IPanel implements ShellProcessListener {
         cmd.add("/mnt/install");
         switch (Linux.distro) {
           case Ubuntu:
-            cmd.add("apt-get");
+            cmd.add("apt");
             cmd.add("--yes");
             break;
           case Fedora:
@@ -715,7 +715,7 @@ public class Install extends IPanel implements ShellProcessListener {
         cmd.add("/mnt/install");
         switch (Linux.distro) {
           case Ubuntu:
-            cmd.add("apt-get");
+            cmd.add("apt");
             cmd.add("--yes");
             break;
           case Fedora:
