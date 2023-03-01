@@ -14,6 +14,12 @@
     <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -Wno-write-strings linux.cpp ../../native/jfnative64.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64.bin"/>
   </target>
 
+  <target name="arm64" description="create linux stubs">
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -Wno-write-strings linux.cpp ../../native/jfnative64.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64.bin"/>
+    <!-- fedora adds a build-id that conflicts each time the executable in found in a package -->
+    <exec command="strip -R .note.gnu.build-id ../linux64.bin"/>
+  </target>
+
   <target name="get-bin-x86" description="download pre-built binaries for x86">
     <sequential>
       <get src="http://javaforce.sourceforge.net/jf-stubs-lnx64-x86.zip" dest="../jf-stubs-lnx64-x86.zip" usetimestamp="true"/>
@@ -54,6 +60,7 @@
   <target name="help">
     <echo>ant linux : build intel x86 64bit (Debian/Ubuntu/Fedora/Arch)</echo>
     <echo>ant freebsd : build intel x86 64bit (FreeBSD)</echo>
+    <echo>ant arm64 : build ARM 64bit</echo>
   </target>
 
 </project>

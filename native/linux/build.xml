@@ -27,7 +27,7 @@
   </target>
 
   <target name="arm64" description="create linux native so for arm64">
-    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include -I ${java.home}/include/linux -I /usr/include/aarch64-linux-gnu -I ../headers linux.cpp -c -o linux64.o -fPIC"/>
+    <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/linux -I ${java.home}/include -I /usr/include/aarch64-linux-gnu -I ../headers linux.cpp -c -o linux64.o -fPIC"/>
     <exec command="gcc ${opt} -I../glfw/include -I /usr/include/aarch64-linux-gnu glfw.c -c -o glfw64.o -fPIC"/>
     <exec command="gcc -shared linux64.o glfw64.o -L /usr/lib/aarch64-linux-gnu -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -o ../jfnative64.so"/>
     <exec command="ar r ../jfnative64.a linux64.o glfw64.o"/>
@@ -91,7 +91,7 @@
 
     <echo>ant linux : build intel x86 64bit (Debian/Ubuntu/Fedora/Arch)</echo>
     <echo>ant freebsd : build intel x86 64bit (FreeBSD)</echo>
-    <echo>ant arm64 : build ARM 64bit (Raspberry PI)</echo>
+    <echo>ant arm64 : build ARM 64bit</echo>
   </target>
 
 </project>
