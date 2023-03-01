@@ -61,17 +61,19 @@ Building native library (ffmpeg, OpenGL, Camera)
 ------------------------------------------------
 Native Library is in /native
 See readme.txt in each platform folder for more info.
+Windows:Requires Visual C++ in your PATH.
   - you can run 'ant get-bin' to download pre-built binaries for Win64
+Linux:Debian/Ubuntu:run 'ant deb' to install required devel packages.
+Linux:RedHat/Fedora:run 'ant rpm' to install required devel packages.
+Linux:Arch:run 'ant pac' to install required devel packages.
+Linux:FreeBSD:run 'ant pkg' to install required devel packages.
+  - you can run 'ant get-bin-x86' or 'ant get-bin-arm' to download pre-build binaries for Linux64
 
 Building native launchers
 -------------------------
 Native Launchers are in /stubs
 They require the native library be build first.
-Windows:Requires Visual C++ in your PATH.
   - you can run 'ant get-bin' to download pre-built binaries for Win64
-Linux:Debian/Ubuntu:run 'ant deb' to install required packages.
-Linux:RedHat/Fedora:run 'ant rpm' to install required packages.
-  - you can run 'ant get-bin-x86' or 'ant get-bin-arm' to download pre-build binaries for Linux64
 
 Building jfLinux
 ----------------
