@@ -25,7 +25,7 @@ public class Linux {
   }
 
   public static enum DistroTypes {
-    Unknown, Ubuntu, Fedora
+    Unknown, Ubuntu, Fedora, Arch
   };
   public static DistroTypes distro = DistroTypes.Unknown;
 
@@ -53,6 +53,11 @@ public class Linux {
         if (id.equals("fedora")) {
           distro = DistroTypes.Fedora;
           JFLog.log("Detected Linux:fedora");
+          return true;
+        }
+        if (id.equals("arch")) {
+          distro = DistroTypes.Arch;
+          JFLog.log("Detected Linux:arch");
           return true;
         }
       }
@@ -1209,9 +1214,11 @@ public class Linux {
   public static synchronized boolean authUser(String user, String pass) {
     String backend;
     detectDistro();
+    // see /etc/pam.d/ for available back ends
     switch (distro) {
       case Ubuntu: backend = "passwd"; break;
       case Fedora: backend = "password-auth"; break;
+      case Arch: backend = "passwd"; break;
       default: return false;
     }
     return LnxNative.authUser(user, pass, backend);
