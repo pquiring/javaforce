@@ -1218,7 +1218,7 @@ public class Linux {
     switch (distro) {
       case Ubuntu: backend = "passwd"; break;
       case Fedora: backend = "password-auth"; break;
-      case Arch: backend = "passwd"; break;
+      case Arch: backend = "system-auth"; break;
       default: return false;
     }
     return LnxNative.authUser(user, pass, backend);
