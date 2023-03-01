@@ -1,3 +1,2 @@
 /usr/bin/jfbusserver
-/lib/systemd/system/jfbusserver.service
-
+/usr/lib/systemd/system/jfbusserver.service

@@ -54,11 +54,10 @@
     <chmod file="/usr/sbin/jflogon-rundomain" perm="+x"/>
     <copy file="dhclient-script" todir="/etc/dhcp"/>
     <chmod file="/etc/dhcp/dhclient-script" perm="+x"/>
-    <!-- systemd in /lib for debian and fedora(linked) -->
-    <mkdir dir="/lib/systemd/system-preset/"/>
-    <copy file="82-jflogon.preset" todir="/lib/systemd/system-preset"/>
-    <mkdir dir="/lib/systemd/system/"/>
-    <copy file="jflogon.service" todir="/lib/systemd/system"/>
+    <mkdir dir="/usr/lib/systemd/system-preset/"/>
+    <copy file="82-jflogon.preset" todir="/usr/lib/systemd/system-preset"/>
+    <mkdir dir="/usr/lib/systemd/system/"/>
+    <copy file="jflogon.service" todir="/usr/lib/systemd/system"/>
     <copy file="weston-logon.ini" todir="/etc"/>
     <copy file="weston-session.ini" todir="/etc"/>
   </target>
@@ -71,8 +70,8 @@
     <delete file="/usr/sbin/jflogon-rundomain"/>
     <delete file="/usr/sbin/jflogon"/>
     <delete file="/etc/dhcp/dhclient-script"/>
-    <delete file="/lib/systemd/system-preset/82-jflogon.preset"/>
-    <delete file="/lib/systemd/system/jflogon.service"/>
+    <delete file="/usr/lib/systemd/system-preset/82-jflogon.preset"/>
+    <delete file="/usr/lib/systemd/system/jflogon.service"/>
   </target>
 
   <target name="clean" description="deletes compiled files">

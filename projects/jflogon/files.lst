@@ -4,5 +4,5 @@
 /usr/sbin/jflogon-rundomain
 /etc/dhcp/dhclient-script
 /usr/share/java/jflogon.jar
-/lib/systemd/system-preset/82-jflogon.preset
-/lib/systemd/system/jflogon.service
+/usr/lib/systemd/system-preset/82-jflogon.preset
+/usr/lib/systemd/system/jflogon.service
