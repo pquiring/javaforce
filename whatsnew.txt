@@ -1,5 +1,9 @@
 What's new...
 
+Mar 1/2023 : JF/38.1
+  - jfLinux now fully supports ArchLinux
+    - Go Canada!
+
 Feb 26/2023 : JF/38.0
   - jfLinux is Bourne Again!
     - initially released in 2012 and updated in 2014 it's been nearly a decade since it's been working

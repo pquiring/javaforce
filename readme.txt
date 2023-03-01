@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 38.0
+Version 38.1
 
 What is it?
 ===========
@@ -76,8 +76,8 @@ Linux:RedHat/Fedora:run 'ant rpm' to install required packages.
 Building jfLinux
 ----------------
 After building Javaforce, native library and stubs (launchers) you can run build.sh to build and package everything.
-Only Debian and Fedora (and their derivatives) are working.
-Partial support for Arch and FreeBSD are available.
+Supported distros : Debian, Fedora, Arch.
+FreeBSD is currently not supported.
 
 JavaForce Ant tasks:
 --------------------
