@@ -50,6 +50,7 @@ public class ConfigApp extends javax.swing.JFrame {
     switch (Linux.distro) {
       case Ubuntu: break;
       case Fedora: break;
+      case Arch: break;
       default:
         if (!test) {
           JFAWT.showError("Error", "Unsupported Distro");

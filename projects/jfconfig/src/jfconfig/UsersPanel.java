@@ -241,18 +241,8 @@ public class UsersPanel extends javax.swing.JPanel {
     cmd.add("-m");
     cmd.add("-U");  //create group with same name
     if (dialog.getAdmin()) {
-      switch (Linux.distro) {
-        case Ubuntu:
-//          cmd.add("-G");
-//          cmd.add("admin");  //allows sudo (Ubuntu 11.10)
-          cmd.add("-G");
-          cmd.add("sudo");  //allows sudo (Ubuntu 12.04)
-          break;
-        case Fedora:
-          cmd.add("-G");
-          cmd.add("wheel");
-          break;
-      }
+      cmd.add("-G");
+      cmd.add("sudo");
     }
     cmd.add("-c");
     cmd.add("\"" + dialog.getFullName() + "\"");
