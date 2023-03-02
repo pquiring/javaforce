@@ -297,6 +297,39 @@ public class Linux {
     return task.getStatus();
   }
 
+    /**
+   * Work with Arch packages.
+   */
+  private static boolean pacman(String action, String pkg, String desc) {
+    JFTask task = new JFTask() {
+      public boolean work() {
+        this.setProgress(-1);
+        String action = (String)this.getProperty("action");
+        String pkg = (String)this.getProperty("pkg");
+        String desc = (String)this.getProperty("desc");
+        setLabel((action.equals("install") ? "Installing " : "Removing ") + desc);
+        ShellProcess sp = new ShellProcess();
+        sp.removeEnvironmentVariable("TERM");  //prevent config dialogs
+        String output = sp.run(new String[]{"sudo", "-E", "pacman", action, "--noconfirm", pkg}, false);
+        if (output == null) {
+          setLabel("Failed to exec pacman");
+          JFLog.log("Failed to exec pacman");
+          return false;
+        }
+        JFLog.log(output);
+        setProperty("results", output);
+        setLabel("Complete");
+        setProgress(100);
+        return true;
+      }
+    };
+    task.setProperty("action", action);
+    task.setProperty("pkg", pkg);
+    task.setProperty("desc", desc);
+    new ProgressDialog(null, true, task).setVisible(true);
+    return task.getStatus();
+  }
+
   public static boolean installPackage(String pkg, String desc) {
     detectDistro();
     switch (distro) {
@@ -304,6 +337,8 @@ public class Linux {
         return apt("install", pkg, desc);
       case Fedora:
         return yum("install", pkg, desc);
+      case Arch:
+        return pacman("-S", pkg, desc);
     }
     return false;
   }
@@ -315,6 +350,8 @@ public class Linux {
         return apt("autoremove", pkg, desc);
       case Fedora:
         return yum("remove", pkg, desc);
+      case Arch:
+        return pacman("-R", pkg, desc);
     }
     return false;
   }
@@ -340,7 +377,8 @@ public class Linux {
     }
     return true;
   }
-  private static String[][] pkgList;
+
+  private static String[][] pkgList;  //[count][name,desc,installed]
 
   /*  public static String[][] getPackages() {
    if (dpkg == null) updateInstalled();
@@ -396,6 +434,39 @@ public class Linux {
     return ret;
   }
 
+  private static String[][] arch_searchPackages(String regex) {
+    ShellProcess sp = new ShellProcess();
+    ArrayList<String> cmd = new ArrayList<String>();
+    cmd.add("pacman");
+    cmd.add("-Ss");
+    cmd.add(regex);
+    String output = sp.run(cmd, false);
+    if (output == null) {
+      JFLog.log("Error:unable to execute pacman");
+      return null;
+    }
+    String[] lns = output.split("\n");
+    String[][] ret = new String[lns.length/2][2];
+    /*/
+    local/package version
+        Desc...
+    /*/
+    int idx = 0;
+    for (int a = 0; a < lns.length; a += 2) {
+      String ln1 = lns[a];
+      String ln2 = lns[a+1];
+      int i1 = ln1.indexOf('/');
+      int i2 = ln1.indexOf(' ');
+      String name = ln1.substring(i1, i2);
+      String ver = ln1.substring(i2+1);
+      String desc = ln2.substring(4);
+      ret[idx][0] = name;  //package name
+      ret[idx][1] = desc;  //package desc
+      idx++;
+    }
+    return ret;
+  }
+
   /**
    * Searches for available packages (NOTE:There may be nulls in the output)
    */
@@ -406,6 +477,8 @@ public class Linux {
         return ubuntu_searchPackages(regex);
       case Fedora:
         return fedora_searchPackages(regex);
+      case Arch:
+        return arch_searchPackages(regex);
     }
     return null;
   }
@@ -464,6 +537,37 @@ public class Linux {
     }
   }
 
+  public static void arch_updateInstalled() {
+    ShellProcess sp = new ShellProcess();
+    ArrayList<String> cmd = new ArrayList<String>();
+    cmd.add("pacman");
+    cmd.add("-Ss");
+    String output = sp.run(cmd, false);
+    if (output == null) {
+      JFLog.log("Error:unable to execute pacman");
+    }
+    String[] lns = output.split("\n");
+    /*/
+    local/package version [[installed]]
+        Desc...
+    /*/
+    int idx = 0;
+    for (int a = 0; a < lns.length; a += 2) {
+      String ln1 = lns[a];
+      String ln2 = lns[a+1];
+      String[] fs2 = ln2.split(" ");
+      int i1 = ln1.indexOf('/');
+      int i2 = ln1.indexOf(' ');
+      String name = ln1.substring(i1, i2);
+      String ver = ln1.substring(i2+1);
+      String desc = ln2.substring(4);
+      pkgList[idx][0] = name;  //package name
+      pkgList[idx][1] = desc;  //package desc
+      pkgList[idx][1] = fs2.length == 3 ? "true" : "false";  //package installed
+      idx++;
+    }
+  }
+
   public static void updateInstalled() {
     detectDistro();
     switch (distro) {
@@ -472,6 +576,9 @@ public class Linux {
         break;
       case Fedora:
         fedora_updateInstalled();
+        break;
+      case Arch:
+        arch_updateInstalled();
         break;
     }
   }
