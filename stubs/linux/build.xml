@@ -11,7 +11,7 @@
   </target>
 
   <target name="freebsd" description="create linux stubs">
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -Wno-write-strings linux.cpp ../../native/jfnative64.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64.bin"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -Wno-write-strings linux.cpp ../../native/jfnative64.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -linotify -o ../linux64.bin"/>
   </target>
 
   <target name="arm64" description="create linux stubs">

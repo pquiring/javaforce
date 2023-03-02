@@ -26,4 +26,7 @@
 
 #ifndef __FreeBSD__
 #include "../glfw/src/linux_joystick.c"
+#else
+int _glfwPlatformPollJoystick(_GLFWjoystick* ptr, int mode) {return 0;}
+void _glfwPlatformUpdateGamepadGUID(char* guid) {}
 #endif

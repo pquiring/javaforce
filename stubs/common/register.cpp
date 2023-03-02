@@ -234,8 +234,10 @@ void registerCommonNatives(JNIEnv *env) {
   cls = findClass(env, "javaforce/jni/JFNative");
   registerNatives(env, cls, javaforce_jni_JFNative, sizeof(javaforce_jni_JFNative)/sizeof(JNINativeMethod));
 
+#ifndef __FreeBSD__
   cls = findClass(env, "javaforce/controls/ni/DAQmx");
   registerNatives(env, cls, javaforce_controls_ni_DAQmx, sizeof(javaforce_controls_ni_DAQmx)/sizeof(JNINativeMethod));
+#endif
 
   cls = findClass(env, "javaforce/gl/GL");
   registerNatives(env, cls, javaforce_gl_GL, sizeof(javaforce_gl_GL)/sizeof(JNINativeMethod));
@@ -249,8 +251,10 @@ void registerCommonNatives(JNIEnv *env) {
   cls = findClass(env, "javaforce/ui/Image");
   registerNatives(env, cls, javaforce_ui_Image, sizeof(javaforce_ui_Image)/sizeof(JNINativeMethod));
 
+#ifndef __FreeBSD__
   cls = findClass(env, "javaforce/media/Camera");
   registerNatives(env, cls, javaforce_media_Camera, sizeof(javaforce_media_Camera)/sizeof(JNINativeMethod));
+#endif
 
   cls = findClass(env, "javaforce/media/MediaCoder");
   registerNatives(env, cls, javaforce_media_MediaCoder, sizeof(javaforce_media_MediaCoder)/sizeof(JNINativeMethod));
