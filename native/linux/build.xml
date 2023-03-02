@@ -53,36 +53,6 @@
     <exec command="pkg install -y gcc ffmpeg libX11 libXrandr libXcursor libXinerama libXi libXt ncurses mesa-libs"/>
   </target>
 
-  <target name="get-bin-x86" description="download pre-built binaries for x86">
-    <sequential>
-      <get src="http://javaforce.sourceforge.net/jf-lib-lnx64-x86.zip" dest="../jf-lib-lnx64-x86.zip" usetimestamp="true"/>
-      <unzip src="../jf-lib-lnx64-x86.zip" dest=".."/>
-    </sequential>
-  </target>
-
-  <target name="zip-bin-x86" description="zip pre-built binaries">
-    <zip destfile="../jf-lib-lnx64-x86.zip">
-      <fileset dir="..">
-        <include name="*.so"/>
-      </fileset>
-    </zip>
-  </target>
-
-  <target name="get-bin-arm" description="download pre-built binaries for arm">
-    <sequential>
-      <get src="http://javaforce.sourceforge.net/jf-lib-lnx64-arm.zip" dest="../jf-lib-lnx64-arm.zip" usetimestamp="true"/>
-      <unzip src="../jf-lib-lnx64-arm.zip" dest=".."/>
-    </sequential>
-  </target>
-
-  <target name="zip-bin-arm" description="zip pre-built binaries">
-    <zip destfile="../jf-lib-lnx64-arm.zip">
-      <fileset dir="..">
-        <include name="*.so"/>
-      </fileset>
-    </zip>
-  </target>
-
   <target name="help">
     <echo>ant deb : install Debian/Ubuntu prerequisites</echo>
     <echo>ant rpm : install Fedora prerequisites</echo>

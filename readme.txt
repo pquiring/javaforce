@@ -67,7 +67,6 @@ Linux:Debian/Ubuntu:run 'ant deb' to install required devel packages.
 Linux:RedHat/Fedora:run 'ant rpm' to install required devel packages.
 Linux:Arch:run 'ant pac' to install required devel packages.
 Linux:FreeBSD:run 'ant pkg' to install required devel packages.
-  - you can run 'ant get-bin-x86' or 'ant get-bin-arm' to download pre-build binaries for Linux64
 
 Building native launchers
 -------------------------
