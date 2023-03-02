@@ -9,9 +9,9 @@
   <property name="version" value="38.1"/>
   <property name="noelf" value="true"/>
 
-  <property name="debian.depends" value="default-jre-headless, jfsch, jfzlib, jfcifs, libv4l-0, desktop-file-utils, libxcursor1"/>
-  <property name="fedora.depends" value="java-17-openjdk-headless, jfsch, jfzlib, jfcifs, libv4l, desktop-file-utils"/>
-  <property name="arch.depends" value="jre-openjdk, jfsch, jfzlib, jfcifs, v4l-utils, desktop-file-utils"/>
+  <property name="debian.depends" value="default-jre-headless    , jfsch, jfzlib, jfcifs, libv4l-0 , desktop-file-utils, libxcursor1"/>
+  <property name="fedora.depends" value="java-17-openjdk-headless, jfsch, jfzlib, jfcifs, libv4l   , desktop-file-utils"/>
+  <property name="arch.depends"   value="jre-openjdk             , jfsch, jfzlib, jfcifs, v4l-utils, desktop-file-utils"/>
 
   <property environment="env"/>
 

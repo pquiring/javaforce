@@ -8,9 +8,9 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.19"/>
 
-  <property name="debian.depends" value="jfdesktop, jfbusserver, default-jre, mutter, xserver-xorg, x11-xserver-utils, libx11-dev, plymouth, gvfs, bluez, winbind, smbclient, wpasupplicant, numlockx, dosfstools, ntfs-3g, sudo, psmisc"/>
-  <property name="fedora.depends" value="jfdesktop, jfbusserver, java-17-openjdk, xorg-x11-server-Xorg, xrandr, xset, plymouth, bluez, samba-winbind-clients, samba-client, wpa_supplicant, numlockx, dosfstools, ntfsprogs"/>
-  <property name="arch.depends" value="jfdesktop, jfbusserver, xorg-server, xorg-xrandr, xorg-xset, gvfs, bluez, libwbclient, smbclient, wpa_supplicant, numlockx, dosfstools, ntfs-3g"/> <!-- aur : plymouth -->
+  <property name="debian.depends" value="jfdesktop, jfbusserver, default-jre    , xserver-xorg        , x11-xserver-utils, null     , plymouth, gvfs, bluez, winbind              , smbclient   , wpasupplicant , numlockx, dosfstools, ntfs-3g, sudo, psmisc, libx11-dev"/>
+  <property name="fedora.depends" value="jfdesktop, jfbusserver, java-17-openjdk, xorg-x11-server-Xorg, xrandr           , xset     , plymouth, null, bluez, samba-winbind-clients, samba-client, wpa_supplicant, numlockx, dosfstools, ntfsprogs"/>
+  <property name="arch.depends"   value="jfdesktop, jfbusserver, null           , xorg-server         , xorg-xrandr      , xorg-xset, null    , gvfs, bluez, libwbclient          , smbclient   , wpa_supplicant, numlockx, dosfstools, ntfs-3g"/> <!-- aur : plymouth -->
 
   <import file="../../base.xml"/>
 
