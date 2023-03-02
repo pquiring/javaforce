@@ -146,6 +146,7 @@ public class GenPkgInfo {
     for(int a=0;a<list.length;a++) {
       String depend = list[a].trim();
       if (depend.length() == 0) continue;
+      if (depend.equals("null")) continue;
       depends.add(depend);
     }
     return depends.toArray(new String[0]);
