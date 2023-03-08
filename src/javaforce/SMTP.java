@@ -464,7 +464,7 @@ public class SMTP {
       }
       String body_html;
       {
-        FileInputStream fis = new FileInputStream(body_text_file);
+        FileInputStream fis = new FileInputStream(body_html_file);
         body_html = new String(JF.readAll(fis));
         fis.close();
       }
