@@ -13,6 +13,11 @@ import javax.crypto.spec.*;
  */
 public class SMTP {
 
+  public static class Attachment {
+    public String name;
+    public byte[] data;
+  }
+
   public SMTP() {
   }
   private Socket s;
@@ -23,6 +28,8 @@ public class SMTP {
   private String host;
   private ServerSocket active;  //active socket
   private boolean log = false;
+  private ArrayList<String> headers = new ArrayList<String>();
+
   public boolean debug = false;
   /**
    * Holds the repsonse strings from the last executed command
@@ -173,16 +180,34 @@ public class SMTP {
   public void from(String email) throws Exception {
     cmd("MAIL FROM:<" + email + ">");
     getResponse();
+    headers.add("From: <" + email + ">\r\n");
   }
 
   public void to(String email) throws Exception {
     cmd("RCPT TO:<" + email + ">");
     getResponse();
+    headers.add("To: <" + email + ">\r\n");
   }
 
-  public boolean data(String msg) throws Exception {
-    /*
-     sample data:
+  public void cc(String email) throws Exception {
+    cmd("RCPT TO:<" + email + ">");
+    getResponse();
+    headers.add("To: <" + email + ">\r\n");
+  }
+
+  public void bcc(String email) throws Exception {
+    cmd("RCPT TO:<" + email + ">");
+    getResponse();
+    //no headers for bcc
+  }
+
+  /** Sends a simple text message with headers included.
+   *
+   * The terminating \r\n.\r\n will be added.
+   *
+   * @param msg = email headers + blank line + message body
+
+   sample msg:
      From: "First Last" <bob@example.com>
      To: "First Last" <to@example.com>
      Cc: "First Last" <cc@example.com>
@@ -191,14 +216,118 @@ public class SMTP {
 
      Hello Bob,
      blah blah blah
-     make sure you don't have . (period) on a line by itself since that ends the message.
-     */
+   */
+  public boolean data(String msg) throws Exception {
     cmd("DATA");
     getResponse();
     if (!response[response.length - 1].startsWith("354")) {
       return false;
     }
     os.write(msg.getBytes());
+    os.write("\r\n.\r\n".getBytes());
+    getResponse();
+    if (!response[response.length - 1].startsWith("250")) {
+      return false;
+    }
+    return true;
+  }
+
+  /** Sets subject for email. */
+  public void subject(String subject) {
+    headers.add("Subject: " + subject + "\r\n");
+  }
+
+  /** Sets content type of body.
+   *
+   * ie: "text/plain" or "text/html"
+   *
+   * Default is unspecified.
+   *
+   */
+  public void setContentType(String type) {
+    headers.add("Content-Type: " + type + "\r\n");
+  }
+
+  /** Add date header to email.
+   *
+   */
+  public void addDate(Calendar date) {
+    headers.add("Date: " + date.toString() + "\r\n");
+  }
+
+  /** Add custom header to email. */
+  public void addHeader(String name, String value) {
+    headers.add(name + ": " + value + "\r\n");
+  }
+
+  //boundaries max 70 chars
+  private static final String boundary_mixed  = "javaforce_smtp__boundary_mixed";
+  private static final String boundary_alt    = "javaforce_smtp__boundary_alt";
+
+  /** Sends a message with optional attachments.
+   * Headers are automatically generated and MUST NOT be included in body.
+   * One or both of body_text, body_html MUST be supplied.
+   * @param body_text = body of message in TEXT format
+   * @param body_html = body of message in HTML format
+   * @param attachments = files to attach
+   */
+  public boolean data(String body_text, String body_html, ArrayList<Attachment> attachments) throws Exception {
+    StringBuilder full = new StringBuilder();
+    boolean has_attachments = attachments != null && attachments.size() > 0;
+    //headers
+    for(String header : headers) {
+      full.append(header);
+    }
+    full.append("Content-Type: multipart/mixed; boundary=" + boundary_mixed + "\r\n");
+    //blank line (end of headers)
+    full.append("\r\n");
+    full.append("This is a multipart MIME message");  //for older clients?
+    full.append("\r\n");
+    full.append("--" + boundary_mixed + "\r\n");
+    full.append("Content-Type: multipart/alternative; boundary=" + boundary_alt + "\r\n");
+    full.append("\r\n");
+    //no content in alt section
+    full.append("\r\n");
+    full.append("--" + boundary_alt + "\r\n");
+    //body (text)
+    //headers for body of multipart message
+    full.append("Content-Type: text/plain\r\n");
+    full.append("Content-Length: " + body_text.length() + "\r\n");
+    full.append("\r\n");
+    full.append(body_text);
+    full.append("--" + boundary_alt + "\r\n");
+    full.append("Content-Type: text/html\r\n");
+    full.append("Content-Length: " + body_html.length() + "\r\n");
+    full.append("\r\n");
+    full.append(body_html);
+    full.append("--" + boundary_alt + "--\r\n");  //end of alt section
+    full.append("\r\n");
+    if (has_attachments) {
+      //boundary
+      for(Attachment attach : attachments) {
+        full.append("--" + boundary_mixed + "\r\n");
+        //headers
+        full.append("Content-Type: application/octet-stream\r\n");
+        full.append("Content-Transfer-Encoding: base64\r\n");
+        full.append("Content-Disposition: attachment; filename=" + attach.name + ";\r\n");
+        full.append("Content-Length: " + attach.data.length + "\r\n");
+        //blank line
+        full.append("\r\n");
+        Base64 encoder = new Base64();
+        byte[] b64 = encoder.encode(attach.data);
+        String s64 = new String(b64, "UTF-8");
+        //content
+        full.append(s64);
+        full.append("\r\n");
+      }
+    }
+    full.append("--" + boundary_mixed + "--\r\n");  //end of mixed section
+    cmd("DATA");
+    getResponse();
+    if (!response[response.length - 1].startsWith("354")) {
+      return false;
+    }
+    os.write(full.toString().getBytes());
     os.write("\r\n.\r\n".getBytes());
     getResponse();
     if (!response[response.length - 1].startsWith("250")) {
@@ -238,29 +367,68 @@ public class SMTP {
     return in.substring(i1+1, i2);
   }
 
-  public static void main(String args[]) {
-    if (args.length < 2) {
-      System.out.println("Usage:SMTP server[:port] msg.txt [user pass [type]]");
-      System.out.println("  type=LOGIN(default) NTLM");
-      System.out.println("msg.txt sample:\r\n");
-      System.out.println("From: \"First Last\" <bob@example.com>");
-      System.out.println("To: \"First Last\" <to@example.com>");
-      System.out.println("Cc: \"First Last\" <cc@example.com>");
-      System.out.println("Date: Tue, 15 Jan 2008 16:02:43 -0500");
-      System.out.println("Subject: Subject line\r\n");
-      System.out.println("Hello Bob, ...");
+  private static void usage() {
+    System.out.println("Usage:SMTP --server=host[:port] --text=file --html=file --from=email --to=email --cc=email --bcc=email --subject=desc [--user=user] [--pass=pass] [--auth=type] [--file=filename]");
+    System.out.println("  to/cc/bcc can be repeated");
+    System.out.println("  type=LOGIN(default) NTLM");
+    System.exit(1);
+  }
+
+  public static void main(String[] args) {
+    if (args.length < 5) {
+      usage();
       return;
     }
     SMTP smtp = new SMTP();
     try {
-      String txt = new String(JF.readAll(new FileInputStream(args[1])));
-      txt = txt.replaceAll("\r", "");
-      String lns[] = txt.split("\n");
-      if (lns.length < 4) throw new Exception("file too short");
       smtp.setLogging(true);
       smtp.debug = true;
       int port = 25;
-      String host = args[0];
+      String host = null;
+      String body_text_file = null;
+      String body_html_file = null;
+      String from = null;
+      ArrayList<String> tos = new ArrayList<String>();
+      ArrayList<String> ccs = new ArrayList<String>();
+      ArrayList<String> bccs = new ArrayList<String>();
+      String subject = null;
+      String user = null;
+      String pass = null;
+      String auth = AUTH_LOGIN;
+      ArrayList<String> files = new ArrayList<String>();
+      for(String arg : args) {
+        if (!arg.startsWith("--")) continue;
+        int idx = arg.indexOf("=");
+        if (idx == -1) continue;
+        String key = arg.substring(2, idx);
+        String value = arg.substring(idx + 1);
+        switch (key) {
+          case "server": host = value; break;
+          case "text": body_text_file = value; break;
+          case "html": body_html_file = value; break;
+          case "from": from = value; break;
+          case "to": tos.add(value); break;
+          case "cc": ccs.add(value); break;
+          case "bcc": bccs.add(value); break;
+          case "subject": subject = value; break;
+          case "user": user = value; break;
+          case "pass": pass = value; break;
+          case "auth":
+            switch (value) {
+              case "LOGIN": auth = AUTH_LOGIN; break;
+              case "NTLM": auth = AUTH_NTLM; break;
+              default: System.out.println("auth not supported:" + value); System.exit(1); break;
+            }
+            break;
+          case "file": files.add(value); break;
+        }
+      }
+      if (host == null) usage();
+      if (from == null) usage();
+      if (tos.size() == 0) usage();
+      if (body_text_file == null && body_html_file == null) usage();
+      if (body_text_file == null) body_text_file = body_html_file;
+      if (body_html_file == null) body_html_file = body_text_file;
       int idx = host.indexOf(':');
       if (idx != -1) {
         port = JF.atoi(host.substring(idx+1));
@@ -273,28 +441,44 @@ public class SMTP {
         smtp.connectSSL(host, port);
       }
       smtp.login();
-      if (args.length >= 4) {
-        String auth_type = AUTH_LOGIN;
-        if (args.length == 5) {
-          switch (args[4]) {
-            case "LOGIN": auth_type = AUTH_LOGIN; break;
-            case "NTLM": auth_type = AUTH_NTLM; break;
-          }
-        }
-        if (!smtp.auth(args[2], args[3], auth_type)) {
+      if (user != null && pass != null) {
+        if (!smtp.auth(args[2], args[3], auth)) {
           throw new Exception("Login failed!");
         }
       }
-      smtp.from(extractEmail(lns[0]));
-      for(int a=1;a<lns.length;a++) {
-        String ln = lns[a].toLowerCase();
-        if (ln.startsWith("to:") || ln.startsWith("cc:") || ln.startsWith("bcc:")) {
-          smtp.to(extractEmail(lns[a]));
-        } else {
-          break;
-        }
+      smtp.from(from);
+      for(String to : tos) {
+        smtp.to(to);
       }
-      smtp.data(txt);
+      for(String cc : ccs) {
+        smtp.cc(cc);
+      }
+      for(String bcc : bccs) {
+        smtp.bcc(bcc);
+      }
+      String body_text;
+      {
+        FileInputStream fis = new FileInputStream(body_text_file);
+        body_text = new String(JF.readAll(fis));
+        fis.close();
+      }
+      String body_html;
+      {
+        FileInputStream fis = new FileInputStream(body_text_file);
+        body_html = new String(JF.readAll(fis));
+        fis.close();
+      }
+      ArrayList<Attachment> attachments = new ArrayList<Attachment>();
+      for(String file : files) {
+        Attachment attach = new Attachment();
+        attach.name = file;
+        FileInputStream fis = new FileInputStream(file);
+        attach.data = JF.readAll(fis);
+        fis.close();
+        attachments.add(attach);
+      }
+      smtp.subject(subject);
+      smtp.data(body_text, body_html, attachments);
       System.out.println("Reply=" + smtp.getLastResponse());
       smtp.disconnect();
     } catch (Exception e) {

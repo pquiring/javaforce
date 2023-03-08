@@ -85,7 +85,6 @@ public class Base64 {
   }
 
   private static final class Buffer {
-
     byte buf[];
     int pos;
   }
