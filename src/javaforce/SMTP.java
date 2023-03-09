@@ -288,18 +288,20 @@ public class SMTP {
     full.append("\r\n");
     //no content in alt section
     full.append("\r\n");
-    full.append("--" + boundary_alt + "\r\n");
-    //body (text)
-    //headers for body of multipart message
-    full.append("Content-Type: text/plain\r\n");
-    full.append("Content-Length: " + body_text.length() + "\r\n");
-    full.append("\r\n");
-    full.append(body_text);
-    full.append("--" + boundary_alt + "\r\n");
-    full.append("Content-Type: text/html\r\n");
-    full.append("Content-Length: " + body_html.length() + "\r\n");
-    full.append("\r\n");
-    full.append(body_html);
+    if (body_text != null) {
+      full.append("--" + boundary_alt + "\r\n");
+      full.append("Content-Type: text/plain\r\n");
+      full.append("Content-Length: " + body_text.length() + "\r\n");
+      full.append("\r\n");
+      full.append(body_text);
+    }
+    if (body_html != null) {
+      full.append("--" + boundary_alt + "\r\n");
+      full.append("Content-Type: text/html\r\n");
+      full.append("Content-Length: " + body_html.length() + "\r\n");
+      full.append("\r\n");
+      full.append(body_html);
+    }
     full.append("--" + boundary_alt + "--\r\n");  //end of alt section
     full.append("\r\n");
     if (has_attachments) {
@@ -427,8 +429,6 @@ public class SMTP {
       if (from == null) usage();
       if (tos.size() == 0) usage();
       if (body_text_file == null && body_html_file == null) usage();
-      if (body_text_file == null) body_text_file = body_html_file;
-      if (body_html_file == null) body_html_file = body_text_file;
       int idx = host.indexOf(':');
       if (idx != -1) {
         port = JF.atoi(host.substring(idx+1));
@@ -456,14 +456,14 @@ public class SMTP {
       for(String bcc : bccs) {
         smtp.bcc(bcc);
       }
-      String body_text;
-      {
+      String body_text = null;
+      if (body_text_file != null) {
         FileInputStream fis = new FileInputStream(body_text_file);
         body_text = new String(JF.readAll(fis));
         fis.close();
       }
-      String body_html;
-      {
+      String body_html = null;
+      if (body_html_file != null) {
         FileInputStream fis = new FileInputStream(body_html_file);
         body_html = new String(JF.readAll(fis));
         fis.close();
