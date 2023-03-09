@@ -371,7 +371,7 @@ public class SMTP {
 
   private static void usage() {
     System.out.println("Usage:SMTP --server=host[:port] --text=file --html=file --from=email --to=email --cc=email --bcc=email --subject=desc [--user=user] [--pass=pass] [--auth=type] [--file=filename]");
-    System.out.println("  to/cc/bcc can be repeated");
+    System.out.println("  to,cc,bcc,file options can be repeated");
     System.out.println("  type=LOGIN(default) NTLM");
     System.exit(1);
   }
