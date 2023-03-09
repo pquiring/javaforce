@@ -311,7 +311,7 @@ public class SMTP {
         //headers
         full.append("Content-Type: application/octet-stream\r\n");
         full.append("Content-Transfer-Encoding: base64\r\n");
-        full.append("Content-Disposition: attachment; filename=" + attach.name + ";\r\n");
+        full.append("Content-Disposition: attachment; filename=\"" + attach.name + "\";\r\n");
         full.append("Content-Length: " + attach.data.length + "\r\n");
         //blank line
         full.append("\r\n");
