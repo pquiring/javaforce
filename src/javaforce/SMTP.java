@@ -94,6 +94,7 @@ public class SMTP {
     s = null;
     is = null;
     os = null;
+    headers.clear();
   }
 
   public void setLogging(boolean state) {
@@ -271,9 +272,9 @@ public class SMTP {
    * @param body_html = body of message in HTML format
    * @param attachments = files to attach
    */
-  public boolean data(String body_text, String body_html, ArrayList<Attachment> attachments) throws Exception {
+  public boolean data(String body_text, String body_html, Attachment[] attachments) throws Exception {
     StringBuilder full = new StringBuilder();
-    boolean has_attachments = attachments != null && attachments.size() > 0;
+    boolean has_attachments = attachments != null && attachments.length > 0;
     //headers
     for(String header : headers) {
       full.append(header);
@@ -478,7 +479,7 @@ public class SMTP {
         attachments.add(attach);
       }
       smtp.subject(subject);
-      smtp.data(body_text, body_html, attachments);
+      smtp.data(body_text, body_html, attachments.toArray(new Attachment[0]));
       System.out.println("Reply=" + smtp.getLastResponse());
       smtp.disconnect();
     } catch (Exception e) {
