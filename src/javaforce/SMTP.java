@@ -312,7 +312,7 @@ public class SMTP {
         //headers
         full.append("Content-Type: application/octet-stream\r\n");
         full.append("Content-Transfer-Encoding: base64\r\n");
-        full.append("Content-Disposition: attachment; filename=\"" + attach.name + "\";\r\n");
+        full.append("Content-Disposition: attachment; filename=\"" + fileName(attach.name) + "\";\r\n");
         full.append("Content-Length: " + attach.data.length + "\r\n");
         //blank line
         full.append("\r\n");
@@ -368,6 +368,15 @@ public class SMTP {
     int i1 = in.indexOf('<');
     int i2 = in.indexOf('>');
     return in.substring(i1+1, i2);
+  }
+
+  private static String fileName(String full) {
+    int idx;
+    idx = full.lastIndexOf('/');
+    if (idx != -1) return full.substring(idx+1);
+    idx = full.lastIndexOf('\\');
+    if (idx != -1) return full.substring(idx+1);
+    return full;
   }
 
   private static void usage() {
@@ -472,7 +481,7 @@ public class SMTP {
       ArrayList<Attachment> attachments = new ArrayList<Attachment>();
       for(String file : files) {
         Attachment attach = new Attachment();
-        attach.name = file;
+        attach.name = fileName(file);
         FileInputStream fis = new FileInputStream(file);
         attach.data = JF.readAll(fis);
         fis.close();
