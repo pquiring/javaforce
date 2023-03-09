@@ -217,25 +217,6 @@ int InvokeMethod(char *_method, jobject args, char *sign) {
   return 1;
 }
 
-char* DetectGC() {
-  //detects best GC to use : Shenandoah or Zero
-  //Zero requires VirtualAlloc2 from kernelbase.dll (1803 or better)
-  HMODULE dll = NULL;
-  dll = LoadLibrary("kernelbase.dll");
-  void* func = GetProcAddress(dll, "VirtualAlloc2");
-  FreeLibrary(dll);
-  if (func == NULL) {
-    func = GetProcAddress(jvm_dll, "??_7VM_ShenandoahFullGC@@6B@");
-    if (func == NULL) {
-      return (char*)"-XX:+UseG1GC";  //default
-    } else {
-      return (char*)"-XX:+UseShenandoahGC";
-    }
-  } else {
-    return (char*)"-XX:+UseZGC";
-  }
-}
-
 char* MakeString(char* fmt, char* path) {
   int len = strlen(fmt) - 2 + strlen(path) + 1;
   char* str = (char*)malloc(len);
@@ -256,7 +237,6 @@ JavaVMInitArgs *BuildArgs() {
     opts[nOpts++] = MakeString("-Djava.home=%s", exepath);
   } else {
     opts[nOpts++] = CreateClassPath();
-    opts[nOpts++] = DetectGC();
   } 
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
