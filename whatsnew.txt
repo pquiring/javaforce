@@ -1,5 +1,9 @@
 What's new...
 
+Mar 9/2023 : JF/38.2
+  - javaforce.SMTP client now supports text/html alternatives and email attachments
+    - if you were using the CLI you will have to change your parameters
+
 Mar 1/2023 : JF/38.1
   - jfLinux now fully supports ArchLinux
     - Go Canada!
