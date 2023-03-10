@@ -163,7 +163,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     create_list = new javax.swing.JButton();
     list_name = new javax.swing.JTextField();
     jLabel5 = new javax.swing.JLabel();
-    selected_list = new javax.swing.JComboBox();
+    selected_list = new javax.swing.JComboBox<>();
     reset_list = new javax.swing.JButton();
     delete_list = new javax.swing.JButton();
     export_list = new javax.swing.JButton();
@@ -1568,7 +1568,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
   private javax.swing.JButton reset_list;
   private javax.swing.JButton save_setup;
   private javax.swing.JButton select_file;
-  private javax.swing.JComboBox selected_list;
+  private javax.swing.JComboBox<String> selected_list;
   private javax.swing.JTextField silence_duration;
   private javax.swing.JTextField silence_threshold;
   private javax.swing.JRadioButton single;
@@ -1802,7 +1802,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       e = data[y][0];
       al.add(e);
     }
-    selected_list.setModel(new DefaultComboBoxModel(al.toArray()));
+    selected_list.setModel(new DefaultComboBoxModel<String>(al.toArray(new String[0])));
 //    selectedList.setSelectedIndex(0);
     updateList();
   }
