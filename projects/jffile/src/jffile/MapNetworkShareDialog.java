@@ -48,7 +48,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
     share = new javax.swing.JTextField();
     jPanel1 = new javax.swing.JPanel();
     mapWineDrive = new javax.swing.JCheckBox();
-    wineDrive = new javax.swing.JComboBox();
+    wineDrive = new javax.swing.JComboBox<>();
     accept = new javax.swing.JButton();
     cancel = new javax.swing.JButton();
     jLabel3 = new javax.swing.JLabel();
@@ -241,7 +241,7 @@ public class MapNetworkShareDialog extends javax.swing.JDialog {
   private javax.swing.JTextField server;
   private javax.swing.JTextField share;
   private javax.swing.JTextField username;
-  private javax.swing.JComboBox wineDrive;
+  private javax.swing.JComboBox<String> wineDrive;
   // End of variables declaration//GEN-END:variables
 
   private JBusClient jbusClient;

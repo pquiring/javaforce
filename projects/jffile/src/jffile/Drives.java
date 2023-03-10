@@ -171,7 +171,7 @@ public class Drives extends javax.swing.JDialog {
   private javax.swing.JButton umount;
   // End of variables declaration//GEN-END:variables
 
-  private DefaultListModel model = new DefaultListModel();
+  private DefaultListModel<String> model = new DefaultListModel<>();
   private ArrayList<String> devList = new ArrayList<String>();
   private JBusClient jbusClient;
 

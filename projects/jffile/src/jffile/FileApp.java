@@ -714,7 +714,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
 
   private SiteDetails localSite;
   private static String[] args;
-  private DefaultListModel model = new DefaultListModel();
+  private DefaultListModel<String> model = new DefaultListModel<>();
   public static JBusClient jbusClient;
   public static FileApp This;
   private Drives drives;

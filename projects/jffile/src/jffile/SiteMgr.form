@@ -142,7 +142,7 @@
                                       <Component id="tPort" max="32767" attributes="1"/>
                                   </Group>
                                   <Component id="tHost" alignment="0" max="32767" attributes="1"/>
-                                  <Component id="tName" alignment="0" pref="155" max="32767" attributes="1"/>
+                                  <Component id="tName" alignment="0" max="32767" attributes="1"/>
                               </Group>
                           </Group>
                           <EmptySpace pref="30" max="32767" attributes="0"/>
@@ -222,6 +222,9 @@
           <Events>
             <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="cbProtocolItemStateChanged"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+          </AuxValues>
         </Component>
         <Component class="javax.swing.JLabel" name="lPort">
           <Properties>

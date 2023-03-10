@@ -43,7 +43,7 @@ public class SiteMgr extends javax.swing.JDialog {
     lHost = new javax.swing.JLabel();
     tHost = new javax.swing.JTextField();
     lProtocol = new javax.swing.JLabel();
-    cbProtocol = new javax.swing.JComboBox();
+    cbProtocol = new javax.swing.JComboBox<>();
     lPort = new javax.swing.JLabel();
     tPort = new javax.swing.JTextField();
     lUsername = new javax.swing.JLabel();
@@ -110,7 +110,7 @@ public class SiteMgr extends javax.swing.JDialog {
 
     lProtocol.setText("Protocol");
 
-    cbProtocol.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "FTP (21)", "FTPS (990)", "SFTP (22)" }));
+    cbProtocol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "FTP (21)", "FTPS (990)", "SFTP (22)" }));
     cbProtocol.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         cbProtocolItemStateChanged(evt);
@@ -183,7 +183,7 @@ public class SiteMgr extends javax.swing.JDialog {
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(tPort))
                 .addComponent(tHost, javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(tName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)))
+                .addComponent(tName, javax.swing.GroupLayout.Alignment.LEADING)))
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)))
         .addContainerGap())
     );
@@ -434,7 +434,7 @@ public class SiteMgr extends javax.swing.JDialog {
   private javax.swing.JButton bNewFolder;
   private javax.swing.JButton bNewSite;
   private javax.swing.JButton bSave;
-  private javax.swing.JComboBox cbProtocol;
+  private javax.swing.JComboBox<String> cbProtocol;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel lHost;
