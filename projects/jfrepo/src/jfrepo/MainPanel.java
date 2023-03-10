@@ -69,14 +69,14 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   private void initComponents() {
 
     jLabel1 = new javax.swing.JLabel();
-    protocol = new javax.swing.JComboBox();
+    protocol = new javax.swing.JComboBox<>();
     choose = new javax.swing.JButton();
     map = new javax.swing.JPanel();
-    selection = new javax.swing.JComboBox();
+    selection = new javax.swing.JComboBox<>();
 
     jLabel1.setText("Protocol");
 
-    protocol.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "HTTP", "FTP", "RSYNC" }));
+    protocol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "HTTP", "FTP", "RSYNC" }));
 
     choose.setText("Choose Server");
     choose.addActionListener(new java.awt.event.ActionListener() {
@@ -130,8 +130,8 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   private javax.swing.JButton choose;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JPanel map;
-  private javax.swing.JComboBox protocol;
-  private javax.swing.JComboBox selection;
+  private javax.swing.JComboBox<String> protocol;
+  private javax.swing.JComboBox<Mirror> selection;
   // End of variables declaration//GEN-END:variables
 
   private class Mirror {
