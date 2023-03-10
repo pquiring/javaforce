@@ -74,7 +74,7 @@ public class Config implements Serializable {
       FileInputStream fis = new FileInputStream(Paths.dataPath + "/config.dat");
       ObjectInputStream ois = new ObjectInputStream(fis);
       current = (Config)ois.readObject();
-      current.hosts = new ArrayList();
+      current.hosts = new ArrayList<>();
       if (current.email_type == null) {
         current.email_type = SMTP.AUTH_LOGIN;
       }

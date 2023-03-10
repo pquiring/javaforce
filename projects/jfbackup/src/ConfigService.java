@@ -980,8 +980,8 @@ public class ConfigService implements WebUIHandler {
         return name.endsWith(".nfo");
       }
     });
-    Arrays.sort(files, new Comparator() {
-      public int compare(Object o1, Object o2) {
+    Arrays.sort(files, new Comparator<File>() {
+      public int compare(File o1, File o2) {
         File f1 = (File)o1;
         File f2 = (File)o2;
         if (f1.lastModified() < f2.lastModified()) return 1;
@@ -1119,7 +1119,7 @@ public class ConfigService implements WebUIHandler {
 
     if (ri == null) {
       ri = new RestoreInfo();
-      stack = new Stack();
+      stack = new Stack<>();
     }
     Label selected = new Label("...");
     updateSelected(selected);
@@ -1136,7 +1136,7 @@ public class ConfigService implements WebUIHandler {
           Panel panel2 = new Panel();
           Row row;
           ri = new RestoreInfo();
-          stack = new Stack();
+          stack = new Stack<>();
           cat = Catalog.load(catinfo.backup);
           if (cat == null || cat.backup != catinfo.backup) {
             row = new Row();

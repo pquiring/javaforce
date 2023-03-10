@@ -22,7 +22,7 @@ public class RestoreJob extends Thread {
   private RestoreInfo info;
   private Catalog cat;
   private CatalogInfo catInfo;
-  private ArrayList<String> tapes = new ArrayList();
+  private ArrayList<String> tapes = new ArrayList<>();
   private EntryVolume currentVolume;
   private EntryFolder currentFolder;
   private EntryTape currentTape;
