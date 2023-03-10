@@ -29,6 +29,9 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   public jfhex() {
     initComponents();
     initApp();
+    //allow TAB usage by disabling key binding to focus traversal
+    tabs.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+    tabs.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
   }
 
   /** This method is called from within the constructor to
@@ -53,7 +56,6 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     tabs.addChangeListener(formListener);
     tabs.addKeyListener(formListener);
 
-    jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
     status.setText("...");

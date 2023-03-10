@@ -421,7 +421,7 @@ public class Hex extends JComponent implements KeyListener/*, MouseListener*/ {
         case KeyEvent.VK_RIGHT: move(1, 0, false); e.consume(); break;
         case KeyEvent.VK_PAGE_UP: move(0, -16, false); e.consume(); break;
         case KeyEvent.VK_PAGE_DOWN: move(0, 16, false); e.consume(); break;
-        case KeyEvent.VK_SPACE: switchSide(); e.consume(); break;
+        case KeyEvent.VK_TAB: switchSide(); e.consume(); break;
         case KeyEvent.VK_INSERT: switchInsertMode(); break;
         case KeyEvent.VK_DELETE: {
           if (selectStart != -1) {
@@ -447,6 +447,7 @@ public class Hex extends JComponent implements KeyListener/*, MouseListener*/ {
     char key = e.getKeyChar();
     switch (key) {
       case 8:  //backspace
+      case 9:  //tab
       case 0x7f:  //delete
         return;
     }

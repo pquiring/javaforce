@@ -436,13 +436,11 @@ public class Hex extends JComponent implements KeyListener {
     char key = e.getKeyChar();
     switch (key) {
       case 8:  //backspace
+      case 9:  //tab
       case 0x7f:  //delete
         return;
     }
     if (selectStart != -1) delete();
     if (insertMode) insert(key); else overwrite(key);
   }
-//override isManagingFocus - this allows TAB to be processed (only when there is one tab)
-//WARNING : this member is deprecated - need to find a better way
-  public boolean isManagingFocus() {return true;}
 }

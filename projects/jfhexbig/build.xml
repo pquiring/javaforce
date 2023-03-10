@@ -27,6 +27,7 @@
     <mkdir dir="${build}"/>
     <javac srcdir="${src}" destdir="${build}" target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false">
       <classpath path="${classpath}"/>
+      <compilerarg value="-Xlint:deprecation"/>
     </javac>
   </target>
 
