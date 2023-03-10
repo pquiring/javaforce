@@ -28,7 +28,8 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   /** Creates new form jfedit */
   public JEdit() {
     initComponents();
-    folder.setModel(new DefaultListModel());
+    model = new DefaultListModel<>();
+    folder.setModel(model);
     initApp();
     JFImage icon = new JFImage();
     icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfedit.png"));
@@ -268,6 +269,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private boolean projectOpen;
   private boolean projectExists;
   private boolean projectActive;
+  private DefaultListModel<String> model;
   //new vars here
 
   private void initApp() {
@@ -1118,7 +1120,6 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   }
 
   private void listProjectFiles() {
-    DefaultListModel model = (DefaultListModel)folder.getModel();
     model.clear();
     File[] files = new File(".").listFiles();
     for(File file : files) {

@@ -19,7 +19,8 @@ public class EditProject extends javax.swing.JDialog {
     setTitle("Edit Project");
     setComponentOrientation(((parent == null) ? javax.swing.JOptionPane.getRootFrame() : parent).getComponentOrientation());
     if (parent != null) setLocationRelativeTo(parent);
-    files.setModel(new DefaultListModel());
+    model = new DefaultListModel<String>();
+    files.setModel(model);
     load();
     JFAWT.assignHotKey(this, bOk, java.awt.event.KeyEvent.VK_ENTER);
     JFAWT.assignHotKey(this, bCancel, java.awt.event.KeyEvent.VK_ESCAPE);
@@ -140,7 +141,9 @@ public class EditProject extends javax.swing.JDialog {
   private javax.swing.JButton remove;
   // End of variables declaration//GEN-END:variables
 
-  Project project;
+  private Project project;
+  private DefaultListModel<String> model;
+
 
   public static void editProject(java.awt.Frame parent, Project project) {
     EditProject dialog = new EditProject(parent, true, project);
@@ -148,7 +151,6 @@ public class EditProject extends javax.swing.JDialog {
   }
 
   private void load() {
-    DefaultListModel model = (DefaultListModel)files.getModel();
     int count = project.fileMasks.size();
     model.clear();
     for(int idx=0;idx<count;idx++) {
@@ -161,7 +163,6 @@ public class EditProject extends javax.swing.JDialog {
 
   private void save() {
     project.fileMasks.clear();
-    DefaultListModel model = (DefaultListModel)files.getModel();
     int count = model.getSize();
     if (count == 0) {
       model.addElement("*.txt");
@@ -176,7 +177,6 @@ public class EditProject extends javax.swing.JDialog {
   private void add() {
     String str = JFAWT.getString("Enter filemask", "");
     if (str == null) return;
-    DefaultListModel model = (DefaultListModel)files.getModel();
     int count = model.getSize();
     for(int idx=0;idx<count;idx++) {
       String e = (String)model.getElementAt(idx);
