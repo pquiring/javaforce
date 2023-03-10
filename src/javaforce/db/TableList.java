@@ -63,18 +63,18 @@ public class TableList<ROW extends Row> extends SerialObject {
     }
   }
 
-  public Table get(int id) {
+  public Table<ROW> get(int id) {
     int cnt = tables.size();
     for(int a=0;a<cnt;a++) {
-      Table table = tables.get(a);
+      Table<ROW> table = tables.get(a);
       if (table.id == id) return table;
     }
     return null;
   }
-  public Table get(String name) {
+  public Table<ROW> get(String name) {
     int cnt = tables.size();
     for(int a=0;a<cnt;a++) {
-      Table table = tables.get(a);
+      Table<ROW> table = tables.get(a);
       if (table.name.equals(name)) return table;
     }
     JFLog.log("Error:Table not found:" + name);

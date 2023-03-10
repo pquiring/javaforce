@@ -204,7 +204,7 @@ public class Database {
 
   private static void create() {
     JFLog.log("Database create...");
-    Table list;
+    Table<ListRow> list;
     addUser("admin", "admin");
     addUser("oper", "oper");
     //create default config
@@ -373,7 +373,7 @@ public class Database {
 
     //create panels
     int id = addPanel("jfc_login", true, true);
-    Table celltable = addCellTable("jfc_login", id);
+    Table<CellRow> celltable = addCellTable("jfc_login", id);
     celltable.add(new CellRow(id,0,0,3,1,"label", "", "Username:"));
     celltable.add(new CellRow(id,4,0,3,1,"textfield", "user", ""));
     celltable.add(new CellRow(id,0,2,3,1,"label", "", "Password:"));
@@ -681,7 +681,7 @@ public class Database {
 
   private static void create_main_menu(int id) {
     deleteCellTableById(id);
-    Table celltable = addCellTable("jfc_menu", id);
+    Table<CellRow> celltable = addCellTable("jfc_menu", id);
     celltable.add(new CellRow(id,0,0,3,1,"button","","Main Panel").setFuncArg("setPanel","Main"));
     celltable.add(new CellRow(id,0,1,3,1,"button","","Controllers").setFuncArg("setPanel","jfc_controllers"));
     celltable.add(new CellRow(id,0,2,3,1,"button","","Tags").setFuncArg("jfc_ctrl_tags","1"));
@@ -706,7 +706,7 @@ public class Database {
   }
 
   private static void create_vision_system() {
-    Table celltable;
+    Table<CellRow> celltable;
     int id;
 
     id = addPanel("jfc_vision_cameras", false, true);
@@ -850,13 +850,13 @@ public class Database {
     users.save();
   }
 
-  public static Table addList(String name) {
-    Table list = new Table(() -> {return new ListRow();});
+  public static Table<ListRow> addList(String name) {
+    Table<ListRow> list = new Table<>(() -> {return new ListRow();});
     list.name = name;
     lists.add(list);
     return list;
   }
-  public static Table getList(String name) {
+  public static Table<ListRow> getList(String name) {
     return lists.get(name);
   }
 
@@ -907,7 +907,7 @@ public class Database {
     String match = ",c" + cid + "#";
     ArrayList<Table<BlockRow>> tables = blocks.getTables();
     for(int t=0;t<tables.size();t++) {
-      Table table = tables.get(t);
+      Table<BlockRow> table = tables.get(t);
       ArrayList<BlockRow> blockRows = table.getRows();
       for(int r=0;r<blockRows.size();r++) {
         BlockRow row = (BlockRow)blockRows.get(r);
@@ -1077,7 +1077,7 @@ public class Database {
     String match2 = "," + name + ",";  //cid == 0 only
     ArrayList<Table<BlockRow>> tables = blocks.getTables();
     for(int t=0;t<tables.size();t++) {
-      Table table = tables.get(t);
+      Table<BlockRow> table = tables.get(t);
       ArrayList<BlockRow> blockRows = table.getRows();
       for(int r=0;r<blockRows.size();r++) {
         BlockRow row = (BlockRow)blockRows.get(r);
@@ -1146,8 +1146,8 @@ public class Database {
     ArrayList<Integer> pids = new ArrayList<Integer>();
     ArrayList<Table<CellRow>> tables = cells.getTables();
     for(int t=0;t<tables.size();t++) {
-      Table table = tables.get(t);
-      ArrayList<Row> cellRows = table.getRows();
+      Table<CellRow> table = tables.get(t);
+      ArrayList<CellRow> cellRows = table.getRows();
       for(int r=0;r<cellRows.size();r++) {
         CellRow row = (CellRow)cellRows.get(r);
         int pid = row.pid;
@@ -1173,18 +1173,18 @@ public class Database {
     return panels.toArray(new PanelRow[0]);
   }
 
-  public static Table addCellTable(String name, int pid) {
-    Table table = new Table(() -> {return new CellRow();});
+  public static Table<CellRow> addCellTable(String name, int pid) {
+    Table<CellRow> table = new Table<>(() -> {return new CellRow();});
     table.name = name;
     table.xid = pid;
     cells.add(table);
     table.save();
     return table;
   }
-  public static Table getCellTableById(int pid) {
+  public static Table<CellRow> getCellTableById(int pid) {
     ArrayList<Table<CellRow>> tables = cells.getTables();
     for(int a=0;a<tables.size();a++) {
-      Table table = tables.get(a);
+      Table<CellRow> table = tables.get(a);
       if (table.xid == pid) return table;
     }
     return null;
@@ -1203,8 +1203,8 @@ public class Database {
     return table.getRows().toArray(new CellRow[0]);
   }
   public static CellRow getCell(int pid, int x, int y) {
-    Table table = getCellTableById(pid);
-    ArrayList<Row> rows = table.getRows();
+    Table<CellRow> table = getCellTableById(pid);
+    ArrayList<CellRow> rows = table.getRows();
     for(int r=0;r<rows.size();r++) {
       CellRow cell = (CellRow)rows.get(r);
       if (
@@ -1222,8 +1222,8 @@ public class Database {
   public static void deleteCell(int pid, int x, int y) {
     PanelRow panel = getPanelById(pid);
     String name = panel.name;
-    Table table = cells.get(name);
-    ArrayList<Row> rows = table.getRows();
+    Table<CellRow> table = cells.get(name);
+    ArrayList<CellRow> rows = table.getRows();
     for(int r=0;r<rows.size();r++) {
       CellRow cell = (CellRow)rows.get(r);
       if (cell.x == x && cell.y == y) {
@@ -1241,11 +1241,11 @@ public class Database {
     func.comment = "";
     funcs.add(func);
     funcs.save();
-    Table rungsTable = new Table(() -> {return new RungRow();});
+    Table<RungRow> rungsTable = new Table<>(() -> {return new RungRow();});
     rungsTable.xid = func.id;
     rungs.add(rungsTable);
     rungsTable.save();
-    Table blocksTable = new Table(() -> {return new BlockRow();});
+    Table<BlockRow> blocksTable = new Table<>(() -> {return new BlockRow();});
     blocksTable.xid = func.id;
     blocks.add(blocksTable);
     blocksTable.save();
@@ -1277,8 +1277,8 @@ public class Database {
     String tags = "," + func.name + ",";
     ArrayList<Table<BlockRow>> tables = blocks.getTables();
     for(int t=0;t<tables.size();t++) {
-      Table table = tables.get(t);
-      ArrayList<Row> blockRows = table.getRows();
+      Table<BlockRow> table = tables.get(t);
+      ArrayList<BlockRow> blockRows = table.getRows();
       for(int r=0;r<blockRows.size();r++) {
         BlockRow row = (BlockRow)blockRows.get(r);
         if (row.name.equals("CALL") && row.tags.equals(tags)) return true;
@@ -1328,15 +1328,15 @@ public class Database {
     rung.logic = logic;
     rung.comment = comment;
     int xid = getRungId(fid);
-    Table table = rungs.get(xid);
+    Table<RungRow> table = rungs.get(xid);
     table.add(rung);
     table.save();
     saveBlocksById(fid);
   }
   public static RungRow getRungById(int fid, int rid) {
     int xid = getRungId(fid);
-    Table table = rungs.get(xid);
-    ArrayList<Row> rows = table.getRows();
+    Table<RungRow> table = rungs.get(xid);
+    ArrayList<RungRow> rows = table.getRows();
     for(int r=0;r<rows.size();r++) {
       RungRow rung = (RungRow)rows.get(r);
       if (rung.rid == rid) return rung;
@@ -1391,9 +1391,9 @@ public class Database {
   public static void deleteRungById(int fid, int rid) {
     int xid = getRungId(fid);
     {
-      Table table = rungs.get(xid);
+      Table<RungRow> table = rungs.get(xid);
       int id = -1;
-      ArrayList<Row> rows = table.getRows();
+      ArrayList<RungRow> rows = table.getRows();
       for(int r=0;r<rows.size();r++) {
         RungRow rung = (RungRow)rows.get(r);
         if (rung.rid == rid) {
@@ -1406,8 +1406,8 @@ public class Database {
       table.save();
     }
     {
-      Table table = blocks.get(xid);
-      ArrayList<Row> rows = table.getRows();
+      Table<BlockRow> table = blocks.get(xid);
+      ArrayList<BlockRow> rows = table.getRows();
       for(int r=0;r<rows.size();) {
         BlockRow blk = (BlockRow)rows.get(r);
         if (blk.rid == rid) {
@@ -1443,15 +1443,15 @@ public class Database {
     block.bid = bid;
     block.name = name;
     block.tags = tags;
-    Table table = blocks.get(xid);
+    Table<BlockRow> table = blocks.get(xid);
     table.add(block);
     table.save();
   }
   public static BlockRow[] getRungBlocksById(int fid, int rid) {
     int xid = getBlockId(fid);
-    Table table = blocks.get(xid);
-    ArrayList<Row> rows = table.getRows();
-    ArrayList<Row> ret = new ArrayList<Row>();
+    Table<BlockRow> table = blocks.get(xid);
+    ArrayList<BlockRow> rows = table.getRows();
+    ArrayList<BlockRow> ret = new ArrayList<>();
     for(int r=0;r<rows.size();r++) {
       BlockRow row = (BlockRow)rows.get(r);
       if (row.rid == rid) {
@@ -1472,8 +1472,8 @@ public class Database {
       String match5 = ",tc0#" + tag.name + "[";
       String match6 = ",tc0#" + tag.name + ".";
       for(int t=0;t<tables.size();t++) {
-        Table table = tables.get(t);
-        ArrayList<Row> blockRows = table.getRows();
+        Table<BlockRow> table = tables.get(t);
+        ArrayList<BlockRow> blockRows = table.getRows();
         for(int r=0;r<blockRows.size();r++) {
           BlockRow row = (BlockRow)blockRows.get(r);
           String tags = row.tags;
@@ -1502,8 +1502,8 @@ public class Database {
       String match2 = ",tc" + tag.cid + "#" + tag.name + "[";
       String match3 = ",tc" + tag.cid + "#" + tag.name + ".";
       for(int t=0;t<tables.size();t++) {
-        Table table = tables.get(t);
-        ArrayList<Row> blockRows = table.getRows();
+        Table<BlockRow> table = tables.get(t);
+        ArrayList<BlockRow> blockRows = table.getRows();
         for(int r=0;r<blockRows.size();r++) {
           BlockRow row = (BlockRow)blockRows.get(r);
           String tags = row.tags;
@@ -1534,8 +1534,8 @@ public class Database {
   }
   public static void clearBlocksById(int fid, int rid) {
     int xid = getBlockId(fid);
-    Table table = blocks.get(xid);
-    ArrayList<Row> rows = table.getRows();
+    Table<BlockRow> table = blocks.get(xid);
+    ArrayList<BlockRow> rows = table.getRows();
     for(int a=0;a<rows.size();) {
       BlockRow row = (BlockRow)rows.get(a);
       if (row.rid == rid) {
@@ -1548,9 +1548,9 @@ public class Database {
   }
   public static void deleteRungBlocksById(int fid, int rid) {
     int xid = getBlockId(fid);
-    Table table = blocks.get(xid);
-    ArrayList<Row> rows = table.getRows();
-    ArrayList<Row> ret = new ArrayList<Row>();
+    Table<BlockRow> table = blocks.get(xid);
+    ArrayList<BlockRow> rows = table.getRows();
+    ArrayList<BlockRow> ret = new ArrayList<>();
     for(int r=0;r<rows.size();) {
       BlockRow row = (BlockRow)rows.get(r);
       if (row.rid == rid) {
@@ -1563,7 +1563,7 @@ public class Database {
   }
 
   public static void addWatchTable(String name) {
-    Table table = new Table(() -> {return new WatchRow();});
+    Table<WatchRow> table = new Table<>(() -> {return new WatchRow();});
     table.name = name;
     watches.add(table);
   }
@@ -1571,7 +1571,7 @@ public class Database {
     watches.remove(wid);
   }
   public static void addWatchTag(int wid, String tag) {
-    Table table = watches.get(wid);
+    Table<WatchRow> table = watches.get(wid);
     WatchRow row = new WatchRow();
     row.tag = tag;
     table.add(row);
@@ -1817,12 +1817,10 @@ public class Database {
   }
 
   public static boolean update(String tableName, String id, String col, String value, String type) {
-    Table table = null;
-    TableList tablelist = null;
     switch (tableName) {
       case "config": {
-        table = config;
-        ArrayList<Row> rows = table.getRows();
+        Table<ConfigRow> table = config;
+        ArrayList<ConfigRow> rows = table.getRows();
         int cnt = rows.size();
         for(int a=0;a<cnt;a++) {
           ConfigRow row = (ConfigRow)rows.get(a);
@@ -1835,8 +1833,8 @@ public class Database {
         break;
       }
       case "ctrls": {
-        table = controllers;
-        ArrayList<Row> rows = table.getRows();
+        Table<ControllerRow> table = controllers;
+        ArrayList<ControllerRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -1894,8 +1892,8 @@ public class Database {
         break;
       }
       case "tags": {
-        table = tags;
-        ArrayList<Row> rows = table.getRows();
+        Table<TagRow> table = tags;
+        ArrayList<TagRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -1947,8 +1945,9 @@ public class Database {
         break;
       }
       case "watch": {
-        tablelist = watches;
-        ArrayList<Table> tables = tablelist.getTables();
+        Table<WatchRow> table = null;
+        TableList<WatchRow> tablelist = watches;
+        ArrayList<Table<WatchRow>> tables = tablelist.getTables();
         int cnt = tables.size();
         int tableid = Integer.valueOf(id);
         switch (col) {
@@ -1967,8 +1966,9 @@ public class Database {
         break;
       }
       case "watchtags": {
-        tablelist = watches;
-        ArrayList<Table> tables = tablelist.getTables();
+        Table<WatchRow> table = null;
+        TableList<WatchRow> tablelist = watches;
+        ArrayList<Table<WatchRow>> tables = tablelist.getTables();
         int cnt = tables.size();
         String ids[] = id.split("_");
         int tableid = Integer.valueOf(ids[0]);
@@ -1978,7 +1978,7 @@ public class Database {
             for(int a=0;a<cnt;a++) {
               table = tables.get(a);
               if (table.id == tableid) {
-                ArrayList<Row> rows = table.getRows();
+                ArrayList<WatchRow> rows = table.getRows();
                 for(int b=0;b<rows.size();b++) {
                   WatchRow row = (WatchRow)rows.get(b);
                   if (row.id == rowid) {
@@ -1995,8 +1995,8 @@ public class Database {
         break;
       }
       case "udts": {
-        table = udts;
-        ArrayList<Row> rows = table.getRows();
+        Table<UDT> table = udts;
+        ArrayList<UDT> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2015,8 +2015,8 @@ public class Database {
         break;
       }
       case "udtmems": {
-        table = udtmembers;
-        ArrayList<Row> rows = table.getRows();
+        Table<UDTMember> table = udtmembers;
+        ArrayList<UDTMember> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2057,8 +2057,8 @@ public class Database {
         break;
       }
       case "panels": {
-        table = panels;
-        ArrayList<Row> rows = table.getRows();
+        Table<PanelRow> table = panels;
+        ArrayList<PanelRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2082,8 +2082,8 @@ public class Database {
         break;
       }
       case "funcs": {
-        table = funcs;
-        ArrayList<Row> rows = table.getRows();
+        Table<FunctionRow> table = funcs;
+        ArrayList<FunctionRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2102,8 +2102,8 @@ public class Database {
         break;
       }
       case "visioncameras": {
-        table = visioncameras;
-        ArrayList<Row> rows = table.getRows();
+        Table<VisionCameraRow> table = visioncameras;
+        ArrayList<VisionCameraRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2133,8 +2133,8 @@ public class Database {
         break;
       }
       case "visionprograms": {
-        table = visionprograms;
-        ArrayList<Row> rows = table.getRows();
+        Table<VisionProgramRow> table = visionprograms;
+        ArrayList<VisionProgramRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2170,8 +2170,8 @@ public class Database {
         break;
       }
       case "visionshots": {
-        table = visionshots;
-        ArrayList<Row> rows = table.getRows();
+        Table<VisionShotRow> table = visionshots;
+        ArrayList<VisionShotRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2201,8 +2201,8 @@ public class Database {
         break;
       }
       case "visionareas": {
-        table = visionareas;
-        ArrayList<Row> rows = table.getRows();
+        Table<VisionAreaRow> table = visionareas;
+        ArrayList<VisionAreaRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2274,8 +2274,6 @@ public class Database {
   }
 
   public static String select(String tableName, String id, String col, String type) {
-    Table table = null;
-    TableList tablelist = null;
     if (tableName.equals("null")) {
       JFLog.log("table == null");
       Main.trace();
@@ -2283,8 +2281,8 @@ public class Database {
     }
     switch (tableName) {
       case "config": {
-        table = Database.config;
-        ArrayList<Row> rows = table.getRows();
+        Table<ConfigRow> table = Database.config;
+        ArrayList<ConfigRow> rows = table.getRows();
         int cnt = rows.size();
         for(int a=0;a<cnt;a++) {
           ConfigRow row = (ConfigRow)rows.get(a);
@@ -2295,8 +2293,8 @@ public class Database {
         break;
       }
       case "ctrls": {
-        table = controllers;
-        ArrayList<Row> rows = table.getRows();
+        Table<ControllerRow> table = controllers;
+        ArrayList<ControllerRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2340,8 +2338,8 @@ public class Database {
         break;
       }
       case "tags": {
-        table = tags;
-        ArrayList<Row> rows = table.getRows();
+        Table<TagRow> table = tags;
+        ArrayList<TagRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2385,8 +2383,9 @@ public class Database {
         break;
       }
       case "watch": {
-        tablelist = watches;
-        ArrayList<Table> tables = tablelist.getTables();
+        Table<WatchRow> table = null;
+        TableList<WatchRow> tablelist = watches;
+        ArrayList<Table<WatchRow>> tables = tablelist.getTables();
         int cnt = tables.size();
         int tableid = Integer.valueOf(id);
         switch (col) {
@@ -2403,8 +2402,9 @@ public class Database {
         break;
       }
       case "watchtags": {
-        tablelist = watches;
-        ArrayList<Table> tables = tablelist.getTables();
+        Table<WatchRow> table = null;
+        TableList<WatchRow> tablelist = watches;
+        ArrayList<Table<WatchRow>> tables = tablelist.getTables();
         int cnt = tables.size();
         String ids[] = id.split("_");
         int tableid = Integer.valueOf(ids[0]);
@@ -2414,7 +2414,7 @@ public class Database {
             for(int a=0;a<cnt;a++) {
               table = tables.get(a);
               if (table.id == tableid) {
-                ArrayList<Row> rows = table.getRows();
+                ArrayList<WatchRow> rows = table.getRows();
                 for(int b=0;b<rows.size();b++) {
                   WatchRow row = (WatchRow)rows.get(b);
                   if (row.id == rowid) {
@@ -2429,8 +2429,8 @@ public class Database {
         break;
       }
       case "udts": {
-        table = udts;
-        ArrayList<Row> rows = table.getRows();
+        Table<UDT> table = udts;
+        ArrayList<UDT> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2447,8 +2447,8 @@ public class Database {
         break;
       }
       case "udtmems": {
-        table = udtmembers;
-        ArrayList<Row> rows = table.getRows();
+        Table<UDTMember> table = udtmembers;
+        ArrayList<UDTMember> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2483,8 +2483,8 @@ public class Database {
         break;
       }
       case "panels": {
-        table = panels;
-        ArrayList<Row> rows = table.getRows();
+        Table<PanelRow> table = panels;
+        ArrayList<PanelRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2501,8 +2501,8 @@ public class Database {
         break;
       }
       case "funcs": {
-        table = funcs;
-        ArrayList<Row> rows = table.getRows();
+        Table<FunctionRow> table = funcs;
+        ArrayList<FunctionRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2519,8 +2519,8 @@ public class Database {
         break;
       }
       case "visioncameras": {
-        table = visioncameras;
-        ArrayList<Row> rows = table.getRows();
+        Table<VisionCameraRow> table = visioncameras;
+        ArrayList<VisionCameraRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2555,8 +2555,8 @@ public class Database {
         break;
       }
       case "visionprograms": {
-        table = visionprograms;
-        ArrayList<Row> rows = table.getRows();
+        Table<VisionProgramRow> table = visionprograms;
+        ArrayList<VisionProgramRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2582,8 +2582,8 @@ public class Database {
         break;
       }
       case "visionshots": {
-        table = visionshots;
-        ArrayList<Row> rows = table.getRows();
+        Table<VisionShotRow> table = visionshots;
+        ArrayList<VisionShotRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {
@@ -2609,8 +2609,8 @@ public class Database {
         break;
       }
       case "visionareas": {
-        table = visionareas;
-        ArrayList<Row> rows = table.getRows();
+        Table<VisionAreaRow> table = visionareas;
+        ArrayList<VisionAreaRow> rows = table.getRows();
         int cnt = rows.size();
         int rowid = Integer.valueOf(id);
         switch (col) {

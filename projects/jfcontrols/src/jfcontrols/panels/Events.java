@@ -546,7 +546,7 @@ public class Events {
         Panels.setCellSize(nc, nr);
         t1.add(nc, r.x, r.y);
         int pid = (Integer)client.getProperty("panel");
-        javaforce.db.Table celltable = Database.getCellTableById(pid);
+        javaforce.db.Table<CellRow> celltable = Database.getCellTableById(pid);
         celltable.add(new CellRow(pid,r.x,r.y,1,1,type,text,"").setStyle(style));
         celltable.save();
         break;
@@ -1134,7 +1134,7 @@ public class Events {
         String name = c.getName();
         LogicBlock blk = null;
         try {
-          Class cls = Class.forName("jfcontrols.logic." + name.replaceAll(" ", "_").toUpperCase());
+          Class<?> cls = Class.forName("jfcontrols.logic." + name.replaceAll(" ", "_").toUpperCase());
           Constructor ctor = cls.getConstructor();
           blk = (LogicBlock)ctor.newInstance();
         } catch (Exception e) {

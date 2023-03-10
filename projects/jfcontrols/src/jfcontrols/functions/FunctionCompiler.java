@@ -157,7 +157,7 @@ public class FunctionCompiler {
           }
           LogicBlock blk = null;
           try {
-            Class cls = Class.forName("jfcontrols.logic." + name.toUpperCase());
+            Class<?> cls = Class.forName("jfcontrols.logic." + name.toUpperCase());
             Constructor ctor = cls.getConstructor();
             blk = (LogicBlock)ctor.newInstance();
           } catch (Exception e) {

@@ -557,7 +557,7 @@ public class Panels {
       }
       value = "bit";
     } else if (arg.equals("jfc_tag_type_udt")) {
-      javaforce.db.Table listTable = Database.getList("jfc_tag_type");
+      javaforce.db.Table<ListRow> listTable = Database.getList("jfc_tag_type");
       ListRow basicTypes[] = (ListRow[])listTable.getRows().toArray(new ListRow[0]);
       String basic[][] = new String[basicTypes.length][2];
       for(int a=0;a<basicTypes.length;a++) {
@@ -579,7 +579,7 @@ public class Panels {
         pairs[pos++] = udts[a];
       }
     } else {
-      javaforce.db.Table listTable = Database.getList(arg);
+      javaforce.db.Table<ListRow> listTable = Database.getList(arg);
       ListRow data[] = (ListRow[])listTable.getRows().toArray(new ListRow[0]);
       pairs = new String[data.length][];
       for(int a=0;a<data.length;a++) {
@@ -1660,7 +1660,7 @@ public class Panels {
           }
           LogicBlock blk = null;
           try {
-            Class cls = Class.forName("jfcontrols.logic." + name.toUpperCase());
+            Class<?> cls = Class.forName("jfcontrols.logic." + name.toUpperCase());
             Constructor ctor = cls.getConstructor();
             blk = (LogicBlock)ctor.newInstance();
           } catch (Exception e) {
