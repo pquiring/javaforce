@@ -39,7 +39,7 @@ public class BlueToothDialog extends javax.swing.JFrame {
     jToolBar1 = new javax.swing.JToolBar();
     scan = new javax.swing.JButton();
     connect = new javax.swing.JButton();
-    devices = new javax.swing.JComboBox();
+    devices = new javax.swing.JComboBox<>();
     status = new javax.swing.JLabel();
     jScrollPane2 = new javax.swing.JScrollPane();
     table = new javax.swing.JTable();
@@ -53,7 +53,6 @@ public class BlueToothDialog extends javax.swing.JFrame {
       }
     });
 
-    jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
     scan.setText("Scan");
@@ -158,7 +157,7 @@ public class BlueToothDialog extends javax.swing.JFrame {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton connect;
-  private javax.swing.JComboBox devices;
+  private javax.swing.JComboBox<String> devices;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JToolBar jToolBar1;
   private javax.swing.JButton scan;

@@ -46,7 +46,7 @@ public class BatteryDialog extends javax.swing.JDialog {
 
     close = new javax.swing.JButton();
     jScrollPane1 = new javax.swing.JScrollPane();
-    list = new javax.swing.JList();
+    list = new javax.swing.JList<>();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Battery Info");
@@ -104,11 +104,11 @@ public class BatteryDialog extends javax.swing.JDialog {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton close;
   private javax.swing.JScrollPane jScrollPane1;
-  private javax.swing.JList list;
+  private javax.swing.JList<String> list;
   // End of variables declaration//GEN-END:variables
 
 
-  private DefaultListModel model = new DefaultListModel();
+  private DefaultListModel<String> model = new DefaultListModel<>();
   private java.util.Timer timer;
 
   private void updateInfo() {
