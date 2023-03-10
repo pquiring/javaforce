@@ -362,7 +362,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void ControlCenterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ControlCenterActionPerformed
     try {
-      Runtime.getRuntime().exec("jfconfig");
+      Runtime.getRuntime().exec(new String[] {"jfconfig"});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -414,7 +414,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   }//GEN-LAST:event_RunActionPerformed
 
   private void UpgradesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpgradesActionPerformed
-    try { Runtime.getRuntime().exec("jfupgrade"); } catch (Exception e) {JFLog.log(e);}
+    try { Runtime.getRuntime().exec(new String[] {"jfupgrade"}); } catch (Exception e) {JFLog.log(e);}
   }//GEN-LAST:event_UpgradesActionPerformed
 
   private void BatterySettingsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BatterySettingsActionPerformed
@@ -431,7 +431,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void TaskMgrActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TaskMgrActionPerformed
     try {
-      Runtime.getRuntime().exec("jftaskmgr");
+      Runtime.getRuntime().exec(new String[] {"jftaskmgr"});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -725,10 +725,10 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       if (group.isEmpty()) {
         removeButton(button);
       } else {
-        button.putClientProperty("pinned", new Boolean(false));
+        button.putClientProperty("pinned", (Boolean)(false));
       }
     } else {
-      button.putClientProperty("pinned", new Boolean(true));
+      button.putClientProperty("pinned", (Boolean)(true));
       addApp(file);
       saveConfig();
     }
@@ -969,9 +969,9 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     button.addMouseListener(this);
     button.putClientProperty("file", file);
     button.putClientProperty("icon", icon);
-    button.putClientProperty("arrow", new Boolean(addArrow));
-    button.putClientProperty("halfSized", new Boolean(halfSized));
-    button.putClientProperty("pinned", new Boolean(pinned));
+    button.putClientProperty("arrow", (Boolean)(addArrow));
+    button.putClientProperty("halfSized", (Boolean)(halfSized));
+    button.putClientProperty("pinned", (Boolean)(pinned));
     button.putClientProperty("group", new Group());
     if (!file.startsWith("#")) {
       createAppPopupMenu(button);
@@ -2364,7 +2364,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
 
   private void showWelcome() {
     try {
-      Runtime.getRuntime().exec("jfwelcome");
+      Runtime.getRuntime().exec(new String[] {"jfwelcome"});
     } catch (Exception e) {
       JFLog.log(e);
     }
