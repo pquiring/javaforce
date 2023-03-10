@@ -38,9 +38,9 @@ public class EditSettings extends javax.swing.JDialog {
     jLabel1 = new javax.swing.JLabel();
     rateField = new javax.swing.JComboBox();
     jLabel2 = new javax.swing.JLabel();
-    inputDevice = new javax.swing.JComboBox();
+    inputDevice = new javax.swing.JComboBox<>();
     jLabel3 = new javax.swing.JLabel();
-    outputDevice = new javax.swing.JComboBox();
+    outputDevice = new javax.swing.JComboBox<>();
     jLabel4 = new javax.swing.JLabel();
     channels = new javax.swing.JComboBox();
 
@@ -155,13 +155,13 @@ public class EditSettings extends javax.swing.JDialog {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton cancel;
   private javax.swing.JComboBox channels;
-  private javax.swing.JComboBox inputDevice;
+  private javax.swing.JComboBox<String> inputDevice;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JButton ok;
-  private javax.swing.JComboBox outputDevice;
+  private javax.swing.JComboBox<String> outputDevice;
   private javax.swing.JComboBox rateField;
   // End of variables declaration//GEN-END:variables
 
