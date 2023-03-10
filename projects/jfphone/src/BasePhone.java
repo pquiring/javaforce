@@ -1458,7 +1458,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
     if (!(awtsrc instanceof JComponent)) return false;
     JComponent src = (JComponent)awtsrc;
     if (src.getParent() != (Object)this) return false;
-//    JFLog.log("KeyEvent : KeyCode=" + e.getKeyCode() + " KeyChar=" + e.getKeyChar() + " Mods=" + e.getModifiers() + " ID=" + e.getID());
+//    JFLog.log("KeyEvent : KeyCode=" + e.getKeyCode() + " KeyChar=" + e.getKeyChar() + " Mods=" + (e.getModifiersEx() & JFAWT.KEY_MASKS) + " ID=" + e.getID());
     int id = e.getID();
     char ch = e.getKeyChar();
     int cc = e.getKeyCode();

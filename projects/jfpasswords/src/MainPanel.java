@@ -451,7 +451,7 @@ public class MainPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_entriesMouseClicked
 
   private void entriesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_entriesKeyPressed
-    int mod = evt.getModifiers();
+    int mod = evt.getModifiersEx() & JFAWT.KEY_MASKS;
     int kc = evt.getKeyChar();
     int cc = evt.getKeyCode();
 //    JFLog.log("key:" + mod + "," + kc + "," + cc);
@@ -460,7 +460,7 @@ public class MainPanel extends javax.swing.JPanel {
       editEntry();
       return;
     }
-    if (mod != java.awt.event.KeyEvent.CTRL_MASK) return;
+    if (mod != java.awt.event.KeyEvent.CTRL_DOWN_MASK) return;
     switch (cc) {
       case 'C': copyPassword(); evt.consume(); break;
       case 'Z': copyUsername(); evt.consume(); break;

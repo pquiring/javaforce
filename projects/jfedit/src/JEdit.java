@@ -209,7 +209,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
 
   private void folderKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_folderKeyTyped
     int key = evt.getKeyChar();
-    int mod = evt.getModifiers();
+    int mod = evt.getModifiersEx() & JFAWT.KEY_MASKS;
     if (mod != 0) return;
     switch (key) {
       case KeyEvent.VK_ENTER: openFileProjectList(); break;
@@ -833,7 +833,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
   private void keyPressedEvent(java.awt.event.KeyEvent evt) {
     //Key Pressed
     int key = evt.getKeyCode();
-    int mod = evt.getModifiers();
+    int mod = evt.getModifiersEx() & JFAWT.KEY_MASKS;
     Object source = evt.getSource();
     boolean isText = source instanceof JFTextArea;
     int idx;
@@ -950,7 +950,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
           }
         }
         break;
-      case KeyEvent.SHIFT_MASK:
+      case KeyEvent.SHIFT_DOWN_MASK:
         if (!isText) return;
         switch (key) {
           case KeyEvent.VK_TAB: {
@@ -969,7 +969,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
           }
         }
         break;
-      case KeyEvent.CTRL_MASK:
+      case KeyEvent.CTRL_DOWN_MASK:
         if (key == KeyEvent.VK_2) {switchToTabs(); return;}
         if (!isText) return;
         switch (key) {
@@ -990,7 +990,7 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
           case KeyEvent.VK_1: {switchToProject(); return;}
         }
         break;
-      case KeyEvent.ALT_MASK:
+      case KeyEvent.ALT_DOWN_MASK:
         switch (key) {
           case KeyEvent.VK_F1: {toggleProject(); return;}
           case KeyEvent.VK_F2: {editProject(); return;}

@@ -372,8 +372,8 @@ public class Hex extends JComponent implements KeyListener {
 //interface KeyListener
   public void keyPressed(KeyEvent e) {
     int keyCode = e.getKeyCode();
-    int keyMods = e.getModifiers();
-    if (keyMods == KeyEvent.CTRL_MASK) {
+    int keyMods = e.getModifiersEx() & JFAWT.KEY_MASKS;
+    if (keyMods == KeyEvent.CTRL_DOWN_MASK) {
       switch (keyCode) {
         case KeyEvent.VK_A: selectStart = 0; selectEnd = txt.length(); break;
         case KeyEvent.VK_C:  //no break
@@ -384,13 +384,13 @@ public class Hex extends JComponent implements KeyListener {
         case KeyEvent.VK_END: move(0, INF, false); e.consume(); break;
       }
     }
-    if (keyMods == (KeyEvent.SHIFT_MASK | KeyEvent.CTRL_MASK)) {
+    if (keyMods == (KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK)) {
       switch (keyCode) {
         case KeyEvent.VK_HOME: move(0, -INF, true); e.consume(); break;
         case KeyEvent.VK_END: move(0, INF, true); e.consume(); break;
       }
     }
-    if (keyMods == KeyEvent.SHIFT_MASK) {
+    if (keyMods == KeyEvent.SHIFT_DOWN_MASK) {
       switch (keyCode) {
         case KeyEvent.VK_UP: move(0, -1, true); e.consume(); break;
         case KeyEvent.VK_DOWN: move(0, 1, true); e.consume(); break;
@@ -429,9 +429,10 @@ public class Hex extends JComponent implements KeyListener {
   public void keyReleased(KeyEvent e) {
   }
   public void keyTyped(KeyEvent e) {
-    if (e.getModifiers() == KeyEvent.CTRL_MASK) return;
-    if (e.getModifiers() == KeyEvent.ALT_MASK) return;
-    if (e.getModifiers() == (KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK)) return;
+    int mods = e.getModifiersEx() & JFAWT.KEY_MASKS;
+    if (mods == KeyEvent.CTRL_DOWN_MASK) return;
+    if (mods == KeyEvent.ALT_DOWN_MASK) return;
+    if (mods == (KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) return;
     char key = e.getKeyChar();
     switch (key) {
       case 8:  //backspace

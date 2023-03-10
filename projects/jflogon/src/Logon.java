@@ -277,7 +277,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private void usernameKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameKeyTyped
     int kc = evt.getKeyCode();
-    int mod = evt.getModifiers();
+    int mod = evt.getModifiersEx() & JFAWT.KEY_MASKS;
     if ((kc == KeyEvent.VK_ENTER) && (mod == 0)) {
       logonActionPerformed(null);
     }
@@ -285,7 +285,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private void passwordKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordKeyTyped
     int kc = evt.getKeyCode();
-    int mod = evt.getModifiers();
+    int mod = evt.getModifiersEx() & JFAWT.KEY_MASKS;
     if ((kc == KeyEvent.VK_ENTER) && (mod == 0)) {
       logonActionPerformed(null);
     }
@@ -293,7 +293,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private void passwordKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_passwordKeyReleased
     int kc = evt.getKeyCode();
-    int mod = evt.getModifiers();
+    int mod = evt.getModifiersEx() & JFAWT.KEY_MASKS;
     if ((kc == KeyEvent.VK_ENTER) && (mod == 0)) {
       logonActionPerformed(null);
     }
@@ -301,7 +301,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
 
   private void usernameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usernameKeyReleased
     int kc = evt.getKeyCode();
-    int mod = evt.getModifiers();
+    int mod = evt.getModifiersEx() & JFAWT.KEY_MASKS;
     if ((kc == KeyEvent.VK_ENTER) && (mod == 0)) {
       logonActionPerformed(null);
     }

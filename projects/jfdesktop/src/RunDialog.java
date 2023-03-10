@@ -109,7 +109,7 @@ public class RunDialog extends javax.swing.JDialog {
 
   private void cmdKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cmdKeyReleased
     int code = evt.getKeyCode();
-    int mod = evt.getModifiers();
+    int mod = evt.getModifiersEx() & JFAWT.KEY_MASKS;
     if ((code == java.awt.event.KeyEvent.VK_ENTER) && (mod == 0)) {
       okActionPerformed(null);
     }

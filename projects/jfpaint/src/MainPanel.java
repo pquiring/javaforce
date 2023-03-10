@@ -2062,7 +2062,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   public void keyPressed(KeyEvent evt) {
     //Key Pressed
     int f1 = evt.getKeyCode();
-    int f2 = evt.getModifiers();
+    int f2 = evt.getModifiersEx() & JFAWT.KEY_MASKS;
     int idx = getidx();
     if ((f1 == KeyEvent.VK_F1) && (f2 == 0)) {
       JOptionPane.showMessageDialog(this,
@@ -2084,17 +2084,17 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       return;
     }
     if ((f1 == KeyEvent.VK_ESCAPE) && (f2 == 0)) { unselectTool(getidx()); return; }
-    if ((f1 == KeyEvent.VK_N) && (f2 == KeyEvent.CTRL_MASK)) { addTab("untitled"); return; }
-    if ((f1 == KeyEvent.VK_S) && (f2 == KeyEvent.CTRL_MASK)) { saveTab(); return; }
-    if ((f1 == KeyEvent.VK_Q) && (f2 == KeyEvent.CTRL_MASK)) { saveAs(); return; }
-    if ((f1 == KeyEvent.VK_W) && (f2 == KeyEvent.CTRL_MASK)) { closeTab(false); return; }
-    if ((f1 == KeyEvent.VK_O) && (f2 == KeyEvent.CTRL_MASK)) { openTab(); return; }
-    if ((f1 == KeyEvent.VK_P) && (f2 == KeyEvent.CTRL_MASK)) { print(); return; }
-    if ((f1 == KeyEvent.VK_A) && (f2 == KeyEvent.CTRL_MASK)) { selectAll(); return; }
+    if ((f1 == KeyEvent.VK_N) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { addTab("untitled"); return; }
+    if ((f1 == KeyEvent.VK_S) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { saveTab(); return; }
+    if ((f1 == KeyEvent.VK_Q) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { saveAs(); return; }
+    if ((f1 == KeyEvent.VK_W) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { closeTab(false); return; }
+    if ((f1 == KeyEvent.VK_O) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { openTab(); return; }
+    if ((f1 == KeyEvent.VK_P) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { print(); return; }
+    if ((f1 == KeyEvent.VK_A) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { selectAll(); return; }
     if ((f1 == KeyEvent.VK_DELETE) && (f2 == 0)) { delSel(); return; }
-    if ((f1 == KeyEvent.VK_Z) && (f2 == KeyEvent.CTRL_MASK)) { undo(); return; }
-    if ((f1 == KeyEvent.VK_Y) && (f2 == KeyEvent.CTRL_MASK)) { redo(); return; }
-    if ((f2 == KeyEvent.ALT_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
+    if ((f1 == KeyEvent.VK_Z) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { undo(); return; }
+    if ((f1 == KeyEvent.VK_Y) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { redo(); return; }
+    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
       idx = f1 - KeyEvent.VK_0;
       if (idx == 0) idx = 9; else idx--;
       if (idx >= imageTabs.size()) return;
@@ -2102,12 +2102,12 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       tabs.setSelectedIndex(idx);
       return;
     }
-    if ((f2 == KeyEvent.CTRL_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
+    if ((f2 == KeyEvent.CTRL_DOWN_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
       cidx = f1 - KeyEvent.VK_0;
       return;
     }
-    if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_MINUS)) {unselectTool(getidx()); tabs.setSelectedIndex(10);}
-    if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_EQUALS)) {unselectTool(getidx()); tabs.setSelectedIndex(11);}
+    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 == KeyEvent.VK_MINUS)) {unselectTool(getidx()); tabs.setSelectedIndex(10);}
+    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 == KeyEvent.VK_EQUALS)) {unselectTool(getidx()); tabs.setSelectedIndex(11);}
   }
 
   public void keyReleased(KeyEvent e) {}

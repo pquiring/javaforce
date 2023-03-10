@@ -833,7 +833,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     TableCell cell = null;
     if (col > 0) cell = (TableCell)tableView.getValueAt(row, col);
     int cnt = -1, sel = -1;
-    if (evt.getModifiers() == 0) {
+    if ((evt.getModifiersEx() & JFAWT.KEY_MASKS) == 0) {
       switch(evt.getKeyCode()) {
         case KeyEvent.VK_ESCAPE:
           if (recording) recordStop();
@@ -889,7 +889,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
           break;
       }
     }
-    if (col > 1 && evt.getModifiers() == KeyEvent.CTRL_MASK) {
+    if (col > 1 && ((evt.getModifiersEx() & JFAWT.KEY_MASKS) == KeyEvent.CTRL_DOWN_MASK)) {
       Music.Track track = music.song.patterns.get(currentPatternIdx).tracks.get(col-1);
       switch(evt.getKeyCode()) {
         case KeyEvent.VK_C:

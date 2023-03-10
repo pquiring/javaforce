@@ -251,7 +251,7 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
   private void tabsKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tabsKeyPressed
     //Key Pressed
     int f1 = evt.getKeyCode();
-    int f2 = evt.getModifiers();
+    int f2 = evt.getModifiersEx() & JFAWT.KEY_MASKS;
     int idx;
     if ((f1 == KeyEvent.VK_F1) && (f2 == 0)) {
       JOptionPane.showMessageDialog(this,
@@ -283,28 +283,28 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
         pages.get(a).hex.repaint();
       }
     }
-    if ((f1 == KeyEvent.VK_N) && (f2 == KeyEvent.CTRL_MASK)) { addpage("untitled", new byte[0]); return; }
-    if ((f1 == KeyEvent.VK_S) && (f2 == KeyEvent.CTRL_MASK)) { savepage(); return; }
-//    if ((f1 == KeyEvent.VK_Q) && (f2 == KeyEvent.CTRL_MASK)) { savepageas(); return; }
-    if ((f1 == KeyEvent.VK_W) && (f2 == KeyEvent.CTRL_MASK)) { closepage(); return; }
-    if ((f1 == KeyEvent.VK_O) && (f2 == KeyEvent.CTRL_MASK)) { openpage(); return; }
-    if ((f1 == KeyEvent.VK_F) && (f2 == KeyEvent.CTRL_MASK)) { find(); return; }
-    if ((f1 == KeyEvent.VK_G) && (f2 == KeyEvent.CTRL_MASK)) { findagain(false); return; }
+    if ((f1 == KeyEvent.VK_N) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { addpage("untitled", new byte[0]); return; }
+    if ((f1 == KeyEvent.VK_S) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { savepage(); return; }
+//    if ((f1 == KeyEvent.VK_Q) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { savepageas(); return; }
+    if ((f1 == KeyEvent.VK_W) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { closepage(); return; }
+    if ((f1 == KeyEvent.VK_O) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { openpage(); return; }
+    if ((f1 == KeyEvent.VK_F) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { find(); return; }
+    if ((f1 == KeyEvent.VK_G) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { findagain(false); return; }
     if ((f1 == KeyEvent.VK_F3) && (f2 == 0)) { findagain(false); return; }
-    if ((f1 == KeyEvent.VK_R) && (f2 == KeyEvent.CTRL_MASK)) { replace(); return; }
-    if ((f1 == KeyEvent.VK_L) && (f2 == KeyEvent.CTRL_MASK)) { gotopos(); return; }
-    if ((f1 == KeyEvent.VK_E) && (f2 == KeyEvent.CTRL_MASK)) { execute(); return; }
-    if ((f2 == KeyEvent.ALT_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
+    if ((f1 == KeyEvent.VK_R) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { replace(); return; }
+    if ((f1 == KeyEvent.VK_L) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { gotopos(); return; }
+    if ((f1 == KeyEvent.VK_E) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { execute(); return; }
+    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 >= KeyEvent.VK_0) && (f1 <= KeyEvent.VK_9)) {
       idx = f1 - KeyEvent.VK_0;
       if (idx == 0) idx = 9; else idx--;
       if (idx >= pages.size()) return;
       tabs.setSelectedIndex(idx);
       return;
     }
-    if ((f1 == KeyEvent.VK_B) && (f2 == KeyEvent.CTRL_MASK)) { find_bin(); return; }
-    if ((f1 == KeyEvent.VK_T) && (f2 == KeyEvent.CTRL_MASK)) { replace_bin(); return; }
-    if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_MINUS)) tabs.setSelectedIndex(10);
-    if ((f2 == KeyEvent.ALT_MASK) && (f1 == KeyEvent.VK_EQUALS)) tabs.setSelectedIndex(11);
+    if ((f1 == KeyEvent.VK_B) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { find_bin(); return; }
+    if ((f1 == KeyEvent.VK_T) && (f2 == KeyEvent.CTRL_DOWN_MASK)) { replace_bin(); return; }
+    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 == KeyEvent.VK_MINUS)) tabs.setSelectedIndex(10);
+    if ((f2 == KeyEvent.ALT_DOWN_MASK) && (f1 == KeyEvent.VK_EQUALS)) tabs.setSelectedIndex(11);
   }//GEN-LAST:event_tabsKeyPressed
 
   private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing

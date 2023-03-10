@@ -103,9 +103,9 @@ public class AudioApp extends javax.swing.JFrame implements KeyEventDispatcher {
     int id = e.getID();
     char ch = e.getKeyChar();
     int cc = e.getKeyCode();
-    int mod = e.getModifiers();
+    int mod = e.getModifiersEx() & JFAWT.KEY_MASKS;
 //    JFLog.log("keyEvent:" + e);
-    if (mod == KeyEvent.CTRL_MASK) {
+    if (mod == KeyEvent.CTRL_DOWN_MASK) {
       switch (id) {
         case KeyEvent.KEY_TYPED:
           break;
