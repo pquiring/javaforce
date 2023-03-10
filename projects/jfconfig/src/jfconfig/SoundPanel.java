@@ -351,12 +351,12 @@ public class SoundPanel extends javax.swing.JPanel {
   // End of variables declaration//GEN-END:variables
 
 
-  private DefaultListModel outModel = new DefaultListModel();
-  private DefaultListModel inModel = new DefaultListModel();
-  private DefaultListModel outportsModel = new DefaultListModel();
-  private DefaultListModel inportsModel = new DefaultListModel();
-  private DefaultListModel cardsModel = new DefaultListModel();
-  private DefaultListModel profilesModel = new DefaultListModel();
+  private DefaultListModel<String> outModel = new DefaultListModel<>();
+  private DefaultListModel<String> inModel = new DefaultListModel<>();
+  private DefaultListModel<String> outportsModel = new DefaultListModel<>();
+  private DefaultListModel<String> inportsModel = new DefaultListModel<>();
+  private DefaultListModel<String> cardsModel = new DefaultListModel<>();
+  private DefaultListModel<String> profilesModel = new DefaultListModel<>();
 
   private void listAll() {
     PulseAudio.list();

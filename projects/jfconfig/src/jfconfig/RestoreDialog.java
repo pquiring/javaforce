@@ -43,9 +43,9 @@ public class RestoreDialog extends javax.swing.JDialog {
   private void initComponents() {
 
     jLabel1 = new javax.swing.JLabel();
-    src = new javax.swing.JComboBox();
+    src = new javax.swing.JComboBox<>();
     jLabel2 = new javax.swing.JLabel();
-    backups = new javax.swing.JComboBox();
+    backups = new javax.swing.JComboBox<>();
     restore = new javax.swing.JButton();
     cancel = new javax.swing.JButton();
     tabs = new javax.swing.JTabbedPane();
@@ -56,7 +56,7 @@ public class RestoreDialog extends javax.swing.JDialog {
     useDiffFolder = new javax.swing.JCheckBox();
     systemOpts = new javax.swing.JPanel();
     jLabel3 = new javax.swing.JLabel();
-    dest = new javax.swing.JComboBox();
+    dest = new javax.swing.JComboBox<>();
     jfparted = new javax.swing.JButton();
     jLabel5 = new javax.swing.JLabel();
     refresh = new javax.swing.JButton();
@@ -65,7 +65,7 @@ public class RestoreDialog extends javax.swing.JDialog {
 
     jLabel1.setText("Source");
 
-    src.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    src.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
     src.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         srcItemStateChanged(evt);
@@ -74,7 +74,7 @@ public class RestoreDialog extends javax.swing.JDialog {
 
     jLabel2.setText("Backups");
 
-    backups.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    backups.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
     restore.setText("Restore");
     restore.addActionListener(new java.awt.event.ActionListener() {
@@ -141,7 +141,7 @@ public class RestoreDialog extends javax.swing.JDialog {
 
     jLabel3.setText("Destination");
 
-    dest.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    dest.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
     jfparted.setText("Partition Editor");
     jfparted.addActionListener(new java.awt.event.ActionListener() {
@@ -285,9 +285,9 @@ public class RestoreDialog extends javax.swing.JDialog {
   }//GEN-LAST:event_useDiffFolderItemStateChanged
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JComboBox backups;
+  private javax.swing.JComboBox<String> backups;
   private javax.swing.JButton cancel;
-  private javax.swing.JComboBox dest;
+  private javax.swing.JComboBox<String> dest;
   private javax.swing.JTextField diffFolder;
   private javax.swing.JButton diffSelect;
   private javax.swing.JLabel jLabel1;
@@ -299,7 +299,7 @@ public class RestoreDialog extends javax.swing.JDialog {
   private javax.swing.JPanel personalOpts;
   private javax.swing.JButton refresh;
   private javax.swing.JButton restore;
-  private javax.swing.JComboBox src;
+  private javax.swing.JComboBox<String> src;
   private javax.swing.JPanel systemOpts;
   private javax.swing.JTabbedPane tabs;
   private javax.swing.JCheckBox useDiffFolder;

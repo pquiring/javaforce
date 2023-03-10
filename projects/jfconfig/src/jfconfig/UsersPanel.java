@@ -47,7 +47,7 @@ public class UsersPanel extends javax.swing.JPanel {
     addGroup = new javax.swing.JButton();
     deleteGroup = new javax.swing.JButton();
     manageGroups = new javax.swing.JButton();
-    addGroupCombo = new javax.swing.JComboBox();
+    addGroupCombo = new javax.swing.JComboBox<>();
     jToolBar1 = new javax.swing.JToolBar();
     back = new javax.swing.JButton();
     addUser = new javax.swing.JButton();
@@ -133,7 +133,7 @@ public class UsersPanel extends javax.swing.JPanel {
       }
     });
 
-    addGroupCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    addGroupCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
     javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
     jPanel1.setLayout(jPanel1Layout);
@@ -171,7 +171,6 @@ public class UsersPanel extends javax.swing.JPanel {
 
     split.setRightComponent(jTabbedPane1);
 
-    jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
     back.setText("<Back");
@@ -353,7 +352,7 @@ public class UsersPanel extends javax.swing.JPanel {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton addGroup;
-  private javax.swing.JComboBox addGroupCombo;
+  private javax.swing.JComboBox<String> addGroupCombo;
   private javax.swing.JButton addUser;
   private javax.swing.JButton back;
   private javax.swing.JButton deleteGroup;
@@ -373,7 +372,7 @@ public class UsersPanel extends javax.swing.JPanel {
   private javax.swing.JList users;
   // End of variables declaration//GEN-END:variables
 
-  private class ListModel extends DefaultListModel {
+  private class ListModel extends DefaultListModel<String> {
     public ArrayList<String[]> fields = new ArrayList<String[]>();
   }
 

@@ -47,17 +47,16 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
     apply = new javax.swing.JButton();
     nvidia = new javax.swing.JButton();
     jLabel4 = new javax.swing.JLabel();
-    resolution = new javax.swing.JComboBox();
+    resolution = new javax.swing.JComboBox<>();
     jPanel1 = new javax.swing.JPanel();
     view = new javax.swing.JScrollPane();
     layout = new javax.swing.JPanel();
     mirror = new javax.swing.JCheckBox();
     jLabel7 = new javax.swing.JLabel();
-    rotation = new javax.swing.JComboBox();
+    rotation = new javax.swing.JComboBox<>();
     jLabel1 = new javax.swing.JLabel();
-    displays = new javax.swing.JComboBox();
+    displays = new javax.swing.JComboBox<>();
 
-    jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
     back.setText("< Back");
@@ -128,7 +127,7 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
 
     jLabel7.setText("Rotation");
 
-    rotation.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Normal", "ClockWise", "CounterClockWise", "Inverted" }));
+    rotation.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Normal", "ClockWise", "CounterClockWise", "Inverted" }));
     rotation.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         rotationItemStateChanged(evt);
@@ -237,7 +236,7 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton apply;
   private javax.swing.JButton back;
-  private javax.swing.JComboBox displays;
+  private javax.swing.JComboBox<String> displays;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel jLabel7;
@@ -246,8 +245,8 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
   private javax.swing.JPanel layout;
   private javax.swing.JCheckBox mirror;
   private javax.swing.JButton nvidia;
-  private javax.swing.JComboBox resolution;
-  private javax.swing.JComboBox rotation;
+  private javax.swing.JComboBox<String> resolution;
+  private javax.swing.JComboBox<String> rotation;
   private javax.swing.JScrollPane view;
   // End of variables declaration//GEN-END:variables
 

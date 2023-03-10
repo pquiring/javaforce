@@ -40,7 +40,7 @@ public class TimeZonePanel extends javax.swing.JPanel implements MouseListener, 
 
     map = new javax.swing.JPanel();
     jLabel2 = new javax.swing.JLabel();
-    timezone = new javax.swing.JComboBox();
+    timezone = new javax.swing.JComboBox<>();
 
     map.setLayout(new java.awt.GridLayout(1, 0));
 
@@ -76,7 +76,7 @@ public class TimeZonePanel extends javax.swing.JPanel implements MouseListener, 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JLabel jLabel2;
   private javax.swing.JPanel map;
-  private javax.swing.JComboBox timezone;
+  private javax.swing.JComboBox<String> timezone;
   // End of variables declaration//GEN-END:variables
 
   private class Zone {

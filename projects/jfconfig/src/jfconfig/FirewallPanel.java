@@ -238,7 +238,7 @@ public class FirewallPanel extends javax.swing.JPanel {
   private javax.swing.JButton up;
   // End of variables declaration//GEN-END:variables
 
-  DefaultListModel rulesModel = new DefaultListModel();
+  private DefaultListModel<String> rulesModel = new DefaultListModel<>();
 
   public static class Rule {
     public boolean enabled;

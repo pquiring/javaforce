@@ -63,7 +63,7 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
     dest = new javax.swing.JTextField();
     mask = new javax.swing.JTextField();
     use_dev = new javax.swing.JRadioButton();
-    dev = new javax.swing.JComboBox();
+    dev = new javax.swing.JComboBox<>();
     use_gw = new javax.swing.JRadioButton();
     gw = new javax.swing.JTextField();
     accept = new javax.swing.JButton();
@@ -209,7 +209,7 @@ public class RoutingRouteDialog extends javax.swing.JDialog implements KeyListen
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.JButton cancel;
   private javax.swing.JTextField dest;
-  private javax.swing.JComboBox dev;
+  private javax.swing.JComboBox<String> dev;
   private javax.swing.JTextField gw;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;

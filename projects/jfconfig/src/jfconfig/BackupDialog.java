@@ -34,14 +34,14 @@ public class BackupDialog extends javax.swing.JDialog {
   private void initComponents() {
 
     jLabel1 = new javax.swing.JLabel();
-    dest = new javax.swing.JComboBox();
+    dest = new javax.swing.JComboBox<>();
     backup = new javax.swing.JButton();
     deleteOld = new javax.swing.JCheckBox();
     jLabel2 = new javax.swing.JLabel();
     cancel = new javax.swing.JButton();
     deleteDays = new javax.swing.JSpinner();
     jLabel3 = new javax.swing.JLabel();
-    compression = new javax.swing.JComboBox();
+    compression = new javax.swing.JComboBox<>();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Backup Personal");
@@ -67,11 +67,11 @@ public class BackupDialog extends javax.swing.JDialog {
       }
     });
 
-    deleteDays.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(365), Integer.valueOf(0), null, Integer.valueOf(1)));
+    deleteDays.setModel(new javax.swing.SpinnerNumberModel(365, 0, null, 1));
 
     jLabel3.setText("Compression");
 
-    compression.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Fast average compression (gzip)", "Slow better compression (bzip2)" }));
+    compression.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Fast average compression (gzip)", "Slow better compression (bzip2)" }));
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
@@ -141,10 +141,10 @@ public class BackupDialog extends javax.swing.JDialog {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton backup;
   private javax.swing.JButton cancel;
-  private javax.swing.JComboBox compression;
+  private javax.swing.JComboBox<String> compression;
   private javax.swing.JSpinner deleteDays;
   private javax.swing.JCheckBox deleteOld;
-  private javax.swing.JComboBox dest;
+  private javax.swing.JComboBox<String> dest;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;

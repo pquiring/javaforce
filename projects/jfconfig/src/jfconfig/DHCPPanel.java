@@ -209,7 +209,7 @@ public class DHCPPanel extends javax.swing.JPanel {
  *
  */
 
-  private DefaultListModel poolsModel = new DefaultListModel();
+  private DefaultListModel<String> poolsModel = new DefaultListModel<>();
 
   public static class Pool {
     public boolean enabled;

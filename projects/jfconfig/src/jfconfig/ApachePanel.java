@@ -63,14 +63,13 @@ public class ApachePanel extends javax.swing.JPanel {
     cgi = new javax.swing.JCheckBox();
     manageFiles = new javax.swing.JButton();
     jLabel7 = new javax.swing.JLabel();
-    wizards = new javax.swing.JComboBox();
+    wizards = new javax.swing.JComboBox<>();
     runWizard = new javax.swing.JButton();
     jLabel9 = new javax.swing.JLabel();
-    wizardsDest = new javax.swing.JComboBox();
+    wizardsDest = new javax.swing.JComboBox<>();
     jButton1 = new javax.swing.JButton();
     enableSSL = new javax.swing.JButton();
 
-    jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
     back.setText("<Back");
@@ -181,7 +180,7 @@ public class ApachePanel extends javax.swing.JPanel {
 
     jLabel7.setText("Load:");
 
-    wizards.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "WordPress", "Drupal", "myPHPAdmin" }));
+    wizards.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "WordPress", "Drupal", "myPHPAdmin" }));
 
     runWizard.setText("Execute");
     runWizard.addActionListener(new java.awt.event.ActionListener() {
@@ -192,7 +191,7 @@ public class ApachePanel extends javax.swing.JPanel {
 
     jLabel9.setText("as");
 
-    wizardsDest.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Entire Website", "Virtual Folder" }));
+    wizardsDest.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Entire Website", "Virtual Folder" }));
 
     jButton1.setText("Launch SSL Key Manager...");
     jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -468,11 +467,11 @@ public class ApachePanel extends javax.swing.JPanel {
   private javax.swing.JButton runWizard;
   private javax.swing.JButton save;
   private javax.swing.JCheckBox ssl;
-  private javax.swing.JComboBox wizards;
-  private javax.swing.JComboBox wizardsDest;
+  private javax.swing.JComboBox<String> wizards;
+  private javax.swing.JComboBox<String> wizardsDest;
   // End of variables declaration//GEN-END:variables
 
-  private DefaultListModel hostsModel = new DefaultListModel();
+  private DefaultListModel<String> hostsModel = new DefaultListModel<>();
   private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "apache.xml";
   public static class Host {

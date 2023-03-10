@@ -426,8 +426,8 @@ public class TomcatPanel extends javax.swing.JPanel {
   private javax.swing.JTextField sslPort;
   // End of variables declaration//GEN-END:variables
 
-  private DefaultListModel servicesModel = new DefaultListModel();
-  private DefaultListModel hostsModel = new DefaultListModel();
+  private DefaultListModel<String> servicesModel = new DefaultListModel<>();
+  private DefaultListModel<String> hostsModel = new DefaultListModel<>();
   private String configFolder = "/etc/jfconfig.d/";
   private String configFile = "tomcat.xml";
   public static class Host {

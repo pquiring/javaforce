@@ -62,27 +62,27 @@ public class FirewallRuleDialog extends javax.swing.JDialog implements KeyListen
     name = new javax.swing.JTextField();
     cancel = new javax.swing.JButton();
     accept = new javax.swing.JButton();
-    type = new javax.swing.JComboBox();
+    type = new javax.swing.JComboBox<>();
     jLabel2 = new javax.swing.JLabel();
     tabs = new javax.swing.JTabbedPane();
     localhost = new javax.swing.JPanel();
     jLabel3 = new javax.swing.JLabel();
     jLabel4 = new javax.swing.JLabel();
-    basicProtocol = new javax.swing.JComboBox();
+    basicProtocol = new javax.swing.JComboBox<>();
     basicPort = new javax.swing.JTextField();
     basicAccept = new javax.swing.JRadioButton();
     jLabel5 = new javax.swing.JLabel();
     basicBlock = new javax.swing.JRadioButton();
     nat = new javax.swing.JPanel();
     jLabel6 = new javax.swing.JLabel();
-    wan = new javax.swing.JComboBox();
+    wan = new javax.swing.JComboBox<>();
     jLabel7 = new javax.swing.JLabel();
-    lan = new javax.swing.JComboBox();
+    lan = new javax.swing.JComboBox<>();
     portForwarding = new javax.swing.JPanel();
     jLabel8 = new javax.swing.JLabel();
-    portForwardingIF = new javax.swing.JComboBox();
+    portForwardingIF = new javax.swing.JComboBox<>();
     jLabel9 = new javax.swing.JLabel();
-    portForwardingProtocol = new javax.swing.JComboBox();
+    portForwardingProtocol = new javax.swing.JComboBox<>();
     jLabel10 = new javax.swing.JLabel();
     portForwardingIP = new javax.swing.JTextField();
     jLabel13 = new javax.swing.JLabel();
@@ -93,7 +93,7 @@ public class FirewallRuleDialog extends javax.swing.JDialog implements KeyListen
     portForwardingDestPort = new javax.swing.JTextField();
     dmz = new javax.swing.JPanel();
     jLabel11 = new javax.swing.JLabel();
-    DMZIF = new javax.swing.JComboBox();
+    DMZIF = new javax.swing.JComboBox<>();
     jLabel12 = new javax.swing.JLabel();
     DMZPrivateIP = new javax.swing.JTextField();
     jLabel16 = new javax.swing.JLabel();
@@ -119,7 +119,7 @@ public class FirewallRuleDialog extends javax.swing.JDialog implements KeyListen
       }
     });
 
-    type.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Localhost Exception", "NAT Routing", "Port Forwarding", "DMZ" }));
+    type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Localhost Exception", "NAT Routing", "Port Forwarding", "DMZ" }));
     type.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         typeItemStateChanged(evt);
@@ -134,7 +134,7 @@ public class FirewallRuleDialog extends javax.swing.JDialog implements KeyListen
 
     jLabel4.setText("Protocol");
 
-    basicProtocol.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TCP", "UDP", "ICMP" }));
+    basicProtocol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TCP", "UDP", "ICMP" }));
 
     buttonGroup1.add(basicAccept);
     basicAccept.setSelected(true);
@@ -228,7 +228,7 @@ public class FirewallRuleDialog extends javax.swing.JDialog implements KeyListen
 
     jLabel9.setText("Protocol");
 
-    portForwardingProtocol.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TCP", "UDP", "ICMP" }));
+    portForwardingProtocol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TCP", "UDP", "ICMP" }));
 
     jLabel10.setText("Destination IP");
 
@@ -432,14 +432,14 @@ public class FirewallRuleDialog extends javax.swing.JDialog implements KeyListen
   }//GEN-LAST:event_acceptActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JComboBox DMZIF;
+  private javax.swing.JComboBox<String> DMZIF;
   private javax.swing.JTextField DMZPrivateIP;
   private javax.swing.JTextField DMZPublicIP;
   private javax.swing.JButton accept;
   private javax.swing.JRadioButton basicAccept;
   private javax.swing.JRadioButton basicBlock;
   private javax.swing.JTextField basicPort;
-  private javax.swing.JComboBox basicProtocol;
+  private javax.swing.JComboBox<String> basicProtocol;
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.JButton cancel;
   private javax.swing.JPanel dmz;
@@ -461,20 +461,20 @@ public class FirewallRuleDialog extends javax.swing.JDialog implements KeyListen
   private javax.swing.JLabel jLabel7;
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
-  private javax.swing.JComboBox lan;
+  private javax.swing.JComboBox<String> lan;
   private javax.swing.JPanel localhost;
   private javax.swing.JTextField name;
   private javax.swing.JPanel nat;
   private javax.swing.JPanel portForwarding;
   private javax.swing.JTextField portForwardingDestPort;
-  private javax.swing.JComboBox portForwardingIF;
+  private javax.swing.JComboBox<String> portForwardingIF;
   private javax.swing.JTextField portForwardingIP;
   private javax.swing.JTextField portForwardingLength;
   private javax.swing.JTextField portForwardingPort;
-  private javax.swing.JComboBox portForwardingProtocol;
+  private javax.swing.JComboBox<String> portForwardingProtocol;
   private javax.swing.JTabbedPane tabs;
-  private javax.swing.JComboBox type;
-  private javax.swing.JComboBox wan;
+  private javax.swing.JComboBox<String> type;
+  private javax.swing.JComboBox<String> wan;
   // End of variables declaration//GEN-END:variables
 
   public boolean accepted = false;

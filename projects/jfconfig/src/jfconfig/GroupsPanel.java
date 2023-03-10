@@ -44,11 +44,10 @@ public class GroupsPanel extends javax.swing.JPanel {
     jPanel2 = new javax.swing.JPanel();
     jScrollPane2 = new javax.swing.JScrollPane();
     members = new javax.swing.JList();
-    addUserCombo = new javax.swing.JComboBox();
+    addUserCombo = new javax.swing.JComboBox<>();
     addUser = new javax.swing.JButton();
     removeUser = new javax.swing.JButton();
 
-    jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
     back.setText("<Back");
@@ -229,7 +228,7 @@ public class GroupsPanel extends javax.swing.JPanel {
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton addGroup;
   private javax.swing.JButton addUser;
-  private javax.swing.JComboBox addUserCombo;
+  private javax.swing.JComboBox<String> addUserCombo;
   private javax.swing.JButton back;
   private javax.swing.JButton deleteGroup;
   private javax.swing.JList groups;
@@ -243,11 +242,12 @@ public class GroupsPanel extends javax.swing.JPanel {
   private javax.swing.JButton removeUser;
   // End of variables declaration//GEN-END:variables
 
-  private class ListModel extends DefaultListModel {
+  private class ListModel extends DefaultListModel<String> {
     public ArrayList<String[]> fields = new ArrayList<String[]>();
   }
 
-  private ListModel groupsModel = new ListModel(), membersModel = new ListModel();
+  private ListModel groupsModel = new ListModel();
+  private ListModel membersModel = new ListModel();
 
   private void loadGroups() {
     groupsModel.clear();

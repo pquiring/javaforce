@@ -233,7 +233,7 @@ acl <url_name> url_regex <url>
 http_access allow [<url_name>] <src_name>
 */
 
-  private DefaultListModel rulesModel = new DefaultListModel();
+  private DefaultListModel<String> rulesModel = new DefaultListModel<>();
 
   public static class Rule {
     public Rule() {};

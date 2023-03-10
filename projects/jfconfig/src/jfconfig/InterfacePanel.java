@@ -148,7 +148,7 @@ public class InterfacePanel extends javax.swing.JPanel {
   private javax.swing.JLabel status;
   // End of variables declaration//GEN-END:variables
 
-  private DefaultListModel model = new DefaultListModel();
+  private DefaultListModel<String> model = new DefaultListModel<>();
   private boolean active;
 
   public static class Interface {

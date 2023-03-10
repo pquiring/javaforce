@@ -115,7 +115,7 @@ public class VPNDialog extends javax.swing.JDialog {
     capOpt_echo = new javax.swing.JCheckBox();
     cap_mschapv2 = new javax.swing.JCheckBox();
     jLabel9 = new javax.swing.JLabel();
-    capOpt_mppe_type = new javax.swing.JComboBox();
+    capOpt_mppe_type = new javax.swing.JComboBox<>();
     jLabel6 = new javax.swing.JLabel();
     host = new javax.swing.JTextField();
     accept = new javax.swing.JButton();
@@ -291,7 +291,7 @@ public class VPNDialog extends javax.swing.JDialog {
 
     jLabel9.setText("Type");
 
-    capOpt_mppe_type.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "All available (Default)", "128bit", "40bit" }));
+    capOpt_mppe_type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "All available (Default)", "128bit", "40bit" }));
 
     javax.swing.GroupLayout customPanelLayout = new javax.swing.GroupLayout(customPanel);
     customPanel.setLayout(customPanelLayout);
@@ -481,7 +481,7 @@ public class VPNDialog extends javax.swing.JDialog {
   private javax.swing.JCheckBox capOpt_echo;
   private javax.swing.JCheckBox capOpt_mppe;
   private javax.swing.JCheckBox capOpt_mppe_stateful;
-  private javax.swing.JComboBox capOpt_mppe_type;
+  private javax.swing.JComboBox<String> capOpt_mppe_type;
   private javax.swing.JCheckBox capOpt_tcp;
   private javax.swing.JCheckBox cap_chap;
   private javax.swing.JCheckBox cap_eap;

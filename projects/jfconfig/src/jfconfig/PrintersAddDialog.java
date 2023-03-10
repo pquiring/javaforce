@@ -37,7 +37,7 @@ public class PrintersAddDialog extends javax.swing.JDialog {
     jLabel2 = new javax.swing.JLabel();
     jLabel3 = new javax.swing.JLabel();
     scanLocal = new javax.swing.JButton();
-    localPrinters = new javax.swing.JComboBox();
+    localPrinters = new javax.swing.JComboBox<>();
     addLocal = new javax.swing.JButton();
     jLabel4 = new javax.swing.JLabel();
     ipAddr = new javax.swing.JTextField();
@@ -49,9 +49,9 @@ public class PrintersAddDialog extends javax.swing.JDialog {
     addShare = new javax.swing.JButton();
     cancel = new javax.swing.JButton();
     jLabel7 = new javax.swing.JLabel();
-    make = new javax.swing.JComboBox();
+    make = new javax.swing.JComboBox<>();
     jLabel8 = new javax.swing.JLabel();
-    model = new javax.swing.JComboBox();
+    model = new javax.swing.JComboBox<>();
     jLabel9 = new javax.swing.JLabel();
     jLabel10 = new javax.swing.JLabel();
     pass = new javax.swing.JPasswordField();
@@ -108,7 +108,7 @@ public class PrintersAddDialog extends javax.swing.JDialog {
 
     jLabel7.setText("Make");
 
-    make.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Auto" }));
+    make.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Auto" }));
     make.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         makeItemStateChanged(evt);
@@ -117,7 +117,7 @@ public class PrintersAddDialog extends javax.swing.JDialog {
 
     jLabel8.setText("Model");
 
-    model.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Auto" }));
+    model.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Auto" }));
 
     jLabel9.setText("User");
 
@@ -274,9 +274,9 @@ public class PrintersAddDialog extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel7;
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
-  private javax.swing.JComboBox localPrinters;
-  private javax.swing.JComboBox make;
-  private javax.swing.JComboBox model;
+  private javax.swing.JComboBox<String> localPrinters;
+  private javax.swing.JComboBox<String> make;
+  private javax.swing.JComboBox<String> model;
   private javax.swing.JPasswordField pass;
   private javax.swing.JButton scanLocal;
   private javax.swing.JTextField server;

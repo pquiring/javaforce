@@ -342,8 +342,8 @@ public class DNSPanel extends javax.swing.JPanel {
     public Zone zone[];
   }
 
-  private DefaultListModel zonesModel = new DefaultListModel();
-  private DefaultListModel entriesModel = new DefaultListModel();
+  private DefaultListModel<String> zonesModel = new DefaultListModel<>();
+  private DefaultListModel<String> entriesModel = new DefaultListModel<>();
 
   private Config config;
   private String configFolder = "/etc/jfconfig.d/";

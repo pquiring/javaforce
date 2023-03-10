@@ -58,9 +58,9 @@ public class OpenSSLPanel extends javax.swing.JPanel {
     caStatus = new javax.swing.JTextField();
     caGenerate = new javax.swing.JButton();
     caImport = new javax.swing.JButton();
-    ca = new javax.swing.JComboBox();
+    ca = new javax.swing.JComboBox<>();
     jPanel2 = new javax.swing.JPanel();
-    key = new javax.swing.JComboBox();
+    key = new javax.swing.JComboBox<>();
     keyStatus = new javax.swing.JTextField();
     keyGenerate = new javax.swing.JButton();
     keyImport = new javax.swing.JToggleButton();
@@ -88,7 +88,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
       }
     });
 
-    ca.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    ca.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
     ca.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         caItemStateChanged(evt);
@@ -126,7 +126,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
 
     jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Keys"));
 
-    key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    key.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
     key.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         keyItemStateChanged(evt);
@@ -308,7 +308,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton apply;
-  private javax.swing.JComboBox ca;
+  private javax.swing.JComboBox<String> ca;
   private javax.swing.JButton caGenerate;
   private javax.swing.JButton caImport;
   private javax.swing.JTextField caStatus;
@@ -316,7 +316,7 @@ public class OpenSSLPanel extends javax.swing.JPanel {
   private javax.swing.JButton help;
   private javax.swing.JPanel jPanel1;
   private javax.swing.JPanel jPanel2;
-  private javax.swing.JComboBox key;
+  private javax.swing.JComboBox<String> key;
   private javax.swing.JButton keyGenerate;
   private javax.swing.JToggleButton keyImport;
   private javax.swing.JTextField keyStatus;

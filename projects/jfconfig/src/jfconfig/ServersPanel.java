@@ -571,7 +571,7 @@ public class ServersPanel extends javax.swing.JPanel implements ActionListener {
 
   private void config(String panelName) {
     try {
-      Class cls = Class.forName(panelName);
+      Class<?> cls = Class.forName(panelName);
       Constructor ctor = cls.getConstructor();
       JPanel panel = (JPanel)ctor.newInstance();
       ConfigApp.This.setPanel(panel);
