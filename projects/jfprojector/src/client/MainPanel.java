@@ -53,12 +53,12 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     jLabel3 = new javax.swing.JLabel();
     fps = new javax.swing.JSpinner();
     jLabel4 = new javax.swing.JLabel();
-    audioDevices = new javax.swing.JComboBox();
+    audioDevices = new javax.swing.JComboBox<>();
     showMouseCursor = new javax.swing.JCheckBox();
     jLabel5 = new javax.swing.JLabel();
-    vBitRate = new javax.swing.JComboBox();
+    vBitRate = new javax.swing.JComboBox<>();
     jLabel6 = new javax.swing.JLabel();
-    aBitRate = new javax.swing.JComboBox();
+    aBitRate = new javax.swing.JComboBox<>();
     jLabel7 = new javax.swing.JLabel();
     jLabel8 = new javax.swing.JLabel();
     jLabel1 = new javax.swing.JLabel();
@@ -105,7 +105,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
 
     jLabel5.setText("Video Quality");
 
-    vBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8M", "6M", "4M", "2M", "1M", "800k", "400k", "200k" }));
+    vBitRate.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8M", "6M", "4M", "2M", "1M", "800k", "400k", "200k" }));
     vBitRate.setSelectedIndex(4);
     vBitRate.setToolTipText("");
     vBitRate.addActionListener(new java.awt.event.ActionListener() {
@@ -116,7 +116,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
 
     jLabel6.setText("Audio Quality");
 
-    aBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "256k", "192k", "128k", "64k", "32k" }));
+    aBitRate.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "256k", "192k", "128k", "64k", "32k" }));
     aBitRate.setSelectedIndex(2);
     aBitRate.setToolTipText("");
 
@@ -242,9 +242,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   }//GEN-LAST:event_vBitRateActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JComboBox aBitRate;
+  private javax.swing.JComboBox<String> aBitRate;
   private javax.swing.JRadioButton audio;
-  private javax.swing.JComboBox audioDevices;
+  private javax.swing.JComboBox<String> audioDevices;
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.ButtonGroup buttonGroup2;
   private javax.swing.JSpinner fps;
@@ -264,7 +264,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private javax.swing.JCheckBox showMouseCursor;
   private javax.swing.JButton start;
   private javax.swing.JRadioButton stereo;
-  private javax.swing.JComboBox vBitRate;
+  private javax.swing.JComboBox<String> vBitRate;
   // End of variables declaration//GEN-END:variables
 
   private AudioInput mic;
