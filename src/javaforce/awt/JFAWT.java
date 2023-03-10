@@ -16,6 +16,12 @@ import javaforce.*;
 
 public class JFAWT {
 
+  /** Value of new key down masks (CTRL + ALT + SHIFT).
+   * Use with KeyEvent.getModifiersEx()
+   * Note : RightAlt is AltGraph that includes Alt + AltGraph masks.
+   */
+  public static int KEY_MASKS = InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK | InputEvent.ALT_DOWN_MASK;
+
   /** Opens a URL in default web browser */
   public static void openURL(String url) {
     try {
