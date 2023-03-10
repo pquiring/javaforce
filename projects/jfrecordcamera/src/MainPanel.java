@@ -59,19 +59,19 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     jPanel1 = new javax.swing.JPanel();
     jLabel5 = new javax.swing.JLabel();
     segmentSecs = new javax.swing.JTextField();
-    aBitRate = new javax.swing.JComboBox();
+    aBitRate = new javax.swing.JComboBox<>();
     stereo = new javax.swing.JRadioButton();
     audio = new javax.swing.JRadioButton();
     jLabel7 = new javax.swing.JLabel();
     jLabel2 = new javax.swing.JLabel();
     refresh = new javax.swing.JButton();
-    cameraDevices = new javax.swing.JComboBox();
+    cameraDevices = new javax.swing.JComboBox<>();
     protocol = new javax.swing.JComboBox<>();
     jLabel6 = new javax.swing.JLabel();
     jLabel3 = new javax.swing.JLabel();
     stopMotion = new javax.swing.JRadioButton();
     next = new javax.swing.JButton();
-    vBitRate = new javax.swing.JComboBox();
+    vBitRate = new javax.swing.JComboBox<>();
     codec = new javax.swing.JComboBox<>();
     jLabel13 = new javax.swing.JLabel();
     seconds = new javax.swing.JSpinner();
@@ -79,7 +79,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     resolution = new javax.swing.JComboBox<>();
     broadcast = new javax.swing.JRadioButton();
     jLabel9 = new javax.swing.JLabel();
-    freq = new javax.swing.JComboBox();
+    freq = new javax.swing.JComboBox<>();
     noaudio = new javax.swing.JRadioButton();
     jLabel11 = new javax.swing.JLabel();
     mono = new javax.swing.JRadioButton();
@@ -90,7 +90,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     jLabel4 = new javax.swing.JLabel();
     jLabel12 = new javax.swing.JLabel();
     jLabel1 = new javax.swing.JLabel();
-    audioDevices = new javax.swing.JComboBox();
+    audioDevices = new javax.swing.JComboBox<>();
     jLabel8 = new javax.swing.JLabel();
     jPanel2 = new javax.swing.JPanel();
     previewVideo = new javax.swing.JLabel();
@@ -103,7 +103,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 
     segmentSecs.setText("5");
 
-    aBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "256k", "192k", "128k", "64k", "32k" }));
+    aBitRate.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "256k", "192k", "128k", "64k", "32k" }));
     aBitRate.setSelectedIndex(2);
     aBitRate.setToolTipText("");
 
@@ -148,7 +148,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
       }
     });
 
-    vBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8M", "6M", "4M", "2M", "1M", "800k", "400k", "200k" }));
+    vBitRate.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8M", "6M", "4M", "2M", "1M", "800k", "400k", "200k" }));
     vBitRate.setSelectedIndex(4);
     vBitRate.setToolTipText("");
 
@@ -172,7 +172,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 
     jLabel9.setText("bits/sec");
 
-    freq.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "48000", "44100", "22050", "11025", "8000" }));
+    freq.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "48000", "44100", "22050", "11025", "8000" }));
     freq.setSelectedIndex(1);
 
     buttonGroup1.add(noaudio);
@@ -462,17 +462,17 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
   }//GEN-LAST:event_broadcastActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JComboBox aBitRate;
+  private javax.swing.JComboBox<String> aBitRate;
   private javax.swing.JRadioButton audio;
-  private javax.swing.JComboBox audioDevices;
+  private javax.swing.JComboBox<String> audioDevices;
   private javax.swing.JRadioButton broadcast;
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.ButtonGroup buttonGroup2;
   private javax.swing.ButtonGroup buttonGroup3;
-  private javax.swing.JComboBox cameraDevices;
+  private javax.swing.JComboBox<String> cameraDevices;
   private javax.swing.JComboBox<String> codec;
   private javax.swing.JSpinner fps;
-  private javax.swing.JComboBox freq;
+  private javax.swing.JComboBox<String> freq;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel11;
@@ -506,7 +506,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
   private javax.swing.JRadioButton stereo;
   private javax.swing.JRadioButton stopMotion;
   private javax.swing.JRadioButton timeLapse;
-  private javax.swing.JComboBox vBitRate;
+  private javax.swing.JComboBox<String> vBitRate;
   // End of variables declaration//GEN-END:variables
 
   private Camera camera;
