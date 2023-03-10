@@ -38,6 +38,7 @@
   <property name="project4" value=""/>
   <property name="project5" value=""/>
   <property file="${cfg}"/>
+  <property name="jdkver" value="11"/>
 
   <target name="check-builds">
     <available file="${project2}.xml" property="project2.present"/>

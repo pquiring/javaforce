@@ -30,7 +30,7 @@
     <mkdir dir="${build}"/>
     <ant dir="../jfparted" target="compile" inheritAll="false"/>
     <ant dir="../jfconfig" target="compile" inheritAll="false"/> <!-- need TimeZonePanel -->
-    <javac srcdir="${src}" destdir="${build}"  target="1.8" source="1.8" debug="true" includeantruntime="false">
+    <javac srcdir="${src}" destdir="${build}"  target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false">
       <classpath path="${classpath}"/>
       <classpath path="../jfparted/classes"/>
       <classpath path="../jfconfig/classes"/>
