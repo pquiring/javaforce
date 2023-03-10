@@ -499,8 +499,7 @@ public class THex implements KeyEvents {
     public boolean save() throws Exception {
       StringBuilder sb = new StringBuilder();
       FileOutputStream fos = new FileOutputStream(filename);
-      byte data[] = new byte[txt.length()];
-      txt.toString().getBytes(0, txt.length(), data, 0);  //getBytes() will not encode bytes
+      byte data[] = txt.toString().getBytes("ISO-8859-1");
       fos.write(data);
       fos.close();
       dirty = false;
@@ -538,7 +537,7 @@ public class THex implements KeyEvents {
         byte data[] = JF.readAll(fis);
         fis.close();
         txt.setLength(0);
-        txt.append(new String(data));
+        txt.append(new String(data, "ISO-8859-1"));
         return true;
       } catch (Exception e) {
         return false;

@@ -388,8 +388,7 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
     try {
       tmp = pages.get(idx).hex.getText();
       FileOutputStream fos = new FileOutputStream(pages.get(idx).filename);
-      byte data[] = new byte[tmp.length()];
-      tmp.getBytes(0, tmp.length(), data, 0);  //this method will not encode the bytes (deprecated though)
+      byte data[] = tmp.getBytes("ISO-8859-1");
       fos.write(data);
       fos.close();
       tabs.setTitleAt(idx, pages.get(idx).filename.getName());
@@ -488,7 +487,7 @@ public class jfhex extends javax.swing.JFrame implements FindEvent, ReplaceEvent
       fis.read(txt);
       fis.close();
       bLoading = true;
-      setText(idx, new String(txt, 0));  //new String(byte[], int) will not encode the bytes (new String(byte[]) does)
+      setText(idx, new String(txt, "ISO-8859-1"));
       pages.get(idx).hex.setCaretPosition(0);
       bLoading = false;
       tabs.setTitleAt(idx, pages.get(idx).filename.getName());
