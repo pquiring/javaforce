@@ -6,6 +6,7 @@ package jfcontrols.panels;
  */
 
 import java.util.*;
+import java.lang.reflect.*;
 
 import javaforce.*;
 import javaforce.webui.*;
@@ -1134,7 +1135,8 @@ public class Events {
         LogicBlock blk = null;
         try {
           Class cls = Class.forName("jfcontrols.logic." + name.replaceAll(" ", "_").toUpperCase());
-          blk = (LogicBlock)cls.newInstance();
+          Constructor ctor = cls.getConstructor();
+          blk = (LogicBlock)ctor.newInstance();
         } catch (Exception e) {
           JFLog.log(e);
         }

@@ -8,6 +8,7 @@ package jfconfig;
 
 import java.util.*;
 import java.awt.event.*;
+import java.lang.reflect.*;
 import javax.swing.*;
 
 import javaforce.*;
@@ -571,7 +572,8 @@ public class ServersPanel extends javax.swing.JPanel implements ActionListener {
   private void config(String panelName) {
     try {
       Class cls = Class.forName(panelName);
-      JPanel panel = (JPanel)cls.newInstance();
+      Constructor ctor = cls.getConstructor();
+      JPanel panel = (JPanel)ctor.newInstance();
       ConfigApp.This.setPanel(panel);
     } catch (Exception e) {
       JFLog.log(e);

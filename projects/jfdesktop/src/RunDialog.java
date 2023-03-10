@@ -103,7 +103,7 @@ public class RunDialog extends javax.swing.JDialog {
   }//GEN-LAST:event_cancelActionPerformed
 
   private void okActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okActionPerformed
-    try { Runtime.getRuntime().exec(cmd.getText()); } catch (Exception e) {}
+    try { Runtime.getRuntime().exec(cmd.getText().split(" ")); } catch (Exception e) {}
     dispose();
   }//GEN-LAST:event_okActionPerformed
 

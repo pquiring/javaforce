@@ -184,9 +184,9 @@ public class JFWebPlayer extends Thread implements WebHandler, WebSocketHandler,
         JFLog.log("touch@" + sx + "x" + sy);
         try {
           robot.mouseMove(sx, sy);
-          robot.mousePress(InputEvent.BUTTON1_MASK);
+          robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
           JF.sleep(15);
-          robot.mouseRelease(InputEvent.BUTTON1_MASK);
+          robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
         } catch (Exception e) {}
         break;
       }
@@ -199,9 +199,9 @@ public class JFWebPlayer extends Thread implements WebHandler, WebSocketHandler,
         JFLog.log("toggle@" + sx + "x" + sy);
         try {
           robot.mouseMove(sx, sy);
-          robot.mousePress(InputEvent.BUTTON1_MASK);
+          robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
           JF.sleep(15);
-          robot.mouseRelease(InputEvent.BUTTON1_MASK);
+          robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
         } catch (Exception e) {}
         break;
       }

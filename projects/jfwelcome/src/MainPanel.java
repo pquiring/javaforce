@@ -117,7 +117,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     String action = ae.getActionCommand();
     if (action == null) return;
     try {
-      Runtime.getRuntime().exec(action);
+      Runtime.getRuntime().exec(action.split(" "));
     } catch (Exception e) {
       System.out.println("Exception:" + e);
     }

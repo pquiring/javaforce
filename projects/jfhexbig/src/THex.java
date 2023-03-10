@@ -136,7 +136,7 @@ public class THex implements KeyEvents {
             break;
         }
         break;
-      case KeyEvent.CTRL_MASK:
+      case KeyEvent.CTRL_DOWN_MASK:
         switch (keyCode) {
           case KeyEvent.VK_UP:
             //scrollUp(false);
@@ -158,7 +158,7 @@ public class THex implements KeyEvents {
             break;
         }
         break;
-      case KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK:
+      case KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK:
         switch (keyCode) {
           case KeyEvent.VK_UP:
             //scrollUp(true);
@@ -180,7 +180,7 @@ public class THex implements KeyEvents {
             break;
         }
         break;
-      case KeyEvent.ALT_MASK:
+      case KeyEvent.ALT_DOWN_MASK:
         switch (keyCode) {
           case 'f':
             //ALT+F = File Menu
@@ -219,7 +219,7 @@ public class THex implements KeyEvents {
             break;
         }
         break;
-      case KeyEvent.SHIFT_MASK:
+      case KeyEvent.SHIFT_DOWN_MASK:
         switch (keyCode) {
           case KeyEvent.VK_UP:
             moveUp(true);
