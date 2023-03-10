@@ -517,7 +517,7 @@ public class App extends javax.swing.JFrame {
   public static App app;
   public static ArrayList<Tag> tags = new ArrayList<Tag>();
   public static DefaultTableModel tableModel = new DefaultTableModel();
-  public static DefaultListModel listModel = new DefaultListModel();
+  public static DefaultListModel<String> listModel = new DefaultListModel<>();
   public static JFImage logImage = new JFImage(1, 510);
   public static Worker worker;
   public static Task task;
