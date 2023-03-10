@@ -52,16 +52,16 @@ public class Config implements Serializable {
 
   private void validate() {
     if (hosts == null) {
-      hosts = new ArrayList();
+      hosts = new ArrayList<>();
     }
     if (networks == null) {
-      networks = new ArrayList();
+      networks = new ArrayList<>();
     }
     for(Network nw : networks) {
       nw.validate();
     }
     if (devices == null) {
-      devices = new ArrayList();
+      devices = new ArrayList<>();
     }
     if (email_type == null) {
       email_type = SMTP.AUTH_LOGIN;
