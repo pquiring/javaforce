@@ -21,10 +21,10 @@ public class EditProjectProperties extends javax.swing.JDialog {
     initComponents();
     setPosition();
     this.project = project;
-    videoRate.setValue(new Integer(project.config.videoRate));
+    videoRate.setValue((Integer)(project.config.videoRate));
     v1001.setSelected(project.config.v1001);
     audioRate.setSelectedItem("" + project.config.audioRate);
-    audioChannels.setValue(new Integer(project.config.audioChannels));
+    audioChannels.setValue((Integer)(project.config.audioChannels));
     width.setText("" + project.config.width);
     height.setText("" + project.config.height);
     preview.setSelected(project.config.preview);

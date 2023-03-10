@@ -14,7 +14,7 @@ public class DurationProps extends javax.swing.JPanel {
    */
   public DurationProps(Element element) {
     initComponents();
-    length.setValue(new Integer(element.length));
+    length.setValue((Integer)(element.length));
   }
 
   /**

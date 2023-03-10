@@ -260,7 +260,7 @@ public class VncViewer extends java.applet.Applet
 	len = 8;
       for (int i = 0; i < len; i++) {
 	String hex = encPasswordParam.substring(i*2, i*2+2);
-	Integer x = new Integer(Integer.parseInt(hex, 16));
+	Integer x = Integer.parseInt(hex, 16);
 	pw[i] = x.byteValue();
       }
 

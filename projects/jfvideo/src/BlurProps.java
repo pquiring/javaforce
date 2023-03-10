@@ -15,7 +15,7 @@ public class BlurProps extends javax.swing.JPanel {
    */
   public BlurProps(Element element) {
     initComponents();
-    length.setValue(new Integer(element.length));
+    length.setValue((Integer)(element.length));
     String fs[] = element.fx.split(";");
     for(int a=0;a<fs.length;a++) {
       String f = fs[a];

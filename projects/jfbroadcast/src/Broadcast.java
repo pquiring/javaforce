@@ -2063,16 +2063,16 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
       sip_start.setText("" + settings.sip_start);
       sip_end.setText("" + settings.sip_end);
 
-      number_lines.setValue(new Integer(settings.numberLines));
+      number_lines.setValue((Integer)(settings.numberLines));
       xfer_number.setText(settings.xfer);
       if (settings.delay == 0) settings.delay = 100;
-      delay.setValue(new Integer(settings.delay));
+      delay.setValue((Integer)(settings.delay));
       enable_xfer.setSelected(settings.enable_xfer);
       xfer_digit.setText("" + settings.xfer_digit);
       if (settings.maxRingTime == 0) settings.maxRingTime = 60;
-      maxRingTime.setValue(new Integer(settings.maxRingTime));
+      maxRingTime.setValue((Integer)(settings.maxRingTime));
       if (settings.maxAttempts == 0) settings.maxAttempts = 3;
-      maxAttempts.setValue(new Integer(settings.maxAttempts));
+      maxAttempts.setValue((Integer)(settings.maxAttempts));
 
       enable_g729a.setSelected(settings.enable_g729a);
       enable_g711u.setSelected(settings.enable_g711u);
@@ -2141,10 +2141,10 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     settings = new Settings();
     sip_start.setText("6000");
     sip_end.setText("9000");
-    number_lines.setValue(new Integer(8));
-    delay.setValue(new Integer(100));
-    maxRingTime.setValue(new Integer(60));
-    maxAttempts.setValue(new Integer(3));
+    number_lines.setValue((Integer)(8));
+    delay.setValue((Integer)(100));
+    maxRingTime.setValue((Integer)(60));
+    maxAttempts.setValue((Integer)(3));
     human_vm_detect.setSelected(true);
     greeting_threshold.setText("1000");
     silence_threshold.setText("1000");
@@ -2195,28 +2195,28 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
 
   private void validateOptions() {
     if ((Integer)number_lines.getValue() < 1) {
-      number_lines.setValue(new Integer(1));
+      number_lines.setValue((Integer)(1));
     }
 
     if ((Integer)delay.getValue() < 100) {
-      delay.setValue(new Integer(100));
+      delay.setValue((Integer)(100));
     }
     if ((Integer)delay.getValue() > 10000) {
-      delay.setValue(new Integer(10000));
+      delay.setValue((Integer)(10000));
     }
 
     if ((Integer)maxRingTime.getValue() < 10) {
-      maxRingTime.setValue(new Integer(10));
+      maxRingTime.setValue((Integer)(10));
     }
     if ((Integer)maxRingTime.getValue() > 100) {
-      maxRingTime.setValue(new Integer(100));
+      maxRingTime.setValue((Integer)(100));
     }
 
     if ((Integer)maxAttempts.getValue() < 1) {
-      maxAttempts.setValue(new Integer(1));
+      maxAttempts.setValue((Integer)(1));
     }
     if ((Integer)maxAttempts.getValue() > 100) {
-      maxAttempts.setValue(new Integer(100));
+      maxAttempts.setValue((Integer)(100));
     }
     validateTime(start1, "10:00");
     validateTime(start2, "10:00");
@@ -2681,7 +2681,7 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     for(int row=0;row<rc;row++) {
       if (((String)listView.getValueAt(row, 0)).equals(number)) {
         listView.setValueAt("calling", row, 1);
-        listView.setValueAt(new Integer(attempts), row, 2);
+        listView.setValueAt((Integer)(attempts), row, 2);
         listView.repaint();
         return;
       }

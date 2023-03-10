@@ -20,12 +20,12 @@ public class DateTimePanel extends javax.swing.JPanel {
   public DateTimePanel() {
     initComponents();
     Calendar now = Calendar.getInstance();
-    set_year.setValue(new Integer(now.get(Calendar.YEAR)));
+    set_year.setValue((Integer)now.get(Calendar.YEAR));
     set_month.setSelectedIndex(now.get(Calendar.MONTH));
-    set_day.setValue(new Integer(now.get(Calendar.DAY_OF_MONTH)));
-    set_hour.setValue(new Integer(now.get(Calendar.HOUR_OF_DAY)));
-    set_minute.setValue(new Integer(now.get(Calendar.MINUTE)));
-    set_second.setValue(new Integer(now.get(Calendar.SECOND)));
+    set_day.setValue((Integer)(now.get(Calendar.DAY_OF_MONTH)));
+    set_hour.setValue((Integer)(now.get(Calendar.HOUR_OF_DAY)));
+    set_minute.setValue((Integer)(now.get(Calendar.MINUTE)));
+    set_second.setValue((Integer)(now.get(Calendar.SECOND)));
     tzPanel = new TimeZonePanel();
     tzPanel.loadCurrentZone();
     tz.add(tzPanel);

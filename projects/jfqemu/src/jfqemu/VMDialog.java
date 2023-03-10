@@ -47,7 +47,7 @@ public class VMDialog extends javax.swing.JDialog {
     if (vm.hddif == null) vm.hddif = "IDE";
     hddif.setSelectedItem(vm.hddif);
 
-    cpuCount.setValue(new Integer(vm.cpuCount));
+    cpuCount.setValue((Integer)(vm.cpuCount));
     x64.setSelected(vm.cpuType.equals("x86_64"));
     memory.setText("" + vm.memory);
     if (vm.boot.equals("c"))
@@ -56,7 +56,7 @@ public class VMDialog extends javax.swing.JDialog {
       boot.setSelectedIndex(1);
     if (vm.serviceID != -1) {
       isService.setSelected(true);
-      serviceID.setValue(new Integer(vm.serviceID));
+      serviceID.setValue((Integer)(vm.serviceID));
     }
     sound.setSelectedItem(vm.sound);
     video.setSelectedItem(vm.video);
@@ -381,7 +381,7 @@ public class VMDialog extends javax.swing.JDialog {
     jLabel8.setText("# CPUs:");
 
     cpuCount.setModel(new javax.swing.SpinnerNumberModel(1, 1, 8, 1));
-    cpuCount.setValue(new Integer(1));
+    cpuCount.setValue((Integer)(1));
 
     jLabel7.setText("1st Boot Device:");
 

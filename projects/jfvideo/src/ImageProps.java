@@ -14,7 +14,7 @@ public class ImageProps extends javax.swing.JPanel {
   public ImageProps(Element element) {
     initComponents();
     alphaFadeIn.setSelected(element.alphaFadeIn);
-    alphaFadeInDuration.setValue(new Integer(element.alphaFadeInDuration));
+    alphaFadeInDuration.setValue((Integer)(element.alphaFadeInDuration));
     alphaLevel.setValue(255 - element.alphaLevel);
     int lvl = 128;
     if ((element.clrAlpha & 0xff0000) > 0) {
