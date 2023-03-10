@@ -8,6 +8,7 @@ package javaforce.awt;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.*;
 import java.lang.reflect.*;
 import javax.swing.*;
 import javax.swing.filechooser.*;
@@ -435,5 +436,10 @@ public class JFAWT {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public static Set<? extends AWTKeyStroke> emptyKeys() {
+    HashSet<AWTKeyStroke> list = new HashSet<>();
+    return list;
   }
 }

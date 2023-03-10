@@ -28,8 +28,8 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
     initComponents();
     initApp();
     //allow TAB usage by disabling key binding to focus traversal
-    tabs.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
-    tabs.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, Collections.EMPTY_SET);
+    tabs.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, JFAWT.emptyKeys());
+    tabs.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, JFAWT.emptyKeys());
   }
 
   /** This method is called from within the constructor to
