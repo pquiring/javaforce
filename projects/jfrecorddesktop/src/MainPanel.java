@@ -83,18 +83,18 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     audio = new javax.swing.JRadioButton();
     noaudio = new javax.swing.JRadioButton();
     start = new javax.swing.JButton();
-    freq = new javax.swing.JComboBox();
+    freq = new javax.swing.JComboBox<>();
     mono = new javax.swing.JRadioButton();
     stereo = new javax.swing.JRadioButton();
     jLabel3 = new javax.swing.JLabel();
     fps = new javax.swing.JSpinner();
     jLabel4 = new javax.swing.JLabel();
-    audioDevices = new javax.swing.JComboBox();
+    audioDevices = new javax.swing.JComboBox<>();
     showMouseCursor = new javax.swing.JCheckBox();
     jLabel5 = new javax.swing.JLabel();
-    vBitRate = new javax.swing.JComboBox();
+    vBitRate = new javax.swing.JComboBox<>();
     jLabel6 = new javax.swing.JLabel();
-    aBitRate = new javax.swing.JComboBox();
+    aBitRate = new javax.swing.JComboBox<>();
     jLabel7 = new javax.swing.JLabel();
     delay3seconds = new javax.swing.JCheckBox();
     jLabel8 = new javax.swing.JLabel();
@@ -128,7 +128,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
       }
     });
 
-    freq.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "44100", "22050", "11025", "8000" }));
+    freq.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "44100", "22050", "11025", "8000" }));
     freq.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         freqActionPerformed(evt);
@@ -153,7 +153,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
 
     jLabel5.setText("Video Quality");
 
-    vBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "8M", "6M", "4M", "2M", "1M", "800k", "400k", "200k" }));
+    vBitRate.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8M", "6M", "4M", "2M", "1M", "800k", "400k", "200k" }));
     vBitRate.setSelectedIndex(4);
     vBitRate.setToolTipText("");
     vBitRate.addActionListener(new java.awt.event.ActionListener() {
@@ -164,7 +164,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
 
     jLabel6.setText("Audio Quality");
 
-    aBitRate.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "256k", "192k", "128k", "64k", "32k" }));
+    aBitRate.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "256k", "192k", "128k", "64k", "32k" }));
     aBitRate.setSelectedIndex(2);
     aBitRate.setToolTipText("");
 
@@ -390,9 +390,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   }//GEN-LAST:event_broadcastActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JComboBox aBitRate;
+  private javax.swing.JComboBox<String> aBitRate;
   private javax.swing.JRadioButton audio;
-  private javax.swing.JComboBox audioDevices;
+  private javax.swing.JComboBox<String> audioDevices;
   private javax.swing.JRadioButton broadcast;
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.ButtonGroup buttonGroup2;
@@ -400,7 +400,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private javax.swing.JComboBox<String> codec;
   private javax.swing.JCheckBox delay3seconds;
   private javax.swing.JSpinner fps;
-  private javax.swing.JComboBox freq;
+  private javax.swing.JComboBox<String> freq;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel11;
@@ -425,7 +425,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private javax.swing.JRadioButton stereo;
   private javax.swing.JRadioButton timeLapse;
   private javax.swing.JCheckBox trim3seconds;
-  private javax.swing.JComboBox vBitRate;
+  private javax.swing.JComboBox<String> vBitRate;
   // End of variables declaration//GEN-END:variables
 
   private AudioInput mic;
