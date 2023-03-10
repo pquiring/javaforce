@@ -17,11 +17,6 @@ public class Menu {
     JMenuBar menu = create();
     frame.setJMenuBar(menu);
   }
-  public static void create(JApplet applet, MainPanel panel) {
-    Menu.panel = panel;
-    JMenuBar menu = create();
-    applet.setJMenuBar(menu);
-  }
   private static JMenuBar create() {
     JMenuBar menuBar;
     JMenu menu;
