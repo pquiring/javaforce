@@ -267,7 +267,7 @@ public class RestoreDialog extends javax.swing.JDialog {
   }//GEN-LAST:event_srcItemStateChanged
 
   private void jfpartedActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jfpartedActionPerformed
-    try { Runtime.getRuntime().exec("jfparted"); } catch (Exception e) {}
+    try { Runtime.getRuntime().exec(new String[] {"jfparted"}); } catch (Exception e) {}
   }//GEN-LAST:event_jfpartedActionPerformed
 
   private void refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshActionPerformed

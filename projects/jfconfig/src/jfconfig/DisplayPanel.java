@@ -200,7 +200,7 @@ public class DisplayPanel extends javax.swing.JPanel implements MouseMotionListe
 
   private void nvidiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nvidiaActionPerformed
     try {
-      Runtime.getRuntime().exec("nvidia-settings");
+      Runtime.getRuntime().exec(new String[] {"nvidia-settings"});
     } catch (Exception e) {
     }
   }//GEN-LAST:event_nvidiaActionPerformed

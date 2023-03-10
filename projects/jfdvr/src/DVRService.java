@@ -107,8 +107,8 @@ public class DVRService extends Thread {
       File firewall_setup = new File(Paths.dataPath + "/firewall.setup");
       if (firewall_setup.exists()) return;
       firewall_setup.createNewFile();
-      Runtime.getRuntime().exec("netsh advfirewall firewall add rule name=\"jfDVR_RTP_IN\" dir=in protocol=udp localport=5000-10000 action=allow");
-      Runtime.getRuntime().exec("netsh advfirewall firewall add rule name=\"jfDVR_RTP_OUT\" dir=out protocol=udp localport=5000-10000 action=allow");
+      Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTP_IN\"", "dir=in", "protocol=udp", "localport=5000-10000", "action=allow"});
+      Runtime.getRuntime().exec(new String[] {"netsh", "advfirewall", "firewall", "add", "rule", "name=\"jfDVR_RTP_OUT\"", "dir=out", "protocol=udp", "localport=5000-10000", "action=allow"});
     } catch (Exception e) {
       JFLog.log(e);
     }

@@ -301,7 +301,7 @@ public class ConfigDialog extends javax.swing.JDialog {
 
   private void themesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_themesActionPerformed
     try {
-      Runtime.getRuntime().exec("obconf");
+      Runtime.getRuntime().exec(new String[] {"obconf"});
     } catch (Exception e) {}
   }//GEN-LAST:event_themesActionPerformed
 

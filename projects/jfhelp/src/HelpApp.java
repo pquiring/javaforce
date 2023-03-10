@@ -132,7 +132,7 @@ public class HelpApp extends javax.swing.JFrame {
         if (url.equals("file:/usr/share/jfhelp/contents.html")) {
           contentsActionPerformed(null);
         }  else if (url.startsWith("http")) {
-          Runtime.getRuntime().exec("x-www-browser " + url);
+          Runtime.getRuntime().exec(new String[] {"x-www-browser", url});
         } else {
           clear();
           html.setPage(evt.getURL());

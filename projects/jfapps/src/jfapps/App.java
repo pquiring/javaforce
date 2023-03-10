@@ -223,7 +223,7 @@ public class App extends javax.swing.JPanel {
               if (sp.getErrorLevel() == 0) ok = true;
             } else {
               //just execute it as root
-              Runtime.getRuntime().exec("chmod +x " + tmpFile.getAbsolutePath());
+              Runtime.getRuntime().exec(new String[] {"chmod", "+x", tmpFile.getAbsolutePath()});
               ShellProcess sp = new ShellProcess();
               output = sp.run(new String[] {"sudo" ,tmpFile.getAbsolutePath()}, true);
               if (sp.getErrorLevel() == 0) ok = true;
