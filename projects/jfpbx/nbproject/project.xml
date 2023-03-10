@@ -70,11 +70,11 @@
             <compilation-unit>
                 <package-root>src</package-root>
                 <classpath mode="compile">javaforce.jar</classpath>
-                <source-level>1.8</source-level>
+                <source-level>11</source-level>
             </compilation-unit>
             <compilation-unit>
                 <package-root>static</package-root>
-                <source-level>1.8</source-level>
+                <source-level>11</source-level>
             </compilation-unit>
         </java-data>
     </configuration>
