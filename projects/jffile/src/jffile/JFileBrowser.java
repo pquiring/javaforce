@@ -540,9 +540,9 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
 
   public void keyPressed(KeyEvent e) {
     int keycode = e.getKeyCode();
-    int mods = e.getModifiers();
+    int mods = e.getModifiersEx() & JFAWT.KEY_MASKS;
 //    JFLog.log("keyPressed:" + mods + "," + (char)keycode);
-    if (mods == KeyEvent.CTRL_MASK) {
+    if (mods == KeyEvent.CTRL_DOWN_MASK) {
       switch (keycode) {
         case KeyEvent.VK_C:
           copy();
@@ -1304,7 +1304,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
 
   public void mouseClicked(MouseEvent me) {
     JComponent c = (JComponent)me.getSource();
-    int mod = me.getModifiers();
+    int mod = me.getModifiersEx() & JFAWT.KEY_MASKS;
     if (c == panel) {
       if ((me.getButton() == me.BUTTON3) && (me.getClickCount() == 1)) {
         if (desktopMenu == null) return;
@@ -1313,14 +1313,14 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
         desktopMenu.show(panel, me.getX(), me.getY());
         //TODO : make desktopMenu on top - how ???
       }
-      if ((mod & KeyEvent.CTRL_MASK) == 0) clearSelection();
+      if ((mod & KeyEvent.CTRL_DOWN_MASK) == 0) clearSelection();
       return;
     }
     if (c instanceof JFileIcon) {
       JFileIcon b = (JFileIcon)c;
       switch (me.getClickCount()) {
         case 1:
-          if ((mod & KeyEvent.CTRL_MASK) == 0) clearSelection();
+          if ((mod & KeyEvent.CTRL_DOWN_MASK) == 0) clearSelection();
           b.setSelected(true);
           break;
         case 2:
@@ -1332,7 +1332,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
   }
 
   public void mousePressed(MouseEvent me) {
-    int mod = me.getModifiers();
+    int mod = me.getModifiersEx() & JFAWT.KEY_MASKS;
     requestFocus();
     dragicon = false;
     dragselection = false;
@@ -1340,7 +1340,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
     if (c instanceof JFileIcon) {
       JFileIcon b = (JFileIcon)c;
       if (!b.isSelected()) {
-        if ((mod & KeyEvent.CTRL_MASK) == 0) clearSelection();
+        if ((mod & KeyEvent.CTRL_DOWN_MASK) == 0) clearSelection();
         b.setSelected(true);
       }
       if (me.getButton() == MouseEvent.BUTTON3) {

@@ -18,11 +18,6 @@ public class Menu {
     JMenuBar menu = create(local, true);
     frame.setJMenuBar(menu);
   }
-  public static void create(JApplet applet, JTabbedPane tabs, boolean local) {
-    Menu.tabs = tabs;
-    JMenuBar menu = create(local, false);
-    applet.setJMenuBar(menu);
-  }
   private static JMenuBar create(boolean local, boolean exit) {
     JMenuBar menuBar;
     JMenu menu;

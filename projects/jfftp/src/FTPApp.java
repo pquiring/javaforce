@@ -59,7 +59,7 @@ public class FTPApp extends javax.swing.JFrame {
     jMenu1.setMnemonic('F');
     jMenu1.setText("File");
 
-    jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+    jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
     jMenuItem1.setMnemonic('S');
     jMenuItem1.setText("Site Manager");
     jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -89,7 +89,7 @@ public class FTPApp extends javax.swing.JFrame {
     jMenu1.add(jMenuItem3);
     jMenu1.add(jSeparator3);
 
-    jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
+    jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_DOWN_MASK));
     jMenuItem6.setMnemonic('C');
     jMenuItem6.setText("Close Site");
     jMenuItem6.addActionListener(new java.awt.event.ActionListener() {

@@ -665,14 +665,14 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
   }//GEN-LAST:event_remote_paste_2ActionPerformed
 
   private void localDirKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_localDirKeyPressed
-    if (evt.getModifiers() != 0) return;
+    if ((evt.getModifiersEx() & JFAWT.KEY_MASKS) != 0) return;
     if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
       local_chdir(localDir.getText());
     }
   }//GEN-LAST:event_localDirKeyPressed
 
   private void remoteDirKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_remoteDirKeyPressed
-    if (evt.getModifiers() != 0) return;
+    if ((evt.getModifiersEx() & JFAWT.KEY_MASKS) != 0) return;
     if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
       remote_chdir(remoteDir.getText());
     }

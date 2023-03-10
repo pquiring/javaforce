@@ -25,7 +25,7 @@ public class TermApp extends javax.swing.JFrame implements KeyEventDispatcher {
 
   public boolean dispatchKeyEvent(KeyEvent e) {
     //System.out.println("KeyEvent:" + e);
-    if ((e.getSource() instanceof Buffer) && (e.getKeyCode() == e.VK_TAB) && (e.getModifiers() == 0)) {
+    if ((e.getSource() instanceof Buffer) && (e.getKeyCode() == e.VK_TAB) && ((e.getModifiersEx() & JFAWT.KEY_MASKS) == 0)) {
       return true;  //do not pass on to next dispatch handler (prevents FocusManager from using TAB to switch tabs)
     }
     return false;  //pass on as normal

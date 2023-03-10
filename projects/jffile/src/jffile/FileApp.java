@@ -196,7 +196,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     });
     jMenu1.add(newtLocalTab);
 
-    siteMgr.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+    siteMgr.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_DOWN_MASK));
     siteMgr.setMnemonic('S');
     siteMgr.setText("Site Manager");
     siteMgr.addActionListener(new java.awt.event.ActionListener() {
@@ -226,7 +226,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     jMenu1.add(exportSites);
     jMenu1.add(jSeparator3);
 
-    closeTab.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_MASK));
+    closeTab.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_W, java.awt.event.InputEvent.CTRL_DOWN_MASK));
     closeTab.setMnemonic('C');
     closeTab.setText("Close Site");
     closeTab.addActionListener(new java.awt.event.ActionListener() {
@@ -531,7 +531,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
 
   private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
     try {
-      Runtime.getRuntime().exec("jfhelp jffile");
+      Runtime.getRuntime().exec(new String[] {"jfhelp", "jffile"});
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -946,9 +946,9 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
     int id = e.getID();
     char ch = e.getKeyChar();
     int cc = e.getKeyCode();
-    int mod = e.getModifiers();
+    int mod = e.getModifiersEx() & JFAWT.KEY_MASKS;
 //    JFLog.log("keyEvent:" + mod + "," + (char)cc + "," + getFocusOwner());
-    if (mod == KeyEvent.CTRL_MASK) {
+    if (mod == KeyEvent.CTRL_DOWN_MASK) {
       switch (id) {
         case KeyEvent.KEY_TYPED:
           switch (cc) {

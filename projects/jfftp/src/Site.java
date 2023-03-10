@@ -503,8 +503,8 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
 
   private void localFilesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_localFilesKeyPressed
     int keycode = evt.getKeyCode();
-    int mods = evt.getModifiers();
-    if (mods == KeyEvent.CTRL_MASK) {
+    int mods = evt.getModifiersEx() & JFAWT.KEY_MASKS;
+    if (mods == KeyEvent.CTRL_DOWN_MASK) {
       switch (keycode) {
         case KeyEvent.VK_C:
 //          local_copy();
@@ -526,8 +526,8 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
 
   private void remoteFilesKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_remoteFilesKeyPressed
     int keycode = evt.getKeyCode();
-    int mods = evt.getModifiers();
-    if (mods == KeyEvent.CTRL_MASK) {
+    int mods = evt.getModifiersEx() & JFAWT.KEY_MASKS;
+    if (mods == KeyEvent.CTRL_DOWN_MASK) {
       switch (keycode) {
         case KeyEvent.VK_C:
 //          remote_copy();
