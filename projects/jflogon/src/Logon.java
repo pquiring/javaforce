@@ -91,11 +91,11 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
     Shutdown = new javax.swing.JMenuItem();
     NetworkPopup = new javax.swing.JPopupMenu();
     lUser = new javax.swing.JLabel();
-    username = new javax.swing.JComboBox();
+    username = new javax.swing.JComboBox<>();
     lPass = new javax.swing.JLabel();
     password = new javax.swing.JPasswordField();
     logonTo = new javax.swing.JLabel();
-    computer = new javax.swing.JComboBox();
+    computer = new javax.swing.JComboBox<>();
     logon = new javax.swing.JButton();
     shutdown = new javax.swing.JButton();
     jLabel4 = new javax.swing.JLabel();
@@ -312,7 +312,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private javax.swing.JMenuItem Reboot;
   private javax.swing.JMenuItem Shutdown;
   private javax.swing.JMenuItem Sleep;
-  private javax.swing.JComboBox computer;
+  private javax.swing.JComboBox<String> computer;
   private javax.swing.JLabel jLabel4;
   private javax.swing.JLabel lPass;
   private javax.swing.JLabel lUser;
@@ -321,7 +321,7 @@ public class Logon extends javax.swing.JFrame implements ActionListener {
   private javax.swing.JButton network;
   private javax.swing.JPasswordField password;
   private javax.swing.JButton shutdown;
-  private javax.swing.JComboBox username;
+  private javax.swing.JComboBox<String> username;
   private javax.swing.JPopupMenu xMenu;
   // End of variables declaration//GEN-END:variables
 
