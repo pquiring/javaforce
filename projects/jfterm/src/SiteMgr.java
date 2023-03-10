@@ -45,7 +45,7 @@ public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
     lHost = new javax.swing.JLabel();
     tHost = new javax.swing.JTextField();
     lProtocol = new javax.swing.JLabel();
-    cbProtocol = new javax.swing.JComboBox();
+    cbProtocol = new javax.swing.JComboBox<>();
     lPort = new javax.swing.JLabel();
     tPort = new javax.swing.JTextField();
     lUsername = new javax.swing.JLabel();
@@ -122,7 +122,7 @@ public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
 
     lProtocol.setText("Protocol");
 
-    cbProtocol.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Telnet (23)", "SSH (22)", "SSL (443)", "ComPort" }));
+    cbProtocol.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Telnet (23)", "SSH (22)", "SSL (443)", "ComPort" }));
     cbProtocol.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         cbProtocolItemStateChanged(evt);
@@ -609,7 +609,7 @@ public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
   private javax.swing.ButtonGroup buttonGroup1;
   private javax.swing.JCheckBox cbAutoSize;
   private javax.swing.JCheckBox cbLocalEcho;
-  private javax.swing.JComboBox cbProtocol;
+  private javax.swing.JComboBox<String> cbProtocol;
   private javax.swing.JCheckBox cbX;
   private javax.swing.JCheckBox cbX11;
   private javax.swing.JCheckBox cbY;
