@@ -18,7 +18,7 @@ public class TorrentClient extends Thread {
   private static final int MAXPEERS = 30;  //max # active peers
   private static final int NUMWANT = 80;  //# peers requested from tracker (advisory)
 
-  public boolean log = false;  //lots of debugging info
+  public static boolean debug = true;  //lots of debugging info
 
   public String torrent, dest;
   public boolean done = false;
@@ -34,7 +34,7 @@ public class TorrentClient extends Thread {
   public float available = 0.0f;
   //metainfo data
   private byte metaData[];
-  private MetaFile metaFile;
+  private TorrentFile metaFile;
   public String status;
   private boolean have[];
   private int haveCnt = 0;
@@ -155,33 +155,36 @@ public class TorrentClient extends Thread {
         peer_id += (char)(r.nextBoolean() ? 'a' : 'A' + r.nextInt(26));
       }
       //read torrent
-      if (log) JFLog.log("Reading torrent:" + torrent);
+      if (debug) JFLog.log("Reading torrent:" + torrent);
       readMeta();
-      if (log) JFLog.log("Getting info...");
-      Object info = metaFile.getTag(new String[] {"d", "s:info"}, null);
-      info_hash = SHA1sum(Arrays.copyOfRange(metaData, metaFile.tagBegin, metaFile.tagEnd+1));
-      if (log) JFLog.log("info_hash = " + escape(info_hash));
+      if (debug) JFLog.log("Getting info...");
+      MetaDict info = metaFile.getDict(new String[] {"d", "d:info"}, null);
+      info_hash = SHA1sum(Arrays.copyOfRange(metaData, info.pos1, info.pos2));
+      if (debug) JFLog.log("info_hash = " + escape(info_hash));
       announce = metaFile.getString(new String[] {"d", "s:announce"}, null);
-      if (log) JFLog.log("announce=" + announce);
+      if (debug) JFLog.log("announce=" + announce);
       MetaList aList = metaFile.getList(new String[] {"d", "s:announce-list"}, null);
       if (aList != null) {
         for(int a=0;a<aList.list.size();a++) {
-          String str = concatList(aList.list, false);
-          announceList.add(str);
-//          if (log) JFLog.log("list=" + str);
+          MetaTag tag = aList.list.get(a);
+          if (tag instanceof MetaString) {
+            MetaString str = (MetaString)tag;
+            announceList.add(str.str);
+          }
         }
       }
       totalLength = metaFile.getValue(new String[] {"d", "d:info", "i:length"}, null);
-      if (log) JFLog.log("length=" + totalLength);
+      if (debug) JFLog.log("length=" + totalLength);
       pieceLength = metaFile.getValue(new String[] {"d", "d:info", "i:piece length"}, null);
-      if (log) JFLog.log("piece_length=" + pieceLength);
+      if (debug) JFLog.log("piece_length=" + pieceLength);
       numFragsPerPiece = (int)(pieceLength / FRAGSIZE);
       if (numFragsPerPiece * FRAGSIZE != pieceLength) throw new Exception("bad piece_length (not multiple of FRAGSIZE)");
       name = metaFile.getString(new String[] {"d", "d:info", "s:name"}, null);
-      if (log) JFLog.log("name=" + name);
-      byte[] piecesArray = metaFile.getString(new String[] {"d", "d:info", "s:pieces"}, null).getBytes();
+      if (debug) JFLog.log("name=" + name);
+      MetaData piecesTag = (MetaData)metaFile.getDictEntry(new String[] {"d", "d:info", "s:pieces"}, null);
+      byte[] piecesArray = piecesTag.data;
       int noPieces = piecesArray.length / 20;
-      if (log) JFLog.log("# pieces=" + noPieces);
+      if (debug) JFLog.log("# pieces=" + noPieces);
       have = new boolean[noPieces];
       pieces = new byte[noPieces][];
       for(int a=0;a<noPieces;a++) {
@@ -190,37 +193,37 @@ public class TorrentClient extends Thread {
       }
       MetaList filesList = metaFile.getList(new String[] {"d", "d:info", "l:files"}, null);
       if (filesList != null) {
-        if (log) JFLog.log("filesList");
+        if (debug) JFLog.log("filesList");
         noFiles = filesList.list.size();
         long filesLength = 0;
         for(int a=0;a<noFiles;a++) {
           MetaList fileDict = (MetaList)filesList.list.get(a);
-          MetaList fileName = (MetaList)metaFile.getList(new String[]{"s:path"}, fileDict.list);
+          MetaList fileName = (MetaList)metaFile.getList(new String[]{"s:path"}, fileDict);
           TFile tfile = new TFile();
           tfile.name = concatList(fileName.list, true);
-          tfile.length = (Long)metaFile.getValue(new String[] {"i:length"}, fileDict.list);
+          tfile.length = (Long)metaFile.getValue(new String[] {"i:length"}, fileDict);
           filesLength += tfile.length;
           files.add(tfile);
-          if (log) JFLog.log("file[]=" + tfile.name + ":length=" + tfile.length);
+          if (debug) JFLog.log("file[]=" + tfile.name + ":length=" + tfile.length);
         }
         if (totalLength == -1) {
           totalLength = filesLength;
         }
       } else {
-        if (log) JFLog.log("filesList=null");
+        if (debug) JFLog.log("filesList=null");
         noFiles = 1;
         TFile tfile = new TFile();
         tfile.name = name;
         tfile.length = totalLength;
         files.add(tfile);
       }
-      if (log) JFLog.log("noFiles=" + noFiles);
+      if (debug) JFLog.log("noFiles=" + noFiles);
       lastPieceLength = totalLength % pieceLength;
       if (lastPieceLength == 0) lastPieceLength = pieceLength;
-      if (log) JFLog.log("lastPieceLength=" + lastPieceLength);
+      if (debug) JFLog.log("lastPieceLength=" + lastPieceLength);
       //what are we doing?
       checkFiles();
-      if (log) JFLog.log("haveCnt=" + haveCnt);
+      if (debug) JFLog.log("haveCnt=" + haveCnt);
       //create a timer to get info from announce[-list]
       status = "Contacting tracker";
       timer.schedule(new TimerTask() {
@@ -243,20 +246,20 @@ public class TorrentClient extends Thread {
             if (done) return;
             addPeer();
           } catch (Exception e) {
-            if (log) JFLog.log(e);
+            if (debug) JFLog.log(e);
           }
         }
       }, 1000, 1000);
     } catch (Exception e) {
       status = "Error";
-      if (log) JFLog.log(e);
+      if (debug) JFLog.log(e);
     }
   }
   private void readMeta() throws Exception {
     FileInputStream fis = new FileInputStream(torrent);
     metaData = JF.readAll(fis);
     fis.close();
-    metaFile = new MetaFile();
+    metaFile = new TorrentFile();
     metaFile.read(metaData);
   }
   private String concatList(ArrayList<MetaTag> list, boolean isFilePath) throws Exception {
@@ -415,7 +418,7 @@ public class TorrentClient extends Thread {
     if (announce.startsWith("http://")) {
       URL url = new URL(announce + "?info_hash=" + escape(info_hash) + "&peer_id=" + peer_id + "&port=" + TorrentServer.port +
         "&uploaded=" + upAmount + "&downloaded=" + downAmount + "&left=" + (totalLength - downAmount) + "&compact=1&numwant=" + NUMWANT + "&event=" + event);
-      if (log) JFLog.log("url=" + url.toExternalForm());
+      if (debug) JFLog.log("url=" + url.toExternalForm());
       HttpURLConnection uc = (HttpURLConnection)url.openConnection();
       uc.setReadTimeout(30 * 1000);
       uc.connect();
@@ -423,7 +426,7 @@ public class TorrentClient extends Thread {
       int length = uc.getContentLength();
       metaData = JF.readAll(is, length);
       uc.disconnect();
-      if (log) JFLog.log("response=" + new String(metaData));
+      if (debug) JFLog.log("response=" + new String(metaData));
       metaFile.read(metaData);
       String failure = metaFile.getString(new String[] {"d", "s:failure reason"}, null);
       if (failure != null) {
@@ -451,7 +454,7 @@ public class TorrentClient extends Thread {
         }
         if (!found) {
           peerList.add(p);
-          if (log) JFLog.log("peer[]=" + p.ip + ":" + p.port);
+          if (debug) JFLog.log("peer[]=" + p.ip + ":" + p.port);
         }
       }
       if (!registered) {
@@ -476,7 +479,7 @@ public class TorrentClient extends Thread {
       peer = peerList.get(peerIdx++);
       if (peerIdx >= peerList.size()) peerIdx = 0;
       if (peer.inuse) return;
-      if (log) JFLog.log("Connecting to peer:" + peer.ip + ":" + peer.port);
+      if (debug) JFLog.log("Connecting to peer:" + peer.ip + ":" + peer.port);
       peer.lastMsg = now;
       peer.inuse = true;
       peerActiveCount++;
@@ -541,7 +544,7 @@ public class TorrentClient extends Thread {
     }
     public void run() {
       try {
-        if (log) JFLog.log("Starting PeerListener:" + peer.ip);
+        if (debug) JFLog.log("Starting PeerListener:" + peer.ip);
         if (peer.s == null) {
           peer.s = new Socket(peer.ip, peer.port);
           peer.is = peer.s.getInputStream();
@@ -570,9 +573,9 @@ public class TorrentClient extends Thread {
           processMessage(msg);
         }
       } catch (ConnectException e1) {
-        if (log) JFLog.log("Lost connection:" + peer.ip);
+        if (debug) JFLog.log("Lost connection:" + peer.ip);
       } catch (Exception e2) {
-        if (log) JFLog.log(e2);
+        if (debug) JFLog.log(e2);
       }
       try { if (peer.s.isConnected()) peer.s.close(); } catch (Exception e1) { }
 //      if (log) JFLog.log("Stopping peer:" + peer.ip);
@@ -752,17 +755,17 @@ public class TorrentClient extends Thread {
     private void fragment(byte msg[]) throws Exception {
       // FRAGMENT PIDX(4) BEGIN(4)
       int pidx = BE.getuint32(msg, 1);
-      if (pidx != peer.downloadingPieceIdx) {if (log) JFLog.log("frag:bad pidx:"+pidx);return;}
+      if (pidx != peer.downloadingPieceIdx) {if (debug) JFLog.log("frag:bad pidx:"+pidx);return;}
       int begin = BE.getuint32(msg, 5);
       int fidx = begin / FRAGSIZE;
-      if (fidx >= peer.numFrags) {if (log) JFLog.log("frag:bad fidx:"+fidx);return;}
+      if (fidx >= peer.numFrags) {if (debug) JFLog.log("frag:bad fidx:"+fidx);return;}
       int length = msg.length - 9;
-      if (peer.piece == null) {if (log) JFLog.log("frag:not ready(1)");return;}
-      if (begin + length > peer.piece.length) {if (log) JFLog.log("frag:bad length:"+fidx);return;}
+      if (peer.piece == null) {if (debug) JFLog.log("frag:not ready(1)");return;}
+      if (begin + length > peer.piece.length) {if (debug) JFLog.log("frag:bad length:"+fidx);return;}
       synchronized(peer.fragLock) {
-        if (peer.haveFrags[fidx]) {if (log) JFLog.log("frag:already have fidx:"+fidx);return;}
+        if (peer.haveFrags[fidx]) {if (debug) JFLog.log("frag:already have fidx:"+fidx);return;}
         System.arraycopy(msg, 9, peer.piece, begin, length);
-        if (log) JFLog.log("gotFrag:" + pidx + "," + fidx);
+        if (debug) JFLog.log("gotFrag:" + pidx + "," + fidx);
         peer.haveFrags[fidx] = true;
         peer.gotFragCnt++;
         peer.pendingFrags--;
@@ -782,7 +785,7 @@ public class TorrentClient extends Thread {
     }
     public void run() {
       try {
-        if (log) JFLog.log("Starting PeerDownloader:" + peer.ip);
+        if (debug) JFLog.log("Starting PeerDownloader:" + peer.ip);
         synchronized(peer.chokeLock) {
           while (true) {
             if (done) return;
@@ -808,7 +811,7 @@ public class TorrentClient extends Thread {
               peer.chokeLock.wait();
               continue;
             }
-            if (log) JFLog.log("want " + pidx + " from " + peer.ip);
+            if (debug) JFLog.log("want " + pidx + " from " + peer.ip);
             if (!peer.am_interested) {
               writePacket(peer.os, new byte[] {INTERESTED});
               peer.am_interested = true;
@@ -838,7 +841,7 @@ public class TorrentClient extends Thread {
             peer.gotFragCnt = 0;
             int nextFrag = 0;
             //now send frag requests (stack them up to FRAGSTACK)
-            if (log) JFLog.log("downloading fragments:#frags=" + peer.numFrags + ":from=" + peer.ip);
+            if (debug) JFLog.log("downloading fragments:#frags=" + peer.numFrags + ":from=" + peer.ip);
             while (peer.gotFragCnt != peer.numFrags) {
               synchronized (peer.fragLock) {
                 if ((peer.pendingFrags < FRAGSTACK) && (nextFrag < peer.numFrags)) {
@@ -851,7 +854,7 @@ public class TorrentClient extends Thread {
               }
             }
             byte sha[] = SHA1sum(peer.piece);
-            if (log) {
+            if (debug) {
               JFLog.log("sha1.downloaded=" + escape(sha));
               JFLog.log("sha1.peice     =" + escape(pieces[peer.downloadingPieceIdx]));
             }
@@ -879,7 +882,7 @@ public class TorrentClient extends Thread {
       else
         BE.setuint32(msg, 9, FRAGSIZE);
       writePacket(peer.os, msg);
-      if (log) JFLog.log("requestFrag:" + peer.downloadingPieceIdx + "," + fidx);
+      if (debug) JFLog.log("requestFrag:" + peer.downloadingPieceIdx + "," + fidx);
     }
     private void broadcastHave() {
       byte msg[] = new byte[5];
@@ -952,7 +955,7 @@ public class TorrentClient extends Thread {
     //piece already validated
     //piece may span files
     if (have[pidx]) return;  //already have this piece
-    if (log) JFLog.log(" --- savePiece --- idx=" + pidx);
+    if (debug) JFLog.log(" --- savePiece --- idx=" + pidx);
     long begin = pidx * pieceLength;
     int pieceOff = 0;
     long pos = 0;

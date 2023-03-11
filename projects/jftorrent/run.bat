@@ -1,2 +1,2 @@
 @echo off
-javaw -cp javaforce.jar;jftorrent.jar TorrentApp %*
+java -cp javaforce.jar;jftorrent.jar TorrentApp %*
