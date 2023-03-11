@@ -162,11 +162,6 @@ char *CreateClassPath() {
   return ExpandedClassPath;
 }
 
-char* DetectGC() {
-  //ZGC is always available under JDK15+
-  return (char*)"-XX:+UseZGC";
-}
-
 JavaVMInitArgs *BuildArgs() {
   JavaVMInitArgs *args;
   JavaVMOption *options;
@@ -180,7 +175,6 @@ JavaVMInitArgs *BuildArgs() {
     opts[nOpts++] = (char*)"-Djava.home=/usr/bin";
   } else {
     opts[nOpts++] = CreateClassPath();
-//    opts[nOpts++] = DetectGC();  //not supported yet
   } 
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
