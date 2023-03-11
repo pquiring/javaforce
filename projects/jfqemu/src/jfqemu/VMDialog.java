@@ -120,38 +120,38 @@ public class VMDialog extends javax.swing.JDialog {
     hd4new = new javax.swing.JButton();
     hd1new = new javax.swing.JButton();
     jLabel18 = new javax.swing.JLabel();
-    hdaif = new javax.swing.JComboBox();
-    hdbif = new javax.swing.JComboBox();
-    hdcif = new javax.swing.JComboBox();
-    hddif = new javax.swing.JComboBox();
+    hdaif = new javax.swing.JComboBox<>();
+    hdbif = new javax.swing.JComboBox<>();
+    hdcif = new javax.swing.JComboBox<>();
+    hddif = new javax.swing.JComboBox<>();
     optionsTab = new javax.swing.JPanel();
     jLabel9 = new javax.swing.JLabel();
     jLabel8 = new javax.swing.JLabel();
     cpuCount = new javax.swing.JSpinner();
     jLabel7 = new javax.swing.JLabel();
-    boot = new javax.swing.JComboBox();
+    boot = new javax.swing.JComboBox<>();
     memory = new javax.swing.JTextField();
     x64 = new javax.swing.JCheckBox();
     jLabel22 = new javax.swing.JLabel();
-    chipset = new javax.swing.JComboBox();
+    chipset = new javax.swing.JComboBox<>();
     hwTab = new javax.swing.JPanel();
     jLabel11 = new javax.swing.JLabel();
-    video = new javax.swing.JComboBox();
+    video = new javax.swing.JComboBox<>();
     jLabel12 = new javax.swing.JLabel();
-    sound = new javax.swing.JComboBox();
+    sound = new javax.swing.JComboBox<>();
     jLabel13 = new javax.swing.JLabel();
-    net1model = new javax.swing.JComboBox();
+    net1model = new javax.swing.JComboBox<>();
     usb = new javax.swing.JCheckBox();
     jLabel16 = new javax.swing.JLabel();
-    net1type = new javax.swing.JComboBox();
-    net2model = new javax.swing.JComboBox();
+    net1type = new javax.swing.JComboBox<>();
+    net2model = new javax.swing.JComboBox<>();
     jLabel15 = new javax.swing.JLabel();
     jLabel19 = new javax.swing.JLabel();
-    net2type = new javax.swing.JComboBox();
-    net3model = new javax.swing.JComboBox();
+    net2type = new javax.swing.JComboBox<>();
+    net3model = new javax.swing.JComboBox<>();
     jLabel20 = new javax.swing.JLabel();
     jLabel21 = new javax.swing.JLabel();
-    net3type = new javax.swing.JComboBox();
+    net3type = new javax.swing.JComboBox<>();
     serviceTab = new javax.swing.JPanel();
     isService = new javax.swing.JCheckBox();
     serviceID = new javax.swing.JSpinner();
@@ -264,13 +264,13 @@ public class VMDialog extends javax.swing.JDialog {
 
     jLabel18.setText("NOTE : Use /dev/cdrom for physical CD-ROM");
 
-    hdaif.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "IDE", "SCSI", "SATA" }));
+    hdaif.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "IDE", "SCSI", "SATA" }));
 
-    hdbif.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "IDE", "SCSI", "SATA" }));
+    hdbif.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "IDE", "SCSI", "SATA" }));
 
-    hdcif.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "IDE", "SCSI", "SATA" }));
+    hdcif.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "IDE", "SCSI", "SATA" }));
 
-    hddif.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "IDE", "SCSI", "SATA" }));
+    hddif.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "IDE", "SCSI", "SATA" }));
 
     javax.swing.GroupLayout drivesTabLayout = new javax.swing.GroupLayout(drivesTab);
     drivesTab.setLayout(drivesTabLayout);
@@ -385,7 +385,7 @@ public class VMDialog extends javax.swing.JDialog {
 
     jLabel7.setText("1st Boot Device:");
 
-    boot.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Hard Drive", "CD-ROM" }));
+    boot.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Hard Drive", "CD-ROM" }));
 
     memory.setText("256");
 
@@ -393,7 +393,7 @@ public class VMDialog extends javax.swing.JDialog {
 
     jLabel22.setText("Chipset");
 
-    chipset.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "PIIX3", "ICH9" }));
+    chipset.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "PIIX3", "ICH9" }));
 
     javax.swing.GroupLayout optionsTabLayout = new javax.swing.GroupLayout(optionsTab);
     optionsTab.setLayout(optionsTabLayout);
@@ -449,37 +449,37 @@ public class VMDialog extends javax.swing.JDialog {
 
     jLabel11.setText("Video");
 
-    video.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "cirrus", "std", "vmware", "qxl" }));
+    video.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "cirrus", "std", "vmware", "qxl" }));
 
     jLabel12.setText("Sound");
 
-    sound.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "none", "sb16", "es1370", "ac97", "hda", "all" }));
+    sound.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "none", "sb16", "es1370", "ac97", "hda", "all" }));
 
     jLabel13.setText("Network1");
 
-    net1model.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "disabled", "e1000", "lance", "i82551", "i82557b", "i82559er", "ne2k_pci", "ne2k_isa", "pcnet", "rtl8139", "smc91c111", "mcf_fec" }));
+    net1model.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "disabled", "e1000", "lance", "i82551", "i82557b", "i82559er", "ne2k_pci", "ne2k_isa", "pcnet", "rtl8139", "smc91c111", "mcf_fec" }));
 
     usb.setText("USB");
 
     jLabel16.setText("Type:");
 
-    net1type.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "user" }));
+    net1type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "user" }));
 
-    net2model.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "disabled", "e1000", "lance", "i82551", "i82557b", "i82559er", "ne2k_pci", "ne2k_isa", "pcnet", "rtl8139", "smc91c111", "mcf_fec" }));
+    net2model.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "disabled", "e1000", "lance", "i82551", "i82557b", "i82559er", "ne2k_pci", "ne2k_isa", "pcnet", "rtl8139", "smc91c111", "mcf_fec" }));
 
     jLabel15.setText("Network2");
 
     jLabel19.setText("Type:");
 
-    net2type.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "user" }));
+    net2type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "user" }));
 
-    net3model.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "disabled", "e1000", "lance", "i82551", "i82557b", "i82559er", "ne2k_pci", "ne2k_isa", "pcnet", "rtl8139", "smc91c111", "mcf_fec" }));
+    net3model.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "disabled", "e1000", "lance", "i82551", "i82557b", "i82559er", "ne2k_pci", "ne2k_isa", "pcnet", "rtl8139", "smc91c111", "mcf_fec" }));
 
     jLabel20.setText("Network3");
 
     jLabel21.setText("Type:");
 
-    net3type.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "user" }));
+    net3type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "user" }));
 
     javax.swing.GroupLayout hwTabLayout = new javax.swing.GroupLayout(hwTab);
     hwTab.setLayout(hwTabLayout);
@@ -710,9 +710,9 @@ public class VMDialog extends javax.swing.JDialog {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton accept;
-  private javax.swing.JComboBox boot;
+  private javax.swing.JComboBox<String> boot;
   private javax.swing.JButton cancel;
-  private javax.swing.JComboBox chipset;
+  private javax.swing.JComboBox<String> chipset;
   private javax.swing.JSpinner cpuCount;
   private javax.swing.JPanel drivesTab;
   private javax.swing.JTextField folder;
@@ -725,16 +725,16 @@ public class VMDialog extends javax.swing.JDialog {
   private javax.swing.JButton hd4select;
   private javax.swing.JTextField hda;
   private javax.swing.JCheckBox hdacd;
-  private javax.swing.JComboBox hdaif;
+  private javax.swing.JComboBox<String> hdaif;
   private javax.swing.JTextField hdb;
   private javax.swing.JCheckBox hdbcd;
-  private javax.swing.JComboBox hdbif;
+  private javax.swing.JComboBox<String> hdbif;
   private javax.swing.JTextField hdc;
   private javax.swing.JCheckBox hdccd;
-  private javax.swing.JComboBox hdcif;
+  private javax.swing.JComboBox<String> hdcif;
   private javax.swing.JTextField hdd;
   private javax.swing.JCheckBox hddcd;
-  private javax.swing.JComboBox hddif;
+  private javax.swing.JComboBox<String> hddif;
   private javax.swing.JButton hdsselect;
   private javax.swing.JPanel hwTab;
   private javax.swing.JCheckBox isService;
@@ -763,20 +763,20 @@ public class VMDialog extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel9;
   private javax.swing.JTextField memory;
   private javax.swing.JTextField name;
-  private javax.swing.JComboBox net1model;
-  private javax.swing.JComboBox net1type;
-  private javax.swing.JComboBox net2model;
-  private javax.swing.JComboBox net2type;
-  private javax.swing.JComboBox net3model;
-  private javax.swing.JComboBox net3type;
+  private javax.swing.JComboBox<String> net1model;
+  private javax.swing.JComboBox<String> net1type;
+  private javax.swing.JComboBox<String> net2model;
+  private javax.swing.JComboBox<String> net2type;
+  private javax.swing.JComboBox<String> net3model;
+  private javax.swing.JComboBox<String> net3type;
   private javax.swing.JPanel optionsTab;
   private javax.swing.JComboBox os;
   private javax.swing.JSpinner serviceID;
   private javax.swing.JPanel serviceTab;
-  private javax.swing.JComboBox sound;
+  private javax.swing.JComboBox<String> sound;
   private javax.swing.JTabbedPane tabs;
   private javax.swing.JCheckBox usb;
-  private javax.swing.JComboBox video;
+  private javax.swing.JComboBox<String> video;
   private javax.swing.JCheckBox x64;
   // End of variables declaration//GEN-END:variables
 

@@ -43,7 +43,7 @@ public class NetworkDialog extends javax.swing.JDialog {
     jLabel3 = new javax.swing.JLabel();
     tapID = new javax.swing.JTextField();
     jLabel4 = new javax.swing.JLabel();
-    tapBridge = new javax.swing.JComboBox();
+    tapBridge = new javax.swing.JComboBox<>();
     createTAP = new javax.swing.JButton();
     close = new javax.swing.JButton();
     jPanel2 = new javax.swing.JPanel();
@@ -51,12 +51,12 @@ public class NetworkDialog extends javax.swing.JDialog {
     brID = new javax.swing.JTextField();
     createBridge = new javax.swing.JButton();
     jLabel5 = new javax.swing.JLabel();
-    ifName = new javax.swing.JComboBox();
+    ifName = new javax.swing.JComboBox<>();
     jPanel3 = new javax.swing.JPanel();
-    tapSelect = new javax.swing.JComboBox();
+    tapSelect = new javax.swing.JComboBox<>();
     deleteTAP = new javax.swing.JButton();
     jPanel4 = new javax.swing.JPanel();
-    bridgeSelect = new javax.swing.JComboBox();
+    bridgeSelect = new javax.swing.JComboBox<>();
     deleteBridge = new javax.swing.JButton();
     help = new javax.swing.JButton();
     netmgr = new javax.swing.JButton();
@@ -166,7 +166,7 @@ public class NetworkDialog extends javax.swing.JDialog {
 
     jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Delete TAP"));
 
-    tapSelect.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    tapSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
     deleteTAP.setText("Delete");
     deleteTAP.addActionListener(new java.awt.event.ActionListener() {
@@ -198,7 +198,7 @@ public class NetworkDialog extends javax.swing.JDialog {
 
     jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Delete Bridge"));
 
-    bridgeSelect.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+    bridgeSelect.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
     deleteBridge.setText("Delete");
     deleteBridge.addActionListener(new java.awt.event.ActionListener() {
@@ -322,14 +322,14 @@ public class NetworkDialog extends javax.swing.JDialog {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextField brID;
-  private javax.swing.JComboBox bridgeSelect;
+  private javax.swing.JComboBox<String> bridgeSelect;
   private javax.swing.JButton close;
   private javax.swing.JButton createBridge;
   private javax.swing.JButton createTAP;
   private javax.swing.JButton deleteBridge;
   private javax.swing.JButton deleteTAP;
   private javax.swing.JButton help;
-  private javax.swing.JComboBox ifName;
+  private javax.swing.JComboBox<String> ifName;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
@@ -340,9 +340,9 @@ public class NetworkDialog extends javax.swing.JDialog {
   private javax.swing.JPanel jPanel3;
   private javax.swing.JPanel jPanel4;
   private javax.swing.JButton netmgr;
-  private javax.swing.JComboBox tapBridge;
+  private javax.swing.JComboBox<String> tapBridge;
   private javax.swing.JTextField tapID;
-  private javax.swing.JComboBox tapSelect;
+  private javax.swing.JComboBox<String> tapSelect;
   // End of variables declaration//GEN-END:variables
 
   private void listIFs() {

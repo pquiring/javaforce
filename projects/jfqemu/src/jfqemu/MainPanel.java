@@ -43,7 +43,7 @@ public class MainPanel extends javax.swing.JPanel {
   private void initComponents() {
 
     jScrollPane1 = new javax.swing.JScrollPane();
-    vmlist = new javax.swing.JList();
+    vmlist = new javax.swing.JList<>();
     newVM = new javax.swing.JButton();
     startVM = new javax.swing.JButton();
     editVM = new javax.swing.JButton();
@@ -261,11 +261,11 @@ public class MainPanel extends javax.swing.JPanel {
   private javax.swing.JButton startVM;
   private javax.swing.JButton startVMservice;
   private javax.swing.JTextField state;
-  private javax.swing.JList vmlist;
+  private javax.swing.JList<String> vmlist;
   // End of variables declaration//GEN-END:variables
 
   public static ArrayList<VM> vms = new ArrayList<VM>();
-  private DefaultListModel vmlistModel = new DefaultListModel();
+  private DefaultListModel<String> vmlistModel = new DefaultListModel<>();
   private ArrayList<File> vmfiles = new ArrayList<File>();
   private JFrame frame;
   private JBusClient jbusClient;
