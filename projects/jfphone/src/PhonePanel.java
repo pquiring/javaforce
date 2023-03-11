@@ -14,7 +14,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.awt.*;
-import javaforce.jni.JFNative;
+import javaforce.jni.*;
 import javaforce.voip.*;
 
 /** jfPhone Panel */
@@ -89,10 +89,10 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     sidePanel = new javax.swing.JToggleButton();
     contactLabel = new javax.swing.JLabel();
     jScrollPane1 = new javax.swing.JScrollPane();
-    contactJList = new javax.swing.JList();
+    contactJList = new javax.swing.JList<>();
     recentLabel = new javax.swing.JLabel();
     jScrollPane2 = new javax.swing.JScrollPane();
-    recentList = new javax.swing.JList();
+    recentList = new javax.swing.JList<>();
     delContact = new javax.swing.JButton();
     addContact = new javax.swing.JButton();
     editContact = new javax.swing.JButton();
@@ -106,7 +106,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     spkScale = new javax.swing.JLabel();
     volRec = new javax.swing.JSlider();
     volPlay = new javax.swing.JSlider();
-    presenceStatus = new javax.swing.JComboBox();
+    presenceStatus = new javax.swing.JComboBox<>();
     jLabel1 = new javax.swing.JLabel();
     spk = new javax.swing.JButton();
     labels1 = new javax.swing.JLabel();
@@ -443,11 +443,6 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     add(contactLabel);
     contactLabel.setBounds(290, 10, 70, 10);
 
-    contactJList.setModel(new javax.swing.AbstractListModel() {
-      String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-      public int getSize() { return strings.length; }
-      public Object getElementAt(int i) { return strings[i]; }
-    });
     contactJList.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mouseClicked(java.awt.event.MouseEvent evt) {
         contactJListMouseClicked(evt);
@@ -467,11 +462,6 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     add(recentLabel);
     recentLabel.setBounds(290, 190, 80, 10);
 
-    recentList.setModel(new javax.swing.AbstractListModel() {
-      String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-      public int getSize() { return strings.length; }
-      public Object getElementAt(int i) { return strings[i]; }
-    });
     recentList.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mouseClicked(java.awt.event.MouseEvent evt) {
         recentListMouseClicked(evt);
@@ -581,7 +571,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     add(volPlay);
     volPlay.setBounds(240, 210, 20, 90);
 
-    presenceStatus.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Auto", "DND", "Busy", "Idle", "Offline" }));
+    presenceStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Auto", "DND", "Busy", "Idle", "Offline" }));
     presenceStatus.setEnabled(false);
     presenceStatus.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -853,7 +843,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
   private javax.swing.JButton cfg;
   private javax.swing.JButton clear;
   private javax.swing.JButton cnf;
-  private javax.swing.JList contactJList;
+  private javax.swing.JList<Contact> contactJList;
   private javax.swing.JLabel contactLabel;
   private javax.swing.JButton delContact;
   private javax.swing.JTextField dial;
@@ -893,9 +883,9 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
   private javax.swing.JButton n9;
   private javax.swing.JButton npound;
   private javax.swing.JButton nstar;
-  private javax.swing.JComboBox presenceStatus;
+  private javax.swing.JComboBox<String> presenceStatus;
   private javax.swing.JLabel recentLabel;
-  private javax.swing.JList recentList;
+  private javax.swing.JList<String> recentList;
   private javax.swing.JButton record;
   private javax.swing.JLabel recordPic;
   private javax.swing.JButton redial;
@@ -934,10 +924,10 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
       Settings.saveSettings();
     }
 
-    contactJList.setCellRenderer(new ListCellRenderer() {
+    contactJList.setCellRenderer(new ListCellRenderer<Contact>() {
       public Component getListCellRendererComponent(
-        JList list,              // the list
-        Object value,            // value to display
+        JList<? extends Contact> list,              // the list
+        Contact value,            // value to display
         int index,               // cell index
         boolean isSelected,      // is the cell selected
         boolean cellHasFocus)    // does the cell have focus
@@ -1346,7 +1336,7 @@ Line Colors:
         if (SIP.getFlag2(fields1, "monitor").equals("true")) addMonitor(Settings.current.sipcontacts[a], sub);
       }
     }
-    contactJList.setListData(contactList.toArray());
+    contactJList.setListData(contactList.toArray(new Contact[0]));
   }
 
   /** Update recent lists after a change. */

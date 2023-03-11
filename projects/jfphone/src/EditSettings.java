@@ -97,23 +97,23 @@ public class EditSettings extends javax.swing.JDialog {
     jPanel2 = new javax.swing.JPanel();
     selectOutRingtone = new javax.swing.JButton();
     jLabel34 = new javax.swing.JLabel();
-    inRingtone = new javax.swing.JComboBox();
-    outRingtone = new javax.swing.JComboBox();
+    inRingtone = new javax.swing.JComboBox<>();
+    outRingtone = new javax.swing.JComboBox<>();
     jLabel65 = new javax.swing.JLabel();
     selectInRingtone = new javax.swing.JButton();
     audio = new javax.swing.JPanel();
     jPanel13 = new javax.swing.JPanel();
     jLabel20 = new javax.swing.JLabel();
-    audioInput = new javax.swing.JComboBox();
-    audioOutput = new javax.swing.JComboBox();
+    audioInput = new javax.swing.JComboBox<>();
+    audioOutput = new javax.swing.JComboBox<>();
     jLabel19 = new javax.swing.JLabel();
     jPanel15 = new javax.swing.JPanel();
     jScrollPane2 = new javax.swing.JScrollPane();
-    disabled_audio_codecs = new javax.swing.JList();
+    disabled_audio_codecs = new javax.swing.JList<>();
     move_audio_codec_up = new javax.swing.JButton();
     move_audio_codec_down = new javax.swing.JButton();
     jScrollPane3 = new javax.swing.JScrollPane();
-    enabled_audio_codecs = new javax.swing.JList();
+    enabled_audio_codecs = new javax.swing.JList<>();
     jLabel41 = new javax.swing.JLabel();
     jLabel42 = new javax.swing.JLabel();
     add_audio_codec = new javax.swing.JButton();
@@ -128,16 +128,16 @@ public class EditSettings extends javax.swing.JDialog {
     useNativeVideo = new javax.swing.JRadioButton();
     disableVideo = new javax.swing.JRadioButton();
     jLabel33 = new javax.swing.JLabel();
-    videoDevice = new javax.swing.JComboBox();
+    videoDevice = new javax.swing.JComboBox<>();
     videoFPS = new javax.swing.JSlider();
     jLabel32 = new javax.swing.JLabel();
     jPanel18 = new javax.swing.JPanel();
     jScrollPane4 = new javax.swing.JScrollPane();
-    disabled_video_codecs = new javax.swing.JList();
+    disabled_video_codecs = new javax.swing.JList<>();
     move_video_codec_up = new javax.swing.JButton();
     move_video_codec_down = new javax.swing.JButton();
     jScrollPane5 = new javax.swing.JScrollPane();
-    enabled_video_codecs = new javax.swing.JList();
+    enabled_video_codecs = new javax.swing.JList<>();
     jLabel46 = new javax.swing.JLabel();
     jLabel47 = new javax.swing.JLabel();
     add_video_codec = new javax.swing.JButton();
@@ -156,9 +156,9 @@ public class EditSettings extends javax.swing.JDialog {
     l1disableVideo = new javax.swing.JCheckBox();
     l1secure = new javax.swing.JCheckBox();
     jLabel29 = new javax.swing.JLabel();
-    l1sip = new javax.swing.JComboBox();
+    l1sip = new javax.swing.JComboBox<>();
     jLabel56 = new javax.swing.JLabel();
-    l1key = new javax.swing.JComboBox();
+    l1key = new javax.swing.JComboBox<>();
     jLabel31 = new javax.swing.JLabel();
     l1name = new javax.swing.JTextField();
     l1siplog = new javax.swing.JCheckBox();
@@ -169,22 +169,22 @@ public class EditSettings extends javax.swing.JDialog {
     jLabel6 = new javax.swing.JLabel();
     l2host = new javax.swing.JTextField();
     l2same = new javax.swing.JCheckBox();
-    l2sameidx = new javax.swing.JComboBox();
+    l2sameidx = new javax.swing.JComboBox<>();
     jLabel24 = new javax.swing.JLabel();
     l2auth = new javax.swing.JTextField();
     l2pass = new javax.swing.JPasswordField();
     l2disableVideo = new javax.swing.JCheckBox();
     l2secure = new javax.swing.JCheckBox();
     jLabel37 = new javax.swing.JLabel();
-    l2sip = new javax.swing.JComboBox();
+    l2sip = new javax.swing.JComboBox<>();
     jLabel57 = new javax.swing.JLabel();
-    l2key = new javax.swing.JComboBox();
+    l2key = new javax.swing.JComboBox<>();
     jLabel44 = new javax.swing.JLabel();
     l2name = new javax.swing.JTextField();
     l2siplog = new javax.swing.JCheckBox();
     l3 = new javax.swing.JPanel();
     l3same = new javax.swing.JCheckBox();
-    l3sameidx = new javax.swing.JComboBox();
+    l3sameidx = new javax.swing.JComboBox<>();
     l3user = new javax.swing.JTextField();
     jLabel7 = new javax.swing.JLabel();
     jLabel8 = new javax.swing.JLabel();
@@ -196,15 +196,15 @@ public class EditSettings extends javax.swing.JDialog {
     l3disableVideo = new javax.swing.JCheckBox();
     l3secure = new javax.swing.JCheckBox();
     jLabel52 = new javax.swing.JLabel();
-    l3sip = new javax.swing.JComboBox();
+    l3sip = new javax.swing.JComboBox<>();
     jLabel58 = new javax.swing.JLabel();
-    l3key = new javax.swing.JComboBox();
+    l3key = new javax.swing.JComboBox<>();
     jLabel45 = new javax.swing.JLabel();
     l3name = new javax.swing.JTextField();
     l3siplog = new javax.swing.JCheckBox();
     l4 = new javax.swing.JPanel();
     l4same = new javax.swing.JCheckBox();
-    l4sameidx = new javax.swing.JComboBox();
+    l4sameidx = new javax.swing.JComboBox<>();
     jLabel10 = new javax.swing.JLabel();
     l4user = new javax.swing.JTextField();
     jLabel11 = new javax.swing.JLabel();
@@ -216,15 +216,15 @@ public class EditSettings extends javax.swing.JDialog {
     l4disableVideo = new javax.swing.JCheckBox();
     l4secure = new javax.swing.JCheckBox();
     jLabel53 = new javax.swing.JLabel();
-    l4sip = new javax.swing.JComboBox();
+    l4sip = new javax.swing.JComboBox<>();
     jLabel59 = new javax.swing.JLabel();
-    l4key = new javax.swing.JComboBox();
+    l4key = new javax.swing.JComboBox<>();
     jLabel66 = new javax.swing.JLabel();
     l4name = new javax.swing.JTextField();
     l4siplog = new javax.swing.JCheckBox();
     l5 = new javax.swing.JPanel();
     l5same = new javax.swing.JCheckBox();
-    l5sameidx = new javax.swing.JComboBox();
+    l5sameidx = new javax.swing.JComboBox<>();
     jLabel13 = new javax.swing.JLabel();
     l5user = new javax.swing.JTextField();
     jLabel14 = new javax.swing.JLabel();
@@ -236,15 +236,15 @@ public class EditSettings extends javax.swing.JDialog {
     l5disableVideo = new javax.swing.JCheckBox();
     l5secure = new javax.swing.JCheckBox();
     jLabel54 = new javax.swing.JLabel();
-    l5sip = new javax.swing.JComboBox();
+    l5sip = new javax.swing.JComboBox<>();
     jLabel60 = new javax.swing.JLabel();
-    l5key = new javax.swing.JComboBox();
+    l5key = new javax.swing.JComboBox<>();
     jLabel67 = new javax.swing.JLabel();
     l5name = new javax.swing.JTextField();
     l5siplog = new javax.swing.JCheckBox();
     l6 = new javax.swing.JPanel();
     l6same = new javax.swing.JCheckBox();
-    l6sameidx = new javax.swing.JComboBox();
+    l6sameidx = new javax.swing.JComboBox<>();
     jLabel16 = new javax.swing.JLabel();
     l6user = new javax.swing.JTextField();
     jLabel17 = new javax.swing.JLabel();
@@ -256,9 +256,9 @@ public class EditSettings extends javax.swing.JDialog {
     l6disableVideo = new javax.swing.JCheckBox();
     l6secure = new javax.swing.JCheckBox();
     jLabel55 = new javax.swing.JLabel();
-    l6sip = new javax.swing.JComboBox();
+    l6sip = new javax.swing.JComboBox<>();
     jLabel61 = new javax.swing.JLabel();
-    l6key = new javax.swing.JComboBox();
+    l6key = new javax.swing.JComboBox<>();
     jLabel68 = new javax.swing.JLabel();
     l6name = new javax.swing.JTextField();
     l6siplog = new javax.swing.JCheckBox();
@@ -574,9 +574,9 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel20.setText("Audio Input:");
 
-    audioInput.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<default>" }));
+    audioInput.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "<default>" }));
 
-    audioOutput.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<default>" }));
+    audioOutput.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "<default>" }));
 
     jLabel19.setText("Audio Output:");
 
@@ -610,10 +610,10 @@ public class EditSettings extends javax.swing.JDialog {
 
     jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("Audio Codecs"));
 
-    disabled_audio_codecs.setModel(new javax.swing.AbstractListModel() {
+    disabled_audio_codecs.setModel(new javax.swing.AbstractListModel<String>() {
       String[] strings = { "..." };
       public int getSize() { return strings.length; }
-      public Object getElementAt(int i) { return strings[i]; }
+      public String getElementAt(int i) { return strings[i]; }
     });
     disabled_audio_codecs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     jScrollPane2.setViewportView(disabled_audio_codecs);
@@ -632,10 +632,10 @@ public class EditSettings extends javax.swing.JDialog {
       }
     });
 
-    enabled_audio_codecs.setModel(new javax.swing.AbstractListModel() {
+    enabled_audio_codecs.setModel(new javax.swing.AbstractListModel<String>() {
       String[] strings = { "..." };
       public int getSize() { return strings.length; }
-      public Object getElementAt(int i) { return strings[i]; }
+      public String getElementAt(int i) { return strings[i]; }
     });
     enabled_audio_codecs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     jScrollPane3.setViewportView(enabled_audio_codecs);
@@ -798,7 +798,7 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel33.setText("Device:");
 
-    videoDevice.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "<default>" }));
+    videoDevice.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "<default>" }));
 
     videoFPS.setMajorTickSpacing(5);
     videoFPS.setMaximum(30);
@@ -850,10 +850,10 @@ public class EditSettings extends javax.swing.JDialog {
 
     jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("Video Codecs"));
 
-    disabled_video_codecs.setModel(new javax.swing.AbstractListModel() {
+    disabled_video_codecs.setModel(new javax.swing.AbstractListModel<String>() {
       String[] strings = { "..." };
       public int getSize() { return strings.length; }
-      public Object getElementAt(int i) { return strings[i]; }
+      public String getElementAt(int i) { return strings[i]; }
     });
     disabled_video_codecs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     jScrollPane4.setViewportView(disabled_video_codecs);
@@ -872,10 +872,10 @@ public class EditSettings extends javax.swing.JDialog {
       }
     });
 
-    enabled_video_codecs.setModel(new javax.swing.AbstractListModel() {
+    enabled_video_codecs.setModel(new javax.swing.AbstractListModel<String>() {
       String[] strings = { "..." };
       public int getSize() { return strings.length; }
-      public Object getElementAt(int i) { return strings[i]; }
+      public String getElementAt(int i) { return strings[i]; }
     });
     enabled_video_codecs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
     jScrollPane5.setViewportView(enabled_video_codecs);
@@ -988,11 +988,11 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel29.setText("SIP Transport");
 
-    l1sip.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "UDP", "TCP", "TLS" }));
+    l1sip.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "UDP", "TCP", "TLS" }));
 
     jLabel56.setText("Encryption Key Exchange");
 
-    l1key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
+    l1key.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SDP", "DTLS" }));
 
     jLabel31.setText("Display name");
     jLabel31.setToolTipText("Display Name (optional)");
@@ -1091,7 +1091,7 @@ public class EditSettings extends javax.swing.JDialog {
       }
     });
 
-    l2sameidx.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Line 1", "Line 3", "Line 4", "Line 5", "Line 6" }));
+    l2sameidx.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Line 1", "Line 3", "Line 4", "Line 5", "Line 6" }));
 
     jLabel24.setText("Auth name");
 
@@ -1102,11 +1102,11 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel37.setText("SIP Transport");
 
-    l2sip.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "UDP", "TCP", "TLS" }));
+    l2sip.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "UDP", "TCP", "TLS" }));
 
     jLabel57.setText("Encryption Key Exchange");
 
-    l2key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
+    l2key.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SDP", "DTLS" }));
 
     jLabel44.setText("Display name");
 
@@ -1206,7 +1206,7 @@ public class EditSettings extends javax.swing.JDialog {
       }
     });
 
-    l3sameidx.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Line 1", "Line 2", "Line 4", "Line 5", "Line 6" }));
+    l3sameidx.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Line 1", "Line 2", "Line 4", "Line 5", "Line 6" }));
 
     jLabel7.setText("Username");
 
@@ -1223,11 +1223,11 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel52.setText("SIP Transport");
 
-    l3sip.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "UDP", "TCP", "TLS" }));
+    l3sip.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "UDP", "TCP", "TLS" }));
 
     jLabel58.setText("Encryption Key Exchange");
 
-    l3key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
+    l3key.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SDP", "DTLS" }));
 
     jLabel45.setText("Display name");
 
@@ -1327,7 +1327,7 @@ public class EditSettings extends javax.swing.JDialog {
       }
     });
 
-    l4sameidx.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Line 1", "Line 2", "Line 3", "Line 5", "Line 6" }));
+    l4sameidx.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Line 1", "Line 2", "Line 3", "Line 5", "Line 6" }));
 
     jLabel10.setText("Username");
 
@@ -1344,11 +1344,11 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel53.setText("SIP Transport");
 
-    l4sip.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "UDP", "TCP", "TLS" }));
+    l4sip.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "UDP", "TCP", "TLS" }));
 
     jLabel59.setText("Encryption Key Exchange");
 
-    l4key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
+    l4key.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SDP", "DTLS" }));
 
     jLabel66.setText("Display name");
 
@@ -1448,7 +1448,7 @@ public class EditSettings extends javax.swing.JDialog {
       }
     });
 
-    l5sameidx.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Line 1", "Line 2", "Line 3", "Line 4", "Line 6" }));
+    l5sameidx.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Line 1", "Line 2", "Line 3", "Line 4", "Line 6" }));
 
     jLabel13.setText("Username");
 
@@ -1465,11 +1465,11 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel54.setText("SIP Transport");
 
-    l5sip.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "UDP", "TCP", "TLS" }));
+    l5sip.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "UDP", "TCP", "TLS" }));
 
     jLabel60.setText("Encryption Key Exchange");
 
-    l5key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
+    l5key.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SDP", "DTLS" }));
 
     jLabel67.setText("Display name");
 
@@ -1569,7 +1569,7 @@ public class EditSettings extends javax.swing.JDialog {
       }
     });
 
-    l6sameidx.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Line 1", "Line 2", "Line 3", "Line 4", "Line 5", "Line 6" }));
+    l6sameidx.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Line 1", "Line 2", "Line 3", "Line 4", "Line 5", "Line 6" }));
 
     jLabel16.setText("Username");
 
@@ -1586,11 +1586,11 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel55.setText("SIP Transport");
 
-    l6sip.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "UDP", "TCP", "TLS" }));
+    l6sip.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "UDP", "TCP", "TLS" }));
 
     jLabel61.setText("Encryption Key Exchange");
 
-    l6key.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "SDP", "DTLS" }));
+    l6key.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "SDP", "DTLS" }));
 
     jLabel68.setText("Display name");
 
@@ -1832,7 +1832,7 @@ public class EditSettings extends javax.swing.JDialog {
           .addComponent(sipRange))
         .addGap(18, 18, 18)
         .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(rtpmin, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
+          .addComponent(rtpmin)
           .addComponent(sipmin))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(jPanel22Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2205,29 +2205,29 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JButton add_video_codec;
   private javax.swing.JCheckBox alwaysOnTop;
   private javax.swing.JPanel audio;
-  private javax.swing.JComboBox audioInput;
-  private javax.swing.JComboBox audioOutput;
+  private javax.swing.JComboBox<String> audioInput;
+  private javax.swing.JComboBox<String> audioOutput;
   private javax.swing.JCheckBox autohold;
   private javax.swing.JButton bCancel;
   private javax.swing.JButton bSave;
   private javax.swing.JCheckBox checkVersion;
   private javax.swing.JCheckBox disableLogging;
   private javax.swing.JRadioButton disableVideo;
-  private javax.swing.JList disabled_audio_codecs;
-  private javax.swing.JList disabled_video_codecs;
+  private javax.swing.JList<String> disabled_audio_codecs;
+  private javax.swing.JList<String> disabled_video_codecs;
   private javax.swing.JTextField dname;
   private javax.swing.JTextField dndCodeOff;
   private javax.swing.JTextField dndCodeOn;
   private javax.swing.JTextField downloadPath;
   private javax.swing.JPanel eKey;
-  private javax.swing.JList enabled_audio_codecs;
-  private javax.swing.JList enabled_video_codecs;
+  private javax.swing.JList<String> enabled_audio_codecs;
+  private javax.swing.JList<String> enabled_video_codecs;
   private javax.swing.JCheckBox exitWhenClosed;
   private javax.swing.JButton genCertKey;
   private javax.swing.JPanel general;
   private javax.swing.JButton help;
   private javax.swing.JCheckBox hideWhenMinimized;
-  private javax.swing.JComboBox inRingtone;
+  private javax.swing.JComboBox<String> inRingtone;
   private javax.swing.JButton jButton1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
@@ -2318,76 +2318,76 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JTextField l1auth;
   private javax.swing.JCheckBox l1disableVideo;
   private javax.swing.JTextField l1host;
-  private javax.swing.JComboBox l1key;
+  private javax.swing.JComboBox<String> l1key;
   private javax.swing.JTextField l1name;
   private javax.swing.JPasswordField l1pass;
   private javax.swing.JCheckBox l1secure;
-  private javax.swing.JComboBox l1sip;
+  private javax.swing.JComboBox<String> l1sip;
   private javax.swing.JCheckBox l1siplog;
   private javax.swing.JTextField l1user;
   private javax.swing.JPanel l2;
   private javax.swing.JTextField l2auth;
   private javax.swing.JCheckBox l2disableVideo;
   private javax.swing.JTextField l2host;
-  private javax.swing.JComboBox l2key;
+  private javax.swing.JComboBox<String> l2key;
   private javax.swing.JTextField l2name;
   private javax.swing.JPasswordField l2pass;
   private javax.swing.JCheckBox l2same;
-  private javax.swing.JComboBox l2sameidx;
+  private javax.swing.JComboBox<String> l2sameidx;
   private javax.swing.JCheckBox l2secure;
-  private javax.swing.JComboBox l2sip;
+  private javax.swing.JComboBox<String> l2sip;
   private javax.swing.JCheckBox l2siplog;
   private javax.swing.JTextField l2user;
   private javax.swing.JPanel l3;
   private javax.swing.JTextField l3auth;
   private javax.swing.JCheckBox l3disableVideo;
   private javax.swing.JTextField l3host;
-  private javax.swing.JComboBox l3key;
+  private javax.swing.JComboBox<String> l3key;
   private javax.swing.JTextField l3name;
   private javax.swing.JPasswordField l3pass;
   private javax.swing.JCheckBox l3same;
-  private javax.swing.JComboBox l3sameidx;
+  private javax.swing.JComboBox<String> l3sameidx;
   private javax.swing.JCheckBox l3secure;
-  private javax.swing.JComboBox l3sip;
+  private javax.swing.JComboBox<String> l3sip;
   private javax.swing.JCheckBox l3siplog;
   private javax.swing.JTextField l3user;
   private javax.swing.JPanel l4;
   private javax.swing.JTextField l4auth;
   private javax.swing.JCheckBox l4disableVideo;
   private javax.swing.JTextField l4host;
-  private javax.swing.JComboBox l4key;
+  private javax.swing.JComboBox<String> l4key;
   private javax.swing.JTextField l4name;
   private javax.swing.JPasswordField l4pass;
   private javax.swing.JCheckBox l4same;
-  private javax.swing.JComboBox l4sameidx;
+  private javax.swing.JComboBox<String> l4sameidx;
   private javax.swing.JCheckBox l4secure;
-  private javax.swing.JComboBox l4sip;
+  private javax.swing.JComboBox<String> l4sip;
   private javax.swing.JCheckBox l4siplog;
   private javax.swing.JTextField l4user;
   private javax.swing.JPanel l5;
   private javax.swing.JTextField l5auth;
   private javax.swing.JCheckBox l5disableVideo;
   private javax.swing.JTextField l5host;
-  private javax.swing.JComboBox l5key;
+  private javax.swing.JComboBox<String> l5key;
   private javax.swing.JTextField l5name;
   private javax.swing.JPasswordField l5pass;
   private javax.swing.JCheckBox l5same;
-  private javax.swing.JComboBox l5sameidx;
+  private javax.swing.JComboBox<String> l5sameidx;
   private javax.swing.JCheckBox l5secure;
-  private javax.swing.JComboBox l5sip;
+  private javax.swing.JComboBox<String> l5sip;
   private javax.swing.JCheckBox l5siplog;
   private javax.swing.JTextField l5user;
   private javax.swing.JPanel l6;
   private javax.swing.JTextField l6auth;
   private javax.swing.JCheckBox l6disableVideo;
   private javax.swing.JTextField l6host;
-  private javax.swing.JComboBox l6key;
+  private javax.swing.JComboBox<String> l6key;
   private javax.swing.JTextField l6name;
   private javax.swing.JPasswordField l6pass;
   private javax.swing.JCheckBox l6same;
-  private javax.swing.JComboBox l6sameidx;
+  private javax.swing.JComboBox<String> l6sameidx;
   private javax.swing.JCheckBox l6secure;
-  private javax.swing.JComboBox l6sip;
+  private javax.swing.JComboBox<String> l6sip;
   private javax.swing.JCheckBox l6siplog;
   private javax.swing.JTextField l6user;
   private javax.swing.JButton move_audio_codec_down;
@@ -2403,7 +2403,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JRadioButton natStun;
   private javax.swing.JRadioButton natTurn;
   private javax.swing.JTextField natUser;
-  private javax.swing.JComboBox outRingtone;
+  private javax.swing.JComboBox<String> outRingtone;
   private javax.swing.JCheckBox received;
   private javax.swing.JCheckBox reinvite;
   private javax.swing.JButton remove_audio_codec;
@@ -2428,15 +2428,15 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JRadioButton useNativeVideo;
   private javax.swing.JCheckBox usePublish;
   private javax.swing.JPanel video;
-  private javax.swing.JComboBox videoDevice;
+  private javax.swing.JComboBox<String> videoDevice;
   private javax.swing.JSlider videoFPS;
   private javax.swing.ButtonGroup videoGroup;
   // End of variables declaration//GEN-END:variables
 
-  private DefaultListModel disabledAudioCodecsList = new DefaultListModel();
-  private DefaultListModel enabledAudioCodecsList = new DefaultListModel();
-  private DefaultListModel disabledVideoCodecsList = new DefaultListModel();
-  private DefaultListModel enabledVideoCodecsList = new DefaultListModel();
+  private DefaultListModel<String> disabledAudioCodecsList = new DefaultListModel<>();
+  private DefaultListModel<String> enabledAudioCodecsList = new DefaultListModel<>();
+  private DefaultListModel<String> disabledVideoCodecsList = new DefaultListModel<>();
+  private DefaultListModel<String> enabledVideoCodecsList = new DefaultListModel<>();
 
   /** Pops up the EditSettings dialog window and returns when the dialog is closed. */
 
@@ -2995,7 +2995,7 @@ public class EditSettings extends javax.swing.JDialog {
 
     if (Settings.current.audioOutput == null) Settings.current.audioOutput = "";
 
-    audioOutput.setModel(new javax.swing.DefaultComboBoxModel(mixers));
+    audioOutput.setModel(new javax.swing.DefaultComboBoxModel<String>(mixers));
     for(int a=0;a<mixers.length;a++) {
       if (Settings.current.audioOutput.equalsIgnoreCase(mixers[a])) {
         audioOutput.setSelectedIndex(a);
@@ -3008,7 +3008,7 @@ public class EditSettings extends javax.swing.JDialog {
 
     if (Settings.current.audioInput == null) Settings.current.audioInput = "";
 
-    audioInput.setModel(new javax.swing.DefaultComboBoxModel(mixers));
+    audioInput.setModel(new javax.swing.DefaultComboBoxModel<String>(mixers));
     for(int a=0;a<mixers.length;a++) {
       if (Settings.current.audioInput.equalsIgnoreCase(mixers[a])) {
         audioInput.setSelectedIndex(a);
@@ -3032,7 +3032,7 @@ public class EditSettings extends javax.swing.JDialog {
 
     if (Settings.current.videoDevice == null) Settings.current.videoDevice = "";
 
-    videoDevice.setModel(new javax.swing.DefaultComboBoxModel(devices));
+    videoDevice.setModel(new javax.swing.DefaultComboBoxModel<String>(devices));
     for(int a=0;a<devices.length;a++) {
       if (Settings.current.videoDevice.equalsIgnoreCase(devices[a])) {
         videoDevice.setSelectedIndex(a);
