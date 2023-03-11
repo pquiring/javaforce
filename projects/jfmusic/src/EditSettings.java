@@ -39,13 +39,13 @@ public class EditSettings extends javax.swing.JDialog {
   private void initComponents() {
 
     jLabel1 = new javax.swing.JLabel();
-    device = new javax.swing.JComboBox();
+    device = new javax.swing.JComboBox<>();
     ok = new javax.swing.JButton();
     cancel = new javax.swing.JButton();
     jLabel2 = new javax.swing.JLabel();
-    recordMode = new javax.swing.JComboBox();
+    recordMode = new javax.swing.JComboBox<>();
     jLabel3 = new javax.swing.JLabel();
-    recordTrack = new javax.swing.JComboBox();
+    recordTrack = new javax.swing.JComboBox<>();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Edit Settings");
@@ -68,12 +68,12 @@ public class EditSettings extends javax.swing.JDialog {
 
     jLabel2.setText("Recording Mode:");
 
-    recordMode.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Overwrite", "Insert" }));
+    recordMode.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Overwrite", "Insert" }));
     recordMode.setEnabled(false);
 
     jLabel3.setText("Recording Track Mode:");
 
-    recordTrack.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Single", "Multi" }));
+    recordTrack.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Single", "Multi" }));
     recordTrack.setEnabled(false);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -139,13 +139,13 @@ public class EditSettings extends javax.swing.JDialog {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton cancel;
-  private javax.swing.JComboBox device;
+  private javax.swing.JComboBox<String> device;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JButton ok;
-  private javax.swing.JComboBox recordMode;
-  private javax.swing.JComboBox recordTrack;
+  private javax.swing.JComboBox<String> recordMode;
+  private javax.swing.JComboBox<String> recordTrack;
   // End of variables declaration//GEN-END:variables
 
   private boolean listDevices() {

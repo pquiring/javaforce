@@ -47,13 +47,13 @@ public class MidiKeyboard extends javax.swing.JDialog implements Receiver {
   private void initComponents() {
 
     jLabel1 = new javax.swing.JLabel();
-    device = new javax.swing.JComboBox();
+    device = new javax.swing.JComboBox<>();
     jLabel2 = new javax.swing.JLabel();
-    library = new javax.swing.JComboBox();
+    library = new javax.swing.JComboBox<>();
     close = new javax.swing.JButton();
     velocity = new javax.swing.JCheckBox();
     jLabel3 = new javax.swing.JLabel();
-    region = new javax.swing.JComboBox();
+    region = new javax.swing.JComboBox<>();
     autoRegion = new javax.swing.JCheckBox();
     attenuation = new javax.swing.JSlider();
     jLabel4 = new javax.swing.JLabel();
@@ -214,13 +214,13 @@ public class MidiKeyboard extends javax.swing.JDialog implements Receiver {
   private javax.swing.JSlider attenuation;
   private javax.swing.JCheckBox autoRegion;
   private javax.swing.JButton close;
-  private javax.swing.JComboBox device;
+  private javax.swing.JComboBox<String> device;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
-  private javax.swing.JComboBox library;
-  private javax.swing.JComboBox region;
+  private javax.swing.JComboBox<String> library;
+  private javax.swing.JComboBox<String> region;
   private javax.swing.JCheckBox velocity;
   // End of variables declaration//GEN-END:variables
 

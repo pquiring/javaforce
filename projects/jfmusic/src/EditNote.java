@@ -108,16 +108,16 @@ public class EditNote extends javax.swing.JDialog {
     tabs = new javax.swing.JTabbedPane();
     noteTab = new javax.swing.JPanel();
     jLabel1 = new javax.swing.JLabel();
-    _note = new javax.swing.JComboBox();
+    _note = new javax.swing.JComboBox<>();
     volumeTab = new javax.swing.JPanel();
     vol_param = new javax.swing.JSlider();
-    vol_cmd = new javax.swing.JComboBox();
+    vol_cmd = new javax.swing.JComboBox<>();
     jLabel5 = new javax.swing.JLabel();
     volText = new javax.swing.JLabel();
     global = new javax.swing.JCheckBox();
     effectTab = new javax.swing.JPanel();
     jLabel3 = new javax.swing.JLabel();
-    fx_cmd = new javax.swing.JComboBox();
+    fx_cmd = new javax.swing.JComboBox<>();
     fxText = new javax.swing.JLabel();
     fxParamPanel = new javax.swing.JPanel();
     fxParamTab = new javax.swing.JTabbedPane();
@@ -128,7 +128,7 @@ public class EditNote extends javax.swing.JDialog {
     fx_param1 = new javax.swing.JSlider();
     _instr = new javax.swing.JPanel();
     jLabel4 = new javax.swing.JLabel();
-    fx_instr = new javax.swing.JComboBox();
+    fx_instr = new javax.swing.JComboBox<>();
     _int = new javax.swing.JPanel();
     jLabel2 = new javax.swing.JLabel();
     fx_int = new javax.swing.JTextField();
@@ -153,7 +153,7 @@ public class EditNote extends javax.swing.JDialog {
 
     jLabel1.setText("Note");
 
-    _note.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No Note", "C-0", "C#0", "D-0", "D#0", "E-0", "F-0", "F#0", "G-0", "G#0", "A-0", "A#0", "B-0", "C-1", "C#1", "D-1", "D#1", "E-1", "F-1", "F#1", "G-1", "G#1", "A-1", "A#1", "B-1", "C-2", "C#2", "D-2", "D#2", "E-2", "F-2", "F#2", "G-2", "G#2", "A-2", "A#2", "B-2", "C-3", "C#3", "D-3", "D#3", "E-3", "F-3", "F#3", "G-3", "G#3", "A-3", "A#3", "B-3", "C-4", "C#4", "D-4", "D#4", "E-4", "F-4", "F#4", "G-4", "G#4", "A-4", "A#4", "B-4", "C-5", "C#5", "D-5", "D#5", "E-5", "F-5", "F#5", "G-5", "G#5", "A-5", "A#5", "B-5", "C-6", "C#6", "D-6", "D#6", "E-6", "F-6", "F#6", "G-6", "G#6", "A-6", "A#6", "B-6", "C-7", "C#7", "D-7", "D#7", "E-7", "F-7", "F#7", "G-7", "G#7", "A-7", "A#7", "B-7", "C-8", "C#8", "D-8", "D#8", "E-8", "F-8", "F#8", "G-8", "G#8", "A-8", "A#8", "B-8", "C-9", "C#9", "D-9", "D#9", "E-9", "F-9", "F#9", "G-9", "G#9", "A-9", "A#9", "B-9", " " }));
+    _note.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No Note", "C-0", "C#0", "D-0", "D#0", "E-0", "F-0", "F#0", "G-0", "G#0", "A-0", "A#0", "B-0", "C-1", "C#1", "D-1", "D#1", "E-1", "F-1", "F#1", "G-1", "G#1", "A-1", "A#1", "B-1", "C-2", "C#2", "D-2", "D#2", "E-2", "F-2", "F#2", "G-2", "G#2", "A-2", "A#2", "B-2", "C-3", "C#3", "D-3", "D#3", "E-3", "F-3", "F#3", "G-3", "G#3", "A-3", "A#3", "B-3", "C-4", "C#4", "D-4", "D#4", "E-4", "F-4", "F#4", "G-4", "G#4", "A-4", "A#4", "B-4", "C-5", "C#5", "D-5", "D#5", "E-5", "F-5", "F#5", "G-5", "G#5", "A-5", "A#5", "B-5", "C-6", "C#6", "D-6", "D#6", "E-6", "F-6", "F#6", "G-6", "G#6", "A-6", "A#6", "B-6", "C-7", "C#7", "D-7", "D#7", "E-7", "F-7", "F#7", "G-7", "G#7", "A-7", "A#7", "B-7", "C-8", "C#8", "D-8", "D#8", "E-8", "F-8", "F#8", "G-8", "G#8", "A-8", "A#8", "B-8", "C-9", "C#9", "D-9", "D#9", "E-9", "F-9", "F#9", "G-9", "G#9", "A-9", "A#9", "B-9", " " }));
 
     javax.swing.GroupLayout noteTabLayout = new javax.swing.GroupLayout(noteTab);
     noteTab.setLayout(noteTabLayout);
@@ -188,7 +188,7 @@ public class EditNote extends javax.swing.JDialog {
       }
     });
 
-    vol_cmd.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "SET_VOLUME", "SET_PANNING", "SLIDE_UP", "SLIDE_DOWN", "PAN_SLIDE_LEFT", "PAN_SLIDE_RIGHT", "SET_VOL_VIBRATE_SPEED", "SET_PAN_VIBRATE_SPEED", "TREMOLO", "PANBRELLO", " " }));
+    vol_cmd.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "SET_VOLUME", "SET_PANNING", "SLIDE_UP", "SLIDE_DOWN", "PAN_SLIDE_LEFT", "PAN_SLIDE_RIGHT", "SET_VOL_VIBRATE_SPEED", "SET_PAN_VIBRATE_SPEED", "TREMOLO", "PANBRELLO", " " }));
     vol_cmd.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         vol_cmdItemStateChanged(evt);
@@ -237,7 +237,7 @@ public class EditNote extends javax.swing.JDialog {
 
     jLabel3.setText("cmd:");
 
-    fx_cmd.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "None", "PORTAMENTO", "PORTAMENTO_TO_NOTE", "SET_VIBRATE_SPEED", "VIBRATO", "TREMOR", "PATTERN_BREAK", "KEY_OFF", "CUT_OFF", "SET_INSTRUMENT", "DELAY_START", "SAMPLE_OFFSET", "SET_BPM", " " }));
+    fx_cmd.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "None", "PORTAMENTO", "PORTAMENTO_TO_NOTE", "SET_VIBRATE_SPEED", "VIBRATO", "TREMOR", "PATTERN_BREAK", "KEY_OFF", "CUT_OFF", "SET_INSTRUMENT", "DELAY_START", "SAMPLE_OFFSET", "SET_BPM", " " }));
     fx_cmd.addItemListener(new java.awt.event.ItemListener() {
       public void itemStateChanged(java.awt.event.ItemEvent evt) {
         fx_cmdItemStateChanged(evt);
@@ -312,7 +312,7 @@ public class EditNote extends javax.swing.JDialog {
 
     jLabel4.setText("Instrument:");
 
-    fx_instr.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "TODO" }));
+    fx_instr.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TODO" }));
 
     javax.swing.GroupLayout _instrLayout = new javax.swing.GroupLayout(_instr);
     _instr.setLayout(_instrLayout);
@@ -575,15 +575,15 @@ public class EditNote extends javax.swing.JDialog {
   private javax.swing.JPanel _2;
   private javax.swing.JPanel _instr;
   private javax.swing.JPanel _int;
-  private javax.swing.JComboBox _note;
+  private javax.swing.JComboBox<String> _note;
   private javax.swing.JButton cancel;
   private javax.swing.JButton cont;
   private javax.swing.JPanel effectTab;
   private javax.swing.JPanel fxParamPanel;
   private javax.swing.JTabbedPane fxParamTab;
   private javax.swing.JLabel fxText;
-  private javax.swing.JComboBox fx_cmd;
-  private javax.swing.JComboBox fx_instr;
+  private javax.swing.JComboBox<String> fx_cmd;
+  private javax.swing.JComboBox<String> fx_instr;
   private javax.swing.JTextField fx_int;
   private javax.swing.JSlider fx_param;
   private javax.swing.JSlider fx_param1;
@@ -598,7 +598,7 @@ public class EditNote extends javax.swing.JDialog {
   private javax.swing.JButton ok;
   private javax.swing.JTabbedPane tabs;
   private javax.swing.JLabel volText;
-  private javax.swing.JComboBox vol_cmd;
+  private javax.swing.JComboBox<String> vol_cmd;
   private javax.swing.JSlider vol_param;
   private javax.swing.JPanel volumeTab;
   // End of variables declaration//GEN-END:variables

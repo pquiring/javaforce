@@ -56,7 +56,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     patternsTab = new javax.swing.JPanel();
     jToolBar2 = new javax.swing.JToolBar();
     jLabel11 = new javax.swing.JLabel();
-    pattern = new javax.swing.JComboBox();
+    pattern = new javax.swing.JComboBox<>();
     addPattern = new javax.swing.JButton();
     removePattern = new javax.swing.JButton();
     jButton10 = new javax.swing.JButton();
@@ -84,23 +84,23 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     };
     seqTab = new javax.swing.JPanel();
     jScrollPane4 = new javax.swing.JScrollPane();
-    sequence = new javax.swing.JList();
+    sequence = new javax.swing.JList<>();
     seqUp = new javax.swing.JButton();
     seqDown = new javax.swing.JButton();
     jToolBar1 = new javax.swing.JToolBar();
     jLabel13 = new javax.swing.JLabel();
-    seqPattern = new javax.swing.JComboBox();
+    seqPattern = new javax.swing.JComboBox<>();
     seqAdd = new javax.swing.JButton();
     seqRemove = new javax.swing.JButton();
     instrTab = new javax.swing.JPanel();
     jToolBar5 = new javax.swing.JToolBar();
     jLabel14 = new javax.swing.JLabel();
-    instrument = new javax.swing.JComboBox();
+    instrument = new javax.swing.JComboBox<>();
     iRemove = new javax.swing.JButton();
     jButton9 = new javax.swing.JButton();
     filler9 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
     jLabel5 = new javax.swing.JLabel();
-    library = new javax.swing.JComboBox();
+    library = new javax.swing.JComboBox<>();
     iAddLibrary = new javax.swing.JButton();
     filler10 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
     jLabel7 = new javax.swing.JLabel();
@@ -108,7 +108,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
     jToolBar7 = new javax.swing.JToolBar();
     jLabel6 = new javax.swing.JLabel();
-    regions = new javax.swing.JComboBox();
+    regions = new javax.swing.JComboBox<>();
     jButton14 = new javax.swing.JButton();
     jButton15 = new javax.swing.JButton();
     jButton13 = new javax.swing.JButton();
@@ -116,7 +116,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     samplesTab = new javax.swing.JPanel();
     jToolBar3 = new javax.swing.JToolBar();
     jLabel9 = new javax.swing.JLabel();
-    sample = new javax.swing.JComboBox();
+    sample = new javax.swing.JComboBox<>();
     jButton17 = new javax.swing.JButton();
     jButton18 = new javax.swing.JButton();
     jButton16 = new javax.swing.JButton();
@@ -127,7 +127,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     attenuation = new javax.swing.JCheckBox();
     filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 0), new java.awt.Dimension(10, 32767));
     jLabel4 = new javax.swing.JLabel();
-    zoom = new javax.swing.JComboBox();
+    zoom = new javax.swing.JComboBox<>();
     jButton4 = new javax.swing.JButton();
     jButton5 = new javax.swing.JButton();
     jButton6 = new javax.swing.JButton();
@@ -181,7 +181,6 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
 
     patternsTab.setPreferredSize(new java.awt.Dimension(418, 580));
 
-    jToolBar2.setFloatable(false);
     jToolBar2.setRollover(true);
 
     jLabel11.setText("Pattern:");
@@ -279,8 +278,6 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
       }
     });
     jToolBar2.add(jButton1);
-
-    jToolBar4.setFloatable(false);
 
     jLabel2.setText("BPM:");
     jToolBar4.add(jLabel2);
@@ -388,7 +385,6 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
       }
     });
 
-    jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
     jLabel13.setText("Pattern:");
@@ -448,7 +444,6 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
 
     instrTab.setPreferredSize(new java.awt.Dimension(418, 580));
 
-    jToolBar5.setFloatable(false);
     jToolBar5.setRollover(true);
     jToolBar5.setMinimumSize(new java.awt.Dimension(1, 1));
     jToolBar5.setPreferredSize(new java.awt.Dimension(1, 25));
@@ -488,7 +483,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     jLabel5.setText("Library:");
     jToolBar5.add(jLabel5);
 
-    library.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Piano", "etc" }));
+    library.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Piano", "etc" }));
     library.setMaximumSize(new java.awt.Dimension(256, 32767));
     library.setMinimumSize(new java.awt.Dimension(256, 20));
     jToolBar5.add(library);
@@ -515,7 +510,6 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     jToolBar5.add(iAddFile);
     jToolBar5.add(filler6);
 
-    jToolBar7.setFloatable(false);
     jToolBar7.setRollover(true);
 
     jLabel6.setText("Regions:");
@@ -574,7 +568,6 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
 
     tabs.addTab("Instruments", instrTab);
 
-    jToolBar3.setFloatable(false);
     jToolBar3.setRollover(true);
 
     jLabel9.setText("Sample:");
@@ -624,7 +617,6 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     jToolBar3.add(jButton16);
     jToolBar3.add(filler8);
 
-    jToolBar6.setFloatable(false);
     jToolBar6.setRollover(true);
     jToolBar6.setMinimumSize(new java.awt.Dimension(1, 1));
     jToolBar6.setPreferredSize(new java.awt.Dimension(1, 25));
@@ -657,7 +649,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
     jLabel4.setText("Zoom:");
     jToolBar6.add(jLabel4);
 
-    zoom.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1:1", "1:2", "1:4", "1:8", "1:16", "1:32", "1:64", "1:128" }));
+    zoom.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1:1", "1:2", "1:4", "1:8", "1:16", "1:32", "1:64", "1:128" }));
     zoom.setMaximumSize(new java.awt.Dimension(128, 32767));
     zoom.setMinimumSize(new java.awt.Dimension(128, 20));
     zoom.addItemListener(new java.awt.event.ItemListener() {
@@ -1288,7 +1280,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
   private javax.swing.JButton iAddLibrary;
   private javax.swing.JButton iRemove;
   private javax.swing.JPanel instrTab;
-  private javax.swing.JComboBox instrument;
+  private javax.swing.JComboBox<String> instrument;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton10;
   private javax.swing.JButton jButton11;
@@ -1329,28 +1321,28 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
   private javax.swing.JToolBar jToolBar5;
   private javax.swing.JToolBar jToolBar6;
   private javax.swing.JToolBar jToolBar7;
-  private javax.swing.JComboBox library;
+  private javax.swing.JComboBox<String> library;
   private javax.swing.JCheckBox loop;
   private javax.swing.JTextField name;
   private javax.swing.ButtonGroup noteTypes;
-  private javax.swing.JComboBox pattern;
+  private javax.swing.JComboBox<String> pattern;
   private javax.swing.JPanel patternsTab;
-  private javax.swing.JComboBox regions;
+  private javax.swing.JComboBox<String> regions;
   private javax.swing.JButton removePattern;
-  private javax.swing.JComboBox sample;
+  private javax.swing.JComboBox<String> sample;
   private javax.swing.JScrollPane samplesPane;
   private javax.swing.JPanel samplesTab;
   private javax.swing.JButton seqAdd;
   private javax.swing.JButton seqDown;
-  private javax.swing.JComboBox seqPattern;
+  private javax.swing.JComboBox<String> seqPattern;
   private javax.swing.JButton seqRemove;
   private javax.swing.JPanel seqTab;
   private javax.swing.JButton seqUp;
-  private javax.swing.JList sequence;
+  private javax.swing.JList<String> sequence;
   private javax.swing.JCheckBox sustain;
   private javax.swing.JTable tableView;
   private javax.swing.JTabbedPane tabs;
-  private javax.swing.JComboBox zoom;
+  private javax.swing.JComboBox<String> zoom;
   // End of variables declaration//GEN-END:variables
 
   private DefaultTableModel tableModel = new DefaultTableModel() {
@@ -1802,7 +1794,7 @@ public class SongPanel extends javax.swing.JPanel implements Music.Listener, Rec
   }
 
   public JComboBox getTrackInstruments(final Music.Track track) {
-    final JComboBox cb = new JComboBox();
+    final JComboBox<String> cb = new JComboBox<>();
     int cnt = music.song.instruments.size();
     if (cnt == 0) return cb;
     for(int a=0;a<cnt;a++) {
