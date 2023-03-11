@@ -12,7 +12,7 @@ import javaforce.*;
 
 public class Clients {
 
-  public static HashMap<String, Client> clients = new HashMap();
+  public static HashMap<String, Client> clients = new HashMap<>();
 
   public static int getCount() {
     return clients.size();

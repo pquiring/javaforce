@@ -11,7 +11,7 @@ import java.util.*;
 import javaforce.*;
 
 public class Commands {
-  public static HashMap<String, Command> cmds = new HashMap();
+  public static HashMap<String, Command> cmds = new HashMap<>();
 
   public static String getConfigFile() {
     return Paths.config + "/commands.cfg";
