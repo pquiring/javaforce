@@ -143,7 +143,7 @@ public class FindDialog extends javax.swing.JDialog {
 
     private void anykey(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_anykey
       int keyCode = evt.getKeyCode();
-      int mods = evt.getModifiers();
+      int mods = evt.getModifiersEx() & JFAWT.KEY_MASKS;
       if (keyCode == KeyEvent.VK_ESCAPE && mods == 0) {
         cancelActionPerformed(null);
       }

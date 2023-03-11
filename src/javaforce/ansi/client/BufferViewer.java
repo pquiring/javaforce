@@ -283,8 +283,8 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
 //interface KeyListener
   public void keyPressed(KeyEvent e) {
     int keyCode = e.getKeyCode();
-    int keyMods = e.getModifiers();
-    if (keyMods == KeyEvent.CTRL_MASK) {
+    int keyMods = e.getModifiersEx() & JFAWT.KEY_MASKS;
+    if (keyMods == KeyEvent.CTRL_DOWN_MASK) {
       switch (keyCode) {
         case KeyEvent.VK_A: selectStart = 0; selectEnd = buffer.sx * (buffer.sy + buffer.scrollBack) - 1; break;
         case KeyEvent.VK_W: buffer.close(); break;
@@ -296,17 +296,17 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
         case KeyEvent.VK_END: e.consume(); break;
       }
     }
-    if (keyMods == KeyEvent.SHIFT_MASK) {
+    if (keyMods == KeyEvent.SHIFT_DOWN_MASK) {
       switch (keyCode) {
         case KeyEvent.VK_INSERT: buffer.paste(); break;
       }
     }
-    if (keyMods == (KeyEvent.SHIFT_MASK & KeyEvent.CTRL_MASK)) {
+    if (keyMods == (KeyEvent.SHIFT_DOWN_MASK & KeyEvent.CTRL_DOWN_MASK)) {
       switch (keyCode) {
         case KeyEvent.VK_TAB: prevTab(); break;
       }
     }
-    if (keyMods == KeyEvent.ALT_MASK) {
+    if (keyMods == KeyEvent.ALT_DOWN_MASK) {
       switch (keyCode) {
         case KeyEvent.VK_HOME: buffer.clrscr(); break;
         case KeyEvent.VK_1: setTab(0); break;
@@ -349,12 +349,13 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
       return;
     }
     char key = e.getKeyChar();
-    if (e.getModifiers() == KeyEvent.CTRL_MASK) {
+    int mods = e.getModifiersEx() & JFAWT.KEY_MASKS;
+    if (mods == KeyEvent.CTRL_DOWN_MASK) {
       if ((key == 10) || (key == 13)) {buffer.output('\r'); buffer.output('\n');}
       return;
     }
-    if (e.getModifiers() == KeyEvent.ALT_MASK) return;
-    if (e.getModifiers() == (KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK)) return;
+    if (mods == KeyEvent.ALT_DOWN_MASK) return;
+    if (mods == (KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK)) return;
     if (key == 10) key = 13;
     if (key == KeyEvent.VK_DELETE) return;  //handled in keyPressed
 //    System.out.println("keyTyped=" + ((int)key));  //test

@@ -4,6 +4,7 @@ package javaforce;
 
 import java.util.*;
 import java.sql.*;
+import java.lang.reflect.*;
 
 public class SQL {
   /** Last exception that occured. */
@@ -32,7 +33,9 @@ public class SQL {
   /** Init JDBC driver (need only call once) */
   public static boolean initClass(String jdbcClass) {
     try {
-      Class.forName(jdbcClass).newInstance();
+      Class<?> cls = Class.forName(jdbcClass);
+      Constructor ctor = cls.getConstructor();
+      ctor.newInstance();
       return true;
     } catch (Exception e) {
       JFLog.log("Error:Unable to find class:" + jdbcClass);

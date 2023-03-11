@@ -61,7 +61,7 @@ public class ANSI {
   public void keyPressed(int keyCode, int keyMods, Buffer buffer) {
     //an easy way to find codes is to run "xterm sh" and press keys - "sh" doesn't understand ANSI and echo'es them back
     String str = null;
-    if (keyMods == KeyEvent.CTRL_MASK) {
+    if (keyMods == KeyEvent.CTRL_DOWN_MASK) {
       if ((keyCode >= KeyEvent.VK_A) && (keyCode <= KeyEvent.VK_Z)) {
         str = "" + (char)(keyCode - KeyEvent.VK_A + 1);
       }
@@ -72,7 +72,7 @@ public class ANSI {
         case KeyEvent.VK_LEFT: str = "" + ESC + "" + altcode + "1;5D"; break;
       }
     }
-    if (keyMods == KeyEvent.ALT_MASK) {
+    if (keyMods == KeyEvent.ALT_DOWN_MASK) {
       switch (keyCode) {
         case KeyEvent.VK_UP:   str = "" + ESC + "" + altcode + "1;3A"; break;
         case KeyEvent.VK_DOWN: str = "" + ESC + "" + altcode + "1;3B"; break;
@@ -80,7 +80,7 @@ public class ANSI {
         case KeyEvent.VK_LEFT: str = "" + ESC + "" + altcode + "1;3D"; break;
       }
     }
-    if (keyMods == KeyEvent.SHIFT_MASK) {
+    if (keyMods == KeyEvent.SHIFT_DOWN_MASK) {
       switch (keyCode) {
         case KeyEvent.VK_UP:   str = "" + ESC + "" + altcode + "1;2A"; break;
         case KeyEvent.VK_DOWN: str = "" + ESC + "" + altcode + "1;2B"; break;

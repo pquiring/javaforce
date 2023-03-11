@@ -2,6 +2,7 @@ package javaforce.awt;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.geom.*;
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.event.*;
@@ -144,11 +145,11 @@ public class JFTextArea extends JTextArea {
         try {
           JTextComponent component = getComponent();
           TextUI mapper = component.getUI();
-          Rectangle r = mapper.modelToView(component, getDot());
+          Rectangle2D r = mapper.modelToView2D(component, getDot(), Position.Bias.Forward);
           g.setColor(component.getCaretColor());
           int width = g.getFontMetrics().charWidth('w');
-          int y = r.y + r.height - 2;
-          g.drawLine(r.x, y, r.x + width - 2, y);
+          int y = (int)(r.getY() + r.getHeight() - 2);
+          g.drawLine((int)r.getX(), y, (int)(r.getX() + width - 2), y);
         } catch (BadLocationException e) {
         }
       }

@@ -927,6 +927,7 @@ public class XML implements TreeModelListener {
   public void writeClass(XMLTag tag, Object obj) {
     Class<?> c = obj.getClass();
     Class<?> fc, fcc;
+    Constructor ctor;
     Field f;
     int childCnt = tag.getChildCount();
     XMLTag child;
@@ -946,7 +947,8 @@ public class XML implements TreeModelListener {
           fc = f.getType();
           if (fc.isArray()) {
             fcc = fc.getComponentType();
-            i = fcc.newInstance();
+            ctor = fcc.getConstructor();
+            i = ctor.newInstance();
             writeClass(child, i);
             array = (Object[]) f.get(obj);
             if ((array == null) || (array.length == 0)) {
@@ -958,7 +960,8 @@ public class XML implements TreeModelListener {
             }
             f.set(obj, newArray);
           } else {
-            Object childObject = fc.newInstance();
+            ctor = fc.getConstructor();
+            Object childObject = ctor.newInstance();
             writeClass(child, childObject);
             f.set(obj, childObject);
           }
@@ -1080,7 +1083,8 @@ public class XML implements TreeModelListener {
             name = child.getName();
             f = c.getField(name);
             fc = f.getType();
-            Object childObject = fc.newInstance();
+            ctor = fc.getConstructor();
+            Object childObject = ctor.newInstance();
             writeClass(child, childObject);
             f.set(obj, childObject);
           }

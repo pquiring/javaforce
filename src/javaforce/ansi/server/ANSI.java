@@ -469,13 +469,13 @@ public class ANSI {
         pos = numpos;
         pos++;  //skip ;
       }
-      if (hasDigit(nums, 2)) keyMods = KeyEvent.SHIFT_MASK;
-      if (hasDigit(nums, 3)) keyMods = KeyEvent.ALT_MASK;
-      if (hasDigit(nums, 4)) keyMods = KeyEvent.ALT_MASK | KeyEvent.SHIFT_MASK;
-      if (hasDigit(nums, 5)) keyMods = KeyEvent.CTRL_MASK;
-      if (hasDigit(nums, 6)) keyMods = KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK;;
-      if (hasDigit(nums, 7)) keyMods = KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK;
-      if (hasDigit(nums, 8)) keyMods = KeyEvent.CTRL_MASK | KeyEvent.ALT_MASK | KeyEvent.SHIFT_MASK;;
+      if (hasDigit(nums, 2)) keyMods = KeyEvent.SHIFT_DOWN_MASK;
+      if (hasDigit(nums, 3)) keyMods = KeyEvent.ALT_DOWN_MASK;
+      if (hasDigit(nums, 4)) keyMods = KeyEvent.ALT_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
+      if (hasDigit(nums, 5)) keyMods = KeyEvent.CTRL_DOWN_MASK;
+      if (hasDigit(nums, 6)) keyMods = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;;
+      if (hasDigit(nums, 7)) keyMods = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
+      if (hasDigit(nums, 8)) keyMods = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;;
       switch (code) {
         case 'A':  //up
           keyCode = KeyEvent.VK_UP;
@@ -491,7 +491,7 @@ public class ANSI {
           break;
         case '~':  //f keys
           if (numc == 0) break;
-          if (nums[0] >= 25) keyMods = KeyEvent.SHIFT_MASK; else keyMods = 0;
+          if (nums[0] >= 25) keyMods = KeyEvent.SHIFT_DOWN_MASK; else keyMods = 0;
           switch (nums[0]) {
             case 1: keyCode = KeyEvent.VK_ESCAPE; break;  //custom
             case 2: keyCode = KeyEvent.VK_INSERT; break;
@@ -573,7 +573,7 @@ public class ANSI {
     } else {
       char code = buffer.charAt(1);
       if (Character.isAlphabetic(code)) {
-        keyMods = KeyEvent.ALT_MASK;
+        keyMods = KeyEvent.ALT_DOWN_MASK;
         keyCode = code;
       } else {
         //unknown code

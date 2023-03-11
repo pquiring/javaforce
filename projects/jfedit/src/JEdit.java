@@ -232,7 +232,6 @@ public class JEdit extends javax.swing.JFrame implements FindEvent, ReplaceEvent
         return;
       }
     }
-    JFAWT.removeAltGraph();
     JEdit.args = args;
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {

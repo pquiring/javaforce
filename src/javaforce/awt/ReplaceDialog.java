@@ -179,14 +179,14 @@ public class ReplaceDialog extends javax.swing.JDialog {
 
     private void anykey(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_anykey
       int keyCode = evt.getKeyCode();
-      int mods = evt.getModifiers();
+      int mods = evt.getModifiersEx() & JFAWT.KEY_MASKS;
       if (keyCode == KeyEvent.VK_ESCAPE && mods == 0) {
         cancelActionPerformed(null);
       }
       if (keyCode == KeyEvent.VK_ENTER && mods == 0) {
         findReplaceActionPerformed(null);
       }
-      if (keyCode == KeyEvent.VK_A && mods == KeyEvent.ALT_MASK) {
+      if (keyCode == KeyEvent.VK_A && mods == KeyEvent.ALT_DOWN_MASK) {
         replaceAllActionPerformed(null);
       }
     }//GEN-LAST:event_anykey
