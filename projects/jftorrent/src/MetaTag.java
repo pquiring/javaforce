@@ -6,5 +6,4 @@
 
 public class MetaTag {
   public int pos, endpos;
-  public Object obj;
 }

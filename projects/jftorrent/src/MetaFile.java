@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class MetaFile {
   private byte metaData[];
-  private ArrayList<MetaTag> metaList;
+  private ArrayList<MetaTag> metaList;  //root tag
   public int tagBegin, tagEnd;  //set by getTag()
   private int metaIdx;
   public void read(byte data[]) throws Exception {
@@ -21,9 +21,10 @@ public class MetaFile {
   }
   private void readMeta(ArrayList<MetaTag> list) throws Exception {
     while (metaIdx < metaData.length) {
-      MetaTag tag = new MetaTag();
-      tag.pos = metaIdx;
+      int tagIdx = metaIdx;
       if ((metaData[metaIdx] >= '0') && (metaData[metaIdx] <= '9')) {
+        MetaString tag = new MetaString();
+        tag.pos = tagIdx;
         //string length:string data
         String str = "";
         while (metaData[metaIdx] != ':') {
@@ -31,7 +32,7 @@ public class MetaFile {
         }
         metaIdx++;
         int strLength = Integer.valueOf(str);
-        tag.obj = Arrays.copyOfRange(metaData, metaIdx, metaIdx + strLength);
+        tag.str = new String(Arrays.copyOfRange(metaData, metaIdx, metaIdx + strLength));
         list.add(tag);
         metaIdx += strLength;
         if (strLength < 128) {
@@ -42,30 +43,32 @@ public class MetaFile {
         continue;
       }
       switch (metaData[metaIdx++]) {
-        case 'i':  //integer
+        case 'i': {  //integer
+          MetaValue tag = new MetaValue();
+          tag.pos = tagIdx;
           String str = "";
           while (metaData[metaIdx] != 'e') {
             str += (char)metaData[metaIdx++];
           }
           metaIdx++;
-          tag.obj = Long.valueOf(str);
+          tag.val = Long.valueOf(str);
           list.add(tag);
 //          if (log) JFLog.log("  create:i:" + tag.obj);
           break;
-        case 'd':  //dict
+        }
+        case 'd': {  //dict
 //          if (log) JFLog.log("  create:d");
-          ArrayList<MetaTag> dict = new ArrayList<MetaTag>();
-          tag.obj = dict;
+          MetaList tag = new MetaList();
           list.add(tag);
-          readMeta(dict);
+          readMeta(tag.list);
           tag.endpos = metaIdx-1;
           break;
+        }
         case 'l':  //list (handled same as dict)
 //          if (log) JFLog.log("  create:l");
-          ArrayList<MetaTag> sublist = new ArrayList<MetaTag>();
-          tag.obj = sublist;
+          MetaList tag = new MetaList();
           list.add(tag);
-          readMeta(sublist);
+          readMeta(tag.list);
           tag.endpos = metaIdx-1;
           break;
         case 'e':
@@ -76,16 +79,41 @@ public class MetaFile {
       }
     }
   }
-  public Object getTag(String path[]) throws Exception {
-    return getTag(path, metaList);
+  public String getString(String path[], ArrayList<MetaTag> list) throws Exception {
+    if (list == null) list = metaList;
+    MetaTag tag = getTag(path, list);
+    if (tag instanceof MetaString) {
+      MetaString str = (MetaString)tag;
+      return str.str;
+    }
+    return null;
   }
-  public Object getTag(String path[], ArrayList<MetaTag> list) throws Exception {
+  public MetaList getList(String path[], ArrayList<MetaTag> list) throws Exception {
+    if (list == null) list = metaList;
+    MetaTag tag = getTag(path, list);
+    if (tag instanceof MetaList) {
+      MetaList sublist = (MetaList)tag;
+      return sublist;
+    }
+    return null;
+  }
+  public long getValue(String path[], ArrayList<MetaTag> list) throws Exception {
+    if (list == null) list = metaList;
+    MetaTag tag = getTag(path, list);
+    if (tag instanceof MetaValue) {
+      MetaValue val = (MetaValue)tag;
+      return val.val;
+    }
+    return -1;
+  }
+  public MetaTag getTag(String path[], ArrayList<MetaTag> list) throws Exception {
     int pathIdx = 0;
     while (pathIdx < path.length) {
       int listLength = list.size();
       if (path[pathIdx].equals("d")) {
 //        if (log) JFLog.log("getTag:d0:length=" + listLength);
-        list = (ArrayList<MetaTag>)list.get(0).obj;
+        MetaList sublist = (MetaList)list.get(0);
+        list = (ArrayList<MetaTag>)sublist.list;
         pathIdx++;
         continue;
       }
@@ -93,14 +121,15 @@ public class MetaFile {
 //        if (log) JFLog.log("getTag:d:length=" + listLength);
         boolean found = false;
         for(int a=0;a<listLength;a++) {
-          Object o = list.get(a).obj;
-          if (o instanceof byte[]) {
-            String s = new String((byte[])o, "UTF-8");
-            if (s.equals(path[pathIdx].substring(2))) {
+          Object o = list.get(a);
+          if (o instanceof MetaString) {
+            MetaString str = (MetaString)o;
+            if (str.str.equals(path[pathIdx].substring(2))) {
               if (pathIdx == path.length-1) {
-                return list.get(a+1).obj;
+                return list.get(a+1);
               } else {
-                list = (ArrayList<MetaTag>)list.get(a+1).obj;
+                MetaList sublist = (MetaList)list.get(a+1);
+                list = sublist.list;
                 pathIdx++;
                 found = true;
                 break;
@@ -114,13 +143,13 @@ public class MetaFile {
       if (path[pathIdx].startsWith("s:")) {
 //        if (log) JFLog.log("getTag:s");
         for(int a=0;a<listLength;a++) {
-          Object o = list.get(a).obj;
-          if (o instanceof byte[]) {
-            String s = new String((byte[])o, "UTF-8");
-            if (s.equals(path[pathIdx].substring(2))) {
+          Object o = list.get(a);
+          if (o instanceof MetaString) {
+            MetaString str = (MetaString)o;
+            if (str.str.equals(path[pathIdx].substring(2))) {
               tagBegin = list.get(a+1).pos;
               tagEnd = list.get(a+1).endpos;
-              return list.get(a+1).obj;
+              return list.get(a+1);
             }
           }
         }
@@ -129,11 +158,11 @@ public class MetaFile {
       if (path[pathIdx].startsWith("i:")) {
 //        if (log) JFLog.log("getTag:i");
         for(int a=0;a<listLength;a++) {
-          Object o = list.get(a).obj;
-          if (o instanceof byte[]) {
-            String s = new String((byte[])o, "UTF-8");
-            if (s.equals(path[pathIdx].substring(2))) {
-              return list.get(a+1).obj;
+          Object o = list.get(a);
+          if (o instanceof MetaString) {
+            MetaString str = (MetaString)o;
+            if (str.str.equals(path[pathIdx].substring(2))) {
+              return list.get(a+1);
             }
           }
         }
@@ -143,14 +172,15 @@ public class MetaFile {
 //        if (log) JFLog.log("getTag:l:length=" + listLength);
         boolean found = false;
         for(int a=0;a<listLength;a++) {
-          Object o = list.get(a).obj;
-          if (o instanceof byte[]) {
-            String s = new String((byte[])o, "UTF-8");
-            if (s.equals(path[pathIdx].substring(2))) {
+          Object o = list.get(a);
+          if (o instanceof MetaString) {
+            MetaString str = (MetaString)o;
+            if (str.str.equals(path[pathIdx].substring(2))) {
               if (pathIdx == path.length-1) {
-                return list.get(a+1).obj;
+                return list.get(a+1);
               } else {
-                list = (ArrayList<MetaTag>)list.get(a+1).obj;
+                MetaList sublist = (MetaList)list.get(a+1);
+                list = sublist.list;
                 pathIdx++;
                 found = true;
                 break; //out of for loop

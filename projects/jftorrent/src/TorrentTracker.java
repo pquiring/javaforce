@@ -53,7 +53,7 @@ public class TorrentTracker extends Thread {
       byte metaData[] = JF.readAll(fis);
       fis.close();
       metaFile.read(metaData);
-      Object info = metaFile.getTag(new String[] {"d", "s:info"});
+      Object info = metaFile.getTag(new String[] {"d", "s:info"}, null);
       torrent.info_hash = SHA1sum(Arrays.copyOfRange(metaData, metaFile.tagBegin, metaFile.tagEnd+1));
       torrents.add(torrent);
     } catch (Exception e) {

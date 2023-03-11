@@ -158,33 +158,28 @@ public class TorrentClient extends Thread {
       if (log) JFLog.log("Reading torrent:" + torrent);
       readMeta();
       if (log) JFLog.log("Getting info...");
-      Object info = metaFile.getTag(new String[] {"d", "s:info"});
+      Object info = metaFile.getTag(new String[] {"d", "s:info"}, null);
       info_hash = SHA1sum(Arrays.copyOfRange(metaData, metaFile.tagBegin, metaFile.tagEnd+1));
       if (log) JFLog.log("info_hash = " + escape(info_hash));
-      announce = new String((byte[])metaFile.getTag(new String[] {"d", "s:announce"}), "UTF-8");
+      announce = metaFile.getString(new String[] {"d", "s:announce"}, null);
       if (log) JFLog.log("announce=" + announce);
-      ArrayList<MetaTag> aList = (ArrayList<MetaTag>)metaFile.getTag(new String[] {"d", "s:announce-list"});
+      MetaList aList = metaFile.getList(new String[] {"d", "s:announce-list"}, null);
       if (aList != null) {
-        for(int a=0;a<aList.size();a++) {
-          String str = concatList((ArrayList<MetaTag>)aList.get(a).obj, false);
+        for(int a=0;a<aList.list.size();a++) {
+          String str = concatList(aList.list, false);
           announceList.add(str);
 //          if (log) JFLog.log("list=" + str);
         }
       }
-      Long len = (Long)metaFile.getTag(new String[] {"d", "d:info", "i:length"});
-      if (len != null) {
-        totalLength = len;
-      } else {
-        totalLength = -1;
-      }
+      totalLength = metaFile.getValue(new String[] {"d", "d:info", "i:length"}, null);
       if (log) JFLog.log("length=" + totalLength);
-      pieceLength = (Long)metaFile.getTag(new String[] {"d", "d:info", "i:piece length"});
+      pieceLength = metaFile.getValue(new String[] {"d", "d:info", "i:piece length"}, null);
       if (log) JFLog.log("piece_length=" + pieceLength);
       numFragsPerPiece = (int)(pieceLength / FRAGSIZE);
       if (numFragsPerPiece * FRAGSIZE != pieceLength) throw new Exception("bad piece_length (not multiple of FRAGSIZE)");
-      name = new String((byte[])metaFile.getTag(new String[] {"d", "d:info", "s:name"}), "UTF-8");
+      name = metaFile.getString(new String[] {"d", "d:info", "s:name"}, null);
       if (log) JFLog.log("name=" + name);
-      byte[] piecesArray = (byte[])metaFile.getTag(new String[] {"d", "d:info", "s:pieces"});
+      byte[] piecesArray = metaFile.getString(new String[] {"d", "d:info", "s:pieces"}, null).getBytes();
       int noPieces = piecesArray.length / 20;
       if (log) JFLog.log("# pieces=" + noPieces);
       have = new boolean[noPieces];
@@ -193,17 +188,17 @@ public class TorrentClient extends Thread {
         pieces[a] = new byte[20];
         System.arraycopy(piecesArray, a * 20, pieces[a], 0, 20);
       }
-      ArrayList<MetaTag> filesList = (ArrayList<MetaTag>)metaFile.getTag(new String[] {"d", "d:info", "l:files"});
+      MetaList filesList = metaFile.getList(new String[] {"d", "d:info", "l:files"}, null);
       if (filesList != null) {
         if (log) JFLog.log("filesList");
-        noFiles = filesList.size();
+        noFiles = filesList.list.size();
         long filesLength = 0;
         for(int a=0;a<noFiles;a++) {
-          ArrayList<MetaTag> fileDict = (ArrayList<MetaTag>)filesList.get(a).obj;
-          ArrayList<MetaTag> fileName = (ArrayList<MetaTag>)metaFile.getTag(new String[]{"s:path"}, fileDict);
+          MetaList fileDict = (MetaList)filesList.list.get(a);
+          MetaList fileName = (MetaList)metaFile.getList(new String[]{"s:path"}, fileDict.list);
           TFile tfile = new TFile();
-          tfile.name = concatList(fileName, true);
-          tfile.length = (Long)metaFile.getTag(new String[] {"i:length"}, fileDict);
+          tfile.name = concatList(fileName.list, true);
+          tfile.length = (Long)metaFile.getValue(new String[] {"i:length"}, fileDict.list);
           filesLength += tfile.length;
           files.add(tfile);
           if (log) JFLog.log("file[]=" + tfile.name + ":length=" + tfile.length);
@@ -269,7 +264,8 @@ public class TorrentClient extends Thread {
     StringBuilder str = new StringBuilder();
     for(int a=0;a<size;a++) {
       if ((a > 0) || (isFilePath)) str.append("/");
-      str.append(new String((byte[])list.get(a).obj, "UTF-8"));
+      MetaString s = (MetaString)list.get(a);
+      str.append(s.str);
     }
     return str.toString();
   }
@@ -429,15 +425,15 @@ public class TorrentClient extends Thread {
       uc.disconnect();
       if (log) JFLog.log("response=" + new String(metaData));
       metaFile.read(metaData);
-      byte failure[] = (byte[])metaFile.getTag(new String[] {"d", "s:failure reason"});
+      String failure = metaFile.getString(new String[] {"d", "s:failure reason"}, null);
       if (failure != null) {
-        throw new Exception(new String(failure, "UTF-8"));
+        throw new Exception(failure);
       }
       if (event.equals("stopped") || event.equals("completed")) return;
-      complete = ((Long)metaFile.getTag(new String[] {"d", "i:complete"})).intValue();
-      incomplete = ((Long)metaFile.getTag(new String[] {"d", "i:incomplete"})).intValue();
-      interval = ((Long)metaFile.getTag(new String[] {"d", "i:interval"})).intValue();
-      peers = (byte[])metaFile.getTag(new String[] {"d", "s:peers"});
+      complete = (int)metaFile.getValue(new String[] {"d", "i:complete"}, null);
+      incomplete = (int)metaFile.getValue(new String[] {"d", "i:incomplete"}, null);
+      interval = (int)metaFile.getValue(new String[] {"d", "i:interval"}, null);
+      peers = metaFile.getString(new String[] {"d", "s:peers"}, null).getBytes();
       if (peers == null) throw new Exception("no peers");
       int noPeers = peers.length/6;
       for(int a=0;a<noPeers;a++) {

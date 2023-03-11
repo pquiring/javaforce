@@ -313,7 +313,7 @@ public class MainPanel extends javax.swing.JPanel {
   private String configFolder = JF.getUserPath();
   private String configFile = "/.jftorrent.xml";
   private TorrentServer server;
-  private DefaultListModel listModel = new DefaultListModel();
+  private DefaultListModel<String> listModel = new DefaultListModel<>();
   private DefaultTableModel tableModel;
   public static MainPanel This;
 
