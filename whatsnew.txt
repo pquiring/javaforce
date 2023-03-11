@@ -1,5 +1,15 @@
 What's new...
 
+Mar 11/2023 : JF/38.3
+  - lots of code cleanups
+    - fixed all deprecated code
+    - fixed all unchecked code
+    - still 7 occurances that can't be fixed due to deps
+      - mostly java clipboard and jsch
+      - see jfdesktop / jffile / jfftp / jfvideo
+    - you can use following environment variable to check for deprecated or unchecked code:
+      set JDK_JAVAC_OPTIONS=-Xlint:unchecked -Xlint:deprecation
+
 Mar 9/2023 : JF/38.2
   - javaforce.SMTP client now supports text/html alternatives and email attachments
     - if you were using the CLI you will have to change your parameters

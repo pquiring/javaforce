@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 38.2
+Version 38.3
 
 What is it?
 ===========
@@ -133,7 +133,7 @@ GraalVM support for AWT is still unfinished and probably will never be.
 Requirements
 ------------
 
-  - JDK 17+
+  - JDK 11+
   - Apache Ant 1.9.8+
   - Windows : VisualC++ compiler (64bit), wixtoolset v3
   - FFMpeg 4.2+ sources(headers) + shared libraries
