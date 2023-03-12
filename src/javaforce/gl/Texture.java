@@ -3,6 +3,7 @@ package javaforce.gl;
 import java.io.*;
 
 import javaforce.*;
+import javaforce.awt.*;
 import javaforce.ui.*;
 import static javaforce.gl.GL.*;
 
@@ -108,7 +109,7 @@ public class Texture {
     if (debug) {
       JFLog.log("GLTexture.load:" + image.getWidth() + "x" + image.getHeight());
     }
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_RGBA
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image.getWidth(), image.getHeight(), 0, GL_BGRA
       , GL_UNSIGNED_BYTE, image.getBuffer());
     loaded = true;
     return true;

@@ -36,7 +36,18 @@ JNIEXPORT jintArray JNICALL Java_javaforce_ui_Image_nloadPNG
   jintArray out = e->NewIntArray(x*y);
   uint8 *out_ptr = (uint8*)e->GetPrimitiveArrayCritical(out, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
-  memcpy(out_ptr, px_ptr, x*y*4);
+  //convert RGBA to BGRA
+  int xy = x * y;
+  uint8* dst = out_ptr;
+  uint8* src = px_ptr; 
+  int off = 0;
+  for(int i=0;i<xy;i++) {
+    dst[off+2] = src[off+0];
+    dst[off+1] = src[off+1];
+    dst[off+0] = src[off+2];
+    dst[off+3] = src[off+3];
+    off += 4;
+  }
   e->ReleasePrimitiveArrayCritical(out, out_ptr, JNI_COMMIT);
 
   stbi_image_free(px_ptr);

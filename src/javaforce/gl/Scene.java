@@ -1,11 +1,9 @@
 package javaforce.gl;
 
-import javaforce.gl.model.GL_JF3D;
-import javaforce.gl.model.GL_BLEND;
-import javaforce.gl.model.GL_3DS;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.gl.model.*;
 import static javaforce.gl.GL.*;
 
 /** Scene is a primitive 3D framework.
