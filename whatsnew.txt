@@ -1,5 +1,9 @@
 What's new...
 
+Mar 12/2023 : JF/38.4
+  - fixed RGB order issue with javaforce.ui.Image to match java image loader
+  - more code cleanups  
+
 Mar 11/2023 : JF/38.3
   - lots of code cleanups
     - fixed all deprecated code
