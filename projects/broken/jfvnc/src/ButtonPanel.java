@@ -22,7 +22,6 @@
 // ButtonPanel class implements panel with four buttons in the
 // VNCViewer desktop window.
 //
-
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -70,7 +69,6 @@ class ButtonPanel extends Panel implements ActionListener {
   //
   // Enable buttons on successful connection.
   //
-
   public void enableButtons() {
     disconnectButton.setEnabled(true);
     clipboardButton.setEnabled(true);
@@ -80,7 +78,6 @@ class ButtonPanel extends Panel implements ActionListener {
   //
   // Disable all buttons on disconnect.
   //
-
   public void disableButtonsOnDisconnect() {
     remove(disconnectButton);
     disconnectButton = new Button("Hide desktop");
@@ -100,7 +97,6 @@ class ButtonPanel extends Panel implements ActionListener {
   // Enable/disable controls that should not be available in view-only
   // mode.
   //
-
   public void enableRemoteAccessControls(boolean enable) {
     ctrlAltDelButton.setEnabled(enable);
   }
@@ -108,7 +104,6 @@ class ButtonPanel extends Panel implements ActionListener {
   //
   // Event processing.
   //
-
   public void actionPerformed(ActionEvent evt) {
 
     viewer.moveFocusToDesktop();
@@ -127,14 +122,12 @@ class ButtonPanel extends Panel implements ActionListener {
 
     } else if (evt.getSource() == ctrlAltDelButton) {
       try {
-        final int modifiers = InputEvent.CTRL_MASK | InputEvent.ALT_MASK;
+        final int modifiers = InputEvent.CTRL_DOWN_MASK | InputEvent.ALT_DOWN_MASK;
 
-        KeyEvent ctrlAltDelEvent =
-          new KeyEvent(this, KeyEvent.KEY_PRESSED, 0, modifiers, 127);
+        KeyEvent ctrlAltDelEvent = new KeyEvent(this, KeyEvent.KEY_PRESSED, 0, modifiers, 127, (char) 0);
         viewer.rfb.writeKeyEvent(ctrlAltDelEvent);
 
-        ctrlAltDelEvent =
-          new KeyEvent(this, KeyEvent.KEY_RELEASED, 0, modifiers, 127);
+        ctrlAltDelEvent = new KeyEvent(this, KeyEvent.KEY_RELEASED, 0, modifiers, 127, (char) 0);
         viewer.rfb.writeKeyEvent(ctrlAltDelEvent);
 
       } catch (IOException e) {
@@ -142,13 +135,12 @@ class ButtonPanel extends Panel implements ActionListener {
       }
     } else if (evt.getSource() == refreshButton) {
       try {
-	RfbProto rfb = viewer.rfb;
-	rfb.writeFramebufferUpdateRequest(0, 0, rfb.framebufferWidth,
-					  rfb.framebufferHeight, false);
+        RfbProto rfb = viewer.rfb;
+        rfb.writeFramebufferUpdateRequest(0, 0, rfb.framebufferWidth,
+                rfb.framebufferHeight, false);
       } catch (IOException e) {
         e.printStackTrace();
       }
     }
   }
 }
-

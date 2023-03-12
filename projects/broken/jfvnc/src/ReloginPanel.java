@@ -22,8 +22,6 @@
 // ReloginPanel class implements panel with a button for logging in again,
 // after fatal errors or disconnect
 //
-
-
 import java.awt.*;
 import java.awt.event.*;
 import java.applet.*;
@@ -31,8 +29,8 @@ import java.applet.*;
 //
 // The panel which implements the Relogin button
 //
-
 class ReloginPanel extends Panel implements ActionListener {
+
   Button reloginButton;
   Button closeButton;
   VncViewer viewer;
@@ -46,20 +44,15 @@ class ReloginPanel extends Panel implements ActionListener {
     reloginButton = new Button("Login again");
     add(reloginButton);
     reloginButton.addActionListener(this);
-    if (viewer.inSeparateFrame) {
-      closeButton = new Button("Close window");
-      add(closeButton);
-      closeButton.addActionListener(this);
-    }
+    closeButton = new Button("Close window");
+    add(closeButton);
+    closeButton.addActionListener(this);
   }
 
   //
   // This method is called when a button is pressed.
   //
   public synchronized void actionPerformed(ActionEvent evt) {
-    if (viewer.inSeparateFrame)
-      viewer.vncFrame.dispose();
-    if (evt.getSource() == reloginButton)
-      viewer.getAppletContext().showDocument(viewer.getDocumentBase());
+    viewer.vncFrame.dispose();
   }
 }

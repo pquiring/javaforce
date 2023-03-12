@@ -21,7 +21,6 @@
 // SessionRecorder is a class to write FBS (FrameBuffer Stream) files.
 // FBS files are used to save RFB sessions for later playback.
 //
-
 import java.io.*;
 
 class SessionRecorder {
@@ -39,7 +38,7 @@ class SessionRecorder {
     df = new DataOutputStream(f);
     startTime = System.currentTimeMillis();
     lastTimeOffset = 0;
-    
+
     bufferSize = bufsize;
     bufferBytes = 0;
     buffer = new byte[bufferSize];
@@ -52,7 +51,6 @@ class SessionRecorder {
   //
   // Close the file, free resources.
   //
-
   public void close() throws IOException {
     try {
       flush();
@@ -68,7 +66,6 @@ class SessionRecorder {
   //
   // Write the FBS file header as defined in the rfbproxy utility.
   //
-
   public void writeHeader() throws IOException {
     df.write("FBS 001.000\n".getBytes());
   }
@@ -76,73 +73,68 @@ class SessionRecorder {
   //
   // Write one byte.
   //
-
   public void writeByte(int b) throws IOException {
     prepareWriting();
-    buffer[bufferBytes++] = (byte)b;
+    buffer[bufferBytes++] = (byte) b;
   }
 
   //
   // Write 16-bit value, big-endian.
   //
-
   public void writeShortBE(int v) throws IOException {
     prepareWriting();
-    buffer[bufferBytes++] = (byte)(v >> 8);
-    buffer[bufferBytes++] = (byte)v;
+    buffer[bufferBytes++] = (byte) (v >> 8);
+    buffer[bufferBytes++] = (byte) v;
   }
 
   //
   // Write 32-bit value, big-endian.
   //
-
   public void writeIntBE(int v) throws IOException {
     prepareWriting();
-    buffer[bufferBytes]     = (byte)(v >> 24);
-    buffer[bufferBytes + 1] = (byte)(v >> 16);
-    buffer[bufferBytes + 2] = (byte)(v >> 8);
-    buffer[bufferBytes + 3] = (byte)v;
+    buffer[bufferBytes] = (byte) (v >> 24);
+    buffer[bufferBytes + 1] = (byte) (v >> 16);
+    buffer[bufferBytes + 2] = (byte) (v >> 8);
+    buffer[bufferBytes + 3] = (byte) v;
     bufferBytes += 4;
   }
 
   //
   // Write 16-bit value, little-endian.
   //
-
   public void writeShortLE(int v) throws IOException {
     prepareWriting();
-    buffer[bufferBytes++] = (byte)v;
-    buffer[bufferBytes++] = (byte)(v >> 8);
+    buffer[bufferBytes++] = (byte) v;
+    buffer[bufferBytes++] = (byte) (v >> 8);
   }
 
   //
   // Write 32-bit value, little-endian.
   //
-
   public void writeIntLE(int v) throws IOException {
     prepareWriting();
-    buffer[bufferBytes]     = (byte)v;
-    buffer[bufferBytes + 1] = (byte)(v >> 8);
-    buffer[bufferBytes + 2] = (byte)(v >> 16);
-    buffer[bufferBytes + 3] = (byte)(v >> 24);
+    buffer[bufferBytes] = (byte) v;
+    buffer[bufferBytes + 1] = (byte) (v >> 8);
+    buffer[bufferBytes + 2] = (byte) (v >> 16);
+    buffer[bufferBytes + 3] = (byte) (v >> 24);
     bufferBytes += 4;
   }
 
   //
   // Write byte arrays.
   //
-
   public void write(byte b[], int off, int len) throws IOException {
     prepareWriting();
     while (len > 0) {
-      if (bufferBytes > bufferSize - 4)
-	flush(false);
+      if (bufferBytes > bufferSize - 4) {
+        flush(false);
+      }
 
       int partLen;
       if (bufferBytes + len > bufferSize) {
-	partLen = bufferSize - bufferBytes;
+        partLen = bufferSize - bufferBytes;
       } else {
-	partLen = len;
+        partLen = len;
       }
       System.arraycopy(b, off, buffer, bufferBytes, partLen);
       bufferBytes += partLen;
@@ -161,15 +153,15 @@ class SessionRecorder {
   // updateTimeOffset is set to false, then the current time offset
   // will not be changed for next write operation.
   //
-
   public void flush(boolean updateTimeOffset) throws IOException {
     if (bufferBytes > 0) {
       df.writeInt(bufferBytes);
       df.write(buffer, 0, (bufferBytes + 3) & 0x7FFFFFFC);
-      df.writeInt((int)lastTimeOffset);
+      df.writeInt((int) lastTimeOffset);
       bufferBytes = 0;
-      if (updateTimeOffset)
-	lastTimeOffset = -1;
+      if (updateTimeOffset) {
+        lastTimeOffset = -1;
+      }
     }
   }
 
@@ -181,13 +173,13 @@ class SessionRecorder {
   // Before writing any data, remember time offset and flush the
   // buffer before it becomes full.
   //
-
   protected void prepareWriting() throws IOException {
-    if (lastTimeOffset == -1)
+    if (lastTimeOffset == -1) {
       lastTimeOffset = System.currentTimeMillis() - startTime;
-    if (bufferBytes > bufferSize - 4)
+    }
+    if (bufferBytes > bufferSize - 4) {
       flush(false);
+    }
   }
 
 }
-

@@ -21,12 +21,11 @@
 //
 // Clipboard frame.
 //
-
 import java.awt.*;
 import java.awt.event.*;
 
 class ClipboardFrame extends Frame
-  implements WindowListener, ActionListener {
+        implements WindowListener, ActionListener {
 
   TextArea textArea;
   Button clearButton, closeButton;
@@ -36,7 +35,6 @@ class ClipboardFrame extends Frame
   //
   // Constructor.
   //
-
   ClipboardFrame(VncViewer v) {
     super("TightVNC Clipboard");
 
@@ -74,11 +72,9 @@ class ClipboardFrame extends Frame
     addWindowListener(this);
   }
 
-
   //
   // Set the cut text from the RFB server.
   //
-
   void setCutText(String text) {
     selection = text;
     textArea.setText(text);
@@ -87,13 +83,11 @@ class ClipboardFrame extends Frame
     }
   }
 
-
   //
   // When the focus leaves the window, see if we have new cut text and
   // if so send it to the RFB server.
   //
-
-  public void windowDeactivated (WindowEvent evt) {
+  public void windowDeactivated(WindowEvent evt) {
     if (selection != null && !selection.equals(textArea.getText())) {
       selection = textArea.getText();
       viewer.setCutText(selection);
@@ -103,7 +97,6 @@ class ClipboardFrame extends Frame
   //
   // Close our window properly.
   //
-
   public void windowClosing(WindowEvent evt) {
     setVisible(false);
   }
@@ -111,18 +104,24 @@ class ClipboardFrame extends Frame
   //
   // Ignore window events we're not interested in.
   //
+  public void windowActivated(WindowEvent evt) {
+  }
 
-  public void windowActivated(WindowEvent evt) {}
-  public void windowOpened(WindowEvent evt) {}
-  public void windowClosed(WindowEvent evt) {}
-  public void windowIconified(WindowEvent evt) {}
-  public void windowDeiconified(WindowEvent evt) {}
+  public void windowOpened(WindowEvent evt) {
+  }
 
+  public void windowClosed(WindowEvent evt) {
+  }
+
+  public void windowIconified(WindowEvent evt) {
+  }
+
+  public void windowDeiconified(WindowEvent evt) {
+  }
 
   //
   // Respond to button presses
   //
-
   public void actionPerformed(ActionEvent evt) {
     if (evt.getSource() == clearButton) {
       textArea.setText("");

@@ -2,18 +2,18 @@
   <description>jfvnc</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfvnc"/>
-  <property name="home" location="../.."/>
+  <property name="home" location="../../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
-  <property name="classpath" location="../../classes"/>
+  <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="version" value="0.2"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="depnatives">
     <jar destfile="javaforce.jar">
-      <zipfileset src="../../jars/javaforce.jar"/>
+      <zipfileset src="${home}/jars/javaforce.jar"/>
       <manifest>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>

@@ -22,31 +22,31 @@
 // implement an alternate way to connect to VNC servers via one or two
 // HTTP proxies supporting the HTTP CONNECT method.
 //
-
 import java.net.*;
 import java.io.*;
 
 class HTTPConnectSocket extends Socket {
 
   public HTTPConnectSocket(String host, int port,
-			   String proxyHost, int proxyPort)
-    throws IOException {
+          String proxyHost, int proxyPort)
+          throws IOException {
 
     // Connect to the specified HTTP proxy
     super(proxyHost, proxyPort);
 
     // Send the CONNECT request
-    getOutputStream().write(("CONNECT " + host + ":" + port +
-			     " HTTP/1.0\r\n\r\n").getBytes());
+    getOutputStream().write(("CONNECT " + host + ":" + port
+            + " HTTP/1.0\r\n\r\n").getBytes());
 
     // Read the first line of the response
-    DataInputStream is = new DataInputStream(getInputStream());
+    BufferedReader is = new BufferedReader(new InputStreamReader(getInputStream()));
     String str = is.readLine();
 
     // Check the HTTP error code -- it should be "200" on success
     if (!str.startsWith("HTTP/1.0 200 ")) {
-      if (str.startsWith("HTTP/1.0 "))
-	str = str.substring(9);
+      if (str.startsWith("HTTP/1.0 ")) {
+        str = str.substring(9);
+      }
       throw new IOException("Proxy reports \"" + str + "\"");
     }
 
@@ -56,4 +56,3 @@ class HTTPConnectSocket extends Socket {
     } while (str.length() != 0);
   }
 }
-

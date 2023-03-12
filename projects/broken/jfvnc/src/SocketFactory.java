@@ -21,16 +21,15 @@
 // SocketFactory.java describes an interface used to substitute the
 // standard Socket class by its alternative implementations.
 //
-
 import java.applet.*;
 import java.net.*;
 import java.io.*;
 
 public interface SocketFactory {
 
-  public Socket createSocket(String host, int port, Applet applet)
-    throws IOException;
+  public Socket createSocket(String host, int port)
+          throws IOException;
 
   public Socket createSocket(String host, int port, String[] args)
-    throws IOException;
+          throws IOException;
 }
