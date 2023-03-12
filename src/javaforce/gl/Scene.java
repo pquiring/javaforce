@@ -157,9 +157,25 @@ public class Scene {
     needinittex = true;
     tex = new Texture(idx);
     tex.name = fn;
-    if (!tex.loadPNG(fn)) {
-      JFLog.log("Error:Failed to load texture:" + fn);
+    int extidx = fn.lastIndexOf('.');
+    if (extidx == -1) {
+      JFLog.log("Unsupported texture:" + fn);
       return false;
+    }
+    String ext = fn.substring(extidx);
+    switch (ext.toLowerCase()) {
+      case ".png":
+        if (!tex.loadPNG(fn)) {
+          JFLog.log("Error:Failed to load texture:" + fn);
+          return false;
+        }
+        break;
+      case ".jpg":
+        if (!tex.loadJPG(fn)) {
+          JFLog.log("Error:Failed to load texture:" + fn);
+          return false;
+        }
+        break;
     }
     tex.refcnt = 1;
     tl.put(fn, tex);

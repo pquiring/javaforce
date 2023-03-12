@@ -39,7 +39,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_ui_Image_nloadPNG
   //convert RGBA to BGRA
   int xy = x * y;
   uint8* dst = out_ptr;
-  uint8* src = px_ptr; 
+  uint8* src = px_ptr;
   int off = 0;
   for(int i=0;i<xy;i++) {
     dst[off+2] = src[off+0];
@@ -79,6 +79,7 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_ui_Image_nsavePNG
 {
   write_ctx ctx;
   jboolean isCopy;
+  int xy = x * y;
 
   ctx.buf = NULL;
   ctx.siz = 0;
@@ -88,9 +89,22 @@ JNIEXPORT jbyteArray JNICALL Java_javaforce_ui_Image_nsavePNG
 
   uint8 *px_ptr = (uint8*)e->GetPrimitiveArrayCritical(px, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
+  uint8* rgb_ptr = (uint8*)malloc(xy*4);
+  //convert RGBA to BGRA
+  uint8* dst = rgb_ptr;
+  uint8* src = px_ptr;
+  int off = 0;
+  for(int i=0;i<xy;i++) {
+    dst[off+2] = src[off+0];
+    dst[off+1] = src[off+1];
+    dst[off+0] = src[off+2];
+    dst[off+3] = src[off+3];
+    off += 4;
+  }
 
-  stbi_write_png_to_func(write_func, (void*)&ctx, x, y, 4, px_ptr, x*4);
+  stbi_write_png_to_func(write_func, (void*)&ctx, x, y, 4, rgb_ptr, x*4);
 
+  free(rgb_ptr);
   e->ReleasePrimitiveArrayCritical(px, px_ptr, JNI_ABORT);
 
   jbyteArray out = e->NewByteArray(ctx.siz);

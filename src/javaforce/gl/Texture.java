@@ -78,6 +78,26 @@ public class Texture {
     return true;
   }
 
+  public boolean loadJPG(String filename) {
+    JFLog.log("Loading Texture:" + filename.toString());
+    try {
+      return loadJPG(new FileInputStream(filename));
+    } catch (FileNotFoundException e) {
+      JFLog.log("File not found:" + filename);
+      return false;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
+    }
+  }
+
+  public boolean loadJPG(InputStream is) {
+    if (!image.loadJPG(is)) {
+      return false;
+    }
+    return true;
+  }
+
   public boolean load() {
     if (tid == -1) {
       int[] id = new int[1];
