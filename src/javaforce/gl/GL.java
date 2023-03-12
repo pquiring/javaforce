@@ -89,6 +89,7 @@ public class GL {
   public static final int GL_MODULATE = 0x2100;
   public static final int GL_RGBA = 0x1908;
   public static final int GL_BGRA = 0x80e1;
+  public static final int GL_RGBA8 = 0x8058;
   public static final int GL_COLOR_BUFFER_BIT = 0x4000;
   public static final int GL_DEPTH_BUFFER_BIT= 0x0100;
   public static final int GL_STENCIL_BUFFER_BIT = 0x0400;
