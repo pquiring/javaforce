@@ -78,7 +78,7 @@ Building jfLinux
 ----------------
 After building Javaforce, native library and stubs (launchers) you can run build.sh to build and package everything.
 Supported distros : Debian, Fedora, Arch.
-FreeBSD is currently not supported.
+FreeBSD is currently not supported (open issue if you would like to see FreeBSD packager task and repo created)
 
 JavaForce Ant tasks:
 --------------------
