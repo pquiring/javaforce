@@ -20,26 +20,27 @@ public class TorrentFile {
     root = readTag();
   }
   private MetaTag readTag() throws Exception {
+    int start = metaIdx;
     if (Character.isDigit(metaData[metaIdx])) {
-      MetaString tag = new MetaString();
-      //string length:string data
+      MetaData tag = new MetaData();
+      //length:byte[length]
       StringBuilder str = new StringBuilder();
       while (Character.isDigit(metaData[metaIdx])) {
         str.append((char)metaData[metaIdx++]);
       }
-      metaIdx++;  //'e'
-      tag.pos1 = metaIdx;
+      metaIdx++;  //':'
+      tag.pos1 = start;
       int len = Integer.valueOf(str.toString());
-      tag.str = new String(Arrays.copyOfRange(metaData, metaIdx, metaIdx + len));
+      tag.data = Arrays.copyOfRange(metaData, metaIdx, metaIdx + len);
       metaIdx += len;
       tag.pos2 = metaIdx;
-      if (debug) JFLog.log("readString:" + tag.str);
+      if (debug) JFLog.log("read byte[]:" + tag.data.length);
       return tag;
     }
     switch (metaData[metaIdx++]) {
       case 'i': {  //integer
         MetaInt tag = new MetaInt();
-        tag.pos1 = metaIdx;
+        tag.pos1 = start;
         StringBuilder str = new StringBuilder();
         while (Character.isDigit(metaData[metaIdx])) {
           str.append((char)metaData[metaIdx++]);
@@ -52,7 +53,7 @@ public class TorrentFile {
       }
       case 'd': {  //dict
         MetaDict tag = new MetaDict();
-        tag.pos1 = metaIdx;
+        tag.pos1 = start;
         if (debug) JFLog.log("readDict {");
         do {
           MetaDictEntry de = new MetaDictEntry();
@@ -60,18 +61,7 @@ public class TorrentFile {
           de.key = readTag();
           if (de.key == null) break;
           if (debug) JFLog.log("key=" + de.key);
-          if (de.key.equals("pieces")) {
-            metaIdx--;
-            metaData[metaIdx] = 'i';  //fake integer tag (overwrites 's' in pieces)
-            //read raw pieces data
-            MetaInt size = (MetaInt)readTag();
-            MetaData data = new MetaData();
-            data.data = Arrays.copyOfRange(metaData, metaIdx, (int)(metaIdx + size.val));
-            metaIdx += size.val;
-            de.value = data;
-          } else {
-            de.value = readTag();
-          }
+          de.value = readTag();
           if (debug) JFLog.log("} //dictEntry");
           tag.list.add(de);
         } while(true);
@@ -81,7 +71,7 @@ public class TorrentFile {
       }
       case 'l': { //list
         MetaList tag = new MetaList();
-        tag.pos1 = metaIdx;
+        tag.pos1 = start;
         if (debug) JFLog.log("readList {");
         do {
           MetaTag entry = readTag();
@@ -104,9 +94,9 @@ public class TorrentFile {
   public String getString(String path[], MetaTag list) throws Exception {
     if (list == null) list = root;
     MetaTag tag = getTag(path, list);
-    if (tag instanceof MetaString) {
-      MetaString str = (MetaString)tag;
-      return str.str;
+    if (tag instanceof MetaData) {
+      MetaData str = (MetaData)tag;
+      return str.toString();
     }
     return null;
   }
@@ -152,10 +142,10 @@ public class TorrentFile {
         for(int a=0;a<dict.list.size();a++) {
           MetaDictEntry de = dict.list.get(a);
           MetaTag key = de.key;
-          if (key instanceof MetaString) {
-            MetaString str = (MetaString)key;
-            if (debug) JFLog.log("compare?" + str.str + "==" + find);
-            if (str.str.equals(find)) {
+          if (key instanceof MetaData) {
+            MetaData str = (MetaData)key;
+            if (debug) JFLog.log("compare?" + str.toString() + "==" + find);
+            if (str.toString().equals(find)) {
               found = true;
               dict = (MetaDict)de.value;
               break;
@@ -176,10 +166,10 @@ public class TorrentFile {
         for(int a=0;a<dict.list.size();a++) {
           MetaDictEntry de = dict.list.get(a);
           MetaTag key = de.key;
-          if (key instanceof MetaString) {
-            MetaString str = (MetaString)key;
-            if (debug) JFLog.log("compare?" + str.str + "==" + find);
-            if (str.str.equals(find)) {
+          if (key instanceof MetaData) {
+            MetaData str = (MetaData)key;
+            if (debug) JFLog.log("compare?" + str.toString() + "==" + find);
+            if (str.toString().equals(find)) {
               return de.value;
             }
           }
@@ -192,10 +182,10 @@ public class TorrentFile {
         for(int a=0;a<dict.list.size();a++) {
           MetaDictEntry de = dict.list.get(a);
           MetaTag key = de.key;
-          if (key instanceof MetaString) {
-            MetaString str = (MetaString)key;
-            if (debug) JFLog.log("compare?" + str.str + "==" + find);
-            if (str.str.equals(find)) {
+          if (key instanceof MetaData) {
+            MetaData str = (MetaData)key;
+            if (debug) JFLog.log("compare?" + str.toString() + "==" + find);
+            if (str.toString().equals(find)) {
               return de.value;
             }
           }
@@ -208,9 +198,9 @@ public class TorrentFile {
         for(int a=0;a<dict.list.size();a++) {
           MetaDictEntry de = dict.list.get(a);
           MetaTag key = de.key;
-          if (key instanceof MetaString) {
-            MetaString str = (MetaString)key;
-            if (str.str.equals(find)) {
+          if (key instanceof MetaData) {
+            MetaData str = (MetaData)key;
+            if (str.toString().equals(find)) {
               return de.value;
             }
           }

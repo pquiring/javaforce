@@ -46,7 +46,7 @@ public class TorrentClient extends Thread {
   private long lastPieceLength;  //need to calc
   public String name;
   private int noFiles;
-  private ArrayList<TFile> files = new ArrayList<TFile>();
+  private ArrayList<MetaFile> files = new ArrayList<MetaFile>();
   private byte pieces[][];  //SHA1
   private int numFragsPerPiece;
   private final int FRAGSTACK = 3;
@@ -78,20 +78,6 @@ public class TorrentClient extends Thread {
   private final int FRAGMENT = 7;  //deliver fragment - piece of a piece (I call them fragments)
   private final int CANCEL = 8;
   private final int DHT_PORT = 9;
-
-  /** File in this torrent */
-  private static class TFile {
-    public String name;
-    public long length;
-    public RandomAccessFile file;
-    public final Object lock = new Object();
-    public void mkdirs(String dest) {
-      String filename = dest + "/" + name;
-      int idx = filename.lastIndexOf("/");
-      if (idx == -1) return;
-      new File(filename.substring(0, idx)).mkdirs();
-    }
-  }
 
   /** Peer for this torrent */
   private static class Peer {
@@ -127,6 +113,7 @@ public class TorrentClient extends Thread {
       System.exit(1);
     }
     JFLog.init(JF.getUserPath() + "/.jftorrent.log", true);
+    JF.initHttps();
     TorrentClient client = new TorrentClient(args[0], args[1], true, false);
     client.start();
   }
@@ -167,9 +154,9 @@ public class TorrentClient extends Thread {
       if (aList != null) {
         for(int a=0;a<aList.list.size();a++) {
           MetaTag tag = aList.list.get(a);
-          if (tag instanceof MetaString) {
-            MetaString str = (MetaString)tag;
-            announceList.add(str.str);
+          if (tag instanceof MetaData) {
+            MetaData str = (MetaData)tag;
+            announceList.add(str.toString());
           }
         }
       }
@@ -193,13 +180,13 @@ public class TorrentClient extends Thread {
       }
       MetaList filesList = metaFile.getList(new String[] {"d", "d:info", "l:files"}, null);
       if (filesList != null) {
-        if (debug) JFLog.log("filesList");
         noFiles = filesList.list.size();
+        if (debug) JFLog.log("filesList:" + noFiles);
         long filesLength = 0;
         for(int a=0;a<noFiles;a++) {
           MetaList fileDict = (MetaList)filesList.list.get(a);
           MetaList fileName = (MetaList)metaFile.getList(new String[]{"s:path"}, fileDict);
-          TFile tfile = new TFile();
+          MetaFile tfile = new MetaFile();
           tfile.name = concatList(fileName.list, true);
           tfile.length = (Long)metaFile.getValue(new String[] {"i:length"}, fileDict);
           filesLength += tfile.length;
@@ -212,7 +199,7 @@ public class TorrentClient extends Thread {
       } else {
         if (debug) JFLog.log("filesList=null");
         noFiles = 1;
-        TFile tfile = new TFile();
+        MetaFile tfile = new MetaFile();
         tfile.name = name;
         tfile.length = totalLength;
         files.add(tfile);
@@ -267,8 +254,8 @@ public class TorrentClient extends Thread {
     StringBuilder str = new StringBuilder();
     for(int a=0;a<size;a++) {
       if ((a > 0) || (isFilePath)) str.append("/");
-      MetaString s = (MetaString)list.get(a);
-      str.append(s.str);
+      MetaData s = (MetaData)list.get(a);
+      str.append(s.toString());
     }
     return str.toString();
   }
@@ -279,7 +266,7 @@ public class TorrentClient extends Thread {
     boolean bad = false;  //part of piece is missing
     try {
       for(int a=0;a<noFiles;a++) {
-        TFile tfile = files.get(a);
+        MetaFile tfile = files.get(a);
         String filename = dest + "/" + tfile.name;
         File file = new File(filename);
         if (file.exists()) {
@@ -415,7 +402,7 @@ public class TorrentClient extends Thread {
     return ret;
   }
   private void contactTracker(String event) throws Exception {
-    if (announce.startsWith("http://")) {
+    if (announce.startsWith("http://") || announce.startsWith("https://")) {
       URL url = new URL(announce + "?info_hash=" + escape(info_hash) + "&peer_id=" + peer_id + "&port=" + TorrentServer.port +
         "&uploaded=" + upAmount + "&downloaded=" + downAmount + "&left=" + (totalLength - downAmount) + "&compact=1&numwant=" + NUMWANT + "&event=" + event);
       if (debug) JFLog.log("url=" + url.toExternalForm());
@@ -470,7 +457,9 @@ public class TorrentClient extends Thread {
       if (peerList.isEmpty()) throw new Exception("no peers");
     } else if (announce.startsWith("udp://")) {
       throw new Exception("UDP protocol not supported yet");
-    } else throw new Exception("bad announce URL");
+    } else {
+      throw new Exception("bad announce URL:" + announce);
+    }
   }
   private void addPeer() throws Exception {
     if (peerActiveCount >= MAXPEERS) return;
@@ -544,7 +533,7 @@ public class TorrentClient extends Thread {
     }
     public void run() {
       try {
-        if (debug) JFLog.log("Starting PeerListener:" + peer.ip);
+        if (debug) JFLog.log("Starting PeerListener:" + peer.ip + ":" + peer.port);
         if (peer.s == null) {
           peer.s = new Socket(peer.ip, peer.port);
           peer.is = peer.s.getInputStream();
@@ -905,7 +894,7 @@ public class TorrentClient extends Thread {
     long pos = 0;
     int toRead;
     for(int a=0;a<files.size();a++) {
-      TFile tfile = files.get(a);
+      MetaFile tfile = files.get(a);
       if (pos + tfile.length <= begin) {
         pos += tfile.length;
         continue;
@@ -961,7 +950,7 @@ public class TorrentClient extends Thread {
     long pos = 0;
     int write;
     for(int a=0;a<files.size();a++) {
-      TFile tfile = files.get(a);
+      MetaFile tfile = files.get(a);
       if (pos + tfile.length < begin) {
         pos += tfile.length;
         continue;

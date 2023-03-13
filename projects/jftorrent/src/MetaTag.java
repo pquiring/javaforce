@@ -5,6 +5,6 @@
  */
 
 public class MetaTag {
-  char type;
-  int pos1, pos2;
+  public char type;
+  public int pos1, pos2;
 }
