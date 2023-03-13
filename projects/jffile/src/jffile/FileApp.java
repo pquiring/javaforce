@@ -1026,6 +1026,7 @@ public class FileApp extends javax.swing.JFrame implements KeyEventDispatcher, A
         return true;
       }
 
+      @SuppressWarnings("unchecked")
       public boolean importData(TransferHandler.TransferSupport info) {
         if (!info.isDrop()) {
           return false;

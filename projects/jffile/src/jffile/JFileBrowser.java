@@ -1041,6 +1041,7 @@ public class JFileBrowser extends javax.swing.JComponent implements MouseListene
         return true;
       }
 
+      @SuppressWarnings("unchecked")
       public boolean importData(TransferHandler.TransferSupport info) {
         if (!info.isDrop()) {
           return false;

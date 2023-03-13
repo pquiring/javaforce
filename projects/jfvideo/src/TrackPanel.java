@@ -412,6 +412,7 @@ public class TrackPanel extends javax.swing.JPanel {
         return true;
       }
 
+      @SuppressWarnings("unchecked")
       public boolean importData(TransferHandler.TransferSupport info) {
         if (!info.isDrop()) {
           return false;

@@ -1283,6 +1283,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
         return true;
       }
 
+      @SuppressWarnings("unchecked")
       public boolean importData(TransferHandler.TransferSupport info) {
         if (!info.isDrop()) {
           return false;

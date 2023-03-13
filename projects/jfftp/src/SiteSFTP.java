@@ -98,6 +98,7 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void remote_ls() {
     try {
       String wd = remote_pwd();
