@@ -669,12 +669,10 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
   };
 
   private TableCellEditor tableCellEditor = new DefaultCellEditor(new JTextField("")) {
-    @Override
     public boolean isCellEditable(EventObject anEvent) {
       return false;  //BUG : inline editing doesn't work yet
     }
 
-    @Override
     public Component getTableCellEditorComponent(JTable table,
       Object value,
       boolean isSelected,

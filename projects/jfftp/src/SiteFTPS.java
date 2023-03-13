@@ -7,7 +7,6 @@ import javaforce.*;
 import javaforce.awt.*;
 
 public class SiteFTPS extends SiteFTP {
-  @Override
   public boolean connect(SiteDetails sd) {
     try {
       ftp = new FTP();

@@ -18,12 +18,11 @@ public class WebResponse extends OutputStream {
   private ArrayList<String> cookies = new ArrayList<String>();
   private ArrayList<String> headers = new ArrayList<String>();
 
-  @Override
   public void write(int b) throws IOException {
     if (liveStream) throw new IOException("");
     buf.write(b);
   }
-  @Override
+
   public void write(byte b[], int off, int len) throws IOException {
     if (liveStream) throw new IOException("");
     buf.write(b, off, len);

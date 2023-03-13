@@ -24,14 +24,11 @@ public class JFLayoutStyle extends javax.swing.LayoutStyle {
     this.size = size;
   }
 
-  @Override
   public int getPreferredGap(JComponent component1, JComponent component2, ComponentPlacement type, int position, Container parent) {
     return size;
   }
 
-  @Override
   public int getContainerGap(JComponent component, int position, Container parent) {
     return size;
   }
-
 }

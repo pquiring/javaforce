@@ -86,7 +86,6 @@ public class GetFolderDialog extends javax.swing.JDialog {
       public void run() {
         GetFolderDialog dialog = new GetFolderDialog(new javax.swing.JFrame(), true);
         dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-          @Override
           public void windowClosing(java.awt.event.WindowEvent e) {
             System.exit(0);
           }

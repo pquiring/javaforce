@@ -61,7 +61,6 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
     setOptsState();
     updateAvailableLists();
     new Thread() {
-      @Override
       public void run() {
         createDatabase();
         if (check_update.isSelected()) checkVersion();
@@ -1351,7 +1350,6 @@ public class Broadcast extends javax.swing.JFrame implements SIPClientInterface,
         return;
       }
       callingThread = new Thread() {
-        @Override
         public void run() {
           startCalling();
         }

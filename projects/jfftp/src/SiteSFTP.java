@@ -35,7 +35,6 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     }
   }
 
-  @Override
   public boolean connect(SiteDetails sd) {
     try {
       jsch = new JSch();
@@ -71,7 +70,6 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     return true;
   }
 
-  @Override
   public void disconnect() {
     try {
       channel.disconnect();
@@ -79,7 +77,6 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     } catch (Exception e) {}
   }
 
-  @Override
   public String remote_pwd() {
     String wd;
     try {
@@ -97,7 +94,6 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     return wd;
   }
 
-  @Override
   @SuppressWarnings("unchecked")
   public void remote_ls() {
     try {
@@ -118,7 +114,6 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     }
   }
 
-  @Override
   public void remote_chdir(String path) {
     try {
       channel.cd(path);
@@ -130,7 +125,6 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     }
   }
 
-  @Override
   public void download_file(File remote, File local) {
     total = 0;
     try {
@@ -144,7 +138,6 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     }
   }
 
-  @Override
   public void upload_file(File local, File remote) {
     total = 0;
     try {
@@ -158,13 +151,11 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     }
   }
 
-  @Override
   public void abort() {
     aborted = true;
     //TODO : channel.abort() ?
   }
 
-  @Override
   public void remote_mkdir(String file) {
     try {
       channel.mkdir(file);
@@ -175,7 +166,6 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     }
   }
 
-  @Override
   public void remote_delete_file(String file) {
     try {
       channel.rm(file);
@@ -186,7 +176,6 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     }
   }
 
-  @Override
   public void remote_delete_folder(String file) {
     try {
       channel.rmdir(file);
@@ -207,7 +196,6 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     }
   }
 
-  @Override
   public void remote_rename(String from, String to) {
     try {
       channel.rename(from, to);
@@ -218,7 +206,6 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     }
   }
 
-  @Override
   public void setPerms(int value, String remoteFile) {
     try {
       channel.chmod(value, remoteFile);

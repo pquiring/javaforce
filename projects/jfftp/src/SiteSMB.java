@@ -17,7 +17,6 @@ public class SiteSMB extends Site {
   private String url;
   private NtlmPasswordAuthentication auth;
 
-  @Override
   public boolean connect(SiteDetails sd) {
     try {
       setStatus("Connecting...");
@@ -40,7 +39,6 @@ public class SiteSMB extends Site {
     return true;
   }
 
-  @Override
   public void disconnect() {
   }
 
@@ -86,7 +84,6 @@ public class SiteSMB extends Site {
     return true;
   }
 
-  @Override
   public void remote_chdir(String path) {
     String wd = remoteDir.getText();
     path = path.replaceAll("\\\\", "/");
@@ -114,13 +111,11 @@ public class SiteSMB extends Site {
     parseRemote(wd, getListing());
   }
 
-  @Override
   public void download() {
     aborted = false;
     localFolderStack = new ArrayList<String>();
     remoteFolderStack = new ArrayList<String>();
     new Thread() {
-      @Override
       public void run() {
         setStatus("Downloading");
         download_files();
@@ -210,13 +205,11 @@ public class SiteSMB extends Site {
     }
   }
 
-  @Override
   public void upload() {
     aborted = false;
     localFolderStack = new ArrayList<String>();
     remoteFolderStack = new ArrayList<String>();
     new Thread() {
-      @Override
       public void run() {
         setStatus("Uploading");
         upload_files();
@@ -314,7 +307,6 @@ public class SiteSMB extends Site {
     aborted = true;
   }
 
-  @Override
   public void remote_mkdir() {
     String fn = JFAWT.getString("Enter new folder name", "");
     if ((fn == null) || (fn.length() == 0)) return;
@@ -343,14 +335,12 @@ public class SiteSMB extends Site {
     }
   }
 
-  @Override
   public void remote_delete() {
     remoteFolderStack = new ArrayList<String>();
     if (!JFAWT.showConfirm("Delete", "Are you sure you want to delete file(s)?")) return;
     aborted = false;
     setStatus("Deleting");
     new Thread() {
-      @Override
       public void run() {
         remote_delete_files();
         remote_chdir(".");  //refresh
@@ -435,7 +425,6 @@ public class SiteSMB extends Site {
     }
   }
 
-  @Override
   public void remote_rename() {
     int rows[] = remoteFiles.getSelectedRows();
     if ((rows == null) || (rows.length != 1)) return;
@@ -475,7 +464,6 @@ public class SiteSMB extends Site {
     }
   }
 
-  @Override
   public void remote_props() {
     int rows[] = remoteFiles.getSelectedRows();
     if ((rows == null) || (rows.length != 1)) return;
