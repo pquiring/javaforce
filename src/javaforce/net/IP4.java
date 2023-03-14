@@ -64,4 +64,7 @@ public class IP4 {
     }
     return true;
   }
+  public boolean isMulticastAddress() {
+    return toInetAddress().isMulticastAddress();
+  }
 }
