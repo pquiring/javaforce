@@ -10,7 +10,7 @@ import java.util.Arrays;
 import javaforce.JFLog;
 
 public class TorrentFile {
-  private static boolean debug = true;
+  private static boolean debug = false;
   private byte metaData[];
   private MetaTag root;  //root tag
   private int metaIdx;

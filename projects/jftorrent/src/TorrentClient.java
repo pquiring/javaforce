@@ -12,7 +12,7 @@ import java.security.*;
 import javaforce.*;
 
 public class TorrentClient extends Thread {
-  public static final String clientVersion = "0002";  //must be 4 digits
+  public static final String clientVersion = "0003";  //must be 4 digits
 
   private static final int FRAGSIZE = 16 * 1024;  //16k
   private static final int MAXPEERS = 30;  //max # active peers
@@ -35,26 +35,27 @@ public class TorrentClient extends Thread {
   public int seeders;
   public float available = 0.0f;
   //metainfo data
-  private byte metaData[];
+  private byte[] metaData;
   private TorrentFile metaFile;
   public String status;
-  private boolean have[];
+  private boolean[] have;
   private int haveCnt = 0;
   private String announce;
   private ArrayList<String> announceList = new ArrayList<String>();
-  private byte info_hash[];
+  private byte[] info_hash;
   public long totalLength = 1;  //must not be zero - causes / by zero
   private long pieceLength;
   private long lastPieceLength;  //need to calc
   public String name;
   private int noFiles;
   private ArrayList<MetaFile> files = new ArrayList<MetaFile>();
-  private byte pieces[][];  //SHA1
+  private byte[][] pieces;  //SHA1
   private int numFragsPerPiece;
   private final int FRAGSTACK = 3;
 
   //client info
-  private String peer_id;
+  private String peer_id;  //Torrent protocol
+  private String node_id;  //DHT protocol
 
   //tracker data
   private int complete;
@@ -71,9 +72,11 @@ public class TorrentClient extends Thread {
   private long now;
 
   //DHT support
-  private DatagramSocket dhts;
-  private int dhtport;
-  private DHTListener dhtlistener;
+  private DatagramSocket local_dht_ds;
+  private int local_dht_port;
+  private DHTListener dht_listener;
+  private ArrayList<Node> nodeList = new ArrayList<Node>();
+  private final Object nodeListLock = new Object();
 
   //Torrent protocol commands
   private final int CHOKE = 0;
@@ -98,6 +101,7 @@ public class TorrentClient extends Thread {
     public InetSocketAddress ipaddrport;
     public boolean dht;
     public int dhtport;
+//    public int extdhtport;
 
     //Unicast TCP
     public Socket s;
@@ -114,9 +118,9 @@ public class TorrentClient extends Thread {
     public PeerListener listener;
     public PeerDownloader downloader;
     public long lastMsg;
-    public boolean have[];
-    public byte piece[];
-    public boolean haveFrags[];
+    public boolean[] have;
+    public byte[] piece;
+    public boolean[] haveFrags;
     public int gotFragCnt, numFrags;
     public int downloadingPieceIdx = -1;
     public final Object chokeLock = new Object();
@@ -223,7 +227,33 @@ public class TorrentClient extends Thread {
     }
   }
 
-  public static void main(String args[]) {
+  /** DHT Node. */
+  public class Node {
+    public String node_id;
+    public String ip;
+    public InetAddress ipaddr;
+    public int port;
+
+    public void init(String ip, int port) {
+      this.ip = ip;
+      try { this.ipaddr = InetAddress.getByName(ip); } catch (Exception e) {}
+      this.port = port;
+    }
+
+    public void write(byte[] msg) {
+      DatagramPacket packet = new DatagramPacket(msg, msg.length, ipaddr, port);
+      try {
+        local_dht_ds.send(packet);
+      } catch (Exception e) {
+        if (debug) JFLog.log(e);
+      }
+    }
+    public void log(String msg) {
+      if (debug) JFLog.log("node:" + ip + ":" + port + ":" + msg);
+    }
+  }
+
+  public static void main(String[] args) {
     if (args.length != 2) {
       System.out.println("Usage : TorrentClient torrent destination");
       System.exit(1);
@@ -253,9 +283,12 @@ public class TorrentClient extends Thread {
       status = "Reading torrent file";
       //generate peer id (random)
       peer_id = "-JT" + clientVersion + "-";
+      node_id = "-JD" + clientVersion + "-";
       Random r = new Random();
       while (peer_id.length() != 20) {
-        peer_id += (char)(r.nextBoolean() ? 'a' : 'A' + r.nextInt(26));
+        char ch = (char)(r.nextBoolean() ? 'a' : 'A' + r.nextInt(26));
+        peer_id += ch;
+        node_id += ch;
       }
       //read torrent
       if (debug) JFLog.log("Reading torrent:" + torrent);
@@ -510,15 +543,12 @@ public class TorrentClient extends Thread {
     }
     return str.toString();
   }
-  private String getip(byte data[], int pos) {
+  private String getip(byte[] data, int pos) {
     return "" + ((int)data[pos++] & 0xff) + "." + ((int)data[pos++] & 0xff) + "."
       + ((int)data[pos++] & 0xff) + "." + ((int)data[pos++] & 0xff);
   }
-  private int getport(byte data[], int pos) {
-    int ret = ((int)data[pos]) & 0xff;
-    ret <<= 8;
-    ret += ((int)data[pos+1]) & 0xff;
-    return ret;
+  private int getport(byte[] data, int pos) {
+    return BE.getuint16(data, pos);
   }
   private void contactTracker(String event) throws Exception {
     if (announce.startsWith("http://") || announce.startsWith("https://")) {
@@ -678,7 +708,6 @@ public class TorrentClient extends Thread {
         }
         if (peer.dht) {
           sendDHTPort();
-          getDHTPort();
         }
         sendBitField();
         while (peer.isConnected()) {
@@ -758,45 +787,38 @@ public class TorrentClient extends Thread {
       if (bo != 128) {
         bits[Bo] = (byte)value;
       }
-      writePacket(peer, bits);
+      writeMessage(peer, bits);
     }
     private void sendDHTPort() throws Exception {
       peer.log("sendDHTPort");
       byte[] msg = new byte[3];
       msg[0] = PORT;
-      BE.setuint16(msg, 0, dhtport);
-      writePacket(peer, msg);
+      BE.setuint16(msg, 1, local_dht_port);
+      writeMessage(peer, msg);
     }
-    private boolean getDHTPort() {
-      //DHT response is not a standard message
-      byte res[] = new byte[7];
-      int toRead = 7;
-      int pos = 0;
-      peer.log("Reading DHT Port");
-      try {
-        while (toRead > 0) {
-          int read = peer.read(res, pos, toRead);
-          if (read <= 0) throw new Exception("read error:" + peer.ip);
-          pos += read;
-          toRead -= read;
-        }
-        //0-3 = msg length (int32)
-        //4-5 = port (int16)
-        //6 = reserved (int8) ???
-        peer.dhtport = BE.getuint16(res, 4);
-        peer.log("peer DHT port=" + peer.dhtport);
-        return true;
-      } catch (Exception e) {
-        peer.log("getDHTPort Exception");
-        if (debug) JFLog.log(e);
-      }
-      return false;
+    private void sendDHTPing(Node node) throws Exception {
+      if (debug) node.log("Sending ping");
+      StringBuilder msg = new StringBuilder();
+      msg.append("d");
+        msg.append("1:a");
+          msg.append("d");
+            msg.append("2:id");
+            msg.append("20:"); msg.append(node_id);
+          msg.append("e");
+        msg.append("1:q");  //query
+          msg.append("4:ping");
+        msg.append("1:t");
+          msg.append("2:aa");
+        msg.append("1:y");
+          msg.append("1:q");
+        msg.append("e");
+      node.write(msg.toString().getBytes());
     }
     private static final int BUFSIZ = 2048;
     private byte[] getMessage() {
-      byte buf[] = new byte[BUFSIZ];
-      byte len[] = new byte[4];
-      byte msg[];
+      byte[] buf = new byte[BUFSIZ];
+      byte[] len = new byte[4];
+      byte[] msg;
       int toRead = 4;
       int pos = 0;
       try {
@@ -835,7 +857,7 @@ public class TorrentClient extends Thread {
       }
       return null;
     }
-    private void processMessage(byte msg[]) throws Exception {
+    private void processMessage(byte[] msg) throws Exception {
       peer.lastMsg = now;
       if (msg.length == 0) {
         //keep alive
@@ -854,12 +876,12 @@ public class TorrentClient extends Thread {
         case INTERESTED:
           peer.peer_interested = true;
           peer.am_choking = false;
-          writePacket(peer, new byte[] {UNCHOKE});
+          writeMessage(peer, new byte[] {UNCHOKE});
           break;
         case NOTINTERESTED:
           peer.peer_interested = false;
           peer.am_choking = true;
-          writePacket(peer, new byte[] {CHOKE});
+          writeMessage(peer, new byte[] {CHOKE});
           break;
         case HAVE:
           have(BE.getuint32(msg, 1));
@@ -868,7 +890,8 @@ public class TorrentClient extends Thread {
         case REQUEST: request(msg); break;
         case FRAGMENT: fragment(msg); break;
         case CANCEL: cancel(msg); break;
-        case PORT: port(msg); break;
+        case PORT: port(msg);
+          break;
         default: {
           if (debug) {
             StringBuilder str = new StringBuilder();
@@ -890,7 +913,7 @@ public class TorrentClient extends Thread {
         peer.seeder = true;
       }
     }
-    private void bitfield(byte msg[]) {
+    private void bitfield(byte[] msg) {
       if (peer.downloader != null) {
         peer.log("bitfield() : already downloading");
         return;
@@ -917,7 +940,7 @@ public class TorrentClient extends Thread {
       peer.downloader = new PeerDownloader(peer);
       peer.downloader.start();
     }
-    private void request(byte msg[]) throws Exception {
+    private void request(byte[] msg) throws Exception {
       if (peer.am_choking) return;
       int pidx = BE.getuint32(msg, 1);
       int begin = BE.getuint32(msg, 5);
@@ -927,7 +950,7 @@ public class TorrentClient extends Thread {
       upAmountCnt += length;
       sendFragment(peer, pidx, begin, length);
     }
-    private void fragment(byte msg[]) throws Exception {
+    private void fragment(byte[] msg) throws Exception {
       // FRAGMENT PIDX(4) BEGIN(4)
       int pidx = BE.getuint32(msg, 1);
       if (pidx != peer.downloadingPieceIdx) {peer.log("frag:bad pidx:"+pidx);return;}
@@ -947,16 +970,26 @@ public class TorrentClient extends Thread {
         peer.fragLock.notify();
       }
     }
-    private void cancel(byte msg[]) {
+    private void cancel(byte[] msg) {
       peer.log("cancel not supported yet");
     }
-    private void port(byte msg[]) {
-      if (msg.length != 2) {
+    private void port(byte[] msg) {
+      if (msg.length != 3) {
         peer.log("invalid PORT command:len=" + msg.length);
         return;
       }
-      int port = getport(msg, 0);
-      peer.log("DHT Port=" + port);
+      peer.dhtport = getport(msg, 1);
+      peer.log("DHT Port=" + peer.dhtport);
+      Node node = new Node();
+      node.init(peer.ip, peer.dhtport);
+      synchronized (nodeListLock) {
+        nodeList.add(node);
+      }
+      try {
+        sendDHTPing(node);
+      } catch (Exception e) {
+        if (debug) JFLog.log(e);
+      }
     }
   }
   private class PeerDownloader extends Thread {
@@ -996,7 +1029,7 @@ public class TorrentClient extends Thread {
             } while (pidx != startIdx);
             if (!ok) {
               if (peer.am_interested) {
-                writePacket(peer, new byte[] {NOTINTERESTED});
+                writeMessage(peer, new byte[] {NOTINTERESTED});
                 peer.am_interested = false;
               }
               peer.log("NOTINTERESTED:wait()ing");
@@ -1005,7 +1038,7 @@ public class TorrentClient extends Thread {
             }
             peer.log("wants " + pidx);
             if (!peer.am_interested) {
-              writePacket(peer, new byte[] {INTERESTED});
+              writeMessage(peer, new byte[] {INTERESTED});
               peer.am_interested = true;
             }
             while (peer.peer_choking) {
@@ -1078,7 +1111,7 @@ public class TorrentClient extends Thread {
         BE.setuint32(msg, 9, peer.lastFragLength);
       else
         BE.setuint32(msg, 9, FRAGSIZE);
-      writePacket(peer, msg);
+      writeMessage(peer, msg);
       peer.log("requestFrag:" + peer.downloadingPieceIdx + "," + fidx);
     }
     private void broadcastHave() {
@@ -1089,7 +1122,7 @@ public class TorrentClient extends Thread {
         for(int a=0;a<peerList.size();a++) {
           Peer peer = peerList.get(a);
           if (!peer.inuse) continue;
-          try {writePacket(peer, msg);} catch (Exception e) {}
+          try {writeMessage(peer, msg);} catch (Exception e) {}
         }
       }
     }
@@ -1146,9 +1179,9 @@ public class TorrentClient extends Thread {
     msg[7] = (byte)((fbegin & 0xff00) >> 8);
     msg[8] = (byte)(fbegin & 0xff);
     System.arraycopy(frag, 0, msg, 9, frag.length);
-    writePacket(peer, msg);
+    writeMessage(peer, msg);
   }
-  private synchronized void savePiece(int pidx, byte piece[]) throws Exception {
+  private synchronized void savePiece(int pidx, byte[] piece) throws Exception {
     //piece already validated
     //piece may span files
     if (have[pidx]) return;  //already have this piece
@@ -1227,14 +1260,17 @@ public class TorrentClient extends Thread {
     upSpeed = (int)(upAmountCnt / 5);
     upAmountCnt = 0;
   }
-  private void writePacket(Peer peer, byte msg[]) throws Exception {
+  private void writeMessage(Peer peer, byte[] msg) throws Exception {
     byte packet[] = new byte[msg.length + 4];
     packet[0] = (byte)((msg.length & 0xff000000) >>> 24);
     packet[1] = (byte)((msg.length & 0xff0000) >> 16);
     packet[2] = (byte)((msg.length & 0xff00) >> 8);
     packet[3] = (byte)(msg.length & 0xff);
     System.arraycopy(msg, 0, packet, 4, msg.length);
-    peer.write(packet);  //BUG : can you write large packets???
+    peer.write(packet);
+  }
+  private void sendQuery(Node node, byte[] msg) throws Exception {
+    node.write(msg);
   }
   /** Closes the torrent, can not be re-started. */
   public void close() {
@@ -1290,22 +1326,29 @@ public class TorrentClient extends Thread {
   }
   public void initDHT() {
     try {
-      dhts = new DatagramSocket();
-      dhtport = dhts.getLocalPort();
-      if (debug) JFLog.log("DHT.port=" + dhtport);
-      dhtlistener = new DHTListener();
-      dhtlistener.start();
+      local_dht_ds = new DatagramSocket();
+      local_dht_port = local_dht_ds.getLocalPort();
+      if (debug) JFLog.log("DHT.localport=" + local_dht_port);
+      dht_listener = new DHTListener(local_dht_ds);
+      dht_listener.start();
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
   public class DHTListener extends Thread {
+    private DatagramSocket ds;
     private byte[] data = new byte[65527];  //max UDP packet
+
+    public DHTListener(DatagramSocket ds) {
+      this.ds = ds;
+    }
     public void run() {
-      while (true) {
+      if (debug) JFLog.log("Starting DHTListener");
+      while (active) {
         try {
+          if (debug) JFLog.log("Listening for DHT packet");
           DatagramPacket packet = new DatagramPacket(data, data.length);
-          dhts.receive(packet);
+          ds.receive(packet);
           int len = packet.getLength();
           if (debug) {
             JFLog.log("DHT.recv.len=" + len);
@@ -1316,6 +1359,7 @@ public class TorrentClient extends Thread {
           JF.sleep(100);
         }
       }
+      if (debug) JFLog.log("Stopping DHTListener");
     }
   }
 }
