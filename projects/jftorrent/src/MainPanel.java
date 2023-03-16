@@ -223,13 +223,13 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void editConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editConfigActionPerformed
     int orgPort = TorrentServer.port;
-    boolean orgMC = config.multicast;
+    boolean orgMC = Config.config.multicast;
     ConfigDialog dialog = new ConfigDialog(null, true);
     dialog.setVisible(true);
     if (!dialog.accepted) return;
-    if (config.port == orgPort && config.multicast == orgMC) return;
+    if (Config.config.port == orgPort && Config.config.multicast == orgMC) return;
     saveConfig();
-    server.changePort(config.port);
+    server.changePort(Config.config.port);
     status.setText("?");
     for(int a=0;a<clients.size();a++) {
       clients.get(a).recontactTracker();
@@ -263,8 +263,8 @@ public class MainPanel extends javax.swing.JPanel {
     int idx = (Integer)table.getValueAt(row, 1);
     TorrentClient client = clients.get(idx);
     client._start();
-    config.torrent[idx].active = true;
-    config.torrent[idx].paused = false;
+    Config.config.torrent[idx].active = true;
+    Config.config.torrent[idx].paused = false;
     saveConfig();
   }//GEN-LAST:event_startActionPerformed
 
@@ -274,7 +274,7 @@ public class MainPanel extends javax.swing.JPanel {
     int idx = (Integer)table.getValueAt(row, 1);
     TorrentClient client = clients.get(idx);
     client.pause();
-    config.torrent[idx].paused = true;
+    Config.config.torrent[idx].paused = true;
     saveConfig();
   }//GEN-LAST:event_pauseActionPerformed
 
@@ -284,7 +284,7 @@ public class MainPanel extends javax.swing.JPanel {
     int idx = (Integer)table.getValueAt(row, 1);
     TorrentClient client = clients.get(idx);
     client._stop();
-    config.torrent[idx].active = false;
+    Config.config.torrent[idx].active = false;
     saveConfig();
   }//GEN-LAST:event_stopActionPerformed
 
@@ -310,7 +310,6 @@ public class MainPanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
   private ArrayList<TorrentClient> clients = new ArrayList<TorrentClient>();
-  public static Config config;
   private String configFolder = JF.getUserPath();
   private String configFile = "/.jftorrent.xml";
   private TorrentServer server;
@@ -318,25 +317,13 @@ public class MainPanel extends javax.swing.JPanel {
   private DefaultTableModel tableModel;
   public static MainPanel This;
 
-  public static class Torrent {
-    public String file;
-    public String dest;
-    public boolean active = true, paused = false;
-  }
-
-  public static class Config {
-    public Torrent torrent[];
-    public int port;
-    public boolean multicast;
-  }
-
   private void loadConfig() {
     defaultConfig();
     try {
       XML xml = new XML();
       FileInputStream fis = new FileInputStream(configFolder + configFile);
       xml.read(fis);
-      xml.writeClass(config);
+      xml.writeClass(Config.config);
     } catch (FileNotFoundException e1) {
       defaultConfig();
     } catch (Exception e2) {
@@ -346,16 +333,16 @@ public class MainPanel extends javax.swing.JPanel {
   }
 
   private void defaultConfig() {
-    config = new Config();
-    config.torrent = new Torrent[0];
-    config.port = 6881;
+    Config.config = new Config();
+    Config.config.torrent = new Torrent[0];
+    Config.config.port = 6881;
   }
 
   private void saveConfig() {
     try {
       XML xml = new XML();
       FileOutputStream fos = new FileOutputStream(configFolder + configFile);
-      xml.readClass("jftorrent", config);
+      xml.readClass("jftorrent", Config.config);
       xml.write(fos);
       fos.close();
     } catch (Exception e) {
@@ -364,13 +351,13 @@ public class MainPanel extends javax.swing.JPanel {
   }
 
   private void startServer() {
-    server = new TorrentServer(config.port);
+    server = new TorrentServer(Config.config.port);
     server.start();
   }
 
   private void startTorrents() {
-    for(int a=0;a<config.torrent.length;a++) {
-      startTorrent(config.torrent[a].file, config.torrent[a].dest, config.torrent[a].active, config.torrent[a].paused);
+    for(int a=0;a<Config.config.torrent.length;a++) {
+      startTorrent(Config.config.torrent[a].file, Config.config.torrent[a].dest, Config.config.torrent[a].active, Config.config.torrent[a].paused);
     }
   }
 
@@ -475,17 +462,17 @@ public class MainPanel extends javax.swing.JPanel {
     newTorrent.dest = dest;
     newTorrent.active = true;
     newTorrent.paused = false;
-    config.torrent = Arrays.copyOf(config.torrent, config.torrent.length + 1);
-    config.torrent[config.torrent.length-1] = newTorrent;
+    Config.config.torrent = Arrays.copyOf(Config.config.torrent, Config.config.torrent.length + 1);
+    Config.config.torrent[Config.config.torrent.length-1] = newTorrent;
     saveConfig();
   }
 
   private void removeTorrent(int idx) {
-    int len = config.torrent.length;
+    int len = Config.config.torrent.length;
     Torrent newList[] = new Torrent[len-1];
-    System.arraycopy(config.torrent, 0, newList, 0, idx);
-    System.arraycopy(config.torrent, idx+1, newList, idx, len - idx - 1);
-    config.torrent = newList;
+    System.arraycopy(Config.config.torrent, 0, newList, 0, idx);
+    System.arraycopy(Config.config.torrent, idx+1, newList, idx, len - idx - 1);
+    Config.config.torrent = newList;
     saveConfig();
   }
 

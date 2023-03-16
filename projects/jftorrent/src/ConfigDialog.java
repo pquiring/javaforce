@@ -17,8 +17,10 @@ public class ConfigDialog extends javax.swing.JDialog {
     super(parent, modal);
     initComponents();
     setPosition();
-    port.setText("" + MainPanel.config.port);
-    multicast.setSelected(MainPanel.config.multicast);
+    port.setText("" + Config.config.port);
+    multicast.setSelected(Config.config.multicast);
+    dht.setSelected(Config.config.dht);
+    fast.setSelected(Config.config.fast);
   }
 
   /**
@@ -35,6 +37,8 @@ public class ConfigDialog extends javax.swing.JDialog {
     jButton1 = new javax.swing.JButton();
     jButton2 = new javax.swing.JButton();
     multicast = new javax.swing.JCheckBox();
+    dht = new javax.swing.JCheckBox();
+    fast = new javax.swing.JCheckBox();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -58,6 +62,10 @@ public class ConfigDialog extends javax.swing.JDialog {
 
     multicast.setText("Multicast Support");
 
+    dht.setText("DHT Support");
+
+    fast.setText("Fast Support");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -74,7 +82,12 @@ public class ConfigDialog extends javax.swing.JDialog {
             .addGap(0, 0, Short.MAX_VALUE)
             .addComponent(jButton2)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(jButton1)))
+            .addComponent(jButton1))
+          .addGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(dht)
+              .addComponent(fast))
+            .addGap(0, 0, Short.MAX_VALUE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -86,6 +99,10 @@ public class ConfigDialog extends javax.swing.JDialog {
           .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(multicast)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(dht)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(fast)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jButton1)
@@ -101,13 +118,17 @@ public class ConfigDialog extends javax.swing.JDialog {
   }//GEN-LAST:event_jButton2ActionPerformed
 
   private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-    MainPanel.config.port = JF.atoi(port.getText());
-    MainPanel.config.multicast = multicast.isSelected();
+    Config.config.port = JF.atoi(port.getText());
+    Config.config.multicast = multicast.isSelected();
+    Config.config.dht = dht.isSelected();
+    Config.config.fast = fast.isSelected();
     accepted = true;
     dispose();
   }//GEN-LAST:event_jButton1ActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JCheckBox dht;
+  private javax.swing.JCheckBox fast;
   private javax.swing.JButton jButton1;
   private javax.swing.JButton jButton2;
   private javax.swing.JLabel jLabel1;

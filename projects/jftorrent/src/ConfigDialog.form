@@ -23,7 +23,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" alignment="0" attributes="0">
+          <Group type="102" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="multicast" max="32767" attributes="0"/>
@@ -37,6 +37,13 @@
                       <Component id="jButton2" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="jButton1" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="dht" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="fast" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -53,6 +60,10 @@
               </Group>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="multicast" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="dht" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="fast" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jButton1" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -93,6 +104,16 @@
     <Component class="javax.swing.JCheckBox" name="multicast">
       <Properties>
         <Property name="text" type="java.lang.String" value="Multicast Support"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="dht">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="DHT Support"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="fast">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Fast Support"/>
       </Properties>
     </Component>
   </SubComponents>

@@ -12,13 +12,11 @@ import java.security.*;
 import javaforce.*;
 
 public class TorrentClient extends Thread {
-  public static final String clientVersion = "0003";  //must be 4 digits
+  public static final String clientVersion = "0014";  //must be 4 digits
 
   private static final int FRAGSIZE = 16 * 1024;  //16k
   private static final int MAXPEERS = 30;  //max # active peers
   private static final int NUMWANT = 80;  //# peers requested from tracker (advisory)
-
-  private static final boolean enable_dht = true;
 
   public static boolean debug = true;  //lots of debugging info
 
@@ -90,6 +88,13 @@ public class TorrentClient extends Thread {
   private final int CANCEL = 8;
   private final int PORT = 9;  //DHT port
 
+  //FAST commands BEP 006
+  private final int SUGGEST = 0xd;
+  private final int HAVE_ALL = 0xe;
+  private final int HAVE_NONE = 0xf;
+  private final int REJECT = 0x10;
+  private final int ALLOW_FAST = 0x11;
+
   /** Peer for this torrent */
   private static class Peer {
     public boolean inuse = false;
@@ -99,7 +104,8 @@ public class TorrentClient extends Thread {
     public int port;
     public InetAddress ipaddr;
     public InetSocketAddress ipaddrport;
-    public boolean dht;
+    public boolean dht;  //BEP 005
+    public boolean fast;  //BEP 006
     public int dhtport;
 //    public int extdhtport;
 
@@ -360,7 +366,7 @@ public class TorrentClient extends Thread {
       //what are we doing?
       checkFiles();
       if (debug) JFLog.log("haveCnt=" + haveCnt);
-      if (enable_dht) {
+      if (Config.config.dht) {
         initDHT();
       }
       //create a timer to get info from announce[-list]
@@ -523,7 +529,7 @@ public class TorrentClient extends Thread {
     MessageDigest md = MessageDigest.getInstance(type);
     byte[] digest = md.digest(data);
     if (debug) {
-      JFLog.log("digest/" + type + ":" + hexToString(digest));
+//      JFLog.log("digest/" + type + ":" + hexToString(digest));
     }
     return digest;
   }
@@ -573,7 +579,7 @@ public class TorrentClient extends Thread {
   }
   private void contactTracker(String event) throws Exception {
     if (announce.startsWith("http://") || announce.startsWith("https://")) {
-      URL url = new URL(announce + "?info_hash=" + escape(info_hash) + "&peer_id=" + peer_id + "&port=" + MainPanel.config.port +
+      URL url = new URL(announce + "?info_hash=" + escape(info_hash) + "&peer_id=" + peer_id + "&port=" + Config.config.port +
         "&uploaded=" + upAmount + "&downloaded=" + downAmount + "&left=" + (totalLength - downAmount) + "&compact=1&numwant=" + NUMWANT + "&event=" + event);
       if (debug) JFLog.log("url=" + url.toExternalForm());
       HttpURLConnection uc = (HttpURLConnection)url.openConnection();
@@ -714,17 +720,7 @@ public class TorrentClient extends Thread {
           peer.connect();
         }
         peer.log("Sending handshake");
-        //send handshake
-        byte handshake[] = new byte[68];
-        handshake[0] = 19;  //magic length (0)
-        System.arraycopy("BitTorrent protocol".getBytes(),0,handshake,1,19);  //magic (1-19)
-        //8 reserved bytes (20-27)
-        if (enable_dht) {
-          handshake[27] = (byte)0x01;  //set last bit to let tracker know DHT is requested
-        }
-        System.arraycopy(info_hash,0,handshake,28,20);  //info_hash (28-47)
-        System.arraycopy(peer_id.getBytes(),0,handshake,48,20);  //peer_id (48-67)
-        peer.write(handshake);
+        sendHandshake();
         if (!peer.haveHandshake) {
           if (!getHandshake()) {
             throw new Exception("handshake failed");
@@ -734,6 +730,7 @@ public class TorrentClient extends Thread {
           sendDHTPort();
         }
         sendBitField();
+        writeMessage(peer, new byte[] {UNCHOKE});
         while (peer.isConnected()) {
           byte msg[] = getMessage();
           if (msg == null) break;
@@ -761,6 +758,21 @@ public class TorrentClient extends Thread {
       listenerActive = false;
       peer.close();
     }
+    public void sendHandshake() throws Exception {
+      byte handshake[] = new byte[68];
+      handshake[0] = 19;  //magic length (0)
+      System.arraycopy("BitTorrent protocol".getBytes(),0,handshake,1,19);  //magic (1-19)
+      //8 reserved bytes (20-27)
+      if (Config.config.dht) {
+        handshake[27] |= (byte)0x01;
+      }
+      if (Config.config.fast) {
+        handshake[27] |= (byte)0x04;
+      }
+      System.arraycopy(info_hash,0,handshake,28,20);  //info_hash (28-47)
+      System.arraycopy(peer_id.getBytes(),0,handshake,48,20);  //peer_id (48-67)
+      peer.write(handshake);
+    }
     private boolean getHandshake() {
       byte buf[] = new byte[1024];
       byte handshake[] = new byte[68];
@@ -780,11 +792,12 @@ public class TorrentClient extends Thread {
         if (!new String(handshake, 1, 19).equals("BitTorrent protocol")) throw new Exception("bad handshake (unknown protocol):" + peer.ip);
         peer.dht = (handshake[27] & 0x01) == 0x01;
         peer.log("Supports DHT:" + peer.dht);
+        peer.fast = (handshake[27] & 0x04) == 0x04;
+        peer.log("Supports FAST:" + peer.fast);
         peer.log("Handshake=" + hexToString(handshake));
         System.arraycopy(handshake, 28, peer_info_hash, 0, 20);
         if (!Arrays.equals(peer_info_hash, info_hash)) throw new Exception("not my torrent:" + peer.ip);
         peer.id = new String(handshake, 48, 20);
-        //TODO : validate handshake more???
         peer.haveHandshake = true;
         peer.log("Got valid handshake");
         return true;
@@ -914,8 +927,13 @@ public class TorrentClient extends Thread {
         case REQUEST: request(msg); break;
         case FRAGMENT: fragment(msg); break;
         case CANCEL: cancel(msg); break;
-        case PORT: port(msg);
-          break;
+        case PORT: port(msg); break;
+        //FAST commands
+        case SUGGEST: break;
+        case HAVE_ALL: have_all(); break;
+        case HAVE_NONE: have_none(); break;
+        case REJECT: break;
+        case ALLOW_FAST: break;
         default: {
           if (debug) {
             peer.log("Unknown message:" + hexToString(msg));
@@ -942,10 +960,6 @@ public class TorrentClient extends Thread {
       }
     }
     private void bitfield(byte[] msg) {
-      if (peer.downloader != null) {
-        peer.log("bitfield() : already downloading");
-        return;
-      }
       if (peer.have == null) {
         peer.have = new boolean[pieces.length];
       }
@@ -1021,6 +1035,41 @@ public class TorrentClient extends Thread {
         sendDHTPing(node);
       } catch (Exception e) {
         if (debug) JFLog.log(e);
+      }
+    }
+    private void have_all() {
+      if (peer.have == null) {
+        peer.have = new boolean[pieces.length];
+      }
+      for(int a=0;a<pieces.length;a++) {
+        peer.have[a] = true;
+      }
+      peer.seeder = true;
+      peer.available = pieces.length;
+      if (done) {
+        peer.log("Peer.have_all() : already done");
+        return;
+      }
+      if (peer.downloader == null) {
+        peer.log("received bit field:starting downloader:available=" + available);
+        peer.downloader = new PeerDownloader(peer);
+        peer.downloader.start();
+      }
+    }
+    private void have_none() {
+      if (peer.have == null) {
+        peer.have = new boolean[pieces.length];
+      }
+      peer.seeder = false;
+      peer.available = 0;
+      if (done) {
+        peer.log("Peer.have_none() : already done");
+        return;
+      }
+      if (peer.downloader == null) {
+        peer.log("received bit field:starting downloader:available=" + available);
+        peer.downloader = new PeerDownloader(peer);
+        peer.downloader.start();
       }
     }
   }
@@ -1301,7 +1350,7 @@ public class TorrentClient extends Thread {
     System.arraycopy(msg, 0, packet, 4, msg.length);
     peer.write(packet);
   }
-  private void sendQuery(Node node, byte[] msg) throws Exception {
+  private void writeMessage(Node node, byte[] msg) throws Exception {
     node.write(msg);
   }
   /** Closes the torrent, can not be re-started. */
