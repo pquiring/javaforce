@@ -1243,7 +1243,7 @@ public class JF {
       SSLSocketFactory sslsocketfactory = (SSLSocketFactory) ctx.getSocketFactory();  //this method will work with untrusted certs
       SSLSocket ssl = (SSLSocket)sslsocketfactory.createSocket(socket, socket.getInetAddress().getHostAddress(), socket.getPort(), true);
       if (!server) {
-        ssl.setUseClientMode(false);
+        ssl.setUseClientMode(true);
       }
 //      ssl.setEnabledProtocols(protocols);
 //      ssl.setEnabledCipherSuites(cipher_suites);

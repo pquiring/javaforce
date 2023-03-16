@@ -223,10 +223,11 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void editConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editConfigActionPerformed
     int orgPort = TorrentServer.port;
+    boolean orgMC = config.multicast;
     ConfigDialog dialog = new ConfigDialog(null, true);
     dialog.setVisible(true);
     if (!dialog.accepted) return;
-    if (config.port == orgPort) return;
+    if (config.port == orgPort && config.multicast == orgMC) return;
     saveConfig();
     server.changePort(config.port);
     status.setText("?");
@@ -326,6 +327,7 @@ public class MainPanel extends javax.swing.JPanel {
   public static class Config {
     public Torrent torrent[];
     public int port;
+    public boolean multicast;
   }
 
   private void loadConfig() {

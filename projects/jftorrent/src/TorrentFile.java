@@ -45,7 +45,7 @@ public class TorrentFile {
         while (Character.isDigit(metaData[metaIdx])) {
           str.append((char)metaData[metaIdx++]);
         }
-        metaIdx++;  //'e' or ':'
+        metaIdx++;  //'e'
         tag.val = Long.valueOf(str.toString());
         tag.pos2 = metaIdx;
         if (debug) JFLog.log("readInt:" + tag.val);
@@ -59,7 +59,7 @@ public class TorrentFile {
           MetaDictEntry de = new MetaDictEntry();
           if (debug) JFLog.log("readDictEntry {");
           de.key = readTag();
-          if (de.key == null) break;
+          if (de.key == null) break;  //'e'
           if (debug) JFLog.log("key=" + de.key);
           de.value = readTag();
           if (debug) JFLog.log("} //dictEntry");
@@ -75,7 +75,7 @@ public class TorrentFile {
         if (debug) JFLog.log("readList {");
         do {
           MetaTag entry = readTag();
-          if (entry == null) break;
+          if (entry == null) break;  //'e'
           tag.list.add(tag);
         } while(true);
         if (debug) JFLog.log("} //list");
@@ -97,6 +97,15 @@ public class TorrentFile {
     if (tag instanceof MetaData) {
       MetaData str = (MetaData)tag;
       return str.toString();
+    }
+    return null;
+  }
+  public byte[] getData(String path[], MetaTag list) throws Exception {
+    if (list == null) list = root;
+    MetaTag tag = getTag(path, list);
+    if (tag instanceof MetaData) {
+      MetaData str = (MetaData)tag;
+      return str.data;
     }
     return null;
   }
@@ -190,7 +199,7 @@ public class TorrentFile {
             }
           }
         }
-        JFLog.log("Error:string not found:" + find);
+        if (debug) JFLog.log("Error:string not found:" + find);
         return null;
       }
       if (path[pathIdx].startsWith("i:")) {

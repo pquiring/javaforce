@@ -128,7 +128,7 @@ public class TorrentClient extends Thread {
     public int lastFragLength;
     public int pendingFrags;
     public void write(byte[] buf) throws Exception {
-      log("writeTo:" + ip + ":" + port + ":Len=" + buf.length);
+//      log("writeTo:" + ip + ":" + port + ":Len=" + buf.length);
       if (s != null) {
         os.write(buf);
         os.flush();
@@ -144,10 +144,10 @@ public class TorrentClient extends Thread {
     private byte[] overflow;
     private byte[] datagram;
     public int read(byte[] buf, int pos, int len) throws Exception {
-      log("readFrom:" + ip + ":" + port + ":Len=" + len);
+//      log("readFrom:" + ip + ":" + port + ":Len=" + len);
       if (s != null) {
         int ret = is.read(buf, pos, len);
-        log("unicast.read.Len=" + ret);
+//        log("unicast.read.Len=" + ret);
         return ret;
       }
       if (ms != null) {
@@ -158,13 +158,13 @@ public class TorrentClient extends Thread {
             System.arraycopy(overflow, 0, buf, pos, overflow.length);
             int ret = overflow.length;
             overflow = null;
-            log("read.Len=" + ret + " (overflow-all)");
+//            log("read.Len=" + ret + " (overflow-all)");
             return ret;
           } else {
             //return part of overflow
             System.arraycopy(overflow, 0, buf, pos, len);
             overflow = Arrays.copyOfRange(overflow, len, overflow.length);
-            log("read.Len=" + len + " (overflow-partial)");
+//            log("read.Len=" + len + " (overflow-partial)");
             return len;
           }
         }
@@ -180,7 +180,7 @@ public class TorrentClient extends Thread {
           packLen = len;
         }
         System.arraycopy(datagram, 0, buf, pos, packLen);
-        log("read.Len=" + packLen);
+//        log("read.Len=" + packLen);
         return packLen;
       }
       log("Error:read but not connected");
@@ -295,7 +295,7 @@ public class TorrentClient extends Thread {
       readMeta();
       if (debug) JFLog.log("Getting info...");
       MetaDict info = metaFile.getDict(new String[] {"d", "d:info"}, null);
-      info_hash = SHA1sum(Arrays.copyOfRange(metaData, info.pos1, info.pos2));
+      info_hash = SHA_1(Arrays.copyOfRange(metaData, info.pos1, info.pos2));
       if (debug) JFLog.log("info_hash = " + escape(info_hash));
       announce = metaFile.getString(new String[] {"d", "s:announce"}, null);
       if (debug) JFLog.log("announce=" + announce);
@@ -464,7 +464,7 @@ public class TorrentClient extends Thread {
                 if (pidx == pieces.length-1) {
                   thisPieceLength = (int)lastPieceLength;
                 }
-                byte hash[] = SHA1sum(Arrays.copyOfRange(piece,0,thisPieceLength));
+                byte hash[] = SHA_1(Arrays.copyOfRange(piece,0,thisPieceLength));
                 if (Arrays.equals(hash, pieces[pidx])) {
                   have[pidx] = true;
                   haveCnt++;
@@ -510,9 +510,30 @@ public class TorrentClient extends Thread {
     if (done) status = "Seeding";
   }
 
-  public static byte[] SHA1sum(byte[] data) throws NoSuchAlgorithmException {
-    MessageDigest md = MessageDigest.getInstance("SHA-1");
-    return md.digest(data);
+  public static String hexToString(byte[] hex) {
+    StringBuilder str = new StringBuilder();
+    for(int a=0;a<hex.length;a++) {
+      if (a > 0) str.append(",");
+      str.append(String.format("%02x", hex[a] & 0xff));
+    }
+    return str.toString();
+  }
+
+  public static byte[] digest(byte[] data, String type) throws NoSuchAlgorithmException {
+    MessageDigest md = MessageDigest.getInstance(type);
+    byte[] digest = md.digest(data);
+    if (debug) {
+      JFLog.log("digest/" + type + ":" + hexToString(digest));
+    }
+    return digest;
+  }
+
+  public static byte[] SHA_1(byte[] data) throws NoSuchAlgorithmException {
+    return digest(data, "SHA-1");
+  }
+
+  public static byte[] SHA_256(byte[] data) throws NoSuchAlgorithmException {
+    return digest(data, "SHA-256");
   }
 
   //URLEncoder only works with String's
@@ -539,7 +560,7 @@ public class TorrentClient extends Thread {
           str.append((char)hash[a]);
           continue;
       }
-      str.append("%" + String.format("%02x", (((int)hash[a]) & 0xff)));
+      str.append("%" + String.format("%02X", (((int)hash[a]) & 0xff)));
     }
     return str.toString();
   }
@@ -552,7 +573,7 @@ public class TorrentClient extends Thread {
   }
   private void contactTracker(String event) throws Exception {
     if (announce.startsWith("http://") || announce.startsWith("https://")) {
-      URL url = new URL(announce + "?info_hash=" + escape(info_hash) + "&peer_id=" + peer_id + "&port=" + TorrentServer.port +
+      URL url = new URL(announce + "?info_hash=" + escape(info_hash) + "&peer_id=" + peer_id + "&port=" + MainPanel.config.port +
         "&uploaded=" + upAmount + "&downloaded=" + downAmount + "&left=" + (totalLength - downAmount) + "&compact=1&numwant=" + NUMWANT + "&event=" + event);
       if (debug) JFLog.log("url=" + url.toExternalForm());
       HttpURLConnection uc = (HttpURLConnection)url.openConnection();
@@ -572,7 +593,7 @@ public class TorrentClient extends Thread {
       complete = (int)metaFile.getValue(new String[] {"d", "i:complete"}, null);
       incomplete = (int)metaFile.getValue(new String[] {"d", "i:incomplete"}, null);
       interval = (int)metaFile.getValue(new String[] {"d", "i:interval"}, null);
-      peers = metaFile.getString(new String[] {"d", "s:peers"}, null).getBytes();
+      peers = metaFile.getData(new String[] {"d", "s:peers"}, null);
       if (peers == null) throw new Exception("no peers");
       int noPeers = peers.length/6;
       if (debug) JFLog.log("# peers=" + noPeers);
@@ -580,6 +601,7 @@ public class TorrentClient extends Thread {
         Peer p = new Peer();
         p.ip = getip(peers, a*6);
         p.port = getport(peers, a*6 + 4);
+        p.ipaddr = InetAddress.getByName(p.ip);
         boolean found = false;
         int size = peerList.size();
         for(int b=0;b<size;b++) {
@@ -618,6 +640,7 @@ public class TorrentClient extends Thread {
       peer = peerList.get(peerIdx++);
       if (peerIdx >= peerList.size()) peerIdx = 0;
       if (peer.inuse) return;
+      if (peer.ipaddr.isMulticastAddress()) return;
       if (debug) JFLog.log("Connecting to peer:" + peer.ip + ":" + peer.port);
       peer.lastMsg = now;
       peer.inuse = true;
@@ -653,6 +676,7 @@ public class TorrentClient extends Thread {
     }
     peer.haveHandshake = true;
     peer.ip = ip;
+    peer.ipaddr = InetAddress.getByName(ip);
     peer.s = s;
     peer.port = port;
     peer.id = id;
@@ -696,7 +720,7 @@ public class TorrentClient extends Thread {
         System.arraycopy("BitTorrent protocol".getBytes(),0,handshake,1,19);  //magic (1-19)
         //8 reserved bytes (20-27)
         if (enable_dht) {
-          handshake[27] = (byte)0x1;  //set last bit to let tracker know DHT is requested
+          handshake[27] = (byte)0x01;  //set last bit to let tracker know DHT is requested
         }
         System.arraycopy(info_hash,0,handshake,28,20);  //info_hash (28-47)
         System.arraycopy(peer_id.getBytes(),0,handshake,48,20);  //peer_id (48-67)
@@ -756,6 +780,7 @@ public class TorrentClient extends Thread {
         if (!new String(handshake, 1, 19).equals("BitTorrent protocol")) throw new Exception("bad handshake (unknown protocol):" + peer.ip);
         peer.dht = (handshake[27] & 0x01) == 0x01;
         peer.log("Supports DHT:" + peer.dht);
+        peer.log("Handshake=" + hexToString(handshake));
         System.arraycopy(handshake, 28, peer_info_hash, 0, 20);
         if (!Arrays.equals(peer_info_hash, info_hash)) throw new Exception("not my torrent:" + peer.ip);
         peer.id = new String(handshake, 48, 20);
@@ -833,7 +858,6 @@ public class TorrentClient extends Thread {
         }
         int msglen = BE.getuint32(len, 0);
         if ((msglen > FRAGSIZE + 1 + 4 + 4) && (msglen > (have.length / 8) + 1 + 1)) throw new Exception("msg too large:" + peer.ip);
-        peer.log("msgLen=" + msglen);
         msg = new byte[msglen];
         toRead = msglen;
         pos = 0;
@@ -894,17 +918,16 @@ public class TorrentClient extends Thread {
           break;
         default: {
           if (debug) {
-            StringBuilder str = new StringBuilder();
-            for(int a=0;a<msg.length;a++) {
-              if (a > 0) str.append(",");
-              str.append(String.format("%02x", msg[a] & 0xff));
-            }
-            peer.log("Unknown message:" + str.toString());
+            peer.log("Unknown message:" + hexToString(msg));
           }
         }
       }
     }
     private void have(int pidx) {
+      if (debug) peer.log("have:" + pidx);
+      if (peer.have == null) {
+        peer.have = new boolean[pieces.length];
+      }
       if (peer.have[pidx]) return;
       peer.have[pidx] = true;
       if (!have[pidx]) synchronized(peer.chokeLock) {peer.chokeLock.notify();}
@@ -912,13 +935,20 @@ public class TorrentClient extends Thread {
       if (peer.available == have.length) {
         peer.seeder = true;
       }
+      if (peer.downloader == null) {
+        peer.log("received have:starting downloader:available=" + available);
+        peer.downloader = new PeerDownloader(peer);
+        peer.downloader.start();
+      }
     }
     private void bitfield(byte[] msg) {
       if (peer.downloader != null) {
         peer.log("bitfield() : already downloading");
         return;
       }
-      peer.have = new boolean[pieces.length];
+      if (peer.have == null) {
+        peer.have = new boolean[pieces.length];
+      }
       int Bo = 1;
       int bo = 128;
       int idx = 0;
@@ -936,9 +966,11 @@ public class TorrentClient extends Thread {
         peer.log("Peer.bitfield() : already done");
         return;
       }
-      peer.log("received bit field:starting downloader:available=" + available);
-      peer.downloader = new PeerDownloader(peer);
-      peer.downloader.start();
+      if (peer.downloader == null) {
+        peer.log("received bit field:starting downloader:available=" + available);
+        peer.downloader = new PeerDownloader(peer);
+        peer.downloader.start();
+      }
     }
     private void request(byte[] msg) throws Exception {
       if (peer.am_choking) return;
@@ -1079,7 +1111,7 @@ public class TorrentClient extends Thread {
                 }
               }
             }
-            byte sha[] = SHA1sum(peer.piece);
+            byte sha[] = SHA_1(peer.piece);
             if (debug) {
               peer.log("sha1.downloaded=" + escape(sha));
               peer.log("sha1.peice     =" + escape(pieces[peer.downloadingPieceIdx]));
