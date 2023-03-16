@@ -1,5 +1,5 @@
 /**
- * Torrent file.
+ * Torrent bencoded file.
  *
  * Created : May 27, 2012
  *
