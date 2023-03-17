@@ -11,6 +11,8 @@ import javaforce.awt.*;
 
 public class TorrentApp extends javax.swing.JFrame {
 
+  public static boolean cli_debug;
+
   /**
    * Creates new form TorrentApp
    */
@@ -64,6 +66,11 @@ public class TorrentApp extends javax.swing.JFrame {
    * @param args the command line arguments
    */
   public static void main(String args[]) {
+    if (args.length > 0) {
+      if (args[0].equals("--debug")) {
+        cli_debug = true;
+      }
+    }
     /*
      * Create and display the form
      */

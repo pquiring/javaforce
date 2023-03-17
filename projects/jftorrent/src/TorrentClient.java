@@ -14,10 +14,10 @@ import javaforce.*;
 public class TorrentClient extends Thread {
   public static final String clientVersion = "0014";  //must be 4 digits
 
-  private static final int FRAGSIZE = 16 * 1024;  //16k
-  private static final int MAXPEERS = 30;  //max # active peers
-  private static final int NUMWANT = 80;  //# peers requested from tracker (advisory)
-  private static final int TIMEOUT = 5000;  //connection timeout (ms)
+  private static int FRAGSIZE = 16 * 1024;  //16k
+  private static int MAXPEERS = 30;  //max # active peers
+  private static int NUMWANT = 80;  //# peers requested from tracker (advisory)
+  private static int TIMEOUT = 5000;  //connection timeout (ms)
 
   public static boolean debug = true;  //lots of debugging info
 
@@ -288,6 +288,9 @@ public class TorrentClient extends Thread {
     this.dest = dest;
   }
   public void run() {
+    if (TorrentApp.cli_debug) {
+      MAXPEERS = 1;
+    }
     try {
       status = "Reading torrent file";
       //generate peer id (random)
@@ -392,7 +395,7 @@ public class TorrentClient extends Thread {
               prunePeers();
             }
             if (done) return;
-            addPeer();
+            getNextPeer();
           } catch (Exception e) {
             if (debug) JFLog.log(e);
           }
@@ -523,8 +526,19 @@ public class TorrentClient extends Thread {
     StringBuilder str = new StringBuilder();
     int cnt = 0;
     for(int a=pos;cnt<len;a++,cnt++) {
-      if (a > 0) str.append(",");
-      str.append(String.format("%02x", hex[a] & 0xff));
+      char ch = (char)hex[a];
+      if (ch >= '0' && ch <= '9') {
+        str.append((char)ch);
+      } else if (ch >= 'a' && ch <= 'z') {
+        str.append((char)ch);
+      } else if (ch >= 'A' && ch <= 'Z') {
+        str.append((char)ch);
+      } else if (ch == ':') {
+        str.append((char)ch);
+      } else {
+        str.append('%');
+        str.append(String.format("%02x", hex[a] & 0xff));
+      }
     }
     return str.toString();
   }
@@ -607,23 +621,23 @@ public class TorrentClient extends Thread {
       if (peers == null) throw new Exception("no peers");
       int noPeers = peers.length/6;
       if (debug) JFLog.log("# peers=" + noPeers);
-      for(int a=0;a<noPeers;a++) {
-        Peer p = new Peer();
-        p.ip = getip(peers, a*6);
-        p.port = getport(peers, a*6 + 4);
-        p.ipaddr = InetAddress.getByName(p.ip);
-        boolean found = false;
-        int size = peerList.size();
-        for(int b=0;b<size;b++) {
-          Peer pp = peerList.get(b);
-          if ((pp.ip.equals(p.ip)) && (pp.port == p.port)) {
-            found = true;
-            break;
+      synchronized(peerListLock) {
+        for(int a=0;a<noPeers;a++) {
+          Peer p = new Peer();
+          p.ip = getip(peers, a*6);
+          p.port = getport(peers, a*6 + 4);
+          p.ipaddr = InetAddress.getByName(p.ip);
+          boolean found = false;
+          for(Peer pp : peerList) {
+            if ((pp.ip.equals(p.ip)) && (pp.port == p.port)) {
+              found = true;
+              break;
+            }
           }
-        }
-        if (!found) {
-          peerList.add(p);
-          if (debug) JFLog.log("peer[]=" + p.ip + ":" + p.port);
+          if (!found) {
+            peerList.add(p);
+            if (debug) JFLog.log("peer[]=" + p.ip + ":" + p.port);
+          }
         }
       }
       if (!registered) {
@@ -643,12 +657,12 @@ public class TorrentClient extends Thread {
       throw new Exception("bad announce URL:" + announce);
     }
   }
-  private void addPeer() throws Exception {
+  private void getNextPeer() throws Exception {
     if (peerActiveCount >= MAXPEERS) return;
     Peer peer;
     synchronized(peerListLock) {
-      peer = peerList.get(peerIdx++);
       if (peerIdx >= peerList.size()) peerIdx = 0;
+      peer = peerList.get(peerIdx++);
       if (peer.inuse) return;
       if (peer.ipaddr.isMulticastAddress()) return;
       if (debug) JFLog.log("Connecting to peer:" + peer.ip + ":" + peer.port);
@@ -1064,10 +1078,11 @@ public class TorrentClient extends Thread {
     if (debug) node.log("Sending ping");
     DataBuilder msg = new DataBuilder();
     msg.append("d");
-      msg.append("d1:a");
-        msg.append("2:id");
-        msg.append("20:"); msg.append(local_node_id);
-      msg.append("e");
+      msg.append("1:a");
+        msg.append("d");
+          msg.append("2:id");
+            msg.append("20:"); msg.append(local_node_id);
+        msg.append("e");
       msg.append("1:q");  //query
         msg.append("4:ping");
       msg.append("1:t");
@@ -1075,24 +1090,92 @@ public class TorrentClient extends Thread {
         msg.append(new byte[] {'p', '0'});
       msg.append("1:y");
         msg.append("1:q");
-      msg.append("e");
+    msg.append("e");
     node.write(msg.toByteArray());
   }
   private void DHTReplyPong(Node node, byte[] tid) throws Exception {
     if (debug) node.log("Sending ping");
     DataBuilder msg = new DataBuilder();
     msg.append("d");
-      msg.append("d1:r");
-        msg.append("2:id");
-        msg.append("20:"); msg.append(local_node_id);
-      msg.append("e");
+      msg.append("1:r");
+        msg.append("d");
+          msg.append("2:id");
+            msg.append("20:"); msg.append(local_node_id);
+        msg.append("e");
       msg.append("1:t");
         msg.append(Integer.toString(tid.length));
         msg.append(":");
         msg.append(tid);
       msg.append("1:y");
         msg.append("1:r");
-      msg.append("e");
+    msg.append("e");
+    node.write(msg.toByteArray());
+  }
+  private void DHTQueryGetPeers(Node node) throws Exception {
+    if (debug) node.log("Sending get peers");
+    DataBuilder msg = new DataBuilder();
+    msg.append("d");
+      msg.append("1:a");
+        msg.append("d");
+          msg.append("2:id");
+            msg.append("20:"); msg.append(local_node_id);
+          msg.append("9:info_hash");
+            msg.append("20:"); msg.append(info_hash);
+        msg.append("e");
+      msg.append("1:q");  //query
+        msg.append("9:get_peers");
+      msg.append("1:t");
+        msg.append("2:");
+        msg.append(new byte[] {'g', '0'});
+      msg.append("1:y");
+        msg.append("1:q");
+    msg.append("e");
+    node.write(msg.toByteArray());
+  }
+  private void DHTReplyGetPeers(Node node, byte[] tid, boolean info_hash_matches) throws Exception {
+    if (debug) node.log("Sending ping");
+    DataBuilder msg = new DataBuilder();
+    msg.append("d");
+      msg.append("1:r");
+        msg.append("d");
+          msg.append("2:id");
+            msg.append("20:"); msg.append(local_node_id);
+          msg.append("5:token");
+            msg.append("5:nekot");
+    if (info_hash_matches) {
+          msg.append("6:values");
+            msg.append("l");
+            synchronized(peerListLock) {
+              byte[] port = new byte[2];
+              for(Peer p : peerList) {
+                msg.append("6:");
+                msg.append(p.ipaddr.getAddress());
+                BE.setuint16(port, 0, p.port);
+                msg.append(port);
+              }
+            }
+            msg.append("e");
+    } else {
+          msg.append("5:nodes");
+            synchronized(nodeListLock) {
+              msg.append(Integer.toString(nodeList.size() * 6));
+              msg.append(":");
+              byte[] port = new byte[2];
+              for(Node n : nodeList) {
+                msg.append(n.ipaddr.getAddress());
+                BE.setuint16(port, 0, n.port);
+                msg.append(port);
+              }
+            }
+    }
+        msg.append("e");
+      msg.append("1:t");
+        msg.append(Integer.toString(tid.length));
+        msg.append(":");
+        msg.append(tid);
+      msg.append("1:y");
+        msg.append("1:r");
+    msg.append("e");
     node.write(msg.toByteArray());
   }
   private class PeerDownloader extends Thread {
@@ -1102,8 +1185,8 @@ public class TorrentClient extends Thread {
       this.peer = peer;
     }
     public void run() {
-      if (true) {
-        peer.log("Not downloading (test)");
+      if (TorrentApp.cli_debug) {
+        peer.log("Not downloading (debug)");
         return;
       }
       try {
@@ -1507,17 +1590,16 @@ public class TorrentClient extends Thread {
                 }
                 case "find_node": {
                   String a_target = file.getString(new String[] {"d", "d:a", "s:target"}, null);
+                  //TODO : send reply
                   break;
                 }
                 case "get_peers": {
                   String a_info_hash = file.getString(new String[] {"d", "d:a", "s:info_hash"}, null);
-                  if (!a_info_hash.equals(info_hash)) {
-                    //unrelated info_hash
-                    continue;
-                  }
+                  DHTReplyGetPeers(node, tid, a_info_hash.equals(info_hash));
                   break;
                 }
                 case "announce_peer": {
+                  //TODO : send reply
                   break;
                 }
               }
@@ -1535,26 +1617,88 @@ public class TorrentClient extends Thread {
               //reply
               switch ((char)tid[0]) {
                 case 'p': {  //pong
-                  if (node.peer == null) {
-                    //TODO : host is alive - create Peer or request other nodes ???
-                  }
+                  //node is alive - query for other peers
+                  DHTQueryGetPeers(node);
                   break;
                 }
                 case 'f': {
                   byte[] nodes = file.getData(new String[] {"d", "d:r", "s:nodes"}, null);
-                  if (nodes == null) continue;
+                  if (nodes == null) {
+                    if (debug) JFLog.log("DHT:reply:find_node:nodes==null");
+                    continue;
+                  }
                   int noNodes = nodes.length / 6;
-                  //TODO : add nodes and ping them
+                  if (debug) JFLog.log("DHT:reply:find_node=" + noNodes);
                   break;
                 }
                 case 'g': {
-                  byte[] nodes = file.getData(new String[] {"d", "d:r", "s:nodes"}, null);
-                  if (nodes == null) continue;
-                  int noNodes = nodes.length / 6;
-                  //TODO : add nodes and ping them
+                  MetaList peers = file.getList(new String[] {"d", "d:r", "l:values"}, null);
+                  if (peers != null) {
+                    //node has peers related to info_hash
+                    int noPeers = peers.list.size();
+                    if (debug) JFLog.log("DHT:reply:get_peers:peers=" + noPeers);
+                    synchronized(peerListLock) {
+                      if (TorrentApp.cli_debug) {
+                        if (node.peer != null) {
+                          node.peer.close();
+                        }
+                        peerList.clear();
+                      }
+                      for(int a=0;a<noPeers;a++) {
+                        MetaData meta = (MetaData)peers.list.get(a);
+                        byte[] ip_port = meta.data;
+                        if (ip_port.length != 6) continue;
+                        Peer p = new Peer();
+                        p.ip = getip(ip_port, 0);
+                        p.port = getport(ip_port, 4);
+                        p.ipaddr = InetAddress.getByName(p.ip);
+                        boolean found = false;
+                        for(Peer pp : peerList) {
+                          if ((pp.ip.equals(p.ip)) && (pp.port == p.port)) {
+                            found = true;
+                            break;
+                          }
+                        }
+                        if (!found) {
+                          peerList.add(p);
+                          if (debug) JFLog.log("peer[]=" + p.ip + ":" + p.port);
+                        }
+                      }
+                    }
+                  } else {
+                    if (debug) JFLog.log("DHT:reply:get_peers:peers==null");
+                    //does not have peers, check for other nodes
+                    byte[] nodes = file.getData(new String[] {"d", "d:r", "s:nodes"}, null);
+                    if (nodes == null) {
+                      //no peers or nodes???
+                      if (debug) JFLog.log("DHT:reply:get_peers:nodes==null");
+                      continue;
+                    }
+                    int noNodes = nodes.length / 6;
+                    if (debug) JFLog.log("DHT:reply:get_peers:nodes=" + noNodes);
+                    synchronized(nodeListLock) {
+                      for(int a=0;a<noNodes;a++) {
+                        Node n = new Node();
+                        String node_ip = getip(nodes, a * 6);
+                        int node_port = getport(nodes, a * 6 + 4);
+                        n.init(node_ip, node_port);
+                        boolean found = false;
+                        for(Node nn : nodeList) {
+                          if (nn.ip.equals(node_ip) && (nn.port == port)) {
+                            found = true;
+                            break;
+                          }
+                        }
+                        if (!found) {
+                          nodeList.add(n);
+                        }
+                      }
+                    }
+                  }
                   break;
                 }
                 case 'a': {
+                  //TODO : announce_peer
                   break;
                 }
               }
@@ -1562,6 +1706,7 @@ public class TorrentClient extends Thread {
             }
             case "e": {
               //error
+              //TODO : process error
               break;
             }
           }
