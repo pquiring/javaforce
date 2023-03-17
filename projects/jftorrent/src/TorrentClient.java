@@ -1,6 +1,8 @@
 /**
  * Created : May 23, 2012
  *
+ * TODO : need to remove dead nodes.
+ *
  * @author pquiring
  */
 
@@ -16,6 +18,7 @@ public class TorrentClient extends Thread {
 
   private static int FRAGSIZE = 16 * 1024;  //16k
   private static int MAXPEERS = 30;  //max # active peers
+  private static int MAXNODES = 30;  //max # active nodes
   private static int NUMWANT = 80;  //# peers requested from tracker (advisory)
   private static int TIMEOUT = 5000;  //connection timeout (ms)
 
@@ -53,8 +56,8 @@ public class TorrentClient extends Thread {
   private final int FRAGSTACK = 3;
 
   //client info
-  private String local_peer_id;  //Torrent protocol
-  private String local_node_id;  //DHT protocol
+  private String local_peer_id;  //Torrent protocol (ASCII)
+  private byte[] local_node_id;  //DHT protocol (binary)
 
   //tracker data
   private int complete;
@@ -75,6 +78,8 @@ public class TorrentClient extends Thread {
   private int local_dht_port;
   private DHTListener dht_listener;
   private ArrayList<Node> nodeList = new ArrayList<Node>();
+  private int nodeIdx = 0;
+  private int nodeActiveCount = 0;
   private final Object nodeListLock = new Object();
 
   //Torrent protocol commands
@@ -237,11 +242,13 @@ public class TorrentClient extends Thread {
 
   /** DHT Node. */
   public class Node {
-    public String node_id;
+    public byte[] node_id;
     public String ip;
     public InetAddress ipaddr;
     public int port;
     public Peer peer;
+    public boolean pinged;
+    public long lastMsg;
 
     public void init(String ip, int port) {
       this.ip = ip;
@@ -295,13 +302,13 @@ public class TorrentClient extends Thread {
       status = "Reading torrent file";
       //generate peer id (random)
       local_peer_id = "-JT" + clientVersion + "-";
-      local_node_id = "-JD" + clientVersion + "-";
       Random r = new Random();
       while (local_peer_id.length() != 20) {
         char ch = (char)(r.nextBoolean() ? 'a' : 'A' + r.nextInt(26));
         local_peer_id += ch;
-        local_node_id += ch;
       }
+      local_node_id = new byte[20];
+      r.nextBytes(local_node_id);
       //read torrent
       if (debug) JFLog.log("Reading torrent:" + torrent);
       readMeta();
@@ -396,6 +403,7 @@ public class TorrentClient extends Thread {
             }
             if (done) return;
             getNextPeer();
+            getNextNode();
           } catch (Exception e) {
             if (debug) JFLog.log(e);
           }
@@ -673,6 +681,20 @@ public class TorrentClient extends Thread {
     peer.haveHandshake = false;
     peer.listener = new PeerListener(peer);
     peer.listener.start();
+  }
+  private void getNextNode() throws Exception {
+    if (nodeActiveCount >= MAXNODES) return;
+    Node node;
+    synchronized(nodeListLock) {
+      if (nodeIdx >= nodeList.size()) nodeIdx = 0;
+      node = nodeList.get(nodeIdx++);
+      if (node.pinged) return;
+      if (node.ipaddr.isMulticastAddress()) return;
+      if (debug) JFLog.log("Connecting to node:" + node.ip + ":" + node.port);
+      node.lastMsg = now;
+      nodeActiveCount++;
+    }
+    DHTQueryPing(node);
   }
   public void addPeer(Socket s, String id) throws Exception {
     //inbound peer from TorrentServer
@@ -1033,7 +1055,12 @@ public class TorrentClient extends Thread {
         nodeList.add(node);
       }
       try {
-        DHTQueryPing(node);
+        synchronized (nodeListLock) {
+          if (nodeActiveCount < MAXNODES) {
+            DHTQueryPing(node);
+            nodeActiveCount++;
+          }
+        }
       } catch (Exception e) {
         if (debug) JFLog.log(e);
       }
@@ -1076,6 +1103,7 @@ public class TorrentClient extends Thread {
   }
   private void DHTQueryPing(Node node) throws Exception {
     if (debug) node.log("Sending ping");
+    node.pinged = true;
     DataBuilder msg = new DataBuilder();
     msg.append("d");
       msg.append("1:a");
@@ -1525,11 +1553,11 @@ public class TorrentClient extends Thread {
       JFLog.log(e);
     }
   }
-  private Node findNode(String id) {
+  private Node findNode(byte[] id) {
     synchronized(nodeListLock) {
       for(Node node : nodeList) {
         if (node.node_id == null) continue;
-        if (node.node_id.equals(id)) {
+        if (Arrays.equals(node.node_id, id)) {
           return node;
         }
       }
@@ -1573,8 +1601,8 @@ public class TorrentClient extends Thread {
           switch (y) {
             case "q": {
               //query
-              String a_node_id = file.getString(new String[] {"d", "d:a", "s:id"}, null);
-              if (debug) JFLog.log("query:node_id = " + a_node_id);
+              byte[] a_node_id = file.getData(new String[] {"d", "d:a", "s:id"}, null);
+              if (debug) JFLog.log("query:node_id = " + hexToString(a_node_id, 0, a_node_id.length));
               Node node = findNode(ip, port);
               if (node == null) {
                 if (debug) JFLog.log("DHT:query:node not found:" + ip + ":" + port);
@@ -1606,7 +1634,7 @@ public class TorrentClient extends Thread {
               break;
             }
             case "r": {
-              String r_node_id = file.getString(new String[] {"d", "d:r", "s:id"}, null);
+              byte[] r_node_id = file.getData(new String[] {"d", "d:r", "s:id"}, null);
               Node node = findNode(ip ,port);
               if (node == null) {
                 if (debug) JFLog.log("DHT:reply:node not found:" + ip + ":" + port);
@@ -1627,7 +1655,7 @@ public class TorrentClient extends Thread {
                     if (debug) JFLog.log("DHT:reply:find_node:nodes==null");
                     continue;
                   }
-                  int noNodes = nodes.length / 6;
+                  int noNodes = nodes.length / 26;
                   if (debug) JFLog.log("DHT:reply:find_node=" + noNodes);
                   break;
                 }
@@ -1674,14 +1702,16 @@ public class TorrentClient extends Thread {
                       if (debug) JFLog.log("DHT:reply:get_peers:nodes==null");
                       continue;
                     }
-                    int noNodes = nodes.length / 6;
+                    int noNodes = nodes.length / 26;
                     if (debug) JFLog.log("DHT:reply:get_peers:nodes=" + noNodes);
                     synchronized(nodeListLock) {
                       for(int a=0;a<noNodes;a++) {
                         Node n = new Node();
-                        String node_ip = getip(nodes, a * 6);
-                        int node_port = getport(nodes, a * 6 + 4);
+                        byte[] node_id = Arrays.copyOfRange(nodes, a * 26, a * 26 + 20);
+                        String node_ip = getip(nodes, a * 26 + 20);
+                        int node_port = getport(nodes, a * 26 + 24);
                         n.init(node_ip, node_port);
+                        n.node_id = node_id;
                         boolean found = false;
                         for(Node nn : nodeList) {
                           if (nn.ip.equals(node_ip) && (nn.port == port)) {
@@ -1691,8 +1721,13 @@ public class TorrentClient extends Thread {
                         }
                         if (!found) {
                           nodeList.add(n);
+                          if (debug) JFLog.log("node[]=" + n.ip + ":" + n.port);
                         }
                       }
+                    }
+                    //remove useless node
+                    synchronized (nodeListLock) {
+                      nodeList.remove(node);
                     }
                   }
                   break;
