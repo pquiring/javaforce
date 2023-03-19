@@ -19,6 +19,7 @@ public class TorrentClient extends Thread {
   private static int MAXNODES = 30;  //max # active nodes
   private static int NUMWANT = 80;  //# peers requested from tracker (advisory)
   private static int TIMEOUT = 5000;  //connection timeout (ms)
+  private static int FRAGSTACK = 3;  //# of fragments to request at a time (pipelining)
 
   public static boolean debug = false;  //lots of debugging info
   public static boolean debugE = true;  //debug exceptions
@@ -53,7 +54,6 @@ public class TorrentClient extends Thread {
   private ArrayList<MetaFile> files = new ArrayList<MetaFile>();
   private byte[][] pieces;  //SHA1
   private int numFragsPerPiece;
-  private final int FRAGSTACK = 3;
 
   //client info
   private String local_peer_id;  //Torrent protocol (ASCII)
@@ -1041,16 +1041,41 @@ public class TorrentClient extends Thread {
     }
     private void fragment(byte[] msg) throws Exception {
       // FRAGMENT PIDX(4) BEGIN(4)
-      int pidx = BE.getuint32(msg, 1);
-      if (pidx != peer.downloadingPieceIdx) {peer.log("frag:bad pidx:"+pidx);return;}
-      int begin = BE.getuint32(msg, 5);
-      int fidx = begin / FRAGSIZE;
-      if (fidx >= peer.numFrags) {peer.log("frag:bad fidx:"+fidx);return;}
-      int length = msg.length - 9;
-      if (peer.piece == null) {peer.log("frag:not ready(1)");return;}
-      if (begin + length > peer.piece.length) {peer.log("frag:bad length:"+fidx);return;}
       synchronized(peer.fragLock) {
-        if (peer.haveFrags[fidx]) {peer.log("frag:already have fidx:"+fidx);return;}
+        int pidx = BE.getuint32(msg, 1);
+        if (pidx != peer.downloadingPieceIdx) {
+          peer.log("frag:bad pidx:"+pidx);
+          peer.pendingFrags--;
+          peer.fragLock.notify();
+          return;
+        }
+        int begin = BE.getuint32(msg, 5);
+        int fidx = begin / FRAGSIZE;
+        if (fidx >= peer.numFrags) {
+          peer.log("frag:bad fidx:"+fidx);
+          peer.pendingFrags--;
+          peer.fragLock.notify();
+          return;
+        }
+        int length = msg.length - 9;
+        if (peer.piece == null) {
+          peer.log("frag:not ready(1)");
+          peer.pendingFrags--;
+          peer.fragLock.notify();
+          return;
+        }
+        if (begin + length > peer.piece.length) {
+          peer.log("frag:bad length:"+fidx);
+          peer.pendingFrags--;
+          peer.fragLock.notify();
+          return;
+        }
+        if (peer.haveFrags[fidx]) {
+          peer.log("frag:already have fidx:"+fidx);
+          peer.pendingFrags--;
+          peer.fragLock.notify();
+          return;
+        }
         System.arraycopy(msg, 9, peer.piece, begin, length);
         peer.log("gotFrag:" + pidx + "," + fidx);
         peer.haveFrags[fidx] = true;
@@ -1239,6 +1264,8 @@ public class TorrentClient extends Thread {
     msg.append("e");
     node.write(msg.toByteArray());
   }
+  private static Random rnd = new Random();
+  private static Object rndLock = new Object();
   private class PeerDownloader extends Thread {
     private Peer peer;
     public volatile boolean downloaderActive = true;
@@ -1266,7 +1293,10 @@ public class TorrentClient extends Thread {
               break;
             }
             //is there a piece we can get from them
-            int startIdx = Math.abs(new Random().nextInt(have.length));  //pure random baby
+            int startIdx;
+            synchronized (rndLock) {
+              startIdx = rnd.nextInt(have.length);
+            }
             int pidx = startIdx;
             boolean ok = false;
             do {
@@ -1340,7 +1370,7 @@ public class TorrentClient extends Thread {
                 peer.log("download done, stopping");
                 break;
               }
-              broadcastHave();
+              broadcastHave(peer.downloadingPieceIdx);
             } else {
               peer.log("bad piece downloaded");
             }
@@ -1367,14 +1397,17 @@ public class TorrentClient extends Thread {
       writeMessage(peer, msg);
       peer.log("requestFrag:" + peer.downloadingPieceIdx + "," + fidx);
     }
-    private void broadcastHave() {
+    private void broadcastHave(int pidx) {
       byte msg[] = new byte[5];
       msg[0] = HAVE;
-      BE.setuint32(msg, 1, peer.downloadingPieceIdx);
+      BE.setuint32(msg, 1, pidx);
       synchronized(peerListLock) {
         for(int a=0;a<peerList.size();a++) {
           Peer peer = peerList.get(a);
           if (!peer.active) continue;
+          if (peer.seeder) continue;
+          if (peer.have == null) continue;
+          if (peer.have[pidx]) continue;
           try {writeMessage(peer, msg);} catch (Exception e) {}
         }
       }
@@ -1699,7 +1732,7 @@ public class TorrentClient extends Thread {
                   if (peers != null) {
                     //node has peers related to info_hash
                     int noPeers = peers.list.size();
-                    if (debugPN) JFLog.log("DHT:reply:get_peers:peers=" + noPeers);
+                    if (debug) JFLog.log("DHT:reply:get_peers:peers=" + noPeers);
                     synchronized(peerListLock) {
                       for(int a=0;a<noPeers;a++) {
                         MetaData meta = (MetaData)peers.list.get(a);
