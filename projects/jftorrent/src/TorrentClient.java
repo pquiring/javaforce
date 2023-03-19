@@ -20,7 +20,9 @@ public class TorrentClient extends Thread {
   private static int NUMWANT = 80;  //# peers requested from tracker (advisory)
   private static int TIMEOUT = 5000;  //connection timeout (ms)
 
-  public static boolean debug = true;  //lots of debugging info
+  public static boolean debug = false;  //lots of debugging info
+  public static boolean debugE = true;  //debug exceptions
+  public static boolean debugPN = true;  //debug new peers / nodes
 
   public String torrent, dest;
   public boolean done = false;
@@ -66,6 +68,7 @@ public class TorrentClient extends Thread {
   private ArrayList<Peer> peerList = new ArrayList<Peer>();
   private int peerIdx = 0;
   private int peerActiveCount = 0;
+  private int peerDownloadCount = 0;
   private final Object peerListLock = new Object();
   private Timer timer = new Timer();
   private boolean registered = false;
@@ -262,7 +265,7 @@ public class TorrentClient extends Thread {
       try {
         local_dht_ds.send(packet);
       } catch (Exception e) {
-        if (debug) JFLog.log(e);
+        if (debugE) JFLog.log(e);
       }
     }
     public void log(String msg) {
@@ -285,12 +288,12 @@ public class TorrentClient extends Thread {
     return info_hash;
   }
 
-  public int getNumPeers() {
-    return peerList.size();
+  public String getNumPeers() {
+    return peerDownloadCount + " / " + peerActiveCount + " / " + peerList.size();
   }
 
-  public int getNumNodes() {
-    return nodeList.size();
+  public String getNumNodes() {
+    return nodeActiveCount + " / " + nodeList.size();
   }
 
   public TorrentClient(String torrent, String dest, boolean active, boolean paused) {
@@ -300,10 +303,6 @@ public class TorrentClient extends Thread {
     this.dest = dest;
   }
   public void run() {
-    if (TorrentApp.cli_debug) {
-      MAXPEERS = 1;
-      MAXNODES = 1;
-    }
     try {
       status = "Reading torrent file";
       //generate peer id (random)
@@ -416,13 +415,13 @@ public class TorrentClient extends Thread {
               getNextNode();
             }
           } catch (Exception e) {
-            if (debug) JFLog.log(e);
+            if (debugE) JFLog.log(e);
           }
         }
       }, 1000, 1000);
     } catch (Exception e) {
       status = "Error";
-      if (debug) JFLog.log(e);
+      if (debugE) JFLog.log(e);
     }
   }
   private void readMeta() throws Exception {
@@ -530,7 +529,7 @@ public class TorrentClient extends Thread {
         }
       }
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debugE) JFLog.log(e);
     }
     done = haveCnt == pieces.length;
     java.awt.EventQueue.invokeLater(new Runnable() {
@@ -655,7 +654,7 @@ public class TorrentClient extends Thread {
           }
           if (!found) {
             peerList.add(p);
-            if (debug) JFLog.log("peer[]=" + p.ip + ":" + p.port);
+            if (debugPN) JFLog.log("peer[]=" + p.ip + ":" + p.port);
           }
         }
       }
@@ -865,7 +864,7 @@ public class TorrentClient extends Thread {
         return true;
       } catch (Exception e) {
         peer.log("getHandshake Exception");
-        if (debug) JFLog.log(e);
+        if (debugE) JFLog.log(e);
       }
       return false;
     }
@@ -934,7 +933,7 @@ public class TorrentClient extends Thread {
         return msg;
       } catch (Exception e) {
         peer.log("getMessage Exception");
-        if (debug) JFLog.log(e);
+        if (debugE) JFLog.log(e);
       }
       return null;
     }
@@ -1084,7 +1083,7 @@ public class TorrentClient extends Thread {
           }
         }
       } catch (Exception e) {
-        if (debug) JFLog.log(e);
+        if (debugE) JFLog.log(e);
       }
     }
     private void have_all() {
@@ -1247,9 +1246,8 @@ public class TorrentClient extends Thread {
       this.peer = peer;
     }
     public void run() {
-      if (TorrentApp.cli_debug) {
-        peer.log("Not downloading (debug)");
-        return;
+      synchronized(peerListLock) {
+        peerDownloadCount++;
       }
       try {
         peer.log("Starting PeerDownloader");
@@ -1353,6 +1351,9 @@ public class TorrentClient extends Thread {
       } catch (Exception e) {
       }
       peer.log("Downloader stopping");
+      synchronized(peerListLock) {
+        peerDownloadCount--;
+      }
     }
     private void requestFragment(int fidx) throws Exception {
       byte msg[] = new byte[1 + 4 + 4 + 4];
@@ -1584,7 +1585,7 @@ public class TorrentClient extends Thread {
       dht_listener = new DHTListener(local_dht_ds);
       dht_listener.start();
     } catch (Exception e) {
-      JFLog.log(e);
+      if (debugE) JFLog.log(e);
     }
   }
   private Node findNode(byte[] id) {
@@ -1698,14 +1699,8 @@ public class TorrentClient extends Thread {
                   if (peers != null) {
                     //node has peers related to info_hash
                     int noPeers = peers.list.size();
-                    if (debug) JFLog.log("DHT:reply:get_peers:peers=" + noPeers);
+                    if (debugPN) JFLog.log("DHT:reply:get_peers:peers=" + noPeers);
                     synchronized(peerListLock) {
-                      if (TorrentApp.cli_debug) {
-                        if (node.peer != null) {
-                          node.peer.close();
-                        }
-                        peerList.clear();
-                      }
                       for(int a=0;a<noPeers;a++) {
                         MetaData meta = (MetaData)peers.list.get(a);
                         byte[] ip_port = meta.data;
@@ -1723,19 +1718,16 @@ public class TorrentClient extends Thread {
                         }
                         if (!found) {
                           peerList.add(p);
-                          if (debug) JFLog.log("peer[]=" + p.ip + ":" + p.port);
+                          if (debugPN) JFLog.log("peer[]=" + p.ip + ":" + p.port + " from node");
                         }
                       }
                     }
-                  } else {
-                    if (debug) JFLog.log("DHT:reply:get_peers:values==null");
-                    //does not have peers, check for other nodes
-                    byte[] nodes = file.getData(new String[] {"d", "d:r", "s:nodes"}, null);
-                    if (nodes == null) {
-                      //no peers or nodes???
-                      if (debug) JFLog.log("DHT:reply:get_peers:nodes==null");
-                      continue;
-                    }
+                  }
+
+                  if (debug) JFLog.log("DHT:reply:get_peers:values==null");
+                  byte[] nodes = file.getData(new String[] {"d", "d:r", "s:nodes"}, null);
+                  if (nodes != null) {
+                    //node has other nodes
                     int noNodes = nodes.length / 26;
                     if (debug) JFLog.log("DHT:reply:get_peers:nodes=" + noNodes);
                     synchronized(nodeListLock) {
@@ -1755,7 +1747,7 @@ public class TorrentClient extends Thread {
                         }
                         if (!found) {
                           nodeList.add(n);
-                          if (debug) JFLog.log("node[]=" + n.ip + ":" + n.port);
+                          if (debugPN) JFLog.log("node[]=" + n.ip + ":" + n.port);
                         }
                       }
                     }
@@ -1781,7 +1773,7 @@ public class TorrentClient extends Thread {
             }
           }
         } catch (Exception e) {
-          JFLog.log(e);
+          if (debugE) JFLog.log(e);
           JF.sleep(100);
         }
       }

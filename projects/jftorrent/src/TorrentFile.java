@@ -14,10 +14,12 @@ public class TorrentFile {
   private byte metaData[];
   private MetaTag root;  //root tag
   private int metaIdx;
+  private int metaLen;
   public void read(byte data[]) throws Exception {
     metaData = data;
     metaIdx = 0;
     root = readTag();
+    metaLen = metaIdx;
   }
   private MetaTag readTag() throws Exception {
     int start = metaIdx;
@@ -76,7 +78,7 @@ public class TorrentFile {
         do {
           MetaTag entry = readTag();
           if (entry == null) break;  //'e'
-          tag.list.add(tag);
+          tag.list.add(entry);
         } while(true);
         if (debug) JFLog.log("} //list");
         tag.pos2 = metaIdx;
@@ -164,7 +166,7 @@ public class TorrentFile {
           }
         }
         if (!found) {
-          JFLog.log("Error:dict not found:" + find);
+          if (debug) JFLog.log("Error:dict not found:" + find);
           return null;
         }
         pathIdx++;
@@ -183,7 +185,7 @@ public class TorrentFile {
             }
           }
         }
-        JFLog.log("Error:list not found:" + find);
+        if (debug) JFLog.log("Error:list not found:" + find);
         return null;
       }
       if (path[pathIdx].startsWith("s:")) {
@@ -214,11 +216,14 @@ public class TorrentFile {
             }
           }
         }
-        JFLog.log("Error:int not found:" + find);
+        if (debug) JFLog.log("Error:int not found:" + find);
         return null;
       }
     }
     return dict;
+  }
+  public String toString() {
+    return TorrentClient.hexToString(metaData, 0, metaLen);
   }
 }
 
