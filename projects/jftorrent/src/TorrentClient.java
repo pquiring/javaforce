@@ -19,7 +19,7 @@ public class TorrentClient extends Thread {
   private static int MAXNODES = 30;  //max # active nodes
   private static int NUMWANT = 80;  //# peers requested from tracker (advisory)
   private static int TIMEOUT = 5000;  //connection timeout (ms)
-  private static int FRAGSTACK = 3;  //# of fragments to request at a time (pipelining)
+  private static int FRAGSTACK = 10;  //# of fragments to request at a time (pipelining)
 
   public static boolean debug = false;  //lots of debugging info
   public static boolean debugE = true;  //debug exceptions
