@@ -14,7 +14,6 @@ import javaforce.*;
 public class TorrentServer extends Thread {
   private static Vector<TorrentClient> clients = new Vector<TorrentClient>();
   private String status = "?";
-  public static int port = 6881;
   private ServerSocket ss;
 
   public static void register(TorrentClient client) {
@@ -25,14 +24,10 @@ public class TorrentServer extends Thread {
     clients.remove(client);
   }
 
-  public TorrentServer(int port) {
-    TorrentServer.port = port;
-  }
-
   public void run() {
     while (true) {
       try {
-        ss = new ServerSocket(port);
+        ss = new ServerSocket(Config.config.port);
         while (true) {
           Socket s = ss.accept();
           new PeerListener(s).start();
@@ -47,8 +42,7 @@ public class TorrentServer extends Thread {
     return status;
   }
 
-  public void changePort(int port) {
-    TorrentServer.port = port;
+  public void restart() {
     status = "?";
     try {ss.close();} catch (Exception e) {}
   }

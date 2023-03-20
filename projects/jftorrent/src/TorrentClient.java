@@ -1177,7 +1177,7 @@ public class TorrentClient extends Thread {
       msg.append("1:y");
         msg.append("1:q");
     msg.append("e");
-    node.write(msg.toByteArray());
+    writeMessage(node, msg.toByteArray());
   }
   private void DHTReplyPong(Node node, byte[] tid) throws Exception {
     if (debug) node.log("Sending ping");
@@ -1195,7 +1195,7 @@ public class TorrentClient extends Thread {
       msg.append("1:y");
         msg.append("1:r");
     msg.append("e");
-    node.write(msg.toByteArray());
+    writeMessage(node, msg.toByteArray());
   }
   private void DHTQueryGetPeers(Node node) throws Exception {
     if (debug) node.log("Sending get peers");
@@ -1216,7 +1216,7 @@ public class TorrentClient extends Thread {
       msg.append("1:y");
         msg.append("1:q");
     msg.append("e");
-    node.write(msg.toByteArray());
+    writeMessage(node, msg.toByteArray());
   }
   private void DHTReplyGetPeers(Node node, byte[] tid, boolean info_hash_matches) throws Exception {
     if (debug) node.log("Sending ping");
@@ -1262,7 +1262,7 @@ public class TorrentClient extends Thread {
       msg.append("1:y");
         msg.append("1:r");
     msg.append("e");
-    node.write(msg.toByteArray());
+    writeMessage(node, msg.toByteArray());
   }
   private static Random rnd = new Random();
   private static Object rndLock = new Object();

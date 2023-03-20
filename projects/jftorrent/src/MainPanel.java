@@ -221,14 +221,14 @@ public class MainPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_addFileActionPerformed
 
   private void editConfigActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editConfigActionPerformed
-    int orgPort = TorrentServer.port;
+    int orgPort = Config.config.port;
     boolean orgMC = Config.config.multicast;
     ConfigDialog dialog = new ConfigDialog(null, true);
     dialog.setVisible(true);
     if (!dialog.accepted) return;
     if (Config.config.port == orgPort && Config.config.multicast == orgMC) return;
     saveConfig();
-    server.changePort(Config.config.port);
+    server.restart();
     status.setText("?");
     for(int a=0;a<clients.size();a++) {
       clients.get(a).recontactTracker();
@@ -352,7 +352,7 @@ public class MainPanel extends javax.swing.JPanel {
   }
 
   private void startServer() {
-    server = new TorrentServer(Config.config.port);
+    server = new TorrentServer();
     server.start();
   }
 
