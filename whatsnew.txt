@@ -1,5 +1,10 @@
 What's new...
 
+Mar 19/2023 : JF/39.0
+  - jfTorrent/0.6
+    - added support for DHT and FAST protocols
+  - more code cleanups
+
 Mar 12/2023 : JF/38.4
   - fixed RGB order issue with javaforce.ui.Image to match java image loader
   - more code cleanups  
