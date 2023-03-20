@@ -31,13 +31,23 @@ public class DNS extends Thread {
     return JF.getLogPath() + "/jfdns.log";
   }
 
+  /** Cache entry. */
+  private static class Entry {
+    public String record;  //example.com,a
+    public byte[] value;  //reply to client
+    public long ts;  //timestamp
+  }
+
   private DatagramSocket ds;
   private static int maxmtu = 512;  //standard
   private ArrayList<String> uplink = new ArrayList<String>();
   private ArrayList<String> records = new ArrayList<String>();
   private ArrayList<String> allows = new ArrayList<String>();
   private ArrayList<String> denies = new ArrayList<String>();
+  private ArrayList<Entry> cache = new ArrayList<>();
+  private Object cacheLock = new Object();
   private int uplinktimeout = 2000;
+  private int cachetimeout = (1000 * 60 * 60);  //1 hour
 
   public void run() {
     JFLog.append(getLogFile(), false);
@@ -83,7 +93,8 @@ public class DNS extends Thread {
     = "[global]\n"
     + "uplink=8.8.8.8\n"
     + "uplink=8.8.4.4\n"
-    + "uplinktimeout=1000\n"
+    + "uplinktimeout=2000 #default 2 seconds\n"
+    + "#cachetimeout=3600000 #default 1 hour\n"
     + "[records]\n"
     + "#name,type,ttl,value\n"
     + "#mydomain.com,cname,3600,www.mydomain.com\n"
@@ -115,27 +126,45 @@ public class DNS extends Thread {
           section = Section.Records;
           continue;
         }
+        if (ln.startsWith("[")) {
+          continue;
+        }
         switch (section) {
-          case Global:
-            if (ln.startsWith("uplink=")) {
-              uplink.add(ln.substring(7));
-            }
-            if (ln.startsWith("uplinktimeout=")) {
-              uplinktimeout = JF.atoi(ln.substring(14));
-            }
-            if (ln.startsWith("allow=")) {
-              String dns = ln.substring(6);
-              if (!allows.contains(dns)) {
-                allows.add(dns);
+          case Global: {
+            idx = ln.indexOf('=');
+            if (idx == -1) continue;
+            String key = ln.substring(0, idx).trim();
+            String value = ln.substring(idx + 1).trim();
+            switch (key) {
+              case "uplink": {
+                uplink.add(value);
+                break;
+              }
+              case "uplinktimeout":{
+                uplinktimeout = JF.atoi(value);
+                break;
+              }
+              case "allow": {
+                if (!allows.contains(value)) {
+                  allows.add(value);
+                }
+                break;
+              }
+              case "cachetimeout": {
+                cachetimeout = JF.atoi(value);
+                break;
+              }
+              case "deny": {
+                denies.add(value);
+                break;
               }
             }
-            if (ln.startsWith("deny=")) {
-              denies.add(ln.substring(5));
-            }
             break;
-          case Records:
+          }
+          case Records: {
             records.add(ln);
             break;
+          }
         }
       }
       br.close();
@@ -261,6 +290,7 @@ public class DNS extends Thread {
           continue;
         }
         if (queryLocal(domain, type, id)) continue;
+        if (queryCache(domain, type, id)) continue;
         queryRemote(domain, type, id);
       }
     }
@@ -316,7 +346,6 @@ public class DNS extends Thread {
     private boolean queryLocal(String domain, int type, int id) {
       //TODO : query derby and add answer if available
       //NOTE : set aa if found in local db and do not add anything to nameservers
-      int rc = records.size();
       String match = null;
       switch (type) {
         case A: match = domain + ",a,"; break;
@@ -326,12 +355,48 @@ public class DNS extends Thread {
       }
       if (match == null) return false;
       match = match.toLowerCase();
-      for(int a=0;a<rc;a++) {
+      int cnt = records.size();
+      for(int a=0;a<cnt;a++) {
         String record = records.get(a);
         if (record.startsWith(match)) {
           //name,type,ttl,values...
           sendReply(domain, record, type, id);
           return true;
+        }
+      }
+      return false;
+    }
+
+    private boolean queryCache(String domain, int type, int id) {
+      JFLog.log("queryCache:domain=" + domain + ",type=" + type);
+      String match = null;
+      switch (type) {
+        case A: match = domain + ",a,"; break;
+        case CNAME: match = domain + ",cname,"; break;
+        case MX: match = domain + ",mx,"; break;
+        case AAAA: match = domain + ",aaaa,"; break;
+      }
+      if (match == null) return false;
+      match = match.toLowerCase();
+      long timeout =  System.currentTimeMillis() - cachetimeout;
+      synchronized(cacheLock) {
+        int cnt = cache.size();
+        for(int a=0;a<cnt;) {
+          Entry entry = cache.get(a);
+          if (entry.ts < timeout) {
+            //delete old record
+            cache.remove(a);
+            cnt--;
+          } else {
+            if (entry.record.startsWith(match)) {
+              //update tid
+              BE.setuint16(entry.value, 0, id);
+              //name,type,ttl,values...
+              sendReply(domain, entry.value);
+              return true;
+            }
+            a++;
+          }
         }
       }
       return false;
@@ -386,7 +451,9 @@ public class DNS extends Thread {
           reply = new byte[maxmtu];
           DatagramPacket in = new DatagramPacket(reply, reply.length);
           sock.receive(in);
-          sendReply(domain, reply, in.getLength());
+          reply = Arrays.copyOf(reply, in.getLength());
+          sendReply(domain, reply);
+          addCache(domain, type, reply);
           return;
         } catch (Exception e) {
           JFLog.log(e);
@@ -395,10 +462,10 @@ public class DNS extends Thread {
       JFLog.log("Query Remote failed for domain=" + domain);
     }
 
-    private void sendReply(String domain, byte outData[], int outDataLength) {
+    private void sendReply(String domain, byte outData[]) {
       JFLog.log("sendReply:" + domain + " to " + packet.getAddress() + ":" + packet.getPort());
       try {
-        DatagramPacket out = new DatagramPacket(outData, outDataLength);
+        DatagramPacket out = new DatagramPacket(outData, outData.length);
         out.setAddress(packet.getAddress());
         out.setPort(packet.getPort());
         ds.send(out);
@@ -466,7 +533,26 @@ public class DNS extends Thread {
           putIP6(f[3]);  //Rdata
           break;
       }
-      sendReply(query, reply, replyOffset);
+      sendReply(query, Arrays.copyOf(reply, replyOffset));
+    }
+
+    private void addCache(String domain, int type, byte[] reply) {
+      String record = null;
+      switch (type) {
+        case A: record = domain + ",a,"; break;
+        case CNAME: record = domain + ",cname,"; break;
+        case MX: record = domain + ",mx,"; break;
+        case AAAA: record = domain + ",aaaa,"; break;
+      }
+      if (record == null) return;
+      record = record.toLowerCase();
+      Entry entry = new Entry();
+      entry.record = record;
+      entry.value = reply;
+      entry.ts = System.currentTimeMillis();
+      synchronized(cacheLock) {
+        cache.add(entry);
+      }
     }
 
     private void putIP4(String ip) {
