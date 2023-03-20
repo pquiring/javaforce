@@ -12,7 +12,7 @@ import java.security.*;
 import javaforce.*;
 
 public class TorrentClient extends Thread {
-  public static final String clientVersion = "0005";  //must be 4 digits
+  public static final String clientVersion = "0006";  //must be 4 digits
 
   private static int FRAGSIZE = 16 * 1024;  //16k
   private static int MAXPEERS = 30;  //max # active peers

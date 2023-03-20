@@ -27,11 +27,11 @@ public class MainPanel extends javax.swing.JPanel {
     tableModel = (DefaultTableModel)table.getModel();
     new File(JF.getUserPath() + "/Torrents").mkdirs();
 //    JFLog.init(JF.getUserPath() + "/.jftorrent.log", true);
+    initHttps();
     loadConfig();
     updateList();
     startServer();
     startTorrents();
-    initHttps();
     java.util.Timer timer = new java.util.Timer();
     timer.schedule(new TimerTask() {
       public void run() {

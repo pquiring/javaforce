@@ -1,4 +1,7 @@
 What's new ???
 
+Mar 19, 2023 : 0.6
+  - added support for DHT (BEP 005) and FAST (BEP 006) protocols
+
 Mar 18, 2020 : 0.5
   - fix : win64 loader now loads msvcrt dlls properly
