@@ -49,6 +49,8 @@ public class DNS extends Thread {
   private int uplinktimeout = 2000;
   private int cachetimeout = (1000 * 60 * 60);  //1 hour
 
+  private boolean uplinks_down = false;  //uplink(s) are down?
+
   public void run() {
     JFLog.append(getLogFile(), false);
     JFLog.setRetention(30);
@@ -155,7 +157,9 @@ public class DNS extends Thread {
                 break;
               }
               case "deny": {
-                denies.add(value);
+                if (!denies.contains(value)) {
+                  denies.add(value);
+                }
                 break;
               }
             }
@@ -290,8 +294,11 @@ public class DNS extends Thread {
           continue;
         }
         if (queryLocal(domain, type, id)) continue;
-        if (queryCache(domain, type, id)) continue;
-        queryRemote(domain, type, id);
+        boolean updateOnly = false;
+        if (queryCache(domain, type, id)) {
+          updateOnly = true;
+        }
+        queryRemote(domain, type, id, updateOnly);
       }
     }
 
@@ -344,16 +351,7 @@ public class DNS extends Thread {
     }
 
     private boolean queryLocal(String domain, int type, int id) {
-      //TODO : query derby and add answer if available
-      //NOTE : set aa if found in local db and do not add anything to nameservers
-      String match = null;
-      switch (type) {
-        case A: match = domain + ",a,"; break;
-        case CNAME: match = domain + ",cname,"; break;
-        case MX: match = domain + ",mx,"; break;
-        case AAAA: match = domain + ",aaaa,"; break;
-      }
-      if (match == null) return false;
+      String match = domain + "," + typeToString(type) + ",";
       match = match.toLowerCase();
       int cnt = records.size();
       for(int a=0;a<cnt;a++) {
@@ -369,14 +367,7 @@ public class DNS extends Thread {
 
     private boolean queryCache(String domain, int type, int id) {
       JFLog.log("queryCache:domain=" + domain + ",type=" + type);
-      String match = null;
-      switch (type) {
-        case A: match = domain + ",a,"; break;
-        case CNAME: match = domain + ",cname,"; break;
-        case MX: match = domain + ",mx,"; break;
-        case AAAA: match = domain + ",aaaa,"; break;
-      }
-      if (match == null) return false;
+      String match = domain + "," + typeToString(type) + ",";
       match = match.toLowerCase();
       long timeout =  System.currentTimeMillis() - cachetimeout;
       synchronized(cacheLock) {
@@ -384,9 +375,13 @@ public class DNS extends Thread {
         for(int a=0;a<cnt;) {
           Entry entry = cache.get(a);
           if (entry.ts < timeout) {
-            //delete old record
-            cache.remove(a);
-            cnt--;
+            //delete old record (only if uplink is active)
+            if (!uplinks_down) {
+              cache.remove(a);
+              cnt--;
+            } else {
+              a++;
+            }
           } else {
             if (entry.record.startsWith(match)) {
               //update tid
@@ -402,6 +397,9 @@ public class DNS extends Thread {
       return false;
     }
 
+    /** Controls which domain names are allowed.
+     * Could be useful as a filtering DNS server.
+     */
     private boolean isAllowed(String domain) {
       int cnt = allows.size();
       for(int a=0;a<cnt;a++) {
@@ -426,12 +424,13 @@ public class DNS extends Thread {
       return "A";
     }
 
-    private void queryRemote(String domain, int type, int id) {
+    private void queryRemote(String domain, int type, int id, boolean updateOnly) {
       JFLog.log("queryRemote:domain=" + domain + ",type=" + type);
       //query remote DNS server and simple relay the reply "as is"
       //TODO : need to actually remove AA flag if present and fill in other sections as needed
       if (!isAllowed(domain)) {
         JFLog.log("not allowed:" + domain);
+        if (updateOnly) return;
         //send "example.com" which will give a 404 error
         if (type == AAAA)
           sendReply(domain, domain + "," + typeToString(type) + ",3600,0:0:0:0:0:FFFF:5DB8:D822", type, id);
@@ -443,7 +442,7 @@ public class DNS extends Thread {
       for(int idx=0;idx<cnt;idx++) {
         try {
           DatagramPacket out = new DatagramPacket(data, dataLength);
-          out.setAddress(InetAddress.getByName(uplink.get(idx)));
+          out.setAddress(InetAddress.getByName(uplink.get(0)));
           out.setPort(53);
           DatagramSocket sock = new DatagramSocket();  //bind to anything
           sock.setSoTimeout(uplinktimeout);
@@ -452,13 +451,20 @@ public class DNS extends Thread {
           DatagramPacket in = new DatagramPacket(reply, reply.length);
           sock.receive(in);
           reply = Arrays.copyOf(reply, in.getLength());
-          sendReply(domain, reply);
-          addCache(domain, type, reply);
+          if (!updateOnly) {
+            sendReply(domain, reply);
+          }
+          updateCache(domain, type, reply);
+          uplinks_down = false;
           return;
         } catch (Exception e) {
           JFLog.log(e);
+          //move failed uplink to end of list
+          String up = uplink.remove(0);
+          uplink.add(up);
         }
       }
+      uplinks_down = true;
       JFLog.log("Query Remote failed for domain=" + domain);
     }
 
@@ -477,8 +483,8 @@ public class DNS extends Thread {
     private void sendReply(String query, String record, int type, int id) {
       JFLog.log("sendReply:query=" + query + ",record=" + record + ",type=" + type);
       int rdataOffset, rdataLength;
-      //record = type,name,ttl,value
-      String f[] = record.split(",");
+      //record = name,type,ttl,value
+      String[] f = record.split(",");
       int ttl = JF.atoi(f[2]);
       reply = new byte[maxmtu];
       replyBuffer = ByteBuffer.wrap(reply);
@@ -536,21 +542,24 @@ public class DNS extends Thread {
       sendReply(query, Arrays.copyOf(reply, replyOffset));
     }
 
-    private void addCache(String domain, int type, byte[] reply) {
-      String record = null;
-      switch (type) {
-        case A: record = domain + ",a,"; break;
-        case CNAME: record = domain + ",cname,"; break;
-        case MX: record = domain + ",mx,"; break;
-        case AAAA: record = domain + ",aaaa,"; break;
-      }
-      if (record == null) return;
-      record = record.toLowerCase();
-      Entry entry = new Entry();
-      entry.record = record;
-      entry.value = reply;
-      entry.ts = System.currentTimeMillis();
+    private void updateCache(String domain, int type, byte[] reply) {
+      String match = domain + "," + typeToString(type) + ",";
+      match = match.toLowerCase();
       synchronized(cacheLock) {
+        int cnt = cache.size();
+        for(int a=0;a<cnt;a++) {
+          Entry entry = cache.get(a);
+          if (entry.record.equals(match)) {
+            entry.value = reply;
+            entry.ts = System.currentTimeMillis();
+            return;
+          }
+        }
+        //record not found, add one
+        Entry entry = new Entry();
+        entry.record = match;
+        entry.value = reply;
+        entry.ts = System.currentTimeMillis();
         cache.add(entry);
       }
     }
