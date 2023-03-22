@@ -921,7 +921,7 @@ public class Proxy extends Thread {
       if (p.length != 3) return req;
       String urlstr = p[1];
       if ((!urlstr.startsWith("http:")) && (!urlstr.startsWith("https:"))) return req;
-      URL url = new URL(urlstr);
+      URL url = new URI(urlstr).toURL();
       return p[0] + " " + url.getFile() + " " + p[2];
     }
     private class ConnectRelay extends Thread {

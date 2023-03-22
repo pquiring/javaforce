@@ -333,7 +333,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     StringBuffer file;
     int i1, i2;
     try {
-      URL url = new URL("http://www.geoiptool.com/en/?IP=" + mirror.hostname);
+      URL url = new URI("http://www.geoiptool.com/en/?IP=" + mirror.hostname).toURL();
       HttpURLConnection uc = (HttpURLConnection)url.openConnection();
       uc.connect();
       is = uc.getInputStream();
@@ -435,7 +435,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     initHttps();
     if (updateRepo) {
       try {
-        URL url = new URL("https://launchpad.net/ubuntu/+archivemirrors");
+        URL url = new URI("https://launchpad.net/ubuntu/+archivemirrors").toURL();
         HttpsURLConnection uc = (HttpsURLConnection)url.openConnection();
         uc.connect();
         is = uc.getInputStream();
@@ -579,7 +579,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     initHttps();
     if (updateRepo) {
       try {
-        URL url = new URL("http://mirrors.fedoraproject.org/publiclist/Fedora/");
+        URL url = new URI("http://mirrors.fedoraproject.org/publiclist/Fedora/").toURL();
         HttpURLConnection uc = (HttpURLConnection)url.openConnection();
         uc.connect();
         is = uc.getInputStream();

@@ -1062,7 +1062,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   public void checkVersion() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(
-        new URL("https://jfphone.sourceforge.io/version" + (version.indexOf("beta") == -1 ? "" : "beta") + ".php").openStream()));
+        new URI("https://jfphone.sourceforge.io/version" + (version.indexOf("beta") == -1 ? "" : "beta") + ".php").toURL().openStream()));
       final String line = reader.readLine();
       if (line.equals(version)) {JFLog.log("version is up-to-date"); return;}
       JFLog.log("newer version is available : " + line);

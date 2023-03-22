@@ -14,7 +14,7 @@ public class ProxyTest {
   public static void load(String urlstr) {
     try {
       System.out.println("GET " + urlstr);
-      URL url = new URL(urlstr);
+      URL url = new URI(urlstr).toURL();
       java.net.Proxy proxy = new java.net.Proxy(java.net.Proxy.Type.HTTP, new InetSocketAddress("localhost", 3128));
       URLConnection c = url.openConnection(proxy);
       c.connect();

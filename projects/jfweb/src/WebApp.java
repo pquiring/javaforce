@@ -7,7 +7,7 @@
  */
 
 import javax.swing.event.HyperlinkEvent;
-import java.net.URL;
+import java.net.*;
 import javaforce.*;
 import java.io.*;
 
@@ -133,7 +133,7 @@ public class WebApp extends javax.swing.JFrame {
   private void homeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_homeActionPerformed
     try {
       url.setText(Settings.homePage);
-      html.setPage(new URL(Settings.homePage));
+      html.setPage(new URI(Settings.homePage).toURL());
     } catch(Exception e) {}
   }//GEN-LAST:event_homeActionPerformed
 
@@ -194,7 +194,7 @@ public class WebApp extends javax.swing.JFrame {
     String tmp = url.getText();
     if (!tmp.startsWith("http://") && !tmp.startsWith("https://")) tmp = "http://" + tmp;
     try {
-      return new URL(tmp);
+      return new URI(tmp).toURL();
     } catch (Exception e) {
       return null;
     }

@@ -268,7 +268,7 @@ public class Client extends javax.swing.JFrame {
       if (server.indexOf(":") == -1) {
         server = server + ":33001";
       }
-      URL url = new URL("https://" + server + "/invite");
+      URL url = new URI("https://" + server + "/invite").toURL();
       URLConnection conn = url.openConnection();
       conn.addRequestProperty("Authorization", "Basic " + encodePassword());
       //conn.setAllowUserInteraction(true);

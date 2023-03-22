@@ -615,8 +615,8 @@ public class TorrentClient extends Thread {
   }
   private void contactTracker(String event) throws Exception {
     if (announce.startsWith("http://") || announce.startsWith("https://")) {
-      URL url = new URL(announce + "?info_hash=" + escape(info_hash) + "&peer_id=" + local_peer_id + "&port=" + Config.config.port +
-        "&uploaded=" + upAmount + "&downloaded=" + downAmount + "&left=" + (totalLength - downAmount) + "&compact=1&numwant=" + NUMWANT + "&event=" + event);
+      URL url = new URI(announce + "?info_hash=" + escape(info_hash) + "&peer_id=" + local_peer_id + "&port=" + Config.config.port +
+        "&uploaded=" + upAmount + "&downloaded=" + downAmount + "&left=" + (totalLength - downAmount) + "&compact=1&numwant=" + NUMWANT + "&event=" + event).toURL();
       if (debug) JFLog.log("url=" + url.toExternalForm());
       HttpURLConnection uc = (HttpURLConnection)url.openConnection();
       uc.setReadTimeout(30 * 1000);

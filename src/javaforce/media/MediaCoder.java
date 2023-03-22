@@ -159,8 +159,8 @@ public class MediaCoder {
         //first download latest URL from github
         try {
           BufferedReader reader = new BufferedReader(new InputStreamReader(
-            new URL("http://pquiring.github.io/javaforce/codecpackwin"
-            + (JF.is64Bit() ? "64" : "32") + ".html").openStream()));
+            new URI("http://pquiring.github.io/javaforce/codecpackwin"
+            + (JF.is64Bit() ? "64" : "32") + ".html").toURL().openStream()));
           String url = reader.readLine();
           int zLength = JF.atoi(reader.readLine());
           byte[] buf = new byte[64 * 1024];
@@ -186,7 +186,7 @@ public class MediaCoder {
             return false;
           }
           {
-            URL urlAddr = new URL(url);
+            URL urlAddr = new URI(url).toURL();
             URLConnection conn = urlAddr.openConnection();
             conn.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393");
             conn.connect();
@@ -212,7 +212,7 @@ public class MediaCoder {
           }
           if (z7) {
             //download 7za.exe (~500KB)
-            URL urlAddr = new URL(url7);
+            URL urlAddr = new URI(url7).toURL();
             URLConnection conn = urlAddr.openConnection();
             conn.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393");
             conn.connect();

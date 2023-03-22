@@ -86,7 +86,7 @@ public class VideoApp extends javax.swing.JFrame {
   public void checkVersion() {
     try {
       BufferedReader reader = new BufferedReader(new InputStreamReader(
-        new URL("http://jfvideo.sourceforge.net/version.php").openStream()));
+        new URI("http://jfvideo.sourceforge.net/version.php").toURL().openStream()));
       String line = reader.readLine();
       if (line.equals(version)) {JFLog.log("version is up-to-date"); return;}
       JFLog.log("newer version is available : " + line);

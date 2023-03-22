@@ -310,7 +310,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
     filename = getFilename();
     try {
       FileOutputStream fos = new FileOutputStream(filename);
-      URL url = new URL(this.url);
+      URL url = new URI(this.url).toURL();
       HttpURLConnection conn = (HttpURLConnection)url.openConnection();
       conn.setAuthenticator(new Authenticator() {
         protected PasswordAuthentication getPasswordAuthentication() {

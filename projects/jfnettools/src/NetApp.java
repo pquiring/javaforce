@@ -881,7 +881,7 @@ public class NetApp extends javax.swing.JFrame {
     try {
       //detect internet ip
       BufferedReader reader = new BufferedReader(new InputStreamReader
-        (new URL("http://checkip.dyndns.org").openStream()));
+        (new URI("http://checkip.dyndns.org").toURL().openStream()));
       String line = reader.readLine();
       int i1 = line.indexOf("Address: ");
       int i2 = line.indexOf("</body>");

@@ -32,7 +32,7 @@ public class JF {
 
   public static URL createURL(String url) {
     try {
-      return new URL(url);
+      return new URI(url).toURL();
     } catch (Exception e) {
       JFLog.log(e);
       return null;
@@ -66,7 +66,7 @@ public class JF {
       }
     }
     try {
-      URL u = new URL(purl);
+      URL u = new URI(purl).toURL();
       HttpURLConnection huc = (HttpURLConnection) u.openConnection();
       huc.setRequestMethod("GET");
       huc.connect();

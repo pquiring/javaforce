@@ -193,7 +193,7 @@ public class App extends javax.swing.JPanel {
               }
             } else {
               //TODO:this is not working!!!
-              URL url = new URL(urlString);
+              URL url = new URI(urlString).toURL();
               HttpURLConnection uc = (HttpURLConnection)url.openConnection();
               this.setProgress(25);
               uc.connect();

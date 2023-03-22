@@ -541,7 +541,7 @@ public class MainPanel extends javax.swing.JPanel {
 //            int idx = urlString.lastIndexOf(".");
 //            String ext = urlString.substring(idx).toLowerCase();
             urltorrent = new File(JF.getUserPath() + "/Torrents/" + getNameFromURL(urlString) + ".torrent");
-            URL url = new URL(urlString);
+            URL url = new URI(urlString).toURL();
             HttpURLConnection uc = (HttpURLConnection)url.openConnection();
             this.setProgress(25);
             uc.connect();
