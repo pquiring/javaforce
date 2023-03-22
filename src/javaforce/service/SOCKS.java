@@ -50,7 +50,8 @@ public class SOCKS extends Thread {
   private static IP4Port bind_cmd = new IP4Port();
   private static boolean secure = false;
   private static ArrayList<String> user_pass_list;
-  private static ArrayList<Subnet4> subnet_list;
+  private static ArrayList<Subnet4> subnet_dest_list;
+  private static ArrayList<Subnet4> subnet_src_list;
   private static ArrayList<ForwardLocal> forward_local_list;
   private static ArrayList<ForwardRemote> forward_remote_list;
 
@@ -181,10 +182,25 @@ public class SOCKS extends Thread {
         forward_remote_workers.add(frw);
       }
       while (active) {
-        Socket s = ss.accept();
-        SocksWorker sess = new SocksWorker(s);
-        addSession(sess);
-        sess.start();
+        try {
+          Socket s = ss.accept();
+          InetSocketAddress sa = (InetSocketAddress)s.getRemoteSocketAddress();
+          String src_ip = sa.getAddress().getHostAddress();
+          if (src_ip.equals("0:0:0:0:0:0:0:1")) {
+            //IP6 localhost
+            src_ip = "127.0.0.1";
+          }
+          if (!ip_src_allowed(src_ip)) {
+            JFLog.log("SOCKS:Source IP blocked:" + src_ip);
+            s.close();
+            continue;
+          }
+          SocksWorker sess = new SocksWorker(s);
+          addSession(sess);
+          sess.start();
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
       }
     } catch (Exception e) {
       JFLog.log(e);
@@ -228,8 +244,10 @@ public class SOCKS extends Thread {
     + "socks.bind=false\n"
     + "#socks.bind.timeout=120000\n"
     + "#auth=user:pass\n"
-    + "#ipnet=192.168.0.0/255.255.255.0\n"
-    + "#ip=192.168.5.6\n"
+    + "#src.ipnet=192.168.2.0/255.255.255.0\n"
+    + "#src.ip=192.168.3.2\n"
+    + "#dest.ipnet=192.168.0.0/255.255.255.0\n"
+    + "#dest.ip=192.168.1.6\n"
     + "#forwardlocal=192.168.100.2:80,192.168.200.2:80\n"
     + "#forwardremote=[user:pass@]192.168.110.2:1080,0.0.0.0,80,192.168.200.2:80[,true]\n"
     + "#forwardremote.timeout=3600000\n";
@@ -237,7 +255,8 @@ public class SOCKS extends Thread {
   private void loadConfig() {
     JFLog.log("loadConfig");
     user_pass_list = new ArrayList<String>();
-    subnet_list = new ArrayList<Subnet4>();
+    subnet_src_list = new ArrayList<Subnet4>();
+    subnet_dest_list = new ArrayList<Subnet4>();
     forward_local_list = new ArrayList<ForwardLocal>();
     forward_remote_list = new ArrayList<ForwardRemote>();
     Section section = Section.None;
@@ -315,7 +334,8 @@ public class SOCKS extends Thread {
               case "auth":
                 user_pass_list.add(value);
                 break;
-              case "ipnet": {
+              case "ipnet":  //old alias
+              case "dest.ipnet": {
                 Subnet4 subnet = new Subnet4();
                 idx = value.indexOf('/');
                 if (idx == -1) {
@@ -332,19 +352,52 @@ public class SOCKS extends Thread {
                   JFLog.log("SOCKS:Invalid netmask:" + mask);
                   break;
                 }
-                JFLog.log("Allow IP Network=" + subnet.toString());
-                subnet_list.add(subnet);
+                JFLog.log("Dest Allow IP Network=" + subnet.toString());
+                subnet_dest_list.add(subnet);
                 break;
               }
-              case "ip": {
+              case "ip":  //old alias
+              case "dest.ip": {
                 Subnet4 subnet = new Subnet4();
                 if (!subnet.setIP(value)) {
                   JFLog.log("SOCKS:Invalid IP:" + value);
                   break;
                 }
                 subnet.setMask("255.255.255.255");
-                JFLog.log("Allow IP Address=" + subnet.toString());
-                subnet_list.add(subnet);
+                JFLog.log("Dest Allow IP Address=" + subnet.toString());
+                subnet_dest_list.add(subnet);
+                break;
+              }
+              case "src.ipnet": {
+                Subnet4 subnet = new Subnet4();
+                idx = value.indexOf('/');
+                if (idx == -1) {
+                  JFLog.log("SOCKS:Invalid IP Subnet:" + value);
+                  break;
+                }
+                String ip = value.substring(0, idx);
+                String mask = value.substring(idx + 1);
+                if (!subnet.setIP(ip)) {
+                  JFLog.log("SOCKS:Invalid IP:" + ip);
+                  break;
+                }
+                if (!subnet.setMask(mask)) {
+                  JFLog.log("SOCKS:Invalid netmask:" + mask);
+                  break;
+                }
+                JFLog.log("Source Allow IP Network=" + subnet.toString());
+                subnet_src_list.add(subnet);
+                break;
+              }
+              case "src.ip": {
+                Subnet4 subnet = new Subnet4();
+                if (!subnet.setIP(value)) {
+                  JFLog.log("SOCKS:Invalid IP:" + value);
+                  break;
+                }
+                subnet.setMask("255.255.255.255");
+                JFLog.log("Source Allow IP Address=" + subnet.toString());
+                subnet_src_list.add(subnet);
                 break;
               }
               case "forward":  //old alias
@@ -424,11 +477,23 @@ public class SOCKS extends Thread {
     }
   }
 
-  private static boolean ip_allowed(String ip4) {
-    if (subnet_list.size() == 0) return true;
+  private static boolean ip_src_allowed(String ip4) {
+    if (subnet_src_list.size() == 0) return true;
     IP4 target = new IP4();
     if (!target.setIP(ip4)) return false;
-    for(Subnet4 net : subnet_list) {
+    for(Subnet4 net : subnet_src_list) {
+      if (net.matches(target)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private static boolean ip_dest_allowed(String ip4) {
+    if (subnet_dest_list.size() == 0) return true;
+    IP4 target = new IP4();
+    if (!target.setIP(ip4)) return false;
+    for(Subnet4 net : subnet_dest_list) {
       if (net.matches(target)) {
         return true;
       }
@@ -565,7 +630,7 @@ public class SOCKS extends Thread {
       } else {
         dest = String.format("%d.%d.%d.%d", req[4] & 0xff, req[5] & 0xff, req[6] & 0xff, req[7] & 0xff);
       }
-      if (!ip_allowed(dest)) throw new Exception("SOCKS:Target IP outside of allowed IP Subnets:" + dest);
+      if (!ip_dest_allowed(dest)) throw new Exception("SOCKS:Target IP outside of allowed IP Subnets:" + dest);
       o = new Socket(dest, port);
       connected = true;
       byte[] reply = new byte[8];
@@ -732,7 +797,7 @@ public class SOCKS extends Thread {
         default:
           throw new Exception("SOCKS5:bad connection request:addr type not supported:" + req[3]);
       }
-      if (!ip_allowed(dest)) throw new Exception("SOCKS:Target IP outside of allowed IP Subnets:" + dest);
+      if (!ip_dest_allowed(dest)) throw new Exception("SOCKS:Target IP outside of allowed IP Subnets:" + dest);
       reply = new byte[reqSize];
       System.arraycopy(req, 0, reply, 0, reqSize);
       reply[1] = 0x00;  //success
