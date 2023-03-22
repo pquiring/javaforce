@@ -1,5 +1,10 @@
 Whats new ???
 
+Mar 22, 2023 : 0.12
+  - new : added src.ipnet, src.ip options to allow only desired clients
+  - change : ipnet, ip are changed to dest.ipnet, dest.ip 
+    - options to specify where clients can connect to
+
 Feb 6, 2023 : 0.11
   - fix : change forward.remote.wait default/min values to resonable values
 
