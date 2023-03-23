@@ -94,6 +94,8 @@ compile : compile projects java files
 jar : build the projects main jar file
 depjars : copy dependant jar files into project folder
 executable : build native launcher
+ - a stub launcher for the platform is copied into the project folder and configured to load classpath and start main method
+ - a project property "apptype" can be set to "c" for console apps or "s" for service apps (default is gui app)
 deb : build Debian deb file (after install)
  - requires bzip2, binutils, sudo
  - linux packaging requires files.lst and linux stub (/stubs/linux)
