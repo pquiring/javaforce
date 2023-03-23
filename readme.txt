@@ -33,7 +33,7 @@ jfDVR - Records IP/RTSP/H264 cameras with motion detection
 
 jfBackup - Enterprise tape backup system
 
-and many more...
+and many more... (see projects/readme.txt for complete list)
 
 Folders
 =======
