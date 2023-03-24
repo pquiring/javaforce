@@ -44,8 +44,8 @@ public class SOCKS extends Thread {
   private static Object lock = new Object();
   private static boolean socks4 = true, socks5 = false;
   private static boolean socks_bind = false;
-  private static int socks_bind_timeout = (2 * 60 * 1000);  //default 2 mins
-  private static int forward_remote_wait = (60 * 60 * 1000);  //default 60 mins
+  private static int socks_bind_timeout = (60 * 60 * 1000);  //default 60 mins
+  private static int forward_remote_timeout = (5 * 60 * 1000);  //default 5 mins (Note: TIME_WAIT is 4 mins)
   private static IP4Port bind = new IP4Port();
   private static IP4Port bind_cmd = new IP4Port();
   private static boolean secure = false;
@@ -323,12 +323,12 @@ public class SOCKS extends Thread {
                 break;
               case "forward.remote.wait":  //old alias
               case "forwardremote.timeout":
-                forward_remote_wait = Integer.valueOf(value);
-                if (forward_remote_wait < 60000) {
-                  forward_remote_wait = 60000;  //1 min
+                forward_remote_timeout = Integer.valueOf(value);
+                if (forward_remote_timeout < 60000) {
+                  forward_remote_timeout = 60000;  //1 min
                 }
-                if (forward_remote_wait > 86400000) {
-                  forward_remote_wait = 86400000;  //1 day
+                if (forward_remote_timeout > 86400000) {
+                  forward_remote_timeout = 86400000;  //1 day
                 }
                 break;
               case "auth":
@@ -963,7 +963,7 @@ public class SOCKS extends Thread {
           if (wait) {
             //abnormal exception - wait to avoid hammering server
             int wait_time = 0;
-            while (active && wait_time < forward_remote_wait) {
+            while (active && wait_time < forward_remote_timeout) {
               JF.sleep(1000);
               wait_time += 1000;
             }
