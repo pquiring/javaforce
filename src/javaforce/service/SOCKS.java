@@ -242,7 +242,7 @@ public class SOCKS extends Thread {
     + "socks4=true\n"
     + "socks5=false\n"
     + "socks.bind=false\n"
-    + "#socks.bind.timeout=120000\n"
+    + "#socks.bind.timeout=3600000\n"
     + "#auth=user:pass\n"
     + "#src.ipnet=192.168.2.0/255.255.255.0\n"
     + "#src.ip=192.168.3.2\n"
@@ -250,7 +250,7 @@ public class SOCKS extends Thread {
     + "#dest.ip=192.168.1.6\n"
     + "#forwardlocal=192.168.100.2:80,192.168.200.2:80\n"
     + "#forwardremote=[user:pass@]192.168.110.2:1080,0.0.0.0,80,192.168.200.2:80[,true]\n"
-    + "#forwardremote.timeout=3600000\n";
+    + "#forwardremote.timeout=300000\n";
 
   private void loadConfig() {
     JFLog.log("loadConfig");
