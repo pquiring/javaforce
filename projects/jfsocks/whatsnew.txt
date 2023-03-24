@@ -1,5 +1,8 @@
 Whats new ???
 
+Mar 24, 2023 : 0.13
+  - change bind and forwardremote default timeouts
+
 Mar 22, 2023 : 0.12
   - new : added src.ipnet, src.ip options to allow only desired clients
   - change : ipnet, ip are changed to dest.ipnet, dest.ip 
