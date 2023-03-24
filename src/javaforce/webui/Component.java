@@ -61,6 +61,11 @@ public abstract class Component {
     setStyle("display", display);
   }
 
+  /** Gets Component's ID.*/
+  public String getID() {
+    return id;
+  }
+
   /** Sets Component's name. */
   public void setName(String name) {
     this.name = name;
