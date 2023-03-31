@@ -7,21 +7,29 @@ package javaforce.utils;
  * Created : Jun 9, 2014
  */
 import java.util.*;
+import java.io.*;
 
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.jni.*;
 import javaforce.media.*;
+import javaforce.webui.*;
+import javaforce.webui.event.*;
 
-public class TestCamera extends javax.swing.JFrame {
+public class TestCamera extends javax.swing.JFrame implements WebUIHandler, MediaIO {
 
   /**
    * Creates new form Test2
    */
   public TestCamera() {
     JFNative.load();
+    if (!MediaCoder.init()) {
+      JFAWT.showError("Error", "FFmpeg init failed");
+      System.exit(1);
+    }
     initComponents();
-    setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
+    pack();
+    new WebUIServer().start(this, 8080, false);
   }
 
   /**
@@ -33,26 +41,35 @@ public class TestCamera extends javax.swing.JFrame {
   // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
   private void initComponents() {
 
-    jButton1 = new javax.swing.JButton();
-    jButton2 = new javax.swing.JButton();
+    start = new javax.swing.JButton();
+    stop = new javax.swing.JButton();
     preview = new javax.swing.JLabel();
+    webview = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("Camera Test");
 
-    jButton1.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-    jButton1.setText("Start");
-    jButton1.addActionListener(new java.awt.event.ActionListener() {
+    start.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+    start.setText("Start");
+    start.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton1ActionPerformed(evt);
+        startActionPerformed(evt);
       }
     });
 
-    jButton2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-    jButton2.setText("Stop");
-    jButton2.addActionListener(new java.awt.event.ActionListener() {
+    stop.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+    stop.setText("Stop");
+    stop.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        jButton2ActionPerformed(evt);
+        stopActionPerformed(evt);
+      }
+    });
+
+    webview.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+    webview.setText("Web Stream");
+    webview.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        webviewActionPerformed(evt);
       }
     });
 
@@ -65,10 +82,11 @@ public class TestCamera extends javax.swing.JFrame {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(preview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(start, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 369, Short.MAX_VALUE)))
+            .addComponent(stop, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 197, Short.MAX_VALUE)
+            .addComponent(webview, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
@@ -76,8 +94,9 @@ public class TestCamera extends javax.swing.JFrame {
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-          .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
-          .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(start, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
+          .addComponent(stop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(webview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(preview, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
         .addContainerGap())
@@ -86,7 +105,7 @@ public class TestCamera extends javax.swing.JFrame {
     pack();
   }// </editor-fold>//GEN-END:initComponents
 
-  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+  private void startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startActionPerformed
     camera = new Camera();
     if (camera == null) {
       JFLog.log("cam == null");
@@ -105,6 +124,9 @@ public class TestCamera extends javax.swing.JFrame {
     for (int a = 0; a < devices.length; a++) {
       JFLog.log("device=" + devices[a]);
     }
+    encoder = new MediaEncoder();
+    encoder.setProfileLevel(MediaCoder.PROFILE_MAIN);
+    encoder.start(this, 640, 480, 10, -1, -1, "dash", true, false);
     camera.start(0, 640, 480);
     width = camera.getWidth();
     height = camera.getHeight();
@@ -118,20 +140,17 @@ public class TestCamera extends javax.swing.JFrame {
             img = new JFImage(width, height);
           }
           System.arraycopy(px, 0, img.getBuffer(), 0, width * height);
-/*          cnt++;
-          if (cnt > 5) {
-            img.savePNG("test" + cnt + ".png");
-          }*/
           preview.setIcon(img);
           preview.repaint();
+          JFLog.log("addFrame:" + frame++);
+          encoder.addVideo(px);
+          encoder.flush();
         }});
       }
-    }, 500, 500);
-  }//GEN-LAST:event_jButton1ActionPerformed
+    }, 100, 100);
+  }//GEN-LAST:event_startActionPerformed
 
-  int cnt = 0;
-
-  private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+  private void stopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopActionPerformed
     if (camera == null) {
       return;
     }
@@ -139,7 +158,11 @@ public class TestCamera extends javax.swing.JFrame {
     timer = null;
     camera.stop();
     camera = null;
-  }//GEN-LAST:event_jButton2ActionPerformed
+  }//GEN-LAST:event_stopActionPerformed
+
+  private void webviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_webviewActionPerformed
+    JFAWT.openURL("http://localhost:8080");
+  }//GEN-LAST:event_webviewActionPerformed
 
   /**
    * @param args the command line arguments
@@ -154,14 +177,87 @@ public class TestCamera extends javax.swing.JFrame {
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
-  private javax.swing.JButton jButton1;
-  private javax.swing.JButton jButton2;
   private javax.swing.JLabel preview;
+  private javax.swing.JButton start;
+  private javax.swing.JButton stop;
+  private javax.swing.JButton webview;
   // End of variables declaration//GEN-END:variables
 
   private Camera camera;
   private Timer timer;
-  private int frame;
+  private int frame = 1;
   private JFImage img;
   private int width, height;
+  private MediaEncoder encoder;
+  private WebUIClient client;
+  private Video video;
+  private byte[] init_segment;
+//  private boolean sent_manifest;
+
+  public void clientConnected(WebUIClient client) {
+    JFLog.log("clientConnected:" + client);
+    this.client = client;
+  }
+
+  public void clientDisconnected(WebUIClient client) {
+    JFLog.log("clientDisconnected:" + client);
+    this.client = null;
+    //System.exit(0);
+  }
+
+  public byte[] getResource(String url) {
+    //TODO : return static images, etc needed by webpage
+    return null;
+  }
+
+  public Panel getRootPanel(WebUIClient client) {
+    Panel panel = new Panel();
+
+    video = new Video();
+    video.setWidth(256);
+    video.setHeight(256);
+    panel.add(video);
+
+    Button b = new Button("Start");
+    panel.add(b);
+    Label msg = new Label("");
+    panel.add(msg);
+    b.addClickListener(new Click() {
+      public void onClick(MouseEvent me, Component c) {
+        if (encoder == null) {
+          msg.setText("not ready to play");
+        } else {
+          video.sendEvent("media_init", new String[] {"codecs=" + encoder.getCodecMimeType("dash", true, false)});
+        }
+      }
+    });
+
+    return panel;
+  }
+
+  public int read(MediaCoder coder, byte[] data) {
+    JFLog.log("read:" + data.length);
+    return -1;
+  }
+
+  public int write(MediaCoder coder, byte[] data) {
+    JFLog.log("write:" + data.length);
+    if (data.length <= 24) return data.length;  //ignore strange header packet
+    if (init_segment == null) {
+      init_segment = new byte[data.length];
+      System.arraycopy(data, 0, init_segment, 0, data.length);
+    }
+    //send fragments
+    if (client != null) {
+      JFLog.log("send frame:" + data.length);
+      client.sendData(data, 0, data.length);
+      client.sendEvent(video.getID(), "media_add_buffer", null);
+    }
+    return data.length;
+  }
+
+  public long seek(MediaCoder coder, long pos, int type) {
+    JFLog.log("seek:" + pos + "," + type);
+    return pos;
+  }
 }

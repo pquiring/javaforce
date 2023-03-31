@@ -176,9 +176,9 @@ public class TestMedia implements MediaIO {
     }
   }
 
-  public long seek(MediaCoder coder, long pos, int how) {
+  public long seek(MediaCoder coder, long pos, int type) {
     try {
-      switch (how) {
+      switch (type) {
         case MediaCoder.SEEK_SET:
           break;
         case MediaCoder.SEEK_CUR:
@@ -194,5 +194,9 @@ public class TestMedia implements MediaIO {
       e.printStackTrace();
     }
     return 0;
+  }
+
+  public void open(MediaCoder coder, int type) {
+
   }
 }
