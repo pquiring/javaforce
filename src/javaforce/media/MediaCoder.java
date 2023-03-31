@@ -84,10 +84,15 @@ public class MediaCoder {
     return cnt == 8;
   }
 
-  //constants
+  //seek types
   public static final int SEEK_SET = 0;
   public static final int SEEK_CUR = 1;
   public static final int SEEK_END = 2;
+
+  //profile levels
+  public static final int PROFILE_BASELINE = 1;  //default
+  public static final int PROFILE_MAIN = 2;
+  public static final int PROFILE_PRO = 3;
 
   //video codecs (VideoDecoder)
   public static final int AV_CODEC_ID_NONE = 0;
