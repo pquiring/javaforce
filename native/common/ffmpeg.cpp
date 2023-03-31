@@ -1774,10 +1774,6 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
 
   if (ctx->is_dash) {
     (*_av_dict_set)(&ctx->fmt_ctx->metadata, "movflags", "+dash+delay_moov+skip_sidx+skip_trailer", AV_DICT_APPEND);
-//    printf("fmt_ctx->url = %s\n", ctx->fmt_ctx->url);
-//    char* url = (char*)(*_av_mallocz)(1024);
-//    strcpy(url, "dash.mpd");
-//    ctx->fmt_ctx->url = url;
   }
 
   int ret = (*_avformat_write_header)(ctx->fmt_ctx, NULL);
