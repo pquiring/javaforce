@@ -101,9 +101,24 @@ public class VSS {
     JFLog.log("VSS:deleteShadow:" + volume);
     ShellProcess sh = new ShellProcess();
     sh.keepOutput(true);
-    String out = sh.run(new String[] {"vssadmin", "delete", "shadows", "/For=" + volume, "/Quiet"}, false);
-    //no output
-    return sh.getErrorLevel() == 0;
+    String out = sh.run(new String[] {"vssadmin", "delete", "shadows", "/For=" + volume}, false);
+    boolean res = sh.getErrorLevel() == 0;
+    if (!res) {
+      JFLog.log(out);
+    }
+    return res;
+  }
+
+  public static boolean deleteShadowAll() {
+    JFLog.log("VSS:deleteShadowAll");
+    ShellProcess sh = new ShellProcess();
+    sh.keepOutput(true);
+    String out = sh.run(new String[] {"vssadmin", "delete", "shadows", "/All"}, false);
+    boolean res = sh.getErrorLevel() == 0;
+    if (!res) {
+      JFLog.log(out);
+    }
+    return res;
   }
 
   public static boolean mountShadow(String mountPath, String shadowPath) {
@@ -129,7 +144,7 @@ public class VSS {
     System.out.println(" createshadow {drive} : create shadow");
     System.out.println(" mountshadow {path} {shadow} : mount shadow");
     System.out.println(" unmountshadow {path} : unmount shadow");
-    System.out.println(" deleteshadow {shadow} : delete shadow");
+    System.out.println(" deleteshadow {shadow} : delete shadow (/all for all shadows)");
     System.exit(1);
   }
 
@@ -189,10 +204,18 @@ public class VSS {
 
   public static void deleteshadow(String[] args) {
     if (args.length != 2) usage();
-    if (deleteShadow(args[1])) {
-      System.out.println("Shadow deletion successful!");
+    if (args[1].equals("/all")) {
+      if (deleteShadowAll()) {
+        System.out.println("Shadow deletion(s) successful!");
+      } else {
+        System.out.println("Shadow deletion(s) failed!");
+      }
     } else {
-      System.out.println("Shadow deletion failed!");
+      if (deleteShadow(args[1])) {
+        System.out.println("Shadow deletion successful!");
+      } else {
+        System.out.println("Shadow deletion failed!");
+      }
     }
   }
 }
