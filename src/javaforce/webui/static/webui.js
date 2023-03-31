@@ -9,21 +9,6 @@ var root;
 
 var delay = 500;
 
-var audioCtx = new AudioContext();
-var audioOscillator;
-var audioOscillatorFreq;
-
-function alarm() {
-  if (audioOscillator === null) return;
-  if (audioOscillatorFreq === 440) {
-    audioOscillatorFreq = 660;
-  } else {
-    audioOscillatorFreq = 440;
-  }
-  audioOscillator.frequency.value = audioOscillatorFreq;
-  setTimeout(alarm, 1000);
-}
-
 function getWidth(element) {
   var str = element.style.width;
   if (str === null || str.length === 0 || str.endsWith("%")) {
@@ -231,19 +216,6 @@ function wsevent(event) {
     case "onresize":
       element.onresize();
       break;
-    case "audio-alarm-start":
-      audioOscillator = audioCtx.createOscillator();
-      audioOscillator.type = 'square';
-      audioOscillatorFreq = 440;
-      audioOscillator.frequency.value = audioOscillatorFreq;
-      audioOscillator.connect(audioCtx.destination);
-      audioOscillator.start();
-      setTimeout(alarm, 1000);
-      break;
-    case "audio-alarm-stop":
-      audioOscillator.stop();
-      audioOscillator = null;
-      break;
     case "enabledrag":
       enableDrag(msg.id, msg.type, msg.x1, msg.y1, msg.x2, msg.y2);
       break;
@@ -251,6 +223,15 @@ function wsevent(event) {
       var ctx = element.getContext('2d');
       ctx.strokeStyle = msg.clr;
       ctx.strokeRect(msg.x, msg.y, msg.w, msg.h);
+      break;
+    case "media_init":
+      media_init(element, msg.codecs);
+      break;
+    case "media_uninit":
+      media_uninit(element);
+      break;
+    case "media_add_buffer":
+      media_add_buffer(element);
       break;
   }
 };

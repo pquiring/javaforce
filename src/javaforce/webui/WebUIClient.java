@@ -139,9 +139,16 @@ public class WebUIClient {
   public void sendData(byte data[]) {
     socket.write(data, WebSocket.TYPE_BINARY);
   }
+  public void sendData(byte data[], int pos, int length) {
+    socket.write(Arrays.copyOfRange(data, pos,pos + length), WebSocket.TYPE_BINARY);
+  }
   private int tid = 1;
   public synchronized void sendEvent(String id, String event, String args[]) {
     if (!isReady) return;
+    if (id == null) {
+      JFLog.log("WebUIClient:Error:sendEvent():id==null");
+      return;
+    }
     StringBuilder sb = new StringBuilder();
     StringBuilder log = new StringBuilder();
     String str;
@@ -173,6 +180,7 @@ public class WebUIClient {
         str = ",\"" + key + "\":" + stringify(value);
         sb.append(str);
         if (key.equals("html")) {
+          //omit lengthy html code from log
           log.append(",\"" + key + "\":\"...\"");
         } else {
           log.append(str);
