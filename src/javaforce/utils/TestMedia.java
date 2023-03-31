@@ -195,8 +195,4 @@ public class TestMedia implements MediaIO {
     }
     return 0;
   }
-
-  public void open(MediaCoder coder, int type) {
-
-  }
 }
