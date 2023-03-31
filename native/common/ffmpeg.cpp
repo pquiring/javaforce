@@ -6,6 +6,7 @@
 #include <libavutil/channel_layout.h>
 #include <libavutil/mathematics.h>
 #include <libavutil/timestamp.h>
+#include <libavutil/opt.h>
 #include <libswscale/swscale.h>
 
 #include <chrono>
@@ -18,6 +19,9 @@
 
 static jboolean libav_org = JNI_FALSE;
 static jboolean loaded = JNI_FALSE;
+
+static jboolean ff_debug = JNI_FALSE;
+static jboolean ff_debug_buffer = JNI_FALSE;
 
 JF_LIB_HANDLE codec = NULL;
 JF_LIB_HANDLE device = NULL;
@@ -35,10 +39,7 @@ static void copyWarning() {
 }
 
 //avcodec functions
-void (*_avcodec_register_all)();
 AVCodec* (*_avcodec_find_decoder)(int codec_id);
-int (*_avcodec_decode_video2)(AVCodecContext *avctx,AVFrame *picture,int* got_picture_ptr,AVPacket *avpkt);  //[DEPRECATED]
-int (*_avcodec_decode_audio4)(AVCodecContext *avctx,AVFrame *frame,int* got_frame_ptr,AVPacket *avpkt);  //[DEPRECATED]
 int (*_avcodec_open2)(AVCodecContext *avctx,AVCodec *codec,void* options);
 AVCodecContext* (*_avcodec_alloc_context3)(AVCodec *codec);
 void (*_av_init_packet)(AVPacket *pkt);
@@ -48,8 +49,6 @@ void (*_av_packet_free_side_data)(AVPacket *pkt);
 AVCodec* (*_avcodec_find_encoder)(int codec_id);
 //int (*_avpicture_alloc)(AVPicture *pic, int pix_fmt, int width, int height);
 //int (*_avpicture_free)(AVPicture *pic);
-int (*_avcodec_encode_video2)(AVCodecContext *cc, AVPacket *pkt, AVFrame *frame, int* intref);  //[DEPRECATED]
-int (*_avcodec_encode_audio2)(AVCodecContext *cc, AVPacket *pkt, AVFrame *frame, int* intref);  //[DEPRECATED]
 int (*_avcodec_fill_audio_frame)(AVFrame *frame, int nb_channels, int fmt, void* buf, int bufsize, int align);
 int (*_avcodec_close)(AVCodecContext *cc);
 const char* (*_avcodec_get_name)(AVCodecID id);
@@ -65,14 +64,10 @@ int (*_avcodec_send_packet)(AVCodecContext *ctx, const AVPacket *pkt);
 int (*_avcodec_receive_frame)(AVCodecContext *ctx, const AVFrame *frame);
 
 //avdevice functions
-void (*_avdevice_register_all)();
 
 //avfilter functions
-void (*_avfilter_register_all)();
 
 //avformat functions
-void (*_av_register_all)();
-void (*_av_register_output_format)(AVOutputFormat *oformat);
 AVOutputFormat* (*_av_guess_format)(const char* shortName, const char* fileName, const char* mimeType);
 int (*_av_find_best_stream)(AVFormatContext *ic,int type,int wanted_stream_nb,int related_stream
   ,void** decoder_ret, int flags);
@@ -85,7 +80,6 @@ int (*_avformat_open_input)(void** ps,const char* filename,void* fmt,void* optio
 int (*_avformat_find_stream_info)(AVFormatContext *ic,void** options);
 int (*_av_read_frame)(AVFormatContext *s,AVPacket *pkt);
 void* (*_av_find_input_format)(const char* name);
-void* (*_av_iformat_next)(void* ptr);
 int (*_avformat_seek_file)(AVFormatContext *ctx, int stream_idx, int64_t min_ts, int64_t ts, int64_t max_ts, int flags);
 int (*_av_seek_frame)(AVFormatContext *ctx, int stream_idx, int64_t ts, int flags);
 //encoding
@@ -167,28 +161,6 @@ static AVOutputFormat *AVOutputFormat_New() {
 
 static AVOutputFormat *vpx = NULL;
 
-static void register_vpx() {
-  vpx = (*_av_guess_format)("vpx", NULL, NULL);
-  if (vpx != NULL) {
-    return;
-  }
-  //basically just clone h264
-  AVOutputFormat *h264 = (*_av_guess_format)("h264", NULL, NULL);
-  if (h264 == NULL) {
-    printf("FFMPEG:Unable to register vpx codec\n");
-    return;
-  }
-  vpx = AVOutputFormat_New();
-  vpx->name = "vpx";
-  vpx->long_name = "raw vpx";
-  vpx->extensions = "vpx";
-  vpx->audio_codec = AV_CODEC_ID_NONE;
-  vpx->video_codec = AV_CODEC_ID_VP8;
-  vpx->write_packet = h264->write_packet;
-  vpx->flags = h264->flags;
-  (*_av_register_output_format)(vpx);
-}
-
 //av_free_packet is deprecated : easy to implement
 static void _av_free_packet(AVPacket *pkt) {
   if (pkt) {
@@ -231,6 +203,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   , const char* utilFile, const char* scaleFile, const char* postFile, const char* resampleFile)
 {
   //load libraries (order is important)
+  printf("ffmpeg init...\n");
 
   util = loadLibrary(utilFile);
   if (util == NULL) {
@@ -281,10 +254,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   }
 
   //get functions
-  getFunction(codec, (void**)&_avcodec_register_all, "avcodec_register_all");
   getFunction(codec, (void**)&_avcodec_find_decoder, "avcodec_find_decoder");
-  getFunction(codec, (void**)&_avcodec_decode_video2, "avcodec_decode_video2");
-  getFunction(codec, (void**)&_avcodec_decode_audio4, "avcodec_decode_audio4");
   getFunction(codec, (void**)&_avcodec_open2, "avcodec_open2");
   getFunction(codec, (void**)&_avcodec_alloc_context3, "avcodec_alloc_context3");
   getFunction(codec, (void**)&_av_init_packet, "av_init_packet");
@@ -293,8 +263,6 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(codec, (void**)&_avcodec_find_encoder, "avcodec_find_encoder");
 //  getFunction(codec, (void**)&_avpicture_alloc, "avpicture_alloc");
 //  getFunction(codec, (void**)&_avpicture_free, "avpicture_free");
-  getFunction(codec, (void**)&_avcodec_encode_video2, "avcodec_encode_video2");
-  getFunction(codec, (void**)&_avcodec_encode_audio2, "avcodec_encode_audio2");
   getFunction(codec, (void**)&_avcodec_fill_audio_frame, "avcodec_fill_audio_frame");
   getFunction(codec, (void**)&_avcodec_close, "avcodec_close");
   if (!libav_org) {
@@ -309,12 +277,6 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(codec, (void**)&_avcodec_send_packet, "avcodec_send_packet");
   getFunction(codec, (void**)&_avcodec_receive_frame, "avcodec_receive_frame");
 
-  getFunction(device, (void**)&_avdevice_register_all, "avdevice_register_all");
-
-  getFunction(ffilter, (void**)&_avfilter_register_all, "avfilter_register_all");
-
-  getFunction(format, (void**)&_av_register_all, "av_register_all");
-  getFunction(format, (void**)&_av_register_output_format, "av_register_output_format");
   getFunction(format, (void**)&_av_guess_format, "av_guess_format");
   getFunction(format, (void**)&_av_find_best_stream, "av_find_best_stream");
   getFunction(format, (void**)&_avio_alloc_context, "avio_alloc_context");
@@ -325,7 +287,6 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(format, (void**)&_avformat_find_stream_info, "avformat_find_stream_info");
   getFunction(format, (void**)&_av_read_frame, "av_read_frame");
   getFunction(format, (void**)&_av_find_input_format, "av_find_input_format");
-  getFunction(format, (void**)&_av_iformat_next, "av_iformat_next");
   getFunction(format, (void**)&_avformat_seek_file, "avformat_seek_file");
   getFunction(format, (void**)&_av_seek_frame, "av_seek_frame");
   getFunction(format, (void**)&_avformat_new_stream, "avformat_new_stream");
@@ -387,13 +348,6 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
     getFunction(resample, (void**)&_avresample_convert, "avresample_convert");
   }
 
-  //register_all
-  (*_avcodec_register_all)();
-  (*_avdevice_register_all)();
-  (*_avfilter_register_all)();
-  (*_av_register_all)();
-  register_vpx();
-
   //print version info
   union {
     int v32;
@@ -408,6 +362,11 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   printf("avcodec_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
   version.v32 = (*_avformat_version)();
   printf("avformat_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
+
+  //enable debugging
+  if (ff_debug) {
+    (*_av_log_set_level)(AV_LOG_TRACE);
+  }
 
   return JNI_TRUE;
 }
@@ -470,7 +429,9 @@ struct FFContext {
 
   //MediaIO (these can be cached since the MediaIO object should not be GCed)
   jclass cls_mio;
-  jmethodID mid_ff_read, mid_ff_write, mid_ff_seek;
+  jmethodID mid_ff_read;
+  jmethodID mid_ff_write;
+  jmethodID mid_ff_seek;
 
   //decoder fields
   jobject mio;
@@ -545,8 +506,10 @@ struct FFContext {
 
   uint8_t* audio_src_data[4];
 
+  jboolean is_dash;
+
   /** Set to make fps = fps * 1000 / 1001. */
-  jboolean fps_1000_1001;
+  jboolean config_fps_1000_1001;
 
   /** Number of frames per group of pictures (GOP).
    * Determines how often key frame is generated.
@@ -564,9 +527,10 @@ struct FFContext {
    */
   int config_audio_bit_rate;
 
-  jboolean dash;
+  int config_compressionLevel;
 
-  int compressionLevel;
+  /** ProfileLevel (1=baseline 2=main 3=high) */
+  int config_profileLevel;
 
   void GetMediaIO() {
     cls_mio = e->GetObjectClass(mio);
@@ -633,6 +597,24 @@ static int write_packet(FFContext *ctx, void*buf, int size) {
   int write = ctx->e->CallIntMethod(ctx->mio, ctx->mid_ff_write, ctx->c, ba);  //obj, methodID, args[]
   if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
   ctx->e->DeleteLocalRef(ba);
+  if (ctx->is_dash && ff_debug_buffer) {
+    char* chbuf = (char*)buf;
+    int len = size;
+    if (len > 1024) len = 1024;
+    printf("buf = [");
+    for(int a=0;a<len;a++) {
+      char ch = chbuf[a];
+      if (ch < 32 || ch > 127) {
+        printf("{%02x}", ch & 0xff);
+      } else {
+        printf("%c", ch);
+      }
+    }
+    if (size > 1024) {
+      printf("{...}");
+    }
+    printf("]\n");
+  }
   return write;
 }
 
@@ -671,7 +653,7 @@ static int decoder_open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, 
     }
     ctx->codec_ctx = (*_avcodec_alloc_context3)(codec);
     (*_avcodec_parameters_to_context)(ctx->codec_ctx, stream->codecpar);
-//    ctx->codec_ctx->flags |= CODEC_FLAG_LOW_DELAY;
+//    ctx->codec_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
     if ((ret = (*_avcodec_open2)(ctx->codec_ctx, codec, NULL)) < 0) {
       return ret;
     }
@@ -789,6 +771,8 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_start
 
   ctx->ff_buffer = (*_av_mallocz)(ffiobufsiz);
   ctx->io_ctx = (*_avio_alloc_context)(ctx->ff_buffer, ffiobufsiz, 0, (void*)ctx, (void*)&read_packet, (void*)&write_packet, seekable ? (void*)&seek_packet : NULL);
+  if (ctx->io_ctx == NULL) return JNI_FALSE;
+//  ctx->io_ctx->direct = 1;
   ctx->fmt_ctx = (*_avformat_alloc_context)();
   ctx->fmt_ctx->pb = ctx->io_ctx;
   int res;
@@ -1391,7 +1375,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_getFrameRate
 //encoder codebase
 
 static jboolean encoder_add_stream(FFContext *ctx, int codec_id) {
-//  printf("add_stream(codec_id=0x%x)\r\n", codec_id);
+  printf("encoder_add_stream\n");
   AVCodecContext *codec_ctx;
   AVStream *stream;
   AVCodec *codec;
@@ -1405,75 +1389,11 @@ static jboolean encoder_add_stream(FFContext *ctx, int codec_id) {
 
   switch (codec->type) {
     case AVMEDIA_TYPE_AUDIO:
-      if (codec->sample_fmts != NULL) {
-        bool have_fmt = false;
-        for(int idx=0;;idx++) {
-          AVSampleFormat fmt = codec->sample_fmts[idx];
-          if (fmt == -1) {
-            if (!have_fmt) {
-              codec_ctx->sample_fmt = codec->sample_fmts[0];
-            }
-            break;
-          }
-          printf("audio:available sample format:%d\n", fmt);
-          if (fmt == AV_SAMPLE_FMT_S16) {
-            //preferred format
-            have_fmt = true;
-            codec_ctx->sample_fmt = fmt;
-            break;
-          }
-          if (fmt == AV_SAMPLE_FMT_S16P && !have_fmt) {
-            //second preferred format
-            have_fmt = true;
-            codec_ctx->sample_fmt = fmt;
-            break;
-          }
-        };
-      } else {
-        codec_ctx->sample_fmt = AV_SAMPLE_FMT_S16;
-      }
-
-      codec_ctx->bit_rate = ctx->config_audio_bit_rate;
-      codec_ctx->sample_rate = ctx->freq;
-      codec_ctx->channels = ctx->chs;
-      switch (ctx->chs) {
-        case 1: codec_ctx->channel_layout = AV_CH_LAYOUT_MONO; break;
-        case 2: codec_ctx->channel_layout = AV_CH_LAYOUT_STEREO; break;
-        case 4: codec_ctx->channel_layout = AV_CH_LAYOUT_QUAD; break;
-      }
-      codec_ctx->time_base.num = 1;
-      codec_ctx->time_base.den = ctx->freq;
-      stream->time_base.num = 1;
-      stream->time_base.den = ctx->freq;
-
       ctx->audio_stream = stream;
       ctx->audio_codec = codec;
       ctx->audio_codec_ctx = codec_ctx;
       break;
     case AVMEDIA_TYPE_VIDEO:
-      codec_ctx->bit_rate = ctx->config_video_bit_rate;
-      codec_ctx->width = ctx->width;
-      codec_ctx->height = ctx->height;
-      if (ctx->fps_1000_1001) {
-        codec_ctx->time_base.num = 1000;
-        codec_ctx->time_base.den = ctx->fps * 1001;
-        stream->time_base.num = 1000;
-        stream->time_base.den = ctx->fps * 1001;
-        codec_ctx->framerate.num = 1000;
-        codec_ctx->framerate.num = ctx->fps * 10010;
-      } else {
-        codec_ctx->time_base.num = 1;
-        codec_ctx->time_base.den = ctx->fps;
-        stream->time_base.num = 1;
-        stream->time_base.den = ctx->fps;
-        codec_ctx->framerate.num = 1;
-        codec_ctx->framerate.num = ctx->fps;
-      }
-      codec_ctx->gop_size = ctx->config_gop_size;
-//      codec_ctx->keyint_min = ctx->config_gop_size;
-      codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
-//      codec_ctx->max_b_frames = 12;
-
       ctx->video_stream = stream;
       ctx->video_codec = codec;
       ctx->video_codec_ctx = codec_ctx;
@@ -1483,10 +1403,12 @@ static jboolean encoder_add_stream(FFContext *ctx, int codec_id) {
     case AVMEDIA_TYPE_SUBTITLE:
     case AVMEDIA_TYPE_ATTACHMENT:
     case AVMEDIA_TYPE_NB:
+    default:
+      printf("Unknown/Unsupported stream:%d\n", codec->type);
       break;
   }
 
-  if ((ctx->out_fmt->flags & AVFMT_GLOBALHEADER) != 0) {
+  if (((ctx->out_fmt->flags & AVFMT_GLOBALHEADER) != 0) && (!ctx->is_dash)) {
     codec_ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
   }
 
@@ -1501,18 +1423,51 @@ static int get_size_alignment(int width, int height) {
 }
 
 static jboolean encoder_init_video(FFContext *ctx) {
-  printf("encoder_init_video(id=0x%x)\r\n", ctx->video_codec->id);
+  printf("encoder_init_video:codec_ctx=%p:codec=%p:stream=%p\n", ctx->video_codec_ctx, ctx->video_codec, ctx->video_stream);
+
+  ctx->video_codec_ctx->bit_rate = ctx->config_video_bit_rate;
+  ctx->video_codec_ctx->width = ctx->width;
+  ctx->video_codec_ctx->height = ctx->height;
+  if (ctx->config_fps_1000_1001) {
+    ctx->video_codec_ctx->time_base.num = 1000;
+    ctx->video_codec_ctx->time_base.den = ctx->fps * 1001;
+    ctx->video_stream->time_base.num = 1000;
+    ctx->video_stream->time_base.den = ctx->fps * 1001;
+    ctx->video_codec_ctx->framerate.num = 1000;
+    ctx->video_codec_ctx->framerate.num = ctx->fps * 10010;
+  } else {
+    ctx->video_codec_ctx->time_base.num = 1;
+    ctx->video_codec_ctx->time_base.den = ctx->fps;
+    ctx->video_stream->time_base.num = 1;
+    ctx->video_stream->time_base.den = ctx->fps;
+    ctx->video_codec_ctx->framerate.num = 1;
+    ctx->video_codec_ctx->framerate.num = ctx->fps;
+  }
+  ctx->video_codec_ctx->gop_size = ctx->config_gop_size;
+//  ctx->video_codec_ctx->keyint_min = ctx->config_gop_size;
+  ctx->video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+//  ctx->video_codec_ctx->max_b_frames = 12;
+
   //set video codec options
   switch (ctx->video_codec_ctx->codec_id) {
     case AV_CODEC_ID_MPEG4: {
+      printf("codec=MPEG4\n");
       break;
     }
     case AV_CODEC_ID_H264: {
-      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "baseline", 0);
-      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "slow", 0);
+      printf("codec=H264\n");
+      //see https://trac.ffmpeg.org/wiki/Encode/H.264
+      switch (ctx->config_profileLevel) {
+        case 1: (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "baseline", 0); break;
+        case 2: (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "main", 0); break;
+        case 3: (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "profile", "high", 0); break;
+      }
+//      (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "fast", 0);  //TODO
       break;
     }
     case AV_CODEC_ID_VP9: {
+      printf("codec=VP9\n");
+      //see https://trac.ffmpeg.org/wiki/Encode/VP9
       (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "preset", "veryfast", 0);
       (*_av_opt_set)(ctx->video_codec_ctx->priv_data, "deadline", "realtime", 0);
       (*_av_opt_set_int)(ctx->video_codec_ctx->priv_data, "cpu-used", 8, 0);
@@ -1529,9 +1484,11 @@ static jboolean encoder_init_video(FFContext *ctx) {
   }
   ctx->video_codec_ctx->qmin = 2;
   ctx->video_codec_ctx->qmax = 40;
-  if (ctx->compressionLevel != -1) {
-    ctx->video_codec_ctx->compression_level = ctx->compressionLevel;
+//  ctx->video_codec_ctx->delay = 1;
+  if (ctx->config_compressionLevel != -1) {
+    ctx->video_codec_ctx->compression_level = ctx->config_compressionLevel;
   }
+//  ctx->video_codec_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
 
   //open video codec
   int ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
@@ -1579,7 +1536,49 @@ static jboolean encoder_init_video(FFContext *ctx) {
 }
 
 static jboolean encoder_init_audio(FFContext *ctx) {
-  printf("encoder_init_audio(id=0x%x)\r\n", ctx->audio_codec->id);
+  printf("encoder_init_audio:codec_ctx=%p:codec=%p:stream=%p\n", ctx->audio_codec_ctx, ctx->audio_codec, ctx->audio_stream);
+
+  if (ctx->audio_codec->sample_fmts != NULL) {
+    bool have_fmt = false;
+    for(int idx=0;;idx++) {
+      AVSampleFormat fmt = ctx->audio_codec->sample_fmts[idx];
+      if (fmt == -1) {
+        if (!have_fmt) {
+          ctx->audio_codec_ctx->sample_fmt = ctx->audio_codec->sample_fmts[0];
+        }
+        break;
+      }
+      printf("audio:available sample format:%d\n", fmt);
+      if (fmt == AV_SAMPLE_FMT_S16) {
+        //preferred format
+        have_fmt = true;
+        ctx->audio_codec_ctx->sample_fmt = fmt;
+        break;
+      }
+      if (fmt == AV_SAMPLE_FMT_S16P && !have_fmt) {
+        //second preferred format
+        have_fmt = true;
+        ctx->audio_codec_ctx->sample_fmt = fmt;
+        break;
+      }
+    };
+  } else {
+    ctx->audio_codec_ctx->sample_fmt = AV_SAMPLE_FMT_S16;
+  }
+
+  ctx->audio_codec_ctx->bit_rate = ctx->config_audio_bit_rate;
+  ctx->audio_codec_ctx->sample_rate = ctx->freq;
+  ctx->audio_codec_ctx->channels = ctx->chs;
+  switch (ctx->chs) {
+    case 1: ctx->audio_codec_ctx->channel_layout = AV_CH_LAYOUT_MONO; break;
+    case 2: ctx->audio_codec_ctx->channel_layout = AV_CH_LAYOUT_STEREO; break;
+    case 4: ctx->audio_codec_ctx->channel_layout = AV_CH_LAYOUT_QUAD; break;
+  }
+  ctx->audio_codec_ctx->time_base.num = 1;
+  ctx->audio_codec_ctx->time_base.den = ctx->freq;
+  ctx->audio_stream->time_base.num = 1;
+  ctx->audio_stream->time_base.den = ctx->freq;
+	
   //set audio codec options
   switch (ctx->audio_codec_ctx->codec_id) {
     case AV_CODEC_ID_MP3: {
@@ -1605,8 +1604,8 @@ static jboolean encoder_init_audio(FFContext *ctx) {
       break;
     }
   }
-  if (ctx->compressionLevel != -1) {
-    ctx->video_codec_ctx->compression_level = ctx->compressionLevel;
+  if (ctx->config_compressionLevel != -1) {
+    ctx->video_codec_ctx->compression_level = ctx->config_compressionLevel;
   }
 
   //open audio codec
@@ -1697,16 +1696,59 @@ static AVFormatContext *_avformat_alloc_output_context2(const char *codec) {
   return fmt_ctx;
 }
 
+#define OPEN_MANIFEST 0
+#define OPEN_STREAM 1
+
+static int io_open(struct AVFormatContext *fmt_ctx, AVIOContext **pb, const char *url, int flags, AVDictionary **options) {
+  FFContext *ctx = (FFContext*)fmt_ctx->opaque;
+  void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
+  AVIOContext *io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 1, (void*)ctx, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
+  *pb = io_ctx;
+  printf("ffmpeg:io_open:ctx=%p:pb=%p:url=%s\n", fmt_ctx, *pb, url);
+  return 0;
+}
+
+static void io_close(struct AVFormatContext *fmt_ctx, AVIOContext *pb) {
+  FFContext *ctx = (FFContext*)fmt_ctx->opaque;
+
+  (*_avio_flush)(pb);
+  (*_av_free)(pb->buffer);
+
+  printf("ffmpeg:io_close:ctx=%p:pb=%p\n", fmt_ctx, pb);
+}
+
+static jboolean single_file = JNI_FALSE;  //not working
+
 static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVideo, jboolean doAudio, void*read, void*write, void*seek) {
   ctx->fmt_ctx = _avformat_alloc_output_context2(codec);
   if (ctx->fmt_ctx == NULL) {
     printf("Error:Unable to find codec:%s\n", codec);
     return JNI_FALSE;
   }
-  ctx->ff_buffer = (*_av_mallocz)(ffiobufsiz);
-  ctx->io_ctx = (*_avio_alloc_context)(ctx->ff_buffer, ffiobufsiz, 1, (void*)ctx, read, write, seek);
-  if (ctx->io_ctx == NULL) return JNI_FALSE;
-  ctx->fmt_ctx->pb = ctx->io_ctx;
+  printf("encoder_start:fmt_ctx=%p:out_fmt=%p\n", ctx->fmt_ctx, ctx->fmt_ctx->oformat);
+  if (strcmp(codec, "dash") == 0) {
+    ctx->is_dash = 1;
+  }
+  if (ctx->is_dash) {
+    if (single_file) {
+      (*_av_opt_set_int)(ctx->fmt_ctx->priv_data, "single_file", 1, 0);
+      (*_av_opt_set)(ctx->fmt_ctx->priv_data, "single_file_name", "dash.mp4", 0);
+    }
+    (*_av_opt_set_int)(ctx->fmt_ctx->priv_data, "streaming", 1, 0);
+    (*_av_opt_set)(ctx->fmt_ctx->priv_data, "dash_segment_type", "mp4", 0);
+
+//    (*_av_opt_set_int)(ctx->fmt_ctx->priv_data, "ldash", 1, 0);  //enable low latency dash
+  } else {
+    ctx->ff_buffer = (*_av_mallocz)(ffiobufsiz);
+    ctx->io_ctx = (*_avio_alloc_context)(ctx->ff_buffer, ffiobufsiz, 1, (void*)ctx, read, write, seek);
+    if (ctx->io_ctx == NULL) return JNI_FALSE;
+  //  ctx->io_ctx->direct = 1;
+    printf("io_ctx=%p\n", ctx->io_ctx);
+    ctx->fmt_ctx->pb = ctx->io_ctx;
+  }
+  ctx->fmt_ctx->io_open = &io_open;
+  ctx->fmt_ctx->io_close = &io_close;
+  ctx->fmt_ctx->opaque = ctx;
   ctx->out_fmt = (AVOutputFormat*)ctx->fmt_ctx->oformat;
   if ((ctx->out_fmt->video_codec != AV_CODEC_ID_NONE) && doVideo) {
     if (!encoder_add_stream(ctx, ctx->out_fmt->video_codec)) {
@@ -1732,9 +1774,15 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
       return JNI_FALSE;
     }
   }
-  if (ctx->dash) {
-    (*_av_dict_set)(&ctx->fmt_ctx->metadata, "movflags", "faststart", 0);
+
+  if (ctx->is_dash) {
+    (*_av_dict_set)(&ctx->fmt_ctx->metadata, "movflags", "+dash+delay_moov+skip_sidx+skip_trailer", AV_DICT_APPEND);
+//    printf("fmt_ctx->url = %s\n", ctx->fmt_ctx->url);
+//    char* url = (char*)(*_av_mallocz)(1024);
+//    strcpy(url, "dash.mpd");
+//    ctx->fmt_ctx->url = url;
   }
+
   int ret = (*_avformat_write_header)(ctx->fmt_ctx, NULL);
   if (ret < 0) {
     printf("avformat_write_header failed! %d\n", ret);
@@ -1782,18 +1830,18 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
 
   jclass cls_encoder = e->FindClass("javaforce/media/MediaEncoder");
   jfieldID fid_fps_1000_1001 = e->GetFieldID(cls_encoder, "fps_1000_1001", "Z");
-  jfieldID fid_dash = e->GetFieldID(cls_encoder, "dash", "Z");
   jfieldID fid_framesPerKeyFrame = e->GetFieldID(cls_encoder, "framesPerKeyFrame", "I");
   jfieldID fid_videoBitRate = e->GetFieldID(cls_encoder, "videoBitRate", "I");
   jfieldID fid_audioBitRate = e->GetFieldID(cls_encoder, "audioBitRate", "I");
   jfieldID fid_compressionLevel = e->GetFieldID(cls_encoder, "compressionLevel", "I");
+  jfieldID fid_profileLevel = e->GetFieldID(cls_encoder, "profileLevel", "I");
 
-  ctx->fps_1000_1001 = e->GetBooleanField(c, fid_fps_1000_1001);
+  ctx->config_fps_1000_1001 = e->GetBooleanField(c, fid_fps_1000_1001);
   ctx->config_gop_size = e->GetIntField(c, fid_framesPerKeyFrame);
   ctx->config_video_bit_rate = e->GetIntField(c, fid_videoBitRate);
   ctx->config_audio_bit_rate = e->GetIntField(c, fid_audioBitRate);
-  ctx->dash = e->GetBooleanField(c, fid_dash);
-  ctx->compressionLevel = e->GetIntField(c, fid_compressionLevel);
+  ctx->config_compressionLevel = e->GetIntField(c, fid_compressionLevel);
+  ctx->config_profileLevel = e->GetIntField(c, fid_profileLevel);
 
   ctx->org_width = width;
   ctx->org_height = height;
@@ -1818,6 +1866,24 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
 
   return ret;
 }
+
+/*
+JNIEXPORT jstring JNICALL Java_javaforce_media_MediaEncoder_getManifest (JNIEnv *e, jobject c)
+{
+  FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return NULL;
+
+  if (!ctx->is_dash) return NULL;
+  if (ctx->dash_manifest_size == 0) return NULL;
+
+  ctx->dash_manifest[ctx->dash_manifest_size] = 0;
+
+  jstring str = e->NewStringUTF(ctx->dash_manifest);
+  ctx->dash_manifest_size = 0;
+
+  return str;
+}
+*/
 
 static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
 {
@@ -2082,15 +2148,18 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaEncoder_getAudioFramesize
   return ctx->audio_codec_ctx->frame_size;
 }
 
-static jboolean encoder_flush(FFContext *ctx, AVCodecContext *codec_ctx, AVStream *stream) {
+static jboolean encoder_flush(FFContext *ctx, AVCodecContext *codec_ctx, AVStream *stream, jboolean endOfStream) {
   AVPacket *pkt = AVPacket_New();
   (*_av_init_packet)(pkt);
+  int ret;
 
   //signal end of input
-  int ret = (*_avcodec_send_frame)(codec_ctx, NULL);
-  if (ret < 0) {
-    printf("avcodec_send_frame() failed!\n");
-    return JNI_FALSE;
+  if (endOfStream) {
+    ret = (*_avcodec_send_frame)(codec_ctx, NULL);
+    if (ret < 0) {
+      printf("avcodec_send_frame() failed!\n");
+      return JNI_FALSE;
+    }
   }
   while (1) {
     ret = (*_avcodec_receive_packet)(codec_ctx, pkt);
@@ -2106,14 +2175,33 @@ static jboolean encoder_flush(FFContext *ctx, AVCodecContext *codec_ctx, AVStrea
   return JNI_TRUE;
 }
 
+JNIEXPORT void JNICALL Java_javaforce_media_MediaEncoder_flush
+  (JNIEnv *e, jobject c)
+{
+  FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return;
+  if (ctx->audio_stream != NULL) {
+    encoder_flush(ctx, ctx->audio_codec_ctx, ctx->audio_stream, JNI_FALSE);
+  }
+  if (ctx->video_stream != NULL) {
+    encoder_flush(ctx, ctx->video_codec_ctx, ctx->video_stream, JNI_FALSE);
+  }
+  if (ctx->io_ctx != NULL) {
+    (*_avio_flush)(ctx->io_ctx);
+    if (ctx->is_dash) {
+//      (*_avio_flush)(ctx->io_ctx_dash);
+    }
+  }
+}
+
 static void encoder_stop(FFContext *ctx)
 {
   //flush encoders
   if (ctx->audio_stream != NULL) {
-    encoder_flush(ctx, ctx->audio_codec_ctx, ctx->audio_stream);
+    encoder_flush(ctx, ctx->audio_codec_ctx, ctx->audio_stream, JNI_TRUE);
   }
   if (ctx->video_stream != NULL) {
-    encoder_flush(ctx, ctx->video_codec_ctx, ctx->video_stream);
+    encoder_flush(ctx, ctx->video_codec_ctx, ctx->video_stream, JNI_TRUE);
   }
   int ret = (*_av_write_trailer)(ctx->fmt_ctx);
   if (ret < 0) {
