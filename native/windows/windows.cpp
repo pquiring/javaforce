@@ -318,7 +318,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_media_Camera_cameraListDevices
       jchar *wstr = (jchar*)var.byref;
       int wstrlen = strlen16(wstr) * 2;
       //printf("camera=%ls\n", wstr);
-      printf("moniker=%p\n", moniker);
+      //printf("moniker=%p\n", moniker);
       ctx->cameraDeviceNames[ctx->cameraDeviceCount] = (jchar*)malloc(wstrlen);
       memcpy(ctx->cameraDeviceNames[ctx->cameraDeviceCount], wstr, wstrlen + 2);
       ctx->cameraDevices[ctx->cameraDeviceCount] = moniker;
