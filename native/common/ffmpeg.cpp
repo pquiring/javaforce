@@ -1696,9 +1696,6 @@ static AVFormatContext *_avformat_alloc_output_context2(const char *codec) {
   return fmt_ctx;
 }
 
-#define OPEN_MANIFEST 0
-#define OPEN_STREAM 1
-
 static int io_open(struct AVFormatContext *fmt_ctx, AVIOContext **pb, const char *url, int flags, AVDictionary **options) {
   FFContext *ctx = (FFContext*)fmt_ctx->opaque;
   void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
@@ -1866,24 +1863,6 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_start
 
   return ret;
 }
-
-/*
-JNIEXPORT jstring JNICALL Java_javaforce_media_MediaEncoder_getManifest (JNIEnv *e, jobject c)
-{
-  FFContext *ctx = getFFContext(e,c);
-  if (ctx == NULL) return NULL;
-
-  if (!ctx->is_dash) return NULL;
-  if (ctx->dash_manifest_size == 0) return NULL;
-
-  ctx->dash_manifest[ctx->dash_manifest_size] = 0;
-
-  jstring str = e->NewStringUTF(ctx->dash_manifest);
-  ctx->dash_manifest_size = 0;
-
-  return str;
-}
-*/
 
 static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, int length)
 {

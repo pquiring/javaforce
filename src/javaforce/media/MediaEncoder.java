@@ -12,7 +12,7 @@ public class MediaEncoder extends MediaCoder {
   public int videoBitRate = 400000;
   public int audioBitRate = 128000;
   public int compressionLevel = -1;
-  public int profileLevel = 1;  //1=baseline 2=main 3=professional
+  public int profileLevel = 1;  //1=baseline 2=main 3=high
   public native boolean start(MediaIO io, int width, int height, int fps, int chs, int freq, String codec, boolean doVideo, boolean doAudio);
   /** Sets frame rate = fps * 1000 / 1001 (default = false) */
   public void set1000over1001(boolean state) {
@@ -38,7 +38,6 @@ public class MediaEncoder extends MediaCoder {
   public void setProfileLevel(int level) {
     profileLevel = level;
   }
-  public native String getManifest();
   public native boolean addAudio(short sams[], int offset, int length);
   public boolean addAudio(short sams[]) {
     return addAudio(sams, 0, sams.length);
@@ -97,6 +96,7 @@ public class MediaEncoder extends MediaCoder {
           if (doAudio) mime.append(",");
           mime.append("vp09.00.10.08");
         }
+        mime.append("\"");
         break;
     }
     return mime.toString();
