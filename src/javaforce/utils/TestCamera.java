@@ -29,6 +29,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     }
     initComponents();
     pack();
+    listCameras();
     new WebUIServer().start(this, 8080, false);
   }
 
@@ -45,6 +46,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     stop = new javax.swing.JButton();
     preview = new javax.swing.JLabel();
     webview = new javax.swing.JButton();
+    cameraList = new javax.swing.JComboBox<>();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("Camera Test");
@@ -73,6 +75,8 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
       }
     });
 
+    cameraList.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -85,7 +89,9 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
             .addComponent(start, javax.swing.GroupLayout.PREFERRED_SIZE, 248, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
             .addComponent(stop, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 197, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(cameraList, 0, 370, Short.MAX_VALUE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(webview, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)))
         .addContainerGap())
     );
@@ -96,7 +102,8 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addComponent(start, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
           .addComponent(stop, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-          .addComponent(webview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+          .addComponent(webview, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+          .addComponent(cameraList))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(preview, javax.swing.GroupLayout.DEFAULT_SIZE, 492, Short.MAX_VALUE)
         .addContainerGap())
@@ -107,27 +114,24 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
 
   private void startActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startActionPerformed
     camera = new Camera();
-    if (camera == null) {
-      JFLog.log("cam == null");
-      return;
-    }
     if (!camera.init()) {
-      JFLog.log("init failed");
+      JFAWT.showError("Error", "Camera init failed");
       return;
     }
-    String devices[] = camera.listDevices();
+    String[] devices = camera.listDevices();
     if (devices == null || devices.length == 0) {
-      JFLog.log("no devices found");
-      return;
+      camera.uninit();
+      JFAWT.showError("Error", "No camera found");
     }
-    JFLog.log("device count=" + devices.length);
-    for (int a = 0; a < devices.length; a++) {
-      JFLog.log("device=" + devices[a]);
+    int camIdx = cameraList.getSelectedIndex();
+    if (camIdx >= devices.length) {
+      camIdx = 0;
     }
+    JFLog.log("camera=" + devices[camIdx]);
     encoder = new MediaEncoder();
     encoder.setProfileLevel(MediaCoder.PROFILE_MAIN);
     encoder.start(this, 640, 480, 10, -1, -1, "dash", true, false);
-    camera.start(0, 640, 480);
+    camera.start(camIdx, 640, 480);
     width = camera.getWidth();
     height = camera.getHeight();
     timer = new Timer();
@@ -177,6 +181,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
+  private javax.swing.JComboBox<String> cameraList;
   private javax.swing.JLabel preview;
   private javax.swing.JButton start;
   private javax.swing.JButton stop;
@@ -193,6 +198,25 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private Video video;
   private byte[] init_segment;
 //  private boolean sent_manifest;
+
+  public void listCameras() {
+    camera = new Camera();
+    if (!camera.init()) {
+      JFAWT.showError("Error", "Camera init failed");
+      return;
+    }
+    String devices[] = camera.listDevices();
+    camera.uninit();
+    if (devices == null || devices.length == 0) {
+      JFAWT.showError("Error", "No camera found");
+      return;
+    }
+    JFLog.log("device count=" + devices.length);
+    for (int a = 0; a < devices.length; a++) {
+      JFLog.log("device=" + devices[a]);
+      cameraList.addItem(devices[a]);
+    }
+  }
 
   public void clientConnected(WebUIClient client) {
     JFLog.log("clientConnected:" + client);
