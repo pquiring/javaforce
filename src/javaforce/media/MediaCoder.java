@@ -92,7 +92,7 @@ public class MediaCoder {
   //profile levels
   public static final int PROFILE_BASELINE = 1;  //default
   public static final int PROFILE_MAIN = 2;
-  public static final int PROFILE_PRO = 3;
+  public static final int PROFILE_HIGH = 3;
 
   //video codecs (VideoDecoder)
   public static final int AV_CODEC_ID_NONE = 0;
