@@ -214,8 +214,8 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     Panel panel = new Panel();
 
     video = new Video();
-    video.setWidth(256);
-    video.setHeight(256);
+    video.setWidth(640);
+    video.setHeight(480);
     panel.add(video);
 
     Button b = new Button("Start");
@@ -242,7 +242,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
 
   public int write(MediaCoder coder, byte[] data) {
     JFLog.log("write:" + data.length);
-    if (data.length <= 24) return data.length;  //ignore strange header packet
     if (init_segment == null) {
       init_segment = new byte[data.length];
       System.arraycopy(data, 0, init_segment, 0, data.length);

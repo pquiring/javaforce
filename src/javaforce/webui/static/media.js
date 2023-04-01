@@ -7,6 +7,7 @@ function media_init(media, codecs) {
   ctx.mediaSource = null;
   ctx.streamBuffer = null;
   ctx.codecs = codecs;
+  ctx.buffered = 0;
   ctx.toString = function() {return "media context:id=" + this.media.id;};
   console.log("media_init:ctx=" + ctx);
   medias.set(media.id, ctx);
@@ -31,7 +32,7 @@ function media_uninit(media) {
 
 function media_add_buffer(media) {
   var ctx = medias.get(media.id);
-  console.log("media_add_buffer:ctx=" + ctx + ":byteLength=" + bindata.byteLength);
+  console.log("media_add_buffer:ctx=" + ctx + ":byteLength=" + bindata.byteLength + ":readyState=" + ctx.media.readyState);
   if (ctx.mediaSource.readyState !== 'open') {
     console.log("media_add_buffer:Error:MediaSource not open");
     return;
@@ -45,4 +46,11 @@ function media_add_buffer(media) {
     return;
   }
   ctx.streamBuffer.appendBuffer(bindata);
+  if (ctx.media.readyState !== 4) {
+    ctx.buffered++;
+    if (ctx.buffered === 5) {
+      ctx.media.play();
+      ctx.buffered = 0;
+    }
+  }
 }

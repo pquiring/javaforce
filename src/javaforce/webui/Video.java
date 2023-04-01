@@ -7,6 +7,12 @@ package javaforce.webui;
 
 public class Video extends Component {
   private String src;
+  public Video() {
+    addEvent("onpause", "console.log('Video.paused:readyState=' + this.readyState);");
+    addEvent("onstaled", "console.log('Video.staled:readyState=' + this.readyState);");
+    addEvent("onsuspend", "console.log('Video.suspend:readyState=' + this.readyState);");
+    addEvent("onwaiting", "console.log('Video.waiting:readyState=' + this.readyState);");
+  }
   public String html() {
     StringBuilder sb = new StringBuilder();
     sb.append("<video");

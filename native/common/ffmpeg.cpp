@@ -1696,10 +1696,34 @@ static AVFormatContext *_avformat_alloc_output_context2(const char *codec) {
   return fmt_ctx;
 }
 
+static int read_null(FFContext *ctx, void*buf, int size) {
+  return 0;
+}
+
+static int write_null(FFContext *ctx, void*buf, int size) {
+  return size;
+}
+
+static jlong seek_null(FFContext *ctx, jlong offset, int how) {
+  return 0;
+}
+
+
+static jboolean ff_startsWith(const char*str, const char*with) {
+  int len = strlen(with);
+  return strncmp(str, with, len) == 0;
+}
+
 static int io_open(struct AVFormatContext *fmt_ctx, AVIOContext **pb, const char *url, int flags, AVDictionary **options) {
   FFContext *ctx = (FFContext*)fmt_ctx->opaque;
   void *ff_buffer = (*_av_mallocz)(ffiobufsiz);
-  AVIOContext *io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 1, (void*)ctx, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
+  AVIOContext *io_ctx;
+  if ((ff_startsWith(url, "init-")) || (ff_startsWith(url, "chunk-"))) {
+    io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 1, (void*)ctx, (void*)&read_packet, (void*)&write_packet, (void*)&seek_packet);
+  } else {
+    //usually .tmp junk data
+    io_ctx = (*_avio_alloc_context)(ff_buffer, ffiobufsiz, 1, (void*)ctx, (void*)&read_null, (void*)&write_null, (void*)&seek_null);
+  }
   *pb = io_ctx;
   printf("ffmpeg:io_open:ctx=%p:pb=%p:url=%s\n", fmt_ctx, *pb, url);
   return 0;
