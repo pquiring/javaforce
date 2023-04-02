@@ -5,6 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import java.awt.*;
 import java.util.*;
 
 import javaforce.*;
@@ -26,6 +27,7 @@ public class TestGLCube implements WebUIHandler {
   public void clientDisconnected(WebUIClient client) {
     Context context = (Context)client.getProperty("context");
     context.close();
+    System.exit(0);
   }
 
   public byte[] getResource(String url) {
@@ -178,8 +180,11 @@ public class TestGLCube implements WebUIHandler {
       canvas.sendEvent("buffer", new String[] {"idx=0"});
       canvas.sendData(convertFloatArray(textCoords));
       canvas.sendEvent("buffer", new String[] {"idx=1"});
-      JFImage img = new JFImage();
-      img.loadPNG("data\\opengl.png");
+      JFImage img = new JFImage(256, 256);
+      img.fill(0, 0, 256, 256, 0xffffff);
+      img.setFont(new Font(Font.DIALOG, 0, 40));
+      img.getGraphics().setColor(java.awt.Color.BLACK);
+      img.getGraphics().drawBytes("OpenGL".getBytes(), 0,6, 50, 100);
       canvas.sendData(convertIntArray(img.getBuffer()));
       canvas.sendEvent("loadt", new String[] {"idx=0", "x=" + img.getWidth(), "y=" + img.getHeight()});
       //setup rendering pipeline

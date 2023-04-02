@@ -21,17 +21,16 @@ function gl_render(canvas) {
   var gl = canvas.gl;
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
   console.log('render:' + gl);
-  var i1 = 0;
-  while (true) {
-    var i2 = 0;
-    while (true) {
-      var func = canvas.render[i1][i2];
-      if (!func) break;
-      var args = canvas.args[i1][i2];
-      func(canvas, gl, args);
-      i2++;
+  for(var i1=0;i1<canvas.render.length;i1++) {
+    for(var i2=0;i2<canvas.render[i1].length;i2++) {
+      try {
+        var func = canvas.render[i1][i2];
+        var args = canvas.args[i1][i2];
+        func(canvas, gl, args);
+      } catch (e) {
+        console.log(e);
+      }
     }
-    i1++;
   }
 }
 
