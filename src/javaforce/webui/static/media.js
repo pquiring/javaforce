@@ -2,6 +2,10 @@ var medias = new Map();
 
 function media_set_source(media, src) {
   media.src = src;
+  var table = document.getElementById(media.id + "s2");
+  table.style.display = 'none';  //hide initial controls
+  media.setAttribute('controls', '');  //show native controls
+  media.play();
 }
 
 function media_set_live_source(media, codecs) {
