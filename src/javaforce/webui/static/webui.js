@@ -224,8 +224,11 @@ function wsevent(event) {
       ctx.strokeStyle = msg.clr;
       ctx.strokeRect(msg.x, msg.y, msg.w, msg.h);
       break;
-    case "media_init":
-      media_init(element, msg.codecs);
+    case "media_set_source":
+      media_set_source(element, msg.src);
+      break;
+    case "media_set_live_source":
+      media_set_live_source(element, msg.codecs);
       break;
     case "media_uninit":
       media_uninit(element);

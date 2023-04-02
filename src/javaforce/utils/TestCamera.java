@@ -255,20 +255,9 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     video.setHeight(480);
     panel.add(video);
 
-    video.addChangedListener(new Changed() {
-      public void onChanged(Component comp) {
-        if (!video.isInited()) {
-          video.init(encoder.getCodecMimeType("dash", true, false));
-        }
-      }
-    });
-
-    panel.addLoadedListener(new Loaded() {
-      public void loaded(Component cmp) {
-        if (!video.isInited()) {
-          video.init(encoder.getCodecMimeType("dash", true, false));
-        }
-        //video.play();  //not allowed
+    video.addActionListener(new Action() {
+      public void action(Component cmp) {
+        video.setLiveSource(encoder.getCodecMimeType("dash", true, false));
       }
     });
 

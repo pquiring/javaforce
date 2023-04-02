@@ -1,6 +1,10 @@
 var medias = new Map();
 
-function media_init(media, codecs) {
+function media_set_source(media, src) {
+  media.src = src;
+}
+
+function media_set_live_source(media, codecs) {
   console.log("media_init:id=" + media.id);
   var ctx = {};
   ctx.media = media;
@@ -12,6 +16,9 @@ function media_init(media, codecs) {
   medias.set(media.id, ctx);
   ctx.mediaSource = new MediaSource();
   media.src = URL.createObjectURL(ctx.mediaSource);
+  var table = document.getElementById(media.id + "s2");
+  table.style.display = 'none';  //hide initial controls
+  media.setAttribute('controls', '');  //show native controls
   ctx.mediaSource.addEventListener('sourceopen', function(event) {
     URL.revokeObjectURL(media.src);
     console.log("media_init.sourceopen:ctx=" + ctx);
@@ -21,6 +28,7 @@ function media_init(media, codecs) {
     }
     ctx.streamBuffer = ctx.mediaSource.addSourceBuffer(ctx.codecs);
   });
+  media.play();
 }
 
 function media_uninit(media) {

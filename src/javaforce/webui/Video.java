@@ -5,10 +5,13 @@ package javaforce.webui;
  * @author pquiring
  */
 
-public class Video extends Component {
+import javaforce.webui.event.*;
+
+public class Video extends Container {
   private String src;
-  private boolean inited;
   private int state;
+
+  private Button button_play;
 
   public static final int STATE_UNINIT = 0;
   public static final int STATE_STOP = 1;
@@ -23,30 +26,52 @@ public class Video extends Component {
     addEvent("onstaled", "console.log('Video.staled:readyState=' + this.readyState);");
     addEvent("onsuspend", "console.log('Video.suspend:readyState=' + this.readyState);");
     addEvent("onwaiting", "console.log('Video.waiting:readyState=' + this.readyState);");
+    setStyle("position", "absolute");
+    setStyle("left", "0");
+    setStyle("top", "0");
+    button_play = new Button("Play");
+    button_play.addClickListener(new Click() {
+      public void onClick(MouseEvent me, Component comp) {
+        Video.this.dispatchEvent("action", null);
+      }
+    });
+    add(button_play);
   }
   public String html() {
     StringBuilder sb = new StringBuilder();
-    sb.append("<video");
-    sb.append(getAttrs());
+    sb.append("<div id='" + getID() + "s1' style='display: inline-block; position: relative;");
     if (width != 0) {
-      sb.append(" width='" + width + "'");
+      sb.append(" width:" + width + ";");
     }
     if (height != 0) {
-      sb.append(" height='" + height + "'");
+      sb.append(" height:" + height + ";");
     }
+    sb.append("'>");
+    sb.append("<video");
+    sb.append(getAttrs());
     if (src != null) {
       sb.append(" src='" + src + "'");
     }
-    sb.append(" controls autoplay></video>");
+    sb.append("></video>");
+    sb.append("<table id='" + getID() + "s2' style='position:absolute; left:0px; top:0px; width: 100%; height: 100%; background-color: grey;'>\n" +
+              "<tr height=50%></tr>\n" +
+              "<tr>\n" +
+              "<td width=50%></td>\n" +
+              "<td>\n" +
+              button_play.html() +
+              "</td>\n" +
+              "<td width=50%></td>\n" +
+              "</tr>\n" +
+              "<tr height=50%></tr>" +
+              "</table>");
+    sb.append("</div>");
     return sb.toString();
   }
   public void setSource(String url) {
     src = url;
   }
-  public void init(String codecs) {
-    if (inited) return;
-    sendEvent("media_init", new String[] {"codecs=" + codecs});
-    inited = true;
+  public void setLiveSource(String codecs) {
+    sendEvent("media_set_live_source", new String[] {"codecs=" + codecs});
   }
   public void play() {
     sendEvent("media_play", null);
@@ -63,13 +88,12 @@ public class Video extends Component {
   public void seek(double time) {
     sendEvent("media_seek", new String[] {"time=" + String.format("%.3f", time)});
   }
-  public void dispatchEvent(String event, String args[]) {
+  public void onEvent(String event, String args[]) {
     switch (event) {
       case "onplay": onplay(); break;
       case "onpause": onpause(); break;
       case "onstop": onstop(); break;
     }
-    super.dispatchEvent(event, args);
   }
   private void onplay() {
     state = STATE_PLAY;
@@ -82,9 +106,6 @@ public class Video extends Component {
   private void onstop() {
     state = STATE_STOP;
     onChanged(null);
-  }
-  public boolean isInited() {
-    return inited;
   }
   public boolean isPlaying() {
     return state == STATE_PLAY;

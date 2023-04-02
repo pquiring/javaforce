@@ -505,23 +505,28 @@ public abstract class Component {
   public void dispatchEvent(String event, String args[]) {
     MouseEvent me = new MouseEvent();
     KeyEvent ke = new KeyEvent();
-    for(int a=0;a<args.length;a++) {
-      if (args[a].equals("ck=true")) {
-        me.ctrlKey = true;
-        ke.ctrlKey = true;
-      }
-      if (args[a].equals("ak=true")) {
-        me.altKey = true;
-        ke.altKey = true;
-      }
-      if (args[a].equals("sk=true")) {
-        me.shiftKey = true;
-        ke.shiftKey = true;
+    if (args != null) {
+      for(int a=0;a<args.length;a++) {
+        if (args[a].equals("ck=true")) {
+          me.ctrlKey = true;
+          ke.ctrlKey = true;
+        }
+        if (args[a].equals("ak=true")) {
+          me.altKey = true;
+          ke.altKey = true;
+        }
+        if (args[a].equals("sk=true")) {
+          me.shiftKey = true;
+          ke.shiftKey = true;
+        }
       }
     }
     switch (event) {
       case "click":
         onClick(args, me);
+        break;
+      case "action":
+        action();
         break;
       case "changed":
         onChanged(args);
