@@ -192,10 +192,12 @@ function wsevent(event) {
     case "add":
       temp.innerHTML = msg.html;
       element.appendChild(temp.firstChild);
+      temp.innerHTML = '';
       break;
     case "addbefore":
       temp.innerHTML = msg.html;
       element.insertBefore(temp.firstChild, document.getElementById(msg.beforeid));
+      temp.innerHTML = '';
       break;
     case "remove":
       var child = document.getElementById(msg.child);
