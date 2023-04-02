@@ -22,7 +22,7 @@ static jboolean loaded = JNI_FALSE;
 
 static jboolean ff_debug = JNI_FALSE;
 static jboolean ff_debug_buffer = JNI_FALSE;
-static jboolean ff_debug_box = JNI_TRUE;
+static jboolean ff_debug_box = JNI_FALSE;
 
 JF_LIB_HANDLE codec = NULL;
 JF_LIB_HANDLE device = NULL;

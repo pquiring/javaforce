@@ -19,7 +19,7 @@ import javaforce.webui.event.*;
 public class TestCamera extends javax.swing.JFrame implements WebUIHandler, MediaIO {
 
   /**
-   * Creates new form Test2
+   * Creates new form TestCamera
    */
   public TestCamera() {
     JFNative.load();
@@ -146,11 +146,11 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
           System.arraycopy(px, 0, img.getBuffer(), 0, width * height);
           preview.setIcon(img);
           preview.repaint();
-          JFLog.log("addFrame:" + frameCount);
+          JFLog.log("addFrame:" + frameCount++);
           gotPacket = false;
           encoder.addVideo(px);
           encoder.flush();
-          if (gotPacket) frameCount++;
+          if (gotPacket) encoderCount++;
         }});
       }
     }, 100, 100);
@@ -193,6 +193,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private Camera camera;
   private Timer timer;
   private int frameCount = 0;
+  private int encoderCount = 0;
   private int fps = 10;
   private JFImage img;
   private int width, height;
@@ -242,7 +243,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   }
 
   public String getCurrentTime() {
-    double currentTime = frameCount;
+    double currentTime = encoderCount;
     currentTime /= fps;
     return String.format("%.3f", currentTime);
   }
