@@ -233,6 +233,15 @@ function wsevent(event) {
     case "media_add_buffer":
       media_add_buffer(element);
       break;
+    case "media_play":
+      media_play(element);
+      break;
+    case "media_pause":
+      media_pause(element);
+      break;
+    case "media_stop":
+      media_stop(element);
+      break;
     case "media_seek":
       media_seek(element, msg.time);
       break;

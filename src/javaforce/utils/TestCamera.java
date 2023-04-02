@@ -31,6 +31,8 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     pack();
     listCameras();
     new WebUIServer().start(this, 8080, false);
+    encoder = new MediaEncoder();
+    encoder.setProfileLevel(MediaCoder.PROFILE_MAIN);
   }
 
   /**
@@ -128,8 +130,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
       camIdx = 0;
     }
     JFLog.log("camera=" + devices[camIdx]);
-    encoder = new MediaEncoder();
-    encoder.setProfileLevel(MediaCoder.PROFILE_MAIN);
     encoder.start(this, 640, 480, 10, -1, -1, "dash", true, false);
     camera.start(camIdx, 640, 480);
     width = camera.getWidth();
@@ -226,7 +226,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   public void clientConnected(WebUIClient client) {
     JFLog.log("clientConnected:" + client);
     this.client = client;
-    client.setProperty("ready", "false");
     client.setProperty("init-segment", "false");  //got init segment (ftyp)
     client.setProperty("start-segment", "false");  //got start of segment (styp) (else wait for next styp)
   }
@@ -256,18 +255,20 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     video.setHeight(480);
     panel.add(video);
 
-    Button b = new Button("Start");
-    panel.add(b);
-    Label msg = new Label("");
-    panel.add(msg);
-    b.addClickListener(new Click() {
-      public void onClick(MouseEvent me, Component c) {
-        if (encoder == null) {
-          msg.setText("not ready to play");
-        } else {
-          video.sendEvent("media_init", new String[] {"codecs=" + encoder.getCodecMimeType("dash", true, false)});
-          client.setProperty("ready", "true");
+    video.addChangedListener(new Changed() {
+      public void onChanged(Component comp) {
+        if (!video.isInited()) {
+          video.init(encoder.getCodecMimeType("dash", true, false));
         }
+      }
+    });
+
+    panel.addLoadedListener(new Loaded() {
+      public void loaded(Component cmp) {
+        if (!video.isInited()) {
+          video.init(encoder.getCodecMimeType("dash", true, false));
+        }
+        //video.play();  //not allowed
       }
     });
 
@@ -304,7 +305,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     }
     //send fragments
     if (client != null) {
-      if (client.getProperty("ready").equals("false")) {
+      if (!video.isPlaying()) {
         return data.length;
       }
       JFLog.log("send frame:" + data.length);

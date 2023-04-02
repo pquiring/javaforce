@@ -13,7 +13,7 @@ function media_init(media, codecs) {
   ctx.mediaSource = new MediaSource();
   media.src = URL.createObjectURL(ctx.mediaSource);
   ctx.mediaSource.addEventListener('sourceopen', function(event) {
-//    URL.revokeObjectURL(media.src);
+    URL.revokeObjectURL(media.src);
     console.log("media_init.sourceopen:ctx=" + ctx);
     if (!MediaSource.isTypeSupported(ctx.codecs)) {
       console.log("Error:codecs not supported:" + ctx.codecs);
@@ -58,7 +58,46 @@ function media_add_buffer(media) {
   }
 }
 
+function media_play(media) {
+  console.log("media_play");
+  media.play();
+}
+
+function media_pause(media) {
+  console.log("media_pause");
+  media.pause();
+}
+
+function media_stop(media) {
+  console.log("media_stop");
+  media.stop();
+}
+
 function media_seek(media, time) {
   console.log("media_seek:" + time);
   media.currentTime = time;
+}
+
+function media_onplay(media) {
+  var msg = {
+    event: "onplay",
+    id: media.id
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function media_onpause(media) {
+  var msg = {
+    event: "onpause",
+    id: media.id
+  };
+  ws.send(JSON.stringify(msg));
+}
+
+function media_onstop(media) {
+  var msg = {
+    event: "onstop",
+    id: media.id
+  };
+  ws.send(JSON.stringify(msg));
 }
