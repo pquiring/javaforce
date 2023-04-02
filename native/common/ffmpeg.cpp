@@ -22,6 +22,7 @@ static jboolean loaded = JNI_FALSE;
 
 static jboolean ff_debug = JNI_FALSE;
 static jboolean ff_debug_buffer = JNI_FALSE;
+static jboolean ff_debug_box = JNI_TRUE;
 
 JF_LIB_HANDLE codec = NULL;
 JF_LIB_HANDLE device = NULL;
@@ -540,7 +541,7 @@ struct FFContext {
   }
 };
 
-#define ffiobufsiz (32 * 1024)
+#define ffiobufsiz (64 * 1024)
 
 FFContext* createFFContext(JNIEnv *e, jobject c) {
   FFContext *ctx;
@@ -591,12 +592,42 @@ static int read_packet(FFContext *ctx, void*buf, int size) {
   return read;
 }
 
+typedef struct mp4_box {
+  int size;
+  char type[4];
+} mp4_box;
+
+static int swap_order(int val) {
+  union {
+    int i32;
+    char i8[4];
+  } be, le;
+  be.i32 = val;
+  le.i8[0] = be.i8[3];
+  le.i8[1] = be.i8[2];
+  le.i8[2] = be.i8[1];
+  le.i8[3] = be.i8[0];
+  return le.i32;
+}
+
 static int write_packet(FFContext *ctx, void*buf, int size) {
   jbyteArray ba = ctx->e->NewByteArray(size);
   ctx->e->SetByteArrayRegion(ba, 0, size, (jbyte*)buf);
   int write = ctx->e->CallIntMethod(ctx->mio, ctx->mid_ff_write, ctx->c, ba);  //obj, methodID, args[]
   if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
   ctx->e->DeleteLocalRef(ba);
+  if (ctx->is_dash && ff_debug_box) {
+    int pkt_len = size;
+    char* buf8 = (char*)buf;
+    while (pkt_len > 0) {
+      mp4_box* box = (mp4_box*)buf8;
+      int box_size = swap_order(box->size);
+      if (box_size < 0) break;  //mid packet?
+      printf("box:%c%c%c%c:%d\n", box->type[0], box->type[1], box->type[2], box->type[3], box_size);
+      buf8 += box_size;
+      pkt_len -= box_size;
+    }
+  }
   if (ctx->is_dash && ff_debug_buffer) {
     char* chbuf = (char*)buf;
     int len = size;

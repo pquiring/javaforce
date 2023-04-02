@@ -146,9 +146,11 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
           System.arraycopy(px, 0, img.getBuffer(), 0, width * height);
           preview.setIcon(img);
           preview.repaint();
-          JFLog.log("addFrame:" + frame++);
+          JFLog.log("addFrame:" + frameCount);
+          gotPacket = false;
           encoder.addVideo(px);
           encoder.flush();
+          if (gotPacket) frameCount++;
         }});
       }
     }, 100, 100);
@@ -190,13 +192,15 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
 
   private Camera camera;
   private Timer timer;
-  private int frame = 1;
+  private int frameCount = 0;
+  private int fps = 10;
   private JFImage img;
   private int width, height;
   private MediaEncoder encoder;
   private WebUIClient client;
   private Video video;
   private byte[] init_segment;
+  private boolean gotPacket;
 //  private boolean sent_manifest;
 
   public void listCameras() {
@@ -221,6 +225,9 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   public void clientConnected(WebUIClient client) {
     JFLog.log("clientConnected:" + client);
     this.client = client;
+    client.setProperty("ready", "false");
+    client.setProperty("init-segment", "false");  //got init segment (ftyp)
+    client.setProperty("start-segment", "false");  //got start of segment (styp) (else wait for next styp)
   }
 
   public void clientDisconnected(WebUIClient client) {
@@ -232,6 +239,12 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   public byte[] getResource(String url) {
     //TODO : return static images, etc needed by webpage
     return null;
+  }
+
+  public String getCurrentTime() {
+    double currentTime = frameCount;
+    currentTime /= fps;
+    return String.format("%.3f", currentTime);
   }
 
   public Panel getRootPanel(WebUIClient client) {
@@ -252,6 +265,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
           msg.setText("not ready to play");
         } else {
           video.sendEvent("media_init", new String[] {"codecs=" + encoder.getCodecMimeType("dash", true, false)});
+          client.setProperty("ready", "true");
         }
       }
     });
@@ -264,17 +278,60 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     return -1;
   }
 
+  /*
+  struct mp4_header { int size; char type[4]; }
+  types:
+    ftyp / moov = init segment (describes video details)
+    styp = start of segment
+    moof / mdat = frame
+  */
+
   public int write(MediaCoder coder, byte[] data) {
-    JFLog.log("write:" + data.length);
+    JFLog.log("write:" + data.length + ":" + getCurrentTime());
+    gotPacket = true;
+    boolean is_init = init_segment == null;
+    boolean is_start_segment = false;
+    if (data.length >= 8) {
+      String type = new String(data, 4, 4);
+      if (type.equals("styp")) {
+        is_start_segment = true;
+      }
+    }
     if (init_segment == null) {
       init_segment = new byte[data.length];
       System.arraycopy(data, 0, init_segment, 0, data.length);
     }
     //send fragments
     if (client != null) {
+      if (client.getProperty("ready").equals("false")) {
+        return data.length;
+      }
       JFLog.log("send frame:" + data.length);
+      if (client.getProperty("init-segment").equals("false")) {
+        if (is_init) {
+          client.setProperty("init-segment", "true");
+          client.setProperty("start-segment", "true");
+        }
+      }
+      if (!is_start_segment) {
+        if (client.getProperty("start-segment").equals("false")) {
+          return data.length;
+        }
+      } else {
+        if (client.getProperty("start-segment").equals("false")) {
+          client.setProperty("init-segment", "true");
+          client.sendData(init_segment, 0, init_segment.length);
+          client.sendEvent(video.getID(), "media_add_buffer", null);
+          client.setProperty("start-segment", "true");
+          //because player has missed some segments it will need to seek to currentTime
+          client.sendEvent(video.getID(), "media_seek", new String[] {"time=" + getCurrentTime()});
+        }
+      }
       client.sendData(data, 0, data.length);
       client.sendEvent(video.getID(), "media_add_buffer", null);
+      if (is_init) {
+        client.setProperty("init-segment", "true");
+      }
     }
     return data.length;
   }

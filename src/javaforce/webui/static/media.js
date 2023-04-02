@@ -7,7 +7,6 @@ function media_init(media, codecs) {
   ctx.mediaSource = null;
   ctx.streamBuffer = null;
   ctx.codecs = codecs;
-  ctx.buffered = 0;
   ctx.toString = function() {return "media context:id=" + this.media.id;};
   console.log("media_init:ctx=" + ctx);
   medias.set(media.id, ctx);
@@ -32,7 +31,7 @@ function media_uninit(media) {
 
 function media_add_buffer(media) {
   var ctx = medias.get(media.id);
-  console.log("media_add_buffer:ctx=" + ctx + ":byteLength=" + bindata.byteLength + ":readyState=" + ctx.media.readyState);
+  console.log("media_add_buffer:ctx=" + ctx + ":byteLength=" + bindata.byteLength + ":readyState=" + ctx.media.readyState + ":currentTime=" + ctx.media.currentTime);
   if (ctx.mediaSource.readyState !== 'open') {
     console.log("media_add_buffer:Error:MediaSource not open");
     return;
@@ -47,10 +46,19 @@ function media_add_buffer(media) {
   }
   ctx.streamBuffer.appendBuffer(bindata);
   if (ctx.media.readyState !== 4) {
-    ctx.buffered++;
-    if (ctx.buffered === 5) {
+    var bufs = media.buffered;
+    var len = bufs.length;
+    for(var i=0;i<len;i++) {
+      console.log("buffered:" + bufs.start(i) + " to " + bufs.end(i));
+    }
+    if (len > 0) {
+      ctx.media.currentTime = bufs.start(0);
       ctx.media.play();
-      ctx.buffered = 0;
     }
   }
+}
+
+function media_seek(media, time) {
+  console.log("media_seek:" + time);
+  media.currentTime = time;
 }
