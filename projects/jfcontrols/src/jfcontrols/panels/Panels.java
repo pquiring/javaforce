@@ -959,7 +959,7 @@ public class Panels {
         String groups[] = Database.getLogicGroups();
         int idx = -1;
         for(int a=0;a<groups.length;a++) {
-          tabs.add(wrapPanel(getTable(createCell(r.x, r.y, r.width, r.height, "table", "jfc_logics", null, null, null, groups[a], null), null, new Rectangle(r), client)), "");
+          tabs.addTab(wrapPanel(getTable(createCell(r.x, r.y, r.width, r.height, "table", "jfc_logics", null, null, null, groups[a], null), null, new Rectangle(r), client)), "");
           if (groups[a].equals("bit")) idx = a;
         }
         if (idx != -1) tabs.setTabIndex(idx);

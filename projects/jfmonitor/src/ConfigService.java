@@ -105,7 +105,6 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     Container ctr = new Container();
     InnerPanel inner = new InnerPanel("jfMonitor Login");
-    inner.setDisplay("inline");
     panel.setAlign(Component.CENTER);
     Row row;
     Label msg = new Label("");
@@ -906,7 +905,6 @@ public class ConfigService implements WebUIHandler {
     {
       InnerPanel client_panel = new InnerPanel("Client Setup");
       col.add(client_panel);
-      client_panel.setDisplay("inline-block");
       Label msg = new Label("");
       client_panel.add(msg);
       row = new Row();
@@ -997,7 +995,6 @@ public class ConfigService implements WebUIHandler {
     {
       InnerPanel server_panel = new InnerPanel("Server Setup");
       col.add(server_panel);
-      server_panel.setDisplay("inline-block");
       Label msg = new Label("");
       msg.setColor(Color.red);
       server_panel.add(msg);

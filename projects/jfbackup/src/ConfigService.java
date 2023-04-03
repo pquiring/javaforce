@@ -106,7 +106,6 @@ public class ConfigService implements WebUIHandler {
     Panel panel = new Panel();
     panel.removeClass("column");
     InnerPanel inner = new InnerPanel("jfBackup Login");
-    inner.setDisplay("inline");
     inner.setAutoWidth();
     inner.setAutoHeight();
     panel.setAlign(Component.CENTER);

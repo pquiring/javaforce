@@ -13,7 +13,6 @@ public class LoginPanel extends Panel {
   public LoginPanel() {
     this.removeClass("column");
     InnerPanel inner = new InnerPanel("jfNetBoot Login");
-    inner.setDisplay("inline");
     inner.setAutoWidth();
     inner.setAutoHeight();
     this.setAlign(Component.CENTER);
