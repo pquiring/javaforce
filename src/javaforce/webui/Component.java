@@ -378,14 +378,19 @@ public abstract class Component {
     return sb.toString();
   }
 
-  protected String display = "";  //default to css rules
-  protected boolean isVisible = true;
+  private boolean isVisible = true;
+
+  /** Sets component to initial invisible. */
+  protected void initInvisible() {
+    isVisible = false;
+    setStyle("display", "none");
+  }
 
   public void setVisible(boolean state) {
     isVisible = state;
     if (state) {
-      sendEvent("display", new String[] {"val=" + display});  //reset to css rules
-      setStyle("display", display);
+      sendEvent("display", new String[] {"val="});  //reset to css rules
+      setStyle("display", "");
     } else {
       sendEvent("display", new String[] {"val=none"});
       setStyle("display", "none");
@@ -397,16 +402,6 @@ public abstract class Component {
 
   public boolean isVisible() {
     return isVisible;
-  }
-
-  public void setDisplay(String display) {
-    this.display = display;
-    setStyle("display", display);
-    sendEvent("display", new String[] {"val=" + display});
-  }
-
-  public String getDisplay() {
-    return display;
   }
 
   public void setPosition(int x, int y) {

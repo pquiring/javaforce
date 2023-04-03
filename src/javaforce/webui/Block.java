@@ -7,6 +7,6 @@ package javaforce.webui;
 
 public class Block extends Container {
   public Block() {
-    setDisplay("block");
+    addClass("block");
   }
 }

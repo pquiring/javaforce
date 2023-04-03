@@ -11,7 +11,6 @@ public class InnerPanel extends Panel {
     this.header = header;
     removeClass("panel");
     addClass("innerpanel");
-    setDisplay("block");
   }
   public String html() {
     StringBuilder sb = new StringBuilder();

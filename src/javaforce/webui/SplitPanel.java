@@ -23,70 +23,60 @@ public class SplitPanel extends Panel {
     div.setBackColor(Color.grey);
     switch (dir) {
       case VERTICAL:
-        setDisplay("table");
-
         t1 = new Panel();  //left component
         t1.setWidth(pos);
         t1.setMaxHeight();
-        t1.addClass("splitPanel");
-        t1.setDisplay("table-cell");
+        t1.addClass("splitPanelCell");
         t1.setVerticalAlign(TOP);
         c1 = new Panel();
         c1.setWidth(pos);
         c1.setMaxHeight();
-        c1.setDisplay("block");
+        c1.addClass("block");
         c1.add(new Label("left"));
         t1.add(c1);
 
         t2 = new Panel();  //right component
         t2.setMaxWidth();
         t2.setMaxHeight();
-        t2.addClass("splitPanel");
-        t2.setDisplay("table-cell");
+        t2.addClass("splitPanelCell");
         t2.setVerticalAlign(TOP);
         c2 = new Panel();
         c2.setMaxWidth();
         c2.setMaxHeight();
-        c2.setDisplay("block");
+        c2.addClass("block");
         c2.add(new Label("right"));
         t2.add(c2);
 
         div.setWidth(5);
         div.setMaxHeight();
-        div.setDisplay("block");
         break;
       case HORIZONTAL:
-        setDisplay("table");
-
         t1 = new Panel();  //top component
         t1.setHeight(pos);
         t1.setMaxWidth();
-        t1.addClass("splitPanel");
-        t1.setDisplay("table-row");
+        t1.addClass("splitPanelRow");
         t1.setVerticalAlign(TOP);
         c1 = new Panel();
         c1.setHeight(pos);
         c1.setMaxWidth();
-        c1.setDisplay("block");
+        c1.addClass("block");
         c1.add(new Label("top"));
         t1.add(c1);
 
         t2 = new Panel();  //bottom component
         t2.setMaxWidth();
         t2.setMaxHeight();
-        t2.addClass("splitPanel");
-        t2.setDisplay("table-row");
+        t2.addClass("splitPanelRow");
         t2.setVerticalAlign(TOP);
         c2 = new Panel();
         c2.setMaxWidth();
         c2.setMaxHeight();
-        c2.setDisplay("block");
+        c2.addClass("block");
         c2.add(new Label("bottom"));
         t2.add(c2);
 
         div.setMaxWidth();
         div.setHeight(5);
-        div.setDisplay("block");
         break;
     }
     add(t1);  //left/top component

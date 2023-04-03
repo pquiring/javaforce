@@ -45,7 +45,6 @@ public class Tree extends ScrollPanel implements Click {
   private void addNode(TreeNode node, int offset) {
     Block row = new Block();
     row.setClass("treerow");
-    row.setDisplay("inline");
     add(row);
     row.setProperty("node", node);
     row.addClickListener(this);

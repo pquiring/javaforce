@@ -20,6 +20,6 @@ public class CenteredPanel extends Panel {
   public CenteredPanel() {
     setAlign(CENTER);
     setVerticalAlign(CENTER);
-    setDisplay("table-cell");  //does NOT work with percentage width/height
+    addClass("centeredpanel");  //does NOT work with percentage width/height
   }
 }

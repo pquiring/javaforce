@@ -8,8 +8,7 @@ package javaforce.webui;
 public class PopupMenu extends Container {
   public MenuItem activeItem;
   public PopupMenu() {
-    display = "inline-block";
-    isVisible = false;
+    initInvisible();
     setClass("popupmenu");
     addEvent("mousedown", "onMouseDown(event, this);");
   }

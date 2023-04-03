@@ -9,7 +9,7 @@ import javaforce.webui.event.*;
 
 public class ListBox extends ScrollPanel implements Click {
   public ListBox() {
-    setDisplay("block");
+    addClass("listbox");
   }
 
   public void add(String item) {
@@ -26,7 +26,7 @@ public class ListBox extends ScrollPanel implements Click {
   public void add(Component item) {
     item.addClass("width100");
     item.setProperty("selected", "false");
-    item.setDisplay("block");
+    item.addClass("listboxitem");
     super.add(item);
   }
 

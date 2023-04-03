@@ -10,13 +10,11 @@ public class ScrollPanel extends Panel {
   private Container ctr;
   public ScrollPanel() {
     setOverflow(SCROLL);
-    setDisplay("table");
-    setClass("panel");
+    setClass("scrollpanel");
     cell = new Panel();
-    cell.setDisplay("table-cell");
+    cell.addClass("scrollpanelcell");
     ctr = new Panel();
-    ctr.setDisplay("block");
-    ctr.setClass("scrollpanel");
+    ctr.setClass("block");
     ctr.setWidth(0);
     ctr.setHeight(0);
     cell.add(ctr);
