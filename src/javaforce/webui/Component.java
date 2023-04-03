@@ -54,8 +54,6 @@ public abstract class Component {
   public ArrayList<OnEvent> events = new ArrayList<OnEvent>();
 
   /** Component constructor.
-   * @param parent = Panel
-   * @param name = name of component
    */
   public Component() {
   }

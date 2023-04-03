@@ -139,10 +139,10 @@ public class Test implements WebUIHandler {
 
     //add TabPanel
     Panel t1 = new Panel();
-    tab.add(t1, "Tab#1");
+    tab.addTab(t1, "Tab#1");
     t1.add(table);
     Panel t2 = new Panel();
-    tab.add(t2, "Tab#2");
+    tab.addTab(t2, "Tab#2");
     Column col = new Column();
     t2.add(col);
     Label l2 = new Label("Another Label");
@@ -169,7 +169,7 @@ public class Test implements WebUIHandler {
 
     Panel p = new Panel();
     p.add(list);
-    tab.add(p, "Tab#3");
+    tab.addTab(p, "Tab#3");
 
     Tree tree = new Tree();
     tree.setHeight(50);
@@ -188,7 +188,7 @@ public class Test implements WebUIHandler {
 
     Panel p2 = new Panel();
     p2.add(tree);
-    tab.add(p2, "Tab#4");
+    tab.addTab(p2, "Tab#4");
 
     //add third row
     Row row3 = new Row();

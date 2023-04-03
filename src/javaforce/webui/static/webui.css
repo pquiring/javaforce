@@ -106,6 +106,26 @@ td {
   height: 100%;
 }
 
+.row {
+  display: block;
+}
+
+.rowitem {
+  display: inline-block;
+}
+
+.column {
+  display: block;
+}
+
+.columnitem {
+  display: block;
+}
+
+.pad {
+  display: inline-block;
+}
+
 .innerpanel {
   width: auto;
   height: auto;
@@ -140,6 +160,7 @@ td {
 }
 
 .label {
+  display: inline-block;
   box-sizing: border-box;
 }
 

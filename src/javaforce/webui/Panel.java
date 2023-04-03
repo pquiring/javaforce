@@ -10,7 +10,6 @@ public class Panel extends Container {
   public Panel() {
     addClass("panel");
     setOverflow(HIDDEN);
-    setDisplay("block");
   }
   public int getOverflow() {
     return overflow;

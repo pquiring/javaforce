@@ -25,7 +25,7 @@ public class TabPanel extends Column {
     borders = state;
     setBorderGray(state);
   }
-  public void add(Panel panel, String text) {
+  public void addTab(Panel panel, String text) {
     int cnt = row.count();
     Label label = new Label(text);
     label.setClass("tab" + (cnt == 0 ? "active" : "inactive"));
