@@ -18,7 +18,8 @@ public class EditDocInfo extends javax.swing.JDialog {
     initComponents();
     this.file.setText(file);
     this.lines.setText(Integer.toString(lines));
-    this.position.setText(String.format("Col:%d Row:%d",y,x));
+    this.x.setText(String.format("%d",x));
+    this.y.setText(String.format("%d",y));
     this.eol.setSelectedIndex(unix ? 1 : 0);
     JFAWT.assignHotKey(this, ok, KeyEvent.VK_ENTER);
     JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
@@ -39,11 +40,14 @@ public class EditDocInfo extends javax.swing.JDialog {
     jLabel2 = new javax.swing.JLabel();
     lines = new javax.swing.JTextField();
     jLabel3 = new javax.swing.JLabel();
-    position = new javax.swing.JTextField();
+    x = new javax.swing.JTextField();
     jLabel4 = new javax.swing.JLabel();
     eol = new javax.swing.JComboBox<>();
     ok = new javax.swing.JButton();
     cancel = new javax.swing.JButton();
+    jLabel5 = new javax.swing.JLabel();
+    jLabel6 = new javax.swing.JLabel();
+    y = new javax.swing.JTextField();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     setTitle("Document Info");
@@ -58,7 +62,9 @@ public class EditDocInfo extends javax.swing.JDialog {
 
     jLabel3.setText("Position:");
 
-    position.setEditable(false);
+    x.setEditable(false);
+    x.setMinimumSize(new java.awt.Dimension(100, 22));
+    x.setPreferredSize(new java.awt.Dimension(100, 22));
 
     jLabel4.setText("EOL:");
 
@@ -78,6 +84,14 @@ public class EditDocInfo extends javax.swing.JDialog {
       }
     });
 
+    jLabel5.setText("X:");
+
+    jLabel6.setText("Y:");
+
+    y.setEditable(false);
+    y.setMinimumSize(new java.awt.Dimension(100, 22));
+    y.setPreferredSize(new java.awt.Dimension(100, 22));
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -96,7 +110,14 @@ public class EditDocInfo extends javax.swing.JDialog {
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel3)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-            .addComponent(position))
+            .addComponent(jLabel5)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(x, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(jLabel6)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(y, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 0, Short.MAX_VALUE))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel4)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -122,7 +143,10 @@ public class EditDocInfo extends javax.swing.JDialog {
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel3)
-          .addComponent(position, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+          .addComponent(x, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jLabel5)
+          .addComponent(jLabel6)
+          .addComponent(y, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
           .addComponent(jLabel4)
@@ -154,9 +178,12 @@ public class EditDocInfo extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
   private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel5;
+  private javax.swing.JLabel jLabel6;
   private javax.swing.JTextField lines;
   private javax.swing.JButton ok;
-  private javax.swing.JTextField position;
+  private javax.swing.JTextField x;
+  private javax.swing.JTextField y;
   // End of variables declaration//GEN-END:variables
 
   public boolean accepted;
