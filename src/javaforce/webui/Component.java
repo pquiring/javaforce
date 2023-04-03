@@ -58,7 +58,6 @@ public abstract class Component {
    * @param name = name of component
    */
   public Component() {
-    setStyle("display", display);
   }
 
   /** Gets Component's ID.*/
@@ -381,13 +380,13 @@ public abstract class Component {
     return sb.toString();
   }
 
-  private String display = "inline-block";
-  private boolean isVisible = true;
+  protected String display = "";  //default to css rules
+  protected boolean isVisible = true;
 
   public void setVisible(boolean state) {
     isVisible = state;
     if (state) {
-      sendEvent("display", new String[] {"val=" + display});
+      sendEvent("display", new String[] {"val=" + display});  //reset to css rules
       setStyle("display", display);
     } else {
       sendEvent("display", new String[] {"val=none"});

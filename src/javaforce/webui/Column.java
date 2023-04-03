@@ -12,7 +12,7 @@ public class Column extends Container {
   }
   public void add(Component comp) {
     super.add(comp);
-    comp.setDisplay("blcok");
+    comp.setDisplay("block");
   }
   public void add(int idx, Component comp) {
     super.add(idx, comp);

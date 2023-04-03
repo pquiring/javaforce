@@ -10,6 +10,8 @@ public class PopupPanel extends Panel {
   private Block block;
   private boolean modal;
   public PopupPanel(String title) {
+    display = "inline-block";
+    isVisible = false;
     titleBar = new TitleBar(title, this);
     add(titleBar);
     setClass("popuppanel");
