@@ -21,6 +21,7 @@ import java.io.*;
 import java.util.*;
 
 import javaforce.*;
+import javaforce.ui.*;
 import javaforce.service.*;
 
 public class WebUIServer implements WebHandler, WebSocketHandler {
@@ -103,6 +104,9 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
       data = handler.getResource(url);
       res.addHeader("Cache-Control: no-store");
     } else {
+      if (url.equals("/favicon.ico")) {
+        url = "/webui.png";
+      }
       data = getResource("javaforce/webui/static" + url);
     }
     if (data == null) {
