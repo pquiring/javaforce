@@ -508,6 +508,8 @@ struct FFContext {
   uint8_t* audio_src_data[4];
 
   jboolean is_dash;
+  jboolean is_mp4;
+  jboolean is_h264;
 
   /** Set to make fps = fps * 1000 / 1001. */
   jboolean config_fps_1000_1001;
@@ -616,19 +618,19 @@ static int write_packet(FFContext *ctx, void*buf, int size) {
   int write = ctx->e->CallIntMethod(ctx->mio, ctx->mid_ff_write, ctx->c, ba);  //obj, methodID, args[]
   if (ctx->e->ExceptionCheck()) ctx->e->ExceptionClear();
   ctx->e->DeleteLocalRef(ba);
-  if (ctx->is_dash && ff_debug_box) {
+  if (ctx->is_mp4 && ff_debug_box) {
     int pkt_len = size;
     char* buf8 = (char*)buf;
     while (pkt_len > 0) {
       mp4_box* box = (mp4_box*)buf8;
       int box_size = swap_order(box->size);
-      if (box_size < 0) break;  //mid packet?
+      if (box_size <= 0) break;  //mid packet?
       printf("box:%c%c%c%c:%d\n", box->type[0], box->type[1], box->type[2], box->type[3], box_size);
       buf8 += box_size;
       pkt_len -= box_size;
     }
   }
-  if (ctx->is_dash && ff_debug_buffer) {
+  if (ctx->is_mp4 && ff_debug_buffer) {
     char* chbuf = (char*)buf;
     int len = size;
     if (len > 1024) len = 1024;
@@ -1780,6 +1782,12 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
   printf("encoder_start:fmt_ctx=%p:out_fmt=%p\n", ctx->fmt_ctx, ctx->fmt_ctx->oformat);
   if (strcmp(codec, "dash") == 0) {
     ctx->is_dash = 1;
+  }
+  else if (strcmp(codec, "mp4") == 0) {
+    ctx->is_mp4 = 1;
+  }
+  else if (strcmp(codec, "h264") == 0) {
+    ctx->is_h264 = 1;
   }
   if (ctx->is_dash) {
     if (single_file) {
