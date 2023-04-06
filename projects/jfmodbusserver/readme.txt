@@ -47,6 +47,7 @@ Notes :
   - the config has changed from version 0.1
   - I2C input device can write (optional) and then read bytes
   - I2C output device can only write bytes
+  - after installing .deb package you need to run 'systemctl enable jfmodbusserver' and reboot to enable the service
 
 Author : Peter Quiring (pquiring@gmail.com)
 
@@ -54,7 +55,7 @@ Website : jfmodbusserver.sourceforge.net
 
 Source : github.com/pquiring/javaforce (projects/jfmodbusserver)
 
-Version : 0.2
+Version : 0.3
 
 Released : Feb 27, 2019
 

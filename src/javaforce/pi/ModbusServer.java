@@ -32,7 +32,7 @@ public class ModbusServer extends Thread {
     new ModbusServer().start();
   }
   public enum IO {input, output, unknown};
-  public static String version = "0.2";
+  public static String version = "0.3";
   public ServerSocket ss;
   //NOTE:Everything is 1 based (zero not used)
   public static int port = 502;

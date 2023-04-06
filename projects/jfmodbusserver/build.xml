@@ -2,8 +2,9 @@
   <description>Modbus Server</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfModbusServer"/>
+  <property name="apptype" value="s"/>
   <property name="home" location="../.."/>
-  <property name="version" value="0.2"/>
+  <property name="version" value="0.3"/>
 
   <import file="../../base.xml"/>
 
@@ -12,5 +13,9 @@
   </target>
 
   <target name="jar" depends="depjars" description="jar">
+  </target>
+
+  <target name="install" description="install files for linux">
+    <copy file="jfmodbusserver.service" todir="/usr/lib/systemd/system"/>
   </target>
 </project>

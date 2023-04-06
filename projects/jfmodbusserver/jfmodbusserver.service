@@ -1,0 +1,10 @@
+[Unit]
+Description=JavaForce ModBus Server
+After=
+
+[Service]
+ExecStart=/usr/bin/jfmodbusserver
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
