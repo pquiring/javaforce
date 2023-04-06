@@ -57,5 +57,5 @@ Source : github.com/pquiring/javaforce (projects/jfmodbusserver)
 
 Version : 0.3
 
-Released : Feb 27, 2019
+Released : Apr 6, 2023
 

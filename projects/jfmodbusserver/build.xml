@@ -18,4 +18,15 @@
   <target name="install" description="install files for linux">
     <copy file="jfmodbusserver.service" todir="/usr/lib/systemd/system"/>
   </target>
+
+  <target name="zip" description="zip pre-built binaries">
+    <zip destfile="jfmodbusserver-${version}.zip">
+      <fileset dir=".">
+        <include name="*.jar"/>
+        <include name="*.txt"/>
+        <include name="*.so"/>
+        <include name="*.sh"/>
+      </fileset>
+    </zip>
+  </target>
 </project>
