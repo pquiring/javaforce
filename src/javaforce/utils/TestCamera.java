@@ -1,6 +1,6 @@
 package javaforce.utils;
 
-/** Tests Camera function (to be deleted)
+/** Tests Camera function
  *
  * @author pquiring
  *
@@ -143,14 +143,17 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
       camIdx = 0;
     }
     JFLog.log("camera=" + devices[camIdx]);
+    for(int a=0;a<3;a++) {JFLog.log(" ------------------------------- ");}
     encoder.start(this, 640, 480, 10, -1, -1, "dash", true, false);
     if (transcode) {
+      for(int a=0;a<3;a++) {JFLog.log(" ------------------------------- ");}
       encoder_video.start(new MediaIO() {
         public int read(MediaCoder coder, byte[] data) {
           return 0;
         }
         public int write(MediaCoder coder, byte[] data) {
-          encoder.addVideoEncoded(data, 0, data.length, false);
+          JFLog.log("h264.write:" + data.length);
+          encoder.addVideoEncoded(data, 0, data.length, ((encoderCount++) % 12) == 0);
           encoder.flush();
           return data.length;
         }
@@ -159,6 +162,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
         }
       }, 640, 480, 10, -1, -1, "h264", true, false);
     }
+    for(int a=0;a<3;a++) {JFLog.log(" ------------------------------- ");}
     camera.start(camIdx, 640, 480);
     width = camera.getWidth();
     height = camera.getHeight();
@@ -175,7 +179,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
           preview.setIcon(img);
           preview.repaint();
           JFLog.log("addFrame:" + frameCount++);
-          gotPacket = false;
           if (transcode) {
             encoder_video.addVideo(px);
             encoder_video.flush();
@@ -183,7 +186,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
             encoder.addVideo(px);
             encoder.flush();
           }
-          if (gotPacket) encoderCount++;
         }});
       }
     }, 100, 100);
@@ -232,7 +234,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private Camera camera;
   private Timer timer;
   private int frameCount = 0;
-  private int encoderCount = 0;
+  private int encoderCount = 1;
   private int fps = 10;
   private JFImage img;
   private int width, height;
@@ -241,7 +243,6 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private WebUIClient client;
   private Video video;
   private byte[] init_segment;
-  private boolean gotPacket;
   private boolean transcode;
 
   public void listCameras() {
@@ -328,8 +329,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   */
 
   public int write(MediaCoder coder, byte[] data) {
-    JFLog.log("write:" + data.length + ":" + getCurrentTime());
-    gotPacket = true;
+    JFLog.log("dash.write:" + data.length + ":" + getCurrentTime());
     boolean is_init = init_segment == null;
     boolean is_start_segment = false;
     if (data.length >= 8) {

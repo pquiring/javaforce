@@ -20,9 +20,10 @@
 static jboolean libav_org = JNI_FALSE;
 static jboolean loaded = JNI_FALSE;
 
-static jboolean ff_debug = JNI_FALSE;
+static jboolean ff_debug_log = JNI_FALSE;
 static jboolean ff_debug_buffer = JNI_FALSE;
 static jboolean ff_debug_box = JNI_FALSE;
+static jboolean ff_debug_time_base = JNI_TRUE;
 
 JF_LIB_HANDLE codec = NULL;
 JF_LIB_HANDLE device = NULL;
@@ -365,7 +366,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   printf("avformat_version=%d.%d.%d\n", version.v8.major, version.v8.minor, version.v8.micro);
 
   //enable debugging
-  if (ff_debug) {
+  if (ff_debug_log) {
     (*_av_log_set_level)(AV_LOG_TRACE);
   }
 
@@ -1466,15 +1467,15 @@ static jboolean encoder_init_video(FFContext *ctx) {
     ctx->video_codec_ctx->time_base.den = ctx->fps * 1001;
     ctx->video_stream->time_base.num = 1000;
     ctx->video_stream->time_base.den = ctx->fps * 1001;
-    ctx->video_codec_ctx->framerate.num = 1000;
-    ctx->video_codec_ctx->framerate.num = ctx->fps * 10010;
+    ctx->video_codec_ctx->framerate.num = ctx->fps * 1001;
+    ctx->video_codec_ctx->framerate.den = 1000;
   } else {
     ctx->video_codec_ctx->time_base.num = 1;
     ctx->video_codec_ctx->time_base.den = ctx->fps;
     ctx->video_stream->time_base.num = 1;
-    ctx->video_stream->time_base.den = ctx->fps;
-    ctx->video_codec_ctx->framerate.num = 1;
+    ctx->video_stream->time_base.den = ctx->fps * 1024;
     ctx->video_codec_ctx->framerate.num = ctx->fps;
+    ctx->video_codec_ctx->framerate.den = 1;
   }
   ctx->video_codec_ctx->gop_size = ctx->config_gop_size;
 //  ctx->video_codec_ctx->keyint_min = ctx->config_gop_size;
@@ -1611,7 +1612,7 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   ctx->audio_codec_ctx->time_base.den = ctx->freq;
   ctx->audio_stream->time_base.num = 1;
   ctx->audio_stream->time_base.den = ctx->freq;
-	
+
   //set audio codec options
   switch (ctx->audio_codec_ctx->codec_id) {
     case AV_CODEC_ID_MP3: {
@@ -1839,7 +1840,18 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
     (*_av_dict_set)(&ctx->fmt_ctx->metadata, "movflags", "+dash+delay_moov+skip_sidx+skip_trailer", AV_DICT_APPEND);
   }
 
+  if (ff_debug_time_base) {
+    printf("before:num/den=%d/%d\n", ctx->video_stream->time_base.num, ctx->video_stream->time_base.den);
+    printf("    cc:num/den=%d/%d\n", ctx->video_codec_ctx->time_base.num, ctx->video_codec_ctx->time_base.den);
+    printf("    fr:num/den=%d/%d\n", ctx->video_codec_ctx->framerate.num, ctx->video_codec_ctx->framerate.den);
+  }
   int ret = (*_avformat_write_header)(ctx->fmt_ctx, NULL);
+  if (ff_debug_time_base) {
+    printf(" after:num/den=%d/%d\n", ctx->video_stream->time_base.num, ctx->video_stream->time_base.den);
+    printf("    cc:num/den=%d/%d\n", ctx->video_codec_ctx->time_base.num, ctx->video_codec_ctx->time_base.den);
+    printf("    fr:num/den=%d/%d\n", ctx->video_codec_ctx->framerate.num, ctx->video_codec_ctx->framerate.den);
+  }
+
   if (ret < 0) {
     printf("avformat_write_header failed! %d\n", ret);
   }
