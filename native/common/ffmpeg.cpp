@@ -506,6 +506,9 @@ struct FFContext {
   int64_t audio_pts;
   int64_t video_pts;
 
+  int64_t last_dts;
+  int64_t last_pts;
+
   uint8_t* audio_src_data[4];
 
   jboolean is_dash;
@@ -1985,6 +1988,8 @@ static jboolean encoder_addAudioFrame(FFContext *ctx, short *sams, int offset, i
     if (ret < 0) break;
     pkt->stream_index = ctx->audio_stream->index;
     (*_av_packet_rescale_ts)(pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
+    ctx->last_dts = pkt->dts;
+    ctx->last_pts = pkt->pts;
 //    log_packet("audio", ctx->fmt_ctx, pkt);
     ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
     if (ret < 0) {
@@ -2090,6 +2095,9 @@ static jboolean encoder_addVideo(FFContext *ctx, int *px)
     if (ret < 0) break;
     pkt->stream_index = ctx->video_stream->index;
     (*_av_packet_rescale_ts)(pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
+//    printf("packet:%lld/%lld/%lld\n", pkt->dts, pkt->pts, pkt->duration);
+    ctx->last_dts = pkt->dts;
+    ctx->last_pts = pkt->pts;
 //    log_packet("video", ctx->fmt_ctx, pkt);
     ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
     if (ret < 0) {
@@ -2119,15 +2127,35 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideo
   return ok;
 }
 
-static jboolean encoder_addAudioEncoded(FFContext *ctx, jbyte* data, jint size) {
+JNIEXPORT jlong JNICALL Java_javaforce_media_MediaEncoder_getLastDTS
+  (JNIEnv *e, jobject c)
+{
+  FFContext *ctx = getFFContext(e,c);
+  return ctx->last_dts;
+}
+
+JNIEXPORT jlong JNICALL Java_javaforce_media_MediaEncoder_getLastPTS
+  (JNIEnv *e, jobject c)
+{
+  FFContext *ctx = getFFContext(e,c);
+  return ctx->last_pts;
+}
+
+static jboolean encoder_addAudioEncoded(FFContext *ctx, jbyte* data, jint size, jboolean ts, jlong dts, jlong pts) {
   AVPacket *pkt = AVPacket_New();
   (*_av_init_packet)(pkt);
   pkt->data = (uint8_t*)data;
   pkt->size = size;
   pkt->stream_index = ctx->audio_stream->index;
-  pkt->pts = ctx->audio_pts;  //(*_av_rescale_q)(ctx->audio_pts, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
-  pkt->dts = pkt->pts;
-  (*_av_packet_rescale_ts)(pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
+
+  if (ts) {
+    pkt->dts = dts;
+    pkt->pts = pts;
+  } else {
+    pkt->pts = ctx->audio_pts;  //(*_av_rescale_q)(ctx->audio_pts, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
+    pkt->dts = pkt->pts;
+    (*_av_packet_rescale_ts)(pkt, ctx->audio_codec_ctx->time_base, ctx->audio_stream->time_base);
+  }
 
   int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
   pkt->data = NULL;
@@ -2146,25 +2174,48 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudioEncoded
   jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-  jboolean ok = encoder_addAudioEncoded(ctx, ba_ptr + offset, length);
+  jboolean ok = encoder_addAudioEncoded(ctx, ba_ptr + offset, length, JNI_FALSE, 0, 0);
 
   e->ReleasePrimitiveArrayCritical(ba, ba_ptr, JNI_ABORT);
 
   return ok;
 }
 
-static jboolean encoder_addVideoEncoded(FFContext *ctx, jbyte* data, jint size, jboolean key_frame) {
+JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudioEncodedTS
+  (JNIEnv *e, jobject c, jbyteArray ba, jint offset, jint length, jlong dts, jlong pts)
+{
+  FFContext *ctx = getFFContext(e,c);
+
+  jboolean isCopy;
+  jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
+  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
+
+  jboolean ok = encoder_addAudioEncoded(ctx, ba_ptr + offset, length, JNI_TRUE, dts, pts);
+
+  e->ReleasePrimitiveArrayCritical(ba, ba_ptr, JNI_ABORT);
+
+  return ok;
+}
+
+static jboolean encoder_addVideoEncoded(FFContext *ctx, jbyte* data, jint size, jboolean key_frame, jboolean ts, jlong dts, jlong pts) {
   AVPacket *pkt = AVPacket_New();
   (*_av_init_packet)(pkt);
   pkt->data = (uint8_t*)data;
   pkt->size = size;
   pkt->stream_index = ctx->video_stream->index;
-  pkt->pts = ctx->video_pts;  //(*_av_rescale_q)(ctx->video_pts, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
-  pkt->dts = pkt->pts;
   if (key_frame) {
     pkt->flags = AV_PKT_FLAG_KEY;
   }
-  (*_av_packet_rescale_ts)(pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
+
+  if (ts) {
+    pkt->dts = dts;
+    pkt->pts = pts;
+  } else {
+    pkt->pts = ctx->video_pts;  //(*_av_rescale_q)(ctx->video_pts, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
+    pkt->dts = pkt->pts;
+    (*_av_packet_rescale_ts)(pkt, ctx->video_codec_ctx->time_base, ctx->video_stream->time_base);
+//    printf("packet:%lld/%lld/%lld\n", pkt->dts, pkt->pts, pkt->duration);
+  }
 
   int ret = (*_av_interleaved_write_frame)(ctx->fmt_ctx, pkt);
   pkt->data = NULL;
@@ -2183,7 +2234,23 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideoEncoded
   jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
 
-  jboolean ok = encoder_addVideoEncoded(ctx, ba_ptr + offset, length, key_frame);
+  jboolean ok = encoder_addVideoEncoded(ctx, ba_ptr + offset, length, key_frame, JNI_FALSE, 0, 0);
+
+  e->ReleasePrimitiveArrayCritical(ba, ba_ptr, JNI_ABORT);
+
+  return ok;
+}
+
+JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideoEncodedTS
+  (JNIEnv *e, jobject c, jbyteArray ba, jint offset, jint length, jboolean key_frame, jlong dts, jlong pts)
+{
+  FFContext *ctx = getFFContext(e,c);
+
+  jboolean isCopy;
+  jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
+  if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
+
+  jboolean ok = encoder_addVideoEncoded(ctx, ba_ptr + offset, length, key_frame, JNI_TRUE, dts, pts);
 
   e->ReleasePrimitiveArrayCritical(ba, ba_ptr, JNI_ABORT);
 

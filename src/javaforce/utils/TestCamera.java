@@ -153,7 +153,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
         }
         public int write(MediaCoder coder, byte[] data) {
           JFLog.log("h264.write:" + data.length);
-          encoder.addVideoEncoded(data, 0, data.length, ((encoderCount++) % 12) == 0);
+          encoder.addVideoEncodedTS(data, 0, data.length, false, encoder_video.getLastDTS(), encoder_video.getLastPTS());
           encoder.flush();
           return data.length;
         }
@@ -186,6 +186,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
             encoder.addVideo(px);
             encoder.flush();
           }
+          JFLog.log("============================");
         }});
       }
     }, 100, 100);

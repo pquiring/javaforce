@@ -38,16 +38,22 @@ public class MediaEncoder extends MediaCoder {
   public void setProfileLevel(int level) {
     profileLevel = level;
   }
-  public native boolean addAudio(short sams[], int offset, int length);
-  public boolean addAudio(short sams[]) {
+  public native boolean addAudio(short[] sams, int offset, int length);
+  public boolean addAudio(short[] sams) {
     return addAudio(sams, 0, sams.length);
   }
-  public native boolean addVideo(int px[]);
+  public native boolean addVideo(int[] px);
   public native int getAudioFramesize();
+  public native long getLastDTS();
+  public native long getLastPTS();
   /** Adds pre encoded audio. */
-  public native boolean addAudioEncoded(byte packet[], int offset, int length);
+  public native boolean addAudioEncoded(byte[] packet, int offset, int length);
   /** Adds pre encoded video. */
   public native boolean addVideoEncoded(byte[] packet, int offset, int length, boolean key_frame);
+  /** Adds pre encoded audio. */
+  public native boolean addAudioEncodedTS(byte[] packet, int offset, int length, long dts, long pts);
+  /** Adds pre encoded video. */
+  public native boolean addVideoEncodedTS(byte[] packet, int offset, int length, boolean key_frame, long dts, long pts);
   public native void flush();
   public native void stop();
   /** Returns codecs mimetype. */
