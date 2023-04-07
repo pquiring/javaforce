@@ -83,7 +83,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     cameraList.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
 
     transcodeBox.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
-    transcodeBox.setText("transcode h264 -> dash (WIP)");
+    transcodeBox.setText("transcode h264 -> dash");
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);

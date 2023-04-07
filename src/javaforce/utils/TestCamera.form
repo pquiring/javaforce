@@ -120,7 +120,7 @@
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Tahoma" size="18" style="1"/>
         </Property>
-        <Property name="text" type="java.lang.String" value="transcode h264 -&gt; dash (WIP)"/>
+        <Property name="text" type="java.lang.String" value="transcode h264 -&gt; dash"/>
       </Properties>
     </Component>
   </SubComponents>
