@@ -153,7 +153,9 @@ public class TestGLCube implements WebUIHandler {
     }
     public void run() {
       Canvas canvas = (Canvas)client.getProperty("canvas");
-      mMatrix.addRotate(1, 1, 0, 0);
+      mMatrix.addRotate(5, 1, 0, 0);
+      mMatrix.addRotate(10, 0, 1, 0);
+      mMatrix.addRotate(3, 0, 0, 1);
       canvas.sendData(convertFloatArray(mMatrix.m));
       canvas.sendEvent("matrix", new String[] {"idx=1"});
     }
@@ -184,7 +186,7 @@ public class TestGLCube implements WebUIHandler {
       img.fill(0, 0, 256, 256, 0xffffff);
       img.setFont(new Font(Font.DIALOG, 0, 40));
       img.getGraphics().setColor(java.awt.Color.BLACK);
-      img.getGraphics().drawBytes("OpenGL".getBytes(), 0,6, 50, 100);
+      img.getGraphics().drawBytes("WebGL".getBytes(), 0,5, 50, 100);
       canvas.sendData(convertIntArray(img.getBuffer()));
       canvas.sendEvent("loadt", new String[] {"idx=0", "x=" + img.getWidth(), "y=" + img.getHeight()});
       //setup rendering pipeline
