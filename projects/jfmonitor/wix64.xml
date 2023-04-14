@@ -39,6 +39,14 @@
             Scope="any"
             IgnoreFailure="yes"
             Profile="all" />
+          <fire:FirewallException
+            Id="FirewallRule3"
+            Name="jfMonitorWEBAPI"
+            Protocol="tcp"
+            Port="8080"
+            Scope="any"
+            IgnoreFailure="yes"
+            Profile="all" />
 				</File>
         <File Id="jfmonitor.jar" Source="jfmonitor.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>

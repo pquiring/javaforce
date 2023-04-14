@@ -21,6 +21,7 @@ public class APIService extends Thread implements WebHandler {
   private void getmac(String[] args, WebResponse res) {
     try {
       String ip = null;
+      boolean html = false;
       for(String arg : args) {
         int idx = arg.indexOf('=');
         if (idx == -1) continue;
@@ -30,6 +31,9 @@ public class APIService extends Thread implements WebHandler {
           case "ip":
             ip = value;
             break;
+          case "html":
+            html = value.equals("true");
+            break;
         }
       }
       if (ip == null) throw new Exception("bad args");
@@ -37,7 +41,15 @@ public class APIService extends Thread implements WebHandler {
         for(IP nwip : nw.ips) {
           if (nwip.host.equals(ip)) {
             String mac = nwip.mac;
-            try {res.write(mac.getBytes());} catch (Exception e) {}
+            StringBuilder sb = new StringBuilder();
+            if (html) {
+              sb.append("<body style='margin: 0px; padding: 0px; overflow: hidden;'>");
+            }
+            sb.append(mac);
+            if (html) {
+              sb.append("</body>");
+            }
+            try {res.write(sb.toString().getBytes());} catch (Exception e) {}
           }
         }
       }
