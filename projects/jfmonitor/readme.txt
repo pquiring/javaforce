@@ -21,6 +21,10 @@ Usage:
   - each client will report file system usage to the server
   - any client (or server) can also ping any locally connected network which requires pcap installed.
 
+API Interface
+  - http://server:8080/?verb=getmac&ip=1.2.3.4
+    - returns last known mac address for IP
+
 FAQ:
   - Q: Can I ping a remote network?
   - A: No, the MAC address is used to identify devices and ARP requests are used instead of actual PING requests
@@ -33,6 +37,3 @@ Source Code : https://github.com/pquiring/javaforce/tree/master/projects/jfmonit
 
 Author : Peter Quiring
 eMail : pquiring at gmail dot com
-
-Version : 0.4
-Date : 1/6/2023
