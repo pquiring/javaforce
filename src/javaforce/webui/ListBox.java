@@ -10,6 +10,7 @@ import javaforce.webui.event.*;
 public class ListBox extends ScrollPanel implements Click {
   public ListBox() {
     addClass("listbox");
+    addClass("height100");
   }
 
   public void add(String item) {
