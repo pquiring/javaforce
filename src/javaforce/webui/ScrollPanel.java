@@ -6,17 +6,19 @@ package javaforce.webui;
  */
 
 public class ScrollPanel extends Panel {
-  private Container cell;
-  private Container ctr;
+  private Panel cell;
+  private Panel ctr;
   public ScrollPanel() {
     setOverflow(SCROLL);
     setClass("scrollpanel");
+    setResizeChild(false);
     cell = new Panel();
     cell.addClass("scrollpanelcell");
+//    cell.setResizeChild(false);
     ctr = new Panel();
     ctr.setClass("block");
-    ctr.setWidth(0);
-    ctr.setHeight(0);
+//    ctr.setResizeChild(false);
+    ctr.setOverflow(AUTO);
     cell.add(ctr);
     super.add(cell);
   }

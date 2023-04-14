@@ -7,6 +7,7 @@ package javaforce.webui;
 
 public class Panel extends Container {
   private int overflow = -1;
+  private boolean resizeChild = true;
   public Panel() {
     addClass("panel");
     setOverflow(HIDDEN);
@@ -31,12 +32,18 @@ public class Panel extends Container {
   }
   public void init() {
     super.init();
-    if (count() > 0) {
+    if (resizeChild && count() > 0) {
       Component child = get(0);
       if (child instanceof Panel) {
         addEvent("onresize", "onresizePanel(event, this,\"" + child.id + "\");");
       }
     }
+  }
+  public boolean getResizeChild() {
+    return resizeChild;
+  }
+  public void setResizeChild(boolean state) {
+    resizeChild = state;
   }
 
   public void onLoaded(String[] args) {

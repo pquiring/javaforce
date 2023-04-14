@@ -275,8 +275,8 @@ public abstract class Component {
   public void setSize(int width, int height) {
     this.width = width;
     this.height = height;
-    setStyle("width", width + "px");
-    setStyle("height", height + "px");
+    if (width > 0) {setStyle("width", width + "px");}
+    if (height > 0) {setStyle("height", height + "px");}
     sendEvent("setsize", new String[] {"w=" + width, "h=" + height});
   }
   public int getX() {
