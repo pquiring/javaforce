@@ -35,6 +35,21 @@ function media_set_live_source(media, codecs) {
   media.play();
 }
 
+function media_set_capture(media, audio, video) {
+  console.log("media_set_capture:id=" + media.id);
+  var ctx = {};
+  ctx.media = media;
+  var table = document.getElementById(media.id + "s2");
+  table.style.display = 'none';  //hide initial controls
+  ctx.capture = navigator.mediaDevices.getUserMedia({'audio' : audio,'video': video});
+  //{'audio' : true, 'video' : width:1024, height: 720, framerate: {ideal: 10, max:15}, facingMode: 'user' | 'environment'}
+  ctx.capture.then((stream) => {
+    ctx.media.srcObject = stream;
+    ctx.media.play();
+  });
+  medias.set(media.id, ctx);
+}
+
 function media_uninit(media) {
   var ctx = medias.get(media.id);
   //TODO : stop/free resources

@@ -79,6 +79,9 @@ public class Media extends Container {
   public void setLiveSource(String codecs) {
     sendEvent("media_set_live_source", new String[] {"codecs=" + codecs});
   }
+  public void setCapture(boolean doVideo, boolean doAudio) {
+    sendEvent("media_set_capture", new String[] {"audio=" + doAudio, "video=" + doVideo});
+  }
   public void play() {
     sendEvent("media_play", null);
     state = STATE_PLAY;

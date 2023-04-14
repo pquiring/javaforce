@@ -243,6 +243,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private MediaEncoder encoder_video;
   private WebUIClient client;
   private Video video;
+  private Video video_capture;
   private byte[] init_segment;
   private boolean transcode;
 
@@ -308,6 +309,17 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     video.addActionListener(new Action() {
       public void action(Component cmp) {
         video.setLiveSource(encoder.getCodecMimeType("dash", true, false));
+      }
+    });
+
+    video_capture = new Video();
+    video_capture.setWidth(1024);
+    video_capture.setHeight(720);
+    panel.add(video_capture);
+
+    video_capture.addActionListener(new Action() {
+      public void action(Component cmp) {
+        video_capture.setCapture(true, true);
       }
     });
 

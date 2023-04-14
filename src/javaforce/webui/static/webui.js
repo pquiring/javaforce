@@ -232,6 +232,9 @@ function wsevent(event) {
     case "media_set_live_source":
       media_set_live_source(element, msg.codecs);
       break;
+    case "media_set_capture":
+      media_set_capture(element, msg.audio, msg.video);
+      break;
     case "media_uninit":
       media_uninit(element);
       break;
