@@ -10,6 +10,7 @@ import javaforce.net.*;
 public class MonitorService extends Thread {
   public static ConfigService configService;
   public static MonitorService monitorService;
+  public static APIService apiService;
   public static Server server;
   public static QueryClients query;
   public static Client client;
@@ -58,6 +59,9 @@ public class MonitorService extends Thread {
     //start config service
     configService = new ConfigService();
     configService.start();
+    //start api service
+    apiService = new APIService();
+    apiService.start();
     //start client or server thread
     switch (Config.current.mode) {
       case "client": startClient(); break;
