@@ -22,7 +22,7 @@ Usage:
   - any client (or server) can also ping any locally connected network which requires pcap installed.
 
 API Interface
-  - http://server:8080/?verb=getmac&ip=1.2.3.4
+  - http://server:8080/?verb=getmac&ip=1.2.3.4&html=true
     - returns last known mac address for IP
 
 FAQ:
