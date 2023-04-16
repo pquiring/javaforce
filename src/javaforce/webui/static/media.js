@@ -44,8 +44,21 @@ function media_set_capture(media, audio, video) {
   ctx.capture = navigator.mediaDevices.getUserMedia({'audio' : audio,'video': video});
   //{'audio' : true, 'video' : width:1024, height: 720, framerate: {ideal: 10, max:15}, facingMode: 'user' | 'environment'}
   ctx.capture.then((stream) => {
+    var opts = {
+      audioBitsPerSecond: 128000,
+      videoBitsPerSecond: 2500000,
+      mimeType: 'video/x-matroska;codecs=avc1,opus'
+    };
+    ctx.recorder = new MediaRecorder(stream, opts);
+    ctx.recorder.onstart = (event) => {console.log("recorder.start");};
+    ctx.recorder.onerror = (event) => {console.log("recorder.error");};
+    ctx.recorder.ondataavailable = (event) => {
+      //TODO : send event.data (Blob) to server
+      console.log("data.length=" + event.data.size);
+    };
     ctx.media.srcObject = stream;
     ctx.media.play();
+    ctx.recorder.start(100);
   });
   medias.set(media.id, ctx);
 }
