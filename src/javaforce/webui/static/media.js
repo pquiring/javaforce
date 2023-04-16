@@ -53,8 +53,8 @@ function media_set_capture(media, audio, video) {
     ctx.recorder.onstart = (event) => {console.log("recorder.start");};
     ctx.recorder.onerror = (event) => {console.log("recorder.error");};
     ctx.recorder.ondataavailable = (event) => {
-      //TODO : send event.data (Blob) to server
-      console.log("data.length=" + event.data.size);
+      //console.log("data.length=" + event.data.size);
+      ws.send(event.data);
     };
     ctx.media.srcObject = stream;
     ctx.media.play();

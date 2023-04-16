@@ -7,6 +7,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import java.io.*;
 import java.util.*;
 
 import javaforce.*;
@@ -26,6 +27,7 @@ public class WebUIClient {
   public PopupMenu topPopupMenu;
 
   private WebUIHandler handler;
+  private OutputStream os;
 
   public WebUIClient(WebSocket socket, WebUIHandler handler) {
     this.socket = socket;
@@ -102,6 +104,12 @@ public class WebUIClient {
       } else {
         JFLog.log("Error:Component not found:" + id);
       }
+    }
+  }
+  public void dispatchData(byte[] data) {
+    //JFLog.log("data=" + data.length);
+    if (os != null) {
+      try { os.write(data); } catch (Exception e) {}
     }
   }
   private Object pingLock = new Object();
@@ -248,5 +256,10 @@ public class WebUIClient {
 
   public void openURL(String url) {
     sendEvent(root.id, "openurl", new String[] {"url=" + url});
+  }
+
+  /** Set where binary data is written to. */
+  public void setOutputStream(OutputStream os) {
+    this.os = os;
   }
 }

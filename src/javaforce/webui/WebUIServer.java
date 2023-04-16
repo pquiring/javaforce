@@ -29,7 +29,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   private WebUIHandler handler;
 
   /** Enable debug log messages. */
-  public static boolean debug = false;
+  public static boolean debug = true;
 
   /** Enable transaction id in WebSocket messages for debugging. */
   public static boolean debug_tid = false;
@@ -166,6 +166,10 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
     WebUIClient client = getClient(sock);
     if (client == null) {
       JFLog.log("Unknown Socket:" + sock);
+      return;
+    }
+    if (type == WebSocket.TYPE_BINARY || type == WebSocket.TYPE_CONT) {
+      client.dispatchData(data);
       return;
     }
     String msg = new String(data);

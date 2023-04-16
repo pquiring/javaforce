@@ -7,6 +7,7 @@ package javaforce.utils;
  * Created : Jun 9, 2014
  */
 
+import java.io.*;
 import java.util.*;
 
 import javaforce.*;
@@ -320,6 +321,9 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     video_capture.addActionListener(new Action() {
       public void action(Component cmp) {
         video_capture.setCapture(true, true);
+        try {
+          client.setOutputStream(new FileOutputStream("test.mkv"));
+        } catch (Exception e) {}
       }
     });
 
