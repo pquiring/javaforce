@@ -1,3 +1,7 @@
+Apr 17/2023 : 0.6 released
+  - fixed webui issues
+  - added web API port to firewall exception rules
+
 Apr 14/2023 : 0.5a released
   - added html parameter to getmac verb
 
