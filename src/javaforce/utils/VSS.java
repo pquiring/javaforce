@@ -99,14 +99,45 @@ public class VSS {
 
   public static boolean deleteShadow(String volume) {
     JFLog.log("VSS:deleteShadow:" + volume);
-    ShellProcess sh = new ShellProcess();
-    sh.keepOutput(true);
-    String out = sh.run(new String[] {"vssadmin", "delete", "shadows", "/For=" + volume}, false);
-    boolean res = sh.getErrorLevel() == 0;
-    if (!res) {
-      JFLog.log(out);
+    {
+      ShellProcess sh = new ShellProcess();
+      sh.keepOutput(true);
+      String out = sh.run(new String[] {"vssadmin", "delete", "shadows", "/For=" + volume}, false);
+      boolean res = sh.getErrorLevel() == 0;
+      if (!res) {
+        JFLog.log(out);
+      }
+      if (res) return true;
     }
-    return res;
+    //try to perform reize and then delete again (this issue still present in WS2022)
+    {
+      ShellProcess sh = new ShellProcess();
+      sh.keepOutput(true);
+      String out = sh.run(new String[] {"vssadmin", "resize", "shadowstorage", "/For=" + volume, "/On=" + volume, "/maxsize=400MB"}, false);
+      boolean res = sh.getErrorLevel() == 0;
+      if (!res) {
+        JFLog.log(out);
+      }
+    }
+    {
+      ShellProcess sh = new ShellProcess();
+      sh.keepOutput(true);
+      String out = sh.run(new String[] {"vssadmin", "resize", "shadowstorage", "/For=" + volume, "/On=" + volume, "/maxsize=unbounded"}, false);
+      boolean res = sh.getErrorLevel() == 0;
+      if (!res) {
+        JFLog.log(out);
+      }
+    }
+    {
+      ShellProcess sh = new ShellProcess();
+      sh.keepOutput(true);
+      String out = sh.run(new String[] {"vssadmin", "delete", "shadows", "/For=" + volume}, false);
+      boolean res = sh.getErrorLevel() == 0;
+      if (!res) {
+        JFLog.log(out);
+      }
+      return res;
+    }
   }
 
   public static boolean deleteShadowAll() {
