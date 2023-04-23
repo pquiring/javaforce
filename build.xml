@@ -52,9 +52,7 @@
   <target name="compile" depends="depjars" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
-    <mkdir dir="jars"/>
     <javac srcdir="${src}" destdir="${build}" target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false" nativeheaderdir="native/headers">
-      <compilerarg value="-Xlint:unchecked"/>
       <classpath>
         <fileset dir="jars" includes="*.jar"/>
       </classpath>
