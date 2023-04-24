@@ -26,7 +26,7 @@ import javaforce.*;
 
 public class JNLP {
   private static boolean debug = false;
-  private static String version = "0.1";
+  private static String version = "0.2";
   public static void main(String[] args) {
     if (args == null || args.length < 1) {
       System.out.println("Desc: JavaForce JNLP Launcher/" + version);
@@ -140,7 +140,8 @@ public class JNLP {
           JFLog.log(c);
         }
       }
-      Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]));
+      Process p = Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]));
+      p.waitFor();
     } catch (Exception e) {
       JFLog.log(e);
     }
