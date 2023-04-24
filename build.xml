@@ -92,6 +92,9 @@
   <target name="jnlp" depends="compile-jnlp" description="build jnlp jar file">
     <!-- build jnlp jar file from class files -->
     <jar destfile="jars/jnlp.jar" includes="**/*.class" basedir="${build-jnlp}">
+      <manifest>
+        <attribute name="Main-Class" value="javaforce.utils.JNLP"/>
+      </manifest>
     </jar>
     <copy file="jars/jnlp.jar" todir="."/>
   </target>
