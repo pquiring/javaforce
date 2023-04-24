@@ -5,7 +5,25 @@ import java.util.*;
 
 import javaforce.*;
 
+/** JNLP Very Basic Launcher
+ *
+ * Usage : JNLP file.jnlp
+ *
+ * Supports:
+ *  - jnlp,codebase
+ *  - resources,href
+ *  - properties,name,value
+ *  - application-desc,main-class
+ *
+ * Not supported:
+ *  - Applets
+ *  - parameters
+ *
+ * @author pquiring
+ */
+
 public class JNLP {
+  private static boolean debug = false;
   public static void main(String[] args) {
     //arg0=jnlp file
     if (args == null || args.length < 1) {
@@ -48,11 +66,11 @@ public class JNLP {
           uri += '/';
         }
       }
-      JFLog.log("host=" + host);
+      if (debug) JFLog.log("host=" + host);
       int port = 80;
       int i1 = host.indexOf(':');
       if (i1 != -1) {
-        JFLog.log("port=" + host.substring(i1 + 1));
+        if (debug) JFLog.log("port=" + host.substring(i1 + 1));
         port = Integer.valueOf(host.substring(i1 + 1));
         host = host.substring(0, i1);
       }
@@ -111,9 +129,11 @@ public class JNLP {
         fos.close();
       }
       //launch jnlp
-      JFLog.log("executing jnlp:");
-      for(String c : cmd) {
-        JFLog.log(c);
+      if (debug) {
+        JFLog.log("executing jnlp:");
+        for(String c : cmd) {
+          JFLog.log(c);
+        }
       }
       Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]));
     } catch (Exception e) {
