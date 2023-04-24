@@ -26,14 +26,20 @@ import javaforce.*;
 
 public class JNLP {
   private static boolean debug = false;
-  private static String version = "0.2";
+  private static String version = "0.3";
   public static void main(String[] args) {
     if (args == null || args.length < 1) {
       System.out.println("Desc: JavaForce JNLP Launcher/" + version);
-      System.out.println("Usage: JNLP file.jnlp");
+      System.out.println("Usage: JNLP file.jnlp [--nowait]");
       System.out.println("Author: Peter Quiring");
       System.out.println("WebSite: http://github.com/pquiring/javaforce");
       return;
+    }
+    boolean wait = true;
+    if (args.length > 1) {
+      if (args[1].equals("--nowait")) {
+        wait = false;
+      }
     }
     try {
       XML xml = new XML();
@@ -141,7 +147,7 @@ public class JNLP {
         }
       }
       Process p = Runtime.getRuntime().exec(cmd.toArray(new String[cmd.size()]));
-      p.waitFor();
+      if (wait) p.waitFor();
     } catch (Exception e) {
       JFLog.log(e);
     }
