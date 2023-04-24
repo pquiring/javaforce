@@ -19,15 +19,20 @@ import javaforce.*;
  *  - Applets
  *  - parameters
  *
+ * Tested with Inductive Automation : Ignition v7.x
+ *
  * @author pquiring
  */
 
 public class JNLP {
   private static boolean debug = false;
+  private static String version = "0.1";
   public static void main(String[] args) {
-    //arg0=jnlp file
     if (args == null || args.length < 1) {
+      System.out.println("Desc: JavaForce JNLP Launcher/" + version);
       System.out.println("Usage: JNLP file.jnlp");
+      System.out.println("Author: Peter Quiring");
+      System.out.println("WebSite: http://github.com/pquiring/javaforce");
       return;
     }
     try {

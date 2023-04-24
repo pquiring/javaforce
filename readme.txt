@@ -87,6 +87,7 @@ ffmpeg-mac64 : Download ffmpeg libraries for Mac64
 jre-base : pre-link JRE for creating native packages (msi, dmg)
 jre-base-desktop : pre-link JRE with desktop support
 jre-base-javac : pre-link JRE with java compiler support
+jnlp : build JNLP launcher (Java8)
 
 Common Ant tasks:
 -----------------
