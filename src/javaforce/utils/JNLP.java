@@ -7,7 +7,7 @@ import javaforce.*;
 
 /** JNLP Very Basic Launcher
  *
- * Usage : JNLP file.jnlp
+ * Usage : JNLP file.jnlp [--nowait]
  *
  * Supports:
  *  - jnlp,codebase
@@ -19,6 +19,9 @@ import javaforce.*;
  *  - Applets
  *  - parameters
  *
+ * On Windows the --nowait may be required.
+ * On Linux the --nowait should not be used.
+ *
  * Tested with Inductive Automation : Ignition v7.x
  *
  * @author pquiring
@@ -26,11 +29,12 @@ import javaforce.*;
 
 public class JNLP {
   private static boolean debug = false;
-  private static String version = "0.3";
+  private static String version = "0.4";
   public static void main(String[] args) {
     if (args == null || args.length < 1) {
       System.out.println("Desc: JavaForce JNLP Launcher/" + version);
       System.out.println("Usage: JNLP file.jnlp [--nowait]");
+      System.out.println("Where: --nowait = Do not wait for JNLP app to exit");
       System.out.println("Author: Peter Quiring");
       System.out.println("WebSite: http://github.com/pquiring/javaforce");
       return;
