@@ -543,8 +543,8 @@ public class MainPanel extends javax.swing.JPanel {
   public static Config config;
   private String configFolder = JF.getUserPath();
   private String configFile = "/.jfpasswords.xml";
-  private XML safe = new XML();
-  private XML safeGroups = new XML();  //a copy with just groups
+  private XMLTree safe = new XMLTree();
+  private XMLTree safeGroups = new XMLTree();  //a copy with just groups
   protected static String password;
   private DefaultTableModel table;
   private java.util.Timer timer;
@@ -569,7 +569,7 @@ public class MainPanel extends javax.swing.JPanel {
   private void loadConfig() {
     config = new Config();
     try {
-      XML xml = new XML();
+      XMLTree xml = new XMLTree();
       FileInputStream fis = new FileInputStream(configFolder + configFile);
       xml.read(fis);
       xml.writeClass(config);
@@ -583,7 +583,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void saveConfig() {
     try {
-      XML xml = new XML();
+      XMLTree xml = new XMLTree();
       FileOutputStream fos = new FileOutputStream(configFolder + configFile);
       xml.readClass("jpassword", config);
       xml.write(fos);
@@ -642,13 +642,13 @@ public class MainPanel extends javax.swing.JPanel {
     copyGroups(safe.root, safeGroups.root);
   }
 
-  private void copyGroups(XML.XMLTag src, XML.XMLTag dst) {
+  private void copyGroups(XMLTree.XMLTag src, XMLTree.XMLTag dst) {
     int cnt = src.getChildCount();
     groups.makeVisible(new TreePath(dst.getPath()));
     for(int a=0;a<cnt;a++) {
-      XML.XMLTag tag = src.getChildAt(a);
+      XMLTree.XMLTag tag = src.getChildAt(a);
       if (tag.name.equals("group")) {
-        XML.XMLTag newtag = safeGroups.addTag(dst, "group", "name=\"" + tag.getArg("name") + "\"", "");
+        XMLTree.XMLTag newtag = safeGroups.addTag(dst, "group", "name=\"" + tag.getArg("name") + "\"", "");
         copyGroups(tag, newtag);
         continue;
       }
@@ -771,7 +771,7 @@ public class MainPanel extends javax.swing.JPanel {
     String name = JFAWT.getString("Enter Group Name:", "");
     if (name == null) return;
     TreePath path = groups.getSelectionPath();
-    XML.XMLTag selTag;
+    XMLTree.XMLTag selTag;
     if (path == null) {
       selTag = safe.root;
     } else {
@@ -784,7 +784,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void deleteGroup() {
     TreePath path = groups.getSelectionPath();
-    XML.XMLTag selTag;
+    XMLTree.XMLTag selTag;
     if (path == null) return;
     selTag = safe.getTag(path);
     if (!JFAWT.showConfirm("Confirm", "Are you sure?")) return;
@@ -795,7 +795,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void renameGroup() {
     TreePath path = groups.getSelectionPath();
-    XML.XMLTag selTag;
+    XMLTree.XMLTag selTag;
     if (path == null) return;
     selTag = safe.getTag(path);
     String newName = JFAWT.getString("Enter new name", selTag.getArg("name"));
@@ -816,7 +816,7 @@ public class MainPanel extends javax.swing.JPanel {
   private void listEntries() {
     table.setRowCount(0);
     TreePath path = groups.getSelectionPath();
-    XML.XMLTag selTag;
+    XMLTree.XMLTag selTag;
     if (path == null) {
       selTag = safe.root;
     } else {
@@ -826,12 +826,12 @@ public class MainPanel extends javax.swing.JPanel {
     int cnt = selTag.getChildCount();
     ArrayList<Entry> alist = new ArrayList<Entry>();
     for(int a=0;a<cnt;a++) {
-      XML.XMLTag child = selTag.getChildAt(a);
+      XMLTree.XMLTag child = selTag.getChildAt(a);
       if (!child.name.equals("entry")) continue;
       int cnt2 = child.getChildCount();
       String title = child.getArg("name"), username = "", pass = "", url = "", notes = "";
       for(int b=0;b<cnt2;b++) {
-        XML.XMLTag f = child.getChildAt(b);
+        XMLTree.XMLTag f = child.getChildAt(b);
         if (f.name.equals("username")) {
           username = f.getContent();
           continue;
@@ -868,13 +868,13 @@ public class MainPanel extends javax.swing.JPanel {
     dialog.setVisible(true);
     if (!dialog.accepted) return;
     TreePath path = groups.getSelectionPath();
-    XML.XMLTag selTag;
+    XMLTree.XMLTag selTag;
     if (path == null) {
       selTag = safe.root;
     } else {
       selTag = safe.getTag(path);
     }
-    XML.XMLTag entry = safe.addTag(selTag, "entry", "", "");
+    XMLTree.XMLTag entry = safe.addTag(selTag, "entry", "", "");
     dialog.saveTo(safe, entry);
     listEntries();
     dirty = true;
@@ -883,13 +883,13 @@ public class MainPanel extends javax.swing.JPanel {
   private void deleteEntry() {
     TreePath path = groups.getSelectionPath();
     if (path == null) return;
-    XML.XMLTag selTag;
+    XMLTree.XMLTag selTag;
     selTag = safe.getTag(path);
     int row = entries.getSelectedRow();
     if (row == -1) return;
     String title = (String)entries.getValueAt(row, 0);
     int cnt = selTag.getChildCount();
-    XML.XMLTag child = null;
+    XMLTree.XMLTag child = null;
     for(int a=0;a<cnt;a++) {
       child = selTag.getChildAt(a);
       if (child.name.equals("entry") && child.getArg("name").equals(title)) break;
@@ -904,7 +904,7 @@ public class MainPanel extends javax.swing.JPanel {
 
   private void editEntry() {
     TreePath path = groups.getSelectionPath();
-    XML.XMLTag selTag;
+    XMLTree.XMLTag selTag;
     if (path == null) return;
     selTag = safe.getTag(path);
     int row = entries.getSelectedRow();
@@ -912,7 +912,7 @@ public class MainPanel extends javax.swing.JPanel {
     String title = (String)entries.getValueAt(row, 0);
     int cnt = selTag.getChildCount();
     boolean ok = false;
-    XML.XMLTag child = null;
+    XMLTree.XMLTag child = null;
     for(int a=0;a<cnt;a++) {
       child = selTag.getChildAt(a);
       if (child.getArg("name").equals(title)) {
@@ -977,21 +977,21 @@ public class MainPanel extends javax.swing.JPanel {
   private void importFileKeePass2(File file) {
     try {
       FileInputStream fis = new FileInputStream(file);
-      XML xml = new XML();
+      XMLTree xml = new XMLTree();
       xml.read(fis);
       fis.close();
       //find the root tag
-      XML.XMLTag root = null;
+      XMLTree.XMLTag root = null;
       int cnt=xml.root.getChildCount();
       for(int a=0;a<cnt;a++) {
-        XML.XMLTag child = xml.root.getChildAt(a);
+        XMLTree.XMLTag child = xml.root.getChildAt(a);
         if (child.name.equals("Root")) {
           root = child;
           break;
         }
       }
       if (root == null) throw new Exception("Root tag not found");
-      XML.XMLTag dst = safe.root;
+      XMLTree.XMLTag dst = safe.root;
       importGroup(root, dst);
       copyGroups();
     } catch (Exception e) {
@@ -1000,12 +1000,12 @@ public class MainPanel extends javax.swing.JPanel {
     }
   }
 
-  private void importGroup(XML.XMLTag src, XML.XMLTag dst) {
+  private void importGroup(XMLTree.XMLTag src, XMLTree.XMLTag dst) {
     int cnt = src.getChildCount();
     for(int a=0;a<cnt;a++) {
-      XML.XMLTag srcChild = src.getChildAt(a);
+      XMLTree.XMLTag srcChild = src.getChildAt(a);
       if (srcChild.name.equals("Group")) {
-        XML.XMLTag dstChild = safe.addTag(dst, "group", "", "");
+        XMLTree.XMLTag dstChild = safe.addTag(dst, "group", "", "");
         importGroup(srcChild, dstChild);
         continue;
       }
@@ -1014,22 +1014,22 @@ public class MainPanel extends javax.swing.JPanel {
         continue;
       }
       if (srcChild.name.equals("Entry")) {
-        XML.XMLTag dstChild = safe.addTag(dst, "entry", "", "");
+        XMLTree.XMLTag dstChild = safe.addTag(dst, "entry", "", "");
         importEntry(srcChild, dstChild);
         continue;
       }
     }
   }
 
-  private void importEntry(XML.XMLTag src, XML.XMLTag dst) {
+  private void importEntry(XMLTree.XMLTag src, XMLTree.XMLTag dst) {
     int cnt = src.getChildCount();
     for(int a=0;a<cnt;a++) {
-      XML.XMLTag child = src.getChildAt(a);
+      XMLTree.XMLTag child = src.getChildAt(a);
       if (child.name.equals("String")) {
         String Key = "", Value = "";
         int cntChild = child.getChildCount();
         for(int b=0;b<cntChild;b++) {
-          XML.XMLTag child2 = child.getChildAt(b);
+          XMLTree.XMLTag child2 = child.getChildAt(b);
           if (child2.name.equals("Key")) {
             Key = child2.getContent();
             continue;
@@ -1108,7 +1108,7 @@ public class MainPanel extends javax.swing.JPanel {
   private void copyPassword() {
     String pass = null;
     TreePath path = groups.getSelectionPath();
-    XML.XMLTag selTag;
+    XMLTree.XMLTag selTag;
     if (path == null) return;
     selTag = safe.getTag(path);
     int row = entries.getSelectedRow();
@@ -1116,7 +1116,7 @@ public class MainPanel extends javax.swing.JPanel {
     String title = (String)entries.getValueAt(row, 0);
     int cnt = selTag.getChildCount();
     boolean ok = false;
-    XML.XMLTag child = null;
+    XMLTree.XMLTag child = null;
     for(int a=0;a<cnt;a++) {
       child = selTag.getChildAt(a);
       if (child.getArg("name").equals(title)) {
@@ -1126,7 +1126,7 @@ public class MainPanel extends javax.swing.JPanel {
     }
     if (!ok) return;
     int cntChild = child.getChildCount();
-    XML.XMLTag f;
+    XMLTree.XMLTag f;
     for(int a=0;a<cntChild;a++) {
       f = child.getChildAt(a);
       if (f.name.equals("password")) {
@@ -1146,7 +1146,7 @@ public class MainPanel extends javax.swing.JPanel {
   private void copyUsername() {
     String username = null;
     TreePath path = groups.getSelectionPath();
-    XML.XMLTag selTag;
+    XMLTree.XMLTag selTag;
     if (path == null) return;
     selTag = safe.getTag(path);
     int row = entries.getSelectedRow();
@@ -1154,7 +1154,7 @@ public class MainPanel extends javax.swing.JPanel {
     String title = (String)entries.getValueAt(row, 0);
     int cnt = selTag.getChildCount();
     boolean ok = false;
-    XML.XMLTag child = null;
+    XMLTree.XMLTag child = null;
     for(int a=0;a<cnt;a++) {
       child = selTag.getChildAt(a);
       if (child.getArg("name").equals(title)) {
@@ -1164,7 +1164,7 @@ public class MainPanel extends javax.swing.JPanel {
     }
     if (!ok) return;
     int cntChild = child.getChildCount();
-    XML.XMLTag f;
+    XMLTree.XMLTag f;
     for(int a=0;a<cntChild;a++) {
       f = child.getChildAt(a);
       if (f.name.equals("username")) {
@@ -1184,7 +1184,7 @@ public class MainPanel extends javax.swing.JPanel {
   public void openSite() {
     String url = null;
     TreePath path = groups.getSelectionPath();
-    XML.XMLTag selTag;
+    XMLTree.XMLTag selTag;
     if (path == null) return;
     selTag = safe.getTag(path);
     int row = entries.getSelectedRow();
@@ -1192,7 +1192,7 @@ public class MainPanel extends javax.swing.JPanel {
     String title = (String)entries.getValueAt(row, 0);
     int cnt = selTag.getChildCount();
     boolean ok = false;
-    XML.XMLTag child = null;
+    XMLTree.XMLTag child = null;
     for(int a=0;a<cnt;a++) {
       child = selTag.getChildAt(a);
       if (child.getArg("name").equals(title)) {
@@ -1202,7 +1202,7 @@ public class MainPanel extends javax.swing.JPanel {
     }
     if (!ok) return;
     int cntChild = child.getChildCount();
-    XML.XMLTag f;
+    XMLTree.XMLTag f;
     for(int a=0;a<cntChild;a++) {
       f = child.getChildAt(a);
       if (f.name.equals("url")) {
@@ -1275,8 +1275,8 @@ public class MainPanel extends javax.swing.JPanel {
     public EntryFlavor() throws ClassNotFoundException {
       super("text/custom1");
     }
-    public XML.XMLTag group;
-    public XML.XMLTag entries[];
+    public XMLTree.XMLTag group;
+    public XMLTree.XMLTag entries[];
   }
 
   private EntryFlavor ef;
@@ -1307,7 +1307,7 @@ public class MainPanel extends javax.swing.JPanel {
     public GroupFlavor() throws ClassNotFoundException {
       super("text/custom2");
     }
-    public XML.XMLTag group;
+    public XMLTree.XMLTag group;
   }
 
   private GroupFlavor gf;
@@ -1361,16 +1361,16 @@ public class MainPanel extends javax.swing.JPanel {
           EntryTransfer t = new EntryTransfer();
 
           TreePath path = groups.getSelectionPath();
-          XML.XMLTag group;
+          XMLTree.XMLTag group;
           if (path == null) return null;
           group = safe.getTag(path);
           int rows[] = entries.getSelectedRows();
-          t.data.entries = new XML.XMLTag[rows.length];
+          t.data.entries = new XMLTree.XMLTag[rows.length];
           for(int row=0;row<rows.length;row++) {
             String title = (String)entries.getValueAt(rows[row], 0);
             int cnt = group.getChildCount();
             boolean ok = false;
-            XML.XMLTag child = null;
+            XMLTree.XMLTag child = null;
             for(int a=0;a<cnt;a++) {
               child = group.getChildAt(a);
               if (child.getArg("name").equals(title)) {
@@ -1417,7 +1417,7 @@ public class MainPanel extends javax.swing.JPanel {
               EntryFlavor data = (EntryFlavor)info.getTransferable().getTransferData(ef);
 
               TreePath path = groups.getSelectionPath();
-              XML.XMLTag dest;
+              XMLTree.XMLTag dest;
               if (path == null) return false;
               dest = safe.getTag(path);
               if (dest == null) return false;
@@ -1449,7 +1449,7 @@ public class MainPanel extends javax.swing.JPanel {
               GroupFlavor data = (GroupFlavor)info.getTransferable().getTransferData(gf);
 
               TreePath path = groups.getSelectionPath();
-              XML.XMLTag dest;
+              XMLTree.XMLTag dest;
               if (path == null) return false;
               dest = safe.getTag(path);
               if (dest == null) return false;

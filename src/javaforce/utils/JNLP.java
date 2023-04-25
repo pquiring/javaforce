@@ -43,7 +43,6 @@ public class JNLP {
     }
     try {
       XML xml = new XML();
-      xml.setUseUniqueNames(false);
       xml.read(args[0]);
       XML.XMLTag jnlp = xml.getTag(new String[] {"jnlp"});
       if (jnlp == null) throw new Exception("no jnlp tag");
@@ -120,6 +119,7 @@ public class JNLP {
       cmd.add(main);
       //download jar files
       for(String jar : jars) {
+        if (debug) break;
         HTTP http = null;
         switch (proto) {
           case "http": http = new HTTP(); break;

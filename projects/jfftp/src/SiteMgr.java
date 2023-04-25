@@ -11,12 +11,14 @@ import java.io.*;
 import javax.swing.tree.TreePath;
 import javax.swing.JOptionPane;
 import javax.swing.tree.TreeSelectionModel;
-
-import javaforce.*;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
+import javaforce.*;
+import javaforce.awt.*;
+
+
+public class SiteMgr extends javax.swing.JDialog implements XMLTree.XMLEvent {
 
   public SiteMgr(java.awt.Frame parent, boolean modal) {
     super(parent, modal);
@@ -316,14 +318,14 @@ public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
       JOptionPane.QUESTION_MESSAGE);
     if (name == null) return;
     if (!validField(name)) return;
-    XML.XMLTag parent = selectedTag;
+    XMLTree.XMLTag parent = selectedTag;
     if (parent == null) parent = sitesTag;
     if (parent.name.equalsIgnoreCase("site")) parent = parent.getParent();
     xml.addTag(parent, "folder", " name=\"" + name + "\"", "").isNotLeaf = true;
   }//GEN-LAST:event_bNewFolderActionPerformed
 
   private void treeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_treeValueChanged
-    XML.XMLTag tag = getSelectedTag(), child;
+    XMLTree.XMLTag tag = getSelectedTag(), child;
     if (tag == null) return;
     clearFields();
     selectedTag = tag;
@@ -337,7 +339,7 @@ public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
     }
     isNew = false;
 /*    for(Iterator i = tag.args.iterator(); i.hasNext();) {
-      XML.XMLAttr attr = (XML.XMLAttr)i.next();
+      XMLTree.XMLAttr attr = (XMLTree.XMLAttr)i.next();
       if (attr.name.equalsIgnoreCase("name")) tName.setText(attr.value);
     }
 */
@@ -388,7 +390,7 @@ public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
   }//GEN-LAST:event_bNewSiteActionPerformed
 
   private void bSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bSaveActionPerformed
-    XML.XMLTag parent, tag;
+    XMLTree.XMLTag parent, tag;
     if (!validFields()) return;
     if (isNew) {
       //save as new connection
@@ -420,7 +422,7 @@ public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
   }//GEN-LAST:event_formWindowClosing
 
   private void bConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bConnectActionPerformed
-    XML.XMLTag child, child2;
+    XMLTree.XMLTag child, child2;
     if ((selectedTag != null) && (selectedTag.name.equals("folder"))) {
       //return all sub-children
       int cnt = 0;
@@ -513,10 +515,10 @@ public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
   private boolean isNew = true;
   private String protocols[] = { "ftp", "ftps", "sftp", "smb" };
   private String ports[] = { "21", "990", "22", "445" };
-  private XML xml = new XML();
-  private XML.XMLTag selectedTag = null;
+  private XMLTree xml = new XMLTree();
+  private XMLTree.XMLTag selectedTag = null;
   private SiteDetails retValue[] = null;
-  private XML.XMLTag sitesTag = null;
+  private XMLTree.XMLTag sitesTag = null;
   public static SiteDetails[] showSiteMgr(Frame parent) {
     SiteMgr mgr = new SiteMgr(parent, true);
     mgr.loadAll();
@@ -524,7 +526,7 @@ public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
     mgr.dispose();
     return mgr.retValue;
   }
-  private void show(XML.XMLTag tag) {
+  private void show(XMLTree.XMLTag tag) {
     tree.makeVisible(new TreePath(tag.getPath()));  //ensure everything is visible
 //    if (tag.isLeaf) return;
     for(int a=0;a<tag.getChildCount();a++) show(tag.getChildAt(a));
@@ -601,7 +603,7 @@ public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
     }
     return new String(out);
   }
-  private XML.XMLTag getSelectedTag() {
+  private XMLTree.XMLTag getSelectedTag() {
     TreePath path = tree.getSelectionPath();
     if (path == null) return null;
     return xml.getTag(path);
@@ -623,14 +625,14 @@ public class SiteMgr extends javax.swing.JDialog implements XML.XMLEvent {
     remoteDir.setText("");
     selectedTag = null;
   }
-//interface XML.XMLEvent
-  public void XMLTagAdded(XML.XMLTag tag) {
+//interface XMLTree.XMLEvent
+  public void XMLTagAdded(XMLTree.XMLTag tag) {
     if (tag.name.equalsIgnoreCase("folder")) {tag.isNotLeaf = true;}
     if (tag.name.equalsIgnoreCase("site")) {tag.isLeaf = true;} //this will hide the children
     if (tag.name.equalsIgnoreCase("sites")) {tag.isNotLeaf = true; tag.isReadOnly = true; sitesTag = tag;}
     show(tag);
   }
-  public void XMLTagRenamed(XML.XMLTag tag) {
+  public void XMLTagRenamed(XMLTree.XMLTag tag) {
     if (tag.name.equalsIgnoreCase("folder")) return;
     tName.setText(tag.getName());
   }

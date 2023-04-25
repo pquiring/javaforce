@@ -352,7 +352,7 @@ public class SiteFTP extends Site implements FTP.ProgressListener {
       int idx = file.lastIndexOf("/");
       if (idx != -1) file = file.substring(idx+1);
       for(int a=0;a<remoteTag.getChildCount();a++) {
-        XML.XMLTag child = remoteTag.getChildAt(a);
+        XMLTree.XMLTag child = remoteTag.getChildAt(a);
         if (child.getName().equals(file)) {
           remoteFolders.deleteTag(child);
           break;
@@ -377,7 +377,7 @@ public class SiteFTP extends Site implements FTP.ProgressListener {
     remote_rename(remoteFile, newName);
     //update remoteTree
     for(int a=0;a<remoteTag.getChildCount();a++) {
-      XML.XMLTag child = remoteTag.getChildAt(a);
+      XMLTree.XMLTag child = remoteTag.getChildAt(a);
       if (child.getName().equals(sf.getText())) {
         child.setName(newName);
         break;

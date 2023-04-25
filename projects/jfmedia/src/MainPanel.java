@@ -234,7 +234,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     extract.setEnabled(false);
     int cnt = tree.getSelectionCount();
     if (cnt != 1) return;
-    XML.XMLTag tag = xml.getTag(tree.getSelectionPath());
+    XMLTree.XMLTag tag = xml.getTag(tree.getSelectionPath());
     if (tag == xml.root) return;
     if (media != null && tag == media) {
       listDiscs();
@@ -313,9 +313,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   private javax.swing.JTree tree;
   // End of variables declaration//GEN-END:variables
 
-  private XML xml = new XML();
-  private XML.XMLTag library, playlists, media;
-  private XML.XMLTag music, video;  //library sub-tags
+  private XMLTree xml = new XMLTree();
+  private XMLTree.XMLTag library, playlists, media;
+  private XMLTree.XMLTag music, video;  //library sub-tags
   private ArrayList<String> tableFiles = new ArrayList<String>();
   private MediaDecoder decoder;  //ffmpeg decoder
   private long frameCount;
@@ -418,7 +418,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     }
   }
 
-  private void showAll(XML.XMLTag tag) {
+  private void showAll(XMLTree.XMLTag tag) {
     tree.makeVisible(new TreePath(tag.getPath()));
     int cnt = tag.getChildCount();
     for(int a=0;a<cnt;a++) {
@@ -440,7 +440,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     while (model.getRowCount() > 0) model.removeRow(0);
   }
 
-  private void listTag(XML.XMLTag tag) {
+  private void listTag(XMLTree.XMLTag tag) {
     clearList();
     int cnt = tag.getChildCount();
     int track = 1;
@@ -574,7 +574,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     return "" + mins + ":" + secs;
   }
 
-  private void listDisc(XML.XMLTag tag) {
+  private void listDisc(XMLTree.XMLTag tag) {
     clearList();
     File file = new File("/media/" + tag.content);
     File tracks[] = file.listFiles();

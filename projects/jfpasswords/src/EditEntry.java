@@ -23,7 +23,7 @@ public class EditEntry extends javax.swing.JDialog {
   /**
    * Creates new form EntryDialog
    */
-  public EditEntry(java.awt.Frame parent, boolean modal, XML.XMLTag entry, DefaultTableModel table, int row) {
+  public EditEntry(java.awt.Frame parent, boolean modal, XMLTree.XMLTag entry, DefaultTableModel table, int row) {
     super(parent, modal);
     initComponents();
     JFAWT.assignHotKey(this, cancel, KeyEvent.VK_ESCAPE);
@@ -36,7 +36,7 @@ public class EditEntry extends javax.swing.JDialog {
       title.setText(entry.getArg("name"));
       int cnt = entry.getChildCount();
       for(int a=0;a<cnt;a++) {
-        XML.XMLTag child = entry.getChildAt(a);
+        XMLTree.XMLTag child = entry.getChildAt(a);
         if (child.name.equals("username")) {
           username.setText(child.content);
           continue;
@@ -289,7 +289,7 @@ public class EditEntry extends javax.swing.JDialog {
   private DefaultTableModel table;
   private int row;
 
-  public void saveTo(XML safe, XML.XMLTag parent) {
+  public void saveTo(XMLTree safe, XMLTree.XMLTag parent) {
     String pass = new String(password.getPassword());
     parent.setArg("name", title.getText());
     safe.addSetTag(parent, "username", "", username.getText());

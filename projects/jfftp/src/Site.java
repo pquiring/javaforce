@@ -599,8 +599,8 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
   private javax.swing.JTabbedPane status_pane;
   // End of variables declaration//GEN-END:variables
 
-  public XML localFolders = new XML();
-  public XML remoteFolders = new XML();
+  public XMLTree localFolders = new XMLTree();
+  public XMLTree remoteFolders = new XMLTree();
   public int totalFileSize = 0;
   private static ImageIcon ii[] = new ImageIcon[24];
   private static final int PIC_FOLDER = 0;
@@ -867,7 +867,7 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
           continue;
         }
         localFilesTableModel.addRow(new Object[]{new SiteFile("" + drv + ":", 0, PIC_FOLDER, ""), "", ""});
-        XML.XMLTag tag = localFolders.addSetTag(localFolders.root, "" + drv + ":", "", "");
+        XMLTree.XMLTag tag = localFolders.addSetTag(localFolders.root, "" + drv + ":", "", "");
         localTree.expandPath(new TreePath(tag.getPath()));
       } catch (Exception e) {
       }
@@ -875,7 +875,7 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
     localTree.setSelectionPath(new TreePath(localFolders.root.getPath()));
   }
 
-  public XML.XMLTag localTag;
+  public XMLTree.XMLTag localTag;
 
   private void parseLocal() {
     String wd = localDir.getText().replaceAll("\\\\", "/");
@@ -940,7 +940,7 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
     }
   }
 
-  public XML.XMLTag remoteTag;
+  public XMLTree.XMLTag remoteTag;
 
   public void parseRemote(String wd, String ls) {
     //drwxr-xr-x    3 0        0            4096 Jan 03 20:48 ..
@@ -1240,7 +1240,7 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
       file.delete();
       //update localTree
       for (int a = 0; a < localTag.getChildCount(); a++) {
-        XML.XMLTag child = localTag.getChildAt(a);
+        XMLTree.XMLTag child = localTag.getChildAt(a);
         if (child.getName().equals(file.getName())) {
           localFolders.deleteTag(child);
           break;
@@ -1268,7 +1268,7 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
     localFile.renameTo(newFile);
     //update localTree
     for (int a = 0; a < localTag.getChildCount(); a++) {
-      XML.XMLTag child = localTag.getChildAt(a);
+      XMLTree.XMLTag child = localTag.getChildAt(a);
       if (child.getName().equals(sf.getText())) {
         child.setName(newName);
         break;
@@ -1337,7 +1337,7 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
     if (paths.length != 1) {
       return;
     }
-    XML.XMLTag tag = localFolders.getTag(paths[0]);
+    XMLTree.XMLTag tag = localFolders.getTag(paths[0]);
     ArrayList<String> pathElements = new ArrayList<String>();
     do {
       if (tag.getName().equals("/")) {
@@ -1366,7 +1366,7 @@ public abstract class Site extends javax.swing.JPanel implements FTP.ProgressLis
     if (paths.length != 1) {
       return;
     }
-    XML.XMLTag tag = remoteFolders.getTag(paths[0]);
+    XMLTree.XMLTag tag = remoteFolders.getTag(paths[0]);
     ArrayList<String> pathElements = new ArrayList<String>();
     do {
       if (tag.getName().equals("/")) {

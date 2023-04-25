@@ -223,7 +223,7 @@ public class MainPanel extends javax.swing.JPanel {
     private javax.swing.JTree tree;
     // End of variables declaration//GEN-END:variables
 
-  private XML xml = new XML();
+  private XMLTree xml = new XMLTree();
   private File archive;
   private String type;  //zip or tar
   private char tarType;  //z=gzip j=bzip2
@@ -329,7 +329,7 @@ public class MainPanel extends javax.swing.JPanel {
         lns[a] = lns[a].substring(30);
       }
     }
-    XML.XMLTag tag;
+    XMLTree.XMLTag tag;
     File file;
     for(int a=0;a<lns.length;a++) {
       String f[] = lns[a].split("/");
@@ -435,7 +435,7 @@ public class MainPanel extends javax.swing.JPanel {
       cmd.add(archive.getAbsolutePath());
       if (selectFiles) {
         TreePath paths[] = tree.getSelectionPaths();
-        XML.XMLTag tag;
+        XMLTree.XMLTag tag;
         for(int a=0;a<paths.length;a++) {
           tag = xml.getTag(paths[a]);
           cmd.add(tag.content);
@@ -452,7 +452,7 @@ public class MainPanel extends javax.swing.JPanel {
       cmd.add(archive.getAbsolutePath());
       if (selectFiles) {
         TreePath paths[] = tree.getSelectionPaths();
-        XML.XMLTag tag;
+        XMLTree.XMLTag tag;
         for(int a=0;a<paths.length;a++) {
           tag = xml.getTag(paths[a]);
           cmd.add(tag.content);

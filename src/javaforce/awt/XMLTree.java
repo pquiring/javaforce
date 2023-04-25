@@ -1,17 +1,21 @@
-package javaforce;
+package javaforce.awt;
 
 import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
+import java.awt.*;
+import javaforce.JF;
+import javaforce.JFLog;
+import javax.swing.tree.*;
+import javax.swing.event.*;
 
 /**
- * XML encapsules a complete XML file.<br>
- * Each XML tag (element) is treated as a node in the tree.
- * The read() functions
+ * XML is a TreeModel data model that encapsules a complete XML file.<br> Each
+ * XML tag (element) is treated as a node in the tree. Once read() it can be
+ * viewed and edited with a JTree. Then you can write() it back to a file. XML
+ * will monitor changes made and update nodes as needed. The read() functions
  * include a callback interface so you can further tweak the layout of the XML
- * tree.<br>
- * Then you can write() it back to a file.
- * Typical XML Tag:<br> &lt;name [attributes...]&gt; content |
+ * tree.<br> Typical XML Tag:<br> &lt;name [attributes...]&gt; content |
  * children &lt;/name&gt;<br> Singleton XML Tag: (no children)<br> &lt;name
  * [attributes...] /&gt;<br> Caveats:<br> Only leaf nodes can contain actual
  * data (content) (in other words @XmlMixed is not supported).<br>
@@ -19,25 +23,47 @@ import java.util.*;
  * content is lost.<br> There must be only one root tag.<br> Support for the
  * standard XML header is provided (see header).<br> readClass() and
  * writeClass() support : int, short, byte, float, double, boolean, String,
- * and Custom Classes.<br> Arrays of any of these.<br> All classes and
+ * Color and Custom Classes.<br> Arrays of any of these.<br> All classes and
  * fields MUST be public. static and transient members are skipped. No special
  * annotations are required.
  */
 
-public class XML {
-  private static boolean debug = false;
+public class XMLTree implements TreeModelListener {
+  private DefaultTreeModel treemodel;
+  private boolean useContentForName = false;
+  private boolean useNameAttributeForName = false;
+  private boolean useUniqueNames = true;
+  private boolean fireEvents = true;
+  private boolean ignoreEvents = false;
 
   private class XMLTagPart {
-    private String content = "";
-    private String attrs = "";
+    private String content;
+    private String attrs;
+
+    public XMLTagPart() {
+      content = "";
+      attrs = "";
+    }
   }
+
+  /**
+   * XMLEvent is an interface for a callback handler used during XML loading.
+   */
+  public interface XMLEvent {
+    public void XMLTagAdded(XMLTag tag);
+    public void XMLTagRenamed(XMLTag tag);
+  };
 
   /**
    * XMLAttr is one attribute that is listed in each XML tag.
    */
   public class XMLAttr {
-    public String name = "";
-    public String value = "";
+    public String name, value;
+
+    public XMLAttr() {
+      name = "";
+      value = "";
+    }
   };
 
   /**
@@ -45,19 +71,21 @@ public class XML {
    *
    * @param name the XML tag name
    * @param attrs an ArrayList of XMLAttr
+   * @param uname the unique name of the tag. Usually equals name unless another
+   * child with the same parent has the same name. JTree uses uname to display
+   * the tags.
    * @param content the data within the tags head/tail
    * @param isLeaf set to force JTree to view node as a leaf
    * @param isNotLeaf set to force JTree to view node that is expandable (even
    * if it has no children)
    * @param isReadOnly ignores edits from JTree
+   * @param useContentForName causes JTree to use content for display
    */
-  public class XMLTag {
+  public class XMLTag extends DefaultMutableTreeNode {
     public String name = "";
     public ArrayList<XMLAttr> attrs;
+    public String uname = "";  //unique name (usually same as name)
     public String content = "";
-    public XMLTag parent;
-    public ArrayList<XMLTag> children = new ArrayList<>();
-
     /**
      * Tag is a singleton - no content - ie: <tag attrs.../>
      */
@@ -85,28 +113,10 @@ public class XML {
      * method but returns XMLTag.
      */
     public XMLTag getParent() {
-      return parent;
-    }
-
-    public int getChildCount() {
-      return children.size();
-    }
-
-    public void addTag(XMLTag tag) {
-      addTag(tag, getChildCount());
-    }
-
-    public void addTag(XMLTag tag, int at) {
-      tag.parent = this;
-      children.add(at, tag);
-    }
-
-    public void removeTag(XMLTag tag) {
-      children.remove(tag);
-    }
-
-    public void removeTag(int idx) {
-      children.remove(idx);
+      if (this == treemodel.getRoot()) {
+        return null;  //in case setRoot() moved the root up
+      }
+      return (XMLTag) super.getParent();
     }
 
     /**
@@ -127,7 +137,20 @@ public class XML {
      * Returns a unique name for this node.
      */
     public String getName() {
-      return name;
+      if (useContentForName) {
+        return content;
+      }
+      if (useNameAttributeForName) {
+        String argName = getArg("name");
+        if (argName != null) {
+          return argName;
+        }
+      }
+      if (useUniqueNames) {
+        return uname;
+      } else {
+        return name;
+      }
     }
 
     /**
@@ -148,6 +171,7 @@ public class XML {
       if (!ok) {
         name = newName;
       }
+      setuname(this);
     }
 
     /**
@@ -155,11 +179,7 @@ public class XML {
      * method but returns XMLTag.
      */
     public XMLTag getChildAt(int index) {
-      return children.get(index);
-    }
-
-    public XMLTag[] getChildren() {
-      return children.toArray(new XMLTag[getChildCount()]);
+      return (XMLTag) super.getChildAt(index);
     }
 
     /**
@@ -204,12 +224,10 @@ public class XML {
       content = newContent;
     }
   };
-
   /**
    * The header tag.<br> <?xml version="1.0" encoding="UTF-8" ?>
    */
   public XMLTag header = new XMLTag();
-
   /**
    * The root tag.
    */
@@ -218,9 +236,22 @@ public class XML {
   /**
    * Constructs a new XML object.
    */
-  public XML() {
+  public XMLTree() {
+    treemodel = new DefaultTreeModel(root);
+    treemodel.addTreeModelListener(this);
+    treemodel.setRoot(root);
   }
 
+  /**
+   * Returns the TreeModel that can be passed to JTree constructor.
+   */
+  public TreeModel getTreeModel() {
+    return treemodel;
+  }
+
+  public DefaultTreeModel getDefaultTreeModel() {
+    return treemodel;
+  }
   private final int XML_OPEN = 1;
   private final int XML_DATA = 2;
   private final int XML_CLOSE = 3;
@@ -364,18 +395,70 @@ public class XML {
     }
   }
 
+  private void setuname(XMLTag tag) {
+    XMLTag parent = tag.getParent();
+    String uname = tag.name;
+    XMLAttr attr;
+    for (Iterator i = tag.attrs.iterator(); i.hasNext();) {
+      attr = (XMLAttr) i.next();
+      if (attr.name.equalsIgnoreCase("name")) {
+        uname = attr.value;
+        break;
+      }
+    }
+    String orguname = uname;
+    if (parent == null) {
+      tag.uname = uname;
+      changedTag(tag);
+      return;
+    }
+    boolean ok;
+    int idx = 1;
+    int size = parent.getChildCount();
+    while (true) {
+      ok = true;
+      for (int a = 0; a < size; a++) {
+        XMLTag child = (XMLTag) parent.getChildAt(a);
+        if (child == tag) {
+          continue;
+        }
+        if (child.getName().equalsIgnoreCase(uname)) {
+          ok = false;
+          break;
+        }
+      }
+      if (ok) {
+        break;
+      }
+      uname = orguname + idx;
+      idx++;
+    }
+    tag.uname = uname;
+    changedTag(tag);
+  }
+
+  /**
+   * Reads the entire tree from a XML file from filename. No call handler is
+   * used.
+   *
+   * @param filename name of file to load XML data from
+   */
+  public boolean read(String filename) {
+    return read(filename, null);
+  }
+
   /**
    * Reads the entire tree from a XML file from filename.
    *
    * @param filename name of file to load XML data from
    * @param event callback handler to process each loaded XML tag
    */
-  public boolean read(String filename) {
+  public boolean read(String filename, XMLEvent event) {
     FileInputStream fis;
     boolean ret;
     try {
       fis = new FileInputStream(filename);
-      ret = read(fis);
+      ret = read(fis, event);
       fis.close();
     } catch (Exception e) {
       JFLog.log(e);
@@ -385,12 +468,23 @@ public class XML {
   }
 
   /**
+   * Reads the entire tree from a XML file from the InputStream. No callback
+   * handler is used.
+   *
+   * @param in InputStream to load XML data from
+   */
+  public boolean read(InputStream in) {
+    return read(in, null);
+  }
+
+  /**
    * Reads the entire tree from a XML file from the InputStream.
    *
    * @param in InputStream to load XML data from
    * @param event callback handler to process each loaded XML tag
    */
-  public boolean read(InputStream is) {
+  public boolean read(InputStream is, XMLEvent event) {
+    this.event = event;
     try {
       buf = new String(JF.readAll(is), "UTF-8").toCharArray();
     } catch (Exception e) {
@@ -417,7 +511,11 @@ public class XML {
               return false;
             }  //already read the XML header
             header.name = tagpart.content;
+            header.uname = header.name;
             string2attrs(header, tagpart.attrs);
+            if (event != null) {
+              event.XMLTagAdded(header);
+            }
             break;
           }
           if (tagpart.content.startsWith("!--")) {
@@ -428,14 +526,18 @@ public class XML {
         case XML_SINGLE:
           if (tag == null) {
             //root tag
-            if (debug) JFLog.log("root tag:" + tagpart.content);
             if (bRoot) {
               JFLog.log("XML:Multiple root tags found");
               return false;
             }  //already found a root tag
             bRoot = true;
             root.name = tagpart.content;
+            root.uname = root.name;
             string2attrs(root, tagpart.attrs);
+            if (event != null) {
+              event.XMLTagAdded(root);
+            }
+            changedTag(root);
             tag = root;
           } else {
             newtag = new XMLTag();
@@ -588,6 +690,7 @@ public class XML {
   private void clearTag(XMLTag tag) {
     tag.name = "";
     tag.attrs = new ArrayList<XMLAttr>();
+    tag.uname = "";
     tag.content = "";
   }
 
@@ -597,7 +700,9 @@ public class XML {
   public void deleteAll() {
     deleteTag(root);
     clearTag(header);
+    changedTag(header);
     clearTag(root);
+    changedTag(root);
   }
 
   /**
@@ -612,9 +717,10 @@ public class XML {
     if (tag.getParent() == null) {
       return true;  //can not delete root/header tag itself
     }
-    tag.getParent().removeTag(tag);
+    treemodel.removeNodeFromParent(tag);
     return true;
   }
+  private XMLEvent event = null;
 
   /**
    * Creates an empty node that can be inserted into the tree using addTag().
@@ -626,8 +732,12 @@ public class XML {
   /**
    * Adds the node to the targetParent.
    */
-  public XMLTag addTag(XMLTag parent, XMLTag tag) {
-    parent.addTag(tag, parent.getChildCount());
+  public XMLTag addTag(XMLTag targetParent, XMLTag tag) {
+    treemodel.insertNodeInto(tag, targetParent, targetParent.getChildCount());
+    setuname(tag);
+    if (event != null) {
+      event.XMLTagAdded(tag);
+    }
     return tag;
   }
 
@@ -661,12 +771,24 @@ public class XML {
   }
 
   /**
+   * Notify the treemodel that you changed a node.
+   */
+  public void changedTag(XMLTag tag) {
+    if (!fireEvents) return;
+    ignoreEvents = true;
+    treemodel.nodeChanged(tag);
+    ignoreEvents = false;
+  }
+
+  /**
    * Sets the name, attrs and contents of the true root node.
    */
   public void setRoot(String name, String attrs, String content) {
     root.name = name;
+    root.uname = name;
     string2attrs(root, attrs);
     root.content = content;
+    changedTag(root);
   }
 
   /**
@@ -684,10 +806,18 @@ public class XML {
   }
 
   /**
-   * Returns a node based on the objs[] path.
+   * Returns a node based on the TreePath path;
+   */
+  public XMLTag getTag(TreePath path) {
+    return getTag(path.getPath());
+  }
+
+  /**
+   * Returns a node based on the objs[] path. Relative to virtual root tag. (see
+   * setRoot())
    */
   public XMLTag getTag(Object[] objs) {
-    XMLTag tag = (XMLTag) root, child;
+    XMLTag tag = (XMLTag) treemodel.getRoot(), child;
     String name;
     if (objs == null || objs.length == 0) {
       return null;
@@ -728,6 +858,72 @@ public class XML {
     tag.name = name;
     string2attrs(tag, attrs);
     tag.content = content;
+    if (tag.getParent() != null) {
+      setuname(tag);
+    } else {
+      tag.uname = name;
+      changedTag(tag);
+    }
+    if (event != null) {
+      event.XMLTagAdded(tag);
+    }
+  }
+
+  /**
+   * Sets the root node for the tree. This doesn't effect the true root node.
+   * This is usefull in hiding parts of a XML file from view when viewed in a
+   * JTree.
+   */
+  public void setRoot(XMLTag newRoot) {
+    treemodel.setRoot(newRoot);
+  }
+
+  /**
+   * Forces getName() to return the tags content instead of the actual name.
+   *
+   * @param state
+   */
+  public void setUseContentForName(boolean state) {
+    useContentForName = state;
+  }
+
+  /**
+   * Forces getName() to return the tags content instead of the actual name.
+   */
+  public boolean getUseContentForName() {
+    return useContentForName;
+  }
+
+  /**
+   * Forces getName() to return the tags attribute 'name' (if available)
+   *
+   * @param state
+   */
+  public void setUseAttributeNameForName(boolean state) {
+    useNameAttributeForName = state;
+  }
+
+  /**
+   * Forces getName() to return the tags content instead of the actual name.
+   */
+  public boolean getUseAttributeNameForName() {
+    return useNameAttributeForName;
+  }
+
+  /**
+   * Forces getName() to return unique names.
+   *
+   * @param state
+   */
+  public void setUseUniqueNames(boolean state) {
+    useUniqueNames = state;
+  }
+
+  /**
+   * Forces getName() to return the tags content instead of the actual name.
+   */
+  public boolean getUseUniqueNames() {
+    return useUniqueNames;
   }
 
   /**
@@ -790,6 +986,8 @@ public class XML {
             f.setBoolean(obj, child.content.equalsIgnoreCase("true"));
           } else if (typeString.indexOf(" java.lang.String ") != -1) {
             f.set(obj, child.content);
+          } else if (typeString.indexOf(" java.awt.Color ") != -1) {
+            f.set(obj, new Color(JF.atox(child.content)));
           } else if (typeString.indexOf(" int[] ") != -1) {
             int[] array2 = (int[]) f.get(obj);
             int idx;
@@ -873,6 +1071,18 @@ public class XML {
               array2 = Arrays.copyOf(array2, array2.length + 1);
             }
             array2[idx] = child.content;
+            f.set(obj, array2);
+          } else if (typeString.indexOf(" java.awt.Color[] ") != -1) {
+            Color[] array2 = (Color[]) f.get(obj);
+            int idx;
+            if (array2 == null) {
+              idx = 0;
+              array2 = new Color[1];
+            } else {
+              idx = array2.length;
+              array2 = Arrays.copyOf(array2, array2.length + 1);
+            }
+            array2[idx] = new Color(JF.atox(child.content));
             f.set(obj, array2);
           } else {
             name = child.getName();
@@ -965,6 +1175,11 @@ public class XML {
             for (int b = 0; b < array.length; b++) {
               addTag(tag, name, "", array2[b]);
             }
+          } else if (typeString.indexOf(" java.awt.Color[] ") != -1) {
+            Color array2[] = (Color[]) array;
+            for (int b = 0; b < array.length; b++) {
+              addTag(tag, name, "", Integer.toHexString(array2[b].getRGB()).substring(2));
+            }
           } else {
             //go deeper into object
             for (int b = 0; b < array.length; b++) {
@@ -993,6 +1208,8 @@ public class XML {
             addTag(tag, name, "", "" + fs[a].getDouble(obj));
           } else if (typeString.indexOf(" java.lang.String ") != -1) {
             addTag(tag, name, "", (String) fs[a].get(obj));
+          } else if (typeString.indexOf(" java.awt.Color ") != -1) {
+            addTag(tag, name, "", Integer.toHexString(((Color) fs[a].get(obj)).getRGB()).substring(2));
           } else {
             //go deeper into object
             readClass(addTag(tag, name, "", ""), fs[a].get(obj));
@@ -1010,9 +1227,13 @@ public class XML {
    * @param rootName = name to assign to root tag.
    */
   public void readClass(String rootName, Object obj) {
-    deleteAll();
+    this.deleteAll();
     root.setName(rootName);
     readClass(root, obj);
+  }
+
+  public void setEventListener(XMLEvent event) {
+    this.event = event;
   }
 
   private String encodeSafe(String in) {
@@ -1021,5 +1242,45 @@ public class XML {
 
   private String decodeSafe(String in) {
     return in.replaceAll("&gt;", ">").replaceAll("&lt;", "<").replaceAll("&amp;", "&");
+  }
+
+//interface TreeModelListener
+
+  public void treeNodesChanged(TreeModelEvent e) {
+    if (ignoreEvents) return;
+    XMLTag parent = (XMLTag) (e.getTreePath().getLastPathComponent());
+    int indices[] = e.getChildIndices();
+    if (indices == null || indices.length == 0) {
+      return;
+    }
+    /*
+     * If the event lists children, then the changed
+     * node is the child of the node we've already
+     * gotten.  Otherwise, the changed node and the
+     * specified node are the same.
+     */
+    int index = indices[0];
+    XMLTag tag = (XMLTag) (parent.getChildAt(index));
+    if (tag.isReadOnly) {
+      return;
+    }
+    if (tag.getUserObject() == null) {
+      return;
+    }
+    fireEvents = false;  //prevent inf loop (setName will call changedTag which calls treemodel.nodeChanged)
+    tag.setName(tag.getUserObject().toString());
+    fireEvents = true;
+    if (event != null) {
+      event.XMLTagRenamed(tag);
+    }
+  }
+
+  public void treeNodesInserted(TreeModelEvent e) {
+  }
+
+  public void treeNodesRemoved(TreeModelEvent e) {
+  }
+
+  public void treeStructureChanged(TreeModelEvent e) {
   }
 };

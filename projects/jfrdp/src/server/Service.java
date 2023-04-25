@@ -22,7 +22,7 @@ public class Service implements WebHandler {
   private boolean viewOnly;
 
   private ServerSocket ss;
-  
+
   public void start(String webPass, String rdpPass, int maxUsers, boolean viewOnly) {
     if (webPass == null || rdpPass.length() == 0) {
       return;
@@ -135,7 +135,7 @@ public class Service implements WebHandler {
       String N = l.getArg("N");
       if (gotIP4 || N.indexOf(":") != -1) {
         //IP6 - ignore it
-        T.remove(i);
+        T.removeTag(i);
         cnt--;
       } else {
         //IP4 - use it but change P and H

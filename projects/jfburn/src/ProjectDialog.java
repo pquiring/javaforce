@@ -26,8 +26,8 @@ public class ProjectDialog extends javax.swing.JDialog {
       loadProject(loadFilename);
       xmlFiles = xml.getTag(new String[] {"jfburn", "files"});
       xmlOptions = xml.getTag(new String[] {"jfburn", "options"});
-      XML.XMLTag typeTag = xml.getTag(new String[] {"jfburn", "options", "type"});
-      XML.XMLTag nameTag = xml.getTag(new String[] {"jfburn", "options", "name"});
+      XMLTree.XMLTag typeTag = xml.getTag(new String[] {"jfburn", "options", "type"});
+      XMLTree.XMLTag nameTag = xml.getTag(new String[] {"jfburn", "options", "name"});
       if ((xmlFiles == null) || (xmlOptions == null) || (typeTag == null)) {
         JFAWT.showError("Error", "Invalid Project File");
         dispose();
@@ -246,8 +246,8 @@ public class ProjectDialog extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
   public enum Type {unknown, audio, data, video};
-  private XML xml = new XML();
-  private XML.XMLTag xmlFiles, xmlOptions;
+  private XMLTree xml = new XMLTree();
+  private XMLTree.XMLTag xmlFiles, xmlOptions;
   private Type type;
 
   private String getName(String fullPath) {
@@ -256,10 +256,10 @@ public class ProjectDialog extends javax.swing.JDialog {
     return fullPath.substring(idx+1);
   }
 
-  private void addFolder(XML.XMLTag parent, File folder) {
+  private void addFolder(XMLTree.XMLTag parent, File folder) {
     File files[] = folder.listFiles();
     String folderPath = folder.getAbsolutePath();
-    XML.XMLTag child = xml.addTag(parent, getName(folderPath), "", folderPath);
+    XMLTree.XMLTag child = xml.addTag(parent, getName(folderPath), "", folderPath);
     for(int a=0;a<files.length;a++) {
       if (files[a].isDirectory()) {
         addFolder(child, files[a]);
@@ -303,7 +303,7 @@ public class ProjectDialog extends javax.swing.JDialog {
   private void removeFiles() {
     if (files.getSelectionCount() != 1) return;
     TreePath path = files.getSelectionPath();
-    XML.XMLTag tag = xml.getTag(path);
+    XMLTree.XMLTag tag = xml.getTag(path);
     if (tag == xmlFiles) return;
     xml.deleteTag(tag);
   }
@@ -313,14 +313,14 @@ public class ProjectDialog extends javax.swing.JDialog {
     if (sel == null) return;
     String name = JFAWT.getString("Enter folder name", "");
     if ((name == null) || (name.length() == 0)) return;
-    XML.XMLTag tag = xml.getTag(sel);
+    XMLTree.XMLTag tag = xml.getTag(sel);
     xml.addTag(tag, name, "", name);
   }
 
   private void rename() {
     TreePath sel = files.getSelectionPath();
     if (sel == null) return;
-    XML.XMLTag tag = xml.getTag(sel);
+    XMLTree.XMLTag tag = xml.getTag(sel);
     String newName = JFAWT.getString("Enter new name", tag.getName());
     if (newName == null) return;
     if (tag == xmlFiles) {
@@ -357,7 +357,7 @@ public class ProjectDialog extends javax.swing.JDialog {
 
   private void burnAudioDisc() {
     ArrayList<String> tracks = new ArrayList<String>();
-    XML.XMLTag tag;
+    XMLTree.XMLTag tag;
     int cnt = xmlFiles.getChildCount();
     for(int a=0;a<cnt;a++) {
       tracks.add(xmlFiles.getChildAt(a).content);
@@ -409,7 +409,7 @@ public class ProjectDialog extends javax.swing.JDialog {
     return name.replaceAll("[\\\\]", "\\\\").replaceAll("[=]", "\\=");
   }
 
-  private String getTagName(XML.XMLTag tag) {
+  private String getTagName(XMLTree.XMLTag tag) {
     StringBuilder sb = new StringBuilder();
     sb.append(tag.getName());
     while ((tag = tag.getParent()) != xmlFiles) {
@@ -420,7 +420,7 @@ public class ProjectDialog extends javax.swing.JDialog {
     return escapeName(sb.toString());
   }
 
-  private void writeTag(XML.XMLTag tag, OutputStream ios) throws Exception {
+  private void writeTag(XMLTree.XMLTag tag, OutputStream ios) throws Exception {
     int cnt = tag.getChildCount();
     if (cnt > 0) {
       for(int a=0;a<cnt;a++) {
@@ -448,7 +448,7 @@ public class ProjectDialog extends javax.swing.JDialog {
         cmd = Arrays.copyOf(cmd, cmd.length+1);
         cmd[cmd.length-1] = "-dvd-video";
       }
-      XML.XMLTag tag;
+      XMLTree.XMLTag tag;
       int bootType;
       String bootFile;
       tag = xml.getTag(new String[] {"jfburn", "options", "boot"});
@@ -561,7 +561,7 @@ public class ProjectDialog extends javax.swing.JDialog {
     }
   }
 
-  private void showAll(XML.XMLTag tag) {
+  private void showAll(XMLTree.XMLTag tag) {
     files.makeVisible(new TreePath(tag.getPath()));
     int cnt = tag.getChildCount();
     for(int a=0;a<cnt;a++) {

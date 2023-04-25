@@ -742,8 +742,8 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
   private javax.swing.JMenuItem remote_share;
   private javax.swing.JMenuItem remote_trash;
   // End of variables declaration//GEN-END:variables
-  public XML localFolders = new XML();
-  public XML remoteFolders = new XML();
+  public XMLTree localFolders = new XMLTree();
+  public XMLTree remoteFolders = new XMLTree();
   public int totalFileSize = 0;
   public DefaultTableModel localFilesTableModel = new DefaultTableModel();
   public DefaultTableModel remoteFilesTableModel = new DefaultTableModel();
@@ -938,7 +938,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     remoteBrowser.refresh();
   }
 
-  public XML.XMLTag localTag;  //current folder in XML tree
+  public XMLTree.XMLTag localTag;  //current folder in XML tree
 
   private void local_build_tree() {
     File root = new File("/");
@@ -953,7 +953,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     localBrowser.refresh();
     String cd = localDir.getText();
     String cds[] = cd.split("/");
-    XML.XMLTag tag = localFolders.root;
+    XMLTree.XMLTag tag = localFolders.root;
     for(int a=0;a<cds.length;a++) {
       if (cds[a].length() == 0) continue;
       tag = localFolders.addSetTag(tag, cds[a], "", "");
@@ -966,7 +966,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     }
   }
 
-  public XML.XMLTag remoteTag;
+  public XMLTree.XMLTag remoteTag;
 
   private void remote_build_tree() {
     File root = new File(remoteRoot);
@@ -982,7 +982,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     remoteBrowser.refresh();
     String cd = remoteRoot + remoteDir.getText();
     String cds[] = cd.split("/");
-    XML.XMLTag tag = remoteFolders.root;
+    XMLTree.XMLTag tag = remoteFolders.root;
     for(int a=0;a<cds.length;a++) {
       if (cds[a].length() == 0) continue;
       tag = remoteFolders.addSetTag(tag, cds[a], "", "");
@@ -1268,7 +1268,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     localFile.renameTo(newFile);
     //update localTree
     for (int a = 0; a < localTag.getChildCount(); a++) {
-      XML.XMLTag child = localTag.getChildAt(a);
+      XMLTree.XMLTag child = localTag.getChildAt(a);
       if (child.getName().equals(files[0].file)) {
         child.setName(newName);
         break;
@@ -1293,7 +1293,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     remoteFile.renameTo(newFile);
     //update remoteTree
     for (int a = 0; a < remoteTag.getChildCount(); a++) {
-      XML.XMLTag child = remoteTag.getChildAt(a);
+      XMLTree.XMLTag child = remoteTag.getChildAt(a);
       if (child.getName().equals(files[0].file)) {
         child.setName(newName);
         break;
@@ -1314,7 +1314,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     if (paths.length != 1) {
       return;
     }
-    XML.XMLTag tag = localFolders.getTag(paths[0]);
+    XMLTree.XMLTag tag = localFolders.getTag(paths[0]);
     ArrayList<String> pathElements = new ArrayList<String>();
     do {
       if (tag.getName().equals("/")) {
@@ -1343,7 +1343,7 @@ public class Site extends javax.swing.JPanel implements JFileBrowserListener {
     if (paths.length != 1) {
       return;
     }
-    XML.XMLTag tag = remoteFolders.getTag(paths[0]);
+    XMLTree.XMLTag tag = remoteFolders.getTag(paths[0]);
     ArrayList<String> pathElements = new ArrayList<String>();
     do {
       if (tag.getName().equals("/")) {

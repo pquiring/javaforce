@@ -520,8 +520,8 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
   private javax.swing.JButton zoomOut;
   // End of variables declaration//GEN-END:variables
 
-  private XML xml;
-  private XML.XMLTag library, image, audio, video, special;  //library sub-tags
+  private XMLTree xml;
+  private XMLTree.XMLTag library, image, audio, video, special;  //library sub-tags
   private ArrayList<File> folders = new ArrayList<File>();
   public int scale = 1;  //time scale (# seconds per 16 pxs)
   public int offset;  //in seconds
@@ -578,7 +578,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
       config.track[a].element = track.list.toArray(new Element[0]);
     }
     config.cameraKey = camera.list.toArray(new CameraKey[0]);
-    XML projectXML = new XML();
+    XMLTree projectXML = new XMLTree();
     projectXML.setUseUniqueNames(false);
     projectXML.readClass("jfvideo", config);
     projectXML.write(projectFile);
@@ -586,7 +586,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
 
   public void loadConfig(String fn) {
     projectFile = fn;
-    XML projectXML = new XML();
+    XMLTree projectXML = new XMLTree();
     projectXML.read(projectFile);
     projectXML.setUseUniqueNames(false);
     projectXML.writeClass(config);
@@ -709,7 +709,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
   }
 
   public void reScan() {
-    xml = new XML();
+    xml = new XMLTree();
     xml.root.setName("Media");
     library = xml.addTag(xml.root, "Library", "", "");
     image = xml.addTag(library, "Images", "", "");
@@ -965,7 +965,7 @@ public class ProjectPanel extends javax.swing.JPanel implements MediaIO {
     TreePath path[] = tree.getSelectionPaths();
     ArrayList<String> files = new ArrayList<String>();
     for(int a=0;a<path.length;a++) {
-      XML.XMLTag tag = xml.getTag(path[a]);
+      XMLTree.XMLTag tag = xml.getTag(path[a]);
       if (tag == null) continue;
       String file = tag.getContent();
       files.add(file);

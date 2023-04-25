@@ -33,7 +33,6 @@
   <SubComponents>
     <Container class="javax.swing.JToolBar" name="jToolBar1">
       <Properties>
-        <Property name="floatable" type="boolean" value="false"/>
         <Property name="rollover" type="boolean" value="true"/>
       </Properties>
 
@@ -176,7 +175,6 @@
           <SubComponents>
             <Container class="javax.swing.JToolBar" name="jToolBar2">
               <Properties>
-                <Property name="floatable" type="boolean" value="false"/>
                 <Property name="rollover" type="boolean" value="true"/>
               </Properties>
 
@@ -270,7 +268,6 @@
           <SubComponents>
             <Container class="javax.swing.JToolBar" name="jToolBar3">
               <Properties>
-                <Property name="floatable" type="boolean" value="false"/>
                 <Property name="rollover" type="boolean" value="true"/>
               </Properties>
 

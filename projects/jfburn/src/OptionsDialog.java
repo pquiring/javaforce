@@ -16,13 +16,13 @@ public class OptionsDialog extends javax.swing.JDialog {
   /**
    * Creates new form OptionsDialog
    */
-  public OptionsDialog(java.awt.Frame parent, boolean modal, XML xml, XML.XMLTag options) {
+  public OptionsDialog(java.awt.Frame parent, boolean modal, XMLTree xml, XMLTree.XMLTag options) {
     super(parent, modal);
     initComponents();
     setPosition();
     this.xml = xml;
     this.options = options;
-    XML.XMLTag tag;
+    XMLTree.XMLTag tag;
     tag = xml.getTag(new String[] {"jfburn", "options", "boot"});
     if (tag != null) {
       if (tag.content.equals("true")) enableBoot.setSelected(true);
@@ -256,8 +256,8 @@ public class OptionsDialog extends javax.swing.JDialog {
   private javax.swing.JButton selectBootFile;
   // End of variables declaration//GEN-END:variables
 
-  private XML xml;
-  private XML.XMLTag options;
+  private XMLTree xml;
+  private XMLTree.XMLTag options;
 
   private void listDevices() {
     devs.removeAllItems();
