@@ -3,7 +3,6 @@ body {
 }
 
 div {
-  white-space: nowrap;
   margin: 0px;
   box-sizing: border-box;
 }
