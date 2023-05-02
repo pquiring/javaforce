@@ -166,7 +166,7 @@ public class Test implements WebUIHandler {
     //TAB #3
 
     ListBox list = new ListBox();
-    list.setHeight(50);
+    list.setSize(256, 256);
     list.add("Option #1");
     list.add("Option #2");
     list.add("Option #3");

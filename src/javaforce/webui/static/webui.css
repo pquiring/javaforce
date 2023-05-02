@@ -3,6 +3,7 @@ body {
 }
 
 div {
+  white-space: nowrap;
   margin: 0px;
   box-sizing: border-box;
 }
@@ -151,10 +152,6 @@ td {
 }
 
 .listbox {
-  display: block;
-}
-
-.listboxitem {
   display: block;
 }
 
