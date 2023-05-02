@@ -121,6 +121,10 @@ td {
   display: block;
 }
 
+.inlineblock {
+  display: inline-block;
+}
+
 .pad {
   display: inline-block;
 }
