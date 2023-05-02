@@ -8,13 +8,10 @@ package javaforce.webui;
 import javaforce.webui.event.*;
 
 public class ListBox extends ScrollPanel implements Click {
+
   public ListBox() {
     addClass("listbox");
     addClass("height100");
-  }
-
-  public void add(String item) {
-    add(new Label(item));
   }
 
   public void update(int idx, String text) {
@@ -24,28 +21,49 @@ public class ListBox extends ScrollPanel implements Click {
     lbl.setText(text);
   }
 
+  public void add(String item) {
+    add(new Label(item));
+  }
+
   public void add(Component item) {
     item.addClass("width100");
     item.setProperty("selected", "false");
     item.addClass("listboxitem");
+    if (item.id != null) {
+      init(item);
+    }
     super.add(item);
+  }
+
+  public void add(int idx, Component item) {
+    item.addClass("width100");
+    item.setProperty("selected", "false");
+    item.addClass("listboxitem");
+    if (item.id != null) {
+      init(item);
+    }
+    super.add(idx, item);
+  }
+
+  private void init(Component cmp) {
+    cmp.addEvent("onclick", "onClick(event, " + cmp.id + ");");
+    cmp.addClickListener(this);
   }
 
   public void init() {
     super.init();
     int cnt = count();
-    for(int a=0;a<cnt;a++) {
-      Component c = get(a);
-      c.addEvent("onclick", "onClick(event, " + c.id + ");");
-      c.addClickListener(this);
+    for(int idx=0;idx<cnt;idx++) {
+      Component cmp = get(idx);
+      init(cmp);
     }
   }
 
   public int getSelectedIndex() {
     int cnt = count();
     for(int idx=0;idx<cnt;idx++) {
-      Component c = get(idx);
-      if (c.getProperty("selected").equals("true")) return idx;
+      Component cmp = get(idx);
+      if (cmp.getProperty("selected").equals("true")) return idx;
     }
     return -1;
   }
@@ -94,37 +112,38 @@ public class ListBox extends ScrollPanel implements Click {
   public void setSelectedIndex(int selidx) {
     int cnt = count();
     for(int idx=0;idx<cnt;idx++) {
-      Component c = get(idx);
+      Component cmp = get(idx);
       if (idx == selidx) {
-        if (c.getProperty("selected").equals("false")) {
-          c.setProperty("selected", "true");
-          c.sendEvent("addclass", new String[] {"cls=selected"});
+        if (cmp.getProperty("selected").equals("false")) {
+          cmp.setProperty("selected", "true");
+          cmp.sendEvent("addclass", new String[] {"cls=selected"});
         }
       } else {
-        if (c.getProperty("selected").equals("true")) {
-          c.setProperty("selected", "false");
-          c.sendEvent("delclass", new String[] {"cls=selected"});
+        if (cmp.getProperty("selected").equals("true")) {
+          cmp.setProperty("selected", "false");
+          cmp.sendEvent("delclass", new String[] {"cls=selected"});
         }
       }
     }
   }
 
-  public void onClick(MouseEvent e, Component c) {
-    String selected = (String)c.getProperty("selected");
+  public void onClick(MouseEvent me, Component cmp) {
+    System.out.println("ListBox.onClick");
+    String selected = (String)cmp.getProperty("selected");
     if (selected.equals("false")) {
-      c.setProperty("selected", "true");
-      c.sendEvent("addclass", new String[] {"cls=selected"});
+      cmp.setProperty("selected", "true");
+      cmp.sendEvent("addclass", new String[] {"cls=selected"});
     } else {
-      c.setProperty("selected", "false");
-      c.sendEvent("delclass", new String[] {"cls=selected"});
+      cmp.setProperty("selected", "false");
+      cmp.sendEvent("delclass", new String[] {"cls=selected"});
     }
-    if (!e.ctrlKey) {
+    if (!me.ctrlKey) {
       //clear all other items
-      ListBox list = (ListBox)c.parent;
+      ListBox list = (ListBox)cmp.parent;
       int cnt = list.count();
-      for(int a=0;a<cnt;a++) {
-        Component o = list.get(a);
-        if (o == c) continue;
+      for(int idx=0;idx<cnt;idx++) {
+        Component o = list.get(idx);
+        if (o == cmp) continue;
         selected = (String)o.getProperty("selected");
         if (selected.equals("true")) {
           o.setProperty("selected", "false");
@@ -132,6 +151,7 @@ public class ListBox extends ScrollPanel implements Click {
         }
       }
     }
+    System.out.println("ListBox.onChanged");
     onChanged(null);
   }
 }

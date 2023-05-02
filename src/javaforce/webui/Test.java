@@ -125,26 +125,25 @@ public class Test implements WebUIHandler {
     //add second row
     Row row2 = new Row();
     panel.add(row2);
+
     //add : tab panel
     TabPanel tab = new TabPanel();
     row2.add(tab);
 //    row2.addClass("pad");
 
-    //add : table
+    //TAB #1
     Table table = new Table(50, 50, 3, 3);
     table.setBorder(true);
     table.add(new Label("cell_0_0"), 0, 0);
     table.add(new Label("cell_1_1"), 1, 1);
     table.add(new Label("cell_2_2_______________too_long"), 2, 2);
 
-    //add TabPanel
     Panel t1 = new Panel();
     tab.addTab(t1, "Tab#1");
     t1.add(table);
-    Panel t2 = new Panel();
-    tab.addTab(t2, "Tab#2");
+
+    //TAB #2
     Column col = new Column();
-    t2.add(col);
     Label l2 = new Label("Another Label");
     col.add(l2);
     TextField tf1 = new TextField("init text");
@@ -153,7 +152,6 @@ public class Test implements WebUIHandler {
       System.out.println("textfield text=" + tf.getText());
     });
     col.add(tf1);
-
     TextArea ta1 = new TextArea("init text");
     ta1.addChangedListener((Component comp) -> {
       TextArea ta = (TextArea)comp;
@@ -161,15 +159,23 @@ public class Test implements WebUIHandler {
     });
     col.add(ta1);
 
+    Panel t2 = new Panel();
+    tab.addTab(t2, "Tab#2");
+    t2.add(col);
+
+    //TAB #3
+
     ListBox list = new ListBox();
     list.setHeight(50);
     list.add("Option #1");
     list.add("Option #2");
     list.add("Option #3");
 
-    Panel p = new Panel();
-    p.add(list);
-    tab.addTab(p, "Tab#3");
+    Panel t3 = new Panel();
+    t3.add(list);
+    tab.addTab(t3, "Tab#3");
+
+    //TAB #4
 
     Tree tree = new Tree();
     tree.setHeight(50);
@@ -186,9 +192,22 @@ public class Test implements WebUIHandler {
     child.setData("t3");
     node.addNode(child);
 
-    Panel p2 = new Panel();
-    p2.add(tree);
-    tab.addTab(p2, "Tab#4");
+    Panel t4 = new Panel();
+    t4.add(tree);
+    tab.addTab(t4, "Tab#4");
+
+    //TAB #5
+    ScrollPanel scroll = new ScrollPanel();
+    for(int a=0;a<50;a++) {
+      Row r = new Row();
+      r.add(new Label("X" + a));
+      scroll.add(r);
+    }
+    scroll.setSize(256, 256);
+
+    Panel t5 = new Panel();
+    t5.add(scroll);
+    tab.addTab(t5, "Tab#5");
 
     //add third row
     Row row3 = new Row();
