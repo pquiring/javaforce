@@ -284,7 +284,7 @@ public class XML implements TreeModelListener {
               break;
             }
           }
-          if ((ch == ' ') && (!isAttrs)) {
+          if ((!isAttrs) && (Character.isWhitespace(ch))) {
             isAttrs = true;
           }
           if (isAttrs) {
@@ -332,7 +332,7 @@ public class XML implements TreeModelListener {
     int ep;
     tag.attrs.clear();
     for (int a = 0; a < length; a++) {
-      if (ca[a] == ' ') {
+      if (Character.isWhitespace(ca[a])) {
         continue;  //skip spaces
       }
       ep = attrs.indexOf('=', a);
@@ -366,8 +366,11 @@ public class XML implements TreeModelListener {
         }
         a = ep + 1;
       } else {
-        ep = attrs.indexOf(' ', a);
-        if (ep == -1) {
+        ep = a;
+        while (ep < length && !Character.isWhitespace(ca[ep])) {
+          ep++;
+        }
+        if (ep == length) {
           ep = length - 1;
         }
         if (ep <= a) {
