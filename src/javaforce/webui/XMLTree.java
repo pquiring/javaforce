@@ -25,7 +25,7 @@ import javaforce.*;
  * annotations are required.
  */
 
-public class XML implements TreeModelListener {
+public class XMLTree implements TreeModelListener {
   private TreeModel treemodel;
   private boolean useContentForName = false;
   private boolean useNameAttributeForName = false;
@@ -234,7 +234,7 @@ public class XML implements TreeModelListener {
   /**
    * Constructs a new XML object.
    */
-  public XML() {
+  public XMLTree() {
     treemodel = new TreeModel(root);
     treemodel.addTreeModelListener(this);
     treemodel.setRoot(root);
