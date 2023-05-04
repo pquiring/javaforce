@@ -331,7 +331,7 @@ td {
 }
 
 .treerow {
-  display: inline;
+  display: block;
   height: 20px;
   width: 100%;
 }
@@ -340,28 +340,33 @@ td {
   background-image: url('webui-tree-row.png');
   width: 20px;
   height: 20px;
+  display: inline-block;
 }
 
 .treeopened {
   background-image: url('webui-tree-open.png');
   width: 20px;
   height: 20px;
+  display: inline-block;
 }
 
 .treeclosed {
   background-image: url('webui-tree-close.png');
   width: 20px;
   height: 20px;
+  display: inline-block;
 }
 
 .treeleaf {
   background-image: url('webui-tree-leaf.png');
   width: 20px;
   height: 20px;
+  display: inline-block;
 }
 
 .treelabel {
   height: 20px;
+  display: inline-block;
 }
 
 .modal {
