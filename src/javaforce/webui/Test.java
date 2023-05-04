@@ -178,7 +178,7 @@ public class Test implements WebUIHandler {
     //TAB #4
 
     Tree tree = new Tree();
-    tree.setHeight(50);
+    tree.setSize(256, 256);
     TreeNode node = tree.getRootNode();
     node.setData("root");
     TreeNode child = new TreeNode();

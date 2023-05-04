@@ -11,6 +11,7 @@ public class TreeNode {
   private Object data;
   private TreeNode parent;
   private ArrayList<TreeNode> children = new ArrayList<TreeNode>();
+  public TreeModel model;
 
   public boolean leaf;
   public boolean opened;
@@ -39,14 +40,18 @@ public class TreeNode {
 
   public void addNode(TreeNode node) {
     if (node == this) return;
+    model.changed = true;
+    node.model = model;
     children.add(node);
   }
 
   public void removeNode(int idx) {
-    children.remove(idx);
+    removeNode(children.get(idx));
   }
 
   public void removeNode(TreeNode node) {
+    model.changed = true;
+    node.model = null;
     children.remove(node);
   }
 
@@ -73,6 +78,7 @@ public class TreeNode {
     }
     parent = newParent;
     parent.addNode(this);
+    model.changed = true;
   }
 
   public TreeNode getParent() {

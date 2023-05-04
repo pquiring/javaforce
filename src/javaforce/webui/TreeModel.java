@@ -8,15 +8,18 @@ package javaforce.webui;
 public class TreeModel {
   private TreeNode root;
   private TreeModelListener listener;
+  public boolean changed = true;
 
   public TreeModel(TreeNode root) {
     this.root = root;
+    root.model = this;
   }
   public TreeNode getRoot() {
     return root;
   }
   public void setRoot(TreeNode root) {
     this.root = root;
+    root.model = this;
   }
   public void addTreeModelListener(TreeModelListener listener) {
     this.listener = listener;

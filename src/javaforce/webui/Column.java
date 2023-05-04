@@ -6,7 +6,6 @@ package javaforce.webui;
  */
 
 public class Column extends Container {
-  //TODO : use a Cell like ListBox - forcing "display = block" might not always work
   public Column() {
     addClass("column");
     //setMaxHeight();

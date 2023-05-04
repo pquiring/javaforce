@@ -6,7 +6,6 @@ package javaforce.webui;
  */
 
 public class Row extends Container {
-  //TODO : use a Cell like ListBox - forcing "display = inline-block" might not always work
   public Row() {
     addClass("row");
     //setMaxWidth();

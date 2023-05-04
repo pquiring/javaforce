@@ -20,6 +20,10 @@ public class Tree extends ScrollPanel implements Click {
   }
   private TreeModel model;
   public String html() {
+    if (model.changed) {
+      model.changed = false;
+      rebuild();
+    }
     StringBuilder sb = new StringBuilder();
     sb.append("<div" + getAttrs() + "'>");
     sb.append(innerhtml());
@@ -42,7 +46,7 @@ public class Tree extends ScrollPanel implements Click {
   public TreeNode getRootNode() {
     return model.getRoot();
   }
-  private void addNode(TreeNode node, int offset) {
+  private void buildNode(TreeNode node, int offset) {
     Block row = new Block();
     row.setClass("treerow");
     add(row);
@@ -78,12 +82,12 @@ public class Tree extends ScrollPanel implements Click {
     int cnt = node.getChildCount();
     offset++;
     for(int a=0;a<cnt;a++) {
-      addNode(node.getChildAt(a), offset);
+      buildNode(node.getChildAt(a), offset);
     }
   }
   private void rebuild() {
     removeAll();
-    addNode(model.getRoot(), 0);
+    buildNode(model.getRoot(), 0);
   }
   private TreeEventClick handler;
   public void addEventHandler(TreeEventClick handler) {
