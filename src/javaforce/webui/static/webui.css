@@ -199,6 +199,7 @@ td {
   overflow: hidden;
   background-color: #ccc;
   cursor: default;
+  user-select: none;
 }
 
 .tabinactive {
@@ -207,6 +208,7 @@ td {
   overflow: hidden;
   background-color: #f1f1f1;
   cursor: default;
+  user-select: none;
 }
 
 .tabcontenthidden {
