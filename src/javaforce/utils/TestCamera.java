@@ -32,10 +32,10 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     pack();
     listCameras();
     new WebUIServer().start(this, 8080, false);
-    encoder = new MediaEncoder();
-    encoder.setProfileLevel(MediaCoder.PROFILE_MAIN);
-    encoder_video = new MediaEncoder();
-    encoder_video.setProfileLevel(MediaCoder.PROFILE_MAIN);
+    encoder_dash = new MediaEncoder();
+    encoder_dash.setProfileLevel(MediaCoder.PROFILE_MAIN);
+    encoder_h264 = new MediaEncoder();
+    encoder_h264.setProfileLevel(MediaCoder.PROFILE_MAIN);
   }
 
   /**
@@ -145,17 +145,17 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     }
     JFLog.log("camera=" + devices[camIdx]);
     for(int a=0;a<3;a++) {JFLog.log(" ------------------------------- ");}
-    encoder.start(this, 640, 480, 10, -1, -1, "dash", true, false);
+    encoder_dash.start(this, 640, 480, 10, -1, -1, "dash", true, false);
     if (transcode) {
       for(int a=0;a<3;a++) {JFLog.log(" ------------------------------- ");}
-      encoder_video.start(new MediaIO() {
+      encoder_h264.start(new MediaIO() {
         public int read(MediaCoder coder, byte[] data) {
           return 0;
         }
         public int write(MediaCoder coder, byte[] data) {
           JFLog.log("h264.write:" + data.length);
-          encoder.addVideoEncodedTS(data, 0, data.length, false, encoder_video.getLastDTS(), encoder_video.getLastPTS());
-          encoder.flush();
+          encoder_dash.addVideoEncodedTS(data, 0, data.length, false, encoder_h264.getLastDTS(), encoder_h264.getLastPTS());
+          encoder_dash.flush();
           return data.length;
         }
         public long seek(MediaCoder coder, long pos, int how) {
@@ -181,11 +181,11 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
           preview.repaint();
           JFLog.log("addFrame:" + frameCount++);
           if (transcode) {
-            encoder_video.addVideo(px);
-            encoder_video.flush();
+            encoder_h264.addVideo(px);
+            encoder_h264.flush();
           } else {
-            encoder.addVideo(px);
-            encoder.flush();
+            encoder_dash.addVideo(px);
+            encoder_dash.flush();
           }
           JFLog.log("============================");
         }});
@@ -202,9 +202,9 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     camera.stop();
     camera = null;
     if (transcode) {
-      encoder_video.stop();
+      encoder_h264.stop();
     }
-    encoder.stop();
+    encoder_dash.stop();
     setState(true);
   }//GEN-LAST:event_stopActionPerformed
 
@@ -240,8 +240,8 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
   private int fps = 10;
   private JFImage img;
   private int width, height;
-  private MediaEncoder encoder;
-  private MediaEncoder encoder_video;
+  private MediaEncoder encoder_dash;
+  private MediaEncoder encoder_h264;
   private WebUIClient client;
   private Video video;
   private Video video_capture;
@@ -309,7 +309,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
 
     video.addActionListener(new Action() {
       public void action(Component cmp) {
-        video.setLiveSource(encoder.getCodecMimeType("dash", true, false));
+        video.setLiveSource(encoder_dash.getCodecMimeType("dash", true, false));
       }
     });
 
