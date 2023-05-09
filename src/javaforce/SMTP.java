@@ -21,15 +21,11 @@ public class SMTP {
     public byte[] data;
   }
 
-  public SMTP() {
-  }
   private Socket s;
   private InputStream is;
   private OutputStream os;
   private BufferedReader br;
-  private boolean passive = true;
   private String host;
-  private ServerSocket active;  //active socket
   private boolean log = false;
   private ArrayList<String> headers = new ArrayList<String>();
 
@@ -398,7 +394,7 @@ public class SMTP {
     }
   }
 
-  /** Returns last line of response from last command send. */
+  /** Returns last line of response from last command sent. */
   public String getLastResponse() {
     if (response == null) return null;
     return response[response.length - 1];
@@ -1022,7 +1018,7 @@ public class SMTP {
 
     return type3;
   }
-  public static String encodeSecond(String user, String pass, String type, String response) {
+  private static String encodeSecond(String user, String pass, String type, String response) {
     switch (type) {
       case AUTH_LOGIN:
         return new String(Base64.encode(pass.getBytes()));
