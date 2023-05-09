@@ -13,8 +13,11 @@ import javax.crypto.spec.*;
  */
 public class SMTP {
 
+  /** Email Attachment */
   public static class Attachment {
+    /** attachment filename (no path) */
     public String name;
+    /** attachment content */
     public byte[] data;
   }
 
@@ -40,6 +43,10 @@ public class SMTP {
   public static final int TLSPORT = 587;  //default SSL port (explicit)
   public static final int SSLPORT = 465;  //default SSL port (implicit)
 
+  /** Connects to an insecure SMTP server.
+   * @param host = SMTP server
+   * @param port = port to connect (default = 25 or 587)
+   */
   public boolean connect(String host, int port) throws Exception {
     s = new Socket(host, port);
     is = s.getInputStream();
@@ -54,6 +61,10 @@ public class SMTP {
     return false;
   }
 
+  /** Connects to a secure SMTP server.
+   * @param host = SMTP server
+   * @param port = port to connect (default = 465)
+   */
   public boolean connectSSL(String host, int port) throws Exception {
     TrustManager[] trustAllCerts = new TrustManager[]{
       new X509TrustManager() {
@@ -87,6 +98,7 @@ public class SMTP {
     return false;
   }
 
+  /** Disconnect from SMPT Server. */
   public void disconnect() throws Exception {
     if (s != null) {
       s.close();
@@ -97,10 +109,12 @@ public class SMTP {
     headers.clear();
   }
 
+  /** Set debug logging state. */
   public void setLogging(boolean state) {
     log = state;
   }
 
+  /** Sends HELO command. */
   public boolean login() throws Exception {
     cmd("HELO " + host);
     getResponse();
@@ -113,6 +127,11 @@ public class SMTP {
   public static final String AUTH_LOGIN = "LOGIN";
   public static final String AUTH_NTLM = "NTLM";
 
+  /** Authenticates with SMTP Server.
+   * @param user = username
+   * @param pass = password
+   * @param type = auth type (AUTH_LOGIN or AUTH_NTML)
+   */
   public boolean auth(String user, String pass, String type) throws Exception {
     switch (type) {
       case AUTH_LOGIN: cmd("AUTH LOGIN"); break;
@@ -142,15 +161,21 @@ public class SMTP {
     return true;
   }
 
+  /** Authenticates with SMTP Server using AUTH_LOGIN type.
+   * @param user = username
+   * @param pass = password
+   */
   public boolean auth(String user, String pass) throws Exception {
     return auth(user, pass, AUTH_LOGIN);
   }
 
+  /** Send QUIT command. */
   public void logout() throws Exception {
     cmd("quit");
     getResponse();  //should be "221" but ignored
   }
 
+  /** Send any command to server. */
   public void cmd(String cmd) throws Exception {
     if ((s == null) || (s.isClosed())) {
       throw new Exception("not connected");
@@ -178,24 +203,36 @@ public class SMTP {
     os = s.getOutputStream();
   }
 
+  /** Sets from email for message.
+   * @param email = from email address
+   */
   public void from(String email) throws Exception {
     cmd("MAIL FROM:<" + email + ">");
     getResponse();
     headers.add("From: <" + email + ">\r\n");
   }
 
+  /** Sets to email for message.
+   * @param email = to email address
+   */
   public void to(String email) throws Exception {
     cmd("RCPT TO:<" + email + ">");
     getResponse();
     headers.add("To: <" + email + ">\r\n");
   }
 
+  /** Sets cc email for message.
+   * @param email = cc email address
+   */
   public void cc(String email) throws Exception {
     cmd("RCPT TO:<" + email + ">");
     getResponse();
     headers.add("To: <" + email + ">\r\n");
   }
 
+  /** Sets bcc email for message.
+   * @param email = bcc email address
+   */
   public void bcc(String email) throws Exception {
     cmd("RCPT TO:<" + email + ">");
     getResponse();
@@ -233,30 +270,32 @@ public class SMTP {
     return true;
   }
 
-  /** Sets subject for email. */
+  /** Sets subject header for email.
+   * @param subject = subject of email
+   * Can only be used with enhanced data() method.
+   */
   public void subject(String subject) {
     headers.add("Subject: " + subject + "\r\n");
   }
 
-  /** Sets content type of body.
-   *
-   * ie: "text/plain" or "text/html"
-   *
-   * Default is unspecified.
-   *
+  /** Sets content type header of body.
+   * @param tpe = "text/plain" or "text/html" (default is unspecified)
+   * Can only be used with enhanced data() method.
    */
   public void setContentType(String type) {
     headers.add("Content-Type: " + type + "\r\n");
   }
 
   /** Add date header to email.
-   *
+   * Can only be used with enhanced data() method.
    */
   public void addDate(Calendar date) {
     headers.add("Date: " + date.toString() + "\r\n");
   }
 
-  /** Add custom header to email. */
+  /** Add custom header to email.
+   * Can only be used with enhanced data() method.
+   */
   public void addHeader(String name, String value) {
     headers.add(name + ": " + value + "\r\n");
   }
@@ -265,7 +304,7 @@ public class SMTP {
   private static final String boundary_mixed  = "javaforce_smtp__boundary_mixed";
   private static final String boundary_alt    = "javaforce_smtp__boundary_alt";
 
-  /** Sends a message with optional attachments.
+  /** Sends an enhanced message in text and/or html formats with headers and optional attachments.
    * Headers are automatically generated and MUST NOT be included in body.
    * One or both of body_text, body_html MUST be supplied.
    * @param body_text = body of message in TEXT format
@@ -359,6 +398,7 @@ public class SMTP {
     }
   }
 
+  /** Returns last line of response from last command send. */
   public String getLastResponse() {
     if (response == null) return null;
     return response[response.length - 1];
@@ -386,6 +426,7 @@ public class SMTP {
     System.exit(1);
   }
 
+  /** CLI */
   public static void main(String[] args) {
     if (args.length < 5) {
       usage();
@@ -588,7 +629,7 @@ public class SMTP {
     System.arraycopy(workstation, 0, type1, off, workstation.length);
     return type1;
   }
-  public static String encodeFirst(String user, String pass, String type, String response) {
+  private static String encodeFirst(String user, String pass, String type, String response) {
     switch (type) {
       case AUTH_LOGIN:
         return new String(Base64.encode(user.getBytes()));
@@ -706,7 +747,7 @@ public class SMTP {
     return null;
   }
 
-  public static byte[] calcLMv2Response(String domain, String user,
+  private static byte[] calcLMv2Response(String domain, String user,
     String password, byte[] server_nonce, byte[] client_nonce)
   {
     try {
