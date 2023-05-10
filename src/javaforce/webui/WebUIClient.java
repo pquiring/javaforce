@@ -144,14 +144,21 @@ public class WebUIClient {
     sb.append("\"");
     return sb.toString();
   }
+  private Object lock = new Object();
   public void sendData(byte data[]) {
-    socket.write(data, WebSocket.TYPE_BINARY);
+    if (!isReady) return;
+    synchronized (lock) {
+      socket.write(data, WebSocket.TYPE_BINARY);
+    }
   }
   public void sendData(byte data[], int pos, int length) {
-    socket.write(Arrays.copyOfRange(data, pos,pos + length), WebSocket.TYPE_BINARY);
+    if (!isReady) return;
+    synchronized (lock) {
+      socket.write(Arrays.copyOfRange(data, pos,pos + length), WebSocket.TYPE_BINARY);
+    }
   }
   private int tid = 1;
-  public synchronized void sendEvent(String id, String event, String args[]) {
+  public void sendEvent(String id, String event, String args[]) {
     if (!isReady) return;
     if (id == null) {
       JFLog.log("WebUIClient:Error:sendEvent():id==null");
@@ -199,9 +206,25 @@ public class WebUIClient {
     log.append("}");
     if (WebUIServer.debug) JFLog.log("SEND=" + log.toString());
     try {
-      socket.write(sb.toString().getBytes("utf-8"));
+      synchronized (lock) {
+        socket.write(sb.toString().getBytes("utf-8"));
+      }
     } catch (Exception e) {
       JFLog.log(e);
+    }
+  }
+  public void sendDataEvent(byte data[], String id, String event, String[] args) {
+    if (!isReady) return;
+    synchronized (lock) {
+      sendData(data);
+      sendEvent(id, event, args);
+    }
+  }
+  public void sendDataEvent(byte data[], int pos, int length, String id, String event, String[] args) {
+    if (!isReady) return;
+    synchronized (lock) {
+      sendData(data, pos, length);
+      sendEvent(id, event, args);
     }
   }
   public String html() {

@@ -378,15 +378,13 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
       } else {
         if (client.getProperty("start-segment").equals("false")) {
           client.setProperty("init-segment", "true");
-          client.sendData(init_segment, 0, init_segment.length);
-          client.sendEvent(video.getID(), "media_add_buffer", null);
+          client.sendDataEvent(init_segment, video.getID(), "media_add_buffer", null);
           client.setProperty("start-segment", "true");
           //because player has missed some segments it will need to seek to currentTime
           client.sendEvent(video.getID(), "media_seek", new String[] {"time=" + getCurrentTime()});
         }
       }
-      client.sendData(data, 0, data.length);
-      client.sendEvent(video.getID(), "media_add_buffer", null);
+      client.sendDataEvent(data, video.getID(), "media_add_buffer", null);
       if (is_init) {
         client.setProperty("init-segment", "true");
       }
