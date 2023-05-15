@@ -112,9 +112,9 @@
     <maven name="mssql-jdbc" path="com/microsoft/sqlserver" version="${mssql-jdbc-version}"/>
   </target>
 
-  <available property="have-mysql-connector-j" file="jars/mysql-connector-j-${mysql-connector-j-version}.jar"/>
-  <target name="get-mysql-connector-j" unless="have-mysql-connector-j">
-    <maven name="mysql-connector-j" path="com/mysql" version="${mysql-connector-j-version}"/>
+  <available property="have-mysql-connector" file="jars/mysql-connector-${mysql-connector-version}.jar"/>
+  <target name="get-mysql-connector" unless="have-mysql-connector">
+    <maven name="mysql-connector-j" dest="mysql-connector" path="com/mysql" version="${mysql-connector-version}"/>
   </target>
 
   <available property="have-bouncycastle" file="jars/bouncycastle-${bouncycastle-version}.jar"/>
@@ -142,7 +142,7 @@
     <maven name="filters" path="com/jhlabs" version="${filters-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector-j,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters">
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

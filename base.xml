@@ -133,10 +133,10 @@
     <copyjar name="mssql-jdbc" version="${mssql-jdbc-version}" path="${jarpath}"/>
   </target>
 
-  <property name="mysql-connector-j-version" value="8.0.33"/>
+  <property name="mysql-connector-version" value="8.0.33"/>
 
-  <target name="jar-mysql-connector-j">
-    <copyjar name="mysql-connector-j" version="${mysql-connector-j-version}" path="${jarpath}"/>
+  <target name="jar-mysql-connector">
+    <copyjar name="mysql-connector" version="${mysql-connector-version}" path="${jarpath}"/>
   </target>
 
   <property name="bouncycastle-version" value="1.73"/>
