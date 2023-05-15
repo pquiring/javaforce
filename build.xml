@@ -87,7 +87,12 @@
     <maven name="derby" path="org/apache/derby" version="${derby-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby">
+  <available property="have-jtds" file="jars/jtds-${jtds-version}.jar"/>
+  <target name="get-jtds" unless="have-jtds">
+    <maven name="jtds" path="net/sourceforge/jtds" version="${jtds-version}"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
