@@ -14,17 +14,9 @@
 
   <import file="../../base.xml"/>
 
-  <target name="depjars" depends="depnatives">
+  <target name="depjars" depends="depnatives,jar-filters">
     <jar destfile="javaforce.jar">
       <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="${app}.sourceforge.net"/>
-      </manifest>
-    </jar>
-    <jar destfile="filters.jar">
-      <zipfileset src="../../jars/filters.jar"/>
       <manifest>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>

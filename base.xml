@@ -159,6 +159,12 @@
     <copyjar name="websocket-api" version="${tomcat-version}" path="${jarpath}"/>
   </target>
 
+  <property name="filters-version" value="2.0.235"/>
+
+  <target name="jar-filters">
+    <copyjar name="filters" version="${filters-version}" path="${jarpath}"/>
+  </target>
+
   <target name="check-builds">
     <available file="${project2}.xml" property="project2.present"/>
     <available file="${project3}.xml" property="project3.present"/>

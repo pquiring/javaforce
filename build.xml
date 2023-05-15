@@ -137,7 +137,12 @@
     <maven name="tomcat-websocket-api" dest="websocket-api" path="org/apache/tomcat" version="${tomcat-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector-j,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api">
+  <available property="have-filters" file="jars/filters-${filters-version}.jar"/>
+  <target name="get-filters" unless="have-filters">
+    <maven name="filters" path="com/jhlabs" version="${filters-version}"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector-j,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
