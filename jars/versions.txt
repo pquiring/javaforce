@@ -1,2 +1,13 @@
 #these jars are not available (as is) within maven (need to resolve dependencies)
 llrp = ltkjava-1.0.0.7-with-dependencies
+
+#llrp dependancies:
+Name            Version URL
+
+jdom            1.0     http://www.jdom.org
+log4j           1.2.15  http://logging.apache.org/log4j/1.2/download.html
+jargs           1.0     http://sourceforge.net/project/showfiles.php?group_id=33024
+mina            1.1.7   http://mina.apache.org
+slf4j-log4j12   1.5.0   http://www.slf4j.org
+slf4j-api       1.5.0   http://www.slf4j.org
+xerces-j        2.4.0   http://xerces.apache.org/
