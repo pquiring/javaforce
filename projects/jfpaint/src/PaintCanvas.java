@@ -1152,6 +1152,14 @@ public class PaintCanvas extends JComponent implements MouseListener, MouseMotio
     return imageLayer;
   }
 
+  public JFImage getLayer(int idx) {
+    return img[idx];
+  }
+
+  public JFImage[] getLayers() {
+    return img;
+  }
+
   public JFImage combineImageLayers() {
     if (img.length == 1) return img[0];
     JFImage c = new JFImage();

@@ -1084,6 +1084,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG", "jpg", "jpeg"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG", "png"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("BMP", "bmp"));
+    chooser.addChoosableFileFilter(new FileNameExtensionFilter("TIFF", "tiff"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("XPM", "xpm"));
     chooser.setMultiSelectionEnabled(false);
     chooser.setCurrentDirectory(new File(currentPath));
@@ -1200,6 +1201,36 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         result = false;
       }
     }
+/*
+    else if (format.equals("tiff")) {
+      multi = true;
+      try {
+        FileInputStream fis = new FileInputStream(filename);
+        JFImage[] imgs = JFImage.loadTIFFs(fis);
+        fis.close();
+        int w = 0,h = 0;
+        for(int a=0;a<imgs.length;a++) {
+          img = imgs[a];
+          if (a == 0) {
+            w = img.getWidth();
+            h = img.getHeight();
+            pc.setImageSize(w, h);
+          } else {
+            pc.addImageLayer();
+          }
+          pc.setImageLayer(a);
+          int px[] = img.getPixels();
+          pc.img[a].putPixels(px, 0, 0, w, h, 0);
+          pc.name[a] = "Layer-" + (a+1);
+        }
+        pc.setImageLayer(0);
+        result = true;
+      } catch (Exception e) {
+        JFAWT.showError("Error", e.toString());
+        result = false;
+      }
+    }
+*/
     else if (format.equals("bmp"))
       result = img.loadBMP(filename, 0);
     else if (format.equals("svg"))
@@ -1208,6 +1239,8 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
       result = img.loadJPG(filename);
     else if (format.equals("xpm"))
       result = img.loadXPM(filename);
+    else if (format.equals("tiff"))
+      result = img.loadTIFF(filename);
     else
       result = img.load(filename);
     if (result && !multi) {
@@ -1319,11 +1352,23 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         oos.writeObject(imgs);
         oos.close();
         fos.close();
-        return true;
+        saved = true;
       } catch (Exception e) {
         JFAWT.showError("Error", e.toString());
-        return false;
       }
+/*  //not working!
+    } else if (format.equals("tiff") && pc.getImageLayers() > 1) {
+      try {
+        FileOutputStream fos = new FileOutputStream(filename);
+        saved = JFImage.saveTIFFs(fos, pc.getLayers());
+        fos.close();
+        if (!saved) {
+          throw new Exception("save failed");
+        }
+      } catch (Exception e) {
+        JFAWT.showError("Error", e.toString());
+      }
+*/
     } else {
       if (pc.getImageLayers() > 1) {
         if (!JFAWT.showConfirm("Combine Layers?", "Saving in this format will combine all layers, are you sure?")) return false;
@@ -1335,8 +1380,13 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
         saved = img.saveSVG(filename);
       else if (format.equals("jpg"))
         saved = img.saveJPG(filename);
+      else if (format.equals("tiff"))
+        saved = img.saveTIFF(filename);
       else
         saved = img.save(filename, format);
+      if (!saved) {
+        JFAWT.showError("Error", "save failed");
+      }
     }
     pc.disableScale = false;
     if (saved) pc.dirty = false;
@@ -1350,6 +1400,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("JFPAINT", "jfpaint"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("JPEG", "jpg", "jpeg"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG", "png"));
+    chooser.addChoosableFileFilter(new FileNameExtensionFilter("TIFF", "tiff"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("BMP", "bmp"));
     chooser.addChoosableFileFilter(new FileNameExtensionFilter("SVG", "svg"));
     chooser.setMultiSelectionEnabled(false);
@@ -1407,6 +1458,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     if (format.equals("jpeg")) return "jpg";
     if (format.equals("svg")) return "svg";
     if (format.equals("xpm")) return "xpm";
+    if (format.equals("tiff")) return "tiff";
     System.out.println("Unsupported format:" + format);
     return null;
   }

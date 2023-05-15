@@ -26,6 +26,12 @@
         <File Id="jfpaint.jar" Source="jfpaint.jar" KeyPath="yes"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="filters.jar" Source="filters.jar"/>
+        <File Id="commonimage.jar" Source="common-image.jar"/>
+        <File Id="commonio.jar" Source="common-io.jar"/>
+        <File Id="commonlang.jar" Source="common-lang.jar"/>
+        <File Id="imageiocore.jar" Source="imageio-core.jar"/>
+        <File Id="imageiometadata.jar" Source="imageio-metadata.jar"/>
+        <File Id="imageiotiff.jar" Source="imageio-tiff.jar"/>
         <File Id="jfpaint.exe" Source="jfpaint.exe"/>
       </Component>
     </DirectoryRef>
