@@ -32,23 +32,22 @@ function detectos {
 
 function package {
   echo Packaging $1
-  cp $1.jar /usr/share/java
-  echo /usr/share/java/$1.jar > files.lst
+  cp $2 /usr/share/java
+  echo /usr/share/java/$2 > files.lst
   if [ -f build.xml ]; then rm build.xml; fi
   echo "<project>" >> build.xml
   echo "<description>$1</description>" >> build.xml
-  echo "<property name=\"app\" value=\"$2\"/>" >> build.xml
-  echo "<property name=\"version\" value=\"$3\"/>" >> build.xml
+  echo "<property name=\"app\" value=\"$3\"/>" >> build.xml
+  echo "<property name=\"version\" value=\"$4\"/>" >> build.xml
   echo "</project>" >> build.xml
-  java -cp javaforce.jar javaforce.utils.Gen$PKG $2 $3 ..
+  java -cp javaforce.jar javaforce.utils.Gen$PKG $3 $4 ..
   rm files.lst
   rm build.xml
 }
 
 detectos
 
-package jcifs jfcifs 1.3.19
-package jsch jfsch 0.1.55
-package jzlib jfzlib 1.1.3
-package derby jfderby 10.11.1.1
-
+package jcifs jcifs*.jar jfcifs 1.3.19
+package jsch jsch*.jar jfsch 0.1.55
+package jzlib jzlib*.jar jfzlib 1.1.3
+package derby derby*.jar jfderby 10.16.1.1
