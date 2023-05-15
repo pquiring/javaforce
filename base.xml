@@ -95,6 +95,12 @@
 
   <property name="bfg-version" value="1.14.0"/>
 
+  <property name="derby-version" value="10.16.1.1"/>
+
+  <target name="jar-derby">
+    <copyjar name="derby" version="${derby-version}" path="${jarpath}"/>
+  </target>
+
   <target name="check-builds">
     <available file="${project2}.xml" property="project2.present"/>
     <available file="${project3}.xml" property="project3.present"/>

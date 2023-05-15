@@ -82,7 +82,12 @@
     <maven name="bfg" path="com/madgag" version="${bfg-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff">
+  <available property="have-derby" file="jars/derby-${derby-version}.jar"/>
+  <target name="get-derby" unless="have-derby">
+    <maven name="derby" path="org/apache/derby" version="${derby-version}"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
