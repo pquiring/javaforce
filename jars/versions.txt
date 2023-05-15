@@ -1,5 +1,2 @@
 bacnet = bacnet4j-6.0.0-with-dependencies
 llrp = ltkjava-1.0.0.7-with-dependencies
-
-servlet-api & jsp-api & websocket-api = Tomcat 9.0.72
-#org/apache/tomcat/tomcat-*-api/9.0.75

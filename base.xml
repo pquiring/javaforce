@@ -145,6 +145,20 @@
     <copyjar name="bouncycastle" version="${bouncycastle-version}" path="${jarpath}"/>
   </target>
 
+  <property name="tomcat-version" value="9.0.75"/>
+
+  <target name="jar-servlet-api">
+    <copyjar name="servlet-api" version="${tomcat-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-jsp-api">
+    <copyjar name="jsp-api" version="${tomcat-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-websocket-api">
+    <copyjar name="websocket-api" version="${tomcat-version}" path="${jarpath}"/>
+  </target>
+
   <target name="check-builds">
     <available file="${project2}.xml" property="project2.present"/>
     <available file="${project3}.xml" property="project3.present"/>

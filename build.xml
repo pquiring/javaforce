@@ -122,7 +122,22 @@
     <maven name="bcprov-jdk18on" dest="bouncycastle" path="org/bouncycastle" version="${bouncycastle-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector-j,get-bouncycastle">
+  <available property="have-servlet-api" file="jars/servlet-api-${tomcat-version}.jar"/>
+  <target name="get-servlet-api" unless="have-servlet-api">
+    <maven name="tomcat-servlet-api" dest="servlet-api" path="org/apache/tomcat" version="${tomcat-version}"/>
+  </target>
+
+  <available property="have-jsp-api" file="jars/jsp-api-${tomcat-version}.jar"/>
+  <target name="get-jsp-api" unless="have-jsp-api">
+    <maven name="tomcat-jsp-api" dest="jsp-api" path="org/apache/tomcat" version="${tomcat-version}"/>
+  </target>
+
+  <available property="have-websocket-api" file="jars/websocket-api-${tomcat-version}.jar"/>
+  <target name="get-websocket-api" unless="have-websocket-api">
+    <maven name="tomcat-websocket-api" dest="websocket-api" path="org/apache/tomcat" version="${tomcat-version}"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector-j,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
