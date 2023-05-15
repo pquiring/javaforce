@@ -97,7 +97,12 @@
     <maven name="jsch" path="com/jcraft" version="${jsch-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch">
+  <available property="have-jzlib" file="jars/jzlib-${jzlib-version}.jar"/>
+  <target name="get-jzlib" unless="have-jzlib">
+    <maven name="jzlib" path="com/jcraft" version="${jzlib-version}"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

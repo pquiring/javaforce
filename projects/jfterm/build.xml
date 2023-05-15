@@ -15,17 +15,9 @@
 
   <import file="../../base.xml"/>
 
-  <target name="depjars" depends="depnatives,jar-jsch">
+  <target name="depjars" depends="depnatives,jar-jsch,jar-jzlib">
     <jar destfile="javaforce.jar">
       <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfterm.sourceforge.net"/>
-      </manifest>
-    </jar>
-    <jar destfile="jzlib.jar">
-      <zipfileset src="../../jars/jzlib.jar"/>
       <manifest>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>
