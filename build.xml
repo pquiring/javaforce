@@ -92,7 +92,12 @@
     <maven name="jtds" path="net/sourceforge/jtds" version="${jtds-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds">
+  <available property="have-jsch" file="jars/jsch-${jsch-version}.jar"/>
+  <target name="get-jsch" unless="have-jsch">
+    <maven name="jsch" path="com/jcraft" version="${jsch-version}"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
