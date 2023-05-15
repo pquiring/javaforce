@@ -3,10 +3,12 @@ package javaforce.awt;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.font.*;
-import javax.swing.*;
 import java.io.*;
 import java.util.*;
+
+import javax.swing.*;
 import javax.imageio.*;
+import javax.imageio.stream.*;
 
 import javaforce.*;
 
@@ -55,16 +57,16 @@ public class JFImage extends JComponent implements Icon {
     setImageSize(x, y);
   }
 
-  private void init() {
+  private void init(boolean clear) {
     g2d = bi.createGraphics();
     buffer = ((DataBufferInt) bi.getRaster().getDataBuffer()).getData();
-    fill(0,0,getWidth(),getHeight(), 0);  //fill with black opaque (the default varies by platform)
+    if (clear) fill(0,0,getWidth(),getHeight(), 0);  //fill with black opaque (the default varies by platform)
   }
 
   private void initImage(int x, int y) {
 //    System.out.println("JFImage.initImage:" + x + "," + y);
     bi = new BufferedImage(x, y, imageType);
-    init();
+    init(true);
     setPreferredSize(new Dimension(x, y));
   }
 
@@ -139,12 +141,16 @@ public class JFImage extends JComponent implements Icon {
   public void setBufferedImage(BufferedImage bi) {
     int newType = bi.getType();
     if (newType != BufferedImage.TYPE_INT_ARGB || newType != BufferedImage.TYPE_INT_RGB) {
-      JFLog.log("JFImage.setBufferedImage() : Input image is not INT_RGB/INT_ARGB type");
+      int x = bi.getWidth();
+      int y = bi.getHeight();
+      int px[] = bi.getRGB(0, 0, x, y, null, 0, x);  //tmp may not be int[] buffer
+      setImageSize(x, y);
+      putPixels(px, 0, 0, x, y, 0);
       return;
     }
     this.bi = bi;
     imageType = bi.getType();
-    init();
+    init(false);
   }
 
   public Graphics getGraphics() {
@@ -229,6 +235,46 @@ public class JFImage extends JComponent implements Icon {
     try {
       return save(new FileOutputStream(filename), fmt);
     } catch (Exception e) {
+      return false;
+    }
+  }
+
+  public static JFImage[] loadmulti(InputStream is) {
+    try {
+      ImageInputStream stream = ImageIO.createImageInputStream(is);
+      if (stream == null) throw new Exception("reader not found");
+      ImageReader reader = ImageIO.getImageReaders(stream).next();
+      reader.setInput(stream);
+      int cnt = reader.getNumImages(true);
+      JFImage[] imgs = new JFImage[cnt];
+      for(int i = 0;i<cnt;i++) {
+        BufferedImage img = reader.read(i);
+        imgs[i] = new JFImage();
+        imgs[i].setBufferedImage(img);
+      }
+      return imgs;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  public static boolean savemulti(OutputStream os, JFImage[] imgs, String format) {
+    try {
+      ImageOutputStream stream = ImageIO.createImageOutputStream(os);
+      if (stream == null) throw new Exception("writer not found");
+      ImageWriter writer = ImageIO.getImageWritersByFormatName(format).next();
+      writer.setOutput(stream);
+      int cnt = imgs.length;
+      for(int i = 0;i<cnt;i++) {
+        if (!writer.canInsertImage(i)) {
+          throw new Exception("writer does not support layers, idx=" + i);
+        }
+        writer.writeInsert(i, new IIOImage(imgs[i].getBufferedImage(), null, null), null);
+      }
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
       return false;
     }
   }
@@ -492,6 +538,40 @@ public class JFImage extends JComponent implements Icon {
     setImageSize(size.width, size.height);
     putPixels(buf, 0, 0, size.width, size.height, 0);
     return true;
+  }
+
+  //tiff support (requires twelvemonkeys)
+  public boolean loadTIFF(InputStream in) {
+    return load(in);
+  }
+
+  public boolean saveTIFF(OutputStream out) {
+    return save(out, "tiff");
+  }
+
+  public boolean loadTIFF(String filename) {
+    try {
+      return loadTIFF(new FileInputStream(filename));
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  public boolean saveTIFF(String filename) {
+    try {
+      return saveTIFF(new FileOutputStream(filename));
+    } catch (Exception e) {
+      return false;
+    }
+  }
+
+  //support for layered tiffs
+  public static JFImage[] loadTIFFs(InputStream in) {
+    return loadmulti(in);
+  }
+
+  public static boolean saveTIFFs(OutputStream out, JFImage[] imgs) {
+    return savemulti(out, imgs, "tiff");
   }
 
   /** Puts pixels . */
@@ -1139,7 +1219,7 @@ public class JFImage extends JComponent implements Icon {
       int height = cap.getHeight();
       if (cap.getType() == BufferedImage.TYPE_INT_ARGB) {
         img.bi = cap;
-        img.init();
+        img.init(false);
         return img;
       } else if (cap.getType() == BufferedImage.TYPE_INT_RGB) {
         img.setSize(width, height);

@@ -1,5 +1,24 @@
 <!-- Note : Requires ANT 1.9.8+ -->
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
+  <!--these should be set before importing this file to override default behavior-->
+  <property name="ico" value="${app}.ico"/>
+  <property name="msi" value="${app}"/>
+  <property name="cfg" value="${app}.cfg"/>
+  <property name="candle_extra" value=""/>
+  <property name="light_extra" value=""/>
+  <property name="apptype" value="w"/>
+  <property name="heat_home" value="jre"/>
+  <property name="ffmpeg_home" value=""/>
+  <property name="project2" value=""/>
+  <property name="project3" value=""/>
+  <property name="project4" value=""/>
+  <property name="project5" value=""/>
+  <property name="jarpath" value="."/>
+  <property name="jdkver" value="11"/>
+
+  <!--import properties from project cfg file : CLASSPATH, MAINCLASS, etc-->
+  <property file="${cfg}"/>
+
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcepath="src" sourcefiles="src/*.java" destdir="javadoc">
       <classpath>
@@ -20,25 +39,59 @@
     <attribute name="url"/>
     <attribute name="dest"/>
     <sequential>
-      <get src="@{url}" dest="@{dest}" usetimestamp="true"/>
+      <!-- exists property is not work -->
+      <local name="exists"/>
+      <available property="exists" file="@{dest}"/>
+      <echo message="@{dest} : ${exists}"/>
+      <get unless:true="exists" src="@{url}" dest="@{dest}" usetimestamp="true"/>
     </sequential>
   </macrodef>
 
-  <!--these should be set before importing this file to override default behavior-->
-  <property name="ico" value="${app}.ico"/>
-  <property name="msi" value="${app}"/>
-  <property name="cfg" value="${app}.cfg"/>
-  <property name="candle_extra" value=""/>
-  <property name="light_extra" value=""/>
-  <property name="apptype" value="w"/>
-  <property name="heat_home" value="jre"/>
-  <property name="ffmpeg_home" value=""/>
-  <property name="project2" value=""/>
-  <property name="project3" value=""/>
-  <property name="project4" value=""/>
-  <property name="project5" value=""/>
-  <property file="${cfg}"/>
-  <property name="jdkver" value="11"/>
+  <macrodef name="maven">
+    <attribute name="name"/>
+    <attribute name="path"/>
+    <attribute name="version"/>
+    <sequential>
+      <download url="https://repo1.maven.org/maven2/@{path}/@{name}/@{version}/@{name}-@{version}.jar" dest="./jars/@{name}-@{version}.jar"/>
+    </sequential>
+  </macrodef>
+
+  <macrodef name="copyjar">
+    <attribute name="name"/>
+    <attribute name="path"/>
+    <attribute name="version"/>
+    <sequential>
+      <copy file="${home}/jars/@{name}-@{version}.jar" tofile="@{path}/@{name}.jar"/>
+    </sequential>
+  </macrodef>
+
+  <!--install dependancies to project folder : these will remove the "version" from the jar making project builds easier-->
+
+  <property name="twelvemonkeys-version" value="3.9.4"/>
+
+  <target name="jar-twelvemonkeys-common-lang">
+    <copyjar name="common-lang" version="${twelvemonkeys-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-twelvemonkeys-common-io">
+    <copyjar name="common-io" version="${twelvemonkeys-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-twelvemonkeys-common-image">
+    <copyjar name="common-image" version="${twelvemonkeys-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-twelvemonkeys-imageio-core">
+    <copyjar name="imageio-core" version="${twelvemonkeys-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-twelvemonkeys-imageio-metadata">
+    <copyjar name="imageio-metadata" version="${twelvemonkeys-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-twelvemonkeys-imageio-tiff" depends="jar-twelvemonkeys-common-lang,jar-twelvemonkeys-common-io,jar-twelvemonkeys-common-image,jar-twelvemonkeys-imageio-core,jar-twelvemonkeys-imageio-metadata">
+    <copyjar name="imageio-tiff" version="${twelvemonkeys-version}" path="${jarpath}"/>
+  </target>
 
   <target name="check-builds">
     <available file="${project2}.xml" property="project2.present"/>

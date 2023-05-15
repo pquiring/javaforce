@@ -18,14 +18,16 @@
 
   <import file="base.xml"/>
 
-  <available property="have_glfw" file="native/glfw/src/window.c"/>
-  <target name="glfw" unless="have_glfw" description="download glfw">
+  <!-- get native dependancies -->
+
+  <available property="have-glfw" file="native/glfw/src/window.c"/>
+  <target name="get-glfw" unless="have-glfw" description="download glfw">
     <exec command="git clone https://github.com/glfw/glfw.git native/glfw"/>
     <exec command="git checkout tags/3.3.1" dir="native/glfw"/>
   </target>
 
-  <available property="have_stb" file="native/stb/stb_truetype.h"/>
-  <target name="stb" unless="have_stb" description="download stb">
+  <available property="have-stb" file="native/stb/stb_truetype.h"/>
+  <target name="get-stb" unless="have-stb" description="download stb">
     <exec command="git clone https://github.com/nothings/stb.git native/stb"/>
   </target>
 
@@ -43,11 +45,39 @@
     <unzip src="jfcodecs-mac64.zip" dest="ffmpeg"/>
   </target>
 
-  <target name="repo" description="download repo">
-    <exec command="git clone https://github.com/pquiring/repo"/>
+  <!-- get java dependancies -->
+
+  <available property="have-twelvemonkeys-common-lang" file="jars/common-lang-${twelvemonkeys-version}.jar"/>
+  <target name="get-twelvemonkeys-common-lang" unless="have-twelvemonkeys-common-lang">
+    <maven name="common-lang" path="com/twelvemonkeys/common" version="${twelvemonkeys-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,glfw,stb">
+  <available property="have-twelvemonkeys-common-io" file="jars/common-io-${twelvemonkeys-version}.jar"/>
+  <target name="get-twelvemonkeys-common-io" unless="have-twelvemonkeys-common-io">
+    <maven name="common-io" path="com/twelvemonkeys/common" version="${twelvemonkeys-version}"/>
+  </target>
+
+  <available property="have-twelvemonkeys-common-image" file="jars/common-image-${twelvemonkeys-version}.jar"/>
+  <target name="get-twelvemonkeys-common-image" unless="have-twelvemonkeys-common-image">
+    <maven name="common-image" path="com/twelvemonkeys/common" version="${twelvemonkeys-version}"/>
+  </target>
+
+  <available property="have-twelvemonkeys-imageio-core" file="jars/imageio-core-${twelvemonkeys-version}.jar"/>
+  <target name="get-twelvemonkeys-imageio-core" unless="have-twelvemonkeys-imageio-core">
+    <maven name="imageio-core" path="com/twelvemonkeys/imageio" version="${twelvemonkeys-version}"/>
+  </target>
+
+  <available property="have-twelvemonkeys-imageio-metadata" file="jars/imageio-metadata-${twelvemonkeys-version}.jar"/>
+  <target name="get-twelvemonkeys-imageio-metadata" unless="have-twelvemonkeys-imageio-metadata">
+    <maven name="imageio-metadata" path="com/twelvemonkeys/imageio" version="${twelvemonkeys-version}"/>
+  </target>
+
+  <available property="have-twelvemonkeys-imageio-tiff" file="jars/imageio-tiff-${twelvemonkeys-version}.jar"/>
+  <target name="get-twelvemonkeys-imageio-tiff" unless="have-twelvemonkeys-imageio-tiff">
+    <maven name="imageio-tiff" path="com/twelvemonkeys/imageio" version="${twelvemonkeys-version}"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
@@ -97,6 +127,10 @@
       </manifest>
     </jar>
     <copy file="jars/jnlp.jar" todir="."/>
+  </target>
+
+  <target name="repo" description="download repo files">
+    <exec command="git clone https://github.com/pquiring/repo"/>
   </target>
 
   <target name="javadoc" description="generate java documentation">
