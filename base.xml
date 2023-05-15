@@ -68,6 +68,10 @@
 
   <!--install dependancies to project folder : these will remove the "version" from the jar making project builds easier-->
 
+  <target name="jar-javaforce">
+    <copyjar name="javaforce" version="${version}" path="${jarpath}"/>
+  </target>
+
   <property name="twelvemonkeys-version" value="3.9.4"/>
 
   <target name="jar-twelvemonkeys-common-lang">
