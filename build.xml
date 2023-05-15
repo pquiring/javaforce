@@ -107,7 +107,12 @@
     <maven name="jcifs" path="org/samba/jcifs" version="${jcifs-version}" repo="https://repo.opennms.org/maven2"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs">
+  <available property="have-mssql-jdbc" file="jars/mssql-jdbc-${mssql-jdbc-version}.jar"/>
+  <target name="get-mssql-jdbc" unless="have-mssql-jdbc">
+    <maven name="mssql-jdbc" path="com/microsoft/sqlserver" version="${mssql-jdbc-version}"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
