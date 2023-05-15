@@ -102,7 +102,12 @@
     <maven name="jzlib" path="com/jcraft" version="${jzlib-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib">
+  <available property="have-jcifs" file="jars/jcifs-${jcifs-version}.jar"/>
+  <target name="get-jcifs" unless="have-jcifs">
+    <maven name="jcifs" path="org/samba/jcifs" version="${jcifs-version}" repo="https://repo.opennms.org/maven2"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
