@@ -39,10 +39,9 @@
     <attribute name="url"/>
     <attribute name="dest"/>
     <sequential>
-      <!-- exists property is not work -->
+      <!-- exists property is not working -->
       <local name="exists"/>
       <available property="exists" file="@{dest}"/>
-      <echo message="@{dest} : ${exists}"/>
       <get unless:true="exists" src="@{url}" dest="@{dest}" usetimestamp="true"/>
     </sequential>
   </macrodef>
