@@ -112,7 +112,12 @@
     <maven name="mssql-jdbc" path="com/microsoft/sqlserver" version="${mssql-jdbc-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc">
+  <available property="have-mysql-connector-j" file="jars/mysql-connector-j-${mysql-connector-j-version}.jar"/>
+  <target name="get-mysql-connector-j" unless="have-mysql-connector-j">
+    <maven name="mysql-connector-j" path="com/mysql" version="${mysql-connector-j-version}"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector-j">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
