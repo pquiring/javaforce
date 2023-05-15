@@ -52,8 +52,9 @@
     <attribute name="path"/>
     <attribute name="version"/>
     <attribute name="repo" default="https://repo1.maven.org/maven2"/>
+    <attribute name="dest" default="@{name}"/>
     <sequential>
-      <download url="@{repo}/@{path}/@{name}/@{version}/@{name}-@{version}.jar" dest="./jars/@{name}-@{version}.jar"/>
+      <download url="@{repo}/@{path}/@{name}/@{version}/@{name}-@{version}.jar" dest="./jars/@{dest}-@{version}.jar"/>
     </sequential>
   </macrodef>
 
@@ -136,6 +137,12 @@
 
   <target name="jar-mysql-connector-j">
     <copyjar name="mysql-connector-j" version="${mysql-connector-j-version}" path="${jarpath}"/>
+  </target>
+
+  <property name="bouncycastle-version" value="1.73"/>
+
+  <target name="jar-bouncycastle">
+    <copyjar name="bouncycastle" version="${bouncycastle-version}" path="${jarpath}"/>
   </target>
 
   <target name="check-builds">

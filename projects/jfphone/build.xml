@@ -10,19 +10,9 @@
 
   <import file="../../base.xml"/>
 
-  <target name="depjars" depends="depnatives">
+  <target name="depjars" depends="depnatives,jar-bouncycastle">
     <jar destfile="javaforce.jar">
       <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfphone.sourceforge.net"/>
-      </manifest>
-    </jar>
-    <jar destfile="bouncycastle.jar">
-      <zipfileset src="../../jars/bouncycastle.jar">
-        <exclude name="META-INF/*"/>
-      </zipfileset>
       <manifest>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>

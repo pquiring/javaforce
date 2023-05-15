@@ -13,21 +13,11 @@
   <property name="candle_extra" value=""/>
   <property name="light_extra" value="-b sounds\\en"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
-  <target name="depjars">
+  <target name="depjars" depends="jar-bouncycastle">
     <jar destfile="javaforce.jar">
       <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfpbx.sourceforge.net"/>
-      </manifest>
-    </jar>
-    <jar destfile="bouncycastle.jar">
-      <zipfileset src="../../jars/bouncycastle.jar">
-        <exclude name="META-INF/*"/>
-      </zipfileset>
       <manifest>
         <attribute name="Trusted-Library" value="true"/>
         <attribute name="Permissions" value="all-permissions"/>

@@ -117,7 +117,12 @@
     <maven name="mysql-connector-j" path="com/mysql" version="${mysql-connector-j-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector-j">
+  <available property="have-bouncycastle" file="jars/bouncycastle-${bouncycastle-version}.jar"/>
+  <target name="get-bouncycastle" unless="have-bouncycastle">
+    <maven name="bcprov-jdk18on" dest="bouncycastle" path="org/bouncycastle" version="${bouncycastle-version}"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector-j,get-bouncycastle">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
