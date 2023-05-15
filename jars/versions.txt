@@ -1,2 +1,3 @@
+#these jars are not available (as is) within maven
 bacnet = bacnet4j-6.0.0-with-dependencies
 llrp = ltkjava-1.0.0.7-with-dependencies
