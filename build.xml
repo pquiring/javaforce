@@ -77,6 +77,11 @@
     <maven name="imageio-tiff" path="com/twelvemonkeys/imageio" version="${twelvemonkeys-version}"/>
   </target>
 
+  <available property="have-bfg" file="jars/bfg-${bfg-version}.jar"/>
+  <target name="get-bfg" unless="have-bfg">
+    <maven name="bfg" path="com/madgag" version="${bfg-version}"/>
+  </target>
+
   <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff">
   </target>
 

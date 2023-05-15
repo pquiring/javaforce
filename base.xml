@@ -93,6 +93,8 @@
     <copyjar name="imageio-tiff" version="${twelvemonkeys-version}" path="${jarpath}"/>
   </target>
 
+  <property name="bfg-version" value="1.14.0"/>
+
   <target name="check-builds">
     <available file="${project2}.xml" property="project2.present"/>
     <available file="${project3}.xml" property="project3.present"/>
