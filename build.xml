@@ -153,10 +153,18 @@
     <maven name="org.apache.servicemix.bundles.xerces" dest="xerces" path="org/apache/servicemix/bundles" version="${xerces-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,jar-jsch,jar-jzlib,jar-jcifs,jar-bouncycastle">
+  <available property="have-jdom" file="jars/jdom-${jdom-version}.jar"/>
+  <target name="get-jdom" unless="have-jdom">
+    <maven name="jdom" path="org/jdom" version="${jdom-version}"/>
   </target>
 
-  <target name="compile" depends="depjars" description="compile the source">
+  <target name="getjars" depends="get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom">
+  </target>
+
+  <target name="depjars" depends="depnatives,jar-jsch,jar-jzlib,jar-jcifs,jar-bouncycastle">
+  </target>
+
+  <target name="compile" depends="getjars,depjars" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
     <javac srcdir="${src}" destdir="${build}" target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false" nativeheaderdir="native/headers">
@@ -168,7 +176,7 @@
 
   <target name="jar" depends="depjars,compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="jars/javaforce.jar" includes="**/*.class" basedir="${build}">
+    <jar destfile="javaforce.jar" includes="**/*.class" basedir="${build}">
       <fileset dir="${src}">
         <include name="**/*.png"/>
         <include name="**/*.html"/>
@@ -180,8 +188,8 @@
         <include name="*.bfc"/>
       </fileset>
     </jar>
-    <copy file="jars/javaforce.jar" todir="."/>
-    <copy file="jars/javaforce.jar" tofile="jars/javaforce-${version}.jar"/>
+    <copy file="javaforce.jar" todir="jars"/> <!-- for older build scripts -->
+    <copy file="javaforce.jar" tofile="jars/javaforce-${version}.jar"/>
   </target>
 
   <target name="compile-jnlp" description="compile the source">

@@ -18,4 +18,5 @@
   <property name="filters-version" value="2.0.235"/>
   <property name="bacnet-version" value="5.0.0"/>
   <property name="xerces-version" value="2.12.2_1"/>
+  <property name="jdom-version" value="2.0.2"/>
 </project>
