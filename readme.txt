@@ -144,20 +144,9 @@ Requirements
 
 License
 =======
-JavaForce itself is licensed under the LGPL license which can be read in license.txt.
+JavaForce is licensed under the LGPL license which can be read in license.txt.
 The MSI installers show the Common Public License 1.0 which is acceptable as well.
-The other jars in /jars each have their own licensing:
-  filters.jar - Apache License 2.0 (http://www.jhlabs.com)
-  bouncycastle.jar - MIT license? (http://www.bouncycastle.org)
-  derby.jar - Apache License 2.0 (http://db.apache.org/derby)
-  jcifs.jar - LGPL (http://jcifs.samba.org)
-  jsp-api.jar & servlet-api.jar - Apache License 2.0 (http://tomcat.apache.org)
-  jsch.jar & jzlib.jar - BSD license (http://www.jcraft.com)
-  llrp.jar - Apache License 2.0 (http://llrp.org)
-Other components:
-  wixtoolset v3 - Microsoft Reciprocal License (MS-RL) (http://wixtoolset.org)
-  FFMpeg - various
-  glfw - zlib/libpng (http://github.com/glfw/glfw)
+All third party libraries and tools each have their own licenses.
 
 Enjoy!
 
