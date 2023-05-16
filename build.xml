@@ -119,7 +119,7 @@
 
   <available property="have-bouncycastle" file="jars/bouncycastle-${bouncycastle-version}.jar"/>
   <target name="get-bouncycastle" unless="have-bouncycastle">
-    <maven name="bcprov-jdk18on" dest="bouncycastle" path="org/bouncycastle" version="${bouncycastle-version}"/>
+    <maven name="bcprov-jdk15on" dest="bouncycastle" path="org/bouncycastle" version="${bouncycastle-version}"/>
   </target>
 
   <available property="have-servlet-api" file="jars/servlet-api-${tomcat-version}.jar"/>

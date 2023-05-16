@@ -142,7 +142,7 @@
     <copyjar name="mysql-connector" version="${mysql-connector-version}" path="${jarpath}"/>
   </target>
 
-  <property name="bouncycastle-version" value="1.73"/>
+  <property name="bouncycastle-version" value="1.50"/>
 
   <target name="jar-bouncycastle">
     <copyjar name="bouncycastle" version="${bouncycastle-version}" path="${jarpath}"/>
