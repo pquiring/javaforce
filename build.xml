@@ -24,7 +24,7 @@
   <available property="have-glfw" file="native/glfw/src/window.c"/>
   <target name="get-glfw" unless="have-glfw" description="download glfw">
     <exec command="git clone https://github.com/glfw/glfw.git native/glfw"/>
-    <exec command="git checkout tags/3.3.1" dir="native/glfw"/>
+    <exec command="git checkout tags/${glfw-version}" dir="native/glfw"/>
   </target>
 
   <available property="have-stb" file="native/stb/stb_truetype.h"/>

@@ -1,7 +1,9 @@
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!-- JavaForce version -->
   <property name="javaforce-version" value="39.0"/>
-  <!-- Dependancies versions -->
+  <!-- native dependancies versions -->
+  <property name="glfw-version" value="3.3.1"/>
+  <!-- Maven Java Dependancies versions -->
   <property name="twelvemonkeys-version" value="3.9.4"/>
   <property name="bfg-version" value="1.14.0"/>
   <property name="derby-version" value="10.16.1.1"/>
