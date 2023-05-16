@@ -163,7 +163,17 @@
     <maven name="log4j" path="content/repositories/releases/log4j" version="${log4j-version}" repo="https://repository.apache.org"/>
   </target>
 
-  <target name="getjars" depends="get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j">
+  <available property="have-slf4j-api" file="jars/slf4j-api-${slf4j-version}.jar"/>
+  <target name="get-slf4j-api" unless="have-slf4j-api">
+    <maven name="slf4j-api" path="org/slf4j" version="${slf4j-version}"/>
+  </target>
+
+  <available property="have-slf4j-log4j12" file="jars/slf4j-log4j12-${slf4j-version}.jar"/>
+  <target name="get-slf4j-log4j12" unless="have-slf4j-log4j12">
+    <maven name="slf4j-log4j12" path="org/slf4j" version="${slf4j-version}"/>
+  </target>
+
+  <target name="getjars" depends="get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j,get-slf4j-api,get-slf4j-log4j12">
   </target>
 
   <target name="depjars" depends="depnatives,jar-jsch,jar-jzlib,jar-jcifs,jar-bouncycastle">

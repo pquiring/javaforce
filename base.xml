@@ -162,6 +162,14 @@
     <copyjar name="log4j" version="${log4j-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-slf4j-api">
+    <copyjar name="slf4j-api" version="${slf4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-slf4j-log4j12">
+    <copyjar name="slf4j-log4j12" version="${slf4j-version}" path="${jarpath}"/>
+  </target>
+
   <target name="check-builds">
     <available file="${project2}.xml" property="project2.present"/>
     <available file="${project3}.xml" property="project3.present"/>
