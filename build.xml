@@ -7,7 +7,6 @@
   <property name="build" location="classes"/>
   <property name="build-jnlp" location="classes-jnlp"/>
   <property name="home" value="."/>
-  <property name="version" value="39.0"/>
   <property name="noelf" value="true"/>
 
   <property name="debian.depends" value="default-jre-headless    , jfsch, jfzlib, jfcifs, libv4l-0 , desktop-file-utils, libxcursor1"/>
@@ -17,6 +16,8 @@
   <property environment="env"/>
 
   <import file="base.xml"/>
+
+  <property name="version" value="${javaforce-version}"/>
 
   <!-- get native dependancies -->
 

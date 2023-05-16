@@ -16,6 +16,8 @@
   <property name="jarpath" value="."/>
   <property name="jdkver" value="11"/>
 
+  <import file="versions.xml"/>
+
   <!--import properties from project cfg file : CLASSPATH, MAINCLASS, etc-->
   <property file="${cfg}"/>
 
@@ -68,13 +70,9 @@
 
   <!--install dependancies to project folder : these will remove the "version" from the jar making project builds easier-->
 
-  <property name="javaforce-version" value="39.0"/>
-
   <target name="jar-javaforce">
     <copyjar name="javaforce" version="${javaforce-version}" path="${jarpath}"/>
   </target>
-
-  <property name="twelvemonkeys-version" value="3.9.4"/>
 
   <target name="jar-twelvemonkeys-common-lang">
     <copyjar name="common-lang" version="${twelvemonkeys-version}" path="${jarpath}"/>
@@ -100,57 +98,37 @@
     <copyjar name="imageio-tiff" version="${twelvemonkeys-version}" path="${jarpath}"/>
   </target>
 
-  <property name="bfg-version" value="1.14.0"/>
-
-  <property name="derby-version" value="10.16.1.1"/>
-
   <target name="jar-derby">
     <copyjar name="derby" version="${derby-version}" path="${jarpath}"/>
   </target>
-
-  <property name="jtds-version" value="1.3.1"/>
 
   <target name="jar-jtds">
     <copyjar name="jtds" version="${jtds-version}" path="${jarpath}"/>
   </target>
 
-  <property name="jsch-version" value="0.1.55"/>
-
   <target name="jar-jsch">
     <copyjar name="jsch" version="${jsch-version}" path="${jarpath}"/>
   </target>
-
-  <property name="jzlib-version" value="1.1.3"/>
 
   <target name="jar-jzlib">
     <copyjar name="jzlib" version="${jzlib-version}" path="${jarpath}"/>
   </target>
 
-  <property name="jcifs-version" value="1.3.19"/>
-
   <target name="jar-jcifs">
     <copyjar name="jcifs" version="${jcifs-version}" path="${jarpath}"/>
   </target>
-
-  <property name="mssql-jdbc-version" value="9.4.1.jre11"/>
 
   <target name="jar-mssql-jdbc">
     <copyjar name="mssql-jdbc" version="${mssql-jdbc-version}" path="${jarpath}"/>
   </target>
 
-  <property name="mysql-connector-version" value="8.0.33"/>
-
   <target name="jar-mysql-connector">
     <copyjar name="mysql-connector" version="${mysql-connector-version}" path="${jarpath}"/>
   </target>
 
-  <property name="bouncycastle-version" value="1.62"/>
-
   <target name="jar-bouncycastle">
     <copyjar name="bouncycastle" version="${bouncycastle-version}" path="${jarpath}"/>
   </target>
-
-  <property name="tomcat-version" value="9.0.75"/>
 
   <target name="jar-servlet-api">
     <copyjar name="servlet-api" version="${tomcat-version}" path="${jarpath}"/>
@@ -163,8 +141,6 @@
   <target name="jar-websocket-api">
     <copyjar name="websocket-api" version="${tomcat-version}" path="${jarpath}"/>
   </target>
-
-  <property name="filters-version" value="2.0.235"/>
 
   <target name="jar-filters">
     <copyjar name="filters" version="${filters-version}" path="${jarpath}"/>
