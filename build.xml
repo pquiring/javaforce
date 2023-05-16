@@ -148,7 +148,12 @@
     <maven name="bacnet4j" dest="bacnet" path="repository/ias-release/com/infiniteautomation" version="${bacnet-version}" repo="https://maven.mangoautomation.net"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,jar-jsch,jar-jzlib,jar-jcifs,jar-bouncycastle">
+  <available property="have-xerces" file="jars/xerces-${xerces-version}.jar"/>
+  <target name="get-xerces" unless="have-xerces">
+    <maven name="org.apache.servicemix.bundles.xerces" dest="xerces" path="org/apache/servicemix/bundles" version="${xerces-version}"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,jar-jsch,jar-jzlib,jar-jcifs,jar-bouncycastle">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
