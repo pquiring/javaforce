@@ -59,7 +59,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/5">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">jars/jcifs.jar;jars/jsch.jar;jars/bouncycastle.jar;jars/llrp.jar</classpath>
+                <classpath mode="compile">jars/llrp.jar;jsch.jar;jzlib.jar;jcifs.jar;bouncycastle.jar</classpath>
                 <source-level>11</source-level>
             </compilation-unit>
         </java-data>

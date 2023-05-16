@@ -142,7 +142,7 @@
     <maven name="filters" path="com/jhlabs" version="${filters-version}"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,jar-jsch,jar-jzlib,jar-jcifs">
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,jar-jsch,jar-jzlib,jar-jcifs,jar-bouncycastle">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
