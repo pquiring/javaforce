@@ -173,7 +173,12 @@
     <maven name="slf4j-log4j12" path="org/slf4j" version="${slf4j-version}"/>
   </target>
 
-  <target name="getjars" depends="get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j,get-slf4j-api,get-slf4j-log4j12">
+  <available property="have-mina" file="jars/mina-${mina-version}.jar"/>
+  <target name="get-mina" unless="have-mina">
+    <maven name="mina-core" dest="mina" path="org/apache/mina" version="${mina-version}"/>
+  </target>
+
+  <target name="getjars" depends="get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j,get-slf4j-api,get-slf4j-log4j12,get-mina">
   </target>
 
   <target name="depjars" depends="depnatives,jar-jsch,jar-jzlib,jar-jcifs,jar-bouncycastle">
