@@ -8,7 +8,7 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.7"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <target name="depjars" depends="jar-javaforce">
   </target>
