@@ -289,6 +289,8 @@
     <delete>
       <fileset dir="classes" includes="**/*.class"/>
       <fileset dir="jars" includes="javaforce.jar"/>
+      <fileset dir="jars" includes="javaforce-${version}.jar"/>
+      <fileset dir="." includes="*.jar"/>
     </delete>
   </target>
 </project>
