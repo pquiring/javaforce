@@ -158,6 +158,10 @@
     <copyjar name="jdom" version="${jdom-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-log4j">
+    <copyjar name="log4j" version="${log4j-version}" path="${jarpath}"/>
+  </target>
+
   <target name="check-builds">
     <available file="${project2}.xml" property="project2.present"/>
     <available file="${project3}.xml" property="project3.present"/>

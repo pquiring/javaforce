@@ -158,7 +158,12 @@
     <maven name="jdom" path="org/jdom" version="${jdom-version}"/>
   </target>
 
-  <target name="getjars" depends="get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom">
+  <available property="have-log4j" file="jars/log4j-${log4j-version}.jar"/>
+  <target name="get-log4j" unless="have-log4j">
+    <maven name="log4j" path="content/repositories/releases/log4j" version="${log4j-version}" repo="https://repository.apache.org"/>
+  </target>
+
+  <target name="getjars" depends="get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j">
   </target>
 
   <target name="depjars" depends="depnatives,jar-jsch,jar-jzlib,jar-jcifs,jar-bouncycastle">
