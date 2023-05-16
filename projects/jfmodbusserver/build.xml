@@ -6,10 +6,9 @@
   <property name="home" location="../.."/>
   <property name="version" value="0.3"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="depnatives" description="jar">
-    <copy file="../../jars/javaforce.jar" todir="."/>
+  <target name="depjars" depends="depnatives,jar-javaforce" description="jar">
   </target>
 
   <target name="jar" depends="depjars" description="jar">

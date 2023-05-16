@@ -9,12 +9,9 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.20"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="depnatives">
-    <jar destfile="javaforce.jar">
-      <zipfileset src="../../jars/javaforce.jar"/>
-    </jar>
+  <target name="depjars" depends="depnatives,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

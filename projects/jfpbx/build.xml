@@ -15,15 +15,7 @@
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="jar-bouncycastle">
-    <jar destfile="javaforce.jar">
-      <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfpbx.sourceforge.net"/>
-      </manifest>
-    </jar>
+  <target name="depjars" depends="jar-bouncycastle,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

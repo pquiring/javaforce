@@ -7,10 +7,9 @@
   <property name="build" location="classes"/>
   <property name="classpath" value="javaforce.jar"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
-  <target name="depjars" description="jar">
-    <copy file="../../jars/javaforce.jar" todir="."/>
+  <target name="depjars" depends="jar-javaforce" description="jar">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

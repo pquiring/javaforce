@@ -12,22 +12,14 @@
 
   <property name="project2" value="build-midi"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
   <available property="have-dls" file="gm.dls"/>
   <target name="get-dls" unless="have-dls" depends="">
     <download url="http://javaforce.sourceforge.net/gm.dls" dest="gm.dls"/>
   </target>
 
-  <target name="depjars" depends="depnatives">
-    <jar destfile="javaforce.jar">
-      <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfmusic.sourceforge.net"/>
-      </manifest>
-    </jar>
+  <target name="depjars" depends="depnatives,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

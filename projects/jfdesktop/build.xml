@@ -12,17 +12,9 @@
   <property name="fedora.depends" value="jffile, jfhelp, openbox, obconf, acpi, pipewire  , pulseaudio-utils, gnome-backgrounds, gnome-disk-utility"/>
   <property name="arch.depends"   value="jffile, jfhelp, openbox, obconf, acpi, pulseaudio, null            , gnome-backgrounds, gnome-disk-utility"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
-  <target name="depjars">
-    <jar destfile="javaforce.jar">
-      <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfdesktop.sourceforge.net"/>
-      </manifest>
-    </jar>
+  <target name="depjars" depends="jar-javaforce">
     <ant dir="../jffile" target="jar" inheritAll="false"/>
   </target>
 

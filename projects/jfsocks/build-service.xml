@@ -4,10 +4,10 @@
   <property name="app" value="jfsockssvc"/>
   <property name="apptype" value="s"/>
   <property name="home" location="../.."/>
-  <import file="../../base.xml"/>
 
-  <target name="depjars" description="jar">
-    <copy file="../../jars/javaforce.jar" todir="."/>
+  <import file="${home}/base.xml"/>
+
+  <target name="depjars" depends="jar-javaforce" description="jar">
   </target>
 
   <target name="jar" depends="depjars" description="jar">

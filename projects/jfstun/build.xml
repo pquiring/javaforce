@@ -8,10 +8,9 @@
 
   <property name="project2" value="build-service"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
-  <target name="depjars" description="depjars">
-    <copy file="../../jars/javaforce.jar" todir="."/>
+  <target name="depjars" depends="jar-javaforce" description="depjars">
   </target>
 
   <target name="jar" depends="depjars" description="jar">

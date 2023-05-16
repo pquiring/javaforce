@@ -8,17 +8,9 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.2"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
-  <target name="depjars">
-    <jar destfile="javaforce.jar">
-      <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfaudio.sourceforge.net"/>
-      </manifest>
-    </jar>
+  <target name="depjars" depends="jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
@@ -43,7 +35,7 @@
 
   <!-- sudo -E ant install -->
   <target name="install" depends="jar" description="install files">
-    
+
     <copy file="jfrepo.jar" todir="/usr/share/java"/>
     <copy file="jfrepo-debian.list" todir="/etc"/>
     <copy file="jfrepo-fedora.list" todir="/etc"/>

@@ -11,15 +11,7 @@
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="depnatives">
-    <jar destfile="javaforce.jar">
-      <zipfileset src="${home}/jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="${app}.sourceforge.net"/>
-      </manifest>
-    </jar>
+  <target name="depjars" depends="depnatives,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

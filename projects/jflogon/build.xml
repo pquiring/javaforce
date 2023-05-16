@@ -12,17 +12,9 @@
   <property name="fedora.depends" value="jfdesktop, jfbusserver, java-17-openjdk, xorg-x11-server-Xorg, xrandr           , xset     , plymouth, gvfs, bluez, samba-winbind-clients, smbclient, wpa_supplicant, numlockx, dosfstools, ntfs-3g"/>
   <property name="arch.depends"   value="jfdesktop, jfbusserver, jre-openjdk    , xorg-server         , xorg-xrandr      , xorg-xset, null    , gvfs, bluez, libwbclient          , smbclient, wpa_supplicant, numlockx, dosfstools, ntfs-3g"/> <!-- aur : plymouth -->
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
-  <target name="depjars">
-    <jar destfile="javaforce.jar">
-      <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jflogon.sourceforge.net"/>
-      </manifest>
-    </jar>
+  <target name="depjars" depends="jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

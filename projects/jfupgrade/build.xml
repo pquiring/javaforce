@@ -8,17 +8,9 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="version" value="0.6"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
-  <target name="depjars">
-    <jar destfile="javaforce.jar">
-      <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfupgrade.sourceforge.net"/>
-      </manifest>
-    </jar>
+  <target name="depjars" depends="jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
@@ -41,7 +33,7 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    
+
     <copy file="jfupgrade.jar" todir="/usr/share/java"/>
     <copy file="jfupgrade-cron.sh" todir="/etc/cron.weekly"/>
     <chmod file="/etc/cron.weekly/jfupgrade-cron.sh" perm="+x"/>

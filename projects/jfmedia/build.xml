@@ -9,17 +9,9 @@
   <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="version" value="0.14"/>
 
-  <import file="../../base.xml"/>
+  <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="depnatives">
-    <jar destfile="javaforce.jar">
-      <zipfileset src="../../jars/javaforce.jar"/>
-      <manifest>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfmedia.sourceforge.net"/>
-      </manifest>
-    </jar>
+  <target name="depjars" depends="depnatives,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
