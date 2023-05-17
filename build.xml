@@ -48,7 +48,7 @@
 
   <import file="getjars.xml"/>
 
-  <target name="depjars" depends="depnatives,getjars,jar-jsch,jar-jzlib,jar-jcifs,jar-bouncycastle,jar-llrp,jar-jdom">
+  <target name="depjars" depends="depnatives,getjars,jar-jsch,jar-jzlib,jar-jcifs,jar-bouncycastle,jar-llrp,jar-jdom,jar-mina,jar-jargs,jar-log4j,jar-slf4j-api,jar-slf4j-log4j12">
   </target>
 
   <target name="compile" depends="getjars,depjars" description="compile the source">
