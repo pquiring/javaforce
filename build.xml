@@ -75,7 +75,6 @@
         <include name="*.bfc"/>
       </fileset>
     </jar>
-    <copy file="javaforce.jar" todir="jars"/> <!-- for older build scripts -->
     <copy file="javaforce.jar" tofile="jars/javaforce-${version}.jar"/>
   </target>
 
