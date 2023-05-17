@@ -131,6 +131,11 @@
     <maven name="mina-core" dest="mina" path="org/apache/mina" version="${mina-version}"/>
   </target>
 
+  <available property="have-mina2" file="jars/mina-${mina2-version}.jar"/>
+  <target name="get-mina2" unless="have-mina2">
+    <maven name="mina-core" dest="mina" path="org/apache/mina" version="${mina2-version}"/>
+  </target>
+
   <available property="have-sshd-core" file="jars/sshd-core-${sshd-version}.jar"/>
   <target name="get-sshd-core" unless="have-sshd-core">
     <maven name="sshd-core" path="org/apache/sshd" version="${sshd-version}"/>
@@ -151,6 +156,6 @@
     <maven name="ltkjava" dest="llrp" path="org/llrp" version="${llrp-version}"/>
   </target>
 
-  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j,get-slf4j-api,get-slf4j-log4j12,get-mina,get-sshd-core,get-sshd-common,get-sshd-mina,get-llrp">
+  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j,get-slf4j-api,get-slf4j-log4j12,get-mina,get-mina2,get-sshd-core,get-sshd-common,get-sshd-mina,get-llrp">
   </target>
 </project>
