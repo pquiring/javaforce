@@ -27,3 +27,12 @@
   <property name="jargs-version" value="1.0"/>
   <property name="llrp-version" value="1.0.0.7"/>
 </project>
+
+<!--
+
+Known conflicts:
+
+llrp requires mina 1.x
+sshd requires mina 2.x
+
+-->
