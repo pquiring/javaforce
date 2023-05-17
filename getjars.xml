@@ -151,6 +151,6 @@
     <maven name="ltkjava" dest="llrp" path="org/llrp" version="${llrp-version}"/>
   </target>
 
-  <target name="getjars" depends="get-glfw,get-stb,get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j,get-slf4j-api,get-slf4j-log4j12,get-mina,get-sshd-core,get-sshd-common,get-sshd-mina,get-llrp">
+  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j,get-slf4j-api,get-slf4j-log4j12,get-mina,get-sshd-core,get-sshd-common,get-sshd-mina,get-llrp">
   </target>
 </project>
