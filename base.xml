@@ -174,8 +174,12 @@
     <copyjar name="mina" version="${mina-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-sshd-core">
+    <copyjar name="sshd-core" version="${sshd-version}" path="${jarpath}"/>
+  </target>
+
   <target name="jar-sshd-mina">
-    <copyjar name="sshd-mina" version="${sshd-mina-version}" path="${jarpath}"/>
+    <copyjar name="sshd-mina" version="${sshd-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-jargs">
