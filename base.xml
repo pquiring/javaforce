@@ -29,6 +29,16 @@
     </javadoc>
   </target>
 
+  <target name="src" description="generate src archive">
+    <zip destfile="${app}-${version}-sources.jar">
+      <fileset dir="src" includes="**/*"/>
+    </zip>
+  </target>
+
+  <target name="deploy" depends="src" description="generate deployment archive">
+    <copy file="${app}.jar" tofile="${app}-${version}.jar"/>
+  </target>
+
   <target name="depnatives">
     <copy todir=".">
       <fileset dir="${home}/native" includes="*.dll"/>
