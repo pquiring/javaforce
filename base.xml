@@ -42,11 +42,12 @@
     <exec command="gpg -ab ${app}-${version}.jar"/>
     <exec command="gpg -ab ${app}-${version}-sources.jar"/>
     <exec command="gpg -ab ${app}-${version}-javadoc.jar"/>
-    <exec command="gpg -ab pom.xml"/>
+    <exec command="gpg -ab ${app}-${version}.pom.xml"/>
   </target>
 
   <target name="deploy" depends="src,javadoc,jar" description="generate deployment artifacts">
     <copy file="${app}.jar" tofile="${app}-${version}.jar"/>
+    <copy file="pom.xml" tofile="${app}-${version}.pom.xml"/>
     <antcall target="sign"/>
   </target>
 
