@@ -22,11 +22,14 @@
   <property file="${cfg}"/>
 
   <target name="javadoc" description="generate java documentation">
-    <javadoc sourcepath="src" sourcefiles="src/*.java" destdir="javadoc">
+    <javadoc sourcepath="src" destdir="javadoc">
       <classpath>
         <fileset dir="${home}/jars" includes="*.jar"/>
       </classpath>
     </javadoc>
+    <zip destfile="${app}-${version}-javadoc.jar">
+      <fileset dir="javadoc" includes="**/*"/>
+    </zip>
   </target>
 
   <target name="src" description="generate src archive">
@@ -35,8 +38,16 @@
     </zip>
   </target>
 
-  <target name="deploy" depends="src" description="generate deployment archive">
+  <target name="sign" description="generate asc files">
+    <exec command="gpg -ab ${app}-${version}.jar"/>
+    <exec command="gpg -ab ${app}-${version}-sources.jar"/>
+    <exec command="gpg -ab ${app}-${version}-javadoc.jar"/>
+    <exec command="gpg -ab pom.xml"/>
+  </target>
+
+  <target name="deploy" depends="src,javadoc,jar" description="generate deployment artifacts">
     <copy file="${app}.jar" tofile="${app}-${version}.jar"/>
+    <antcall target="sign"/>
   </target>
 
   <target name="depnatives">
