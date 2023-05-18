@@ -1,0 +1,31 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>javaforce</name>
+  <description>javaforce</description>
+  <url>https://github.com/pquiring/javaforce</url>
+
+  <groupId>io.github.pquiring</groupId>
+  <artifactId>javaforce</artifactId>
+  <version>39.0</version>
+
+  <scm>
+    <url>https://github.com/pquiring/javaforce</url>
+  </scm>
+
+  <licenses>
+    <license>
+      <name>LPGL-2.0</name>
+      <url>https://www.gnu.org/licenses/old-licenses/lgpl-2.0.en.html</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Peter Quiring</name>
+      <email>pquiring@gmail.com</email>
+      <url>https://pquiring.github.io/</url>
+    </developer>
+  </developers>
+
+</project>
