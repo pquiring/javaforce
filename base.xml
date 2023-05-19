@@ -249,7 +249,7 @@
 
   <target name="executable" depends="jar,depjars,depnatives,executable2,executable3,executable4,executable5" description="create executable launcher">
     <sequential>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenExecutable" fork="true">
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenExecutable" fork="true">
         <arg value="${home}"/>
         <arg value="${app}"/>
         <arg value="${apptype}"/>
@@ -277,10 +277,10 @@
 
   <target name="graal" if="graal" depends="jar,depjars,graal2,graal3,graal4,graal5" description="generate aot library">
     <sequential>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenGraal" fork="true">
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenGraal" fork="true">
         <arg value="${MAINCLASS}"/>
       </java>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ExecGraal" fork="true">
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecGraal" fork="true">
         <arg value="${CLASSPATH}"/>
         <arg value="${MAINCLASS}"/>
       </java>
@@ -289,10 +289,10 @@
 
   <target name="graalagent">
     <sequential>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenGraal" fork="true">
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenGraal" fork="true">
         <arg value="${MAINCLASS}"/>
       </java>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ExecGraalAgent" fork="true">
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecGraalAgent" fork="true">
         <arg value="${CLASSPATH}"/>
         <arg value="${MAINCLASS}"/>
       </java>
@@ -301,7 +301,7 @@
 
   <target name="run">
     <sequential>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.ExecProject" fork="true">
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecProject" fork="true">
         <arg value="${CLASSPATH}"/>
         <arg value="${MAINCLASS}"/>
       </java>
@@ -313,21 +313,21 @@
   <target name="msi" depends="executable,graal" description="create msi installer file 64bit">
     <sequential>
       <exec command="candle -ext WixFirewallExtension -ext WixUtilExtension ${candle_extra} -o wix.obj wix64.xml"/>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
         <arg value="${jre}"/>
         <arg value="jre.xml"/>
         <arg value="JRE"/>
         <arg value="${heat_home}"/>
       </java>
       <exec command="candle -o jre.obj jre.xml"/>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
         <arg value="${home}/ffmpeg"/>
         <arg value="ffmpeg.xml"/>
         <arg value="FFMPEG"/>
         <arg value="."/>
       </java>
       <exec command="candle -o ffmpeg.obj ffmpeg.xml"/>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
         <arg value="${home}/jre_base/bin"/>
         <arg value="msvcrt.xml"/>
         <arg value="MSVCRT"/>
@@ -377,7 +377,7 @@
   </target>
 
   <target name="deb" depends="installapp" description="create deb package">
-    <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true">
       <arg value="${app}"/>
       <arg value="${version}"/>
       <arg value="${home}"/>
@@ -385,7 +385,7 @@
   </target>
 
   <target name="rpm" depends="installapp" description="create rpm package">
-    <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenRPM" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenRPM" fork="true">
       <arg value="${app}"/>
       <arg value="${version}"/>
       <arg value="${home}"/>
@@ -393,7 +393,7 @@
   </target>
 
   <target name="pac" depends="installapp" description="create pac package">
-    <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true">
       <arg value="${app}"/>
       <arg value="${version}"/>
       <arg value="${home}"/>
@@ -403,7 +403,7 @@
   <!-- MacOSX targets -->
 
   <target name="dmg" depends="executable,graal" description="create dmg package">
-    <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.GenDMG" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenDMG" fork="true">
       <arg value="${app}"/>
       <arg value="${app}-${version}.dmg"/>
       <arg value="${jre}"/>
