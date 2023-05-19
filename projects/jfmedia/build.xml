@@ -29,9 +29,6 @@
       <fileset dir="src" includes="*.png"/>
       <manifest>
         <attribute name="Main-Class" value="jfmedia"/>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfmedia.sourceforge.net"/>
       </manifest>
     </jar>
   </target>

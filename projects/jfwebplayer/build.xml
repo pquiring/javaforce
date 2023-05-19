@@ -34,9 +34,6 @@
       <fileset dir="." includes="*.png"/>
       <manifest>
         <attribute name="Main-Class" value="webplayerApp"/>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="${app}.sourceforge.net"/>
       </manifest>
     </jar>
   </target>

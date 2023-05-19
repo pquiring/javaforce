@@ -39,9 +39,6 @@
       <fileset dir="." includes="*.crt"/>
       <manifest>
         <attribute name="Main-Class" value="TermApp"/>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfterm.sourceforge.net"/>
       </manifest>
     </jar>
   </target>

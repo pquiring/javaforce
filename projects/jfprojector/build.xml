@@ -35,9 +35,6 @@
       <fileset dir="." includes="*.png"/>
       <manifest>
         <attribute name="Main-Class" value="client.App"/>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfprojector.sourceforge.net"/>
       </manifest>
     </jar>
   </target>

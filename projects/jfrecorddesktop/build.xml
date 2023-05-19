@@ -34,9 +34,6 @@
       <fileset dir="." includes="*.crt"/>
       <manifest>
         <attribute name="Main-Class" value="RecordDesktopApp"/>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfrecorddesktop.sourceforge.net"/>
       </manifest>
     </jar>
   </target>

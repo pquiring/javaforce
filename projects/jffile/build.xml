@@ -37,9 +37,6 @@
       <fileset dir="." includes="*.crt"/>
       <manifest>
         <attribute name="Main-Class" value="FileApp"/>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jffile.sourceforge.net"/>
       </manifest>
     </jar>
   </target>

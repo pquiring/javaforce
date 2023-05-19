@@ -23,9 +23,6 @@
     <jar destfile="jfnettools.jar" includes="*.class" basedir="${build}">
       <manifest>
         <attribute name="Main-Class" value="NetApp"/>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="jfnettools.sourceforge.net"/>
       </manifest>
     </jar>
   </target>

@@ -31,9 +31,6 @@
       <fileset dir="src" includes="*.png"/>
       <manifest>
         <attribute name="Main-Class" value="MonitorService"/>
-        <attribute name="Trusted-Library" value="true"/>
-        <attribute name="Permissions" value="all-permissions"/>
-        <attribute name="Codebase" value="${app}.sourceforge.net"/>
       </manifest>
     </jar>
   </target>
