@@ -58,7 +58,7 @@
 
   <available property="have-jcifs" file="jars/jcifs-${jcifs-version}.jar"/>
   <target name="get-jcifs" unless="have-jcifs">
-    <maven name="jcifs" path="org/samba/jcifs" version="${jcifs-version}" repo="https://repo.opennms.org/maven2"/>
+    <maven name="jcifs" path="org/codelibs" version="${jcifs-version}"/>
   </target>
 
   <available property="have-mssql-jdbc" file="jars/mssql-jdbc-${mssql-jdbc-version}.jar"/>

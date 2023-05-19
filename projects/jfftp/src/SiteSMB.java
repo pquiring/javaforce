@@ -2,7 +2,8 @@ import java.io.*;
 import java.util.*;
 import javax.swing.*;
 
-//jcifs.samba.org
+import jcifs.*;
+import jcifs.context.*;
 import jcifs.smb.*;
 
 import javaforce.*;
@@ -15,7 +16,8 @@ import javaforce.awt.*;
 
 public class SiteSMB extends Site {
   private String url;
-  private NtlmPasswordAuthentication auth;
+  private NtlmPasswordAuthenticator auth;
+  private CIFSContext ctx;
 
   public boolean connect(SiteDetails sd) {
     try {
@@ -25,8 +27,9 @@ public class SiteSMB extends Site {
         remoteDir.setText("/" + sd.remoteDir);
       else
         remoteDir.setText(sd.remoteDir);
-      auth = new NtlmPasswordAuthentication("domain", sd.username, sd.password);
-      SmbFile file = new SmbFile(url + remoteDir.getText(), auth);
+      auth = new NtlmPasswordAuthenticator("domain", sd.username, sd.password);
+      ctx = SingletonContext.getInstance().withCredentials(auth);
+      SmbFile file = new SmbFile(url + remoteDir.getText(), ctx);
       if (!file.exists()) throw new Exception("Resource not found");
       if (!remote_ls()) throw new Exception("Connection failed");
       setStatus(null);
@@ -51,7 +54,7 @@ public class SiteSMB extends Site {
     StringBuffer str = new StringBuffer();
     try {
       setStatus("Listing");
-      SmbFile folder = new SmbFile(url + remoteDir.getText() + "/", auth);
+      SmbFile folder = new SmbFile(url + remoteDir.getText() + "/", ctx);
       SmbFile lst[] = folder.listFiles();
       for(int a=0;a<lst.length;a++) {
         String name = lst[a].getName();
@@ -180,7 +183,7 @@ public class SiteSMB extends Site {
   public void download_file(File remote, File local) {
     SmbFile file;
     try {
-      file = new SmbFile(url + remoteDir.getText() + "/" + remote.getName(), auth);
+      file = new SmbFile(url + remoteDir.getText() + "/" + remote.getName(), ctx);
       InputStream fis = file.getInputStream();
       int len = (int)file.length();
       byte buf[] = new byte[64 * 1024];
@@ -274,7 +277,7 @@ public class SiteSMB extends Site {
   public void upload_file(File local, File remote) {
     SmbFile file;
     try {
-      file = new SmbFile(url + remoteDir.getText() + "/" + remote.getName(), auth);
+      file = new SmbFile(url + remoteDir.getText() + "/" + remote.getName(), ctx);
       if (file.exists()) {
         file.delete();
       }
@@ -325,7 +328,7 @@ public class SiteSMB extends Site {
     try {
       if (!file.startsWith("/")) file = remoteDir.getText() + "/" + file;
       setStatus("mkdir");
-      SmbFile smbfile = new SmbFile(url + file, auth);
+      SmbFile smbfile = new SmbFile(url + file, ctx);
       smbfile.mkdir();
       setStatus(null);
     } catch (Exception e) {
@@ -393,7 +396,7 @@ public class SiteSMB extends Site {
   public void remote_delete_file(String file) {
     try {
       if (!file.startsWith("/")) file = remoteDir.getText() + "/" + file;
-      SmbFile smbfile = new SmbFile(url + file, auth);
+      SmbFile smbfile = new SmbFile(url + file, ctx);
       smbfile.delete();
     } catch (Exception e) {
       setStatus("Error:" + e);
@@ -449,13 +452,13 @@ public class SiteSMB extends Site {
     try {
       SmbFile smbfrom, smbto;
       if (from.startsWith("/"))
-        smbfrom = new SmbFile(url + from, auth);
+        smbfrom = new SmbFile(url + from, ctx);
       else
-        smbfrom = new SmbFile(url + remoteDir.getText() + "/" + from, auth);
+        smbfrom = new SmbFile(url + remoteDir.getText() + "/" + from, ctx);
       if (to.startsWith("/"))
-        smbto = new SmbFile(url + to, auth);
+        smbto = new SmbFile(url + to, ctx);
       else
-        smbto = new SmbFile(url + remoteDir.getText() + "/" + to, auth);
+        smbto = new SmbFile(url + remoteDir.getText() + "/" + to, ctx);
       smbfrom.renameTo(smbto);
     } catch (Exception e) {
       setStatus("Error:" + e);
