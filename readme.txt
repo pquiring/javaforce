@@ -94,6 +94,8 @@ Common Ant tasks:
 compile : compile projects java files
 jar : build the projects main jar file
 depjars : copy dependant jar files into project folder
+javadoc : build javadoc api files
+deploy : build maven deployment artifacts
 executable : build native launcher
  - a stub launcher for the platform is copied into the project folder and configured to load classpath and start main method
  - a project property "apptype" can be set to "c" for console apps or "s" for service apps (default is gui app)
@@ -118,7 +120,6 @@ dmg : build Mac dmg file using hdiutil (mac only)
   - see projects/jfedit or projects/jfpaint for only examples
   - jfimageconvert can convert images to .icns file format (mac icons)
   - mac stub created (/stubs/mac)
-javadoc : create javadoc api help files (open ./javadoc/index.html)
 
 Graal Support
 -------------
