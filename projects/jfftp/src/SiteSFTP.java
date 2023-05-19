@@ -8,56 +8,44 @@
 import java.io.*;
 import java.util.*;
 
-import com.jcraft.jsch.*;
-
 import javaforce.*;
 import javaforce.awt.*;
 
-public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
-  private ChannelSftp channel;
-  private Session jschsession;
-  private JSch jsch;
+import org.apache.sshd.client.SshClient;
+import org.apache.sshd.client.future.ConnectFuture;
+import org.apache.sshd.client.session.ClientSession;
+import org.apache.sshd.sftp.client.SftpClient;
+import org.apache.sshd.sftp.client.impl.DefaultSftpClientFactory;
 
-  private class MyUserInfo implements UserInfo {
-    public String password;
-    public MyUserInfo(String password) {this.password = password;}
-    public String getPassword(){
-      return password;
-    }
-    public boolean promptYesNo(String str){
-      return true;
-    }
-    public String getPassphrase(){ return null; }
-    public boolean promptPassphrase(String message){ return true; }
-    public boolean promptPassword(String message){ return true; }
-    public void showMessage(String message){
-      JFLog.log(message);
-    }
-  }
+public class SiteSFTP extends SiteFTP {
+  private SshClient client;  //ssh
+  private ClientSession session;
+  private SftpClient channel;
+  private String path;
 
   public boolean connect(SiteDetails sd) {
     try {
-      jsch = new JSch();
       setStatus("Connecting...");
-      jschsession = jsch.getSession(sd.username, sd.host, Integer.valueOf(sd.port));
+      client = SshClient.setUpDefaultClient();
+      client.start();
+      ConnectFuture cf = client.connect(sd.username, sd.host, JF.atoi(sd.port));
+      session = cf.verify().getSession();
 //System.out.println("session = " + jschsession);
       if (sd.sshKey.length() == 0) {
-        jschsession.setPassword(sd.password);
-        jschsession.setUserInfo(new MyUserInfo(sd.password));
+        session.addPasswordIdentity(sd.password);
       } else {
         JFLog.log("using key:" + sd.sshKey);
-        jsch.addIdentity(sd.sshKey);
-        java.util.Properties config = new java.util.Properties ();
-        config.put("StrictHostKeyChecking", "no");
-        jschsession.setConfig(config);
+        JFLog.log("TODO : set ssh key");
+        //session.addPublicKeyIdentity(sd.sshKey);
       }
       setStatus("Login...");
-      jschsession.connect(30000);
-      channel = (ChannelSftp) jschsession.openChannel("sftp");
+      session.auth().verify(30000);
+      channel = DefaultSftpClientFactory.INSTANCE.createSftpClient(session);
 //System.out.println("channel = " + channel);
-      channel.connect(30000);
       if (sd.remoteDir.length() > 0) {
-        channel.cd(sd.remoteDir);
+        path = channel.canonicalPath(sd.remoteDir);
+      } else {
+        path = channel.canonicalPath(".");
       }
       remote_ls();
       setStatus(null);
@@ -72,15 +60,15 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
 
   public void disconnect() {
     try {
-      channel.disconnect();
-      jschsession.disconnect();
+      channel.close();
+      session.close();
     } catch (Exception e) {}
   }
 
   public String remote_pwd() {
     String wd;
     try {
-      wd = channel.pwd();
+      wd = channel.canonicalPath(path);
       int i1 = wd.indexOf("\"");
       if (i1 != -1) {
         //the reply is ["path" is your current location]
@@ -100,13 +88,14 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
       String wd = remote_pwd();
       remoteDir.setText(wd);
       remoteDir.setText(wd);
-      Vector<ChannelSftp.LsEntry> ls;
-      ls = channel.ls(".");
-      String lsstr = "";
-      for(int a=0;a<ls.size();a++) {
-        lsstr += ls.get(a).toString() + "\n";
+      Iterable<SftpClient.DirEntry> ls;
+      ls = channel.readDir(path);
+      StringBuilder lsstr = new StringBuilder();
+      for(SftpClient.DirEntry e : ls) {
+        lsstr.append(e.getFilename());
+        lsstr.append("\n");
       }
-      parseRemote(wd, lsstr);
+      parseRemote(wd, lsstr.toString());
     } catch (Exception e) {
       setStatus("Error:" + e);
       JFLog.log(e);
@@ -114,9 +103,13 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     }
   }
 
-  public void remote_chdir(String path) {
+  public void remote_chdir(String newpath) {
     try {
-      channel.cd(path);
+      if (newpath.startsWith("/")) {
+        path = channel.canonicalPath(newpath);  //absolute
+      } else {
+        path = channel.canonicalPath(path + "/" + newpath);  //relative
+      }
       remote_ls();
     } catch (Exception e) {
       setStatus("Error:" + e);
@@ -125,12 +118,27 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     }
   }
 
+  private static final int bufsiz = (1024 * 64);
+  private void copy(InputStream is, OutputStream os) throws Exception {
+    byte[] buf = new byte[bufsiz];
+    while (is.available() > 0) {
+      int toread = is.available();
+      if (toread > bufsiz) toread = bufsiz;
+      int read = is.read(buf, 0, toread);
+      if (read == -1) throw new Exception("read error");
+      if (read > 0) {
+        os.write(buf, 0, read);
+      }
+    }
+  }
+
   public void download_file(File remote, File local) {
     total = 0;
     try {
       FileOutputStream fos = new FileOutputStream(local);
-      //BUG : no progress!
-      channel.get(remote.getName(), fos, this);
+      InputStream is = channel.read(path + "/" +remote.getName());
+      copy(is, fos);
+      is.close();
     } catch (Exception e) {
       setStatus("Error:" + e);
       JFLog.log(e);
@@ -142,8 +150,8 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
     total = 0;
     try {
       FileInputStream fis = new FileInputStream(local);
-      //BUG : no progress!
-      channel.put(fis, remote.getName(), this);
+      OutputStream os = channel.write(path + "/" +remote.getName());
+      copy(fis, os);
     } catch (Exception e) {
       setStatus("Error:" + e);
       JFLog.log(e);
@@ -168,7 +176,7 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
 
   public void remote_delete_file(String file) {
     try {
-      channel.rm(file);
+      channel.remove(file);
    } catch (Exception e) {
       setStatus("Error:" + e);
       JFLog.log(e);
@@ -208,7 +216,9 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
 
   public void setPerms(int value, String remoteFile) {
     try {
-      channel.chmod(value, remoteFile);
+      SftpClient.Attributes attr = new SftpClient.Attributes();
+      attr.setPermissions(value);
+      channel.setStat(remoteFile, attr);
       remote_chdir(".");  //refresh
     } catch (Exception e) {
       setStatus("Error:" + e);
@@ -219,19 +229,14 @@ public class SiteSFTP extends SiteFTP implements SftpProgressMonitor {
 
   private int total;
 
-  //SftpProgressMonitor
-  public void init(int op, String src, String dest, long max) {
-//    JFLog.log("sftp:init");
+  //TODO : progress monitor
+
+  public void progress_init() {
     total = 0;
   }
 
-  public boolean count(long l) {
-//    JFLog.log("sftp:count:" + l);
+  public void progress_count(long l) {
     total += l;
     setProgress(total);
-    return true;  //continue operation
-  }
-
-  public void end() {
   }
 }

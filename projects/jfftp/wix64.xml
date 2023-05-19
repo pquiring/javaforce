@@ -26,8 +26,11 @@
         <File Id="jfftp.jar" Source="jfftp.jar" KeyPath="yes"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="jcifs.jar" Source="jcifs.jar"/>
-        <File Id="jsch.jar" Source="jsch.jar"/>
-        <File Id="jzlib.jar" Source="jzlib.jar"/>
+        <File Id="mina.jar" Source="mina.jar"/>
+        <File Id="sshdcore.jar" Source="sshd-core.jar"/>
+        <File Id="sshdcommon.jar" Source="sshd-common.jar"/>
+        <File Id="sshdmina.jar" Source="sshd-mina.jar"/>
+        <File Id="sshdsftp.jar" Source="sshd-sftp.jar"/>
         <File Id="jfftp.exe" Source="jfftp.exe"/>
       </Component>
     </DirectoryRef>

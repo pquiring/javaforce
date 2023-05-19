@@ -128,14 +128,6 @@
     <copyjar name="jtds" version="${jtds-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-jsch">
-    <copyjar name="jsch" version="${jsch-version}" path="${jarpath}"/>
-  </target>
-
-  <target name="jar-jzlib">
-    <copyjar name="jzlib" version="${jzlib-version}" path="${jarpath}"/>
-  </target>
-
   <target name="jar-jcifs">
     <copyjar name="jcifs" version="${jcifs-version}" path="${jarpath}"/>
   </target>
@@ -214,6 +206,10 @@
 
   <target name="jar-sshd-mina">
     <copyjar name="sshd-mina" version="${sshd-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-sshd-sftp">
+    <copyjar name="sshd-sftp" version="${sshd-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-jargs">

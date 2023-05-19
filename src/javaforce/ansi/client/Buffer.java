@@ -1,5 +1,5 @@
 /*
- * BufferViewer.java
+ * Buffer.java
  *
  * Created on May 10, 2019, 1:34 PM
  *
@@ -24,7 +24,10 @@ import javaforce.jni.*;
 import javaforce.jni.lnx.*;
 import javaforce.jni.win.*;
 
-import com.jcraft.jsch.*;
+import org.apache.sshd.client.SshClient;
+import org.apache.sshd.client.channel.ClientChannel;
+import org.apache.sshd.client.future.ConnectFuture;
+import org.apache.sshd.client.session.ClientSession;
 
 public class Buffer {
 
@@ -72,7 +75,6 @@ public class Buffer {
 
   //public data
   public int sx, sy;  //screen size x/y (80x24)
-  public boolean applet = false;  //non-signed applet
   private int y1,y2;  //scroll range
   public Script script = null;
 
@@ -89,8 +91,9 @@ public class Buffer {
   private InputStream in;
   private OutputStream out;
   private Socket s;  //telnet
-  private Session session;  //ssh
-  private Channel channel;  //ssh
+  private SshClient client;  //ssh
+  private ClientSession session;  //ssh
+  private ClientChannel channel;  //ssh
   private SSLSocket ssl;  //ssl
   /** Number of lines that user can scroll back to. */
   public int scrollBack;
@@ -259,7 +262,7 @@ public class Buffer {
       sx = newsx;
       sy = newsy;
       if (channel != null) {
-        ((ChannelShell)channel).setPtyType(settings.termType, sx, sy, sx * 8, sy * 8);
+        setPtyType();
       }
       if (settings.protocol.equals("local")) {
         pty_setsize();
@@ -499,7 +502,7 @@ public class Buffer {
     try {if (pty != null) {pty.close(); pty = null;}} catch(Exception e) {}
     try {if (wincom != null) {wincom.close(); wincom = null;}} catch(Exception e) {}
     try {if (lnxcom != null) {lnxcom.close(); lnxcom = null;}} catch(Exception e) {}
-    try {if (session != null) {session.disconnect(); session = null;}} catch(Exception e) {}
+    try {if (client != null) {client.close(); client = null;}} catch(Exception e) {}
     try {if (out != null) {out.close(); out = null;}} catch(Exception e) {}
     try {if (in != null) {in.close(); in = null;}} catch(Exception e) {}
     try {if (s != null) {s.close(); s = null;}} catch(Exception e) {}
@@ -744,6 +747,11 @@ public class Buffer {
     return port;
   }
 
+  private void setPtyType() {
+    JFLog.log("TODO : set Pty Type");
+    //channel.setPtyType(settings.termType, sx, sy, sx * 8, sy * 8);
+  }
+
   private boolean connectSSH(Frame parent) {
     try{
       if (settings.sshKey.length() == 0) {
@@ -751,48 +759,44 @@ public class Buffer {
         if (settings.password == null) return false;
       }
       Object pipes[];
-      JSch jsch=new JSch();
-      if (!applet) jsch.setKnownHosts(JF.getUserPath() + "/.jfterm.ssh");
-      session=jsch.getSession(settings.username, settings.host, settings.port);
+      client = SshClient.setUpDefaultClient();
+      client.start();
+      JFLog.log("TODO : set knownhosts");
+      //setKnownHosts(JF.getUserPath() + "/.jfterm-knownhosts");
+      ConnectFuture cf = client.connect(settings.username, settings.host, settings.port);
+      session = cf.verify().getSession();
       if (settings.x11) {
-        session.setX11Host("127.0.0.1");
-        session.setX11Port(detectX11port());
+        JFLog.log("TODO : set X11 host / port");
+        //session.setX11Host("127.0.0.1");
+        //session.setX11Port(detectX11port());
       }
       if (settings.sshKey.length() == 0) {
-        session.setPassword(settings.password);
-        UserInfo ui=new SSHUserInfo(settings.password);
-        session.setUserInfo(ui);
+        session.addPasswordIdentity(settings.password);
       } else {
         JFLog.log("using key:" + settings.sshKey);
-        jsch.addIdentity(settings.sshKey);
-        java.util.Properties config = new java.util.Properties ();
-        config.put("StrictHostKeyChecking", "no");
-        session.setConfig(config);
+        JFLog.log("TODO : set ssh key");
+        //session.addPublicKeyIdentity(sd.sshKey);
       }
-      session.connect(30000);
-      channel=session.openChannel("shell");
+      session.auth().verify(30000);
+      channel = session.createChannel(ClientChannel.CHANNEL_SHELL);
       if (settings.x11) {
-        channel.setXForwarding(true);
+        // Enable X11 forwarding
+        //channel.setXForwarding(true);
+        JFLog.log("TODO : enable x11 forwarding");
       } else {
-        // Enable agent-forwarding.
-        ((ChannelShell)channel).setAgentForwarding(true);
+        // Enable agent-forwarding
+        //channel.setAgentForwarding(true);
+        JFLog.log("TODO : enable agent forwarding");
       }
       pipes = createPipes();
       if (pipes == null) return false;
       out = (OutputStream)pipes[1];
-      channel.setInputStream((InputStream)pipes[0]);
+      channel.setIn((InputStream)pipes[0]);
       pipes = createPipes();
       if (pipes == null) return false;
       in = (InputStream)pipes[0];
-      channel.setOutputStream((OutputStream)pipes[1]);
-      ((ChannelShell)channel).setPtyType(settings.termType, settings.sx, settings.sy, settings.sx * 8, settings.sy * 8);
-//      ((ChannelShell)channel).setEnv(hashMap);  //???
-      /*
-      java.util.Hashtable env=new java.util.Hashtable();
-      env.put("LANG", "ja_JP.eucJP");
-      ((ChannelShell)channel).setEnv(env);
-      */
-      channel.connect(30000);
+      channel.setOut((OutputStream)pipes[1]);
+      channel.open();
       return true;
     } catch (Exception e) {
       if (!closed) input(e.toString());
@@ -808,30 +812,6 @@ public class Buffer {
       return ret;
     } catch (Exception e) {
       return null;
-    }
-  }
-
-  private static class SSHUserInfo implements UserInfo {
-    public String password;
-    public SSHUserInfo(String password) {this.password = password;}
-    public String getPassword(){
-      return password;
-    }
-    public boolean promptYesNo(String str){
-      Object[] options={ "yes", "no" };
-      int foo=JOptionPane.showOptionDialog(null,
-        str,
-        "Warning",
-        JOptionPane.DEFAULT_OPTION,
-        JOptionPane.WARNING_MESSAGE,
-        null, options, options[0]);
-      return foo==0;
-    }
-    public String getPassphrase(){ return null; }
-    public boolean promptPassphrase(String message){ return true; }
-    public boolean promptPassword(String message){ return true; }
-    public void showMessage(String message){
-      JOptionPane.showMessageDialog(null, message);
     }
   }
 

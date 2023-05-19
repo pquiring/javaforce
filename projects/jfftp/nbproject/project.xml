@@ -11,14 +11,14 @@
             <properties/>
             <folders>
                 <source-folder>
-                    <label>src</label>
-                    <type>java</type>
-                    <location>src</location>
+                    <label>jfftp</label>
+                    <location>.</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>
                 <source-folder>
-                    <label>jfftp</label>
-                    <location>.</location>
+                    <label>src</label>
+                    <type>java</type>
+                    <location>src</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>
             </folders>
@@ -59,7 +59,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/5">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">javaforce.jar;jcifs.jar;jsch.jar;jzlib.jar</classpath>
+                <classpath mode="compile">javaforce.jar;jcifs.jar;mina.jar;sshd-core.jar;sshd-common.jar;sshd-sftp.jar</classpath>
                 <source-level>11</source-level>
             </compilation-unit>
         </java-data>

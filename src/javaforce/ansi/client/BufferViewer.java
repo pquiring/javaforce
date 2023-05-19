@@ -24,8 +24,6 @@ import javaforce.jni.*;
 import javaforce.jni.lnx.*;
 import javaforce.jni.win.*;
 
-import com.jcraft.jsch.*;
-
 public class BufferViewer extends JComponent implements KeyListener, MouseListener, MouseMotionListener {
 
   public Buffer buffer;
