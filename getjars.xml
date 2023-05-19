@@ -41,11 +41,6 @@
     <maven name="derby" path="org/apache/derby" version="${derby-version}"/>
   </target>
 
-  <available property="have-jtds" file="jars/jtds-${jtds-version}.jar"/>
-  <target name="get-jtds" unless="have-jtds">
-    <maven name="jtds" path="net/sourceforge/jtds" version="${jtds-version}"/>
-  </target>
-
   <available property="have-jcifs" file="jars/jcifs-${jcifs-version}.jar"/>
   <target name="get-jcifs" unless="have-jcifs">
     <maven name="jcifs" path="org/codelibs" version="${jcifs-version}"/>
@@ -167,6 +162,6 @@
     <maven name="commons-lang3" path="org/apache/commons" version="${commons-lang3-version}"/>
   </target>
 
-  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina,get-sshd-core,get-sshd-common,get-sshd-mina,get-sshd-sftp,get-jargs,get-llrp,get-commons-lang3">
+  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina,get-sshd-core,get-sshd-common,get-sshd-mina,get-sshd-sftp,get-jargs,get-llrp,get-commons-lang3">
   </target>
 </project>

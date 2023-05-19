@@ -124,10 +124,6 @@
     <copyjar name="derby" version="${derby-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-jtds">
-    <copyjar name="jtds" version="${jtds-version}" path="${jarpath}"/>
-  </target>
-
   <target name="jar-jcifs">
     <copyjar name="jcifs" version="${jcifs-version}" path="${jarpath}"/>
   </target>
