@@ -111,9 +111,20 @@
     <maven name="jdom" path="org/jdom" version="${jdom-version}"/>
   </target>
 
-  <available property="have-log4j" file="jars/log4j-${log4j-version}.jar"/>
-  <target name="get-log4j" unless="have-log4j">
-    <maven name="log4j" path="content/repositories/releases/log4j" version="${log4j-version}" repo="https://repository.apache.org"/>
+  <available property="have-log4j-core" file="jars/log4j-core-${log4j-version}.jar"/>
+  <target name="get-log4j-core" unless="have-log4j-core">
+    <maven name="log4j-core" path="org/apache/logging/log4j" version="${log4j-version}"/>
+  </target>
+
+  <available property="have-log4j-api" file="jars/log4j-api-${log4j-version}.jar"/>
+  <target name="get-log4j-api" unless="have-log4j-api">
+    <maven name="log4j-api" path="org/apache/logging/log4j" version="${log4j-version}"/>
+  </target>
+
+  <!-- log4j 1.x api compatibility layer on top of 2.x -->
+  <available property="have-log4j12" file="jars/log4j-1.2-api-${log4j-version}.jar"/>
+  <target name="get-log4j12" unless="have-log4j12">
+    <maven name="log4j-1.2-api" path="org/apache/logging/log4j" version="${log4j-version}"/>
   </target>
 
   <available property="have-slf4j-api" file="jars/slf4j-api-${slf4j-version}.jar"/>
@@ -156,6 +167,6 @@
     <maven name="llrp" path="io/github/pquiring" version="${llrp-version}"/>
   </target>
 
-  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j,get-slf4j-api,get-slf4j-log4j12,get-mina,get-sshd-core,get-sshd-common,get-sshd-mina,get-jargs,get-llrp">
+  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jtds,get-jsch,get-jzlib,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina,get-sshd-core,get-sshd-common,get-sshd-mina,get-jargs,get-llrp">
   </target>
 </project>

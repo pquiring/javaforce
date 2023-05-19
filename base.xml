@@ -180,8 +180,16 @@
     <copyjar name="jdom" version="${jdom-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-log4j">
-    <copyjar name="log4j" version="${log4j-version}" path="${jarpath}"/>
+  <target name="jar-log4j-core">
+    <copyjar name="log4j-core" version="${log4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-log4j-api">
+    <copyjar name="log4j-api" version="${log4j-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-log4j-1.2-api">
+    <copyjar name="log4j-1.2-api" version="${log4j-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-slf4j-api">
