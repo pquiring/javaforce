@@ -47,7 +47,5 @@ function package {
 
 detectos
 
-package jcifs jfcifs 1.3.19
-package jsch jfsch 0.1.55
-package jzlib jfzlib 1.1.3
+package jcifs jfcifs 2.1.34
 package derby jfderby 10.16.1.1
