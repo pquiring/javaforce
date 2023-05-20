@@ -9,9 +9,9 @@
   <property name="home" value="."/>
   <property name="noelf" value="true"/>
 
-  <property name="debian.depends" value="default-jre-headless    , jfsch, jfzlib, jfcifs, libv4l-0 , desktop-file-utils, libxcursor1"/>
-  <property name="fedora.depends" value="java-17-openjdk-headless, jfsch, jfzlib, jfcifs, libv4l   , desktop-file-utils"/>
-  <property name="arch.depends"   value="jre-openjdk-headless    , jfsch, jfzlib, jfcifs, v4l-utils, desktop-file-utils"/>
+  <property name="debian.depends" value="default-jre-headless    , jfcifs, jfmina, jfsshd-core, jfsshd-common, jfsshd-mina, jfsshd-sftp, libv4l-0 , desktop-file-utils, libxcursor1"/>
+  <property name="fedora.depends" value="java-17-openjdk-headless, jfcifs, jfmina, jfsshd-core, jfsshd-common, jfsshd-mina, jfsshd-sftp, libv4l   , desktop-file-utils"/>
+  <property name="arch.depends"   value="jre-openjdk-headless    , jfcifs, jfmina, jfsshd-core, jfsshd-common, jfsshd-mina, jfsshd-sftp, v4l-utils, desktop-file-utils"/>
 
   <property environment="env"/>
 
