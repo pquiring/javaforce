@@ -121,6 +121,15 @@ dmg : build Mac dmg file using hdiutil (mac only)
   - jfimageconvert can convert images to .icns file format (mac icons)
   - mac stub created (/stubs/mac)
 
+Maven
+-----
+The Maven repo is used to download dependancies using ant tasks.
+The mvn tool is currently not required.
+A pom.xml is supplied but is missing dependancies for now, the minimum is included
+to create deployment artifacts.
+Placing JF itself in the Maven repo may not be very useful since it includes more than
+just jar files (natives, build system, etc.)
+
 Graal Support
 -------------
 JavaForce includes some support for building AOT executables using GraalVM (http://www.graalvm.org)
