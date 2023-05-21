@@ -53,17 +53,22 @@ public class LLRP implements LLRPEndpoint {
   public int log_id;
 
   /** Connects to LLRP Controller. */
-  public boolean connect(String ip) {
+  public boolean connect(String ip, int time_out_ms) {
     this.ip = ip;
     llrp = new LLRPConnector(this, ip);
     try {
-      llrp.connect();
+      llrp.connect(time_out_ms);
       return true;
     } catch (Exception e) {
       llrp = null;
       if (debug) JFLog.log(log_id, e);
       return false;
     }
+  }
+
+  /** Connects to LLRP Controller. time out = 30 seconds. */
+  public boolean connect(String ip) {
+    return connect(ip, 30000);
   }
 
   /** Disconnects from LLRP Controller. */
