@@ -57,9 +57,13 @@ public class LLRP implements LLRPEndpoint {
     this.ip = ip;
     llrp = new LLRPConnector(this, ip);
     try {
+      llrp.setReconnect(false);  //custom JF method
       llrp.connect(time_out_ms);
       return true;
     } catch (Exception e) {
+      try {
+        llrp.disconnect();//ensure it's disconnected
+      } catch (Exception e2) {}
       llrp = null;
       if (debug) JFLog.log(log_id, e);
       return false;
