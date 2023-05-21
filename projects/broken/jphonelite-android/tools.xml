@@ -5,7 +5,7 @@
   <property name="version" value="1.9.9"/>
 
   <target name="depjars">
-    <copy file="${home}/jars/bouncycastle.jar" todir="libs"/>
+    <copy file="${home}/bouncycastle.jar" todir="libs"/>
   </target>
 
   <available property="keyexists" file="keystore.key"/>
@@ -30,7 +30,7 @@
     <zip destfile="jphonelite-android-src-${version}.zip">
       <fileset dir="../../..">
         <include name="jf/projects/jphonelite-android/**/*"/>
-        <include name="jf/jars/bouncycastle.jar"/>
+        <include name="jf/bouncycastle.jar"/>
 
         <exclude name="jf/projects/jphonelite-android/**/*.zip"/>
         <exclude name="jf/projects/jphonelite-android/libs/*.jar"/>

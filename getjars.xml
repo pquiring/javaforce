@@ -1,163 +1,163 @@
 <project>
   <!-- get java dependancies -->
 
-  <available property="have-twelvemonkeys-common-lang" file="jars/common-lang-${twelvemonkeys-version}.jar"/>
+  <available property="have-twelvemonkeys-common-lang" file="${lib}/common-lang-${twelvemonkeys-version}.jar"/>
   <target name="get-twelvemonkeys-common-lang" unless="have-twelvemonkeys-common-lang">
     <maven name="common-lang" path="com/twelvemonkeys/common" version="${twelvemonkeys-version}"/>
   </target>
 
-  <available property="have-twelvemonkeys-common-io" file="jars/common-io-${twelvemonkeys-version}.jar"/>
+  <available property="have-twelvemonkeys-common-io" file="${lib}/common-io-${twelvemonkeys-version}.jar"/>
   <target name="get-twelvemonkeys-common-io" unless="have-twelvemonkeys-common-io">
     <maven name="common-io" path="com/twelvemonkeys/common" version="${twelvemonkeys-version}"/>
   </target>
 
-  <available property="have-twelvemonkeys-common-image" file="jars/common-image-${twelvemonkeys-version}.jar"/>
+  <available property="have-twelvemonkeys-common-image" file="${lib}/common-image-${twelvemonkeys-version}.jar"/>
   <target name="get-twelvemonkeys-common-image" unless="have-twelvemonkeys-common-image">
     <maven name="common-image" path="com/twelvemonkeys/common" version="${twelvemonkeys-version}"/>
   </target>
 
-  <available property="have-twelvemonkeys-imageio-core" file="jars/imageio-core-${twelvemonkeys-version}.jar"/>
+  <available property="have-twelvemonkeys-imageio-core" file="${lib}/imageio-core-${twelvemonkeys-version}.jar"/>
   <target name="get-twelvemonkeys-imageio-core" unless="have-twelvemonkeys-imageio-core">
     <maven name="imageio-core" path="com/twelvemonkeys/imageio" version="${twelvemonkeys-version}"/>
   </target>
 
-  <available property="have-twelvemonkeys-imageio-metadata" file="jars/imageio-metadata-${twelvemonkeys-version}.jar"/>
+  <available property="have-twelvemonkeys-imageio-metadata" file="${lib}/imageio-metadata-${twelvemonkeys-version}.jar"/>
   <target name="get-twelvemonkeys-imageio-metadata" unless="have-twelvemonkeys-imageio-metadata">
     <maven name="imageio-metadata" path="com/twelvemonkeys/imageio" version="${twelvemonkeys-version}"/>
   </target>
 
-  <available property="have-twelvemonkeys-imageio-tiff" file="jars/imageio-tiff-${twelvemonkeys-version}.jar"/>
+  <available property="have-twelvemonkeys-imageio-tiff" file="${lib}/imageio-tiff-${twelvemonkeys-version}.jar"/>
   <target name="get-twelvemonkeys-imageio-tiff" unless="have-twelvemonkeys-imageio-tiff">
     <maven name="imageio-tiff" path="com/twelvemonkeys/imageio" version="${twelvemonkeys-version}"/>
   </target>
 
-  <available property="have-bfg" file="jars/bfg-${bfg-version}.jar"/>
+  <available property="have-bfg" file="${lib}/bfg-${bfg-version}.jar"/>
   <target name="get-bfg" unless="have-bfg">
     <maven name="bfg" path="com/madgag" version="${bfg-version}"/>
   </target>
 
-  <available property="have-derby" file="jars/derby-${derby-version}.jar"/>
+  <available property="have-derby" file="${lib}/derby-${derby-version}.jar"/>
   <target name="get-derby" unless="have-derby">
     <maven name="derby" path="org/apache/derby" version="${derby-version}"/>
   </target>
 
-  <available property="have-jcifs" file="jars/jcifs-${jcifs-version}.jar"/>
+  <available property="have-jcifs" file="${lib}/jcifs-${jcifs-version}.jar"/>
   <target name="get-jcifs" unless="have-jcifs">
     <maven name="jcifs" path="org/codelibs" version="${jcifs-version}"/>
   </target>
 
-  <available property="have-mssql-jdbc" file="jars/mssql-jdbc-${mssql-jdbc-version}.jar"/>
+  <available property="have-mssql-jdbc" file="${lib}/mssql-jdbc-${mssql-jdbc-version}.jar"/>
   <target name="get-mssql-jdbc" unless="have-mssql-jdbc">
     <maven name="mssql-jdbc" path="com/microsoft/sqlserver" version="${mssql-jdbc-version}"/>
   </target>
 
-  <available property="have-mysql-connector" file="jars/mysql-connector-${mysql-connector-version}.jar"/>
+  <available property="have-mysql-connector" file="${lib}/mysql-connector-${mysql-connector-version}.jar"/>
   <target name="get-mysql-connector" unless="have-mysql-connector">
     <maven name="mysql-connector-j" dest="mysql-connector" path="com/mysql" version="${mysql-connector-version}"/>
   </target>
 
-  <available property="have-bouncycastle" file="jars/bouncycastle-${bouncycastle-version}.jar"/>
+  <available property="have-bouncycastle" file="${lib}/bouncycastle-${bouncycastle-version}.jar"/>
   <target name="get-bouncycastle" unless="have-bouncycastle">
     <maven name="bcprov-jdk15on" dest="bouncycastle" path="org/bouncycastle" version="${bouncycastle-version}"/>
   </target>
 
-  <available property="have-servlet-api" file="jars/servlet-api-${tomcat-version}.jar"/>
+  <available property="have-servlet-api" file="${lib}/servlet-api-${tomcat-version}.jar"/>
   <target name="get-servlet-api" unless="have-servlet-api">
     <maven name="tomcat-servlet-api" dest="servlet-api" path="org/apache/tomcat" version="${tomcat-version}"/>
   </target>
 
-  <available property="have-jsp-api" file="jars/jsp-api-${tomcat-version}.jar"/>
+  <available property="have-jsp-api" file="${lib}/jsp-api-${tomcat-version}.jar"/>
   <target name="get-jsp-api" unless="have-jsp-api">
     <maven name="tomcat-jsp-api" dest="jsp-api" path="org/apache/tomcat" version="${tomcat-version}"/>
   </target>
 
-  <available property="have-websocket-api" file="jars/websocket-api-${tomcat-version}.jar"/>
+  <available property="have-websocket-api" file="${lib}/websocket-api-${tomcat-version}.jar"/>
   <target name="get-websocket-api" unless="have-websocket-api">
     <maven name="tomcat-websocket-api" dest="websocket-api" path="org/apache/tomcat" version="${tomcat-version}"/>
   </target>
 
-  <available property="have-filters" file="jars/filters-${filters-version}.jar"/>
+  <available property="have-filters" file="${lib}/filters-${filters-version}.jar"/>
   <target name="get-filters" unless="have-filters">
     <maven name="filters" path="com/jhlabs" version="${filters-version}"/>
   </target>
 
-  <available property="have-bacnet" file="jars/bacnet-${bacnet-version}.jar"/>
+  <available property="have-bacnet" file="${lib}/bacnet-${bacnet-version}.jar"/>
   <target name="get-bacnet" unless="have-bacnet">
     <maven name="bacnet4j" dest="bacnet" path="repository/ias-release/com/infiniteautomation" version="${bacnet-version}" repo="https://maven.mangoautomation.net"/>
   </target>
 
-  <available property="have-xerces" file="jars/xerces-${xerces-version}.jar"/>
+  <available property="have-xerces" file="${lib}/xerces-${xerces-version}.jar"/>
   <target name="get-xerces" unless="have-xerces">
     <maven name="org.apache.servicemix.bundles.xerces" dest="xerces" path="org/apache/servicemix/bundles" version="${xerces-version}"/>
   </target>
 
-  <available property="have-jdom" file="jars/jdom-${jdom-version}.jar"/>
+  <available property="have-jdom" file="${lib}/jdom-${jdom-version}.jar"/>
   <target name="get-jdom" unless="have-jdom">
     <maven name="jdom" path="org/jdom" version="${jdom-version}"/>
   </target>
 
-  <available property="have-log4j-core" file="jars/log4j-core-${log4j-version}.jar"/>
+  <available property="have-log4j-core" file="${lib}/log4j-core-${log4j-version}.jar"/>
   <target name="get-log4j-core" unless="have-log4j-core">
     <maven name="log4j-core" path="org/apache/logging/log4j" version="${log4j-version}"/>
   </target>
 
-  <available property="have-log4j-api" file="jars/log4j-api-${log4j-version}.jar"/>
+  <available property="have-log4j-api" file="${lib}/log4j-api-${log4j-version}.jar"/>
   <target name="get-log4j-api" unless="have-log4j-api">
     <maven name="log4j-api" path="org/apache/logging/log4j" version="${log4j-version}"/>
   </target>
 
   <!-- log4j 1.x api compatibility layer on top of 2.x -->
-  <available property="have-log4j12" file="jars/log4j-1.2-api-${log4j-version}.jar"/>
+  <available property="have-log4j12" file="${lib}/log4j-1.2-api-${log4j-version}.jar"/>
   <target name="get-log4j12" unless="have-log4j12">
     <maven name="log4j-1.2-api" path="org/apache/logging/log4j" version="${log4j-version}"/>
   </target>
 
-  <available property="have-slf4j-api" file="jars/slf4j-api-${slf4j-version}.jar"/>
+  <available property="have-slf4j-api" file="${lib}/slf4j-api-${slf4j-version}.jar"/>
   <target name="get-slf4j-api" unless="have-slf4j-api">
     <maven name="slf4j-api" path="org/slf4j" version="${slf4j-version}"/>
   </target>
 
-  <available property="have-slf4j-log4j12" file="jars/slf4j-log4j12-${slf4j-version}.jar"/>
+  <available property="have-slf4j-log4j12" file="${lib}/slf4j-log4j12-${slf4j-version}.jar"/>
   <target name="get-slf4j-log4j12" unless="have-slf4j-log4j12">
     <maven name="slf4j-log4j12" path="org/slf4j" version="${slf4j-version}"/>
   </target>
 
-  <available property="have-mina" file="jars/mina-${mina-version}.jar"/>
+  <available property="have-mina" file="${lib}/mina-${mina-version}.jar"/>
   <target name="get-mina" unless="have-mina">
     <maven name="mina-core" dest="mina" path="org/apache/mina" version="${mina-version}"/>
   </target>
 
-  <available property="have-sshd-core" file="jars/sshd-core-${sshd-version}.jar"/>
+  <available property="have-sshd-core" file="${lib}/sshd-core-${sshd-version}.jar"/>
   <target name="get-sshd-core" unless="have-sshd-core">
     <maven name="sshd-core" path="org/apache/sshd" version="${sshd-version}"/>
   </target>
 
-  <available property="have-sshd-common" file="jars/sshd-common-${sshd-version}.jar"/>
+  <available property="have-sshd-common" file="${lib}/sshd-common-${sshd-version}.jar"/>
   <target name="get-sshd-common" unless="have-sshd-common">
     <maven name="sshd-common" path="org/apache/sshd" version="${sshd-version}"/>
   </target>
 
-  <available property="have-sshd-mina" file="jars/sshd-mina-${sshd-version}.jar"/>
+  <available property="have-sshd-mina" file="${lib}/sshd-mina-${sshd-version}.jar"/>
   <target name="get-sshd-mina" unless="have-sshd-mina">
     <maven name="sshd-mina" path="org/apache/sshd" version="${sshd-version}"/>
   </target>
 
-  <available property="have-sshd-sftp" file="jars/sshd-sftp-${sshd-version}.jar"/>
+  <available property="have-sshd-sftp" file="${lib}/sshd-sftp-${sshd-version}.jar"/>
   <target name="get-sshd-sftp" unless="have-sshd-sftp">
     <maven name="sshd-sftp" path="org/apache/sshd" version="${sshd-version}"/>
   </target>
 
-  <available property="have-jargs" file="jars/jargs-${jargs-version}.jar"/>
+  <available property="have-jargs" file="${lib}/jargs-${jargs-version}.jar"/>
   <target name="get-jargs" unless="have-jargs">
     <maven name="jargs" path="io/github/pquiring" version="${jargs-version}"/>
   </target>
 
-  <available property="have-llrp" file="jars/llrp-${llrp-version}.jar"/>
+  <available property="have-llrp" file="${lib}/llrp-${llrp-version}.jar"/>
   <target name="get-llrp" unless="have-llrp">
     <maven name="llrp" path="io/github/pquiring" version="${llrp-version}"/>
   </target>
 
-  <available property="have-commons-lang3" file="jars/commons-lang3-${commons-lang3-version}.jar"/>
+  <available property="have-commons-lang3" file="${lib}/commons-lang3-${commons-lang3-version}.jar"/>
   <target name="get-commons-lang3" unless="have-commons-lang3">
     <maven name="commons-lang3" path="org/apache/commons" version="${commons-lang3-version}"/>
   </target>

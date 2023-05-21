@@ -45,7 +45,7 @@
     <attribute name="app"/>
     <sequential>
       <copy file="${home}/stubs/win64c.exe" tofile="@{app}c.exe" overwrite="true"/>
-      <java classpath="${home}/jars/javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
+      <java classpath="javaforce.jar" classname="javaforce.utils.WinPE" fork="true">
         <arg value="@{app}c.exe"/>
         <arg value="@{app}.cfg"/>
       </java>

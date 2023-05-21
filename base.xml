@@ -15,6 +15,7 @@
   <property name="project5" value=""/>
   <property name="jarpath" value="."/>
   <property name="jdkver" value="11"/>
+  <property name="lib" value="${home}/lib"/>
 
   <import file="versions.xml"/>
 
@@ -24,7 +25,7 @@
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcepath="src" destdir="javadoc">
       <classpath>
-        <fileset dir="${home}/jars" includes="*.jar"/>
+        <fileset dir="${lib}" includes="*.jar"/>
       </classpath>
     </javadoc>
     <zip destfile="${app}-${version}-javadoc.jar">
@@ -77,7 +78,7 @@
     <attribute name="repo" default="https://repo1.maven.org/maven2"/>
     <attribute name="dest" default="@{name}"/>
     <sequential>
-      <download url="@{repo}/@{path}/@{name}/@{version}/@{name}-@{version}.jar" dest="./jars/@{dest}-@{version}.jar"/>
+      <download url="@{repo}/@{path}/@{name}/@{version}/@{name}-@{version}.jar" dest="${lib}/@{dest}-@{version}.jar"/>
     </sequential>
   </macrodef>
 
@@ -86,7 +87,7 @@
     <attribute name="path"/>
     <attribute name="version"/>
     <sequential>
-      <copy file="${home}/jars/@{name}-@{version}.jar" tofile="@{path}/@{name}.jar"/>
+      <copy file="${lib}/@{name}-@{version}.jar" tofile="@{path}/@{name}.jar"/>
     </sequential>
   </macrodef>
 

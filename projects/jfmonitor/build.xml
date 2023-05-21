@@ -9,7 +9,6 @@
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base"/>
   <property name="version" value="0.6"/>
-  <property name="classpath" value="${home}/jars/javaforce.jar"/>
 
   <import file="${home}/base.xml"/>
 

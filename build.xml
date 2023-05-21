@@ -75,7 +75,7 @@
         <include name="*.bfc"/>
       </fileset>
     </jar>
-    <copy file="javaforce.jar" tofile="jars/javaforce-${version}.jar"/>
+    <copy file="javaforce.jar" tofile="${lib}/javaforce-${version}.jar"/>
   </target>
 
   <target name="compile-jnlp" description="compile the source">
@@ -92,12 +92,12 @@
 
   <target name="jnlp" depends="compile-jnlp" description="build jnlp jar file">
     <!-- build jnlp jar file from class files -->
-    <jar destfile="jars/jnlp.jar" includes="**/*.class" basedir="${build-jnlp}">
+    <jar destfile="${lib}/jnlp.jar" includes="**/*.class" basedir="${build-jnlp}">
       <manifest>
         <attribute name="Main-Class" value="javaforce.utils.JNLP"/>
       </manifest>
     </jar>
-    <copy file="jars/jnlp.jar" todir="."/>
+    <copy file="${lib}/jnlp.jar" todir="."/>
   </target>
 
   <target name="repo" description="download repo files">
@@ -114,9 +114,9 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <copy file="jars/javaforce.jar" todir="/usr/share/java"/>
-    <copy file="jars/bouncycastle.jar" todir="/usr/share/java"/>
-    <copy file="jars/filters.jar" todir="/usr/share/java"/>
+    <copy file="${lib}/javaforce.jar" todir="/usr/share/java"/>
+    <copy file="${lib}/bouncycastle.jar" todir="/usr/share/java"/>
+    <copy file="${lib}/filters.jar" todir="/usr/share/java"/>
 
     <copy file="lnxbin/jbus-call" todir="/usr/bin"/>
     <chmod file="/usr/bin/jbus-call" perm="+x"/>
