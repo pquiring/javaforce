@@ -39,7 +39,7 @@ Folders
 =======
  /          - main folder (run ant here to build /src)
  /src       - the javaforce source files
- /jars      - 3rd party files
+ /lib       - generated and dependancies jar files
  /stubs     - native launcher stubs
  /native    - native library with JNI bindings for FFMPEG, OpenGL, Camera
  /classes   - javaforce compiled files
