@@ -39,11 +39,11 @@ public class JBusServer extends Thread {
   }
 
   public void run() {
-    JFLog.append(JF.getLogPath() + "/jfbusserver.log", false);
-    JFLog.setRetention(30);
+    JFLog.append(port, JF.getLogPath() + "/jfbusserver.log", false);
+    JFLog.setRetention(port, 30);
     try {
       ss = new ServerSocket(port, 1024, InetAddress.getByName("127.0.0.1"));
-      JFLog.log("JBusServer starting on port " + port);
+      JFLog.log(port, "JBusServer starting on port " + port);
       ready = true;
       while (active) {
         try {
@@ -54,15 +54,15 @@ public class JBusServer extends Thread {
             Client client = new Client(s);
             client.start();
           } else {
-            JFLog.log("JBus : Unauthorized client:" + ip);
+            JFLog.log(port, "JBus : Unauthorized client:" + ip);
           }
         } catch (Exception e1) {
-          JFLog.log(e1);
+          JFLog.log(port, e1);
         }
       }
       ss.close();
     } catch (Exception e2) {
-      JFLog.log(e2);
+      JFLog.log(port, e2);
     }
   }
 
@@ -97,7 +97,7 @@ public class JBusServer extends Thread {
         is = s.getInputStream();
         os = s.getOutputStream();
       } catch (Exception e) {
-        JFLog.log(e);
+        JFLog.log(port, e);
       }
     }
 
@@ -112,13 +112,13 @@ public class JBusServer extends Thread {
           doCmd(cmd);
         }
       } catch (Exception e) {
-        JFLog.log(e);
+        JFLog.log(port, e);
       }
       synchronized (lock) {
         clients.remove(this);
       }
       if (pack != null) {
-        JFLog.log("JBus : package unregistered:" + pack);
+        JFLog.log(port, "JBus : package unregistered:" + pack);
       }
     }
 
@@ -130,7 +130,7 @@ public class JBusServer extends Thread {
             return;  //ignore
           }
           pack = cmd.substring(12);
-          JFLog.log("JBus : package registered:" + pack);
+          JFLog.log(port, "JBus : package registered:" + pack);
           synchronized (lock) {
             clients.add(this);
           }
@@ -142,7 +142,7 @@ public class JBusServer extends Thread {
         }
         else {
           //unknown cmd
-          JFLog.log("JBus : unknown cmd:" + cmd);
+          JFLog.log(port, "JBus : unknown cmd:" + cmd);
           return;
         }
       }
@@ -178,7 +178,7 @@ public class JBusServer extends Thread {
         }
       }
       if (!sent) {
-        JFLog.log("JBus : call to unregistered package.func:" + call_pack + "." + call_func);
+        JFLog.log(port, "JBus : call to unregistered package.func:" + call_pack + "." + call_func);
       }
     }
 
@@ -192,7 +192,7 @@ public class JBusServer extends Thread {
         os.flush();
         return true;
       } catch (Exception e) {
-        JFLog.log(e);
+        JFLog.log(port, e);
         return false;
       }
     }
@@ -241,7 +241,7 @@ public class JBusServer extends Thread {
   }
 
   public static void serviceStop() {
-    JFLog.log("Stopping service");
+    JFLog.log(port, "Stopping service");
     svr.close();
   }
 
