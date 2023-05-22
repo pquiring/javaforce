@@ -56,7 +56,7 @@
     <mkdir dir="${build}"/>
     <javac srcdir="${src}" destdir="${build}" target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false" nativeheaderdir="native/headers">
       <classpath>
-        <fileset dir="jars" includes="*.jar"/>
+        <fileset dir="${lib}" includes="*.jar"/>
       </classpath>
     </javac>
   </target>
@@ -107,7 +107,7 @@
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcepath="src" destdir="javadoc">
       <classpath>
-        <fileset dir="jars" includes="*.jar"/>
+        <fileset dir="${lib}" includes="*.jar"/>
       </classpath>
     </javadoc>
   </target>
@@ -193,8 +193,8 @@
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="classes" includes="**/*.class"/>
-      <fileset dir="jars" includes="javaforce.jar"/>
-      <fileset dir="jars" includes="javaforce-${version}.jar"/>
+      <fileset dir="${lib}" includes="javaforce.jar"/>
+      <fileset dir="${lib}" includes="javaforce-${version}.jar"/>
       <fileset dir="." includes="*.jar"/>
     </delete>
   </target>
