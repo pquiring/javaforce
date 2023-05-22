@@ -148,7 +148,7 @@ Requirements
 ------------
 
   - JDK 11+
-  - Apache Ant 1.9.8+
+  - Apache Ant 1.10.x
   - Windows : VisualC++ compiler (64bit), wixtoolset v3
   - FFMpeg 4.2+ sources(headers) + shared libraries
   - glfw for OpenGL support

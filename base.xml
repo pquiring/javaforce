@@ -1,4 +1,3 @@
-<!-- Note : Requires ANT 1.9.8+ -->
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!--these should be set before importing this file to override default behavior-->
   <property name="ico" value="${app}.ico"/>
