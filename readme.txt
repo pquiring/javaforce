@@ -142,7 +142,7 @@ Ant Tasks:
 The ant task 'executable' will generate an executable that will look for the Graal Library before looking for a JVM.
 Library name should be the full class name where main() is defined.
   ie: javaforce.utils.CopyPath.dll
-GraalVM support for AWT is still unfinished and probably will never be.
+GraalVM support for AWT is still a work in progress.
 
 Requirements
 ------------
