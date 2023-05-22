@@ -60,6 +60,14 @@
     </copy>
   </target>
 
+  <target name="ffmpeg">
+    <copy todir=".">
+      <fileset dir="${home}/ffmpeg" includes="*.dll"/>
+      <fileset dir="${home}/ffmpeg" includes="*.so"/>
+      <fileset dir="${home}/ffmpeg" includes="*.dylib"/>
+    </copy>
+  </target>
+
   <macrodef name="download">
     <attribute name="url"/>
     <attribute name="dest"/>

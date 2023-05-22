@@ -32,14 +32,14 @@
     <exec command="git clone https://github.com/nothings/stb.git native/stb"/>
   </target>
 
-  <target name="ffmpeg-win64" description="download ffmpeg for Win64">
+  <target name="get-ffmpeg-win64" description="download ffmpeg for Win64">
     <echo message="Downloading: jfcodecs-win64.zip"/>
     <get src="http://javaforce.sourceforge.net/jfcodecs-win64.zip" dest="jfcodecs-win64.zip"/>
     <mkdir dir="ffmpeg"/>
     <unzip src="jfcodecs-win64.zip" dest="ffmpeg"/>
   </target>
 
-  <target name="ffmpeg-mac64" description="download ffmpeg for mac64">
+  <target name="get-ffmpeg-mac64" description="download ffmpeg for mac64">
     <echo message="Downloading: jfcodecs-mac64.zip"/>
     <get src="http://javaforce.sourceforge.net/jfcodecs-mac64.zip" dest="jfcodecs-mac64.zip"/>
     <mkdir dir="ffmpeg"/>

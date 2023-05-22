@@ -82,8 +82,8 @@ FreeBSD is currently not supported (open issue if you would like to see FreeBSD 
 
 JavaForce Ant tasks:
 --------------------
-ffmpeg-win64 : Download ffmpeg libraries for Win64
-ffmpeg-mac64 : Download ffmpeg libraries for Mac64
+get-ffmpeg-win64 : Download ffmpeg libraries for Win64
+get-ffmpeg-mac64 : Download ffmpeg libraries for Mac64
 jre-base : pre-link JRE for creating native packages (msi, dmg)
 jre-base-desktop : pre-link JRE with desktop support
 jre-base-javac : pre-link JRE with java compiler support
@@ -99,6 +99,7 @@ deploy : build maven deployment artifacts
 executable : build native launcher
  - a stub launcher for the platform is copied into the project folder and configured to load classpath and start main method
  - a project property "apptype" can be set to "c" for console apps or "s" for service apps (default is gui app)
+ffmpeg : copy ffmpeg libraries to project folder
 deb : build Debian deb file (after install)
  - requires bzip2, binutils, sudo
  - linux packaging requires files.lst and linux stub (/stubs/linux)
