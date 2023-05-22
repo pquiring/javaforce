@@ -48,7 +48,7 @@
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcepath="src" sourcefiles="src/*.java" destdir="javadoc">
       <classpath>
-        <fileset dir="../../jars" includes="*.jar"/>
+        <fileset dir="${lib}" includes="*.jar"/>
       </classpath>
     </javadoc>
   </target>
