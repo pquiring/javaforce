@@ -18,7 +18,7 @@
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="jar-mina,jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-sshd-mina,jar-jcifs,jar-javaforce">
+  <target name="depjars" depends="jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-jcifs,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
