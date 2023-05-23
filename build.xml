@@ -15,6 +15,22 @@
 
   <property environment="env"/>
 
+  <fileset dir="." id="classpath">
+    <include name="bouncycastle.jar"/>
+    <include name="jargs.jar"/>
+    <include name="jcifs.jar"/>
+    <include name="jdom.jar"/>
+    <include name="llrp.jar"/>
+    <include name="log4j-1.2-api.jar"/>
+    <include name="log4j-api.jar"/>
+    <include name="log4j-core.jar"/>
+    <include name="mina-core.jar"/>
+    <include name="slf4j-api.jar"/>
+    <include name="slf4j-log4j12.jar"/>
+    <include name="sshd-common.jar"/>
+    <include name="sshd-core.jar"/>
+  </fileset>
+
   <import file="base.xml"/>
 
   <property name="version" value="${javaforce-version}"/>
@@ -56,19 +72,7 @@
     <mkdir dir="${build}"/>
     <javac srcdir="${src}" destdir="${build}" target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false" nativeheaderdir="native/headers">
       <classpath>
-        <fileset dir="." includes="bouncycastle.jar"/>
-        <fileset dir="." includes="jargs.jar"/>
-        <fileset dir="." includes="jcifs.jar"/>
-        <fileset dir="." includes="jdom.jar"/>
-        <fileset dir="." includes="llrp.jar"/>
-        <fileset dir="." includes="log4j-1.2-api.jar"/>
-        <fileset dir="." includes="log4j-api.jar"/>
-        <fileset dir="." includes="log4j-core.jar"/>
-        <fileset dir="." includes="mina-core.jar"/>
-        <fileset dir="." includes="slf4j-api.jar"/>
-        <fileset dir="." includes="slf4j-log4j12.jar"/>
-        <fileset dir="." includes="sshd-common.jar"/>
-        <fileset dir="." includes="sshd-core.jar"/>
+        <fileset refid="classpath"/>
       </classpath>
     </javac>
   </target>

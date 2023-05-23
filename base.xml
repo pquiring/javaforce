@@ -24,7 +24,7 @@
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcepath="src" destdir="javadoc">
       <classpath>
-        <fileset dir="${lib}" includes="*.jar"/>
+        <fileset refid="classpath"/>
       </classpath>
     </javadoc>
     <zip destfile="${app}-${version}-javadoc.jar">
