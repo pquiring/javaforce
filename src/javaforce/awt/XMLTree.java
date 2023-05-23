@@ -66,20 +66,15 @@ public class XMLTree implements TreeModelListener {
     }
   };
 
-  /**
+  /*
    * XMLTag is one node in the tree that represents one XML element or 'tag'.
    *
-   * @param name the XML tag name
-   * @param attrs an ArrayList of XMLAttr
-   * @param uname the unique name of the tag. Usually equals name unless another
-   * child with the same parent has the same name. JTree uses uname to display
-   * the tags.
-   * @param content the data within the tags head/tail
-   * @param isLeaf set to force JTree to view node as a leaf
-   * @param isNotLeaf set to force JTree to view node that is expandable (even
-   * if it has no children)
-   * @param isReadOnly ignores edits from JTree
-   * @param useContentForName causes JTree to use content for display
+   * name = the XML tag name
+   * attrs = an ArrayList of XMLAttr
+   * content = the data within the tags head/tail
+   * isLeaf = set to force JTree to view node as a leaf
+   * isNotLeaf = set to force JTree to view node that is expandable (even if it has no children)
+   * isReadOnly = ignores edits from JTree
    */
   public class XMLTag extends DefaultMutableTreeNode {
     public String name = "";
@@ -87,7 +82,7 @@ public class XMLTree implements TreeModelListener {
     public String uname = "";  //unique name (usually same as name)
     public String content = "";
     /**
-     * Tag is a singleton - no content - ie: <tag attrs.../>
+     * Tag is a singleton
      */
     public boolean isSingle = false;
     public boolean isNotLeaf = false;
@@ -225,7 +220,7 @@ public class XMLTree implements TreeModelListener {
     }
   };
   /**
-   * The header tag.<br> <?xml version="1.0" encoding="UTF-8" ?>
+   * The XML header tag.
    */
   public XMLTag header = new XMLTag();
   /**
@@ -471,16 +466,16 @@ public class XMLTree implements TreeModelListener {
    * Reads the entire tree from a XML file from the InputStream. No callback
    * handler is used.
    *
-   * @param in InputStream to load XML data from
+   * @param is InputStream to load XML data from
    */
-  public boolean read(InputStream in) {
-    return read(in, null);
+  public boolean read(InputStream is) {
+    return read(is, null);
   }
 
   /**
    * Reads the entire tree from a XML file from the InputStream.
    *
-   * @param in InputStream to load XML data from
+   * @param is InputStream to load XML data from
    * @param event callback handler to process each loaded XML tag
    */
   public boolean read(InputStream is, XMLEvent event) {

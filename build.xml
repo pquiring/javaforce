@@ -120,14 +120,6 @@
     <exec command="git clone https://github.com/pquiring/repo"/>
   </target>
 
-  <target name="javadoc" description="generate java documentation">
-    <javadoc sourcepath="src" destdir="javadoc">
-      <classpath>
-        <fileset dir="${lib}" includes="*.jar"/>
-      </classpath>
-    </javadoc>
-  </target>
-
   <!-- sudo ant install -->
   <target name="install" description="install files">
     <copy file="${lib}/javaforce.jar" todir="/usr/share/java"/>
@@ -211,6 +203,7 @@
       <fileset dir="classes" includes="**/*.class"/>
       <fileset dir="${lib}" includes="javaforce-${version}.jar"/>
       <fileset dir="." includes="*.jar"/>
+      <fileset dir="." includes="*.asc"/>
     </delete>
   </target>
 </project>

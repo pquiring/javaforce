@@ -38,11 +38,13 @@
     </zip>
   </target>
 
+  <property environment="environment"/>
+
   <target name="sign" description="generate asc files">
-    <exec command="gpg -ab ${app}-${version}.jar"/>
-    <exec command="gpg -ab ${app}-${version}-sources.jar"/>
-    <exec command="gpg -ab ${app}-${version}-javadoc.jar"/>
-    <exec command="gpg -ab ${app}-${version}.pom"/>
+    <exec command="gpg --no-tty --batch --passphrase ${environment.GPG_PASSPHRASE} -ab ${app}-${version}.jar"/>
+    <exec command="gpg --no-tty --batch --passphrase ${environment.GPG_PASSPHRASE} -ab ${app}-${version}-sources.jar"/>
+    <exec command="gpg --no-tty --batch --passphrase ${environment.GPG_PASSPHRASE} -ab ${app}-${version}-javadoc.jar"/>
+    <exec command="gpg --no-tty --batch --passphrase ${environment.GPG_PASSPHRASE} -ab ${app}-${version}.pom"/>
   </target>
 
   <target name="deploy" depends="src,javadoc,jar" description="generate deployment artifacts">

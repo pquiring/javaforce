@@ -168,8 +168,8 @@ public class LLRP implements LLRPEndpoint {
 
   /** Set GPO port to state.
    *
-   * @param port = GPO port (1-65535)
-   * @parma state = value to write
+   * @param  port = GPO port (1-65535)
+   * @param state = value to write
    */
   public void setGPOState(int port, boolean state) {
     SET_READER_CONFIG msg = new SET_READER_CONFIG();
@@ -192,7 +192,7 @@ public class LLRP implements LLRPEndpoint {
   }
 
   /** Sets Impinj Search Mode (custom parameter)
-   * @mode = 1-6 (see IMPINJ_SEARCH_MODE_...)  (-1 = disabled)
+   * @param mode = 1-6 (see IMPINJ_SEARCH_MODE_...)  (-1 = disabled)
    */
   public void setImpinjSearchMode(int mode) {
     impinj_search_mode = mode;

@@ -3,7 +3,7 @@ package javaforce;
 /** Convert ASCII-8bit to Unicode
  *
  * Converts codes 128-255
- * Used by jfTerm and Hex editors (hex & hexbig)
+ * Used by jfTerm and Hex editors (hex , hexbig)
  *
  * @author pquiring
  *

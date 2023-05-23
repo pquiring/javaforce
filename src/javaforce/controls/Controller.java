@@ -45,7 +45,9 @@ public class Controller {
     this.rate = rate;
   }
 
-  /** Connects to a PLC:
+  /** Connects to a PLC. */
+
+  /*
    *
    * url = "S7:host"
    * url = "MODBUS:host"

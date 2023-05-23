@@ -40,16 +40,15 @@ public class XML {
     public String value = "";
   };
 
-  /**
+  /*
    * XMLTag is one node in the tree that represents one XML element or 'tag'.
    *
-   * @param name the XML tag name
-   * @param attrs an ArrayList of XMLAttr
-   * @param content the data within the tags head/tail
-   * @param isLeaf set to force JTree to view node as a leaf
-   * @param isNotLeaf set to force JTree to view node that is expandable (even
-   * if it has no children)
-   * @param isReadOnly ignores edits from JTree
+   * name = the XML tag name
+   * attrs = an ArrayList of XMLAttr
+   * content = the data within the tags head/tail
+   * isLeaf = set to force JTree to view node as a leaf
+   * isNotLeaf = set to force JTree to view node that is expandable (even if it has no children)
+   * isReadOnly = ignores edits from JTree
    */
   public class XMLTag {
     public String name = "";
@@ -59,7 +58,7 @@ public class XML {
     public ArrayList<XMLTag> children = new ArrayList<>();
 
     /**
-     * Tag is a singleton - no content - ie: <tag attrs.../>
+     * Tag is a singleton
      */
     public boolean isSingle = false;
     public boolean isNotLeaf = false;
@@ -206,7 +205,7 @@ public class XML {
   };
 
   /**
-   * The header tag.<br> <?xml version="1.0" encoding="UTF-8" ?>
+   * The XML header tag.
    */
   public XMLTag header = new XMLTag();
 
@@ -368,7 +367,6 @@ public class XML {
    * Reads the entire tree from a XML file from filename.
    *
    * @param filename name of file to load XML data from
-   * @param event callback handler to process each loaded XML tag
    */
   public boolean read(String filename) {
     FileInputStream fis;
@@ -387,8 +385,7 @@ public class XML {
   /**
    * Reads the entire tree from a XML file from the InputStream.
    *
-   * @param in InputStream to load XML data from
-   * @param event callback handler to process each loaded XML tag
+   * @param is InputStream to load XML data from
    */
   public boolean read(InputStream is) {
     try {

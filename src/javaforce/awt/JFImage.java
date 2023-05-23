@@ -1243,7 +1243,7 @@ public class JFImage extends JComponent implements Icon {
     }
   }
 
-  /** Gets color Layer (RGB) : pixels & bits */
+  /** Gets color Layer (RGB) : pixels AND bits */
   public int[] getLayer(int bits) {
     int[] px = getPixels();
     for(int a=0;a<px.length;a++) {
@@ -1253,7 +1253,7 @@ public class JFImage extends JComponent implements Icon {
     return px;
   }
 
-  /** Puts color Layer (RGB) : (pixels | bits) */
+  /** Puts color Layer (RGB) : (pixels OR bits) */
   public void putLayer(int px[], int bits) {
     if (px.length != buffer.length) return;
     int mask = 0xffffffff - bits;

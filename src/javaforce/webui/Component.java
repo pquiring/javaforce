@@ -453,8 +453,8 @@ public abstract class Component {
   public static final int DRAG_NWSE = 5;
 
   /** Enables dragging a component.
-   * @param drag_type = DRAG_... types (sets cursor type)
-   * @param (x1,y1)-(x2,y2) = dragging bounds (-1=no bounds)
+   * drag_type = DRAG_... types (sets cursor type)
+   * coords = (x1,y1)-(x2,y2) = dragging bounds (-1=no bounds)
    */
   public void enableDragging(int drag_type, int x1, int y1, int x2, int y2) {
     this.x1 = x1;

@@ -5,7 +5,7 @@ package javaforce.ansi.server;
  * @author pquiring
  */
 
-/**
+/*
  *  Layout:
  * ************ Open/Save **************
  * * Filename: [.....................] *
@@ -57,7 +57,7 @@ public class FileDialog implements Dialog {
     listFiles();
   }
 
-  /**
+/*
  *  Layout:
  * ************ Open/Save **************
  * * Filename: [.....................] *

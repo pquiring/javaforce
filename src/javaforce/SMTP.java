@@ -240,8 +240,10 @@ public class SMTP {
    * The terminating \r\n.\r\n will be added.
    *
    * @param msg = email headers + blank line + message body
+   */
 
-   sample msg:
+  /*
+     sample msg:
      From: "First Last" <bob@example.com>
      To: "First Last" <to@example.com>
      Cc: "First Last" <cc@example.com>
@@ -275,7 +277,7 @@ public class SMTP {
   }
 
   /** Sets content type header of body.
-   * @param tpe = "text/plain" or "text/html" (default is unspecified)
+   * @param type = "text/plain" or "text/html" (default is unspecified)
    * Can only be used with enhanced data() method.
    */
   public void setContentType(String type) {

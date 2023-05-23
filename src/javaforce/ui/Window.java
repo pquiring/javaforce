@@ -191,7 +191,7 @@ public class Window {
 
   private static native void nsetpos(long id, int x, int y);
   /** set window position.
-   * @return int[0] = x, int[1] = y
+   * return: int[0] = x, int[1] = y
    */
   public void setPosition(int x,int y) {
     nsetpos(id, x, y);

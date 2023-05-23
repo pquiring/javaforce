@@ -645,7 +645,7 @@ public class Music {
 
   /** Plays one note of an instrument thru a sound channel, returns idx of sound channel used.
    * @param idx = instrument index
-   * @param LR = left/right volume (0.0 - 1.0)
+   * @param volL,volR = left/right volume (0.0 - 1.0)
    * @param note = note to play (midi value)
    * @return idx to use with other Sound channel functions, -1 if can't play now
    */
@@ -674,8 +674,7 @@ public class Music {
 
   /** Plays sample thru a sound channel, returns idx of sound channel used.
    * @param idx = instrument index
-   * @param LR = left/right volume (0.0 - 1.0)
-   * @param note = note to play (midi value)
+   * @param L,R = left/right volume (0.0 - 1.0)
    * @return idx to use with other Sound channel functions, -1 if can't play now
    */
   public synchronized int samplePlay(int idx, float L, float R) {
