@@ -11,7 +11,7 @@
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="jar-mina,jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-sshd-mina,jar-jcifs,jar-javaforce">
+  <target name="depjars" depends="jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-jcifs,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
@@ -20,7 +20,6 @@
     <javac srcdir="${src}" destdir="${build}" deprecation="true" target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false">
       <classpath path="${classpath}"/>
       <classpath path="jcifs.jar"/>
-      <classpath path="mina.jar"/>
       <classpath path="sshd-core.jar"/>
       <classpath path="sshd-common.jar"/>
       <classpath path="sshd-sftp.jar"/>
