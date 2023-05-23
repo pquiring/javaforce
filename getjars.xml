@@ -162,11 +162,16 @@
     <maven name="llrp" path="io/github/pquiring" version="${llrp-version}"/>
   </target>
 
+  <available property="have-llrp-deps" file="${lib}/llrp-${llrp-version}-deps.jar"/>
+  <target name="get-llrp-deps" unless="have-llrp-deps">
+    <get src="https://github.com/pquiring/llrp/releases/download/0.0/llrp-1.0.0.7-deps.jar" dest="${lib}/llrp-${llrp-version}-deps.jar"/>
+  </target>
+
   <available property="have-commons-lang3" file="${lib}/commons-lang3-${commons-lang3-version}.jar"/>
   <target name="get-commons-lang3" unless="have-commons-lang3">
     <maven name="commons-lang3" path="org/apache/commons" version="${commons-lang3-version}"/>
   </target>
 
-  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina1-core,get-mina2-core,get-sshd-core,get-sshd-common,get-sshd-mina,get-sshd-sftp,get-jargs,get-llrp,get-commons-lang3">
+  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina1-core,get-mina2-core,get-sshd-core,get-sshd-common,get-sshd-mina,get-sshd-sftp,get-jargs,get-llrp,get-llrp-deps,get-commons-lang3">
   </target>
 </project>

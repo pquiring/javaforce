@@ -93,8 +93,9 @@
     <attribute name="name"/>
     <attribute name="path"/>
     <attribute name="version"/>
+    <attribute name="suffix" default=""/>
     <sequential>
-      <copy file="${lib}/@{name}-@{version}.jar" tofile="@{path}/@{name}.jar"/>
+      <copy file="${lib}/@{name}-@{version}@{suffix}.jar" tofile="@{path}/@{name}.jar"/>
     </sequential>
   </macrodef>
 
@@ -226,6 +227,10 @@
 
   <target name="jar-llrp">
     <copyjar name="llrp" version="${llrp-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-llrp-deps">
+    <copyjar name="llrp" suffix="-deps" version="${llrp-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-commons-lang3">
