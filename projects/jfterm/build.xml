@@ -15,7 +15,7 @@
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="depnatives,jar-mina,jar-sshd-core,jar-sshd-common,jar-sshd-mina,jar-slf4j-api,jar-slf4j-log4j12,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-javaforce">
+  <target name="depjars" depends="depnatives,jar-sshd-core,jar-sshd-common,jar-slf4j-api,jar-slf4j-log4j12,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">
@@ -24,10 +24,8 @@
     <javac srcdir="${src}" destdir="${build}" deprecation="true" target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false">
       <classpath path="${classpath}"/>
       <classpath>
-        <fileset dir="." includes="mina.jar"/>
         <fileset dir="." includes="sshd-core.jar"/>
         <fileset dir="." includes="sshd-common.jar"/>
-        <fileset dir="." includes="sshd-mina.jar"/>
       </classpath>
     </javac>
   </target>
