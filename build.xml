@@ -48,7 +48,7 @@
 
   <import file="getjars.xml"/>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,getjars,jar-jcifs,jar-bouncycastle,jar-llrp,jar-jdom,jar-mina1-core,jar-sshd-core,jar-sshd-common,jar-sshd-mina,jar-jargs,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12">
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,getjars,jar-jcifs,jar-bouncycastle,jar-llrp,jar-jdom,jar-mina1-core,jar-sshd-core,jar-sshd-common,jar-jargs,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12">
   </target>
 
   <target name="compile" depends="getjars,depjars" description="compile the source">
@@ -56,7 +56,19 @@
     <mkdir dir="${build}"/>
     <javac srcdir="${src}" destdir="${build}" target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false" nativeheaderdir="native/headers">
       <classpath>
-        <fileset dir="${lib}" includes="*.jar"/>
+        <fileset dir="." includes="bouncycastle.jar"/>
+        <fileset dir="." includes="jargs.jar"/>
+        <fileset dir="." includes="jcifs.jar"/>
+        <fileset dir="." includes="jdom.jar"/>
+        <fileset dir="." includes="llrp.jar"/>
+        <fileset dir="." includes="log4j-1.2-api.jar"/>
+        <fileset dir="." includes="log4j-api.jar"/>
+        <fileset dir="." includes="log4j-core.jar"/>
+        <fileset dir="." includes="mina-core.jar"/>
+        <fileset dir="." includes="slf4j-api.jar"/>
+        <fileset dir="." includes="slf4j-log4j12.jar"/>
+        <fileset dir="." includes="sshd-common.jar"/>
+        <fileset dir="." includes="sshd-core.jar"/>
       </classpath>
     </javac>
   </target>
@@ -193,7 +205,6 @@
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="classes" includes="**/*.class"/>
-      <fileset dir="${lib}" includes="javaforce.jar"/>
       <fileset dir="${lib}" includes="javaforce-${version}.jar"/>
       <fileset dir="." includes="*.jar"/>
     </delete>
