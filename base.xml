@@ -196,8 +196,12 @@
     <copyjar name="slf4j-log4j12" version="${slf4j-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-mina">
-    <copyjar name="mina" version="${mina-version}" path="${jarpath}"/>
+  <target name="jar-mina1-core">
+    <copyjar name="mina-core" version="${mina1-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-mina2-core">
+    <copyjar name="mina-core" version="${mina2-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-sshd-core">
