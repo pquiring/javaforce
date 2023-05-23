@@ -25,10 +25,8 @@
       <Component Id="appfiles" Guid="{78D691A9-2F87-4C2C-907C-8A78B826CCDE}" Win64="yes">
         <File Id="jfterm.jar" Source="jfterm.jar" KeyPath="yes"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <File Id="mina.jar" Source="mina.jar"/>
         <File Id="sshdcore.jar" Source="sshd-core.jar"/>
         <File Id="sshdcommon.jar" Source="sshd-common.jar"/>
-        <File Id="sshdmina.jar" Source="sshd-mina.jar"/>
         <File Id="jfterm.exe" Source="jfterm.exe"/>
       </Component>
     </DirectoryRef>

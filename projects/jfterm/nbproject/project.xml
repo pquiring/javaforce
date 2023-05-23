@@ -55,7 +55,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/5">
             <compilation-unit>
                 <package-root>src</package-root>
-                <classpath mode="compile">javaforce.jar;mina.jar;sshd-mina.jar;sshd-core.jar;sshd-common.jar</classpath>
+                <classpath mode="compile">javaforce.jar;sshd-core.jar;sshd-common.jar</classpath>
                 <source-level>11</source-level>
             </compilation-unit>
         </java-data>
