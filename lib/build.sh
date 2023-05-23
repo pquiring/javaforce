@@ -49,7 +49,6 @@ detectos
 
 package jcifs jfcifs 2.1.34
 package derby jfderby 10.16.1.1
-package mina-core jfmina 1.1.7
 package sshd-core jfsshd-core 2.10.0
 package sshd-common jfsshd-common 2.10.0
 package sshd-sftp jfsshd-sftp 2.10.0

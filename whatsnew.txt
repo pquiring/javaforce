@@ -1,5 +1,13 @@
 What's new...
 
+May 23/2023 : JF/40.0
+  - most dependencies are now downloaded thru maven repos
+  - ffmpeg now includes support for dash encoding (see javaforce.utils.TestCamera)
+  - new : javaforce.utils.JNLP - simple JNLP launcher (no Applet support)
+  - jfSOCKS/0.13
+    - fixed timeouts for forwarding features
+  - DNS Server : added caching support
+
 Mar 19/2023 : JF/39.0
   - jfTorrent/0.6
     - added support for DHT and FAST protocols
@@ -7,7 +15,7 @@ Mar 19/2023 : JF/39.0
 
 Mar 12/2023 : JF/38.4
   - fixed RGB order issue with javaforce.ui.Image to match java image loader
-  - more code cleanups  
+  - more code cleanups
 
 Mar 11/2023 : JF/38.3
   - lots of code cleanups
