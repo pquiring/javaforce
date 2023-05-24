@@ -22,7 +22,7 @@
   <property file="${cfg}"/>
 
   <target name="javadoc" description="generate java documentation">
-    <javadoc sourcepath="src" destdir="javadoc">
+    <javadoc sourcepath="src" destdir="javadoc" additionalparam="-Xdoclint:none">
       <classpath>
         <fileset refid="classpath"/>
       </classpath>
