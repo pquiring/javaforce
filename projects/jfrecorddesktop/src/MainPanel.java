@@ -62,6 +62,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     }
     port.setText(Integer.toString(Settings.current.port));
     segmentSecs.setText(Integer.toString(Settings.current.segmentSecs));
+    listMonitorDevices();
     listAudioDevices();
     this.frame = frame;
     mouse = new JFImage();
@@ -113,6 +114,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     port = new javax.swing.JTextField();
     jLabel11 = new javax.swing.JLabel();
     segmentSecs = new javax.swing.JTextField();
+    jLabel12 = new javax.swing.JLabel();
+    monitorDevices = new javax.swing.JComboBox<>();
 
     buttonGroup1.add(audio);
     audio.setSelected(true);
@@ -225,6 +228,8 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
 
     segmentSecs.setText("5");
 
+    jLabel12.setText("Monitor");
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(
@@ -265,11 +270,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(seconds, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel9)))
-            .addGap(0, 0, Short.MAX_VALUE))
-          .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-            .addGap(0, 0, Short.MAX_VALUE)
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jLabel9))
               .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -301,13 +302,22 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
                   .addComponent(jLabel11)
                   .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                   .addComponent(segmentSecs, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)))))
+                .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)))
+            .addGap(0, 0, Short.MAX_VALUE))
+          .addGroup(layout.createSequentialGroup()
+            .addComponent(jLabel12)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(monitorDevices, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         .addContainerGap())
     );
     layout.setVerticalGroup(
       layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(layout.createSequentialGroup()
         .addContainerGap()
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel12)
+          .addComponent(monitorDevices, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(jLabel4)
           .addComponent(audioDevices, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -404,6 +414,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private javax.swing.JLabel jLabel1;
   private javax.swing.JLabel jLabel10;
   private javax.swing.JLabel jLabel11;
+  private javax.swing.JLabel jLabel12;
   private javax.swing.JLabel jLabel13;
   private javax.swing.JLabel jLabel2;
   private javax.swing.JLabel jLabel3;
@@ -413,6 +424,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private javax.swing.JLabel jLabel7;
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
+  private javax.swing.JComboBox<String> monitorDevices;
   private javax.swing.JRadioButton mono;
   private javax.swing.JRadioButton noaudio;
   private javax.swing.JTextField port;
@@ -438,6 +450,16 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private String lockfile;
   private JFLockFile lock = new JFLockFile();
 
+  public void listMonitorDevices() {
+    GraphicsDevice[] monitors = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+    monitorDevices.removeAllItems();
+    monitorDevices.addItem("<default>");
+    for(GraphicsDevice dev : monitors) {
+      String name = dev.getIDstring();
+      monitorDevices.addItem(name);
+    }
+  }
+
   public void listAudioDevices() {
     mic = new AudioInput();
     String list[] = mic.listDevices();
@@ -447,9 +469,23 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     }
   }
 
+  public GraphicsDevice selectedMonitorDevice() {
+    GraphicsDevice[] monitors = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
+    String selected = (String)monitorDevices.getSelectedItem();
+    if (selected.equals("<default>")) {
+      return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+    }
+    for(GraphicsDevice dev : monitors) {
+      String name = dev.getIDstring();
+      if (name.equals(selected)) return dev;
+    }
+    return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+  }
+
   public void setState(boolean state) {
     start.setEnabled(state);
     if (state) start.setText("Start");
+    monitorDevices.setEnabled(state);
     audioDevices.setEnabled(state);
     audio.setEnabled(state);
     noaudio.setEnabled(state);
@@ -592,6 +628,9 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
         case "WEBM": selected_codec = webm; break;
       }
 
+      GraphicsDevice monitor = selectedMonitorDevice();
+      JFLog.log("monitor=" + monitor.getIDstring());
+
       if (doRecord) {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -646,7 +685,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
         if (!create_file()) return;
       }
 
-      JFImage img = JFImage.createScreenCapture();
+      JFImage img = JFImage.createScreenCapture(monitor);
       width = img.getWidth();
       height = img.getHeight();
 
@@ -714,7 +753,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
           continue;
         }
         if (!skip_frame) {
-          img = JFImage.createScreenCapture();
+          img = JFImage.createScreenCapture(monitor);
           if (showMouse) {
             Point mpt = MouseInfo.getPointerInfo().getLocation();
             img.putJFImageBlend(mouse, mpt.x, mpt.y, true);
