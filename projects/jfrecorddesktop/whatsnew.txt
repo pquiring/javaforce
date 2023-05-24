@@ -1,5 +1,8 @@
 Whats new???
 
+May 24, 2023 : version 0.13 released!
+  - new : added monitor selection
+
 Nov 9, 2021 : version 0.12 reelased!
   - new : settings are persistent
   - new : only one instance of app can start
