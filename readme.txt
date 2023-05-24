@@ -3,15 +3,15 @@ JavaForce SDK
 
 Version 40.0
 
-What is it?
+Description
 ===========
-JavaForce is a Java library extending the capabilities of Java.
+JavaForce is a Java library featuring:
 
-The main library includes a VoIP stack and bindings for FFMPEG, OpenGL and Camera.
-
-Custom native launchers for Console/GUI apps and system services.
-
-Tasks to package apps (msi, deb, rpm, etc.)
+  - VoIP stack
+  - native bindings for FFMPEG, OpenGL and Camera
+  - PLC I/O
+  - custom native launchers for console apps, desktop apps and system services
+  - tasks to package apps (msi, deb, rpm, etc.)
 
 Includes many apps built around the library such as jfPhone, jfVideo Creator, jfAudio, jfMusic, etc.
 
