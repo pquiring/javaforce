@@ -15,7 +15,7 @@ JavaForce is a Java library featuring:
 
 Includes many apps built around the library such as jfPhone, jfVideo Creator, jfAudio, jfMusic, etc.
 
-JF is also the core library in the Java infused Linux Operating system : http://jfLinux.sourceforge.net
+JF is also the core library in the Java infused Linux Operating system : https://github.com/pquiring/javaforce/tree/master/linux
 
 JF is also used to create jfCraft, a Minecraft clone : http://pquiring.github.io/jfcraft
 
