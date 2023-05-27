@@ -5,13 +5,13 @@ broken - non-functional apps
 jfapps - Application Management for jfLinux
 jfarchive - Archive Manager for jfLinux
 jfaudio - Audio Editor
-jfbackup - Enterprise Tape Backup Service
+jfbackup - Enterprise Tape Backup Service (Windows only)
 jfbroadcast - VoIP Auto Dialer
-jfburn - CD/DVD Burning
+jfburn - CD/DVD Burning (Linux only)
 jfbusserver - Internal App Messaging Service for jfLinux
 jfcalc - Calculator
 jfcapture - Desktop Capture Utility for jfLinux
-jfconfig - Settings App for jfLinux
+jfconfig - Settings Manager for jfLinux
 jfcontrols - PLC / HMI System
 jfdatalogger - PLC Data Logger
 jfdataloggerplus - PLC Data Logger to SQL
@@ -44,7 +44,6 @@ jfplcbackup - PLC Backup/Restore Utility
 jfprojector - Desktop/Audio Projector
 jfproxy - Proxy Service
 jfqemu - QEMU Manager
-jfrdp - RDP Service (broken)
 jfrecordcamera - Record Camera Utility
 jfrecorddesktop - Record Desktop Utility
 jfremote - VNC/RDP Client
@@ -57,9 +56,5 @@ jftest3d - OpenGL Test Suite
 jftorrent - Torrent Server/Client
 jfupgrade - Package Upgrade Manager for jfLinux
 jfvideo - Video Creator
-jfview - Obsolete Kiosk System (junk)
 jfvnc - VNC Client
-jfweb - Java Web Client (junk)
-jfwebplayer - Experimental Web-Based Media Player (junk)
-jfwebproxy - SOCKS Server using Web Services (junk)
 jfwelcome - Welcome App for jfLinux
