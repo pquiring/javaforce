@@ -239,6 +239,18 @@
     <copyjar name="commons-lang3" version="${commons-lang3-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-batik-all">
+    <copyjar name="batik-all" version="${batik-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-xmlgraphics-commons">
+    <copyjar name="xmlgraphics-commons" version="${xmlgraphics-commons-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-xml-apis-ext">
+    <copyjar name="xml-apis-ext" version="${xml-apis-ext-version}" path="${jarpath}"/>
+  </target>
+
   <target name="check-builds">
     <available file="${project2}.xml" property="project2.present"/>
     <available file="${project3}.xml" property="project3.present"/>

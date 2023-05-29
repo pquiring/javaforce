@@ -1,11 +1,11 @@
-package javaforce;
+package javaforce.awt.priv;
 
 //BMP - M$-Windows Bitmap file format
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.awt.*;
 
 import javaforce.*;
-import javaforce.ui.*;
 
 /**
  * Internal class to provide BMP file support.
@@ -59,7 +59,7 @@ public class bmp {
 
    /*/
 
-  public static int[] load(InputStream in, Dimension size, int index) {
+  public static int[] load(InputStream in, javaforce.ui.Dimension size, int index) {
     int a;
     int clrs;
     int bmp_x, bmp_y, bmp_bpp, bmp_bypp;
@@ -219,7 +219,7 @@ public class bmp {
     return ret;
   }
 
-  public static boolean save24(OutputStream out, int buf[], Dimension size, boolean noheader, boolean icon) {
+  public static boolean save24(OutputStream out, int buf[], javaforce.ui.Dimension size, boolean noheader, boolean icon) {
     int a;
     int slsiz = size.width * 3;
     int dlsiz = (slsiz + 3) & 0xfffffffc;
@@ -289,7 +289,7 @@ public class bmp {
     return true;
   }
 
-  public static boolean save32(OutputStream out, int buf[], Dimension size, boolean noheader, boolean icon) {
+  public static boolean save32(OutputStream out, int buf[], javaforce.ui.Dimension size, boolean noheader, boolean icon) {
 
     int a;
     int slsiz = size.width * 4;

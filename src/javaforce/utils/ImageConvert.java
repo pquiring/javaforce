@@ -6,9 +6,10 @@ import javaforce.awt.*;
 public class ImageConvert {
   public static void main(String[] args) {
     if (args.length < 2) {
-      System.out.println("Usage : ImageConvert filein fileout [index]");
-      System.out.println("Suppports : jpg, png, bmp, ico, icns(output only)");
-      System.out.println("    index : ico index (input only)");
+      System.out.println("Usage : ImageConvert filein fileout [{index} | {width height}]");
+      System.out.println("Suppports : jpg, png, bmp, ico, icns(output only), svg(input only)");
+      System.out.println("    index : ico index (input only) (default = 0)");
+      System.out.println("    width height : svg size (input only) (default = 256 256)");
       return;
     }
     try {
@@ -26,6 +27,16 @@ public class ImageConvert {
         if (!img.loadBMP(args[0], index)) throw new Exception("Load failed");
       } else if (infmt.equals("bmp")) {
         if (!img.loadBMP(args[0], 0)) throw new Exception("Load failed");
+      } else if (infmt.equals("svg")) {
+        int width = 256;
+        if (args.length > 2) {
+          width = JF.atoi(args[2]);
+        }
+        int height = 256;
+        if (args.length > 3) {
+          height = JF.atoi(args[3]);
+        }
+        if (!img.loadSVG(args[0], width, height)) throw new Exception("Load failed");
       } else {
         throw new Exception("Unsupported input type:" + infmt);
       }

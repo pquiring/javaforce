@@ -11,6 +11,7 @@ import javax.imageio.*;
 import javax.imageio.stream.*;
 
 import javaforce.*;
+import javaforce.awt.priv.*;
 
 /**
  * Encapsules BufferedImage to provide more functions.
@@ -476,10 +477,11 @@ public class JFImage extends JComponent implements Icon {
     return true;
   }
 
-  public boolean loadSVG(String filename) {
+  public boolean loadSVG(String filename, int width, int height) {
     try {
-      return loadSVG(new FileInputStream(filename));
+      return loadSVG(new FileInputStream(filename), width, height);
     } catch (Exception e) {
+      JFLog.log(e);
       return false;
     }
   }
@@ -488,19 +490,22 @@ public class JFImage extends JComponent implements Icon {
     try {
       return saveSVG(new FileOutputStream(filename));
     } catch (Exception e) {
+      JFLog.log(e);
       return false;
     }
   }
 
-  public boolean loadSVG(InputStream in) {
+  public boolean loadSVG(InputStream in, int width, int height) {
     int[] buf;
-    javaforce.ui.Dimension size = new javaforce.ui.Dimension(0, 0);
+    javaforce.ui.Dimension size = new javaforce.ui.Dimension(width, height);
     buf = svg.load(in, size);
     try {in.close();} catch (Exception e) {}
     if (buf == null) {
+      JFLog.log("error:buf==null");
       return false;
     }
     if (size.width == 0 || size.height == 0) {
+      JFLog.log("error:width,height=" + size.width + "," + size.height);
       return false;
     }
     setImageSize(size.width, size.height);

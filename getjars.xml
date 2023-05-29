@@ -172,6 +172,21 @@
     <maven name="commons-lang3" path="org/apache/commons" version="${commons-lang3-version}"/>
   </target>
 
-  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina1-core,get-mina2-core,get-sshd-core,get-sshd-common,get-sshd-mina,get-sshd-sftp,get-jargs,get-llrp,get-llrp-deps,get-commons-lang3">
+  <available property="have-batik-all" file="${lib}/batik-all-${batik-version}.jar"/>
+  <target name="get-batik-all" unless="have-batik-all">
+    <maven name="batik-all" path="org/apache/xmlgraphics" version="${batik-version}"/>
+  </target>
+
+  <available property="have-xmlgraphics-commons" file="${lib}/xmlgraphics-commons-${xmlgraphics-commons-version}.jar"/>
+  <target name="get-xmlgraphics-commons" unless="have-xmlgraphics-commons">
+    <maven name="xmlgraphics-commons" path="org/apache/xmlgraphics" version="${xmlgraphics-commons-version}"/>
+  </target>
+
+  <available property="have-xml-apis-ext" file="${lib}/xml-apis-ext-${xml-apis-ext-version}.jar"/>
+  <target name="get-xml-apis-ext" unless="have-xml-apis-ext">
+    <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
+  </target>
+
+  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina1-core,get-mina2-core,get-sshd-core,get-sshd-common,get-sshd-mina,get-sshd-sftp,get-jargs,get-llrp,get-llrp-deps,get-commons-lang3,get-batik-all,get-xmlgraphics-commons,get-xml-apis-ext">
   </target>
 </project>
