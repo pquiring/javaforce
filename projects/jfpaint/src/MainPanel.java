@@ -751,7 +751,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   private void scaleSizeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scaleSizeActionPerformed
     GetXY dialog = new GetXY(frame, true, "Scale Image (percentage)", 100, 100);
     dialog.setVisible(true);
-    if (dialog.w <= 0) return;
+    if (!dialog.accepted()) return;
     PaintCanvas pc = imageTabs.get(getidx()).pc;
     int orgLayer = pc.getColorLayer();
     if (orgLayer != 0) {
@@ -780,7 +780,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     int oy = pc.getUnscaledHeight();
     GetXY dialog = new GetXY(frame, true, "Set Image Size (pixels)", ox, oy);
     dialog.setVisible(true);
-    if ((dialog.w <= 0) || (dialog.h <= 0)) return;
+    if (!dialog.accepted()) return;
     changeSize(pc, dialog.w - ox, dialog.h - oy, false);
   }//GEN-LAST:event_changeSizeActionPerformed
 
@@ -788,7 +788,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
     if (round.isSelected()) {
       GetXY getarcs = new GetXY(null, true, "Get Arc X/Y", arcX, arcY);
       getarcs.setVisible(true);
-      if (getarcs.w == -1) {
+      if (!getarcs.accepted()) {
         round.setSelected(false);
         return;
       }
@@ -1233,9 +1233,13 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
 */
     else if (format.equals("bmp"))
       result = img.loadBMP(filename, 0);
-    else if (format.equals("svg"))
-      result = img.loadSVG(filename);
-    else if (format.equals("jpg"))
+    else if (format.equals("svg")) {
+      GetXY size = new GetXY(null, true, "Input SVG dimensions", 256, 256);
+      size.setVisible(true);
+      if (!size.accepted) return false;
+      if (size.w <= 0 || size.h <= 0) return false;
+      result = img.loadSVG(filename, size.w, size.h);
+    } else if (format.equals("jpg"))
       result = img.loadJPG(filename);
     else if (format.equals("xpm"))
       result = img.loadXPM(filename);
@@ -1288,7 +1292,7 @@ public class MainPanel extends javax.swing.JPanel implements MouseListener, Mous
   public void newTab() {
     GetXY dialog = new GetXY(frame, true, "New Image (pixels)", init_x, init_y);
     dialog.setVisible(true);
-    if (dialog.w == -1) return;
+    if (!dialog.accepted()) return;
     int idx = getidx();
     ImageTab tab = imageTabs.get(idx);
     if (!(tab.filename.toString().equals("untitled") && imageTabs.get(idx).pc.dirty == false)) {

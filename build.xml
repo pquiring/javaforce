@@ -173,7 +173,7 @@
   </target>
 
   <target name="jre-base-desktop" description="build JRE for bundled JRE builds with desktop (swing) support">
-    <exec command="jlink --module-path ${java.home}/jmods --add-modules java.base,java.desktop,java.sql,jdk.crypto.ec,jdk.crypto.cryptoki,java.security.jgss --output jre_base_desktop"/>
+    <exec command="jlink --module-path ${java.home}/jmods --add-modules java.base,java.desktop,java.sql,jdk.crypto.ec,jdk.crypto.cryptoki,java.security.jgss,jdk.xml.dom --output jre_base_desktop"/>
     <delete>
       <fileset dir="jre_base_desktop/bin" includes="java**.exe"/>
     </delete>

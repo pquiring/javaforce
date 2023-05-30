@@ -11,7 +11,7 @@
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="jar-twelvemonkeys-imageio-tiff,jar-filters,jar-javaforce">
+  <target name="depjars" depends="jar-twelvemonkeys-imageio-tiff,jar-filters,jar-javaforce,jar-batik-all,jar-xmlgraphics-commons,jar-xml-apis-ext">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

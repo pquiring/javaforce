@@ -113,12 +113,14 @@ public class GetXY extends javax.swing.JDialog {
   private void okActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okActionPerformed
     w = Integer.valueOf(width.getText());
     h = Integer.valueOf(height.getText());
+    accepted = true;
     setVisible(false);
   }//GEN-LAST:event_okActionPerformed
 
   private void cancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelActionPerformed
     w = -1;
     h = -1;
+    accepted = false;
     setVisible(false);
   }//GEN-LAST:event_cancelActionPerformed
 
@@ -132,6 +134,7 @@ public class GetXY extends javax.swing.JDialog {
     // End of variables declaration//GEN-END:variables
 
   public int w,h;
+  public boolean accepted;
 
   private void setPosition() {
     Rectangle s = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
@@ -139,4 +142,7 @@ public class GetXY extends javax.swing.JDialog {
     setLocation(s.width/2 - d.width/2, s.height/2 - (d.height/2));
   }
 
+  public boolean accepted() {
+    return accepted;
+  }
 }

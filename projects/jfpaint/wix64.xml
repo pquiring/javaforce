@@ -32,6 +32,9 @@
         <File Id="imageiocore.jar" Source="imageio-core.jar"/>
         <File Id="imageiometadata.jar" Source="imageio-metadata.jar"/>
         <File Id="imageiotiff.jar" Source="imageio-tiff.jar"/>
+        <File Id="batikall.jar" Source="batik-all.jar"/>
+        <File Id="xmlgraphicscommons.jar" Source="xmlgraphics-commons.jar"/>
+        <File Id="xmlapisext.jar" Source="xml-apis-ext.jar"/>
         <File Id="jfpaint.exe" Source="jfpaint.exe"/>
       </Component>
     </DirectoryRef>
