@@ -25,7 +25,7 @@ import javaforce.gl.*;
 
 public class MainPanel extends javax.swing.JPanel implements MouseListener, MouseMotionListener, KeyListener, KeyEventDispatcher, ActionListener {
 
-  public static String version = "0.26";
+  public static String version = "0.27";
 
   /**
    * Creates new form PaintPanel

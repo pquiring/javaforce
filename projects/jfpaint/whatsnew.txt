@@ -1,5 +1,8 @@
 Whatsnew ...
 
+May 30, 2023 - v0.27 released!
+  - new : added support for tiff,svg files
+
 Jun 21, 2022 - v0.26 released!
   - new : added stamp function and multiple clipboards (CTRL+#)
 
