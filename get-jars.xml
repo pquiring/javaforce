@@ -1,4 +1,4 @@
-<project>
+<project xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!-- get java dependancies -->
 
   <available property="have-twelvemonkeys-common-lang" file="${lib}/common-lang-${twelvemonkeys-version}.jar"/>

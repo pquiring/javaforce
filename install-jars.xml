@@ -1,4 +1,4 @@
-<project>
+<project xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!--install dependancies to project folder : these will remove the "version" from the jar making project builds easier-->
 
   <target name="jar-javaforce">

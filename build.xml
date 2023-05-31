@@ -1,4 +1,4 @@
-<project name="javaforce" default="jar" basedir=".">
+<project name="javaforce" default="jar" basedir="." xmlns:if="ant:if" xmlns:unless="ant:unless">
   <description>JavaForce SDK</description>
   <!-- set global properties for this build -->
   <property name="app" value="javaforce"/>
