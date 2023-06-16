@@ -135,8 +135,11 @@ JavaForce includes some support for building AOT executables using GraalVM (http
 To build a project using Graal you need to add a property to the build.xml
   <property name="graal" value="true"/>
 Ant Tasks:
-  graal : build Graal native Library
-  graalagent : execute application to build native configuration files (sometimes not necessary)
+  graal
+    - build Graal native Library
+  graalagent
+    - execute application to build native configuration files
+    - these config files are stored in META-INF/native-image and must be included in the application jar file
 The ant task 'executable' will generate an executable that will look for the Graal Library before looking for a JVM.
 Library name should be the full class name where main() is defined.
   ie: javaforce.utils.CopyPath.dll
