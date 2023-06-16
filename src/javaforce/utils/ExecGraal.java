@@ -12,7 +12,8 @@ import javaforce.*;
 
 public class ExecGraal implements ShellProcessListener {
   private static String json_path = "META-INF/native-image";
-  private static boolean use_agent_config = true;
+  private static boolean use_javaforce_config = true;  //graal needs to be told about these
+  private static boolean use_agent_config = false;  //these should be loaded into the jar file
   public static void main(String[] args) {
     if (args.length != 2) {
       System.out.println("Usage:ExecGraal CLASSPATH MAINCLASS");
@@ -42,11 +43,15 @@ public class ExecGraal implements ShellProcessListener {
 
     //add JF config files
 
-    JFLog.log("Using:META-INF/native-image/javaforce-jni-config.json");
-    cmd.add("-H:JNIConfigurationFiles=" + json_path + "/javaforce-jni-config.json");
+    if (use_javaforce_config) {
+      JFLog.log("Using:META-INF/native-image/javaforce-jni-config.json");
+      cmd.add("-H:JNIConfigurationFiles=" + json_path + "/javaforce-jni-config.json");
+    }
 
-    JFLog.log("Using:META-INF/native-image/javaforce-resource-config.json");
-    cmd.add("-H:ResourceConfigurationFiles=" + json_path + "/javaforce-resource-config.json");
+    if (use_javaforce_config) {
+      JFLog.log("Using:META-INF/native-image/javaforce-resource-config.json");
+      cmd.add("-H:ResourceConfigurationFiles=" + json_path + "/javaforce-resource-config.json");
+    }
 
     //add graal agent config files
 
