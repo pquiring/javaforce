@@ -10,29 +10,45 @@ package javaforce.awt;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
+import javax.swing.*;
 
 import javaforce.*;
 
 public class JFIcon extends TimerTask {
-  private Timer timer;
+  private java.util.Timer timer;
   private double scaling;
   private int width,height;
   private SystemTray tray;
   private TrayIcon icon;
   private PopupMenu menu;
+  private JPopupMenu jmenu;
   private JFImage image;
   private JFImage scaled;
   private ActionListener listener;
   private String tooltip;
 
   public boolean create(JFImage image, PopupMenu menu, ActionListener listener, String tooltip) {
-    timer = new Timer();
+    timer = new java.util.Timer();
     timer.schedule(this, 1000, 1000);
     scaling = JFAWT.getScaling();
     width = JFAWT.getWidth();
     height = JFAWT.getHeight();
     this.image = image;
     this.menu = menu;
+    this.listener = listener;
+    this.tooltip = tooltip;
+    create();
+    return true;
+  }
+
+  public boolean create(JFImage image, JPopupMenu menu, ActionListener listener, String tooltip) {
+    timer = new java.util.Timer();
+    timer.schedule(this, 1000, 1000);
+    scaling = JFAWT.getScaling();
+    width = JFAWT.getWidth();
+    height = JFAWT.getHeight();
+    this.image = image;
+    this.jmenu = menu;
     this.listener = listener;
     this.tooltip = tooltip;
     create();
@@ -81,6 +97,23 @@ public class JFIcon extends TimerTask {
     icon = new TrayIcon(scaled.getImage(), tooltip, menu);
     icon.setImageAutoSize(true);
     icon.addActionListener(listener);
+    if (jmenu != null) {
+      icon.addMouseListener(new MouseAdapter() {
+        public void mouseReleased(MouseEvent e) {
+          maybeShowPopup(e);
+        }
+        public void mousePressed(MouseEvent e) {
+          maybeShowPopup(e);
+        }
+        private void maybeShowPopup(MouseEvent e) {
+          if (e.isPopupTrigger()) {
+            jmenu.setLocation(e.getX(), e.getY());
+            jmenu.setInvoker(jmenu);
+            jmenu.setVisible(true);
+          }
+        }
+      });
+    }
     try { tray.add(icon); } catch (Exception e) { JFLog.log(e); }
   }
 
