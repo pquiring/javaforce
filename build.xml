@@ -88,8 +88,8 @@
         <include name="**/*.css"/>
         <include name="**/*.ttf"/>
       </fileset>
-      <fileset dir="${java.home}/lib">
-        <include name="*.bfc"/>
+      <fileset dir=".">
+        <include name="META-INF/**/*"/>
       </fileset>
     </jar>
     <copy file="javaforce.jar" tofile="${lib}/javaforce-${version}.jar"/>

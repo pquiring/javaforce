@@ -1,0 +1,21 @@
+[
+  { "name" : "javaforce.JF", "methods": [ {"name" : "expandArgs"} ]},
+  { "name" : "PasswordsApp", "allDeclaredMethods" : true},
+  { "name" : "javaforce.ui.Window", "allDeclaredMethods" : true},
+  { "name" : "javaforce.ui.Font", "allDeclaredConstructors" : true},
+  { "name" : "javaforce.ui.Image", "allDeclaredConstructors" : true},
+  { "name" : "javaforce.gl.GL", "allDeclaredConstructors" : true, "allDeclaredMethods" : true},
+  { "name" : "javaforce.media.MediaIO", "allDeclaredMethods" : true},
+  { "name" : "javaforce.media.MediaCoder", "allDeclaredConstructors" : true, "fields" : [ { "name" : "ctx" } ]},
+  { "name" : "javaforce.media.Camera", "allDeclaredConstructors" : true},
+  { "name" : "javaforce.media.MediaDecoder", "allDeclaredConstructors" : true},
+  { "name" : "javaforce.media.MediaVideoDecoder", "allDeclaredConstructors" : true},
+  { "name" : "javaforce.media.MediaEncoder", "allDeclaredConstructors" : true},
+  { "name" : "javaforce.media.VideoBuffer", "allDeclaredMethods" : true},
+  { "name" : "javaforce.net.PacketCapture", "allDeclaredConstructors" : true},
+  { "name" : "javaforce.jni.JFNative", "allDeclaredConstructors" : true},
+  { "name" : "javaforce.jni.WinNative", "allDeclaredConstructors" : true},
+  { "name" : "javaforce.jni.LnxNative", "allDeclaredConstructors" : true},
+  { "name" : "javaforce.jni.Startup", "allDeclaredConstructors" : true},
+  { "name" : "javaforce.controls.ni.DAQmx", "allDeclaredConstructors" : true}
+]

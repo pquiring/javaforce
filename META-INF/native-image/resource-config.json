@@ -1,0 +1,11 @@
+{
+  "resources": { 
+    "includes": [ 
+      {"pattern": "javaforce/webui/static/.*"},
+      {"pattern": "javaforce/icons/.*"}, 
+      {"pattern": "javaforce/icons/16/.*"}, 
+      {"pattern": "javaforce/icons/32/.*"}, 
+      {"pattern": ".*[.]ttf"} 
+    ]
+  }
+}
