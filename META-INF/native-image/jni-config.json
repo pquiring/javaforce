@@ -1,6 +1,5 @@
 [
   { "name" : "javaforce.JF", "methods": [ {"name" : "expandArgs"} ]},
-  { "name" : "PasswordsApp", "allDeclaredMethods" : true},
   { "name" : "javaforce.ui.Window", "allDeclaredMethods" : true},
   { "name" : "javaforce.ui.Font", "allDeclaredConstructors" : true},
   { "name" : "javaforce.ui.Image", "allDeclaredConstructors" : true},
