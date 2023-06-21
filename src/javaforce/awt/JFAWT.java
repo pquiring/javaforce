@@ -415,12 +415,23 @@ public class JFAWT {
   /** Loads font config for graal apps. */
   public static void loadFontConfig() {
     try {
-      InputStream fontconfig = Class.forName("javaforce.JFAWT").getClassLoader().getResourceAsStream("fontconfig.bfc");
+      InputStream fontconfig = Class.forName("javaforce.awt.JFAWT").getClassLoader().getResourceAsStream("fontconfig.bfc");
       Class<?> fontconfiguration = Class.forName("sun.awt.FontConfiguration");
       Method mid = fontconfiguration.getMethod("loadBinary", new Class[] {InputStream.class});
       mid.invoke(null, fontconfig);
     } catch (Exception e) {
       e.printStackTrace();
+    }
+  }
+
+  /** List available fonts. */
+  public static void listFonts() {
+    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+
+    Font[] allFonts = ge.getAllFonts();
+
+    for (Font font : allFonts) {
+      System.out.println(font.getFontName(Locale.US));
     }
   }
 
