@@ -154,7 +154,7 @@
     <ant antfile="${project5}.xml" target="graal" inheritAll="false"/>
   </target>
 
-  <target name="graal" if="graal" depends="jar,depjars,graal2,graal3,graal4,graal5" description="generate aot library">
+  <target name="graal" depends="jar,depjars,graal2,graal3,graal4,graal5" description="generate aot library">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecGraal" fork="true">
       <arg value="${CLASSPATH}"/>
       <arg value="${MAINCLASS}"/>
@@ -179,7 +179,7 @@
 
   <!-- Windows targets -->
 
-  <target name="msi" depends="executable,graal" description="create msi installer file 64bit">
+  <target name="msi" depends="executable" description="create msi installer file 64bit">
     <sequential>
       <exec command="candle -ext WixFirewallExtension -ext WixUtilExtension ${candle_extra} -o wix.obj wix64.xml"/>
       <java classpath="${home}/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
@@ -238,7 +238,7 @@
     <ant antfile="${project5}.xml" target="installapp" inheritAll="false"/>
   </target>
 
-  <target name="installapp" depends="executable,graal,installapp2,installapp3,installapp4,installapp5">
+  <target name="installapp" depends="executable,installapp2,installapp3,installapp4,installapp5">
     <sequential>
       <exec command="sudo cp ${app}.bin /usr/bin/${app}"/>
       <exec command="sudo ant -f ${ant.file} install"/>
@@ -271,7 +271,7 @@
 
   <!-- MacOSX targets -->
 
-  <target name="dmg" depends="executable,graal" description="create dmg package">
+  <target name="dmg" depends="executable" description="create dmg package">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenDMG" fork="true">
       <arg value="${app}"/>
       <arg value="${app}-${version}.dmg"/>
