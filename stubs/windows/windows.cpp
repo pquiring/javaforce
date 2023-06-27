@@ -44,6 +44,7 @@ HKEY key, subkey;
 int type;
 char version[MAX_PATH];
 char javahome[MAX_PATH];
+char expanded[MAX_PATH];
 char dll[MAX_PATH];
 int size = MAX_PATH;
 HMODULE jvm_dll;
@@ -237,7 +238,7 @@ JavaVMInitArgs *BuildArgs() {
     opts[nOpts++] = MakeString("-Djava.home=%s", exepath);
   } else {
     opts[nOpts++] = CreateClassPath();
-  } 
+  }
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
     while (x != NULL) {
@@ -583,6 +584,12 @@ int try_jvm() {
         }
       }
     }
+  }
+
+  if (strchr(javahome, '%') != NULL) {
+    //expand environment strings
+    ExpandEnvironmentStrings(javahome, expanded, MAX_PATH);
+    strcpy(javahome, expanded);
   }
 
   strcpy(dll, javahome);
