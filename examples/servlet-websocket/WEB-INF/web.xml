@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4">
+
+  <servlet>
+    <servlet-name>chat</servlet-name>
+    <servlet-class>code.Chat</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>chat</servlet-name>
+    <url-pattern>/chat</url-pattern>
+  </servlet-mapping>
+
+  <session-config>
+    <session-timeout>
+      30
+    </session-timeout>
+  </session-config>
+  <welcome-file-list>
+    <welcome-file>
+      index.html
+    </welcome-file>
+  </welcome-file-list>
+</web-app>
