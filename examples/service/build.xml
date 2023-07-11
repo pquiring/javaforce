@@ -1,0 +1,37 @@
+<project name="service" default="jar" basedir=".">
+  <description>test</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="service"/>
+  <property name="apptype" value="s"/>
+  <property name="home" location="../.."/>
+  <property name="src" location="src"/>
+  <property name="build" location="classes"/>
+  <property name="classpath" location="javaforce.jar"/>
+  <property name="version" value="0.1"/>
+  <property name="jre" location="${home}/jre_base"/>
+
+  <import file="${home}/base.xml"/>
+
+  <target name="depjars" depends="depnatives,jar-mssql-jdbc,jar-javaforce">
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" debug="true" target="${jdkver}" source="${jdkver}" includeantruntime="false">
+      <classpath path="javaforce.jar"/>
+    </javac>
+  </target>
+
+  <target name="jar" depends="compile" description="build jar file">
+    <!-- Build jar file from class files -->
+    <jar destfile="service.jar" includes="**/*.class" basedir="${build}"/>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.jar"/>
+    </delete>
+  </target>
+</project>
