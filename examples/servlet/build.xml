@@ -1,0 +1,55 @@
+<project name="servlet" default="war" basedir=".">
+  <description>servlet</description>
+  <!-- set global properties for this build -->
+  <property name="home" location="../.."/>
+  <property name="src" location="src"/>
+  <property name="build" location="WEB-INF/classes"/>
+  <!-- this is sloppy to put dist in "." because it makes creating war difficult -->
+  <property name="dist" location="."/>
+  <property name="jdkver" value="17"/>
+
+  <import file="${home}/base.xml"/>
+
+  <target name="depjars" depends="jar-mssql-jdbc,jar-servlet-api,jar-javaforce">
+    <copy file="javaforce.jar" todir="WEB-INF/lib" />
+    <copy file="mssql-jdbc.jar" todir="WEB-INF/lib" />
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <mkdir dir="${build}"/>
+    <javac srcdir="${src}" destdir="${build}" debug="true" target="${jdkver}" source="${jdkver}" includeantruntime="false">
+      <classpath>
+        <pathelement location="servlet-api.jar"/>
+        <fileset dir="WEB-INF/lib">
+          <include name="*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="jar"/>
+
+  <target name="war" depends="compile" description="build war file">
+    <!-- Build war file from class files -->
+    <war destfile="servlet.war" webxml="WEB-INF/web.xml">
+      <fileset dir="${dist}">
+        <include name="WEB-INF/**/*.class"/>
+        <include name="WEB-INF/**/*.jar"/>
+        <include name="WEB-INF/**/*.dll"/>
+        <include name="META-INF/context.xml"/>
+        <!-- include any static content -->
+        <include name="**/*.png"/>
+        <include name="**/*.html"/>
+        <include name="**/*.js"/>
+      </fileset>
+    </war>
+  </target>
+
+  <target name="clean" description="deletes compiled files">
+    <delete>
+      <fileset dir="." includes="**/*.class"/>
+      <fileset dir="." includes="**/*.war"/>
+    </delete>
+  </target>
+</project>
