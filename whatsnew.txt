@@ -1,5 +1,13 @@
 What's new...
 
+July 12/2023 : JF/41.0
+  - added support for svg using batik
+    - jfPaint/0.27
+  - jfRecordDesktop/0.13
+    - added monitor selection
+  - graal support improvements
+  - added examples
+
 May 23/2023 : JF/40.0
   - most dependencies are now downloaded thru maven repos
   - ffmpeg now includes support for dash encoding (see javaforce.utils.TestCamera)
