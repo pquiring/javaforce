@@ -498,6 +498,7 @@ public class POP3 extends Thread {
               cos.write(buf, 0, read);
               sent += read;
             }
+            fis.close();
             cos.write(".\r\n".getBytes());
           } catch (Exception e) {
             cos.write("550 error\r\n".getBytes());
