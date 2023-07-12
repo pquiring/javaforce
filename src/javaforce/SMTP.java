@@ -94,7 +94,7 @@ public class SMTP {
     return false;
   }
 
-  /** Disconnect from SMPT Server. */
+  /** Disconnect from SMTP Server. */
   public void disconnect() throws Exception {
     if (s != null) {
       s.close();
