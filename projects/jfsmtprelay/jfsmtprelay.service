@@ -1,0 +1,10 @@
+[Unit]
+Description=JavaForce SMTP Relay Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfsmtprelaysvc
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

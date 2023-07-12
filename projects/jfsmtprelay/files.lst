@@ -1,0 +1,5 @@
+/usr/bin/jfsmtprelay
+/usr/bin/jfsmtprelaysvc
+/lib/systemd/system/jfsmtprelay.service
+
+
