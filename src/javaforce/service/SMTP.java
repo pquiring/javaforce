@@ -40,8 +40,10 @@ public class SMTP extends Thread {
     } else {
       path.append("/var/jfsmtp/mail");
     }
-    path.append("/");
-    path.append(user);
+    if (!digest) {
+      path.append("/");
+      path.append(user);
+    }
     String mail = path.toString();
     new File(mail).mkdirs();
     return mail;
@@ -67,6 +69,7 @@ public class SMTP extends Thread {
   private static IP4Port bind = new IP4Port();
   private static ArrayList<Integer> ports = new ArrayList<>();
   private static ArrayList<Integer> ssl_ports = new ArrayList<>();
+  private static boolean digest = false;  //messages are stored in global mailbox for retrieval by SMTPRelay agent
 
   public SMTP() {
   }
@@ -145,7 +148,8 @@ public class SMTP extends Thread {
     + "#bind=192.168.100.2\n"
     + "#domain=example.com\n"
     + "#ldap_server=192.168.200.2\n"
-    + "#account=user:pass\n";
+    + "#account=user:pass\n"
+    + "#digest=true\n";  //digest mode (see SMTPRelay service)
 
   private void loadConfig() {
     JFLog.log("loadConfig");
@@ -398,6 +402,8 @@ public class SMTP extends Thread {
                 cos.write("235 Login successful\r\n".getBytes());
               } else {
                 cos.write("501 Login failed\r\n".getBytes());
+                close();
+                return;
               }
               break;
             }
@@ -480,7 +486,7 @@ public class SMTP extends Thread {
       StringBuilder sb = new StringBuilder();
       sb.append("MAIL FROM:<" + from + ">\r\n");
       for(String t : to) {
-        sb.append("RCPT TO:<" + from + ">\r\n");
+        sb.append("RCPT TO:<" + t + ">\r\n");
       }
       return sb.toString();
     }
