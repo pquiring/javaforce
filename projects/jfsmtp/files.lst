@@ -1,0 +1,5 @@
+/usr/bin/jfsmtp
+/usr/bin/jfsmtpsvc
+/lib/systemd/system/jfsmtp.service
+
+

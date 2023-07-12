@@ -1,0 +1,10 @@
+[Unit]
+Description=JavaForce SMTP Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfsmtpsvc
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
