@@ -58,6 +58,8 @@ public class SMTPApp extends javax.swing.JFrame {
     config = new javax.swing.JTextArea();
     jLabel1 = new javax.swing.JLabel();
     jButton1 = new javax.swing.JButton();
+    gen_keys = new javax.swing.JButton();
+    help = new javax.swing.JButton();
 
     setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
     setTitle("SMTP Server");
@@ -85,6 +87,20 @@ public class SMTPApp extends javax.swing.JFrame {
       }
     });
 
+    gen_keys.setText("Generate SSL Key");
+    gen_keys.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        gen_keysActionPerformed(evt);
+      }
+    });
+
+    help.setText("Help");
+    help.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        helpActionPerformed(evt);
+      }
+    });
+
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
     getContentPane().setLayout(layout);
     layout.setHorizontalGroup(
@@ -95,7 +111,11 @@ public class SMTPApp extends javax.swing.JFrame {
           .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 583, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(jButton1)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+            .addComponent(gen_keys)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(help)
+            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
             .addComponent(save))
           .addGroup(layout.createSequentialGroup()
             .addComponent(jLabel1)
@@ -108,11 +128,13 @@ public class SMTPApp extends javax.swing.JFrame {
         .addContainerGap()
         .addComponent(jLabel1)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 424, Short.MAX_VALUE)
+        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE)
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(save)
-          .addComponent(jButton1))
+          .addComponent(jButton1)
+          .addComponent(gen_keys)
+          .addComponent(help))
         .addContainerGap())
     );
 
@@ -129,6 +151,14 @@ public class SMTPApp extends javax.swing.JFrame {
     showViewLog();
   }//GEN-LAST:event_jButton1ActionPerformed
 
+  private void gen_keysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gen_keysActionPerformed
+    genKeys();
+  }//GEN-LAST:event_gen_keysActionPerformed
+
+  private void helpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpActionPerformed
+    showHelp();
+  }//GEN-LAST:event_helpActionPerformed
+
   /**
    * @param args the command line arguments
    */
@@ -143,6 +173,8 @@ public class SMTPApp extends javax.swing.JFrame {
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JTextArea config;
+  private javax.swing.JButton gen_keys;
+  private javax.swing.JButton help;
   private javax.swing.JButton jButton1;
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
@@ -173,5 +205,24 @@ public class SMTPApp extends javax.swing.JFrame {
         }
       });
     }
+    public void getKeys(String status) {
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          if (status.equals("OK")) {
+            JFAWT.showMessage("GenKeys", "OK");
+          } else {
+            JFAWT.showError("GenKeys", "Error");
+          }
+        }
+      });
+    }
+  }
+
+  private void genKeys() {
+    busClient.call(SOCKS.busPack, "genKeys", "\"" + busClient.pack + "\"");
+  }
+
+  private void showHelp() {
+    JFAWT.openURL("http://jfsmtp.sf.net/help.html");
   }
 }
