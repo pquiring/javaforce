@@ -392,7 +392,7 @@ public class POP3 extends Thread {
         }
         case "APOP": {
           String[] c_u_p = cmd.split(" ", 3);
-          String user = c_u_p[1];
+          user = c_u_p[1];
           String pass = c_u_p[2];  //MD5???
           if (login(user, pass, true)) {
             cos.write("235 Login successful\r\n".getBytes());
@@ -401,7 +401,7 @@ public class POP3 extends Thread {
             close();
             return;
           }
-          mailbox = getMailboxFolder(user);
+          setupMailbox();
           break;
         }
         case "AUTH": {
@@ -410,7 +410,7 @@ public class POP3 extends Thread {
             case "LOGIN": {  //plain text
               cos.write("334 Send username\r\n".getBytes());
               String user_base64 = readln();
-              String user = new String(javaforce.Base64.decode(user_base64.getBytes()));
+              user = new String(javaforce.Base64.decode(user_base64.getBytes()));
               cos.write("334 Send password\r\n".getBytes());
               String pass_base64 = readln();
               String pass = new String(javaforce.Base64.decode(pass_base64.getBytes()));
@@ -421,8 +421,7 @@ public class POP3 extends Thread {
                 close();
                 return;
               }
-              mailbox = getMailboxFolder(user);
-              files = new File(mailbox).listFiles();
+              setupMailbox();
               break;
             }
             default: {
@@ -450,8 +449,7 @@ public class POP3 extends Thread {
             close();
             return;
           }
-          mailbox = getMailboxFolder(user);
-          files = new File(mailbox).listFiles();
+          setupMailbox();
           break;
         }
         case "STARTTLS": {
@@ -547,13 +545,20 @@ public class POP3 extends Thread {
       files = null;
       to.clear();
     }
+    private void setupMailbox() {
+      mailbox = getMailboxFolder(user);
+      listFiles();
+    }
+    private void listFiles() {
+      files = new File(mailbox).listFiles();
+    }
     private String stat() {
       if (mailbox == null) {
         return "505 Mailbox not ready";
       }
       int cnt = 0;
       int size = 0;
-      files = new File(mailbox).listFiles();
+      listFiles();
       for(File file : files) {
         if (!file.getName().endsWith(".msg")) continue;
         cnt++;
@@ -575,7 +580,7 @@ public class POP3 extends Thread {
       int size = 0;
       StringBuilder list = new StringBuilder();
       int idx = 1;
-      files = new File(mailbox).listFiles();
+      listFiles();
       for(File file : files) {
         if (!file.getName().endsWith(".msg")) continue;
         cnt++;

@@ -6,8 +6,6 @@ package javaforce.service;
  *
  * Supports 25, 465(ssl), 587(tls)
  *
- * There is currently no way to retrieve the email.
- * This is primarily designed to be integrated with another service.
  * See SMTPEvents
  *
  * @author pquiring
