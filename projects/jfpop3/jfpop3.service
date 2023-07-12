@@ -1,0 +1,10 @@
+[Unit]
+Description=JavaForce POP3 Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfpop3svc
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
