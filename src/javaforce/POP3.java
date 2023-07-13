@@ -224,6 +224,26 @@ public class POP3 {
     return data;
   }
 
+  /** Get message */
+  public void get(int idx, OutputStream os) throws Exception {
+    cmd("RETR " + idx);
+    getResponse();
+    if (!response.startsWith("+OK")) {
+      throw new Exception("RETR failed!");
+    }
+    String[] p = response.split(" ", 3);
+    int length = Integer.valueOf(p[1]);
+    byte[] buf = new byte[bufsiz];
+    int total = 0;
+    while (total < length) {
+      int read = is.read(buf);
+      if (read < 0) throw new Exception("read error");
+      os.write(buf, 0, read);
+      total += read;
+    }
+    getResponse();  //"."
+  }
+
   /** Delete message on server. */
   public boolean delete(int idx) throws Exception {
     cmd("DELE " + idx);
