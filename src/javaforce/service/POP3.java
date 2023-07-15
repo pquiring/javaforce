@@ -368,12 +368,12 @@ public class POP3 extends Thread {
         JFLog.log("Session start");
         cis = c.getInputStream();
         cos = c.getOutputStream();
-        cos.write(("220 jfPOP3 Server/" + JF.getVersion() + "\r\n").getBytes());
+        cos.write(("+OK jfPOP3 Server/" + JF.getVersion() + "\r\n").getBytes());
         while (c.isConnected()) {
           String cmd = readln();
           if (cmd == null) break;
           if (cmd.equalsIgnoreCase("QUIT")) {
-            cos.write("221 Goodbye\r\n".getBytes());
+            cos.write("+OK Goodbye\r\n".getBytes());
             break;
           }
           doCommand(cmd);
@@ -393,67 +393,36 @@ public class POP3 extends Thread {
       }
       String[] p = cmd.split(" ", 2);
       switch (p[0].toUpperCase()) {
-        case "HELO":
-        case "EHLO": {
-          cos.write(("250 jfPOP3 Server/" + JF.getVersion() + "\r\n").getBytes());
-          break;
-        }
         case "APOP": {
           String[] c_u_p = cmd.split(" ", 3);
           user = c_u_p[1];
           String pass = c_u_p[2];  //MD5???
           if (login(user, pass, true)) {
-            cos.write("235 Login successful\r\n".getBytes());
+            cos.write("+OK Login successful\r\n".getBytes());
           } else {
-            cos.write("501 Login failed\r\n".getBytes());
+            cos.write("-ERR Login failed\r\n".getBytes());
             close();
             return;
           }
           setupMailbox();
           break;
         }
-        case "AUTH": {
-          String type = p[1];
-          switch (type.toUpperCase()) {
-            case "LOGIN": {  //plain text
-              cos.write("334 Send username\r\n".getBytes());
-              String user_base64 = readln();
-              user = new String(javaforce.Base64.decode(user_base64.getBytes()));
-              cos.write("334 Send password\r\n".getBytes());
-              String pass_base64 = readln();
-              String pass = new String(javaforce.Base64.decode(pass_base64.getBytes()));
-              if (login(user, pass, false)) {
-                cos.write("235 Login successful\r\n".getBytes());
-              } else {
-                cos.write("501 Login failed\r\n".getBytes());
-                close();
-                return;
-              }
-              setupMailbox();
-              break;
-            }
-            default: {
-              cos.write("504 Unknown AUTH type\r\n".getBytes());
-              break;
-            }
-          }
-          break;
-        }
         case "USER": {
           user = p[1];
+          cos.write("+OK User Accepted".getBytes());
           break;
         }
         case "PASS": {
           if (user == null) {
-            cos.write("501 Login failed\r\n".getBytes());
+            cos.write("-ERR Login failed\r\n".getBytes());
             close();
             return;
           }
           String pass = p[1];
           if (login(user, pass, false)) {
-            cos.write("235 Login successful\r\n".getBytes());
+            cos.write("+OK Login successful\r\n".getBytes());
           } else {
-            cos.write("501 Login failed\r\n".getBytes());
+            cos.write("-ERR Login failed\r\n".getBytes());
             close();
             return;
           }
@@ -462,10 +431,10 @@ public class POP3 extends Thread {
         }
         case "STARTTLS": {
           if (secure) {
-            cos.write("550 Already secure\r\n".getBytes());
+            cos.write("-ERR Already secure\r\n".getBytes());
             break;
           }
-          cos.write("220 Ok\r\n".getBytes());
+          cos.write("+OK Switching to TLS\r\n".getBytes());
           //upgrade connection to SSL
           c = JF.connectSSL(c);
           cis = c.getInputStream();
@@ -486,12 +455,12 @@ public class POP3 extends Thread {
         case "RETR": {
           //get message
           if (mailbox == null) {
-            cos.write("550 mailbox not ready\r\n".getBytes());
+            cos.write("-ERR mailbox not ready\r\n".getBytes());
             break;
           }
           int idx = Integer.valueOf(p[1]);
           if (idx < 0 || idx >= files.length || files[idx] == null) {
-            cos.write("550 message not found\r\n".getBytes());
+            cos.write("-ERR message not found\r\n".getBytes());
             break;
           }
           try {
@@ -509,7 +478,7 @@ public class POP3 extends Thread {
             fis.close();
             cos.write(".\r\n".getBytes());
           } catch (Exception e) {
-            cos.write("550 error\r\n".getBytes());
+            cos.write("-ERR error\r\n".getBytes());
             JFLog.log(e);
           }
           break;
@@ -517,26 +486,26 @@ public class POP3 extends Thread {
         case "DELE": {
           //delete message
           if (mailbox == null) {
-            cos.write("550 mailbox not ready\r\n".getBytes());
+            cos.write("-ERR mailbox not ready\r\n".getBytes());
             break;
           }
           int idx = Integer.valueOf(p[1]);
           if (idx < 0 || idx >= files.length || files[idx] == null) {
-            cos.write("550 message not found\r\n".getBytes());
+            cos.write("-ERR message not found\r\n".getBytes());
             break;
           }
           try {
             files[idx].delete();
             files[idx] = null;
-            cos.write(("OK message " + idx + " deleted\r\n").getBytes());
+            cos.write(("+OK message " + idx + " deleted\r\n").getBytes());
           } catch (Exception e) {
-            cos.write("550 error\r\n".getBytes());
+            cos.write("-ERR error\r\n".getBytes());
             JFLog.log(e);
           }
           break;
         }
         default:
-          cos.write("500 Unknown command\r\n".getBytes());
+          cos.write("-ERR Unknown command\r\n".getBytes());
           break;
       }
     }
@@ -563,7 +532,7 @@ public class POP3 extends Thread {
     }
     private String stat() {
       if (mailbox == null) {
-        return "505 Mailbox not ready";
+        return "-ERR Mailbox not ready";
       }
       int cnt = 0;
       int size = 0;
@@ -574,7 +543,7 @@ public class POP3 extends Thread {
         size += file.length();
       }
       StringBuilder reply = new StringBuilder();
-      reply.append("OK ");
+      reply.append("+OK ");
       reply.append(cnt);
       reply.append(" ");
       reply.append(size);
@@ -583,7 +552,7 @@ public class POP3 extends Thread {
     }
     private String list() {
       if (mailbox == null) {
-        return "505 Mailbox not ready";
+        return "-ERR Mailbox not ready";
       }
       int cnt = 0;
       int size = 0;
@@ -601,7 +570,7 @@ public class POP3 extends Thread {
         list.append("\r\n");
       }
       StringBuilder reply = new StringBuilder();
-      reply.append("OK ");
+      reply.append("+OK ");
       reply.append(cnt);
       reply.append(" ");
       reply.append(size);
