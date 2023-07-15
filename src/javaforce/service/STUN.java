@@ -144,20 +144,26 @@ public class STUN {
         cfg.append(ln);
         cfg.append("\n");
         ln = ln.trim().toLowerCase();
-        int idx = ln.indexOf('#');
-        if (idx != -1) ln = ln.substring(0, idx).trim();
+        int cmt = ln.indexOf('#');
+        if (cmt != -1) ln = ln.substring(0, cmt).trim();
         if (ln.length() == 0) continue;
         if (ln.equals("[global]")) {
           section = Section.Global;
           continue;
         }
+        int idx = ln.indexOf("=");
+        if (idx == -1) continue;
+        String key = ln.substring(0, idx);
+        String value = ln.substring(idx + 1);
         switch (section) {
           case Global:
-            if (ln.startsWith("user=")) user = ln.substring(5);
-            else if (ln.startsWith("pass=")) pass = ln.substring(5);
-            else if (ln.startsWith("publicip=")) publicip = ln.substring(9);
-            else if (ln.startsWith("min=")) min = JF.atoi(ln.substring(4));
-            else if (ln.startsWith("max=")) max = JF.atoi(ln.substring(4));
+            switch (key) {
+              case "user": user = value; break;
+              case "pass": pass = value; break;
+              case "publicip": publicip = value; break;
+              case "min": min = JF.atoi(value); break;
+              case "max": max = JF.atoi(value); break;
+            }
             break;
         }
       }

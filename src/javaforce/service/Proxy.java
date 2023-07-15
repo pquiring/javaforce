@@ -221,23 +221,29 @@ public class Proxy extends Thread {
           section = Section.BlockURL;
           continue;
         }
+        idx = ln.indexOf("=");
+        if (idx == -1) continue;
+        String key = ln.substring(0, idx).toLowerCase().trim();
+        String value = ln.substring(idx+1).trim();
         switch (section) {
           case Global:
-            if (ln.startsWith("port=")) {
-              port = JF.atoi(ln.substring(5));
-            }
-            if (ln.startsWith("filtersecure=")) {
-              filtersecure = ln.substring(13).equals("true");
-            }
-            if (ln.startsWith("allow=")) {
-              String net_mask = ln.substring(6);
-              idx = net_mask.indexOf("/");
-              String net = net_mask.substring(0, idx);
-              int addr = getIP(net);
-              allow_net.add(addr);
-              String mask = net_mask.substring(idx+1);
-              int maskBits = getMask(mask);
-              allow_mask.add(maskBits);
+            switch (key) {
+              case "port":
+                port = JF.atoi(value);
+                break;
+              case "filtersecure":
+                filtersecure = value.equals("true");
+                break;
+              case "allow":
+                String net_mask = value;
+                idx = net_mask.indexOf("/");
+                String net = net_mask.substring(0, idx);
+                int addr = getIP(net);
+                allow_net.add(addr);
+                String mask = net_mask.substring(idx+1);
+                int maskBits = getMask(mask);
+                allow_mask.add(maskBits);
+                break;
             }
             break;
           case BlockDomain:
