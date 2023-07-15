@@ -20,6 +20,8 @@ import javaforce.jbus.*;
 public class SOCKS extends Thread {
   public final static String busPack = "net.sf.jfsocks";
 
+  public static boolean debug = false;
+
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfsocks.cfg";
   }
@@ -453,6 +455,10 @@ public class SOCKS extends Thread {
                   forward.secure = p[4].equals("true");
                 }
                 forward_remote_list.add(forward);
+                break;
+              }
+              case "debug": {
+                debug = value.equals("true");
                 break;
               }
             }

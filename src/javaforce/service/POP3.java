@@ -20,6 +20,8 @@ import javaforce.jbus.*;
 public class POP3 extends Thread {
   public final static String busPack = "net.sf.jfpop3";
 
+  public static boolean debug = false;
+
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfpop3.cfg";
   }
@@ -190,6 +192,9 @@ public class POP3 extends Thread {
                 break;
               case "ldap_server":
                 ldap_server = value;
+                break;
+              case "debug":
+                debug = value.equals("true");
                 break;
             }
             break;
@@ -383,6 +388,9 @@ public class POP3 extends Thread {
     private static final int bufsiz = 1500 - 20 - 20;
 
     private void doCommand(String cmd) throws Exception {
+      if (debug) {
+        JFLog.log("Request=" + cmd);
+      }
       String[] p = cmd.split(" ", 2);
       switch (p[0].toUpperCase()) {
         case "HELO":

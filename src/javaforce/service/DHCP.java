@@ -326,6 +326,7 @@ public class DHCP extends Thread {
           case "pxe_server": pool.pxe_server = value; break;
           case "pxe_bootfile": pool.pxe_bootfile = value; break;
           case "pxe_proxy": pool.pxe_proxy = value.equals("true"); break;
+          case "debug": debug = value.equals("true"); break;
         }
       }
       config = cfg.toString();

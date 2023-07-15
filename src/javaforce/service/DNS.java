@@ -23,6 +23,8 @@ import javaforce.jbus.*;
 public class DNS extends Thread {
   public final static String busPack = "net.sf.jfdns";
 
+  public static boolean debug = false;
+
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfdns.cfg";
   }
@@ -162,6 +164,7 @@ public class DNS extends Thread {
                 }
                 break;
               }
+              case "debug": debug = value.equals("true"); break;
             }
             break;
           }

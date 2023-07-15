@@ -22,6 +22,8 @@ import javaforce.jbus.*;
 public class SMTP extends Thread {
   public final static String busPack = "net.sf.jfsmtp";
 
+  public static boolean debug = false;
+
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfsmtp.cfg";
   }
@@ -198,6 +200,9 @@ public class SMTP extends Thread {
                 break;
               case "ldap_server":
                 ldap_server = value;
+                break;
+              case "debug":
+                debug = value.equals("true");
                 break;
             }
             break;
@@ -380,6 +385,9 @@ public class SMTP extends Thread {
     }
 
     private void doCommand(String cmd) throws Exception {
+      if (debug) {
+        JFLog.log("Request=" + cmd);
+      }
       String[] p = cmd.split(" ", 2);
       switch (p[0].toUpperCase()) {
         case "HELO":
