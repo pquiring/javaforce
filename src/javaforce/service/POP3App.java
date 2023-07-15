@@ -219,7 +219,7 @@ public class POP3App extends javax.swing.JFrame {
   }
 
   private void genKeys() {
-    busClient.call(SOCKS.busPack, "genKeys", "\"" + busClient.pack + "\"");
+    busClient.call(POP3.busPack, "genKeys", "\"" + busClient.pack + "\"");
   }
 
   private void showHelp() {

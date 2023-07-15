@@ -219,7 +219,7 @@ public class SMTPApp extends javax.swing.JFrame {
   }
 
   private void genKeys() {
-    busClient.call(SOCKS.busPack, "genKeys", "\"" + busClient.pack + "\"");
+    busClient.call(SMTP.busPack, "genKeys", "\"" + busClient.pack + "\"");
   }
 
   private void showHelp() {
