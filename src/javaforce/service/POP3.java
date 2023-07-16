@@ -193,6 +193,9 @@ public class POP3 extends Thread {
               case "ldap_server":
                 ldap_server = value;
                 break;
+              case "digest":
+                digest = value.equals("true");
+                break;
               case "debug":
                 debug = value.equals("true");
                 break;
