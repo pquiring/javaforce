@@ -463,6 +463,7 @@ public class POP3 extends Thread {
             break;
           }
           int idx = Integer.valueOf(p[1]);
+          idx--;
           if (idx < 0 || idx >= files.length || files[idx] == null) {
             cos.write("-ERR message not found\r\n".getBytes());
             break;
@@ -494,6 +495,7 @@ public class POP3 extends Thread {
             break;
           }
           int idx = Integer.valueOf(p[1]);
+          idx--;
           if (idx < 0 || idx >= files.length || files[idx] == null) {
             cos.write("-ERR message not found\r\n".getBytes());
             break;
