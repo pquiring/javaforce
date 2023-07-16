@@ -39,6 +39,8 @@ public class SMTPRelay extends Thread {
   private static Object lock = new Object();
   private static SMTPRelay service;
 
+  private static boolean debug = false;
+
   public final static String busPack = "net.sf.jfsmtprelay";
 
   public static String getConfigFile() {
@@ -95,9 +97,12 @@ public class SMTPRelay extends Thread {
       javaforce.POP3.Message[] list = pop3.list();
       if (list == null || list.length == 0) {
         pop3.disconnect();
+        if (debug) JFLog.log("No messages found");
         return;
       }
+      if (debug || list.length > 0) JFLog.log("Found " + list.length + " messages to relay");
       for(javaforce.POP3.Message em : list) {
+        if (debug) JFLog.log("Relay message:" + em.idx);
         byte[] data = pop3.get(em.idx);
         javaforce.SMTP smtp = new javaforce.SMTP();  //client
         if (smtp_secure)
@@ -217,6 +222,7 @@ public class SMTPRelay extends Thread {
                 if (interval < 5) interval = 5;
                 if (interval > 1440) interval = 1440;  //one day
               break;
+              case "debug": debug = value.equals("true"); break;
             }
             break;
         }
