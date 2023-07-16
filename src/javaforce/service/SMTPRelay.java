@@ -68,6 +68,7 @@ public class SMTPRelay extends Thread {
       busClient = new JBusClient(busPack, new JBusMethods());
       busClient.setPort(getBusPort());
       busClient.start();
+      if (debug) relay();
       while (active) {
         for(int a=0;a<interval * 60;a++) {
           if (!active) return;
