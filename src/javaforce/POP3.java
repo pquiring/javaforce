@@ -125,11 +125,29 @@ public class POP3 {
   }
 
   private boolean user_pass(String user, String pass) throws Exception {
-    return false;
+    cmd("USER " + user);
+    getResponse();
+    if (!response.startsWith("+OK")) {
+      return false;
+    }
+    cmd("PASS " + pass);
+    getResponse();
+    if (!response.startsWith("+OK")) {
+      return false;
+    }
+    return true;
   }
 
   private boolean apop(String user, String pass) throws Exception {
-    return false;
+    MD5 md5 = new MD5();
+    md5.add(pass);
+    String pass_md5 = md5.toString();
+    cmd("APOP " + user + " " + pass_md5);
+    getResponse();
+    if (!response.startsWith("+OK")) {
+      return false;
+    }
+    return true;
   }
 
   /** Authenticates with POP3 Server using AUTH_LOGIN type.
