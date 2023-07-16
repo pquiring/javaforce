@@ -409,7 +409,7 @@ public class POP3 extends Thread {
         }
         case "USER": {
           user = p[1];
-          cos.write("+OK User Accepted".getBytes());
+          cos.write("+OK User Accepted\r\n".getBytes());
           break;
         }
         case "PASS": {
