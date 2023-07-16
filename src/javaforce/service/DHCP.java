@@ -295,8 +295,8 @@ public class DHCP extends Thread {
         cfg.append(ln);
         cfg.append("\n");
         ln = ln.trim();
-        int idx = ln.indexOf('#');
-        if (idx != -1) ln = ln.substring(0, idx).trim();
+        int cmt = ln.indexOf('#');
+        if (cmt != -1) ln = ln.substring(0, cmt).trim();
         if (ln.length() == 0) continue;
         if (ln.startsWith("[") && ln.endsWith("]")) {
           String sectionName = ln.substring(1,ln.length() - 1);
@@ -309,7 +309,7 @@ public class DHCP extends Thread {
           }
           continue;
         }
-        idx = ln.indexOf("=");
+        int idx = ln.indexOf("=");
         if (idx == -1) continue;
         String key = ln.substring(0, idx).toLowerCase().trim();
         String value = ln.substring(idx+1).trim();

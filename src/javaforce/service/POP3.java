@@ -158,7 +158,8 @@ public class POP3 extends Thread {
         cfg.append(ln);
         cfg.append("\n");
         ln = ln.trim();
-        if (ln.startsWith("#")) continue;
+        int cmt = ln.indexOf('#');
+        if (cmt != -1) ln = ln.substring(0, cmt).trim();
         if (ln.length() == 0) continue;
         if (ln.equals("[global]")) {
           section = Section.Global;

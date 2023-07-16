@@ -202,8 +202,8 @@ public class Proxy extends Thread {
         cfg.append(ln);
         cfg.append("\n");
         ln = ln.trim().toLowerCase();
-        int idx = ln.indexOf('#');
-        if (idx != -1) ln = ln.substring(0, idx).trim();
+        int cmt = ln.indexOf('#');
+        if (cmt != -1) ln = ln.substring(0, cmt).trim();
         if (ln.length() == 0) continue;
         if (ln.equals("[global]")) {
           section = Section.Global;
@@ -221,7 +221,7 @@ public class Proxy extends Thread {
           section = Section.BlockURL;
           continue;
         }
-        idx = ln.indexOf("=");
+        int idx = ln.indexOf("=");
         if (idx == -1) continue;
         String key = ln.substring(0, idx).toLowerCase().trim();
         String value = ln.substring(idx+1).trim();
