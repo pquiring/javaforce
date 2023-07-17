@@ -1,5 +1,5 @@
 /usr/bin/jfsocks
 /usr/bin/jfsocks-client
 /usr/bin/jfsockssvc
-/lib/systemd/system/jfsockssvc.service
+/lib/systemd/system/jfsocks.service
 /usr/share/java/jfsocks-client.jar
