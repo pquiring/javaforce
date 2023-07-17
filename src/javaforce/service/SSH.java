@@ -31,13 +31,6 @@ public class SSH extends Thread {
   }
 
   public void run() {
-    //setup debug logging to console
-    System.setProperty("log4j.logger.org.apache.sshd", "DEBUG");
-    System.setProperty("log4j.rootLogger", "DEBUG,console");
-    System.setProperty("log4j.appender.console", "org.apache.log4j.ConsoleAppender");
-    System.setProperty("log4j2.simplelogStatusLoggerLevel", "WARN");
-//    System.setProperty("", "");
-
     sshd = SshServer.setUpDefaultServer();
     sshd.setPort(22);
     sshd.setHost("localhost");
@@ -50,7 +43,6 @@ public class SSH extends Thread {
     sshd.setPasswordAuthenticator((username, password, serverSession) ->  username.equals(username) && password.equals(password));
 
     //Setup Virtual File System (VFS)
-    //Ensure VFS folder exists
     Path dir;
     if (JF.isWindows())
       dir = Paths.get("c:/");
