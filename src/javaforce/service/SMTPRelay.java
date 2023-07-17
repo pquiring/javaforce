@@ -92,6 +92,7 @@ public class SMTPRelay extends Thread {
       return;
     }
     try {
+      if (debug) JFLog.log("Checking messages...");
       javaforce.POP3 pop3 = new javaforce.POP3();  //client
       pop3.debug = debug;
       if (pop3_secure)
