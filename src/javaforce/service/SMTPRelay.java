@@ -88,6 +88,7 @@ public class SMTPRelay extends Thread {
   private void relay() {
     try {
       javaforce.POP3 pop3 = new javaforce.POP3();  //client
+      pop3.debug = debug;
       if (pop3_secure)
         pop3.connectSSL(pop3_host, pop3_port);
       else
@@ -106,6 +107,7 @@ public class SMTPRelay extends Thread {
         if (debug) JFLog.log("Relay message:" + em.idx);
         byte[] data = pop3.get(em.idx);
         javaforce.SMTP smtp = new javaforce.SMTP();  //client
+        smtp.debug = debug;
         if (smtp_secure)
           smtp.connectSSL(smtp_host, smtp_port);
         else

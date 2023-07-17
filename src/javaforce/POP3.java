@@ -169,7 +169,7 @@ public class POP3 {
     if ((s == null) || (s.isClosed())) {
       throw new Exception("not connected");
     }
-    if (log) {
+    if (log || debug) {
       if (cmd.startsWith("pass ")) {
         JFLog.log("pass ****");
       } else {
@@ -275,5 +275,6 @@ public class POP3 {
 
   private void getResponse() throws Exception {
     response = br.readLine();
+    if (debug) JFLog.log("POP3:response=" + response);
   }
 }
