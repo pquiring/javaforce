@@ -33,7 +33,7 @@ public class SSH extends Thread {
   public void run() {
     sshd = SshServer.setUpDefaultServer();
     sshd.setPort(22);
-    sshd.setHost("localhost");
+//    sshd.setHost("localhost");
     sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
 
     //Accept all keys for authentication
