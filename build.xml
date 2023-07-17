@@ -65,7 +65,7 @@
 
   <import file="get-jars.xml"/>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,getjars,jar-jcifs,jar-bouncycastle,jar-llrp,jar-jdom,jar-mina1-core,jar-sshd-core,jar-sshd-common,jar-jargs,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12,jar-batik-all,jar-xmlgraphics-commons,jar-xml-apis-ext">
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,getjars,jar-jcifs,jar-bouncycastle,jar-filters,jar-llrp,jar-jdom,jar-mina1-core,jar-sshd-core,jar-sshd-common,jar-jargs,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12,jar-batik-all,jar-xmlgraphics-commons,jar-xml-apis-ext">
   </target>
 
   <target name="compile" depends="getjars,depjars" description="compile the source">
@@ -123,9 +123,9 @@
 
   <!-- sudo ant install -->
   <target name="install" description="install files">
-    <copy file="${lib}/javaforce.jar" todir="/usr/share/java"/>
-    <copy file="${lib}/bouncycastle.jar" todir="/usr/share/java"/>
-    <copy file="${lib}/filters.jar" todir="/usr/share/java"/>
+    <copy file="javaforce.jar" todir="/usr/share/java"/>
+    <copy file="bouncycastle.jar" todir="/usr/share/java"/>
+    <copy file="filters.jar" todir="/usr/share/java"/>
 
     <copy file="lnxbin/jbus-call" todir="/usr/bin"/>
     <chmod file="/usr/bin/jbus-call" perm="+x"/>
