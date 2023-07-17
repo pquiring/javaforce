@@ -538,7 +538,7 @@ public class POP3 extends Thread {
     }
     private String stat() {
       if (mailbox == null) {
-        return "-ERR Mailbox not ready";
+        return "-ERR Mailbox not ready\r\n";
       }
       int cnt = 0;
       int size = 0;
@@ -558,7 +558,7 @@ public class POP3 extends Thread {
     }
     private String list() {
       if (mailbox == null) {
-        return "-ERR Mailbox not ready";
+        return "-ERR Mailbox not ready\r\n";
       }
       int cnt = 0;
       int size = 0;
