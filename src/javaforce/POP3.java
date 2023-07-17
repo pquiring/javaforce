@@ -230,17 +230,17 @@ public class POP3 {
     }
     String[] p = response.split(" ", 3);
     int length = Integer.valueOf(p[1]);
-    byte[] data = new byte[length];
-    byte[] buf = new byte[bufsiz];
+    StringBuilder sb = new StringBuilder();
     int total = 0;
     while (total < length) {
-      int read = is.read(buf);
-      if (read < 0) return null;
-      System.arraycopy(buf, 0, data, total, read);
-      total += read;
+      String ln = br.readLine();
+      sb.append(ln);
+      total += ln.length();
+      sb.append("\r\n");
+      total += 2;
     }
     getResponse();  //"."
-    return data;
+    return sb.toString().getBytes();
   }
 
   /** Get message */
@@ -252,13 +252,13 @@ public class POP3 {
     }
     String[] p = response.split(" ", 3);
     int length = Integer.valueOf(p[1]);
-    byte[] buf = new byte[bufsiz];
     int total = 0;
     while (total < length) {
-      int read = is.read(buf);
-      if (read < 0) throw new Exception("read error");
-      os.write(buf, 0, read);
-      total += read;
+      String ln = br.readLine();
+      os.write(ln.getBytes());
+      total += ln.length();
+      os.write("\r\n".getBytes());
+      total += 2;
     }
     getResponse();  //"."
   }
