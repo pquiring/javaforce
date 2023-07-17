@@ -567,7 +567,7 @@ public class POP3 extends Thread {
           try {
             files[idx].delete();
             files[idx] = null;
-            cos.write(("+OK message " + idx + " deleted\r\n").getBytes());
+            cos.write(("+OK message " + (idx+1) + " deleted\r\n").getBytes());
           } catch (Exception e) {
             cos.write("-ERR error\r\n".getBytes());
             JFLog.log(e);
