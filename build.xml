@@ -152,6 +152,7 @@
     <ant antfile="build-jfrm.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfver.xml" target="installapp" inheritAll="false"/>
     <ant antfile="build-jfresmgr.xml" target="installapp" inheritAll="false"/>
+    <ant antfile="build-jfsshd.xml" target="installapp" inheritAll="false"/>
   </target>
 
   <target name="utils" depends="jar" description="build exe for utils">
@@ -163,6 +164,7 @@
     <ant antfile="build-scriptex.xml" inheritAll="false"/>
     <ant antfile="build-web.xml" inheritAll="false"/>
     <ant antfile="build-vss.xml" inheritAll="false"/>
+    <ant antfile="build-jfsshd.xml" inheritAll="false"/>
     <zip destfile="jfUtilities-${version}.zip">
       <fileset dir=".">
         <include name="*.exe"/>
