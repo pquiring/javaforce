@@ -40,6 +40,9 @@ public class SSH extends Thread {
 
   //config
   private String root = null;
+  private boolean enable_shell = true;
+  private boolean enable_sftp = true;
+  private boolean enable_scp = true;
 
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfssh.cfg";
@@ -122,20 +125,26 @@ public class SSH extends Thread {
       sshd.setFileSystemFactory(vfs);
 
       //Add SFTP support
-      List<SubsystemFactory> sftpCommandFactory = new ArrayList<>();
-      SftpSubsystemFactory sftp = new SftpSubsystemFactory();
-      sftpCommandFactory.add(sftp);
-      sshd.setSubsystemFactories(sftpCommandFactory);
+      if (enable_sftp) {
+        List<SubsystemFactory> sftpCommandFactory = new ArrayList<>();
+        SftpSubsystemFactory sftp = new SftpSubsystemFactory();
+        sftpCommandFactory.add(sftp);
+        sshd.setSubsystemFactories(sftpCommandFactory);
+      }
 
       //Add SCP support
-      ScpCommandFactory scp = new ScpCommandFactory.Builder().build();
-      sshd.setCommandFactory(scp);
+      if (enable_scp) {
+        ScpCommandFactory scp = new ScpCommandFactory.Builder().build();
+        sshd.setCommandFactory(scp);
+      }
 
       //Add Shell support
-      if (JF.isWindows()) {
-        sshd.setShellFactory(new ProcessShellFactory("cmd.exe", new String[] {"cmd.exe"}));
-      } else {
-        sshd.setShellFactory(new ProcessShellFactory("/bin/bash", new String[] {"/bin/bash"}));
+      if (enable_shell) {
+        if (JF.isWindows()) {
+          sshd.setShellFactory(new ProcessShellFactory("cmd.exe", new String[] {"cmd.exe"}));
+        } else {
+          sshd.setShellFactory(new ProcessShellFactory("/bin/bash", new String[] {"/bin/bash"}));
+        }
       }
 
       sshd.start();
@@ -166,6 +175,9 @@ public class SSH extends Thread {
     + "#domain=example.com\n"
     + "#ldap_server=192.168.200.2\n"
     + "#account=user:pass\n"
+    + "#shell=true\n"
+    + "#scp=true\n"
+    + "#sftp=true\n"
     ;
 
   private void loadConfig() {
@@ -226,6 +238,15 @@ public class SSH extends Thread {
                 break;
               case "debug":
                 debug = value.equals("true");
+                break;
+              case "shell":
+                enable_shell = value.equals("true");
+                break;
+              case "scp":
+                enable_scp = value.equals("true");
+                break;
+              case "sftp":
+                enable_sftp = value.equals("true");
                 break;
             }
             break;
