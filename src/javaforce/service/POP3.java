@@ -64,6 +64,7 @@ public class POP3 extends Thread {
   private static ArrayList<String> user_pass_list;
   private static Object lock = new Object();
   private static IP4Port bind = new IP4Port();
+  private static ArrayList<Subnet4> subnet_src_list;
   private static ArrayList<Integer> ports = new ArrayList<>();
   private static ArrayList<Integer> ssl_ports = new ArrayList<>();
   private static boolean digest = false;  //messages are stored in global mailbox for retrieval by SMTPRelay agent
@@ -141,7 +142,10 @@ public class POP3 extends Thread {
     + "#domain=example.com\n"
     + "#ldap_server=192.168.200.2\n"
     + "#account=user:pass\n"
-    + "#digest=true\n";  //digest mode (global mailbox)
+    + "#digest=true\n"  //digest mode (global mailbox)
+    + "#src.ipnet=192.168.2.0/255.255.255.0\n"
+    + "#src.ip=192.168.3.2\n"
+    ;
 
   private void loadConfig() {
     JFLog.log("loadConfig");
@@ -149,6 +153,7 @@ public class POP3 extends Thread {
     Section section = Section.None;
     bind.setIP("0.0.0.0");  //bind to all interfaces
     bind.port = 110;
+    subnet_src_list = new ArrayList<Subnet4>();
     try {
       BufferedReader br = new BufferedReader(new FileReader(getConfigFile()));
       StringBuilder cfg = new StringBuilder();
@@ -200,6 +205,38 @@ public class POP3 extends Thread {
               case "debug":
                 debug = value.equals("true");
                 break;
+              case "src.ipnet": {
+                Subnet4 subnet = new Subnet4();
+                idx = value.indexOf('/');
+                if (idx == -1) {
+                  JFLog.log("POP3:Invalid IP Subnet:" + value);
+                  break;
+                }
+                String ip = value.substring(0, idx);
+                String mask = value.substring(idx + 1);
+                if (!subnet.setIP(ip)) {
+                  JFLog.log("POP3:Invalid IP:" + ip);
+                  break;
+                }
+                if (!subnet.setMask(mask)) {
+                  JFLog.log("POP3:Invalid netmask:" + mask);
+                  break;
+                }
+                JFLog.log("Source Allow IP Network=" + subnet.toString());
+                subnet_src_list.add(subnet);
+                break;
+              }
+              case "src.ip": {
+                Subnet4 subnet = new Subnet4();
+                if (!subnet.setIP(value)) {
+                  JFLog.log("POP3:Invalid IP:" + value);
+                  break;
+                }
+                subnet.setMask("255.255.255.255");
+                JFLog.log("Source Allow IP Address=" + subnet.toString());
+                subnet_src_list.add(subnet);
+                break;
+              }
             }
             break;
         }
@@ -278,6 +315,17 @@ public class POP3 extends Thread {
         active = true;
         while (active) {
           Socket s = ss.accept();
+          InetSocketAddress sa = (InetSocketAddress)s.getRemoteSocketAddress();
+          String src_ip = sa.getAddress().getHostAddress();
+          if (src_ip.equals("0:0:0:0:0:0:0:1")) {
+            //IP6 localhost
+            src_ip = "127.0.0.1";
+          }
+          if (!ip_src_allowed(src_ip)) {
+            JFLog.log("SOCKS:Source IP blocked:" + src_ip);
+            s.close();
+            continue;
+          }
           ClientWorker sess = new ClientWorker(s, secure);
           addSession(sess);
           sess.start();
@@ -291,6 +339,18 @@ public class POP3 extends Thread {
       try { ss.close(); } catch (Exception e) {}
       ss = null;
     }
+  }
+
+  private static boolean ip_src_allowed(String ip4) {
+    if (subnet_src_list.size() == 0) return true;
+    IP4 target = new IP4();
+    if (!target.setIP(ip4)) return false;
+    for(Subnet4 net : subnet_src_list) {
+      if (net.matches(target)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public static class ClientWorker extends Thread {
