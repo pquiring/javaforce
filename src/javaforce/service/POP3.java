@@ -322,7 +322,7 @@ public class POP3 extends Thread {
             src_ip = "127.0.0.1";
           }
           if (!ip_src_allowed(src_ip)) {
-            JFLog.log("SOCKS:Source IP blocked:" + src_ip);
+            JFLog.log("POP3:Source IP blocked:" + src_ip);
             s.close();
             continue;
           }
