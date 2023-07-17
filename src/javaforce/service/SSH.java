@@ -14,6 +14,7 @@ import org.apache.sshd.common.file.virtualfs.*;
 import org.apache.sshd.sftp.server.*;
 import org.apache.sshd.server.subsystem.*;
 import org.apache.sshd.server.shell.*;
+import org.apache.sshd.scp.server.*;
 
 import javaforce.*;
 
@@ -30,23 +31,39 @@ public class SSH extends Thread {
   }
 
   public void run() {
+    //setup debug logging to console
+    System.setProperty("log4j.logger.org.apache.sshd", "DEBUG");
+    System.setProperty("log4j.rootLogger", "DEBUG,console");
+    System.setProperty("log4j.appender.console", "org.apache.log4j.ConsoleAppender");
+    System.setProperty("log4j2.simplelogStatusLoggerLevel", "WARN");
+//    System.setProperty("", "");
+
     sshd = SshServer.setUpDefaultServer();
     sshd.setPort(22);
     sshd.setHost("localhost");
     sshd.setKeyPairProvider(new SimpleGeneratorHostKeyProvider());
+
     //Accept all keys for authentication
     sshd.setPublickeyAuthenticator((s, publicKey, serverSession) -> true);
+
     //Allow username/password authentication using pre-defined credentials
     sshd.setPasswordAuthenticator((username, password, serverSession) ->  username.equals(username) && password.equals(password));
+
     //Setup Virtual File System (VFS)
     //Ensure VFS folder exists
-    Path dir = Paths.get(".");
-    sshd.setFileSystemFactory(new VirtualFileSystemFactory(dir.toAbsolutePath()));
+    Path dir = Paths.get("c:/tmp");
+    VirtualFileSystemFactory vfs = new VirtualFileSystemFactory(dir.toAbsolutePath());
+    sshd.setFileSystemFactory(vfs);
 
     //Add SFTP support
     List<SubsystemFactory> sftpCommandFactory = new ArrayList<>();
-    sftpCommandFactory.add(new SftpSubsystemFactory());
+    SftpSubsystemFactory sftp = new SftpSubsystemFactory();
+    sftpCommandFactory.add(sftp);
     sshd.setSubsystemFactories(sftpCommandFactory);
+
+    //Add SCP support
+    ScpCommandFactory scp = new ScpCommandFactory.Builder().build();
+    sshd.setCommandFactory(scp);
 
     //Add Shell support
     if (JF.isWindows()) {
@@ -54,11 +71,6 @@ public class SSH extends Thread {
     } else {
       sshd.setShellFactory(new ProcessShellFactory("/bin/bash", new String[] {"/bin/bash"}));
     }
-
-    //setup debug logging
-    System.setProperty("log4j.logger.org.apache.sshd", "DEBUG");
-    System.setProperty("log4j.rootLogger", "DEBUG,console");
-    System.setProperty("log4j.appender.console", "org.apache.log4j.ConsoleAppender");
 
     try {
       sshd.start();

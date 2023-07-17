@@ -121,6 +121,10 @@
     <copyjar name="sshd-sftp" version="${sshd-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-sshd-scp">
+    <copyjar name="sshd-scp" version="${sshd-version}" path="${jarpath}"/>
+  </target>
+
   <target name="jar-jargs">
     <copyjar name="jargs" version="${jargs-version}" path="${jarpath}"/>
   </target>
