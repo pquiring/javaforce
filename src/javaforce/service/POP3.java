@@ -473,7 +473,7 @@ public class POP3 extends Thread {
             FileInputStream fis = new FileInputStream(file);
             long size = file.length();
             long sent = 0;
-            cos.write(("+OK " + size + " octets").getBytes());
+            cos.write(("+OK " + size + " octets\r\n").getBytes());
             byte[] buf = new byte[bufsiz];
             while (sent < size) {
               int read = fis.read(buf);
