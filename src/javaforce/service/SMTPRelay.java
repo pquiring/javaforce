@@ -88,6 +88,7 @@ public class SMTPRelay extends Thread {
   private void relay() {
     if (!validConfig()) {
       JFLog.log("Please configure!");
+      return;
     }
     try {
       javaforce.POP3 pop3 = new javaforce.POP3();  //client
