@@ -113,8 +113,9 @@ public class SMTPRelay extends Thread {
       }
       if (debug || list.length > 0) JFLog.log("Found " + list.length + " messages to relay");
       for(javaforce.POP3.Message em : list) {
-        if (debug) JFLog.log("Relay message:" + em.idx);
+        if (debug) JFLog.log("Relay message:" + em.idx + ":size=" + em.size);
         byte[] data = pop3.get(em.idx);
+        if (debug) JFLog.log("Message size=" + data.length);
         javaforce.SMTP smtp = new javaforce.SMTP();  //client
         smtp.debug = debug;
         if (smtp_secure)

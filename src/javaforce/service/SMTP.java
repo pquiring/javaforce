@@ -383,7 +383,7 @@ public class SMTP extends Thread {
     public String readln() {
       if (bufferSize > 0) {
         System.arraycopy(buffer, 0, req, 0, buffer.length);
-        reqSize = buffer.length;
+        reqSize = bufferSize;
         bufferSize = 0;
       } else {
         reqSize = 0;
