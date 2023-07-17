@@ -86,6 +86,9 @@ public class SMTPRelay extends Thread {
   }
 
   private void relay() {
+    if (!validConfig()) {
+      JFLog.log("Please configure!");
+    }
     try {
       javaforce.POP3 pop3 = new javaforce.POP3();  //client
       pop3.debug = debug;
@@ -248,6 +251,14 @@ public class SMTPRelay extends Thread {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  public static boolean validConfig() {
+    if (pop3_host == null) return false;
+    if (pop3_user == null) return false;
+    if (pop3_pass == null) return false;
+    if (smtp_host == null) return false;
+    return true;
   }
 
   public static void serviceStart(String[] args) {
