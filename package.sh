@@ -51,10 +51,10 @@ ant repo
 ant $pkg
 cd projects
 chmod +x build.sh
-./build.sh
-cd ../jars
+./package.sh
+cd ../lib
 chmod +x build.sh
-./build.sh
+./package.sh
 cd ..
 
 echo Build Complete!
