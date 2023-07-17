@@ -51,7 +51,11 @@ public class SSH extends Thread {
 
     //Setup Virtual File System (VFS)
     //Ensure VFS folder exists
-    Path dir = Paths.get("c:/tmp");
+    Path dir;
+    if (JF.isWindows())
+      dir = Paths.get("c:/");
+    else
+      dir = Paths.get("/");
     VirtualFileSystemFactory vfs = new VirtualFileSystemFactory(dir.toAbsolutePath());
     sshd.setFileSystemFactory(vfs);
 
