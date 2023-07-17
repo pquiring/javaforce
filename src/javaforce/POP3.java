@@ -216,6 +216,7 @@ public class POP3 {
       Message msg = new Message();
       msg.idx = idx;
       msg.size = size;
+      list.add(msg);
     }
     return list.toArray(new Message[0]);
   }
