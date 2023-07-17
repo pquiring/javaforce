@@ -13,6 +13,7 @@ import org.apache.sshd.server.keyprovider.*;
 import org.apache.sshd.common.file.virtualfs.*;
 import org.apache.sshd.sftp.server.*;
 import org.apache.sshd.server.subsystem.*;
+import org.apache.sshd.server.shell.*;
 
 import javaforce.*;
 
@@ -46,6 +47,18 @@ public class SSH extends Thread {
     List<SubsystemFactory> sftpCommandFactory = new ArrayList<>();
     sftpCommandFactory.add(new SftpSubsystemFactory());
     sshd.setSubsystemFactories(sftpCommandFactory);
+
+    //Add Shell support
+    if (JF.isWindows()) {
+      sshd.setShellFactory(new ProcessShellFactory("cmd.exe", new String[] {"cmd.exe"}));
+    } else {
+      sshd.setShellFactory(new ProcessShellFactory("/bin/bash", new String[] {"/bin/bash"}));
+    }
+
+    //setup debug logging
+    System.setProperty("log4j.logger.org.apache.sshd", "DEBUG");
+    System.setProperty("log4j.rootLogger", "DEBUG,console");
+    System.setProperty("log4j.appender.console", "org.apache.log4j.ConsoleAppender");
 
     try {
       sshd.start();
