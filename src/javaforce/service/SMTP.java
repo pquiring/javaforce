@@ -411,6 +411,7 @@ public class SMTP extends Thread {
               if (login(user, pass)) {
                 cos.write("235 Login successful\r\n".getBytes());
               } else {
+                JF.sleep(1000);
                 cos.write("501 Login failed\r\n".getBytes());
                 close();
                 return;

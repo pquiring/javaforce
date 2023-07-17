@@ -464,6 +464,7 @@ public class POP3 extends Thread {
           if (login(user, pass, true)) {
             cos.write("+OK Login successful\r\n".getBytes());
           } else {
+            JF.sleep(1000);
             cos.write("-ERR Login failed\r\n".getBytes());
             close();
             return;
@@ -486,6 +487,7 @@ public class POP3 extends Thread {
           if (login(user, pass, false)) {
             cos.write("+OK Login successful\r\n".getBytes());
           } else {
+            JF.sleep(1000);
             cos.write("-ERR Login failed\r\n".getBytes());
             close();
             return;
