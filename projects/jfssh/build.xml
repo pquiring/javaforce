@@ -1,0 +1,23 @@
+<project name="jfssh" default="jar" basedir=".">
+  <description>ssh</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfssh"/>
+  <property name="home" location="../.."/>
+  <property name="version" value="0.1"/>
+  <property name="jre" location="${home}/jre_base_desktop"/>
+
+  <property name="project2" value="build-service"/>
+
+  <import file="${home}/base.xml"/>
+
+  <target name="depjars" depends="jar-javaforce,jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-sshd-scp,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12" description="jar">
+  </target>
+
+  <target name="jar" depends="depjars" description="jar">
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <copy file="${app}.service" todir="/lib/systemd/system"/>
+  </target>
+</project>

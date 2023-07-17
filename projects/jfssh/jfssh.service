@@ -1,0 +1,10 @@
+[Unit]
+Description=JavaForce SSH Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfsshsvc
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
