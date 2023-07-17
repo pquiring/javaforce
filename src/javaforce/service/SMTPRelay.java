@@ -95,13 +95,16 @@ public class SMTPRelay extends Thread {
       if (debug) JFLog.log("Checking messages...");
       javaforce.POP3 pop3 = new javaforce.POP3();  //client
       pop3.debug = debug;
+      if (debug) JFLog.log("POP3:connecting...");
       if (pop3_secure)
         pop3.connectSSL(pop3_host, pop3_port);
       else
         pop3.connect(pop3_host, pop3_port);
+      if (debug) JFLog.log("POP3:auth...");
       if (!pop3.auth(pop3_user, pop3_pass, javaforce.POP3.AUTH_APOP)) {
-        throw new Exception("POP3 auth failed!");
+        throw new Exception("POP3:auth failed!");
       }
+      if (debug) JFLog.log("POP3 listing...");
       javaforce.POP3.Message[] list = pop3.list();
       if (list == null || list.length == 0) {
         pop3.disconnect();

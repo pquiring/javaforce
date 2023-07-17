@@ -433,6 +433,7 @@ public class POP3 extends Thread {
         cis = c.getInputStream();
         cos = c.getOutputStream();
         cos.write(("+OK jfPOP3 Server/" + JF.getVersion() + "\r\n").getBytes());
+        cos.flush();
         while (c.isConnected()) {
           String cmd = readln();
           if (cmd == null) break;

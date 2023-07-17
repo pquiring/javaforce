@@ -19,7 +19,7 @@ public class POP3 {
 
   public boolean debug = false;
   /**
-   * Holds the repsonse strings from the last executed command
+   * Holds the response strings from the last executed command
    */
   public String response;
 
@@ -90,6 +90,7 @@ public class POP3 {
     s = null;
     is = null;
     os = null;
+    br = null;
   }
 
   /** Set debug logging state. */
@@ -274,6 +275,7 @@ public class POP3 {
   }
 
   private void getResponse() throws Exception {
+    if (debug) JFLog.log("POP3:reading response...");
     response = br.readLine();
     if (debug) JFLog.log("POP3:response=" + response);
   }
