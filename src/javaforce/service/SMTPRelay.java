@@ -119,23 +119,25 @@ public class SMTPRelay extends Thread {
           }
         }
         //decode message and re-send
-        //MAIL FROM:<...>\r\n
-        //RCPT TO:<...>\r\n
         String msg = new String(data);
         String[] lns = msg.split("\r\n");
         String em_from = null;
         ArrayList<String> em_to = new ArrayList<>();
-        if (smtp_from != null) {
-          em_from = smtp_from;
-        } else {
-          em_from = getEmail(lns[0]);
-        }
-        int idx = 1;
-        do {
+        int idx = 0;
+        while (!lns[idx].equals("")) {
           String ln = lns[idx++];
-          if (!ln.startsWith("RCPT TO:")) break;
-          em_to.add(getEmail(ln));
-        } while (true);
+          int sp = ln.indexOf(':');
+          if (sp == -1) continue;
+          String key = ln.substring(0, sp).toLowerCase();
+          switch (key) {
+            case "from": em_from = getEmail(ln); break;
+            case "to": em_to.add(getEmail(ln)); break;
+          }
+        }
+        if (smtp_from != null) {
+          //override from email
+          em_from = smtp_from;
+        }
 
         //send email
         smtp.from(em_from);
