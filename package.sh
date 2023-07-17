@@ -50,10 +50,10 @@ fi
 ant repo
 ant $pkg
 cd projects
-chmod +x build.sh
+chmod +x package.sh
 ./package.sh
 cd ../lib
-chmod +x build.sh
+chmod +x package.sh
 ./package.sh
 cd ..
 
