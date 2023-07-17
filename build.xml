@@ -29,6 +29,7 @@
     <include name="slf4j-log4j12.jar"/>
     <include name="sshd-common.jar"/>
     <include name="sshd-core.jar"/>
+    <include name="sshd-sftp.jar"/>
     <include name="batik-all.jar"/>
   </fileset>
 
@@ -65,7 +66,7 @@
 
   <import file="get-jars.xml"/>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,getjars,jar-jcifs,jar-bouncycastle,jar-filters,jar-llrp,jar-jdom,jar-mina1-core,jar-sshd-core,jar-sshd-common,jar-jargs,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12,jar-batik-all,jar-xmlgraphics-commons,jar-xml-apis-ext">
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,getjars,jar-jcifs,jar-bouncycastle,jar-filters,jar-llrp,jar-jdom,jar-mina1-core,jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-jargs,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12,jar-batik-all,jar-xmlgraphics-commons,jar-xml-apis-ext">
   </target>
 
   <target name="compile" depends="getjars,depjars" description="compile the source">
