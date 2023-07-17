@@ -447,7 +447,6 @@ public class SMTP extends Thread {
           cos.write("354 Send Data\r\n".getBytes());
           String msgfile = mailbox + "/" + System.currentTimeMillis() + ".msg";
           OutputStream msgstream = new FileOutputStream(msgfile);
-          msgstream.write(getHeaders().getBytes());
           while (c.isConnected()) {
             String ln = readln();
             if (ln == null || ln.equals(".")) {
@@ -491,14 +490,6 @@ public class SMTP extends Thread {
           cos.write("500 Unknown command\r\n".getBytes());
           break;
       }
-    }
-    private String getHeaders() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("MAIL FROM:<" + from + ">\r\n");
-      for(String t : to) {
-        sb.append("RCPT TO:<" + t + ">\r\n");
-      }
-      return sb.toString();
     }
     private void reset() {
       from = null;

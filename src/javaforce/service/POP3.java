@@ -516,14 +516,6 @@ public class POP3 extends Thread {
           break;
       }
     }
-    private String getHeaders() {
-      StringBuilder sb = new StringBuilder();
-      sb.append("MAIL FROM:<" + from + ">\r\n");
-      for(String t : to) {
-        sb.append("RCPT TO:<" + t + ">\r\n");
-      }
-      return sb.toString();
-    }
     private void reset() {
       from = null;
       mailbox = null;
