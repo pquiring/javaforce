@@ -126,6 +126,8 @@ public class SMTPRelay extends Thread {
             pop3.disconnect();
             throw new Exception("SMTP auth failed!");
           }
+        } else {
+          smtp.login();  //HELO
         }
         //decode message and re-send
         String msg = new String(data);
