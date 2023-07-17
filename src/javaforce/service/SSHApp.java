@@ -189,21 +189,6 @@ public class SSHApp extends javax.swing.JFrame {
         }
       });
     }
-    public void getKeys(String status) {
-      java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-          if (status.equals("OK")) {
-            JFAWT.showMessage("GenKeys", "OK");
-          } else {
-            JFAWT.showError("GenKeys", "Error");
-          }
-        }
-      });
-    }
-  }
-
-  private void genKeys() {
-    busClient.call(SSH.busPack, "genKeys", "\"" + busClient.pack + "\"");
   }
 
   private void showHelp() {

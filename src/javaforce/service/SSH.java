@@ -39,8 +39,6 @@ public class SSH extends Thread {
   private SshServer sshd;
 
   //config
-  private String username = "bob";
-  private String password = "secret";
   private String root = null;
 
   public static String getConfigFile() {
@@ -105,7 +103,18 @@ public class SSH extends Thread {
       sshd.setPublickeyAuthenticator((s, publicKey, serverSession) -> true);
 
       //Allow username/password authentication using pre-defined credentials
-      sshd.setPasswordAuthenticator((username, password, serverSession) ->  username.equals(username) && password.equals(password));
+      sshd.setPasswordAuthenticator((username, password, serverSession) -> {
+        for(String u_p : user_pass_list) {
+          int idx = u_p.indexOf(':');
+          if (idx == -1) continue;
+          String user = u_p.substring(0, idx);
+          String pass = u_p.substring(idx + 1);
+          if (user.equals(username) && pass.equals(password)) {
+            return true;
+          }
+        }
+        return false;
+      });
 
       //Setup Virtual File System (VFS)
       Path dir = Paths.get(root);
