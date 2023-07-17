@@ -14,4 +14,7 @@
 
   <target name="jar" depends="depjars,compile" description="build jar file">
   </target>
+
+  <target name="install" description="install files for linux">
+  </target>
 </project>
