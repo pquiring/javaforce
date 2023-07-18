@@ -378,18 +378,19 @@ public class SMTP extends Thread {
     public void close() {
       if (c != null) {
         try { c.close(); } catch (Exception e) {}
+        c = null;
       }
     }
     public String readln() {
       if (bufferSize > 0) {
-        System.arraycopy(buffer, 0, req, 0, buffer.length);
+        System.arraycopy(buffer, 0, req, 0, bufferSize);
         reqSize = bufferSize;
         bufferSize = 0;
       } else {
         reqSize = 0;
       }
       try {
-        while (c.isConnected()) {
+        while (c != null && c.isConnected()) {
           //check for EOL
           if (reqSize >= 2) {
             for(int idx=2;idx<=reqSize;idx++) {
@@ -404,10 +405,6 @@ public class SMTP extends Thread {
               }
             }
           }
-          //read more data
-          int read = cis.read(req, reqSize, req.length - reqSize);
-          if (read < 0) break;
-          reqSize += read;
           //expand buffer if needed
           if (reqSize == req.length) {
             //req buffer full - expand it
@@ -420,6 +417,10 @@ public class SMTP extends Thread {
             System.arraycopy(req, 0, new_req, 0, req.length);
             req = new_req;
           }
+          //read more data
+          int read = cis.read(req, reqSize, req.length - reqSize);
+          if (read < 0) break;
+          reqSize += read;
         }
       } catch (Exception e) {
         JFLog.log(e);
@@ -432,7 +433,7 @@ public class SMTP extends Thread {
         cis = c.getInputStream();
         cos = c.getOutputStream();
         cos.write(("220 jfSMTP Server/" + JF.getVersion() + "\r\n").getBytes());
-        while (c.isConnected()) {
+        while (c != null && c.isConnected()) {
           String cmd = readln();
           if (cmd == null) break;
           if (cmd.equalsIgnoreCase("QUIT")) {
@@ -464,9 +465,11 @@ public class SMTP extends Thread {
             case "LOGIN": {  //plain text
               cos.write("334 Send username\r\n".getBytes());
               String user_base64 = readln();
+              if (user_base64 == null) {close(); return;}
               String user = new String(javaforce.Base64.decode(user_base64.getBytes()));
               cos.write("334 Send password\r\n".getBytes());
               String pass_base64 = readln();
+              if (pass_base64 == null) {close(); return;}
               String pass = new String(javaforce.Base64.decode(pass_base64.getBytes()));
               if (login(user, pass)) {
                 cos.write("235 Login successful\r\n".getBytes());
@@ -508,9 +511,10 @@ public class SMTP extends Thread {
           cos.write("354 Send Data\r\n".getBytes());
           String msgfile = mailbox + "/" + System.currentTimeMillis() + ".msg";
           OutputStream msgstream = new FileOutputStream(msgfile);
-          while (c.isConnected()) {
+          while (c != null && c.isConnected()) {
             String ln = readln();
-            if (ln == null || ln.equals(".")) {
+            if (ln == null) {close(); return;}
+            if (ln.equals(".")) {
               break;
             }
             msgstream.write(ln.getBytes());

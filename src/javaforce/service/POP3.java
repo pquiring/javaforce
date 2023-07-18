@@ -6,6 +6,9 @@ package javaforce.service;
  *
  * Supported ports : 110, 995(ssl)
  *
+ * TODO : UIDL, XTND, XLST (Thunderbird requests)
+ * TODO : TOP, RSET
+ *
  * @author pquiring
  */
 
@@ -383,14 +386,14 @@ public class POP3 extends Thread {
     }
     public String readln() {
       if (bufferSize > 0) {
-        System.arraycopy(buffer, 0, req, 0, buffer.length);
-        reqSize = buffer.length;
+        System.arraycopy(buffer, 0, req, 0, bufferSize);
+        reqSize = bufferSize;
         bufferSize = 0;
       } else {
         reqSize = 0;
       }
       try {
-        while (c.isConnected()) {
+        while (c != null && c.isConnected()) {
           //check for EOL
           if (reqSize >= 2) {
             for(int idx=2;idx<=reqSize;idx++) {
@@ -405,10 +408,6 @@ public class POP3 extends Thread {
               }
             }
           }
-          //read more data
-          int read = cis.read(req, reqSize, req.length - reqSize);
-          if (read < 0) break;
-          reqSize += read;
           //expand buffer if needed
           if (reqSize == req.length) {
             //req buffer full - expand it
@@ -421,6 +420,10 @@ public class POP3 extends Thread {
             System.arraycopy(req, 0, new_req, 0, req.length);
             req = new_req;
           }
+          //read more data
+          int read = cis.read(req, reqSize, req.length - reqSize);
+          if (read < 0) break;
+          reqSize += read;
         }
       } catch (Exception e) {
         JFLog.log(e);
