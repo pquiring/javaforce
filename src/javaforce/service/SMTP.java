@@ -509,18 +509,21 @@ public class SMTP extends Thread {
             break;
           }
           cos.write("354 Send Data\r\n".getBytes());
-          String msgfile = mailbox + "/" + System.currentTimeMillis() + ".msg";
-          OutputStream msgstream = new FileOutputStream(msgfile);
+          String basefile = mailbox + "/" + System.currentTimeMillis();
+          String quefile = basefile + ".que";
+          String msgfile = basefile + ".msg";
+          OutputStream questream = new FileOutputStream(quefile);
           while (c != null && c.isConnected()) {
             String ln = readln();
             if (ln == null) {close(); return;}
             if (ln.equals(".")) {
               break;
             }
-            msgstream.write(ln.getBytes());
-            msgstream.write("\r\n".getBytes());
+            questream.write(ln.getBytes());
+            questream.write("\r\n".getBytes());
           }
-          msgstream.close();
+          questream.close();
+          new File(quefile).renameTo(new File(msgfile));
           if (events != null) {
             events.message(smtp, mailbox, msgfile);
           }
