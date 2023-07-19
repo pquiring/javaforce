@@ -6,7 +6,7 @@ package javaforce.service;
  *
  * Supported ports : 110, 995(ssl)
  *
- * TODO : UIDL, XTND, XLST (Thunderbird requests)
+ * TODO : XTND, XLST (Thunderbird requests)
  * TODO : TOP, RSET
  *
  * @author pquiring
@@ -584,6 +584,10 @@ public class POP3 extends Thread {
             start = p[1];
           }
           cos.write(uidl(start).getBytes());
+          break;
+        }
+        case "NOOP": {
+          cos.write("+OK no operation\r\n".getBytes());
           break;
         }
         default:
