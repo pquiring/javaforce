@@ -1,7 +1,6 @@
 Project Descriptions
 ====================
 
-broken - non-functional apps
 jfapps - Application Management for jfLinux
 jfarchive - Archive Manager for jfLinux
 jfaudio - Audio Editor

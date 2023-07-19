@@ -1,2 +1,0 @@
-#!/bin/bash
-java -cp /usr/share/java/javaforce.jar:/usr/share/java/jfview.jar ViewApp "$1"
