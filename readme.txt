@@ -14,28 +14,13 @@ JavaForce (JF) is a Java library featuring:
   - tasks to package apps (msi, deb, rpm, etc.)
 
 Includes many apps built around the library such as jfPhone, jfVideo Creator, jfAudio, jfMusic, etc.
+  - see projects/readme.txt for complete list
 
 JF is also the core library in the Java infused Linux Operating system:
   https://github.com/pquiring/javaforce/tree/master/linux
 
 JF is also used to create jfCraft, a Minecraft clone:
   http://pquiring.github.io/jfcraft
-
-Projects
-========
-jfPhone - VoIP soft phone
-
-jfVideo - video production
-
-jfAudio - audio editor
-
-jfPaint - multi-tabbed image editor
-
-jfDVR - Records IP/RTSP/H264 cameras with motion detection
-
-jfBackup - Enterprise tape backup system
-
-and many more... (see projects/readme.txt for complete list)
 
 Folders
 =======
