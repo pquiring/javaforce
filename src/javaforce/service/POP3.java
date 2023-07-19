@@ -528,7 +528,7 @@ public class POP3 extends Thread {
             cos.write("-ERR mailbox not ready\r\n".getBytes());
             break;
           }
-          int idx = Integer.valueOf(p[1]);
+          int idx = calcIndex(p[1]);
           idx--;
           if (idx < 0 || idx >= files.length || files[idx] == null) {
             cos.write("-ERR message not found\r\n".getBytes());
@@ -561,7 +561,7 @@ public class POP3 extends Thread {
             cos.write("-ERR mailbox not ready\r\n".getBytes());
             break;
           }
-          int idx = Integer.valueOf(p[1]);
+          int idx = calcIndex(p[1]);
           idx--;
           if (idx < 0 || idx >= files.length || files[idx] == null) {
             cos.write("-ERR message not found\r\n".getBytes());
@@ -577,10 +577,37 @@ public class POP3 extends Thread {
           }
           break;
         }
+        case "UIDL": {
+          //unique id listing
+          String start = "1";
+          if (p.length > 1) {
+            start = p[1];
+          }
+          cos.write(uidl(start).getBytes());
+          break;
+        }
         default:
           cos.write("-ERR Unknown command\r\n".getBytes());
           break;
       }
+    }
+    private int calcIndex(String arg) {
+      int idx;
+      if (arg.length() < 1000000) {
+        idx = Integer.valueOf(arg);
+      } else {
+        String find = arg + ".msg";
+        idx = 0;
+        int offset = 1;
+        for(File file : files) {
+          if (file.getName().equals(find)) {
+            idx = offset;
+            break;
+          }
+          offset++;
+        }
+      }
+      return idx;
     }
     private void reset() {
       from = null;
@@ -593,7 +620,12 @@ public class POP3 extends Thread {
       listFiles();
     }
     private void listFiles() {
-      files = new File(mailbox).listFiles();
+      files = new File(mailbox).listFiles(new FilenameFilter() {
+        public boolean accept(File dir, String name) {
+          return name.endsWith(".msg");
+        }
+
+      });
     }
     private String stat() {
       if (mailbox == null) {
@@ -603,7 +635,6 @@ public class POP3 extends Thread {
       int size = 0;
       listFiles();
       for(File file : files) {
-        if (!file.getName().endsWith(".msg")) continue;
         cnt++;
         size += file.length();
       }
@@ -625,7 +656,6 @@ public class POP3 extends Thread {
       int idx = 1;
       listFiles();
       for(File file : files) {
-        if (!file.getName().endsWith(".msg")) continue;
         cnt++;
         long msgsize = file.length();
         size += msgsize;
@@ -640,6 +670,34 @@ public class POP3 extends Thread {
       reply.append(" ");
       reply.append(size);
       reply.append("\r\n");
+      reply.append(list);
+      reply.append(".\r\n");
+      return reply.toString();
+    }
+    private String uidl(String start) {
+      if (mailbox == null) {
+        return "-ERR Mailbox not ready\r\n";
+      }
+      int sidx = 1;
+      if (start.length() > 0) {
+        sidx = JF.atoi(start);
+      }
+      StringBuilder list = new StringBuilder();
+      int idx = 0;
+      listFiles();
+      for(File file : files) {
+        String filename = file.getName();
+        int ext = filename.indexOf('.');
+        filename = filename.substring(0, ext);
+        idx++;
+        if (idx < sidx) continue;
+        list.append(idx);  //index
+        list.append(" ");
+        list.append(filename);  //unique ID (timestamp when file was created)
+        list.append("\r\n");
+      }
+      StringBuilder reply = new StringBuilder();
+      reply.append("+OK unique ID list follows...\r\n");
       reply.append(list);
       reply.append(".\r\n");
       return reply.toString();
