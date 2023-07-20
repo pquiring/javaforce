@@ -531,26 +531,34 @@ public class SMTP extends Thread {
           reset();
           break;
         case "MAIL":
-          from = strip_email(p[1]);  //FROM:<user@domain.com>
+          if (from != null) {
+            cos.write("550 Already have from email\r\n".getBytes());
+            break;
+          }
+          from = getEmail(p[1]);  //FROM:<user@domain.com>
           if (from == null) {
             cos.write("550 User not found\r\n".getBytes());
             break;
           }
-          mailbox = getMailboxFolder(from);
           cos.write("250 Ok\r\n".getBytes());
           break;
         case "RCPT":
-          if (mailbox == null) {
-            cos.write("550 MAIL not specified\r\n".getBytes());
-            break;
-          }
-          String email = strip_email(p[1]);
+          String email = getEmail(p[1]);
           if (email == null) {
             cos.write("550 User not found\r\n".getBytes());
+            break;
           }
           to.add(email);
-          if (false) {
-            cos.write("551 Forwarding disabled\r\n".getBytes());
+          if (digest) {
+            if (mailbox == null) {
+              mailbox = getMailboxFolder(null);
+            }
+          } else {
+            if (mailbox != null) {
+              cos.write("551 Forwarding disabled\r\n".getBytes());
+              break;
+            }
+            mailbox = getMailboxFolder(email);
           }
           cos.write("250 Ok\r\n".getBytes());
           break;
@@ -566,7 +574,7 @@ public class SMTP extends Thread {
     }
   }
 
-  public static String strip_email(String email) {
+  public static String getEmail(String email) {
     int i1 = email.indexOf('<');
     if (i1 == -1) return null;
     int i2 = email.indexOf('>');
