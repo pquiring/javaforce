@@ -32,7 +32,7 @@ function detectos {
 
 function package {
   echo Packaging $1
-  cp $1-$3.jar /usr/share/java/$1.jar
+  sudo cp $1-$3.jar /usr/share/java/$1.jar
   echo /usr/share/java/$1.jar > files.lst
   if [ -f build.xml ]; then rm build.xml; fi
   echo "<project>" >> build.xml
