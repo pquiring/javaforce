@@ -2,7 +2,7 @@ POP3 Server
 ===========
 
 A simple POP3 Server.
- - digest mode reads all messages in global mailbox (see jfSMTP)
+ - admin user can read all messages in global mailbox (see jfSMTP in digest mode)
 
 See jfSMTP for email server.
 

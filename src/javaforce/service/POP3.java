@@ -41,7 +41,7 @@ public class POP3 extends Thread {
     } else {
       path.append("/var/jfsmtp/mail");
     }
-    if (!digest) {
+    if (user != null) {
       path.append("/");
       path.append(user);
     }
@@ -63,14 +63,16 @@ public class POP3 extends Thread {
   private static ArrayList<ServerWorker> servers = new ArrayList<ServerWorker>();
   private static ArrayList<ClientWorker> clients = new ArrayList<ClientWorker>();
   private static String domain;
-  private static String ldap_server = null;
-  private static ArrayList<String> user_pass_list;
+  private static String ldap_domain;
+  private static String ldap_server;
+  private static ArrayList<EMail> users;
   private static Object lock = new Object();
   private static IP4Port bind = new IP4Port();
   private static ArrayList<Subnet4> subnet_src_list;
   private static ArrayList<Integer> ports = new ArrayList<>();
   private static ArrayList<Integer> ssl_ports = new ArrayList<>();
-  private static boolean digest = false;  //messages are stored in global mailbox for retrieval by SMTPRelay agent
+
+  private static final int FLAG_ADMIN = 1;
 
   public POP3() {
   }
@@ -143,16 +145,17 @@ public class POP3 extends Thread {
     + "#secure=995\n"  //implicit SSL port
     + "#bind=192.168.100.2\n"
     + "#domain=example.com\n"
+    + "#ldap_domain=example.com\n"
     + "#ldap_server=192.168.200.2\n"
+    + "#admin=user:pass\n"
     + "#account=user:pass\n"
-    + "#digest=true\n"  //digest mode (global mailbox)
     + "#src.ipnet=192.168.2.0/255.255.255.0\n"
     + "#src.ip=192.168.3.2\n"
     ;
 
   private void loadConfig() {
     JFLog.log("loadConfig");
-    user_pass_list = new ArrayList<String>();
+    users = new ArrayList<EMail>();
     Section section = Section.None;
     bind.setIP("0.0.0.0");  //bind to all interfaces
     bind.port = 110;
@@ -193,17 +196,27 @@ public class POP3 extends Thread {
                   break;
                 }
                 break;
+              case "admin":
               case "account":
-                user_pass_list.add(value);
+                EMail user = new EMail();
+                int cln = value.indexOf(':');
+                if (cln == -1) {
+                  JFLog.log("Invalid user:" + value);
+                  continue;
+                }
+                user.user = value.substring(0, cln);
+                user.pass = value.substring(cln + 1);
+                user.flags = key.equals("admin") ? FLAG_ADMIN : 0;
+                users.add(user);
                 break;
               case "domain":
                 domain = value;
                 break;
+              case "ldap_domain":
+                ldap_domain = value;
+                break;
               case "ldap_server":
                 ldap_server = value;
-                break;
-              case "digest":
-                digest = value.equals("true");
                 break;
               case "debug":
                 debug = value.equals("true");
@@ -260,29 +273,6 @@ public class POP3 extends Thread {
     } catch (Exception e) {
       JFLog.log(e);
     }
-  }
-
-  public static boolean login(String user, String pass, boolean _md5) {
-    for(String u_p : user_pass_list) {
-      int idx = u_p.indexOf(':');
-      if (idx == -1) continue;
-      String u = u_p.substring(0, idx);
-      String p = u_p.substring(idx + 1);
-      if (u.equals(user)) {
-        if (_md5) {
-          MD5 md5 = new MD5();
-          md5.add(p);
-          return md5.toString().equals(pass);
-        } else {
-          return p.equals(pass);
-        }
-      }
-    }
-    if (ldap_server != null && domain != null) {
-      LDAP ldap = new LDAP();
-      return ldap.login(ldap_server, domain, user, pass);
-    }
-    return false;
   }
 
   public static class ServerWorker extends Thread {
@@ -370,10 +360,9 @@ public class POP3 extends Thread {
 
     private String mailbox;
     private File[] files;
-    private String from;
-    private ArrayList<String> to = new ArrayList<>();
 
     private String user;
+    private boolean admin;
 
     public ClientWorker(Socket s, boolean secure) {
       c = s;
@@ -453,6 +442,26 @@ public class POP3 extends Thread {
       removeSession(this);
     }
 
+    public boolean login(String user, String pass, boolean _md5) {
+      for(EMail acct : users) {
+        if (acct.user.equals(user)) {
+          admin = (acct.flags & FLAG_ADMIN) != 0;
+          if (_md5) {
+            MD5 md5 = new MD5();
+            md5.add(acct.pass);
+            return md5.toString().equals(pass);
+          } else {
+            return acct.pass.equals(pass);
+          }
+        }
+      }
+      if (ldap_server != null && ldap_domain != null) {
+        LDAP ldap = new LDAP();
+        return ldap.login(ldap_server, ldap_domain, user, pass);
+      }
+      return false;
+    }
+
     private static final int bufsiz = 1500 - 20 - 20;
 
     private void doCommand(String cmd) throws Exception {
@@ -528,7 +537,7 @@ public class POP3 extends Thread {
             cos.write("-ERR mailbox not ready\r\n".getBytes());
             break;
           }
-          int idx = calcIndex(p[1]);
+          int idx = getIndex(p[1]);
           idx--;
           if (idx < 0 || idx >= files.length || files[idx] == null) {
             cos.write("-ERR message not found\r\n".getBytes());
@@ -536,7 +545,8 @@ public class POP3 extends Thread {
           }
           try {
             File file = files[idx];
-            FileInputStream fis = new FileInputStream(file);
+            String realfile = getMailboxFolder(null) + file.getName();
+            FileInputStream fis = new FileInputStream(realfile);
             long size = file.length();
             long sent = 0;
             cos.write(("+OK " + size + " octets\r\n").getBytes());
@@ -561,14 +571,14 @@ public class POP3 extends Thread {
             cos.write("-ERR mailbox not ready\r\n".getBytes());
             break;
           }
-          int idx = calcIndex(p[1]);
+          int idx = getIndex(p[1]);
           idx--;
           if (idx < 0 || idx >= files.length || files[idx] == null) {
             cos.write("-ERR message not found\r\n".getBytes());
             break;
           }
           try {
-            files[idx].delete();
+            deleteMsg(files[idx]);
             files[idx] = null;
             cos.write(("+OK message " + (idx+1) + " deleted\r\n").getBytes());
           } catch (Exception e) {
@@ -595,12 +605,10 @@ public class POP3 extends Thread {
           break;
       }
     }
-    private int calcIndex(String arg) {
+    private int getIndex(String arg) {
       int idx;
-      if (arg.length() < 1000000) {
-        idx = Integer.valueOf(arg);
-      } else {
-        String find = arg + ".msg";
+      if (arg.startsWith("T-")) {
+        String find = arg.substring(2) + ".msg";
         idx = 0;
         int offset = 1;
         for(File file : files) {
@@ -610,17 +618,55 @@ public class POP3 extends Thread {
           }
           offset++;
         }
+      } else {
+        idx = Integer.valueOf(arg);
       }
       return idx;
     }
     private void reset() {
-      from = null;
       mailbox = null;
       files = null;
-      to.clear();
+    }
+    private void deleteMsg(File file) {
+      //deletes user .msg file
+      //deletes real .msg file if all other recipients have deleted msg
+      synchronized(lock) {
+        try {
+          if (admin) {
+            //TODO : check all users do not have .msg file linked (what about ldap users?)
+            file.delete();
+            return;
+          }
+          String filename = file.getName();
+          FileInputStream fis = new FileInputStream(file);
+          byte[] data = fis.readAllBytes();
+          fis.close();
+          file.delete();  //delete user .msg file
+          String[] lns = new String(data).split("\r\n");
+          for(String ln : lns) {
+            if (!ln.startsWith("to:")) continue;
+            String to_user = ln.substring(3);
+            String usermailbox = getMailboxFolder(to_user);
+            if (new File(usermailbox + "/" + filename).exists()) {
+              //msg still linked to another recipient
+              return;
+            }
+          }
+          //real msg no longer needed
+          String mailbox = getMailboxFolder(null);
+          String msgfile = mailbox + "/" + filename;
+          new File(msgfile).delete();  //delete real .msg file
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
+      }
     }
     private void setupMailbox() {
-      mailbox = getMailboxFolder(user);
+      if (admin) {
+        mailbox = getMailboxFolder(null);
+      } else {
+        mailbox = getMailboxFolder(user);
+      }
       listFiles();
     }
     private void listFiles() {
@@ -628,7 +674,6 @@ public class POP3 extends Thread {
         public boolean accept(File dir, String name) {
           return name.endsWith(".msg");
         }
-
       });
     }
     private String stat() {
@@ -696,7 +741,7 @@ public class POP3 extends Thread {
         idx++;
         if (idx < sidx) continue;
         list.append(idx);  //index
-        list.append(" ");
+        list.append(" T-");
         list.append(filename);  //unique ID (timestamp when file was created)
         list.append("\r\n");
       }
@@ -706,14 +751,6 @@ public class POP3 extends Thread {
       reply.append(".\r\n");
       return reply.toString();
     }
-  }
-
-  public static String strip_email(String email) {
-    int i1 = email.indexOf('<');
-    if (i1 == -1) return null;
-    int i2 = email.indexOf('>');
-    if (i2 == -1) return null;
-    return email.substring(i1 + 1, i2);
   }
 
   public static void serviceStart(String[] args) {

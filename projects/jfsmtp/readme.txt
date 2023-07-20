@@ -2,9 +2,8 @@ SMTP Server
 ===========
 
 A simple SMTP Server.
- - does NOT support message relaying to other SMTP servers
- - only one recipent supported
- - digest mode dumps all emails into global mailbox (allows multiple recipents) for use by jfPOP3
+ - does NOT support message forwarding to other SMTP servers
+ - digest mode dumps all emails into global mailbox (allows any recipients) for retrieval by jfPOP3 admin account
 
 See jfPOP3 for email retrieval.
 

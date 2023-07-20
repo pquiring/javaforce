@@ -6,5 +6,5 @@ package javaforce.service;
  */
 
 public interface SMTPEvents {
-  public void message(SMTP server, String mailbox, String msgfile);
+  public void message(SMTP server, String msgfile);
 }

@@ -2,7 +2,7 @@ package javaforce.service;
 
 /** SMTP Server.
  *
- * Simple non-relaying server.
+ * Simple non-relaying mail server.
  *
  * Supports 25, 465(ssl), 587(tls)
  *
@@ -40,7 +40,7 @@ public class SMTP extends Thread {
     } else {
       path.append("/var/jfsmtp/mail");
     }
-    if (!digest) {
+    if (user != null) {
       path.append("/");
       path.append(user);
     }
@@ -63,14 +63,15 @@ public class SMTP extends Thread {
   private static ArrayList<ServerWorker> servers = new ArrayList<ServerWorker>();
   private static ArrayList<ClientWorker> clients = new ArrayList<ClientWorker>();
   private static String domain;
-  private static String ldap_server = null;
-  private static ArrayList<String> user_pass_list;
+  private static String ldap_domain;
+  private static String ldap_server;
+  private static ArrayList<EMail> users;
   private static Object lock = new Object();
   private static IP4Port bind = new IP4Port();
   private static ArrayList<Subnet4> subnet_src_list;
   private static ArrayList<Integer> ports = new ArrayList<>();
   private static ArrayList<Integer> ssl_ports = new ArrayList<>();
-  private static boolean digest = false;  //messages are stored in global mailbox for retrieval by SMTPRelay agent
+  private static boolean digest = false;  //any message is accepted ignoring all recipents (use POP3 admin account to retrieve)
 
   public SMTP() {
   }
@@ -148,16 +149,17 @@ public class SMTP extends Thread {
     + "#secure=465\n"  //implicit SSL port
     + "#bind=192.168.100.2\n"
     + "#domain=example.com\n"
+    + "#ldap_domain=example.org\n"
     + "#ldap_server=192.168.200.2\n"
     + "#account=user:pass\n"
-    + "#digest=true\n"  //digest mode (see SMTPRelay service)
+    + "#digest=true\n"  //digest mode (see POP3/SMTPRelay services)
     + "#src.ipnet=192.168.2.0/255.255.255.0\n"
     + "#src.ip=192.168.3.2\n"
     ;
 
   private void loadConfig() {
     JFLog.log("loadConfig");
-    user_pass_list = new ArrayList<String>();
+    users = new ArrayList<EMail>();
     Section section = Section.None;
     bind.setIP("0.0.0.0");  //bind to all interfaces
     bind.port = 25;
@@ -198,11 +200,23 @@ public class SMTP extends Thread {
                   break;
                 }
                 break;
-              case "account":
-                user_pass_list.add(value);
+              case "account": {
+                EMail user = new EMail();
+                int cln = value.indexOf(':');
+                if (cln == -1) {
+                  JFLog.log("Invalid user:" + value);
+                  continue;
+                }
+                user.user = value.substring(0, cln);
+                user.pass = value.substring(cln + 1);
+                users.add(user);
                 break;
+              }
               case "domain":
                 domain = value;
+                break;
+              case "ldap_domain":
+                ldap_domain = value;
                 break;
               case "ldap_server":
                 ldap_server = value;
@@ -268,18 +282,14 @@ public class SMTP extends Thread {
   }
 
   public static boolean login(String user, String pass) {
-    for(String u_p : user_pass_list) {
-      int idx = u_p.indexOf(':');
-      if (idx == -1) continue;
-      String u = u_p.substring(0, idx);
-      String p = u_p.substring(idx + 1);
-      if (u.equals(user)) {
-        return p.equals(pass);
+    for(EMail acct : users) {
+      if (acct.user.equals(user)) {
+        return acct.pass.equals(pass);
       }
     }
-    if (ldap_server != null && domain != null) {
+    if (ldap_server != null && ldap_domain != null) {
       LDAP ldap = new LDAP();
-      return ldap.login(ldap_server, domain, user, pass);
+      return ldap.login(ldap_server, ldap_domain, user, pass);
     }
     return false;
   }
@@ -355,6 +365,16 @@ public class SMTP extends Thread {
     return false;
   }
 
+  private static boolean userExists(EMail email) {
+    for(EMail acct : users) {
+      if (acct.name.equals(email.name)) {
+        return true;
+      }
+    }
+    //TODO : ldap users? (don't have password)
+    return false;
+  }
+
   public static class ClientWorker extends Thread {
     private Socket c;
     private boolean secure;
@@ -367,9 +387,8 @@ public class SMTP extends Thread {
     private byte[] buffer = new byte[1500];
     private int bufferSize = 0;
 
-    private String mailbox;
-    private String from;
-    private ArrayList<String> to = new ArrayList<>();
+    private EMail from;
+    private ArrayList<EMail> to = new ArrayList<>();
 
     public ClientWorker(Socket s, boolean secure) {
       c = s;
@@ -500,16 +519,21 @@ public class SMTP extends Thread {
           secure = true;
           break;
         case "DATA":
-          if (mailbox == null) {
-            cos.write("550 mailbox not ready\r\n".getBytes());
+          if (from == null) {
+            cos.write("550 No from address\r\n".getBytes());
             break;
           }
-          if (from == null) {
-            cos.write("550 User not found\r\n".getBytes());
+          if (to.size() == 0) {
+            cos.write("550 No recipients\r\n".getBytes());
             break;
           }
           cos.write("354 Send Data\r\n".getBytes());
-          String basefile = mailbox + "/" + System.currentTimeMillis();
+          String filename;
+          synchronized(lock) {
+            filename = Long.toString(System.currentTimeMillis());
+            JF.sleep(10);
+          }
+          String basefile = getMailboxFolder(null) + "/" + filename;
           String quefile = basefile + ".que";
           String msgfile = basefile + ".msg";
           OutputStream questream = new FileOutputStream(quefile);
@@ -524,8 +548,28 @@ public class SMTP extends Thread {
           }
           questream.close();
           new File(quefile).renameTo(new File(msgfile));
+          if (!digest) {
+            //link message to each recipient
+            StringBuilder to_list = new StringBuilder();
+            for(EMail acct : to) {
+              to_list.append("to:");
+              to_list.append(acct.user);
+              to_list.append("\r\n");
+            }
+            byte[] to_data = to_list.toString().getBytes();
+            for(EMail acct : to) {
+              String userbox = getMailboxFolder(acct.user);
+              String userbasefile = userbox + "/" + filename;
+              String userquefile = userbasefile + ".que";
+              String usermsgfile = userbasefile + ".msg";
+              FileOutputStream fos = new FileOutputStream(userquefile);
+              fos.write(to_data);
+              fos.close();
+              new File(userquefile).renameTo(new File(usermsgfile));
+            }
+          }
           if (events != null) {
-            events.message(smtp, mailbox, msgfile);
+            events.message(smtp, msgfile);
           }
           cos.write("250 Ok\r\n".getBytes());
           reset();
@@ -535,31 +579,31 @@ public class SMTP extends Thread {
             cos.write("550 Already have from email\r\n".getBytes());
             break;
           }
-          from = getEmail(p[1]);  //FROM:<user@domain.com>
-          if (from == null) {
-            cos.write("550 User not found\r\n".getBytes());
+          from = new EMail();
+          if (!from.set(cmd)) {  //MAIL FROM:<user@domain.com>
+            from = null;
+            cos.write("550 Invalid from address\r\n".getBytes());
             break;
           }
           cos.write("250 Ok\r\n".getBytes());
           break;
         case "RCPT":
-          String email = getEmail(p[1]);
-          if (email == null) {
-            cos.write("550 User not found\r\n".getBytes());
+          EMail email = new EMail();
+          if (!email.set(cmd)) {
+            cos.write("550 Invalid to address\r\n".getBytes());
             break;
           }
-          to.add(email);
-          if (digest) {
-            if (mailbox == null) {
-              mailbox = getMailboxFolder(null);
-            }
-          } else {
-            if (mailbox != null) {
-              cos.write("551 Forwarding disabled\r\n".getBytes());
+          if (!digest) {
+            if (domain != null && !email.domain.equals(domain)) {
+              cos.write("550 Server will not relay messages\r\n".getBytes());
               break;
             }
-            mailbox = getMailboxFolder(email);
+            if (!userExists(email)) {
+              cos.write("550 User not found\r\n".getBytes());
+              break;
+            }
           }
+          to.add(email);
           cos.write("250 Ok\r\n".getBytes());
           break;
         default:
@@ -569,17 +613,8 @@ public class SMTP extends Thread {
     }
     private void reset() {
       from = null;
-      mailbox = null;
       to.clear();
     }
-  }
-
-  public static String getEmail(String email) {
-    int i1 = email.indexOf('<');
-    if (i1 == -1) return null;
-    int i2 = email.indexOf('>');
-    if (i2 == -1) return null;
-    return email.substring(i1 + 1, i2);
   }
 
   public static void serviceStart(String[] args) {
