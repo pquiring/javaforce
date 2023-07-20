@@ -20,7 +20,7 @@ import javax.naming.directory.*;
 public class JF {
 
   public static String getVersion() {
-    return "41.0";
+    return "42.0";
   }
 
   public static void main(String[] args) {

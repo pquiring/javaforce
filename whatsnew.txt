@@ -1,5 +1,16 @@
 What's new...
 
+July 20/2023 : JF/42.0
+  - added POP3 server
+    - jfPOP3/0.1
+  - upgraded SMTP features and released as standalone server
+    - jfSMTP/0.1
+  - added SMTPRelay server
+    - relays msgs from POP3 to another SMTP server
+    - jfSMTPRelay/0.1
+  - added SSH server
+    - jfSSH/0.1
+
 July 12/2023 : JF/41.0
   - added support for svg using batik
     - jfPaint/0.27

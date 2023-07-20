@@ -52,3 +52,4 @@ package derby jfderby 10.16.1.1
 package sshd-core jfsshd-core 2.10.0
 package sshd-common jfsshd-common 2.10.0
 package sshd-sftp jfsshd-sftp 2.10.0
+package sshd-scp jfsshd-scp 2.10.0
