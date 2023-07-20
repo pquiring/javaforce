@@ -545,7 +545,7 @@ public class POP3 extends Thread {
           }
           try {
             File file = files[idx];
-            String realfile = getMailboxFolder(null) + file.getName();
+            String realfile = getMailboxFolder(null) + "/" + file.getName();
             FileInputStream fis = new FileInputStream(realfile);
             long size = file.length();
             long sent = 0;
