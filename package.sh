@@ -32,7 +32,7 @@ function detectos {
 
 detectos
 
-if [ ! -f jars/javaforce.jar ]; then
+if [ ! -f javaforce.jar ]; then
   echo Please build javaforce first!
   exit
 fi
