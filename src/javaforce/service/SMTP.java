@@ -367,7 +367,7 @@ public class SMTP extends Thread {
 
   private static boolean userExists(EMail email) {
     for(EMail acct : users) {
-      if (acct.name.equals(email.name)) {
+      if (acct.user.equals(email.user)) {
         return true;
       }
     }

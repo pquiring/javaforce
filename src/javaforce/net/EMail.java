@@ -77,4 +77,8 @@ public class EMail {
   public List<EMail> getToList() {
     return to;
   }
+
+  public String toString() {
+    return user + "@" + domain;
+  }
 }
