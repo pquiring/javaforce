@@ -41,17 +41,6 @@
     <copy file="jfhex.html" todir="/usr/share/jfhelp"/>
   </target>
 
-  <target name="release" depends="jar" description="create release zip file">
-    <zip destfile="jfhex${version}.zip">
-      <fileset dir=".">
-        <include name="*.jar"/>
-        <include name="*.txt"/>
-      </fileset>
-      <fileset dir="../.." includes="license.txt"/>
-    </zip>
-    <move file="jfhex${version}.zip" todir="${home}/release"/>
-  </target>
-
   <target name="clean" description="deletes compiled files">
     <delete>
       <fileset dir="." includes="**/*.class"/>
