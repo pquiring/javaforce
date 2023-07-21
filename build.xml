@@ -67,7 +67,12 @@
 
   <import file="get-jars.xml"/>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,getjars,jar-jcifs,jar-bouncycastle,jar-filters,jar-llrp,jar-jdom,jar-mina1-core,jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-sshd-scp,jar-jargs,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12,jar-batik-all,jar-xmlgraphics-commons,jar-xml-apis-ext">
+  <available property="have-repo" file="repo/readme.txt"/>
+  <target name="get-repo" unless="have-rep" description="download repo">
+    <exec command="git clone https://github.com/pquiring/repo"/>
+  </target>
+
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-repo,getjars,jar-jcifs,jar-bouncycastle,jar-filters,jar-llrp,jar-jdom,jar-mina1-core,jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-sshd-scp,jar-jargs,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12,jar-batik-all,jar-xmlgraphics-commons,jar-xml-apis-ext">
   </target>
 
   <target name="compile" depends="getjars,depjars" description="compile the source">

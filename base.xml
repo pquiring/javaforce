@@ -216,7 +216,7 @@
       <delete file="msvcrt.obj"/>
       <delete file="msvcrt.xml"/>
       <delete file="${msi}-${version}-win64.wixpdb"/>
-      <move unless:set="nomove" file="${msi}-${version}-win64.msi" todir="${home}/release"/>
+      <move unless:set="nomove" file="${msi}-${version}-win64.msi" todir="${home}/windows/amd64"/>
     </sequential>
   </target>
 
@@ -278,6 +278,6 @@
       <arg value="${jre}"/>
       <arg value="${ffmpeg_home}"/>
     </java>
-    <copy file="${app}-${version}.dmg" todir="${home}/release" overwrite="true"/>
+    <copy file="${app}-${version}.dmg" todir="${home}/mac/amd64" overwrite="true"/>
   </target>
 </project>
