@@ -32,12 +32,14 @@ public class SMTPRelay extends Thread {
   private static String smtp_pass;  //login pass (optional)
   private static String smtp_from;  //override 'from' email (optional)
 
+  private static boolean keepalive = false;  //keep POP3 connection active
   private static long interval = 15;  //how often (minutes) to check for new messages
 
   //private static SMTPRelay service;
   private static volatile boolean active;
   private static Object lock = new Object();
   private static SMTPRelay service;
+  private static javaforce.POP3 pop3;
 
   private static boolean debug = false;
 
@@ -76,6 +78,10 @@ public class SMTPRelay extends Thread {
           JF.sleep(1000);
         }
       }
+      if (pop3 != null) {
+        pop3.disconnect();
+        pop3 = null;
+      }
     } catch (Exception e) {
       JFLog.log(e);
     }
@@ -90,23 +96,29 @@ public class SMTPRelay extends Thread {
       JFLog.log("Please configure!");
       return;
     }
+    javaforce.SMTP smtp = null;  //client
     try {
       if (debug) JFLog.log("Checking messages...");
-      javaforce.POP3 pop3 = new javaforce.POP3();  //client
-      pop3.debug = debug;
-      if (debug) JFLog.log("POP3:connecting...");
-      if (pop3_secure)
-        pop3.connectSSL(pop3_host, pop3_port);
-      else
-        pop3.connect(pop3_host, pop3_port);
-      if (debug) JFLog.log("POP3:auth...");
-      if (!pop3.auth(pop3_user, pop3_pass, javaforce.POP3.AUTH_APOP)) {
-        throw new Exception("POP3:auth failed!");
+      if (pop3 == null) {
+        pop3 = new javaforce.POP3();  //client
+        pop3.debug = debug;
+        if (debug) JFLog.log("POP3:connecting...");
+        if (pop3_secure)
+          pop3.connectSSL(pop3_host, pop3_port);
+        else
+          pop3.connect(pop3_host, pop3_port);
+        if (debug) JFLog.log("POP3:auth...");
+        if (!pop3.auth(pop3_user, pop3_pass, javaforce.POP3.AUTH_APOP)) {
+          throw new Exception("POP3:auth failed!");
+        }
       }
       if (debug) JFLog.log("POP3 listing...");
       javaforce.POP3.Message[] list = pop3.list();
       if (list == null || list.length == 0) {
-        pop3.disconnect();
+        if (!keepalive) {
+          pop3.disconnect();
+          pop3 = null;
+        }
         if (debug) JFLog.log("No messages found");
         return;
       }
@@ -115,7 +127,7 @@ public class SMTPRelay extends Thread {
         if (debug) JFLog.log("Relay message:" + em.idx + ":size=" + em.size);
         byte[] data = pop3.get(em.idx);
         if (debug) JFLog.log("Message size=" + data.length);
-        javaforce.SMTP smtp = new javaforce.SMTP();  //client
+        smtp = new javaforce.SMTP();  //client
         smtp.debug = debug;
         if (smtp_secure)
           smtp.connectSSL(smtp_host, smtp_port);
@@ -123,7 +135,7 @@ public class SMTPRelay extends Thread {
           smtp.connect(smtp_host, smtp_port);
         if (smtp_user != null && smtp_pass != null) {
           if (!smtp.auth(smtp_user, smtp_pass, javaforce.SMTP.AUTH_LOGIN)) {
-            pop3.disconnect();
+            smtp.disconnect();
             throw new Exception("SMTP auth failed!");
           }
         } else {
@@ -157,10 +169,25 @@ public class SMTPRelay extends Thread {
         }
         smtp.data(msg);
         smtp.disconnect();
+        smtp = null;
         pop3.delete(em.idx);
       }
-      pop3.disconnect();
+      if (!keepalive) {
+        pop3.disconnect();
+      }
     } catch (Exception e) {
+      if (pop3 != null) {
+        try {
+          pop3.disconnect();
+        } catch (Exception e2) {}
+        pop3 = null;
+      }
+      if (smtp != null) {
+        try {
+          smtp.disconnect();
+        } catch (Exception e2) {}
+        smtp = null;
+      }
       JFLog.log(e);
     }
   }
@@ -187,6 +214,7 @@ public class SMTPRelay extends Thread {
     + "#smtp_user=bob@example.com #optional\n"
     + "#smtp_pass=secret #optional\n"
     + "#smtp_from=bob@example.com #override from email address (optional)\n"
+    + "keepalive=true #keep pop3 connection alive (default = false)\n"
     + "#interval=15 #how often to check for messages (minutes) (default=15)\n"
     ;
 
@@ -233,9 +261,10 @@ public class SMTPRelay extends Thread {
               case "smtp_pass": smtp_pass = value; break;
               case "smtp_from": smtp_from = value; break;
 
+              case "keepalive": keepalive = value.equals("true"); break;
               case "interval":
                 interval = Integer.valueOf(value);
-                if (interval < 5) interval = 5;
+                if (interval < 1) interval = 1;
                 if (interval > 1440) interval = 1440;  //one day
               break;
               case "debug": debug = value.equals("true"); break;
