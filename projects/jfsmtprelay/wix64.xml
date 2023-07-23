@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
-  <Product Id="*" UpgradeCode="{C424F2E5-71CA-4E27-A592-5AE371E15345}" Version="0.1" Language="1033" Name="jfSMTPRelay" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{C424F2E5-71CA-4E27-A592-5AE371E15345}" Version="0.2" Language="1033" Name="jfSMTPRelay" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
