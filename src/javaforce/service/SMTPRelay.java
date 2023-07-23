@@ -174,6 +174,7 @@ public class SMTPRelay extends Thread {
       }
       if (!keepalive) {
         pop3.disconnect();
+        pop3 = null;
       }
     } catch (Exception e) {
       if (pop3 != null) {
