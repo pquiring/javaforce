@@ -30,9 +30,9 @@ public class SSH extends Thread {
   private static JBusServer busServer;
   private JBusClient busClient;
   private String config;
-  private static String domain = null;
+  private static String ldap_domain = null;
   private static String ldap_server = null;
-  private static ArrayList<String> user_pass_list;
+  private static ArrayList<EMail> users;
   private static IP4Port bind = new IP4Port();
 
   private boolean active;
@@ -107,14 +107,14 @@ public class SSH extends Thread {
 
       //Allow username/password authentication using pre-defined credentials
       sshd.setPasswordAuthenticator((username, password, serverSession) -> {
-        for(String u_p : user_pass_list) {
-          int idx = u_p.indexOf(':');
-          if (idx == -1) continue;
-          String user = u_p.substring(0, idx);
-          String pass = u_p.substring(idx + 1);
-          if (user.equals(username) && pass.equals(password)) {
-            return true;
+        for(EMail acct : users) {
+          if (acct.user.equals(username)) {
+            return acct.pass.equals(password);
           }
+        }
+        if (ldap_server != null && ldap_domain != null) {
+          LDAP ldap = new LDAP();
+          return ldap.login(ldap_server, ldap_domain, username, password);
         }
         return false;
       });
@@ -172,7 +172,7 @@ public class SSH extends Thread {
     + "port=22\n"
     + "#root=/\n"
     + "#bind=192.168.100.2\n"
-    + "#domain=example.com\n"
+    + "#ldap_domain=example.com\n"
     + "#ldap_server=192.168.200.2\n"
     + "#account=user:pass\n"
     + "#shell=true\n"
@@ -182,7 +182,7 @@ public class SSH extends Thread {
 
   private void loadConfig() {
     JFLog.log("loadConfig");
-    user_pass_list = new ArrayList<String>();
+    users = new ArrayList<EMail>();
     Section section = Section.None;
     bind.setIP("0.0.0.0");  //bind to all interfaces
     bind.port = 22;
@@ -224,11 +224,19 @@ public class SSH extends Thread {
                   break;
                 }
                 break;
-              case "account":
-                user_pass_list.add(value);
+              case "account": {
+                int cln = value.indexOf(':');
+                if (cln == -1) continue;
+                String user = value.substring(0, cln);
+                String pass = value.substring(cln + 1);
+                EMail acct = new EMail();
+                acct.user = user;
+                acct.pass = pass;
+                users.add(acct);
                 break;
-              case "domain":
-                domain = value;
+              }
+              case "ldap_domain":
+                ldap_domain = value;
                 break;
               case "root":
                 root = value;
