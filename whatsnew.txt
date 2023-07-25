@@ -1,5 +1,11 @@
 What's new...
 
+July 25/2023 : JF/42.1
+  - jfSMTPRelay/0.2
+    - added keepalive option
+  - jfSSH/0.2
+    - added ldap support
+
 July 20/2023 : JF/42.0
   - added POP3 server
     - jfPOP3/0.1
