@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
-  <Product Id="*" UpgradeCode="{E6BC4AC0-4F65-49AE-829A-6466561364EE}" Version="0.1" Language="1033" Name="jfSSH" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{E6BC4AC0-4F65-49AE-829A-6466561364EE}" Version="0.2" Language="1033" Name="jfSSH" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
