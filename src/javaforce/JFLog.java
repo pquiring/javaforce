@@ -24,6 +24,8 @@ public class JFLog {
   private static long timestampBase;
   private static final int maxfilesize = 1024 * 1024;
 
+  public static final int DEFAULT_LOG = 0;
+
   private static class TraceException extends Exception {
     public TraceException(String msg) {
       super(msg);
@@ -56,7 +58,7 @@ public class JFLog {
   }
 
   public static boolean init(String filename, boolean stdout) {
-    return init(0, filename, false, stdout ? System.out : null);
+    return init(DEFAULT_LOG, filename, false, stdout ? System.out : null);
   }
 
   public static boolean init(int id, String filename, boolean stdout) {
@@ -64,7 +66,7 @@ public class JFLog {
   }
 
   public static boolean append(String filename, boolean stdout) {
-    return init(0, filename, true, stdout ? System.out : null);
+    return init(DEFAULT_LOG, filename, true, stdout ? System.out : null);
   }
 
   public static boolean append(int id, String filename, boolean stdout) {
@@ -83,7 +85,7 @@ public class JFLog {
   }
 
   public static void setRetention(int days) {
-    setRetention(0, days);
+    setRetention(DEFAULT_LOG, days);
   }
 
   public static boolean close(int id) {
@@ -105,7 +107,7 @@ public class JFLog {
   }
 
   public static boolean close() {
-    return close(0);
+    return close(DEFAULT_LOG);
   }
 
   /** Uses a timestamp instead of date/time for each message logged. */
@@ -115,7 +117,7 @@ public class JFLog {
   }
 
   public static boolean log(String msg) {
-    return log(0, msg);
+    return log(DEFAULT_LOG, msg);
   }
 
   private static final long ms_per_day = 24 * 60 * 60 * 1000;
@@ -217,7 +219,7 @@ public class JFLog {
   }
 
   public static boolean log(Throwable t) {
-    return log(0, t);
+    return log(DEFAULT_LOG, t);
   }
 
   public static boolean log(int id, Throwable t) {
@@ -240,7 +242,7 @@ public class JFLog {
   }
 
   public static boolean log(String msg, Throwable t) {
-    return log(0, msg, t);
+    return log(DEFAULT_LOG, msg, t);
   }
 
   public static boolean log(int id, String msg, Throwable t) {
@@ -262,7 +264,7 @@ public class JFLog {
   }
 
   public static void setEnabled(boolean state) {
-    setEnabled(0, state);
+    setEnabled(DEFAULT_LOG, state);
   }
 
   /**
@@ -290,7 +292,7 @@ public class JFLog {
    * NOTE: write() doesn't cycle log files.
    */
   public static boolean write(byte data[], int off, int len) {
-    return write(0, data, off, len);
+    return write(DEFAULT_LOG, data, off, len);
   }
 
   public static OutputStream getOutputStream(int id) {
@@ -305,7 +307,7 @@ public class JFLog {
   }
 
   public static OutputStream getOutputStream() {
-    return getOutputStream(0);
+    return getOutputStream(DEFAULT_LOG);
   }
 
   public static void logTrace(int id, String msg) {
@@ -320,7 +322,7 @@ public class JFLog {
     try {
       throw new TraceException(msg);
     } catch (Exception e) {
-      log(0, e);
+      log(DEFAULT_LOG, e);
     }
   }
 
