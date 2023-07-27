@@ -689,7 +689,7 @@ public class Proxy extends Thread {
     private void ftp(String host, int port, String url) throws Exception {
       int idx = url.indexOf('/');
       url = url.substring(idx);  //remove host
-      FTP ftp = new FTP();
+      javaforce.FTP ftp = new javaforce.FTP();
       log("ftp:" + url);
       try {
         ftp.connect(host, port);
