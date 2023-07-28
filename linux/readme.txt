@@ -1,6 +1,17 @@
-Instructions for installing JavaForce onto a minimal linux system.
+jfLinux
+=======
 
-Steps:
+Desc:
+  jfLinux is a complete desktop environment (DE) using the JavaForce library and related apps.
+
+Status:
+  Currently the DE is based on X11.  There are plans to implement Wayland support but that may have to wait
+until Java itself supports Wayland which is in development, see Wakefield project : https://openjdk.org/projects/wakefield/
+
+Instructions
+------------
+
+To install on a minimal Linux system follow these steps:
 
 1) Install minimal linux system
   Debian netinst (uncheck any desktop environment during package selection)
@@ -25,6 +36,7 @@ Note about Arch installation:
     pacman-key --init
     pacman-key --populate archlinux
     archinstall
-  Within the install program make sure to select destination drive, drive partitioning, select minimal profile, set root password, create user and setup manual networking.
+  Within the install program make sure to select destination drive, drive partitioning, select minimal profile, set root password,
+  create user and setup networking manually.
 
 Thanks!
