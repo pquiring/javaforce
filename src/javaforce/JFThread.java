@@ -6,8 +6,14 @@ package javaforce;
  */
 
 public class JFThread<T> extends Thread {
-  public T user;
-  public JFThread(T user) {
-    this.user = user;
+  public T value;
+  public JFThread(T value) {
+    this.value = value;
+  }
+  public T getValue() {
+    return value;
+  }
+  public void setValue(T value) {
+    this.value = value;
   }
 }
