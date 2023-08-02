@@ -1,5 +1,8 @@
 Whats new???
 
+Aug 2, 2023 : version 0.14 released!
+  - fix : improve web server image reloading script
+
 May 24, 2023 : version 0.13 released!
   - new : added monitor selection
 

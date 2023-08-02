@@ -16,7 +16,7 @@ import javaforce.media.*;
 
 public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler {
 
-  public static String version = "0.12";
+  public static String version = "0.14";
 
   public static class Codec {
     public String codec, ext, desc, mime;
@@ -1222,7 +1222,6 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 "function assignImage(blob) {\n" +
 "  var imageURL = URL.createObjectURL(blob);\n" +
 "  image.src = imageURL;\n" +
-"  setTimeout(loadImage, " + (timeLapseSecondsDelay * 1000) + ");\n" +
 "}\n" +
 "function loadImage() {\n" +
 "  console.log('loadImage');\n" +
@@ -1231,9 +1230,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 "  req.open('get', url);\n" +
 "  req.responseType = 'blob';\n" +
 "  req.onload = function () {\n" +
-"    console.log('req.status=' + req.status);\n" +
 "    if (req.status == 200) {assignImage(req.response);}\n" +
-"    if (req.status == 404) {setTimeOut(loadImage, " + (timeLapseSecondsDelay * 1000) + ");}\n" +
 "  }\n" +
 "  req.send();\n" +
 "}\n" +
@@ -1241,7 +1238,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
 "<img id=image width=100% height=100%></img>" +
 "<script>" +
 "image = document.getElementById('image');\n" +
-"setTimeout(loadImage, " + (timeLapseSecondsDelay * 1000) + ");\n" +
+"setInterval(loadImage," + (timeLapseSecondsDelay * 1000) + ");\n" +
 "</script>"
     );
     return html.toString();

@@ -1,5 +1,8 @@
 What's new ??
 
+Aug 2/2023 : version 0.14 released
+  - fix : improve web server image reloading script
+
 Sept 12/2021 : version 0.12 released
   - fixed mp4 encoding
   - video streaming is *almost* perfect (buffers once in a while)
