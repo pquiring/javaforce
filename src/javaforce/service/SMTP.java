@@ -24,6 +24,11 @@ public class SMTP extends Thread {
 
   public static boolean debug = false;
 
+  public interface Events {
+    public void message(SMTP server, String msgfile);
+  }
+
+
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfsmtp.cfg";
   }
@@ -58,7 +63,7 @@ public class SMTP extends Thread {
   }
 
   private static SMTP smtp;
-  private static SMTPEvents events;
+  private static Events events;
   private static volatile boolean active;
   private static ArrayList<ServerWorker> servers = new ArrayList<ServerWorker>();
   private static ArrayList<ClientWorker> clients = new ArrayList<ClientWorker>();
@@ -76,7 +81,7 @@ public class SMTP extends Thread {
   public SMTP() {
   }
 
-  public void setEvents(SMTPEvents events) {
+  public void setEvents(Events events) {
     SMTP.events = events;
   }
 
