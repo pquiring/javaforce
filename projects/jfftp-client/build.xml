@@ -2,6 +2,7 @@
   <description>jfftp</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfftp"/>
+  <property name="apptype" value="client"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>
