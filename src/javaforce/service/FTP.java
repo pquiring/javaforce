@@ -2,6 +2,9 @@ package javaforce.service;
 
 /** FTP Server.
  *
+ * Known issue:
+ *  windows command line ftp app requires passive mode.  port mode fails although FileZilla works fine.
+ *
  * @author pquiring
  */
 
