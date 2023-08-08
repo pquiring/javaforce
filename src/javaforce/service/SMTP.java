@@ -28,7 +28,6 @@ public class SMTP extends Thread {
     public void message(SMTP server, String msgfile);
   }
 
-
   public static String getConfigFile() {
     return JF.getConfigPath() + "/jfsmtp.cfg";
   }
