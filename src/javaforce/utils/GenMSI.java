@@ -98,11 +98,11 @@ public class GenMSI {
         //cleanup
         new File("wix.obj").delete();
         new File("jre.obj").delete();
-//        new File("jre.xml").delete();
+        new File("jre.xml").delete();
         new File("ffmpeg.obj").delete();
-//        new File("ffmpeg.xml").delete();
+        new File("ffmpeg.xml").delete();
         new File("msvcrt.obj").delete();
-//        new File("msvcrt.xml").delete();
+        new File("msvcrt.xml").delete();
         new File(pdb).delete();
         if (new File(home + "/repo/windows/amd64/readme.txt").exists()) {
           if (!JF.moveFile(out, home + "/repo/windows/amd64/" + out)) throw new Exception("move failed");
