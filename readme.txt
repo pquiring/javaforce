@@ -93,6 +93,7 @@ executable : build native launcher
      "server" for service config GUI apps (same as "window" type plus adds "-server" to package names)
      "client" for client config GUI apps (same as "window" type plus adds "-client" to package names)
 ffmpeg : copy ffmpeg libraries to project folder
+install : install files before package creation (Linux only) (requires root)
 deb : build Debian deb file (after install)
  - requires bzip2, binutils, sudo
  - linux packaging requires files.lst and linux stub (/stubs/linux)
@@ -141,7 +142,8 @@ Requirements
 ------------
   - JDK 11+
   - Apache Ant 1.10.x
-  - Windows : VisualC++ compiler (64bit), wixtoolset v3
+  - Windows : VisualC++ compiler (64bit), wixtoolset v3, AMD64
+  - Mac : AMD64
   - FFMpeg 4.2+ sources(headers) + shared libraries
   - glfw for OpenGL support
 
