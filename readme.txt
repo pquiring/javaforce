@@ -88,8 +88,8 @@ executable : build native launcher
  - a stub launcher for the platform is copied into the project folder and configured to load classpath and start main method
  - a project property "apptype" can be defined as:
      "window" for Window GUI apps (default)
-     "console" for console apps
-     "service" for service apps
+     "console" for console apps (alias "c")
+     "service" for service apps (alias "s")
      "server" for service config GUI apps (same as "window" type plus adds "-server" to package names)
      "client" for client config GUI apps (same as "window" type plus adds "-client" to package names)
 ffmpeg : copy ffmpeg libraries to project folder
