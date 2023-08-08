@@ -9,25 +9,41 @@ package javaforce.utils;
 
 import java.io.*;
 
+import javaforce.*;
+
 public class GenDMG {
+  private static XML xml;
   public static void main(String[] args) {
-    if (args.length < 3) {
-      System.out.println("Usage:GenDMG app output jre_folder [ffmpeg_folder]");
-      System.out.println("  define 'genisoimage' to use genisoimage instead of hdiutil");
+    if (args.length != 1) {
+      System.out.println("Usage:GenDMG build.xml");
       System.exit(1);
     }
-    String app = args[0];
-    String out = args[1];
-    String jre = args[2];
-    String ffmpeg = null;
+    xml = loadXML(args[0]);
+    String home = getProperty("home");
+    String app = getProperty("app");
+    String apptype = getProperty("apptype");
+    String version = getProperty("version");
+    String jre = getProperty("jre");
+    String ffmpeg = getProperty("ffmpeg_home");
+
+    switch (apptype) {
+      case "client":
+      case "server":
+        apptype = "-" + apptype;
+        break;
+      default:
+        apptype = "";
+        break;
+    }
+
+    String out = app + apptype + "-" + version + ".dmg";
+
     String tmp_contents = "/tmp/" + app + "/" + app + ".app/Contents";
     String tmp_contents_resources = "/tmp/" + app + "/" + app + ".app/Contents/Resources";
     String tmp_contents_macos = "/tmp/" + app + "/" + app + ".app/Contents/MacOS";
+
     String icon = app + ".icns";
-    if (args.length > 3) {
-      ffmpeg = args[3];
-      if (ffmpeg.length() == 0) ffmpeg = null;
-    }
+
     if (!new File("Info.plist").exists()) {
       System.out.println("Error:Info.plist not found");
       System.exit(1);
@@ -54,7 +70,7 @@ public class GenDMG {
       rt.exec(new String[] {"rm", "data.tar.bz2"}).waitFor();
       rt.exec(new String[] {"cp", "Info.plist", tmp_contents}).waitFor();
       rt.exec(new String[] {"cp", icon, tmp_contents_resources}).waitFor();
-      if (ffmpeg != null) {
+      if (ffmpeg.length() > 0) {
         File[] files = new File(ffmpeg).listFiles();
         for(int a=0;a<files.length;a++) {
           if (files[a].isDirectory()) continue;
@@ -72,11 +88,62 @@ public class GenDMG {
         rt.exec(new String[] {"genisoimage", "-apple", "-r", "-o", out, "/tmp/" + app}).waitFor();
       }
       rt.exec(new String[] {"rm", "-rf", "/tmp/" + app}).waitFor();
+
+      if (new File(home + "/repo/mac/amd64/readme.txt").exists()) {
+        if (!JF.moveFile(out, home + "/repo/mac/amd64/" + out)) throw new Exception("move failed");
+      }
+
       System.out.println(out + " created!");
       System.exit(0);
     } catch (Exception e) {
       e.printStackTrace();
       System.exit(1);
     }
+  }
+
+  private static XML loadXML(String buildfile) {
+    XML xml = new XML();
+    try {
+      xml.read(new FileInputStream(buildfile));
+      return xml;
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
+    return null;
+  }
+
+  private static String getTag(String name) {
+    XML.XMLTag tag = xml.getTag(new String[] {"project", name});
+    if (tag == null) return "";
+    return tag.content;
+  }
+
+  private static String getProperty(String name) {
+    //<project> <property name="name" value="value">
+    int cnt = xml.root.getChildCount();
+    for(int a=0;a<cnt;a++) {
+      XML.XMLTag tag = xml.root.getChildAt(a);
+      if (!tag.name.equals("property")) continue;
+      int attrs = tag.attrs.size();
+      String attrName = null;
+      String attrValue = null;
+      for(int b=0;b<attrs;b++) {
+        XML.XMLAttr attr = tag.attrs.get(b);
+        if (attr.name.equals("name")) {
+          attrName = attr.value;
+        }
+        if (attr.name.equals("value")) {
+          attrValue = attr.value;
+        }
+        if (attr.name.equals("location")) {
+          attrValue = attr.value;
+        }
+      }
+      if (attrName != null && attrName.equals(name)) {
+        return attrValue;
+      }
+    }
+    return "";
   }
 }

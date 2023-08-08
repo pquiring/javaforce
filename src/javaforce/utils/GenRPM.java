@@ -8,14 +8,14 @@ package javaforce.utils;
  */
 
 import java.io.*;
-import java.nio.file.*;
 
 import javaforce.*;
 
 public class GenRPM {
+  private static XML xml;
   public static void main(String args[]) {
-    if (args.length != 3) {
-      System.out.println("Usage:GenRPM app version home");
+    if (args.length != 1) {
+      System.out.println("Usage:GenRPM build.xml");
       System.exit(1);
     }
     String files = "files.lst";
@@ -28,8 +28,24 @@ public class GenRPM {
     }
     String arch = getArch();
     String archext = getArchExt();
-    String out = args[0] + "-" + args[1] + "-1." + archext + ".rpm";
-    String home = args[2];
+
+    xml = loadXML(args[0]);
+    String app = getProperty("app");
+    String apptype = getProperty("apptype");
+    String version = getProperty("version");
+    String home = getProperty("home");
+
+    switch (apptype) {
+      case "client":
+      case "server":
+        apptype = "-" + apptype;
+        break;
+      default:
+        apptype = "";
+        break;
+    }
+
+    String out = app + apptype + "-" + version + "-1." + archext + ".rpm";
 
     String data = "data.tar.bz2";
     String tmpdir = "/tmp/jfrpm.tmp";
@@ -61,7 +77,7 @@ public class GenRPM {
       rt.exec(new String[] {"mv", "/root/rpmbuild/RPMS/" + archext + "/" + out, "."}).waitFor();
       System.out.println(out + " created!");
       if (new File(home + "/repo/fedora/readme.txt").exists()) {
-        Files.copy(new File(out).toPath(), new File(home + "/repo/fedora/" + archext + "/" + out).toPath(), StandardCopyOption.REPLACE_EXISTING);
+        if (!JF.moveFile(out, home + "/repo/fedora/" + archext + "/" + out)) throw new Exception("move failed");
       }
       System.exit(0);
     } catch (Exception e) {
@@ -88,5 +104,51 @@ public class GenRPM {
 
   public static String getArchExt() {
     return getArch();
+  }
+
+  private static XML loadXML(String buildfile) {
+    XML xml = new XML();
+    try {
+      xml.read(new FileInputStream(buildfile));
+      return xml;
+    } catch (Exception e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
+    return null;
+  }
+
+  private static String getTag(String name) {
+    XML.XMLTag tag = xml.getTag(new String[] {"project", name});
+    if (tag == null) return "";
+    return tag.content;
+  }
+
+  private static String getProperty(String name) {
+    //<project> <property name="name" value="value">
+    int cnt = xml.root.getChildCount();
+    for(int a=0;a<cnt;a++) {
+      XML.XMLTag tag = xml.root.getChildAt(a);
+      if (!tag.name.equals("property")) continue;
+      int attrs = tag.attrs.size();
+      String attrName = null;
+      String attrValue = null;
+      for(int b=0;b<attrs;b++) {
+        XML.XMLAttr attr = tag.attrs.get(b);
+        if (attr.name.equals("name")) {
+          attrName = attr.value;
+        }
+        if (attr.name.equals("value")) {
+          attrValue = attr.value;
+        }
+        if (attr.name.equals("location")) {
+          attrValue = attr.value;
+        }
+      }
+      if (attrName != null && attrName.equals(name)) {
+        return attrValue;
+      }
+    }
+    return "";
   }
 }

@@ -27,10 +27,10 @@ public class WixHeat {
   private static String output_xml;
   private static String base_folder;
   private static String res_name;
-  private static ArrayList<String> files = new ArrayList<String>();
-  private static ArrayList<PathMatcher> matches = new ArrayList<PathMatcher>();
-  private static ArrayList<String> wixfolders = new ArrayList<String>();
-  private static ArrayList<Entry> wixfiles = new ArrayList<Entry>();
+  private static ArrayList<String> files;
+  private static ArrayList<PathMatcher> matches;
+  private static ArrayList<String> wixfolders;
+  private static ArrayList<Entry> wixfiles;
   private static String dir;
   private static String cmp;
 
@@ -96,7 +96,7 @@ public class WixHeat {
   }
 
   private static int baseguid;
-  private static int guid = 1000;
+  private static int guid;
   private static int fileid;
 
   private static void outFiles(String path) {
@@ -151,6 +151,16 @@ public class WixHeat {
     output_xml = args[1].replaceAll("\\\\", "/");
     res_name = args[2];
     base_folder = args[3].replaceAll("\\\\", "/");
+
+    files = new ArrayList<String>();
+    matches = new ArrayList<PathMatcher>();
+    wixfolders = new ArrayList<String>();
+    wixfiles = new ArrayList<Entry>();
+
+    baseguid = 0;
+    guid = 1000;
+    fileid = 0;
+
     for(int a=4;a<args.length;a++) {
       files.add(args[a]);
     }
@@ -175,6 +185,7 @@ public class WixHeat {
     cmp = "cmp_" + res_name + "_";
     dir = "dir_" + res_name + "_";
     try {
+      System.out.println("WixHeat : input_folder=" + input_folder);
       outHeader();
 
       addFolder("APPLICATIONROOTDIRECTORY", "");

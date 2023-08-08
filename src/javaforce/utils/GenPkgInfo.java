@@ -25,7 +25,6 @@ public class GenPkgInfo {
   private XML xml;
   private String app, desc, arch, ver;
   private long size;  //in bytes
-  private boolean graal;
 
   public static void main(String args[]) {
     if (args == null || args.length < 3) {
@@ -46,7 +45,6 @@ public class GenPkgInfo {
     app = getProperty("app");
     desc = getTag("description");
     ver = getProperty("version");
-    graal = getProperty("graal").equals("true");
     switch (distro) {
       case "debian": debian(); break;
       case "fedora": fedora(); break;
@@ -129,6 +127,9 @@ public class GenPkgInfo {
         if (attr.name.equals("value")) {
           attrValue = attr.value;
         }
+        if (attr.name.equals("location")) {
+          attrValue = attr.value;
+        }
       }
       if (attrName != null && attrName.equals(name)) {
         return attrValue;
@@ -140,9 +141,7 @@ public class GenPkgInfo {
   private String[] getDepends(String tagName) {
     ArrayList<String> depends = new ArrayList<String>();
     String list[] = getProperty(tagName).split(",");
-    if (!graal) {
-      if (!app.equals("javaforce")) depends.add("javaforce");
-    }
+    if (!app.equals("javaforce")) depends.add("javaforce");
     for(int a=0;a<list.length;a++) {
       String depend = list[a].trim();
       if (depend.length() == 0) continue;

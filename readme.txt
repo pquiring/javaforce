@@ -86,7 +86,12 @@ javadoc : build javadoc api files
 deploy : build maven deployment artifacts
 executable : build native launcher
  - a stub launcher for the platform is copied into the project folder and configured to load classpath and start main method
- - a project property "apptype" can be set to "c" for console apps or "s" for service apps (default is gui app)
+ - a project property "apptype" can be defined as:
+     "window" for Window GUI apps (default)
+     "console" for console apps
+     "service" for service apps
+     "server" for service config GUI apps (same as "window" type plus adds "-client" to package names)
+     "client" for client config GUI apps (same as "window" type plus adds "-server" to package names)
 ffmpeg : copy ffmpeg libraries to project folder
 deb : build Debian deb file (after install)
  - requires bzip2, binutils, sudo

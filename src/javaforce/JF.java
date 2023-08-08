@@ -8,8 +8,8 @@ import java.lang.reflect.*;
 import javax.net.ssl.*;
 import java.security.*;
 import java.security.cert.*;
-import javax.naming.*;
-import javax.naming.directory.*;
+import java.nio.file.Files;
+import java.nio.file.*;
 
 /**
  * A collection of static methods. Many methods help reduce try/catch clutter by
@@ -1654,5 +1654,25 @@ public class JF {
       return Long.valueOf(val) * TB;
     }
     return Long.valueOf(value);
+  }
+
+  public static boolean moveFile(String src, String dest) {
+    try {
+      Path temp = Files.move(Paths.get(src), Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
+      return temp != null;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  public static boolean copyFile(String src, String dest) {
+    try {
+      Path temp = Files.copy(Paths.get(src), Paths.get(dest), StandardCopyOption.REPLACE_EXISTING);
+      return temp != null;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
   }
 }

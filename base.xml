@@ -1,13 +1,8 @@
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!--these should be set before importing this file to override default behavior-->
+  <property name="apptype" value="window"/>
   <property name="ico" value="${app}.ico"/>
-  <property name="msi" value="${app}"/>
   <property name="cfg" value="${app}.cfg"/>
-  <property name="candle_extra" value=""/>
-  <property name="light_extra" value=""/>
-  <property name="apptype" value="w"/>
-  <property name="heat_home" value="jre"/>
-  <property name="ffmpeg_home" value=""/>
   <property name="project2" value=""/>
   <property name="project3" value=""/>
   <property name="project4" value=""/>
@@ -129,11 +124,7 @@
   <target name="executable" depends="jar,depjars,depnatives,executable2,executable3,executable4,executable5" description="create executable launcher">
     <sequential>
       <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenExecutable" fork="true">
-        <arg value="${home}"/>
-        <arg value="${app}"/>
-        <arg value="${apptype}"/>
-        <arg value="${ico}"/>
-        <arg value="${cfg}"/>
+        <arg value="${ant.file}"/>
       </java>
     </sequential>
   </target>
@@ -180,44 +171,9 @@
   <!-- Windows targets -->
 
   <target name="msi" depends="executable" description="create msi installer file 64bit">
-    <sequential>
-      <exec command="candle -ext WixFirewallExtension -ext WixUtilExtension ${candle_extra} -o wix.obj wix64.xml"/>
-      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
-        <arg value="${jre}"/>
-        <arg value="jre.xml"/>
-        <arg value="JRE"/>
-        <arg value="${heat_home}"/>
-      </java>
-      <exec command="candle -o jre.obj jre.xml"/>
-      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
-        <arg value="${home}/ffmpeg"/>
-        <arg value="ffmpeg.xml"/>
-        <arg value="FFMPEG"/>
-        <arg value="."/>
-      </java>
-      <exec command="candle -o ffmpeg.obj ffmpeg.xml"/>
-      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.WixHeat" fork="true">
-        <arg value="${home}/jre_base/bin"/>
-        <arg value="msvcrt.xml"/>
-        <arg value="MSVCRT"/>
-        <arg value="."/>
-        <arg value="**/api*.dll"/>
-        <arg value="**/msvc*.dll"/>
-        <arg value="**/ucrtbase.dll"/>
-        <arg value="**/vcruntime*.dll"/>
-      </java>
-      <exec command="candle -o msvcrt.obj msvcrt.xml"/>
-      <exec command="light ${light_extra} -ext WixUIExtension -ext WixFirewallExtension -ext WixUtilExtension -cultures:en-us -b ${home} -b ${jre} -b ${jre}\\bin -b ${home}/ffmpeg -dWixUILicenseRtf=${home}/license.rtf -o ${msi}-${version}-win64.msi wix.obj jre.obj ffmpeg.obj msvcrt.obj"/>
-      <delete file="wix.obj"/>
-      <delete file="jre.obj"/>
-      <delete file="jre.xml"/>
-      <delete file="ffmpeg.obj"/>
-      <delete file="ffmpeg.xml"/>
-      <delete file="msvcrt.obj"/>
-      <delete file="msvcrt.xml"/>
-      <delete file="${msi}-${version}-win64.wixpdb"/>
-      <move unless:set="nomove" file="${msi}-${version}-win64.msi" todir="${home}/repo/windows/amd64"/>
-    </sequential>
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenMSI" fork="true">
+      <arg value="${ant.file}"/>
+    </java>
   </target>
 
   <!-- Linux targets -->
@@ -247,25 +203,19 @@
 
   <target name="deb" depends="installapp" description="create deb package">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true">
-      <arg value="${app}"/>
-      <arg value="${version}"/>
-      <arg value="${home}"/>
+      <arg value="${ant.file}"/>
     </java>
   </target>
 
   <target name="rpm" depends="installapp" description="create rpm package">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenRPM" fork="true">
-      <arg value="${app}"/>
-      <arg value="${version}"/>
-      <arg value="${home}"/>
+      <arg value="${ant.file}"/>
     </java>
   </target>
 
   <target name="pac" depends="installapp" description="create pac package">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true">
-      <arg value="${app}"/>
-      <arg value="${version}"/>
-      <arg value="${home}"/>
+      <arg value="${ant.file}"/>
     </java>
   </target>
 
@@ -273,11 +223,7 @@
 
   <target name="dmg" depends="executable" description="create dmg package">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenDMG" fork="true">
-      <arg value="${app}"/>
-      <arg value="${app}-${version}.dmg"/>
-      <arg value="${jre}"/>
-      <arg value="${ffmpeg_home}"/>
+      <arg value="${ant.file}"/>
     </java>
-    <copy file="${app}-${version}.dmg" todir="${home}/repo/mac/amd64" overwrite="true"/>
   </target>
 </project>

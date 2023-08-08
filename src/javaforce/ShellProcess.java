@@ -19,7 +19,8 @@ public class ShellProcess {
   private Process p;
   private InputStream is, es;
   private OutputStream os;
-  private StringBuffer output;
+  private StringBuffer stdout;
+  private StringBuffer stderr;
   private boolean active;
   private ArrayList<Response> script = new ArrayList<Response>();
   private ArrayList<Variable> envAdd = new ArrayList<Variable>();
@@ -31,6 +32,12 @@ public class ShellProcess {
   public static boolean log = false;
   public static boolean logPrompt = false;
   public String command;
+
+  public static class Output {
+    public String stdout;
+    public String stderr;
+    public int errorLevel;
+  }
 
   private static class Response {
     public String prompt;
@@ -126,9 +133,9 @@ public class ShellProcess {
     this.path = path;
   }
 
-  /**
-   * Discards all output. Note that responses are disabled when this is enabled.
-   * This is intended for long processes that are monitored with a
+  /** Keep all output (default).
+   * Note that responses are disabled when this is disabled.
+   * Disabling this is intended for long processes that are monitored with a
    * ShellProcessListener
    */
   public void keepOutput(boolean state) {
@@ -180,7 +187,10 @@ public class ShellProcess {
     for (int a = 0; a < cmd.length; a++) {
       command += cmd[a] + " ";  //test
     }
-    output = new StringBuffer();
+    stdout = new StringBuffer();
+    if (!redirStderr) {
+      stderr = new StringBuffer();
+    }
     active = true;
 
     if (log) {
@@ -200,13 +210,13 @@ public class ShellProcess {
       es = p.getErrorStream();
 
       //start worker thread
-      Worker wi = new Worker(is, true);
-      wi.start();
+      Worker wstdout = new Worker(is, stdout, true);
+      wstdout.start();
 
-      Worker we = null;
+      Worker wstderr = null;
       if (!redirStderr) {
-        we = new Worker(es, false);
-        we.start();
+        wstderr = new Worker(es, stderr, false);
+        wstderr.start();
       }
 
       //wait for process to terminate
@@ -215,9 +225,9 @@ public class ShellProcess {
       active = false;
 
       //wait for worker threads to exit
-      wi.join();
+      wstdout.join();
       if (!redirStderr) {
-        we.join();
+        wstderr.join();
       }
     } catch (Exception e) {
       JFLog.log(e);
@@ -231,7 +241,7 @@ public class ShellProcess {
 
     errorLevel = p.exitValue();
 
-    return output.toString();
+    return stdout.toString();
   }
 
   /**
@@ -256,6 +266,28 @@ public class ShellProcess {
     destroy();
   }
 
+  public String getStdout() {
+    if (stdout == null) return null;
+    return stdout.toString();
+  }
+
+  public String getStderr() {
+    if (stderr == null) return null;
+    return stderr.toString();
+  }
+
+  public Output getOutput() {
+    Output output = new Output();
+    if (stdout != null) {
+      output.stdout = stdout.toString();
+    }
+    if (stderr != null) {
+      output.stderr = stderr.toString();
+    }
+    output.errorLevel = errorLevel;
+    return output;
+  }
+
   /**
    * Returns error level from last process run.
    */
@@ -267,10 +299,12 @@ public class ShellProcess {
 
     private InputStream wis;
     private boolean processScript;
+    private StringBuffer output;
 
-    public Worker(InputStream wis, boolean processScript) {
+    public Worker(InputStream wis, StringBuffer output, boolean processScript) {
       this.processScript = processScript;
       this.wis = wis;
+      this.output = output;
     }
 
     public void run() {
@@ -372,5 +406,24 @@ public class ShellProcess {
 
   public Process getProcess() {
     return p;
+  }
+
+  /** Executes a command and returns the ShellProcess.Output with stdout, stderr and errorLevel. */
+  public static ShellProcess.Output exec(String[] cmd, boolean redirStderr) {
+    try {
+      ShellProcess p = new ShellProcess();
+      p.run(cmd, redirStderr);
+      return p.getOutput();
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  /** Executes a command and returns the ShellProcess.Output with stdout, stderr and errorLevel.
+   * stderr is NOT redirected to stdout.
+   */
+  public static ShellProcess.Output exec(String[] cmd) {
+    return exec(cmd, false);
   }
 }
