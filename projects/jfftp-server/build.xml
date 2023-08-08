@@ -1,0 +1,24 @@
+<project name="jfftp" default="jar" basedir=".">
+  <description>ftp</description>
+  <!-- set global properties for this build -->
+  <property name="app" value="jfftp"/>
+  <property name="apptype" value="server"/>
+  <property name="home" location="../.."/>
+  <property name="version" value="0.1"/>
+  <property name="jre" location="${home}/jre_base_desktop"/>
+
+  <property name="project2" value="build-service"/>
+
+  <import file="${home}/base.xml"/>
+
+  <target name="depjars" depends="jar-javaforce" description="jar">
+  </target>
+
+  <target name="jar" depends="depjars" description="jar">
+  </target>
+
+  <!-- sudo ant install -->
+  <target name="install" description="install files">
+    <copy file="${app}.service" todir="/lib/systemd/system"/>
+  </target>
+</project>

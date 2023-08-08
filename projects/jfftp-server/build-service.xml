@@ -1,0 +1,20 @@
+<project name="jfftpsvc" basedir=".">
+  <!-- set global properties for this build -->
+  <property name="app" value="jfftpsvc"/>
+  <property name="apptype" value="service"/>
+  <property name="home" value="../.."/>
+
+  <import file="${home}/base.xml"/>
+
+  <target name="depjars" depends="depnatives">
+  </target>
+
+  <target name="compile" depends="depjars" description="compile the source">
+  </target>
+
+  <target name="jar" depends="depjars,compile" description="build jar file">
+  </target>
+
+  <target name="install" description="install files for linux">
+  </target>
+</project>

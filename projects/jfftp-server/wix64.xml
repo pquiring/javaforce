@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
+  <Product Id="*" UpgradeCode="{5EA6E3F7-F3BC-45C1-867A-2259484B2479}" Version="0.1" Language="1033" Name="jfFTP" Manufacturer="Peter Quiring">
+    <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
+    <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
+    <UIRef Id="WixUI_Minimal" />
+    <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
+
+    <Icon Id="icon.ico" SourceFile="jfftp.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
+
+    <!-- Step 1: Define the directory structure -->
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfftp"/>
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+<!-- Use the following if you want Shortcut in its own folder -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfFTP"/> -->
+      </Directory>
+    </Directory>
+
+    <!-- Step 2: Add files to your installer package -->
+    <DirectoryRef Id="APPLICATIONROOTDIRECTORY">
+      <Component Id="appfiles" Guid="{5F416CC0-CD6E-41F6-B049-DF5F47F156D2}" Win64="yes">
+        <File Id="jfftpsvc.exe" Source="jfftpsvc.exe" KeyPath="yes">
+          <fire:FirewallException
+            Id="FirewallRule21"
+            Name="jfFTP"
+            Protocol="tcp"
+            Port="21"
+            Scope="any"
+            IgnoreFailure="yes"
+            Profile="all" />
+        </File>
+        <File Id="jfftp.exe" Source="jfftp.exe"/>
+        <File Id="javaforce.jar" Source="javaforce.jar"/>
+        <ServiceInstall Id="ServiceInstaller"
+          Type="ownProcess"
+          Name="jfFTP"
+          DisplayName="jfFTP"
+          Description="jf FTP Server"
+          Start="auto"
+          ErrorControl="normal" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfFTP" Wait="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 2b: Add the shortcut to your installer package -->
+<!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
+    <DirectoryRef Id="ProgramMenuFolder">
+      <Component Id="ApplicationShortcut" Guid="{CD9CC532-A506-45FD-835E-E947471B8A00}">
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTP" Description="Java FTP Server" Target="[APPLICATIONROOTDIRECTORY]jfftp.exe"
+          WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
+<!-- Use the following if you want Shortcut in its own folder -->
+<!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfFTP" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+      </Component>
+    </DirectoryRef>
+
+    <!-- Step 3: Tell WiX to install the files -->
+    <Feature Id="MainApplication" Title="Main Application" Level="1">
+      <ComponentRef Id="appfiles" />
+      <ComponentRef Id="ApplicationShortcut" />
+      <ComponentGroupRef Id="JRE" />
+    </Feature>
+  </Product>
+</Wix>

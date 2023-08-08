@@ -1,0 +1,3 @@
+/usr/bin/jfftp
+/usr/bin/jfftpsvc
+/lib/systemd/system/jfftp.service
