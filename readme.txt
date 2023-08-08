@@ -90,8 +90,8 @@ executable : build native launcher
      "window" for Window GUI apps (default)
      "console" for console apps
      "service" for service apps
-     "server" for service config GUI apps (same as "window" type plus adds "-client" to package names)
-     "client" for client config GUI apps (same as "window" type plus adds "-server" to package names)
+     "server" for service config GUI apps (same as "window" type plus adds "-server" to package names)
+     "client" for client config GUI apps (same as "window" type plus adds "-client" to package names)
 ffmpeg : copy ffmpeg libraries to project folder
 deb : build Debian deb file (after install)
  - requires bzip2, binutils, sudo
