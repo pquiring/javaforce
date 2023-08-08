@@ -8,6 +8,7 @@ package javaforce.utils;
  */
 
 import java.io.*;
+import java.util.*;
 
 import javaforce.*;
 
@@ -49,7 +50,14 @@ public class GenMSI {
     try {
       {
         //create wix object
-        ShellProcess.Output output = ShellProcess.exec(new String[] {"candle",candle_extra,"-ext","WixFirewallExtension","-ext","WixUtilExtension","-o","wix.obj","wix64.xml"}, true);
+        String[] cmd = new String[] {"candle","-ext","WixFirewallExtension","-ext","WixUtilExtension","-o","wix.obj","wix64.xml"};
+        if (candle_extra.length() > 0) {
+          String[] extra = candle_extra.split(" ");
+          for(String x : extra) {
+            cmd = JF.copyOfInsert(cmd, cmd.length, x);
+          }
+        }
+        ShellProcess.Output output = ShellProcess.exec(cmd, true);
         if (output == null) throw new Exception("error");
         System.out.println(output.stdout);
         if (output.errorLevel > 0) throw new Exception("error");
@@ -84,11 +92,16 @@ public class GenMSI {
 
       {
         //create msi file
-        ShellProcess.Output output = ShellProcess.exec(
-          new String[] {"light",light_extra,"-ext","WixUIExtension","-ext","WixFirewallExtension","-ext","WixUtilExtension","-cultures:en-us"
+        String[] cmd = new String[] {"light","-ext","WixUIExtension","-ext","WixFirewallExtension","-ext","WixUtilExtension","-cultures:en-us"
           ,"-b",home,"-b",jre,"-b",jre + "/bin","-b",home + "/ffmpeg","-dWixUILicenseRtf=" + home + "/license.rtf"
-          ,"-o",out,"wix.obj","jre.obj","ffmpeg.obj","msvcrt.obj"}
-          , true);
+          ,"-o",out,"wix.obj","jre.obj","ffmpeg.obj","msvcrt.obj"};
+        if (light_extra.length() > 0) {
+          String[] extra = light_extra.split(" ");
+          for(String x : extra) {
+            cmd = JF.copyOfInsert(cmd, cmd.length, x);
+          }
+        }
+        ShellProcess.Output output = ShellProcess.exec(cmd, true);
         if (output == null) throw new Exception("error");
         System.out.println(output.stdout);
         if (output.errorLevel > 0) throw new Exception("error");

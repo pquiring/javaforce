@@ -11,7 +11,7 @@
   <property name="version" value="0.31"/>
 
   <property name="candle_extra" value=""/>
-  <property name="light_extra" value="-b sounds\\en"/>
+  <property name="light_extra" value="-b sounds/en"/>
 
   <import file="${home}/base.xml"/>
 
