@@ -10,7 +10,7 @@ import java.io.*;
 import javaforce.*;
 
 public class GenExecutable {
-  private static XML xml;
+  private XML xml;
   public static void chmod(String file) {
     new File(file).setExecutable(true);
   }
@@ -19,7 +19,10 @@ public class GenExecutable {
       System.out.println("Usage:GenExecutable build.xml");
       System.exit(1);
     }
-    xml = loadXML(args[0]);
+    new GenExecutable().run(args[0]);
+  }
+  public void run(String buildfile) {
+    xml = loadXML(buildfile);
     String home = getProperty("home");
     String app = getProperty("app");
     String apptype = getProperty("apptype");
@@ -59,6 +62,7 @@ public class GenExecutable {
     } catch (Exception e) {
       e.printStackTrace();
     }
+    doSubProjects();
   }
   private static XML loadXML(String buildfile) {
     XML xml = new XML();
@@ -72,13 +76,13 @@ public class GenExecutable {
     return null;
   }
 
-  private static String getTag(String name) {
+  private String getTag(String name) {
     XML.XMLTag tag = xml.getTag(new String[] {"project", name});
     if (tag == null) return "";
     return tag.content;
   }
 
-  private static String getProperty(String name) {
+  private String getProperty(String name) {
     //<project> <property name="name" value="value">
     int cnt = xml.root.getChildCount();
     for(int a=0;a<cnt;a++) {
@@ -104,5 +108,12 @@ public class GenExecutable {
       }
     }
     return "";
+  }
+  private void doSubProjects() {
+    for(int a=2;a<=5;a++) {
+      String project = getProperty("project" + a);
+      if (project.length() == 0) continue;
+      main(new String[] {project + ".xml"});
+    }
   }
 }
