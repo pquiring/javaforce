@@ -13,9 +13,6 @@
 
   <import file="versions.xml"/>
 
-  <!--import properties from project cfg file : CLASSPATH, MAINCLASS, etc-->
-  <property file="${cfg}"/>
-
   <target name="javadoc" description="generate java documentation">
     <javadoc sourcepath="src" destdir="javadoc" additionalparam="-Xdoclint:none">
       <classpath>
@@ -121,16 +118,14 @@
 
   <target name="graalagent">
     <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecGraalAgent" fork="true">
-      <arg value="${CLASSPATH}"/>
-      <arg value="${MAINCLASS}"/>
+      <arg value="${ant.file}"/>
     </java>
   </target>
 
   <target name="run">
     <sequential>
       <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecProject" fork="true">
-        <arg value="${CLASSPATH}"/>
-        <arg value="${MAINCLASS}"/>
+        <arg value="${ant.file}"/>
       </java>
     </sequential>
   </target>
