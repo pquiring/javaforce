@@ -3,10 +3,6 @@
   <property name="apptype" value="window"/>
   <property name="ico" value="${app}.ico"/>
   <property name="cfg" value="${app}.cfg"/>
-  <property name="project2" value=""/>
-  <property name="project3" value=""/>
-  <property name="project4" value=""/>
-  <property name="project5" value=""/>
   <property name="jarpath" value="."/>
   <property name="jdkver" value="11"/>
   <property name="lib" value="${home}/lib"/>
@@ -140,27 +136,16 @@
 
   <!-- Linux targets -->
 
-  <target name="installapp2" depends="check-builds" if="project2.present">
-    <ant antfile="${project2}.xml" target="installapp" inheritAll="false"/>
-  </target>
-
-  <target name="installapp3" depends="check-builds" if="project3.present">
-    <ant antfile="${project3}.xml" target="installapp" inheritAll="false"/>
-  </target>
-
-  <target name="installapp4" depends="check-builds" if="project4.present">
-    <ant antfile="${project4}.xml" target="installapp" inheritAll="false"/>
-  </target>
-
-  <target name="installapp5" depends="check-builds" if="project5.present">
-    <ant antfile="${project5}.xml" target="installapp" inheritAll="false"/>
-  </target>
-
-  <target name="installapp" depends="executable,installapp2,installapp3,installapp4,installapp5">
+  <target name="installapp" depends="executable">
     <sequential>
-      <exec command="sudo cp ${app}.bin /usr/bin/${app}"/>
-      <exec command="sudo ant -f ${ant.file} install"/>
+      <exec command="sudo ant -f ${ant.file} installapproot"/>
     </sequential>
+  </target>
+
+  <target name="installapproot">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.InstallProject" fork="true">
+      <arg value="${ant.file}"/>
+    </java>
   </target>
 
   <target name="deb" depends="installapp" description="create deb package">
