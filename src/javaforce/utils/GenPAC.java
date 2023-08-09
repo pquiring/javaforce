@@ -35,6 +35,11 @@ public class GenPAC {
     String version = getProperty("version");
     String home = getProperty("home");
 
+    if (version.equals("${javaforce-version}")) {
+      xml = loadXML("versions.xml");
+      version = getProperty("javaforce-version");
+    }
+
     switch (apptype) {
       case "client":
       case "server":
