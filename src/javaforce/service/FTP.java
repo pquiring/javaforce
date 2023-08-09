@@ -405,9 +405,14 @@ public class FTP extends Thread {
       this.secure = secure;
     }
     public void close() {
+      if (cos != null) {
+        try {cos.flush();} catch (Exception e) {}
+      }
       if (c != null) {
         try { c.close(); } catch (Exception e) {}
         c = null;
+        cis = null;
+        cos = null;
       }
       closeData();
     }
