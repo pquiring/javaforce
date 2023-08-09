@@ -510,13 +510,13 @@ public class FTP extends Thread {
         while (c != null && c.isConnected()) {
           String ln = readln();
           if (ln == null) break;
-          String[] p = ln.split(" ");
-          String cmd = p[0].toUpperCase();
+          String[] args = ln.split(" ");
+          String cmd = args[0].toUpperCase();
           if (cmd.equals("QUIT")) {
             cos.write("221 Goodbye\r\n".getBytes());
             break;
           }
-          doCommand(cmd, p);
+          doCommand(cmd, args);
         }
       } catch (Exception e) {
         if (!(e instanceof SocketException)) JFLog.log(e);
@@ -598,48 +598,48 @@ public class FTP extends Thread {
       }
       switch (cmd) {
         case "RETR":
-          get(args[1]);
+          get(JF.join(" ", args, 1));
           break;
         case "STOR":
-          put(args[1]);
+          put(JF.join(" ", args, 1));
           break;
         case "CDUP":
           changeDir("..");
           break;
         case "CWD":
-          changeDir(args[1]);
+          changeDir(JF.join(" ", args, 1));
           break;
         case "SITE":
           //site chmod 777 file
           String cmd2 = args[1];
           switch (cmd2) {
             case "chmod":
-              chmod(args[2], args[3]);
+              chmod(args[2], JF.join(" ", args, 3));
               break;
             default:
               break;
           }
           break;
         case "MKD":
-          makeDir(args[1]);
+          makeDir(JF.join(" ", args, 1));
           break;
         case "RNFR":
-          renameFrom(args[1]);
+          renameFrom(JF.join(" ", args, 1));
           break;
         case "RNTO":
-          renameTo(args[1]);
+          renameTo(JF.join(" ", args, 1));
           break;
         case "DELE":
-          delete(args[1]);
+          delete(JF.join(" ", args, 1));
           break;
         case "RMD":
-          removeDir(args[1]);
+          removeDir(JF.join(" ", args, 1));
           break;
         case "LS":
         case "LIST":
           String path = ".";
           if (args.length > 1) {
-            path = args[1];
+            path = JF.join(" ", args, 1);
           }
           list(path);
           break;
@@ -826,6 +826,10 @@ public class FTP extends Thread {
       }
       if (!openData()) return;
       File[] files = new File(path).listFiles();
+      if (files == null) {
+        files = new File[0];
+        JFLog.log("Warning:no files for path:" + dir);
+      }
       StringBuilder sb = new StringBuilder();
       for(File file : files) {
         String name = file.getName();

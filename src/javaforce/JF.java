@@ -1267,14 +1267,23 @@ public class JF {
     return Thread.currentThread().getStackTrace()[2].getLineNumber();
   }
 
-  /** Joins array of strings placing a delimit inbetween each string.
-   * Used in .NET apps then introduced in Java8.
-   * This is my version for Java6+ apps.
+  /** Joins array of strings placing a delimit in between each string.
    */
   public static String join(String delimit, String strings[]) {
     StringBuilder sb = new StringBuilder();
     for(int a=0;a<strings.length;a++) {
       if (a > 0) sb.append(delimit);
+      sb.append(strings[a]);
+    }
+    return sb.toString();
+  }
+
+  /** Joins array of strings placing a delimit in between each string.
+   */
+  public static String join(String delimit, String strings[], int startIdx) {
+    StringBuilder sb = new StringBuilder();
+    for(int a=startIdx;a<strings.length;a++) {
+      if (a > startIdx) sb.append(delimit);
       sb.append(strings[a]);
     }
     return sb.toString();
