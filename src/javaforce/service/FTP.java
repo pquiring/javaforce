@@ -403,7 +403,6 @@ public class FTP extends Thread {
     public ClientWorker(Socket s, boolean secure) {
       c = s;
       this.secure = secure;
-      croot = root;
     }
     public void close() {
       if (c != null) {
@@ -545,7 +544,7 @@ public class FTP extends Thread {
               String pass = new String(javaforce.Base64.decode(pass_base64.getBytes()));
               if (login(user, pass)) {
                 cos.write("230 Login successful\r\n".getBytes());
-                setRoot(user);
+                setClientRoot();
               } else {
                 JF.sleep(1000);
                 cos.write("501 Login failed\r\n".getBytes());
@@ -559,11 +558,11 @@ public class FTP extends Thread {
               break;
             }
           }
-          break;
+          return;
         case "USER":
           user = args[1];
           cos.write("331 Send password\r\n".getBytes());
-          break;
+          return;
         case "PASS":
           if (user == null) {
             cos.write("501 Login failed\r\n".getBytes());
@@ -572,14 +571,14 @@ public class FTP extends Thread {
           }
           if (login(user, args[1])) {
             cos.write("230 Login successful\r\n".getBytes());
-            setRoot(user);
+            setClientRoot();
           } else {
             JF.sleep(1000);
             cos.write("501 Login failed\r\n".getBytes());
             close();
             return;
           }
-          break;
+          return;
         case "STARTTLS":
           if (secure) {
             cos.write("550 Already secure\r\n".getBytes());
@@ -591,7 +590,13 @@ public class FTP extends Thread {
           cis = c.getInputStream();
           cos = c.getOutputStream();
           secure = true;
-          break;
+          return;
+      }
+      if (croot == null) {
+        cos.write("401 Unauthorized\r\n".getBytes());
+        throw new Exception("unauthorized");
+      }
+      switch (cmd) {
         case "RETR":
           get(args[1]);
           break;
@@ -918,7 +923,7 @@ public class FTP extends Thread {
       return path.substring(len);
     }
 
-    private void setRoot(String user) {
+    private void setClientRoot() {
       croot = root.replaceAll("\\$\\{user\\}", user);
     }
   }
