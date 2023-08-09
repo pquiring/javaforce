@@ -1,5 +1,10 @@
 What's new...
 
+Aug 9/2023 : JF/43.0
+  - jfFTP-server/0.1
+    - added FTP Server
+  - improve/cleanup build process
+
 July 25/2023 : JF/42.1
   - jfSMTPRelay/0.2
     - added keepalive option
