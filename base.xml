@@ -91,13 +91,6 @@
 
   <import file="install-jars.xml"/>
 
-  <target name="check-builds">
-    <available file="${project2}.xml" property="project2.present"/>
-    <available file="${project3}.xml" property="project3.present"/>
-    <available file="${project4}.xml" property="project4.present"/>
-    <available file="${project5}.xml" property="project5.present"/>
-  </target>
-
   <target name="executable" depends="jar,depjars,depnatives" description="create executable launcher">
     <sequential>
       <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenExecutable" fork="true">
