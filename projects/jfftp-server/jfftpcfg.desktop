@@ -1,0 +1,15 @@
+[Desktop Entry]
+Name=FTP Server Config
+Comment=Manage your ftp server.
+
+Icon=jfftpcfg
+
+Type=Application
+Categories=Utility
+
+Exec=jfftpcfg
+StartupNotify=false
+Terminal=false
+MimeType=
+
+Title=jfFTP Server Config
