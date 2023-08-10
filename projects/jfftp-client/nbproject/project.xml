@@ -3,15 +3,15 @@
     <type>org.netbeans.modules.ant.freeform</type>
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
-            <name>jfftp</name>
+            <name>jfftp-client</name>
         </general-data>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
             <!-- Do not use Project Properties customizer when editing this file manually. -->
-            <name>jfftp</name>
+            <name>jfftp-client</name>
             <properties/>
             <folders>
                 <source-folder>
-                    <label>jfftp</label>
+                    <label>jfftp-client</label>
                     <location>.</location>
                     <encoding>windows-1252</encoding>
                 </source-folder>
