@@ -6,7 +6,7 @@
     <UIRef Id="WixUI_Minimal" />
     <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit."/>
 
-    <Icon Id="icon.ico" SourceFile="jfftp.ico"/>
+    <Icon Id="icon.ico" SourceFile="jfftpcfg.ico"/>
     <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
 
     <!-- Step 1: Define the directory structure -->
@@ -33,7 +33,7 @@
             IgnoreFailure="yes"
             Profile="all" />
         </File>
-        <File Id="jfftp.exe" Source="jfftp.exe"/>
+        <File Id="jfftpcfg.exe" Source="jfftpcfg.exe"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"
@@ -50,7 +50,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{CD9CC532-A506-45FD-835E-E947471B8A00}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTP" Description="Java FTP Server" Target="[APPLICATIONROOTDIRECTORY]jfftp.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTP" Description="Java FTP Server" Target="[APPLICATIONROOTDIRECTORY]jfftpcfg.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

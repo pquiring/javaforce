@@ -1,7 +1,7 @@
 <project name="jfftp" default="jar" basedir=".">
   <description>ftp</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfftp"/>
+  <property name="app" value="jfftpcfg"/>
   <property name="apptype" value="server"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.1"/>

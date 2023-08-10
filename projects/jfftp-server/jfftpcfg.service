@@ -1,0 +1,10 @@
+[Unit]
+Description=JavaForce FTP Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfftpsvc
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
