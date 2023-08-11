@@ -14,7 +14,7 @@ public class InstallProject implements ShellProcessListener {
   private XML xml;
   public static void main(String[] args) {
     if (args.length != 1) {
-      System.out.println("Usage:ExecGraal build.xml");
+      System.out.println("Usage:InstallProject build.xml");
       System.exit(1);
     }
     try {
