@@ -22,7 +22,7 @@ public class GenPkgInfo {
     System.exit(1);
   }
 
-  private XML xml;
+  private BuildTools tools;
   private String app, desc, arch, ver;
   private long size;  //in bytes
 
@@ -33,18 +33,23 @@ public class GenPkgInfo {
       System.out.println("    distro = debian fedora");
       System.exit(1);
     }
-    new GenPkgInfo().run(args);
+    try {
+      new GenPkgInfo().run(args);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
   }
 
-  public void run(String args[]) {
+  public void run(String args[]) throws Exception {
+    tools = new BuildTools();
+    if (!tools.loadXML("build.xml")) throw new Exception("error loading build.xml");
     String distro = args[0];
     arch = getArch();
     size = calcSize(args[2]);
     //load build.xml and extract app , desc , etc.
-    xml = loadXML();
-    app = getProperty("app");
-    desc = getTag("description");
-    ver = getProperty("version");
+    app = tools.getProperty("app");
+    desc = tools.getTag("description");
+    ver = tools.getProperty("version");
     switch (distro) {
       case "debian": debian(); break;
       case "fedora": fedora(); break;
@@ -92,55 +97,9 @@ public class GenPkgInfo {
     }
   }
 
-  private XML loadXML() {
-    XML xml = new XML();
-    try {
-      xml.read(new FileInputStream("build.xml"));
-      return xml;
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
-    return null;
-  }
-
-  private String getTag(String name) {
-    XML.XMLTag tag = xml.getTag(new String[] {"project", name});
-    if (tag == null) return "";
-    return tag.content;
-  }
-
-  private String getProperty(String name) {
-    //<project> <property name="name" value="value">
-    int cnt = xml.root.getChildCount();
-    for(int a=0;a<cnt;a++) {
-      XML.XMLTag tag = xml.root.getChildAt(a);
-      if (!tag.name.equals("property")) continue;
-      int attrs = tag.attrs.size();
-      String attrName = null;
-      String attrValue = null;
-      for(int b=0;b<attrs;b++) {
-        XML.XMLAttr attr = tag.attrs.get(b);
-        if (attr.name.equals("name")) {
-          attrName = attr.value;
-        }
-        if (attr.name.equals("value")) {
-          attrValue = attr.value;
-        }
-        if (attr.name.equals("location")) {
-          attrValue = attr.value;
-        }
-      }
-      if (attrName != null && attrName.equals(name)) {
-        return attrValue;
-      }
-    }
-    return "";
-  }
-
   private String[] getDepends(String tagName) {
     ArrayList<String> depends = new ArrayList<String>();
-    String list[] = getProperty(tagName).split(",");
+    String list[] = tools.getProperty(tagName).split(",");
     if (!app.equals("javaforce")) depends.add("javaforce");
     for(int a=0;a<list.length;a++) {
       String depend = list[a].trim();

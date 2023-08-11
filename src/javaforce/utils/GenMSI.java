@@ -8,31 +8,37 @@ package javaforce.utils;
  */
 
 import java.io.*;
-import java.util.*;
 
 import javaforce.*;
 
 public class GenMSI {
-  private static XML xml;
+  private BuildTools tools;
   public static void main(String args[]) {
     if (args.length != 1) {
       System.out.println("Usage:GenMSI build.xml");
       System.exit(1);
     }
-
-    xml = loadXML(args[0]);
-    String home = getProperty("home");
-    String app = getProperty("app");
-    String apptype = getProperty("apptype");
-    String version = getProperty("version");
-    String jre = getProperty("jre");
+    try {
+      new GenMSI().run(args[0]);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+  public void run(String buildfile) throws Exception {
+    tools = new BuildTools();
+    if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
+    String home = tools.getProperty("home");
+    String app = tools.getProperty("app");
+    String apptype = tools.getProperty("apptype");
+    String version = tools.getProperty("version");
+    String jre = tools.getProperty("jre");
     jre = jre.replaceAll("\\$\\{home\\}", home);
-    String msi = getProperty("msi");
+    String msi = tools.getProperty("msi");
     if (msi.length() == 0) msi = app;
-    String heat_home = getProperty("heat_home");
+    String heat_home = tools.getProperty("heat_home");
     if (heat_home.length() == 0) heat_home = "jre";
-    String candle_extra = getProperty("candle_extra");
-    String light_extra = getProperty("light_extra");
+    String candle_extra = tools.getProperty("candle_extra");
+    String light_extra = tools.getProperty("light_extra");
 
     switch (apptype) {
       case "client":
@@ -148,51 +154,5 @@ public class GenMSI {
 
   public static String getArchExt() {
     return getArch();
-  }
-
-  private static XML loadXML(String buildfile) {
-    XML xml = new XML();
-    try {
-      xml.read(new FileInputStream(buildfile));
-      return xml;
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
-    return null;
-  }
-
-  private static String getTag(String name) {
-    XML.XMLTag tag = xml.getTag(new String[] {"project", name});
-    if (tag == null) return "";
-    return tag.content;
-  }
-
-  private static String getProperty(String name) {
-    //<project> <property name="name" value="value">
-    int cnt = xml.root.getChildCount();
-    for(int a=0;a<cnt;a++) {
-      XML.XMLTag tag = xml.root.getChildAt(a);
-      if (!tag.name.equals("property")) continue;
-      int attrs = tag.attrs.size();
-      String attrName = null;
-      String attrValue = null;
-      for(int b=0;b<attrs;b++) {
-        XML.XMLAttr attr = tag.attrs.get(b);
-        if (attr.name.equals("name")) {
-          attrName = attr.value;
-        }
-        if (attr.name.equals("value")) {
-          attrValue = attr.value;
-        }
-        if (attr.name.equals("location")) {
-          attrValue = attr.value;
-        }
-      }
-      if (attrName != null && attrName.equals(name)) {
-        return attrValue;
-      }
-    }
-    return "";
   }
 }

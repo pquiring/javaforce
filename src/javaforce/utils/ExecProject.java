@@ -11,11 +11,7 @@ import java.util.*;
 import javaforce.*;
 
 public class ExecProject implements ShellProcessListener {
-  private XML xml;
-  private void error(String msg) {
-    System.out.print(msg);
-    System.exit(1);
-  }
+  private BuildTools tools;
 
   public static void main(String args[]) {
     if (args.length != 1) {
@@ -31,10 +27,11 @@ public class ExecProject implements ShellProcessListener {
   }
 
   public void run(String buildfile) throws Exception {
-    xml = loadXML(buildfile);
+    tools = new BuildTools();
+    if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
 
-    String app = getProperty("app");
-    String cfg = getProperty("cfg");
+    String app = tools.getProperty("app");
+    String cfg = tools.getProperty("cfg");
     if (cfg.length() == 0) {
       cfg = app + ".cfg";
     }
@@ -63,51 +60,5 @@ public class ExecProject implements ShellProcessListener {
 
   public void shellProcessOutput(String str) {
     System.out.print(str);
-  }
-
-  private static XML loadXML(String buildfile) {
-    XML xml = new XML();
-    try {
-      xml.read(new FileInputStream(buildfile));
-      return xml;
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
-    return null;
-  }
-
-  private String getTag(String name) {
-    XML.XMLTag tag = xml.getTag(new String[] {"project", name});
-    if (tag == null) return "";
-    return tag.content;
-  }
-
-  private String getProperty(String name) {
-    //<project> <property name="name" value="value">
-    int cnt = xml.root.getChildCount();
-    for(int a=0;a<cnt;a++) {
-      XML.XMLTag tag = xml.root.getChildAt(a);
-      if (!tag.name.equals("property")) continue;
-      int attrs = tag.attrs.size();
-      String attrName = null;
-      String attrValue = null;
-      for(int b=0;b<attrs;b++) {
-        XML.XMLAttr attr = tag.attrs.get(b);
-        if (attr.name.equals("name")) {
-          attrName = attr.value;
-        }
-        if (attr.name.equals("value")) {
-          attrValue = attr.value;
-        }
-        if (attr.name.equals("location")) {
-          attrValue = attr.value;
-        }
-      }
-      if (attrName != null && attrName.equals(name)) {
-        return attrValue;
-      }
-    }
-    return "";
   }
 }

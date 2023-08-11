@@ -12,19 +12,27 @@ import java.io.*;
 import javaforce.*;
 
 public class GenDMG {
-  private static XML xml;
+  private BuildTools tools;
   public static void main(String[] args) {
     if (args.length != 1) {
       System.out.println("Usage:GenDMG build.xml");
       System.exit(1);
     }
-    xml = loadXML(args[0]);
-    String home = getProperty("home");
-    String app = getProperty("app");
-    String apptype = getProperty("apptype");
-    String version = getProperty("version");
-    String jre = getProperty("jre");
-    String ffmpeg = getProperty("ffmpeg_home");
+    try {
+      new GenDMG().run(args[0]);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
+  public void run(String buildfile) throws Exception {
+    tools = new BuildTools();
+    if (!tools.loadXML(buildfile)) throw new Exception("error loading " + buildfile);
+    String home = tools.getProperty("home");
+    String app = tools.getProperty("app");
+    String apptype = tools.getProperty("apptype");
+    String version = tools.getProperty("version");
+    String jre = tools.getProperty("jre");
+    String ffmpeg = tools.getProperty("ffmpeg_home");
 
     switch (apptype) {
       case "client":
@@ -99,51 +107,5 @@ public class GenDMG {
       e.printStackTrace();
       System.exit(1);
     }
-  }
-
-  private static XML loadXML(String buildfile) {
-    XML xml = new XML();
-    try {
-      xml.read(new FileInputStream(buildfile));
-      return xml;
-    } catch (Exception e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
-    return null;
-  }
-
-  private static String getTag(String name) {
-    XML.XMLTag tag = xml.getTag(new String[] {"project", name});
-    if (tag == null) return "";
-    return tag.content;
-  }
-
-  private static String getProperty(String name) {
-    //<project> <property name="name" value="value">
-    int cnt = xml.root.getChildCount();
-    for(int a=0;a<cnt;a++) {
-      XML.XMLTag tag = xml.root.getChildAt(a);
-      if (!tag.name.equals("property")) continue;
-      int attrs = tag.attrs.size();
-      String attrName = null;
-      String attrValue = null;
-      for(int b=0;b<attrs;b++) {
-        XML.XMLAttr attr = tag.attrs.get(b);
-        if (attr.name.equals("name")) {
-          attrName = attr.value;
-        }
-        if (attr.name.equals("value")) {
-          attrValue = attr.value;
-        }
-        if (attr.name.equals("location")) {
-          attrValue = attr.value;
-        }
-      }
-      if (attrName != null && attrName.equals(name)) {
-        return attrValue;
-      }
-    }
-    return "";
   }
 }
