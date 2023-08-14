@@ -25,6 +25,7 @@
 
   <target name="win-tools" depends="depjars" description="compile windows tools">
     <exec command="cl src\tapetool.cpp"/>
+    <exec command="cl src\vss.cpp ole32.lib"/>
   </target>
 
   <target name="jar" depends="compile" description="build jar file">
