@@ -242,7 +242,7 @@ int createshadow(const char* drv, const char* mount) {
     std::exit(1);
   }
   char guid[128];
-  char str8[64];
+  char str8vol[64];
   VSS_SNAPSHOT_PROP snap;
   res = pVss->GetSnapshotProperties(id_drv, &snap);
   if (res != S_OK) {
@@ -251,11 +251,11 @@ int createshadow(const char* drv, const char* mount) {
     std::exit(1);
   }
   printf("Volume shadow created for Volume %s\n", drv);
-  printf("Shadow Volume: %s\n", (char*)str16_to_str8((char16*)snap.m_pwszSnapshotDeviceObject, str8));
-//  printf("ShadowSet ID: %s\n", guid_to_string(&id_set, guid));
+  printf("Shadow Volume: %s\n", (char*)str16_to_str8((char16*)snap.m_pwszSnapshotDeviceObject, str8vol));
+  printf("ShadowSet ID: %s\n", guid_to_string(&id_set, guid));
   printf("Shadow ID: %s\n", guid_to_string(&id_drv, guid));
   if (mount != NULL) {
-    mountshadow(mount, str8);
+    mountshadow(mount, str8vol);
   }
   return 0;
 }
@@ -265,8 +265,6 @@ int deleteshadow(const char* shadow) {
   VSS_SNAPSHOT_PROP *snap;
   ULONG copied;
   char guid[64];
-  char16 str8[64];
-  char16 str16[128];
   VSS_ID notdone;
   LONG done;
   int res = pVss->SetContext(VSS_CTX_ALL);
@@ -301,8 +299,6 @@ int deleteshadowall() {
   VSS_SNAPSHOT_PROP *snap;
   ULONG copied;
   char guid[64];
-  char16 str8[64];
-  char16 str16[128];
   VSS_ID notdone;
   LONG done;
   int res = pVss->SetContext(VSS_CTX_ALL);
