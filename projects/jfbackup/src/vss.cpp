@@ -27,6 +27,8 @@ IVssEnumObject *pEnum = NULL;
 
 const int debug = 0;
 
+int mountshadow(const char* path, const char* shadow);
+
 /*
 struct GUID {
   unsigned long  Data1;
@@ -71,7 +73,7 @@ void usage() {
   printf("  Volume Shadow Storage commands:\n");
   printf("  listvols : list volumes\n");
   printf("  listshadows : list shadows\n");
-  printf("  createshadow {drive} : create shadow\n");
+  printf("  createshadow {drive} [mount] : create shadow (optional mount)\n");
   printf("  deleteshadow {shadow} : delete shadow (/all for all shadows)\n");
   printf("  mountshadow {path} {shadow} : mount shadow\n");
   printf("  unmountshadow {path} : unmount shadow\n");
@@ -187,7 +189,7 @@ int listshadows() {
   return 0;
 }
 
-int createshadow(const char* drv) {
+int createshadow(const char* drv, const char* mount) {
   VSS_ID id_set, id_drv;
   char16 drv16[128];
   int res = pVss->SetContext(VSS_CTX_BACKUP);
@@ -252,6 +254,9 @@ int createshadow(const char* drv) {
   printf("Shadow Volume: %s\n", (char*)str16_to_str8((char16*)snap.m_pwszSnapshotDeviceObject, str8));
 //  printf("ShadowSet ID: %s\n", guid_to_string(&id_set, guid));
   printf("Shadow ID: %s\n", guid_to_string(&id_drv, guid));
+  if (mount != NULL) {
+    mountshadow(mount, str8);
+  }
   return 0;
 }
 
@@ -359,7 +364,11 @@ int main(int argc, const char** argv) {
   }
   else if (stricmp(argv[1], "CREATESHADOW") == 0) {
     if (argc < 2) {usage();}
-    code = createshadow(argv[2]);
+    if (argc == 2) {
+      code = createshadow(argv[2], NULL);
+    } else {
+      code = createshadow(argv[2], argv[3]);
+    }
   }
   else if (stricmp(argv[1], "DELETESHADOW") == 0) {
     if (stricmp(argv[2], "/ALL") == 0) {
