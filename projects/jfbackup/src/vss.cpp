@@ -157,7 +157,8 @@ int listshadows() {
   VSS_SNAPSHOT_PROP *snap;
   ULONG copied;
   char guid[64];
-  char16 str8[64];
+  char str8vol[64];
+  char str8org[64];
   char16 str16[128];
   int cnt = 0;
   int res = pVss->SetContext(VSS_CTX_ALL);
@@ -167,14 +168,18 @@ int listshadows() {
   }
   res = pVss->Query(GUID_NULL, VSS_OBJECT_NONE, VSS_OBJECT_SNAPSHOT, &pEnum);
   if (pEnum == NULL) {
-    printf("Error:Query() failed:%x\n", res);
+    printf("Query Failed:%x\n", res);
     return 1;
   }
   while (pEnum->Next(1, &prop, &copied) == S_OK) {
     if (prop.Type == VSS_OBJECT_SNAPSHOT) {
       snap = (VSS_SNAPSHOT_PROP *)&prop.Obj;
       guid_to_string(&snap->m_SnapshotId, guid);
-      printf("Volume %s Shadow %s\n", (char*)str16_to_str8((char16*)snap->m_pwszSnapshotDeviceObject, (char*)str8), guid);
+      printf("Shadow Volume: %s Shadow ID: %s Volume: %s\n"
+        , (char*)str16_to_str8((char16*)snap->m_pwszSnapshotDeviceObject, str8vol)
+        , guid
+        , (char*)str16_to_str8((char16*)snap->m_pwszOriginalVolumeName, str8org)
+      );
       cnt++;
     }
   }
@@ -195,7 +200,6 @@ int createshadow(const char* drv) {
     printf("SetContext Failed:%x\n", res);
     std::exit(1);
   }
-/*
   res = pVss->GatherWriterMetadata(&pAsync);
   if (res != S_OK) {
     printf("GatherWriterMetadata Failed:%x\n", res);
@@ -203,7 +207,6 @@ int createshadow(const char* drv) {
     std::exit(1);
   }
   pAsync->Wait(INFINITE);
-*/
   res = pVss->StartSnapshotSet(&id_set);
   if (res != S_OK) {
     printf("StartSnapshotSet Failed:%x\n", res);
@@ -237,9 +240,18 @@ int createshadow(const char* drv) {
     std::exit(1);
   }
   char guid[128];
-  printf("Volume shadow created for volume %s\n", drv);
-//  printf("ShadowSetID=%s\n", guid_to_string(&id_set, guid));
-  printf("Shadow %s\n", guid_to_string(&id_drv, guid));
+  char str8[64];
+  VSS_SNAPSHOT_PROP snap;
+  res = pVss->GetSnapshotProperties(id_drv, &snap);
+  if (res != S_OK) {
+    printf("GetSnapshotProperties Failed:%x\n", res);
+    pVss->AbortBackup();
+    std::exit(1);
+  }
+  printf("Volume shadow created for Volume %s\n", drv);
+  printf("Shadow Volume: %s\n", (char*)str16_to_str8((char16*)snap.m_pwszSnapshotDeviceObject, str8));
+//  printf("ShadowSet ID: %s\n", guid_to_string(&id_set, guid));
+  printf("Shadow ID: %s\n", guid_to_string(&id_drv, guid));
   return 0;
 }
 
@@ -259,7 +271,7 @@ int deleteshadow(const char* shadow) {
   }
   res = pVss->Query(GUID_NULL, VSS_OBJECT_NONE, VSS_OBJECT_SNAPSHOT, &pEnum);
   if (pEnum == NULL) {
-    printf("Error:Query() failed:%x\n", res);
+    printf("Query Failed:%x\n", res);
     return 1;
   }
   printf("Searching for %s\n", shadow);
@@ -295,7 +307,7 @@ int deleteshadowall() {
   }
   res = pVss->Query(GUID_NULL, VSS_OBJECT_NONE, VSS_OBJECT_SNAPSHOT, &pEnum);
   if (pEnum == NULL) {
-    printf("Error:Query() failed:%x\n", res);
+    printf("Query Failed:%x\n", res);
     return 1;
   }
   while (pEnum->Next(1, &prop, &copied) == S_OK) {
@@ -304,7 +316,7 @@ int deleteshadowall() {
       guid_to_string(&snap->m_SnapshotId, guid);
       int res = pVss->DeleteSnapshots(snap->m_SnapshotId, VSS_OBJECT_SNAPSHOT, TRUE, &done, &notdone);
       if (res != S_OK) {
-        printf("DeleteSnapshots failed:%x\n", res);
+        printf("DeleteSnapshots Failed:%x\n", res);
       }
     }
   }
@@ -313,9 +325,8 @@ int deleteshadowall() {
 
 
 int mountshadow(const char* path, const char* shadow) {
-  //mklink
   char shadow2[1024];
-  sprintf(shadow2, "%s\\", shadow)
+  sprintf(shadow2, "%s\\", shadow);
   if (!CreateSymbolicLink(path, shadow2, SYMBOLIC_LINK_FLAG_DIRECTORY)) {
     printf("CreateSymbolicLink Failed\n");
     return 1;
