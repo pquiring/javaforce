@@ -10,11 +10,11 @@
 
 #include "../common/vector.cpp"
 
-HMODULE lib;
-HRESULT (*pVssInit)(IVssBackupComponents **ppVss);
-IVssBackupComponents *pVss;
-IVssAsync *pAsync = NULL;
-IVssEnumObject *pEnum = NULL;
+static HMODULE vss_lib;
+static HRESULT (*pVssInit)(IVssBackupComponents **ppVss);
+static IVssBackupComponents *pVss;
+static IVssAsync *pAsync = NULL;
+static IVssEnumObject *pEnum = NULL;
 
 /*
 struct GUID {
@@ -66,12 +66,12 @@ static void vssGetFunction(HMODULE handle, void **funcPtr, const char *name) {
 }
 
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssInit(JNIEnv *e, jclass c) {
-  lib = LoadLibrary("vssapi.dll");
-  if (lib == NULL) {
+  vss_lib = LoadLibrary("vssapi.dll");
+  if (vss_lib == NULL) {
     printf("VSS:LoadLibrary Failed\n");
     return JNI_FALSE;
   }
-  vssGetFunction(lib, (void**)&pVssInit, "CreateVssBackupComponentsInternal");
+  vssGetFunction(vss_lib, (void**)&pVssInit, "CreateVssBackupComponentsInternal");
   int res = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
   if (res != S_OK) {
     printf("VSS:CoInitializeEx Failed:%x\n", res);

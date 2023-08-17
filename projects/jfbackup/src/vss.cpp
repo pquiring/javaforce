@@ -20,7 +20,7 @@
 
 HMODULE lib;
 HRESULT (*pVssInit)(IVssBackupComponents **ppVss);
-IVssBackupComponents *pVss;
+IVssBackupComponents *pVss = NULL;
 IVssAsync *pAsync = NULL;
 IVssEnumObject *pEnum = NULL;
 
@@ -73,8 +73,8 @@ void usage() {
   printf("  listvols : list volumes\n");
   printf("  listshadows : list shadows\n");
   printf("  createshadow {drive} [mount] : create shadow (optional mount)\n");
-  printf("  deleteshadow {shadow} : delete shadow (/all for all shadows)\n");
-  printf("  mountshadow {path} {shadow} : mount shadow\n");
+  printf("  deleteshadow {shadow-id} : delete shadow (/all for all shadows)\n");
+  printf("  mountshadow {path} {shadow-vol} : mount shadow\n");
   printf("  unmountshadow {path} : unmount shadow\n");
   std::exit(0);
 }
