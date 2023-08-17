@@ -12,7 +12,7 @@
 
 static HMODULE vss_lib;
 static HRESULT (*pVssInit)(IVssBackupComponents **ppVss);
-static IVssBackupComponents *pVss;
+static IVssBackupComponents *pVss = NULL;
 static IVssAsync *pAsync = NULL;
 static IVssEnumObject *pEnum = NULL;
 
@@ -111,6 +111,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_WinNative_vssListVols(JNIEnv *
   char16 path16[8];
   BOOL supported;
   Vector<jstring> strlst;
+  if (pVss == NULL) return NULL;
   jclass strcls = e->FindClass("java/lang/String");
   int cnt = 0;
   for(int drv='C';drv<='Z';drv++) {
@@ -137,6 +138,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_WinNative_vssListShadows(JNIEn
   char str8org[64];
   char16 str16[128];
   int cnt = 0;
+  if (pVss == NULL) return NULL;
   jclass strcls = e->FindClass("java/lang/String");
   jclass strarraycls = e->FindClass("[Ljava/lang/String;");
   int res = pVss->SetContext(VSS_CTX_ALL);
@@ -174,6 +176,7 @@ JNIEXPORT jobjectArray JNICALL Java_javaforce_jni_WinNative_vssListShadows(JNIEn
 JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssCreateShadow(JNIEnv *e, jclass c, jstring drv, jstring mount) {
   VSS_ID id_set, id_drv;
   char16 drv16[128];
+  if (pVss == NULL) return JNI_FALSE;
   int res = pVss->SetContext(VSS_CTX_BACKUP);
   if (res != S_OK) {
     printf("VSS:SetContext Failed:%x\n", res);
@@ -254,6 +257,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssDeleteShadow(JNIEnv *
   char guid[64];
   VSS_ID notdone;
   LONG done;
+  if (pVss == NULL) return JNI_FALSE;
   int res = pVss->SetContext(VSS_CTX_ALL);
   if (res != S_OK) {
     printf("VSS:SetContext Failed:%x\n", res);
@@ -290,6 +294,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_jni_WinNative_vssDeleteShadowAll(JNIEn
   char guid[64];
   VSS_ID notdone;
   LONG done;
+  if (pVss == NULL) return JNI_FALSE;
   int res = pVss->SetContext(VSS_CTX_ALL);
   if (res != S_OK) {
     printf("VSS:SetContext Failed:%x\n", res);
