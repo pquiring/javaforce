@@ -9,6 +9,7 @@ import java.util.*;
 
 import javaforce.*;
 import javaforce.utils.*;
+import javaforce.jni.*;
 
 public class Client extends Thread {
   private Socket s;
@@ -214,7 +215,7 @@ public class Client extends Thread {
     return LE.getuint64(data, 0);
   }
   private void listvolumes() throws Exception {
-    String vols[] = VSS.listVolumes();
+    String vols[] = WinNative.vssListVols();
     StringBuilder list = new StringBuilder();
     for(int a=0;a<vols.length;a++) {
       list.append(vols[a]);
@@ -232,31 +233,17 @@ public class Client extends Thread {
     byte[] arg = read(arglen);
     String vol = new String(arg);
     cleanMounts();
-    if (!VSS.createShadow(vol)) {
+    if (!WinNative.vssCreateShadow(vol, Paths.vssPath)) {
       writeLength(4);
       os.write("FAIL".getBytes());
       return;
     }
-    String[] shadows = VSS.listShadows();
-    for(String shadow : shadows) {
-      if (shadow.startsWith(vol)) {
-        if (VSS.mountShadow(Paths.vssPath, shadow.substring(3))) {
-          JFLog.log("Note:mountShadow successful:" + shadow);
-          writeLength(4);
-          os.write("OKAY".getBytes());
-          synchronized(lock) {
-            mounts.add(vol);
-          }
-        } else {
-          JFLog.log("Error:mountShadow failed:" + shadow);
-          writeLength(4);
-          os.write("FAIL".getBytes());
-        }
-        return;
-      }
-    }
+    JFLog.log("Note:createShadow successful:" + vol);
     writeLength(4);
-    os.write("FAIL".getBytes());
+    os.write("OKAY".getBytes());
+    synchronized(lock) {
+      mounts.add(vol);
+    }
   }
   private void unmount() throws Exception {
     //read arg
@@ -266,8 +253,8 @@ public class Client extends Thread {
     }
     byte[] arg = read(arglen);
     String vol = new String(arg);
-    VSS.unmountShadow(Paths.vssPath);
-    if (!VSS.deleteShadow(vol)) {
+    WinNative.vssUnmountShadow(Paths.vssPath);
+    if (!WinNative.vssDeleteShadowAll()) {
       writeLength(4);
       os.write("FAIL".getBytes());
     } else {
@@ -281,17 +268,14 @@ public class Client extends Thread {
   public static void cleanMounts() {
     //remove old mount if exists
     if (new File(Paths.vssPath).exists()) {
-      VSS.unmountShadow(Paths.vssPath);
+      WinNative.vssUnmountShadow(Paths.vssPath);
       new File(Paths.vssPath).delete();
     }
     //delete all old shadow copies
-    String shadows[] = VSS.listShadows();
-    for(String shadow : shadows) {
-      VSS.deleteShadow(shadow.substring(0, 2));
-    }
+    WinNative.vssDeleteShadowAll();
     //remove old mount if exists (2nd attempt)
     if (new File(Paths.vssPath).exists()) {
-      VSS.unmountShadow(Paths.vssPath);
+      WinNative.vssUnmountShadow(Paths.vssPath);
       new File(Paths.vssPath).delete();
     }
   }

@@ -15,6 +15,7 @@ public class BackupService extends Thread {
 
   public static void serviceStart(String args[]) {
     JFNative.load();
+    WinNative.vssInit();
     if (backupService != null) return;
     backupService = new BackupService();
     backupService.start();
