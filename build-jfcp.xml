@@ -2,7 +2,7 @@
   <description>jfcp</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfcp"/>
-  <property name="apptype" value="c"/>
+  <property name="apptype" value="console"/>
   <property name="cfg" value="cfg/jfcp.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>

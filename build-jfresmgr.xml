@@ -2,7 +2,7 @@
   <description>jfresmgr</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfresmgr"/>
-  <property name="apptype" value="c"/>
+  <property name="apptype" value="console"/>
   <property name="cfg" value="cfg/jfresmgr.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>

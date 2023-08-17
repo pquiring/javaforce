@@ -2,7 +2,7 @@
   <description>jfrm</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfrm"/>
-  <property name="apptype" value="c"/>
+  <property name="apptype" value="console"/>
   <property name="cfg" value="cfg/jfrm.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>

@@ -2,7 +2,7 @@
   <description>vss</description>
   <!-- set global properties for this build -->
   <property name="app" value="vss"/>
-  <property name="apptype" value="c"/>
+  <property name="apptype" value="console"/>
   <property name="cfg" value="cfg/vss.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>

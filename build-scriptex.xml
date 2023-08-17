@@ -2,7 +2,7 @@
   <description>scriptex</description>
   <!-- set global properties for this build -->
   <property name="app" value="scriptex"/>
-  <property name="apptype" value="c"/>
+  <property name="apptype" value="console"/>
   <property name="cfg" value="cfg/scriptex.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>

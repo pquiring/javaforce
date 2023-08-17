@@ -2,7 +2,7 @@
   <description>jf-monitor-dir</description>
   <!-- set global properties for this build -->
   <property name="app" value="jf-monitor-dir"/>
-  <property name="apptype" value="c"/>
+  <property name="apptype" value="console"/>
   <property name="cfg" value="cfg/jf-monitor-dir.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>

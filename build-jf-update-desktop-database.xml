@@ -2,7 +2,7 @@
   <description>jf-update-desktop-database</description>
   <!-- set global properties for this build -->
   <property name="app" value="jf-update-desktop-database"/>
-  <property name="apptype" value="c"/>
+  <property name="apptype" value="console"/>
   <property name="cfg" value="cfg/jf-update-desktop-database.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>

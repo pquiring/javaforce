@@ -2,7 +2,7 @@
   <description>jfsudo</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfsudo"/>
-  <property name="apptype" value="c"/>
+  <property name="apptype" value="console"/>
   <property name="cfg" value="cfg/jfsudo.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>

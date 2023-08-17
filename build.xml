@@ -173,7 +173,7 @@
     <zip destfile="jfUtilities-${version}.zip">
       <fileset dir=".">
         <include name="*.exe"/>
-        <include name="*.dll"/>
+        <include name="jfnative64.dll"/>
       </fileset>
       <fileset dir="jre_base/bin">
         <include name="*.dll"/>

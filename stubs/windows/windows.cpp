@@ -339,6 +339,16 @@ static JNINativeMethod javaforce_jni_WinNative[] = {
   {"changerClose", "(J)V", (void *)&Java_javaforce_jni_WinNative_changerClose},
   {"changerList", "(J)[Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_changerList},
   {"changerMove", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_changerMove},
+//vss
+  {"vssInit", "()Z", (void *)&Java_javaforce_jni_WinNative_vssInit},
+  {"vssListVols", "()[Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_vssListVols},
+  {"vssListShadows", "()[[Ljava/lang/String;", (void *)&Java_javaforce_jni_WinNative_vssListShadows},
+  {"vssCreateShadow", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssCreateShadow},
+  {"vssDeleteShadow", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssDeleteShadow},
+  {"vssDeleteShadowAll", "()Z", (void *)&Java_javaforce_jni_WinNative_vssDeleteShadowAll},
+  {"vssMountShadow", "(Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssMountShadow},
+  {"vssUnmountShadow", "(Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_WinNative_vssUnmountShadow},
+//test
   {"add", "(II)I", (void *)&Java_javaforce_jni_WinNative_add},
   {"hold", "([II)V", (void *)&Java_javaforce_jni_WinNative_hold},
 };

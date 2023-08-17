@@ -70,6 +70,19 @@ public class WinNative {
   public static native String[] changerList(long handle);
   public static native boolean changerMove(long handle, String src, String transport, String dst);  //transport is optional
 
+  //VSS (Volume Shadow Services)
+  public static native boolean vssInit();
+  public static native String[] vssListVols();
+  public static native String[][] vssListShadows();  //ret = GUID, shadow volume, org volume
+  public static boolean vssCreateShadow(String drv) {
+    return vssCreateShadow(drv, null);
+  }
+  public static native boolean vssCreateShadow(String drv, String mount);
+  public static native boolean vssDeleteShadow(String shadowID);
+  public static native boolean vssDeleteShadowAll();
+  public static native boolean vssMountShadow(String mount, String shadowVol);
+  public static native boolean vssUnmountShadow(String mount);
+
   //test
   public static native int add(int x, int y);
   public static native void hold(int a[], int ms);

@@ -323,7 +323,6 @@ int deleteshadowall() {
   return 0;
 }
 
-
 int mountshadow(const char* path, const char* shadow) {
   char shadow2[1024];
   sprintf(shadow2, "%s\\", shadow);

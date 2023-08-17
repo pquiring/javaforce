@@ -1645,3 +1645,5 @@ JNIEXPORT void JNICALL Java_javaforce_jni_WinNative_hold
 #include "../common/image.cpp"
 
 #include "../common/pcap.cpp"
+
+#include "vss.cpp"

@@ -2,7 +2,7 @@
   <description>web</description>
   <!-- set global properties for this build -->
   <property name="app" value="web"/>
-  <property name="apptype" value="c"/>
+  <property name="apptype" value="console"/>
   <property name="cfg" value="cfg/web.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>

@@ -2,7 +2,7 @@
   <description>jfver</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfver"/>
-  <property name="apptype" value="c"/>
+  <property name="apptype" value="console"/>
   <property name="cfg" value="cfg/jfver.cfg"/>
   <property name="ico" value="javaforce.ico"/>
   <property name="home" value="."/>
