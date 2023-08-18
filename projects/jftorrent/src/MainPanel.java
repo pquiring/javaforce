@@ -320,7 +320,6 @@ public class MainPanel extends javax.swing.JPanel {
     defaultConfig();
     try {
       XML xml = new XML();
-      xml.setUseUniqueNames(false);
       FileInputStream fis = new FileInputStream(configFolder + configFile);
       xml.read(fis);
       xml.writeClass(Config.config);
@@ -341,7 +340,6 @@ public class MainPanel extends javax.swing.JPanel {
   private void saveConfig() {
     try {
       XML xml = new XML();
-      xml.setUseUniqueNames(false);
       FileOutputStream fos = new FileOutputStream(configFolder + configFile);
       xml.readClass("jftorrent", Config.config);
       xml.write(fos);

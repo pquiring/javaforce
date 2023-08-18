@@ -133,7 +133,7 @@ public class XML {
      * Sets the name for this node.
      */
     public void setName(String newName) {
-      //check if name="..." is in attrs, else use name (and update uname)
+      //check if name="..." is in attrs, else use name
       XMLAttr attr;
       boolean ok = false;
       for (Iterator i = attrs.iterator(); i.hasNext();) {

@@ -745,7 +745,6 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
     config.dockSize = 48;
     try {
       XML xml = new XML();
-      xml.setUseUniqueNames(false);
       FileInputStream fis = new FileInputStream(JF.getUserPath() + "/" + configFile);
       byte data[] = JF.readAll(fis);
       String str = new String(data);
@@ -753,7 +752,7 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
       //remove old "desktop" config
       for(int a=0;a<xml.root.getChildCount();) {
         if (xml.root.getChildAt(a).getName().equals("desktop")) {
-          xml.root.remove(a);
+          xml.root.removeTag(a);
         } else {
           a++;
         }
@@ -788,7 +787,6 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   public void loadGlobalConfig() {
     try {
       XML xml = new XML();
-      xml.setUseUniqueNames(false);
       FileInputStream fis = new FileInputStream(globalConfigFolder + "/" + globalConfigFile);
       xml.read(fis);
       xml.writeClass(globalConfig);
@@ -813,7 +811,6 @@ public class Dock extends javax.swing.JWindow implements ActionListener, MouseLi
   public synchronized void saveConfig() {
     try {
       XML xml = new XML();
-      xml.setUseUniqueNames(false);
       FileOutputStream fos = new FileOutputStream(JF.getUserPath() + "/" + configFile);
       xml.readClass("jfdesktop", config);
       xml.write(fos);
