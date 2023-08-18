@@ -319,28 +319,61 @@ public class EditEntry extends javax.swing.JDialog {
   }
   private static char chars[];
   private Random r;
-  private char genChar(boolean sym, boolean amb) {
-    char ch = chars[r.nextInt(26+26+10+(sym?10:0))];
+  private char genChar(boolean sym, boolean amb, boolean one) {
+    char ch = chars[r.nextInt(26+(one?0:26)+(one?0:10)+(sym&&!one?10:0))];
     if (amb) {
       //avoid ambiguous chars
-      if (ch == 'I' || ch == '1' || ch == 'l' || ch == '0' || ch == 'O') return genChar(sym, amb);
+      if (ch == 'I' || ch == '1' || ch == 'l' || ch == '0' || ch == 'O') return genChar(sym, amb, one);
     }
     return ch;
   }
+  private char getCharLower() {
+    return chars[r.nextInt(26)];
+  }
+  private char getCharUpper() {
+    return chars[26 + r.nextInt(26)];
+  }
+  private char getCharNumber() {
+    return chars[26 + 26 + r.nextInt(10)];
+  }
+  private char getCharSymbol() {
+    return chars[26 + 26 + 10 + r.nextInt(10)];
+  }
   private void genPassword() {
     if (chars == null) init();
-    int len = MainPanel.This.config.passwordGeneratorLength;
+    int len = Config.config.passwordGeneratorLength;
     if (len < 4) len = 4;
     if (len > 64) len = 64;
-    boolean sym = MainPanel.This.config.passwordGeneratorSymbols;
-    boolean amb = MainPanel.This.config.passwordGeneratorAmbiguous;
-    String newPass = "";
+    boolean sym = Config.config.passwordGeneratorSymbols;
+    boolean amb = Config.config.passwordGeneratorAmbiguous;
+    boolean one = Config.config.passwordGeneratorOne;
+    char[] passChars = new char[len];
     r = new Random();
-    for(int a=0;a<len;a++) {
-      newPass += genChar(sym, amb);
+    for(int idx=0;idx<len;idx++) {
+      passChars[idx] = genChar(sym, amb, one);
     }
-    password.setText(newPass);
-    confirm.setText(newPass);
+    if (one) {
+      //add one upper case
+      int upperIdx = r.nextInt(len);
+      passChars[upperIdx] = getCharUpper();
+      //add one number
+      int numberIdx = r.nextInt(len);
+      while (numberIdx == upperIdx) {
+        numberIdx = r.nextInt(len);
+      }
+      passChars[numberIdx] = getCharNumber();
+      if (sym) {
+        //add one symbol
+        int symIdx = r.nextInt(len);
+        while (symIdx == upperIdx || symIdx == numberIdx) {
+          symIdx = r.nextInt(len);
+        }
+        passChars[symIdx] = getCharSymbol();
+      }
+    }
+    String passStr = new String(passChars);
+    password.setText(passStr);
+    confirm.setText(passStr);
   }
   private char orgEchoChar;
   private void showPassword() {

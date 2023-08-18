@@ -28,7 +28,7 @@ public class MainPanel extends javax.swing.JPanel {
     safeGroups.setUseUniqueNames(true);
     safeGroups.setUseAttributeNameForName(true);
     safe.setRoot("group", "name=\"Passwords\"", "");
-    loadConfig();
+    Config.loadConfig();
     copyGroups();
     groups.setModel(safeGroups.getTreeModel());
     table = (DefaultTableModel)entries.getModel();
@@ -540,9 +540,6 @@ public class MainPanel extends javax.swing.JPanel {
   // End of variables declaration//GEN-END:variables
 
   public static MainPanel This;
-  public static Config config;
-  private String configFolder = JF.getUserPath();
-  private String configFile = "/.jfpasswords.xml";
   private XMLTree safe = new XMLTree();
   private XMLTree safeGroups = new XMLTree();  //a copy with just groups
   protected static String password;
@@ -555,46 +552,8 @@ public class MainPanel extends javax.swing.JPanel {
   public long timestamp = -1;
   public boolean loaded = false;
 
-  public static class Config {
-    public String safe = "";
-    public int passwordGeneratorLength = 12;
-    public boolean passwordGeneratorSymbols = true;
-    public boolean passwordGeneratorAmbiguous = true;
-    public boolean reAuthOnShow = true;
-    public boolean bWindowMax = false;
-    public int WindowXSize = -1, WindowYSize = -1;
-    public int WindowXPos = 0, WindowYPos = 0;
-  }
-
-  private void loadConfig() {
-    config = new Config();
-    try {
-      XMLTree xml = new XMLTree();
-      FileInputStream fis = new FileInputStream(configFolder + configFile);
-      xml.read(fis);
-      xml.writeClass(config);
-    } catch (FileNotFoundException e1) {
-      config = new Config();
-    } catch (Exception e2) {
-      JFLog.log(e2);
-      config = new Config();
-    }
-  }
-
-  private void saveConfig() {
-    try {
-      XMLTree xml = new XMLTree();
-      FileOutputStream fos = new FileOutputStream(configFolder + configFile);
-      xml.readClass("jpassword", config);
-      xml.write(fos);
-      fos.close();
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-  }
-
   private String getSafeName() {
-    String name = config.safe;
+    String name = Config.config.safe;
     int idx = name.lastIndexOf("/");
     if (idx == -1) idx = 0; else idx++;
     return name.substring(idx, name.length() - 5);
@@ -609,9 +568,9 @@ public class MainPanel extends javax.swing.JPanel {
     }
     try {
       safe.deleteAll();
-      File file = new File(config.safe);
+      File file = new File(Config.config.safe);
       timestamp = file.lastModified();
-      FileInputStream fis = new FileInputStream(config.safe);
+      FileInputStream fis = new FileInputStream(Config.config.safe);
       byte encrypted[] = JF.readAll(fis);
       fis.close();
       Data.setPassword(password);
@@ -656,7 +615,7 @@ public class MainPanel extends javax.swing.JPanel {
   }
 
   public boolean saveSafe() {
-    if (config.safe.length() == 0) {
+    if (Config.config.safe.length() == 0) {
       JFileChooser chooser = new JFileChooser();
       chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
       chooser.setMultiSelectionEnabled(false);
@@ -674,8 +633,8 @@ public class MainPanel extends javax.swing.JPanel {
       chooser.addChoosableFileFilter(ffSafe);
       chooser.setFileFilter(ffSafe);
       if (chooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION) return false;
-      config.safe = chooser.getSelectedFile().getAbsolutePath();
-      if (!config.safe.endsWith(".safe")) config.safe += ".safe";
+      Config.config.safe = chooser.getSelectedFile().getAbsolutePath();
+      if (!Config.config.safe.endsWith(".safe")) Config.config.safe += ".safe";
       safe.setRoot("group", "name=\"" + getSafeName() + "\"", "");
       copyGroups();
     }
@@ -689,17 +648,17 @@ public class MainPanel extends javax.swing.JPanel {
       password = pass1;
     }
     try {
-      FileOutputStream fos = new FileOutputStream(config.safe);
+      FileOutputStream fos = new FileOutputStream(Config.config.safe);
       ByteArrayOutputStream baos = new ByteArrayOutputStream();
       safe.write(baos);
       Data.setPassword(password);
       byte encrypted[] = Data.encrypt(baos.toByteArray());
       fos.write(encrypted);
       fos.close();
-      File file = new File(config.safe);
+      File file = new File(Config.config.safe);
       timestamp = file.lastModified();
       dirty = false;
-      saveConfig();
+      Config.saveConfig();
       loaded = true;
       return true;
     } catch (Exception e) {
@@ -734,8 +693,8 @@ public class MainPanel extends javax.swing.JPanel {
     chooser.addChoosableFileFilter(ffSafe);
     chooser.setFileFilter(ffSafe);
     if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION) return;
-    config.safe = chooser.getSelectedFile().getAbsolutePath();
-    saveConfig();
+    Config.config.safe = chooser.getSelectedFile().getAbsolutePath();
+    Config.saveConfig();
     loadSafe(false);
   }
 
@@ -749,10 +708,10 @@ public class MainPanel extends javax.swing.JPanel {
     }
     safe.deleteAll();
     safe.setRoot("group", "name=\"Passwords\"", "");
-    config.safe = "";
+    Config.config.safe = "";
     password = null;
     timestamp = -1;
-    saveConfig();
+    Config.saveConfig();
     copyGroups();
     loaded = false;
   }
@@ -764,7 +723,7 @@ public class MainPanel extends javax.swing.JPanel {
   private void editConfig() {
     EditConfig dialog = new EditConfig(null, true);
     dialog.setVisible(true);
-    if (dialog.accepted) saveConfig();
+    if (dialog.accepted) Config.saveConfig();
   }
 
   private void addGroup() {
@@ -1254,7 +1213,7 @@ public class MainPanel extends javax.swing.JPanel {
   /** Checks if password safe file has changed, and reload if so. */
   public void checkTimestamp() {
     if (timestamp == -1) return;
-    File file = new File(config.safe);
+    File file = new File(Config.config.safe);
     if (!file.exists()) return;
     long newtimestamp = file.lastModified();
     if (newtimestamp != timestamp) {

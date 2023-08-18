@@ -23,10 +23,10 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
     panel = new MainPanel();
     setContentPane(panel);
 
-    if (panel.config.WindowXSize != -1) {
-      setSize(panel.config.WindowXSize, panel.config.WindowYSize);
-      setLocation(panel.config.WindowXPos, panel.config.WindowYPos);
-      if (panel.config.bWindowMax) setExtendedState(MAXIMIZED_BOTH);
+    if (Config.config.WindowXSize != -1) {
+      setSize(Config.config.WindowXSize, Config.config.WindowYSize);
+      setLocation(Config.config.WindowXPos, Config.config.WindowYPos);
+      if (Config.config.bWindowMax) setExtendedState(MAXIMIZED_BOTH);
     } else {
       setPosition();
     }
@@ -38,7 +38,7 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
     trayicon = new JFImage();
     trayicon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfpasswords_tray.png"));
     addTrayIcon();
-    if (panel.config.safe.length() == 0) {
+    if (Config.config.safe.length() == 0) {
       setVisible(true);
     }
   }
@@ -83,23 +83,23 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
 
   private void formComponentMoved(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentMoved
     if (!loaded) return;
-    if (panel.config.bWindowMax) return;
+    if (Config.config.bWindowMax) return;
     Point loc = getLocation();
-    panel.config.WindowXPos = loc.x;
-    panel.config.WindowYPos = loc.y;
+    Config.config.WindowXPos = loc.x;
+    Config.config.WindowYPos = loc.y;
   }//GEN-LAST:event_formComponentMoved
 
   private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
     if (!loaded) return;
-    if (panel.config.bWindowMax) return;
+    if (Config.config.bWindowMax) return;
     Dimension size = getSize();
-    panel.config.WindowXSize = size.width;
-    panel.config.WindowYSize = size.height;
+    Config.config.WindowXSize = size.width;
+    Config.config.WindowYSize = size.height;
   }//GEN-LAST:event_formComponentResized
 
   private void formWindowStateChanged(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowStateChanged
     if (!loaded) return;
-    panel.config.bWindowMax = evt.getNewState() == MAXIMIZED_BOTH;
+    Config.config.bWindowMax = evt.getNewState() == MAXIMIZED_BOTH;
   }//GEN-LAST:event_formWindowStateChanged
 
   /**
@@ -150,9 +150,9 @@ public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
         requestFocus();
         return;
       }
-      if (panel.config.safe.length() > 0 && !panel.loaded) {
+      if (Config.config.safe.length() > 0 && !panel.loaded) {
         if (!panel.loadSafe(false)) return;
-      } else if (panel.config.reAuthOnShow && panel.loaded) {
+      } else if (Config.config.reAuthOnShow && panel.loaded) {
         String password = GetPassword.getPassword(this);
         if (password == null) return;
         if (!password.equals(MainPanel.password)) {
