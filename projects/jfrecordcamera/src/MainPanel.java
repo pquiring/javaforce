@@ -782,10 +782,6 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
         encoder.setAudioBitRate(getAudioBitRate());
         encoder.setVideoBitRate(getVideoBitRate());
         encoder.setFramesPerKeyFrame(frameRate);
-        if (!doRecord) {
-          encoder.setDASH(true);
-          encoder.setCompressLevel(1);  //faster compression for vp9
-        }
         if (!encoder_start())
         {
           failed("Unable to start encoder");
