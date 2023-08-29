@@ -1,5 +1,12 @@
 What's new...
 
+Aug 29/2023 : JF/43.1
+  - added vss api (volume shadow service)
+    - replaces using vssadmin.exe
+    - see jfBackup
+  - jfPasswords/0.25
+    - added new option to include only one upper case, number, symbol
+
 Aug 9/2023 : JF/43.0
   - jfFTP-server/0.1
     - added FTP Server

@@ -12,7 +12,7 @@ import javaforce.awt.*;
 
 public class PasswordsApp extends javax.swing.JFrame implements ActionListener {
 
-  private String version = "0.24";
+  private String version = "0.25";
 
   /**
    * Creates new form PasswordsApp
