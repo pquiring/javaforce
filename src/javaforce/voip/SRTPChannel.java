@@ -289,17 +289,17 @@ public class SRTPChannel extends RTPChannel {
                   if (dtlsPrivateKey instanceof RSAKeyParameters)
                   {
                     signer = new BcTlsRSASigner(crypto, (RSAKeyParameters)dtlsPrivateKey, null);  //TODO : public Key?
-                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.rsa);
+                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.rsa);
                   }
                   else if (dtlsPrivateKey instanceof DSAPrivateKeyParameters)
                   {
                     signer = new BcTlsDSASigner(crypto, (DSAPrivateKeyParameters)dtlsPrivateKey);
-                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.dsa);
+                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.dsa);
                   }
                   else if (dtlsPrivateKey instanceof ECPrivateKeyParameters)
                   {
                     signer = new BcTlsECDSASigner(crypto, (ECPrivateKeyParameters)dtlsPrivateKey);
-                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.ecdsa);
+                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.ecdsa);
                   }
                   else {
                     //TODO : support other signers?
@@ -390,17 +390,17 @@ public class SRTPChannel extends RTPChannel {
                 if (dtlsPrivateKey instanceof RSAKeyParameters)
                 {
                   signer = new BcTlsRSASigner(crypto, (RSAKeyParameters)dtlsPrivateKey, null);  //TODO : public Key?
-                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.rsa);
+                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.rsa);
                 }
                 else if (dtlsPrivateKey instanceof DSAPrivateKeyParameters)
                 {
                   signer = new BcTlsDSASigner(crypto, (DSAPrivateKeyParameters)dtlsPrivateKey);
-                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.dsa);
+                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.dsa);
                 }
                 else if (dtlsPrivateKey instanceof ECPrivateKeyParameters)
                 {
                   signer = new BcTlsECDSASigner(crypto, (ECPrivateKeyParameters)dtlsPrivateKey);
-                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.ecdsa);
+                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.ecdsa);
                 }
                 else {
                   //TODO : support other signers?
