@@ -66,6 +66,11 @@
     <maven name="bctls-jdk18on" dest="bctls" path="org/bouncycastle" version="${bouncycastle-version}"/>
   </target>
 
+  <available property="have-bcutil" file="${lib}/bcutil-${bouncycastle-version}.jar"/>
+  <target name="get-bcutil" unless="have-bcutil">
+    <maven name="bcutil-jdk18on" dest="bcutil" path="org/bouncycastle" version="${bouncycastle-version}"/>
+  </target>
+
   <available property="have-servlet-api" file="${lib}/servlet-api-${tomcat-version}.jar"/>
   <target name="get-servlet-api" unless="have-servlet-api">
     <maven name="tomcat-servlet-api" dest="servlet-api" path="org/apache/tomcat" version="${tomcat-version}"/>
@@ -197,6 +202,6 @@
     <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
   </target>
 
-  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bcprov,get-bctls,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina1-core,get-mina2-core,get-sshd-core,get-sshd-common,get-sshd-mina,get-sshd-sftp,get-sshd-scp,get-jargs,get-llrp,get-llrp-deps,get-commons-lang3,get-batik-all,get-xmlgraphics-commons,get-xml-apis-ext">
+  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bcprov,get-bctls,get-bcutil,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina1-core,get-mina2-core,get-sshd-core,get-sshd-common,get-sshd-mina,get-sshd-sftp,get-sshd-scp,get-jargs,get-llrp,get-llrp-deps,get-commons-lang3,get-batik-all,get-xmlgraphics-commons,get-xml-apis-ext">
   </target>
 </project>

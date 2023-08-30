@@ -27,6 +27,7 @@
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="bcprov.jar" Source="bcprov.jar"/>
         <File Id="bctls.jar" Source="bctls.jar"/>
+        <File Id="bcutil.jar" Source="bcutil.jar"/>
         <File Id="jfphone.exe" Source="jfphone.exe"/>
         <File Id="run.bat" Source="run.bat"/>
       </Component>

@@ -61,6 +61,7 @@
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="bcprov.jar" Source="bcprov.jar"/>
         <File Id="bctls.jar" Source="bctls.jar"/>
+        <File Id="bcutil.jar" Source="bcutil.jar"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"
           Name="jfPBX"

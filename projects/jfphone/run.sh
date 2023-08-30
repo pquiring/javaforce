@@ -1,1 +1,1 @@
-java -cp javaforce.jar:bcprov.jar:bctls.jar:jfphone.jar PhoneApp $1
+java -cp javaforce.jar:bcprov.jar:bctls.jar:bcutil.jar:jfphone.jar PhoneApp $1

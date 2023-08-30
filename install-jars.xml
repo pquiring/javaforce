@@ -53,6 +53,10 @@
     <copyjar name="bctls" version="${bouncycastle-version}" path="${jarpath}"/>
   </target>
 
+  <target name="jar-bcutil">
+    <copyjar name="bcutil" version="${bouncycastle-version}" path="${jarpath}"/>
+  </target>
+
   <target name="jar-servlet-api">
     <copyjar name="servlet-api" version="${tomcat-version}" path="${jarpath}"/>
   </target>

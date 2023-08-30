@@ -222,7 +222,9 @@ public class SRTPChannel extends RTPChannel {
         try {
           localhost = InetAddress.getByName("localhost");
           dtlsSocket = new DatagramSocket(RTP.getnextlocalrtpport());
+          JFLog.log("dtlsSocket.port=" + dtlsSocket.getLocalPort());
           rawSocket = new DatagramSocket(RTP.getnextlocalrtpport());
+          JFLog.log(" rawSocket.port=" + rawSocket.getLocalPort());
           dtlsSocket.connect(localhost, rawSocket.getLocalPort());
           rawSocket.connect(localhost, dtlsSocket.getLocalPort());
         } catch (Exception e) {
