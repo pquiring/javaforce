@@ -19,7 +19,8 @@
     <javac srcdir="${src}" destdir="${build}" deprecation="true" target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false">
 <!--      <compilerarg value="-Xlint:unchecked"/>  -->  <!-- generates lots of annoying warnings -->
       <classpath path="javaforce.jar"/>
-      <classpath path="bouncycastle.jar"/>
+      <classpath path="bcprov.jar"/>
+      <classpath path="bctls.jar"/>
     </javac>
   </target>
 

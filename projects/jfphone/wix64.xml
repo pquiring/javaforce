@@ -25,7 +25,8 @@
       <Component Id="appfiles" Guid="{65edc291-9a12-4f6c-844b-0e0258f29ee3}" Win64="yes">
         <File Id="jfphone.jar" Source="jfphone.jar" KeyPath="yes"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <File Id="bouncycastle.jar" Source="bouncycastle.jar"/>
+        <File Id="bcprov.jar" Source="bcprov.jar"/>
+        <File Id="bctls.jar" Source="bctls.jar"/>
         <File Id="jfphone.exe" Source="jfphone.exe"/>
         <File Id="run.bat" Source="run.bat"/>
       </Component>

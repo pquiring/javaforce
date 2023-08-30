@@ -51,7 +51,7 @@ public class RTP implements STUN.Listener {
 
   static {
     try {
-      Class.forName("org.bouncycastle.crypto.tls.TlsServer");
+      Class.forName("org.bouncycastle.tls.TlsServer");
       hasBouncyCastle = true;
     } catch (Exception e) {
       JFLog.log("Warning:BouncyCastle not found, SRTP/DTLS not available");
