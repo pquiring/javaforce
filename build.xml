@@ -16,7 +16,8 @@
   <property environment="env"/>
 
   <fileset dir="." id="classpath">
-    <include name="bouncycastle.jar"/>
+    <include name="bcprov.jar"/>
+    <include name="bctls.jar"/>
     <include name="jargs.jar"/>
     <include name="jcifs.jar"/>
     <include name="jdom.jar"/>
@@ -72,7 +73,7 @@
     <exec command="git clone https://github.com/pquiring/repo"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-repo,getjars,jar-jcifs,jar-bouncycastle,jar-filters,jar-llrp,jar-jdom,jar-mina1-core,jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-sshd-scp,jar-jargs,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12,jar-batik-all,jar-xmlgraphics-commons,jar-xml-apis-ext">
+  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-repo,getjars,jar-jcifs,jar-bcprov,jar-bctls,jar-filters,jar-llrp,jar-jdom,jar-mina1-core,jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-sshd-scp,jar-jargs,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12,jar-batik-all,jar-xmlgraphics-commons,jar-xml-apis-ext">
   </target>
 
   <target name="compile" depends="getjars,depjars" description="compile the source">

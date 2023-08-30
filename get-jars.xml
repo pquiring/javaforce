@@ -56,9 +56,14 @@
     <maven name="mysql-connector-j" dest="mysql-connector" path="com/mysql" version="${mysql-connector-version}"/>
   </target>
 
-  <available property="have-bouncycastle" file="${lib}/bouncycastle-${bouncycastle-version}.jar"/>
-  <target name="get-bouncycastle" unless="have-bouncycastle">
-    <maven name="bcprov-jdk15on" dest="bouncycastle" path="org/bouncycastle" version="${bouncycastle-version}"/>
+  <available property="have-bcprov" file="${lib}/bcprov-${bouncycastle-version}.jar"/>
+  <target name="get-bcprov" unless="have-bcprov">
+    <maven name="bcprov-jdk18on" dest="bcprov" path="org/bouncycastle" version="${bouncycastle-version}"/>
+  </target>
+
+  <available property="have-bctls" file="${lib}/bctls-${bouncycastle-version}.jar"/>
+  <target name="get-bctls" unless="have-bctls">
+    <maven name="bctls-jdk18on" dest="bctls" path="org/bouncycastle" version="${bouncycastle-version}"/>
   </target>
 
   <available property="have-servlet-api" file="${lib}/servlet-api-${tomcat-version}.jar"/>
@@ -192,6 +197,6 @@
     <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
   </target>
 
-  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bouncycastle,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina1-core,get-mina2-core,get-sshd-core,get-sshd-common,get-sshd-mina,get-sshd-sftp,get-sshd-scp,get-jargs,get-llrp,get-llrp-deps,get-commons-lang3,get-batik-all,get-xmlgraphics-commons,get-xml-apis-ext">
+  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bcprov,get-bctls,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina1-core,get-mina2-core,get-sshd-core,get-sshd-common,get-sshd-mina,get-sshd-sftp,get-sshd-scp,get-jargs,get-llrp,get-llrp-deps,get-commons-lang3,get-batik-all,get-xmlgraphics-commons,get-xml-apis-ext">
   </target>
 </project>

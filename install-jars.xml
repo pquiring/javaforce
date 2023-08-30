@@ -45,8 +45,12 @@
     <copyjar name="mysql-connector" version="${mysql-connector-version}" path="${jarpath}"/>
   </target>
 
-  <target name="jar-bouncycastle">
-    <copyjar name="bouncycastle" version="${bouncycastle-version}" path="${jarpath}"/>
+  <target name="jar-bcprov">
+    <copyjar name="bcprov" version="${bouncycastle-version}" path="${jarpath}"/>
+  </target>
+
+  <target name="jar-bctls">
+    <copyjar name="bctls" version="${bouncycastle-version}" path="${jarpath}"/>
   </target>
 
   <target name="jar-servlet-api">

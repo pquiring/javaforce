@@ -10,7 +10,7 @@
 
   <import file="${home}/base.xml"/>
 
-  <target name="depjars" depends="depnatives,jar-bouncycastle,jar-javaforce">
+  <target name="depjars" depends="depnatives,jar-bcprov,jar-bctls,jar-javaforce">
   </target>
 
   <target name="compile" depends="depjars" description="compile the source">

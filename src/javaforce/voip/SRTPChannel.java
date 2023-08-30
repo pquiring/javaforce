@@ -8,8 +8,8 @@ package javaforce.voip;
  *
  * RFCs:
  * http://tools.ietf.org/html/rfc3711 - SRTP
- * http://tools.ietf.org/html/rfc5764 - Using DTLS to exchange keys for SRTP
  * http://tools.ietf.org/html/rfc4568 - Using SDP to exchange keys for SRTP (old method before DTLS)
+ * http://tools.ietf.org/html/rfc5764 - Using DTLS to exchange keys for SRTP
  */
 
 import java.io.*;
@@ -21,10 +21,12 @@ import javax.crypto.Mac;
 
 import javaforce.*;
 
-import org.bouncycastle.crypto.tls.*;
+import org.bouncycastle.tls.*;
+import org.bouncycastle.tls.crypto.*;
 import org.bouncycastle.crypto.params.*;
-import org.bouncycastle.asn1.pkcs.*;
 import org.bouncycastle.crypto.util.*;
+import org.bouncycastle.tls.crypto.impl.bc.*;
+import org.bouncycastle.asn1.pkcs.*;
 
 public class SRTPChannel extends RTPChannel {
   public SRTPChannel(RTP rtp, int ssrc, SDP.Stream stream) {
@@ -49,7 +51,7 @@ public class SRTPChannel extends RTPChannel {
   private static DTLSServerProtocol dtlsServer;
   private static DTLSClientProtocol dtlsClient;
   private static InetAddress localhost;
-  private static org.bouncycastle.crypto.tls.Certificate dtlsCertChain;
+  private static org.bouncycastle.tls.Certificate dtlsCertChain;
   private static AsymmetricKeyParameter dtlsPrivateKey;
 
   private static final int KEY_LENGTH = 16;
@@ -233,7 +235,7 @@ public class SRTPChannel extends RTPChannel {
 
         if (!dtlsServerMode) {
           try {
-            dtlsClient = new DTLSClientProtocol(new SecureRandom());
+            dtlsClient = new DTLSClientProtocol();
           } catch (Exception e) {
             JFLog.log(e);
             dtlsClient = null;
@@ -272,7 +274,7 @@ public class SRTPChannel extends RTPChannel {
 
             public TlsAuthentication getAuthentication() throws IOException {
               return new TlsAuthentication() {
-                public void notifyServerCertificate(org.bouncycastle.crypto.tls.Certificate serverCertificate)
+                public void notifyServerCertificate(TlsServerCertificate serverCertificate)
                     throws IOException
                 {
                   //info only
@@ -312,7 +314,29 @@ public class SRTPChannel extends RTPChannel {
                     }
                   }
 
-                  return new DefaultTlsSignerCredentials(context, dtlsCertChain, dtlsPrivateKey, signatureAndHashAlgorithm);
+
+                  BcTlsCrypto crypto = new BcTlsCrypto();
+                  TlsSigner signer = null;
+
+                  if (dtlsPrivateKey instanceof RSAKeyParameters)
+                  {
+                    signer = new BcTlsRSASigner(crypto, (RSAKeyParameters)dtlsPrivateKey, null);  //TODO : public Key?
+                  }
+                  else if (dtlsPrivateKey instanceof DSAPrivateKeyParameters)
+                  {
+                    signer = new BcTlsDSASigner(crypto, (DSAPrivateKeyParameters)dtlsPrivateKey);
+                  }
+                  else if (dtlsPrivateKey instanceof ECPrivateKeyParameters)
+                  {
+                    signer = new BcTlsECDSASigner(crypto, (ECPrivateKeyParameters)dtlsPrivateKey);
+                  }
+                  else {
+                    //TODO : support other signers?
+                    JFLog.log("Unknown private key type:" + dtlsPrivateKey.getClass());
+                    return null;
+                  }
+
+                  return new DefaultTlsCredentialedSigner(new TlsCryptoParameters(context), signer, dtlsCertChain, signatureAndHashAlgorithm);
                 }
               };
             }
@@ -354,7 +378,7 @@ public class SRTPChannel extends RTPChannel {
           }.start();
         } else {
           try {
-            dtlsServer = new DTLSServerProtocol(new SecureRandom());
+            dtlsServer = new DTLSServerProtocol();
           } catch (Exception e) {
             JFLog.log(e);
             dtlsServer = null;
@@ -363,13 +387,13 @@ public class SRTPChannel extends RTPChannel {
 
           try {
             tlsServer = new DefaultTlsServer2() {
-              public void notifyClientCertificate(org.bouncycastle.crypto.tls.Certificate clientCertificate)
+              public void notifyClientCertificate(org.bouncycastle.tls.Certificate clientCertificate)
                 throws IOException
               {
-                org.bouncycastle.asn1.x509.Certificate[] chain = clientCertificate.getCertificateList();
+                TlsCertificate[] chain = clientCertificate.getCertificateList();
     //            JFLog.log("Received client certificate chain of length " + chain.length);
                 for (int i = 0; i != chain.length; i++) {
-                  org.bouncycastle.asn1.x509.Certificate entry = chain[i];
+                  TlsCertificate entry = chain[i];
     //              JFLog.log("fingerprint:SHA-256 " + KeyMgmt.fingerprintSHA256(entry.getEncoded()) + " (" + entry.getSubject() + ")");
     //              JFLog.log("cert length=" + entry.getEncoded().length);
                 }
@@ -383,6 +407,7 @@ public class SRTPChannel extends RTPChannel {
                 return ProtocolVersion.DTLSv10;
               }
 
+/*
               protected TlsEncryptionCredentials getRSAEncryptionCredentials()
                 throws IOException
               {
@@ -407,8 +432,9 @@ public class SRTPChannel extends RTPChannel {
                     return null;
                   }
                 }
-                return new DefaultTlsSignerCredentials(context, dtlsCertChain, dtlsPrivateKey, signatureAndHashAlgorithm);
+                return new DefaultTlsCredentialedSigner(context, dtlsCertChain, dtlsPrivateKey, signatureAndHashAlgorithm);
               }
+*/
 
               public Hashtable getServerExtensions() throws IOException {
                 //see : http://bouncy-castle.1462172.n4.nabble.com/DTLS-SRTP-with-bouncycastle-1-49-td4656286.html
@@ -610,11 +636,14 @@ public class SRTPChannel extends RTPChannel {
 
   public static boolean initDTLS(java.util.List<byte []> certChain, byte[] privateKey, boolean pkRSA) {
     try {
+      BcTlsCrypto crypto = new BcTlsCrypto();
       org.bouncycastle.asn1.x509.Certificate[] x509certs = new org.bouncycastle.asn1.x509.Certificate[certChain.size()];
+      TlsCertificate[] tlscerts = new TlsCertificate[certChain.size()];
       for (int i = 0; i < certChain.size(); ++i) {
         x509certs[i] = org.bouncycastle.asn1.x509.Certificate.getInstance(certChain.get(i));
+        tlscerts[i] = new BcTlsCertificate(crypto, x509certs[i]);
       }
-      dtlsCertChain = new org.bouncycastle.crypto.tls.Certificate(x509certs);
+      dtlsCertChain = new org.bouncycastle.tls.Certificate(tlscerts);
       if (pkRSA) {
         RSAPrivateKey rsa = RSAPrivateKey.getInstance(privateKey);
         dtlsPrivateKey = new RSAPrivateCrtKeyParameters(rsa.getModulus(), rsa.getPublicExponent(),
@@ -633,6 +662,11 @@ public class SRTPChannel extends RTPChannel {
   //the sharedSecret is the same on each side
 
   private class DefaultTlsServer2 extends DefaultTlsServer {
+    public TlsCrypto crypto;
+    public DefaultTlsServer2() {
+      super(new BcTlsCrypto());
+      crypto = this.getCrypto();
+    }
     public void getKeys() {
       try {
         sharedSecret = context.exportKeyingMaterial(ExporterLabel.dtls_srtp, null, (KEY_LENGTH + SALT_LENGTH) * 2);
@@ -656,6 +690,11 @@ public class SRTPChannel extends RTPChannel {
   }
 
   private abstract class DefaultTlsClient2 extends DefaultTlsClient {
+    public TlsCrypto crypto;
+    public DefaultTlsClient2() {
+      super(new BcTlsCrypto());
+      crypto = this.getCrypto();
+    }
     public void getKeys() {
       try {
         sharedSecret = context.exportKeyingMaterial(ExporterLabel.dtls_srtp, null, (KEY_LENGTH + SALT_LENGTH) * 2);
