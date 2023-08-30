@@ -562,21 +562,24 @@ public abstract class SIP {
         //parse static codecs
         String f[] = ln.split(" ");
         String p[] = f[2].split("/");
-        if (p[1].startsWith("UDP/TLS/")) {
+        //p[] = RTP/AVP
+        //p[] = UDP/TLS/RTP/SRTP
+        int i = 1;
+        if (p[i].equals("TLS")) {
           stream.keyExchange = SDP.KeyExchange.DTLS;
-          p[1] = p[1].substring(8);
+          i = 3;
         }
-        if (p[1].equals("AVP")) {
+        if (p[i].equals("AVP")) {
           stream.profile = SDP.Profile.AVP;
-        } else if (p[1].equals("AVPF")) {
+        } else if (p[i].equals("AVPF")) {
           stream.profile = SDP.Profile.AVPF;
-        } else if (p[1].equals("SAVP")) {
+        } else if (p[i].equals("SAVP")) {
           stream.profile = SDP.Profile.SAVP;
-        } else if (p[1].equals("SAVPF")) {
+        } else if (p[i].equals("SAVPF")) {
           stream.profile = SDP.Profile.SAVPF;
         } else {
           stream.profile = SDP.Profile.UNKNOWN;
-          JFLog.log("SIP.getSDP() : Unsupported profile:" + p[1]);
+          JFLog.log("SIP.getSDP() : Unsupported profile:" + p[i]);
         }
         stream.port = JF.atoi(f[1]);
         for(int b=3;b<f.length;b++) {
