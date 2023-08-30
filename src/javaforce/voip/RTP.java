@@ -5,7 +5,7 @@ import java.util.*;
 
 import javaforce.*;
 
-/**
+/** RTP (Real-Time Transport Protocol)
  * Handles sending/receiving RTP packets.
  */
 
