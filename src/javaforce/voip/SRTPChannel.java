@@ -250,12 +250,8 @@ public class SRTPChannel extends RTPChannel {
               return this.session;
             }
 
-            public ProtocolVersion getClientVersion() {
-              return ProtocolVersion.DTLSv12;
-            }
-
-            public ProtocolVersion getMinimumVersion() {
-              return ProtocolVersion.DTLSv10;
+            public ProtocolVersion[] getProtocolVersions() {
+              return new ProtocolVersion[] {ProtocolVersion.DTLSv10, ProtocolVersion.DTLSv12};
             }
 
             public Hashtable getClientExtensions() throws IOException {
@@ -401,13 +397,9 @@ public class SRTPChannel extends RTPChannel {
                 }
               }
 
-              protected ProtocolVersion getMaximumVersion() {
-                return ProtocolVersion.DTLSv12;
-              }
-
-              protected ProtocolVersion getMinimumVersion() {
-                return ProtocolVersion.DTLSv10;
-              }
+            public ProtocolVersion[] getProtocolVersions() {
+              return new ProtocolVersion[] {ProtocolVersion.DTLSv10, ProtocolVersion.DTLSv12};
+            }
 
 /*
               protected TlsEncryptionCredentials getRSAEncryptionCredentials()
