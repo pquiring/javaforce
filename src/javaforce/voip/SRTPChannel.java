@@ -281,37 +281,7 @@ public class SRTPChannel extends RTPChannel {
                 public TlsCredentials getClientCredentials(CertificateRequest certificateRequest)
                     throws IOException
                 {
-                  short[] certificateTypes = certificateRequest.getCertificateTypes();
-                  if (certificateTypes == null) return null;
-                  boolean ok = false;
-                  for(int a=0;a<certificateTypes.length;a++) {
-                    if (certificateTypes[a] == ClientCertificateType.rsa_sign) {
-                      ok = true;
-                      break;
-                    }
-                  }
-                  if (!ok) return null;
-
                   SignatureAndHashAlgorithm signatureAndHashAlgorithm = null;
-                  Vector sigAlgs = certificateRequest.getSupportedSignatureAlgorithms();
-                  if (sigAlgs != null)
-                  {
-                    for (int i = 0; i < sigAlgs.size(); ++i)
-                    {
-                      SignatureAndHashAlgorithm sigAlg = (SignatureAndHashAlgorithm) sigAlgs.elementAt(i);
-                      if (sigAlg.getSignature() == SignatureAlgorithm.rsa)
-                      {
-                        signatureAndHashAlgorithm = sigAlg;
-                        break;
-                      }
-                    }
-
-                    if (signatureAndHashAlgorithm == null)
-                    {
-                      return null;
-                    }
-                  }
-
 
                   BcTlsCrypto crypto = new BcTlsCrypto();
                   TlsSigner signer = null;
@@ -319,14 +289,17 @@ public class SRTPChannel extends RTPChannel {
                   if (dtlsPrivateKey instanceof RSAKeyParameters)
                   {
                     signer = new BcTlsRSASigner(crypto, (RSAKeyParameters)dtlsPrivateKey, null);  //TODO : public Key?
+                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.rsa);
                   }
                   else if (dtlsPrivateKey instanceof DSAPrivateKeyParameters)
                   {
                     signer = new BcTlsDSASigner(crypto, (DSAPrivateKeyParameters)dtlsPrivateKey);
+                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.dsa);
                   }
                   else if (dtlsPrivateKey instanceof ECPrivateKeyParameters)
                   {
                     signer = new BcTlsECDSASigner(crypto, (ECPrivateKeyParameters)dtlsPrivateKey);
+                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.ecdsa);
                   }
                   else {
                     //TODO : support other signers?
@@ -397,38 +370,46 @@ public class SRTPChannel extends RTPChannel {
                 }
               }
 
-            public ProtocolVersion[] getProtocolVersions() {
-              return new ProtocolVersion[] {ProtocolVersion.DTLSv10, ProtocolVersion.DTLSv12};
-            }
-
-/*
-              protected TlsEncryptionCredentials getRSAEncryptionCredentials()
-                throws IOException
-              {
-                return new DefaultTlsEncryptionCredentials(context, dtlsCertChain, dtlsPrivateKey);
+              public ProtocolVersion[] getProtocolVersions() {
+                return new ProtocolVersion[] {ProtocolVersion.DTLSv10, ProtocolVersion.DTLSv12};
               }
 
-              protected TlsSignerCredentials getRSASignerCredentials()
+              protected TlsCredentialedDecryptor getRSAEncryptionCredentials()
+                throws IOException
+              {
+                return new BcDefaultTlsCredentialedDecryptor(new BcTlsCrypto(), dtlsCertChain, dtlsPrivateKey);
+              }
+
+              protected TlsCredentialedSigner getRSASignerCredentials()
                 throws IOException
               {
                 SignatureAndHashAlgorithm signatureAndHashAlgorithm = null;
-                Vector sigAlgs = supportedSignatureAlgorithms;
-                if (sigAlgs != null) {
-                  for (int i = 0; i < sigAlgs.size(); ++i) {
-                    SignatureAndHashAlgorithm sigAlg = (SignatureAndHashAlgorithm) sigAlgs.elementAt(i);
-                    if (sigAlg.getSignature() == SignatureAlgorithm.rsa) {
-                      signatureAndHashAlgorithm = sigAlg;
-                      break;
-                    }
-                  }
+                BcTlsCrypto crypto = new BcTlsCrypto();
+                TlsSigner signer = null;
 
-                  if (signatureAndHashAlgorithm == null) {
-                    return null;
-                  }
+                if (dtlsPrivateKey instanceof RSAKeyParameters)
+                {
+                  signer = new BcTlsRSASigner(crypto, (RSAKeyParameters)dtlsPrivateKey, null);  //TODO : public Key?
+                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.rsa);
                 }
-                return new DefaultTlsCredentialedSigner(context, dtlsCertChain, dtlsPrivateKey, signatureAndHashAlgorithm);
+                else if (dtlsPrivateKey instanceof DSAPrivateKeyParameters)
+                {
+                  signer = new BcTlsDSASigner(crypto, (DSAPrivateKeyParameters)dtlsPrivateKey);
+                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.dsa);
+                }
+                else if (dtlsPrivateKey instanceof ECPrivateKeyParameters)
+                {
+                  signer = new BcTlsECDSASigner(crypto, (ECPrivateKeyParameters)dtlsPrivateKey);
+                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha512, SignatureAlgorithm.ecdsa);
+                }
+                else {
+                  //TODO : support other signers?
+                  JFLog.log("Unknown private key type:" + dtlsPrivateKey.getClass());
+                  return null;
+                }
+
+                return new DefaultTlsCredentialedSigner(new TlsCryptoParameters(context), signer, dtlsCertChain, signatureAndHashAlgorithm);
               }
-*/
 
               public Hashtable getServerExtensions() throws IOException {
                 //see : http://bouncy-castle.1462172.n4.nabble.com/DTLS-SRTP-with-bouncycastle-1-49-td4656286.html
