@@ -59,7 +59,8 @@
         </File>
         <File Id="jfpbx.jar" Source="jfpbx.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
-        <File Id="bouncycastle.jar" Source="bouncycastle.jar"/>
+        <File Id="bcprov.jar" Source="bcprov.jar"/>
+        <File Id="bctls.jar" Source="bctls.jar"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"
           Name="jfPBX"
