@@ -6,6 +6,8 @@ package javaforce.voip;
  *
  * Created : Dec ?, 2013
  *
+ * BC Tests : https://github.com/bcgit/bc-java/tree/main/tls/src/test/java/org/bouncycastle/tls/test
+ *
  * RFCs:
  * http://tools.ietf.org/html/rfc3711 - SRTP
  * http://tools.ietf.org/html/rfc4568 - Using SDP to exchange keys for SRTP (old method before DTLS)
@@ -42,8 +44,8 @@ public class SRTPChannel extends RTPChannel {
   private long _seqno = 0;  //must keep track of seqno beyond 16bits
 
   private DatagramSocket dtlsSocket, rawSocket;
-  private DefaultTlsServer2 tlsServer;
-  private DefaultTlsClient2 tlsClient;
+  private JFTlsServer tlsServer;
+  private JFTlsClient tlsClient;
   private DTLSTransport dtlsTransport;  //DTLS is actually never used to send/receive data (only key exchange)
   private Worker worker;
   private String local_iceufrag, local_icepwd;
@@ -243,7 +245,7 @@ public class SRTPChannel extends RTPChannel {
             dtlsClient = null;
             return;
           }
-          tlsClient = new DefaultTlsClient2() {
+          tlsClient = new JFTlsClient() {
             protected TlsSession session;
             public TlsSession getSessionToResume()
             {
@@ -281,33 +283,26 @@ public class SRTPChannel extends RTPChannel {
                 public TlsCredentials getClientCredentials(CertificateRequest certificateRequest)
                     throws IOException
                 {
-                  SignatureAndHashAlgorithm signatureAndHashAlgorithm = null;
-
-                  BcTlsCrypto crypto = new BcTlsCrypto();
-                  TlsSigner signer = null;
-
-                  if (dtlsPrivateKey instanceof RSAKeyParameters)
+                  short[] certificateTypes = certificateRequest.getCertificateTypes();
+                  if (certificateTypes == null || !org.bouncycastle.util.Arrays.contains(certificateTypes, ClientCertificateType.rsa_sign))
                   {
-                    signer = new BcTlsRSASigner(crypto, (RSAKeyParameters)dtlsPrivateKey, null);  //TODO : public Key?
-                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.rsa);
-                  }
-                  else if (dtlsPrivateKey instanceof DSAPrivateKeyParameters)
-                  {
-                    signer = new BcTlsDSASigner(crypto, (DSAPrivateKeyParameters)dtlsPrivateKey);
-                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.dsa);
-                  }
-                  else if (dtlsPrivateKey instanceof ECPrivateKeyParameters)
-                  {
-                    signer = new BcTlsECDSASigner(crypto, (ECPrivateKeyParameters)dtlsPrivateKey);
-                    signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.ecdsa);
-                  }
-                  else {
-                    //TODO : support other signers?
-                    JFLog.log("Unknown private key type:" + dtlsPrivateKey.getClass());
                     return null;
                   }
 
-                  return new DefaultTlsCredentialedSigner(new TlsCryptoParameters(context), signer, dtlsCertChain, signatureAndHashAlgorithm);
+                  Vector supportedSignatureAlgorithms = certificateRequest.getSupportedSignatureAlgorithms();
+
+                  SignatureAndHashAlgorithm signatureAndHashAlgorithm = null;
+
+                  for (int i = 0; i < supportedSignatureAlgorithms.size(); ++i)
+                  {
+                    SignatureAndHashAlgorithm alg = (SignatureAndHashAlgorithm)supportedSignatureAlgorithms.elementAt(i);
+                    if (alg.getSignature() == SignatureAlgorithm.rsa)
+                    {
+                      signatureAndHashAlgorithm = alg;
+                      break;
+                    }
+                  }
+                  return new BcDefaultTlsCredentialedSigner(new TlsCryptoParameters(context), (BcTlsCrypto)context.getCrypto(), dtlsPrivateKey ,dtlsCertChain, signatureAndHashAlgorithm);
                 }
               };
             }
@@ -357,7 +352,7 @@ public class SRTPChannel extends RTPChannel {
           }
 
           try {
-            tlsServer = new DefaultTlsServer2() {
+            tlsServer = new JFTlsServer() {
               public void notifyClientCertificate(org.bouncycastle.tls.Certificate clientCertificate)
                 throws IOException
               {
@@ -377,38 +372,26 @@ public class SRTPChannel extends RTPChannel {
               protected TlsCredentialedDecryptor getRSAEncryptionCredentials()
                 throws IOException
               {
-                return new BcDefaultTlsCredentialedDecryptor(new BcTlsCrypto(), dtlsCertChain, dtlsPrivateKey);
+                return new BcDefaultTlsCredentialedDecryptor((BcTlsCrypto)context.getCrypto(), dtlsCertChain, dtlsPrivateKey);
               }
 
               protected TlsCredentialedSigner getRSASignerCredentials()
                 throws IOException
               {
+                Vector supportedSignatureAlgorithms = context.getSecurityParametersHandshake().getClientSigAlgs();
                 SignatureAndHashAlgorithm signatureAndHashAlgorithm = null;
-                BcTlsCrypto crypto = new BcTlsCrypto();
-                TlsSigner signer = null;
 
-                if (dtlsPrivateKey instanceof RSAKeyParameters)
+                for (int i = 0; i < supportedSignatureAlgorithms.size(); ++i)
                 {
-                  signer = new BcTlsRSASigner(crypto, (RSAKeyParameters)dtlsPrivateKey, null);  //TODO : public Key?
-                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.rsa);
-                }
-                else if (dtlsPrivateKey instanceof DSAPrivateKeyParameters)
-                {
-                  signer = new BcTlsDSASigner(crypto, (DSAPrivateKeyParameters)dtlsPrivateKey);
-                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.dsa);
-                }
-                else if (dtlsPrivateKey instanceof ECPrivateKeyParameters)
-                {
-                  signer = new BcTlsECDSASigner(crypto, (ECPrivateKeyParameters)dtlsPrivateKey);
-                  signatureAndHashAlgorithm = SignatureAndHashAlgorithm.getInstance(HashAlgorithm.sha256, SignatureAlgorithm.ecdsa);
-                }
-                else {
-                  //TODO : support other signers?
-                  JFLog.log("Unknown private key type:" + dtlsPrivateKey.getClass());
-                  return null;
+                  SignatureAndHashAlgorithm alg = (SignatureAndHashAlgorithm)supportedSignatureAlgorithms.elementAt(i);
+                  if (alg.getSignature() == SignatureAlgorithm.rsa)
+                  {
+                    signatureAndHashAlgorithm = alg;
+                    break;
+                  }
                 }
 
-                return new DefaultTlsCredentialedSigner(new TlsCryptoParameters(context), signer, dtlsCertChain, signatureAndHashAlgorithm);
+                return new BcDefaultTlsCredentialedSigner(new TlsCryptoParameters(context), (BcTlsCrypto)context.getCrypto(), dtlsPrivateKey, dtlsCertChain, signatureAndHashAlgorithm);
               }
 
               public Hashtable getServerExtensions() throws IOException {
@@ -427,6 +410,7 @@ public class SRTPChannel extends RTPChannel {
                 TlsSRTPUtils.addUseSRTPExtension(table, srtpData);
                 return table;
               }
+
               public void notifyHandshakeComplete() throws IOException
               {
                 JFLog.log("SRTPChannel:DTLS:Server:Handshake complete");
@@ -636,11 +620,9 @@ public class SRTPChannel extends RTPChannel {
 
   //the sharedSecret is the same on each side
 
-  private class DefaultTlsServer2 extends DefaultTlsServer {
-    public TlsCrypto crypto;
-    public DefaultTlsServer2() {
+  private class JFTlsServer extends DefaultTlsServer {
+    public JFTlsServer() {
       super(new BcTlsCrypto());
-      crypto = this.getCrypto();
     }
     public void getKeys() {
       try {
@@ -664,11 +646,9 @@ public class SRTPChannel extends RTPChannel {
     }
   }
 
-  private abstract class DefaultTlsClient2 extends DefaultTlsClient {
-    public TlsCrypto crypto;
-    public DefaultTlsClient2() {
+  private abstract class JFTlsClient extends DefaultTlsClient {
+    public JFTlsClient() {
       super(new BcTlsCrypto());
-      crypto = this.getCrypto();
     }
     public void getKeys() {
       try {
