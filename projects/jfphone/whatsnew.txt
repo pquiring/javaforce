@@ -1,4 +1,6 @@
 CHANGELOG:
+8-31-2023 : v1.23 released
+  - new : upgraded bouncycastle
 11-3-2021 : v1.22 released
   - fix : several voip issues
 9-28-2020 : v1.21 released
