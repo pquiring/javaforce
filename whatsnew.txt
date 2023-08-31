@@ -1,5 +1,11 @@
 What's new...
 
+Aug 31/2023 : JF/44.0
+  - upgraded bouncycastle to 1.76
+    - see javaforce.voip.SRTPChannel
+  - jfPhone/1.23
+  - jfPBX/0.32
+
 Aug 29/2023 : JF/43.1
   - added vss api (volume shadow service)
     - replaces using vssadmin.exe
