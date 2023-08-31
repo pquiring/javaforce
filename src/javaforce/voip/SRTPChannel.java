@@ -12,6 +12,11 @@ package javaforce.voip;
  * http://tools.ietf.org/html/rfc3711 - SRTP
  * http://tools.ietf.org/html/rfc4568 - Using SDP to exchange keys for SRTP (old method before DTLS)
  * http://tools.ietf.org/html/rfc5764 - Using DTLS to exchange keys for SRTP
+ *
+ * Tested with jfPBX (works)
+ * Tested with Asterisk (fails)
+ *  - Asterisk is stripping ICE credentials - not directly related to SRTP (could be a configuration issue)
+ *
  */
 
 import java.io.*;
