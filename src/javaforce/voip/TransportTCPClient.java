@@ -19,14 +19,19 @@ public class TransportTCPClient implements Transport {
   protected Socket socket;
   protected OutputStream os;
   protected InputStream is;
-  protected InetAddress host;
-  protected int port;
+  protected InetAddress remotehost;
+  protected int remoteport;
+  protected String localhost;
+  protected int localport;
   private boolean error;
 
   public String getName() { return "TCP"; }
 
   public boolean open(String localhost, int localport) {
+    this.localhost = localhost;
+    this.localport = localport;
     try {
+      JFLog.log("TransportTCPClient.open()");
       socket = new Socket();
       socket.setSoLinger(true, 0);  //allow to reuse socket again without waiting
       socket.bind(new InetSocketAddress(localhost, localport));
@@ -93,7 +98,7 @@ public class TransportTCPClient implements Transport {
         extra = null;
       } else {
         int read = is.read(packet.data);
-        if (read == -1) throw new Exception();
+        if (read == -1) throw new Exception("Transport read failed");
         packet.length = read;
       }
       int plen, tlen;
@@ -103,7 +108,7 @@ public class TransportTCPClient implements Transport {
         if (plen == -1) {
           //not enough read (frag?)
           int read = is.read(packet.data, packet.length, packet.data.length - packet.length);
-          if (read == -1) throw new Exception();
+          if (read == -1) throw new Exception("Transport read failed");
           packet.length += read;
         }
       } while (plen == -1);
@@ -119,7 +124,7 @@ public class TransportTCPClient implements Transport {
       while (packet.length < tlen) {
         //not enough read (frag?)
         int read = is.read(packet.data, packet.length, packet.data.length - packet.length);
-        if (read == -1) throw new Exception();
+        if (read == -1) throw new Exception("Transport read failed");
         packet.length += read;
       }
       if (packet.length > tlen) {
@@ -129,8 +134,8 @@ public class TransportTCPClient implements Transport {
         packet.length = tlen;
       }
       //host and port never change
-      packet.host = host.getHostAddress();
-      packet.port = port;
+      packet.host = remotehost.getHostAddress();
+      packet.port = remoteport;
     } catch (Exception e) {
       error = true;
       if (connected) JFLog.log(e);
@@ -140,8 +145,9 @@ public class TransportTCPClient implements Transport {
   }
 
   protected void connect(InetAddress host, int port) throws Exception {
-    this.host = host;
-    this.port = port;
+    JFLog.log("Connect:" + host.getHostAddress() + ":" + port);
+    this.remotehost = host;
+    this.remoteport = port;
     socket.connect(new InetSocketAddress(host, port), 5000);
     os = socket.getOutputStream();
     is = socket.getInputStream();

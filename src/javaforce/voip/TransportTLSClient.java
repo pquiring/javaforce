@@ -29,20 +29,18 @@ public class TransportTLSClient extends TransportTCPClient {
 
   public String getName() { return "TLS"; }
 
-  public boolean open(int localport) {
-    try {
-      SSLContext sc = SSLContext.getInstance("SSL");
-      sc.init(null, trustAllCerts, new SecureRandom());
-      SSLSocketFactory sslsocketfactory = (SSLSocketFactory) sc.getSocketFactory();  //this method will work with untrusted certs
-      socket = sslsocketfactory.createSocket();
-      socket.setSoLinger(true, 0);  //allow to reuse socket again without waiting
-      socket.bind(new InetSocketAddress(InetAddress.getLocalHost(), localport));
-      os = socket.getOutputStream();
-      is = socket.getInputStream();
-      connected = true;
-    } catch (Exception e) {
-      JFLog.log(e);
-    }
-    return true;
+  public void connect(InetAddress host, int port) throws Exception {
+    this.remotehost = host;
+    this.remoteport = port;
+    socket.connect(new InetSocketAddress(host, port), 5000);
+    SSLContext sc = SSLContext.getInstance("TLSv1.3");
+    sc.init(null, trustAllCerts, new SecureRandom());
+    SSLSocketFactory sslsocketfactory = (SSLSocketFactory) sc.getSocketFactory();  //this method will work with untrusted certs
+    socket = sslsocketfactory.createSocket(socket, remotehost.getHostAddress(), remoteport, true);
+    socket.setSoLinger(true, 0);  //allow to reuse socket again without waiting
+    socket.bind(new InetSocketAddress(InetAddress.getLocalHost(), localport));
+    os = socket.getOutputStream();
+    is = socket.getInputStream();
+    connected = true;
   }
 }
