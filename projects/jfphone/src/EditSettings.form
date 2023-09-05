@@ -1229,7 +1229,7 @@
                                       </Group>
                                       <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="l1name" max="32767" attributes="0"/>
+                                          <Component id="l1name" pref="468" max="32767" attributes="0"/>
                                           <Component id="l1pass" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l1auth" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l1user" max="32767" attributes="0"/>
@@ -1238,21 +1238,22 @@
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="l1secure" min="-2" max="-2" attributes="0"/>
                                           <Component id="l1disableVideo" min="-2" max="-2" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="jLabel29" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l1sip" min="-2" max="-2" attributes="0"/>
                                           </Group>
+                                          <Component id="l1siplog" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
+                                              <Component id="l1secure" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
                                               <Component id="jLabel56" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l1key" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <Component id="l1siplog" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="0" pref="356" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -1290,8 +1291,6 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l1disableVideo" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="l1secure" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel29" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l1sip" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1300,10 +1299,11 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel56" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l1key" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="l1secure" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l1siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="164" max="32767" attributes="0"/>
+                              <EmptySpace pref="176" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1348,7 +1348,7 @@
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="l1secure">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Enable Encryption"/>
+                        <Property name="text" type="java.lang.String" value="Enable Media Encryption"/>
                         <Property name="toolTipText" type="java.lang.String" value="SRTP"/>
                       </Properties>
                     </Component>
@@ -1416,7 +1416,7 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
@@ -1429,7 +1429,7 @@
                                       </Group>
                                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="l2name" max="32767" attributes="0"/>
+                                          <Component id="l2name" pref="482" max="32767" attributes="0"/>
                                           <Component id="l2pass" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l2auth" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l2user" max="32767" attributes="0"/>
@@ -1438,26 +1438,27 @@
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="l2siplog" min="-2" max="-2" attributes="0"/>
-                                          <Component id="l2secure" min="-2" max="-2" attributes="0"/>
                                           <Component id="l2disableVideo" min="-2" max="-2" attributes="0"/>
                                           <Group type="102" attributes="0">
                                               <Component id="l2same" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l2sameidx" min="-2" max="-2" attributes="0"/>
                                           </Group>
+                                          <Component id="l2siplog" min="-2" max="-2" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="jLabel37" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l2sip" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
+                                              <Component id="l2secure" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
                                               <Component id="jLabel57" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l2key" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
-                                      <EmptySpace min="0" pref="356" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -1500,8 +1501,6 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="l2disableVideo" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="l2secure" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel37" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l2sip" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1510,10 +1509,11 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel57" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l2key" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="l2secure" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l2siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="133" max="32767" attributes="0"/>
+                              <EmptySpace pref="142" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1578,7 +1578,7 @@
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="l2secure">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Enable Encryption"/>
+                        <Property name="text" type="java.lang.String" value="Enable Media Encryption"/>
                         <Property name="toolTipText" type="java.lang.String" value="SRTP"/>
                       </Properties>
                     </Component>
@@ -1658,7 +1658,7 @@
                                       </Group>
                                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="l3name" max="32767" attributes="0"/>
+                                          <Component id="l3name" pref="482" max="32767" attributes="0"/>
                                           <Component id="l3pass" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l3auth" alignment="1" max="32767" attributes="0"/>
                                           <Component id="l3user" max="32767" attributes="0"/>
@@ -1667,7 +1667,6 @@
                                   </Group>
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="l3secure" min="-2" max="-2" attributes="0"/>
                                           <Component id="l3disableVideo" min="-2" max="-2" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="l3same" min="-2" max="-2" attributes="0"/>
@@ -1679,14 +1678,16 @@
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l3sip" min="-2" max="-2" attributes="0"/>
                                           </Group>
+                                          <Component id="l3siplog" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
+                                              <Component id="l3secure" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
                                               <Component id="jLabel58" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l3key" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <Component id="l3siplog" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
-                                      <EmptySpace min="0" pref="356" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -1729,8 +1730,6 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="l3disableVideo" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="l3secure" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel52" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l3sip" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1739,10 +1738,11 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel58" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l3key" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="l3secure" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l3siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="133" max="32767" attributes="0"/>
+                              <EmptySpace pref="142" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -1807,7 +1807,7 @@
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="l3secure">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Enable Encryption"/>
+                        <Property name="text" type="java.lang.String" value="Enable Media Encryption"/>
                         <Property name="toolTipText" type="java.lang.String" value="SRTP"/>
                       </Properties>
                     </Component>
@@ -1874,7 +1874,7 @@
                   <Layout>
                     <DimensionLayout dim="0">
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" alignment="0" attributes="0">
+                          <Group type="102" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
@@ -1897,7 +1897,6 @@
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="l4siplog" min="-2" max="-2" attributes="0"/>
-                                          <Component id="l4secure" min="-2" max="-2" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="l4same" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
@@ -1909,13 +1908,15 @@
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l4sip" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <Group type="102" alignment="0" attributes="0">
+                                          <Group type="102" attributes="0">
+                                              <Component id="l4secure" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
                                               <Component id="jLabel59" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l4key" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
-                                      <EmptySpace min="0" pref="356" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="200" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -1958,8 +1959,6 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="l4disableVideo" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="l4secure" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel53" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l4sip" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -1968,10 +1967,11 @@
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel59" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l4key" alignment="3" min="-2" max="-2" attributes="0"/>
+                                  <Component id="l4secure" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l4siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="133" max="32767" attributes="0"/>
+                              <EmptySpace pref="142" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -2036,7 +2036,7 @@
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="l4secure">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Enable Encryption"/>
+                        <Property name="text" type="java.lang.String" value="Enable Media Encryption"/>
                         <Property name="toolTipText" type="java.lang.String" value="SRTP"/>
                       </Properties>
                     </Component>
@@ -2126,7 +2126,6 @@
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="l5siplog" min="-2" max="-2" attributes="0"/>
-                                          <Component id="l5secure" min="-2" max="-2" attributes="0"/>
                                           <Component id="l5disableVideo" min="-2" max="-2" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="l5same" min="-2" max="-2" attributes="0"/>
@@ -2139,12 +2138,14 @@
                                               <Component id="l5sip" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
+                                              <Component id="l5secure" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
                                               <Component id="jLabel60" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l5key" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
-                                      <EmptySpace min="0" pref="356" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="200" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -2187,20 +2188,19 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="l5disableVideo" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="l5secure" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel54" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l5sip" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="l5secure" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel60" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l5key" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l5siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="133" max="32767" attributes="0"/>
+                              <EmptySpace pref="142" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -2265,7 +2265,7 @@
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="l5secure">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Enable Encryption"/>
+                        <Property name="text" type="java.lang.String" value="Enable Media Encryption"/>
                         <Property name="toolTipText" type="java.lang.String" value="SRTP"/>
                       </Properties>
                     </Component>
@@ -2355,7 +2355,6 @@
                                   <Group type="102" attributes="0">
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="l6siplog" min="-2" max="-2" attributes="0"/>
-                                          <Component id="l6secure" min="-2" max="-2" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="l6same" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
@@ -2368,12 +2367,14 @@
                                               <Component id="l6sip" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
+                                              <Component id="l6secure" min="-2" max="-2" attributes="0"/>
+                                              <EmptySpace max="-2" attributes="0"/>
                                               <Component id="jLabel61" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="l6key" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                       </Group>
-                                      <EmptySpace min="0" pref="356" max="32767" attributes="0"/>
+                                      <EmptySpace min="0" pref="200" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
@@ -2416,20 +2417,19 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="l6disableVideo" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="l6secure" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
                                   <Component id="jLabel55" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l6sip" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="3" attributes="0">
+                                  <Component id="l6secure" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="jLabel61" alignment="3" min="-2" max="-2" attributes="0"/>
                                   <Component id="l6key" alignment="3" min="-2" max="-2" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="l6siplog" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="133" max="32767" attributes="0"/>
+                              <EmptySpace pref="142" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                     </DimensionLayout>
@@ -2495,7 +2495,7 @@
                     </Component>
                     <Component class="javax.swing.JCheckBox" name="l6secure">
                       <Properties>
-                        <Property name="text" type="java.lang.String" value="Enable Encryption"/>
+                        <Property name="text" type="java.lang.String" value="Enable Media Encryption"/>
                         <Property name="toolTipText" type="java.lang.String" value="SRTP"/>
                       </Properties>
                     </Component>
