@@ -205,8 +205,8 @@ public class DNS extends Thread {
   private static final int RD = 0x0100;  //recursive desired
   private static final int RA = 0x0080;  //recursive available
   private static final int Z =  0x0040;  //???
-  private static final int AD = 0x0020;  //auth data???
-  private static final int CD = 0x0010;  //checking disabled???
+  private static final int AD = 0x0020;  //auth data
+  private static final int CD = 0x0010;  //allow un-auth data
   //4 bits result code (0=no error)
   private static final int ERR_NO_ERROR     = 0x0000;  //no error
   private static final int ERR_NO_SUCH_NAME = 0x0003;  //404
