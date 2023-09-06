@@ -3,7 +3,7 @@ package javaforce;
 /** DNS Client
  *
  * Transports Supported : UDP
- * Records Supported : A,S
+ * Records Supported : A,AAAA,CNAME,MX,SRV
  *
  * TODO : Support secure options (DNS over HTTPS, DNS over TLS)
  *
@@ -75,6 +75,7 @@ public class DNS {
   public static final int TYPE_AAAA = 28;  //IP6
   public static final int TYPE_LOC = 29;  //location
   public static final int TYPE_SRV = 33;  //service
+  public static final int TYPE_ANY = 255;  //ANY and ALL
 
   private static class Packet {
     public Packet(byte[] data) {
@@ -227,7 +228,7 @@ public class DNS {
         int qdatalen = reply.readShort();
         int nextOffset = reply.getOffset() + qdatalen;
         switch (qtype) {
-          case TYPE_A:  //4x8bit octets
+          case TYPE_A: {
             if (qdatalen != 4) throw new Exception("invalid A data");
             //IP4 = d.d.d.d
             byte[] oct4x8 = reply.readBytes(qdatalen);
@@ -237,7 +238,8 @@ public class DNS {
               oct4x8[2] & 0xff,
               oct4x8[3] & 0xff);
             break;
-          case TYPE_AAAA:  //8x16bit octets
+          }
+          case TYPE_AAAA: {
             if (qdatalen != 16) throw new Exception("invalid AAAA data");
             //IP6 = x:x:x:x:x:x:x:x
             byte[] oct16x8 = reply.readBytes(qdatalen);
@@ -255,10 +257,12 @@ public class DNS {
               oct8x16[6] & 0xffff,
               oct8x16[7] & 0xffff);
             break;
-          case TYPE_CNAME:
+          }
+          case TYPE_CNAME: {
             results[i] = reply.readName();
             break;
-          case TYPE_SOA:
+          }
+          case TYPE_SOA: {
             String pri_ns = reply.readName();
             String mailbox = reply.readName();
             int serial = reply.readInt();
@@ -268,14 +272,25 @@ public class DNS {
             int min_ttl = reply.readInt();
             results[i] = pri_ns;
             break;
-          case TYPE_MX:
+          }
+          case TYPE_MX: {
             int pri = reply.readShort();
             String mx = reply.readName();
             results[i] = mx + ":" + pri;
             break;
-          default:
+          }
+          case TYPE_SRV: {
+            int pri = reply.readShort();
+            int weight = reply.readShort();
+            int port = reply.readShort();
+            String target = reply.readName();
+            results[i] = target + ":" + port;
+            break;
+          }
+          default: {
             results[i] = "unknown type:" + qtype;
             break;
+          }
         }
         if (reply.getOffset() != nextOffset) {
           throw new Exception("Invalid DNS record");
@@ -319,5 +334,6 @@ public class DNS {
     test(dns, TYPE_AAAA, "google.com", true);
     test(dns, TYPE_CNAME, "google.com", true);
     test(dns, TYPE_MX, "gmail.com", true);
+    test(dns, TYPE_SRV, "_ldap._tcp.google.com", true);
   }
 }
