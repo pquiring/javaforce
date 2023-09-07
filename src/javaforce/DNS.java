@@ -3,7 +3,7 @@ package javaforce;
 /** DNS Client
  *
  * Transports Supported : UDP, DNS over HTTPS (DOH)
- * Records Supported : A,AAAA,CNAME,MX,NS,SOA,SRV
+ * Records Supported : A,AAAA,CNAME,MX,NS,SOA,SRV,NAPTR
  *
  * TODO : Fix DNS over TLS (DOT)
  *
