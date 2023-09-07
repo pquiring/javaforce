@@ -11,6 +11,7 @@ package javaforce;
  */
 
 import java.net.*;
+import java.io.*;
 import java.util.*;
 
 public class DNS {
@@ -19,7 +20,7 @@ public class DNS {
 
   public static final int TRANSPORT_UDP = 0;  //DNS (UDP:53)
   public static final int TRANSPORT_DOH = 1;  //DNS over HTTPS (TCP:443)
-//  public static final int TRANSPORT_DOT = 2;  //DNS over TLS (TCP:853)
+  public static final int TRANSPORT_DOT = 2;  //DNS over TLS (TCP:853)
 
   public DNS(String server) {
     this.server = new InetSocketAddress(server, 53);
@@ -43,6 +44,7 @@ public class DNS {
     switch (transport) {
       case TRANSPORT_UDP: port = 53; break;
       case TRANSPORT_DOH: port = 443; break;
+      case TRANSPORT_DOT: port = 853; break;
     }
     return port;
   }
@@ -193,6 +195,7 @@ public class DNS {
       switch (transport) {
         case TRANSPORT_UDP: reply = transportUDP(request); break;
         case TRANSPORT_DOH: reply = transportDOH(request); break;
+        case TRANSPORT_DOT: reply = transportDOT(request); break;
         default: return null;
       }
       if (reply == null) return null;
@@ -314,6 +317,7 @@ public class DNS {
       socket.receive(reply);
       return new Packet(reply.getData(), reply.getLength());
     } catch (Exception e) {
+      JFLog.log(e);
       return null;
     }
   }
@@ -326,6 +330,39 @@ public class DNS {
       byte[] reply = https.post("/dns-query", Arrays.copyOf(request.getData(), request.getSize()), "application/dns-message");
       return new Packet(reply);
     } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
+  private Packet transportDOT(Packet request) {
+    //https://en.wikipedia.org/wiki/DNS_over_TLS
+    JFLog.log("DNS over TLS is not working yet!");
+    try {
+      JF.initHttps();
+      Socket socket = JF.connectSSL(server.getHostString(), server.getPort());
+      OutputStream os = socket.getOutputStream();
+      InputStream is = socket.getInputStream();
+      os.write(request.getData(), 0, request.getSize());
+      byte[] buf = new byte[1500];
+      int total = 0;
+      while (total == 0) {
+        int read = is.read(buf, total, buf.length - total);
+        if (read == -1) {
+          break;
+        }
+        JFLog.log("read=" + read);
+        if (read > 0) {
+          total += read;
+        }
+      }
+      socket.close();
+      if (total == 0) {
+        throw new Exception("null reply");
+      }
+      return new Packet(buf, total);
+    } catch (Exception e) {
+      JFLog.log(e);
       return null;
     }
   }
