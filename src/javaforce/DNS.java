@@ -3,7 +3,7 @@ package javaforce;
 /** DNS Client
  *
  * Transports Supported : UDP, DNS over HTTPS (DOH)
- * Records Supported : A,AAAA,CNAME,MX,SOA,SRV
+ * Records Supported : A,AAAA,CNAME,MX,NS,SOA,SRV
  *
  * TODO : Fix DNS over TLS (DOT)
  *
@@ -278,6 +278,10 @@ public class DNS {
             results[i] = pri_ns;
             break;
           }
+          case TYPE_NS: {
+            results[i] = reply.readName();
+            break;
+          }
           case TYPE_MX: {
             int pri = reply.readShort();
             String mx = reply.readName();
@@ -385,6 +389,7 @@ public class DNS {
     test(dns, TYPE_AAAA, "google.com", true);
     test(dns, TYPE_CNAME, "google.com", true);
     test(dns, TYPE_MX, "gmail.com", true);
+    test(dns, TYPE_NS, "google.com", true);
     test(dns, TYPE_SRV, "_ldap._tcp.google.com", true);
   }
 }
