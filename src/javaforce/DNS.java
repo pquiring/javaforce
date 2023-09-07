@@ -78,6 +78,7 @@ public class DNS {
   public static final int TYPE_AAAA = 28;  //IP6
   public static final int TYPE_LOC = 29;  //location
   public static final int TYPE_SRV = 33;  //service
+  public static final int TYPE_NAPTR = 35;  //naming auth pointer
   public static final int TYPE_ANY = 255;  //ANY and ALL
 
   private static class Packet {
@@ -109,6 +110,10 @@ public class DNS {
     }
 
     //readers
+    public int readByte() throws Exception {
+      int value = data[offset++];
+      return value;
+    }
     public int readShort() throws Exception {
       int value = BE.getuint16(data, offset);
       offset += 2;
@@ -294,6 +299,19 @@ public class DNS {
             int port = reply.readShort();
             String target = reply.readName();
             results[i] = target + ":" + port;
+            break;
+          }
+          case TYPE_NAPTR: {
+            int order = reply.readShort();
+            int pref = reply.readShort();
+            int flag_len = reply.readByte();
+            byte[] flags = reply.readBytes(flag_len);
+            int svc_len = reply.readByte();
+            byte[] service = reply.readBytes(svc_len);
+            int regex_len = reply.readByte();
+            byte[] regex = reply.readBytes(regex_len);
+            String replacement = reply.readName();
+            results[i] = replacement;
             break;
           }
           default: {
