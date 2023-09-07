@@ -18,7 +18,7 @@ public class DNS {
   private int transport;
 
   public static final int TRANSPORT_UDP = 0;  //DNS (UDP:53)
-//  public static final int TRANSPORT_DOH = 1;  //DNS over HTTPS (TCP:443)
+  public static final int TRANSPORT_DOH = 1;  //DNS over HTTPS (TCP:443)
 //  public static final int TRANSPORT_DOT = 2;  //DNS over TLS (TCP:853)
 
   public DNS(String server) {
@@ -41,7 +41,8 @@ public class DNS {
   private int getPort(int transport) {
     int port = 53;
     switch (transport) {
-      case TRANSPORT_UDP: port = 53;
+      case TRANSPORT_UDP: port = 53; break;
+      case TRANSPORT_DOH: port = 443; break;
     }
     return port;
   }
@@ -191,6 +192,7 @@ public class DNS {
       Packet reply;
       switch (transport) {
         case TRANSPORT_UDP: reply = transportUDP(request); break;
+        case TRANSPORT_DOH: reply = transportDOH(request); break;
         default: return null;
       }
       if (reply == null) return null;
@@ -316,6 +318,18 @@ public class DNS {
     }
   }
 
+  private Packet transportDOH(Packet request) {
+    //https://en.wikipedia.org/wiki/DNS_over_HTTPS
+    try {
+      HTTPS https = new HTTPS();
+      https.open(server.getHostString(), server.getPort());
+      byte[] reply = https.post("/dns-query", Arrays.copyOf(request.getData(), request.getSize()), "application/dns-message");
+      return new Packet(reply);
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   private static void test(DNS dns, int type, String domain, boolean recursive) {
     JFLog.log("Request=" + domain);
     String[] reply = dns.resolve(type, domain);
@@ -329,7 +343,7 @@ public class DNS {
   }
 
   public static void main(String[] args) {
-    DNS dns = new DNS("8.8.8.8");
+    DNS dns = new DNS(TRANSPORT_DOH, "8.8.8.8");
     test(dns, TYPE_A, "google.com", true);
     test(dns, TYPE_AAAA, "google.com", true);
     test(dns, TYPE_CNAME, "google.com", true);
