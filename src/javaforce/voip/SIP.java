@@ -1213,7 +1213,6 @@ public abstract class SIP {
               return resolve(dns, newhost);
             }
           }
-          //TODO:try other service types (TCP=_sip._tcp and TLS=_sips._tcp)
         }
         throw new Exception("SIP.resolve:no valid NAPTR record found:" + host);
       }
