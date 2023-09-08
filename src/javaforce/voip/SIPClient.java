@@ -77,11 +77,14 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
   public boolean init(String remotehost, int remoteport, int localport, SIPClientInterface iface, TransportType type) {
     this.iface = iface;
     this.localport = localport;
-    this.remoteport = remoteport;
-    this.remotehost = remotehost;
-    this.remoteip = resolve(remotehost);
     cdlist = new HashMap<String, CallDetails>();
     try {
+      if (!super.init(localhost, localport, this, false, type)) {
+        return false;
+      }
+      this.remoteport = remoteport;
+      this.remotehost = remotehost;
+      this.remoteip = resolve(remotehost);
       this.remoteaddr = InetAddress.getByName(remoteip);
       if (nat == NAT.STUN || nat == NAT.ICE) {
         if (!startSTUN()) return false;
@@ -96,7 +99,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       if (nat == NAT.STUN || nat == NAT.ICE) {
         stopSTUN();
       }
-      return super.init(localhost, localport, this, false, type);
+      return true;
     } catch (Exception e) {
       if (stun != null) stopSTUN();
       JFLog.log(e);
