@@ -68,6 +68,7 @@ public class EditSettings extends javax.swing.JDialog {
     soundGroup = new javax.swing.ButtonGroup();
     videoGroup = new javax.swing.ButtonGroup();
     natGroup = new javax.swing.ButtonGroup();
+    dnsGroup = new javax.swing.ButtonGroup();
     bSave = new javax.swing.JButton();
     bCancel = new javax.swing.JButton();
     tabs = new javax.swing.JTabbedPane();
@@ -286,6 +287,15 @@ public class EditSettings extends javax.swing.JDialog {
     rtpmin = new javax.swing.JTextField();
     jLabel48 = new javax.swing.JLabel();
     rtpmax = new javax.swing.JTextField();
+    jPanel3 = new javax.swing.JPanel();
+    dns_system = new javax.swing.JRadioButton();
+    jLabel38 = new javax.swing.JLabel();
+    dns_custom = new javax.swing.JRadioButton();
+    jLabel40 = new javax.swing.JLabel();
+    jLabel69 = new javax.swing.JLabel();
+    dns_transport = new javax.swing.JComboBox<>();
+    jLabel70 = new javax.swing.JLabel();
+    dns_server = new javax.swing.JTextField();
     eKey = new javax.swing.JPanel();
     jLabel62 = new javax.swing.JLabel();
     jLabel63 = new javax.swing.JLabel();
@@ -1862,6 +1872,77 @@ public class EditSettings extends javax.swing.JDialog {
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
 
+    jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("DNS"));
+
+    dnsGroup.add(dns_system);
+    dns_system.setText("Use system resolver");
+
+    jLabel38.setText("Supports A records only");
+
+    dnsGroup.add(dns_custom);
+    dns_custom.setText("Use custom resolver");
+
+    jLabel40.setText("Supports A,NS,NAPTR,SVR records");
+
+    jLabel69.setText("Transport");
+
+    dns_transport.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "UDP", "DOH" }));
+
+    jLabel70.setText("Server");
+
+    dns_server.setText("8.8.8.8");
+
+    javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+    jPanel3.setLayout(jPanel3Layout);
+    jPanel3Layout.setHorizontalGroup(
+      jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel3Layout.createSequentialGroup()
+        .addContainerGap()
+        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addGroup(jPanel3Layout.createSequentialGroup()
+            .addGap(21, 21, 21)
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(jLabel38)
+              .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jLabel69)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(dns_transport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+              .addGroup(jPanel3Layout.createSequentialGroup()
+                .addComponent(jLabel70)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(dns_server))))
+          .addGroup(jPanel3Layout.createSequentialGroup()
+            .addGap(21, 21, 21)
+            .addComponent(jLabel40, javax.swing.GroupLayout.DEFAULT_SIZE, 211, Short.MAX_VALUE))
+          .addGroup(jPanel3Layout.createSequentialGroup()
+            .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+              .addComponent(dns_system)
+              .addComponent(dns_custom))
+            .addGap(0, 0, Short.MAX_VALUE)))
+        .addContainerGap())
+    );
+    jPanel3Layout.setVerticalGroup(
+      jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+      .addGroup(jPanel3Layout.createSequentialGroup()
+        .addContainerGap()
+        .addComponent(dns_system)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jLabel38)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(dns_custom)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jLabel40)
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel69)
+          .addComponent(dns_transport, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(jLabel70)
+          .addComponent(dns_server, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        .addContainerGap(126, Short.MAX_VALUE))
+    );
+
     javax.swing.GroupLayout topologyLayout = new javax.swing.GroupLayout(topology);
     topology.setLayout(topologyLayout);
     topologyLayout.setHorizontalGroup(
@@ -1871,16 +1952,20 @@ public class EditSettings extends javax.swing.JDialog {
         .addGroup(topologyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
           .addComponent(jPanel22, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
           .addComponent(jPanel21, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        .addContainerGap(249, Short.MAX_VALUE))
+        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        .addContainerGap())
     );
     topologyLayout.setVerticalGroup(
       topologyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
       .addGroup(topologyLayout.createSequentialGroup()
         .addContainerGap()
-        .addComponent(jPanel21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+        .addGroup(topologyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+          .addComponent(jPanel21, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(jPanel22, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        .addContainerGap(83, Short.MAX_VALUE))
+        .addContainerGap(61, Short.MAX_VALUE))
     );
 
     tabs.addTab("Topology", topology);
@@ -2218,6 +2303,11 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JTextField dname;
   private javax.swing.JTextField dndCodeOff;
   private javax.swing.JTextField dndCodeOn;
+  private javax.swing.ButtonGroup dnsGroup;
+  private javax.swing.JRadioButton dns_custom;
+  private javax.swing.JTextField dns_server;
+  private javax.swing.JRadioButton dns_system;
+  private javax.swing.JComboBox<String> dns_transport;
   private javax.swing.JTextField downloadPath;
   private javax.swing.JPanel eKey;
   private javax.swing.JList<String> enabled_audio_codecs;
@@ -2260,8 +2350,10 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel35;
   private javax.swing.JLabel jLabel36;
   private javax.swing.JLabel jLabel37;
+  private javax.swing.JLabel jLabel38;
   private javax.swing.JLabel jLabel39;
   private javax.swing.JLabel jLabel4;
+  private javax.swing.JLabel jLabel40;
   private javax.swing.JLabel jLabel41;
   private javax.swing.JLabel jLabel42;
   private javax.swing.JLabel jLabel43;
@@ -2292,7 +2384,9 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JLabel jLabel66;
   private javax.swing.JLabel jLabel67;
   private javax.swing.JLabel jLabel68;
+  private javax.swing.JLabel jLabel69;
   private javax.swing.JLabel jLabel7;
+  private javax.swing.JLabel jLabel70;
   private javax.swing.JLabel jLabel8;
   private javax.swing.JLabel jLabel9;
   private javax.swing.JPanel jPanel1;
@@ -2306,6 +2400,7 @@ public class EditSettings extends javax.swing.JDialog {
   private javax.swing.JPanel jPanel2;
   private javax.swing.JPanel jPanel21;
   private javax.swing.JPanel jPanel22;
+  private javax.swing.JPanel jPanel3;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JScrollPane jScrollPane3;
@@ -2753,6 +2848,11 @@ public class EditSettings extends javax.swing.JDialog {
     received.setSelected(Settings.current.received);
     rport.setSelected(Settings.current.rport);
 
+    dns_system.setSelected(Settings.current.dns_system);
+    dns_custom.setSelected(!Settings.current.dns_system);
+    dns_transport.setSelectedIndex(Settings.current.dns_transport);
+    dns_server.setText(Settings.current.dns_server);
+
     updateAudio();
 
     updateVideo();
@@ -2909,6 +3009,10 @@ public class EditSettings extends javax.swing.JDialog {
 
     Settings.current.received = received.isSelected();
     Settings.current.rport = rport.isSelected();
+
+    Settings.current.dns_system = dns_system.isSelected();
+    Settings.current.dns_transport = dns_transport.getSelectedIndex();
+    Settings.current.dns_server = dns_server.getText();
   }
 
   private void selectDownloadPath() {

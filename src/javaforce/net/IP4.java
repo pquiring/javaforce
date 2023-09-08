@@ -20,10 +20,13 @@ public class IP4 {
     if (ips.length != 4) {
       return false;
     }
-    for(int a=0;a<4;a++) {
-      int val = JF.atoi(ips[a]);
-      if (val < 0 || val > 255) return false;
-    }
+    try {
+      for(int a=0;a<4;a++) {
+        if (!Character.isDigit(ips[a].charAt(0))) return false;  //test for + or -
+        int val = Integer.parseInt(ips[a]);
+        if (val < 0 || val > 255) return false;
+      }
+    } catch (Exception e) {}
     return true;
   }
   public boolean setIP(String str) {

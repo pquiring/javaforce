@@ -21,6 +21,9 @@ public abstract class SIP {
   private String tupleid;
   private Random r = new Random();
   private boolean server;
+  private static boolean dns_system = true;
+  private static int dns_transport = 0;
+  private static String dns_server = "8.8.8.8";
   protected Transport transport;
   protected static String useragent = "JavaForce/" + JF.getVersion();
 
@@ -1161,7 +1164,101 @@ public abstract class SIP {
     }
     cd.sdp = content.toString();
   }
+
+  /** Set resolver to system DNS client. */
+  public static void setResolver() {
+    dns_system = true;
+    dns_transport = DNS.TRANSPORT_UDP;
+    dns_server = "8.8.8.8";
+  }
+
+  /** Set resolver to custom DNS Server.
+   * @param transport = javaforce.DNS.TRANSPORT_...
+   * @param server = DNS Server host/IP.
+   */
+  public static void setResolver(int transport, String server) {
+    dns_system = false;
+    dns_transport = transport;
+    dns_server = server;
+  }
+
   private static HashMap<String, String> dnsCache = new HashMap<String, String>();
+
+  private static boolean contains(String[] list, String find) {
+    for(String item : list) {
+      if (item.equals(find)) return true;
+    }
+    return false;
+  }
+
+  private static String resolve(DNS dns, String host) throws Exception {
+    //try A records
+    String[] reply = dns.resolve(DNS.TYPE_A, host);
+    if (reply == null) {
+      //try NAPTR records
+      reply = dns.resolve(DNS.TYPE_NAPTR, host);
+      //find _sip._udp service and change host to that
+      if (reply != null) {
+        for(String newhost : reply) {
+          if (newhost.startsWith("_sip._udp")) {
+            if (!newhost.equals(host)) {
+              JFLog.log("DNS.resolve:using NAPTR:" + newhost);
+              return resolve(dns, newhost);
+            }
+          }
+          //TODO:try other service types
+        }
+        throw new Exception("SIP.resolve:no valid NAPTR record found:" + host);
+      }
+    }
+    if (reply == null) {
+      //try SRV records
+      reply = dns.resolve(DNS.TYPE_SRV, host);
+      if (reply != null) {
+        String newhost = reply[0];
+        int idx = newhost.indexOf(':');
+        if (idx != -1) {
+          String port = newhost.substring(idx + 1);
+          //TODO : use port from SRV records
+          JFLog.log("SIP.resolve:discarding port:" + port);
+          newhost = newhost.substring(0, idx);
+        }
+        if (!newhost.equals(host)) {
+          JFLog.log("SIP.resolve:using SRV:" + newhost);
+          return resolve(dns, newhost);
+        }
+      }
+    }
+    if (reply == null) {
+      //try NS records
+      reply = dns.resolve(DNS.TYPE_NS, host);
+      if (reply == null || contains(reply, host)) {
+        throw new Exception("SIP.resolve:host not found:" + host);
+      }
+      JFLog.log("DNS.resolve:using NS:" + reply[0]);
+      dns = new DNS(dns_transport, reply[0]);
+      return resolve(dns, host);
+    }
+    if (reply == null) {
+      //try SOA records
+      reply = dns.resolve(DNS.TYPE_SOA, host);
+      if (reply == null || contains(reply, host)) {
+        throw new Exception("SIP.resolve:host not found:" + host);
+      }
+      JFLog.log("DNS.resolve:using SOA:" + reply[0]);
+      dns = new DNS(dns_transport, reply[0]);
+      return resolve(dns, host);
+    }
+    String ip = reply[0];
+    int idx = ip.indexOf(':');
+    if (idx != -1) {
+      String port = ip.substring(idx + 1);
+      //TODO : use port from SRV records
+      JFLog.log("SIP.resolve:discarding port:" + port);
+      ip = ip.substring(0, idx);
+    }
+    return ip;
+  }
 
   /**
    * Resolve hostname to IP address. Keeps a cache to improve performance.
@@ -1173,11 +1270,21 @@ public abstract class SIP {
     if (ip != null) {
       return ip;
     }
-    try {
-      ip = InetAddress.getByName(host).getHostAddress();
-    } catch (Exception e) {
-      JFLog.log(e);
-      return null;
+    if (dns_system || javaforce.net.IP4.isIP(host)) {
+      try {
+        ip = InetAddress.getByName(host).getHostAddress();
+      } catch (Exception e) {
+        JFLog.log(e);
+        return null;
+      }
+    } else {
+      try {
+        DNS dns = new DNS(dns_transport, dns_server);
+        ip = resolve(dns, host);
+      } catch (Exception e) {
+        JFLog.log(e);
+        return null;
+      }
     }
     JFLog.log("dns:" + host + "=" + ip);
     dnsCache.put(host, ip);

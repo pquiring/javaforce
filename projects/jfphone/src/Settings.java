@@ -81,6 +81,9 @@ public class Settings {
   public boolean received = true;
   public String inRingtone = "*RING", outRingtone = "*NA";
   public boolean welcome = true;
+  public boolean dns_system = true;
+  public int dns_transport = 0;  //0=UDP 1=DOH [2=DOT]
+  public String dns_server = "8.8.8.8";
 
   //static = do not save these settings
   public static boolean aa;
@@ -148,8 +151,18 @@ public class Settings {
       current = new Settings();
       current.initLines();
     }
+    if (current.dns_system) {
+      SIP.setResolver();
+    } else {
+      SIP.setResolver(current.dns_transport, current.dns_server);
+    }
   }
   public static void saveSettings() {
+    if (current.dns_system) {
+      SIP.setResolver();
+    } else {
+      SIP.setResolver(current.dns_transport, current.dns_server);
+    }
     String fn = JF.getUserPath() + "/.jfphone.xml";
     try {
       XML xml = new XML();

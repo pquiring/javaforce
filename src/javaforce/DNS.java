@@ -49,6 +49,14 @@ public class DNS {
     return port;
   }
 
+  public String getServer() {
+    return server.getHostString();
+  }
+
+  public int getPort() {
+    return server.getPort();
+  }
+
   //flags
   private static final int REPLY = 0x8000;  //1=response (0=query)
   //4 bits opcode
@@ -229,7 +237,7 @@ public class DNS {
       }
       int totalres = ranswers + rauth + radditional;
       String[] resname = new String[totalres];
-      String[] results = new String[totalres];
+      ArrayList<String> results = new ArrayList<>();
       for(int i=0;i<totalres;i++) {
         resname[i] = reply.readName();
         int qtype = reply.readShort();
@@ -242,11 +250,13 @@ public class DNS {
             if (qdatalen != 4) throw new Exception("invalid A data");
             //IP4 = d.d.d.d
             byte[] oct4x8 = reply.readBytes(qdatalen);
-            results[i] = String.format("%d.%d.%d.%d",
-              oct4x8[0] & 0xff,
-              oct4x8[1] & 0xff,
-              oct4x8[2] & 0xff,
-              oct4x8[3] & 0xff);
+            if (type == qtype || type == TYPE_ANY) {
+              results.add(String.format("%d.%d.%d.%d",
+                oct4x8[0] & 0xff,
+                oct4x8[1] & 0xff,
+                oct4x8[2] & 0xff,
+                oct4x8[3] & 0xff));
+            }
             break;
           }
           case TYPE_AAAA: {
@@ -257,19 +267,24 @@ public class DNS {
             for(int o=0;o<8;o++) {
               oct8x16[o] = (short)BE.getuint16(oct16x8, o * 2);
             }
-            results[i] = String.format("%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x",
-              oct8x16[0] & 0xffff,
-              oct8x16[1] & 0xffff,
-              oct8x16[2] & 0xffff,
-              oct8x16[3] & 0xffff,
-              oct8x16[4] & 0xffff,
-              oct8x16[5] & 0xffff,
-              oct8x16[6] & 0xffff,
-              oct8x16[7] & 0xffff);
+            if (type == qtype || type == TYPE_ANY) {
+              results.add(String.format("%04x:%04x:%04x:%04x:%04x:%04x:%04x:%04x",
+                oct8x16[0] & 0xffff,
+                oct8x16[1] & 0xffff,
+                oct8x16[2] & 0xffff,
+                oct8x16[3] & 0xffff,
+                oct8x16[4] & 0xffff,
+                oct8x16[5] & 0xffff,
+                oct8x16[6] & 0xffff,
+                oct8x16[7] & 0xffff));
+            }
             break;
           }
           case TYPE_CNAME: {
-            results[i] = reply.readName();
+            String cname = reply.readName();
+            if (type == qtype || type == TYPE_ANY) {
+              results.add(cname);
+            }
             break;
           }
           case TYPE_SOA: {
@@ -280,17 +295,24 @@ public class DNS {
             int retry_interval = reply.readInt();
             int expire_limit = reply.readInt();
             int min_ttl = reply.readInt();
-            results[i] = pri_ns;
+            if (type == qtype || type == TYPE_ANY) {
+              results.add(pri_ns);
+            }
             break;
           }
           case TYPE_NS: {
-            results[i] = reply.readName();
+            String ns = reply.readName();
+            if (type == qtype || type == TYPE_ANY) {
+              results.add(ns);
+            }
             break;
           }
           case TYPE_MX: {
             int pri = reply.readShort();
             String mx = reply.readName();
-            results[i] = mx + ":" + pri;
+            if (type == qtype || type == TYPE_ANY) {
+              results.add(mx + ":" + pri);
+            }
             break;
           }
           case TYPE_SRV: {
@@ -298,7 +320,9 @@ public class DNS {
             int weight = reply.readShort();
             int port = reply.readShort();
             String target = reply.readName();
-            results[i] = target + ":" + port;
+            if (type == qtype || type == TYPE_ANY) {
+              results.add(target + ":" + port);
+            }
             break;
           }
           case TYPE_NAPTR: {
@@ -311,11 +335,13 @@ public class DNS {
             int regex_len = reply.readByte();
             byte[] regex = reply.readBytes(regex_len);
             String replacement = reply.readName();
-            results[i] = replacement;
+            if (type == qtype || type == TYPE_ANY) {
+              results.add(replacement);
+            }
             break;
           }
           default: {
-            results[i] = "unknown type:" + qtype;
+            results.add("unknown type:" + qtype);
             break;
           }
         }
@@ -323,7 +349,8 @@ public class DNS {
           throw new Exception("Invalid DNS record");
         }
       }
-      return results;
+      if (results.size() == 0) return null;
+      return results.toArray(new String[0]);
     } catch (Exception e) {
       JFLog.log(e);
       return null;
