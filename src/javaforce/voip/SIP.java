@@ -1182,6 +1182,7 @@ public abstract class SIP {
     dns_server = server;
   }
 
+  private static Object dnsCacheLock = new Object();
   private static HashMap<String, String> dnsCache = new HashMap<String, String>();
 
   private static boolean contains(String[] list, String find) {
@@ -1191,7 +1192,7 @@ public abstract class SIP {
     return false;
   }
 
-  private static String resolve(DNS dns, String host) throws Exception {
+  private String resolve(DNS dns, String host) throws Exception {
     //try A records
     String[] reply = dns.resolve(DNS.TYPE_A, host);
     if (reply == null) {
@@ -1199,14 +1200,20 @@ public abstract class SIP {
       reply = dns.resolve(DNS.TYPE_NAPTR, host);
       //find _sip._udp service and change host to that
       if (reply != null) {
+        String service = null;
+        switch (transport.getName()) {
+          case "UDP": service = "_sip._udp"; break;
+          case "TCP": service = "_sip._tcp"; break;
+          case "TLS": service = "_sips._tcp"; break;
+        }
         for(String newhost : reply) {
-          if (newhost.startsWith("_sip._udp")) {
+          if (newhost.startsWith(service)) {
             if (!newhost.equals(host)) {
               JFLog.log("DNS.resolve:using NAPTR:" + newhost);
               return resolve(dns, newhost);
             }
           }
-          //TODO:try other service types
+          //TODO:try other service types (TCP=_sip._tcp and TLS=_sips._tcp)
         }
         throw new Exception("SIP.resolve:no valid NAPTR record found:" + host);
       }
@@ -1263,10 +1270,13 @@ public abstract class SIP {
   /**
    * Resolve hostname to IP address. Keeps a cache to improve performance.
    */
-  public static String resolve(String host) {
+  public String resolve(String host) {
     //uses a small DNS cache
     //TODO : age and delete old entries (SIP servers should always have static IPs so this is not critical)
-    String ip = dnsCache.get(host);
+    String ip = null;
+    synchronized (dnsCacheLock) {
+      ip = dnsCache.get(host);
+    }
     if (ip != null) {
       return ip;
     }
@@ -1287,7 +1297,9 @@ public abstract class SIP {
       }
     }
     JFLog.log("dns:" + host + "=" + ip);
-    dnsCache.put(host, ip);
+    synchronized (dnsCacheLock) {
+      dnsCache.put(host, ip);
+    }
     return ip;
   }
   private static final int mtu = 1460;  //max size of packet
