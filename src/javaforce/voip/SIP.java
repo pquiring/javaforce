@@ -1280,7 +1280,7 @@ public abstract class SIP {
     if (ip != null) {
       return ip;
     }
-    if (dns_system || javaforce.net.IP4.isIP(host)) {
+    if (dns_system || javaforce.net.IP4.isIP(host) || javaforce.net.IP6.isIP(host)) {
       try {
         ip = InetAddress.getByName(host).getHostAddress();
       } catch (Exception e) {

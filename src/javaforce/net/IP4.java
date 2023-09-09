@@ -26,7 +26,9 @@ public class IP4 {
         int val = Integer.parseInt(ips[a]);
         if (val < 0 || val > 255) return false;
       }
-    } catch (Exception e) {}
+    } catch (Exception e) {
+      return false;
+    }
     return true;
   }
   public boolean setIP(String str) {
