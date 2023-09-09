@@ -1228,7 +1228,6 @@ public abstract class SIP {
         if (idx != -1) {
           String port = newhost.substring(idx + 1);
           setremoteport(JF.atoi(port));
-          JFLog.log("SIP.resolve:discarding port:" + port);
           newhost = newhost.substring(0, idx);
         }
         if (!newhost.equals(host)) {
