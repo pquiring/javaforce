@@ -1041,6 +1041,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     if (rport != -1) return rport; else return localport;
   }
 
+  public void setremoteport(int port) {
+    remoteport = port;
+  }
+
   public static void setEnableRport(boolean state) {
     use_rport = state;
   }

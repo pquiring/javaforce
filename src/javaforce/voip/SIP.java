@@ -1182,6 +1182,8 @@ public abstract class SIP {
     dns_server = server;
   }
 
+  public void setremoteport(int port) {}
+
   private static Object dnsCacheLock = new Object();
   private static HashMap<String, String> dnsCache = new HashMap<String, String>();
 
@@ -1225,7 +1227,7 @@ public abstract class SIP {
         int idx = newhost.indexOf(':');
         if (idx != -1) {
           String port = newhost.substring(idx + 1);
-          //TODO : use port from SRV records
+          setremoteport(JF.atoi(port));
           JFLog.log("SIP.resolve:discarding port:" + port);
           newhost = newhost.substring(0, idx);
         }
