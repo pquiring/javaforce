@@ -131,22 +131,22 @@ public class IP6 {
     for(int a=0;a<5;a++) {
       if (ip[a] != 0) return false;
     }
-    if (ip[6] != 0xffff) return false;
-    //[7][8] = IP4
+    if (ip[5] != 0xffff) return false;
+    //[6][7] = IP4
     return true;
   }
 
   public IP4 toIP4() {
     if (!isIP4()) return null;
     IP4 ip4 = new IP4();
-    ip4.ip[0] = (short)(ip[7] >>> 8);
-    ip4.ip[1] = (short)(ip[7] & 0xff);
-    ip4.ip[2] = (short)(ip[8] >>> 8);
-    ip4.ip[3] = (short)(ip[8] & 0xff);
+    ip4.ip[0] = (short)(ip[6] >>> 8);
+    ip4.ip[1] = (short)(ip[6] & 0xff);
+    ip4.ip[2] = (short)(ip[7] >>> 8);
+    ip4.ip[3] = (short)(ip[7] & 0xff);
     return ip4;
   }
 
-  public IP6 getLoopbackIP() {
+  public static IP6 getLoopbackIP() {
     IP6 ip6 = new IP6();
     ip6.ip[7] = 1;
     return ip6;
@@ -169,5 +169,11 @@ public class IP6 {
     test("1111:4444:7777:aaaa:bbbb:cccc:dddd:ffff:");
     test("1111:4444:7777:aaaa:bbbb:cccc:dddd::ffff");
     test("1:2:3:::8");
+    JFLog.log("loopback6=" + getLoopbackIP().toString());
+    JFLog.log("loopback4=" + IP4.getLoopbackIP().toIP6().toString());
+    IP4 ip4 = new IP4();
+    ip4.setIP("255.255.255.0");
+    JFLog.log("IP4=" + ip4.toString() + " to IP6=" + ip4.toIP6().toString() + " back IP4=" + ip4.toIP6().toIP4().toString());
+    JFLog.log("IP4.loopback.toIP6.isIP4=" + IP4.getLoopbackIP().toIP6().isIP4());
   }
 }

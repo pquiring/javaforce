@@ -81,13 +81,14 @@ public class IP4 {
 
   public IP6 toIP6() {
     IP6 ip6 = new IP6();
-    ip6.ip[6] = 0xffff;
-    ip6.ip[7] = ip[0] << 8 + ip[1];
-    ip6.ip[8] = ip[2] << 8 + ip[3];
+    ip6.ip[5] = 0xffff;
+    ip6.ip[6] = (ip[0] << 8) + ip[1];
+    ip6.ip[7] = (ip[2] << 8) + ip[3];
+//    JFLog.log("toIP6:" + this.toString() + " -> " + ip6.toString());
     return ip6;
   }
 
-  public IP4 getLoopbackIP() {
+  public static IP4 getLoopbackIP() {
     IP4 ip4 = new IP4();
     ip4.ip[0] = 127;
     ip4.ip[3] = 1;
@@ -108,5 +109,6 @@ public class IP4 {
     test("127.a.0.1");
     test("127..0.1");
     test("127.0.0.1.");
+    JFLog.log("loopback=" + getLoopbackIP().toString());
   }
 }
