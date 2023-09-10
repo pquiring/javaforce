@@ -2,6 +2,8 @@ package javaforce.net;
 
 /** IP6
  *
+ * 128 bits : 64 = network addr (subnet) + 64 = host addr
+ *
  * https://en.wikipedia.org/wiki/IPv6_address
  *
  * @author pquiring
@@ -96,6 +98,58 @@ public class IP6 {
   }
   public boolean isMulticastAddress() {
     return toInetAddress().isMulticastAddress();
+  }
+
+  /** Returns IP6 address as short[] array. */
+  public short[] getIP() {
+    short[] ip6 = new short[8];
+    for(int a=0;a<8;a++) {
+      ip6[a] = (short)ip[a];
+    }
+    return ip6;
+  }
+  /** Returns network part of IP6 address as short[] array. */
+  public short[] getNetwork() {
+    short[] subnet = new short[4];
+    for(int a=0;a<4;a++) {
+      subnet[a] = (short)ip[a];
+    }
+    return subnet;
+  }
+  /** Returns host part of IP6 address as short[] array. */
+  public short[] getHost() {
+    short[] host = new short[4];
+    for(int a=0;a<4;a++) {
+      host[a] = (short)ip[4 + a];
+    }
+    return host;
+  }
+
+  public boolean isIP4() {
+    //::ffff:x:x
+    //NOTE : There are other formats
+    for(int a=0;a<5;a++) {
+      if (ip[a] != 0) return false;
+    }
+    if (ip[6] != 0xffff) return false;
+    //[7][8] = IP4
+    return true;
+  }
+
+  public IP4 toIP4() {
+    if (!isIP4()) return null;
+    IP4 ip4 = new IP4();
+    ip4.ip[0] = (short)(ip[7] >>> 8);
+    ip4.ip[1] = (short)(ip[7] & 0xff);
+    ip4.ip[2] = (short)(ip[8] >>> 8);
+    ip4.ip[3] = (short)(ip[8] & 0xff);
+    return ip4;
+  }
+
+  public IP6 getLoopbackIP() {
+    IP6 ip6 = new IP6();
+    ip6.ip[7] = 1;
+    return ip6;
   }
 
   public static void test(String ip) {
