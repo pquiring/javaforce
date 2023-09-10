@@ -33,16 +33,12 @@ public class IP4 {
     return true;
   }
   public boolean setIP(String str) {
-    if (!isIP(str)) return false;
     if (str.equals("0:0:0:0:0:0:0:1")) {
       //IP6 localhost
       str = "127.0.0.1";
     }
+    if (!isIP(str)) return false;
     String[] ips = str.split("[.]", -1);
-    if (ips.length != 4) {
-      JFLog.log("invalid ip:" + str);
-      return false;
-    }
     try {
       for(int a=0;a<4;a++) {
         ip[a] = Short.valueOf(ips[a]);

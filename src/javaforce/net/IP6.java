@@ -4,8 +4,6 @@ package javaforce.net;
  *
  * https://en.wikipedia.org/wiki/IPv6_address
  *
- * TODO : Some compressed representations are not supported yet.
- *
  * @author pquiring
  */
 
@@ -16,9 +14,19 @@ import javaforce.*;
 public class IP6 {
   public int[] ip = new int[8];
   public static boolean isIP(String str) {
+    int double_idx = str.indexOf("::");
+    boolean compressed = double_idx != -1;
     String[] os = str.split("[:]", -1);
-    if (os.length != 8) {
-      return false;
+    if (compressed) {
+      if (str.endsWith(":")) return false;
+      if (str.indexOf("::", double_idx + 1) != -1) return false;  //too many ::
+      if (os.length < 3 || os.length > 8) {
+        return false;
+      }
+    } else {
+      if (os.length != 8) {
+        return false;
+      }
     }
     try {
       for(String o : os) {
@@ -33,14 +41,21 @@ public class IP6 {
   public boolean setIP(String str) {
     if (!isIP(str)) return false;
     String[] os = str.split("[:]", -1);
-    if (os.length != 8) {
-      JFLog.log("invalid ip:" + str);
-      return false;
-    }
     try {
-      for(int a=0;a<8;a++) {
-        if (os[a].length() > 4) return false;
-        ip[a] = Integer.valueOf(os[a], 16);
+      int idx = 0;
+      for(String o : os) {
+        if (o.length() == 0) {
+          //compressed field
+          if (idx == 0) {
+            //first field(s) are omitted (there will be two zero length fields)
+            idx++;
+          } else {
+            //middle fields(s) are omitted
+            idx = 8 - (os.length - (idx + 1));
+          }
+        } else {
+          ip[idx++] = Integer.valueOf(o, 16);
+        }
       }
     } catch (Exception e) {
       return false;
@@ -86,13 +101,19 @@ public class IP6 {
   public static void test(String ip) {
     IP6 ip6 = new IP6();
     ip6.setIP(ip);
-    JFLog.log(IP6.isIP(ip) + ":" + ip + ":" + ip6.toString());
+    JFLog.log(IP6.isIP(ip) + "=" + ip + "=" + ip6.toString());
   }
 
   public static void main(String[] args) {
     test("1:2:3:4:5:6:7:8");
     test("1111:4444:7777:aaaa:bbbb:cccc:dddd:ffff");
+    test("1:2:3::8");
+    test("1:2::8");
+    test("::8");
+    test("::7:8");
     test("1.1.1.1");
     test("1111:4444:7777:aaaa:bbbb:cccc:dddd:ffff:");
+    test("1111:4444:7777:aaaa:bbbb:cccc:dddd::ffff");
+    test("1:2:3:::8");
   }
 }
