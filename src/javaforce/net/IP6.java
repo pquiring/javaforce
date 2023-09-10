@@ -2,6 +2,10 @@ package javaforce.net;
 
 /** IP6
  *
+ * https://en.wikipedia.org/wiki/IPv6_address
+ *
+ * TODO : Some compressed representations are not supported yet.
+ *
  * @author pquiring
  */
 
@@ -10,9 +14,9 @@ import java.net.*;
 import javaforce.*;
 
 public class IP6 {
-  public short[] ip = new short[8];
+  public int[] ip = new int[8];
   public static boolean isIP(String str) {
-    String[] os = str.split("[:]");
+    String[] os = str.split("[:]", -1);
     if (os.length != 8) {
       return false;
     }
@@ -21,18 +25,25 @@ public class IP6 {
         if (o.length() > 4) return false;
         if (!o.equals(JF.filter(o, JF.filter_hex))) return false;
       }
-    } catch (Exception e) {}
+    } catch (Exception e) {
+      return false;
+    }
     return true;
   }
   public boolean setIP(String str) {
-    String[] os = str.split("[:]");
+    if (!isIP(str)) return false;
+    String[] os = str.split("[:]", -1);
     if (os.length != 8) {
       JFLog.log("invalid ip:" + str);
       return false;
     }
-    for(int a=0;a<8;a++) {
-      if (os[a].length() > 4) return false;
-      ip[a] = Short.valueOf(os[a], 16);
+    try {
+      for(int a=0;a<8;a++) {
+        if (os[a].length() > 4) return false;
+        ip[a] = Integer.valueOf(os[a], 16);
+      }
+    } catch (Exception e) {
+      return false;
     }
     return true;
   }
@@ -70,5 +81,18 @@ public class IP6 {
   }
   public boolean isMulticastAddress() {
     return toInetAddress().isMulticastAddress();
+  }
+
+  public static void test(String ip) {
+    IP6 ip6 = new IP6();
+    ip6.setIP(ip);
+    JFLog.log(IP6.isIP(ip) + ":" + ip + ":" + ip6.toString());
+  }
+
+  public static void main(String[] args) {
+    test("1:2:3:4:5:6:7:8");
+    test("1111:4444:7777:aaaa:bbbb:cccc:dddd:ffff");
+    test("1.1.1.1");
+    test("1111:4444:7777:aaaa:bbbb:cccc:dddd:ffff:");
   }
 }

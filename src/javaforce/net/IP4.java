@@ -16,14 +16,15 @@ public class IP4 {
       //IP6 localhost
       str = "127.0.0.1";
     }
-    String[] ips = str.split("[.]");
-    if (ips.length != 4) {
+    String[] os = str.split("[.]", -1);
+    if (os.length != 4) {
       return false;
     }
     try {
-      for(int a=0;a<4;a++) {
-        if (!Character.isDigit(ips[a].charAt(0))) return false;  //test for + or -
-        int val = Integer.parseInt(ips[a]);
+      for(String o : os) {
+        if (o.length() > 3) return false;
+        if (!o.equals(JF.filter(o, JF.filter_numeric))) return false;
+        int val = Integer.parseInt(o);
         if (val < 0 || val > 255) return false;
       }
     } catch (Exception e) {
@@ -32,17 +33,22 @@ public class IP4 {
     return true;
   }
   public boolean setIP(String str) {
+    if (!isIP(str)) return false;
     if (str.equals("0:0:0:0:0:0:0:1")) {
       //IP6 localhost
       str = "127.0.0.1";
     }
-    String[] ips = str.split("[.]");
+    String[] ips = str.split("[.]", -1);
     if (ips.length != 4) {
       JFLog.log("invalid ip:" + str);
       return false;
     }
-    for(int a=0;a<4;a++) {
-      ip[a] = Short.valueOf(ips[a]);
+    try {
+      for(int a=0;a<4;a++) {
+        ip[a] = Short.valueOf(ips[a]);
+      }
+    } catch (Exception e) {
+      return false;
     }
     return true;
   }
@@ -71,5 +77,21 @@ public class IP4 {
   }
   public boolean isMulticastAddress() {
     return toInetAddress().isMulticastAddress();
+  }
+
+  public static void test(String ip) {
+    IP4 ip4 = new IP4();
+    ip4.setIP(ip);
+    JFLog.log(IP4.isIP(ip) + ":" + ip + ":" + ip4.toString());
+  }
+
+  public static void main(String[] args) {
+    test("1.1.1.1");
+    test("127.0.0.1");
+    test("255.255.255.0");
+    test("1.1.1.-1");
+    test("127.a.0.1");
+    test("127..0.1");
+    test("127.0.0.1.");
   }
 }
