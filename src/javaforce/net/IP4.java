@@ -84,7 +84,6 @@ public class IP4 {
     ip6.ip[5] = 0xffff;
     ip6.ip[6] = (ip[0] << 8) + ip[1];
     ip6.ip[7] = (ip[2] << 8) + ip[3];
-//    JFLog.log("toIP6:" + this.toString() + " -> " + ip6.toString());
     return ip6;
   }
 
