@@ -7,6 +7,8 @@ package javaforce.net;
 
 import java.net.*;
 
+import javaforce.*;
+
 public class Subnet4 {
   private IP4 ip = new IP4(), mask = new IP4();
   public boolean setIP(String str) {
@@ -27,15 +29,10 @@ public class Subnet4 {
    @param in = IP address to check
    */
   public boolean matches(IP4 in) {
-    IP4 copy = new IP4();
+    short o;
     for(int a=0;a<4;a++) {
-      copy.ip[a] = in.ip[a];
-    }
-    for(int a=0;a<4;a++) {
-      copy.ip[a] &= mask.ip[a];
-    }
-    for(int a=0;a<4;a++) {
-      if (copy.ip[a] != ip.ip[a]) return false;
+      o = (short)(in.ip[a] & mask.ip[a]);
+      if (o != ip.ip[a]) return false;
     }
     return true;
   }
@@ -46,5 +43,19 @@ public class Subnet4 {
   }
   public String toString() {
     return ip.toString() + "/" + mask.toString();
+  }
+
+  public static void test(Subnet4 net, String ip) {
+    IP4 ip4 = new IP4();
+    ip4.setIP(ip);
+    JFLog.log(net.matches(ip4) + ":" + ip);
+  }
+
+  public static void main(String[] args) {
+    Subnet4 net = new Subnet4();
+    net.setIP("192.168.1.0");
+    net.setMask("255.255.255.0");
+    test(net, "192.168.1.5");
+    test(net, "192.168.5.5");
   }
 }
