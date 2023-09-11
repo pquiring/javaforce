@@ -1,5 +1,12 @@
 What's new...
 
+Sept 11/2023 : JF/45.0
+  - new : DNS client
+  - new : javaforce.net.IP6
+    - improved IP4
+  - jfPhone/1.24
+    - new : added support for DNS:SRV records (user requested feature)
+
 Aug 31/2023 : JF/44.0
   - upgraded bouncycastle to 1.76
     - see javaforce.voip.SRTPChannel
