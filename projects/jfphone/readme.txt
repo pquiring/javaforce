@@ -1,4 +1,4 @@
-jfPhone/1.23
+jfPhone/1.24
 
 Java VoIP Audio/Video SoftPhone (SIP)
 http://jfphone.sourceforge.net

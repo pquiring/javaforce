@@ -1,4 +1,6 @@
 CHANGELOG:
+9-11-2023 : v1.24 released
+  - new : support DNS:SRV records
 8-31-2023 : v1.23 released
   - new : upgraded bouncycastle
 11-3-2021 : v1.22 released
