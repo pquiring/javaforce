@@ -32,7 +32,7 @@ public class Controller {
   private AudioInput mic;
   private int micBufferSize;
   private short[] micBuffer;
-
+  private int timeout = 3000;
   private ABContext ab_context;
 
   public static double rate;  //sample rate for all controllers (set before connecting to any controllers)
@@ -43,6 +43,12 @@ public class Controller {
 
   public void setRate(float rate) {
     this.rate = rate;
+  }
+
+  public void setTimeout(int ms) {
+    if (ms < 1000) ms = 1000;
+    if (ms > 30000) ms = 30000;
+    timeout = ms;
   }
 
   /** Connects to a PLC. */
@@ -69,7 +75,7 @@ public class Controller {
       synchronized(s7_connect_lock) {
         try {
           connect(host, 102);
-          socket.setSoTimeout(3000);
+          socket.setSoTimeout(timeout);
           os = socket.getOutputStream();
           is = socket.getInputStream();
 
@@ -114,7 +120,7 @@ public class Controller {
       String host = url.substring(7);
       try {
         connect(host, 502);
-        socket.setSoTimeout(3000);
+        socket.setSoTimeout(timeout);
         os = socket.getOutputStream();
         is = socket.getInputStream();
       } catch (Exception e) {
@@ -130,7 +136,7 @@ public class Controller {
       String host = url.substring(3);
       try {
         connect(host, 44818);
-        socket.setSoTimeout(3000);
+        socket.setSoTimeout(timeout);
         os = socket.getOutputStream();
         is = socket.getInputStream();
 
@@ -183,12 +189,14 @@ public class Controller {
 
   private void connect(String host, int port) throws Exception {
     if (socks != null) {
-      socket = new Socket(socks, 1080);
+      socket = new Socket();
+      socket.connect(new InetSocketAddress(socks, 1080), timeout);
       if (!SOCKS.connect(socket, host, port)) {
         throw new Exception("SOCKS connection failed");
       }
     } else {
-      socket = new Socket(host, port);
+      socket = new Socket();
+      socket.connect(new InetSocketAddress(host, port), timeout);
     }
   }
 
