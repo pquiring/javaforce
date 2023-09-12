@@ -300,6 +300,13 @@ public class DNS {
             }
             break;
           }
+          case TYPE_PTR: {
+            String ptr = reply.readName();
+            if (type == qtype || type == TYPE_ANY) {
+              results.add(ptr);
+            }
+            break;
+          }
           case TYPE_NS: {
             String ns = reply.readName();
             if (type == qtype || type == TYPE_ANY) {
@@ -416,7 +423,7 @@ public class DNS {
     }
   }
 
-  private static void test(DNS dns, int type, String domain, boolean recursive) {
+  private static void test(DNS dns, int type, String domain) {
     JFLog.log("Request=" + domain);
     String[] reply = dns.resolve(type, domain);
     if (reply == null) {
@@ -425,16 +432,27 @@ public class DNS {
       for(int i=0;i<reply.length;i++) {
         JFLog.log("  Reply[]=" + reply[i]);
       }
+      if (type == TYPE_A && reply.length > 0) {
+        //test PTR
+        String[] p = reply[0].split("[.]");
+        String reverse = "";
+        for(int i = 3;i >= 0;i--) {
+          reverse += p[i];
+          reverse += ".";
+        }
+        reverse += "in-addr.arpa";
+        test(dns, TYPE_PTR, reverse);
+      }
     }
   }
 
   public static void main(String[] args) {
     DNS dns = new DNS(TRANSPORT_DOH, "8.8.8.8");
-    test(dns, TYPE_A, "google.com", true);
-    test(dns, TYPE_AAAA, "google.com", true);
-    test(dns, TYPE_CNAME, "google.com", true);
-    test(dns, TYPE_MX, "gmail.com", true);
-    test(dns, TYPE_NS, "google.com", true);
-    test(dns, TYPE_SRV, "_ldap._tcp.google.com", true);
+    test(dns, TYPE_A, "google.com");
+    test(dns, TYPE_AAAA, "google.com");
+    test(dns, TYPE_CNAME, "google.com");
+    test(dns, TYPE_MX, "gmail.com");
+    test(dns, TYPE_NS, "google.com");
+    test(dns, TYPE_SRV, "_ldap._tcp.google.com");
   }
 }
