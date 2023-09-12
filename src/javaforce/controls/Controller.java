@@ -45,7 +45,9 @@ public class Controller {
     this.rate = rate;
   }
 
-  /** Specify timeout (ms) for socket connect and read operations. */
+  /** Specify timeout (ms) for socket connect and read operations.
+   * @param ms = timeout (default = 3000)
+   */
   public void setTimeout(int ms) {
     if (ms < 1000) ms = 1000;
     if (ms > 30000) ms = 30000;
