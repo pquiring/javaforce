@@ -17,12 +17,11 @@ public class JFLog {
     private String filename;
     private boolean enabled = true;
     private long retention = -1;
-    private ArrayList<String> files = new ArrayList<String>();
+    private long maxfilesize = 1024 * 1024;
   }
   private static HashMap<Integer, LogInstance> list = new HashMap<Integer, LogInstance>();
   private static boolean useTimestamp = false;
   private static long timestampBase;
-  private static final int maxfilesize = 1024 * 1024;
 
   public static final int DEFAULT_LOG = 0;
 
@@ -86,6 +85,32 @@ public class JFLog {
 
   public static void setRetention(int days) {
     setRetention(DEFAULT_LOG, days);
+  }
+
+  private static final long KB = 1024;
+  private static final long GB = 1024 * 1024 * 1024;
+
+  /** Sets max file size for log.
+   * Once the file is greater the log will rotate()
+   */
+  public static void setMaxFilesize(int id, long size) {
+    LogInstance log;
+    synchronized(list) {
+      log = list.get(id);
+    }
+    if (log == null) {
+      return;
+    }
+    if (size < KB) size = KB;
+    if (size > GB) size = GB;
+    log.maxfilesize = size;
+  }
+
+  /** Sets max file size for log.
+   * Once the file is greater the log will rotate()
+   */
+  public static void setMaxFilesize(long size) {
+    setMaxFilesize(DEFAULT_LOG, size);
   }
 
   public static boolean close(int id) {
@@ -155,67 +180,90 @@ public class JFLog {
         return false;
       }
       log.filesize += msg.length();
-      if (log.filesize > maxfilesize) {
-        log.filesize = 0;
-        //start new log file
-        Calendar cal = Calendar.getInstance();
-        String tmp = String.format(".%1$04d-%2$02d-%3$02d-%4$02d-%5$02d-%6$02d",
-                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY),
-                cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
-        int idx = log.filename.lastIndexOf('.');
-        if (idx == -1) {
-          tmp = log.filename + tmp;
-        } else {
-          tmp = log.filename.substring(0, idx) + tmp + log.filename.substring(idx);
-        }
-        try {
-          log.fos.close();
-        } catch (Exception e1) {
-        }
-        File file = new File(log.filename);
-        file.renameTo(new File(tmp));
-        if (log.retention != -1) {
-          File files[] = null;
-          int fidx = log.filename.lastIndexOf('/');
-          if (fidx == -1) {
-            //no path
-            files = new File(".").listFiles(new FilenameFilter() {
-              public boolean accept(File dir, String name) {
-                return (name.startsWith(log.filename));
-              }
-            });
-          } else {
-            String folder = log.filename.substring(0, fidx);
-            String filename = null;
-            if (idx == -1) {
-              filename = log.filename.substring(fidx + 1);
-            } else {
-              filename = log.filename.substring(fidx + 1, idx);
-            }
-            String fn = filename;
-            files = new File(folder).listFiles(new FilenameFilter() {
-              public boolean accept(File dir, String name) {
-                return name.startsWith(fn);
-              }
-            });
-          }
-          if (files != null) {
-            //delete files older than retention
-            long timestamp = System.currentTimeMillis() - (log.retention * ms_per_day);
-            for(File logfile : files) {
-              if (logfile.lastModified() < timestamp) {
-                logfile.delete();
-              }
-            }
-          }
-        }
-        try {
-          log.fos = new FileOutputStream(log.filename);
-        } catch (Exception e2) {
-        }
+      if (log.filesize > log.maxfilesize) {
+        rotate(id);
       }
     }
     return true;
+  }
+
+  /** Rotates log file. */
+  public static boolean rotate(int id) {
+    LogInstance log;
+    synchronized(list) {
+      log = list.get(id);
+    }
+    if (log == null) {
+      return false;
+    }
+    if (log.filesize == 0) {
+      return false;
+    }
+    synchronized (log.lock) {
+      log.filesize = 0;
+      //start new log file
+      Calendar cal = Calendar.getInstance();
+      String tmp = String.format(".%1$04d-%2$02d-%3$02d-%4$02d-%5$02d-%6$02d",
+              cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH), cal.get(Calendar.HOUR_OF_DAY),
+              cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND));
+      int idx = log.filename.lastIndexOf('.');
+      if (idx == -1) {
+        tmp = log.filename + tmp;
+      } else {
+        tmp = log.filename.substring(0, idx) + tmp + log.filename.substring(idx);
+      }
+      try {
+        log.fos.close();
+      } catch (Exception e1) {
+      }
+      File file = new File(log.filename);
+      file.renameTo(new File(tmp));
+      if (log.retention != -1) {
+        File files[] = null;
+        int fidx = log.filename.lastIndexOf('/');
+        if (fidx == -1) {
+          //no path
+          files = new File(".").listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+              return (name.startsWith(log.filename));
+            }
+          });
+        } else {
+          String folder = log.filename.substring(0, fidx);
+          String filename = null;
+          if (idx == -1) {
+            filename = log.filename.substring(fidx + 1);
+          } else {
+            filename = log.filename.substring(fidx + 1, idx);
+          }
+          String fn = filename;
+          files = new File(folder).listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+              return name.startsWith(fn);
+            }
+          });
+        }
+        if (files != null) {
+          //delete files older than retention
+          long timestamp = System.currentTimeMillis() - (log.retention * ms_per_day);
+          for(File logfile : files) {
+            if (logfile.lastModified() < timestamp) {
+              logfile.delete();
+            }
+          }
+        }
+      }
+      try {
+        log.fos = new FileOutputStream(log.filename);
+      } catch (Exception e2) {
+      }
+    }
+    return true;
+  }
+
+  /** Rotates log file. */
+  public static boolean rotate() {
+    return rotate(DEFAULT_LOG);
   }
 
   public static boolean log(Throwable t) {
@@ -325,5 +373,4 @@ public class JFLog {
       log(DEFAULT_LOG, e);
     }
   }
-
 }
