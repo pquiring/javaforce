@@ -1684,4 +1684,38 @@ public class JF {
       return false;
     }
   }
+
+  public static boolean grep(InputStream is, OutputStream os, String regex) {
+    try {
+      BufferedReader br = new BufferedReader(new InputStreamReader(is));
+      String ln;
+      String regexln = ".*(" + regex + ").*";
+      while ((ln = br.readLine()) != null) {
+        try {
+          if (ln.matches(regexln)) {
+            os.write(ln.getBytes());
+            os.write("\r\n".getBytes());
+          }
+        } catch (Exception e) {}
+      }
+      return true;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
+
+  public static boolean grep(String filein, String fileout, String regex) {
+    try {
+      InputStream is = new FileInputStream(filein);
+      OutputStream os = new FileOutputStream(fileout);
+      boolean res = grep(is, os, regex);
+      is.close();
+      os.close();
+      return res;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return false;
+    }
+  }
 }
