@@ -1694,7 +1694,11 @@ public class JF {
         try {
           if (ln.matches(regexln)) {
             os.write(ln.getBytes());
-            os.write("\r\n".getBytes());
+            if (JF.isWindows()) {
+              os.write("\r\n".getBytes());
+            } else {
+              os.write("\n".getBytes());
+            }
           }
         } catch (Exception e) {}
       }
