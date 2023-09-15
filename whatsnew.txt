@@ -1,5 +1,11 @@
 What's new...
 
+Sept 15/2023 : JF/45.1
+  - new : DNS now support PTR records
+  - new : added Controller.setTimeout()
+  - new : added JFLog.rotate() and setMaxFilesize()
+  - new : added javaforce.JF.grep() and javaforce.utils.grep
+
 Sept 11/2023 : JF/45.0
   - new : DNS client
   - new : javaforce.net.IP6
