@@ -316,6 +316,7 @@ public class SMTP {
     for(String header : headers) {
       full.append(header);
     }
+    full.append("MIME-Version: 1.0\r\n");
     full.append("Content-Type: multipart/mixed; boundary=" + boundary_mixed + "\r\n");
     //blank line (end of headers)
     full.append("\r\n");
@@ -325,13 +326,13 @@ public class SMTP {
     full.append("Content-Type: multipart/alternative; boundary=" + boundary_alt + "\r\n");
     full.append("\r\n");
     //no content in alt section
-    full.append("\r\n");
     if (body_text != null) {
       full.append("--" + boundary_alt + "\r\n");
       full.append("Content-Type: text/plain\r\n");
       full.append("Content-Length: " + body_text.length() + "\r\n");
       full.append("\r\n");
       full.append(body_text);
+      full.append("\r\n");
     }
     if (body_html != null) {
       full.append("--" + boundary_alt + "\r\n");
@@ -339,6 +340,7 @@ public class SMTP {
       full.append("Content-Length: " + body_html.length() + "\r\n");
       full.append("\r\n");
       full.append(body_html);
+      full.append("\r\n");
     }
     full.append("--" + boundary_alt + "--\r\n");  //end of alt section
     full.append("\r\n");
