@@ -3,11 +3,10 @@
 // - supports passing command line options to java main()
 // - loads CLASSPATH and MAINCLASS from PE-EXE resource
 // - globbs arguments (see ExpandStringArray())
-// - supports console apps (type "c")
-// - supports windows services (type "s")
+// - supports console apps (type "console")
+// - supports windows services (type "service")
 // - define java.app.home to find exe/dll files
 // - support graal
-// - support selecting best concurrent GC (Shenandoah or Zero)
 // - native functions are now included in executable
 
 #include <windows.h>

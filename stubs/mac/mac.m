@@ -1,6 +1,5 @@
 //Java Launcher Mac
 
-// version 1.6
 // - supports passing command line options to java main()
 // - now loads CLASSPATH and MAINCLASS from resource file (*.cfg)
 // - now globbs arguments (see ExpandStringArray())
