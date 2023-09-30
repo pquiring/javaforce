@@ -348,7 +348,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_Camera_cameraStart
   if (ctx == NULL) return JNI_FALSE;
   if (deviceIdx >= ctx->cameraDeviceCount) return JNI_FALSE;
   errno = 0;
-  char name[16];
+  char name[32];
   sprintf(name, "/dev/video%d", deviceIdx);
   ctx->camerafd = (*_v4l2_open)(name, O_RDWR | O_NONBLOCK);
   if (ctx->camerafd == -1) {
