@@ -36,6 +36,17 @@ public class ExecProject implements ShellProcessListener {
       cfg = app + ".cfg";
     }
     String home = tools.getProperty("home");
+    String exec = "jfexec";
+    if (JF.isWindows()) {
+      String apptype = tools.getProperty("apptype");
+      if (apptype == null) {
+        apptype = "window";
+      }
+      switch (apptype) {
+//        case "window": exec += "w"; break;  //for debugging purposes do not use 'w' version
+      }
+      exec += ".exe";
+    }
 
     Properties props = new Properties();
     FileInputStream fis = new FileInputStream(cfg);
@@ -48,7 +59,7 @@ public class ExecProject implements ShellProcessListener {
     ShellProcess sp = new ShellProcess();
     sp.addListener(this);
     ArrayList<String> cmd = new ArrayList<String>();
-    cmd.add(home + File.separator + "bin" + File.separator + "jfexec.exe");
+    cmd.add(home + File.separator + "bin" + File.separator + exec);
     cmd.add("-cp");
     if (JF.isWindows()) {
       cmd.add(classpath);
