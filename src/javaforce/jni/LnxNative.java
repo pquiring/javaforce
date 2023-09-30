@@ -12,30 +12,27 @@ import javaforce.linux.*;
 
 public class LnxNative {
   public static void load() {
-    JFNative.load();  //ensure native library is loaded
-    if (JFNative.loaded && JFNative.load_ffmpeg) {
-      Library libs[] = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
-      if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File("/usr/lib/x86_64-linux-gnu")}, libs, ".so", libs.length)) {
-        for(int a=0;a<libs.length;a++) {
-          if (libs[a].path == null) {
-            System.out.println("Warning:Unable to find library:" + libs[a].name + ".so");
-            if (libs[a].name.equals("libX11")) {
-              have_x11 = false;
-            }
-            else if (libs[a].name.equals("libGL")) {
-              have_gl = false;
-            }
-            else if (libs[a].name.equals("libfuse")) {
-              have_fuse = false;
-            }
-            else if (libs[a].name.equals("libv4l2")) {
-              have_v4l2 = false;
-            }
+    Library libs[] = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
+    if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File("/usr/lib/x86_64-linux-gnu")}, libs, ".so", libs.length)) {
+      for(int a=0;a<libs.length;a++) {
+        if (libs[a].path == null) {
+          System.out.println("Warning:Unable to find library:" + libs[a].name + ".so");
+          if (libs[a].name.equals("libX11")) {
+            have_x11 = false;
+          }
+          else if (libs[a].name.equals("libGL")) {
+            have_gl = false;
+          }
+          else if (libs[a].name.equals("libfuse")) {
+            have_fuse = false;
+          }
+          else if (libs[a].name.equals("libv4l2")) {
+            have_v4l2 = false;
           }
         }
       }
-      lnxInit(libs[0].path, libs[1].path, libs[2].path);
     }
+    lnxInit(libs[0].path, libs[1].path, libs[2].path);
   }
 
   private static native boolean lnxInit(String libX11, String libGL, String libv4l2);

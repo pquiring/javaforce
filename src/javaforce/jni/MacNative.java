@@ -7,10 +7,7 @@ package javaforce.jni;
 
 public class MacNative {
   public static void load() {
-    JFNative.load();  //ensure native library is loaded
-    if (JFNative.loaded) {
-      macInit();
-    }
+    macInit();
   }
 
   private static native boolean macInit();

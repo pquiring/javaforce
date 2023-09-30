@@ -7,10 +7,7 @@ package javaforce.jni;
 
 public class WinNative {
   public static void load() {
-    JFNative.load();  //ensure native library is loaded
-    if (JFNative.loaded) {
-      winInit();
-    }
+    winInit();
   }
 
   private static native boolean winInit();
