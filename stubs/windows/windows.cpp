@@ -66,12 +66,12 @@ char service[MAX_PATH];
 char err_msg[1024];
 JavaVM *g_jvm = NULL;
 JNIEnv *g_env = NULL;
-int graal = 0;
+bool graal = false;
 
 /* Prototypes */
 void error(char *msg);
-int JavaThread(void *ignore);
-int loadProperties();
+bool JavaThread(void *ignore);
+bool loadProperties();
 
 /** Displays the error message in a dialog box. */
 void error(char *msg) {
@@ -107,10 +107,10 @@ ConvertStringArray(JNIEnv *env, int strc, char **strv)
   int i;
 
   cls = env->FindClass("java/lang/String");
-  if (cls == 0) {
+  if (cls == NULL) {
     printException(g_env);
     error("Unable to find String class");
-    return 0;
+    return NULL;
   }
   outArray = env->NewObjectArray(strc, cls, 0);
   for (i = 0; i < strc; i++) {
@@ -131,16 +131,16 @@ ExpandStringArray(JNIEnv *env, jobject inArray) {
   jobject outArray;
 
   cls = env->FindClass("javaforce/JF");
-  if (cls == 0) {
+  if (cls == NULL) {
     printException(g_env);
     error("Unable to find javaforce.JF class");
-    return 0;
+    return NULL;
   }
   mid = env->GetStaticMethodID(cls, "expandArgs", "([Ljava/lang/String;)[Ljava/lang/String;");
-  if (mid == 0) {
+  if (mid == NULL) {
     printException(g_env);
     error("Unable to find javaforce.JF.expandArgs method");
-    return 0;
+    return NULL;
   }
   outArray = env->CallStaticObjectMethod(cls, mid, inArray);
   env->DeleteLocalRef(inArray);
@@ -209,24 +209,24 @@ void convertClass(char *cls) {
   }
 }
 
-int InvokeMethod(char *_method, jobject args, char *sign) {
+bool InvokeMethod(char *_method, jobject args, char *sign) {
   convertClass(mainclass);
   jclass cls = g_env->FindClass(mainclass);
-  if (cls == 0) {
+  if (cls == NULL) {
     printException(g_env);
     error("Unable to find main class");
-    return 0;
+    return false;
   }
   jmethodID mid = g_env->GetStaticMethodID(cls, _method, sign);
-  if (mid == 0) {
+  if (mid == NULL) {
     printException(g_env);
     error("Unable to find main method");
-    return 0;
+    return false;
   }
 
   g_env->CallStaticVoidMethod(cls, mid, args);
 
-  return 1;
+  return true;
 }
 
 char* MakeString(char* fmt, char* path) {
@@ -289,16 +289,16 @@ void FreeArgs(JavaVMInitArgs *args) {
 }
 
 /** Creates a new JVM. */
-int CreateJVM() {
+bool CreateJVM() {
   JavaVMInitArgs *args = BuildArgs();
   if ((*CreateJavaVM)(&g_jvm, (void**)&g_env, args) == -1) {
     error("Unable to create Java VM");
-    return 0;
+    return false;
   }
 
 //  FreeArgs(args);
 
-  return 1;
+  return true;
 }
 
 /** Attachs current thread to JVM. */
@@ -375,7 +375,7 @@ void registerAllNatives(JNIEnv *env) {
 }
 
 /** Invokes the main method in a new thread. */
-int JavaThread(void *ignore) {
+bool JavaThread(void *ignore) {
   CreateJVM();
 
   registerAllNatives(g_env);
@@ -391,15 +391,15 @@ int JavaThread(void *ignore) {
 
   g_jvm->DestroyJavaVM();  //waits till all threads are complete
 
-  return 1;
+  return true;
 }
 
 #ifdef _JF_CLI
 //load properties from command line
-int loadProperties() {
+bool loadProperties() {
   //jfexec [-cp] CLASSPATH MAINCLASS
-  int have_classpath = 0;
-  int have_mainclass = 0;
+  bool have_classpath = false;
+  bool have_mainclass = false;
   char** argv = g_argv;
   int argc = g_argc;
   for(int a=1;a<argc;a++) {
@@ -411,25 +411,25 @@ int loadProperties() {
     if (arg[0] == '-') continue;  //TODO : support -D, etc.
     if (!have_classpath) {
       strcpy(classpath, arg);
-      have_classpath = 1;
+      have_classpath = true;
     } else if (!have_mainclass) {
       strcpy(mainclass, arg);
-      have_mainclass = 1;
+      have_mainclass = true;
       break;
     }
   }
   if (!have_classpath || !have_mainclass) {
     printf("Usage : jfexec [-cp] CLASSPATH MAINCLASS ...\r\n");
-    return 0;
+    return false;
   }
   strcpy(method, "main");  //default method name
   javahome[0] = 0;  //detect later
   xoptions[0] = 0;
-  return 1;
+  return true;
 }
 #else
 //load properties from executable
-int loadProperties() {
+bool loadProperties() {
   void *data;
   char *str, *ln1, *ln2;
   HRSRC res;
@@ -442,12 +442,12 @@ int loadProperties() {
   javahome[0] = 0;  //detect later
 
   res = FindResource(NULL, MAKEINTRESOURCE(1), RT_RCDATA);
-  if (res == NULL) {error("Unable to FindResource"); return 0;}
+  if (res == NULL) {error("Unable to FindResource"); return false;}
   size = SizeofResource(NULL, res);
   global = LoadResource(NULL, res);
-  if (global == NULL) {error("Unable to LoadResource"); return 0;}
+  if (global == NULL) {error("Unable to LoadResource"); return false;}
   data = LockResource(global);
-  if (data == NULL) {error("Unable to LockResource"); return 0;}
+  if (data == NULL) {error("Unable to LockResource"); return false;}
   str = (char*)malloc(size+1);
   memcpy(str, data, size);
   str[size] = 0;  //NULL terminate
@@ -494,29 +494,29 @@ int loadProperties() {
     ln1 = ln2;
   }
   free(str);
-  return 1;
+  return true;
 }
 #endif
 
-int exists(char *file) {
-  if (GetFileAttributes(file) == INVALID_FILE_ATTRIBUTES) return 0;
-  return 1;
+bool exists(char *file) {
+  if (GetFileAttributes(file) == INVALID_FILE_ATTRIBUTES) return false;
+  return true;
 }
 
-int findJavaHomeAppFolder() {
+bool findJavaHomeAppFolder() {
   //try to find JRE in Apps folder
   strcpy(javahome, exepath);
   strcat(javahome, "\\jre");
   int sl = strlen(javahome);
   strcat(javahome, "\\bin\\server\\jvm.dll");
-  if (exists(javahome) == 1) {
+  if (exists(javahome)) {
     javahome[sl] = 0;
-    return 1;
+    return true;
   }
-  return 0;
+  return false;
 }
 
-int findJavaHomeAppDataFolder() {
+bool findJavaHomeAppDataFolder() {
   //try to find JRE in %AppData% folder
   GetEnvironmentVariable("APPDATA", javahome, MAX_PATH);
   strcat(javahome, "\\java\\jre");
@@ -526,20 +526,20 @@ int findJavaHomeAppDataFolder() {
     strcat(javahome, "64");
   int sl = strlen(javahome);
   strcat(javahome, "\\bin\\server\\jvm.dll");
-  if (exists(javahome) == 1) {
+  if (exists(javahome)) {
     javahome[sl] = 0;
-    return 1;
+    return true;
   }
-  return 0;
+  return false;
 }
 
-int findJavaHomeRegistry() {
+bool findJavaHomeRegistry() {
   //try to find JRE in Registry
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\JRE", 0, KEY_READ, &key) != 0) {
     if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\Java Runtime Environment", 0, KEY_READ, &key) != 0) {
       if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\JavaSoft\\JDK", 0, KEY_READ, &key) != 0) {
         sprintf(err_msg, "Unable to open JavaSoft registry key");
-        return 0;
+        return false;
       }
     }
   }
@@ -547,35 +547,35 @@ int findJavaHomeRegistry() {
   size = 0;
   if (RegQueryValueEx(key, "CurrentVersion", 0, (LPDWORD)&type, 0, (LPDWORD)&size) != 0 || (type != REG_SZ) || (size > MAX_PATH)) {
     sprintf(err_msg, "Unable to find CurrentVersion registry key");
-    return 0;
+    return false;
   }
 
   size = MAX_PATH;
   if (RegQueryValueEx(key, "CurrentVersion", 0, 0, (LPBYTE)version, (LPDWORD)&size) != 0) {
     sprintf(err_msg, "Unable to load CurrentVersion registry key");
-    return 0;
+    return false;
   }
 
   if (RegOpenKeyEx(key, version, 0, KEY_READ, &subkey) != 0) {
     sprintf(err_msg, "Unable to open CurrentVersion registry key");
-    return 0;
+    return false;
   }
 
   size = 0;
   if (RegQueryValueEx(subkey, "JavaHome", 0, (LPDWORD)&type, 0, (LPDWORD)&size) != 0 || (type != REG_SZ) || (size > MAX_PATH)) {
     sprintf(err_msg, "Unable to find JavaHome registry key");
-    return 0;
+    return false;
   }
 
   size = MAX_PATH;
   if (RegQueryValueEx(subkey, "JavaHome", 0, 0, (LPBYTE)javahome, (LPDWORD)&size) != 0) {
     sprintf(err_msg, "Unable to load JavaHome registry key");
-    return 0;
+    return false;
   }
 
   RegCloseKey(key);
   RegCloseKey(subkey);
-  return 1;
+  return true;
 }
 
 #ifdef _JF_SERVICE
@@ -621,23 +621,23 @@ void __stdcall ServiceMain(int argc, char **argv) {
 
 #endif
 
-int try_graal() {
+bool try_graal() {
   strcpy(dll, exepath);
   strcat(dll, "\\");
   strcat(dll, mainclass);
   strcat(dll, ".dll");
   jvm_dll = LoadLibrary(dll);
-  return jvm_dll == NULL ? 0 : 1;
+  return jvm_dll == NULL ? false : true;
 }
 
-int try_jvm() {
+bool try_jvm() {
   sprintf(err_msg, "Unable to find Java");
   if (javahome[0] == 0) {
     if (findJavaHomeAppFolder() == 0) {
       if (findJavaHomeRegistry() == 0) {
         if (findJavaHomeAppDataFolder() == 0) {
           error(err_msg);
-          return 0;
+          return false;
         }
       }
     }
@@ -655,11 +655,11 @@ int try_jvm() {
 
   strcpy(dll, javahome);
   strcat(dll, "\\bin\\server\\jvm.dll");
-  if ((jvm_dll = LoadLibrary(dll)) == 0) {
+  if ((jvm_dll = LoadLibrary(dll)) == NULL) {
     error("Unable to open jvm.dll");
-    return 0;
+    return false;
   }
-  return 1;
+  return true;
 }
 
 void trim(char *str, char ch) {
@@ -680,14 +680,14 @@ int main(int argc, char **argv)
   strcpy(exepath, module);
   trim(exepath, '\\');
 
-  if (loadProperties() == 0) {
+  if (!loadProperties()) {
     return 2;
   }
 
-  if (try_graal() == 1) {
-    graal = 1;
+  if (try_graal()) {
+    graal = true;
   } else {
-    if (try_jvm() == 0) {
+    if (!try_jvm()) {
       return 2;
     }
   }
