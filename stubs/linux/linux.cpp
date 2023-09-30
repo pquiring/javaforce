@@ -123,6 +123,23 @@ ExpandStringArray(JNIEnv *env, jobjectArray inArray) {
 
 const char *DOption = "-Djava.class.path=";
 
+#ifdef _JF_CLI
+/** Create class path "as is" which should include jar files from current path. */
+char *CreateClassPath() {
+  int cplen = strlen(classpath);
+  for(int a=0;a<cplen;a++) {
+    if (classpath[a] == ';') {
+      classpath[a] = ':';
+    }
+  }
+  int len = strlen(DOption) + cplen + 1;
+  char *ExpandedClassPath = (char*)malloc(len);
+  ExpandedClassPath[0] = 0;
+  strcat(ExpandedClassPath, DOption);
+  strcat(ExpandedClassPath, classpath);
+  return ExpandedClassPath;
+}
+#else
 /** Create class path adding /usr/share/java to each element, and change ; to : */
 char *CreateClassPath() {
   char *ClassPath;
@@ -161,6 +178,7 @@ char *CreateClassPath() {
   }
   return ExpandedClassPath;
 }
+#endif
 
 JavaVMInitArgs *BuildArgs() {
   JavaVMInitArgs *args;
@@ -351,10 +369,43 @@ struct Header {
   int size;
 };
 
+#ifdef _JF_CLI
+int loadProperties() {
+  int have_classpath = 0;
+  int have_mainclass = 0;
+  char** argv = g_argv;
+  int argc = g_argc;
+  for(int a=1;a<argc;a++) {
+    //skip arg
+    g_argv++;
+    g_argc--;
+    char* arg = argv[a];
+    if (arg[0] == 0) continue;
+    if (arg[0] == '-') continue;  //TODO : support -D, etc.
+    if (!have_classpath) {
+      strcpy(classpath, arg);
+      have_classpath = 1;
+    } else if (!have_mainclass) {
+      strcpy(mainclass, arg);
+      have_mainclass = 1;
+      break;
+    }
+  }
+  if (!have_classpath || !have_mainclass) {
+    printf("Usage : jfexec [-cp] CLASSPATH MAINCLASS ...\r\n");
+    return 0;
+  }
+  strcpy(method, "main");  //default method name
+  javahome[0] = 0;  //detect later
+  xoptions[0] = 0;
+  return 1;
+}
+#else
 int loadProperties() {
   char app[MAX_PATH];
   char *data, *ln1, *ln2;
   int sl, fs;
+  int res;
   struct Header header;
 
   xoptions[0] = 0;
@@ -371,14 +422,14 @@ int loadProperties() {
   }
   fs = lseek(file, 0, SEEK_END);
   lseek(file, fs-8, SEEK_SET);
-  read(file, &header, 8);
+  res = read(file, &header, 8);
   if (strncmp(header.name, ".cfg", 4)) {
     error("app.cfg not found");
     return -1;
   }
   lseek(file, fs - 8 - header.size, SEEK_SET);
   data = (char*)malloc(size + 1);
-  read(file, data, header.size);
+  res = read(file, data, header.size);
   close(file);
   data[header.size] = 0;
   ln1 = data;
@@ -418,6 +469,7 @@ int loadProperties() {
   free(data);
   return 0;
 }
+#endif
 
 char* strlwr(char* str) {
   for(int i = 0; str[i]; i++){
