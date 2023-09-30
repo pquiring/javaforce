@@ -62,12 +62,12 @@ char mainclass[MAX_PATH];
 char method[MAX_PATH];
 char xoptions[MAX_PATH];
 char cfgargs[1024];
-int graal = 0;
+bool graal = false;
 
 /* Prototypes */
 void error(const char *msg);
-int JavaThread(void *ignore);
-int loadProperties();
+bool JavaThread(void *ignore);
+bool loadProperties();
 
 /** Displays the error message in a dialog box. */
 void error(const char *msg) {
@@ -193,7 +193,7 @@ JavaVMInitArgs *BuildArgs() {
     opts[nOpts++] = (char*)"-Djava.home=/usr/bin";
   } else {
     opts[nOpts++] = CreateClassPath();
-  } 
+  }
   if (strlen(xoptions) > 0) {
     char *x = xoptions;
     while (x != NULL) {
@@ -316,13 +316,13 @@ void registerAllNatives(JNIEnv *env) {
 }
 
 /** Continues loading the JVM in a new Thread. */
-int JavaThread(void *ignore) {
+bool JavaThread(void *ignore) {
   JavaVM *jvm = NULL;
   JNIEnv *env = NULL;
 
   if ((*CreateJavaVM)(&jvm, &env, BuildArgs()) == -1) {
     error("Unable to create Java VM");
-    return -1;
+    return false;
   }
 
   registerAllNatives(env);
@@ -334,12 +334,12 @@ int JavaThread(void *ignore) {
   if (cls == NULL) {
     printException(env);
     error("Unable to find main class");
-    return -1;
+    return false;
   }
   jmethodID mid = env->GetStaticMethodID(cls, method, "([Ljava/lang/String;)V");
   if (mid == NULL) {
     error("Unable to find main method");
-    return -1;
+    return false;
   }
   char **argv = g_argv;
   int argc = g_argc;
@@ -349,7 +349,7 @@ int JavaThread(void *ignore) {
   env->CallStaticVoidMethod(cls, mid, ExpandStringArray(env, ConvertStringArray(env, argv, argc)));
   jvm->DestroyJavaVM();  //waits till all threads are complete
   //NOTE : Swing creates the EDT to keep Java alive until all windows are disposed
-  return 0;
+  return true;
 }
 
 char *resolvelink(const char *in) {
@@ -370,9 +370,9 @@ struct Header {
 };
 
 #ifdef _JF_CLI
-int loadProperties() {
-  int have_classpath = 0;
-  int have_mainclass = 0;
+bool loadProperties() {
+  bool have_classpath = false;
+  bool have_mainclass = false;
   char** argv = g_argv;
   int argc = g_argc;
   for(int a=1;a<argc;a++) {
@@ -384,24 +384,24 @@ int loadProperties() {
     if (arg[0] == '-') continue;  //TODO : support -D, etc.
     if (!have_classpath) {
       strcpy(classpath, arg);
-      have_classpath = 1;
+      have_classpath = true;
     } else if (!have_mainclass) {
       strcpy(mainclass, arg);
-      have_mainclass = 1;
+      have_mainclass = true;
       break;
     }
   }
   if (!have_classpath || !have_mainclass) {
     printf("Usage : jfexec [-cp] CLASSPATH MAINCLASS ...\r\n");
-    return 0;
+    return false;
   }
   strcpy(method, "main");  //default method name
   javahome[0] = 0;  //detect later
   xoptions[0] = 0;
-  return 1;
+  return true;
 }
 #else
-int loadProperties() {
+bool loadProperties() {
   char app[MAX_PATH];
   char *data, *ln1, *ln2;
   int sl, fs;
@@ -418,14 +418,14 @@ int loadProperties() {
   int file = open(app, O_RDONLY);
   if (file == -1) {
     error("app.cfg not found");
-    return -1;
+    return false;
   }
   fs = lseek(file, 0, SEEK_END);
   lseek(file, fs-8, SEEK_SET);
   res = read(file, &header, 8);
   if (strncmp(header.name, ".cfg", 4)) {
     error("app.cfg not found");
-    return -1;
+    return false;
   }
   lseek(file, fs - 8 - header.size, SEEK_SET);
   data = (char*)malloc(size + 1);
@@ -467,7 +467,7 @@ int loadProperties() {
     ln1 = ln2;
   }
   free(data);
-  return 0;
+  return true;
 }
 #endif
 
@@ -478,16 +478,16 @@ char* strlwr(char* str) {
   return str;
 }
 
-int try_graal() {
+bool try_graal() {
   strcpy(dll, "/usr/lib/");
   strcat(dll, mainclass);
   strcat(dll, ".so");
   strlwr(dll);
   jvm_dll = dlopen(dll, RTLD_NOW);
-  return jvm_dll == NULL ? 0 : 1;
+  return jvm_dll == NULL ? false : true;
 }
 
-int try_jvm() {
+bool try_jvm() {
   //get java home
   strcpy(javahome, resolvelink("/usr/bin/java"));
 
@@ -515,7 +515,7 @@ int try_jvm() {
   if (jawt_dll == NULL) {
     error("Unable to open libjawt.so");
   }
-  return 1;
+  return true;
 }
 
 /** Main entry point. */
@@ -526,10 +526,10 @@ int main(int argc, char **argv) {
 
   loadProperties();
 
-  if (try_graal() == 1) {
-    graal = 1;
+  if (try_graal()) {
+    graal = true;
   } else {
-    if (try_jvm() == 0) {
+    if (!try_jvm()) {
       return 2;
     }
   }
