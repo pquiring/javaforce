@@ -149,6 +149,17 @@ ExpandStringArray(JNIEnv *env, jobject inArray) {
 
 char *DOption = "-Djava.class.path=";
 
+#ifdef _JF_CLI
+/** Create class path "as is" which should include jar files from current path. */
+char *CreateClassPath() {
+  int len = strlen(DOption) + strlen(classpath) + 1;
+  char *ExpandedClassPath = (char*)malloc(len);
+  ExpandedClassPath[0] = 0;
+  strcat(ExpandedClassPath, DOption);
+  strcat(ExpandedClassPath, classpath);
+  return ExpandedClassPath;
+}
+#else
 /** Create class path adding exe path to each element (because the current path is not where the EXE is). */
 char *CreateClassPath() {
   char *ClassPath;
@@ -189,6 +200,7 @@ char *CreateClassPath() {
   }
   return ExpandedClassPath;
 }
+#endif
 
 void convertClass(char *cls) {
   while (*cls) {
@@ -382,6 +394,41 @@ int JavaThread(void *ignore) {
   return 1;
 }
 
+#ifdef _JF_CLI
+//load properties from command line
+int loadProperties() {
+  //jfexec [-cp] CLASSPATH MAINCLASS
+  int have_classpath = 0;
+  int have_mainclass = 0;
+  char** argv = g_argv;
+  int argc = g_argc;
+  for(int a=1;a<argc;a++) {
+    //skip arg
+    g_argv++;
+    g_argc--;
+    char* arg = argv[a];
+    if (arg[0] == 0) continue;
+    if (arg[0] == '-') continue;  //TODO : support -D, etc.
+    if (!have_classpath) {
+      strcpy(classpath, arg);
+      have_classpath = 1;
+    } else if (!have_mainclass) {
+      strcpy(mainclass, arg);
+      have_mainclass = 1;
+      break;
+    }
+  }
+  if (!have_classpath || !have_mainclass) {
+    printf("Usage : jfexec [-cp] CLASSPATH MAINCLASS ...\r\n");
+    return 0;
+  }
+  strcpy(method, "main");  //default method name
+  javahome[0] = 0;  //detect later
+  xoptions[0] = 0;
+  return 1;
+}
+#else
+//load properties from executable
 int loadProperties() {
   void *data;
   char *str, *ln1, *ln2;
@@ -449,6 +496,7 @@ int loadProperties() {
   free(str);
   return 1;
 }
+#endif
 
 int exists(char *file) {
   if (GetFileAttributes(file) == INVALID_FILE_ATTRIBUTES) return 0;
@@ -633,7 +681,6 @@ int main(int argc, char **argv)
   trim(exepath, '\\');
 
   if (loadProperties() == 0) {
-    error("Unable to load properties");
     return 2;
   }
 

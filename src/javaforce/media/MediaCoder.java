@@ -30,10 +30,10 @@ public class MediaCoder {
     String apphome = System.getProperty("java.app.home");
     if (apphome == null) apphome = ".";
     if (JF.isWindows()) {
-      sysFolders = new File[] {new File(apphome), new File(System.getenv("appdata") + "/ffmpeg")};
+      sysFolders = new File[] {new File(apphome), new File(System.getenv("appdata") + "/ffmpeg"), new File(".")};
       ext = ".dll";
     } else if (JF.isMac()) {
-      sysFolders = new File[] {new File(apphome)};
+      sysFolders = new File[] {new File(apphome), new File(".")};
       ext = ".dylib";
     } else {
       sysFolders = new File[] {new File("/usr/lib/x86_64-linux-gnu")};
