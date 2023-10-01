@@ -182,6 +182,15 @@
     </zip>
   </target>
 
+  <target name="jre-base" description="build JRE for bundled JRE builds with only base">
+    <exec command="jlink --module-path ${java.home}/jmods --add-modules java.base,java.sql,jdk.crypto.ec,jdk.crypto.cryptoki,java.security.jgss --output jre_base"/>
+    <delete>
+      <fileset dir="jre_base/bin" includes="java**.exe"/>
+    </delete>
+    <delete dir="jre_base/include"/>
+    <delete dir="jre_base/legal"/>
+  </target>
+
   <target name="jre-base-desktop" description="build JRE for bundled JRE builds with desktop (swing) support">
     <exec command="jlink --module-path ${java.home}/jmods --add-modules java.base,java.desktop,java.sql,jdk.crypto.ec,jdk.crypto.cryptoki,java.security.jgss,jdk.xml.dom --output jre_base_desktop"/>
     <delete>
@@ -191,13 +200,10 @@
     <delete dir="jre_base_desktop/legal"/>
   </target>
 
-  <target name="jre-base" description="build JRE for bundled JRE builds with only base">
-    <exec command="jlink --module-path ${java.home}/jmods --add-modules java.base,java.sql,jdk.crypto.ec,jdk.crypto.cryptoki,java.security.jgss --output jre_base"/>
-    <delete>
-      <fileset dir="jre_base/bin" includes="java**.exe"/>
-    </delete>
-    <delete dir="jre_base/include"/>
-    <delete dir="jre_base/legal"/>
+  <target name="jre-base-desktop-java" description="build JRE for bundled JRE builds with desktop (swing) support (includes java executables)">
+    <exec command="jlink --module-path ${java.home}/jmods --add-modules java.base,java.desktop,java.sql,jdk.crypto.ec,jdk.crypto.cryptoki,java.security.jgss,jdk.xml.dom --output jre_base_desktop_java"/>
+    <delete dir="jre_base_desktop_java/include"/>
+    <delete dir="jre_base_desktop_java/legal"/>
   </target>
 
   <target name="jre-base-javac" description="build JRE for bundled JRE builds with base and Java compiler">
