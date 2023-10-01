@@ -6,8 +6,10 @@ package javaforce;
  */
 
 public class UInteger {
-  public static int MIN_VALUE = 0;
-  public static int MAX_VALUE = 0xffffffff;
+  public static final int MIN_VALUE = 0;
+  public static final int MAX_VALUE = 0xffffffff;
+
+  public static final int MASK = 0xffffffff;
 
   private int value;
 
@@ -33,5 +35,15 @@ public class UInteger {
 
   public static String toString(int value) {
     return toString(value, 10);
+  }
+
+  public static void main(String[] args) {
+    int val = 0x00;
+    for(int a=0;a<16;a++) {
+      String str = toString(val, 16);
+      int v2 = valueOf(str, 16);
+      JFLog.log("int:" + (val & MASK) + " > " + str + " > " + (v2 & MASK));
+      val += 0x11111111;
+    }
   }
 }

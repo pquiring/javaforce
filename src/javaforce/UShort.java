@@ -6,8 +6,10 @@ package javaforce;
  */
 
 public class UShort {
-  public static int MIN_VALUE = 0;
-  public static int MAX_VALUE = 0xffff;
+  public static final int MIN_VALUE = 0;
+  public static final int MAX_VALUE = 0xffff;
+
+  public static final int MASK = 0xffff;
 
   private short value;
 
@@ -37,5 +39,15 @@ public class UShort {
 
   public static String toString(short value) {
     return toString(value, 10);
+  }
+
+  public static void main(String[] args) {
+    short val = 0x00;
+    for(int a=0;a<16;a++) {
+      String str = toString(val, 16);
+      short v2 = valueOf(str, 16);
+      JFLog.log("short:" + (val & MASK) + " > " + str + " > " + (v2 & MASK));
+      val += 0x1111;
+    }
   }
 }
