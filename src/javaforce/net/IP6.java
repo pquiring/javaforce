@@ -14,7 +14,7 @@ import java.net.*;
 import javaforce.*;
 
 public class IP6 {
-  public int[] ip = new int[8];
+  public short[] ip = new short[8];
   public static boolean isIP(String str) {
     int double_idx = str.indexOf("::");
     boolean compressed = double_idx != -1;
@@ -56,7 +56,7 @@ public class IP6 {
             idx = 8 - (os.length - (idx + 1));
           }
         } else {
-          ip[idx++] = Integer.valueOf(o, 16);
+          ip[idx++] = UShort.valueOf(o, 16);
         }
       }
     } catch (Exception e) {
@@ -104,7 +104,7 @@ public class IP6 {
   public short[] getIP() {
     short[] ip6 = new short[8];
     for(int a=0;a<8;a++) {
-      ip6[a] = (short)ip[a];
+      ip6[a] = ip[a];
     }
     return ip6;
   }
@@ -112,7 +112,7 @@ public class IP6 {
   public short[] getNetwork() {
     short[] subnet = new short[4];
     for(int a=0;a<4;a++) {
-      subnet[a] = (short)ip[a];
+      subnet[a] = ip[a];
     }
     return subnet;
   }
@@ -120,7 +120,7 @@ public class IP6 {
   public short[] getHost() {
     short[] host = new short[4];
     for(int a=0;a<4;a++) {
-      host[a] = (short)ip[4 + a];
+      host[a] = ip[4 + a];
     }
     return host;
   }
@@ -131,7 +131,7 @@ public class IP6 {
     for(int a=0;a<5;a++) {
       if (ip[a] != 0) return false;
     }
-    if (ip[5] != 0xffff) return false;
+    if (ip[5] != (short)0xffff) return false;
     //[6][7] = IP4
     return true;
   }
@@ -139,10 +139,10 @@ public class IP6 {
   public IP4 toIP4() {
     if (!isIP4()) return null;
     IP4 ip4 = new IP4();
-    ip4.ip[0] = (short)(ip[6] >>> 8);
-    ip4.ip[1] = (short)(ip[6] & 0xff);
-    ip4.ip[2] = (short)(ip[7] >>> 8);
-    ip4.ip[3] = (short)(ip[7] & 0xff);
+    ip4.ip[0] = (byte)(ip[6] >>> 8);
+    ip4.ip[1] = (byte)(ip[6] & 0xff);
+    ip4.ip[2] = (byte)(ip[7] >>> 8);
+    ip4.ip[3] = (byte)(ip[7] & 0xff);
     return ip4;
   }
 

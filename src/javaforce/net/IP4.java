@@ -14,7 +14,7 @@ import java.net.*;
 import javaforce.*;
 
 public class IP4 {
-  public short[] ip = new short[4];
+  public byte[] ip = new byte[4];
   public static boolean isIP(String str) {
     if (str.equals("0:0:0:0:0:0:0:1")) {
       //IP6 localhost
@@ -45,7 +45,7 @@ public class IP4 {
     String[] ips = str.split("[.]", -1);
     try {
       for(int a=0;a<4;a++) {
-        ip[a] = Short.valueOf(ips[a]);
+        ip[a] = UByte.valueOf(ips[a]);
       }
     } catch (Exception e) {
       return false;
@@ -81,9 +81,9 @@ public class IP4 {
 
   public IP6 toIP6() {
     IP6 ip6 = new IP6();
-    ip6.ip[5] = 0xffff;
-    ip6.ip[6] = (ip[0] << 8) + ip[1];
-    ip6.ip[7] = (ip[2] << 8) + ip[3];
+    ip6.ip[5] = (short)0xffff;
+    ip6.ip[6] = (short)((ip[0] << 8) + (ip[1] & 0xff));
+    ip6.ip[7] = (short)((ip[2] << 8) + (ip[3] & 0xff));
     return ip6;
   }
 
