@@ -9,7 +9,7 @@ public class ULong {
   public static final long MIN_VALUE = 0;
   public static final long MAX_VALUE = 0xffffffffffffffffL;
 
-  public static final long MASK = 0xffffffff;
+  public static final long MASK = 0xffffffffffffffffL;
 
   private long value;
 
@@ -42,7 +42,7 @@ public class ULong {
     for(int a=0;a<16;a++) {
       String str = toString(val, 16);
       long v2 = valueOf(str, 16);
-      JFLog.log("int:" + (val & MASK) + " > " + str + " > " + (v2 & MASK));
+      JFLog.log("long:" + (val & MASK) + " > " + str + " > " + (v2 & MASK));
       val += 0x1111111111111111L;
     }
   }
