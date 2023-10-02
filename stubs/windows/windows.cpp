@@ -649,9 +649,12 @@ bool try_jvm() {
     strcpy(javahome, expanded);
   }
 
+#if 0
+  //this is causing other file related errors in apps
   strcpy(dll, javahome);
   strcat(dll, "\\bin");
   SetDllDirectory(dll);
+#endif
 
   strcpy(dll, javahome);
   strcat(dll, "\\bin\\server\\jvm.dll");

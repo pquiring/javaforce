@@ -50,7 +50,10 @@ public class GenExecutable {
           case "service": ext = "s"; break;
         }
         if (!JF.copyFile(home + "/stubs/win64" + ext + ".exe", app + ".exe")) {
-          throw new Exception("copy error");
+          throw new Exception("copy error:" + app + ".exe");
+        }
+        if (!new File(app + ".exe").exists()) {
+          throw new Exception("copy error:" + app + ".exe");
         }
         WinPE.main(new String[] {app + ".exe", ico, cfg});
       } else if (JF.isMac()) {

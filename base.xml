@@ -88,27 +88,27 @@
 
   <target name="executable" depends="jar,depjars,depnatives" description="create executable launcher">
     <sequential>
-      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenExecutable" fork="true">
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenExecutable" fork="true" jvm="${home}/bin/jfexec">
         <arg value="${ant.file}"/>
       </java>
     </sequential>
   </target>
 
   <target name="graal" depends="jar,depjars" description="generate aot library">
-    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecGraal" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecGraal" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>
   </target>
 
   <target name="graalagent">
-    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecGraalAgent" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecGraalAgent" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>
   </target>
 
   <target name="run">
     <sequential>
-      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecProject" fork="true">
+      <java classpath="${home}/javaforce.jar" classname="javaforce.utils.ExecProject" fork="true" jvm="${home}/bin/jfexec">
         <arg value="${ant.file}"/>
       </java>
     </sequential>
@@ -117,7 +117,7 @@
   <!-- Windows targets -->
 
   <target name="msi" depends="executable" description="create msi package">
-    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenMSI" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenMSI" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>
   </target>
@@ -131,25 +131,25 @@
   </target>
 
   <target name="installapproot">
-    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.InstallProject" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.InstallProject" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>
   </target>
 
   <target name="deb" depends="installapp" description="create deb package">
-    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenDEB" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>
   </target>
 
   <target name="rpm" depends="installapp" description="create rpm package">
-    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenRPM" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenRPM" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>
   </target>
 
   <target name="pac" depends="installapp" description="create pac package">
-    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenPAC" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>
   </target>
@@ -157,7 +157,7 @@
   <!-- MacOSX targets -->
 
   <target name="dmg" depends="executable" description="create dmg package">
-    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenDMG" fork="true">
+    <java classpath="${home}/javaforce.jar" classname="javaforce.utils.GenDMG" fork="true" jvm="${home}/bin/jfexec">
       <arg value="${ant.file}"/>
     </java>
   </target>
