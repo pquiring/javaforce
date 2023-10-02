@@ -701,9 +701,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_jni_WinNative_peBegin
   const char *cstr = e->GetStringUTFChars(file,NULL);
   HANDLE handle = BeginUpdateResource(cstr, FALSE);
   if (handle == NULL) {
-    char cwd[1024];
-    GetCurrentDirectory(1024, (LPSTR)cwd);
-    printf("peBegin failed:file=%s:error=%d:dir=%s\n", cstr, GetLastError(), cwd);
+    printf("peBegin failed:file=%s:error=%d\n", cstr, GetLastError());
   }
   e->ReleaseStringUTFChars(file, cstr);
   return (jlong)handle;
