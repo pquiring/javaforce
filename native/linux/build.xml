@@ -5,9 +5,17 @@
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
   <target name="linux" description="create linux native so for x64">
+    <!-- build native library -->
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/linux -I ${java.home}/include -I /usr/include/x86_64-linux-gnu -I ../headers native.cpp -c -o native.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include -I /usr/include/x86_64-linux-gnu glfw.c -c -o glfw.o -fPIC"/>
     <exec command="ar r native.a native.o glfw.o"/>
+
+    <!-- build native executables -->
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -Wno-write-strings linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64.bin"/>
+    <!-- fedora adds a build-id that conflicts each time the executable in found in a package -->
+    <exec command="strip -R .note.gnu.build-id ../linux64.bin"/>
+    <!-- build cli version -->
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -Wno-write-strings -D_JF_CLI linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexec"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
@@ -15,9 +23,15 @@
   </target>
 
   <target name="freebsd" description="create linux native so for x64/freebsd">
+    <!-- build native library -->
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/freebsd -I ${java.home}/include -I ../headers native.cpp -c -o native.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include glfw.c -c -o glfw.o -fPIC"/>
     <exec command="ar r native.a native.o glfw.o"/>
+
+    <!-- build native executables -->
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -Wno-write-strings linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -linotify -o ../linux64.bin"/>
+    <!-- build cli version -->
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/freebsd -L /usr/lib/x86_64-linux-gnu -Wno-write-strings -D_JF_CLI linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -linotify -o ../../bin/jfexec"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>
@@ -25,9 +39,17 @@
   </target>
 
   <target name="arm64" description="create linux native so for arm64">
+    <!-- build native library -->
     <exec command="gcc ${opt} -D_FILE_OFFSET_BITS=64 -I /usr/include/ffmpeg -I ${java.home}/include/linux -I ${java.home}/include -I /usr/include/aarch64-linux-gnu -I ../headers native.cpp -c -o native.o -fPIC"/>
     <exec command="gcc ${opt} -I../glfw/include -I /usr/include/aarch64-linux-gnu glfw.c -c -o glfw.o -fPIC"/>
     <exec command="ar r native.a native.o glfw.o"/>
+
+    <!-- build native executables -->
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -Wno-write-strings linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../linux64.bin"/>
+    <!-- fedora adds a build-id that conflicts each time the executable in found in a package -->
+    <exec command="strip -R .note.gnu.build-id ../linux64.bin"/>
+    <!-- build cli version -->
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/aarch64-linux-gnu -Wno-write-strings -D_JF_CLI linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexec"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>

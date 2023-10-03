@@ -2,10 +2,18 @@
   <description>native</description>
   <property environment="env"/>
 
-  <target name="windows" description="create windows native dll using cl">
+  <target name="windows" description="create windows native files">
+    <!-- native library -->
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '${env.FFMPEG_HOME}' /I '../headers' native.cpp /c /Fo: native.obj"/>
     <exec command="cl /I '../glfw/include' glfw.c /c /Fo: glfw.obj"/>
     <exec command="lib /nologo /out:native.lib native.obj glfw.obj"/>
+
+    <!-- native loaders -->
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64.exe /link /subsystem:windows /entry:mainCRTStartup"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64c.exe /link /subsystem:console"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /D_JF_SERVICE windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64s.exe /link /subsystem:console"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /D_JF_CLI windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../../bin/jfexecw.exe /link /subsystem:windows /entry:mainCRTStartup"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /D_JF_CLI windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../../bin/jfexec.exe /link /subsystem:console"/>
 
     <delete>
       <fileset dir="." includes="*.obj"/>
@@ -14,15 +22,15 @@
 
   <target name="get-bin" description="download pre-built binaries">
     <sequential>
-      <get src="http://javaforce.sourceforge.net/jf-lib-win64.zip" dest="../jf-lib-win64.zip" usetimestamp="true"/>
-      <unzip src="../jf-lib-win64.zip" dest=".."/>
+      <get src="http://javaforce.sourceforge.net/jf-bin-win64.zip" dest="../jf-bin-win64.zip" usetimestamp="true"/>
+      <unzip src="../jf-bin-win64.zip" dest=".."/>
     </sequential>
   </target>
 
   <target name="zip-bin" description="zip pre-built binaries">
-    <zip destfile="../jf-lib-win64.zip">
+    <zip destfile="../jf-bin-win64.zip">
       <fileset dir="..">
-        <include name="*.dll"/>
+        <include name="*.exe"/>
       </fileset>
     </zip>
   </target>
