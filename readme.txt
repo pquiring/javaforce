@@ -27,8 +27,7 @@ Folders
  /          - main folder (run ant here to build /src)
  /src       - the javaforce source files
  /lib       - generated and dependancies jar files
- /stubs     - native launcher stubs
- /native    - native library with JNI bindings for FFMPEG, OpenGL, Camera
+ /native    - native library and loaders with JNI bindings for FFMPEG, OpenGL, Camera
  /classes   - javaforce compiled files
  /projects  - source for all sub-projects
 
@@ -44,9 +43,9 @@ Checkout Javaforce:
   ant
 Next build the native library and the native launchers.
 
-Building native library (ffmpeg, OpenGL, Camera)
-------------------------------------------------
-Native Library is in /native
+Building native library and loaders (ffmpeg, OpenGL, Camera)
+------------------------------------------------------------
+Native libraries and loaders are in /native
 See readme.txt in each platform folder for more info.
 Windows:Requires Visual C++ in your PATH.
   - you can run 'ant get-bin' to download pre-built binaries for Win64
@@ -55,16 +54,9 @@ Linux:RedHat/Fedora:run 'ant rpm' to install required devel packages.
 Linux:Arch:run 'ant pac' to install required devel packages.
 Linux:FreeBSD:run 'ant pkg' to install required devel packages.
 
-Building native launchers
--------------------------
-Native Launchers are in /stubs
-They require the native library be build first.
-  - you can run 'ant get-bin' to download pre-built binaries for Win64
-  - the native launcher searches for the apps graal library before searching for a standard JVM
-
 Building jfLinux
 ----------------
-After building Javaforce, native library and stubs (launchers) you can run package.sh to package everything.
+After building Javaforce and the native components you can run package.sh to package everything.
 Supported distros : Debian, Fedora, Arch.
 FreeBSD is currently not supported (open issue if you would like to see FreeBSD packager task and repo created)
 
@@ -96,25 +88,23 @@ ffmpeg : copy ffmpeg libraries to project folder
 install : install files before package creation (Linux only) (requires root)
 deb : build Debian deb file (after install)
  - requires bzip2, binutils, sudo
- - linux packaging requires files.lst and linux stub (/stubs/linux)
+ - linux packaging requires files.lst
 rpm : build Fedora rpm file (after install)
  - requires rpm-build
- - linux packaging requires files.lst and linux stub (/stubs/linux)
+ - linux packaging requires files.lst
 pac : build Arch pac file (after install)
- - linux packaging requires files.lst and linux stub (/stubs/linux)
+ - linux packaging requires files.lst
 msi : build Windows msi file with JRE bundled
  - msi creation requires:
   - wixtoolset v3 in path (http://wixtoolset.org)
   - wix64.xml file
   - jre pre-linked for native packaging (see above)
-  - windows stub created (/stubs/windows)
 dmg : build Mac dmg file using hdiutil (mac only)
  - dmg creation requires:
   - jre prep for native packaging (see above)
   - Info.plist, ${app}.icns and macfiles.lst
   - see projects/jfedit or projects/jfpaint for only examples
   - jfimageconvert can convert images to .icns file format (mac icons)
-  - mac stub created (/stubs/mac)
 
 Maven
 -----
