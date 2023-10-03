@@ -49,7 +49,7 @@ public class GenExecutable {
           case "s":  //legacy
           case "service": ext = "s"; break;
         }
-        if (!JF.copyFile(home + "/stubs/win64" + ext + ".exe", app + ".exe")) {
+        if (!JF.copyFile(home + "/native/win64" + ext + ".exe", app + ".exe")) {
           throw new Exception("copy error:" + app + ".exe");
         }
         if (!new File(app + ".exe").exists()) {
@@ -58,11 +58,11 @@ public class GenExecutable {
         WinPE.main(new String[] {app + ".exe", ico, cfg});
       } else if (JF.isMac()) {
         //mac
-        JF.copyFile(home + "/stubs/mac64.bin", app);
+        JF.copyFile(home + "/native/mac64.bin", app);
         chmod(app);
       } else {
         //linux
-        JF.copyFile(home + "/stubs/linux64.bin", app + ".bin");
+        JF.copyFile(home + "/native/linux64.bin", app + ".bin");
         ResourceManager.main(new String[] {app + ".bin", cfg});
         chmod("/usr/bin/" + app);
       }
