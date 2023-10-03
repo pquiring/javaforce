@@ -3,9 +3,9 @@
   <property environment="env"/>
 
   <target name="windows" description="create windows native dll using cl">
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '${env.FFMPEG_HOME}' /I '../headers' windows.cpp /c /Fo: win64.obj"/>
-    <exec command="cl /I '../glfw/include' glfw.c /c /Fo: glfw64.obj"/>
-    <exec command="lib /nologo /out:../jfnative64.lib win64.obj glfw64.obj"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /I '${env.FFMPEG_HOME}' /I '../headers' native.cpp /c /Fo: native.obj"/>
+    <exec command="cl /I '../glfw/include' glfw.c /c /Fo: glfw.obj"/>
+    <exec command="lib /nologo /out:native.lib native.obj glfw.obj"/>
 
     <delete>
       <fileset dir="." includes="*.obj"/>

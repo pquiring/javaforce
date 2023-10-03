@@ -5,11 +5,11 @@
   <property name="opt" value="-O3"/>  <!-- change to -g to debug -->
 
   <target name="mac" description="create mac native so">
-    <exec command="gcc ${opt} -I ${env.FFMPEG_HOME} -I ${java.home} -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers mac.mm -c -o mac.o -fPIC"/>
+    <exec command="gcc ${opt} -I ${env.FFMPEG_HOME} -I ${java.home} -I ${java.home}/include -I ${java.home}/include/darwin -I ../headers native.mm -c -o native.o -fPIC"/>
     <exec command="gcc ${opt} -I ../glfw/include glfw.m -c -o glfw.o -fPIC"/>
-	  <exec command="ar r ../jfnative64.a mac.o glfw.o"/>
+	  <exec command="ar r native.a native.o glfw.o"/>
 
-    <delete file="mac.o"/>
+    <delete file="native.o"/>
     <delete file="glfw.o"/>
   </target>
 </project>
