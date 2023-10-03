@@ -8,6 +8,7 @@ Oct ?/2023 : JF/46.0
    - this method for loading natives was only used before apps were packaged (ie: debugging)
    - use "ant run" to test/debug apps
    - no changes to creating app executables
+ - /stubs has been merged into /native
 
 Sept 22/2023 : JF/45.2
   - fix : SMTP MIME encoding needed more blank lines
