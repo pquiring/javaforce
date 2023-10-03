@@ -2,13 +2,12 @@ What's new...
 
 Oct ?/2023 : JF/46.0
  - Oracle will deprecate using JNI thru System.load() (see JEP draft 8307341)
-   - a new java cli tool was created for loading JF apps from command line (/bin/jfexec) to replace using java.exe
+   - a new java cli tool was created for running JF apps from command line (/bin/jfexec) to replace using java.exe
    - System.load() is no longer used
-   - the jfnative64.* library is no longer created
-   - this method for loading natives was only used before apps were packaged (ie: debugging)
+   - the jfnative64.* library is no longer created (it's code is bundled into native loaders)
    - use "ant run" to test/debug apps
-   - no changes to creating app executables
  - /stubs has been merged into /native
+ - added javaforce.UByte, UShort, UInteger and ULong
 
 Sept 22/2023 : JF/45.2
   - fix : SMTP MIME encoding needed more blank lines
