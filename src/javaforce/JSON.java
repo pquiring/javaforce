@@ -45,6 +45,10 @@ public class JSON {
       }
       return null;
     }
+
+    public String toString() {
+      return key + "=" + value;
+    }
   }
   /** Parses a JSON string. */
   public static Element parse(String str) throws Exception {
