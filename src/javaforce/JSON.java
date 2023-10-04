@@ -9,6 +9,7 @@ Does NOT Support multi-dimension arrays.
 */
 
 import java.util.*;
+import java.io.*;
 
 /*
 
@@ -27,6 +28,7 @@ example:
 */
 
 public class JSON {
+  public static boolean debug = false;
   public static class Element {
     public String key;
     public String value;
@@ -47,6 +49,17 @@ public class JSON {
     root.key = "root";
     parseElement(root, str.trim());
     return root;
+  }
+  public static Element parseFile(String file) throws Exception {
+    try {
+      FileInputStream fis = new FileInputStream(file);
+      byte[] data = fis.readAllBytes();
+      fis.close();
+      return parse(new String(data, "UTF-8"));
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
   }
   /* reads key : returns str left over */
   private static String readKey(Element e, String str) throws Exception {
@@ -96,7 +109,7 @@ public class JSON {
       child.key = key;  //repeat key for each array element
       str = readValue(child, str, true);
       if ((child.value.length() > 0) || (child.children.size() > 0)) {
-//        JFLog.log(child.key + "=" + child.value);
+        if (debug) JFLog.log(child.key + "=" + child.value);
         e.children.add(child);
       }
       if (str.startsWith("]")) return str.substring(1);
@@ -206,7 +219,7 @@ public class JSON {
         str = readArray(e, child.key, str.substring(1));
         continue;
       }
-//      JFLog.log(child.key + "=" + child.value);
+      if (debug) JFLog.log(child.key + "=" + child.value);
       e.children.add(child);
     }
     return str;
@@ -244,4 +257,12 @@ public class JSON {
     }
   }
 */
+  public static void main(String[] args) {
+    try {
+      JSON.debug = true;
+      JSON.parseFile(args[0]);
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
 }
