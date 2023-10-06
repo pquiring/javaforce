@@ -1,6 +1,6 @@
 What's new...
 
-Oct ?/2023 : JF/46.0
+Oct 6/2023 : JF/46.0
  - Oracle will deprecate using JNI thru System.load() (see JEP draft 8307341)
    - a new java cli tool was created for running JF apps from command line (/bin/jfexec) to replace using java.exe
    - System.load() is no longer used
