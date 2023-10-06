@@ -207,7 +207,7 @@
   </target>
 
   <target name="jre-base-javac" description="build JRE for bundled JRE builds with base and Java compiler">
-    <exec command="jlink --module-path ${java.home}/jmods --add-modules java.base,java.sql,jdk.compiler,jdk.jartool,jdk.zipfs,jdk.crypto.ec,jdk.crypto.cryptoki,java.security.jgss,java.management,jdk.unsupported,jdk.zipfs --output jre_base_javac"/>
+    <exec command="jlink --module-path ${java.home}/jmods --add-modules java.base,java.sql,jdk.compiler,jdk.jartool,jdk.zipfs,jdk.crypto.ec,jdk.crypto.cryptoki,java.security.jgss,java.management,jdk.unsupported --output jre_base_javac"/>
     <delete>
       <fileset dir="jre_base_javac/bin" includes="java**.exe"/>
     </delete>
