@@ -1,5 +1,7 @@
 //FFMPEG : Compatible with ffmpeg.org and libav.org
 
+//Requires FFMPEG/5.1.x or better
+
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/avutil.h>
@@ -34,6 +36,10 @@ JF_LIB_HANDLE resample = NULL;
 JF_LIB_HANDLE postproc = NULL;
 JF_LIB_HANDLE scale = NULL;
 jboolean shownCopyWarning = JNI_FALSE;
+
+static AVChannelLayout channel_layout_1;
+static AVChannelLayout channel_layout_2;
+static AVChannelLayout channel_layout_4;
 
 static void copyWarning() {
   printf("Warning : JNI::Get*ArrayElements returned a copy : Performance will be degraded!\n");
@@ -126,11 +132,12 @@ int (*_av_frame_get_buffer)(AVFrame *frame, int align);
 AVFrame* (*_av_frame_alloc)();
 void (*_av_frame_free)(void** frame);
 void (*_av_buffer_unref)(AVBufferRef **buf);
+int (*_av_channel_layout_copy) (AVChannelLayout* dst, const AVChannelLayout* src);
 int (*_avutil_version)();
 
 //swresample functions (ffmpeg.org)
 void* (*_swr_alloc)();
-void* (*_swr_alloc_set_opts)(void*, int64_t out_ch_layout, int out_sample_fmt, int out_sample_rate, int64_t in_ch_layout, int in_sample_fmt, int in_sample_rate, int log_offset, void*log_ctx);
+int (*_swr_alloc_set_opts2)(void**, AVChannelLayout* out_ch_layout, int out_sample_fmt, int out_sample_rate, AVChannelLayout* in_ch_layout, int in_sample_fmt, int in_sample_rate, int log_offset, void*log_ctx);
 int (*_swr_init)(void* ctx);
 int64_t (*_swr_get_delay)(void* ctx,int64_t base);
 int (*_swr_convert)(void* ctx,uint8_t* out_arg[],int out_count,uint8_t* in_arg[],int in_count);
@@ -329,6 +336,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   getFunction(util, (void**)&_av_frame_alloc, "av_frame_alloc");
   getFunction(util, (void**)&_av_frame_free, "av_frame_free");
   getFunction(util, (void**)&_av_buffer_unref, "av_buffer_unref");
+  getFunction(util, (void**)&_av_channel_layout_copy, "av_channel_layout_copy");
   getFunction(util, (void**)&_avutil_version, "avutil_version");
 
   getFunction(scale, (void**)&_sws_getContext, "sws_getContext");
@@ -337,7 +345,7 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
 
   if (!libav_org) {
     getFunction(resample, (void**)&_swr_alloc, "swr_alloc");
-    getFunction(resample, (void**)&_swr_alloc_set_opts, "swr_alloc_set_opts");
+    getFunction(resample, (void**)&_swr_alloc_set_opts2, "swr_alloc_set_opts2");
     getFunction(resample, (void**)&_swr_init, "swr_init");
     getFunction(resample, (void**)&_swr_get_delay, "swr_get_delay");
     getFunction(resample, (void**)&_swr_convert, "swr_convert");
@@ -369,6 +377,22 @@ static jboolean ffmpeg_init(const char* codecFile, const char* deviceFile, const
   if (ff_debug_log) {
     (*_av_log_set_level)(AV_LOG_TRACE);
   }
+
+  //setup AVChannelLayout's to avoid using designated initializers
+  channel_layout_1.order = AV_CHANNEL_ORDER_NATIVE;
+  channel_layout_1.nb_channels = 1;
+  channel_layout_1.u.mask = AV_CH_LAYOUT_MONO;
+  channel_layout_1.opaque = NULL;
+
+  channel_layout_2.order = AV_CHANNEL_ORDER_NATIVE;
+  channel_layout_2.nb_channels = 2;
+  channel_layout_2.u.mask = AV_CH_LAYOUT_STEREO;
+  channel_layout_2.opaque = NULL;
+
+  channel_layout_4.order = AV_CHANNEL_ORDER_NATIVE;
+  channel_layout_4.nb_channels = 4;
+  channel_layout_4.u.mask = AV_CH_LAYOUT_QUAD;
+  channel_layout_4.opaque = NULL;
 
   return JNI_TRUE;
 }
@@ -570,6 +594,7 @@ FFContext* getFFContext(JNIEnv *e, jobject c) {
   jclass cls_coder = e->FindClass("javaforce/media/MediaCoder");
   jfieldID fid_ff_ctx = e->GetFieldID(cls_coder, "ctx", "J");
   ctx = (FFContext*)e->GetLongField(c, fid_ff_ctx);
+  if (ctx == NULL) return NULL;
   ctx->e = e;
   ctx->c = c;
   return ctx;
@@ -698,6 +723,7 @@ static int decoder_open_codec_context(FFContext *ctx, AVFormatContext *fmt_ctx, 
   return stream_idx;
 }
 
+
 static jboolean decoder_open_codecs(FFContext *ctx, int new_width, int new_height, int new_chs, int new_freq) {
   AVCodecContext *codec_ctx;
   if ((ctx->video_stream_idx = decoder_open_codec_context(ctx, ctx->fmt_ctx, AVMEDIA_TYPE_VIDEO)) >= 0) {
@@ -733,37 +759,30 @@ static jboolean decoder_open_codecs(FFContext *ctx, int new_width, int new_heigh
       ctx->swr_ctx = (*_avresample_alloc_context)();
     else
       ctx->swr_ctx = (*_swr_alloc)();
-    if (new_chs == -1) new_chs = ctx->audio_codec_ctx->channels;
-    int64_t new_layout;
+    if (new_chs == -1) new_chs = ctx->audio_codec_ctx->ch_layout.nb_channels;
+    AVChannelLayout new_layout;
     switch (new_chs) {
-      case 1: new_layout = AV_CH_LAYOUT_MONO; ctx->dst_nb_channels = 1; break;
-      case 2: new_layout = AV_CH_LAYOUT_STEREO; ctx->dst_nb_channels = 2; break;
-      case 4: new_layout = AV_CH_LAYOUT_QUAD; ctx->dst_nb_channels = 4; break;
+      case 1: (*_av_channel_layout_copy)(&new_layout, &channel_layout_1); ctx->dst_nb_channels = 1; break;
+      case 2: (*_av_channel_layout_copy)(&new_layout, &channel_layout_2); ctx->dst_nb_channels = 2; break;
+      case 4: (*_av_channel_layout_copy)(&new_layout, &channel_layout_4); ctx->dst_nb_channels = 4; break;
       default: return JNI_FALSE;
     }
-    int64_t src_layout = ctx->audio_codec_ctx->channel_layout;
-    if (src_layout == 0) {
-      switch (ctx->audio_codec_ctx->channels) {
-        case 1: src_layout = AV_CH_LAYOUT_MONO; break;
-        case 2: src_layout = AV_CH_LAYOUT_STEREO; break;
-        case 4: src_layout = AV_CH_LAYOUT_QUAD; break;
-        default: return JNI_FALSE;
-      }
-    }
+    AVChannelLayout src_layout;
+    (*_av_channel_layout_copy)(&src_layout, &ctx->audio_codec_ctx->ch_layout);
     ctx->dst_sample_fmt = AV_SAMPLE_FMT_S16;
     ctx->src_rate = ctx->audio_codec_ctx->sample_rate;
     if (new_freq == -1) new_freq = ctx->src_rate;
     if (libav_org) {
-      (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_count",     ctx->audio_codec_ctx->channels, 0);
+      (*_av_opt_set_int)(ctx->swr_ctx, "in_channel_count",     ctx->audio_codec_ctx->ch_layout.nb_channels, 0);
       (*_av_opt_set_int)(ctx->swr_ctx, "in_sample_rate",        ctx->src_rate, 0);
       (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "in_sample_fmt",  ctx->audio_codec_ctx->sample_fmt, 0);
       (*_av_opt_set_int)(ctx->swr_ctx, "out_channel_count",    new_chs, 0);
       (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       new_freq, 0);
       (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->dst_sample_fmt, 0);
     } else {
-      ctx->swr_ctx = (*_swr_alloc_set_opts)(ctx->swr_ctx,
-        new_layout, ctx->dst_sample_fmt, new_freq, src_layout,
-        ctx->audio_codec_ctx->sample_fmt, ctx->src_rate,
+      (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
+        &new_layout, ctx->dst_sample_fmt, new_freq,
+        &src_layout, ctx->audio_codec_ctx->sample_fmt, ctx->src_rate,
         0, NULL);
     }
 
@@ -871,6 +890,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaDecoder_stop
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return;
   if (ctx->io_ctx != NULL) {
     (*_avio_flush)(ctx->io_ctx);
     (*_av_free)(ctx->io_ctx->buffer);
@@ -924,6 +944,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_read
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   if (ctx->pkt == NULL) {
     printf("MediaDecoder.read():pkt==NULL\n");
     return END_FRAME;
@@ -1031,6 +1052,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaDecoder_getAudio
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return NULL;
   return ctx->jaudio;
 }
 
@@ -1038,6 +1060,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_getWidth
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   if (ctx->video_codec_ctx == NULL) return 0;
   return ctx->video_codec_ctx->width;
 }
@@ -1046,6 +1069,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_getHeight
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   if (ctx->video_codec_ctx == NULL) return 0;
   return ctx->video_codec_ctx->height;
 }
@@ -1054,6 +1078,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaDecoder_getFrameRate
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0.0f;
   if (ctx->video_codec_ctx == NULL) return 0;
   AVRational value = ctx->video_stream->avg_frame_rate;
   float num = (float)value.num;
@@ -1066,6 +1091,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaDecoder_getDuration
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   if (ctx->fmt_ctx == NULL) return 0;
   if (ctx->fmt_ctx->duration << 1 == 0) return 0;  //0x8000000000000000
   return ctx->fmt_ctx->duration / AV_TIME_BASE;  //return in seconds
@@ -1075,6 +1101,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_getSampleRate
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   if (ctx->audio_codec_ctx == NULL) return 0;
   return ctx->audio_codec_ctx->sample_rate;
 }
@@ -1083,6 +1110,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_getChannels
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   return ctx->dst_nb_channels;
 }
 
@@ -1096,6 +1124,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_seek
   (JNIEnv *e, jobject c, jlong seconds)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
   //AV_TIME_BASE is 1000000fps
   seconds *= AV_TIME_BASE;
 /*      int ret = avformat.avformat_seek_file(fmt_ctx, -1
@@ -1109,6 +1138,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_getVideoBitRate
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   if (ctx->video_codec_ctx == NULL) return 0;
   return ctx->video_codec_ctx->bit_rate;
 }
@@ -1117,6 +1147,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaDecoder_getAudioBitRate
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   if (ctx->audio_codec_ctx == NULL) return 0;
   return ctx->audio_codec_ctx->bit_rate;
 }
@@ -1125,6 +1156,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_isKeyFrame
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
   return ctx->pkt_key_frame;
 }
 
@@ -1132,6 +1164,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaDecoder_resize
   (JNIEnv *e, jobject c, jint new_width, jint new_height)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
   if (ctx->video_stream == NULL) return JNI_FALSE;  //no video
 
   if (ctx->rgb_video_dst_data[0] != NULL) {
@@ -1205,6 +1238,7 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaVideoDecoder_stop
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return;
   if (ctx->frame != NULL) {
     (*_av_frame_free)((void**)&ctx->frame);
     ctx->frame = NULL;
@@ -1242,6 +1276,7 @@ JNIEXPORT jintArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode
   (JNIEnv *e, jobject c, jbyteArray data, jint offset, jint length)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return NULL;
   jboolean isCopy;
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
@@ -1315,6 +1350,7 @@ JNIEXPORT jshortArray JNICALL Java_javaforce_media_MediaVideoDecoder_decode16
 {
   int64_t p_start = currentTimeMillis();
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return NULL;
   jboolean isCopy;
   uint8_t *dataptr = (uint8_t*)(jbyte*)e->GetPrimitiveArrayCritical(data, &isCopy);
   if (!shownCopyWarning && isCopy == JNI_TRUE) copyWarning();
@@ -1387,6 +1423,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_getWidth
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   if (ctx->video_codec_ctx == NULL) return 0;
   return ctx->video_codec_ctx->width;
 }
@@ -1395,6 +1432,7 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaVideoDecoder_getHeight
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   if (ctx->video_codec_ctx == NULL) return 0;
   return ctx->video_codec_ctx->height;
 }
@@ -1403,6 +1441,7 @@ JNIEXPORT jfloat JNICALL Java_javaforce_media_MediaVideoDecoder_getFrameRate
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0.0f;
   if (ctx->video_codec_ctx == NULL) return 0;
   if (ctx->video_codec_ctx->time_base.num == 0) return 0;
   if (ctx->video_codec_ctx->ticks_per_frame == 0) return 0;
@@ -1605,11 +1644,10 @@ static jboolean encoder_init_audio(FFContext *ctx) {
 
   ctx->audio_codec_ctx->bit_rate = ctx->config_audio_bit_rate;
   ctx->audio_codec_ctx->sample_rate = ctx->freq;
-  ctx->audio_codec_ctx->channels = ctx->chs;
   switch (ctx->chs) {
-    case 1: ctx->audio_codec_ctx->channel_layout = AV_CH_LAYOUT_MONO; break;
-    case 2: ctx->audio_codec_ctx->channel_layout = AV_CH_LAYOUT_STEREO; break;
-    case 4: ctx->audio_codec_ctx->channel_layout = AV_CH_LAYOUT_QUAD; break;
+    case 1: (*_av_channel_layout_copy)(&ctx->audio_codec_ctx->ch_layout, &channel_layout_1); ctx->dst_nb_channels = 1; break;
+    case 2: (*_av_channel_layout_copy)(&ctx->audio_codec_ctx->ch_layout, &channel_layout_2); ctx->dst_nb_channels = 2; break;
+    case 4: (*_av_channel_layout_copy)(&ctx->audio_codec_ctx->ch_layout, &channel_layout_4); ctx->dst_nb_channels = 4; break;
   }
   ctx->audio_codec_ctx->time_base.num = 1;
   ctx->audio_codec_ctx->time_base.den = ctx->freq;
@@ -1666,7 +1704,7 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   }
   ctx->audio_frame->format = ctx->audio_codec_ctx->sample_fmt;
   ctx->audio_frame->sample_rate = ctx->freq;
-  ctx->audio_frame->channel_layout = ctx->audio_codec_ctx->channel_layout;
+  (*_av_channel_layout_copy)(&ctx->audio_frame->ch_layout, &ctx->audio_codec_ctx->ch_layout);
   ctx->audio_frame->channels = ctx->chs;
   ctx->audio_frame_size = ctx->audio_codec_ctx->frame_size * ctx->chs;  //max samples that encoder will accept
   ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) != 0;
@@ -1696,9 +1734,9 @@ static jboolean encoder_init_audio(FFContext *ctx) {
     (*_av_opt_set_int)(ctx->swr_ctx, "out_sample_rate",       ctx->audio_codec_ctx->sample_rate, 0);
     (*_av_opt_set_sample_fmt)(ctx->swr_ctx, "out_sample_fmt", ctx->audio_codec_ctx->sample_fmt, 0);
   } else {
-    ctx->swr_ctx = (*_swr_alloc_set_opts)(ctx->swr_ctx,
-      ctx->audio_codec_ctx->channel_layout, ctx->audio_codec_ctx->sample_fmt, ctx->audio_codec_ctx->sample_rate,  //output
-      ctx->audio_codec_ctx->channel_layout, AV_SAMPLE_FMT_S16, ctx->freq,  //input
+    (*_swr_alloc_set_opts2)(&ctx->swr_ctx,
+      &ctx->audio_codec_ctx->ch_layout, ctx->audio_codec_ctx->sample_fmt, ctx->audio_codec_ctx->sample_rate,  //output
+      &ctx->audio_codec_ctx->ch_layout, AV_SAMPLE_FMT_S16, ctx->freq,  //input
       0, NULL);
   }
 
@@ -1766,13 +1804,15 @@ static int io_open(struct AVFormatContext *fmt_ctx, AVIOContext **pb, const char
   return 0;
 }
 
-static void io_close(struct AVFormatContext *fmt_ctx, AVIOContext *pb) {
+static int io_close2(struct AVFormatContext *fmt_ctx, AVIOContext *pb) {
   FFContext *ctx = (FFContext*)fmt_ctx->opaque;
 
   (*_avio_flush)(pb);
   (*_av_free)(pb->buffer);
 
-  printf("ffmpeg:io_close:ctx=%p:pb=%p\n", fmt_ctx, pb);
+  printf("ffmpeg:io_close2:ctx=%p:pb=%p\n", fmt_ctx, pb);
+
+  return 0;
 }
 
 static jboolean single_file = JNI_FALSE;  //not working
@@ -1811,7 +1851,7 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
     ctx->fmt_ctx->pb = ctx->io_ctx;
   }
   ctx->fmt_ctx->io_open = &io_open;
-  ctx->fmt_ctx->io_close = &io_close;
+  ctx->fmt_ctx->io_close2 = &io_close2;
   ctx->fmt_ctx->opaque = ctx;
   ctx->out_fmt = (AVOutputFormat*)ctx->fmt_ctx->oformat;
   if ((ctx->out_fmt->video_codec != AV_CODEC_ID_NONE) && doVideo) {
@@ -2053,6 +2093,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudio
   (JNIEnv *e, jobject c, jshortArray sams, jint offset, jint length)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
 
   if (ctx->audio_codec_ctx == NULL) return JNI_FALSE;
 
@@ -2113,6 +2154,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideo
   (JNIEnv *e, jobject c, jintArray px)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
 
   if (ctx->video_codec_ctx == NULL) return JNI_FALSE;
 
@@ -2131,6 +2173,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaEncoder_getLastDTS
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   return ctx->last_dts;
 }
 
@@ -2138,6 +2181,7 @@ JNIEXPORT jlong JNICALL Java_javaforce_media_MediaEncoder_getLastPTS
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return 0;
   return ctx->last_pts;
 }
 
@@ -2169,6 +2213,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudioEncoded
   (JNIEnv *e, jobject c, jbyteArray ba, jint offset, jint length)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
 
   jboolean isCopy;
   jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
@@ -2185,6 +2230,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addAudioEncodedTS
   (JNIEnv *e, jobject c, jbyteArray ba, jint offset, jint length, jlong dts, jlong pts)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
 
   jboolean isCopy;
   jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
@@ -2229,6 +2275,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideoEncoded
   (JNIEnv *e, jobject c, jbyteArray ba, jint offset, jint length, jboolean key_frame)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
 
   jboolean isCopy;
   jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
@@ -2245,6 +2292,7 @@ JNIEXPORT jboolean JNICALL Java_javaforce_media_MediaEncoder_addVideoEncodedTS
   (JNIEnv *e, jobject c, jbyteArray ba, jint offset, jint length, jboolean key_frame, jlong dts, jlong pts)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
 
   jboolean isCopy;
   jbyte *ba_ptr = (jbyte*)e->GetPrimitiveArrayCritical(ba, &isCopy);
@@ -2261,6 +2309,8 @@ JNIEXPORT jint JNICALL Java_javaforce_media_MediaEncoder_getAudioFramesize
   (JNIEnv *e, jobject c)
 {
   FFContext *ctx = getFFContext(e,c);
+  if (ctx == NULL) return JNI_FALSE;
+
   if (ctx->audio_codec_ctx == NULL) return 0;
   return ctx->audio_codec_ctx->frame_size;
 }
