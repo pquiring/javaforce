@@ -1,7 +1,7 @@
 JavaForce SDK
 =============
 
-Version 45.2
+Version 46.0
 
 Description
 ===========
