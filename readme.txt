@@ -134,7 +134,7 @@ Requirements
   - Apache Ant 1.10.x
   - Windows : VisualC++ compiler (64bit), wixtoolset v3, AMD64
   - Mac : AMD64
-  - FFMpeg 4.2+ sources(headers) + shared libraries
+  - FFMpeg 5.1+ sources(headers) + shared libraries
   - glfw for OpenGL support
 
 License
