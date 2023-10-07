@@ -683,7 +683,7 @@ public class TrackPanel extends javax.swing.JPanel {
   }
   public volatile boolean recording = false;
   public volatile boolean playing = false;
-  private static final int recBufSize = 256;  //in bytes (not samples)
+  private static final int recBufSize = 256 * 16;  //in bytes (not samples)
   public void record() {
     selectTrack(true);
     this.rate = Settings.current.freq;
