@@ -1705,7 +1705,6 @@ static jboolean encoder_init_audio(FFContext *ctx) {
   ctx->audio_frame->format = ctx->audio_codec_ctx->sample_fmt;
   ctx->audio_frame->sample_rate = ctx->freq;
   (*_av_channel_layout_copy)(&ctx->audio_frame->ch_layout, &ctx->audio_codec_ctx->ch_layout);
-  ctx->audio_frame->channels = ctx->chs;
   ctx->audio_frame_size = ctx->audio_codec_ctx->frame_size * ctx->chs;  //max samples that encoder will accept
   ctx->audio_frame_size_variable = (ctx->audio_codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) != 0;
   ctx->audio_frame->nb_samples = ctx->audio_codec_ctx->frame_size;
