@@ -73,7 +73,34 @@
     <exec command="git clone https://github.com/pquiring/repo"/>
   </target>
 
-  <target name="depjars" depends="depnatives,get-glfw,get-stb,get-repo,getjars,jar-jcifs,jar-bcprov,jar-bctls,jar-bcutil,jar-filters,jar-llrp,jar-jdom,jar-mina1-core,jar-sshd-core,jar-sshd-common,jar-sshd-sftp,jar-sshd-scp,jar-jargs,jar-log4j-core,jar-log4j-api,jar-log4j-1.2-api,jar-slf4j-api,jar-slf4j-log4j12,jar-batik-all,jar-xmlgraphics-commons,jar-xml-apis-ext">
+  <target name="depjars">
+    <!-- depends via antcalls -->
+    <antcall target="depnatives"/>
+    <antcall target="get-glfw"/>
+    <antcall target="get-stb"/>
+    <antcall target="get-repo"/>
+    <antcall target="getjars"/>
+    <antcall target="jar-jcifs"/>
+    <antcall target="jar-bcprov"/>
+    <antcall target="jar-bctls"/>
+    <antcall target="jar-bcutil"/>
+    <antcall target="jar-filters"/>
+    <antcall target="jar-llrp"/>
+    <antcall target="jar-jdom"/>
+    <antcall target="jar-mina1-core"/>
+    <antcall target="jar-sshd-core"/>
+    <antcall target="jar-sshd-common"/>
+    <antcall target="jar-sshd-sftp"/>
+    <antcall target="jar-sshd-scp"/>
+    <antcall target="jar-jargs"/>
+    <antcall target="jar-log4j-core"/>
+    <antcall target="jar-log4j-api"/>
+    <antcall target="jar-log4j-1.2-api"/>
+    <antcall target="jar-slf4j-api"/>
+    <antcall target="jar-slf4j-log4j12"/>
+    <antcall target="jar-batik-all"/>
+    <antcall target="jar-xmlgraphics-commons"/>
+    <antcall target="jar-xml-apis-ext"/>
   </target>
 
   <target name="compile" depends="getjars,depjars" description="compile the source">

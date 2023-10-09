@@ -202,6 +202,46 @@
     <maven name="xml-apis-ext" path="xml-apis" version="${xml-apis-ext-version}"/>
   </target>
 
-  <target name="getjars" depends="get-twelvemonkeys-common-lang,get-twelvemonkeys-common-io,get-twelvemonkeys-common-image,get-twelvemonkeys-imageio-core,get-twelvemonkeys-imageio-metadata,get-twelvemonkeys-imageio-tiff,get-derby,get-jcifs,get-mssql-jdbc,get-mysql-connector,get-bcprov,get-bctls,get-bcutil,get-servlet-api,get-jsp-api,get-websocket-api,get-filters,get-bacnet,get-xerces,get-jdom,get-log4j-core,get-log4j-api,get-log4j12,get-slf4j-api,get-slf4j-log4j12,get-mina1-core,get-mina2-core,get-sshd-core,get-sshd-common,get-sshd-mina,get-sshd-sftp,get-sshd-scp,get-jargs,get-llrp,get-llrp-deps,get-commons-lang3,get-batik-all,get-xmlgraphics-commons,get-xml-apis-ext">
+  <target name="getjars">
+    <!-- depends via antcalls -->
+    <antcall target="get-twelvemonkeys-common-lang"/>
+    <antcall target="get-twelvemonkeys-common-io"/>
+    <antcall target="get-twelvemonkeys-common-image"/>
+    <antcall target="get-twelvemonkeys-imageio-core"/>
+    <antcall target="get-twelvemonkeys-imageio-metadata"/>
+    <antcall target="get-twelvemonkeys-imageio-tiff"/>
+    <antcall target="get-derby"/>
+    <antcall target="get-jcifs"/>
+    <antcall target="get-mssql-jdbc"/>
+    <antcall target="get-mysql-connector"/>
+    <antcall target="get-bcprov"/>
+    <antcall target="get-bctls"/>
+    <antcall target="get-bcutil"/>
+    <antcall target="get-servlet-api"/>
+    <antcall target="get-jsp-api"/>
+    <antcall target="get-websocket-api"/>
+    <antcall target="get-filters"/>
+    <antcall target="get-bacnet"/>
+    <antcall target="get-xerces"/>
+    <antcall target="get-jdom"/>
+    <antcall target="get-log4j-core"/>
+    <antcall target="get-log4j-api"/>
+    <antcall target="get-log4j12"/>
+    <antcall target="get-slf4j-api"/>
+    <antcall target="get-slf4j-log4j12"/>
+    <antcall target="get-mina1-core"/>
+    <antcall target="get-mina2-core"/>
+    <antcall target="get-sshd-core"/>
+    <antcall target="get-sshd-common"/>
+    <antcall target="get-sshd-mina"/>
+    <antcall target="get-sshd-sftp"/>
+    <antcall target="get-sshd-scp"/>
+    <antcall target="get-jargs"/>
+    <antcall target="get-llrp"/>
+    <antcall target="get-llrp-deps"/>
+    <antcall target="get-commons-lang3"/>
+    <antcall target="get-batik-all"/>
+    <antcall target="get-xmlgraphics-commons"/>
+    <antcall target="get-xml-apis-ext"/>
   </target>
 </project>
