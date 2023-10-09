@@ -497,6 +497,8 @@ public class FTP {
               ds = null;
             }
           }
+        } catch (SocketException se) {
+          break;
         } catch (Exception e) {
           e.printStackTrace();
         }
