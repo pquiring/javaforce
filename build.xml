@@ -69,7 +69,7 @@
   <import file="get-jars.xml"/>
 
   <available property="have-repo" file="repo/readme.txt"/>
-  <target name="get-repo" unless="have-rep" description="download repo">
+  <target name="get-repo" unless="have-repo" description="download repo">
     <exec command="git clone https://github.com/pquiring/repo"/>
   </target>
 
