@@ -41,6 +41,10 @@ public class UByte {
     return toString(value, 10);
   }
 
+  public static int compare(byte v1, byte v2) {
+    return Byte.compareUnsigned(v1, v2);
+  }
+
   public static void main(String[] args) {
     byte val = 0x00;
     for(int a=0;a<16;a++) {

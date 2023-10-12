@@ -41,6 +41,10 @@ public class UShort {
     return toString(value, 10);
   }
 
+  public static int compare(short v1, short v2) {
+    return Short.compareUnsigned(v1, v2);
+  }
+
   public static void main(String[] args) {
     short val = 0x00;
     for(int a=0;a<16;a++) {

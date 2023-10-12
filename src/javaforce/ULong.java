@@ -37,6 +37,18 @@ public class ULong {
     return toString(value, 10);
   }
 
+  public static long compare(long v1, long v2) {
+    return Long.compareUnsigned(v1, v2);
+  }
+
+  public static long divide(long v1, long v2) {
+    return Long.divideUnsigned(v1, v2);
+  }
+
+  public static long remainder(long v1, long v2) {
+    return Long.remainderUnsigned(v1, v2);
+  }
+
   public static void main(String[] args) {
     long val = 0x00;
     for(int a=0;a<16;a++) {

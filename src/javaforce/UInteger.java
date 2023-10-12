@@ -37,6 +37,18 @@ public class UInteger {
     return toString(value, 10);
   }
 
+  public static int compare(int v1, int v2) {
+    return Integer.compareUnsigned(v1, v2);
+  }
+
+  public static int divide(int v1, int v2) {
+    return Integer.divideUnsigned(v1, v2);
+  }
+
+  public static int remainder(int v1, int v2) {
+    return Integer.remainderUnsigned(v1, v2);
+  }
+
   public static void main(String[] args) {
     int val = 0x00;
     for(int a=0;a<16;a++) {
