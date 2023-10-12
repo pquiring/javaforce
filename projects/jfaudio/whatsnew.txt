@@ -1,5 +1,8 @@
 Whats' new....
 
+Oct 12, 2023 - v0.21 released
+  - fix : recording issue (buffer too small)
+
 Mar 18, 2020 - v0.20 released
   - fix : win64 loader now loads msvcrt dlls properly
 

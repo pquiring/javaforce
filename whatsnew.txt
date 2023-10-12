@@ -1,5 +1,11 @@
 What's new...
 
+Oct 12/2023 : JF/47.0
+ - upgrade to ffmpeg/5.1.x
+ - jfAudio/0.21
+   - fixed recording issue
+ - misc fixes
+
 Oct 6/2023 : JF/46.0
  - Oracle will deprecate using JNI thru System.load() (see JEP draft 8307341)
    - a new java cli tool was created for running JF apps from command line (/bin/jfexec) to replace using java.exe
