@@ -183,6 +183,7 @@ public class FTP {
     cmd("quit");
     wait4Response();  //should be "221" but ignored
     getLastResponse();
+    active = false;
   }
 
   public void cmd(String cmd) throws Exception {
@@ -482,6 +483,8 @@ public class FTP {
       while (active) {
         try {
           String res = br.readLine();
+          if (res == null) throw new Exception("FTP:invalid reply:null");
+          if (res.length() < 3) throw new Exception("FTP:invalid reply:" + res);
           JFLog.log(res);
           addResponse(res);
           if (res.charAt(3) == ' ') {
@@ -501,6 +504,7 @@ public class FTP {
           break;
         } catch (Exception e) {
           e.printStackTrace();
+          break;
         }
       }
     }
