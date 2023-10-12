@@ -37,7 +37,7 @@ public class ULong {
     return toString(value, 10);
   }
 
-  public static long compare(long v1, long v2) {
+  public static int compare(long v1, long v2) {
     return Long.compareUnsigned(v1, v2);
   }
 
