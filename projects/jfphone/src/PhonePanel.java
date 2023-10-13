@@ -119,7 +119,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     videoPic = new javax.swing.JLabel();
     record = new javax.swing.JButton();
     recordPic = new javax.swing.JLabel();
-    editContact1 = new javax.swing.JButton();
+    sendMsg = new javax.swing.JButton();
 
     shareDesktopViewOnly.setText("Share Desktop (view only)");
     shareDesktopMenu.add(shareDesktopViewOnly);
@@ -633,15 +633,15 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     add(recordPic);
     recordPic.setBounds(50, 340, 30, 10);
 
-    editContact1.setText("Msg");
-    editContact1.setMargin(new java.awt.Insets(2, 0, 2, 0));
-    editContact1.addActionListener(new java.awt.event.ActionListener() {
+    sendMsg.setText("Msg");
+    sendMsg.setMargin(new java.awt.Insets(2, 0, 2, 0));
+    sendMsg.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        editContact1ActionPerformed(evt);
+        sendMsgActionPerformed(evt);
       }
     });
-    add(editContact1);
-    editContact1.setBounds(450, 10, 40, 20);
+    add(sendMsg);
+    sendMsg.setBounds(450, 10, 40, 20);
   }// </editor-fold>//GEN-END:initComponents
 
     private void n3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_n3ActionPerformed
@@ -845,9 +845,9 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     toggleRecord();
   }//GEN-LAST:event_recordActionPerformed
 
-  private void editContact1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editContact1ActionPerformed
+  private void sendMsgActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendMsgActionPerformed
     sendMessage();
-  }//GEN-LAST:event_editContact1ActionPerformed
+  }//GEN-LAST:event_sendMsgActionPerformed
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton aa;
@@ -864,7 +864,6 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
   private javax.swing.JTextField dial;
   private javax.swing.JButton dnd;
   private javax.swing.JButton editContact;
-  private javax.swing.JButton editContact1;
   private javax.swing.JLabel enableVideoPic;
   private javax.swing.JToggleButton end;
   private javax.swing.JLabel fullScreenPic;
@@ -905,6 +904,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
   private javax.swing.JButton record;
   private javax.swing.JLabel recordPic;
   private javax.swing.JButton redial;
+  private javax.swing.JButton sendMsg;
   private javax.swing.JPopupMenu shareDesktopMenu;
   private javax.swing.JMenuItem shareDesktopRemoteControl;
   private javax.swing.JMenuItem shareDesktopViewOnly;
