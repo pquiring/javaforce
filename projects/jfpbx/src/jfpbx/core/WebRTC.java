@@ -351,6 +351,9 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
   public void onAck(SIPClient sip, String callid, SDP sdp) {
   }
 
+  public void onMessage(SIPClient sip, String callid, String msg) {
+  }
+
   //http://tools.ietf.org/html/rfc5763 - Secure RTP (fingerprint)
 
   private String convertSDPtoWebSDP(RTC rtc, String sdp) {

@@ -3036,6 +3036,9 @@ JFLog.log("connected : number=" + lines[a].number);
   public void onAck(SIPClient sip, String callid, SDP sdp) {
   }
 
+  public void onMessage(SIPClient sip, String callid, String msg) {
+  }
+
   //RTPInterface
 
   public void rtpSamples(RTPChannel rtp) {}

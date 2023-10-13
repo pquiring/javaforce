@@ -57,4 +57,9 @@ public interface SIPClientInterface {
    * Ack message (may contain SDP data)
    */
   public void onAck(SIPClient client, String callid, SDP sdp);
+
+  /**
+   * Instant message received.
+   */
+  public void onMessage(SIPClient client, String callid, String msg);
 }

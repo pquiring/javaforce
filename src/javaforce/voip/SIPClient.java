@@ -458,7 +458,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     if ((cmd.equals("REGISTER")) || (cmd.equals("PUBLISH")) || (cmd.equals("SUBSCRIBE"))) {
       req.append("Expires: " + cdsd.expires + "\r\n");
     }
-    req.append("Allow: INVITE, ACK, CANCEL, BYE, REFER, NOTIFY, OPTIONS\r\n");
+    req.append("Allow: INVITE, ACK, CANCEL, BYE, REFER, NOTIFY, OPTIONS, MESSAGE\r\n");
     req.append("User-Agent: " + useragent + "\r\n");
     if (cdsd.extra != null) {
       req.append(cdsd.extra);
@@ -472,7 +472,11 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
       } else if (cd.sdp.startsWith("SIP/2.0")) {
         req.append("Content-Type: message/sipfrag;version=2.0\r\n");
       } else {
-        req.append("Content-Type: application/sdp\r\n");
+        if (cmd.equals("MESSAGE")) {
+          req.append("Content-Type: text/plain\r\n");
+        } else {
+          req.append("Content-Type: application/sdp\r\n");
+        }
       }
       req.append("Content-Length: " + cd.sdp.length() + "\r\n\r\n");
       req.append(cd.sdp);
@@ -515,7 +519,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     req.append("From: " + join(cdsd.from) + "\r\n");
     req.append("Call-ID: " + cd.callid + "\r\n");
     req.append("Cseq: " + cdsd.cseq + " " + cmd + "\r\n");
-    req.append("Allow: INVITE, ACK, CANCEL, BYE, REFER, NOTIFY, OPTIONS\r\n");
+    req.append("Allow: INVITE, ACK, CANCEL, BYE, REFER, NOTIFY, OPTIONS, MESSAGE\r\n");
     req.append("User-Agent: JavaForce\r\n");
     if ((cd.sdp != null) && (sdp)) {
       req.append("Content-Type: application/sdp\r\n");
@@ -685,6 +689,30 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.extra = null;
     boolean ret = issue(cd, "BYE", false, true);
     return ret;
+  }
+
+  /**
+   * Send instant message.
+   *
+   * See RFC 3428
+   *
+   * TODO : RFC 4975 for rich text messages.
+   */
+  public String message(String to, String msg) {
+    String callid = getcallid();
+    CallDetails cd = getCallDetails(callid);  //new CallDetails
+    cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
+    cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
+    cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
+    cd.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
+    cd.src.from = replacetag(cd.src.from, generatetag());
+    cd.src.branch = getbranch();
+    cd.src.cseq++;
+    cd.sdp = msg;
+    if (!issue(cd, "MESSAGE", true, true)) {
+      return null;
+    }
+    return callid;
   }
 
   /**
@@ -889,21 +917,9 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
           }
           if (req.equals("NOTIFY")) {
             reply(cd, cmd, 200, "OK", false, false);
-            for (int a = 0; a < msg.length; a++) {
-              //look for double \r\n (which appears as an empty line) that marks end of SIP header
-              if (msg[a].length() == 0) {
-                //send the rest of packet as content of NOTIFY event
-                String content = "";
-                for (int b = a + 1; b < msg.length; b++) {
-                  content += msg[b];
-                  content += "\r\n";
-                }
-                String event = getHeader("Event:", msg);
-                if (event == null) event = getHeader("o:", msg);
-                iface.onNotify(this, callid, event, content);
-                break;
-              }
-            }
+            String event = getHeader("Event:", msg);
+            if (event == null) event = getHeader("o:", msg);
+            iface.onNotify(this, callid, event, getContent(msg));
             break;
           }
           if (req.equals("ACK")) {
@@ -915,6 +931,10 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             if (cmd.equals("BYE")) {
               setCallDetails(callid, null);
             }
+            break;
+          }
+          if (req.equals("MESSAGE")) {
+            iface.onMessage(this, callid, getContent(msg));
             break;
           }
           reply(cd, cmd, 405, "Method Not Allowed", false, false);
@@ -995,7 +1015,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             cd.src.cseq++;
             //update contact info
             cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
-            issue(cd, cmd, cmd.equals("INVITE"), true);
+            issue(cd, cmd, cmd.equals("INVITE") || cmd.equals("MESSAGE"), true);
             cd.authsent = true;
           }
           break;

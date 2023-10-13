@@ -119,6 +119,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     videoPic = new javax.swing.JLabel();
     record = new javax.swing.JButton();
     recordPic = new javax.swing.JLabel();
+    editContact1 = new javax.swing.JButton();
 
     shareDesktopViewOnly.setText("Share Desktop (view only)");
     shareDesktopMenu.add(shareDesktopViewOnly);
@@ -441,7 +442,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
 
     contactLabel.setText("Contacts");
     add(contactLabel);
-    contactLabel.setBounds(290, 10, 70, 10);
+    contactLabel.setBounds(290, 10, 50, 10);
 
     contactJList.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -477,7 +478,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     add(jScrollPane2);
     jScrollPane2.setBounds(290, 210, 250, 130);
 
-    delContact.setText("Remove");
+    delContact.setText("-");
     delContact.setMargin(new java.awt.Insets(2, 0, 2, 0));
     delContact.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -485,9 +486,9 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
       }
     });
     add(delContact);
-    delContact.setBounds(480, 10, 60, 20);
+    delContact.setBounds(500, 10, 40, 20);
 
-    addContact.setText("Add");
+    addContact.setText("+");
     addContact.setMargin(new java.awt.Insets(2, 0, 2, 0));
     addContact.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -495,7 +496,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
       }
     });
     add(addContact);
-    addContact.setBounds(360, 10, 50, 20);
+    addContact.setBounds(350, 10, 40, 20);
 
     editContact.setText("Edit");
     editContact.setMargin(new java.awt.Insets(2, 0, 2, 0));
@@ -505,7 +506,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
       }
     });
     add(editContact);
-    editContact.setBounds(420, 10, 50, 20);
+    editContact.setBounds(400, 10, 40, 20);
 
     meterRec.setOrientation(1);
     add(meterRec);
@@ -631,6 +632,16 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     record.setBounds(50, 310, 30, 30);
     add(recordPic);
     recordPic.setBounds(50, 340, 30, 10);
+
+    editContact1.setText("Msg");
+    editContact1.setMargin(new java.awt.Insets(2, 0, 2, 0));
+    editContact1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        editContact1ActionPerformed(evt);
+      }
+    });
+    add(editContact1);
+    editContact1.setBounds(450, 10, 40, 20);
   }// </editor-fold>//GEN-END:initComponents
 
     private void n3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_n3ActionPerformed
@@ -834,6 +845,10 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     toggleRecord();
   }//GEN-LAST:event_recordActionPerformed
 
+  private void editContact1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editContact1ActionPerformed
+    sendMessage();
+  }//GEN-LAST:event_editContact1ActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton aa;
   private javax.swing.JButton ac;
@@ -849,6 +864,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
   private javax.swing.JTextField dial;
   private javax.swing.JButton dnd;
   private javax.swing.JButton editContact;
+  private javax.swing.JButton editContact1;
   private javax.swing.JLabel enableVideoPic;
   private javax.swing.JToggleButton end;
   private javax.swing.JLabel fullScreenPic;
@@ -1536,6 +1552,18 @@ Line Colors:
     updateContactList(true);
     Settings.saveSettings();
     if (SIP.getFlag2(fields, "monitor").equals("true")) delMonitor(contact);
+  }
+
+  public void sendMessage() {
+    if (line == -1) return;
+    Contact label = (Contact)contactJList.getSelectedValue();
+    if (label == null) return;
+    String contact = label.contact;  //"name" <sip:user@server>... -> [0]=name [1]=user [2]=server ...
+    String fields[] = SIP.split(contact);
+    String msg = JFAWT.getString("Enter Message for:" + fields[1], "");
+    if (msg == null) return;
+    PhoneLine xline = lines[line];
+    xline.sip.message(fields[1], msg);
   }
 
   public void hld_setIcon(ImageIcon ii) {
