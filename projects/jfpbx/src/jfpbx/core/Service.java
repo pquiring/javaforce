@@ -297,6 +297,20 @@ public class Service implements SIPServerInterface, PBXAPI {
       }
     }
   }
+  public void onMessage(CallDetailsServer cd, String from, String to, String msg, boolean src) {
+    onMessage(cd, from, to, msg, src, cd.pid);
+  }
+  public void onMessage(CallDetailsServer cd, String from, String to, String msg, boolean src, int pid) {
+    DialChain chain;
+    for(int a=0;a<dialChainList.size();a++) {
+      chain = dialChainList.get(a);
+      if (chain.onMessage((CallDetailsPBX)cd, from, to, msg, src)) {
+        return;
+      }
+    }
+    JFLog.log("Dest not found:" + cd.dialed);
+    reply(cd, 404, "NOT ONLINE", null, false, true);
+  }
 //interface PBXAPI
   public void hookDialChain(DialChain chain) {
     DialChain chainEntry;

@@ -156,6 +156,40 @@ public class Extensions implements Plugin, DialChain {
   }
   public void onFeature(CallDetailsPBX cd, String cmd, String cmddata, boolean src) {
   }
+  public boolean onMessage(CallDetailsPBX cd, String from, String to, String msg, boolean src) {
+    //dial inbound to an extension
+    ExtensionRow ext = Database.getExtension(to);
+    if (ext == null) {
+      JFLog.log("Extensions:to is not an extension");
+      return false;
+    }  //an extension is not being messaged
+    if (cd.user.equals(to)) {  //did someone message themself?
+      JFLog.log("Extensions:extension messaged self");
+      return false;  //message self?
+    }
+    if (!api.isRegistered(to)) {
+      JFLog.log("Extensions:extension not registered");
+      return false;  //phone is not online
+    }
+    Extension x = api.getExtension(to);
+    if (x == null) {
+      JFLog.log("Extensions:exension not found");
+      return false;  //phone is not online
+    }
+    cd.pbxdst.contact = cd.src.contact;
+    cd.pbxdst.branch = cd.src.branch;
+    cd.pbxdst.to = cd.src.to.clone();
+    cd.pbxdst.from = cd.src.from.clone();
+    api.reply(cd, 200, "OK", null, false, true);
+    cd.pbxdst.cseq = 1;
+    cd.pbxdst.host = x.remoteip;
+    cd.pbxdst.port = x.remoteport;
+    cd.uri = "sip:" + to + "@" + cd.pbxdst.host + ":" + cd.pbxdst.port;
+    cd.sdp = msg;
+    api.issue(cd, null, true, false);
+    api.log(cd, "DEBUG:MESSAGE:" + to + ":dst=" + cd.pbxdst.host + ":" + cd.pbxdst.port);
+    return true;
+  }
   private void setTimer(CallDetailsPBX cd, int timeout) {
     api.log(cd, "setting timer for call");
     cd.timer = new Timer();

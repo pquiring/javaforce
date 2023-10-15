@@ -126,6 +126,10 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
   public void onFeature(CallDetailsPBX cd, String cmd, String cmddata, boolean src) {
   }
 
+  public boolean onMessage(CallDetailsPBX cd, String from, String to, String msg, boolean src) {
+    return false;
+  }
+
 //interface PBXEventHandler
   public void event(CallDetailsPBX cd, int type, char digit, boolean interrupted) {
     //type = DTMF digit or end of playSound()

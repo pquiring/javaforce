@@ -172,6 +172,10 @@ public class Trunks implements Plugin, DialChain {
   }
   public void onFeature(CallDetailsPBX cd, String cmd, String cmddata, boolean src) {
   }
+  public boolean onMessage(CallDetailsPBX cd, String from, String to, String msg, boolean src) {
+    return false;
+  }
+
   private void tryTrunk(CallDetailsPBX cd) {
     //try INVITE to cd.trunks[cd.trunkidx]
     TrunkRow trunk = cd.trunks[cd.trunkidx];

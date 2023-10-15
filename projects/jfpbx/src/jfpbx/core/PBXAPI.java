@@ -41,6 +41,7 @@ public interface PBXAPI {
   public void onRinging(CallDetailsServer cd, boolean src, int pid);
   public void onTrying(CallDetailsServer cd, boolean src, int pid);
   public void onFeature(CallDetailsServer cd, String cmd, String data, boolean src, int pid);
+  public void onMessage(CallDetailsServer cd, String from, String to, String msg, boolean src, int pid);
 
   /** Connects src with dst end points.
    * Creates RTP relays as needed.

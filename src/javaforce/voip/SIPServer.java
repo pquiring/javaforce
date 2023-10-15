@@ -82,7 +82,11 @@ public class SIPServer extends SIP implements SIPInterface {
       req.append(header);
     }
     if ((cd.sdp != null) && (sdp)) {
-      req.append("Content-Type: application/sdp\r\n");
+      if (cd.cmd.equals("MESSAGE")) {
+        req.append("Content-Type: text/plain\r\n");
+      } else {
+        req.append("Content-Type: application/sdp\r\n");
+      }
       req.append("Content-Length: " + cd.sdp.length() + "\r\n\r\n");
       req.append(cd.sdp);
     } else {
@@ -423,6 +427,10 @@ public class SIPServer extends SIP implements SIPInterface {
             if (req.equalsIgnoreCase("SHUTDOWN")) {
               iface.onFeature(cd, req, remoteip, src);
               setCallDetailsServer(callid, null);
+              break;
+            }
+            if (req.equalsIgnoreCase("MESSAGE")) {
+              iface.onMessage(cd, cdsd.from[1], cdsd.to[1], getContent(msg), src);
               break;
             }
             JFLog.log("Unknown command:" + req);
