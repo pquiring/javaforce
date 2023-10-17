@@ -259,6 +259,14 @@ public class SQL {
     return ret;
   }
 
+  public int getColumnIndex(String col) {
+    if (colNames == null) return -1;
+    for(int idx=0;idx<colNames.length;idx++) {
+      if (colNames.equals(col)) return idx;
+    }
+    return -1;
+  }
+
   public Exception getLastException() {
     return lastException;
   }
