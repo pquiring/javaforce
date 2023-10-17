@@ -227,15 +227,15 @@ public class JBusServer extends Thread {
   }
 
 
-  public static void main(String args[]) {
-    serviceStart(args);
+  public static void main(String[] args) {
+    JFLog.log("JBusServer/" + JF.getVersion());
   }
 
   //Win32 Service
 
   private static JBusServer svr;
 
-  public static void serviceStart(String args[]) {
+  public static void serviceStart(String[] args) {
     svr = new JBusServer();
     svr.start();
   }

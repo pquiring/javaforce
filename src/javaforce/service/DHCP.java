@@ -1029,11 +1029,6 @@ public class DHCP extends Thread {
 
   public static void main(String[] args) {
     serviceStart(args);
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        serviceStop();
-      }
-    });
   }
 
   //Win32 Service

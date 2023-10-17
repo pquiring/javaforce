@@ -248,11 +248,27 @@ void convertClass(char *cls) {
   }
 }
 
+JNIEXPORT jboolean JNICALL Java_javaforce_jni_LnxNative_lnxServiceStop(JNIEnv *env, jclass c) {
+  jclass cls = env->FindClass(mainclass);
+  if (cls == NULL) {
+    error("Unable to find main class");
+    return JNI_FALSE;
+  }
+  jmethodID mid = env->GetStaticMethodID(cls, "serviceStop", "()V");
+  if (mid == NULL) {
+    error("Unable to find serviceStop method");
+    return JNI_FALSE;
+  }
+  env->CallStaticVoidMethod(cls, mid);
+  return JNI_TRUE;
+}
+
 #include "../common/register.cpp"
 
 //Linux native methods
 static JNINativeMethod javaforce_jni_LnxNative[] = {
   {"lnxInit", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z", (void *)&Java_javaforce_jni_LnxNative_lnxInit},
+  {"lnxServiceStop", "()Z", (void *)&Java_javaforce_jni_LnxNative_lnxServiceStop},
   {"comOpen", "(Ljava/lang/String;I)I", (void *)&Java_javaforce_jni_LnxNative_comOpen},
   {"comClose", "(I)V", (void *)&Java_javaforce_jni_LnxNative_comClose},
   {"comRead", "(I[B)I", (void *)&Java_javaforce_jni_LnxNative_comRead},
@@ -330,9 +346,24 @@ bool JavaThread(void *ignore) {
   env->FindClass("javaforce/jni/Startup");
 
   convertClass(mainclass);
+
+#ifdef _JF_SERVICE
+  //setup service shutdown
+  jclass cls = env->FindClass("javaforce/jni/LnxNative");
+  if (cls == NULL) {
+    error("Unable to find LnxNative class");
+    return false;
+  }
+  jmethodID mid = env->GetStaticMethodID(cls, "lnxServiceInit", "()V");
+  if (mid == NULL) {
+    error("Unable to find lnxServiceInit method");
+    return false;
+  }
+  env->CallStaticVoidMethod(cls, mid);
+#endif
+
   jclass cls = env->FindClass(mainclass);
   if (cls == NULL) {
-    printException(env);
     error("Unable to find main class");
     return false;
   }

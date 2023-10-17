@@ -114,9 +114,9 @@ public class JBusClient extends Thread {
     }
     String call_func = packFunc.substring(idx + 1);
     if (debug) JFLog.log("call:" + call_pack + "." + call_func + "(" + argsString + ")");
-    Object args[] = parseArgs(argsString);
+    Object[] args = parseArgs(argsString);
     int argsLength = args.length;
-    Class types[] = new Class[argsLength];
+    Class[] types = new Class[argsLength];
     for (int a = 0; a < argsLength; a++) {
       if (args[a] instanceof Integer) {
         types[a] = int.class;  //not the same as Integer.class

@@ -36,6 +36,14 @@ public class LnxNative {
   }
 
   private static native boolean lnxInit(String libX11, String libGL, String libv4l2);
+  private static void lnxServiceInit() {
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        lnxServiceStop();
+      }
+    });
+  }
+  private static native boolean lnxServiceStop();
 
   public static boolean have_x11 = true;
   public static boolean have_gl = true;
