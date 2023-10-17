@@ -410,7 +410,11 @@ bool loadProperties() {
 
   xoptions[0] = 0;
 
+#ifdef _JF_SERVICE
+  strcpy(method, "serviceStart");
+#else
   strcpy(method, "main");
+#endif
   cfgargs[0] = 0;
 
   strcpy(app, resolvelink("/proc/self/exe"));

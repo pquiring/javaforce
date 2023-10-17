@@ -39,17 +39,17 @@ public class GenExecutable {
     if (cfg.length() == 0) {
       cfg = app + ".cfg";
     }
+    String type = "";
     try {
       if (JF.isWindows()) {
         //windows
-        String ext = "";
         switch (apptype) {
           case "c":  //legacy
-          case "console": ext = "c"; break;
+          case "console": type = "c"; break;
           case "s":  //legacy
-          case "service": ext = "s"; break;
+          case "service": type = "s"; break;
         }
-        if (!JF.copyFile(home + "/native/win64" + ext + ".exe", app + ".exe")) {
+        if (!JF.copyFile(home + "/native/win64" + type + ".exe", app + ".exe")) {
           throw new Exception("copy error:" + app + ".exe");
         }
         if (!new File(app + ".exe").exists()) {
@@ -62,7 +62,11 @@ public class GenExecutable {
         chmod(app);
       } else {
         //linux
-        JF.copyFile(home + "/native/linux64.bin", app + ".bin");
+        switch (apptype) {
+          case "s":  //legacy
+          case "service": type = "s"; break;
+        }
+        JF.copyFile(home + "/native/linux64" + type + ".bin", app + ".bin");
         ResourceManager.main(new String[] {app + ".bin", cfg});
         chmod("/usr/bin/" + app);
       }
