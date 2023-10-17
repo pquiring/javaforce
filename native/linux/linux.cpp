@@ -335,6 +335,8 @@ void registerAllNatives(JNIEnv *env) {
 bool JavaThread(void *ignore) {
   JavaVM *jvm = NULL;
   JNIEnv *env = NULL;
+  jclass cls = NULL;
+  jmethodID mid = NULL;
 
   if ((*CreateJavaVM)(&jvm, &env, BuildArgs()) == -1) {
     error("Unable to create Java VM");
@@ -349,12 +351,12 @@ bool JavaThread(void *ignore) {
 
 #ifdef _JF_SERVICE
   //setup service shutdown
-  jclass cls = env->FindClass("javaforce/jni/LnxNative");
+  cls = env->FindClass("javaforce/jni/LnxNative");
   if (cls == NULL) {
     error("Unable to find LnxNative class");
     return false;
   }
-  jmethodID mid = env->GetStaticMethodID(cls, "lnxServiceInit", "()V");
+  mid = env->GetStaticMethodID(cls, "lnxServiceInit", "()V");
   if (mid == NULL) {
     error("Unable to find lnxServiceInit method");
     return false;
@@ -362,12 +364,12 @@ bool JavaThread(void *ignore) {
   env->CallStaticVoidMethod(cls, mid);
 #endif
 
-  jclass cls = env->FindClass(mainclass);
+  cls = env->FindClass(mainclass);
   if (cls == NULL) {
     error("Unable to find main class");
     return false;
   }
-  jmethodID mid = env->GetStaticMethodID(cls, method, "([Ljava/lang/String;)V");
+  mid = env->GetStaticMethodID(cls, method, "([Ljava/lang/String;)V");
   if (mid == NULL) {
     error("Unable to find main method");
     return false;
