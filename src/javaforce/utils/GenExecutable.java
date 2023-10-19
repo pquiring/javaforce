@@ -11,9 +11,6 @@ import javaforce.*;
 
 public class GenExecutable {
   private BuildTools tools;
-  public static void chmod(String file) {
-    new File(file).setExecutable(true);
-  }
   public static void main(String[] args) {
     if (args.length != 1) {
       System.out.println("Usage:GenExecutable build.xml");
@@ -59,7 +56,6 @@ public class GenExecutable {
       } else if (JF.isMac()) {
         //mac
         JF.copyFile(home + "/native/mac64.bin", app);
-        chmod(app);
       } else {
         //linux
         switch (apptype) {
@@ -68,7 +64,6 @@ public class GenExecutable {
         }
         JF.copyFile(home + "/native/linux64" + type + ".bin", app + ".bin");
         ResourceManager.main(new String[] {app + ".bin", cfg});
-        chmod("/usr/bin/" + app);
       }
       System.out.println("Native Executable generated!");
     } catch (Exception e) {

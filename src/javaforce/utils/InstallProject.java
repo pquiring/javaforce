@@ -32,6 +32,7 @@ public class InstallProject implements ShellProcessListener {
     //cp ${app}.bin /usr/bin/${app}
     JFLog.log("Installing executable:" + app + ".bin to /usr/bin");
     JF.copyFile(app + ".bin", "/usr/bin/" + app);
+    BuildTools.chmod_x("/usr/bin/" + app);
 
     ShellProcess sp = new ShellProcess();
     sp.addListener(this);

@@ -66,4 +66,7 @@ public class BuildTools {
     }
     return "";
   }
+  public static void chmod_x(String file) {
+    new File(file).setExecutable(true);
+  }
 }
