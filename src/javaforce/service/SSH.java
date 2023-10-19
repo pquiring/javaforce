@@ -74,22 +74,21 @@ public class SSH extends Thread {
   }
 
   public static void serviceStop() {
+    JFLog.log("SSH : Stopping service");
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
     ssh.close();
   }
 
   public static void main(String[] args) {
-    serviceStart(args);
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        serviceStop();
-      }
-    });
   }
 
   public void run() {
     JFLog.append(JF.getLogPath() + "/jfssh.log", true);
     JFLog.setRetention(30);
-    JFLog.log("jfSSH starting...");
+    JFLog.log("SSH : Starting service");
 
     try {
       loadConfig();

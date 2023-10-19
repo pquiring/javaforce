@@ -103,6 +103,7 @@ public class DHCP extends Thread {
   public void run() {
     JFLog.append(getLogFile(), true);
     JFLog.setRetention(30);
+    JFLog.log("DHCP : Starting service");
     try {
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());
@@ -1028,7 +1029,6 @@ public class DHCP extends Thread {
   }
 
   public static void main(String[] args) {
-    serviceStart(args);
   }
 
   //Win32 Service
@@ -1048,6 +1048,10 @@ public class DHCP extends Thread {
   }
 
   public static void serviceStop() {
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
     dhcp.close();
   }
 }

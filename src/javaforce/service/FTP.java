@@ -75,7 +75,7 @@ public class FTP extends Thread {
   public void run() {
     JFLog.append(JF.getLogPath() + "/jfftp.log", true);
     JFLog.setRetention(30);
-    JFLog.log("jfFTP starting...");
+    JFLog.log("FTP : Starting service");
     try {
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());
@@ -950,16 +950,15 @@ public class FTP extends Thread {
   }
 
   public static void serviceStop() {
+    JFLog.log("FTP : Stopping service");
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
     ftp.close();
   }
 
   public static void main(String[] args) {
-    serviceStart(args);
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        serviceStop();
-      }
-    });
   }
 
   private static JBusServer busServer;

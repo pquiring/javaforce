@@ -82,6 +82,7 @@ public class Proxy extends Thread {
   public void run() {
     JFLog.append(getLogFile(), true);
     JFLog.setRetention(30);
+    JFLog.log("Proxy : Starting service");
     Socket s;
     Session sess;
     loadConfig();
@@ -986,7 +987,6 @@ public class Proxy extends Thread {
   }
 
   public static void main(String args[]) {
-    serviceStart(args);
   }
 
   //Win32 Service
@@ -1006,8 +1006,11 @@ public class Proxy extends Thread {
   }
 
   public static void serviceStop() {
-    JFLog.log("Stopping service");
-    busServer.close();
+    JFLog.log("Proxy : Stopping service");
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
     proxy.close();
   }
 }

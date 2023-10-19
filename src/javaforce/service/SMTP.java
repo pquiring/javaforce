@@ -103,7 +103,7 @@ public class SMTP extends Thread {
   public void run() {
     JFLog.append(JF.getLogPath() + "/jfsmtp.log", true);
     JFLog.setRetention(30);
-    JFLog.log("jfSMTP starting...");
+    JFLog.log("SMTP : Starting service");
     try {
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());
@@ -634,16 +634,15 @@ public class SMTP extends Thread {
   }
 
   public static void serviceStop() {
+    JFLog.log("SMTP : Stopping service");
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
     smtp.close();
   }
 
   public static void main(String[] args) {
-    serviceStart(args);
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        serviceStop();
-      }
-    });
   }
 
   private static JBusServer busServer;

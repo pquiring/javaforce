@@ -96,7 +96,7 @@ public class POP3 extends Thread {
   public void run() {
     JFLog.append(JF.getLogPath() + "/jfpop3.log", true);
     JFLog.setRetention(30);
-    JFLog.log("jfPOP3 starting...");
+    JFLog.log("POP3 : Starting service");
     try {
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());
@@ -766,16 +766,15 @@ public class POP3 extends Thread {
   }
 
   public static void serviceStop() {
+    JFLog.log("POP3 : Stopping service");
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
     pop3.close();
   }
 
   public static void main(String[] args) {
-    serviceStart(args);
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        serviceStop();
-      }
-    });
   }
 
   private static JBusServer busServer;

@@ -64,7 +64,7 @@ public class SMTPRelay extends Thread {
   public void run() {
     JFLog.append(JF.getLogPath() + "/jfsmtprelay.log", true);
     JFLog.setRetention(30);
-    JFLog.log("jfSMTPRelay starting...");
+    JFLog.log("SMTPRelay : Starting service");
     try {
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());
@@ -312,16 +312,15 @@ public class SMTPRelay extends Thread {
   }
 
   public static void serviceStop() {
+    JFLog.log("SMTPRelay : Stopping service");
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
     service.close();
   }
 
   public static void main(String[] args) {
-    serviceStart(args);
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        serviceStop();
-      }
-    });
   }
 
   private static JBusServer busServer;

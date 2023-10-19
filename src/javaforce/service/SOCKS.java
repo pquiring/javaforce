@@ -151,7 +151,7 @@ public class SOCKS extends Thread {
   public void run() {
     JFLog.append(JF.getLogPath() + "/jfsocks.log", true);
     JFLog.setRetention(30);
-    JFLog.log("jfSocks starting...");
+    JFLog.log("SOCKS : Starting service");
     try {
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());
@@ -1040,16 +1040,15 @@ public class SOCKS extends Thread {
   }
 
   public static void serviceStop() {
+    JFLog.log("SOCKS : Stopping service");
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
     socks.close();
   }
 
   public static void main(String[] args) {
-    serviceStart(args);
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        serviceStop();
-      }
-    });
   }
 
   private static JBusServer busServer;

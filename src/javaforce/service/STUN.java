@@ -30,7 +30,7 @@ import javaforce.*;
 import javaforce.jbus.JBusClient;
 import javaforce.jbus.JBusServer;
 
-public class STUN {
+public class STUN extends Thread {
   private static int defaultLifeTime = 600;
 
   public final static String busPack = "net.sf.jfstun";
@@ -100,24 +100,19 @@ public class STUN {
   }
 
   /** Starts a STUN/TURN server, loading config from file. */
-  public boolean start() {
+  public STUN() {
     JFLog.append(getLogFile(), true);
     JFLog.setRetention(30);
     loadConfig();
-    busClient = new JBusClient(busPack, new JBusMethods());
-    busClient.setPort(getBusPort());
-    busClient.start();
-    return doStart();
   }
 
   /** Starts a STUN/TURN server with specific config options. */
-  public boolean start(String user, String pass, int min, int max) {
+  public STUN(String user, String pass, int min, int max) {
     this.user = user;
     this.pass = pass;
     this.min = min;
     this.max = max;
     this.next = min;
-    return doStart();
   }
 
   enum Section {None, Global};
@@ -859,10 +854,18 @@ public class STUN {
   }
 
   public static void main(String args[]) {
-    serviceStart(args);
   }
 
-  //Win32 Service
+  public void run() {
+    JFLog.append(JF.getLogPath() + "/jfssh.log", true);
+    JFLog.setRetention(30);
+    JFLog.log("STUN : Starting service");
+
+    busClient = new JBusClient(busPack, new JBusMethods());
+    busClient.setPort(getBusPort());
+    busClient.start();
+    doStart();
+  }
 
   private static STUN stun;
 
@@ -879,8 +882,11 @@ public class STUN {
   }
 
   public static void serviceStop() {
-    JFLog.log("Stopping service");
-    busServer.close();
+    JFLog.log("STUN : Stopping service");
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
     stun.close();
   }
 }

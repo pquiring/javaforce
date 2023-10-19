@@ -56,6 +56,7 @@ public class DNS extends Thread {
   public void run() {
     JFLog.append(getLogFile(), false);
     JFLog.setRetention(30);
+    JFLog.log("DNS : Starting service");
     try {
       loadConfig();
       busClient = new JBusClient(busPack, new JBusMethods());
@@ -86,6 +87,7 @@ public class DNS extends Thread {
   }
 
   public void close() {
+    JFLog.log("DNS : Stopping service");
     try {
       ds.close();
     } catch (Exception e) {}
@@ -638,7 +640,6 @@ public class DNS extends Thread {
   }
 
   public static void main(String args[]) {
-    serviceStart(args);
   }
 
   //Win32 Service
@@ -658,8 +659,11 @@ public class DNS extends Thread {
   }
 
   public static void serviceStop() {
-    JFLog.log("Stopping service");
-    busServer.close();
+    JFLog.log("DNS : Stopping service");
+    if (busServer != null) {
+      busServer.close();
+      busServer = null;
+    }
     dns.close();
   }
 }
