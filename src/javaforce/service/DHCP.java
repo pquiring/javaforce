@@ -142,7 +142,6 @@ public class DHCP extends Thread {
 
   /** Stop the DHCP Service. */
   public void close() {
-    JFLog.log("DHCP : Stopping service");
     stopping = true;
     int cnt = hosts.size();
     for(int a=0;a<cnt;a++) {
@@ -1048,6 +1047,7 @@ public class DHCP extends Thread {
   }
 
   public static void serviceStop() {
+    JFLog.log("DHCP : Stopping service");
     if (busServer != null) {
       busServer.close();
       busServer = null;

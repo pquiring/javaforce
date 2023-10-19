@@ -87,7 +87,6 @@ public class DNS extends Thread {
   }
 
   public void close() {
-    JFLog.log("DNS : Stopping service");
     try {
       ds.close();
     } catch (Exception e) {}
