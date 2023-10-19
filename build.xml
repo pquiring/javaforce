@@ -159,7 +159,9 @@
   <!-- sudo ant install -->
   <target name="install" description="install files">
     <copy file="javaforce.jar" todir="/usr/share/java"/>
-    <copy file="bouncycastle.jar" todir="/usr/share/java"/>
+    <copy file="bcprov.jar" todir="/usr/share/java"/>
+    <copy file="bctls.jar" todir="/usr/share/java"/>
+    <copy file="bcutil.jar" todir="/usr/share/java"/>
     <copy file="filters.jar" todir="/usr/share/java"/>
 
     <copy file="lnxbin/jbus-call" todir="/usr/bin"/>
