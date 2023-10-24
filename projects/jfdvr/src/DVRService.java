@@ -26,12 +26,6 @@ public class DVRService extends Thread {
   }
 
   public static void main(String args[]) {
-    serviceStart(args);
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        serviceStop();
-      }
-    });
   }
 
   public void run() {

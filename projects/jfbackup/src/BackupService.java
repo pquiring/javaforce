@@ -24,12 +24,6 @@ public class BackupService extends Thread {
     backupService.cancel();
   }
   public static void main(String args[]) {
-    serviceStart(args);
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        serviceStop();
-      }
-    });
   }
 
   public void cancel() {
