@@ -1278,6 +1278,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
 
   public int onInvite(SIPClient sip, String callid, String fromid, String fromnumber, SDP sdp) {
     //NOTE : onInvite() can not change codecs (use SIP.reaccept() to do that)
+    JFLog.log("onInvite:fromid=" + fromid + ":fromnumber=" + fromnumber);
     if (sdp != null) {
       for(int s=0;s<sdp.streams.length;s++) {
         JFLog.log("onInvite : stream=" + sdp.streams[s].getType() + "," + sdp.streams[s].getMode() + "," + sdp.streams[s].content);
@@ -1311,6 +1312,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         if (pl.incall) continue;
         if (pl.incoming) continue;
         pl.dial = fromnumber;
+        if (pl.dial == null || pl.dial.trim().length() == 0) pl.dial = "Unknown";
         pl.callerid = fromid;
         if ((pl.callerid == null) || (pl.callerid.trim().length() == 0)) pl.callerid = "Unknown";
         Settings.addCallLog(pl.dial);
