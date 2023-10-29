@@ -105,6 +105,22 @@ public class JF {
     }
   }
 
+  public static String encoderURL(String url) {
+    try {
+      return URLEncoder.encode(url, "UTF-8");
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public static String decodeURL(String url) {
+    try {
+      return URLDecoder.decode(url, "UTF-8");
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
   public static int atoi(String str) {
     if (str.length() == 0) {
       return 0;

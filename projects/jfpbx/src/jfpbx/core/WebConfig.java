@@ -284,19 +284,25 @@ public class WebConfig implements WebHandler {
   private String doExtsPage(String args[]) {
     String verb = "", number = "", editext = "", cloneStart = "", cloneCount = "", display = "", cid = "", pass = "", routetable = "default", msg = "", sure = "", vm = "", vmpass = "";
     for(int a=0;a<args.length;a++) {
-      int x = args[a].indexOf("=") + 1;
-      if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("ext=")) number = args[a].substring(x);
-      if (args[a].startsWith("editext=")) editext = args[a].substring(x);
-      if (args[a].startsWith("cloneStart=")) cloneStart = args[a].substring(x);
-      if (args[a].startsWith("cloneCount=")) cloneCount = args[a].substring(x);
-      if (args[a].startsWith("display=")) display = args[a].substring(x);
-      if (args[a].startsWith("cid=")) cid = args[a].substring(x);
-      if (args[a].startsWith("pass=")) pass = args[a].substring(x);
-      if (args[a].startsWith("routetable=")) routetable = args[a].substring(x);
-      if (args[a].startsWith("sure=")) sure = args[a].substring(x);
-      if (args[a].startsWith("vm=")) vm = args[a].substring(x);
-      if (args[a].startsWith("vmpass=")) vmpass = args[a].substring(x);
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      switch (key) {
+        case "verb": verb = value; break;
+        case "ext": number = value; break;
+        case "editext": editext = value; break;
+        case "cloneStart": cloneStart = value; break;
+        case "cloneCount": cloneCount = value; break;
+        case "display": display = value; break;
+        case "cid": cid = value; break;
+        case "pass": pass = value; break;
+        case "routetable": routetable = value; break;
+        case "sure": sure = value; break;
+        case "vm": vm = value; break;
+        case "vmpass": vmpass = value; break;
+      }
     }
     number = numbersOnly(number);
     cid = numbersOnly(cid);
@@ -327,7 +333,7 @@ public class WebConfig implements WebHandler {
       if (number.length() == 0)  {
         msg = "Invalid extension number";
       } else {
-        if (Database.extensionExists(number)) {
+        if (verb.equals("add") && Database.extensionExists(number)) {
           msg = "IVR already exists with that number";
         }
       }
@@ -357,7 +363,7 @@ public class WebConfig implements WebHandler {
         display = "";
         cid = "";
         pass = "";
-        routetable = "";
+        routetable = "default";
         vm = "";
         vmpass = "";
       }
@@ -377,7 +383,7 @@ public class WebConfig implements WebHandler {
         display = "";
         cid = "";
         pass = "";
-        routetable = "";
+        routetable = "default";
         vm = "";
         vmpass = "";
       } else {
@@ -417,7 +423,7 @@ public class WebConfig implements WebHandler {
       display = "";
       cid = "";
       pass = "";
-      routetable = "";
+      routetable = "default";
       vm = "";
       vmpass = "";
     }
