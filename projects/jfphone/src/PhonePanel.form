@@ -929,7 +929,7 @@
     </Component>
     <Component class="javax.swing.JButton" name="sendMsg">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Msg"/>
+        <Property name="text" type="java.lang.String" value="TXT"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 0, 2, 0]"/>
         </Property>
@@ -940,6 +940,23 @@
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
           <AbsoluteConstraints x="450" y="10" width="40" height="20"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+    <Component class="javax.swing.JButton" name="msgInCall">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="TXT"/>
+        <Property name="toolTipText" type="java.lang.String" value="Clear"/>
+        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+          <Insets value="[2, 0, 2, 0]"/>
+        </Property>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="msgInCallActionPerformed"/>
+      </Events>
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout" value="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout$AbsoluteConstraintsDescription">
+          <AbsoluteConstraints x="130" y="310" width="30" height="30"/>
         </Constraint>
       </Constraints>
     </Component>

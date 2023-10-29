@@ -1317,7 +1317,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         if ((pl.callerid == null) || (pl.callerid.trim().length() == 0)) pl.callerid = "Unknown";
         Settings.addCallLog(pl.dial);
         gui.updateRecentList();
-        pl.status = fromid + " is calling";
+        pl.status = pl.callerid + " is calling";
         pl.incoming = true;
         pl.sdp = sdp;
         pl.callid = callid;

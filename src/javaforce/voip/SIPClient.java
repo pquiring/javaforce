@@ -693,6 +693,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
 
   /**
    * Send instant message.
+   * Outside of a dialog.
    *
    * See RFC 3428
    *
@@ -707,6 +708,32 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.branch = getbranch();
+    cd.src.cseq++;
+    cd.sdp = msg;
+    if (!issue(cd, "MESSAGE", true, true)) {
+      return null;
+    }
+    return callid;
+  }
+
+  /**
+   * Send instant message.
+   * Within current dialog.
+   *
+   * See RFC 3428
+   *
+   * TODO : RFC 4975 for rich text messages.
+   */
+  public String message(String callid, String to, String msg) {
+    CallDetails cd = getCallDetails(callid);  //new CallDetails
+    if (cd.authstr != null) {
+      cd.src.epass = getAuthResponse(cd, auth, pass, remotehost, "BYE", "Proxy-Authorization:");
+    } else {
+      cd.src.epass = null;
+    }
+    cd.authsent = false;
+    cd.src.extra = null;
+    cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
     cd.src.cseq++;
     cd.sdp = msg;
     if (!issue(cd, "MESSAGE", true, true)) {

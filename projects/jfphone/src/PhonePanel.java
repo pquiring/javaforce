@@ -120,6 +120,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     record = new javax.swing.JButton();
     recordPic = new javax.swing.JLabel();
     sendMsg = new javax.swing.JButton();
+    msgInCall = new javax.swing.JButton();
 
     shareDesktopViewOnly.setText("Share Desktop (view only)");
     shareDesktopMenu.add(shareDesktopViewOnly);
@@ -633,7 +634,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     add(recordPic);
     recordPic.setBounds(50, 340, 30, 10);
 
-    sendMsg.setText("Msg");
+    sendMsg.setText("TXT");
     sendMsg.setMargin(new java.awt.Insets(2, 0, 2, 0));
     sendMsg.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -642,6 +643,17 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     });
     add(sendMsg);
     sendMsg.setBounds(450, 10, 40, 20);
+
+    msgInCall.setText("TXT");
+    msgInCall.setToolTipText("Clear");
+    msgInCall.setMargin(new java.awt.Insets(2, 0, 2, 0));
+    msgInCall.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        msgInCallActionPerformed(evt);
+      }
+    });
+    add(msgInCall);
+    msgInCall.setBounds(130, 310, 30, 30);
   }// </editor-fold>//GEN-END:initComponents
 
     private void n3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_n3ActionPerformed
@@ -849,6 +861,10 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     sendMessage();
   }//GEN-LAST:event_sendMsgActionPerformed
 
+  private void msgInCallActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_msgInCallActionPerformed
+    sendMessageInCall();
+  }//GEN-LAST:event_msgInCallActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton aa;
   private javax.swing.JButton ac;
@@ -884,6 +900,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
   private javax.swing.JProgressBar meterRec;
   private javax.swing.JLabel micPic;
   private javax.swing.JLabel micScale;
+  private javax.swing.JButton msgInCall;
   private javax.swing.JButton mute;
   private javax.swing.JLabel mutePic;
   private javax.swing.JButton n0;
@@ -1564,6 +1581,15 @@ Line Colors:
     if (msg == null) return;
     PhoneLine xline = lines[line];
     xline.sip.message(fields[1], msg);
+  }
+
+  public void sendMessageInCall() {
+    if (line == -1) return;
+    PhoneLine xline = lines[line];
+    if (!xline.incall) return;
+    String msg = JFAWT.getString("Enter Message for:" + xline.to, "");
+    if (msg == null) return;
+    xline.sip.message(xline.callid, xline.to, msg);
   }
 
   public void hld_setIcon(ImageIcon ii) {
