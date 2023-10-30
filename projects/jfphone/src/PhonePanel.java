@@ -1965,7 +1965,7 @@ Line Colors:
     for(int a=0;a<6;a++) {
       PhoneLine xline = lines[a];
       if (xline.sip == sip) {
-        chatAdd(xline.user, txt);
+        chatAdd(xline.to, txt);
         return;
       }
     }
