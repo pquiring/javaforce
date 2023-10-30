@@ -1455,8 +1455,8 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
 
   /** SIPClientInterface.onMessage() : triggered when server sends a message. */
 
-  public void onMessage(SIPClient client, String callid, String msg) {
-    gui.chatAdd(client, msg);
+  public void onMessage(SIPClient client, String callid, String fromid, String fromnumber, String msg) {
+    gui.chatAdd(fromnumber, msg);
   }
 
   /** Processes keyboard input. */

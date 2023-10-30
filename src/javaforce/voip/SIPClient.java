@@ -961,7 +961,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             break;
           }
           if (req.equals("MESSAGE")) {
-            iface.onMessage(this, callid, getContent(msg));
+            iface.onMessage(this, callid, cd.dst.from[0], cd.dst.from[1], getContent(msg));
             reply(cd, "MESSAGE", 200, "OK", false, false);
             break;
           }

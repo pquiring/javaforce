@@ -1960,14 +1960,4 @@ Line Colors:
   public void chatAdd(String from, String txt) {
     chat.append("(" + from + "):" + txt + "\r\n");
   }
-
-  public void chatAdd(SIPClient sip, String txt) {
-    for(int a=0;a<6;a++) {
-      PhoneLine xline = lines[a];
-      if (xline.sip == sip) {
-        chatAdd(xline.to, txt);
-        return;
-      }
-    }
-  }
 }

@@ -61,5 +61,5 @@ public interface SIPClientInterface {
   /**
    * Instant message received.
    */
-  public void onMessage(SIPClient client, String callid, String msg);
+  public void onMessage(SIPClient client, String callid, String fromid, String fromnumber, String msg);
 }
