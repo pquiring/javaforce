@@ -294,6 +294,7 @@ public class WebConfig implements WebHandler {
 
   private String doExtsPage(String args[]) {
     String verb = "", number = "", editext = "", cloneStart = "", cloneCount = "", display = "", cid = "", pass = "", routetable = "default", msg = "", sure = "", vm = "", vmpass = "";
+    String email = "";
     for(int a=0;a<args.length;a++) {
       String arg = args[a];
       int idx = arg.indexOf('=');
@@ -314,6 +315,7 @@ public class WebConfig implements WebHandler {
         case "sure": sure = value; break;
         case "vm": vm = value; break;
         case "vmpass": vmpass = value; break;
+        case "email": email = value; break;
       }
     }
     number = numbersOnly(number);
@@ -338,6 +340,7 @@ public class WebConfig implements WebHandler {
         routetable = ext.routetable;
         vm = ext.voicemail ? "true" : "false";
         vmpass = ext.voicemailpass;
+        email = ext.email;
       }
     }
     if (verb.equals("add") || verb.equals("edit")) {
@@ -367,6 +370,7 @@ public class WebConfig implements WebHandler {
       ext.routetable = routetable;
       ext.voicemail = vm.equals("true");
       ext.voicemailpass = vmpass;
+      ext.email = email;
       Database.addExtension(ext);
       if (msg.length() == 0) {
         msg = "Extension added";
@@ -377,6 +381,7 @@ public class WebConfig implements WebHandler {
         routetable = "default";
         vm = "";
         vmpass = "";
+        email = "";
       }
     }
     if (verb.equals("edit")) {
@@ -391,6 +396,7 @@ public class WebConfig implements WebHandler {
         ext.routetable = routetable;
         ext.voicemail = vm.equals("true");
         ext.voicemailpass = vmpass;
+        ext.email = email;
         Database.saveExtensions();
         if (msg.length() == 0) {
           msg = "Extension edited";
@@ -401,6 +407,7 @@ public class WebConfig implements WebHandler {
           routetable = "default";
           vm = "";
           vmpass = "";
+          email = "";
         } else {
           verb = "view";
         }
@@ -414,6 +421,7 @@ public class WebConfig implements WebHandler {
       routetable = ext.routetable;
       vm = ext.voicemail ? "true" : "false";
       vmpass = ext.voicemailpass;
+      email = ext.email;
       try {
         int start = Integer.valueOf(cloneStart);
         int count = Integer.valueOf(cloneCount);
@@ -428,6 +436,7 @@ public class WebConfig implements WebHandler {
           ext.routetable = routetable;
           ext.voicemail = vm.equals("true");
           ext.voicemailpass = vmpass;
+          ext.email = email;
           Database.addExtension(ext);
           added++;
         }
@@ -442,6 +451,7 @@ public class WebConfig implements WebHandler {
       routetable = "default";
       vm = "";
       vmpass = "";
+      email = "";
     }
     StringBuilder html = new StringBuilder();
 
@@ -478,6 +488,7 @@ public class WebConfig implements WebHandler {
       html.append("<tr><td>Route Table:</td><td><input name=routetable value=" + SQL.quote(routetable) + "></td></tr>");
       html.append("<tr><td>VoiceMail:</td><td><input type=checkbox name=vm " + (vm.equals("true") ? "checked" : "") + "></td></tr>");
       html.append("<tr><td>VM Password:</td><td><input name=vmpass value=" + SQL.quote(vmpass) + "></td></tr>");
+      html.append("<tr><td>EMail:</td><td><input name=email value=" + SQL.quote(email) + "></td></tr>");
       html.append("</table>");
       html.append("<input type=submit value=" + (verb.equals("view") ? "Edit" : "Add") + ">");
     }
@@ -1228,6 +1239,7 @@ public class WebConfig implements WebHandler {
     String relayAudio = "", relayVideo = "", moh = "";
     String http = "", https = "", hideAdmin = "", disableWebRTC = "";
     String valid = "", dname = "";
+    String smtp_server = "", smtp_from_email = "";
     for(int a=0;a<args.length;a++) {
       String arg = args[a];
       int idx = arg.indexOf('=');
@@ -1252,6 +1264,8 @@ public class WebConfig implements WebHandler {
         case "disableWebRTC": disableWebRTC = value; break;
         case "valid": valid = value; break;
         case "dname": dname = value; break;
+        case "smtp_server": smtp_server = value; break;
+        case "smtp_from_email": smtp_from_email = value; break;
       }
     }
     StringBuilder html = new StringBuilder();
@@ -1298,6 +1312,8 @@ public class WebConfig implements WebHandler {
       Database.setConfig("https", https);
       Database.setConfig("hideAdmin", hideAdmin);
       Database.setConfig("disableWebRTC", disableWebRTC);
+      Database.setConfig("smtp_server", smtp_server);
+      Database.setConfig("smtp_from_email", smtp_from_email);
       msg = "Settings saved";
     }
     //NOTE : The -debug option is important to prevent KeyTool from executing System.exit()
@@ -1349,6 +1365,8 @@ public class WebConfig implements WebHandler {
     html.append("Web HTTPS Port : <input name=https value=" + Database.getConfig("https") + "><br>");
     html.append("<input type=checkbox name=hideAdmin " + checked(Database.getConfig("hideAdmin")) + "> Hide Admin Link on Home Page<br>");
     html.append("<input type=checkbox name=disableWebRTC " + checked(Database.getConfig("disableWebRTC")) + "> Disable WebRTC support<br>");
+    html.append("SMTP Server : <input name=smtp_server value=" + Database.getConfig("smtp_server") + "><br>");
+    html.append("SMTP From Email : <input name=smtp_from_email value=" + Database.getConfig("smtp_from_email") + "><br>");
     html.append("<br>");
     html.append("<input type=submit value='Save'>");
     html.append("</form>");

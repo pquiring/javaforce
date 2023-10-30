@@ -19,6 +19,26 @@ public class SMTP {
     public String name;
     /** attachment content */
     public byte[] data;
+
+    public static Attachment readFile(String fn) {
+      try {
+        Attachment attach = new Attachment();
+        FileInputStream fis = new FileInputStream(fn);
+        attach.data = fis.readAllBytes();
+        fis.close();
+        fn = fn.replaceAll("\\\\", "/");
+        int idx = fn.lastIndexOf('/');
+        if (idx == -1) {
+          attach.name = fn;
+        } else {
+          attach.name = fn.substring(idx + 1);
+        }
+        return attach;
+      } catch (Exception e) {
+        JFLog.log(e);
+        return null;
+      }
+    }
   }
 
   private Socket s;

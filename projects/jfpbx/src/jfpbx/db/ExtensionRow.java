@@ -24,6 +24,7 @@ public class ExtensionRow extends Row {
   public String routetable;
   public boolean voicemail;
   public String voicemailpass;
+  public String email;  //ver 2
 
   //IVR
   public String script;
@@ -32,7 +33,7 @@ public class ExtensionRow extends Row {
   public String agents;  //comma list
   public String message;
 
-  private static final int version = 1;
+  private static final int version = 2;
   public void readObject() throws Exception {
     super.readObject();
     int ver = readInt();
@@ -46,6 +47,11 @@ public class ExtensionRow extends Row {
         routetable = readString();
         voicemail = readBoolean();
         voicemailpass = readString();
+        if (ver >= 2) {
+          email = readString();
+        } else {
+          email = "";
+        }
         break;
       case IVR:
         script = readString();
@@ -72,6 +78,7 @@ public class ExtensionRow extends Row {
         writeString(routetable);
         writeBoolean(voicemail);
         writeString(voicemailpass);
+        writeString(email);
         break;
       case IVR:
         writeString(script);

@@ -118,6 +118,7 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
     if (!src) return;
     api.reply(cd, 200, "OK", null, false, true);
     if (cd.audioRelay != null) {
+      notify_email(cd);
       cd.audioRelay.uninit();
       cd.audioRelay = null;
     }
@@ -381,6 +382,7 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
     cd.src.cseq++;
     api.issue(cd, null, false, true);
     if (cd.audioRelay != null) {
+      notify();
       cd.audioRelay.uninit();
       cd.audioRelay = null;
     }
@@ -522,5 +524,45 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
     } catch (Exception e) {
       api.log(cd, "Failed to save new VM greeting for ext " + cd.dialed );
     }
+  }
+
+  private void notify_email(CallDetailsPBX cd) {
+    String wavFile = cd.vmrecfn;
+    ExtensionRow ext = Database.getExtension(cd.dialed);
+    if (ext == null) return;
+    String to_email = ext.email;
+    if (to_email == null || to_email.length() == 0) return;
+    String from = cd.dst.from[1];
+    String smtp_server = Database.getConfig("smtp_server");
+    if (smtp_server.length() == 0) return;
+    int smtp_port = 25;
+    int idx = smtp_server.indexOf(':');
+    if (idx != -1) {
+      smtp_port = Integer.valueOf(smtp_server.substring(idx+1));
+      smtp_server = smtp_server.substring(0, idx);
+    }
+    String smtp_from_email = Database.getConfig("smtp_from_email");
+    String msg = "New voicemail from:" + from;
+    //setup captures
+    final String _smtp_server = smtp_server;
+    final int _smtp_port = smtp_port;
+    //do notification on a new thread
+    new Thread() {
+      public void run() {
+        try {
+          SMTP.Attachment attach = SMTP.Attachment.readFile(wavFile);
+          SMTP smtp = new SMTP();
+          smtp.connect(_smtp_server, _smtp_port);
+          smtp.login();
+          smtp.from(smtp_from_email);
+          smtp.to(to_email);
+          smtp.data(msg, msg, new SMTP.Attachment[] {attach});
+          smtp.logout();
+          smtp.disconnect();
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
+      }
+    }.start();
   }
 }
