@@ -52,6 +52,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   public WindowController wc;
   public String lastDial;
   public boolean showingContacts = false;
+  public boolean showingChat = false;
   public java.util.Timer timerKeepAlive, timerRegisterExpires, timerRegisterRetries;
   public ImageIcon ii[];
   public String icons[] = {
@@ -1455,7 +1456,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   /** SIPClientInterface.onMessage() : triggered when server sends a message. */
 
   public void onMessage(SIPClient client, String callid, String msg) {
-    JFAWT.showMessage("Message", msg);
+    gui.chatAdd(client, msg);
   }
 
   /** Processes keyboard input. */

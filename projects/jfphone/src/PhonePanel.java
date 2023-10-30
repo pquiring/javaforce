@@ -121,6 +121,10 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     recordPic = new javax.swing.JLabel();
     sendMsg = new javax.swing.JButton();
     msgInCall = new javax.swing.JButton();
+    contactLabel1 = new javax.swing.JLabel();
+    delContact1 = new javax.swing.JButton();
+    jScrollPane4 = new javax.swing.JScrollPane();
+    chat = new javax.swing.JTextArea();
 
     shareDesktopViewOnly.setText("Share Desktop (view only)");
     shareDesktopMenu.add(shareDesktopViewOnly);
@@ -654,6 +658,28 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     });
     add(msgInCall);
     msgInCall.setBounds(130, 310, 30, 30);
+
+    contactLabel1.setText("Chat");
+    add(contactLabel1);
+    contactLabel1.setBounds(550, 10, 50, 10);
+
+    delContact1.setText("Clear");
+    delContact1.setMargin(new java.awt.Insets(2, 0, 2, 0));
+    delContact1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        delContact1ActionPerformed(evt);
+      }
+    });
+    add(delContact1);
+    delContact1.setBounds(740, 10, 60, 20);
+
+    chat.setColumns(20);
+    chat.setRows(5);
+    chat.setMargin(new java.awt.Insets(0, 0, 0, 0));
+    jScrollPane4.setViewportView(chat);
+
+    add(jScrollPane4);
+    jScrollPane4.setBounds(550, 30, 250, 310);
   }// </editor-fold>//GEN-END:initComponents
 
     private void n3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_n3ActionPerformed
@@ -865,6 +891,10 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     sendMessageInCall();
   }//GEN-LAST:event_msgInCallActionPerformed
 
+  private void delContact1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_delContact1ActionPerformed
+    chatClear();
+  }//GEN-LAST:event_delContact1ActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton aa;
   private javax.swing.JButton ac;
@@ -872,11 +902,14 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
   private javax.swing.JButton backSpace;
   private javax.swing.JToggleButton call;
   private javax.swing.JButton cfg;
+  private javax.swing.JTextArea chat;
   private javax.swing.JButton clear;
   private javax.swing.JButton cnf;
   private javax.swing.JList<Contact> contactJList;
   private javax.swing.JLabel contactLabel;
+  private javax.swing.JLabel contactLabel1;
   private javax.swing.JButton delContact;
+  private javax.swing.JButton delContact1;
   private javax.swing.JTextField dial;
   private javax.swing.JButton dnd;
   private javax.swing.JButton editContact;
@@ -888,6 +921,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
   private javax.swing.JLabel jLabel1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
+  private javax.swing.JScrollPane jScrollPane4;
   private javax.swing.JToggleButton l1;
   private javax.swing.JToggleButton l2;
   private javax.swing.JToggleButton l3;
@@ -1415,6 +1449,7 @@ Line Colors:
 
   public void toggleContacts() {
     showingContacts = !showingContacts;
+    showingChat = showingContacts;
     wc.setPanelSize();
     if (!showingContacts) {
       sidePanel.setText(">");
@@ -1581,6 +1616,7 @@ Line Colors:
     if (msg == null) return;
     PhoneLine xline = lines[line];
     xline.sip.message(fields[1], msg);
+    chatAdd(xline.user, msg);
   }
 
   public void sendMessageInCall() {
@@ -1590,6 +1626,7 @@ Line Colors:
     String msg = JFAWT.getString("Enter Message for:" + xline.to, "");
     if (msg == null) return;
     xline.sip.message(xline.callid, xline.to, msg);
+    chatAdd(xline.user, msg);
   }
 
   public void hld_setIcon(ImageIcon ii) {
@@ -1749,6 +1786,7 @@ Line Colors:
     int x = 290;
     int y = 360;
     if (showingContacts) x += 270;
+    if (showingChat) x += 250;
     return new Dimension(x, y);
   }
 
@@ -1913,5 +1951,23 @@ Line Colors:
 
   public void doConfig() {
     cfg.doClick();
+  }
+
+  public void chatClear() {
+    chat.setText("");
+  }
+
+  public void chatAdd(String from, String txt) {
+    chat.append("(" + from + "):" + txt + "\r\n");
+  }
+
+  public void chatAdd(SIPClient sip, String txt) {
+    for(int a=0;a<6;a++) {
+      PhoneLine xline = lines[a];
+      if (xline.sip == sip) {
+        chatAdd(xline.user, txt);
+        return;
+      }
+    }
   }
 }

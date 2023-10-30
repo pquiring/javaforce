@@ -21,4 +21,5 @@ public interface GUI {
   public void updateRecentList();
   public String getLineStatus();
   public void doConfig();
+  public void chatAdd(SIPClient sip, String msg);
 }
