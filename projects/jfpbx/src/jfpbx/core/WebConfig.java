@@ -63,11 +63,6 @@ public class WebConfig implements WebHandler {
     }
   }
 
-  private String decode(String in) {
-    try {return URLDecoder.decode(in, "UTF-8");} catch (Exception e) {}
-    return "";
-  }
-
   public void doPost(WebRequest req, WebResponse res) {
     try {doRequest(req, res);} catch (Exception e) {JFLog.log(e);}
   }
@@ -170,8 +165,16 @@ public class WebConfig implements WebHandler {
     if (query != null) args = query.split("&"); else args = new String[0];
     String user = "", pass = "";
     for(int a=0;a<args.length;a++) {
-      if (args[a].startsWith("user=")) user = args[a].substring(5);
-      if (args[a].startsWith("pass=")) pass = args[a].substring(5);
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
+      switch (key) {
+        case "user": user = value; break;
+        case "pass": pass = value; break;
+      }
     }
     String msg = "";
     if ((user.length() > 0 && pass.length() > 0)) {
@@ -217,10 +220,18 @@ public class WebConfig implements WebHandler {
   private String doAdminPage(String args[]) {
     String verb = "", current = "", p1 = "", p2 = "";
     for(int a=0;a<args.length;a++) {
-      if (args[a].startsWith("verb=")) verb = args[a].substring(5);
-      if (args[a].startsWith("current=")) current = args[a].substring(8);
-      if (args[a].startsWith("p1=")) p1 = args[a].substring(3);
-      if (args[a].startsWith("p2=")) p2 = args[a].substring(3);
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
+      switch (key) {
+        case "verb": verb = value; break;
+        case "current": current = value; break;
+        case "p1": p1 = value; break;
+        case "p2": p2 = value; break;
+      }
     }
     String msg = "";
     if (verb.equals("changepass")) {
@@ -289,6 +300,7 @@ public class WebConfig implements WebHandler {
       if (idx == -1) continue;
       String key = arg.substring(0, idx);
       String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
       switch (key) {
         case "verb": verb = value; break;
         case "ext": number = value; break;
@@ -306,7 +318,6 @@ public class WebConfig implements WebHandler {
     }
     number = numbersOnly(number);
     cid = numbersOnly(cid);
-    display = convertString(display);
     vmpass = numbersOnly(vmpass);
     if (verb.equals("del")) {
       if (sure.equalsIgnoreCase("on")) {
@@ -334,7 +345,7 @@ public class WebConfig implements WebHandler {
         msg = "Invalid extension number";
       } else {
         if (verb.equals("add") && Database.extensionExists(number)) {
-          msg = "IVR already exists with that number";
+          msg = "Destination already exists with that number";
         }
       }
       if (display.length() == 0)  {
@@ -370,24 +381,29 @@ public class WebConfig implements WebHandler {
     }
     if (verb.equals("edit")) {
       ExtensionRow ext = Database.getExtension(number);
-      ext.display = display;
-      ext.cid = cid;
-      ext.password = pass;
-      ext.routetable = routetable;
-      ext.voicemail = vm.equals("true");
-      ext.voicemailpass = vmpass;
-      Database.saveExtensions();
-      if (msg.length() == 0) {
-        msg = "Extension edited";
-        number = "";
-        display = "";
-        cid = "";
-        pass = "";
-        routetable = "default";
-        vm = "";
-        vmpass = "";
-      } else {
+      if (ext == null) {
+        msg = "Extension not found";
         verb = "view";
+      } else {
+        ext.display = display;
+        ext.cid = cid;
+        ext.password = pass;
+        ext.routetable = routetable;
+        ext.voicemail = vm.equals("true");
+        ext.voicemailpass = vmpass;
+        Database.saveExtensions();
+        if (msg.length() == 0) {
+          msg = "Extension edited";
+          number = "";
+          display = "";
+          cid = "";
+          pass = "";
+          routetable = "default";
+          vm = "";
+          vmpass = "";
+        } else {
+          verb = "view";
+        }
       }
     }
     if (verb.equals("clone")) {
@@ -485,14 +501,21 @@ public class WebConfig implements WebHandler {
 
     String verb = "", name = "", cid = "", did = "", dest = "", msg = "", editroute= "", sure = "";
     for(int a=0;a<args.length;a++) {
-      int x = args[a].indexOf("=") + 1;
-      if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("route=")) name = args[a].substring(x);
-      if (args[a].startsWith("editroute=")) editroute = args[a].substring(x);
-      if (args[a].startsWith("cid=")) cid = args[a].substring(x);
-      if (args[a].startsWith("did=")) did = args[a].substring(x);
-      if (args[a].startsWith("dest=")) dest = args[a].substring(x);
-      if (args[a].startsWith("sure=")) sure = args[a].substring(x);
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
+      switch (key) {
+        case "verb": verb = value; break;
+        case "route": name = value; break;
+        case "editroute": editroute = value; break;
+        case "cid": cid = value; break;
+        case "did": did = value; break;
+        case "dest": dest = value; break;
+        case "sure": sure = value; break;
+      }
     }
     cid = numbersOnly(cid);
     did = numbersOnly(did);
@@ -584,8 +607,8 @@ public class WebConfig implements WebHandler {
         cid = routes[a].cid;
         did = routes[a].did;
         dest = routes[a].dest;
-        if (cid.length() == 0) cid = "any DID";
-        if (did.length() == 0) did = "any CID";
+        if (cid.length() == 0) cid = "any CID";
+        if (did.length() == 0) did = "any DID";
         html.append("<div class=menuitem>" + link("core", "inroutes", "verb=view&route=" + routes[a].name,
           "&lt;" + routes[a].name + "&gt;" + cid + "/" + did) + "</div>");
       }
@@ -598,13 +621,20 @@ public class WebConfig implements WebHandler {
   private String doIVRPage(String args[]) {
     String verb = "", number = "", editext = "", display = "", script = "", sure = "", msg = "";
     for(int a=0;a<args.length;a++) {
-      int x = args[a].indexOf("=") + 1;
-      if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("ext=")) number = args[a].substring(x);
-      if (args[a].startsWith("display=")) display = args[a].substring(x);
-      if (args[a].startsWith("script=")) script = args[a].substring(x);
-      if (args[a].startsWith("editext=")) editext = args[a].substring(x);
-      if (args[a].startsWith("sure=")) sure = args[a].substring(x);
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
+      switch (key) {
+        case "verb": verb = value; break;
+        case "ext": number = value; break;
+        case "display": display = value; break;
+        case "script": script = value; break;
+        case "editext": editext = value; break;
+        case "sure": sure = value; break;
+      }
     }
     number = numbersOnly(number);
     if (verb.equals("del")) {
@@ -626,8 +656,8 @@ public class WebConfig implements WebHandler {
       if (number.length() == 0)  {
         msg = "Invalid IVR number";
       } else {
-        if (Database.extensionExists(number)) {
-          msg = "Extension already exists with that number";
+        if (verb.equals("add") && Database.extensionExists(number)) {
+          msg = "Destination already exists with that number";
         }
       }
       if (display.length() == 0)  {
@@ -681,7 +711,7 @@ public class WebConfig implements WebHandler {
     html.append("<tr><td>IVR #:</td><td><input name=ext value=" + SQL.quote(number) + ">");
     html.append("</td></tr>");
     html.append("<tr><td>Name:</td><td><input name=display value=" + SQL.quote(display) + "></td></tr>");
-    html.append("<tr><td>Script:</td><td><textarea id=script name=script cols=40 rows=20>" + convertString(script) + "</textarea></td><td><a href=\"javascript:showHelp('ivr');\">Help</a><br>");
+    html.append("<tr><td>Script:</td><td><textarea id=script name=script cols=40 rows=20>" + script + "</textarea></td><td><a href=\"javascript:showHelp('ivr');\">Help</a><br>");
     html.append("Presets:<select id=preset><option>-none-</option><option>Conference</option><option>Video Conference</option></select> <a href=\"javascript:load_preset();\">Load</a></td></tr>");
     html.append("</table>");
     html.append("<input type=submit value=" + (verb.equals("view") ? "Edit" : "Add") + ">");
@@ -706,14 +736,21 @@ public class WebConfig implements WebHandler {
   private String doQueuesPage(String args[]) {
     String verb = "", number = "", editext = "", display = "", agents = "", sure = "", msg = "", message = "";
     for(int a=0;a<args.length;a++) {
-      int x = args[a].indexOf("=") + 1;
-      if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("ext=")) number = args[a].substring(x);
-      if (args[a].startsWith("display=")) display = args[a].substring(x);
-      if (args[a].startsWith("agents=")) agents = convertString(args[a].substring(x)).replaceAll("\r\n", ",");
-      if (args[a].startsWith("message=")) message = args[a].substring(x);
-      if (args[a].startsWith("editext=")) editext = args[a].substring(x);
-      if (args[a].startsWith("sure=")) sure = args[a].substring(x);
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
+      switch (key) {
+        case "verb": verb = value; break;
+        case "ext": number = value; break;
+        case "display": display = value; break;
+        case "agents": agents = value.replaceAll("\r\n", ","); break;
+        case "message": message = value; break;
+        case "editext": editext = value; break;
+        case "sure": sure = value; break;
+      }
     }
     if (message.length() == 0) message = "acd-wait-for-agent";
     number = numbersOnly(number);
@@ -737,8 +774,8 @@ public class WebConfig implements WebHandler {
       if (number.length() == 0)  {
         msg = "Invalid Queue number";
       } else {
-        if (Database.extensionExists(number)) {
-          msg = "Extension already exists with that number";
+        if (verb.equals("add") && Database.extensionExists(number)) {
+          msg = "Destination already exists with that number";
         }
       }
       if (display.length() == 0)  {
@@ -796,7 +833,7 @@ public class WebConfig implements WebHandler {
     html.append("<tr><td>Queue #:</td><td><input name=ext value=" + SQL.quote(number) + ">");
     html.append("</td></tr>");
     html.append("<tr><td>Name:</td><td><input name=display value=" + SQL.quote(display) + "></td></tr>");
-    html.append("<tr><td>Agents:</td><td><textarea id=agents name=agents cols=40 rows=20>" + convertString(agents).replaceAll(",", "\r\n") + "</textarea> (list agents one per line)</td></tr>");
+    html.append("<tr><td>Agents:</td><td><textarea id=agents name=agents cols=40 rows=20>" + agents.replaceAll(",", "\r\n") + "</textarea> (list agents one per line)</td></tr>");
     html.append("<tr><td>Member Join Message:</td><td>");
     ArrayList<String> wavFiles = new ArrayList<String>();
     try {
@@ -841,12 +878,19 @@ public class WebConfig implements WebHandler {
   private String doMsgsPage(String args[], WebRequest req) {
     String verb = "", file = "", oldfile = "", newfile = "", sure = "", msg= "";
     for(int a=0;a<args.length;a++) {
-      int x = args[a].indexOf("=") + 1;
-      if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("file=")) file = decode(args[a].substring(x));
-      if (args[a].startsWith("oldfile=")) oldfile = decode(args[a].substring(x));
-      if (args[a].startsWith("newfile=")) newfile = decode(args[a].substring(x));
-      if (args[a].startsWith("sure=")) sure = args[a].substring(x);
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
+      switch (key) {
+        case "verb": verb = value; break;
+        case "file": file = value; break;
+        case "oldfile": oldfile = value; break;
+        case "newfile": newfile = value; break;
+        case "sure": sure = value; break;
+      }
     }
     if ( (file.indexOf("..") != -1) || (file.indexOf("/") != -1) || (file.indexOf("\\") != -1) ) {
       return "ERROR : invalid filename.";
@@ -968,19 +1012,26 @@ public class WebConfig implements WebHandler {
   private String doOutRoutesPage(String args[]) {
     String verb = "", table = "", name = "", priority = "", cid = "", patterns = "", trunks = "", msg = "", editroute= "", t1 = "", t2 = "", t3 = "", t4 = "", sure = "";
     for(int a=0;a<args.length;a++) {
-      int x = args[a].indexOf("=") + 1;
-      if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("routetable=")) table = args[a].substring(x);
-      if (args[a].startsWith("route=")) name = args[a].substring(x);
-      if (args[a].startsWith("priority=")) priority = args[a].substring(x);
-      if (args[a].startsWith("editroute=")) editroute = args[a].substring(x);
-      if (args[a].startsWith("cid=")) cid = args[a].substring(x);
-      if (args[a].startsWith("patterns=")) patterns = args[a].substring(x);
-      if (args[a].startsWith("t1=")) t1 = args[a].substring(x);
-      if (args[a].startsWith("t2=")) t2 = args[a].substring(x);
-      if (args[a].startsWith("t3=")) t3 = args[a].substring(x);
-      if (args[a].startsWith("t4=")) t4 = args[a].substring(x);
-      if (args[a].startsWith("sure=")) sure = args[a].substring(x);
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
+      switch (key) {
+        case "verb": verb = value; break;
+        case "routetable": table = value; break;
+        case "route": name = value; break;
+        case "priority": priority = value; break;
+        case "editroute": editroute = value; break;
+        case "cid": cid = value; break;
+        case "patterns": patterns = value; break;
+        case "t1": t1 = value; break;
+        case "t2": t2 = value; break;
+        case "t3": t3 = value; break;
+        case "t4": t4 = value; break;
+        case "sure": sure = value; break;
+      }
     }
     cid = numbersOnly(cid);
     trunks = t1;
@@ -1033,7 +1084,7 @@ public class WebConfig implements WebHandler {
       }
     }
     if (verb.equals("add")) {
-      patterns = convertString(patterns).replaceAll("\r\n", ":");
+      patterns = patterns.replaceAll("\r\n", ":");
       patterns = patternsOnly(patterns);
       RouteRow row = new RouteRow();
       row.name = name;
@@ -1054,7 +1105,7 @@ public class WebConfig implements WebHandler {
       t4 = "";
     }
     if (verb.equals("edit")) {
-      patterns = convertString(patterns).replaceAll("\r\n", ":");
+      patterns = patterns.replaceAll("\r\n", ":");
       patterns = patternsOnly(patterns);
       RouteRow row = Database.getOutRoute(table, name);
       row.name = name;
@@ -1178,23 +1229,30 @@ public class WebConfig implements WebHandler {
     String http = "", https = "", hideAdmin = "", disableWebRTC = "";
     String valid = "", dname = "";
     for(int a=0;a<args.length;a++) {
-      int x = args[a].indexOf("=") + 1;
-      if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("port=")) port = args[a].substring(x);
-      if (args[a].startsWith("anon=")) anon = args[a].substring(x);
-      if (args[a].startsWith("route=")) route = args[a].substring(x);
-      if (args[a].startsWith("rtpmin=")) rtpmin = args[a].substring(x);
-      if (args[a].startsWith("rtpmax=")) rtpmax = args[a].substring(x);
-      if (args[a].startsWith("videoCodecs=")) videoCodecs = decode(args[a].substring(x).toUpperCase());
-      if (args[a].startsWith("relayAudio=")) relayAudio = args[a].substring(x);
-      if (args[a].startsWith("relayVideo=")) relayVideo = args[a].substring(x);
-      if (args[a].startsWith("moh=")) moh = decode(args[a].substring(x));
-      if (args[a].startsWith("http=")) http = args[a].substring(x);
-      if (args[a].startsWith("https=")) https = args[a].substring(x);
-      if (args[a].startsWith("hideAdmin=")) hideAdmin = args[a].substring(x);
-      if (args[a].startsWith("disableWebRTC=")) disableWebRTC = args[a].substring(x);
-      if (args[a].startsWith("valid=")) valid = args[a].substring(x);
-      if (args[a].startsWith("dname=")) dname = decode(args[a].substring(x));
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
+      switch (key) {
+        case "verb": verb = value; break;
+        case "port": port = value; break;
+        case "anon": anon = value; break;
+        case "route": route = value; break;
+        case "rtpmin": rtpmin = value; break;
+        case "rtpmax": rtpmax = value; break;
+        case "videoCodecs": videoCodecs = value.toUpperCase(); break;
+        case "relayAudio": relayAudio = value; break;
+        case "relayVideo": relayVideo = value; break;
+        case "moh": moh = value; break;
+        case "http": http = value; break;
+        case "https": https = value; break;
+        case "hideAdmin": hideAdmin = value; break;
+        case "disableWebRTC": disableWebRTC = value; break;
+        case "valid": valid = value; break;
+        case "dname": dname = value; break;
+      }
     }
     StringBuilder html = new StringBuilder();
 
@@ -1232,7 +1290,7 @@ public class WebConfig implements WebHandler {
       Database.setConfig("route", route);
       Database.setConfig("rtpmin", rtpmin);
       Database.setConfig("rtpmax", rtpmax);
-      Database.setConfig("videoCodes", videoCodecs);
+      Database.setConfig("videoCodecs", videoCodecs);
       Database.setConfig("relayAudio", relayAudio);
       Database.setConfig("relayVideo", relayVideo);
       Database.setConfig("moh", moh);
@@ -1312,8 +1370,15 @@ public class WebConfig implements WebHandler {
   private String doStatusPage(String args[]) {
     String verb = "", msg = "";
     for(int a=0;a<args.length;a++) {
-      int x = args[a].indexOf("=") + 1;
-      if (args[a].startsWith("verb=")) verb = args[a].substring(x);
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
+      switch (key) {
+        case "verb": verb = value; break;
+      }
     }
     StringBuilder html = new StringBuilder();
 
@@ -1342,9 +1407,10 @@ public class WebConfig implements WebHandler {
   }
 
   private boolean validRegister(String reg) {
+    // user:pass@host[:port]
     int i1 = reg.indexOf(':');
     if (i1 == -1) return false;
-    int i2 = reg.substring(i1+1).indexOf('@');
+    int i2 = reg.indexOf('@');
     if (i2 == -1) return false;
     String user = reg.substring(0, i1);
     if (user.length() == 0) return false;
@@ -1358,18 +1424,25 @@ public class WebConfig implements WebHandler {
   private String doTrunksPage(String args[]) {
     String verb = "", name = "", cid = "", host = "", xip = "", register = "", doregister = "", msg = "", outrules = "", inrules = "", edittrunk= "", sure = "";
     for(int a=0;a<args.length;a++) {
-      int x = args[a].indexOf("=") + 1;
-      if (args[a].startsWith("verb=")) verb = args[a].substring(x);
-      if (args[a].startsWith("trunk=")) name = args[a].substring(x);
-      if (args[a].startsWith("edittrunk=")) edittrunk = args[a].substring(x);
-      if (args[a].startsWith("cid=")) cid = args[a].substring(x);
-      if (args[a].startsWith("host=")) host = args[a].substring(x);
-      if (args[a].startsWith("xip=")) xip = args[a].substring(x);
-      if (args[a].startsWith("register=")) register = args[a].substring(x);
-      if (args[a].startsWith("doregister=")) doregister = args[a].substring(x);
-      if (args[a].startsWith("outrules=")) outrules = args[a].substring(x);
-      if (args[a].startsWith("inrules=")) inrules = args[a].substring(x);
-      if (args[a].startsWith("sure=")) sure = args[a].substring(x);
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
+      switch (key) {
+        case "verb": verb = value; break;
+        case "trunk": name = value; break;
+        case "edittrunk": edittrunk = value; break;
+        case "cid": cid = value; break;
+        case "host": host = value; break;
+        case "xip": xip = value; break;
+        case "register": register = value; break;
+        case "doregister": doregister = value; break;
+        case "outrules": outrules = value; break;
+        case "inrules": inrules = value; break;
+        case "sure": sure = value; break;
+      }
     }
     cid = numbersOnly(cid);
     if (name.length() == 0) verb = "";
@@ -1398,15 +1471,15 @@ public class WebConfig implements WebHandler {
     if (verb.equals("add") || verb.equals("edit")) {
       if (!validRegister(register)) {
         msg = "Invalid Register";
-        verb = "view";
+        verb = "";
       }
     }
     if (verb.equals("add")) {
-      outrules = convertString(outrules).replaceAll("\r\n", ":");
+      outrules = outrules.replaceAll("\r\n", ":");
       outrules = patternsOnly(outrules);
-      inrules = convertString(inrules).replaceAll("\r\n", ":");
+      inrules = inrules.replaceAll("\r\n", ":");
       inrules = patternsOnly(inrules);
-      register = convertString(register);
+      register = register;
       TrunkRow row = new TrunkRow();
       row.name = name;
       row.host = host;
@@ -1428,11 +1501,10 @@ public class WebConfig implements WebHandler {
       inrules = "";
     }
     if (verb.equals("edit")) {
-      outrules = convertString(outrules).replaceAll("\r\n", ":");
+      outrules = outrules.replaceAll("\r\n", ":");
       outrules = patternsOnly(outrules);
-      inrules = convertString(inrules).replaceAll("\r\n", ":");
+      inrules = inrules.replaceAll("\r\n", ":");
       inrules = patternsOnly(inrules);
-      register = convertString(register);
       TrunkRow row = Database.getTrunk(name);
       if (row != null) {
         row.name = name;
@@ -1478,8 +1550,8 @@ public class WebConfig implements WebHandler {
     html.append("<tr><td> Register String: </td><td> <input name=register value=" + SQL.quote(register) + "></td><td>(optional) user:pass@host[:port][/did]</td></tr>");
     html.append("<tr><td> <input type=checkbox name=doregister " + (doregister.equals("on") ? "checked" : "") + "> Register with trunk (optional)</td></tr>");
     html.append("<tr><td> Dial Out Rules: </td><td> <textarea name=outrules cols=20 rows=10>");
-      String lns[] = outrules.split(":");
-      for(int a=0;a<lns.length;a++) html.append(lns[a]);
+      String[] out_lns = outrules.split(":");
+      for(int a=0;a<out_lns.length;a++) {html.append(out_lns[a]);html.append("\r\n");}
     html.append("</textarea>");
     html.append("</td><td>");
     html.append("(optional)<br>");
@@ -1496,8 +1568,8 @@ public class WebConfig implements WebHandler {
     html.append("</pre>");
     html.append("</td></tr>");
     html.append("<tr><td> Dial In Rules: </td><td> <textarea name=inrules class=aligntop cols=20 rows=10>");
-    lns = inrules.split(":");
-    for(int a=0;a<lns.length;a++) html.append(lns[a]);
+      String[] in_lns = inrules.split(":");
+      for(int a=0;a<in_lns.length;a++) {html.append(in_lns[a]);html.append("\r\n");}
     html.append("</textarea>");
     html.append("</td><td>");
     html.append("(optional) [not implemented yet]<br>");
@@ -1620,8 +1692,16 @@ public class WebConfig implements WebHandler {
       pg = "blank";  //TODO : voicemail for normal users ???
     }
     for(int a=0;a<args.length;a++) {
-      if (args[a].startsWith("plugin=")) plugin = args[a].substring(7);
-      if (args[a].startsWith("pluginpg=")) pg = args[a].substring(9);
+      String arg = args[a];
+      int idx = arg.indexOf('=');
+      if (idx == -1) continue;
+      String key = arg.substring(0, idx);
+      String value = JF.decodeURL(arg.substring(idx + 1));
+      if (value == null) value = "";
+      switch (key) {
+        case "plugin": plugin = value; break;
+        case "pluginpg": pg = value; break;
+      }
     }
     if (!isAllowed(id, plugin, pg)) { redir(res, "core", "blank"); return; }
 
@@ -1717,35 +1797,6 @@ public class WebConfig implements WebHandler {
   }
   public String formUpload(String plugin, String pluginpg, String args) {
     return "<form action='/admin?plugin=" + plugin + "&pluginpg=" + pluginpg + "&" + args +"' enctype='multipart/form-data' method='post'>";
-  }
-  public String convertString(String instr) {
-    //convert WebString to normal strings (expand %## codes, '+'->' ')
-    String outstr = "";
-    char ca[] = instr.toCharArray();
-    int h1, h2;
-    char ch;
-    for(int a=0;a<ca.length;a++) {
-      switch (ca[a]) {
-        case '%':
-          if (a+2>=ca.length) return outstr;
-          if ((ca[a+1] >= '0') && (ca[a+1] <= '9')) h1 = ca[a+1] - '0';
-          else if ((ca[a+1] >= 'a') && (ca[a+1] <= 'f')) h1 = ca[a+1] - ('a' - 10);
-          else if ((ca[a+1] >= 'A') && (ca[a+1] <= 'F')) h1 = ca[a+1] - ('A' - 10);
-          else h1 = 0;
-          if ((ca[a+2] >= '0') && (ca[a+2] <= '9')) h2 = ca[a+2] - '0';
-          else if ((ca[a+2] >= 'a') && (ca[a+2] <= 'f')) h2 = ca[a+2] - ('a' - 10);
-          else if ((ca[a+2] >= 'A') && (ca[a+2] <= 'F')) h2 = ca[a+2] - ('A' - 10);
-          else h2 = 0;
-          ch = (char)(h1 * 0x10 + h2);
-          if (ch == '\"') ch = '\'';
-          outstr += ch;
-          a+=2;
-          break;
-        case '+': outstr += " "; break;
-        default: outstr += ca[a]; break;
-      }
-    }
-    return outstr;
   }
   public String select(String name, String value, String list[]) {
     StringBuffer buf = new StringBuffer();
