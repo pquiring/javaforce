@@ -556,6 +556,7 @@ public class VoiceMail implements Plugin, DialChain, PBXEventHandler {
           smtp.login();
           smtp.from(smtp_from_email);
           smtp.to(to_email);
+          smtp.subject("New Voicemail");
           smtp.data(msg, msg, new SMTP.Attachment[] {attach});
           smtp.logout();
           smtp.disconnect();
