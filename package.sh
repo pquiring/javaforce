@@ -37,13 +37,8 @@ if [ ! -f javaforce.jar ]; then
   exit
 fi
 
-if [ ! -f native/jfnative64.so ]; then
-  echo Please build native library first!
-  exit
-fi
-
-if [ ! -f stubs/linux64.bin ]; then
-  echo Please build stub launcher first!
+if [ ! -f native/linux64.bin ]; then
+  echo Please build native first!
   exit
 fi
 
