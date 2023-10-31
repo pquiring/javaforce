@@ -622,6 +622,7 @@
     <Component class="javax.swing.JButton" name="delContact">
       <Properties>
         <Property name="text" type="java.lang.String" value="-"/>
+        <Property name="toolTipText" type="java.lang.String" value="Remove Contact"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 0, 2, 0]"/>
         </Property>
@@ -638,6 +639,7 @@
     <Component class="javax.swing.JButton" name="addContact">
       <Properties>
         <Property name="text" type="java.lang.String" value="+"/>
+        <Property name="toolTipText" type="java.lang.String" value="Add Contact"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 0, 2, 0]"/>
         </Property>
@@ -654,6 +656,7 @@
     <Component class="javax.swing.JButton" name="editContact">
       <Properties>
         <Property name="text" type="java.lang.String" value="Edit"/>
+        <Property name="toolTipText" type="java.lang.String" value="Edit Contact"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 0, 2, 0]"/>
         </Property>
@@ -930,6 +933,7 @@
     <Component class="javax.swing.JButton" name="sendMsg">
       <Properties>
         <Property name="text" type="java.lang.String" value="TXT"/>
+        <Property name="toolTipText" type="java.lang.String" value="Send Message to Contact"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 0, 2, 0]"/>
         </Property>
@@ -946,7 +950,7 @@
     <Component class="javax.swing.JButton" name="msgInCall">
       <Properties>
         <Property name="text" type="java.lang.String" value="TXT"/>
-        <Property name="toolTipText" type="java.lang.String" value="Clear"/>
+        <Property name="toolTipText" type="java.lang.String" value="Send Message In Call"/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[2, 0, 2, 0]"/>
         </Property>
@@ -1000,6 +1004,10 @@
       <SubComponents>
         <Component class="javax.swing.JTextArea" name="chat">
           <Properties>
+            <Property name="editable" type="boolean" value="false"/>
+            <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+              <Color blue="ff" green="ff" red="ff" type="rgb"/>
+            </Property>
             <Property name="columns" type="int" value="20"/>
             <Property name="rows" type="int" value="5"/>
             <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">

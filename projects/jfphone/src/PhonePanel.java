@@ -484,6 +484,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     jScrollPane2.setBounds(290, 210, 250, 130);
 
     delContact.setText("-");
+    delContact.setToolTipText("Remove Contact");
     delContact.setMargin(new java.awt.Insets(2, 0, 2, 0));
     delContact.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -494,6 +495,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     delContact.setBounds(500, 10, 40, 20);
 
     addContact.setText("+");
+    addContact.setToolTipText("Add Contact");
     addContact.setMargin(new java.awt.Insets(2, 0, 2, 0));
     addContact.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -504,6 +506,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     addContact.setBounds(350, 10, 40, 20);
 
     editContact.setText("Edit");
+    editContact.setToolTipText("Edit Contact");
     editContact.setMargin(new java.awt.Insets(2, 0, 2, 0));
     editContact.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -639,6 +642,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     recordPic.setBounds(50, 340, 30, 10);
 
     sendMsg.setText("TXT");
+    sendMsg.setToolTipText("Send Message to Contact");
     sendMsg.setMargin(new java.awt.Insets(2, 0, 2, 0));
     sendMsg.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -649,7 +653,7 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     sendMsg.setBounds(450, 10, 40, 20);
 
     msgInCall.setText("TXT");
-    msgInCall.setToolTipText("Clear");
+    msgInCall.setToolTipText("Send Message In Call");
     msgInCall.setMargin(new java.awt.Insets(2, 0, 2, 0));
     msgInCall.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -673,6 +677,8 @@ public class PhonePanel extends BasePhone implements MeterController, GUI, Video
     add(delContact1);
     delContact1.setBounds(740, 10, 60, 20);
 
+    chat.setEditable(false);
+    chat.setBackground(new java.awt.Color(255, 255, 255));
     chat.setColumns(20);
     chat.setRows(5);
     chat.setMargin(new java.awt.Insets(0, 0, 0, 0));
