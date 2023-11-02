@@ -580,6 +580,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     } else {
       cd.src.epass = null;
     }
+    cd.uri = "sip:" + cd.src.to[1] + "@" + remotehost + ":" + remoteport;
     cd.src.cseq++;
     cd.authsent = false;
     cd.src.extra = headers;
@@ -604,6 +605,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     headers += "Supported: gruu, replaces, tdialog\r\n";
     headers += "Require: tdialog\r\n";
     headers += "Target-Dialog: " + callid + ";local-tag=" + gettag(cd.src.to) + ";remote-tag=" + gettag(cd.src.from) + "\r\n";
+    cd.uri = "sip:" + cd.src.to[1] + "@" + remotehost + ":" + remoteport;
     cd.src.cseq++;
     cd.authsent = false;
     cd.src.extra = headers;
@@ -632,6 +634,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.o2++;
     cd.src.sdp = sdp;
     buildsdp(cd, cd.src);
+    cd.uri = "sip:" + cd.src.to[1] + "@" + remotehost + ":" + remoteport;
     cd.src.cseq++;
     cd.authsent = false;
     cd.src.extra = null;
@@ -670,6 +673,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     if (cd.dst.to != null) cd.src.to = cd.dst.to;  //update tag if avail
     if (cd.dst.from != null) cd.src.from = cd.dst.from;  //is this line even needed???
     cd.src.extra = null;
+    cd.uri = "sip:" + cd.src.to[1] + "@" + remotehost + ":" + remoteport;
     boolean ret = issue(cd, "CANCEL", false, true);
     return ret;
   }
@@ -684,6 +688,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     } else {
       cd.src.epass = null;
     }
+    cd.uri = "sip:" + cd.src.to[1] + "@" + remotehost + ":" + remoteport;
     cd.src.cseq++;
     cd.authsent = false;
     cd.src.extra = null;
@@ -705,7 +710,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
     cd.src.from = new String[]{name, user, remotehost + ":" + remoteport, ":"};
     cd.src.contact = "<sip:" + user + "@" + cd.localhost + ":" + getlocalport() + ">";
-    cd.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
+    cd.uri = "im:" + to + "@" + remotehost + ":" + remoteport;
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.branch = getbranch();
     cd.src.cseq++;
@@ -734,6 +739,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.authsent = false;
     cd.src.extra = null;
     cd.src.to = new String[]{to, to, remotehost + ":" + remoteport, ":"};
+    cd.uri = "im:" + to + "@" + remotehost + ":" + remoteport;
     cd.src.cseq++;
     cd.sdp = msg;
     if (!issue(cd, "MESSAGE", true, true)) {
