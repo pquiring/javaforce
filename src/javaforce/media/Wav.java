@@ -91,11 +91,11 @@ public class Wav {
           int cnt = dataLength / 3;
           samples32 = new int[cnt];
           for(int a=0;a<cnt;a++) {
-            int sam = samples8[cnt * 3 + 2] & 0xff;
+            int sam = samples8[a * 3 + 2] & 0xff;
             sam <<= 8;
-            sam += samples8[cnt * 3 + 1] & 0xff;
+            sam += samples8[a * 3 + 1] & 0xff;
             sam <<= 8;
-            sam += samples8[cnt * 3 + 0] & 0xff;
+            sam += samples8[a * 3 + 0] & 0xff;
             samples32[a] = sam;
           }
           break;
