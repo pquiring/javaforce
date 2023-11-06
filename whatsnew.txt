@@ -2,8 +2,8 @@ What's new...
 
 Nov 6/2023 : JF/48.0
  - VoIP : add instant MESSAGE support
-   - jfPhone/1.24
-   - jfPBX/0.20
+   - jfPhone/1.25
+   - jfPBX/0.33
  - fix linux packaging
 
 Oct 12/2023 : JF/47.0
