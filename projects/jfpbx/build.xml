@@ -8,7 +8,7 @@
   <property name="build" location="classes"/>
   <property name="classpath" location="javaforce.jar"/>
   <property name="jre" location="${home}/jre_base"/>
-  <property name="version" value="0.32"/>
+  <property name="version" value="0.33"/>
 
   <property name="candle_extra" value=""/>
   <property name="light_extra" value="-b sounds/en"/>

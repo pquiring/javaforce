@@ -1,5 +1,7 @@
 CHANGELOG
 =========
+11-6-2023 : v0.33 released
+  - new : added instant MESSAGE support
 8-31-2023 : v0.32 released
   - new : upgraded bouncycastle
 11-3-2021 : v0.31 released
