@@ -1,4 +1,6 @@
 CHANGELOG:
+11-6-2023 : v1.25 released
+  - new : support instant MESSAGE w/ chat history
 9-11-2023 : v1.24 released
   - new : support DNS:SRV records
 8-31-2023 : v1.23 released
