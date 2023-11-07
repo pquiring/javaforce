@@ -8,12 +8,13 @@ package javaforce.jni;
 import java.io.*;
 import java.awt.*;
 
+import javaforce.*;
 import javaforce.linux.*;
 
 public class LnxNative {
   public static void load() {
     Library libs[] = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
-    if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File("/usr/lib/x86_64-linux-gnu")}, libs, ".so", libs.length)) {
+    if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(getArchLibFolder())}, libs, ".so", libs.length)) {
       for(int a=0;a<libs.length;a++) {
         if (libs[a].path == null) {
           System.out.println("Warning:Unable to find library:" + libs[a].name + ".so");
@@ -33,6 +34,18 @@ public class LnxNative {
       }
     }
     lnxInit(libs[0].path, libs[1].path, libs[2].path);
+  }
+
+  /** Returns CPU arch lib folder. */
+  public static String getArchLibFolder() {
+    if (new File("/usr/lib/x86_64-linux-gnu").exists()) {
+      return "/usr/lib/x86_64-linux-gnu";
+    }
+    if (new File("/usr/lib/aarch64-linux-gnu").exists()) {
+      return "/usr/lib/aarch64-linux-gnu";
+    }
+    JFLog.log("Warning:Arch Lib folder not found!");
+    return "/usr/lib";
   }
 
   private static native boolean lnxInit(String libX11, String libGL, String libv4l2);

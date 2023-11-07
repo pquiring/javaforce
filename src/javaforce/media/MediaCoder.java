@@ -36,7 +36,7 @@ public class MediaCoder {
       sysFolders = new File[] {new File(apphome), new File(".")};
       ext = ".dylib";
     } else {
-      sysFolders = new File[] {new File("/usr/lib/x86_64-linux-gnu")};
+      sysFolders = new File[] {new File("/usr/lib"), new File(LnxNative.getArchLibFolder())};
       ext = ".so";
     }
     Library[] libs = {
