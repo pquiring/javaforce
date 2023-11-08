@@ -96,6 +96,7 @@ public class Wav {
             sam += samples8[a * 3 + 1] & 0xff;
             sam <<= 8;
             sam += samples8[a * 3 + 0] & 0xff;
+            sam <<= 8;
             samples32[a] = sam;
           }
           break;
