@@ -1,5 +1,8 @@
 What's new...
 
+Nov 17/2023 : JF/48.1
+ - fix linux/arm64 support
+
 Nov 6/2023 : JF/48.0
  - VoIP : add instant MESSAGE support
    - jfPhone/1.25
