@@ -127,10 +127,10 @@ public class IPL {
   //l,w,h = length,width,height
   //p{text} = prefix barcode with text
 
-  /** Adds standard 2D Barcode (code 39).
+  /** Adds standard Bar Code (code 39).
    * Usually scaleX/scaleY are the same (try 1,1 or 2,2)
    */
-  public void addBarcode2D(int x, int y, int scaleX, int scaleY, String code) {
+  public void addBarCode(int x, int y, int scaleX, int scaleY, String code) {
     if (done) return;
     String str = String.format("B%d;o%d,%d;f0;h%d;w%d;r0;i0;c0,0;d3,%s;", field++, x, y, scaleY, scaleX, code);
     start();
@@ -139,11 +139,11 @@ public class IPL {
     fields.add(code);
   }
 
-  /** Adds 3D QR barcode.
+  /** Adds QR Code.
    * version = size of QR code (how many Alphanumeric codes max it can hold) (ECC level=H) (ie:V4=50, V10=174, V25=1852) (see https://www.qrcode.com/en/about/version.html)
    * scaleXY = scales QR in X/Y direction (try 1,2,3,4,5,...)
    */
-  public void addBarcode3D(int x, int y, int version, int scaleXY, String code) {
+  public void addQRCode(int x, int y, int version, int scaleXY, String code) {
     if (done) return;
     String str = String.format("B%d;o%d,%d;f0;h%d;w%d;r0;i0;c18,0;d3,%s;", field++, x, y, version, scaleXY, code);
     start();
