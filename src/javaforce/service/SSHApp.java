@@ -27,21 +27,21 @@ public class SSHApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(SSH.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(SSH.getBusPort());
+        busClient = new JBusClient(SSHServer.busPack + ".client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(SSHServer.getBusPort());
         busClient.start();
-        busClient.call(SSH.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient.call(SSHServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(SSH.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    busClient.call(SSHServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    busClient.call(SSH.busPack, "restart", "");
+    busClient.call(SSHServer.busPack, "restart", "");
   }
 
   /**
@@ -169,7 +169,7 @@ public class SSHApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(SSH.getLogFile());
+      viewer = new ViewLog(SSHServer.getLogFile());
       viewer.setTitle("SSH Log");
     }
     viewer.setVisible(true);

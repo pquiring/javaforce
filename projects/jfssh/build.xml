@@ -1,7 +1,7 @@
-<project name="jfssh" default="jar" basedir=".">
+<project name="jfsshcfg" default="jar" basedir=".">
   <description>ssh</description>
   <!-- set global properties for this build -->
-  <property name="app" value="jfssh"/>
+  <property name="app" value="jfsshcfg"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.2"/>
   <property name="jre" location="${home}/jre_base_desktop"/>

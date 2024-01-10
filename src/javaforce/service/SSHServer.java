@@ -21,12 +21,12 @@ import javaforce.*;
 import javaforce.net.*;
 import javaforce.jbus.*;
 
-public class SSH extends Thread {
+public class SSHServer extends Thread {
   public final static String busPack = "net.sf.jfssh";
 
   public static boolean debug = false;
 
-  private static SSH ssh;
+  private static SSHServer ssh;
   private static JBusServer busServer;
   private JBusClient busClient;
   private String config;
@@ -69,7 +69,7 @@ public class SSH extends Thread {
         JF.sleep(10);
       }
     }
-    ssh = new SSH();
+    ssh = new SSHServer();
     ssh.start();
   }
 
@@ -295,7 +295,7 @@ public class SSH extends Thread {
     public void restart() {
       JFLog.log("restart");
       ssh.close();
-      ssh = new SSH();
+      ssh = new SSHServer();
       ssh.start();
     }
   }
