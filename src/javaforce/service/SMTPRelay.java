@@ -39,7 +39,7 @@ public class SMTPRelay extends Thread {
   private static volatile boolean active;
   private static Object lock = new Object();
   private static SMTPRelay service;
-  private static javaforce.POP3 pop3;
+  private static POP3 pop3;
 
   private static boolean debug = false;
 
@@ -96,11 +96,11 @@ public class SMTPRelay extends Thread {
       JFLog.log("Please configure!");
       return;
     }
-    javaforce.SMTP smtp = null;  //client
+    SMTP smtp = null;  //client
     try {
       if (debug) JFLog.log("Checking messages...");
       if (pop3 == null) {
-        pop3 = new javaforce.POP3();  //client
+        pop3 = new POP3();  //client
         pop3.debug = debug;
         if (debug) JFLog.log("POP3:connecting...");
         if (pop3_secure)
@@ -108,12 +108,12 @@ public class SMTPRelay extends Thread {
         else
           pop3.connect(pop3_host, pop3_port);
         if (debug) JFLog.log("POP3:auth...");
-        if (!pop3.auth(pop3_user, pop3_pass, javaforce.POP3.AUTH_APOP)) {
+        if (!pop3.auth(pop3_user, pop3_pass, POP3.AUTH_APOP)) {
           throw new Exception("POP3:auth failed!");
         }
       }
       if (debug) JFLog.log("POP3 listing...");
-      javaforce.POP3.Message[] list = pop3.list();
+      POP3.Message[] list = pop3.list();
       if (list == null || list.length == 0) {
         if (!keepalive) {
           pop3.disconnect();
@@ -123,18 +123,18 @@ public class SMTPRelay extends Thread {
         return;
       }
       if (debug || list.length > 0) JFLog.log("Found " + list.length + " messages to relay");
-      for(javaforce.POP3.Message em : list) {
+      for(POP3.Message em : list) {
         if (debug) JFLog.log("Relay message:" + em.idx + ":size=" + em.size);
         byte[] data = pop3.get(em.idx);
         if (debug) JFLog.log("Message size=" + data.length);
-        smtp = new javaforce.SMTP();  //client
+        smtp = new SMTP();  //client
         smtp.debug = debug;
         if (smtp_secure)
           smtp.connectSSL(smtp_host, smtp_port);
         else
           smtp.connect(smtp_host, smtp_port);
         if (smtp_user != null && smtp_pass != null) {
-          if (!smtp.auth(smtp_user, smtp_pass, javaforce.SMTP.AUTH_LOGIN)) {
+          if (!smtp.auth(smtp_user, smtp_pass, SMTP.AUTH_LOGIN)) {
             smtp.disconnect();
             throw new Exception("SMTP auth failed!");
           }
