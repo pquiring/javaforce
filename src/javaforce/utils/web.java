@@ -15,7 +15,7 @@ import javaforce.service.*;
 public class web implements WebHandler {
   public static void main(String[] args) {
     System.out.println("Starting web server on port 80...");
-    Web server = new Web();
+    WebServer server = new WebServer();
     server.start(new web(), 80, false);
   }
 

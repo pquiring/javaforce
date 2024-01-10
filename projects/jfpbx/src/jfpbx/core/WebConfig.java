@@ -24,17 +24,17 @@ public class WebConfig implements WebHandler {
   public static int http_port, https_port, sip_port;
   public static boolean hideAdmin, disableWebRTC;
   private WebRTC webrtc;
-  private Web http, https;
+  private WebServer http, https;
 
   public boolean start() {
     JFLog.log("Starting Web Server on port " + http_port);
-    http = new Web();
+    http = new WebServer();
     http.start(this, http_port, false);
     if (new File(Paths.etc + "jfpbx.key").exists()) {
       System.setProperty("javax.net.ssl.keyStore", Paths.etc + "jfpbx.key");
       System.setProperty("javax.net.ssl.keyStorePassword", "password");
       JFLog.log("Starting Web Server on port " + https_port + " (secure)");
-      https = new Web();
+      https = new WebServer();
       https.start(this, https_port, true);
       if (!disableWebRTC) startWebRTC();
     }

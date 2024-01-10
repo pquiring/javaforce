@@ -25,7 +25,7 @@ import javaforce.ui.*;
 import javaforce.service.*;
 
 public class WebUIServer implements WebHandler, WebSocketHandler {
-  private Web web;
+  private WebServer web;
   private WebUIHandler handler;
 
   /** Enable debug log messages. */
@@ -37,7 +37,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
   public void start(WebUIHandler handler, int port, boolean secure) {
     this.handler = handler;
     if (web != null) stop();
-    web = new Web();
+    web = new WebServer();
     web.setWebSocketHandler(this);
     web.start(this, port, secure);
     JFLog.log("WebUI Server starting on port " + port + "...");

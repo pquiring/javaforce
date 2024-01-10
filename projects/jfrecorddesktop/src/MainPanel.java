@@ -567,7 +567,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
   private int segmentTimeMax;
   private byte[] image;
   private byte[] mpd;
-  private Web broadcaster;
+  private WebServer broadcaster;
   private ArrayList<String> tempFiles = new ArrayList<>();
   private String mediaFile;
   private MediaEncoder encoder;
@@ -1002,7 +1002,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, ActionList
     if (webport > 65535) {
       webport = 80;
     }
-    broadcaster = new Web();
+    broadcaster = new WebServer();
     broadcaster.start(this, webport, false);
   }
 

@@ -13,7 +13,7 @@ import javax.net.ssl.*;
 
 import javaforce.*;
 
-public class Web {
+public class WebServer {
   private WebHandler api;
   private WebSocketHandler wsapi;
   private ServerSocket ss;
@@ -47,8 +47,8 @@ public class Web {
     }
   }
   private static class Server extends Thread {
-    private Web web;
-    public Server(Web web) {
+    private WebServer web;
+    public Server(WebServer web) {
       this.web = web;
     }
     public void run() {
@@ -66,8 +66,8 @@ public class Web {
   private static class Connection extends Thread {
     private Socket s;
     private InputStream is;
-    private Web web;
-    public Connection(Web web, Socket s) {
+    private WebServer web;
+    public Connection(WebServer web, Socket s) {
       this.web = web;
       this.s = s;
     }

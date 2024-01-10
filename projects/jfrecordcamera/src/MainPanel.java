@@ -513,7 +513,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
   private AudioInput mic;
   private RandomAccessFile raf;
   private MediaEncoder encoder;
-  private Web broadcaster;
+  private WebServer broadcaster;
   private ArrayList<String> tempFiles = new ArrayList<>();
   private boolean active = false;
   private boolean working = false;
@@ -1056,7 +1056,7 @@ public class MainPanel extends javax.swing.JPanel implements MediaIO, WebHandler
     if (webport > 65535) {
       webport = 80;
     }
-    broadcaster = new Web();
+    broadcaster = new WebServer();
     broadcaster.start(this, webport, false);
   }
 

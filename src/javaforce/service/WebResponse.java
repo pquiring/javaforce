@@ -33,7 +33,7 @@ public class WebResponse extends OutputStream {
     byte data[] = buf.toByteArray();
     boolean gzip = false;
     if (data.length > 0) {
-      if (Web.config_enable_gzip) {
+      if (WebServer.config_enable_gzip) {
         String accept = req.getHeader("Accept-Encoding");
         if (accept != null) {
           String encodings[] = accept.split(",");
@@ -57,7 +57,7 @@ public class WebResponse extends OutputStream {
     int size = data.length;
     writeHeaders(size, gzip);
     if (data.length > 0) {
-      os.write(Web.chunkHeader(data));
+      os.write(WebServer.chunkHeader(data));
       os.write(data);
       os.write("\r\n0\r\n\r\n".getBytes());
     }

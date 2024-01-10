@@ -7,10 +7,10 @@ import javaforce.*;
 import javaforce.service.*;
 
 public class APIService extends Thread implements WebHandler {
-  private static Web web;
+  private static WebServer web;
 
   public void run() {
-    web = new Web();
+    web = new WebServer();
     web.start(this, 8080, false);
   }
 
