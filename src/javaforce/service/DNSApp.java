@@ -27,21 +27,21 @@ public class DNSApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(DNS.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(DNS.getBusPort());
+        busClient = new JBusClient(DNSServer.busPack + ".client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(DNSServer.getBusPort());
         busClient.start();
-        busClient.call(DNS.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient.call(DNSServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(DNS.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    busClient.call(DNSServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    busClient.call(DNS.busPack, "restart", "");
+    busClient.call(DNSServer.busPack, "restart", "");
   }
 
   /**
@@ -153,7 +153,7 @@ public class DNSApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(DNS.getLogFile());
+      viewer = new ViewLog(DNSServer.getLogFile());
       viewer.setTitle("DNS Log");
     }
     viewer.setVisible(true);

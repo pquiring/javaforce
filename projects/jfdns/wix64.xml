@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
-  <Product Id="*" UpgradeCode="{4A0F1642-9982-47FA-96C8-E5058B62CA7D}" Version="0.12" Language="1033" Name="jfDNS" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{4A0F1642-9982-47FA-96C8-E5058B62CA7D}" Version="0.12" Language="1033" Name="jfDNSServer" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
@@ -12,11 +12,11 @@
     <!-- Step 1: Define the directory structure -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
-        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdns"/>
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdnsserver"/>
       </Directory>
       <Directory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
-<!--        <Directory Id="ApplicationProgramsFolder" Name="jfDNS"/> -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfDNSServer"/> -->
       </Directory>
     </Directory>
 
@@ -26,7 +26,7 @@
         <File Id="jfdnssvc.exe" Source="jfdnssvc.exe" KeyPath="yes">
           <fire:FirewallException
             Id="FirewallRule"
-            Name="jfDNS"
+            Name="jfDNSServer"
             Protocol="udp"
             Port="53"
             Scope="any"
@@ -37,12 +37,12 @@
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"
-          Name="jfDNS"
-          DisplayName="jfDNS"
+          Name="jfDNSServer"
+          DisplayName="jfDNSServer"
           Description="jf DNS Server"
           Start="auto"
           ErrorControl="normal" />
-        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfDNS" Wait="yes" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfDNSServer" Wait="yes" />
       </Component>
     </DirectoryRef>
 
@@ -50,11 +50,11 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{36C58739-955F-4894-AED9-C4B90FD3F275}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfDNS" Description="Java DNS Server" Target="[APPLICATIONROOTDIRECTORY]jfdns.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfDNSServer" Description="Java DNS Server" Target="[APPLICATIONROOTDIRECTORY]jfdns.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfDNS" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfDNSServer" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
 
