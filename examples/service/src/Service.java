@@ -14,7 +14,7 @@ import javaforce.service.*;
 public class Service extends Thread implements WebHandler {
   public static String version = "0.1";
   public static Service service;
-  public static Web web;
+  public static WebServer web;
   public boolean active;
 
   public static final String name = "TemplateService";
@@ -28,7 +28,7 @@ public class Service extends Thread implements WebHandler {
     JFLog.log(name + " started/" + version);
     service = new Service();
     service.start();
-    web = new Web();
+    web = new WebServer();
     web.start(service, port, false);
   }
 
