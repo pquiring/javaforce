@@ -11,7 +11,7 @@ import java.util.*;
 
 import javaforce.*;
 
-public class MQTT extends Thread {
+public class MQTTServer extends Thread {
   public void setListener(MQTTEvents events) {
     this.events = events;
   }
