@@ -28,21 +28,21 @@ public class STUNApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(STUN.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(STUN.getBusPort());
+        busClient = new JBusClient(STUNServer.busPack + ".client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(STUNServer.getBusPort());
         busClient.start();
-        busClient.call(STUN.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient.call(STUNServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(STUN.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    busClient.call(STUNServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    busClient.call(STUN.busPack, "restart", "");
+    busClient.call(STUNServer.busPack, "restart", "");
   }
 
   /**
@@ -154,7 +154,7 @@ public class STUNApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(STUN.getLogFile());
+      viewer = new ViewLog(STUNServer.getLogFile());
       viewer.setTitle("STUN Log");
     }
     viewer.setVisible(true);

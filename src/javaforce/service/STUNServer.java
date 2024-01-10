@@ -30,7 +30,7 @@ import javaforce.*;
 import javaforce.jbus.JBusClient;
 import javaforce.jbus.JBusServer;
 
-public class STUN extends Thread {
+public class STUNServer extends Thread {
   private static int defaultLifeTime = 600;
 
   public final static String busPack = "net.sf.jfstun";
@@ -100,14 +100,14 @@ public class STUN extends Thread {
   }
 
   /** Starts a STUN/TURN server, loading config from file. */
-  public STUN() {
+  public STUNServer() {
     JFLog.append(getLogFile(), true);
     JFLog.setRetention(30);
     loadConfig();
   }
 
   /** Starts a STUN/TURN server with specific config options. */
-  public STUN(String user, String pass, int min, int max) {
+  public STUNServer(String user, String pass, int min, int max) {
     this.user = user;
     this.pass = pass;
     this.min = min;
@@ -840,7 +840,7 @@ public class STUN extends Thread {
     }
     public void restart() {
       stun.close();
-      stun = new STUN();
+      stun = new STUNServer();
       stun.start();
     }
   }
@@ -867,7 +867,7 @@ public class STUN extends Thread {
     doStart();
   }
 
-  private static STUN stun;
+  private static STUNServer stun;
 
   public static void serviceStart(String args[]) {
     if (JF.isWindows()) {
@@ -877,7 +877,7 @@ public class STUN extends Thread {
         JF.sleep(10);
       }
     }
-    stun = new STUN();
+    stun = new STUNServer();
     stun.start();
   }
 
