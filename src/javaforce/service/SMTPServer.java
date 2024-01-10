@@ -19,13 +19,13 @@ import javaforce.*;
 import javaforce.net.*;
 import javaforce.jbus.*;
 
-public class SMTP extends Thread {
+public class SMTPServer extends Thread {
   public final static String busPack = "net.sf.jfsmtp";
 
   public static boolean debug = false;
 
   public interface Events {
-    public void message(SMTP server, String msgfile);
+    public void message(SMTPServer server, String msgfile);
   }
 
   public static String getConfigFile() {
@@ -61,7 +61,7 @@ public class SMTP extends Thread {
     }
   }
 
-  private static SMTP smtp;
+  private static SMTPServer smtp;
   private static Events events;
   private static volatile boolean active;
   private static ArrayList<ServerWorker> servers = new ArrayList<ServerWorker>();
@@ -77,11 +77,11 @@ public class SMTP extends Thread {
   private static ArrayList<Integer> ssl_ports = new ArrayList<>();
   private static boolean digest = false;  //any message is accepted ignoring all recipents (use POP3 admin account to retrieve)
 
-  public SMTP() {
+  public SMTPServer() {
   }
 
   public void setEvents(Events events) {
-    SMTP.events = events;
+    SMTPServer.events = events;
   }
 
   private static void addSession(ClientWorker sess) {
@@ -629,7 +629,7 @@ public class SMTP extends Thread {
         JF.sleep(10);
       }
     }
-    smtp = new SMTP();
+    smtp = new SMTPServer();
     smtp.start();
   }
 
@@ -667,7 +667,7 @@ public class SMTP extends Thread {
     public void restart() {
       JFLog.log("restart");
       smtp.close();
-      smtp = new SMTP();
+      smtp = new SMTPServer();
       smtp.start();
     }
 

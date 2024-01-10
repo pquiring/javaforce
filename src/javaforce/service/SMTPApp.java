@@ -27,21 +27,21 @@ public class SMTPApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(SMTP.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(SMTP.getBusPort());
+        busClient = new JBusClient(SMTPServer.busPack + ".client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(SMTPServer.getBusPort());
         busClient.start();
-        busClient.call(SMTP.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient.call(SMTPServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(SMTP.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    busClient.call(SMTPServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    busClient.call(SMTP.busPack, "restart", "");
+    busClient.call(SMTPServer.busPack, "restart", "");
   }
 
   /**
@@ -185,7 +185,7 @@ public class SMTPApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(SMTP.getLogFile());
+      viewer = new ViewLog(SMTPServer.getLogFile());
       viewer.setTitle("SMTP Log");
     }
     viewer.setVisible(true);
@@ -219,7 +219,7 @@ public class SMTPApp extends javax.swing.JFrame {
   }
 
   private void genKeys() {
-    busClient.call(SMTP.busPack, "genKeys", "\"" + busClient.pack + "\"");
+    busClient.call(SMTPServer.busPack, "genKeys", "\"" + busClient.pack + "\"");
   }
 
   private void showHelp() {
