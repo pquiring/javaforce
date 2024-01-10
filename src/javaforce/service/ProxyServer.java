@@ -16,7 +16,7 @@ import java.security.*;
 import javaforce.*;
 import javaforce.jbus.*;
 
-public class Proxy extends Thread {
+public class ProxyServer extends Thread {
 
   public final static String busPack = "net.sf.jfproxy";
 
@@ -973,7 +973,7 @@ public class Proxy extends Thread {
     }
     public void restart() {
       proxy.close();
-      proxy = new Proxy();
+      proxy = new ProxyServer();
       proxy.start();
     }
   }
@@ -991,7 +991,7 @@ public class Proxy extends Thread {
 
   //Win32 Service
 
-  private static Proxy proxy;
+  private static ProxyServer proxy;
 
   public static void serviceStart(String args[]) {
     if (JF.isWindows()) {
@@ -1001,7 +1001,7 @@ public class Proxy extends Thread {
         JF.sleep(10);
       }
     }
-    proxy = new Proxy();
+    proxy = new ProxyServer();
     proxy.start();
   }
 

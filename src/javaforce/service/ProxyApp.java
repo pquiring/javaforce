@@ -28,21 +28,21 @@ public class ProxyApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(Proxy.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(Proxy.getBusPort());
+        busClient = new JBusClient(ProxyServer.busPack + ".client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(ProxyServer.getBusPort());
         busClient.start();
-        busClient.call(Proxy.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient.call(ProxyServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(Proxy.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    busClient.call(ProxyServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    busClient.call(Proxy.busPack, "restart", "");
+    busClient.call(ProxyServer.busPack, "restart", "");
   }
 
   /**
@@ -154,7 +154,7 @@ public class ProxyApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(Proxy.getLogFile());
+      viewer = new ViewLog(ProxyServer.getLogFile());
       viewer.setTitle("Proxy Log");
     }
     viewer.setVisible(true);
