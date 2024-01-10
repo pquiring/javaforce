@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
-  <Product Id="*" UpgradeCode="{5EA6E3F7-F3BC-45C1-867A-2259484B2479}" Version="0.1" Language="1033" Name="jfFTP" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{5EA6E3F7-F3BC-45C1-867A-2259484B2479}" Version="0.1" Language="1033" Name="jfFTPServer" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
@@ -12,11 +12,11 @@
     <!-- Step 1: Define the directory structure -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
-        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfftp"/>
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfftpserver"/>
       </Directory>
       <Directory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
-<!--        <Directory Id="ApplicationProgramsFolder" Name="jfFTP"/> -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfFTPServer"/> -->
       </Directory>
     </Directory>
 
@@ -26,7 +26,7 @@
         <File Id="jfftpsvc.exe" Source="jfftpsvc.exe" KeyPath="yes">
           <fire:FirewallException
             Id="FirewallRule21"
-            Name="jfFTP"
+            Name="jfFTPServer"
             Protocol="tcp"
             Port="21"
             Scope="any"
@@ -37,12 +37,12 @@
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"
-          Name="jfFTP"
-          DisplayName="jfFTP"
+          Name="jfFTPServer"
+          DisplayName="jfFTPServer"
           Description="jf FTP Server"
           Start="auto"
           ErrorControl="normal" />
-        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfFTP" Wait="yes" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfFTPServer" Wait="yes" />
       </Component>
     </DirectoryRef>
 
@@ -50,7 +50,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{CD9CC532-A506-45FD-835E-E947471B8A00}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTP" Description="Java FTP Server" Target="[APPLICATIONROOTDIRECTORY]jfftpcfg.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTPServer" Description="Java FTP Server" Target="[APPLICATIONROOTDIRECTORY]jfftpcfg.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

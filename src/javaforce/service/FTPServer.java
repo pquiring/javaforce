@@ -16,7 +16,7 @@ import javaforce.*;
 import javaforce.net.*;
 import javaforce.jbus.*;
 
-public class FTP extends Thread {
+public class FTPServer extends Thread {
   public final static String busPack = "net.sf.jfftp";
 
   public static boolean debug = false;
@@ -39,7 +39,7 @@ public class FTP extends Thread {
     }
   }
 
-  private static FTP ftp;
+  private static FTPServer ftp;
   private static volatile boolean active;
   private static ArrayList<ServerWorker> servers = new ArrayList<ServerWorker>();
   private static ArrayList<ClientWorker> clients = new ArrayList<ClientWorker>();
@@ -53,7 +53,7 @@ public class FTP extends Thread {
   private static ArrayList<Integer> ports = new ArrayList<>();
   private static ArrayList<Integer> ssl_ports = new ArrayList<>();
 
-  public FTP() {
+  public FTPServer() {
   }
 
   private static void addSession(ClientWorker sess) {
@@ -945,7 +945,7 @@ public class FTP extends Thread {
         JF.sleep(10);
       }
     }
-    ftp = new FTP();
+    ftp = new FTPServer();
     ftp.start();
   }
 
@@ -983,7 +983,7 @@ public class FTP extends Thread {
     public void restart() {
       JFLog.log("restart");
       ftp.close();
-      ftp = new FTP();
+      ftp = new FTPServer();
       ftp.start();
     }
 

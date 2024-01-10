@@ -27,21 +27,21 @@ public class FTPApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(FTP.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(FTP.getBusPort());
+        busClient = new JBusClient(FTPServer.busPack + ".client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(FTPServer.getBusPort());
         busClient.start();
-        busClient.call(FTP.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient.call(FTPServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(FTP.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    busClient.call(FTPServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    busClient.call(FTP.busPack, "restart", "");
+    busClient.call(FTPServer.busPack, "restart", "");
   }
 
   /**
@@ -185,7 +185,7 @@ public class FTPApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(FTP.getLogFile());
+      viewer = new ViewLog(FTPServer.getLogFile());
       viewer.setTitle("FTP Log");
     }
     viewer.setVisible(true);
@@ -219,7 +219,7 @@ public class FTPApp extends javax.swing.JFrame {
   }
 
   private void genKeys() {
-    busClient.call(FTP.busPack, "genKeys", "\"" + busClient.pack + "\"");
+    busClient.call(FTPServer.busPack, "genKeys", "\"" + busClient.pack + "\"");
   }
 
   private void showHelp() {
