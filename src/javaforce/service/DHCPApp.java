@@ -29,21 +29,21 @@ public class DHCPApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(DHCP.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(DHCP.getBusPort());
+        busClient = new JBusClient(DHCPServer.busPack + ".client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(DHCPServer.getBusPort());
         busClient.start();
-        busClient.call(DHCP.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient.call(DHCPServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(DHCP.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    busClient.call(DHCPServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    busClient.call(DHCP.busPack, "restart", "");
+    busClient.call(DHCPServer.busPack, "restart", "");
   }
 
   /**
@@ -155,7 +155,7 @@ public class DHCPApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(DHCP.getLogFile());
+      viewer = new ViewLog(DHCPServer.getLogFile());
       viewer.setTitle("DHCP Log");
     }
     viewer.setVisible(true);
@@ -166,7 +166,7 @@ public class DHCPApp extends javax.swing.JFrame {
     try {
       DatagramSocket s = new DatagramSocket(68);
       byte[] d = new byte[242];
-      d[0] = DHCP.DHCP_OPCODE_REQUEST;
+      d[0] = DHCPServer.DHCP_OPCODE_REQUEST;
       d[1] = 1;  //ethernet
       d[2] = 6;  //hw len (MAC size)
       d[3] = 0;  //hops
@@ -196,7 +196,7 @@ public class DHCPApp extends javax.swing.JFrame {
       d = new byte[1024];
       p = new DatagramPacket(d, d.length);
       s.receive(p);
-      JFAWT.showMessage("IP", DHCP.IP4toString(d, 16));
+      JFAWT.showMessage("IP", DHCPServer.IP4toString(d, 16));
       s.close();
     } catch (Exception e) {
       JFAWT.showError("Error", e.toString());

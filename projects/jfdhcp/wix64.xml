@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
-  <Product Id="*" UpgradeCode="{0595AC71-0C0B-4F51-9AF6-1355755D944D}" Version="0.11" Language="1033" Name="jfDHCP" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{0595AC71-0C0B-4F51-9AF6-1355755D944D}" Version="0.11" Language="1033" Name="jfDHCPServer" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
@@ -12,11 +12,11 @@
     <!-- Step 1: Define the directory structure -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
-        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdhcp"/>
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfdhcpserver"/>
       </Directory>
       <Directory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
-<!--        <Directory Id="ApplicationProgramsFolder" Name="jfDHCP"/> -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfDHCPServer"/> -->
       </Directory>
     </Directory>
 
@@ -26,7 +26,7 @@
         <File Id="jfdhcpsvc.exe" Source="jfdhcpsvc.exe" KeyPath="yes">
           <fire:FirewallException
             Id="FirewallRule"
-            Name="jfDHCP"
+            Name="jfDHCPServer"
             Protocol="udp"
             Port="67"
             Scope="any"
@@ -37,12 +37,12 @@
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"
-          Name="jfDHCP"
-          DisplayName="jfDHCP"
+          Name="jfDHCPServer"
+          DisplayName="jfDHCPServer"
           Description="jf DHCP Server"
           Start="auto"
           ErrorControl="normal" />
-        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfDHCP" Wait="yes" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfDHCPServer" Wait="yes" />
       </Component>
     </DirectoryRef>
 
@@ -50,11 +50,11 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{9E1741B5-128F-47E9-A19A-2A0E30E09C8F}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfDHCP" Description="Java DHCP Server" Target="[APPLICATIONROOTDIRECTORY]jfdhcp.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfDHCPServer" Description="Java DHCP Server" Target="[APPLICATIONROOTDIRECTORY]jfdhcp.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfDHCP" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfDHCPServer" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
       </Component>
     </DirectoryRef>
 
