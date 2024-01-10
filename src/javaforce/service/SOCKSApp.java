@@ -27,21 +27,21 @@ public class SOCKSApp extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(SOCKS.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(SOCKS.getBusPort());
+        busClient = new JBusClient(SOCKSServer.busPack + ".client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(SOCKSServer.getBusPort());
         busClient.start();
-        busClient.call(SOCKS.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient.call(SOCKSServer.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(SOCKS.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    busClient.call(SOCKSServer.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    busClient.call(SOCKS.busPack, "restart", "");
+    busClient.call(SOCKSServer.busPack, "restart", "");
   }
 
   /**
@@ -185,7 +185,7 @@ public class SOCKSApp extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(SOCKS.getLogFile());
+      viewer = new ViewLog(SOCKSServer.getLogFile());
       viewer.setTitle("SOCKS Log");
     }
     viewer.setVisible(true);
@@ -218,7 +218,7 @@ public class SOCKSApp extends javax.swing.JFrame {
   }
 
   private void genKeys() {
-    busClient.call(SOCKS.busPack, "genKeys", "\"" + busClient.pack + "\"");
+    busClient.call(SOCKSServer.busPack, "genKeys", "\"" + busClient.pack + "\"");
   }
 
   private void showHelp() {

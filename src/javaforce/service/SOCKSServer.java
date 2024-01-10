@@ -17,7 +17,7 @@ import javaforce.*;
 import javaforce.net.*;
 import javaforce.jbus.*;
 
-public class SOCKS extends Thread {
+public class SOCKSServer extends Thread {
   public final static String busPack = "net.sf.jfsocks";
 
   public static boolean debug = false;
@@ -57,10 +57,10 @@ public class SOCKS extends Thread {
   private static ArrayList<ForwardLocal> forward_local_list;
   private static ArrayList<ForwardRemote> forward_remote_list;
 
-  public SOCKS() {
+  public SOCKSServer() {
   }
 
-  public SOCKS(int port, boolean secure) {
+  public SOCKSServer(int port, boolean secure) {
     bind.port = port;
     this.secure = secure;
   }
@@ -1025,7 +1025,7 @@ public class SOCKS extends Thread {
     }
   }
 
-  private static SOCKS socks;
+  private static SOCKSServer socks;
 
   public static void serviceStart(String[] args) {
     if (JF.isWindows()) {
@@ -1035,7 +1035,7 @@ public class SOCKS extends Thread {
         JF.sleep(10);
       }
     }
-    socks = new SOCKS();
+    socks = new SOCKSServer();
     socks.start();
   }
 
@@ -1073,7 +1073,7 @@ public class SOCKS extends Thread {
     public void restart() {
       JFLog.log("restart");
       socks.close();
-      socks = new SOCKS();
+      socks = new SOCKSServer();
       socks.start();
     }
 

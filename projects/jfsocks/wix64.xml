@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:fire="http://schemas.microsoft.com/wix/FirewallExtension">
-  <Product Id="*" UpgradeCode="{88C984E1-2CB6-4457-A6EB-E24ACAD02DB5}" Version="0.13" Language="1033" Name="jfSOCKS" Manufacturer="Peter Quiring">
+  <Product Id="*" UpgradeCode="{88C984E1-2CB6-4457-A6EB-E24ACAD02DB5}" Version="0.13" Language="1033" Name="jfSOCKSServer" Manufacturer="Peter Quiring">
     <Package InstallerVersion="300" Compressed="yes" InstallScope="perMachine" Platform="x64"/>
     <Media Id="1" Cabinet="files.cab" EmbedCab="yes" />
     <UIRef Id="WixUI_Minimal" />
@@ -12,11 +12,11 @@
     <!-- Step 1: Define the directory structure -->
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFiles64Folder">
-        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfsocks"/>
+        <Directory Id="APPLICATIONROOTDIRECTORY" Name="jfsocksserver"/>
       </Directory>
       <Directory Id="ProgramMenuFolder">
 <!-- Use the following if you want Shortcut in its own folder -->
-<!--        <Directory Id="ApplicationProgramsFolder" Name="jfSOCKS"/> -->
+<!--        <Directory Id="ApplicationProgramsFolder" Name="jfSOCKSServer"/> -->
       </Directory>
     </Directory>
 
@@ -26,7 +26,7 @@
         <File Id="jfsockssvc.exe" Source="jfsockssvc.exe" KeyPath="yes">
           <fire:FirewallException
             Id="FirewallRule"
-            Name="jfSOCKS"
+            Name="jfSOCKSServer"
             Protocol="tcp"
             Port="1080"
             Scope="any"
@@ -39,12 +39,12 @@
         <File Id="jfsocks.exe" Source="jfsocks.exe"/>
         <ServiceInstall Id="ServiceInstaller"
           Type="ownProcess"
-          Name="jfSOCKS"
-          DisplayName="jfSOCKS"
+          Name="jfSOCKSServer"
+          DisplayName="jfSOCKSServer"
           Description="jf SOCKS Server"
           Start="auto"
           ErrorControl="normal" />
-        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfSOCKS" Wait="yes" />
+        <ServiceControl Id="StartService" Start="install" Stop="both" Remove="uninstall" Name="jfSOCKSServer" Wait="yes" />
       </Component>
     </DirectoryRef>
 
@@ -56,7 +56,7 @@
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->
-        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfSOCKS" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
+        <RegistryValue Root="HKCU" Key="Software\Microsoft\jfSOCKSServer" Name="installed" Type="integer" Value="1" KeyPath="yes"/>
         <Shortcut Id="ApplicationStartMenuShortcut2" Name="jfSOCKS Client" Description="Java SOCKS Server" Target="[APPLICATIONROOTDIRECTORY]jfsocks-client.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
