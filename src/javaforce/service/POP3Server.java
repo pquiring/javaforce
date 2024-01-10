@@ -20,7 +20,7 @@ import javaforce.*;
 import javaforce.net.*;
 import javaforce.jbus.*;
 
-public class POP3 extends Thread {
+public class POP3Server extends Thread {
   public final static String busPack = "net.sf.jfpop3";
 
   public static boolean debug = false;
@@ -58,7 +58,7 @@ public class POP3 extends Thread {
     }
   }
 
-  private static POP3 pop3;
+  private static POP3Server pop3;
   private static volatile boolean active;
   private static ArrayList<ServerWorker> servers = new ArrayList<ServerWorker>();
   private static ArrayList<ClientWorker> clients = new ArrayList<ClientWorker>();
@@ -74,7 +74,7 @@ public class POP3 extends Thread {
 
   private static final int FLAG_ADMIN = 1;
 
-  public POP3() {
+  public POP3Server() {
   }
 
   private static void addSession(ClientWorker sess) {
@@ -761,7 +761,7 @@ public class POP3 extends Thread {
         JF.sleep(10);
       }
     }
-    pop3 = new POP3();
+    pop3 = new POP3Server();
     pop3.start();
   }
 
@@ -799,7 +799,7 @@ public class POP3 extends Thread {
     public void restart() {
       JFLog.log("restart");
       pop3.close();
-      pop3 = new POP3();
+      pop3 = new POP3Server();
       pop3.start();
     }
 

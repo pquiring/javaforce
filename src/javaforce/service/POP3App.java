@@ -27,21 +27,21 @@ public class POP3App extends javax.swing.JFrame {
     new Thread() {
       public void run() {
         Random r = new Random();
-        busClient = new JBusClient(POP3.busPack + ".client" + r.nextInt(), new JBusMethods());
-        busClient.setPort(POP3.getBusPort());
+        busClient = new JBusClient(POP3Server.busPack + ".client" + r.nextInt(), new JBusMethods());
+        busClient.setPort(POP3Server.getBusPort());
         busClient.start();
-        busClient.call(POP3.busPack, "getConfig", "\"" + busClient.pack + "\"");
+        busClient.call(POP3Server.busPack, "getConfig", "\"" + busClient.pack + "\"");
       }
     }.start();
     JFAWT.centerWindow(this);
   }
 
   public void writeConfig() {
-    busClient.call(POP3.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
+    busClient.call(POP3Server.busPack, "setConfig", busClient.quote(busClient.encodeString(config.getText())));
   }
 
   public void restart() {
-    busClient.call(POP3.busPack, "restart", "");
+    busClient.call(POP3Server.busPack, "restart", "");
   }
 
   /**
@@ -185,7 +185,7 @@ public class POP3App extends javax.swing.JFrame {
 
   public void showViewLog() {
     if (viewer == null || viewer.isClosed) {
-      viewer = new ViewLog(POP3.getLogFile());
+      viewer = new ViewLog(POP3Server.getLogFile());
       viewer.setTitle("POP3 Log");
     }
     viewer.setVisible(true);
@@ -219,7 +219,7 @@ public class POP3App extends javax.swing.JFrame {
   }
 
   private void genKeys() {
-    busClient.call(POP3.busPack, "genKeys", "\"" + busClient.pack + "\"");
+    busClient.call(POP3Server.busPack, "genKeys", "\"" + busClient.pack + "\"");
   }
 
   private void showHelp() {
