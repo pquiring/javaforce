@@ -66,9 +66,10 @@ public class Settings {
 
   public static void loadSettings() {
     String fn = JF.getUserPath() + "/.jfterm.xml";
-    XML xml = new XML();
+    XMLTree xml = new XMLTree();
+    xml.setUseUniqueNames(false);
     xml.read(fn);
-    XML.XMLTag tag = xml.getTag(new Object[] {"jfterm", "settings"});
+    XMLTree.XMLTag tag = xml.getTag(new Object[] {"jfterm", "settings"});
     if (tag == null) return;  //no settings found
     xml.writeClass(tag, settings);
     fnt = JFAWT.getMonospacedFont(0, settings.fontSize);
@@ -76,9 +77,10 @@ public class Settings {
 
   public static void saveSettings() {
     String fn = JF.getUserPath() + "/.jfterm.xml";
-    XML xml = new XML();
+    XMLTree xml = new XMLTree();
+    xml.setUseUniqueNames(false);
     xml.root.setName("jfterm");
-    XML.XMLTag tag = xml.addTag(xml.root, "settings", "", "");
+    XMLTree.XMLTag tag = xml.addTag(xml.root, "settings", "", "");
     xml.readClass(tag, settings);
     xml.write(fn);
     fnt = JFAWT.getMonospacedFont(0, settings.fontSize);
