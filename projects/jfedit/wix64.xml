@@ -26,6 +26,7 @@
         <File Id="jfedit.jar" Source="jfedit.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="jfedit.exe" Source="jfedit.exe" KeyPath="yes"/>
+        <File Id="jftextedit.exe" Source="jftextedit.exe"/>
 
         <ProgId Id="jfEdit.txt" Description="Text Document" Advertise="yes" Icon="icon.ico">
           <Extension Id="txt" ContentType="text/plain">
