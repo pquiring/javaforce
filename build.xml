@@ -103,7 +103,7 @@
     <antcall target="jar-xml-apis-ext"/>
   </target>
 
-  <target name="compile" depends="getjars,depjars" description="compile the source">
+  <target name="compile" depends="depjars" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir="${build}"/>
     <javac srcdir="${src}" destdir="${build}" target="${jdkver}" source="${jdkver}" debug="true" includeantruntime="false" nativeheaderdir="native/headers">
