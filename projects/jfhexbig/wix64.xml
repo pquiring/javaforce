@@ -26,6 +26,7 @@
         <File Id="jfhexbig.jar" Source="jfhexbig.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="jfhexbig.exe" Source="jfhexbig.exe" KeyPath="yes"/>
+        <File Id="jftexthexbig.exe" Source="jftexthexbig.exe"/>
       </Component>
     </DirectoryRef>
 

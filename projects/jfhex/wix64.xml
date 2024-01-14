@@ -26,6 +26,7 @@
         <File Id="jfhex.jar" Source="jfhex.jar"/>
         <File Id="javaforce.jar" Source="javaforce.jar"/>
         <File Id="jfhex.exe" Source="jfhex.exe" KeyPath="yes"/>
+        <File Id="jftexthex.exe" Source="jftexthex.exe"/>
       </Component>
     </DirectoryRef>
 
