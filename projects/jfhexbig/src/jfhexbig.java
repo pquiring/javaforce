@@ -357,12 +357,16 @@ public class jfhexbig extends javax.swing.JFrame implements FindEvent, ReplaceEv
    */
   public static String args[];
   public static void main(String args[]) {
-    jfhexbig.args = args;
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      public void run() {
-        new jfhexbig().setVisible(true);
-      }
-    });
+    if (JF.isUnix() && System.getenv("DISPLAY") == null) {
+      THex.main(args);
+    } else {
+      jfhexbig.args = args;
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          new jfhexbig().setVisible(true);
+        }
+      });
+    }
   }
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
