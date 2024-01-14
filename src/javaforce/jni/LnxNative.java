@@ -81,8 +81,10 @@ public class LnxNative {
     new Thread() {
       public void run() {
         try {
-          UnixDomainSocketAddress socketAddress = UnixDomainSocketAddress.of(getServiceSocket());
+          String socketPath = getServiceSocket();
+          UnixDomainSocketAddress socketAddress = UnixDomainSocketAddress.of(socketPath);
           ServerSocketChannel serverChannel = ServerSocketChannel.open(StandardProtocolFamily.UNIX);
+          new File(socketPath).delete();
           serverChannel.bind(socketAddress);
           boolean active = true;
           while (active) {
@@ -95,6 +97,7 @@ public class LnxNative {
               }
             }
             channel.close();
+            new File(socketPath).delete();
           }
         } catch (Exception e) {
           JFLog.log(e);
