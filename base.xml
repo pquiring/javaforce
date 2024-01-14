@@ -4,7 +4,7 @@
   <property name="ico" value="${app}.ico"/>
   <property name="cfg" value="${app}.cfg"/>
   <property name="jarpath" value="."/>
-  <property name="jdkver" value="11"/>
+  <property name="jdkver" value="17"/>
   <property name="lib" value="${home}/lib"/>
 
   <import file="versions.xml"/>
