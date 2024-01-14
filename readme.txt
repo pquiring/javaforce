@@ -37,6 +37,9 @@ First get some tools installed, all projects are built with Apache Ant (http://a
   debian:apt install git ant
   fedora:yum install git ant
   windows:install git, OpenJDK and ant from various sources (msys2, cygwin, oracle, etc.)
+Before checking out the source make sure to configure line endings:
+  linux/mac : git config --global core.autocrlf input
+  windows : git config --global core.autocrlf true
 Checkout Javaforce:
   git clone http://github.com/pquiring/javaforce
   cd javaforce
