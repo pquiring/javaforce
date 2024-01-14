@@ -350,6 +350,21 @@ bool JavaThread(void *ignore) {
   convertClass(mainclass);
 
 #ifdef _JF_SERVICE
+  if (g_argc == 2 && (strcmp(g_argv[1], "--stop") == 0)) {
+    //request service shutdown
+    cls = env->FindClass("javaforce/jni/LnxNative");
+    if (cls == NULL) {
+      error("Unable to find LnxNative class");
+      return false;
+    }
+    mid = env->GetStaticMethodID(cls, "lnxServiceRequestStop", "()V");
+    if (mid == NULL) {
+      error("Unable to find lnxServiceRequestStop method");
+      return false;
+    }
+    env->CallStaticVoidMethod(cls, mid);
+    return true;
+  }
   //setup service shutdown
   cls = env->FindClass("javaforce/jni/LnxNative");
   if (cls == NULL) {

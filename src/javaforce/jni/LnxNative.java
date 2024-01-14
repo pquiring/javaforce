@@ -7,6 +7,10 @@ package javaforce.jni;
 
 import java.io.*;
 import java.awt.*;
+import java.net.*;
+import java.nio.*;
+import java.nio.channels.*;
+import java.nio.file.*;
 
 import javaforce.*;
 import javaforce.linux.*;
@@ -48,15 +52,75 @@ public class LnxNative {
     return "/usr/lib";
   }
 
+  private static String readSocketMessage(SocketChannel channel) throws IOException {
+    ByteBuffer buffer = ByteBuffer.allocate(1024);
+    int bytesRead = channel.read(buffer);
+    if (bytesRead < 0) return null;
+    byte[] bytes = new byte[bytesRead];
+    buffer.flip();
+    buffer.get(bytes);
+    String message = new String(bytes);
+    return message;
+  }
+
+  private static String getServiceSocket() {
+    try {
+      String path = Path.of("/proc/self/exe").toRealPath().toString();
+      int idx = path.lastIndexOf('/');
+      String app = path.substring(idx+1);
+      String sockpath = "/usr/lib/systemd/system/" + app + ".socket";
+      return sockpath;
+    } catch (Exception e) {
+      JFLog.log(e);
+      return null;
+    }
+  }
+
   private static native boolean lnxInit(String libX11, String libGL, String libv4l2);
   private static void lnxServiceInit() {
-    Runtime.getRuntime().addShutdownHook(new Thread() {
+    new Thread() {
       public void run() {
-        lnxServiceStop();
+        try {
+          UnixDomainSocketAddress socketAddress = UnixDomainSocketAddress.of(getServiceSocket());
+          ServerSocketChannel serverChannel = ServerSocketChannel.open(StandardProtocolFamily.UNIX);
+          serverChannel.bind(socketAddress);
+          boolean active = true;
+          while (active) {
+            SocketChannel channel = serverChannel.accept();
+            while (active) {
+              String msg = readSocketMessage(channel);
+              if (msg == null) break;
+              switch (msg) {
+                case "stop": lnxServiceStop(); active = false; break;
+              }
+            }
+            channel.close();
+          }
+        } catch (Exception e) {
+          JFLog.log(e);
+        }
       }
-    });
+    }.start();
   }
   private static native boolean lnxServiceStop();
+  private static void lnxServiceRequestStop() {
+    //connect to unix socket and send stop command
+    try {
+      SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX);
+      UnixDomainSocketAddress socketAddress = UnixDomainSocketAddress.of(getServiceSocket());
+      channel.connect(socketAddress);
+      ByteBuffer buffer = ByteBuffer.allocate(1024);
+      buffer.clear();
+      buffer.put("stop".getBytes());
+      buffer.flip();
+      while (buffer.hasRemaining()) {
+        channel.write(buffer);
+      }
+      channel.close();
+    } catch (Exception e) {
+      JFLog.log(e);
+    }
+  }
 
   public static boolean have_x11 = true;
   public static boolean have_gl = true;
