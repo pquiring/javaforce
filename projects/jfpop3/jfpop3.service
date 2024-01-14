@@ -4,6 +4,7 @@ After=jfbusserver.service
 
 [Service]
 ExecStart=/usr/bin/jfpop3svc
+ExecStop=/usr/bin/jfpop3svc --stop
 Restart=always
 
 [Install]

@@ -4,6 +4,7 @@ After=jfbusserver.service
 
 [Service]
 ExecStart=/usr/bin/jfqemu
+ExecStop=/usr/bin/jfqemu --stop
 Restart=always
 
 [Install]

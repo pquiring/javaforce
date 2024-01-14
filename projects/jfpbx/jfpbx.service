@@ -4,6 +4,7 @@ After=jfbusserver.service
 
 [Service]
 ExecStart=/usr/bin/jfpbx
+ExecStop=/usr/bin/jfpbx --stop
 Restart=always
 
 [Install]

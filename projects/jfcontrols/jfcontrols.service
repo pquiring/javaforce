@@ -3,6 +3,7 @@ Description=jfControls
 
 [Service]
 ExecStart=/usr/bin/jfcontrols
+ExecStop=/usr/bin/jfcontrols --stop
 Restart=always
 
 [Install]

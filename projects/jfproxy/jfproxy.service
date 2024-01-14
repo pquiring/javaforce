@@ -4,6 +4,7 @@ After=jfbusserver.service
 
 [Service]
 ExecStart=/usr/bin/jfproxysvc
+ExecStop=/usr/bin/jfproxysvc --stop
 Restart=always
 
 [Install]

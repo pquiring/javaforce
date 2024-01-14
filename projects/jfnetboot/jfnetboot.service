@@ -3,6 +3,7 @@ Description=JavaForce Net Boot Service
 
 [Service]
 ExecStart=/usr/bin/jfnetboot
+ExecStop=/usr/bin/jfnetboot --stop
 Restart=always
 
 [Install]

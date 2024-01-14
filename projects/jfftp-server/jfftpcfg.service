@@ -4,6 +4,7 @@ After=jfbusserver.service
 
 [Service]
 ExecStart=/usr/bin/jfftpsvc
+ExecStop=/usr/bin/jfftpsvc --stop
 Restart=always
 
 [Install]

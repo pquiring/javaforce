@@ -4,6 +4,7 @@ After=jfbusserver.service
 
 [Service]
 ExecStart=/usr/bin/jfsmtpsvc
+ExecStop=/usr/bin/jfsmtpsvc --stop
 Restart=always
 
 [Install]

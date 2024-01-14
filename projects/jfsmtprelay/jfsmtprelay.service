@@ -4,6 +4,7 @@ After=jfbusserver.service
 
 [Service]
 ExecStart=/usr/bin/jfsmtprelaysvc
+ExecStop=/usr/bin/jfsmtprelaysvc --stop
 Restart=always
 
 [Install]

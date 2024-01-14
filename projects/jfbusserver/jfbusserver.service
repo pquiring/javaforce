@@ -4,6 +4,7 @@ After=
 
 [Service]
 ExecStart=/usr/bin/jfbusserver
+ExecStop=/usr/bin/jfbusserver --stop
 Restart=always
 
 [Install]
