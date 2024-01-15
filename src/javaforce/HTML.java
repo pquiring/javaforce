@@ -8,6 +8,57 @@ package javaforce;
  */
 
 public class HTML {
+
+  /** Generate html.form.input
+   * @param name = element name (optional)
+   * @param id = element id (optional)
+   * @param value = default value (optional)
+   */
+  public String input_field(String name, String id, String value) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<input");
+    if (name != null) {
+      sb.append(" name='");
+      sb.append(name);
+      sb.append("'");
+    }
+    if (id != null) {
+      sb.append(" id='");
+      sb.append(id);
+      sb.append("'");
+    }
+    if (value != null) {
+      sb.append(" value='");
+      sb.append(value);
+      sb.append("'");
+    }
+    sb.append(">");
+    return sb.toString();
+  }
+
+  /** Generate html.form.input[type=checkbox]
+   * @param name = element name (optional)
+   * @param id = element id (optional)
+   * @param checked = checkbox is initial checked
+   */
+  public String input_checkbox(String name, String id, boolean checked) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<input type=checkbox");
+    if (name != null) {
+      sb.append(" name='");
+      sb.append(name);
+      sb.append("'");
+    }
+    if (id != null) {
+      sb.append(" id='");
+      sb.append(id);
+      sb.append("'");
+    }
+    if (checked) sb.append(" checked");
+    sb.append(">");
+    return sb.toString();
+  }
+
   /** Generate html.form.select.
    * @param name = element name (optional)
    * @param id = element id (optional)
