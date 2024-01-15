@@ -98,7 +98,7 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     right.add(row);
-    HTML html = new HTML("hr");
+    HTMLContainer html = new HTMLContainer("hr");
     html.setText("");
     html.setStyle("width", "100%");
     row.add(html);

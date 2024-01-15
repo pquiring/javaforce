@@ -111,7 +111,7 @@ public class ConfigPanel extends Panel {
     Column col = new Column();
     panel.add(col);
     col.add(new Label("jfNetBoot/" + Settings.version));
-    col.add(new HTML("hr"));
+    col.add(new HTMLContainer("hr"));
     col.add(new Label("FileSystems:" + FileSystems.getCount()));
     col.add(new Label("Clients:" + Clients.getCount()));
     Row row = new Row();
@@ -131,7 +131,7 @@ public class ConfigPanel extends Panel {
     panel.add(col);
     //add top Label
     col.add(new Label("File Systems"));
-    col.add(new HTML("hr"));
+    col.add(new HTMLContainer("hr"));
     //add buttons on top : [Create] [Help]
     Row opts = new Row();
     col.add(opts);
@@ -244,7 +244,7 @@ public class ConfigPanel extends Panel {
     panel.add(col);
     //add top Label
     col.add(new Label("Clients"));
-    col.add(new HTML("hr"));
+    col.add(new HTMLContainer("hr"));
     //add buttons on top : [Help]
     Row opts = new Row();
     col.add(opts);
@@ -427,7 +427,7 @@ public class ConfigPanel extends Panel {
     panel.add(col);
     //add top Label
     col.add(new Label("Commands"));
-    col.add(new HTML("hr"));
+    col.add(new HTMLContainer("hr"));
     //add buttons on top : [Create] [Help]
     Row opts = new Row();
     col.add(opts);
@@ -520,7 +520,7 @@ public class ConfigPanel extends Panel {
     panel.add(col);
     //add top Label
     col.add(new Label("DHCP"));
-    col.add(new HTML("hr"));
+    col.add(new HTMLContainer("hr"));
     //add buttons on top : [Help]
     Row opts = new Row();
     col.add(opts);

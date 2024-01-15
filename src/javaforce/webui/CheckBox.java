@@ -8,12 +8,12 @@ package javaforce.webui;
 import javaforce.webui.event.*;
 
 public class CheckBox extends Container {
-  private HTML input;
-  private HTML label;
+  private HTMLContainer input;
+  private HTMLContainer label;
   private boolean selected;
 
   public CheckBox(String text) {
-    input = new HTML("input");
+    input = new HTMLContainer("input");
     input.setEnclosed(false);
     input.addAttr("type", "checkbox");
     input.addEvent("onchange", "onCheckBoxChange(event, this);");
@@ -21,7 +21,7 @@ public class CheckBox extends Container {
       selected = !selected;
       onChanged(new String[0]);
     });
-    label = new HTML("label");
+    label = new HTMLContainer("label");
     label.setText(text);
     input.add(label);
     add(input);

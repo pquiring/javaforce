@@ -991,7 +991,7 @@ public class ConfigService implements WebUIHandler {
         }.start();
       });
     }
-    col.add(new HTML("br"));
+    col.add(new HTMLContainer("br"));
     {
       InnerPanel server_panel = new InnerPanel("Server Setup");
       col.add(server_panel);
