@@ -49,7 +49,7 @@ public class HTML {
     if (!found && selected_value != null && selected_text != null) {
       sb.append("<option value='");
       sb.append(selected_value);
-      sb.append(" selected>");
+      sb.append("' selected>");
       sb.append(selected_text);
       sb.append("</option>");
     }
