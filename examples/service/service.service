@@ -1,0 +1,11 @@
+[Unit]
+Description=JavaForce Example Service
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/service
+ExecStop=/usr/bin/service --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
