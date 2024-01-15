@@ -1,5 +1,15 @@
 What's new...
 
+Jan 15/2024 : JF/49.0
+ - to improve linux services a unix socket is created to send commands to the service.
+   - the "stop" command is sent to gracefully stop the service
+ - unix sockets require Java 16 so the minimum version has been bumped to JDK 17
+     which is the next LTS release
+ - all services in javaforce.service.* were renamed to include "Server" to avoid
+     confusion with the client names in javaforce.*
+ - new : javaforce.HTML
+   - misc functions to generate HTML code
+
 Nov 17/2023 : JF/48.1
  - fix linux/arm64 support
 
