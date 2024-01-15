@@ -134,8 +134,9 @@ GraalVM support for AWT is still a work in progress.
 Requirements
 ------------
   - JDK 17+
-  - Apache Ant 1.10.x
-  - Windows : VisualC++ compiler (64bit), wixtoolset v3, AMD64
+  - Apache Ant 1.10+
+  - Linux : gcc
+  - Windows : Visual C++ build tools, wixtoolset v3, AMD64
   - Mac : AMD64
   - FFMpeg 5.1+ sources(headers) + shared libraries
   - glfw for OpenGL support
