@@ -14,7 +14,7 @@ public class HTML {
    * @param id = element id (optional)
    * @param value = default value (optional)
    */
-  public String input_field(String name, String id, String value) {
+  public static String input_field(String name, String id, String value) {
     StringBuilder sb = new StringBuilder();
     sb.append("<input");
     if (name != null) {
@@ -41,7 +41,7 @@ public class HTML {
    * @param id = element id (optional)
    * @param checked = checkbox is initial checked
    */
-  public String input_checkbox(String name, String id, boolean checked) {
+  public static String input_checkbox(String name, String id, boolean checked) {
     StringBuilder sb = new StringBuilder();
     sb.append("<input type=checkbox");
     if (name != null) {
