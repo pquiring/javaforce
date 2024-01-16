@@ -2,7 +2,7 @@
   <description>SOCKS Server</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfsockssvc"/>
-  <property name="apptype" value="s"/>
+  <property name="apptype" value="service"/>
   <property name="home" location="../.."/>
 
   <import file="${home}/base.xml"/>

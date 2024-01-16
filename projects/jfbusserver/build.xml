@@ -2,7 +2,7 @@
   <description>Bus Server</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfbusserver"/>
-  <property name="apptype" value="s"/>
+  <property name="apptype" value="service"/>
   <property name="home" location="../.."/>
   <property name="version" value="0.1"/>
 

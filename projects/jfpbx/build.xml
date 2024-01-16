@@ -2,7 +2,7 @@
   <description>jfpbx</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfpbx"/>
-  <property name="apptype" value="s"/>
+  <property name="apptype" value="service"/>
   <property name="home" location="../.."/>
   <property name="src" location="src"/>
   <property name="build" location="classes"/>

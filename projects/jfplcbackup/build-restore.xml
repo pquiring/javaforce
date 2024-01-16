@@ -1,7 +1,7 @@
 <project name="jfplcrestore" basedir=".">
   <!-- set global properties for this build -->
   <property name="app" value="jfplcrestore"/>
-  <property name="apptype" value="c"/>
+  <property name="apptype" value="console"/>
   <property name="home" value="../.."/>
 
   <import file="${home}/base.xml"/>

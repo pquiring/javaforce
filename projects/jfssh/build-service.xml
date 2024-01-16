@@ -1,7 +1,7 @@
 <project name="jfsshsvc" basedir=".">
   <!-- set global properties for this build -->
   <property name="app" value="jfsshsvc"/>
-  <property name="apptype" value="s"/>
+  <property name="apptype" value="service"/>
   <property name="home" value="../.."/>
 
   <import file="${home}/base.xml"/>

@@ -2,7 +2,7 @@
   <description>jfdataloggerplus</description>
   <!-- set global properties for this build -->
   <property name="app" value="jfdataloggerplus"/>
-  <property name="apptype" value="s"/>
+  <property name="apptype" value="service"/>
   <property name="home" location="../.."/>
   <property name="jre" location="${home}/jre_base_desktop"/>
   <property name="src" location="src"/>
