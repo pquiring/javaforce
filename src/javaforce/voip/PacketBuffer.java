@@ -7,8 +7,15 @@ import javaforce.*;
 public class PacketBuffer {
   private static final int maxPacketsSize = 16 * 1024 * 1024;
   private static final int maxPackets = 256;
+  public PacketBuffer() {
+    log = 0;
+    init();
+  }
   public PacketBuffer(int log) {
     this.log = log;
+    init();
+  }
+  private void init() {
     data = new byte[maxPacketsSize];
     nextFrame.data = new byte[maxPacketsSize];
   }
