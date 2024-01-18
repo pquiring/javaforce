@@ -243,6 +243,13 @@ JavaVMInitArgs *BuildArgs() {
   int idx;
   char *opts[64];
 
+#ifdef _JF_DEBUG
+  opts[nOpts++] = "-Dcom.sun.management.jmxremote";
+  opts[nOpts++] = "-Dcom.sun.management.jmxremote.port=9010";
+  opts[nOpts++] = "-Dcom.sun.management.jmxremote.local.only=false";
+  opts[nOpts++] = "-Dcom.sun.management.jmxremote.authenticate=false";
+  opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
+#endif
   opts[nOpts++] = MakeString("-Djava.app.home=%s", exepath);
   if (graal) {
     opts[nOpts++] = (char*)"-Djava.graal=true";

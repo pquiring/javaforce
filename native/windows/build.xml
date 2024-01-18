@@ -12,8 +12,8 @@
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64.exe /link /subsystem:windows /entry:mainCRTStartup"/>
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64c.exe /link /subsystem:console"/>
     <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /D_JF_SERVICE windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../win64s.exe /link /subsystem:console"/>
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /D_JF_CLI windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../../bin/jfexecw.exe /link /subsystem:windows /entry:mainCRTStartup"/>
-    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /D_JF_CLI windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../../bin/jfexec.exe /link /subsystem:console"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /D_JF_CLI /D_JF_DEBUG windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../../bin/jfexecw.exe /link /subsystem:windows /entry:mainCRTStartup"/>
+    <exec command="cl /I '${java.home}/include' /I '${java.home}/include/win32' /D_JF_CLI /D_JF_DEBUG windows.cpp native.lib user32.lib gdi32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib strmiids.lib opengl32.lib /Fe: ../../bin/jfexec.exe /link /subsystem:console"/>
 
     <delete>
       <fileset dir="." includes="*.obj"/>

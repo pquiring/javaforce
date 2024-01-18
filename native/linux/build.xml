@@ -18,7 +18,7 @@
     <exec command="strip -R .note.gnu.build-id ../linux64s.bin"/>
 
     <!-- build cli version -->
-    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -Wno-write-strings -D_JF_CLI linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexec"/>
+    <exec command="gcc ${opt} -I ${java.home}/include -I ${java.home}/include/linux -L /usr/lib/x86_64-linux-gnu -Wno-write-strings -D_JF_CLI -D_JF_DEBUG linux.cpp native.a -ldl -lpthread -lX11 -lXrandr -lXinerama -lXcursor -lpam -lncurses -lstdc++ -lm -o ../../bin/jfexec"/>
 
     <delete>
       <fileset dir="." includes="*.o"/>

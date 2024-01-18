@@ -131,6 +131,12 @@ To build a project using Graal use the following Ant Tasks.
     - library name should be the full class name where main() is defined (ie: javaforce.utils.CopyPath.dll)
 GraalVM support for AWT is still a work in progress.
 
+Debugging
+---------
+The native loaders in /bin enable JMX debugging support on port 9010.
+These loaders are used when you run an app with "ant run".
+From VisualVM you can connect to the JMX as localhost:9010
+
 Requirements
 ------------
   - JDK 17+
