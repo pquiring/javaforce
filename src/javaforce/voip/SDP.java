@@ -114,6 +114,18 @@ public class SDP implements Cloneable {
       }
       return null;
     }
+    public String toString() {
+      StringBuilder sb = new StringBuilder();
+      sb.append(type);
+      sb.append(",");
+      sb.append(mode);
+      sb.append(",codecs={");
+      for(Codec codec : codecs) {
+        sb.append(codec);
+      }
+      sb.append("}");
+      return sb.toString();
+    }
   }
   public int log;
   public void setLog(int id) {
@@ -186,7 +198,7 @@ public class SDP implements Cloneable {
     sb.append("SDP:" + streams.length + "[");
     for(int a=0;a<streams.length;a++) {
       if (a > 0) sb.append(",");
-      sb.append("Stream=" + streams[a].type + "," + streams[a].mode);
+      sb.append("Stream=" + streams[a]);
     }
     sb.append("]");
     return sb.toString();

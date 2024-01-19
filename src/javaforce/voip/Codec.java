@@ -18,4 +18,8 @@ public class Codec {
   public boolean equals(Codec other) {
     return name.equals(other.name);
   }
+
+  public String toString() {
+    return "{" + name + ":" + id + "}";
+  }
 }
