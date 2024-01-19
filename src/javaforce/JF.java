@@ -12,8 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.*;
 
 /**
- * A collection of static methods. Many methods help reduce try/catch clutter by
- * returning error codes.
+ * A collection of useful static methods.
  *
  * @author Peter Quiring
  */

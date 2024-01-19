@@ -135,7 +135,10 @@ public class JFLog {
     return close(DEFAULT_LOG);
   }
 
-  /** Uses a timestamp instead of date/time for each message logged. */
+  /** Uses a timestamp instead of date/time for each message logged.
+   * Timestamp is based on time when this method is called.
+   * Effects all logs.
+   */
   public static void enableTimestamp(boolean state) {
     timestampBase = System.nanoTime() / 1000000;
     useTimestamp = state;
@@ -152,13 +155,6 @@ public class JFLog {
     synchronized(list) {
       log = list.get(id);
     }
-    if (log == null) {
-      System.out.println(msg);
-      return false;
-    }
-    if (!log.enabled) {
-      return true;
-    }
     if (!useTimestamp) {
       Calendar cal = Calendar.getInstance();
       msg = String.format("[%1$04d/%2$02d/%3$02d %4$02d:%5$02d:%6$02d] %7$s\r\n",
@@ -166,6 +162,13 @@ public class JFLog {
               cal.get(Calendar.MINUTE), cal.get(Calendar.SECOND), msg);
     } else {
       msg = String.format("[%1$d] %2$s\r\n", (System.nanoTime() / 1000000) - timestampBase, msg);
+    }
+    if (log == null) {
+      System.out.println(msg);
+      return false;
+    }
+    if (!log.enabled) {
+      return true;
     }
     synchronized (log.lock) {
       if (log.stdout != null) {

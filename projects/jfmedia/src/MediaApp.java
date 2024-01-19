@@ -6,10 +6,12 @@
 
 import java.awt.*;
 import java.io.*;
+import java.net.*;
 
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.media.*;
+import javaforce.voip.*;
 
 public class MediaApp extends javax.swing.JFrame {
 
@@ -19,6 +21,7 @@ public class MediaApp extends javax.swing.JFrame {
    * Creates new form MediaApp
    */
   public MediaApp() {
+    RTSPURL.register();
     initComponents();
     JFImage icon = new JFImage();
     icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfmedia.png"));
@@ -28,9 +31,18 @@ public class MediaApp extends javax.swing.JFrame {
     setContentPane(panel);
     setPosition();
     if (args.length > 0) {
-      File file = new File(args[0]);
-      if (file.exists()) {
-        panel.play(file);
+      String arg = args[0];
+      if (arg.startsWith("rtsp://")) {
+        try {
+          panel.play(new URI(arg).toURL());
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      } else {
+        File file = new File(args[0]);
+        if (file.exists()) {
+          panel.play(file);
+        }
       }
     }
     setTitle("jfMedia/" + version);

@@ -29,7 +29,9 @@ public class VideoBuffer {
    * Returns null if buffer is full.
    */
   public JFImage getNewFrame() {
-    if (headInUse) freeNewFrame();
+    if (headInUse) {
+      freeNewFrame();
+    }
     int newHead = head + 1;
     if (newHead == images.length) newHead = 0;
     if (newHead == tail) return null;  //buffer full

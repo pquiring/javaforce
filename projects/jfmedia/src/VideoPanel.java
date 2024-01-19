@@ -212,19 +212,17 @@ public class VideoPanel extends javax.swing.JPanel {
       return;
     }
     needPainting = true;
-    java.awt.EventQueue.invokeLater(new Runnable() {
-      public void run() {
-        img = new_img;
-        repaint();
-      }
-    });
+    try {
+      java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+          img = new_img;
+          repaint();
+        }
+      });
+    } catch (Exception e) {}
   }
 
   public void paintComponent(Graphics g) {
-    if (!needPainting) {
-      JFLog.log("VideoPanel:not painting");
-      return;
-    }
     int w = getWidth();
     int h = getHeight();
     //paint controls

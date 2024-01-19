@@ -285,21 +285,27 @@ public class RTPChannel {
           Codec codec = stream.codecs[a];
           if (codec.equals(RTP.CODEC_H263)) {
             JFLog.log(log, "codec = H.263");
+            haveVcodec = true;
             break;
           } else if (codec.equals(RTP.CODEC_H263_1998)) {
             JFLog.log(log, "codec = H.263-1998");
+            haveVcodec = true;
             break;
           } else if (codec.equals(RTP.CODEC_H263_2000)) {
             JFLog.log(log, "codec = H.263-2000");
+            haveVcodec = true;
             break;
           } else if (codec.equals(RTP.CODEC_JPEG)) {
             JFLog.log(log, "codec = JPEG");
+            haveVcodec = true;
             break;
           } else if (codec.equals(RTP.CODEC_H264)) {
             JFLog.log(log, "codec = H.264");
+            haveVcodec = true;
             break;
           } else if (codec.equals(RTP.CODEC_VP8)) {
             JFLog.log(log, "codec = VP8");
+            haveVcodec = true;
             break;
           }
         }

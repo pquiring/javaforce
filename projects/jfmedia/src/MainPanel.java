@@ -6,6 +6,7 @@
 
 import java.io.*;
 import java.util.*;
+import java.net.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -14,15 +15,23 @@ import javax.swing.table.*;
 import javaforce.*;
 import javaforce.awt.*;
 import javaforce.jbus.*;
-import javaforce.jni.*;
+import javaforce.voip.*;
 import javaforce.media.*;
 
 public class MainPanel extends javax.swing.JPanel implements ActionListener {
+
+  private final static boolean debug_buffers = false;
+  private final static boolean debug_motion = false;
+  private final static boolean debug_motion_image = false;
+  private final static boolean debug_short_clips = false;
+  private final static boolean debug_log = false;
+  private boolean wait_next_key_frame;
 
   /**
    * Creates new form MainPanel
    */
   public MainPanel() {
+    JFLog.enableTimestamp(true);
     initComponents();
     playIcon = new javax.swing.ImageIcon(getClass().getResource("/play.png"));
     pauseIcon = new javax.swing.ImageIcon(getClass().getResource("/pause.png"));
@@ -73,6 +82,8 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     extract = new javax.swing.JButton();
     jSeparator3 = new javax.swing.JToolBar.Separator();
     addFolder = new javax.swing.JButton();
+    jSeparator4 = new javax.swing.JToolBar.Separator();
+    jButton1 = new javax.swing.JButton();
     time = new javax.swing.JSlider();
 
     jSplitPane1.setResizeWeight(0.5);
@@ -111,7 +122,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       }
     });
     table.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-    table.setShowVerticalLines(false);
     table.addMouseListener(new java.awt.event.MouseAdapter() {
       public void mouseClicked(java.awt.event.MouseEvent evt) {
         tableMouseClicked(evt);
@@ -127,7 +137,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
 
     jSplitPane1.setRightComponent(jScrollPane2);
 
-    jToolBar1.setFloatable(false);
     jToolBar1.setRollover(true);
 
     play.setIcon(new javax.swing.ImageIcon(getClass().getResource("/play.png"))); // NOI18N
@@ -202,6 +211,18 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       }
     });
     jToolBar1.add(addFolder);
+    jToolBar1.add(jSeparator4);
+
+    jButton1.setText("Network Source");
+    jButton1.setFocusable(false);
+    jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+    jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+    jButton1.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        jButton1ActionPerformed(evt);
+      }
+    });
+    jToolBar1.add(jButton1);
 
     time.setValue(0);
     time.addChangeListener(new javax.swing.event.ChangeListener() {
@@ -293,14 +314,23 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     addFolder();
   }//GEN-LAST:event_addFolderActionPerformed
 
+  private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    GetNetworkSourceDialog dialog = new GetNetworkSourceDialog(null, true);
+    dialog.setVisible(true);
+    if (!dialog.accepted) return;
+    play(dialog.getURL());
+  }//GEN-LAST:event_jButton1ActionPerformed
+
   // Variables declaration - do not modify//GEN-BEGIN:variables
   private javax.swing.JButton addFolder;
   private javax.swing.JButton extract;
+  private javax.swing.JButton jButton1;
   private javax.swing.JScrollPane jScrollPane1;
   private javax.swing.JScrollPane jScrollPane2;
   private javax.swing.JToolBar.Separator jSeparator1;
   private javax.swing.JToolBar.Separator jSeparator2;
   private javax.swing.JToolBar.Separator jSeparator3;
+  private javax.swing.JToolBar.Separator jSeparator4;
   private javax.swing.JSplitPane jSplitPane1;
   private javax.swing.JToolBar jToolBar1;
   private javax.swing.JButton next;
@@ -317,7 +347,8 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   private XMLTree.XMLTag library, playlists, media;
   private XMLTree.XMLTag music, video;  //library sub-tags
   private ArrayList<String> tableFiles = new ArrayList<String>();
-  private MediaDecoder decoder;  //ffmpeg decoder
+  private MediaDecoder decoder;
+  private MediaVideoDecoder video_decoder;
   private long frameCount;
   private long audioCount;
   private final Object countLock = new Object();
@@ -331,7 +362,8 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   private int randomIdx, randomIdxList[];
   private StatusCellRenderer statusCellRenderer = new StatusCellRenderer();
   private JBusClient jbusClient;
-  private ReadThread readThread;
+  private FileReader fileReader;
+  private NetworkReader networkReader;
   private Thread playThread;
   private static MainPanel This;
   private long fileLength;
@@ -458,8 +490,8 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     model.setValueAt(icon_playing, idx, 0);
     currentIdx = idx;
     playing = true;
-    readThread = new ReadThread(tableFiles.get(idx));
-    readThread.start();
+    fileReader = new FileReader(tableFiles.get(idx));
+    fileReader.start();
     play.setIcon(pauseIcon);
     timer = new javax.swing.Timer(1000, this);
     timer.start();
@@ -470,24 +502,54 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     if (playing) {stop(true); return;}
     currentIdx = -1;
     playing = true;
-    readThread = new ReadThread(file.getAbsolutePath());
-    readThread.start();
+    fileReader = new FileReader(file.getAbsolutePath());
+    fileReader.start();
+    play.setIcon(pauseIcon);
+    timer = new javax.swing.Timer(1000, this);
+    timer.start();
+  }
+
+  /** Play a network source directly. */
+  public void play(URL url) {
+    if (playing) {stop(true); return;}
+    if (url == null) {
+      JFAWT.showError("Error", "Invalid URL");
+      return;
+    }
+    currentIdx = -1;
+    playing = true;
+    networkReader = new NetworkReader(url);
+    networkReader.start();
     play.setIcon(pauseIcon);
     timer = new javax.swing.Timer(1000, this);
     timer.start();
   }
 
   public synchronized void stop(boolean wait) {
-    if (!playing) return;
-    if (decoder == null) return;
-    if (readThread == null) return;
+    if (!playing) {
+      JFLog.log("stop:not playing");
+      return;
+    }
+    if (decoder == null && video_decoder == null) {
+      JFLog.log("stop:no decoder running");
+      return;
+    }
+    if (fileReader == null && networkReader == null) {
+      JFLog.log("stop:no reader running");
+      return;
+    }
     timer.stop();
     timer = null;
     playing = false;
-    if (wait) {
-      JFLog.log("wait for read thread");
-      try {readThread.join();} catch (Exception e) {JFLog.log(e);}
-      JFLog.log("read thread done");
+    if (wait || true) {
+      JFLog.log("stop:waiting for reader thread to stop");
+      if (fileReader != null) {
+        try {fileReader.join();} catch (Exception e) {JFLog.log(e);}
+      }
+      if (networkReader != null) {
+        try {networkReader.join();} catch (Exception e) {JFLog.log(e);}
+      }
+      JFLog.log("stop:reader thread done");
     }
     play.setIcon(playIcon);
     if (currentIdx != -1) model.setValueAt(null, currentIdx, 0);
@@ -498,7 +560,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   private void pause() {
     if (!playing) return;
     if (paused) return;
-    if (decoder == null) return;
+    if (decoder == null && video_decoder == null) return;
     play.setIcon(playIcon);
     if (videoPanel != null) videoPanel.play().setIcon(playIcon);
     paused = true;
@@ -521,7 +583,11 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       long pos;
       if (fps > 0) {
         //video
-        pos = (long)(frameCount / decoder.getFrameRate());
+        if (decoder == null) {
+          pos = 0;
+        } else {
+          pos = (long)(frameCount / decoder.getFrameRate());
+        }
       } else {
         //audio only
         pos = audioCount / (44100 * chs);
@@ -728,17 +794,17 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   //too small can cause problems
   //too large causes resizes to take a long time to take effect
   //the problem is that some video files are not interlaced very well
-  final int buffer_seconds = 4;
   final int pre_buffer_seconds = 2;
 
-  public class ReadThread extends Thread implements MediaIO {
+  public class FileReader extends Thread implements MediaIO {
     private String file;
-    int m_in;  //input data
-    int m_out[] = new int[4];  //output data
-    RandomAccessFile raf;
-    long fileRead = 0;
-    byte fileBuf[] = new byte[64*1024];
-    public ReadThread(String file) {
+    private RandomAccessFile raf;
+    private long fileRead = 0;
+    private byte fileBuf[] = new byte[64*1024];
+
+    private final int buffer_seconds = 4;
+
+    public FileReader(String file) {
       this.file = file;
     }
     public void run() {
@@ -777,6 +843,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
           width = getWidth();
           height = getHeight();
           decoder.resize(width, height);
+          if (fps <= 0) {
+            fps = 24;
+          }
           video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
           playThread = new PlayAudioVideoThread();
           playThread.start();
@@ -910,6 +979,348 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       return pos;
     }
   }
+
+  private static int nextPort = 5000;
+  private static synchronized int getLocalPort() {
+    if (nextPort > 10000) nextPort = 5000;
+    int port = nextPort;
+    nextPort += 2;
+    return port;
+  }
+
+  public class NetworkReader extends Thread implements MediaIO, RTSPClientInterface, RTPInterface {
+    private URL url;
+    private RTSPClient rtsp;
+    private RTP rtp;
+    private RTPChannel channel;
+    private RTPH264 h264;
+    private SDP sdp;
+    private PacketBuffer packets_decode;
+    private PacketBuffer packets_encode;
+    private long lastPacket;
+    private long now;
+    private int decoded_frame[];
+    private int decoded_x, decoded_y, decoded_xy;
+    private int log = 0;
+
+    private final int buffer_seconds = 4;
+
+    public NetworkReader(URL url) {
+      this.url = url;
+    }
+    public void run() {
+      frameCount = 0;
+      audioCount = 0;
+      seekPosition = -1;
+      audio_buffer = null;
+      video_buffer = null;
+      width = -1;
+      height = -1;
+      resizeVideo = false;
+      eof = false;
+      preBuffering = true;
+      packets_decode = new PacketBuffer();
+      packets_encode = new PacketBuffer();
+
+      try {
+        rtsp = new RTSPClient();
+        int port = url.getPort();
+        if (port == -1) {
+          port = 554;  //default RTSP port
+        }
+        rtsp.init(url.getHost(), port, getLocalPort(), this, TransportType.TCP);
+        String user_pass = url.getUserInfo();
+        if (user_pass != null) {
+          int idx = user_pass.indexOf(":");
+          String user = user_pass.substring(0, idx);
+          String pass = user_pass.substring(idx + 1);
+          rtsp.setUserPass(user, pass);
+        }
+        rtsp.options(url.toString());
+
+        fileLength = -1;
+        String err = null;
+        mediaLength = -1;
+        videoPanel = new VideoPanel();
+        java.awt.EventQueue.invokeLater(new Runnable() {
+          public void run() {
+            setPanel(videoPanel);
+          }
+        });
+        videoPanel.start();
+        //TODO : choose correct AV player
+        playThread = new PlayVideoOnlyThread();
+        playThread.start();
+        while (playing && !eof) {
+          if (paused) {
+            JF.sleep(100);  //TODO:use a lock with wait() and notify() instead
+            preBuffering = true;  //pre buffer again after unpause
+            continue;
+          }
+          if ((video_buffer != null && video_buffer.size() >= fps * (buffer_seconds-1)) || (audio_buffer != null && audio_buffer.size() > (44100 * chs * (buffer_seconds-1)))) {
+            preBuffering = false;  //in case we don't even have pre_buffer_seconds of video frames
+            int sleep;
+            if (fps > 0) {
+              sleep = 1000 / (int)fps;
+//              JFLog.log("video sleeping:" + sleep + ":" + fps);
+            } else {
+              sleep = 1000 / ((44100 * chs) / (audio_bufsiz));
+//              JFLog.log("audio sleeping:" + sleep);
+            }
+            JFLog.log("sleep=" + sleep);
+            JF.sleep(sleep);
+            continue;
+          }
+        }
+        JFLog.log("NetworkReader:closing");
+        close(true);
+        if (err != null) JFAWT.showError("Error", err);
+      } catch (Exception e) {
+        JFAWT.showError("Error", e.toString());
+        JFLog.log(e);
+      }
+      try {
+        JFLog.log("wait for play thread");
+        playThread.join();
+        JFLog.log("play thread done");
+      } catch (Exception e) {
+        JFLog.log(e);
+      }
+      playThread = null;
+      audio_buffer = null;
+      video_buffer = null;
+      if (videoPanel != null) {
+        videoPanel.stop();
+        videoPanel = null;
+        setPanel(MainPanel.this);
+      }
+      if (playing) MainPanel.this.stop(false);
+      video_decoder = null;
+    }
+
+    private void close(boolean teardown) {
+      JFLog.log("close:1");
+      if (rtsp != null) {
+        if (teardown) {
+          rtsp.teardown(url.toString());
+        }
+        rtsp.uninit();
+        rtsp = null;
+      }
+      JFLog.log("close:2");
+      if (rtp != null) {
+        rtp.stop();
+        rtp = null;
+      }
+      channel = null;
+      JFLog.log("close:3");
+      if (video_decoder != null) {
+        video_decoder.stop();
+        video_decoder = null;
+      }
+      JFLog.log("close:4");
+    }
+
+    //interface MediaIO
+    public int read(MediaCoder coder, byte data[]) {
+      int read = 0;
+      try {
+        //TODO : read network data
+      } catch (Exception e) {
+        JFLog.log(e);
+        return read;
+      }
+      if (read == -1) read = 0;
+      return read;
+    }
+    public int write(MediaCoder coder, byte data[]) {
+      //jfmedia does not create media files
+      return 0;
+    }
+    public long seek(MediaCoder coder, long pos, int how) {
+      return -1;
+    }
+
+    //RTSPClient Interface
+    public void onOptions(RTSPClient client) {
+      JFLog.log("onOptions");
+      client.describe(url.toString());
+    }
+
+    public void onDescribe(RTSPClient client, SDP sdp) {
+      JFLog.log("onDescribe");
+      this.sdp = sdp;
+      JFLog.log("SDP=" + sdp);
+      SDP.Stream stream = sdp.getFirstVideoStream();
+      if (stream == null) {
+        JFLog.log("Error:CameraWorker:onDescribe():SDP does not contain video stream");
+        return;
+      }
+      //IP/port in SDP is all zeros
+      stream.setIP(client.getRemoteIP());
+      stream.setPort(-1);
+      if (video_decoder != null) {
+        video_decoder.stop();
+        video_decoder = null;
+      }
+      video_decoder = new MediaVideoDecoder();
+      boolean status;
+      if (fps <= 0) {
+        fps = 24;
+      }
+      decoded_x = MainPanel.this.getWidth();
+      decoded_y = MainPanel.this.getHeight();
+      decoded_xy = decoded_x * decoded_y;
+      width = decoded_x;
+      height = decoded_y;
+      video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
+      status = video_decoder.start(MediaCoder.AV_CODEC_ID_H264, decoded_x, decoded_y);
+      if (!status) {
+        JFLog.log("Error:MediaVideoDecoder.start() failed");
+        return;
+      }
+      rtp = new RTP();
+      rtp.init(this);
+      rtp.start();
+      channel = rtp.createChannel(stream);
+      channel.start();
+      h264 = new RTPH264();
+      client.setup(url.toString(), rtp.getlocalrtpport(), 0);
+    }
+
+    public void onSetup(RTSPClient client) {
+      JFLog.log("onSetup");
+      client.play(url.toString());
+    }
+
+    public void onPlay(RTSPClient client) {
+      JFLog.log("onPlay");
+      //connect to RTP stream and start decoding video
+    }
+
+    public void onTeardown(RTSPClient client) {
+      JFLog.log("onTeardown");
+      //stop RTP stream
+      close(false);
+    }
+
+    //RTP Interface
+
+    public void rtpSamples(RTPChannel rtp) {
+    }
+
+    public void rtpDigit(RTPChannel rtp, char key) {
+    }
+
+    public void rtpPacket(RTPChannel rtp, byte[] buf, int offset, int length) {
+    }
+
+    public void rtcpPacket(RTPChannel rtp, byte[] buf, int offset, int length) {
+    }
+
+    public void rtpH263(RTPChannel rtp, byte[] buf, int offset, int length) {
+    }
+
+    public void rtpH263_1998(RTPChannel rtp, byte[] buf, int offset, int length) {
+    }
+
+    public void rtpH263_2000(RTPChannel rtp, byte[] buf, int offset, int length) {
+    }
+
+    public void rtpH264(RTPChannel rtp, byte[] buf, int offset, int length) {
+      try {
+        //I frame : 9 ... 5 (key frame)
+        //P frame : 9 ... 1 (diff frame)
+        lastPacket = System.currentTimeMillis();
+        Packet packet = h264.decode(buf, 0, length);
+        if (packet == null) {
+          return;
+        }
+        int type = packet.data[4] & 0x1f;
+        switch (type) {
+          case 7:  //SPS
+          case 8:  //PPS
+          case 1:  //P frame
+          case 5:  //I frame
+            break;
+          default:
+            return;  //all others ignore
+        }
+        packets_decode.add(packet);
+        packets_encode.add(packet);
+        packets_decode.cleanPackets(true);
+        packets_encode.cleanPackets(true);
+        if (!packets_decode.haveCompleteFrame()) return;
+        boolean key_frame = packets_decode.isNextFrame_KeyFrame();
+        if (debug_buffers && key_frame) {
+          JFLog.log(log, "packets_decode=" + packets_decode.toString());
+          JFLog.log(log, "packets_encode=" + packets_decode.toString());
+        }
+        if (wait_next_key_frame) {
+          if (!key_frame) {
+            packets_decode.reset();
+            packets_encode.reset();
+            return;
+          }
+          wait_next_key_frame = false;
+        }
+        Packet nextPacket = packets_decode.getNextFrame();
+        decoded_frame = video_decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
+        if (decoded_frame == null) {
+          JFLog.log(log, "Error:newFrame == null:packet.length=" + nextPacket.length);
+          packets_decode.reset();
+          packets_encode.reset();
+          //decoding error : delete all frames till next key frame
+          wait_next_key_frame = true;
+          return;
+        } else {
+          if (false) {
+            int video_width = video_decoder.getWidth();
+            int video_height = video_decoder.getHeight();
+            float video_fps = video_decoder.getFrameRate();
+            JFLog.log(log, "Note : detected width/height=" + video_width + "x" + video_height);
+            JFLog.log(log, "Note : detected FPS=" + video_fps);
+          }
+          if (width > 0 && height > 0) {
+            JFImage img = video_buffer.getNewFrame();
+            if (img != null) {
+              if ((img.getWidth() != width) || (img.getHeight() != height)) {
+                img.setSize(width, height);
+              }
+              img.putPixels(decoded_frame, 0, 0, width, height, 0);
+              video_buffer.freeNewFrame();
+            } else {
+              JFLog.log("Warning : VideoBuffer overflow");
+            }
+          }
+        }
+        packets_decode.removeNextFrame();
+        now = lastPacket;
+/*
+        if (true) {
+          while (packets_encode.haveCompleteFrame()) {
+            key_frame = packets_encode.isNextFrame_KeyFrame();
+            nextPacket = packets_encode.getNextFrame();
+//            frames.add(nextPacket, key_frame);
+            frameCount++;
+            packets_encode.removeNextFrame();
+          }
+        }
+*/
+      } catch (Exception e) {
+        JFLog.log(log, e);
+      }
+    }
+
+    public void rtpVP8(RTPChannel rtp, byte[] buf, int offset, int length) {
+    }
+
+    public void rtpJPEG(RTPChannel rtp, byte[] buf, int offset, int length) {
+    }
+
+    public void rtpInactive(RTPChannel rtp) {
+    }
+  }
   public class PlayAudioVideoThread extends Thread {
     public void run() {
       double frameDelay = 1000.0f / fps;
@@ -922,6 +1333,14 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       double current = System.currentTimeMillis();
       int skip = 0;
       while (playing) {
+        if (video_buffer == null) {
+          JF.sleep(100);
+          continue;
+        }
+        if (audio_buffer == null) {
+          JF.sleep(100);
+          continue;
+        }
         if (preBuffering) {
           //wait till buffers are 50% full before starting
           while (!eof && playing && preBuffering) {
@@ -935,11 +1354,13 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         if (eof) {
           if ((video_buffer.size() == 0) && (audio_buffer.size() < audio_bufsiz)) break;
         }
-        while (audio_buffer.size() >= audio_bufsiz && samplesToWrite >= audio_bufsiz) {
-          audio_buffer.get(samples, 0, audio_bufsiz);
-          output.write(samples);
-          samplesToWrite -= audio_bufsiz;
-          synchronized(countLock) { audioCount += audio_bufsiz; };
+        if (audio_buffer != null) {
+          while (audio_buffer.size() >= audio_bufsiz && samplesToWrite >= audio_bufsiz) {
+            audio_buffer.get(samples, 0, audio_bufsiz);
+            output.write(samples);
+            samplesToWrite -= audio_bufsiz;
+            synchronized(countLock) { audioCount += audio_bufsiz; };
+          }
         }
         if (video_buffer.size() > 0) {
           JFImage img = video_buffer.getNextFrame();
@@ -963,9 +1384,13 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         current += frameDelay;
         double now = System.currentTimeMillis();
         double delay = (current - now);
-        if (delay >= 1.0) {
-          JF.sleep((int)delay);
+        if (delay < 1) {
+          delay = 1;
         }
+        if (delay > 1000) {
+          delay = 1000;
+        }
+        JF.sleep((int)delay);
       }
       output.stop();
       JFLog.log("play thread exit");
@@ -981,6 +1406,10 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       short samples[] = new short[audio_bufsiz];
       double current = System.currentTimeMillis();
       while (playing) {
+        if (audio_buffer == null) {
+          JF.sleep(100);
+          continue;
+        }
         if (preBuffering) {
           //wait till buffers are 50% full before starting
           while (!eof && playing && preBuffering) {
@@ -1003,11 +1432,69 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         current += frameDelay;
         double now = System.currentTimeMillis();
         double delay = (current - now);
-        if (delay >= 1.0) {
-          JF.sleep((int)delay);
+        if (delay < 1) {
+          delay = 1;
         }
+        if (delay > 1000) {
+          delay = 1000;
+        }
+        JF.sleep((int)delay);
       }
       output.stop();
+      JFLog.log("play thread exit");
+    }
+  }
+  public class PlayVideoOnlyThread extends Thread {
+    public void run() {
+      double frameDelay = 1000.0f / fps;
+      double current = System.currentTimeMillis();
+      int skip = 0;
+      while (playing) {
+        if (video_buffer == null) {
+          JF.sleep(100);
+          continue;
+        }
+        if (preBuffering) {
+          //wait till buffers are 50% full before starting
+          while (!eof && playing && preBuffering) {
+            if (video_buffer.size() >= (fps * pre_buffer_seconds)) break;
+            JF.sleep(25);
+          }
+          preBuffering = false;
+        }
+        if (eof) {
+          if (video_buffer.size() == 0) break;
+        }
+        if (video_buffer.size() > 0) {
+          JFImage img = video_buffer.getNextFrame();
+          synchronized(countLock) { frameCount++; }
+          while (skip > 0 && video_buffer.size() > 1) {
+            if (img == null) break;
+            skip--;
+            video_buffer.freeNextFrame();
+            img = video_buffer.getNextFrame();
+            synchronized(countLock) { frameCount++; }
+          }
+          skip = 0;
+          if (img != null) {
+            videoPanel.setImage(img);
+            video_buffer.freeNextFrame();
+          }
+        } else {
+          JFLog.log("Playback too slow - skipping a frame");
+          skip++;
+        }
+        current += frameDelay;
+        double now = System.currentTimeMillis();
+        double delay = (current - now);
+        if (delay < 1) {
+          delay = 1;
+        }
+        if (delay > 1000) {
+          delay = 1000;
+        }
+        JF.sleep((int)delay);
+      }
       JFLog.log("play thread exit");
     }
   }
