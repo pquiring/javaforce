@@ -513,12 +513,16 @@ public abstract class SIP {
 
   /**
    * Parses the SDP content.
+   *
+   * @param msg = SDP text
+   * @param log = JFLog log id
    */
-  public static SDP getSDP(String msg[]) {
+  public static SDP getSDP(String msg[], int log) {
     String type = getHeader("Content-Type:", msg);
     if (type == null) type = getHeader("c:", msg);  //short form
     if (type == null || type.indexOf("application/sdp") == -1) return null;
     SDP sdp = new SDP();
+    sdp.setLog(log);
     SDP.Stream stream = null;
     int idx;
     int start = -1;
@@ -526,7 +530,7 @@ public abstract class SIP {
       if (msg[a].length() == 0) {start = a+1; break;}
     }
     if (start == -1) {
-      JFLog.log("SIP.getSDP() : No SDP found");
+      JFLog.log(log, "SIP.getSDP() : No SDP found");
       return null;
     }
     int acnt = 1;
@@ -536,7 +540,7 @@ public abstract class SIP {
       if (ln.startsWith("c=")) {
         //c=IN IP4 1.2.3.4
         idx = ln.indexOf("IP4 ");
-        if (idx == -1) {JFLog.log("SIP.getSDP() : Unsupported c field:" + ln); continue;}
+        if (idx == -1) {JFLog.log(log, "SIP.getSDP() : Unsupported c field:" + ln); continue;}
         String ip = ln.substring(idx+4);
         if (stream == null) {
           sdp.ip = ip;
@@ -582,7 +586,7 @@ public abstract class SIP {
           stream.profile = SDP.Profile.SAVPF;
         } else {
           stream.profile = SDP.Profile.UNKNOWN;
-          JFLog.log("SIP.getSDP() : Unsupported profile:" + p[i]);
+          JFLog.log(log, "SIP.getSDP() : Unsupported profile:" + p[i]);
         }
         stream.port = JF.atoi(f[1]);
         for(int b=3;b<f.length;b++) {
@@ -669,6 +673,9 @@ public abstract class SIP {
           byte salt[] = Arrays.copyOfRange(keys, 16, 16 + 14);
           stream.addKey(f[1], key, salt);
         }
+        else if (ln.startsWith("a=framerate:")) {
+          sdp.framerate = JF.atof(ln.substring(12));
+        }
         else {
           sdp.otherAttributes.add(ln.substring(2));
         }
@@ -700,6 +707,10 @@ public abstract class SIP {
       }
     }
     return sdp;
+  }
+
+  public static SDP getSDP(String msg[]) {
+    return getSDP(msg, 0);
   }
 
   /**

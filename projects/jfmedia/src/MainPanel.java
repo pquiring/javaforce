@@ -541,7 +541,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     timer.stop();
     timer = null;
     playing = false;
-    if (wait || true) {
+    if (wait) {
       JFLog.log("stop:waiting for reader thread to stop");
       if (fileReader != null) {
         try {fileReader.join();} catch (Exception e) {JFLog.log(e);}
@@ -555,6 +555,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     if (currentIdx != -1) model.setValueAt(null, currentIdx, 0);
     time.setValue(0);
     if (videoPanel != null) videoPanel.time().setValue(0);
+    fps = -1;
   }
 
   private void pause() {
@@ -784,7 +785,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   private VideoBuffer video_buffer;
   final int audio_bufsiz = 1024;
   final int chs = 2;  //currently all formats are converted to stereo
-  float fps;
+  float fps = -1;
   int width, height;
   int new_width, new_height;
   boolean resizeVideo;
@@ -1062,12 +1063,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             int sleep;
             if (fps > 0) {
               sleep = 1000 / (int)fps;
-//              JFLog.log("video sleeping:" + sleep + ":" + fps);
             } else {
               sleep = 1000 / ((44100 * chs) / (audio_bufsiz));
-//              JFLog.log("audio sleeping:" + sleep);
             }
-            JFLog.log("sleep=" + sleep);
             JF.sleep(sleep);
             continue;
           }
@@ -1165,11 +1163,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       }
       video_decoder = new MediaVideoDecoder();
       boolean status;
-      if (fps <= 0) {
-        fps = 24;
-      }
-      decoded_x = MainPanel.this.getWidth();
-      decoded_y = MainPanel.this.getHeight();
+      fps = sdp.getFrameRate();
+      decoded_x = getWidth();
+      decoded_y = getHeight();
       decoded_xy = decoded_x * decoded_y;
       width = decoded_x;
       height = decoded_y;
@@ -1323,7 +1319,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   }
   public class PlayAudioVideoThread extends Thread {
     public void run() {
-      double frameDelay = 1000.0f / fps;
+      double frameDelay = -1;
       double samplesPerFrame = (44100.0 * ((double)chs)) / fps;
       JFLog.log("samplesPerFrame=" + samplesPerFrame);
       double samplesToWrite = 0;
@@ -1340,6 +1336,13 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         if (audio_buffer == null) {
           JF.sleep(100);
           continue;
+        }
+        if (frameDelay == -1) {
+          if (fps == -1) {
+            JF.sleep(100);
+            continue;
+          }
+          frameDelay = 1000.0f / fps;
         }
         if (preBuffering) {
           //wait till buffers are 50% full before starting
@@ -1446,13 +1449,20 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
   }
   public class PlayVideoOnlyThread extends Thread {
     public void run() {
-      double frameDelay = 1000.0f / fps;
+      double frameDelay = -1;
       double current = System.currentTimeMillis();
       int skip = 0;
       while (playing) {
         if (video_buffer == null) {
           JF.sleep(100);
           continue;
+        }
+        if (frameDelay == -1) {
+          if (fps == -1) {
+            JF.sleep(100);
+            continue;
+          }
+          frameDelay = 1000.0f / fps;
         }
         if (preBuffering) {
           //wait till buffers are 50% full before starting

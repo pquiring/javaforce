@@ -137,6 +137,7 @@ public class SDP implements Cloneable {
   public String owner;
   public String session;
   public long time_start, time_stop;
+  public float framerate;
   public ArrayList<String> otherAttributes = new ArrayList<String>();  //list of unknown attributes (a=...)
   public ArrayList<String> otherParameters = new ArrayList<String>();  //list of unknown parameters (?=...)
 
@@ -192,6 +193,9 @@ public class SDP implements Cloneable {
   }
   public boolean hasVideo() {
     return getFirstVideoStream() != null;
+  }
+  public float getFrameRate() {
+    return framerate;
   }
   public String toString() {
     StringBuilder sb = new StringBuilder();
