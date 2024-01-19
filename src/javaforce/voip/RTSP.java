@@ -11,6 +11,9 @@ import javaforce.*;
  */
 
 public abstract class RTSP {
+  static {
+    RTSPURL.register();
+  }
   private Worker worker;
   private RTSPInterface iface;
   private boolean active = true;
