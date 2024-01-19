@@ -36,7 +36,7 @@ public class ExecProject implements ShellProcessListener {
       cfg = app + ".cfg";
     }
     String home = tools.getProperty("home");
-    String exec = "jfexec";
+    String exec = "jfexecd";  //use debug version
     if (JF.isWindows()) {
       String apptype = tools.getProperty("apptype");
       if (apptype == null) {
