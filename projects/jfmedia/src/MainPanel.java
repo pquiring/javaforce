@@ -999,6 +999,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     private PacketBuffer packets;
     private long lastPacket;
     private long now;
+    private long lastKeepAlive;
     private int decoded_frame[];
     private int decoded_x, decoded_y, decoded_xy;
     private int log = 0;
@@ -1022,20 +1023,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       packets = new PacketBuffer();
 
       try {
-        rtsp = new RTSPClient();
-        int port = url.getPort();
-        if (port == -1) {
-          port = 554;  //default RTSP port
-        }
-        rtsp.init(url.getHost(), port, getLocalPort(), this, TransportType.TCP);
-        String user_pass = url.getUserInfo();
-        if (user_pass != null) {
-          int idx = user_pass.indexOf(":");
-          String user = user_pass.substring(0, idx);
-          String pass = user_pass.substring(idx + 1);
-          rtsp.setUserPass(user, pass);
-        }
-        rtsp.options(url.toString());
+        connect();
 
         fileLength = -1;
         String err = null;
@@ -1050,6 +1038,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         //TODO : choose correct AV player
         playThread = new PlayVideoOnlyThread();
         playThread.start();
+        lastKeepAlive = System.currentTimeMillis();
         while (playing && !eof) {
           if (paused) {
             JF.sleep(100);  //TODO:use a lock with wait() and notify() instead
@@ -1067,6 +1056,19 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             JF.sleep(sleep);
             continue;
           }
+          long now = System.currentTimeMillis();
+          if (now - lastPacket > 10*1000) {
+            JFLog.log(log, "NetworkReader : Reconnecting");
+            disconnect();
+            if (!connect()) {
+              JF.sleep(1000);
+              continue;
+            }
+          } else if (now - lastKeepAlive > 55*1000) {
+            rtsp.keepalive(url.toString());
+            lastKeepAlive = now;
+          }
+          JF.sleep(1000);
         }
         JFLog.log("NetworkReader:closing");
         close(true);
@@ -1092,6 +1094,38 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       }
       if (playing) MainPanel.this.stop(false);
       video_decoder = null;
+    }
+
+    public boolean connect() {
+      rtsp = new RTSPClient();
+      int port = url.getPort();
+      if (port == -1) {
+        port = 554;  //default RTSP port
+      }
+      rtsp.init(url.getHost(), port, getLocalPort(), this, TransportType.TCP);
+      String user_pass = url.getUserInfo();
+      if (user_pass != null) {
+        int idx = user_pass.indexOf(":");
+        String user = user_pass.substring(0, idx);
+        String pass = user_pass.substring(idx + 1);
+        rtsp.setUserPass(user, pass);
+      }
+      rtsp.options(url.toString());
+      long now = System.currentTimeMillis();
+      lastKeepAlive = now;
+      lastPacket = now;
+      return false;
+    }
+
+    public void disconnect() {
+      if (rtsp != null) {
+        rtsp.uninit();
+        rtsp = null;
+      }
+      if (decoder != null) {
+        decoder.stop();
+        decoder = null;
+      }
     }
 
     private void close(boolean teardown) {
