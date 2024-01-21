@@ -32,6 +32,21 @@
 
 #include <jni.h>
 
+#include "../../native/headers/javaforce_controls_ni_DAQmx.h"
+#include "../../native/headers/javaforce_gl_GL.h"
+#include "../../native/headers/javaforce_ui_Font.h"
+#include "../../native/headers/javaforce_ui_Image.h"
+#include "../../native/headers/javaforce_ui_Window.h"
+#include "../../native/headers/javaforce_jni_JFNative.h"
+#include "../../native/headers/javaforce_jni_MacNative.h"
+#include "../../native/headers/javaforce_media_Camera.h"
+#include "../../native/headers/javaforce_media_MediaCoder.h"
+#include "../../native/headers/javaforce_media_MediaDecoder.h"
+#include "../../native/headers/javaforce_media_MediaEncoder.h"
+#include "../../native/headers/javaforce_media_MediaVideoDecoder.h"
+#include "../../native/headers/javaforce_media_VideoBuffer.h"
+#include "../../native/headers/javaforce_net_PacketCapture.h"
+
 /* Global variables */
 int type;
 char version[MAX_PATH];
@@ -136,27 +151,79 @@ void printException(JNIEnv *env) {
   (*env)->ExceptionClear(env);
 }
 
+JavaVMInitArgs *BuildArgs() {
+  JavaVMInitArgs *args;
+  JavaVMOption *options;
+  int nOpts = 0;
+  char *opts[64];
+  int idx;
+
+#ifdef _JF_DEBUG
+  opts[nOpts++] = "-Dcom.sun.management.jmxremote";
+  opts[nOpts++] = "-Dcom.sun.management.jmxremote.port=9010";
+  opts[nOpts++] = "-Dcom.sun.management.jmxremote.local.only=false";
+  opts[nOpts++] = "-Dcom.sun.management.jmxremote.authenticate=false";
+  opts[nOpts++] = "-Dcom.sun.management.jmxremote.ssl=false";
+#endif
+  opts[nOpts++] = (char*)"-Djava.app.home=.";
+  if (graal) {
+    opts[nOpts++] = (char*)"-Djava.graal=true";
+    opts[nOpts++] = (char*)"-Djava.home=.";
+  } else {
+    opts[nOpts++] = CreateClassPath();
+  }
+  if (strlen(xoptions) > 0) {
+    char *x = xoptions;
+    while (x != NULL) {
+      opts[nOpts++] = x;
+      x = strchr(x, ' ');
+      if (x != NULL) {
+        *x = 0;
+        x++;
+      }
+    }
+  }
+
+  args = (JavaVMInitArgs*)malloc(sizeof(JavaVMInitArgs));
+  memset(args, 0, sizeof(JavaVMInitArgs));
+  options = (JavaVMOption*)malloc(sizeof(JavaVMOption) * nOpts);
+  memset(options, 0, sizeof(JavaVMOption) * nOpts);
+
+  for(idx=0;idx<nOpts;idx++) {
+    options[idx].optionString = opts[idx];
+  }
+
+  args->version = JNI_VERSION_1_2;
+  args->nOptions = nOpts;
+  args->options = options;
+  args->ignoreUnrecognized = JNI_FALSE;
+
+  return args;
+}
+
+#include "../common/register.cpp"
+
+//Linux native methods
+static JNINativeMethod javaforce_jni_LnxNative[] = {
+  {"macInit", "()Z", (void *)&Java_javaforce_jni_MacNative_macInit},
+};
+
+/** Register natives embedded with executable. */
+void registerAllNatives(JNIEnv *env) {
+  jclass cls;
+
+  registerCommonNatives(env);
+
+  cls = findClass(env, "javaforce/jni/MacNative");
+  registerNatives(env, cls, javaforce_jni_MacNative, sizeof(javaforce_jni_MacNative)/sizeof(JNINativeMethod));
+}
+
 /** Continues loading the JVM in a new Thread. */
 int JavaThread(void *ignore) {
   JavaVM *jvm = NULL;
   JNIEnv *env = NULL;
-  JavaVMInitArgs args;
-  JavaVMOption options[3];
 
-  memset(&args, 0, sizeof(args));
-  args.version = JNI_VERSION_1_2;
-  args.nOptions = 3;
-  args.options = options;
-  args.ignoreUnrecognized = JNI_FALSE;
-
-  options[0].optionString = CreateClassPath();
-  options[0].extraInfo = NULL;
-  options[1].optionString = "-Djava.app.home=.";
-  options[1].extraInfo = NULL;
-  options[2].optionString = "-XX:+UseZGC";
-  options[2].extraInfo = NULL;
-
-  if ((*CreateJavaVM)(&jvm, &env, &args) == -1) {
+  if ((*CreateJavaVM)(&jvm, &env, BuildArgs()) == -1) {
     error("Unable to create Java VM");
     return -1;
   }
