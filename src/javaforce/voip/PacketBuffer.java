@@ -1,6 +1,10 @@
 package javaforce.voip;
 
-/** PacketBuffer */
+/** PacketBuffer
+ *
+ * Combines RTP fragments into H264 packets.
+ *
+ */
 
 import javaforce.*;
 

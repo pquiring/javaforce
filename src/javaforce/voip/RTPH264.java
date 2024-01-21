@@ -3,6 +3,8 @@ package javaforce.voip;
 /**
  * Encodes/Decodes RTP/H264 packets
  *
+ * RTP packets are "fragments" of H264 packets.
+ *
  * http://tools.ietf.org/html/rfc3984
  *
  * @author pquiring
@@ -41,7 +43,7 @@ public class RTPH264 extends RTPCodec {
    * FUA Header : S(1) E(1) R(1) TYPE(5) : S=start E=end R=reserved TYPE=1-23
    */
 
-  /** Encodes raw H.264 data into multiple RTP packets. */
+  /** Encodes raw H.264 packets into multiple RTP packets (fragments). */
   public byte[][] encode(byte data[], int x, int y, int id) {
     ArrayList<byte[]> packets = new ArrayList<byte[]>();
     int len = data.length;
@@ -109,7 +111,7 @@ public class RTPH264 extends RTPCodec {
   }
 
   /**
-   * Returns full packets.
+   * Combines RTP fragments into full H264 packets.
    */
   public Packet decode(byte[] rtp, int offset, int length) {
     //assumes offset == 0
