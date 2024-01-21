@@ -996,8 +996,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     private RTPChannel channel;
     private RTPH264 h264;
     private SDP sdp;
-    private PacketBuffer packets_decode;
-    private PacketBuffer packets_encode;
+    private PacketBuffer packets;
     private long lastPacket;
     private long now;
     private int decoded_frame[];
@@ -1020,8 +1019,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       resizeVideo = false;
       eof = false;
       preBuffering = true;
-      packets_decode = new PacketBuffer();
-      packets_encode = new PacketBuffer();
+      packets = new PacketBuffer();
 
       try {
         rtsp = new RTSPClient();
@@ -1242,30 +1240,25 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
           default:
             return;  //all others ignore
         }
-        packets_decode.add(packet);
-        packets_encode.add(packet);
-        packets_decode.cleanPackets(true);
-        packets_encode.cleanPackets(true);
-        if (!packets_decode.haveCompleteFrame()) return;
-        boolean key_frame = packets_decode.isNextFrame_KeyFrame();
+        packets.add(packet);
+        packets.cleanPackets(true);
+        if (!packets.haveCompleteFrame()) return;
+        boolean key_frame = packets.isNextFrame_KeyFrame();
         if (debug_buffers && key_frame) {
-          JFLog.log(log, "packets_decode=" + packets_decode.toString());
-          JFLog.log(log, "packets_encode=" + packets_decode.toString());
+          JFLog.log(log, "packets_decode=" + packets.toString());
         }
         if (wait_next_key_frame) {
           if (!key_frame) {
-            packets_decode.reset();
-            packets_encode.reset();
+            packets.reset();
             return;
           }
           wait_next_key_frame = false;
         }
-        Packet nextPacket = packets_decode.getNextFrame();
+        Packet nextPacket = packets.getNextFrame();
         decoded_frame = video_decoder.decode(nextPacket.data, nextPacket.offset, nextPacket.length);
         if (decoded_frame == null) {
           JFLog.log(log, "Error:newFrame == null:packet.length=" + nextPacket.length);
-          packets_decode.reset();
-          packets_encode.reset();
+          packets.reset();
           //decoding error : delete all frames till next key frame
           wait_next_key_frame = true;
           return;
@@ -1290,19 +1283,8 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
             }
           }
         }
-        packets_decode.removeNextFrame();
+        packets.removeNextFrame();
         now = lastPacket;
-/*
-        if (true) {
-          while (packets_encode.haveCompleteFrame()) {
-            key_frame = packets_encode.isNextFrame_KeyFrame();
-            nextPacket = packets_encode.getNextFrame();
-//            frames.add(nextPacket, key_frame);
-            frameCount++;
-            packets_encode.removeNextFrame();
-          }
-        }
-*/
       } catch (Exception e) {
         JFLog.log(log, e);
       }
