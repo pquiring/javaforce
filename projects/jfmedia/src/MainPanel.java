@@ -1114,7 +1114,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       long now = System.currentTimeMillis();
       lastKeepAlive = now;
       lastPacket = now;
-      return false;
+      return true;
     }
 
     public void disconnect() {
