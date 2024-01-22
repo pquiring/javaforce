@@ -587,19 +587,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   public void rtpDigit(RTPChannel rtp, char key) {
   }
 
-  public void rtpPacket(RTPChannel rtp, byte[] buf, int offset, int length) {
-  }
-
-  public void rtcpPacket(RTPChannel rtp, byte[] buf, int offset, int length) {
-  }
-
-  public void rtpH263(RTPChannel rtp, byte[] buf, int offset, int length) {
-  }
-
-  public void rtpH263_1998(RTPChannel rtp, byte[] buf, int offset, int length) {
-  }
-
-  public void rtpH263_2000(RTPChannel rtp, byte[] buf, int offset, int length) {
+  public void rtpPacket(RTPChannel rtp, int codec, byte[] buf, int offset, int length) {
+    switch (codec) {
+      case CodecType.H264: rtpH264(rtp, buf, offset, length); break;
+    }
   }
 
   public void rtpH264(RTPChannel rtp, byte[] buf, int offset, int length) {
@@ -692,12 +683,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     } catch (Exception e) {
       JFLog.log(log, e);
     }
-  }
-
-  public void rtpVP8(RTPChannel rtp, byte[] buf, int offset, int length) {
-  }
-
-  public void rtpJPEG(RTPChannel rtp, byte[] buf, int offset, int length) {
   }
 
   public void rtpInactive(RTPChannel rtp) {

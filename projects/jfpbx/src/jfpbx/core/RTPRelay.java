@@ -366,6 +366,13 @@ public class RTPRelay implements RTPInterface {
     eh.event(cd, eh.DIGIT, digit, true);
   }
 
+  public void rtpPacket(RTPChannel channel, int codec, byte data[], int off, int len) {
+    switch (codec) {
+      case CodecType.RTP: rtpPacket(channel, data, off, len); break;
+      case CodecType.RTCP: rtcpPacket(channel, data, off, len); break;
+    }
+  }
+
   public void rtcpPacket(RTPChannel channel, byte data[], int off, int len) {
     if (channel.rtp == rtp_src) {
       rtp_dst.getDefaultChannel().writeRTCP(data, off, len);
@@ -405,12 +412,6 @@ public class RTPRelay implements RTPInterface {
     }
   }
 
-  public void rtpH263(RTPChannel rtp, byte data[],int off,int len) {}
-  public void rtpH263_1998(RTPChannel rtp, byte[] data, int off, int len) {}
-  public void rtpH263_2000(RTPChannel rtp, byte[] data, int off, int len) {}
-  public void rtpH264(RTPChannel rtp, byte data[],int off,int len) {}
-  public void rtpJPEG(RTPChannel rtp, byte data[],int off,int len) {}
-  public void rtpVP8(RTPChannel rtp, byte data[],int off,int len) {}
   public void rtpInactive(RTPChannel rtp) {}
 
   private void closeRecording(boolean interrupted) {

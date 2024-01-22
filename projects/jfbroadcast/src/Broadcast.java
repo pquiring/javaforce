@@ -3036,7 +3036,7 @@ JFLog.log("connected : number=" + lines[a].number);
   public void onAck(SIPClient sip, String callid, SDP sdp) {
   }
 
-  public void onMessage(SIPClient sip, String callid, String msg) {
+  public void onMessage(SIPClient sip, String callid, String msg, String x1, String x2) {
   }
 
   //RTPInterface
@@ -3092,12 +3092,7 @@ JFLog.log("connected : number=" + lines[a].number);
     }
   }
 
-  public void rtpH263(RTPChannel rtp, byte[] bytes, int off, int len) {}
-  public void rtpH263_1998(RTPChannel rtp, byte[] bytes, int off, int len) {}
-  public void rtpH263_2000(RTPChannel rtp, byte[] bytes, int off, int len) {}
-  public void rtpH264(RTPChannel rtp, byte[] bytes, int off, int len) {}
-  public void rtpJPEG(RTPChannel rtp, byte[] bytes, int off, int len) {}
-  public void rtpVP8(RTPChannel rtp, byte[] bytes, int off, int len) {}
+  public void rtpPacket(RTPChannel rtp, int codec, byte[] bytes, int off, int len) {}
   public void rtpInactive(RTPChannel rtp) {}
 
   private void nextMessage(Lines line) {
@@ -3117,9 +3112,6 @@ JFLog.log("connected : number=" + lines[a].number);
       if (questions.enabled[line.msgidx]) return;
     }
   }
-
-  public void rtpPacket(RTPChannel rtp, byte[] data,int pos,int len) {}
-  public void rtcpPacket(RTPChannel rtp, byte[] data,int pos,int len) {}
 
   public static class Questions implements Serializable {
     static final long serialVersionUID = 1000L;

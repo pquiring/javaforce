@@ -710,7 +710,7 @@ public class SRTPChannel extends RTPChannel {
 
   protected void processRTP(byte data[], int off, int len) {
     if (rtp.rawMode) {
-      rtp.iface.rtpPacket(this, data, off, len);
+      rtp.iface.rtpPacket(this, CodecType.RAW, data, off, len);
       return;
     }
     int firstByte = ((int)data[off]) & 0xff;

@@ -372,7 +372,7 @@ public class RTPChannel {
   protected void processRTP(byte data[], int off, int len) {
     lastPacket = RTP.now;
     if (rtp.rawMode) {
-      rtp.iface.rtpPacket(this, data, off, len);
+      rtp.iface.rtpPacket(this, CodecType.RAW, data, off, len);
       return;
     }
     int id = data[off + 1] & 0x7f;  //payload id
@@ -424,10 +424,10 @@ public class RTPChannel {
           rtp.iface.rtpSamples(this);
           break;
         case 26:
-          rtp.iface.rtpJPEG(this, data, off, len);
+          rtp.iface.rtpPacket(this, CodecType.JPEG, data, off, len);
           break;
         case 34:
-          rtp.iface.rtpH263(this, data, off, len);
+          rtp.iface.rtpPacket(this, CodecType.H263, data, off, len);
           break;
       }
     } else {
@@ -459,20 +459,20 @@ public class RTPChannel {
           }
         }
       } else if (id == vp8_id) {
-        rtp.iface.rtpVP8(this, data, off, len);
+        rtp.iface.rtpPacket(this, CodecType.VP8, data, off, len);
       } else if (id == h264_id) {
-        rtp.iface.rtpH264(this, data, off, len);
+        rtp.iface.rtpPacket(this, CodecType.H264, data, off, len);
       } else if (id == h263_1998_id) {
-        rtp.iface.rtpH263_1998(this, data, off, len);
+        rtp.iface.rtpPacket(this, CodecType.H263_1998, data, off, len);
       } else if (id == h263_2000_id) {
-        rtp.iface.rtpH263_2000(this, data, off, len);
+        rtp.iface.rtpPacket(this, CodecType.H263_2000, data, off, len);
       }
     }
   }
 
   protected void processRTCP(byte data[], int off, int len) {
     if (rtp.rawMode) {
-      rtp.iface.rtcpPacket(this, data, off, len);
+      rtp.iface.rtpPacket(this, CodecType.RTCP, data, off, len);
     }
     //TODO : RTCP ???
   }

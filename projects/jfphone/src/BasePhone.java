@@ -1531,30 +1531,37 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
   /** RTPInterface.rtpSamples() */
   public void rtpSamples(RTPChannel rtp) {}
   /** RTPInterface.rtpPacket() */
-  public void rtpPacket(RTPChannel rtp, byte data[], int off, int len) {}
-  /** RTPInterface.rtcpPacket() */
-  public void rtcpPacket(RTPChannel rtp, byte data[], int off, int len) {}
-  /** RTPInterface.rtpH263() */
+  public void rtpPacket(RTPChannel rtp, int codec, byte data[], int off, int len) {
+    switch (codec) {
+      case CodecType.H263: rtpH263(rtp, data, off, len); break;
+      case CodecType.H263_1998: rtpH263_1998(rtp, data, off, len); break;
+      case CodecType.H263_2000: rtpH263_2000(rtp, data, off, len); break;
+      case CodecType.H264: rtpH264(rtp, data, off, len); break;
+      case CodecType.VP8: rtpVP8(rtp, data, off, len); break;
+      case CodecType.JPEG: rtpJPEG(rtp, data, off, len); break;
+    }
+  }
+  /** rtpH263() */
   public void rtpH263(RTPChannel rtp, byte data[], int off, int len) {
     rtp_h263_receive(rtp, data, off, len);
   }
-  /** RTPInterface.rtpH263_1998() */
+  /** rtpH263_1998() */
   public void rtpH263_1998(RTPChannel rtp, byte data[], int off, int len) {
     rtp_h263_1998_receive(rtp, data, off, len);
   }
-  /** RTPInterface.rtpH263() */
+  /** rtpH263() */
   public void rtpH263_2000(RTPChannel rtp, byte data[], int off, int len) {
     rtp_h263_2000_receive(rtp, data, off, len);
   }
-  /** RTPInterface.rtpH264() */
+  /** rtpH264() */
   public void rtpH264(RTPChannel rtp, byte data[], int off, int len) {
     rtp_h264_receive(rtp, data, off, len);
   }
-  /** RTPInterface.rtpVP8() */
+  /** rtpVP8() */
   public void rtpVP8(RTPChannel rtp, byte data[], int off, int len) {
     rtp_vp8_receive(rtp, data, off, len);
   }
-  /** RTPInterface.rtpJPEG() */
+  /** rtpJPEG() */
   public void rtpJPEG(RTPChannel rtp, byte data[], int off, int len) {
     rtp_jpeg_receive(rtp, data, off, len);
   }
