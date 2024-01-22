@@ -15,7 +15,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   private String remotehost, remoteip;
   private InetAddress remoteaddr;
   private int remoteport;
-  private String user;  //acct name (usually a phone number)
+  private String user;  //username
   private String pass;  //password
   private RTSPClientInterface iface;
   private String localhost;

@@ -5,6 +5,8 @@ package javaforce.voip;
  * @author pquiring
  */
 
+import java.net.*;
+
 public class RTSPSession {
   public RTSPSession(String localhost) {
     this.localhost = localhost;
@@ -29,4 +31,8 @@ public class RTSPSession {
   public String remotehost;
   public int remoteport;
   public int remotecseq;
+
+  //server only
+  public InetAddress remoteaddr;
+  public int reply;
 }

@@ -207,7 +207,7 @@ public class SIPServer extends SIP implements SIPInterface {
 
   public void packet(String[] msg, String remoteip, int remoteport) {
     try {
-      String tmp, req = null, epass;
+      String tmp, cmd = null, epass;
       String callid = getHeader("Call-ID:", msg);
       if (callid == null) callid = getHeader("i:", msg);
       if (callid == null) {
@@ -289,17 +289,17 @@ public class SIPServer extends SIP implements SIPInterface {
           cdsd.contact = getHeader("m:", msg);
         }
         cd.cmd = getcseqcmd(msg);
-        int type = getResponseType(msg);
-        if (type != -1) {
-          JFLog.log("callid:" + callid + "\r\nreply=" + type + " from " + remoteip + ":" + remoteport);
+        int reply = getResponseType(msg);
+        if (reply != -1) {
+          JFLog.log("callid:" + callid + "\r\nreply=" + reply + " from " + remoteip + ":" + remoteport);
         } else {
-          req = getRequest(msg);
-          JFLog.log("callid:" + callid + "\r\nrequest=" + req + " from " + remoteip + ":" + remoteport);
+          cmd = getRequest(msg);
+          JFLog.log("callid:" + callid + "\r\nrequest=" + cmd + " from " + remoteip + ":" + remoteport);
         }
-        switch (type) {
+        switch (reply) {
           case -1:
             clone(cdsd, cdpbx);
-            if (req.equalsIgnoreCase("REGISTER")) {
+            if (cmd.equalsIgnoreCase("REGISTER")) {
               String resln = getHeader("Authorization:", msg);
               if (resln == null) {
                 //send a 401
@@ -343,7 +343,7 @@ public class SIPServer extends SIP implements SIPInterface {
               setCallDetailsServer(callid, null);
               break;
             }
-            if (req.equalsIgnoreCase("INVITE")) {
+            if (cmd.equalsIgnoreCase("INVITE")) {
               //BUG : What if call is from same extension but from another PBX
               //      this will think the INVITE must auth first
               //      need to check if dest is on this PBX and bypass auth check
@@ -396,44 +396,44 @@ public class SIPServer extends SIP implements SIPInterface {
               iface.onInvite(cd, src);
               break;
             }
-            if (req.equalsIgnoreCase("CANCEL")) {
+            if (cmd.equalsIgnoreCase("CANCEL")) {
               iface.onCancel(cd, src);
 //              setCallDetailsServer(callid, null);  //still too soon
               break;
             }
-            if (req.equalsIgnoreCase("BYE")) {
+            if (cmd.equalsIgnoreCase("BYE")) {
               //BUG : can't delete calldetails yet (memory leak)
               iface.onBye(cd, src);
               break;
             }
-            if (req.equalsIgnoreCase("ACK")) {
+            if (cmd.equalsIgnoreCase("ACK")) {
               //TODO : ???
               break;
             }
-            if (req.equalsIgnoreCase("REFER")) {
-              iface.onFeature(cd, req, getHeader("Refer-To:", msg), src);
+            if (cmd.equalsIgnoreCase("REFER")) {
+              iface.onFeature(cd, cmd, getHeader("Refer-To:", msg), src);
               break;
             }
-            if (req.equalsIgnoreCase("OPTIONS")) {
+            if (cmd.equalsIgnoreCase("OPTIONS")) {
               iface.onOptions(cd, src);
               break;
             }
-            if (req.equalsIgnoreCase("SUBSCRIBE")) {
+            if (cmd.equalsIgnoreCase("SUBSCRIBE")) {
               //send 200 and ignore
               reply(cd, 200, "OK", null, false, src);
               setCallDetailsServer(callid, null);
               break;
             }
-            if (req.equalsIgnoreCase("SHUTDOWN")) {
-              iface.onFeature(cd, req, remoteip, src);
+            if (cmd.equalsIgnoreCase("SHUTDOWN")) {
+              iface.onFeature(cd, cmd, remoteip, src);
               setCallDetailsServer(callid, null);
               break;
             }
-            if (req.equalsIgnoreCase("MESSAGE")) {
+            if (cmd.equalsIgnoreCase("MESSAGE")) {
               iface.onMessage(cd, cdsd.from[1], cdsd.to[1], getContent(msg), src);
               break;
             }
-            JFLog.log("Unknown command:" + req);
+            JFLog.log("Unknown command:" + cmd);
             setCallDetailsServer(callid, null);
             break;
           case 100:
@@ -537,8 +537,8 @@ public class SIPServer extends SIP implements SIPInterface {
             }
             break;
           default:
-            iface.onError(cd, type, src);
-            if (type == 487) {
+            iface.onError(cd, reply, src);
+            if (reply == 487) {
               setCallDetailsServer(cd.callid, null);  //call canceled
             }
             break;
