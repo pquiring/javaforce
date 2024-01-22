@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Jan 22, 2024 : v0.16 released!
+  - fix : RTSP compatbility issue
+
 Jan 21, 2024 : v0.15 released!
   - new : supports RTSP network streams
 

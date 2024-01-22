@@ -1,7 +1,12 @@
 What's new...
 
+Jan 22/2024 : JF/50.1
+ - fix RTSP compatibility issue
+ - jfMedia/0.16
+
 Jan 21/2024 : JF/50.0
  - jfMedia : added RTSP support
+ - jfMedia/0.15
 
 Jan 15/2024 : JF/49.0
  - to improve linux services a unix socket is created to send commands to the service.
