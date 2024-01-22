@@ -24,6 +24,7 @@ public class RTSPSession {
   public String authstr;
   public String nonce;
   public int nonceCount;
+  public String accept;
 
   public String remotehost;
   public int remoteport;
