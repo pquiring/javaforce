@@ -225,19 +225,19 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
           //request/cmd
           switch (cmd) {
             case "OPTIONS":
-              iface.onOptions(this);
+              iface.onOptions(this, sess);
               break;
             case "DESCRIBE":
-              iface.onDescribe(this);
+              iface.onDescribe(this, sess);
               break;
             case "SETUP":
-              iface.onSetup(this);
+              iface.onSetup(this, sess);
               break;
             case "PLAY":
-              iface.onPlay(this);
+              iface.onPlay(this, sess);
               break;
             case "TEARDOWN":
-              iface.onTeardown(this);
+              iface.onTeardown(this, sess);
               break;
             case "GET_PARAMETER":
               //just echo back garbage - used primarily as a keep alive

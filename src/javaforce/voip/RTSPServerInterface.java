@@ -1,15 +1,13 @@
 package javaforce.voip;
 
 /** RTSP Server Interface
- *
- * @author User
  */
 
 public interface RTSPServerInterface {
   public String getPassword(String user);
-  public void onOptions(RTSPServer client);
-  public void onDescribe(RTSPServer client);
-  public void onSetup(RTSPServer client);
-  public void onPlay(RTSPServer client);
-  public void onTeardown(RTSPServer client);
+  public void onOptions(RTSPServer server, RTSPSession session);
+  public void onDescribe(RTSPServer server, RTSPSession session);
+  public void onSetup(RTSPServer server, RTSPSession session);
+  public void onPlay(RTSPServer server, RTSPSession session);
+  public void onTeardown(RTSPServer server, RTSPSession session);
 }
