@@ -178,10 +178,11 @@ char *CreateClassPath() {
     }
   }
   int len = strlen(DOption) + sl + (ml * cnt) + 1;
-  char *env_classpath = getenv("CLASSPATH");
-  if (env_classpath != NULL) {
-    int env_len = strlen(env_classpath);
-    len += env_len + 1;
+  char env_classpath[1024];
+  int env_classpath_len = GetEnvironmentVariable("CLASSPATH", env_classpath, 1024);
+  if (env_classpath_len > 0) {
+    env_classpath[env_classpath_len] = 0;
+    len += env_classpath_len + 1;
   }
   char *ExpandedClassPath = (char*)malloc(len);
   ExpandedClassPath[0] = 0;
@@ -194,7 +195,7 @@ char *CreateClassPath() {
     }
     strcat(ExpandedClassPath, jar[a]);
   }
-  if (env_classpath != NULL) {
+  if (env_classpath_len > 0) {
     strcat(ExpandedClassPath, ";");
     strcat(ExpandedClassPath, env_classpath);
   }
@@ -510,6 +511,22 @@ bool exists(char *file) {
   return true;
 }
 
+bool findJavaHomeEnvironment() {
+  //try to find JRE in JAVA_HOME environment variable
+  char env_java_home[1024];
+  int env_java_home_len = GetEnvironmentVariable("JAVA_HOME", env_java_home, 1024);
+  if (env_java_home_len == 0) return false;
+  env_java_home[env_java_home_len] = 0;
+  strcpy(javahome, env_java_home);
+  int sl = strlen(javahome);
+  strcat(javahome, "\\bin\\server\\jvm.dll");
+  if (exists(javahome)) {
+    javahome[sl] = 0;
+    return true;
+  }
+  return false;
+}
+
 bool findJavaHomeAppFolder() {
   //try to find JRE in Apps folder
   strcpy(javahome, exepath);
@@ -525,7 +542,8 @@ bool findJavaHomeAppFolder() {
 
 bool findJavaHomeAppDataFolder() {
   //try to find JRE in %AppData% folder
-  GetEnvironmentVariable("APPDATA", javahome, MAX_PATH);
+  int javahome_len = GetEnvironmentVariable("APPDATA", javahome, MAX_PATH);
+  if (javahome_len == 0) return false;
   strcat(javahome, "\\java\\jre");
   if (sizeof(void*) == 4)
     strcat(javahome, "32");
@@ -640,11 +658,13 @@ bool try_graal() {
 bool try_jvm() {
   sprintf(err_msg, "Unable to find Java");
   if (javahome[0] == 0) {
-    if (findJavaHomeAppFolder() == 0) {
+    if (findJavaHomeEnvironment() == 0) {
       if (findJavaHomeRegistry() == 0) {
-        if (findJavaHomeAppDataFolder() == 0) {
-          error(err_msg);
-          return false;
+        if (findJavaHomeAppFolder() == 0) {
+          if (findJavaHomeAppDataFolder() == 0) {
+            error(err_msg);
+            return false;
+          }
         }
       }
     }
