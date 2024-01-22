@@ -1,6 +1,9 @@
 ChangeLog
 ---------
 
+Jan 21, 2024 : v0.15 released!
+  - new : supports RTSP network streams
+
 Mar 18, 2020 : v0.14 released!
   - fix : win64 loader now loads msvcrt dlls properly
 
