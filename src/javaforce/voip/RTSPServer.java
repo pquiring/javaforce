@@ -47,7 +47,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
       if (nat == NAT.STUN || nat == NAT.ICE) {
         stopSTUN();
       }
-      return super.init(localhost, localport, this, false, type);
+      return super.init(localhost, localport, this, true, type);
     } catch (Exception e) {
       if (stun != null) stopSTUN();
       JFLog.log(log, e);
@@ -282,7 +282,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
               break;
             case "GET_PARAMETER":
               if (!sess.auth) break;
-              //just echo back garbage - used primarily as a keep alive
+              iface.onGetParameter(this, sess);
               break;
           }
           break;
