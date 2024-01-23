@@ -128,7 +128,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Not sure if needed with TCP/TLS but is done anyways.
    */
   public void keepalive(String url) {
-    get_parameter(cleanURL(url));
+    get_parameter(cleanURL(url), null);
   }
 
   /**
@@ -260,13 +260,6 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Issues a command to the RTSP server.
    */
   private boolean issue(RTSPSession sess, String cmd) {
-    return issue(sess, cmd, false);
-  }
-
-  /**
-   * Issues a command to the RTSP server.
-   */
-  private boolean issue(RTSPSession sess, String cmd, boolean sessid) {
     JFLog.log(log, "sessid:" + sess.id + "\r\nissue command : " + cmd + " from : " + user + " to : " + remotehost);
     sess.remotehost = remoteip;
     sess.remoteport = remoteport;
@@ -284,10 +277,17 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     if (sess.accept != null) {
       req.append("Accept: " + sess.accept + "\r\n");
     }
-    if (sessid) {
+    if (sess.id != -1) {
       req.append("Session: " + sess.id + "\r\n");
     }
+    if (sess.params != null) {
+      req.append("Content-Type: text/parameters\r\n");
+      req.append("Content-Length: " + sess.params.length() + "\r\n");
+    }
     req.append("\r\n");
+    if (sess.params != null) {
+      req.append(sess.params);
+    }
     return send(remoteaddr, remoteport, req.toString());
   }
 
@@ -338,7 +338,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   public boolean play(String url) {
     sess.uri = cleanURL(url);
     sess.extra = "/";
-    return issue(sess, "PLAY", true);
+    return issue(sess, "PLAY");
   }
 
   /**
@@ -348,17 +348,22 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     if (sess == null) return false;
     sess.uri = cleanURL(url);
     sess.extra = "/";
-    return issue(sess, "TEARDOWN", true);
+    return issue(sess, "TEARDOWN");
   }
 
   /**
    * GET_PARAMETER (RTSP) Used as a keepalive.
    */
-  public boolean get_parameter(String url) {
+  public boolean get_parameter(String url, String params) {
     sess.uri = cleanURL(url);
     sess.extra = "/";
-    return issue(sess, "GET_PARAMETER", true);
+    sess.params = params;
+    boolean result = issue(sess, "GET_PARAMETER");
+    sess.params = null;
+    return result;
   }
+
+  // other unsupported commands: ANNOUNCE, PAUSE, SET_PARAMETER, REDIRECT, RECORD
 
   /**
    * Processes RTSP messages sent from the RTSP server.

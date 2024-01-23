@@ -14,7 +14,7 @@ public class RTSPSession {
   }
   public String localhost;
   public int cseq = 2;
-  public long id;
+  public long id = -1;
   public String uri;
   public String extra;
   public String epass;
@@ -27,6 +27,7 @@ public class RTSPSession {
   public String nonce;
   public int nonceCount;
   public String accept;
+  public String params;
 
   public String remotehost;
   public int remoteport;
