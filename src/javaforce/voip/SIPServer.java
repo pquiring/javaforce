@@ -15,6 +15,7 @@ public class SIPServer extends SIP implements SIPInterface {
   private HashMap<String, CallDetailsServer> cdlist;
   private SIPServerInterface iface;
   private boolean use_qop = false;
+  private static final String realm = "javaforce";
 
   private static class Trunk {
     public String user, auth, pass;
@@ -300,11 +301,11 @@ public class SIPServer extends SIP implements SIPInterface {
           case -1:
             clone(cdsd, cdpbx);
             if (cmd.equalsIgnoreCase("REGISTER")) {
-              String resln = getHeader("Authorization:", msg);
-              if (resln == null) {
+              String auth = getHeader("Authorization:", msg);
+              if (auth == null) {
                 //send a 401
                 cd.nonce = getnonce();
-                String challenge = "WWW-Authenticate: Digest algorithm=MD5, realm=\"jpbx\", nonce=\"" + cd.nonce + "\"";
+                String challenge = "WWW-Authenticate: Digest algorithm=MD5, realm=\"" + realm + "\", nonce=\"" + cd.nonce + "\"";
                 if (use_qop) {
                   challenge += ", qop=\"auth\"";
                 }
@@ -312,16 +313,17 @@ public class SIPServer extends SIP implements SIPInterface {
                 reply(cd, 401, "REQ AUTH", challenge, false, src);
                 break;
               }
-              if (!resln.regionMatches(true, 0, "digest ", 0, 7)) {
+              if (!auth.regionMatches(true, 0, "digest ", 0, 7)) {
+                JFLog.log("invalid Authorization");
                 break;
               }
-              String[] tags = resln.substring(7).replaceAll(" ", "").replaceAll("\"", "").split(",");
+              String[] tags = auth.substring(7).replaceAll(" ", "").replaceAll("\"", "").split(",");
               String res = getHeader("response=", tags);
               String nonce = getHeader("nonce=", tags);
               if ((nonce == null) || (cd.nonce == null) || (!cd.nonce.equals(nonce))) {
                 //send another 401
                 cd.nonce = getnonce();
-                String challenge = "WWW-Authenticate: Digest algorithm=MD5, realm=\"jpbx\", nonce=\"" + cd.nonce + "\"";
+                String challenge = "WWW-Authenticate: Digest algorithm=MD5, realm=\"" + realm + "\", nonce=\"" + cd.nonce + "\"";
                 if (use_qop) {
                   challenge += ", qop=\"auth\"";
                 }
@@ -329,7 +331,7 @@ public class SIPServer extends SIP implements SIPInterface {
                 reply(cd, 401, "REQ AUTH", challenge, false, src);
                 break;
               }
-              String test = getResponse(cd.user, iface.getPassword(cd.user), "jpbx", cd.cmd, getHeader("uri=", tags), cd.nonce, getHeader("qop=", tags),
+              String test = getResponse(cd.user, iface.getPassword(cd.user), realm, cd.cmd, getHeader("uri=", tags), cd.nonce, getHeader("qop=", tags),
                 getHeader("nc=", tags), getHeader("cnonce=", tags));
               cd.nonce = null;  //don't allow value to be reused
               if (!res.equalsIgnoreCase(test)) {
@@ -354,7 +356,7 @@ public class SIPServer extends SIP implements SIPInterface {
                 if ((resln == null) || (cd.nonce == null)) {
                   //send a 407
                   cd.nonce = getnonce();
-                  String challenge = "Proxy-Authenticate: Digest algorithm=MD5, realm=\"jpbx\", nonce=\"" + cd.nonce + "\"\r\n";
+                  String challenge = "Proxy-Authenticate: Digest algorithm=MD5, realm=\"" + realm + "\", nonce=\"" + cd.nonce + "\"\r\n";
                   reply(cd, 407, "REQ AUTH", challenge, false, src);
                   break;
                 }
@@ -367,11 +369,11 @@ public class SIPServer extends SIP implements SIPInterface {
                 if ((nonce == null) || (!cd.nonce.equals(nonce))) {
                   //send another 407
                   cd.nonce = getnonce();
-                  String challenge = "Proxy-Authenticate: Digest algorithm=MD5, realm=\"jpbx\", nonce=\"" + cd.nonce + "\"\r\n";
+                  String challenge = "Proxy-Authenticate: Digest algorithm=MD5, realm=\"" + realm + "\", nonce=\"" + cd.nonce + "\"\r\n";
                   reply(cd, 407, "REQ AUTH", challenge, false, src);
                   break;
                 }
-                String test = getResponse(cd.user, pass, "jpbx", cd.cmd, getHeader("uri=", tags), cd.nonce, null, null, null);
+                String test = getResponse(cd.user, pass, realm, cd.cmd, getHeader("uri=", tags), cd.nonce, null, null, null);
                 cd.nonce = null;  //don't allow value to be reused
                 if (!res.equalsIgnoreCase(test)) {
                   reply(cd, 403, "BAD PASSWORD", null, false, src);

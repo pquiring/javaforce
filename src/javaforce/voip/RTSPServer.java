@@ -23,6 +23,8 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
   private static NAT nat = NAT.None;
   private static boolean useNATOnPrivateNetwork = false;  //do not use NATing techniques on private network servers
   private static String stunHost, stunUser, stunPass;
+  private boolean use_qop = false;
+  private static final String realm = "javaforce";
 
   public Object userobj;  //user definable
   public int expires;  //expires
@@ -145,14 +147,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
   /**
    * Issues a reply to the RTSP client.
    */
-  public boolean reply(RTSPSession sess, int reply, String msg) {
-    return reply(sess, reply, msg, false);
-  }
-
-  /**
-   * Issues a reply to the RTSP client.
-   */
-  public boolean reply(RTSPSession sess, int reply, String msg, boolean sessid) {
+  public boolean reply(RTSPSession sess, int reply, String msg, String header) {
     JFLog.log(log, "sessid:" + sess.id + "\r\nissue reply : " + reply);
     sess.reply = reply;
     StringBuilder req = new StringBuilder();
@@ -168,9 +163,6 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
     if (sess.accept != null) {
       req.append("Accept: " + sess.accept + "\r\n");
     }
-    if (sessid) {
-      req.append("Session: " + sess.id + "\r\n");
-    }
     if (sess.sdp != null) {
       req.append("Content-Type: application/sdp\r\n");
       req.append("Content-Length: " + sess.sdp.length() + "\r\n\r\n");
@@ -179,6 +171,13 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
       req.append("Content-Length: 0\r\n\r\n");
     }
     return send(sess.remoteaddr, sess.remoteport, req.toString());
+  }
+
+  /**
+   * Issues a reply to the RTSP client.
+   */
+  public boolean reply(RTSPSession sess, int reply, String msg) {
+    return reply(sess, reply, msg, null);
   }
 
   /**
@@ -225,21 +224,64 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
           //request/cmd
           switch (cmd) {
             case "OPTIONS":
+              String auth = getHeader("Authorization:", msg);
+              if (auth == null) {
+                //send a 401
+                sess.nonce = getnonce();
+                String challenge = "WWW-Authenticate: Digest algorithm=MD5, realm=\"" + realm + "\", nonce=\"" + sess.nonce + "\"";
+                if (use_qop) {
+                  challenge += ", qop=\"auth\"";
+                }
+                challenge += "\r\n";
+                reply(sess, 401, "REQ AUTH", challenge);
+                break;
+              }
+              if (!auth.regionMatches(true, 0, "digest ", 0, 7)) {
+                JFLog.log("invalid Authorization");
+                break;
+              }
+              String[] tags = auth.substring(7).replaceAll(" ", "").replaceAll("\"", "").split(",");
+              String res = getHeader("response=", tags);
+              String nonce = getHeader("nonce=", tags);
+              if ((nonce == null) || (sess.nonce == null) || (!sess.nonce.equals(nonce))) {
+                //send another 401
+                sess.nonce = getnonce();
+                String challenge = "WWW-Authenticate: Digest algorithm=MD5, realm=\"" + realm + "\", nonce=\"" + sess.nonce + "\"";
+                if (use_qop) {
+                  challenge += ", qop=\"auth\"";
+                }
+                challenge += "\r\n";
+                reply(sess, 401, "REQ AUTH", challenge);
+                break;
+              }
+              String test = getResponse(sess.user, iface.getPassword(sess.user), realm, sess.cmd, getHeader("uri=", tags), sess.nonce, getHeader("qop=", tags),
+                getHeader("nc=", tags), getHeader("cnonce=", tags));
+              sess.nonce = null;  //don't allow value to be reused
+              if (!res.equalsIgnoreCase(test)) {
+                reply(sess, 403, "BAD PASSWORD", null);
+                break;
+              }
+              sess.auth = true;
               iface.onOptions(this, sess);
               break;
             case "DESCRIBE":
+              if (!sess.auth) break;
               iface.onDescribe(this, sess);
               break;
             case "SETUP":
+              if (!sess.auth) break;
               iface.onSetup(this, sess);
               break;
             case "PLAY":
+              if (!sess.auth) break;
               iface.onPlay(this, sess);
               break;
             case "TEARDOWN":
+              if (!sess.auth) break;
               iface.onTeardown(this, sess);
               break;
             case "GET_PARAMETER":
+              if (!sess.auth) break;
               //just echo back garbage - used primarily as a keep alive
               break;
           }

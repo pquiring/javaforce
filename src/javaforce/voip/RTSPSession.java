@@ -35,4 +35,6 @@ public class RTSPSession {
   //server only
   public InetAddress remoteaddr;
   public int reply;
+  public String user;
+  public boolean auth;
 }
