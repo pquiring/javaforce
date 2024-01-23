@@ -579,6 +579,9 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     }
   }
 
+  public void onGetParameter(RTSPClient client, String[] params) {
+  }
+
   //RTP Interface
 
   public void rtpSamples(RTPChannel rtp) {

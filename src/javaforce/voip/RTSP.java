@@ -673,6 +673,23 @@ public abstract class RTSP {
   }
 
   /**
+   * Get Content from a SIP message.
+   */
+  protected String[] getContent(String[] msg) {
+    ArrayList<String> content = new ArrayList<String>();
+    for (int a = 0; a < msg.length; a++) {
+      //look for double \r\n (which appears as an empty line) that marks end of SIP headers
+      if (msg[a].length() == 0) {
+        for (int b = a + 1; b < msg.length; b++) {
+          content.add(msg[b]);
+        }
+        break;
+      }
+    }
+    return content.toArray(new String[0]);
+  }
+
+  /**
    * Generates a response to a SIP authorization challenge.
    */
   protected String getResponse(String user, String pass, String realm, String cmd, String uri, String nonce, String qop, String nc, String cnonce) {

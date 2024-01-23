@@ -411,6 +411,8 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
             iface.onPlay(this);
           } else if (sess.cmd.equals("TEARDOWN")) {
             iface.onTeardown(this);
+          } else if (sess.cmd.equals("GET_PARAMETER")) {
+            iface.onGetParameter(this, getContent(msg));
           }
           break;
         case 401:

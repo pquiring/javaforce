@@ -1232,6 +1232,9 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       close(false);
     }
 
+    public void onGetParameter(RTSPClient client, String[] params) {
+    }
+
     //RTP Interface
 
     public void rtpSamples(RTPChannel rtp) {
