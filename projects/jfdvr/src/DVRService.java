@@ -26,6 +26,7 @@ public class DVRService extends Thread {
   }
 
   public static void main(String args[]) {
+    serviceStart(args);  //for debugging
   }
 
   public void run() {
@@ -46,7 +47,9 @@ public class DVRService extends Thread {
     //start recording processes
     Config config = Config.current;
     for(int a=0;a<config.cameras.length;a++) {
-      startCamera(config.cameras[a]);
+      if (config.cameras[a].enabled) {
+        startCamera(config.cameras[a]);
+      }
     }
   }
 
@@ -93,6 +96,7 @@ public class DVRService extends Thread {
         return;
       }
     }
+    startCamera(camera);
   }
 
   private void setupFirewall() {

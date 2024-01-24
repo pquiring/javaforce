@@ -14,6 +14,7 @@ public class Config extends SerialObject implements Serializable {
   public static Config current;
 
   public Camera cameras[] = new Camera[0];
+  public Group groups[] = new Group[0];
 
   public static void load() {
     String file = Paths.dataPath + "/config.dat";
@@ -56,6 +57,11 @@ public class Config extends SerialObject implements Serializable {
     cameras[cameras.length-1] = camera;
   }
 
+  public void addGroup(Group group) {
+    groups = Arrays.copyOf(groups, groups.length + 1);
+    groups[groups.length-1] = group;
+  }
+
   public void removeCamera(Camera camera) {
     int idx = -1;
     for(int a=0;a<cameras.length;a++) {
@@ -65,19 +71,39 @@ public class Config extends SerialObject implements Serializable {
     cameras = (Camera[])JF.copyOfExcluding(cameras, idx);
   }
 
+  public void removeGroup(Group group) {
+    int idx = -1;
+    for(int a=0;a<groups.length;a++) {
+      if (groups[a] == group) {idx = a; break;}
+    }
+    if (idx == -1) return;
+    groups = (Group[])JF.copyOfExcluding(groups, idx);
+  }
+
   public static final short id_cameras = id_array + 1;
+  public static final short id_groups = id_array + 2;
 
   public void readObject() throws Exception {
+    int cnt;
     do {
       short id = readShort();
       switch (id) {
         case id_cameras:
-          int cnt = readInt();
+          cnt = readInt();
           cameras = new Camera[cnt];
           for(int a=0;a<cnt;a++) {
             cameras[a] = new Camera();
             cameras[a].readInit(this);
             cameras[a].readObject();
+          }
+          break;
+        case id_groups:
+          cnt = readInt();
+          groups = new Group[cnt];
+          for(int a=0;a<cnt;a++) {
+            groups[a] = new Group();
+            groups[a].readInit(this);
+            groups[a].readObject();
           }
           break;
         case id_end: return;
@@ -87,12 +113,20 @@ public class Config extends SerialObject implements Serializable {
   }
 
   public void writeObject() throws Exception {
+    int cnt;
     writeShort(id_cameras);
-    int cnt = cameras.length;
+    cnt = cameras.length;
     writeInt(cnt);
     for(int a=0;a<cnt;a++) {
       cameras[a].writeInit(this);
       cameras[a].writeObject();
+    }
+    writeShort(id_groups);
+    cnt = groups.length;
+    writeInt(cnt);
+    for(int a=0;a<cnt;a++) {
+      groups[a].writeInit(this);
+      groups[a].writeObject();
     }
     writeShort(id_end);
   }

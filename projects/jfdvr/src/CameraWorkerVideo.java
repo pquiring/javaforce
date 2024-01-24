@@ -280,6 +280,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     }
     try {
       if (encoder != null) {
+        JFLog.log("stopping encoder");
         encoder.stop();
         encoder = null;
       }

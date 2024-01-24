@@ -5,6 +5,7 @@ package javaforce.webui;
  * @author pquiring
  */
 
+import javaforce.*;
 import javaforce.webui.event.*;
 
 public class ListBox extends ScrollPanel implements Click {
@@ -47,16 +48,12 @@ public class ListBox extends ScrollPanel implements Click {
   }
 
   public void add(Component item) {
-    if (item.id != null) {
-      init(item);
-    }
+    init(item);
     super.add(new Cell(item));
   }
 
   public void add(int idx, Component item) {
-    if (item.id != null) {
-      init(item);
-    }
+    init(item);
     super.add(idx, new Cell(item));
   }
 
@@ -69,7 +66,6 @@ public class ListBox extends ScrollPanel implements Click {
   }
 
   private void init(Component cmp) {
-    cmp.addEvent("onclick", "onClick(event, " + cmp.id + ");");
     cmp.addClickListener(this);
   }
 
@@ -141,6 +137,7 @@ public class ListBox extends ScrollPanel implements Click {
   }
 
   public void onClick(MouseEvent me, Component cmp) {
+    JFLog.log("ListBox.onClick");
     Cell cell = (Cell)cmp.getParent();
     if (me.ctrlKey) {
       cell.setSelected(!cell.isSelected());

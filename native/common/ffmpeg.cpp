@@ -23,9 +23,10 @@ static jboolean libav_org = JNI_FALSE;
 static jboolean loaded = JNI_FALSE;
 
 static jboolean ff_debug_log = JNI_FALSE;
+static jboolean ff_debug_trace = JNI_FALSE;
 static jboolean ff_debug_buffer = JNI_FALSE;
 static jboolean ff_debug_box = JNI_FALSE;
-static jboolean ff_debug_time_base = JNI_TRUE;
+static jboolean ff_debug_time_base = JNI_FALSE;
 
 JF_LIB_HANDLE codec = NULL;
 JF_LIB_HANDLE device = NULL;
@@ -1524,6 +1525,7 @@ static jboolean encoder_init_video(FFContext *ctx) {
   ctx->video_codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
 //  ctx->video_codec_ctx->max_b_frames = 12;
 
+  if (ff_debug_trace) printf("encoder_init_video\n");
   //set video codec options
   switch (ctx->video_codec_ctx->codec_id) {
     case AV_CODEC_ID_MPEG4: {
@@ -1566,10 +1568,12 @@ static jboolean encoder_init_video(FFContext *ctx) {
   }
 //  ctx->video_codec_ctx->flags |= AV_CODEC_FLAG_LOW_DELAY;
 
+  if (ff_debug_trace) printf("encoder_init_video:open:%p:%p\n", ctx->video_codec_ctx, ctx->video_codec);
   //open video codec
   int ret = (*_avcodec_open2)(ctx->video_codec_ctx, ctx->video_codec, NULL);
   if (ret < 0) return JNI_FALSE;
 
+  if (ff_debug_trace) printf("encoder_init_video:params:%p:%p\n", ctx->video_stream->codecpar, ctx->video_codec_ctx);
   //copy params (after codec is opened)
   ret = (*_avcodec_parameters_from_context)(ctx->video_stream->codecpar, ctx->video_codec_ctx);
   if (ret < 0) {
@@ -1577,6 +1581,7 @@ static jboolean encoder_init_video(FFContext *ctx) {
     return JNI_FALSE;
   }
 
+  if (ff_debug_trace) printf("encoder_init_video\n");
   if (ctx->video_codec_ctx->pix_fmt != AV_PIX_FMT_BGRA) {
     ctx->scaleVideo = JNI_TRUE;
   }
@@ -1585,14 +1590,17 @@ static jboolean encoder_init_video(FFContext *ctx) {
     ctx->src_pic->width = ctx->org_width;
     ctx->src_pic->height = ctx->org_height;
     ctx->src_pic->format = AV_PIX_FMT_BGRA;
+    if (ff_debug_trace) printf("encoder_init_video\n");
     ret = (*_av_frame_get_buffer)(ctx->src_pic, get_size_alignment(ctx->org_width, ctx->org_height));
     if (ret < 0) {
       printf("av_frame_get_buffer() failed! %d\n", ret);
       return JNI_FALSE;
     }
+    if (ff_debug_trace) printf("encoder_init_video\n");
     ctx->sws_ctx = (*_sws_getContext)(ctx->org_width, ctx->org_height, AV_PIX_FMT_BGRA
       , ctx->video_codec_ctx->width, ctx->video_codec_ctx->height, ctx->video_codec_ctx->pix_fmt, SWS_BICUBIC, NULL, NULL, NULL);
   }
+  if (ff_debug_trace) printf("encoder_init_video\n");
   //get caps
   ctx->video_delay = (ctx->video_codec->capabilities & AV_CODEC_CAP_DELAY) != 0;
   ctx->video_frame = (*_av_frame_alloc)();
@@ -1603,6 +1611,7 @@ static jboolean encoder_init_video(FFContext *ctx) {
   ctx->video_frame->width = ctx->width;
   ctx->video_frame->height = ctx->height;
   ctx->video_frame->format = ctx->video_codec_ctx->pix_fmt;
+  if (ff_debug_trace) printf("encoder_init_video\n");
   ret = (*_av_frame_get_buffer)(ctx->video_frame, get_size_alignment(ctx->width, ctx->height));
   if (ret < 0) {
     printf("av_frame_get_buffer() failed! %d\n", ret);
@@ -1832,6 +1841,7 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
   else if (strcmp(codec, "h264") == 0) {
     ctx->is_h264 = 1;
   }
+  if (ff_debug_trace) printf("encoder_start\n");
   if (ctx->is_dash) {
     if (single_file) {
       (*_av_opt_set_int)(ctx->fmt_ctx->priv_data, "single_file", 1, 0);
@@ -1853,30 +1863,35 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
   ctx->fmt_ctx->io_close2 = &io_close2;
   ctx->fmt_ctx->opaque = ctx;
   ctx->out_fmt = (AVOutputFormat*)ctx->fmt_ctx->oformat;
+  if (ff_debug_trace) printf("encoder_start\n");
   if ((ctx->out_fmt->video_codec != AV_CODEC_ID_NONE) && doVideo) {
     if (!encoder_add_stream(ctx, ctx->out_fmt->video_codec)) {
       printf("encoder_add_stream:video failed!\n");
       return JNI_FALSE;
     }
   }
+  if (ff_debug_trace) printf("encoder_start\n");
   if ((ctx->out_fmt->audio_codec != AV_CODEC_ID_NONE) && doAudio) {
     if (!encoder_add_stream(ctx, ctx->out_fmt->audio_codec)) {
       printf("encoder_add_stream:audio failed!\n");
       return JNI_FALSE;
     }
   }
+  if (ff_debug_trace) printf("encoder_start\n");
   if (ctx->video_stream != NULL) {
     if (!encoder_init_video(ctx)) {
       printf("encoder_init_video failed!\n");
       return JNI_FALSE;
     }
   }
+  if (ff_debug_trace) printf("encoder_start\n");
   if (ctx->audio_stream != NULL) {
     if (!encoder_init_audio(ctx)) {
       printf("encoder_init_audio failed!\n");
       return JNI_FALSE;
     }
   }
+  if (ff_debug_trace) printf("encoder_start\n");
 
   if (ctx->is_dash) {
     (*_av_dict_set)(&ctx->fmt_ctx->metadata, "movflags", "+dash+delay_moov+skip_sidx+skip_trailer", AV_DICT_APPEND);
@@ -1893,17 +1908,20 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
     printf("    cc:num/den=%d/%d\n", ctx->video_codec_ctx->time_base.num, ctx->video_codec_ctx->time_base.den);
     printf("    fr:num/den=%d/%d\n", ctx->video_codec_ctx->framerate.num, ctx->video_codec_ctx->framerate.den);
   }
-
   if (ret < 0) {
     printf("avformat_write_header failed! %d\n", ret);
   }
+
+  if (ff_debug_trace) printf("encoder_start\n");
   if (ctx->audio_frame != NULL) {
     ctx->audio_pts = 0;
   }
   if (ctx->video_frame != NULL) {
     ctx->video_pts = 0;
   }
+  if (ff_debug_trace) printf("encoder_start\n");
   (*_av_dump_format)(ctx->fmt_ctx, 0, "dump.avi", 1);
+  if (ff_debug_trace) printf("encoder_start\n");
   if (doAudio) {
     printf("audio:codec->time_base=%d/%d stream->time_base=%d/%d\n", ctx->audio_codec_ctx->time_base.num, ctx->audio_codec_ctx->time_base.den, ctx->audio_stream->time_base.num, ctx->audio_stream->time_base.den);
     printf("audio:bitrate=%d samplerate=%d channels=%d\n", ctx->config_audio_bit_rate, ctx->freq, ctx->chs);
@@ -1912,11 +1930,13 @@ static jboolean encoder_start(FFContext *ctx, const char *codec, jboolean doVide
       printf("audio:conversion=%d to %d\n", AV_SAMPLE_FMT_S16, ctx->audio_codec_ctx->sample_fmt);
     }
   }
+  if (ff_debug_trace) printf("encoder_start\n");
   if (doVideo) {
     printf("video:codec->time_base=%d/%d stream->time_base=%d/%d\n", ctx->video_codec_ctx->time_base.num, ctx->video_codec_ctx->time_base.den, ctx->video_stream->time_base.num, ctx->video_stream->time_base.den);
     printf("video:bitrate=%d fps=%d\n", ctx->config_video_bit_rate, ctx->fps);
     printf("video:ticks=%d\n", ctx->video_codec_ctx->ticks_per_frame);
   }
+  if (ff_debug_trace) printf("encoder_start\n");
   return JNI_TRUE;
 }
 
@@ -2362,23 +2382,28 @@ JNIEXPORT void JNICALL Java_javaforce_media_MediaEncoder_flush
 
 static void encoder_stop(FFContext *ctx)
 {
+  if (ff_debug_trace) printf("encoder_stop\n");
   //flush encoders
   if (ctx->audio_stream != NULL) {
     encoder_flush(ctx, ctx->audio_codec_ctx, ctx->audio_stream, JNI_TRUE);
   }
+  if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->video_stream != NULL) {
     encoder_flush(ctx, ctx->video_codec_ctx, ctx->video_stream, JNI_TRUE);
   }
+  if (ff_debug_trace) printf("encoder_stop:%p\n", ctx->fmt_ctx);
   int ret = (*_av_write_trailer)(ctx->fmt_ctx);
   if (ret < 0) {
     printf("av_write_trailer() failed! %d\n", ret);
   }
+  if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->io_ctx != NULL) {
     (*_avio_flush)(ctx->io_ctx);
     (*_av_free)(ctx->io_ctx->buffer);
     ctx->io_ctx = NULL;
     ctx->ff_buffer = NULL;
   }
+  if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->audio_stream != NULL) {
     (*_avcodec_close)(ctx->audio_codec_ctx);
     (*_av_free)(ctx->audio_codec_ctx);
@@ -2389,10 +2414,12 @@ static void encoder_stop(FFContext *ctx)
     (*_av_free)(ctx->video_codec_ctx);
     ctx->video_stream = NULL;
   }
+  if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->audio_frame != NULL) {
     (*_av_frame_free)((void**)&ctx->audio_frame);
     ctx->audio_frame = NULL;
   }
+  if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->video_frame != NULL) {
     (*_av_frame_free)((void**)&ctx->video_frame);
     ctx->video_frame = NULL;
@@ -2405,6 +2432,7 @@ static void encoder_stop(FFContext *ctx)
     (*_avformat_free_context)(ctx->fmt_ctx);
     ctx->fmt_ctx = NULL;
   }
+  if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->src_pic != NULL) {
     (*_av_frame_free)((void**)&ctx->src_pic);
     ctx->src_pic = NULL;
@@ -2413,6 +2441,7 @@ static void encoder_stop(FFContext *ctx)
     (*_sws_freeContext)(ctx->sws_ctx);
     ctx->sws_ctx = NULL;
   }
+  if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->swr_ctx != NULL) {
     if (libav_org)
       (*_avresample_free)(&ctx->swr_ctx);
@@ -2420,6 +2449,7 @@ static void encoder_stop(FFContext *ctx)
       (*_swr_free)(&ctx->swr_ctx);
     ctx->swr_ctx = NULL;
   }
+  if (ff_debug_trace) printf("encoder_stop\n");
   if (ctx->audio_buffer != NULL) {
     (*_av_free)(ctx->audio_buffer);
     ctx->audio_buffer = NULL;

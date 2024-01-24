@@ -171,9 +171,23 @@ public class Test implements WebUIHandler {
     list.add("Option #2");
     list.add("Option #3");
 
+    Button b_add = new Button("Add");
+    Button b_remove = new Button("Remove");
+
     Panel t3 = new Panel();
     t3.add(list);
+    t3.add(b_add);
+    t3.add(b_remove);
     tab.addTab(t3, "Tab#3");
+
+    b_add.addClickListener((MouseEvent e, Component button) -> {
+      list.add("Option #" + (list.count()+1));
+    });
+
+    b_remove.addClickListener((MouseEvent e, Component button) -> {
+      list.remove(list.count() - 1);
+    });
+
 
     //TAB #4
 

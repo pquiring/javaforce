@@ -1,4 +1,4 @@
-/**
+/** Config Service.
  *
  * @author pquiring
  */
@@ -72,7 +72,10 @@ public class ConfigService implements WebUIHandler {
       return MediaCoder.downloadWebUI();
     }
     Label lbl;
-    Row row;
+    Row row, row2;
+    int cnt;
+
+    client.setProperty("view", "cameras");
 
     Panel panel = new Panel();
     SplitPanel split = new SplitPanel(SplitPanel.VERTICAL);
@@ -83,10 +86,13 @@ public class ConfigService implements WebUIHandler {
     panel.add(split);
     //left side
     ListBox list = new ListBox();
-    list.setName("list");
-    int cnt = Config.current.cameras.length;
+    cnt = Config.current.cameras.length;
     for(int a=0;a<cnt;a++) {
-      list.add(Config.current.cameras[a].name);
+      list.add("Camera:" + Config.current.cameras[a].name);
+    }
+    cnt = Config.current.groups.length;
+    for(int a=0;a<cnt;a++) {
+      list.add("Group:" + Config.current.groups[a].name);
     }
     left.add(list);
 
@@ -110,89 +116,96 @@ public class ConfigService implements WebUIHandler {
 
     row = new Row();
     right.add(row);
-    Button b_new = new Button("New");
-    row.add(b_new);
-    b_new.setName("new");
+    Button b_new_camera = new Button("New Camera");
+    row.add(b_new_camera);
+    Button b_new_group = new Button("New Group");
+    row.add(b_new_group);
     Button b_save = new Button("Save");
     row.add(b_save);
-    b_save.setName("save");
 
     Button b_delete = new Button("Delete");
     row.add(b_delete);
-    b_delete.setName("delete");
 
     Button b_help = new Button("Help");
     row.add(b_help);
-    b_help.setName("help");
 
     row = new Row();
     right.add(row);
-    Label lname = new Label("Name:");
-    row.add(lname);
-    TextField name = new TextField("");
-    name.setName("name");
-    row.add(name);
+    InnerPanel camera_panel = new InnerPanel("Camera");
+    row.add(camera_panel);
 
     row = new Row();
-    right.add(row);
-    Label lurl = new Label("URL:");
-    row.add(lurl);
-    TextField url = new TextField("");
-    name.setName("url");
-    row.add(url);
-
-    InnerPanel video = new InnerPanel("Video Options (rtsp)");
-    right.add(video);
+    camera_panel.add(row);
+    Label camera_lbl_name = new Label("Name:");
+    row.add(camera_lbl_name);
+    TextField camera_name = new TextField("");
+    row.add(camera_name);
 
     row = new Row();
-    video.add(row);
-    CheckBox record_motion = new CheckBox("Motion Recording");
-    record_motion.setSelected(true);
-    row.add(record_motion);
+    camera_panel.add(row);
+    Label camera_lbl_url = new Label("URL:");
+    row.add(camera_lbl_url);
+    TextField camera_url = new TextField("");
+    row.add(camera_url);
 
     row = new Row();
-    video.add(row);
+    camera_panel.add(row);
+    CheckBox camera_enabled = new CheckBox("Enabled");
+    camera_enabled.setSelected(true);
+    row.add(camera_enabled);
+
+    InnerPanel camera_video_panel = new InnerPanel("Video Options (rtsp)");
+    camera_panel.add(camera_video_panel);
+
+    row = new Row();
+    camera_video_panel.add(row);
+    CheckBox camera_record_motion = new CheckBox("Motion Recording");
+    camera_record_motion.setSelected(true);
+    row.add(camera_record_motion);
+
+    row = new Row();
+    camera_video_panel.add(row);
     lbl = new Label("Motion Threshold:");
     row.add(lbl);
-    Slider threshold = new Slider(Slider.HORIZONTAL, 0, 100, 15);
-    row.add(threshold);
+    Slider camera_threshold = new Slider(Slider.HORIZONTAL, 0, 100, 15);
+    row.add(camera_threshold);
     Label threshold_lbl = new Label("20");
-    threshold.addChangedListener((Component c) -> {
-      threshold_lbl.setText(Integer.toString(threshold.getPos()));
+    camera_threshold.addChangedListener((Component c) -> {
+      threshold_lbl.setText(Integer.toString(camera_threshold.getPos()));
     });
     row.add(threshold_lbl);
 
     row = new Row();
-    video.add(row);
+    camera_video_panel.add(row);
     lbl = new Label("Motion Recording Off Delay (sec):");
     row.add(lbl);
-    Slider motion_off_delay = new Slider(Slider.HORIZONTAL, 0, 60, 5);
-    row.add(motion_off_delay);
+    Slider camera_motion_off_delay = new Slider(Slider.HORIZONTAL, 0, 60, 5);
+    row.add(camera_motion_off_delay);
     Label motion_off_delay_lbl = new Label("5");
-    motion_off_delay.addChangedListener((Component c) -> {
-      motion_off_delay_lbl.setText(Integer.toString(motion_off_delay.getPos()));
+    camera_motion_off_delay.addChangedListener((Component c) -> {
+      motion_off_delay_lbl.setText(Integer.toString(camera_motion_off_delay.getPos()));
     });
     row.add(motion_off_delay_lbl);
 
-    InnerPanel pic = new InnerPanel("Picture Options (http)");
-    right.add(pic);
+    InnerPanel pic_panel = new InnerPanel("Picture Options (http)");
+    camera_panel.add(pic_panel);
 
     row = new Row();
-    pic.add(row);
+    pic_panel.add(row);
     lbl = new Label("Controller:");
     row.add(lbl);
     TextField controller = new TextField("");
     row.add(controller);
 
     row = new Row();
-    pic.add(row);
+    pic_panel.add(row);
     lbl = new Label("Trigger Tag:");
     row.add(lbl);
     TextField tag_trigger = new TextField("");
     row.add(tag_trigger);
 
     row = new Row();
-    pic.add(row);
+    pic_panel.add(row);
     lbl = new Label("Program Tag:");
     row.add(lbl);
     TextField tag_value = new TextField("");
@@ -201,27 +214,30 @@ public class ConfigService implements WebUIHandler {
     row.add(lbl);
 
     row = new Row();
-    pic.add(row);
+    pic_panel.add(row);
     CheckBox pos_edge = new CheckBox("Pos Edge Trigger");
     pos_edge.setSelected(true);
     row.add(pos_edge);
 
+    InnerPanel storage_panel = new InnerPanel("Storage");
+    camera_panel.add(storage_panel);
+
     row = new Row();
-    right.add(row);
+    storage_panel.add(row);
     lbl = new Label("Max file size (MB) (10-4096):");
     row.add(lbl);
     TextField max_file_size = new TextField("1024");
     row.add(max_file_size);
 
     row = new Row();
-    right.add(row);
+    storage_panel.add(row);
     lbl = new Label("Max folder size (GB) (1-4096):");
     row.add(lbl);
     TextField max_folder_size = new TextField("100");
     row.add(max_folder_size);
 
-    Column preview_panel = new Column();
-    right.add(preview_panel);
+    InnerPanel preview_panel = new InnerPanel("Preview");
+    camera_panel.add(preview_panel);
 
     row = new Row();
     preview_panel.add(row);
@@ -243,134 +259,402 @@ public class ConfigService implements WebUIHandler {
     row.add(img);
     preview_panel.setVisible(false);
 
+    row = new Row();
+    right.add(row);
+    InnerPanel group_panel = new InnerPanel("Group");
+    right.add(group_panel);
+    group_panel.setVisible(false);
+
+    row = new Row();
+    group_panel.add(row);
+    Label group_lbl_name = new Label("Name:");
+    row.add(group_lbl_name);
+    TextField group_name = new TextField("");
+    row.add(group_name);
+
+    row = new Row();
+    group_panel.add(row);
+
+    InnerPanel group_cameras = new InnerPanel("Group Cameras");
+    row.add(group_cameras);
+
+    InlineBlock blk1 = new InlineBlock();
+    InnerPanel ipanel1 = new InnerPanel("Available");
+    ListBox group_list_avail = new ListBox();
+    ipanel1.add(group_list_avail);
+    blk1.add(ipanel1);
+    row.add(blk1);
+
+    InlineBlock blk2 = new InlineBlock();
+
+    row2 = new Row();
+    blk2.add(row2);
+    Pad pad = new Pad();
+    pad.setHeight(25);
+    row2.add(pad);
+
+    row2 = new Row();
+    blk2.add(row2);
+    Button b_group_add_camera = new Button("Add >>");
+    b_group_add_camera.setWidth(75);
+    row2.add(b_group_add_camera);
+
+    row2 = new Row();
+    blk2.add(row2);
+    Button b_group_remove_camera = new Button("<< Remove");
+    b_group_remove_camera.setWidth(75);
+    row2.add(b_group_remove_camera);
+
+    row.add(blk2);
+
+    InlineBlock blk3 = new InlineBlock();
+    InnerPanel ipanel3 = new InnerPanel("Selected");
+    ListBox group_list_selected = new ListBox();
+    ipanel3.add(group_list_selected);
+    blk3.add(ipanel3);
+    row.add(blk3);
+
     list.addChangedListener((Component x) -> {
-      int idx = list.getSelectedIndex();
-      JFLog.log("list:idx=" + idx);
-      if (idx < 0 || idx >= Config.current.cameras.length) return;
-      Camera camera = Config.current.cameras[idx];
-      name.setText(camera.name);
-      url.setText(camera.url);
-      record_motion.setSelected(camera.record_motion);
-      threshold.setPos(camera.record_motion_threshold);
-      threshold_lbl.setText(Integer.toString(camera.record_motion_threshold));
-      if (camera.record_motion_after < 0) camera.record_motion_after = 0;
-      if (camera.record_motion_after > 60) camera.record_motion_after = 60;
-      motion_off_delay.setPos(camera.record_motion_after);
-      motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
-      max_file_size.setText(Integer.toString(camera.max_file_size));
-      max_folder_size.setText(Integer.toString(camera.max_folder_size));
-      controller.setText(camera.controller);
-      tag_trigger.setText(camera.tag_trigger);
-      tag_value.setText(camera.tag_value);
-      pos_edge.setSelected(camera.pos_edge);
-      stopTimer(client);
-      client.setProperty("camera", camera);
-      Timer timer = new Timer();
-      timer.schedule(new TimerTask() {
-        public void run() {
-          bar.setValue(camera.motion_value);
-          motion_value.setText(Integer.toString((int)camera.motion_value));
-          img.refresh();
+      errmsg.setText("");
+      String opt = list.getSelectedItem();
+      if (opt == null) return;
+      int idx = opt.indexOf(':');
+      String opt_type = opt.substring(0, idx);
+      String opt_name = opt.substring(idx+1);
+      switch (opt_type) {
+        case "Camera": {
+          //select camera
+          int camera_cnt = Config.current.cameras.length;
+          Camera camera = null;
+          for(int a=0;a<camera_cnt;a++) {
+            if (Config.current.cameras[a].name.equals(opt_name)) {
+              camera = Config.current.cameras[a];
+              break;
+            }
+          }
+          if (camera == null) break;
+          camera_name.setText(camera.name);
+          camera_url.setText(camera.url);
+          camera_enabled.setSelected(camera.enabled);
+          camera_record_motion.setSelected(camera.record_motion);
+          camera_threshold.setPos(camera.record_motion_threshold);
+          threshold_lbl.setText(Integer.toString(camera.record_motion_threshold));
+          if (camera.record_motion_after < 0) camera.record_motion_after = 0;
+          if (camera.record_motion_after > 60) camera.record_motion_after = 60;
+          camera_motion_off_delay.setPos(camera.record_motion_after);
+          motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
+          max_file_size.setText(Integer.toString(camera.max_file_size));
+          max_folder_size.setText(Integer.toString(camera.max_folder_size));
+          controller.setText(camera.controller);
+          tag_trigger.setText(camera.tag_trigger);
+          tag_value.setText(camera.tag_value);
+          pos_edge.setSelected(camera.pos_edge);
+          stopTimer(client);
+          client.setProperty("camera", camera);
+          Camera camera_cap = camera;
+          Timer timer = new Timer();
+          timer.schedule(new TimerTask() {
+            public void run() {
+              bar.setValue(camera_cap.motion_value);
+              motion_value.setText(Integer.toString((int)camera_cap.motion_value));
+              img.refresh();
+            }
+          }, 500, 500);
+          client.setProperty("timer", timer);
+          preview_panel.setVisible(true);
+          camera.viewing = true;
+          camera.update_preview = true;
+          camera_panel.setVisible(true);
+          group_panel.setVisible(false);
+          client.setProperty("view", "cameras");
+          break;
         }
-      }, 500, 500);
-      client.setProperty("timer", timer);
-      preview_panel.setVisible(true);
-      camera.viewing = true;
-      camera.update_preview = true;
+        case "Group": {
+          //select group
+          int group_cnt = Config.current.groups.length;
+          Group group = null;
+          for(int a=0;a<group_cnt;a++) {
+            if (Config.current.groups[a].name.equals(opt_name)) {
+              group = Config.current.groups[a];
+              break;
+            }
+          }
+          if (group == null) break;
+          group_name.setText(group.name);
+          update_group_lists(group, group_list_avail, group_list_selected);
+          camera_panel.setVisible(false);
+          group_panel.setVisible(true);
+          client.setProperty("view", "groups");
+          break;
+        }
+      }
     });
-    b_new.addClickListener((MouseEvent e, Component button) -> {
+    b_new_camera.addClickListener((MouseEvent e, Component button) -> {
       list.setSelectedIndex(-1);
-      name.setText("");
-      url.setText("");
+      camera_name.setText("");
+      camera_url.setText("");
       controller.setText("");
       tag_trigger.setText("");
       tag_value.setText("");
       stopTimer(client);
       bar.setValue(0);
       preview_panel.setVisible(false);
+      camera_panel.setVisible(true);
+      group_panel.setVisible(false);
+      client.setProperty("view", "cameras");
+    });
+    b_new_group.addClickListener((MouseEvent e, Component button) -> {
+      list.setSelectedIndex(-1);
+      group_name.setText("");
+      stopTimer(client);
+      preview_panel.setVisible(false);
+      camera_panel.setVisible(false);
+      group_panel.setVisible(true);
+      update_group_lists(new Group(), group_list_avail, group_list_selected);
+      client.setProperty("view", "groups");
+      client.setProperty("new_group", new Group());
     });
     b_save.addClickListener((MouseEvent e, Component button) -> {
-      int idx = list.getSelectedIndex();
-      String _name = name.getText();
-      _name = cleanName(_name);
-      name.setText(_name);
-      if (_name.length() == 0) {
-        errmsg.setText("Invalid Name");
-        return;
-      }
-      String _url = url.getText();
-      if (!validURL(_url)) {
-        errmsg.setText("Invalid URL");
-        return;
-      }
-      Camera camera;
-      boolean reload = false;
-      if (idx == -1) {
-        //create new camera
-        int ccnt = Config.current.cameras.length;
-        for(int a=0;a<ccnt;a++) {
-          if (Config.current.cameras[a].name.equals(_name)) {
-            errmsg.setText("That name already exists");
+      errmsg.setText("");
+      String view = (String)client.getProperty("view");
+      switch (view) {
+        case "cameras": {
+          //save camera
+          String _name = camera_name.getText();
+          _name = cleanName(_name);
+          camera_name.setText(_name);
+          if (_name.length() == 0) {
+            errmsg.setText("Invalid Name");
             return;
           }
+          String _url = camera_url.getText();
+          if (!validURL(_url)) {
+            errmsg.setText("Invalid URL");
+            return;
+          }
+          boolean reload = false;
+          Camera camera = null;
+          if (list.getSelectedIndex() == -1) {
+            //create new camera
+            int ccnt = Config.current.cameras.length;
+            for(int a=0;a<ccnt;a++) {
+              if (Config.current.cameras[a].name.equals(_name)) {
+                errmsg.setText("That name already exists");
+                return;
+              }
+            }
+            camera = new Camera();
+            Config.current.addCamera(camera);
+            list.add("Camera:" + _name);
+          } else {
+            String opt = list.getSelectedItem();
+            if (opt == null) return;
+            int idx = opt.indexOf(':');
+            String opt_type = opt.substring(0, idx);
+            String opt_name = opt.substring(idx+1);
+            //update existing camera
+            int camera_cnt = Config.current.cameras.length;
+            for(int a=0;a<camera_cnt;a++) {
+              if (Config.current.cameras[a].name.equals(opt_name)) {
+                camera = Config.current.cameras[a];
+                break;
+              }
+            }
+            if (camera == null) break;
+            //check if name/url are the same
+            if (camera.name.equals(_name) && camera.url.equals(_url)) {
+              reload = true;
+            } else {
+              DVRService.dvrService.stopCamera(camera);
+            }
+          }
+          camera.name = _name;
+          camera.url = _url;
+          camera.enabled = camera_enabled.isSelected();
+          camera.record_motion = camera_record_motion.isSelected();
+          camera.record_motion_threshold = camera_threshold.getPos();
+          threshold_lbl.setText(Integer.toString(camera.record_motion_threshold));
+          camera.record_motion_after = camera_motion_off_delay.getPos();
+          motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
+          camera.max_file_size = Integer.valueOf(max_file_size.getText());
+          if (camera.max_file_size < 10) camera.max_file_size = 10;
+          if (camera.max_file_size > 4096) camera.max_file_size = 4096;
+          camera.max_folder_size = Integer.valueOf(max_folder_size.getText());
+          if (camera.max_folder_size < 0) camera.max_folder_size = 1;
+          if (camera.max_folder_size > 4096) camera.max_folder_size = 4096;
+          camera.controller = controller.getText();
+          camera.tag_trigger = tag_trigger.getText();
+          camera.tag_value = tag_value.getText();
+          camera.pos_edge = pos_edge.isSelected();
+          if (reload) {
+            if (camera.enabled) {
+              DVRService.dvrService.reloadCamera(camera);
+            } else {
+              DVRService.dvrService.stopCamera(camera);
+            }
+          } else {
+            if (camera.enabled) {
+              DVRService.dvrService.startCamera(camera);
+            }
+          }
+          Config.current.save();
+          stopTimer(client);
+          break;
         }
-        camera = new Camera();
-        Config.current.addCamera(camera);
-        list.add(_name);
-      } else {
-        //update existing camera
-        camera = Config.current.cameras[idx];
-        //check if name/url are the same
-        if (camera.name.equals(_name) && camera.url.equals(_url)) {
-          reload = true;
-        } else {
-          DVRService.dvrService.stopCamera(camera);
+        case "groups": {
+          //save group
+          String _name = camera_name.getText();
+          _name = cleanName(_name);
+          group_name.setText(_name);
+          if (_name.length() == 0) {
+            errmsg.setText("Invalid Name");
+            return;
+          }
+
+          Group group = null;
+          if (list.getSelectedIndex() == -1) {
+            //create new group
+            int ccnt = Config.current.groups.length;
+            for(int a=0;a<ccnt;a++) {
+              if (Config.current.groups[a].name.equals(_name)) {
+                errmsg.setText("That name already exists");
+                return;
+              }
+            }
+            group = (Group)client.getProperty("new_group");
+            Config.current.addGroup(group);
+            list.add("Group:" + _name);
+            client.setProperty("new_group", null);
+          } else {
+            String opt = list.getSelectedItem();
+            if (opt == null) return;
+            int idx = opt.indexOf(':');
+            String opt_type = opt.substring(0, idx);
+            String opt_name = opt.substring(idx+1);
+            //update existing group
+            int group_cnt = Config.current.groups.length;
+            for(int a=0;a<group_cnt;a++) {
+              if (Config.current.groups[a].name.equals(opt_name)) {
+                group = Config.current.groups[a];
+                break;
+              }
+            }
+            if (group == null) break;
+          }
+          update_group_lists(group, group_list_avail, group_list_selected);
+          break;
         }
       }
-      camera.name = _name;
-      camera.url = _url;
-      camera.record_motion = record_motion.isSelected();
-      camera.record_motion_threshold = threshold.getPos();
-      threshold_lbl.setText(Integer.toString(camera.record_motion_threshold));
-      camera.record_motion_after = motion_off_delay.getPos();
-      motion_off_delay_lbl.setText(Integer.toString(camera.record_motion_after));
-      camera.max_file_size = Integer.valueOf(max_file_size.getText());
-      if (camera.max_file_size < 10) camera.max_file_size = 10;
-      if (camera.max_file_size > 4096) camera.max_file_size = 4096;
-      camera.max_folder_size = Integer.valueOf(max_folder_size.getText());
-      if (camera.max_folder_size < 0) camera.max_folder_size = 1;
-      if (camera.max_folder_size > 4096) camera.max_folder_size = 4096;
-      camera.controller = controller.getText();
-      camera.tag_trigger = tag_trigger.getText();
-      camera.tag_value = tag_value.getText();
-      camera.pos_edge = pos_edge.isSelected();
-      if (!reload) {
-        DVRService.dvrService.startCamera(camera);
-      } else {
-        DVRService.dvrService.reloadCamera(camera);
-      }
-      Config.current.save();
-      button.client.refresh();  //list not working yet
-      stopTimer(client);
     });
+
+    b_group_add_camera.addClickListener((MouseEvent e, Component button) -> {
+      String opt = list.getSelectedItem();
+      if (opt == null) return;
+      int idx = opt.indexOf(':');
+      String opt_type = opt.substring(0, idx);
+      String opt_name = opt.substring(idx+1);
+
+      Group group = null;
+
+      int group_cnt = Config.current.groups.length;
+      for(int a=0;a<group_cnt;a++) {
+        if (Config.current.groups[a].name.equals(opt_name)) {
+          group = Config.current.groups[a];
+          break;
+        }
+      }
+      if (group == null) {
+        group = (Group)client.getProperty("new_group");
+      }
+
+      String camera = group_list_avail.getSelectedItem();
+      if (camera == null) return;
+
+      group.add(camera);
+      update_group_lists(group, group_list_avail, group_list_selected);
+      Config.save();
+    });
+
+    b_group_remove_camera.addClickListener((MouseEvent e, Component button) -> {
+      String opt = list.getSelectedItem();
+      if (opt == null) return;
+      int idx = opt.indexOf(':');
+      String opt_type = opt.substring(0, idx);
+      String opt_name = opt.substring(idx+1);
+
+      Group group = null;
+
+      int group_cnt = Config.current.groups.length;
+      for(int a=0;a<group_cnt;a++) {
+        if (Config.current.groups[a].name.equals(opt_name)) {
+          group = Config.current.groups[a];
+          break;
+        }
+      }
+      if (group == null) {
+        group = (Group)client.getProperty("new_group");
+      }
+
+      String camera = group_list_selected.getSelectedItem();
+      if (camera == null) return;
+
+      group.remove(camera);
+      update_group_lists(group, group_list_avail, group_list_selected);
+      Config.save();
+    });
+
     PopupPanel popup = new PopupPanel("Confirm");
-    popup.setName("popup");
     popup.setModal(true);
     Label popup_label = new Label("Are you sure?");
     popup.add(popup_label);
     Button popup_b_delete = new Button("Delete");
     popup.add(popup_b_delete);
     popup_b_delete.addClickListener((MouseEvent e, Component button) -> {
-      int idx = list.getSelectedIndex();
-      if (idx < 0 || idx >= Config.current.cameras.length) return;
-      Camera camera = Config.current.cameras[idx];
-      DVRService.dvrService.stopCamera(camera);
-      Config.current.removeCamera(camera);
-      Config.current.save();
-      list.remove(idx);  //not working yet
-      popup.setVisible(false);
-      button.client.refresh();  //list not working yet
-      stopTimer(client);
+      errmsg.setText("");
+      String view = (String)client.getProperty("view");
+      int selidx = list.getSelectedIndex();
+      String opt = list.getSelectedItem();
+      if (opt == null) return;
+      int idx = opt.indexOf(':');
+      String opt_type = opt.substring(0, idx);
+      String opt_name = opt.substring(idx+1);
+      switch (view) {
+        case "cameras":
+          //delete camera
+          Camera camera = null;
+          int camera_cnt = Config.current.cameras.length;
+          for(int a=0;a<camera_cnt;a++) {
+            if (Config.current.cameras[a].name.equals(opt_name)) {
+              camera = Config.current.cameras[a];
+              break;
+            }
+          }
+          if (camera == null) break;
+          DVRService.dvrService.stopCamera(camera);
+          Config.current.removeCamera(camera);
+          Config.current.save();
+          list.remove(selidx);
+          popup.setVisible(false);
+          stopTimer(client);
+          break;
+        case "groups":
+          //delete group
+          int group_cnt = Config.current.groups.length;
+          Group group = null;
+          for(int a=0;a<group_cnt;a++) {
+            if (Config.current.groups[a].name.equals(opt_name)) {
+              group = Config.current.groups[a];
+              break;
+            }
+          }
+          if (group == null) break;
+          Config.current.removeGroup(group);
+          Config.current.save();
+          list.remove(selidx);
+          popup.setVisible(false);
+          stopTimer(client);
+          break;
+      }
     });
     Button popup_b_cancel = new Button("Cancel");
     popup.add(popup_b_cancel);
@@ -379,7 +663,7 @@ public class ConfigService implements WebUIHandler {
     });
     b_delete.addClickListener((MouseEvent e, Component button) -> {
       int idx = list.getSelectedIndex();
-      if (idx < 0 || idx >= Config.current.cameras.length) return;
+      if (idx == -1) return;
       popup.setVisible(true);
     });
     b_help.addClickListener((MouseEvent e, Component button) -> {
@@ -390,6 +674,24 @@ public class ConfigService implements WebUIHandler {
     split.setDividerPosition(150);
 
     return panel;
+  }
+
+  private void update_group_lists(Group group, ListBox avail, ListBox selected) {
+    while (avail.count() > 0) {
+      avail.remove(0);
+    }
+    while (selected.count() > 0) {
+      selected.remove(0);
+    }
+    int cnt = Config.current.cameras.length;
+    for(int a=0;a<cnt;a++) {
+      Camera camera = Config.current.cameras[a];
+      if (group.contains(camera.name)) {
+        selected.add(camera.name);
+      } else {
+        avail.add(camera.name);
+      }
+    }
   }
 
   public byte[] getResource(String url) {

@@ -11,6 +11,7 @@ public class Camera extends SerialObject implements Serializable {
   public static final long serialVersionUID = 1;
   public String name;
   public String url;
+  public boolean enabled;
   public boolean record_motion;
   public int record_motion_threshold;
   public int record_motion_after;
@@ -35,6 +36,7 @@ public class Camera extends SerialObject implements Serializable {
     tag_trigger = "";
     tag_value = "";
     pos_edge = true;
+    enabled = true;
   }
 
   public transient volatile float motion_value;
@@ -50,6 +52,7 @@ public class Camera extends SerialObject implements Serializable {
 
   public static final short id_record_motion = id_1 + 1;
   public static final short id_pos_edge = id_1 + 2;
+  public static final short id_enabled = id_1 + 3;
 
   public static final short id_record_motion_threshold = id_4 + 1;
   public static final short id_record_motion_after = id_4 + 2;
@@ -71,6 +74,7 @@ public class Camera extends SerialObject implements Serializable {
         case id_tag_trigger: tag_trigger = readString(); break;
         case id_tag_value: tag_value = readString(); break;
         case id_pos_edge: pos_edge = readBoolean(); break;
+        case id_enabled: enabled = readBoolean(); break;
         case id_end: return;
         default: skipChunk(id); break;
       }
@@ -106,6 +110,8 @@ public class Camera extends SerialObject implements Serializable {
       writeShort(id_pos_edge);
       writeBoolean(pos_edge);
     }
+    writeShort(id_enabled);
+    writeBoolean(enabled);
     writeShort(id_end);
   }
 }
