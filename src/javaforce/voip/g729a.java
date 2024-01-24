@@ -15,6 +15,8 @@ import javaforce.codec.g729a.*;
 
 /**
  * Encodes/decodes g729a packets.
+ *
+ * http://tools.ietf.org/html/rfc4749
  */
 public class g729a implements Coder {
 

@@ -3,7 +3,7 @@ package javaforce.voip;
 /**
  * Encodes/Decodes RTP/VP8 packets
  *
- * http://tools.ietf.org/html/draft-ietf-payload-vp8-01
+ * http://tools.ietf.org/html/rfc7741
  *
  * @author pquiring
  */
