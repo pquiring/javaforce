@@ -993,6 +993,9 @@ public abstract class RTSP {
       if (hasCodec(stream.codecs, RTP.CODEC_H264)) {
         content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_H264).id + " H264/90000\r\n");
       }
+      if (hasCodec(stream.codecs, RTP.CODEC_H265)) {
+        content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_H265).id + " H265/90000\r\n");
+      }
       if (hasCodec(stream.codecs, RTP.CODEC_VP8)) {
         content.append("a=rtpmap:" + getCodec(stream.codecs, RTP.CODEC_VP8).id + " VP8/90000\r\n");
       }

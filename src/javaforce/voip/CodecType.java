@@ -23,5 +23,5 @@ public class CodecType {
   public static final int H263_1998 = 41;
   public static final int H263_2000 = 42;
   public static final int H264 = 50;
-//  public static final int H265 = 60;
+  public static final int H265 = 60;
 }

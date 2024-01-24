@@ -304,6 +304,9 @@ public class SDP implements Cloneable {
       if (stream.hasCodec(RTP.CODEC_H264)) {
         content.append("a=rtpmap:" + stream.getCodec(RTP.CODEC_H264).id + " H264/90000\r\n");
       }
+      if (stream.hasCodec(RTP.CODEC_H265)) {
+        content.append("a=rtpmap:" + stream.getCodec(RTP.CODEC_H265).id + " H265/90000\r\n");
+      }
       if (stream.hasCodec(RTP.CODEC_VP8)) {
         content.append("a=rtpmap:" + stream.getCodec(RTP.CODEC_VP8).id + " VP8/90000\r\n");
       }

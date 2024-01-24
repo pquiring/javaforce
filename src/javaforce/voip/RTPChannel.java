@@ -21,6 +21,7 @@ public class RTPChannel {
   private int h264_id = -1;
   private int h263_1998_id = -1;
   private int h263_2000_id = -1;
+  private int h265_id = -1;
   private char dtmfChar;
   private boolean dtmfSent = false;
   private AudioBuffer buffer = new AudioBuffer(8000, 1, 2);  //freq, chs, seconds
@@ -54,6 +55,10 @@ public class RTPChannel {
 
   public int getH264id() {
     return h264_id;
+  }
+
+  public int getH265id() {
+    return h265_id;
   }
 
   public int getH263_1998id() {
@@ -233,6 +238,11 @@ public class RTPChannel {
         h264_id = codec_h264.id;
       }
 
+      Codec codec_h265 = stream.getCodec(RTP.CODEC_H265);
+      if (codec_h265 != null) {
+        h265_id = codec_h265.id;
+      }
+
       Codec codec_h263_1998 = stream.getCodec(RTP.CODEC_H263_1998);
       if (codec_h263_1998 != null) {
         h263_1998_id = codec_h263_1998.id;
@@ -301,6 +311,10 @@ public class RTPChannel {
             break;
           } else if (codec.equals(RTP.CODEC_H264)) {
             JFLog.log(log, "codec = H.264");
+            haveVcodec = true;
+            break;
+          } else if (codec.equals(RTP.CODEC_H265)) {
+            JFLog.log(log, "codec = H.265");
             haveVcodec = true;
             break;
           } else if (codec.equals(RTP.CODEC_VP8)) {
@@ -462,6 +476,8 @@ public class RTPChannel {
         rtp.iface.rtpPacket(this, CodecType.VP8, data, off, len);
       } else if (id == h264_id) {
         rtp.iface.rtpPacket(this, CodecType.H264, data, off, len);
+      } else if (id == h265_id) {
+        rtp.iface.rtpPacket(this, CodecType.H265, data, off, len);
       } else if (id == h263_1998_id) {
         rtp.iface.rtpPacket(this, CodecType.H263_1998, data, off, len);
       } else if (id == h263_2000_id) {
