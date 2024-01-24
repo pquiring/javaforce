@@ -1,6 +1,8 @@
 package javaforce.voip;
 
 import java.util.*;
+import java.net.*;
+
 import javaforce.*;
 
 /**
@@ -10,12 +12,6 @@ import javaforce.*;
 public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
 
   public enum NAT {None, STUN, TURN, ICE};
-
-/*
-  private String remotehost, remoteip;
-  private InetAddress remoteaddr;
-  private int remoteport;
-*/
 
   private RTSPServerInterface iface;
   private String localhost;
@@ -199,6 +195,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
         remoteip = sess.localhost;
       }
       sess.remotehost = remoteip;
+      sess.remoteaddr = InetAddress.getByName(remoteip);
       sess.remoteport = remoteport;
       sess.remotecseq = getcseq(msg);
       String sid = getHeader("Session:", msg);
