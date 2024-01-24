@@ -1,6 +1,7 @@
 <project xmlns:if="ant:if" xmlns:unless="ant:unless">
   <!-- JavaForce version -->
   <property name="javaforce-version" value="50.1"/>
+  <property name="ffmpeg-version" value="5.1.2"/>
   <!-- native dependancies versions -->
   <property name="glfw-version" value="3.3.1"/>
   <!-- Maven Java Dependancies versions -->
