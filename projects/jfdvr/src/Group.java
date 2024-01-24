@@ -69,4 +69,15 @@ public class Group extends SerialObject {
     }
     return false;
   }
+
+  public String getCameraList() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("cameras:");
+    int cnt = cameras.length;
+    for(int a=0;a<cnt;a++) {
+      if (a > 0) sb.append(",");
+      sb.append(cameras[a]);
+    }
+    return sb.toString();
+  }
 }

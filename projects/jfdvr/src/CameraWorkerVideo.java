@@ -600,6 +600,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     try {
       //I frame : 9 ... 5 (key frame)
       //P frame : 9 ... 1 (diff frame)
+      camera.sendPacket(buf, offset, length);
       lastPacket = System.currentTimeMillis();
       Packet packet = h264.decode(buf, 0, length);
       if (packet == null) {

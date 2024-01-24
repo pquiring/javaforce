@@ -38,4 +38,8 @@ public class RTSPSession {
   public int reply;
   public String user;
   public boolean auth;
+
+  //user defined for tracking resource
+  public int res_type;  //resource type
+  public String res_name;  //resource name
 }

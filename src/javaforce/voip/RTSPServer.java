@@ -31,12 +31,13 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
   /**
    * Initialize this instance for RTSP.<br>
    *
-   * @param localport is the UDP port to bind to locally.<br>
+   * @param localport is the TCP port to bind to locally (usually 554).<br>
    * @param iface must be a RTSPServerInterface where RTSP events are dispatched
    * to.<br>
    */
   public boolean init(int localport, RTSPServerInterface iface, TransportType type) {
     this.iface = iface;
+    if (localport == -1) localport = 554;
     this.localport = localport;
     try {
       JFLog.log(log, "localhost = " + localhost);
@@ -279,7 +280,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
               break;
             case "GET_PARAMETER":
               if (!sess.auth) break;
-              iface.onGetParameter(this, sess);
+              iface.onGetParameter(this, sess, getContent(msg));
               break;
           }
           break;

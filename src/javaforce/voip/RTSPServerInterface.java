@@ -10,5 +10,5 @@ public interface RTSPServerInterface {
   public void onSetup(RTSPServer server, RTSPSession session);
   public void onPlay(RTSPServer server, RTSPSession session);
   public void onTeardown(RTSPServer server, RTSPSession session);
-  public void onGetParameter(RTSPServer server, RTSPSession session);
+  public void onGetParameter(RTSPServer server, RTSPSession session, String[] params);
 }

@@ -15,6 +15,8 @@ public class Config extends SerialObject implements Serializable {
 
   public Camera cameras[] = new Camera[0];
   public Group groups[] = new Group[0];
+  public String user = "dvr";
+  public String pass = "password";
 
   public static void load() {
     String file = Paths.dataPath + "/config.dat";
@@ -80,8 +82,28 @@ public class Config extends SerialObject implements Serializable {
     groups = (Group[])JF.copyOfExcluding(groups, idx);
   }
 
+  public Camera getCamera(String name) {
+    for(int a=0;a<cameras.length;a++) {
+      if (cameras[a].name.equals(name)) {
+       return cameras[a];
+      }
+    }
+    return null;
+  }
+
+  public Group getGroup(String name) {
+    for(int a=0;a<groups.length;a++) {
+      if (groups[a].name.equals(name)) {
+       return groups[a];
+      }
+    }
+    return null;
+  }
+
   public static final short id_cameras = id_array + 1;
   public static final short id_groups = id_array + 2;
+  public static final short id_user = id_len + 1;
+  public static final short id_pass = id_len + 2;
 
   public void readObject() throws Exception {
     int cnt;
@@ -106,6 +128,12 @@ public class Config extends SerialObject implements Serializable {
             groups[a].readObject();
           }
           break;
+        case id_user:
+          user = readString();
+          break;
+        case id_pass:
+          pass = readString();
+          break;
         case id_end: return;
         default: skipChunk(id); break;
       }
@@ -128,6 +156,10 @@ public class Config extends SerialObject implements Serializable {
       groups[a].writeInit(this);
       groups[a].writeObject();
     }
+    writeShort(id_user);
+    writeString(user);
+    writeShort(id_pass);
+    writeString(pass);
     writeShort(id_end);
   }
 }

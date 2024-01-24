@@ -5,15 +5,18 @@
 
 import java.util.*;
 import java.io.*;
+import java.net.*;
 
 import javaforce.*;
 import javaforce.jni.*;
 import javaforce.media.*;
-import javaforce.voip.RTP;
+import javaforce.voip.*;
 
-public class DVRService extends Thread {
+public class DVRService extends Thread implements RTSPServerInterface {
   public static DVRService dvrService;
   public static ConfigService configService;
+  public static RTSPServer rtspServer;
+
   public final static boolean debug = false;
   public static void serviceStart(String args[]) {
     if (dvrService != null) return;
@@ -44,6 +47,9 @@ public class DVRService extends Thread {
     configService.start();
     //enable firewall exception
     setupFirewall();
+    //start RTSP server
+    rtspServer = new RTSPServer();
+    rtspServer.init(554, this, TransportType.TCP);
     //start recording processes
     Config config = Config.current;
     for(int a=0;a<config.cameras.length;a++) {
@@ -110,5 +116,112 @@ public class DVRService extends Thread {
     } catch (Exception e) {
       JFLog.log(e);
     }
+  }
+
+  //RTSPServerInterface
+
+  //rtsp://user:pass@host:port/camera/name
+  //rtsp://user:pass@host:port/group/name
+
+  public String getPassword(String user) {
+    return "password";
+  }
+
+  public void onOptions(RTSPServer server, RTSPSession sess) {
+    try {
+      server.reply(sess, 200, "OK");
+    } catch (Exception e) {
+      server.reply(sess, 501, "ERROR");
+    }
+  }
+
+  public void onDescribe(RTSPServer server, RTSPSession sess) {
+    try {
+      URL url = new URI(sess.uri).toURL();
+      String path = url.getPath();  // / type / name
+      String[] type_name = path.split("/");
+      String type = type_name[1];
+      String name = type_name[2];
+      switch (type) {
+        case "camera": sess.sdp = camera_get_sdp(name, sess); break;
+        case "group": throw new Exception("CAN-NOT-PLAY-GROUP");
+        default: throw new Exception("BAD-URL");
+      }
+      server.reply(sess, 200, "OK");
+      sess.sdp = null;
+    } catch (Exception e) {
+      server.reply(sess, 501, "ERROR");
+    }
+  }
+
+  public void onSetup(RTSPServer server, RTSPSession sess) {
+    try {
+      server.reply(sess, 200, "OK");
+    } catch (Exception e) {
+      server.reply(sess, 501, "ERROR");
+    }
+  }
+
+  public void onPlay(RTSPServer server, RTSPSession sess) {
+    try {
+      URL url = new URI(sess.uri).toURL();
+      String path = url.getPath();  // / type / name
+      String[] type_name = path.split("/");
+      String type = type_name[1];
+      String name = type_name[2];
+      switch (type) {
+        case "camera": camera_add_viewer(name, sess); break;
+        case "group": throw new Exception("CAN-NOT-PLAY-GROUP");
+        default: throw new Exception("BAD-URL");
+      }
+      server.reply(sess, 200, "OK");
+    } catch (Exception e) {
+      server.reply(sess, 501, "ERROR");
+    }
+  }
+
+  public void onTeardown(RTSPServer server, RTSPSession sess) {
+    try {
+      server.reply(sess, 200, "OK");
+    } catch (Exception e) {
+      server.reply(sess, 501, "ERROR");
+    }
+  }
+
+  public void onGetParameter(RTSPServer server, RTSPSession sess, String[] params) {
+    try {
+      URL url = new URI(sess.uri).toURL();
+      String path = url.getPath();  // / type / name
+      String[] type_name = path.split("/");
+      String type = type_name[1];
+      String name = type_name[2];
+      sess.params = "";
+      switch (type) {
+        case "camera": sess.params = "keep-alive: true"; break;
+        case "group": sess.params = group_get_camera_list(name); break;
+        default: throw new Exception("BAD URL");
+      }
+      server.reply(sess, 200, "OK");
+      sess.params = null;
+    } catch (Exception e) {
+      server.reply(sess, 501, "ERROR");
+    }
+  }
+
+  private String camera_get_sdp(String name, RTSPSession sess) {
+    //TODO
+    return null;
+  }
+
+  private void camera_add_viewer(String name, RTSPSession sess) {
+    Camera camera = Config.current.getCamera(name);
+    if (camera == null) return;
+    camera.add_viewer(sess);
+  }
+
+  private String group_get_camera_list(String name) {
+    Group group = Config.current.getGroup(name);
+    if (group == null) return null;
+    return group.getCameraList();
   }
 }

@@ -4,8 +4,10 @@
  */
 
 import java.io.*;
+import java.util.*;
 
 import javaforce.io.*;
+import javaforce.voip.*;
 
 public class Camera extends SerialObject implements Serializable {
   public static final long serialVersionUID = 1;
@@ -43,6 +45,17 @@ public class Camera extends SerialObject implements Serializable {
   public transient volatile byte[] preview;  //png image
   public transient volatile boolean viewing;
   public transient volatile boolean update_preview;
+  public transient volatile ArrayList<RTSPSession> viewers = new ArrayList<>();
+
+  public void add_viewer(RTSPSession sess) {
+    viewers.add(sess);
+  }
+
+  public void sendPacket(byte[] buf, int offset, int length) {
+    try {
+      //TODO : send thru RTP connection
+    } catch (Exception e) {}
+  }
 
   public static final short id_name = id_len + 1;
   public static final short id_url = id_len + 2;
