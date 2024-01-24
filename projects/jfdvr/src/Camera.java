@@ -9,7 +9,7 @@ import java.util.*;
 import javaforce.io.*;
 import javaforce.voip.*;
 
-public class Camera extends SerialObject implements Serializable {
+public class Camera extends SerialObject implements Serializable, RTPInterface {
   public static final long serialVersionUID = 1;
   public String name;
   public String url;
@@ -51,9 +51,23 @@ public class Camera extends SerialObject implements Serializable {
     viewers.add(sess);
   }
 
+  public String get_sdp(RTSPSession sess) {
+    SDP sdp = new SDP();
+    SDP.Stream stream = sdp.addStream(SDP.Type.video);
+    stream.addCodec(RTP.CODEC_H264);
+    sess.rtp = new RTP();
+    sess.rtp.init(this);
+    sess.rtp.start();
+    sess.channel = sess.rtp.createChannel(sdp.getFirstVideoStream());
+    sess.channel.start();
+    return sdp.build(sess.localhost);
+  }
+
   public void sendPacket(byte[] buf, int offset, int length) {
     try {
-      //TODO : send thru RTP connection
+      for(RTSPSession sess : viewers) {
+        sess.channel.writeRTP(buf, offset, length);
+      }
     } catch (Exception e) {}
   }
 
@@ -127,4 +141,13 @@ public class Camera extends SerialObject implements Serializable {
     writeBoolean(enabled);
     writeShort(id_end);
   }
+
+  //RTPInterface
+  public void rtpPacket(RTPChannel rtpc, int i, byte[] bytes, int i1, int i2) {}
+
+  public void rtpSamples(RTPChannel rtpc) {}
+
+  public void rtpDigit(RTPChannel rtpc, char c) {}
+
+  public void rtpInactive(RTPChannel rtpc) {}
 }

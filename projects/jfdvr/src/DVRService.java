@@ -209,8 +209,9 @@ public class DVRService extends Thread implements RTSPServerInterface {
   }
 
   private String camera_get_sdp(String name, RTSPSession sess) {
-    //TODO
-    return null;
+    Camera camera = Config.current.getCamera(name);
+    if (camera == null) return null;
+    return camera.get_sdp(sess);
   }
 
   private void camera_add_viewer(String name, RTSPSession sess) {
