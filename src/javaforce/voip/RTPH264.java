@@ -20,6 +20,8 @@ public class RTPH264 extends RTPCodec {
   public static int decodeSize = 4 * 1024 * 1024;
   public int log;
 
+  private static final int FU = 28;
+
   public RTPH264() {
     ssrc = random.nextInt();
     packet = new Packet();
@@ -72,7 +74,7 @@ public class RTPH264 extends RTPCodec {
         while (packetLength > nalLength) {
           packet = new byte[12 + 2 + nalLength];
           RTPChannel.buildHeader(packet, id, seqnum++, timestamp, ssrc, false);
-          packet[12] = 28;  //FU-A
+          packet[12] = FU;  //FU-A
           packet[12] |= nri;
           packet[13] = type;
           if (first) {
@@ -89,7 +91,7 @@ public class RTPH264 extends RTPCodec {
         nalLength = packetLength;
         packet = new byte[12 + 2 + nalLength];
         RTPChannel.buildHeader(packet, id, seqnum++, timestamp, ssrc, len == nalLength);
-        packet[12] = 28;  //F=0 TYPE=28 (FU-A)
+        packet[12] = FU;  //F=0 TYPE=28 (FU-A)
         packet[12] |= nri;
         packet[13] = type;
         packet[13] |= 0x40;  //last FU packet
@@ -131,12 +133,12 @@ public class RTPH264 extends RTPCodec {
       packet.length = 4 + h264Length;
       reset_packet = true;
       return packet;
-    } else if (type == 28) {
+    } else if (type == FU) {
       //FU-A Packet
       boolean first = (rtp[13] & 0x80) == 0x80;
       boolean last = (rtp[13] & 0x40) == 0x40;
       int realtype = rtp[13] & 0x1f;
-      boolean M = (rtp[12] & 0x80) == 0x80;
+      boolean M = (rtp[12] & 0x80) == 0x80;  //ERROR : this should be rtp[1]
       if (M && !last) {
         JFLog.log(log, "Error : H264 : FU-A : M bit set but not last packet : seq=" + thisseqnum);
         return null;
