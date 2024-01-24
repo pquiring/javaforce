@@ -13,7 +13,7 @@ import javaforce.controls.*;
 
 public class CameraWorkerPictures extends Thread implements CameraWorker {
   public Camera camera;
-  private String url;  //camera.url without user:pass@
+  private String url, cleanurl;
   private String user,pass;
   private String path;
   private long max_file_size;  //in bytes
@@ -33,6 +33,8 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
   private String tag_value = "";
   private String filename;
   private String last_filename;
+  private boolean viewer;
+  private boolean record;
 
   private Controller controller;
 
@@ -53,8 +55,12 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
 
   private ArrayList<Recording> files = new ArrayList<Recording>();
 
-  public CameraWorkerPictures(Camera camera) {
+  public CameraWorkerPictures(Camera camera, String url, boolean viewer, boolean record) {
     log = nextLog();
+    this.url = url;
+    this.cleanurl = HTTP.cleanURL(url);
+    this.viewer = viewer;
+    this.record = record;
     JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + ".log", false);
     JFLog.setRetention(log, 5);
     JFLog.log(log, "Camera=" + camera.name);
@@ -62,8 +68,10 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
     path = Paths.videoPath + "/" + camera.name;
     max_file_size = camera.max_file_size * 1024L * 1024L;
     max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
-    preview_image = new JFImage(preview_x, preview_y);
-    captured_image = new JFImage();
+    if (record) {
+      preview_image = new JFImage(preview_x, preview_y);
+      captured_image = new JFImage();
+    }
   }
 
   public void cancel() {
@@ -127,7 +135,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
           JFLog.log(log, "delete recording:" + rec.file.getName());
         }
         //update preview
-        if (camera.viewing && camera.update_preview) {
+        if (record && camera.viewing && camera.update_preview) {
           if (captured_image != null) {
             if (!captured_image.loadJPG(last_filename)) {
               JFLog.log("failed to load last image");
@@ -160,39 +168,16 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
     //reset values
     width = -1;
     height = -1;
-    String url = camera.url;
-    String uri = null;
-    String remotehost = null;
-    int remoteport = 80;
     //http://[user:pass@]host[:port]/uri
     if (!url.startsWith("http://")) {
       return false;
     }
-    url = url.substring(7);  //remove http://
-    int idx = url.indexOf('/');
-    if (idx != -1) {
-      uri = url.substring(idx);
-      url = url.substring(0, idx);
-    } else {
-      uri = "";
+    String user_pass = HTTP.getUserInfo(url);
+    if (user_pass != null) {
+      int idx = user_pass.indexOf(':');
+      user = user_pass.substring(0, idx);
+      pass = user_pass.substring(idx+1);
     }
-    idx = url.indexOf("@");
-    if (idx != -1) {
-      String user_pass = url.substring(0, idx);
-      url = url.substring(idx+1);
-      idx = user_pass.indexOf(':');
-      if (idx != -1) {
-        user = user_pass.substring(0, idx);
-        pass = user_pass.substring(idx+1);
-      }
-    }
-    idx = url.indexOf(':');
-    if (idx != -1) {
-      remoteport = Integer.valueOf(url.substring(idx+1));
-      url = url.substring(0, idx);
-    }
-    remotehost = url;
-    this.url = "http://" + remotehost + ":" + remoteport + uri;
     return true;
   }
 
@@ -310,7 +295,7 @@ public class CameraWorkerPictures extends Thread implements CameraWorker {
     filename = getFilename();
     try {
       FileOutputStream fos = new FileOutputStream(filename);
-      URL url = new URI(this.url).toURL();
+      URL url = new URI(cleanurl).toURL();
       HttpURLConnection conn = (HttpURLConnection)url.openConnection();
       conn.setAuthenticator(new Authenticator() {
         protected PasswordAuthentication getPasswordAuthentication() {

@@ -147,6 +147,17 @@ public class ConfigService implements WebUIHandler {
     row.add(camera_lbl_url);
     TextField camera_url = new TextField("");
     row.add(camera_url);
+    Label camera_lbl_url_desc = new Label("(high quality : viewer)");
+    row.add(camera_lbl_url_desc);
+
+    row = new Row();
+    camera_panel.add(row);
+    Label camera_lbl_url_low = new Label("URL:");
+    row.add(camera_lbl_url_low);
+    TextField camera_url_low = new TextField("");
+    row.add(camera_url_low);
+    Label camera_lbl_url_low_desc = new Label("(low quality : decoder, motion detection, preview)");
+    row.add(camera_lbl_url_low_desc);
 
     row = new Row();
     camera_panel.add(row);
@@ -429,7 +440,12 @@ public class ConfigService implements WebUIHandler {
           }
           String _url = camera_url.getText();
           if (!validURL(_url)) {
-            errmsg.setText("Invalid URL");
+            errmsg.setText("Invalid URL (high quality)");
+            return;
+          }
+          String _url_low = camera_url_low.getText();
+          if (!validURL(_url_low)) {
+            errmsg.setText("Invalid URL (low quality)");
             return;
           }
           boolean reload = false;
@@ -470,6 +486,7 @@ public class ConfigService implements WebUIHandler {
           }
           camera.name = _name;
           camera.url = _url;
+          camera.url_low = _url_low;
           camera.enabled = camera_enabled.isSelected();
           camera.record_motion = camera_record_motion.isSelected();
           camera.record_motion_threshold = camera_threshold.getPos();

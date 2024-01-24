@@ -114,21 +114,13 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     return in.replaceAll("\"", "");
   }
 
-  private String cleanURL(String url) {
-    //need to remove user:pass from url
-    //rtsp://user:pass@host:port/path?opt1=val1&opt2=val2
-    int idx = url.indexOf('@');
-    if (idx == -1) return url;
-    return "rtsp://" + url.substring(idx + 1);
-  }
-
   /**
    * Send an empty RTSP message to server. This should be done periodically to
    * keep firewalls open. Most routers close UDP connections after 60 seconds.
    * Not sure if needed with TCP/TLS but is done anyways.
    */
   public void keepalive(String url) {
-    get_parameter(cleanURL(url), null);
+    get_parameter(RTSPURL.cleanURL(url), null);
   }
 
   /**
@@ -303,7 +295,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send OPTIONS request to server.
    */
   public boolean options(String url) {
-    sess.uri = cleanURL(url);
+    sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "";
     return issue(sess, "OPTIONS");
   }
@@ -312,7 +304,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send DESCRIBE request to server.
    */
   public boolean describe(String url) {
-    sess.uri = cleanURL(url);
+    sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "";
     sess.accept = "application/sdp";
     boolean result = issue(sess, "DESCRIBE");
@@ -325,7 +317,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    */
   public boolean setup(String url, int localrtpport, int trackid) {
     sess.transport = "Transport: RTP/AVP;unicast;client_port=" + localrtpport + "-" + (localrtpport+1) + "\r\n";
-    sess.uri = cleanURL(url);
+    sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "/trackid=" + trackid;
     boolean result = issue(sess, "SETUP");
     sess.transport = null;
@@ -336,7 +328,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * Send PLAY request to server (RTSP).
    */
   public boolean play(String url) {
-    sess.uri = cleanURL(url);
+    sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "/";
     return issue(sess, "PLAY");
   }
@@ -346,7 +338,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    */
   public boolean teardown(String url) {
     if (sess == null) return false;
-    sess.uri = cleanURL(url);
+    sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "/";
     return issue(sess, "TEARDOWN");
   }
@@ -355,7 +347,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
    * GET_PARAMETER (RTSP) Used as a keepalive.
    */
   public boolean get_parameter(String url, String params) {
-    sess.uri = cleanURL(url);
+    sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "/";
     sess.params = params;
     boolean result = issue(sess, "GET_PARAMETER");

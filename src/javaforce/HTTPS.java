@@ -52,4 +52,12 @@ public class HTTPS extends HTTP {
     }
     if (print) System.out.println(html);
   }
+  /** Removes user info from HTTP URL. */
+  public static String cleanURL(String url) {
+    //need to remove user:pass from url
+    //https://user:pass@host:port/path?opt1=val1&opt2=val2
+    int idx = url.indexOf('@');
+    if (idx == -1) return url;
+    return "https://" + url.substring(idx + 1);
+  }
 }

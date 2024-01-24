@@ -12,7 +12,8 @@ import javaforce.voip.*;
 public class Camera extends SerialObject implements Serializable, RTPInterface {
   public static final long serialVersionUID = 1;
   public String name;
-  public String url;
+  public String url;  //high res stream (viewing)
+  public String url_low;  //low res stream (decoding, motion)
   public boolean enabled;
   public boolean record_motion;
   public int record_motion_threshold;
@@ -29,6 +30,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public Camera() {
     name = "";
     url = "";
+    url_low = "";
     record_motion = true;
     record_motion_threshold = 20;
     record_motion_after = 5;
@@ -76,6 +78,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
   public static final short id_controller = id_len + 3;
   public static final short id_tag_trigger = id_len + 4;
   public static final short id_tag_value = id_len + 5;
+  public static final short id_url_low = id_len + 6;
 
   public static final short id_record_motion = id_1 + 1;
   public static final short id_pos_edge = id_1 + 2;
@@ -92,6 +95,7 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
       switch (id) {
         case id_name: name = readString(); break;
         case id_url: url = readString(); break;
+        case id_url_low: url_low = readString(); break;
         case id_record_motion: record_motion = readBoolean(); break;
         case id_record_motion_threshold: record_motion_threshold = readInt(); break;
         case id_record_motion_after: record_motion_after = readInt(); break;
@@ -113,6 +117,8 @@ public class Camera extends SerialObject implements Serializable, RTPInterface {
     writeString(name);
     writeShort(id_url);
     writeString(url);
+    writeShort(id_url_low);
+    writeString(url_low);
     writeShort(id_record_motion);
     writeBoolean(record_motion);
     writeShort(id_record_motion_threshold);

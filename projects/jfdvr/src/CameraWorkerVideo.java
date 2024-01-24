@@ -13,7 +13,7 @@ import javaforce.media.*;
 
 public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RTPInterface, MediaIO, CameraWorker {
   public Camera camera;
-  private String url;  //camera.url without user:pass@
+  private String url, cleanurl;
   private String path;
   private long max_file_size;  //in bytes
   private long max_folder_size;  //in bytes
@@ -55,6 +55,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private JFImage preview_image;
   private boolean wait_next_key_frame;
   private int log;
+  private boolean viewer;
+  private boolean record;
 
   public Camera getCamera() {
     return camera;
@@ -154,8 +156,12 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   private ArrayList<Recording> files = new ArrayList<Recording>();
 
-  public CameraWorkerVideo(Camera camera) {
+  public CameraWorkerVideo(Camera camera, String url, boolean viewer, boolean record) {
     log = nextLog();
+    this.url = url;
+    this.cleanurl = RTSPURL.cleanURL(url);
+    this.viewer = viewer;
+    this.record = record;
     JFLog.append(log, Paths.logsPath + "/cam-" + camera.name + ".log", debug_log);
     JFLog.setRetention(log, 5);
     JFLog.log(log, "Camera=" + camera.name);
@@ -165,9 +171,11 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
     recording = !camera.record_motion;  //always recording
     frames = new Frames(log);
-    packets_decode = new PacketBuffer(log);
-    packets_encode = new PacketBuffer(log);
-    preview_image = new JFImage(decoded_x, decoded_y);
+    if (record) {
+      packets_decode = new PacketBuffer(log);
+      packets_encode = new PacketBuffer(log);
+      preview_image = new JFImage(decoded_x, decoded_y);
+    }
   }
 
   public void cancel() {
@@ -213,7 +221,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           JFLog.log(log, "delete recording:" + rec.file.getName());
         }
         //update preview
-        if (camera.viewing && camera.update_preview) {
+        if (record && camera.viewing && camera.update_preview) {
           int px[] = decoded_frame;
           if (px != null) {
             preview_image.putPixels(px, 0, 0, decoded_x, decoded_y, 0);
@@ -224,6 +232,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
           }
         }
         do {
+          if (!record) {
+            JF.sleep(1000);
+            continue;
+          }
           if (file_size > max_file_size) {
             JFLog.log(log, camera.name + " : max file size");
             if (encoder != null) {
@@ -304,8 +316,6 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     fps = -1;
     client = new RTSPClient();
     client.setLog(log);
-    String url = camera.url;
-    String uri = null;
     String remotehost = null;
     String user = null;
     String pass = null;
@@ -314,32 +324,15 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     if (!url.startsWith("rtsp://")) {
       return false;
     }
-    url = url.substring(7);  //remove rtsp://
-    int idx = url.indexOf('/');
-    if (idx != -1) {
-      uri = url.substring(idx);
-      url = url.substring(0, idx);
-    } else {
-      uri = "";
+    String user_pass = RTSPURL.getUserInfo(url);
+    if (user_pass != null) {
+      int idx = user_pass.indexOf(':');
+      user = user_pass.substring(0, idx);
+      pass = user_pass.substring(idx+1);
     }
-    idx = url.indexOf("@");
-    if (idx != -1) {
-      String user_pass = url.substring(0, idx);
-      url = url.substring(idx+1);
-      idx = user_pass.indexOf(':');
-      if (idx != -1) {
-        user = user_pass.substring(0, idx);
-        pass = user_pass.substring(idx+1);
-      }
-    }
-    idx = url.indexOf(':');
-    if (idx != -1) {
-      remoteport = Integer.valueOf(url.substring(idx+1));
-      url = url.substring(0, idx);
-    }
-    remotehost = url;
-    this.url = "rtsp://" + remotehost + ":" + remoteport + uri;
-    JFLog.log(log, camera.name + " : Connecting");
+    remotehost = RTSPURL.getHost(url);
+    remoteport = RTSPURL.getPort(url);
+    JFLog.log(log, camera.name + " : Connecting : viewer=" + viewer + ",recording=" + record);
     if (!client.init(remotehost, remoteport, getLocalPort(), this, TransportType.TCP)) {
       JFLog.log(log, "RTSP init failed");
       client = null;
@@ -600,8 +593,11 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     try {
       //I frame : 9 ... 5 (key frame)
       //P frame : 9 ... 1 (diff frame)
-      camera.sendPacket(buf, offset, length);
+      if (viewer) {
+        camera.sendPacket(buf, offset, length);
+      }
       lastPacket = System.currentTimeMillis();
+      if (!record) return;
       Packet packet = h264.decode(buf, 0, length);
       if (packet == null) {
         return;
