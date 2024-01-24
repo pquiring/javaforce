@@ -316,10 +316,8 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     fps = -1;
     client = new RTSPClient();
     client.setLog(log);
-    String remotehost = null;
     String user = null;
     String pass = null;
-    int remoteport = 554;
     //rtsp://[user:pass@]host[:port]/uri
     if (!url.startsWith("rtsp://")) {
       return false;
@@ -330,9 +328,10 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       user = user_pass.substring(0, idx);
       pass = user_pass.substring(idx+1);
     }
-    remotehost = RTSPURL.getHost(url);
-    remoteport = RTSPURL.getPort(url);
-    JFLog.log(log, camera.name + " : Connecting : viewer=" + viewer + ",recording=" + record);
+    String remotehost = RTSPURL.getHost(url);
+    int remoteport = RTSPURL.getPort(url);
+    if (remoteport == -1) remoteport = 554;
+    JFLog.log(log, camera.name + " : Connecting : viewer=" + viewer + ",recording=" + record + ",remoteport=" + remoteport);
     if (!client.init(remotehost, remoteport, getLocalPort(), this, TransportType.TCP)) {
       JFLog.log(log, "RTSP init failed");
       client = null;
