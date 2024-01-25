@@ -14,58 +14,67 @@ import javaforce.*;
 
 public class RTPJPEG extends RTPCodec {
 
+  //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 8(rtp_jpeg_header) = 1438 bytes payload per packet
+  private static final int mtu = 1438;
+  private int seqnum;
+  private int timestamp;
+  private int ssrc;
+  private Packet packet;
+  public static final int maxSize = 4 * 1024 * 1024;
+
+  //RTP bits
+  private static final int M = 0x80;  //M bit
+
   public RTPJPEG() {
     ssrc = random.nextInt();
+    packet = new Packet();
+    packet.data = new byte[maxSize];
   }
 
   /** Encodes a raw JPEG data into multiple RTP packets. */
-  public byte[][] encode(byte[] jpeg, int x, int y, int id) {
+  public void encode(byte[] jpeg, int x, int y, int id, PacketReceiver pr) {
     int cnt = (jpeg.length + mtu - 1) / mtu;
     int len = jpeg.length;
-    byte[][] packets = new byte[cnt][];
     int packetLength;
     int offset = 0;
     for(int a=0;a<cnt;a++) {
       if (len > mtu) packetLength = mtu; else packetLength = len;
-      packets[a] = new byte[packetLength + 12 + 8];  //12=RTP.length 8=rtp_jpeg_header.length
-      RTPChannel.buildHeader(packets[a], RTP.CODEC_JPEG.id, seqnum, timestamp, ssrc, a == cnt-1);
-      buildHeader(packets[a], x, y, offset);
-      System.arraycopy(jpeg, offset, packets[a], 12 + 8, packetLength);
+      packet.length = packetLength + 12 + 8;  //12=RTP.length 8=rtp_jpeg_header.length
+      RTPChannel.buildHeader(packet.data, RTP.CODEC_JPEG.id, seqnum, timestamp, ssrc, a == cnt-1);
+      buildHeader(packet.data, x, y, offset);
+      System.arraycopy(jpeg, offset, packet.data, 12 + 8, packetLength);
       offset += packetLength;
       len -= packetLength;
+      if (a == cnt-1) {
+        packet.data[1] |= M;  //mark last packet (marker)
+      }
+      pr.onPacket(packet);
     }
-    packets[cnt-1][1] |= 0x80;  //mark last packet (marker)
     seqnum++;
+    packet.length = 0;
     timestamp += 100;  //??? 10 fps ???
-    return packets;
   }
 
-  private Packet packet = new Packet();
-
-  public Packet decode(byte[] rtp, int offset, int length) {
-    if (rtp.length < 12 + 8) return null;  //bad packet
-    if (partial == null) partial = new byte[0];
+  public void decode(byte[] rtp, int offset, int length, PacketReceiver pr) {
+    if (rtp.length < 12 + 8) return;  //bad packet
     int off = ((int)rtp[13]) & 0xff;
     off <<= 8;
     off += ((int)rtp[14]) & 0xff;
     off <<= 8;
     off += ((int)rtp[15]) & 0xff;
-    if (off != partial.length) {
+    if (off != packet.length) {
       //lost a packet
       JFLog.log("RTPJPEG:decode:lost a packet or not in order");
-      partial = null;
-      return null;
+      packet.length = 0;
+      return;
     }
     int jpegLength = rtp.length - 12 - 8;
-    int partialLength = partial.length;
-    partial = Arrays.copyOf(partial, partial.length + jpegLength);
-    System.arraycopy(rtp, 12+8, partial, partialLength, jpegLength);
-    if ((rtp[1] & 0x80) == 0x80) {  //check for marker
-      packet.data = partial;
-      partial = null;
-      return packet;
+    int partialLength = packet.length;
+    System.arraycopy(rtp, 12+8, packet.data, partialLength, jpegLength);
+    if ((rtp[1] & M) == M) {  //check for marker
+      pr.onPacket(packet);
+      packet.length = 0;
     }
-    return null;
   }
 
   private static void buildHeader(byte[] data, int x, int y, int offset) {
@@ -78,11 +87,4 @@ public class RTPJPEG extends RTPCodec {
     data[18] = (byte)(x/8);  //width
     data[19] = (byte)(y/8);  //height
   }
-
-  //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 8(rtp_jpeg_header) = 1438 bytes payload per packet
-  private static final int mtu = 1438;
-  private int seqnum;
-  private int timestamp;
-  private int ssrc;
-  private byte[] partial;
 }

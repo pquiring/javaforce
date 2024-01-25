@@ -14,47 +14,58 @@ import javaforce.*;
 
 public class RTPVP8 extends RTPCodec {
 
+  //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 1 (VP8) = 1445 bytes payload per packet
+  private static final int mtu = 1445;
+  private int seqnum;
+  private int timestamp;
+  private final int ssrc;
+  private int lastseqnum = -1;
+  private Packet packet;
+  private static int maxSize = 4 * 1024 * 1024;
+
+  //RTP bits
+  private static final int M = 0x80;  //M bit
+
   public RTPVP8() {
     ssrc = random.nextInt();
+    packet = new Packet();
+    packet.data = new byte[maxSize];
   }
 
   /** Encodes raw VP8 data into multiple RTP packets. */
-  public byte[][] encode(byte[] data, int x, int y, int id) {
-    ArrayList<byte[]> packets = new ArrayList<byte[]>();
+  public void encode(byte[] data, int x, int y, int id, PacketReceiver pr) {
     int len = data.length;
     int packetLength;
     int offset = 0;
-    byte[] packet;
+    boolean first = true;
     while (len > 0) {
       if (len > mtu) {
         packetLength = mtu;
       } else {
         packetLength = len;
       }
-      packet = new byte[packetLength + 1 + 12];  //1=VP8 header, 12=RTP.length
-      RTPChannel.buildHeader(packet, id, seqnum++, timestamp, ssrc, len == packetLength);
-      packet[12] = (byte)(packets.size() == 0 ? 0x10 : 0);  //X R N S PartID
+      packet.length = packetLength + 1 + 12;  //1=VP8 header, 12=RTP.length
+      RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, len == packetLength);
+      if (first) {
+        packet.data[12] = (byte)(0x10);  //X R N S PartID(4)
+        first = false;
+      }
       System.arraycopy(data, offset, packet, 13, packetLength);
-      packets.add(packet);
+      pr.onPacket(packet);
       offset += packetLength;
       len -= packetLength;
     }
+    packet.length = 0;
     timestamp += 100;  //??? 10 fps ???
-    return packets.toArray(new byte[0][0]);
   }
-
-  private Packet packet = new Packet();
 
   /**
    * Returns last full packet.
    */
-  public Packet decode(byte[] rtp, int offset, int length) {
-    if (rtp.length < 12 + 2) return null;  //bad packet
+  public void decode(byte[] rtp, int offset, int length, PacketReceiver pr) {
+    if (rtp.length < 12 + 2) return;  //bad packet
     int vp8Length = rtp.length - 12;
     int payloadOffset = 12;
-    if (partial == null) {
-      partial = new byte[0];
-    }
     byte x = rtp[12];  //X R N S PartID
     payloadOffset++;
     vp8Length--;
@@ -77,32 +88,21 @@ public class RTPVP8 extends RTPCodec {
     }
 
     //copy to partial
-    int partialLength = partial.length;
-    partial = Arrays.copyOf(partial, partial.length + vp8Length);
-    System.arraycopy(rtp, payloadOffset, partial, partialLength, vp8Length);
+    int partialLength = packet.length;
+    System.arraycopy(rtp, payloadOffset, packet.data, partialLength, vp8Length);
 
     int thisseqnum = RTPChannel.getseqnum(rtp, 0);
     if (lastseqnum != -1 && thisseqnum != lastseqnum + 1) {
       JFLog.log("VP8:Received packet out of order, discarding frame.");
-      partial = null;
       lastseqnum = -1;
-      return null;
+      packet.length = 0;
+      return;
     }
     lastseqnum = thisseqnum;
-    if ((rtp[1] & 0x80) == 0x80) {  //check RTP.M flag
-      packet.data = partial;
-      partial = null;
+    if ((rtp[1] & M) == M) {  //check RTP.M flag
+      pr.onPacket(packet);
       lastseqnum = -1;
-      return packet;
+      packet.length = 0;
     }
-    return null;
   }
-
-  //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 1 (VP8) = 1445 bytes payload per packet
-  private static final int mtu = 1445;
-  private int seqnum;
-  private int timestamp;
-  private final int ssrc;
-  private byte[] partial;
-  private int lastseqnum = -1;
 }

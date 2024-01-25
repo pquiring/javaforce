@@ -9,6 +9,6 @@ import java.util.*;
 
 public abstract class RTPCodec {
   public Random random = new Random();
-  public abstract byte[][] encode(byte[] data, int x, int y, int id);
-  public abstract Packet decode(byte[] rtp, int offset, int length);
+  public abstract void encode(byte[] data, int x, int y, int id, PacketReceiver pr);
+  public abstract void decode(byte[] rtp, int offset, int length, PacketReceiver pr);
 }

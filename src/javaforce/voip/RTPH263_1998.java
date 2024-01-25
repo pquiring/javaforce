@@ -15,12 +15,21 @@ package javaforce.voip;
 
 import java.util.*;
 
-import javaforce.*;
-
 public class RTPH263_1998 extends RTPCodec {
+
+  private Packet packet;
+  private int lastseqnum = -1;
+  private static int maxSize = 4 * 1024 * 1024;
+  //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 2(rtp_h263_header) = 1444 bytes payload per packet
+  private static final int mtu = 1444;
+  private int seqnum;
+  private int timestamp;
+  private final int ssrc;
 
   public RTPH263_1998() {
     ssrc = random.nextInt();
+    packet = new Packet();
+    packet.data = new byte[maxSize];
   }
 
   private int find_best_length(byte data[], int offset, int length) {
@@ -33,12 +42,10 @@ public class RTPH263_1998 extends RTPCodec {
   }
 
   /** Encodes raw H.263 data into multiple RTP packets. */
-  public byte[][] encode(byte data[], int x, int y, int id) {
-    ArrayList<byte[]> packets = new ArrayList<byte[]>();
+  public void encode(byte data[], int x, int y, int id, PacketReceiver pr) {
     int len = data.length;
     int packetLength;
     int offset = 0;
-    byte packet[];
     boolean P;  //was 0,0 stripped off?
     while (len > 0) {
       P = false;
@@ -52,49 +59,34 @@ public class RTPH263_1998 extends RTPCodec {
       } else {
         packetLength = len;
       }
-      packet = new byte[packetLength + 12 + 2];  //12=RTP.length 2=rtp_h263+_header.length
-      RTPChannel.buildHeader(packet, id, seqnum++, timestamp, ssrc, len == packetLength);
+      packet.length = packetLength + 12 + 2;  //12=RTP.length 2=rtp_h263+_header.length
+      RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, len == packetLength);
       //build H.263 header (2 bytes)
-      packet[12] = (byte)(P ? 0x04 : 0x00);
-//      packet[13] = 0x00;
-      System.arraycopy(data, offset, packet, 12 + 2, packetLength);
+      packet.data[12] = (byte)(P ? 0x04 : 0x00);
+//      packet.data[13] = 0x00;
+      System.arraycopy(data, offset, packet.data, 12 + 2, packetLength);
       offset += packetLength;
       len -= packetLength;
-      packets.add(packet);
+      pr.onPacket(packet);
     }
+    packet.length = 0;
     timestamp += 100;  //??? 10 fps ???
-    return packets.toArray(new byte[0][0]);
   }
-
-  private Packet packet = new Packet();
 
   /**
    * Returns last full packet.
    */
 //  public byte[] decode(byte rtp[]) {
-  public Packet decode(byte rtp[], int offset, int length) {
-    if (rtp.length < 12 + 2) return null;  //bad packet
-    if (partial == null) {
-      partial = new byte[0];
-    }
+  public void decode(byte rtp[], int offset, int length, PacketReceiver pr) {
+    if (rtp.length < 12 + 2) return;  //bad packet
     int h263Length = rtp.length - 12 - 2;
     boolean P = (rtp[12] & 0x04) == 0x04;
-    int partialLength = partial.length;
-    partial = Arrays.copyOf(partial, partial.length + (P ? 2 : 0) + h263Length);
+    int partialLength = packet.length;
     //if P is true a 0,0 is left between last packet and this packet
-    System.arraycopy(rtp, 12 + 2, partial, partialLength + (P ? 2 : 0), h263Length);
+    System.arraycopy(rtp, 12 + 2, packet.data, partialLength + (P ? 2 : 0), h263Length);
     if ((rtp[1] & 0x80) == 0x80) {  //RTP.M flag
-      packet.data = partial;
-      partial = null;
-      return packet;
+      pr.onPacket(packet);
+      packet.length = 0;
     }
-    return null;
   }
-
-  //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 2(rtp_h263_header) = 1444 bytes payload per packet
-  private static final int mtu = 1444;
-  private int seqnum;
-  private int timestamp;
-  private final int ssrc;
-  private byte partial[];
 }

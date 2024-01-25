@@ -990,7 +990,7 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     return port;
   }
 
-  public class NetworkReader extends Thread implements MediaIO, RTSPClientInterface, RTPInterface {
+  public class NetworkReader extends Thread implements MediaIO, RTSPClientInterface, RTPInterface, PacketReceiver {
     private URL url;
     private RTSPClient rtsp;
     private RTP rtp;
@@ -1265,10 +1265,14 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
         //I frame : 9 ... 5 (key frame)
         //P frame : 9 ... 1 (diff frame)
         lastPacket = System.currentTimeMillis();
-        Packet packet = codec.decode(buf, 0, length);
-        if (packet == null) {
-          return;
-        }
+        codec.decode(buf, 0, length, this);
+      } catch (Exception e) {
+        JFLog.log(log, e);
+      }
+    }
+
+    public void onPacket(Packet packet) {
+      try {
         int type = packet.data[4] & 0x1f;
         switch (type) {
           case 7:  //SPS

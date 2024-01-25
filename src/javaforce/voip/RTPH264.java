@@ -17,15 +17,29 @@ import javaforce.*;
 
 public class RTPH264 extends RTPCodec {
 
-  public static int decodeSize = 4 * 1024 * 1024;
-  public int log;
+  //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) = 1446 bytes payload per packet
+  private static final int mtu = 1446;
+  private int seqnum;
+  private int timestamp;
+  private final int ssrc;
+  private Packet packet;
+  private int lastseqnum = -1;
+  private static final int maxSize = 4 * 1024 * 1024;
+  private int log;
 
   private static final int FU = 28;
+
+  //FU bits
+  private static final int S = 0x80;  //start or first
+  private static final int E = 0x40;  //last or end
+
+  //RTP bits
+  private static final int M = 0x80;  //M bit
 
   public RTPH264() {
     ssrc = random.nextInt();
     packet = new Packet();
-    packet.data = new byte[decodeSize];
+    packet.data = new byte[maxSize];
   }
 
   public void setLog(int id) {
@@ -42,17 +56,15 @@ public class RTPH264 extends RTPCodec {
   }
 
   /*
-   * NAL Header : F(1) NRI(2) TYPE(5) : F=0 NRI=0-3 TYPE=1-23:full_packet 28=FU-A
-   * FUA Header : S(1) E(1) R(1) TYPE(5) : S=start E=end R=reserved TYPE=1-23
+   * NAL Header : 8 bits : F(1) NRI(2) TYPE(5) : F=0 NRI=0-3 TYPE=1-23:full_packet 28=FU-A
+   * FUA Header : 8 bits : S(1) E(1) R(1) TYPE(5) : S=start E=end R=reserved TYPE=1-23
    */
 
   /** Encodes raw H.264 packets into multiple RTP packets (fragments). */
-  public byte[][] encode(byte data[], int x, int y, int id) {
-    ArrayList<byte[]> packets = new ArrayList<byte[]>();
+  public void encode(byte data[], int x, int y, int id, PacketReceiver pr) {
     int len = data.length;
     int packetLength;
     int offset = 0;
-    byte packet[];
     while (len > 0) {
       //skip 0,0,0,1
       while (data[offset] == 0) {offset++; len--;}
@@ -72,57 +84,53 @@ public class RTPH264 extends RTPCodec {
         packetLength--;
         boolean first = true;
         while (packetLength > nalLength) {
-          packet = new byte[12 + 2 + nalLength];
-          RTPChannel.buildHeader(packet, id, seqnum++, timestamp, ssrc, false);
-          packet[12] = FU;  //FU-A
-          packet[12] |= nri;
-          packet[13] = type;
+          packet.length = 12 + 2 + nalLength;
+          RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, false);
+          packet.data[12] = FU;
+          packet.data[12] |= nri;
+          packet.data[13] = type;
           if (first) {
-            packet[13] |= 0x80;  //first FU packet
+            packet.data[13] |= S;  //first FU packet
             first = false;
           }
-          System.arraycopy(data, offset, packet, 14, nalLength);
+          System.arraycopy(data, offset, packet.data, 14, nalLength);
           offset += nalLength;
           len -= nalLength;
           packetLength -= nalLength;
-          packets.add(packet);
+          pr.onPacket(packet);
         }
         //add last NAL packet
         nalLength = packetLength;
-        packet = new byte[12 + 2 + nalLength];
-        RTPChannel.buildHeader(packet, id, seqnum++, timestamp, ssrc, len == nalLength);
-        packet[12] = FU;  //F=0 TYPE=28 (FU-A)
-        packet[12] |= nri;
-        packet[13] = type;
-        packet[13] |= 0x40;  //last FU packet
-        System.arraycopy(data, offset, packet, 14, nalLength);
+        packet.length = 12 + 2 + nalLength;
+        RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, len == nalLength);
+        packet.data[12] = FU;
+        packet.data[12] |= nri;
+        packet.data[13] = type;
+        packet.data[13] |= E;  //last FU packet
+        System.arraycopy(data, offset, packet.data, 14, nalLength);
         offset += nalLength;
         len -= nalLength;
         packetLength -= nalLength;
-        packets.add(packet);
+        pr.onPacket(packet);
       } else {
-        packet = new byte[packetLength + 12];  //12=RTP.length
-        RTPChannel.buildHeader(packet, id, seqnum++, timestamp, ssrc, len == packetLength);
-        System.arraycopy(data, offset, packet, 12, packetLength);
-        packets.add(packet);
+        //full NAL packet
+        packet.length = packetLength + 12;  //12=RTP.length
+        RTPChannel.buildHeader(packet.data, id, seqnum++, timestamp, ssrc, len == packetLength);
+        System.arraycopy(data, offset, packet.data, 12, packetLength);
+        pr.onPacket(packet);
         offset += packetLength;
         len -= packetLength;
       }
     }
     timestamp += 100;  //??? 10 fps ???
-    return packets.toArray(new byte[0][0]);
   }
 
   /**
    * Combines RTP fragments into full H264 packets.
    */
-  public Packet decode(byte[] rtp, int offset, int length) {
+  public void decode(byte[] rtp, int offset, int length, PacketReceiver pr) {
     //assumes offset == 0
-    if (length < 12 + 2) return null;  //bad packet
-    if (reset_packet) {
-      packet.length = 0;
-      reset_packet = false;
-    }
+    if (length < 12 + 2) return;  //bad packet
     int h264Length = length - 12;
     int type = rtp[12] & 0x1f;
     int thisseqnum = RTPChannel.getseqnum(rtp, 0);
@@ -131,17 +139,21 @@ public class RTPH264 extends RTPCodec {
       System.arraycopy(rtp, 12, packet.data, 4, h264Length);
       packet.data[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
       packet.length = 4 + h264Length;
-      reset_packet = true;
-      return packet;
+      pr.onPacket(packet);
+      lastseqnum = thisseqnum;
+      packet.length = 0;
     } else if (type == FU) {
-      //FU-A Packet
-      boolean first = (rtp[13] & 0x80) == 0x80;
-      boolean last = (rtp[13] & 0x40) == 0x40;
+      //FU header bits
+      boolean first = (rtp[13] & S) == S;
+      boolean last = (rtp[13] & E) == E;
       int realtype = rtp[13] & 0x1f;
-      boolean M = (rtp[12] & 0x80) == 0x80;  //ERROR : this should be rtp[1]
-      if (M && !last) {
+      //RTP header bits
+      boolean m = (rtp[1] & M) == M;
+      if (m && !last) {
         JFLog.log(log, "Error : H264 : FU-A : M bit set but not last packet : seq=" + thisseqnum);
-        return null;
+        lastseqnum = -1;
+        packet.length = 0;
+        return;
       }
       if (first) {
         if (packet.length != 0) {
@@ -157,13 +169,15 @@ public class RTPH264 extends RTPCodec {
       } else {
         if (packet.length == 0) {
           JFLog.log(log, "Error : H264 : partial packet received before first packet : seq=" + thisseqnum);
-          return null;
+          lastseqnum = -1;
+          packet.length = 0;
+          return;
         }
         if (thisseqnum != nextseqnum()) {
           JFLog.log(log, "Error : H264 : Received FU-A packet out of order, discarding frame : seq=" + thisseqnum);
-          packet.length = 0;
           lastseqnum = -1;
-          return null;
+          packet.length = 0;
+          return;
         }
         lastseqnum = thisseqnum;
         int partialLength = packet.length;
@@ -171,32 +185,21 @@ public class RTPH264 extends RTPCodec {
         System.arraycopy(rtp, 12+2, packet.data, partialLength, h264Length);
         packet.length += h264Length;
         if (last) {
-          reset_packet = true;
-          return packet;
+          pr.onPacket(packet);
+          packet.length = 0;
         }
       }
     } else {
       JFLog.log(log, "H264:Unsupported packet type:" + type);
-      packet.length = 0;
       lastseqnum = -1;
-      return null;
+      packet.length = 0;
     }
-    return null;
   }
 
   private int nextseqnum() {
     if (lastseqnum == 65535) return 0;
     return lastseqnum + 1;
   }
-
-  //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) = 1446 bytes payload per packet
-  private static final int mtu = 1446;
-  private int seqnum;
-  private int timestamp;
-  private final int ssrc;
-  private Packet packet;
-  private boolean reset_packet;
-  private int lastseqnum = -1;
 }
 
 /*
@@ -215,5 +218,7 @@ public class RTPH264 extends RTPCodec {
    11 EoS (End of Stream)
    12 Filter Data
 13-23 [extended]
-24-31 [unspecified]
+24-27 [unspecified]
+   28 FU
+29-31 [unspecified]
 */

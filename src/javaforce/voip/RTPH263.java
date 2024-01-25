@@ -37,15 +37,15 @@ public class RTPH263 extends RTPCodec {
   }
 
   /** Encodes raw H.263 data into multiple RTP packets. */
-  public byte[][] encode(byte[] data, int x, int y, int id) {
-    return null;  //TODO
+  public void encode(byte[] data, int x, int y, int id, PacketReceiver pr) {
+    //TODO
   }
 
   /**
    * Returns last full packet.
    */
-  public Packet decode(byte[] rtp, int offset, int length) {
-    return null;  //TODO
+  public void decode(byte[] rtp, int offset, int length, PacketReceiver pr) {
+    //TODO
   }
 
   //mtu = 1500 - 14(ethernet) - 20(ip) - 8(udp) - 12(rtp) - 4(rtp_h263_header) = 1442 bytes payload per packet

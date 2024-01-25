@@ -11,7 +11,7 @@ import javaforce.awt.*;
 import javaforce.media.*;
 import javaforce.voip.*;
 
-public class RemoteCamera extends Thread {
+public class RemoteCamera extends Thread implements PacketReceiver {
   private volatile boolean active = true;
   private volatile boolean done = false;
   public RTPChannel channel;
@@ -65,28 +65,12 @@ public class RemoteCamera extends Thread {
     if (!active) {
       return;
     }
-    Packet packet = rtpJpeg.decode(data, pos, len);
-    if (packet != null) {
-      JFImage tmp = new JFImage();
-      if (!tmp.load(new ByteArrayInputStream(packet.data))) {
-        JFLog.log("RemoteCamera : failed to decode image");
-        return;
-      }
-      imageList.add(tmp);
-      synchronized (lock) {
-        lock.notify();
-      }
-    }
+    rtpJpeg.decode(data, pos, len, this);
   }
 
   public void rtp_h263_data(byte[] data, int pos, int len) {
     if (!active) {
       return;
-    }
-    Packet packet = rtpH263.decode(data, pos, len);
-    if (packet == null) {
-      return;
-      //      printArray("decoded_h263", pack, 0, pack.length);
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
@@ -97,27 +81,12 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(packet.data, packet.offset, packet.length);
-    if (px == null) {
-      return;
-    }
-    JFImage img = new JFImage();
-    img.setSize(PhonePanel.vx, PhonePanel.vy);
-    img.putPixels(px, 0, 0, PhonePanel.vx, PhonePanel.vy, 0);
-    imageList.add(img);
-    synchronized (lock) {
-      lock.notify();
-    }
+    rtpH263.decode(data, pos, len, this);
   }
 
   public void rtp_h263_1998_data(byte[] data, int pos, int len) {
     if (!active) {
       return;
-    }
-    Packet packet = rtpH263_1998.decode(data, pos, len);
-    if (packet == null) {
-      return;
-      //      printArray("decoded_1998", pack, 0, pack.length);
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
@@ -128,27 +97,12 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(packet.data, packet.offset, packet.length);
-    if (px == null) {
-      return;
-    }
-    JFImage img = new JFImage();
-    img.setSize(PhonePanel.vx, PhonePanel.vy);
-    img.putPixels(px, 0, 0, PhonePanel.vx, PhonePanel.vy, 0);
-    imageList.add(img);
-    synchronized (lock) {
-      lock.notify();
-    }
+    rtpH263_1998.decode(data, pos, len, this);
   }
 
   public void rtp_h263_2000_data(byte[] data, int pos, int len) {
     if (!active) {
       return;
-    }
-    Packet packet = rtpH263_2000.decode(data, pos, len);
-    if (packet == null) {
-      return;
-      //      printArray("decoded_2000", pack, 0, pack.length);
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
@@ -159,29 +113,12 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(packet.data, packet.offset, packet.length);
-    if (px == null) {
-      return;
-    }
-    JFImage img = new JFImage();
-    img.setSize(PhonePanel.vx, PhonePanel.vy);
-    img.putPixels(px, 0, 0, PhonePanel.vx, PhonePanel.vy, 0);
-    imageList.add(img);
-    synchronized (lock) {
-      lock.notify();
-    }
+    rtpH263_2000.decode(data, pos, len, this);
   }
 
   public void rtp_h264_data(byte[] data, int pos, int len) {
     if (!active) {
       return;
-    }
-    //      printArray("i:rtpH264:", data, 0, len);
-    Packet pack = rtpH264.decode(data, pos, pos + len);
-    if (pack == null) {
-      return;
-      //      printArray("decoded_h264", pack, 0, pack.length);
-      //      try { raf.write(pack); } catch (Exception e) {}
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
@@ -192,30 +129,12 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(pack.data, 0, pack.length);
-    if (px == null) {
-      return;
-    }
-    //      JFLog.log("px[]=" + px[0] + "," + px[1] + "," + px[2]);
-    JFImage img = new JFImage();
-    img.setSize(PhonePanel.vx, PhonePanel.vy);
-    img.putPixels(px, 0, 0, PhonePanel.vx, PhonePanel.vy, 0);
-    imageList.add(img);
-    synchronized (lock) {
-      lock.notify();
-    }
+    rtpH264.decode(data, pos, pos + len, this);
   }
 
   public void rtp_vp8_data(byte[] data, int pos, int len) {
     if (!active) {
       return;
-    }
-    //      printArray("i:rtpVP8:", data, 0, len);
-    Packet packet = rtpVP8.decode(data, pos, len);
-    if (packet == null) {
-      return;
-      //      printArray("decoded_VP8", pack, 0, pack.length);
-      //      try { raf.write(pack); } catch (Exception e) {}
     }
     if (decoder == null) {
       decoder = new MediaVideoDecoder();
@@ -226,17 +145,32 @@ public class RemoteCamera extends Thread {
         return;
       }
     }
-    int[] px = decoder.decode(packet.data, packet.offset, packet.length);
-    if (px == null) {
-      return;
-    }
-    //      JFLog.log("px[]=" + px[0] + "," + px[1] + "," + px[2]);
-    JFImage img = new JFImage();
-    img.setSize(PhonePanel.vx, PhonePanel.vy);
-    img.putPixels(px, 0, 0, PhonePanel.vx, PhonePanel.vy, 0);
-    imageList.add(img);
-    synchronized (lock) {
-      lock.notify();
+    rtpVP8.decode(data, pos, len, this);
+  }
+
+  public void onPacket(Packet packet) {
+    if (decoder == null) {
+      JFImage tmp = new JFImage();
+      if (!tmp.load(new ByteArrayInputStream(packet.data))) {
+        JFLog.log("RemoteCamera : failed to decode image");
+        return;
+      }
+      imageList.add(tmp);
+      synchronized (lock) {
+        lock.notify();
+      }
+    } else {
+      int[] px = decoder.decode(packet.data, packet.offset, packet.length);
+      if (px == null) {
+        return;
+      }
+      JFImage img = new JFImage();
+      img.setSize(PhonePanel.vx, PhonePanel.vy);
+      img.putPixels(px, 0, 0, PhonePanel.vx, PhonePanel.vy, 0);
+      imageList.add(img);
+      synchronized (lock) {
+        lock.notify();
+      }
     }
   }
 

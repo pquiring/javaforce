@@ -11,7 +11,7 @@ import javaforce.awt.*;
 import javaforce.voip.*;
 import javaforce.media.*;
 
-public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RTPInterface, MediaIO, CameraWorker {
+public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RTPInterface, MediaIO, CameraWorker, PacketReceiver {
   public Camera camera;
   private String url, cleanurl;
   private String path;
@@ -597,10 +597,14 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
       }
       lastPacket = System.currentTimeMillis();
       if (!record) return;
-      Packet packet = h264.decode(buf, 0, length);
-      if (packet == null) {
-        return;
-      }
+      h264.decode(buf, 0, length, this);
+    } catch (Exception e) {
+      JFLog.log(log, e);
+    }
+  }
+
+  public void onPacket(Packet packet) {
+    try {
       int type = packet.data[4] & 0x1f;
       switch (type) {
         case 7:  //SPS
