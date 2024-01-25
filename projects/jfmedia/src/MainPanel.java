@@ -1273,7 +1273,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     }
 
     public void onPacket(Packet packet) {
-      JFLog.log("onPacket:" + (packet.data[4] & 0xff));
       try {
         if (h264 != null) {
           byte type = h264.get_nal_type(packet.data, 4);

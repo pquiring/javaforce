@@ -144,7 +144,6 @@ public class RTPH265 extends RTPCodec {
     int h265Length = length - 12;
     //NAL header bits (16bits) [12-13]
     byte nal_type = get_nal_type(rtp, 12);
-    JFLog.log("H265:type=" + nal_type);
     //int layer = (rtp[13] >> 3);
     //int tid = (rtp[13] & 0x7);
     int thisseqnum = RTPChannel.getseqnum(rtp, 0);
@@ -163,7 +162,6 @@ public class RTPH265 extends RTPCodec {
       boolean last = (rtp[14] & E) == E;
       byte fu_type = (byte)(rtp[14] & 0x3f);
       nal_type = (byte)(fu_type << 1);
-      JFLog.log("H265:fu_type=" + fu_type + ":nal_type=" + nal_type);
       //RTP header bits
       boolean m = (rtp[1] & M) == M;
       if (m && !last) {
@@ -249,7 +247,7 @@ public class RTPH265 extends RTPCodec {
   }
 
   public static boolean isKeyFrame(byte type) {
-    return type == 19;
+    return type == 19 || type == 20;
   }
 
   public static boolean isIFrame(byte type) {
@@ -257,7 +255,7 @@ public class RTPH265 extends RTPCodec {
   }
 
   public static boolean isFrame(byte type) {
-    return type == 19 || type == 1;
+    return type == 19 || type == 20 || type == 1;
   }
 
   public static boolean canDecodePacket(byte type) {
@@ -267,6 +265,7 @@ public class RTPH265 extends RTPCodec {
       case 34:  //PPS
       case 1:  //i frame
       case 19:  //key frame
+      case 20:  //key frame
         return true;
       default:
         return false;  //all others ignore
