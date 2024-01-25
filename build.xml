@@ -53,17 +53,17 @@
   </target>
 
   <target name="get-ffmpeg-win64-bin" description="download ffmpeg for Win64">
-    <echo message="Downloading: ffmpeg-win64-bin-{ffmpeg-version}.zip"/>
-    <get src="http://javaforce.sourceforge.net/ffmpeg-win64-bin-{ffmpeg-version}.zip" dest="ffmpeg-win64-bin-{ffmpeg-version}.zip"/>
-    <mkdir dir="ffmpeg-bin/{ffmpeg-version}"/>
-    <unzip src="ffmpeg-win64-bin-{ffmpeg-version}.zip" dest="ffmpeg-bin/{ffmpeg-version}"/>
+    <echo message="Downloading: ffmpeg-win64-bin-${ffmpeg-version}.zip"/>
+    <get src="http://javaforce.sourceforge.net/ffmpeg-win64-bin-${ffmpeg-version}.zip" dest="ffmpeg-win64-bin-${ffmpeg-version}.zip"/>
+    <mkdir dir="ffmpeg-bin/${ffmpeg-version}"/>
+    <unzip src="ffmpeg-win64-bin-${ffmpeg-version}.zip" dest="ffmpeg-bin/${ffmpeg-version}"/>
   </target>
 
   <target name="get-ffmpeg-win64-src" description="download ffmpeg for Win64">
-    <echo message="Downloading: ffmpeg-win64-src-{ffmpeg-version}.zip"/>
-    <get src="http://javaforce.sourceforge.net/ffmpeg-win64-src-{ffmpeg-version}.zip" dest="ffmpeg-win64-src-{ffmpeg-version}.zip"/>
-    <mkdir dir="ffmpeg-src/{ffmpeg-version}"/>
-    <unzip src="ffmpeg-win64-src-{ffmpeg-version}.zip" dest="ffmpeg-src/{ffmpeg-version}"/>
+    <echo message="Downloading: ffmpeg-win64-src-${ffmpeg-version}.zip"/>
+    <get src="http://javaforce.sourceforge.net/ffmpeg-win64-src-${ffmpeg-version}.zip" dest="ffmpeg-win64-src-${ffmpeg-version}.zip"/>
+    <mkdir dir="ffmpeg-src/${ffmpeg-version}"/>
+    <unzip src="ffmpeg-win64-src-${ffmpeg-version}.zip" dest="ffmpeg-src/${ffmpeg-version}"/>
   </target>
 
   <import file="get-jars.xml"/>
