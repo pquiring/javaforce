@@ -1022,7 +1022,6 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       resizeVideo = false;
       eof = false;
       preBuffering = true;
-      packets = new PacketBuffer();
 
       try {
         connect();
@@ -1204,16 +1203,18 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
       width = decoded_x;
       height = decoded_y;
       video_buffer = new VideoBuffer(width, height, buffer_seconds * (int)fps);
-      int codec = -1;
+      int av_codec = -1;
       if (stream.hasCodec(RTP.CODEC_H264)) {
-        codec = MediaCoder.AV_CODEC_ID_H264;
+        av_codec = MediaCoder.AV_CODEC_ID_H264;
         h264 = new RTPH264();
+        packets = new PacketBuffer(CodecType.H264);
       }
       if (stream.hasCodec(RTP.CODEC_H265)) {
-        codec = MediaCoder.AV_CODEC_ID_H265;
+        av_codec = MediaCoder.AV_CODEC_ID_H265;
         h265 = new RTPH265();
+        packets = new PacketBuffer(CodecType.H265);
       }
-      status = video_decoder.start(codec, decoded_x, decoded_y);
+      status = video_decoder.start(av_codec, decoded_x, decoded_y);
       if (!status) {
         JFLog.log("Error:MediaVideoDecoder.start() failed");
         return;
@@ -1272,16 +1273,15 @@ public class MainPanel extends javax.swing.JPanel implements ActionListener {
     }
 
     public void onPacket(Packet packet) {
+      JFLog.log("onPacket:" + (packet.data[4] & 0xff));
       try {
-        int type = packet.data[4] & 0x1f;
-        switch (type) {
-          case 7:  //SPS
-          case 8:  //PPS
-          case 1:  //P frame
-          case 5:  //I frame
-            break;
-          default:
-            return;  //all others ignore
+        if (h264 != null) {
+          byte type = h264.get_nal_type(packet.data, 4);
+          if (!h264.canDecodePacket(type)) return;
+        }
+        if (h265 != null) {
+          byte type = h265.get_nal_type(packet.data, 4);
+          if (!h265.canDecodePacket(type)) return;
         }
         packets.add(packet);
         packets.cleanPackets(true);

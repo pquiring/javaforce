@@ -81,7 +81,7 @@ public class RTPH265 extends RTPCodec {
       if (packetLength > mtu) {
         //need to split up into Frag Units
         int nalLength = mtu - 2;
-        byte fu_type = (byte)((data[offset] & 0x7e) >> 1);  //shited into FU style
+        byte nal_type = get_nal_type(data, offset);
         byte layer_tid = data[offset + 1];
         offset++;
         len--;
@@ -94,7 +94,7 @@ public class RTPH265 extends RTPCodec {
           packet.data[12] = FU << 1;
           packet.data[13] = LAYER_TID;
           //FU header (8bit)
-          packet.data[14] = fu_type;
+          packet.data[14] = nal_type;
           if (first) {
             packet.data[14] |= S;  //first FU packet
             first = false;
@@ -114,7 +114,7 @@ public class RTPH265 extends RTPCodec {
         packet.data[12] = FU << 1;
         packet.data[13] = LAYER_TID;
         //FU header (8bit)
-        packet.data[14] = fu_type;
+        packet.data[14] = nal_type;
         packet.data[14] |= E;
         //followed by real NAL unit
         System.arraycopy(data, offset, packet.data, 15, nalLength);
@@ -143,11 +143,12 @@ public class RTPH265 extends RTPCodec {
     if (length < 12 + 3) return;  //bad packet
     int h265Length = length - 12;
     //NAL header bits (16bits) [12-13]
-    int type = (rtp[12] & 0x7e) >> 1;
+    byte nal_type = get_nal_type(rtp, 12);
+    JFLog.log("H265:type=" + nal_type);
     //int layer = (rtp[13] >> 3);
     //int tid = (rtp[13] & 0x7);
     int thisseqnum = RTPChannel.getseqnum(rtp, 0);
-    if (type > 0 && type < FU) {
+    if (nal_type > 0 && nal_type < FU) {
       //a full NAL packet
       System.arraycopy(rtp, 12, packet.data, 4, h265Length);
       packet.data[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
@@ -156,11 +157,13 @@ public class RTPH265 extends RTPCodec {
       lastseqnum = thisseqnum;
       packet.length = 0;
       return;
-    } else if (type == FU) {
+    } else if (nal_type == FU) {
       //FU header bits [14]
       boolean first = (rtp[14] & S) == S;
       boolean last = (rtp[14] & E) == E;
-      byte nal_type = (byte)((rtp[14] & 0x3f) << 1);
+      byte fu_type = (byte)(rtp[14] & 0x3f);
+      nal_type = (byte)(fu_type << 1);
+      JFLog.log("H265:fu_type=" + fu_type + ":nal_type=" + nal_type);
       //RTP header bits
       boolean m = (rtp[1] & M) == M;
       if (m && !last) {
@@ -173,13 +176,14 @@ public class RTPH265 extends RTPCodec {
         if (packet.length != 0) {
           JFLog.log(log, "Warning : H265 : FU : first packet again, last frame lost?");
         }
+
         h265Length -= 3;
-        System.arraycopy(rtp, 12 + 3, packet.data, 4, h265Length);
-        packet.length = 4 + h265Length;
+        System.arraycopy(rtp, 12 + 3, packet.data, 4 + 2, h265Length);
+        packet.length = 4 + 2 + h265Length;
         packet.data[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
         //NAL header (16 bits)
         packet.data[4] = nal_type;
-        //[5] = layer + tid ???
+        packet.data[5] = rtp[13];  //layer / tid
         lastseqnum = thisseqnum;
       } else {
         if (packet.length == 0) {
@@ -189,22 +193,21 @@ public class RTPH265 extends RTPCodec {
           return;
         }
         if (thisseqnum != nextseqnum()) {
-          JFLog.log(log, "Error : H265 : Received FU-A packet out of order, discarding frame : seq=" + thisseqnum);
+          JFLog.log(log, "Error : H265 : Received FU packet out of order, discarding frame : seq=" + thisseqnum);
           lastseqnum = -1;
           packet.length = 0;
           return;
         }
         lastseqnum = thisseqnum;
-        int partialLength = packet.length;
         h265Length -= 3;
-        System.arraycopy(rtp, 12+3, packet.data, partialLength, h265Length);
+        System.arraycopy(rtp, 12 + 3, packet.data, packet.length, h265Length);
         packet.length += h265Length;
         if (last) {
           pr.onPacket(packet);
           packet.length = 0;
         }
       }
-    } else if (type == AP) {
+    } else if (nal_type == AP) {
       //AP Packet (2 or more full NAL units in one RTP packet)
       //each NAL unit is preceded by a 16bit size (network byte order)
       offset += 12 + 2;
@@ -221,12 +224,12 @@ public class RTPH265 extends RTPCodec {
       }
       lastseqnum = thisseqnum;
       packet.length = 0;
-    } else if (type == PACI) {
+    } else if (nal_type == PACI) {
       //ignore packet?
       lastseqnum = thisseqnum;
       packet.length = 0;
     } else {
-      JFLog.log(log, "H265:Unsupported packet type:" + type);
+      JFLog.log(log, "H265:Unsupported packet type:" + nal_type);
       lastseqnum = -1;
       packet.length = 0;
     }
@@ -236,14 +239,62 @@ public class RTPH265 extends RTPCodec {
     if (lastseqnum == 65535) return 0;
     return lastseqnum + 1;
   }
+
+  public static byte get_nal_type(byte[] rtp, int offset) {
+    return (byte)((rtp[offset] & 0x7e) >> 1);
+  }
+
+  public static byte get_fu_type(byte[] rtp, int offset) {
+    return (byte)(rtp[offset] & 0x2f);
+  }
+
+  public static boolean isKeyFrame(byte type) {
+    return type == 19;
+  }
+
+  public static boolean isIFrame(byte type) {
+    return type == 1;
+  }
+
+  public static boolean isFrame(byte type) {
+    return type == 19 || type == 1;
+  }
+
+  public static boolean canDecodePacket(byte type) {
+    switch (type) {
+      case 32:  //VPS
+      case 33:  //SPS
+      case 34:  //PPS
+      case 1:  //i frame
+      case 19:  //key frame
+        return true;
+      default:
+        return false;  //all others ignore
+    }
+  }
 }
 
 /*
+
+https://github.com/GStreamer/gstreamer/blob/main/subprojects/gst-plugins-good/gst/rtp/gstrtph265types.h
+
  Type Name
-    0 [invalid]
- 1-47 NAL packets
+ 0-47 NAL packets
+ 0-21 slice
+   19 IDR RADL
+   20 IDR LP
+   32 VPS
+   33 SPS
+   34 PPS
+   35 AUD
+   36 EOS
+   37 EOB
+   38 FD
+   39 PREFIX SEI
+   40 SUFFIX SEI
+----- rtp types -----
    48 AP (aggregate NAL packets)
    49 FU (fragment NAL packet)
    50 PACI
-50-63 reserved?
+51-63 reserved?
 */

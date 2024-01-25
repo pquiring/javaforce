@@ -56,7 +56,7 @@ public class RTPH264 extends RTPCodec {
   }
 
   /*
-   * NAL Header : 8 bits : F(1) NRI(2) TYPE(5) : F=0 NRI=0-3 TYPE=1-23:full_packet 28=FU-A
+   * NAL Header : 8 bits : F(1) NRI(2) TYPE(5) : F=0 NRI=0-3 TYPE=1-23:full_packet 28=FU
    * FUA Header : 8 bits : S(1) E(1) R(1) TYPE(5) : S=start E=end R=reserved TYPE=1-23
    */
 
@@ -77,7 +77,7 @@ public class RTPH264 extends RTPCodec {
       if (packetLength > mtu) {
         //need to split up into Frag Units (mode A)
         int nalLength = mtu - 2;
-        byte type = (byte)(data[offset] & 0x1f);
+        byte type = get_nal_type(data, offset);
         byte nri = (byte)(data[offset] & 0x60);
         offset++;
         len--;
@@ -132,7 +132,7 @@ public class RTPH264 extends RTPCodec {
     //assumes offset == 0
     if (length < 12 + 2) return;  //bad packet
     int h264Length = length - 12;
-    int type = rtp[12] & 0x1f;
+    byte type = get_nal_type(rtp, 12);
     int thisseqnum = RTPChannel.getseqnum(rtp, 0);
     if (type >= 1 && type <= 23) {
       //a full NAL packet
@@ -146,25 +146,27 @@ public class RTPH264 extends RTPCodec {
       //FU header bits
       boolean first = (rtp[13] & S) == S;
       boolean last = (rtp[13] & E) == E;
-      int realtype = rtp[13] & 0x1f;
+      byte fu_type = get_fu_type(rtp, 13);
       //RTP header bits
       boolean m = (rtp[1] & M) == M;
       if (m && !last) {
-        JFLog.log(log, "Error : H264 : FU-A : M bit set but not last packet : seq=" + thisseqnum);
+        JFLog.log(log, "Error : H264 : FU : M bit set but not last packet : seq=" + thisseqnum);
         lastseqnum = -1;
         packet.length = 0;
         return;
       }
       if (first) {
         if (packet.length != 0) {
-          JFLog.log(log, "Warning : H264 : FU-A : first packet again, last frame lost?");
+          JFLog.log(log, "Warning : H264 : FU : first packet again, last frame lost?");
         }
         int nri = rtp[12] & 0x60;
         h264Length -= 2;
         System.arraycopy(rtp, 12 + 2, packet.data, 4 + 1, h264Length);
         packet.length = 4 + 1 + h264Length;
         packet.data[3] = 0x01;  //start code = 0x00 0x00 0x00 0x01
-        packet.data[4] = (byte)(nri + realtype);
+        //NAL header (8 bits)
+        packet.data[4] = (byte)(nri + fu_type);
+
         lastseqnum = thisseqnum;
       } else {
         if (packet.length == 0) {
@@ -174,15 +176,14 @@ public class RTPH264 extends RTPCodec {
           return;
         }
         if (thisseqnum != nextseqnum()) {
-          JFLog.log(log, "Error : H264 : Received FU-A packet out of order, discarding frame : seq=" + thisseqnum);
+          JFLog.log(log, "Error : H264 : Received FU packet out of order, discarding frame : seq=" + thisseqnum);
           lastseqnum = -1;
           packet.length = 0;
           return;
         }
         lastseqnum = thisseqnum;
-        int partialLength = packet.length;
         h264Length -= 2;
-        System.arraycopy(rtp, 12+2, packet.data, partialLength, h264Length);
+        System.arraycopy(rtp, 12 + 2, packet.data, packet.length, h264Length);
         packet.length += h264Length;
         if (last) {
           pr.onPacket(packet);
@@ -200,11 +201,46 @@ public class RTPH264 extends RTPCodec {
     if (lastseqnum == 65535) return 0;
     return lastseqnum + 1;
   }
+
+  public static byte get_nal_type(byte[] rtp, int offset) {
+    return (byte)(rtp[offset] & 0x1f);
+  }
+
+  public static byte get_fu_type(byte[] rtp, int offset) {
+    return (byte)(rtp[offset] & 0x1f);
+  }
+
+  public static boolean isKeyFrame(byte type) {
+    return type == 5;
+  }
+
+  public static boolean isIFrame(byte type) {
+    return type == 1;
+  }
+
+  public static boolean isFrame(byte type) {
+    return type == 5 || type == 1;
+  }
+
+  public static boolean canDecodePacket(byte type) {
+    switch (type) {
+      case 7:  //SPS
+      case 8:  //PPS
+      case 1:  //i frame
+      case 5:  //key frame
+        return true;
+      default:
+        return false;  //all others ignore
+    }
+  }
 }
 
 /*
+https://github.com/GStreamer/gstreamer/blob/main/subprojects/gst-plugins-bad/gst-libs/gst/codecparsers/gsth264parser.h
+
  Type Name
     0 [invalid]
+ 1-23 NAL packets
     1 Coded slice (incremental frame)
     2 Data Partition A
     3 Data Partition B
@@ -218,6 +254,7 @@ public class RTPH264 extends RTPCodec {
    11 EoS (End of Stream)
    12 Filter Data
 13-23 [extended]
+----- rtp types -----
 24-27 [unspecified]
    28 FU
 29-31 [unspecified]

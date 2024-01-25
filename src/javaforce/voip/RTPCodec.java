@@ -2,6 +2,8 @@ package javaforce.voip;
 
 /** RTPCodec
  *
+ * NOTE : Each derived class should be used for encoder or decoded (never both).
+ *
  * @author pquiring
  */
 

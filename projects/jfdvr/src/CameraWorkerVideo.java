@@ -29,6 +29,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
   private RTP rtp;
   private RTPChannel channel;
   private RTPH264 h264;
+  private RTPH265 h265;
   private MediaVideoDecoder decoder;
   private MediaEncoder encoder;
   private RandomAccessFile raf;
@@ -99,9 +100,12 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
 
   /** Frame to be recorded. */
   private static class Frames {
-    public Frames(int log) {
+    public Frames(int codecType) {
       this.log = log;
-      packets = new PacketBuffer(log);
+      packets = new PacketBuffer(codecType);
+    }
+    public void setLog(int id) {
+      this.log = id;
     }
     public void stop() {
       this.stop[head] = true;
@@ -170,10 +174,7 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     max_file_size = camera.max_file_size * 1024L * 1024L;
     max_folder_size = camera.max_folder_size * 1024L * 1024L * 1024L;
     recording = !camera.record_motion;  //always recording
-    frames = new Frames(log);
     if (record) {
-      packets_decode = new PacketBuffer(log);
-      packets_encode = new PacketBuffer(log);
       preview_image = new JFImage(decoded_x, decoded_y);
     }
   }
@@ -545,8 +546,24 @@ public class CameraWorkerVideo extends Thread implements RTSPClientInterface, RT
     rtp.start();
     channel = rtp.createChannel(stream);
     channel.start();
-    h264 = new RTPH264();
-    h264.setLog(log);
+    if (stream.hasCodec(RTP.CODEC_H264)) {
+      h264 = new RTPH264();
+      h264.setLog(log);
+      packets_decode = new PacketBuffer(CodecType.H264);
+      packets_decode.setLog(log);
+      packets_encode = new PacketBuffer(CodecType.H264);
+      packets_encode.setLog(log);
+      frames = new Frames(CodecType.H264);
+    }
+    if (stream.hasCodec(RTP.CODEC_H265)) {
+      h265 = new RTPH265();
+      h265.setLog(log);
+      packets_decode = new PacketBuffer(CodecType.H265);
+      packets_decode.setLog(log);
+      packets_encode = new PacketBuffer(CodecType.H265);
+      packets_encode.setLog(log);
+      frames = new Frames(CodecType.H265);
+    }
     client.setup(url, rtp.getlocalrtpport(), 0);
   }
 
