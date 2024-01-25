@@ -68,37 +68,38 @@ public class RTPVP8 extends RTPCodec {
     int payloadOffset = 12;
     byte bits = rtp[12];  //X R N S R PartitionIndex(3)
     boolean x = (bits & 0x80) == 0x80;  //extended bits
-    boolean n = (bits & 0x80) == 0x20;  //non-ref frame (can be discarded)
+    boolean n = (bits & 0x20) == 0x20;  //non-ref frame (can be discarded)
     boolean s = (bits & 0x10) == 0x10;  //start
-    payloadOffset++;
-    vp8Length--;
-    if (x) {
-      byte iltk = rtp[13];  //I L T K RSV(3)
+    if (s) {
+      packet.length = 0;
+    } else {
       payloadOffset++;
       vp8Length--;
-      if ((iltk & 0x80) == 0x80) {  //Picture ID
-        byte pid = rtp[14];
-        if ((pid & 0x80) == 0x80) {
-          //15 bit PID
+      if (x) {
+        byte iltk = rtp[13];  //I L T K RSV(3)
+        payloadOffset++;
+        vp8Length--;
+        if ((iltk & 0x80) == 0x80) {  //Picture ID
+          byte pid = rtp[14];
+          if ((pid & 0x80) == 0x80) {
+            //15 bit PID
+            payloadOffset++;
+            vp8Length--;
+          }
           payloadOffset++;
           vp8Length--;
         }
-        payloadOffset++;
-        vp8Length--;
-      }
-      if ((iltk & 0x40) == 0x40) {  //TL0PICIDX
-        payloadOffset++;
-        vp8Length--;
-      }
-      if ((iltk & 0x30) != 0x00) {  //TID RSV-B
-        payloadOffset++;
-        vp8Length--;
+        if ((iltk & 0x40) == 0x40) {  //TL0PICIDX
+          payloadOffset++;
+          vp8Length--;
+        }
+        if ((iltk & 0x30) != 0x00) {  //TID RSV-B
+          payloadOffset++;
+          vp8Length--;
+        }
       }
     }
-
-    if (s) {
-      packet.length = 0;
-    }
+    if (n) return;
 
     //copy to packet
     System.arraycopy(rtp, payloadOffset, packet.data, packet.length, vp8Length);
