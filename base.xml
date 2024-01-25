@@ -46,9 +46,9 @@
 
   <target name="ffmpeg">
     <copy todir=".">
-      <fileset dir="${home}/ffmpeg" includes="*.dll"/>
-      <fileset dir="${home}/ffmpeg" includes="*.so"/>
-      <fileset dir="${home}/ffmpeg" includes="*.dylib"/>
+      <fileset dir="${home}/ffmpeg-bin/{ffmpeg-version}" includes="*.dll"/>
+      <fileset dir="${home}/ffmpeg-bin/{ffmpeg-version}" includes="*.so"/>
+      <fileset dir="${home}/ffmpeg-bin/{ffmpeg-version}" includes="*.dylib"/>
     </copy>
   </target>
 
