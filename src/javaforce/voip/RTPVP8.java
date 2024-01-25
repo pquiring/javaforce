@@ -66,30 +66,42 @@ public class RTPVP8 extends RTPCodec {
     if (rtp.length < 12 + 2) return;  //bad packet
     int vp8Length = rtp.length - 12;
     int payloadOffset = 12;
-    byte x = rtp[12];  //X R N S PartID
+    byte bits = rtp[12];  //X R N S R PartitionIndex(3)
+    boolean x = (bits & 0x80) == 0x80;  //extended bits
+    boolean n = (bits & 0x80) == 0x20;  //non-ref frame (can be discarded)
+    boolean s = (bits & 0x10) == 0x10;  //start
     payloadOffset++;
     vp8Length--;
-    if ((x & 0x80) == 0x80) {
-      byte ilt = rtp[13];  //I L T RSV-A
+    if (x) {
+      byte iltk = rtp[13];  //I L T K RSV(3)
       payloadOffset++;
       vp8Length--;
-      if ((ilt & 0x80) == 0x80) {  //picture ID
+      if ((iltk & 0x80) == 0x80) {  //Picture ID
+        byte pid = rtp[14];
+        if ((pid & 0x80) == 0x80) {
+          //15 bit PID
+          payloadOffset++;
+          vp8Length--;
+        }
         payloadOffset++;
         vp8Length--;
       }
-      if ((ilt & 0x40) == 0x40) {  //TL0PICIDX
+      if ((iltk & 0x40) == 0x40) {  //TL0PICIDX
         payloadOffset++;
         vp8Length--;
       }
-      if ((ilt & 0x20) == 0x20) {  //TID RSV-B
+      if ((iltk & 0x30) != 0x00) {  //TID RSV-B
         payloadOffset++;
         vp8Length--;
       }
     }
 
-    //copy to partial
-    int partialLength = packet.length;
-    System.arraycopy(rtp, payloadOffset, packet.data, partialLength, vp8Length);
+    if (s) {
+      packet.length = 0;
+    }
+
+    //copy to packet
+    System.arraycopy(rtp, payloadOffset, packet.data, packet.length, vp8Length);
 
     int thisseqnum = RTPChannel.getseqnum(rtp, 0);
     if (lastseqnum != -1 && thisseqnum != lastseqnum + 1) {
