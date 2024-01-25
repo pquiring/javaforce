@@ -65,8 +65,8 @@ FreeBSD is currently not supported (open issue if you would like to see FreeBSD 
 
 JavaForce Ant tasks:
 --------------------
-get-ffmpeg-win64 : Download ffmpeg libraries for Win64
-get-ffmpeg-mac64 : Download ffmpeg libraries for Mac64
+get-ffmpeg-win64-bin : Download ffmpeg libraries for Win64
+get-ffmpeg-win64-src : Download ffmpeg sources for Win64 (to build native library)
 jre-base : pre-link JRE for creating native packages (msi, dmg)
 jre-base-desktop : pre-link JRE with desktop support
 jre-base-javac : pre-link JRE with java compiler support

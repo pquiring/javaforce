@@ -13,4 +13,4 @@ To compile:
 Required environment variables:
 
 - FFMPEG_HOME = FFMPEG home path
-  - if you run "ant get-ffmpeg-win64-src" this should be set to ../../ffmpeg-src/{ffmpeg-version}
+  - if you run "ant get-ffmpeg-win64-src" this should be set to ../../ffmpeg-src/${ffmpeg-version}
