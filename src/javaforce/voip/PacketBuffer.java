@@ -2,9 +2,7 @@ package javaforce.voip;
 
 /** PacketBuffer
  *
- * Combines RTP fragments into H264 packets.
- *
- * TODO : support H.265 packets.
+ * Combines RTP fragments into H264 or H265 packets.
  *
  */
 
