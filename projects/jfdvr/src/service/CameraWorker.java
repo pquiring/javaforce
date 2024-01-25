@@ -1,3 +1,5 @@
+package service;
+
 /** CameraWorker interface.
  *
  * @author pquiring

@@ -1,3 +1,5 @@
+package service;
+
 /** Config Service.
  *
  * @author pquiring

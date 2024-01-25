@@ -1,3 +1,5 @@
+package service;
+
 /** Group.
  *
  * A collection of cameras for viewing.

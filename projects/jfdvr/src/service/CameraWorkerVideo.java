@@ -1,3 +1,5 @@
+package service;
+
 /** CameraWorkerVideo
  *
  * @author pquiring
