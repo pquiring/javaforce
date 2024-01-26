@@ -45,6 +45,7 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
     server = new javax.swing.JTextField();
     updateLists = new javax.swing.JButton();
 
+    groupList.setModel(new DefaultListModel<String>());
     jScrollPane1.setViewportView(groupList);
 
     viewGroup.setText("View Group");
@@ -54,6 +55,7 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
       }
     });
 
+    cameraList.setModel(new DefaultListModel<String>());
     jScrollPane2.setViewportView(cameraList);
 
     viewCamera.setText("View Camera");
@@ -131,13 +133,13 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
   private void viewGroupActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewGroupActionPerformed
     String group = groupList.getSelectedValue();
     if (group == null) return;
-    ViewerApp.frame.selectView("group" ,group);
+    ViewerApp.self.selectView("group" ,group);
   }//GEN-LAST:event_viewGroupActionPerformed
 
   private void viewCameraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewCameraActionPerformed
     String camera = cameraList.getSelectedValue();
     if (camera == null) return;
-    ViewerApp.frame.selectView("camera", camera);
+    ViewerApp.self.selectView("camera", camera);
   }//GEN-LAST:event_viewCameraActionPerformed
 
   private void updateListsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_updateListsActionPerformed
@@ -164,12 +166,12 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
   public static ArrayList<String> groups = new ArrayList<>();
 
   private void updateLists() {
-    DefaultListModel groupModel = (DefaultListModel)groupList.getModel();
+    DefaultListModel<String> groupModel = (DefaultListModel<String>)groupList.getModel();
     for(String group : groups) {
       groupModel.addElement(group);
     }
 
-    DefaultListModel cameraModel = (DefaultListModel)cameraList.getModel();
+    DefaultListModel<String> cameraModel = (DefaultListModel<String>)cameraList.getModel();
     for(String camera : cameras) {
       cameraModel.addElement(camera);
     }

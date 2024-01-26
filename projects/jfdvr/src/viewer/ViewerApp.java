@@ -28,24 +28,22 @@ public class ViewerApp extends javax.swing.JFrame {
     JFImage icon = new JFImage();
     icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfdvr.png"));
     setIconImage(icon.getImage());
-    frame = this;
-    panel = new ViewerPanel();
-    setContentPane(panel);
+    self = this;
+    root = this.getRootPane();
     setPosition();
     setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F5 = Select View)");
-    if (args.length > 0) {
+    if (args.length > 0 && args[0].startsWith("rtsp://")) {
       String arg = args[0];
-      if (arg.startsWith("rtsp://")) {
-        try {
-          Config.url = new URI(arg).toURL();
-          panel.play(Config.url);
-        } catch (Exception e) {
-          e.printStackTrace();
-        }
+      panel = new Viewer();
+      try {
+        Config.url = new URI(arg).toURL();
+        panel.play(Config.url);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     } else {
       SelectView dialog = new SelectView();
-      dialog.setVisible(true);
+      setContentPane(dialog);
     }
     JFAWT.assignHotKey(this.getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
     JFAWT.assignHotKey(this.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F5);
@@ -97,8 +95,9 @@ public class ViewerApp extends javax.swing.JFrame {
   // End of variables declaration//GEN-END:variables
 
   public static String[] args;
-  public static ViewerPanel panel;
-  public static ViewerApp frame;
+  public static Viewer panel;
+  public static ViewerApp self;
+  public static JRootPane root;
 
   private void setPosition() {
     Dimension d = getSize();
@@ -130,7 +129,6 @@ public class ViewerApp extends javax.swing.JFrame {
   public void stopViewer() {
     if (panel == null) return;
     panel.stop(true);
-    remove(panel);
     panel = null;
   }
 
@@ -152,11 +150,21 @@ public class ViewerApp extends javax.swing.JFrame {
   public void selectView(String type, String name) {
     try {
       Config.url = new URI(Config.changeURL("/" + type + "/" + name)).toURL();
-      panel = new ViewerPanel();
-      setContentPane(panel);
+      panel = new Viewer();
       panel.play(Config.url);
     } catch (Exception e) {
       JFLog.log(e);
     }
   }
+
+  public static void setPanel(JPanel panel) {
+    JFLog.log("setPanel:" + panel);
+    if (panel == null) {
+      self.setRootPane(root);
+    } else {
+      self.setContentPane(panel);
+    }
+    panel.revalidate();
+  }
+
 }

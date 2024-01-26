@@ -99,8 +99,8 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   public void stop() {
-    if (ViewerApp.frame.isFullScreen()) {
-      ViewerApp.frame.toggleFullScreen();
+    if (ViewerApp.self.isFullScreen()) {
+      ViewerApp.self.toggleFullScreen();
     }
   }
 
