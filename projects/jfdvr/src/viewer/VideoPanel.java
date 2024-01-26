@@ -36,6 +36,11 @@ public class VideoPanel extends javax.swing.JPanel {
         formMouseMoved(evt);
       }
     });
+    addMouseListener(new java.awt.event.MouseAdapter() {
+      public void mouseClicked(java.awt.event.MouseEvent evt) {
+        formMouseClicked(evt);
+      }
+    });
     addComponentListener(new java.awt.event.ComponentAdapter() {
       public void componentResized(java.awt.event.ComponentEvent evt) {
         formComponentResized(evt);
@@ -61,6 +66,10 @@ public class VideoPanel extends javax.swing.JPanel {
     ViewerApp.panel.setVideoSize(getWidth(), getHeight());
   }//GEN-LAST:event_formComponentResized
 
+  private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
+    zoom(evt.getX(), evt.getY());
+  }//GEN-LAST:event_formMouseClicked
+
 
   // Variables declaration - do not modify//GEN-BEGIN:variables
   // End of variables declaration//GEN-END:variables
@@ -69,6 +78,8 @@ public class VideoPanel extends javax.swing.JPanel {
   private boolean needPainting = false;
   private boolean grid;
   private int gx, gy;
+  private boolean zoom;
+  private int zx, zy;
 
   private void init() {
     if (img != null) return;
@@ -105,6 +116,11 @@ public class VideoPanel extends javax.swing.JPanel {
 
   public void setImage(JFImage src, int px, int py) {
     init();
+    if (zoom) {
+      if (px != zx || py != zy) return;
+      setImage(src);
+      return;
+    }
     int img_w = getWidth();
     int img_h = getHeight();
     int w = img_w / gx;
@@ -159,5 +175,19 @@ public class VideoPanel extends javax.swing.JPanel {
     grid = true;
     this.gx = gx;
     this.gy = gy;
+  }
+
+  private void zoom(int x, int y) {
+    if (zoom) {
+      zoom = false;
+    } else {
+      int img_w = getWidth();
+      int img_h = getHeight();
+      int w = img_w / gx;
+      int h = img_h / gy;
+      zx = x / w;
+      zy = y / h;
+      zoom = true;
+    }
   }
 }
