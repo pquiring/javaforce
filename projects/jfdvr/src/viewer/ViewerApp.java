@@ -8,7 +8,6 @@ package viewer;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 import java.net.*;
 import javax.swing.*;
 
@@ -29,7 +28,7 @@ public class ViewerApp extends javax.swing.JFrame {
     icon.loadPNG(this.getClass().getClassLoader().getResourceAsStream("jfdvr.png"));
     setIconImage(icon.getImage());
     self = this;
-    root = this.getRootPane();
+    root = getContentPane();
     setPosition();
     setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F5 = Select View)");
     if (args.length > 0 && args[0].startsWith("rtsp://")) {
@@ -43,10 +42,8 @@ public class ViewerApp extends javax.swing.JFrame {
       }
     } else {
       SelectView dialog = new SelectView();
-      setContentPane(dialog);
+      setPanel(dialog);
     }
-    JFAWT.assignHotKey(this.getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
-    JFAWT.assignHotKey(this.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F5);
   }
 
   /**
@@ -97,7 +94,7 @@ public class ViewerApp extends javax.swing.JFrame {
   public static String[] args;
   public static Viewer panel;
   public static ViewerApp self;
-  public static JRootPane root;
+  public static Container root;
 
   private void setPosition() {
     Dimension d = getSize();
@@ -126,13 +123,13 @@ public class ViewerApp extends javax.swing.JFrame {
     return fullScreen;
   }
 
-  public void stopViewer() {
+  public static void stopViewer() {
     if (panel == null) return;
     panel.stop(true);
     panel = null;
   }
 
-  public void showHelp() {
+  public static void showHelp() {
     JFAWT.showMessage("Help",
       "jfDVR/" + service.ConfigService.version + "\n\n" +
       "F1 = Help\n" +
@@ -140,10 +137,10 @@ public class ViewerApp extends javax.swing.JFrame {
     );
   }
 
-  public void selectView() {
+  public static void selectView() {
     stopViewer();
     SelectView view = new SelectView();
-    setContentPane(view);
+    setPanel(view);
     view.setVisible(true);
   }
 
@@ -160,11 +157,12 @@ public class ViewerApp extends javax.swing.JFrame {
   public static void setPanel(JPanel panel) {
     JFLog.log("setPanel:" + panel);
     if (panel == null) {
-      self.setRootPane(root);
+      self.setContentPane(root);
     } else {
       self.setContentPane(panel);
     }
+    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
+    JFAWT.assignHotKey(panel.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F5);
     panel.revalidate();
   }
-
 }
