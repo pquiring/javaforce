@@ -1,6 +1,6 @@
-<project name="player" basedir=".">
+<project name="viewer" basedir=".">
   <!-- set global properties for this build -->
-  <property name="app" value="player"/>
+  <property name="app" value="viewer"/>
   <property name="apptype" value="console"/>
   <property name="home" value="../.."/>
 

@@ -12,7 +12,7 @@
 
   <import file="${home}/base.xml"/>
 
-  <property name="project2" value="build-player"/>
+  <property name="project2" value="build-viewer"/>
 
   <target name="depjars" depends="depnatives,jar-javaforce" description="jar">
   </target>
