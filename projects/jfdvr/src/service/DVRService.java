@@ -199,21 +199,42 @@ public class DVRService extends Thread implements RTSPServerInterface {
     }
   }
 
+  public String getParameter(String[] params, String name) {
+    for(int a=0;a<params.length;a++) {
+      String param = params[a];
+      int idx = param.indexOf(":");
+      if (idx == -1) continue;
+      String key = param.substring(0, idx);
+      String value = param.substring(idx + 1);
+      if (key.equals(name)) {
+        return value;
+      }
+    }
+    return "";
+  }
+
   public void onGetParameter(RTSPServer server, RTSPSession sess, String[] params) {
     try {
-      URL url = new URI(sess.uri).toURL();
-      String path = url.getPath();  // / type / name
-      String[] type_name = path.split("/");
-      String type = type_name[1];
-      String name = type_name[2];
-      sess.params = "";
-      switch (type) {
-        case "camera": sess.params = "keep-alive: true"; break;
-        case "group": sess.params = group_get_camera_list(name); break;
-        default: throw new Exception("BAD URL");
+      String action = getParameter(params, "action");
+      if (action.equals("query")) {
+        URL url = new URI(sess.uri).toURL();
+        String path = url.getPath();  // / type / name
+        String[] type_name = path.split("/");
+        String type = type_name[1];
+        String name = type_name[2];
+        sess.params = "";
+        switch (type) {
+          case "camera": sess.params = "type: camera;\r\n"; break;
+          case "group": sess.params = "type: group;\r\n" + group_get_camera_list(name); break;
+          default: throw new Exception("BAD URL");
+        }
+        server.reply(sess, 200, "OK");
+        sess.params = null;
+      } else {
+        sess.params = "type: keep-alive;\r\n";
+        server.reply(sess, 200, "OK");
+        sess.params = null;
       }
-      server.reply(sess, 200, "OK");
-      sess.params = null;
     } catch (Exception e) {
       server.reply(sess, 501, "ERROR");
     }

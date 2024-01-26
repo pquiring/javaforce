@@ -12,6 +12,8 @@
 
   <import file="${home}/base.xml"/>
 
+  <property name="project2" value="build-player"/>
+
   <target name="depjars" depends="depnatives,jar-javaforce" description="jar">
   </target>
 
@@ -25,7 +27,7 @@
 
   <target name="jar" depends="compile" description="build jar file">
     <!-- Build jar file from class files -->
-    <jar destfile="${app}.jar" includes="*.class" basedir="${build}">
+    <jar destfile="${app}.jar" includes="**/*.class" basedir="${build}">
       <fileset dir="." includes="*.png"/>
       <fileset dir="src" includes="*.png"/>
       <fileset dir="." includes="*.crt"/>
