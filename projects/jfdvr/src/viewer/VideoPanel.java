@@ -58,7 +58,7 @@ public class VideoPanel extends javax.swing.JPanel {
   }//GEN-LAST:event_formMouseMoved
 
   private void formComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_formComponentResized
-    PlayerApp.panel.setVideoSize(getWidth(), getHeight());
+    ViewerApp.panel.setVideoSize(getWidth(), getHeight());
   }//GEN-LAST:event_formComponentResized
 
 
@@ -88,8 +88,8 @@ public class VideoPanel extends javax.swing.JPanel {
   }
 
   public void stop() {
-    if (PlayerApp.frame.isFullScreen()) {
-      PlayerApp.frame.toggleFullScreen();
+    if (ViewerApp.frame.isFullScreen()) {
+      ViewerApp.frame.toggleFullScreen();
     }
   }
 

@@ -754,7 +754,7 @@ public class MainPanel extends javax.swing.JPanel {
   }
   public void setPanel(JPanel panel) {
     JFLog.log("setPanel:" + panel);
-    PlayerApp.frame.setContentPane(panel);
+    ViewerApp.frame.setContentPane(panel);
     panel.revalidate();
   }
 }
