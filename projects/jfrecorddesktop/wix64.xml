@@ -33,7 +33,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{363A7CF2-0F6F-4090-A518-884B028A213A}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfRecordDesktop" Description="Java RecordDesktop Editor" Target="[APPLICATIONROOTDIRECTORY]jfrecorddesktop.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfRecordDesktop" Description="RecordDesktop" Target="[APPLICATIONROOTDIRECTORY]jfrecorddesktop.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

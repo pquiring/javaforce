@@ -35,7 +35,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{871FBA6F-04C4-4AFB-98D3-07B5FF00A091}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfTerm" Description="Java Term Image Editor" Target="[APPLICATIONROOTDIRECTORY]jfterm.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfTerm" Description="Term Image Editor" Target="[APPLICATIONROOTDIRECTORY]jfterm.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

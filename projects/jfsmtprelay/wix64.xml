@@ -42,7 +42,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{325424D3-B406-496F-8AAB-F9EF9B5DA967}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfSMTPRelay" Description="Java SMTPRelay Server" Target="[APPLICATIONROOTDIRECTORY]jfsmtprelay.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfSMTPRelay" Description="SMTPRelay Server" Target="[APPLICATIONROOTDIRECTORY]jfsmtprelay.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

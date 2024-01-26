@@ -33,7 +33,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{3444F1CC-2733-4CEB-BA7A-AF53C5C2C93B}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfMedia" Description="Java Media Editor" Target="[APPLICATIONROOTDIRECTORY]jfmedia.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfMedia" Description="Media Editor" Target="[APPLICATIONROOTDIRECTORY]jfmedia.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

@@ -36,7 +36,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{628BA10A-882E-4D34-B1D8-B5E352B3E6F2}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfTorrent" Description="Java Torrent Editor" Target="[APPLICATIONROOTDIRECTORY]jftorrent.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfTorrent" Description="Torrent Editor" Target="[APPLICATIONROOTDIRECTORY]jftorrent.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

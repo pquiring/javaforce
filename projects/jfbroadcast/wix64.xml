@@ -34,7 +34,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{D3016C65-77AE-43DE-8215-52EB398FA210}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfBroadcast" Description="Java Broadcast Editor" Target="[APPLICATIONROOTDIRECTORY]jfbroadcast.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfBroadcast" Description="Broadcast Editor" Target="[APPLICATIONROOTDIRECTORY]jfbroadcast.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

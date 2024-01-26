@@ -33,7 +33,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{F46FED51-4201-4B84-8825-88A674998514}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfRecordCamera" Description="Java RecordCamera" Target="[APPLICATIONROOTDIRECTORY]jfrecordcamera.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfRecordCamera" Description="RecordCamera" Target="[APPLICATIONROOTDIRECTORY]jfrecordcamera.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

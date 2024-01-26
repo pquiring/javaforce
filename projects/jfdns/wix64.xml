@@ -50,7 +50,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{36C58739-955F-4894-AED9-C4B90FD3F275}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfDNSServer" Description="Java DNS Server" Target="[APPLICATIONROOTDIRECTORY]jfdns.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfDNSServer" Description="DNS Server" Target="[APPLICATIONROOTDIRECTORY]jfdns.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

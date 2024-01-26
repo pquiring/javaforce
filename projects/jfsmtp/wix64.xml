@@ -58,7 +58,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{CD9CC532-A506-45FD-835E-E947471B8A00}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfSMTPServer" Description="Java SMTP Server" Target="[APPLICATIONROOTDIRECTORY]jfsmtp.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfSMTPServer" Description="SMTP Server" Target="[APPLICATIONROOTDIRECTORY]jfsmtp.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

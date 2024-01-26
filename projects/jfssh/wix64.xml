@@ -59,7 +59,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{D88F2BF2-FB0C-488E-8C90-94EAB521386C}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfSSHServer" Description="Java SSH Server" Target="[APPLICATIONROOTDIRECTORY]jfsshcfg.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfSSHServer" Description="SSH Server" Target="[APPLICATIONROOTDIRECTORY]jfsshcfg.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

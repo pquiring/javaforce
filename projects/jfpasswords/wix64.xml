@@ -33,7 +33,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{C59F223F-82C9-4AB3-AAE1-B0678FE5CDD1}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfPasswords" Description="Java Passwords Manager" Target="[APPLICATIONROOTDIRECTORY]jfpasswords.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfPasswords" Description="Passwords Manager" Target="[APPLICATIONROOTDIRECTORY]jfpasswords.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

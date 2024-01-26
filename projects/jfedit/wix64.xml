@@ -63,7 +63,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{A986E325-13AB-4FD1-AB3B-4637DF9BC1D9}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfEdit" Description="Java Text Editor" Target="[APPLICATIONROOTDIRECTORY]jfedit.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfEdit" Description="Text Editor" Target="[APPLICATIONROOTDIRECTORY]jfedit.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

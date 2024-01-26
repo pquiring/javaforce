@@ -40,7 +40,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{D8207138-798E-4FF2-AC98-55D7183B47E1}">
-<!--        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfBusServer" Description="Java Bus Server" Target="[APPLICATIONROOTDIRECTORY]jfbusserver.exe"
+<!--        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfBusServer" Description="Bus Server" Target="[APPLICATIONROOTDIRECTORY]jfbusserver.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>  -->
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

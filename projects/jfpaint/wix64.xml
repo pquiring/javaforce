@@ -43,7 +43,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{705A1ED5-B9ED-4E97-9634-2CD1E8711F81}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfPaint" Description="Java Paint Image Editor" Target="[APPLICATIONROOTDIRECTORY]jfpaint.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfPaint" Description="Paint Image Editor" Target="[APPLICATIONROOTDIRECTORY]jfpaint.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

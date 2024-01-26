@@ -34,7 +34,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{D265B4C9-1C00-4B79-8A14-9621C8CDC6D0}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfHex" Description="Java Hex Editor" Target="[APPLICATIONROOTDIRECTORY]jfhex.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfHex" Description="Hex Editor" Target="[APPLICATIONROOTDIRECTORY]jfhex.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

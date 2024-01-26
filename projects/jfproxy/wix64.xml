@@ -50,7 +50,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{833BAC0B-AF3A-47E2-9CC5-AA8B97543AB7}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfProxyServer" Description="Java Proxy Server" Target="[APPLICATIONROOTDIRECTORY]jfproxy.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfProxyServer" Description="Proxy Server" Target="[APPLICATIONROOTDIRECTORY]jfproxy.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

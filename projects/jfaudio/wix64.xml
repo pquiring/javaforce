@@ -33,7 +33,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{AEDA13A7-3830-4B58-88BB-BB3587E9C1C6}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfAudio" Description="Java Audio Editor" Target="[APPLICATIONROOTDIRECTORY]jfaudio.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfAudio" Description="Audio Editor" Target="[APPLICATIONROOTDIRECTORY]jfaudio.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

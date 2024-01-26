@@ -34,7 +34,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{F0D75A64-033E-4DC2-A647-D8523F66C03D}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfVideo" Description="Java Video Creator" Target="[APPLICATIONROOTDIRECTORY]jfvideo.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfVideo" Description="Video Creator" Target="[APPLICATIONROOTDIRECTORY]jfvideo.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

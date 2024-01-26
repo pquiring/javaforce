@@ -37,7 +37,7 @@
 <!-- Change Id to ApplicationProgramsFolder if you want Shortcut in its own folder -->
     <DirectoryRef Id="ProgramMenuFolder">
       <Component Id="ApplicationShortcut" Guid="{32616FEB-4683-46F0-8121-B15CAF6799F9}">
-        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTP" Description="Java FTP Client" Target="[APPLICATIONROOTDIRECTORY]jfftp.exe"
+        <Shortcut Id="ApplicationStartMenuShortcut" Name="jfFTP" Description="FTP Client" Target="[APPLICATIONROOTDIRECTORY]jfftp.exe"
           WorkingDirectory="APPLICATIONROOTDIRECTORY"/>
 <!-- Use the following if you want Shortcut in its own folder -->
 <!--        <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/> -->

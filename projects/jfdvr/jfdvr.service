@@ -1,0 +1,11 @@
+[Unit]
+Description=JavaForce DVR Server
+After=jfbusserver.service
+
+[Service]
+ExecStart=/usr/bin/jfdvr
+ExecStop=/usr/bin/jfdvr --stop
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
