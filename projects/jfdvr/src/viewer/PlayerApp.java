@@ -1,4 +1,4 @@
-package player;
+package viewer;
 
 /**
  * Created : Mar 25, 2012
