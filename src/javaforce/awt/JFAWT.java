@@ -197,6 +197,35 @@ public class JFAWT {
     root.getActionMap().put(name, event);
   }
 
+   /** Assigns a single hot key to activate button.
+   * Use mnemonics for key combos.
+   */
+  public static void assignHotKey(JDialog dialog, final Runnable action, int vk) {
+    String name = "Action" + vk;
+    Action event = new AbstractAction() {
+      public void actionPerformed(ActionEvent event) {
+        action.run();
+      }
+    };
+    JRootPane root = dialog.getRootPane();
+    root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(vk, 0), name);
+    root.getActionMap().put(name, event);
+  }
+
+  /** Assigns a single hot key to activate button.
+   * Use mnemonics for key combos.
+   */
+  public static void assignHotKey(JRootPane root, final Runnable action, int vk) {
+    String name = "Action" + vk;
+    Action event = new AbstractAction() {
+      public void actionPerformed(ActionEvent event) {
+        action.run();
+      }
+    };
+    root.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(vk, 0), name);
+    root.getActionMap().put(name, event);
+  }
+
   /** Due to JVM bugs finding a monospaced font is not that easy...
    * See : Java Bug # 9009891 @ bugs.sun.com
    */

@@ -16,7 +16,7 @@ import javaforce.awt.*;
 import javaforce.voip.*;
 import javaforce.media.*;
 
-public class MainPanel extends javax.swing.JPanel {
+public class ViewerPanel extends javax.swing.JPanel {
 
   private final static boolean debug_buffers = false;
   private boolean wait_next_key_frame;
@@ -24,7 +24,7 @@ public class MainPanel extends javax.swing.JPanel {
   /**
    * Creates new form MainPanel
    */
-  public MainPanel() {
+  public ViewerPanel() {
     JFLog.enableTimestamp(true);
     initComponents();
   }
@@ -121,16 +121,9 @@ public class MainPanel extends javax.swing.JPanel {
   //the problem is that some video files are not interlaced very well
   final int pre_buffer_seconds = 2;
 
-  private static int nextPort = 5000;
-  private static synchronized int getLocalPort() {
-    if (nextPort > 10000) nextPort = 5000;
-    int port = nextPort;
-    nextPort += 2;
-    return port;
-  }
-
   public class NetworkReader extends Thread implements MediaIO, RTSPClientInterface, RTPInterface, PacketReceiver {
     private URL url;
+    private String type, name;
     private RTSPClient rtsp;
     private RTP rtp;
     private RTPChannel channel;
@@ -152,7 +145,12 @@ public class MainPanel extends javax.swing.JPanel {
     private final int buffer_seconds = 4;
 
     public NetworkReader(URL url) {
+      //rtsp://host/type/name
       this.url = url;
+      String path = url.getPath();
+      String[] p = path.split("/");
+      type = p[1];
+      name = p[2];
     }
     public void setGrid(int gx, int gy) {
       grid = true;
@@ -242,9 +240,9 @@ public class MainPanel extends javax.swing.JPanel {
       if (videoPanel != null) {
         videoPanel.stop();
         videoPanel = null;
-        setPanel(MainPanel.this);
+        setPanel(ViewerPanel.this);
       }
-      if (playing) MainPanel.this.stop(false);
+      if (playing) ViewerPanel.this.stop(false);
       video_decoder = null;
     }
 
@@ -254,7 +252,7 @@ public class MainPanel extends javax.swing.JPanel {
       if (port == -1) {
         port = 554;  //default RTSP port
       }
-      rtsp.init(url.getHost(), port, getLocalPort(), this, TransportType.TCP);
+      rtsp.init(url.getHost(), port, Config.getLocalPort(), this, TransportType.TCP);
       String user_pass = url.getUserInfo();
       if (user_pass != null) {
         int idx = user_pass.indexOf(":");
@@ -262,7 +260,12 @@ public class MainPanel extends javax.swing.JPanel {
         String pass = user_pass.substring(idx + 1);
         rtsp.setUserPass(user, pass);
       }
-      rtsp.get_parameter(url.toString(), "action: query;\r\n");
+      if (type.equals("camera")) {
+        start_camera();
+      } else {
+        rtsp.get_parameter(url.toString(), "action: query;");
+      }
+
       long now = System.currentTimeMillis();
       lastKeepAlive = now;
       lastPacket = now;
@@ -394,20 +397,6 @@ public class MainPanel extends javax.swing.JPanel {
       close(false);
     }
 
-    public String getParameter(String[] params, String name) {
-      for(int a=0;a<params.length;a++) {
-        String param = params[a];
-        int idx = param.indexOf(":");
-        if (idx == -1) continue;
-        String key = param.substring(0, idx);
-        String value = param.substring(idx + 1);
-        if (key.equals(name)) {
-          return value;
-        }
-      }
-      return "";
-    }
-
     private void start_camera() {
       rtsp.options(url.toString());
     }
@@ -415,6 +404,7 @@ public class MainPanel extends javax.swing.JPanel {
     private void start_group(String cams) {
       cameras = cams.split(",");
       int count = cameras.length;
+      grid = true;
       grid_x = 2;
       grid_y = 2;
       grid_xy = grid_x * grid_y;
@@ -453,10 +443,17 @@ public class MainPanel extends javax.swing.JPanel {
     }
 
     public void onGetParameter(RTSPClient client, String[] params) {
-      String type = getParameter(params, "type");
       switch (type) {
-        case "camera": start_camera(); break;
-        case "group": start_group(getParameter(params, "cameras")); break;
+        case "camera":
+          //keep-alive
+          break;
+        case "group":
+          if (!grid) {
+            start_group(Config.getParameter(params, "cameras"));
+          } else {
+            //keep-alive
+          }
+          break;
       }
     }
 

@@ -224,6 +224,7 @@ public class DVRService extends Thread implements RTSPServerInterface {
         String name = type_name[2];
         sess.params = "";
         switch (type) {
+          case "list": sess.params = "type: list;\r\n" + get_list(name); break;
           case "camera": sess.params = "type: camera;\r\n"; break;
           case "group": sess.params = "type: group;\r\n" + group_get_camera_list(name) + "groups: " + get_group_list(); break;
           default: throw new Exception("BAD URL");
@@ -250,6 +251,28 @@ public class DVRService extends Thread implements RTSPServerInterface {
     Camera camera = Config.current.getCamera(name);
     if (camera == null) return;
     camera.add_viewer(sess);
+  }
+
+  private String get_list(String type) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("list: ");
+    int cnt = 0;
+    if (type.equals("camera") || type.equals("all")) {
+      for(Camera camera : Config.current.cameras) {
+        if (cnt > 0) sb.append(",");
+        sb.append("camera-" + camera.name);
+        cnt++;
+      }
+    }
+    if (type.equals("group") || type.equals("all")) {
+      for(Group group : Config.current.groups) {
+        if (cnt > 0) sb.append(",");
+        sb.append("group-" + group.name);
+        cnt++;
+      }
+    }
+    sb.append("\r\n");
+    return sb.toString();
   }
 
   private String group_get_camera_list(String name) {
