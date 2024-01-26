@@ -32,7 +32,7 @@ public class ViewerApp extends javax.swing.JFrame {
     panel = new ViewerPanel();
     setContentPane(panel);
     setPosition();
-    setTitle("jfDVR Viewer/" + service.ConfigService.version + " (Press F5 to Select View)");
+    setTitle("jfDVR Viewer/" + service.ConfigService.version + " (F1 = Help | F5 = Select View)");
     if (args.length > 0) {
       String arg = args[0];
       if (arg.startsWith("rtsp://")) {
@@ -47,6 +47,7 @@ public class ViewerApp extends javax.swing.JFrame {
       SelectView dialog = new SelectView();
       dialog.setVisible(true);
     }
+    JFAWT.assignHotKey(this.getRootPane(), new Runnable() {public void run() {showHelp();}}, KeyEvent.VK_F1);
     JFAWT.assignHotKey(this.getRootPane(), new Runnable() {public void run() {selectView();}}, KeyEvent.VK_F5);
   }
 
@@ -131,6 +132,14 @@ public class ViewerApp extends javax.swing.JFrame {
     panel.stop(true);
     remove(panel);
     panel = null;
+  }
+
+  public void showHelp() {
+    JFAWT.showMessage("Help",
+      "jfDVR/" + service.ConfigService.version + "\n\n" +
+      "F1 = Help\n" +
+      "F5 = Select View\n"
+    );
   }
 
   public void selectView() {
