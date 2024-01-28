@@ -191,7 +191,7 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
       port = 554;  //default RTSP port
     }
     rtsp.init(Config.url.getHost(), port, Config.getLocalPort(), this, TransportType.TCP);
-    rtsp.get_parameter(Config.changeURL("/list/all"), "action: query;\r\n");
+    rtsp.get_parameter(Config.changeURL("/list/all"), "action: query\r\n");
   }
 
   public void onOptions(RTSPClient client) {
