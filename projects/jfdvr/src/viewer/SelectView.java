@@ -8,6 +8,7 @@ package viewer;
 import java.util.*;
 import javax.swing.*;
 
+import javaforce.*;
 import javaforce.voip.*;
 
 public class SelectView extends javax.swing.JPanel implements RTSPClientInterface {
@@ -210,7 +211,7 @@ public class SelectView extends javax.swing.JPanel implements RTSPClientInterfac
   }
 
   public void onGetParameter(RTSPClient client, String[] params) {
-    String list = Config.getParameter(params, "list");
+    String list = HTTP.getParameter(params, "list");
     if (list == null) return;
     cameras.clear();
     groups.clear();

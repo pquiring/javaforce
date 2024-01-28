@@ -44,6 +44,8 @@ public class JF {
     java.lang.System.out.println(msg);
   }
 
+  //URL functions
+
   public static URL createURL(String url) {
     try {
       return new URI(url).toURL();
@@ -52,6 +54,18 @@ public class JF {
       return null;
     }
   }
+
+  /** Removes user info from any URL. */
+  public static String cleanURL(String url) {
+    //need to remove user:pass from url
+    //proto://user:pass@host:port/path?opt1=val1&opt2=val2
+    int idx = url.indexOf('@');
+    if (idx == -1) return url;  //no user info
+    int i2 = url.indexOf("://");
+    if (i2 == -1) return null;  //invalid URL
+    return url.substring(0 ,i2 + 3) + url.substring(idx + 1);
+  }
+
 
   public static String readURL(String url) {
     String str = "";

@@ -128,11 +128,7 @@ public class HTTP {
 
   /** Removes user info from HTTP URL. */
   public static String cleanURL(String url) {
-    //need to remove user:pass from url
-    //http://user:pass@host:port/path?opt1=val1&opt2=val2
-    int idx = url.indexOf('@');
-    if (idx == -1) return url;
-    return "http://" + url.substring(idx + 1);
+    return JF.cleanURL(url);
   }
 
   public static String getUserInfo(String urlstr) {
@@ -552,5 +548,26 @@ public class HTTP {
       return;
     }
     if (print) System.out.println(html);
+  }
+
+  /**
+   * Returns HTTP style parameter from list of parameters.
+   *
+   * @param params = HTTP list of parameters
+   * @param name = name of parameter to return
+   * @return parameter
+   */
+  public static String getParameter(String[] params, String name) {
+    for(int a=0;a<params.length;a++) {
+      String param = params[a];
+      int idx = param.indexOf(":");
+      if (idx == -1) continue;
+      String key = param.substring(0, idx);
+      String value = param.substring(idx + 1);
+      if (key.equals(name)) {
+        return value;
+      }
+    }
+    return "";
   }
 }

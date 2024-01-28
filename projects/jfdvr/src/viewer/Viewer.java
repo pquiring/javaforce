@@ -419,7 +419,7 @@ public class Viewer {
           break;
         case "group":
           if (!grid) {
-            start_group(Config.getParameter(params, "cameras"));
+            start_group(HTTP.getParameter(params, "cameras"));
           } else {
             //keep-alive
           }
