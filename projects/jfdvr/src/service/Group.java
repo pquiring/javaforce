@@ -80,7 +80,6 @@ public class Group extends SerialObject {
       if (a > 0) sb.append(",");
       sb.append(cameras[a]);
     }
-    sb.append("\r\n");
     return sb.toString();
   }
 }

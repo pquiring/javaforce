@@ -208,17 +208,17 @@ public class DVRService extends Thread implements RTSPServerInterface {
         String[] type_name = path.split("/");
         String type = type_name[1];
         String name = type_name[2];
-        sess.params = "";
+        sess.params = null;
         switch (type) {
-          case "list": sess.params = "type: list\r\n" + get_list(name); break;
-          case "camera": sess.params = "type: camera\r\n"; break;
-          case "group": sess.params = "type: group\r\n" + group_get_camera_list(name) + "groups: " + get_group_list(); break;
+          case "list": sess.params = get_list_all(name); break;
+          case "camera": sess.params = new String[] {"type: camera"}; break;
+          case "group": sess.params = get_list_group_cameras(name); break;
           default: throw new Exception("BAD URL");
         }
         server.reply(sess, 200, "OK");
         sess.params = null;
       } else {
-        sess.params = "type: keep-alive\r\n";
+        sess.params = new String[] {"type: keep-alive"};
         server.reply(sess, 200, "OK");
         sess.params = null;
       }
@@ -239,45 +239,33 @@ public class DVRService extends Thread implements RTSPServerInterface {
     camera.add_viewer(sess);
   }
 
-  private String get_list(String type) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("list: ");
-    int cnt = 0;
+  private String[] get_list_all(String type) {
+    StringBuilder camlist = new StringBuilder();
+    StringBuilder grplist = new StringBuilder();
+    camlist.append("cameras: ");
+    grplist.append("groups: ");
     if (type.equals("camera") || type.equals("all")) {
+      int cnt = 0;
       for(Camera camera : Config.current.cameras) {
-        if (cnt > 0) sb.append(",");
-        sb.append("camera-" + camera.name);
+        if (cnt > 0) camlist.append(",");
+        camlist.append(camera.name);
         cnt++;
       }
     }
     if (type.equals("group") || type.equals("all")) {
+      int cnt = 0;
       for(Group group : Config.current.groups) {
-        if (cnt > 0) sb.append(",");
-        sb.append("group-" + group.name);
+        if (cnt > 0) camlist.append(",");
+        grplist.append(group.name);
         cnt++;
       }
     }
-    sb.append("\r\n");
-    return sb.toString();
+    return new String[] {camlist.toString(), grplist.toString()};
   }
 
-  private String group_get_camera_list(String name) {
+  private String[] get_list_group_cameras(String name) {
     Group group = Config.current.getGroup(name);
     if (group == null) return null;
-    return group.getCameraList();
-  }
-
-  private String get_group_list() {
-    StringBuilder sb = new StringBuilder();
-    boolean first = true;
-    for(Group group : Config.current.groups) {
-      if (first) {
-        first = false;
-      } else {
-        sb.append(",");
-      }
-      sb.append(group.name);
-    }
-    return sb.toString();
+    return new String[] {group.getCameraList()};
   }
 }

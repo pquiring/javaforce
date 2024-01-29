@@ -233,7 +233,8 @@ public class Viewer {
       if (type.equals("camera")) {
         start_camera();
       } else {
-        rtsp.get_parameter(url.toString(), "action: query;");
+        //type = group : list cameras
+        rtsp.get_parameter(url.toString(), new String[] {"action: query"});
       }
 
       long now = System.currentTimeMillis();

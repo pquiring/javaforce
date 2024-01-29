@@ -257,6 +257,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
     sess.remoteport = remoteport;
     sess.cmd = cmd;
     StringBuilder req = new StringBuilder();
+    StringBuilder post = new StringBuilder();
     req.append(cmd + " " + sess.uri + sess.extra + " RTSP/1.0\r\n");
     req.append("Cseq: " + sess.cseq++ + "\r\n");
     req.append("User-Agent: " + useragent + "\r\n");
@@ -273,12 +274,16 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
       req.append("Session: " + sess.id + "\r\n");
     }
     if (sess.params != null) {
+      for(String param : sess.params) {
+        post.append(param);
+        post.append("\r\n");
+      }
       req.append("Content-Type: text/parameters\r\n");
-      req.append("Content-Length: " + sess.params.length() + "\r\n");
+      req.append("Content-Length: " + post.length() + "\r\n");
     }
     req.append("\r\n");
     if (sess.params != null) {
-      req.append(sess.params);
+      req.append(post);
     }
     return send(remoteaddr, remoteport, req.toString());
   }
@@ -346,7 +351,7 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
   /**
    * GET_PARAMETER (RTSP) Used as a keepalive.
    */
-  public boolean get_parameter(String url, String params) {
+  public boolean get_parameter(String url, String[] params) {
     sess.uri = RTSPURL.cleanURL(url);
     sess.extra = "/";
     sess.params = params;
