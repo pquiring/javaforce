@@ -538,7 +538,7 @@ public class Buffer {
           connecting = false;
           input("" + ESC + "[2J");  //clrscr
           //keep reading in until it's disconnected
-          byte buf[] = new byte[1024];
+          byte[] buf = new byte[1024];
           int buflen;
           while (connected) {
             buflen = in.read(buf);
@@ -630,20 +630,20 @@ public class Buffer {
   private boolean connectCom() {
     try {
       if (!settings.hasComm) throw new Exception("no com support");
-      String f[] = settings.host.split(",");  //com1,56000
+      String[] f = settings.host.split(",");  //com1,56000
       if (JF.isWindows()) {
         wincom = WinCom.open(f[0], JF.atoi(f[1]));
         if (wincom == null) return false;
         in = new InputStream() {
           public int read() throws IOException {
-            byte data[] = new byte[1];
+            byte[] data = new byte[1];
             int read = 0;
             do {
               read = wincom.read(data);
             } while (read != 1);
             return data[0];
           }
-          public int read(byte buf[]) throws IOException {
+          public int read(byte[] buf) throws IOException {
             int read;
             do {
               read = wincom.read(buf);
@@ -655,7 +655,7 @@ public class Buffer {
           public void write(int b) throws IOException {
             wincom.write(new byte[] {(byte)b});
           }
-          public void write(byte buf[]) throws IOException {
+          public void write(byte[] buf) throws IOException {
             wincom.write(buf);
           }
         };
@@ -664,14 +664,14 @@ public class Buffer {
         if (lnxcom == null) return false;
         in = new InputStream() {
           public int read() throws IOException {
-            byte data[] = new byte[1];
+            byte[] data = new byte[1];
             int read;
             do {
               read = lnxcom.read(data);
             } while (read <= 0);
             return data[0];
           }
-          public int read(byte buf[]) throws IOException {
+          public int read(byte[] buf) throws IOException {
             int read;
             do {
               read = lnxcom.read(buf);
@@ -683,7 +683,7 @@ public class Buffer {
           public void write(int b) throws IOException {
             lnxcom.write(new byte[] {(byte)b});
           }
-          public void write(byte buf[]) throws IOException {
+          public void write(byte[] buf) throws IOException {
             lnxcom.write(buf);
           }
         };
@@ -703,13 +703,13 @@ public class Buffer {
       if (pty == null) throw new Exception("pty failed");
       in = new InputStream() {
         public int read() {return -1;}
-        public int read(byte buf[]) {
+        public int read(byte[] buf) {
           return pty.read(buf);
         }
       };
       out = new OutputStream() {
         public void write(int x) {};
-        public void write(byte buf[]) {
+        public void write(byte[] buf) {
           pty.write(buf);
         }
       };

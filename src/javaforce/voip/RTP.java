@@ -29,7 +29,7 @@ public class RTP implements STUN.Listener {
   protected static boolean useTURN = false;
   protected static String turnHost, turnIP, turnUser, turnPass;
   protected STUN stun1, stun2;
-  protected byte turnToken[];
+  protected byte[] turnToken;
   protected long turnAllocExpires;
 
   public Object userobj;  //free to use
@@ -98,7 +98,7 @@ public class RTP implements STUN.Listener {
 
   //public interface STUN.Listener
   public void stunPublicIP(STUN stun, String ip, int port) {}
-  public void turnAlloc(STUN stun, String ip, int port, byte token[], int lifetime) {
+  public void turnAlloc(STUN stun, String ip, int port, byte[] token, int lifetime) {
     turnToken = token;
     turnSuccess = true;
     turnIP = ip;  //static - should be the same for all allocations
@@ -116,7 +116,7 @@ public class RTP implements STUN.Listener {
   public void turnFailed(STUN stun) {
     turnFailed = true;
   }
-  public void turnData(STUN stun, byte data[], int offset, int length, short turnChannel) {
+  public void turnData(STUN stun, byte[] data, int offset, int length, short turnChannel) {
     RTPChannel channel = findChannel(turnChannel);
     if (channel == null) return;
     if (stun == stun1) {

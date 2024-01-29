@@ -97,7 +97,7 @@ public class Media extends Container {
   public void seek(double time) {
     sendEvent("media_seek", new String[] {"time=" + String.format("%.3f", time)});
   }
-  public void onEvent(String event, String args[]) {
+  public void onEvent(String event, String[] args) {
     switch (event) {
       case "onplay": onplay(); break;
       case "onpause": onpause(); break;

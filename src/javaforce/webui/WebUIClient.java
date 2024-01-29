@@ -62,7 +62,7 @@ public class WebUIClient {
     root.setClient(this);
     root.init();
   }
-  public void dispatchEvent(String id, String event, String args[]) {
+  public void dispatchEvent(String id, String event, String[] args) {
     if (id.length() == 0 || id.equals("body")) {
       switch (event) {
         case "load":

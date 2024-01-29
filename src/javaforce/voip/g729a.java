@@ -28,10 +28,10 @@ public class g729a implements Coder {
     this.rtp = rtp;
   }
 
-  private byte encoded[] = new byte[20 + 12];  //((160 / 80) * 10) + 12
+  private byte[] encoded = new byte[20 + 12];  //((160 / 80) * 10) + 12
 
   //samples must be 160 samples
-  public byte[] encode(short samples[]) {
+  public byte[] encode(short[] samples) {
     RTPChannel rtpChannel = rtp.getDefaultChannel();
     RTPChannel.buildHeader(encoded, 18, rtpChannel.getseqnum(), rtpChannel.gettimestamp(160), rtpChannel.getssrc(), false);
     encoder.encode(encoded, 12, samples, 0, 160 / 80);  //output, outputOffset, input, inputOffset, # 80 samples packets (2)
@@ -40,10 +40,10 @@ public class g729a implements Coder {
 
   private int decode_timestamp;
 
-  private short decoded[] = new short[160];
+  private short[] decoded = new short[160];
 
   //encoded must be 20+12 bytes at least
-  public short[] decode(byte encoded[], int off) {
+  public short[] decode(byte[] encoded, int off) {
     int decode_timestamp = BE.getuint32(encoded, off + 4);
     if (this.decode_timestamp == 0) {
       this.decode_timestamp = decode_timestamp;

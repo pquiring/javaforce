@@ -251,7 +251,7 @@ public class SDP implements Cloneable {
       if (stream.keyExchange == KeyExchange.SDP && stream.keys != null) {
         for(int c=0;c<stream.keys.length;c++) {
           Key keys = stream.keys[c];
-          byte key_salt[] = new byte[16 + 14];
+          byte[] key_salt = new byte[16 + 14];
           System.arraycopy(keys.key, 0, key_salt, 0, 16);
           System.arraycopy(keys.salt, 0, key_salt, 16, 14);
           String keystr = new String(javaforce.Base64.encode(key_salt));

@@ -13,7 +13,7 @@ import javaforce.*;
 
 public class GenMSI {
   private BuildTools tools;
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length != 1) {
       System.out.println("Usage:GenMSI build.xml");
       System.exit(1);

@@ -32,8 +32,8 @@ public class FileDialog implements Dialog {
   private boolean load;
   private String filename;
   private static String path;
-  private String files[];
-  private Field fields[];
+  private String[] files;
+  private Field[] fields;
   private TextField file;
   private int pathx, pathy;
   private List list;

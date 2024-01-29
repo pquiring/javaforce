@@ -26,7 +26,7 @@ public class Object3 implements Cloneable {
   public HashMap<Integer, Scale3> sl;  //scale list
   public int frameIndex;
   public Matrix m;  //current rotation, translation, scale
-  public float color[];  //RGBA (default = 1.0f,1.0f,1.0f,1.0f)
+  public float[] color;  //RGBA (default = 1.0f,1.0f,1.0f,1.0f)
   public Vertex3 org;  //origin (default = 0.0f,0.0f,0.0f)
   public String name;
   public int parent;  //a 3ds file field (not used)
@@ -111,14 +111,14 @@ public class Object3 implements Cloneable {
   public int frameCount() {
     return maxframeCount;
   }
-  public void addVertex(float xyz[]) {
+  public void addVertex(float[] xyz) {
     vpl.append(xyz);
   }
-  public void addVertex(float xyz[], float uv[]) {
+  public void addVertex(float[] xyz, float[] uv) {
     vpl.append(xyz);
     maps.get(0).uvl.append(uv);
   }
-  public void addVertex(float xyz[], float uv1[], float uv2[]) {
+  public void addVertex(float[] xyz, float[] uv1, float[] uv2) {
     vpl.append(xyz);
     maps.get(0).uvl.append(uv1);
     maps.get(1).uvl.append(uv2);
@@ -134,17 +134,17 @@ public class Object3 implements Cloneable {
   public int getVertexCount() {
     return vpl.size() / 3;
   }
-  public void addText(float uv[]) {
+  public void addText(float[] uv) {
     maps.get(0).addText(uv);
   }
-  public void addText(float uv[], int map) {
+  public void addText(float[] uv, int map) {
     maps.get(map).addText(uv);
   }
-  public void addPoly(int pts[]) {
+  public void addPoly(int[] pts) {
     vil.append(pts);
   }
   public void copyBuffers() {
-    int ids[] = new int[1];
+    int[] ids = new int[1];
 
     if (vpb == -1) {
       glGenBuffers(1, ids);
@@ -242,12 +242,12 @@ public class Object3 implements Cloneable {
   public void print(Model model) {
     System.out.println("Object:" + name);
     //print vertex data
-    float vp[] = vpl.toArray();
+    float[] vp = vpl.toArray();
     for(int a=0;a<vp.length;) {
       System.out.println(String.format("v[%d]=%6.3f,%6.3f,%6.3f", a/3, vp[a++], vp[a++], vp[a++]));
     }
     //print poly data
-    int vi[] = vil.toArray();
+    int[] vi = vil.toArray();
     for(int a=0;a<vi.length;) {
       switch (type) {
         case GL_TRIANGLES:
@@ -262,7 +262,7 @@ public class Object3 implements Cloneable {
     for(int m=0;m<maps.size();m++) {
       UVMap map = maps.get(m);
       System.out.println("UVMap:" + map.name + ",texture=" + model.textures.get(map.textureIndex));
-      float uv[] = map.uvl.toArray();
+      float[] uv = map.uvl.toArray();
       for(int a=0;a<uv.length;) {
         System.out.println(String.format("uv[%d]=%6.3f,%6.3f", a/2, uv[a++], uv[a++]));
       }

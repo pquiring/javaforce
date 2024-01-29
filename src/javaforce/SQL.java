@@ -75,8 +75,8 @@ public class SQL {
 
   /** Returns str with quotes around it (and replaces any pre-existing quotes with spaces). */
   public static String quote(String str) {
-    char strca[] = str.toCharArray();
-    char strca2[] = new char[strca.length+2];
+    char[] strca = str.toCharArray();
+    char[] strca2 = new char[strca.length+2];
     for(int a=0;a<strca.length;a++) {
       switch (strca[a]) {
         case '"':

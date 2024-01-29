@@ -84,7 +84,7 @@ public class Offscreen {
 
     glBindFramebuffer(GL_FRAMEBUFFER, os_fb);
 
-    int ids[] = {os_clr_rb, os_depth_rb};
+    int[] ids = {os_clr_rb, os_depth_rb};
     glDeleteRenderbuffers(2, ids);
     createBuffers(width, height);
   }

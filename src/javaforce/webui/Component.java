@@ -494,7 +494,7 @@ public abstract class Component {
   //event handlers
 
   /** Dispatches event. */
-  public void dispatchEvent(String event, String args[]) {
+  public void dispatchEvent(String event, String[] args) {
     MouseEvent me = new MouseEvent();
     KeyEvent ke = new KeyEvent();
     if (args != null) {

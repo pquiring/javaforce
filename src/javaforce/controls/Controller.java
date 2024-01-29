@@ -282,7 +282,7 @@ public class Controller {
    *
    * datatype is required for AB controllers.
    */
-  public boolean write(String addr, byte data[], datatype type) {
+  public boolean write(String addr, byte[] data, datatype type) {
     addr = addr.toUpperCase();
     synchronized(lock) {
       if (!connected) return false;
@@ -327,14 +327,14 @@ public class Controller {
         case ControllerType.MB: {
           ModAddr ma = ModPacket.decodeAddress(addr);
           ma.data = data;
-          byte packet[] = ModPacket.makeWritePacket(ma);
+          byte[] packet = ModPacket.makeWritePacket(ma);
           try {
             os.write(packet);
           } catch (Exception e) {
             lastException = e;
             return false;
           }
-          byte reply[] = new byte[1500];
+          byte[] reply = new byte[1500];
           int replySize = 0;
           try {
             do {
@@ -350,14 +350,14 @@ public class Controller {
         }
         case ControllerType.AB: {
           if (type == datatype.ANY) return false;
-          byte packet[] = ABPacket.makeWritePacket(addr, ABPacket.getType(type), data, ab_context);
+          byte[] packet = ABPacket.makeWritePacket(addr, ABPacket.getType(type), data, ab_context);
           try {
             os.write(packet);
           } catch (Exception e) {
             lastException = e;
             return false;
           }
-          byte reply[] = new byte[1500];
+          byte[] reply = new byte[1500];
           int replySize = 0;
           try {
             do {
@@ -374,7 +374,7 @@ public class Controller {
         case ControllerType.JF: {
           JFTag tag = JFPacket.decodeAddress(addr);
           tag.data = data;
-          byte packet[] = JFPacket.makeWritePacket(tag, data);
+          byte[] packet = JFPacket.makeWritePacket(tag, data);
           try {
             os.write(packet);
           } catch (Exception e) {
@@ -397,14 +397,14 @@ public class Controller {
   }
 
   private byte[] readPartial(S7Data s7) {
-    byte packet[] = S7Packet.makeReadPacket(s7);
+    byte[] packet = S7Packet.makeReadPacket(s7);
     try {
       os.write(packet);
     } catch (Exception e) {
       lastException = e;
       return null;
     }
-    byte reply[] = new byte[1500];
+    byte[] reply = new byte[1500];
     int replySize = 0;
     try {
       do {

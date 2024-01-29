@@ -10,7 +10,7 @@ public class Angles3 {
   public enum Order {
     XYZ, YXZ, ZXY, ZYX, YZX, XZY
   };
-  public float v[] = new float[3];
+  public float[] v = new float[3];
 
   public Angles3() {
   }

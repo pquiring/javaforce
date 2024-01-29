@@ -70,9 +70,9 @@ public class DHCPServer extends Thread {
     public int mask_int;  //subnet mask (as int)
     public int host_mask_int;  //inverse subnet mask (host bits)
     public int count = 0;  //# of IPs in pool
-    public long pool_time[];  //timestamp of issue (0=not in use)
-    public int pool_hwlen[];  //hwaddr len of client
-    public byte pool_hwaddr[][];  //hwaddr of client
+    public long[] pool_time;  //timestamp of issue (0=not in use)
+    public int[] pool_hwlen;  //hwaddr len of client
+    public byte[][] pool_hwaddr;  //hwaddr of client
     public int next = 0;  //offset
     public String router;
     public String dns;
@@ -165,7 +165,7 @@ public class DHCPServer extends Thread {
       try {
         host.ds = new DatagramSocket(host.port, Inet4Address.getByName(host.ip));
         while (true) {
-          byte data[] = new byte[maxmtu];
+          byte[] data = new byte[maxmtu];
           DatagramPacket packet = new DatagramPacket(data, maxmtu);
           host.ds.receive(packet);
           new RequestWorker(packet, host).start();

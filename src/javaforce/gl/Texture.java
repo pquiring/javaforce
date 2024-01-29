@@ -49,7 +49,7 @@ public class Texture {
     return image.getHeight();
   }
 
-  public void set(int pixels[], int x, int y) {
+  public void set(int[] pixels, int x, int y) {
     image.setSize(x,y);
     image.putPixels(pixels, 0, 0, x, y, 0);
   }

@@ -15,7 +15,7 @@ public interface RTPInterface {
    * @param off = offset into data where packet starts
    * @param len = length of packet
    */
-  public void rtpPacket(RTPChannel rtp, int codecType, byte data[], int off, int len);
+  public void rtpPacket(RTPChannel rtp, int codecType, byte[] data, int off, int len);
 
   /**
    * Triggered when new voice RTP data has arrived and been decoded.

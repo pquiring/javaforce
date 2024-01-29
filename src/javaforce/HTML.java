@@ -110,7 +110,7 @@ public class HTML {
   /** Generate html.form.select.
    * Invokes select() with show_default = true
    */
-  public static String select(String name, String id, String options[][], String selected_value, String selected_text) {
+  public static String select(String name, String id, String[][] options, String selected_value, String selected_text) {
     return select(name, id, options, selected_value, selected_text, true);
   }
   /** Generate HTML stack trace of exception.

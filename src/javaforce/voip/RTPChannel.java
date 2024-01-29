@@ -383,7 +383,7 @@ public class RTPChannel {
     return true;
   }
 
-  protected void processRTP(byte data[], int off, int len) {
+  protected void processRTP(byte[] data, int off, int len) {
     lastPacket = RTP.now;
     if (rtp.rawMode) {
       rtp.iface.rtpPacket(this, CodecType.RAW, data, off, len);

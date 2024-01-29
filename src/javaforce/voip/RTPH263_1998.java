@@ -32,7 +32,7 @@ public class RTPH263_1998 extends RTPCodec {
     packet.data = new byte[maxSize];
   }
 
-  private int find_best_length(byte data[], int offset, int length) {
+  private int find_best_length(byte[] data, int offset, int length) {
     //see if there is a 0,0,x and return a length to that
     //this way the next packet will start at a resync point
     for(int a=1;a<length-3;a++) {
@@ -42,7 +42,7 @@ public class RTPH263_1998 extends RTPCodec {
   }
 
   /** Encodes raw H.263 data into multiple RTP packets. */
-  public void encode(byte data[], int x, int y, int id, PacketReceiver pr) {
+  public void encode(byte[] data, int x, int y, int id, PacketReceiver pr) {
     int len = data.length;
     int packetLength;
     int offset = 0;
@@ -77,7 +77,7 @@ public class RTPH263_1998 extends RTPCodec {
    * Returns last full packet.
    */
 //  public byte[] decode(byte rtp[]) {
-  public void decode(byte rtp[], int offset, int length, PacketReceiver pr) {
+  public void decode(byte[] rtp, int offset, int length, PacketReceiver pr) {
     if (rtp.length < 12 + 2) return;  //bad packet
     int h263Length = rtp.length - 12 - 2;
     boolean P = (rtp[12] & 0x04) == 0x04;

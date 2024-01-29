@@ -163,6 +163,7 @@ public class FormatSource {
     }
   }
   public void doFolder(String folder) {
+    System.out.println("doFolder:" + folder);
     File[] files = new File(folder).listFiles();
     for(File file : files) {
       if (file.isDirectory()) {

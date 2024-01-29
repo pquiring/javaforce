@@ -22,7 +22,7 @@ public class LnxPty {
   }
 
   /** Spawns cmd with args and env (both must be null terminated arrays) and returns new pty. */
-  public static LnxPty exec(String cmd, String args[], String env[]) {
+  public static LnxPty exec(String cmd, String[] args, String[] env) {
     LnxPty pty = new LnxPty();
     if (!pty.fork(cmd, args, env)) return null;
     return pty;

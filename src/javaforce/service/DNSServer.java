@@ -638,14 +638,14 @@ public class DNSServer extends Thread {
     }
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
   }
 
   //Win32 Service
 
   private static DNSServer dns;
 
-  public static void serviceStart(String args[]) {
+  public static void serviceStart(String[] args) {
     if (JF.isWindows()) {
       busServer = new JBusServer(getBusPort());
       busServer.start();

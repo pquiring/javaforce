@@ -319,7 +319,7 @@ public class JFAWT {
    * @param filters[][] = new String[][] { {"desc", "txt"}, ...};
    * @return
    */
-  public static String getOpenFile(String path, String filters[][]) {
+  public static String getOpenFile(String path, String[][] filters) {
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setMultiSelectionEnabled(false);
@@ -348,7 +348,7 @@ public class JFAWT {
    * @param filters[][] = new String[][] { {"desc", "txt"}, ...};
    * @return
    */
-  public static String getSaveFile(String file, String filters[][]) {
+  public static String getSaveFile(String file, String[][] filters) {
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setMultiSelectionEnabled(false);
@@ -378,7 +378,7 @@ public class JFAWT {
    * @param filters[][] = new String[][] { {"desc", "txt"}, ...};
    * @return
    */
-  public static String getSaveAsFile(String path, String filters[][]) {
+  public static String getSaveAsFile(String path, String[][] filters) {
     JFileChooser chooser = new JFileChooser();
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setMultiSelectionEnabled(false);

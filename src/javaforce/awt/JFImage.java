@@ -200,7 +200,7 @@ public class JFImage extends JComponent implements Icon {
     }
     int x = tmp.getWidth();
     int y = tmp.getHeight();
-    int px[] = tmp.getRGB(0, 0, x, y, null, 0, x);  //tmp may not be int[] buffer
+    int[] px = tmp.getRGB(0, 0, x, y, null, 0, x);  //tmp may not be int[] buffer
     setImageSize(x, y);
     putPixels(px, 0, 0, x, y, 0);
     return true;
@@ -293,7 +293,7 @@ public class JFImage extends JComponent implements Icon {
     try {
       int w = bi.getWidth();
       int h = bi.getHeight();
-      int px[] = new int[w * h];
+      int[] px = new int[w * h];
       BufferedImage tmp = new BufferedImage(bi.getWidth(),bi.getHeight(),BufferedImage.TYPE_3BYTE_BGR);
       bi.getRGB(0,0,w,h,px,0,w);
       tmp.setRGB(0,0,w,h,px,0,w);
@@ -365,7 +365,7 @@ public class JFImage extends JComponent implements Icon {
   }
 
   public boolean loadBMP(InputStream in, int index) {
-    int buf[];
+    int[] buf;
     javaforce.ui.Dimension size = new javaforce.ui.Dimension(0, 0);
     buf = bmp.load(in, size, index);
     try {in.close();} catch (Exception e) {e.printStackTrace();}
@@ -383,7 +383,7 @@ public class JFImage extends JComponent implements Icon {
   }
 
   public boolean saveBMP(OutputStream out) {
-    int pixels[];
+    int[] pixels;
     pixels = getPixels(0, 0, getWidth(), getHeight());
     javaforce.ui.Dimension size = new javaforce.ui.Dimension(getWidth(), getHeight());
     return bmp.save24(out, pixels, size, false, false);
@@ -400,7 +400,7 @@ public class JFImage extends JComponent implements Icon {
   }
 
   public boolean saveICO(OutputStream out) {
-    int pixels[];
+    int[] pixels;
     pixels = getPixels(0, 0, getWidth(), getHeight());
     javaforce.ui.Dimension size = new javaforce.ui.Dimension(getWidth(), getHeight());
     return bmp.save32(out, pixels, size, false, true);
@@ -1270,7 +1270,7 @@ public class JFImage extends JComponent implements Icon {
   }
 
   /** Puts color Layer (RGB) : (pixels OR bits) */
-  public void putLayer(int px[], int bits) {
+  public void putLayer(int[] px, int bits) {
     if (px.length != buffer.length) return;
     int mask = 0xffffffff - bits;
     for(int a=0;a<px.length;a++) {
