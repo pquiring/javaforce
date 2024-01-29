@@ -45,7 +45,7 @@ public class CallDetails implements Cloneable {
   public String callid;
   /** URI is what this call leg is about. */
   public String uri;
-  /** sdp content to be added to outbound packets */
+  /** sdp content to be added to outbound packets (TODO : convert to String[]) */
   public String sdp;
   /** Authorization string */
   public String authstr;

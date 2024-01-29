@@ -280,7 +280,7 @@ public class RTSPServer extends RTSP implements RTSPInterface, STUN.Listener {
               break;
             case "GET_PARAMETER":
               if (!sess.auth) break;
-              iface.onGetParameter(this, sess, getContent(msg));
+              iface.onGetParameter(this, sess, HTTP.getContent(msg));
               break;
           }
           break;

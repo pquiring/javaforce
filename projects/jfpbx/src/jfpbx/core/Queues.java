@@ -295,7 +295,7 @@ public class Queues implements Plugin, DialChain, PBXEventHandler {
 
   public void onFeature(CallDetailsPBX cd, String cmd, String cmddata, boolean src) {
   }
-  public boolean onMessage(CallDetailsPBX cd, String from, String to, String msg, boolean src) {
+  public boolean onMessage(CallDetailsPBX cd, String from, String to, String[] msg, boolean src) {
     return false;
   }
 

@@ -21,5 +21,5 @@ public interface GUI {
   public void updateRecentList();
   public String getLineStatus();
   public void doConfig();
-  public void chatAdd(String from, String msg);
+  public void chatAdd(String from, String[] msg);
 }

@@ -952,7 +952,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             reply(cd, cmd, 200, "OK", false, false);
             String event = getHeader("Event:", msg);
             if (event == null) event = getHeader("o:", msg);
-            iface.onNotify(this, callid, event, getContent(msg));
+            iface.onNotify(this, callid, event, HTTP.getContent(msg));
             break;
           }
           if (req.equals("ACK")) {
@@ -967,7 +967,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
             break;
           }
           if (req.equals("MESSAGE")) {
-            iface.onMessage(this, callid, cd.dst.from[0], cd.dst.from[1], getContent(msg));
+            iface.onMessage(this, callid, cd.dst.from[0], cd.dst.from[1], HTTP.getContent(msg));
             reply(cd, "MESSAGE", 200, "OK", false, false);
             break;
           }

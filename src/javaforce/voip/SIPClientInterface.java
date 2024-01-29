@@ -51,7 +51,7 @@ public interface SIPClientInterface {
   /**
    * Server send notify command. (event="message-summary" or "presence")
    */
-  public void onNotify(SIPClient client, String callid, String event, String content);
+  public void onNotify(SIPClient client, String callid, String event, String[] content);
 
   /**
    * Ack message (may contain SDP data)
@@ -61,5 +61,5 @@ public interface SIPClientInterface {
   /**
    * Instant message received.
    */
-  public void onMessage(SIPClient client, String callid, String fromid, String fromnumber, String msg);
+  public void onMessage(SIPClient client, String callid, String fromid, String fromnumber, String[] msg);
 }

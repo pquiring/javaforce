@@ -297,10 +297,10 @@ public class Service implements SIPServerInterface, PBXAPI {
       }
     }
   }
-  public void onMessage(CallDetailsServer cd, String from, String to, String msg, boolean src) {
+  public void onMessage(CallDetailsServer cd, String from, String to, String[] msg, boolean src) {
     onMessage(cd, from, to, msg, src, cd.pid);
   }
-  public void onMessage(CallDetailsServer cd, String from, String to, String msg, boolean src, int pid) {
+  public void onMessage(CallDetailsServer cd, String from, String to, String[] msg, boolean src, int pid) {
     DialChain chain;
     for(int a=0;a<dialChainList.size();a++) {
       chain = dialChainList.get(a);

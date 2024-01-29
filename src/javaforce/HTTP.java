@@ -570,4 +570,21 @@ public class HTTP {
     }
     return "";
   }
+
+  /**
+   * Get Content from a HTTP message.
+   */
+  public static String[] getContent(String[] msg) {
+    ArrayList<String> content = new ArrayList<String>();
+    for (int a = 0; a < msg.length; a++) {
+      //look for double \r\n (which appears as an empty line) that marks end of headers
+      if (msg[a].length() == 0) {
+        for (int b = a + 1; b < msg.length; b++) {
+          content.add(msg[b]);
+        }
+        break;
+      }
+    }
+    return content.toArray(new String[0]);
+  }
 }

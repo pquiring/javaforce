@@ -1368,12 +1368,11 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
 
   /** SIPClientInterface.onNotify() : processes SIP:NOTIFY messages. */
 
-  public void onNotify(SIPClient sip, String callid, String event, String content) {
+  public void onNotify(SIPClient sip, String callid, String event, String[] msg) {
     JFLog.log("onNotify:event=" + event);
-    String contentLines[] = content.split("\r\n");
     event = event.toLowerCase();
     if (event.equals("message-summary")) {
-      String msgwait = SIP.getHeader("Messages-Waiting:", contentLines);
+      String msgwait = SIP.getHeader("Messages-Waiting:", msg);
       if (msgwait != null) {
         for(int a=0;a<6;a++) {
           PhoneLine pl = lines[a];
@@ -1386,9 +1385,9 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
       return;
     }
     if (event.equals("presence")) {
+      String content = String.join("", msg);
       JFLog.log("note:Presence:" + content);
       if (!content.startsWith("<?xml")) {JFLog.log("Not valid presence data (1)"); return;}
-      content = content.replaceAll("\r", "").replaceAll("\n", "");
       XML xml = new XML();
       ByteArrayInputStream bais = new ByteArrayInputStream(content.getBytes());
       if (!xml.read(bais)) {JFLog.log("Not valid presence data (2)"); return;}
@@ -1411,7 +1410,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
         }
       }
       if (notifyLine == -1) {JFLog.log("Received NOTIFY:REFER that doesn't match any lines"); return;}
-      parts = content.split(" ");  //SIP/2.0 code desc
+      parts = msg[0].split(" ");  //SIP/2.0 code desc
       int code = JF.atoi(parts[1]);
       switch (code) {
         case 100:  //trying (not used by Asterisk)
@@ -1455,7 +1454,7 @@ public abstract class BasePhone extends javax.swing.JPanel implements SIPClientI
 
   /** SIPClientInterface.onMessage() : triggered when server sends a message. */
 
-  public void onMessage(SIPClient client, String callid, String fromid, String fromnumber, String msg) {
+  public void onMessage(SIPClient client, String callid, String fromid, String fromnumber, String[] msg) {
     gui.chatAdd(fromnumber, msg);
   }
 

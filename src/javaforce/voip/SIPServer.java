@@ -432,7 +432,7 @@ public class SIPServer extends SIP implements SIPInterface {
               break;
             }
             if (cmd.equalsIgnoreCase("MESSAGE")) {
-              iface.onMessage(cd, cdsd.from[1], cdsd.to[1], getContent(msg), src);
+              iface.onMessage(cd, cdsd.from[1], cdsd.to[1], HTTP.getContent(msg), src);
               break;
             }
             JFLog.log("Unknown command:" + cmd);

@@ -156,7 +156,7 @@ public class Extensions implements Plugin, DialChain {
   }
   public void onFeature(CallDetailsPBX cd, String cmd, String cmddata, boolean src) {
   }
-  public boolean onMessage(CallDetailsPBX cd, String from, String to, String msg, boolean src) {
+  public boolean onMessage(CallDetailsPBX cd, String from, String to, String[] msg, boolean src) {
     //dial inbound to an extension
     ExtensionRow ext = Database.getExtension(to);
     if (ext == null) {
@@ -185,7 +185,7 @@ public class Extensions implements Plugin, DialChain {
     cd.pbxdst.host = x.remoteip;
     cd.pbxdst.port = x.remoteport;
     cd.uri = "sip:" + to + "@" + cd.pbxdst.host + ":" + cd.pbxdst.port;
-    cd.sdp = msg;
+    cd.sdp = String.join("\r\n", msg) + "\r\n";
     api.issue(cd, null, true, false);
     api.log(cd, "DEBUG:MESSAGE:" + to + ":dst=" + cd.pbxdst.host + ":" + cd.pbxdst.port);
     return true;

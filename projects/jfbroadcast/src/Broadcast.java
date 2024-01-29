@@ -3030,13 +3030,13 @@ JFLog.log("connected : number=" + lines[a].number);
     }
   }
 
-  public void onNotify(SIPClient sip, String callid, String event, String content) {
+  public void onNotify(SIPClient sip, String callid, String event, String[] content) {
   }
 
   public void onAck(SIPClient sip, String callid, SDP sdp) {
   }
 
-  public void onMessage(SIPClient sip, String callid, String msg, String x1, String x2) {
+  public void onMessage(SIPClient sip, String callid, String from, String to, String[] msg) {
   }
 
   //RTPInterface

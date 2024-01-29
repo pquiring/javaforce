@@ -48,5 +48,5 @@ public interface SIPServerInterface {
   public void onFeature(CallDetailsServer cd, String cmd, String data, boolean src);
 
   /** Client issues an instant message. */
-  public void onMessage(CallDetailsServer cd, String from, String to, String msg, boolean src);
+  public void onMessage(CallDetailsServer cd, String from, String to, String[] msg, boolean src);
 }

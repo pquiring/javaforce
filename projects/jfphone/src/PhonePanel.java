@@ -1622,7 +1622,7 @@ Line Colors:
     if (msg == null) return;
     PhoneLine xline = lines[line];
     xline.sip.message(fields[1], msg);
-    chatAdd(xline.user, msg);
+    chatAdd(xline.user, msg.split("\r\n"));
   }
 
   public void sendMessageInCall() {
@@ -1632,7 +1632,7 @@ Line Colors:
     String msg = JFAWT.getString("Enter Message for:" + xline.to, "");
     if (msg == null) return;
     xline.sip.message(xline.callid, xline.to, msg);
-    chatAdd(xline.user, msg);
+    chatAdd(xline.user, msg.split("\r\n"));
   }
 
   public void hld_setIcon(ImageIcon ii) {
@@ -1963,7 +1963,7 @@ Line Colors:
     chat.setText("");
   }
 
-  public void chatAdd(String from, String txt) {
-    chat.append("(" + from + "):" + txt + "\r\n");
+  public void chatAdd(String from, String[] msg) {
+    chat.append("(" + from + "):" + String.join("\r\n", msg) + "\r\n");
   }
 }

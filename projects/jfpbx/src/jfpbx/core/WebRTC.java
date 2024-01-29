@@ -345,13 +345,13 @@ public class WebRTC implements WebSocketHandler, SIPClientInterface {
   public void onRefer(SIPClient sip, String callid) {
   }
 
-  public void onNotify(SIPClient sip, String callid, String event, String msg) {
+  public void onNotify(SIPClient sip, String callid, String event, String[] msg) {
   }
 
   public void onAck(SIPClient sip, String callid, SDP sdp) {
   }
 
-  public void onMessage(SIPClient sip, String callid, String fromid, String fromnumber, String msg) {
+  public void onMessage(SIPClient sip, String callid, String fromid, String fromnumber, String[] msg) {
   }
 
   //http://tools.ietf.org/html/rfc5763 - Secure RTP (fingerprint)
