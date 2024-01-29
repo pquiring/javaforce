@@ -38,7 +38,7 @@ public class ANSI {
   private boolean telnet;
 
   public int numc;
-  public int nums[] = new int[16];
+  public int[] nums = new int[16];
 
   public char encodeChar(char ch) {
     if (!altfnt) {
@@ -52,8 +52,8 @@ public class ANSI {
     }
   }
 
-  public char[] encodeString(char buf[], int buflen) {
-    char ret[] = new char[buflen];
+  public char[] encodeString(char[] buf, int buflen) {
+    char[] ret = new char[buflen];
     for(int a=0;a<buflen;a++) ret[a] = encodeChar(buf[a]);
     return ret;
   }
@@ -135,7 +135,7 @@ public class ANSI {
     if (str != null) buffer.output(str.toCharArray());
   }
 
-  public boolean decode(char code[], int codelen, Buffer buffer) {
+  public boolean decode(char[] code, int codelen, Buffer buffer) {
     int x,y;
     x = buffer.getx();
     y = buffer.gety();
@@ -415,7 +415,7 @@ public class ANSI {
     }
     return true;
   }
-  private void decodeNums(char code[], int codelen, int start) {
+  private void decodeNums(char[] code, int codelen, int start) {
     //decode #s encoded into code[]
     int c=start,s,e,t,m;
     numc = 0;
@@ -451,7 +451,7 @@ public class ANSI {
     if (v1 > v2) return v1;
     return v2;
   }
-  private static char altfntchars[] = {
+  private static char[] altfntchars = {
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //0
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //16
     0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,  //32

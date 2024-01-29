@@ -21,7 +21,7 @@ public class DesktopCache implements monitordir.Listener {
   private static Vector<Desktop> desktops = new Vector<Desktop>();  //synchronized
 
   private static void buildCache(File folder) {
-    File files[] = folder.listFiles();
+    File[] files = folder.listFiles();
     for(int a=0;a<files.length;a++) {
       try {
         if (files[a].isDirectory()) {
@@ -31,9 +31,9 @@ public class DesktopCache implements monitordir.Listener {
         String file = files[a].getAbsolutePath();
         if (!file.endsWith(".desktop")) continue;
         FileInputStream fis = new FileInputStream(files[a]);
-        byte data[] = JF.readAll(fis);
+        byte[] data = JF.readAll(fis);
         String str = new String(data);
-        String lns[] = str.split("\n");
+        String[] lns = str.split("\n");
         String name = null, icon = null, type = null, exec = null;
         boolean desktopEntry = false;
         for(int b=0;b<lns.length;b++) {
@@ -100,7 +100,7 @@ public class DesktopCache implements monitordir.Listener {
     try {
       FileInputStream fis = new FileInputStream(file);
       //NOTE: fis.available() is ALWAYS zero
-      byte data[] = new byte[1024];
+      byte[] data = new byte[1024];
       int pos = 0;
       do {
         int read = fis.read(data, pos, 1024 - pos);
@@ -126,10 +126,10 @@ public class DesktopCache implements monitordir.Listener {
     try {
       String cmdline = readFile("/proc/" + pid + "/cmdline");
       if (cmdline == null) return null;
-      String args[] = cmdline.split(new String(new char[] {0}));
+      String[] args = cmdline.split(new String(new char[] {0}));
       String stat = readFile("/proc/" + pid + "/stat");
       if (stat == null) return null;
-      String stats[] = stat.split(" ");
+      String[] stats = stat.split(" ");
       int ppid = JF.atoi(stats[3]);
       String cmd = args[0];
       int idx = cmd.lastIndexOf('/');

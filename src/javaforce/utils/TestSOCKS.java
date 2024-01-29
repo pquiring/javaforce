@@ -11,7 +11,7 @@ import javaforce.JF;
 import javaforce.SOCKS;
 
 public class TestSOCKS {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length != 3) {
       System.out.println("Usage:TestSOCKS socks_server real_server real_port");
       return;

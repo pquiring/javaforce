@@ -206,7 +206,7 @@ public class Image extends FontComponent {
   public boolean saveICNS(OutputStream out) {
     //see http://en.wikipedia.org/wiki/Apple_Icon_Image_format
     //use one of the PNG formats
-    byte header[] = new byte[4*4];
+    byte[] header = new byte[4*4];
     //scale image to one of supported sizes
     int w = getWidth();
     int h = getHeight();

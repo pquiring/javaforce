@@ -27,7 +27,7 @@ public class ToggleButton extends TextComponent {
   private void setColor() {
     setBackColor(state ? clrOn : clrOff);
   }
-  public void onClick(String args[], MouseEvent me) {
+  public void onClick(String[] args, MouseEvent me) {
     state = !state;
     setColor();
     onChanged(args);

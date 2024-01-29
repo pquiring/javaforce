@@ -435,7 +435,7 @@ public class DHCPServer extends Thread {
 
   private boolean validIP4(String ip) {
     if (ip == null) return true;
-    String o[] = ip.split("[.]");
+    String[] o = ip.split("[.]");
     if (o.length != 4) return false;
     for(int a=0;a<4;a++) {
       int v = Integer.valueOf(o[a]);
@@ -447,7 +447,7 @@ public class DHCPServer extends Thread {
 
   private static int IP4toInt(String ip) {
     if (ip == null) return 0;
-    String o[] = ip.split("[.]");
+    String[] o = ip.split("[.]");
     int ret = 0;
     for(int a=0;a<4;a++) {
       ret <<= 8;
@@ -457,8 +457,8 @@ public class DHCPServer extends Thread {
   }
 
   private static byte[] IP4toByteArray(String ip) {
-    String o[] = ip.split("[.]");
-    byte ret[] = new byte[4];
+    String[] o = ip.split("[.]");
+    byte[] ret = new byte[4];
     for(int a=0;a<4;a++) {
       ret[a] = (byte)JF.atoi(o[a]);
     }
@@ -473,11 +473,11 @@ public class DHCPServer extends Thread {
     return String.format("%d.%d.%d.%d", ip >>> 24, (ip >> 16) & 0xff, (ip >> 8) & 0xff, ip & 0xff);
   }
 
-  private static String IP4toString(byte ip[]) {
+  private static String IP4toString(byte[] ip) {
     return IP4toString(BE.getuint32(ip, 0));
   }
 
-  public static String IP4toString(byte ip[], int offset) {
+  public static String IP4toString(byte[] ip, int offset) {
     return IP4toString(BE.getuint32(ip, offset));
   }
 
@@ -547,9 +547,9 @@ public class DHCPServer extends Thread {
     private DatagramPacket packet;
     private Host host;
 
-    private byte req[];
+    private byte[] req;
     private int reqOffset;
-    private byte reply[];
+    private byte[] reply;
     private int replyOffset;
 
     private Pool pool;
@@ -687,7 +687,7 @@ public class DHCPServer extends Thread {
                 }
                 if (pool.pool_time[i] == 0) {
                   //check with ping (Java 5 required)
-                  byte addr[] = IP4toByteArray(pool.pool_first_int + i);
+                  byte[] addr = IP4toByteArray(pool.pool_first_int + i);
                   Inet4Address inet = (Inet4Address)Inet4Address.getByAddress(addr);
                   if (inet.isReachable(1000)) {
                     //IP still in use!
@@ -729,7 +729,7 @@ public class DHCPServer extends Thread {
               break;
             }
             synchronized(pool.lock) {
-              byte addr[] = IP4toByteArray(pool.pool_first);
+              byte[] addr = IP4toByteArray(pool.pool_first);
               addr[3] += yipOffset;
               if (pool.pool_time[yipOffset] != 0) {
                 //check if hwaddr is the same
@@ -787,7 +787,7 @@ public class DHCPServer extends Thread {
       }
     }
 
-    private void sendReply(byte outData[], int outDataLength, int rip) {
+    private void sendReply(byte[] outData, int outDataLength, int rip) {
       try {
         DatagramPacket out = new DatagramPacket(outData, outDataLength);
         if (rip == 0)
@@ -810,7 +810,7 @@ public class DHCPServer extends Thread {
       return false;
     }
 
-    private void sendReply(byte yip[], int msgType /*offer,ack,nak*/, int id, Pool pool, int cip, int rip, byte[] req_list, byte[] client_id) {
+    private void sendReply(byte[] yip, int msgType /*offer,ack,nak*/, int id, Pool pool, int cip, int rip, byte[] req_list, byte[] client_id) {
       if (debug) JFLog.log("DHCP:ReplyFor:" + IP4toString(yip) + ":" + getMsgType(msgType));
       reply = new byte[maxmtu];
       replyOffset = 0;

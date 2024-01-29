@@ -217,8 +217,8 @@ public class STUNServer extends Thread {
     return md5.done();
   }
 
-  private byte[] calcMsgIntegrity(byte data[], int length) {
-    byte key[] = calcKey();
+  private byte[] calcMsgIntegrity(byte[] data, int length) {
+    byte[] key = calcKey();
     try {
       SecretKeySpec ks = new SecretKeySpec(key, "HmacSHA1");
       Mac mac = Mac.getInstance("HmacSHA1");
@@ -282,7 +282,7 @@ public class STUNServer extends Thread {
   private HashMap<String, Alloc> allocs = new HashMap<String, Alloc>();
   private Object allocsLock = new Object();
 
-  private void relayTurn(String ip, int port, byte data[], ByteBuffer bb) throws Exception {
+  private void relayTurn(String ip, int port, byte[] data, ByteBuffer bb) throws Exception {
     String id = ip + ":" + port;
     Alloc alloc = getAlloc(id);
     if (alloc == null) {JFLog.log("Unknown client:" + id); return;}
@@ -320,7 +320,7 @@ public class STUNServer extends Thread {
     return alloc;
   }
 
-  private char chars[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8' ,'9', 'a', 'b', 'c', 'd', 'e', 'f'};
+  private char[] chars = {'0', '1', '2', '3', '4', '5', '6', '7', '8' ,'9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
   private String nonceRandom() {
     Random r = new Random();
@@ -369,7 +369,7 @@ public class STUNServer extends Thread {
   private class Worker extends Thread {
     public void run() {
       DatagramPacket dp;
-      byte data[] = new byte[1500];
+      byte[] data = new byte[1500];
       ByteBuffer bb = ByteBuffer.wrap(data);
       bb.order(ByteOrder.BIG_ENDIAN);
       int change_request_flgs;
@@ -381,11 +381,11 @@ public class STUNServer extends Thread {
       int localip_int, localPort;
       boolean auth, evenPort, username;
       String resToken;
-      String f[];
+      String[] f;
       Alloc alloc;
       int relayip, relayport, channel;
       InetAddress relayaddr;
-      byte ip4[] = new byte[4];
+      byte[] ip4 = new byte[4];
 
       if (publicip != null) {
         localip = publicip;
@@ -497,8 +497,8 @@ public class STUNServer extends Thread {
                 if (!nonce.equals(alloc.nonce)) {alloc.log("nonce mismatch"); break;}
                 if (!username) {alloc.log("!username"); break;}
                 bb.putShort(lengthOffset, (short)(offset));  //patch length
-                byte correct[] = calcMsgIntegrity(data, offset - 4);
-                byte supplied[] = Arrays.copyOfRange(data, offset, offset+20);
+                byte[] correct = calcMsgIntegrity(data, offset - 4);
+                byte[] supplied = Arrays.copyOfRange(data, offset, offset+20);
                 auth = Arrays.equals(correct, supplied);
 //                logKey(correct);
 //                logKey(supplied);
@@ -717,7 +717,7 @@ public class STUNServer extends Thread {
     }
   }
 
-  private void logKey(byte key[]) {
+  private void logKey(byte[] key) {
     StringBuilder log = new StringBuilder();
     for(int a=0;a<key.length;a++) {
       int b = ((int)key[a]) & 0xff;
@@ -743,7 +743,7 @@ public class STUNServer extends Thread {
     }
   }
 
-  private void sendError(Alloc alloc, short code, long id1, long id2, InetAddress remoteAddr, int remotePort, byte data[], ByteBuffer bb) throws Exception {
+  private void sendError(Alloc alloc, short code, long id1, long id2, InetAddress remoteAddr, int remotePort, byte[] data, ByteBuffer bb) throws Exception {
     int offset, lengthOffset;
     alloc.nonce = nonceRandom();
     offset = 0;
@@ -798,7 +798,7 @@ public class STUNServer extends Thread {
     }
     public void run() {
       //read packets from relay socket and send to owner
-      byte data[] = new byte[mtu + 4];
+      byte[] data = new byte[mtu + 4];
       ByteBuffer bb = ByteBuffer.wrap(data);
       bb.order(ByteOrder.BIG_ENDIAN);
       bb.putShort(0, alloc.channel);
@@ -853,7 +853,7 @@ public class STUNServer extends Thread {
     }
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
   }
 
   public void run() {
@@ -869,7 +869,7 @@ public class STUNServer extends Thread {
 
   private static STUNServer stun;
 
-  public static void serviceStart(String args[]) {
+  public static void serviceStart(String[] args) {
     if (JF.isWindows()) {
       busServer = new JBusServer(getBusPort());
       busServer.start();

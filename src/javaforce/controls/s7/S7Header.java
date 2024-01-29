@@ -22,7 +22,7 @@ public class S7Header {
     }
     return 0;
   }
-  public void write(byte data[], int offset, short _param_length, short _data_length) {
+  public void write(byte[] data, int offset, short _param_length, short _data_length) {
     pdu_ref = 0x500;
     param_length = _param_length;
     data_length = _data_length;
@@ -33,7 +33,7 @@ public class S7Header {
     BE.setuint16(data, offset, param_length); offset += 2;
     BE.setuint16(data, offset, data_length); offset += 2;
   }
-  public void read(byte data[], int offset) throws Exception {
+  public void read(byte[] data, int offset) throws Exception {
     id = data[offset++];
     rosctr = data[offset++];
     res = (short)BE.getuint16(data, offset); offset += 2;

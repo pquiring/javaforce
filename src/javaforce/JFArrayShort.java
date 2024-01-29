@@ -10,7 +10,7 @@ package javaforce;
 import java.util.*;
 
 public class JFArrayShort {
-  private short buf[];
+  private short[] buf;
   private int count;
 
   public static int initSize = 64;
@@ -38,7 +38,7 @@ public class JFArrayShort {
     count = newcount;
   }
 
-  public void append(short s[]) {
+  public void append(short[] s) {
     int newcount = count + s.length;
     if (newcount > buf.length) {
       buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));

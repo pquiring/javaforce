@@ -65,7 +65,7 @@ public class RTPH265 extends RTPCodec {
    *
    * TODO : Use AP packets to increase efficiency.
    */
-  public void encode(byte data[], int x, int y, int id, PacketReceiver pr) {
+  public void encode(byte[] data, int x, int y, int id, PacketReceiver pr) {
     int len = data.length;
     int packetLength;
     int offset = 0;

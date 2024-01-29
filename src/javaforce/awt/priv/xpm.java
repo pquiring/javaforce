@@ -15,7 +15,7 @@ import javaforce.*;
 
 public class xpm {
   private int pos = 0;
-  private byte data[];
+  private byte[] data;
   private String getToken() throws Exception {
     String ret = "", remark = "";
     boolean quote = false, comment = false;
@@ -75,8 +75,8 @@ public class xpm {
     } while (true);
   };
 
-  private int px[];
-  private int clrs[];
+  private int[] px;
+  private int[] clrs;
 
   public int[] load(InputStream is, javaforce.ui.Dimension d) {
     try {
@@ -92,7 +92,7 @@ public class xpm {
       if (!getToken().equals("=")) throw new Exception("=");
       if (!getToken().equals("{")) throw new Exception("{");
       String values = getToken();
-      String f[] = values.split(" ");
+      String[] f = values.split(" ");
       int cols = Integer.valueOf(f[0]);
       int rows = Integer.valueOf(f[1]);
       int nclrs = Integer.valueOf(f[2]);

@@ -134,8 +134,8 @@ public class TransportTCPServer implements Transport {
         clients.remove(id);
       }
     }
-    private byte extra[] = null;
-    private int detectLength(byte data[], int off, int len) {
+    private byte[] extra = null;
+    private int detectLength(byte[] data, int off, int len) {
       for(int a=0;a<len-3;a++) {
         if (
           (data[off+a+0] == '\r') &&
@@ -157,7 +157,7 @@ public class TransportTCPServer implements Transport {
       }
       while (active) {
         try {
-          byte data[] = new byte[mtu];
+          byte[] data = new byte[mtu];
           Packet packet = new Packet();
           packet.data = data;
 

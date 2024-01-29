@@ -29,7 +29,7 @@ public class ModPacket {
 
   /** Creates a packet to read data from ModBus. */
   public static byte[] makeReadPacket(ModAddr addr) {
-    byte data[] = new byte[12];
+    byte[] data = new byte[12];
     BE.setuint16(data, 0, tid++);  //transaction id
 //    BE.setuint16(data, 2, 0);  //protocol
     BE.setuint16(data, 4, 6);  //length
@@ -52,7 +52,7 @@ public class ModPacket {
 
   /** Creates a packet to write data to ModBus. */
   public static byte[] makeWritePacket(ModAddr addr) {
-    byte data[] = new byte[12];
+    byte[] data = new byte[12];
     BE.setuint16(data, 0, tid++);  //transaction id
 //    BE.setuint16(data, 2, 0);  //protocol
     BE.setuint16(data, 4, 6);  //length
@@ -124,7 +124,7 @@ public class ModPacket {
     return ma;
   }
 
-  public static ModData decodePacket(byte data[]) {
+  public static ModData decodePacket(byte[] data) {
     ModData out = new ModData();
 
     short tid = (short)BE.getuint16(data, 0);
@@ -149,7 +149,7 @@ public class ModPacket {
     return out;
   }
 
-  public static boolean isPacketComplete(byte data[]) {
+  public static boolean isPacketComplete(byte[] data) {
     try {
       return decodePacket(data) != null;
     } catch (Exception e) {

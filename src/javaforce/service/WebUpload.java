@@ -73,12 +73,12 @@ public class WebUpload {
       while (!headers.toString().endsWith("\r\n\r\n")) {
         headers.append((char)data[pos++]);
       }
-      String lns[] = headers.toString().split("\r\n");
+      String[] lns = headers.toString().split("\r\n");
       //extract Content-Disposition "filename"
       String filename = null;
       for(int a=0;a<lns.length;a++) {
         if (lns[a].startsWith("Content-Disposition:")) {
-          String fields[] = lns[a].split(";");
+          String[] fields = lns[a].split(";");
           for(int b=0;b<fields.length;b++) {
             if (fields[b].trim().startsWith("filename=")) {
               filename = fields[b].trim().substring(9);

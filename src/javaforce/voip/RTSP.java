@@ -164,7 +164,7 @@ public abstract class RTSP {
       parts.add(x2.substring(0, i1).trim());
       x2 = x2.substring(i1 + 1).trim();
     } while (true);
-    String ret[] = new String[parts.size()];
+    String[] ret = new String[parts.size()];
     for (int a = 0; a < parts.size(); a++) {
       ret[a] = parts.get(a);
     }
@@ -210,7 +210,7 @@ public abstract class RTSP {
   /**
    * Returns a flag in a To: From: field.
    */
-  public static String getFlag2(String fields[], String flg) {
+  public static String getFlag2(String[] fields, String flg) {
     flg += "=";
     int i;
     for (i = 0; i < fields.length; i++) {
@@ -233,7 +233,7 @@ public abstract class RTSP {
   /**
    * Sets/adds a flag in a To: From: field.
    */
-  public static String[] setFlag2(String fields[], String flg, String value) {
+  public static String[] setFlag2(String[] fields, String flg, String value) {
     flg += "=";
     boolean seperator = false;
     for (int i = 3; i < fields.length; i++) {
@@ -249,7 +249,7 @@ public abstract class RTSP {
       }
     }
     //need to add an element to fields and append "flg=value"
-    String newfields[] = new String[fields.length + 1];
+    String[] newfields = new String[fields.length + 1];
     for (int j = 0; j < fields.length; j++) {
       newfields[j] = fields[j];
     }
@@ -267,10 +267,10 @@ public abstract class RTSP {
 
   /** Returns branch in first Via line */
   protected String getbranch(String[] msg) {
-    String vias[] = getvialist(msg);
+    String[] vias = getvialist(msg);
     if (vias == null || vias.length == 0) return null;
     //Via: SDP/2.0/UDP host:port;branch=...;rport;...
-    String f[] = vias[0].split(";");
+    String[] f = vias[0].split(";");
     for(int a=0;a<f.length;a++) {
       if (f[a].startsWith("branch=")) {
         return f[a].substring(7);
@@ -377,13 +377,13 @@ public abstract class RTSP {
   /**
    * Replaces the 'tag' field from 'newfield' into 'fields'.
    */
-  public static String[] replacetag(String fields[], String newfield) {
+  public static String[] replacetag(String[] fields, String newfield) {
     //x = "display name" <sip:user@host;tag=...>;tag=...
     //           [0]          [1]  [2]  [...] [:][...]
     if (newfield == null) {
       return fields;
     }
-    String newfields[] = split(newfield);
+    String[] newfields = split(newfield);
     int oldtagidx = -1;
     boolean seperator = false;
     for (int i = 3; i < fields.length; i++) {
@@ -412,7 +412,7 @@ public abstract class RTSP {
           return fields;
         } else {
           //need to add an element to fields and append newfields[i]
-          String retfields[] = new String[fields.length + 1];
+          String[] retfields = new String[fields.length + 1];
           for (int j = 0; j < fields.length; j++) {
             retfields[j] = fields[j];
           }
@@ -427,7 +427,7 @@ public abstract class RTSP {
   /**
    * Removes the 'tag' field from 'fields'.
    */
-  public static String[] removetag(String fields[]) {
+  public static String[] removetag(String[] fields) {
     boolean seperator = false;
     for (int i = 3; i < fields.length; i++) {
       if (!seperator) {
@@ -438,7 +438,7 @@ public abstract class RTSP {
       }
       if (fields[i].startsWith("tag=")) {
         //remove fields[i]
-        String newfields[] = new String[fields.length - 1];
+        String[] newfields = new String[fields.length - 1];
         for (int j = 0; j < i; j++) {
           newfields[j] = fields[j];
         }
@@ -454,7 +454,7 @@ public abstract class RTSP {
   /**
    * Returns the 'tag' field from 'fields'.
    */
-  public static String gettag(String fields[]) {
+  public static String gettag(String[] fields) {
     boolean seperator = false;
     for (int i = 3; i < fields.length; i++) {
       if (!seperator) {
@@ -528,7 +528,7 @@ public abstract class RTSP {
    * Determines if codecs[] contains codec.
    * NOTE:This checks the name field, not the id which could by dynamic.
    */
-  public static boolean hasCodec(Codec codecs[], Codec codec) {
+  public static boolean hasCodec(Codec[] codecs, Codec codec) {
     for (int a = 0; a < codecs.length; a++) {
       if (codecs[a].name.equals(codec.name)) {
         return true;
@@ -540,8 +540,8 @@ public abstract class RTSP {
   /**
    * Adds a codec to a list of codecs.
    */
-  public static Codec[] addCodec(Codec codecs[], Codec codec) {
-    Codec newCodecs[] = new Codec[codecs.length + 1];
+  public static Codec[] addCodec(Codec[] codecs, Codec codec) {
+    Codec[] newCodecs = new Codec[codecs.length + 1];
     for (int a = 0; a < codecs.length; a++) {
       newCodecs[a] = codecs[a];
     }
@@ -552,11 +552,11 @@ public abstract class RTSP {
   /**
    * Removes a codec from a list of codecs.
    */
-  public static Codec[] delCodec(Codec codecs[], Codec codec) {
+  public static Codec[] delCodec(Codec[] codecs, Codec codec) {
     if (!hasCodec(codecs, codec)) {
       return codecs;
     }
-    Codec newCodecs[] = new Codec[codecs.length - 1];
+    Codec[] newCodecs = new Codec[codecs.length - 1];
     int pos = 0;
     for (int a = 0; a < codecs.length; a++) {
       if (codecs[a].name.equals(codec.name)) {
@@ -571,7 +571,7 @@ public abstract class RTSP {
    * Returns a codec from a list of codecs. Comparison is done by name only. The
    * returned codec 'id' may be different than provided codec.
    */
-  public static Codec getCodec(Codec codecs[], Codec codec) {
+  public static Codec getCodec(Codec[] codecs, Codec codec) {
     for (int a = 0; a < codecs.length; a++) {
       if (codecs[a].name.equals(codec.name)) {
         return codecs[a];
@@ -593,7 +593,7 @@ public abstract class RTSP {
 
   /** Returns URI in SIP msg. (INVITE "uri" SIP/2.0) */
   protected String getURI(String[] msg) {
-    String parts[] = msg[0].split(" ");
+    String[] parts = msg[0].split(" ");
     return parts[1];
   }
 
@@ -653,7 +653,7 @@ public abstract class RTSP {
     if (cseqstr == null) {
       return -1;
     }
-    String parts[] = cseqstr.split(" ");
+    String[] parts = cseqstr.split(" ");
     return Integer.valueOf(parts[0]);
   }
 
@@ -665,7 +665,7 @@ public abstract class RTSP {
     if (cseqstr == null) {
       return null;
     }
-    String parts[] = cseqstr.split(" ");
+    String[] parts = cseqstr.split(" ");
     if (parts.length < 2) {
       return null;
     }
@@ -699,7 +699,7 @@ public abstract class RTSP {
   private String[] split(String in, char delimit) {
     ArrayList<String> strs = new ArrayList<String>();
     boolean inquote = false;
-    char ca[] = in.toCharArray();
+    char[] ca = in.toCharArray();
     int p1 = 0, p2 = 0;
     for(int a=0;a<ca.length;a++) {
       char ch = ca[a];
@@ -735,7 +735,7 @@ public abstract class RTSP {
       JFLog.log(log, "err:no digest");
       return null;
     }
-    String tags[] = split(request.substring(7), ',');
+    String[] tags = split(request.substring(7), ',');
     String auth, nonce = null, qop = null, cnonce = null, nc = null,stale = null;
     String realm = null;
     auth = getHeader("algorithm=", tags);
@@ -758,7 +758,7 @@ public abstract class RTSP {
       return null;
     }  //no realm found
     if (qop != null) {
-      String qops[] = qop.split(",");  //server could provide multiple options
+      String[] qops = qop.split(",");  //server could provide multiple options
       qop = null;
       for (int a = 0; a < qops.length; a++) {
         if (qops[a].trim().equals("auth")) {
@@ -851,7 +851,7 @@ public abstract class RTSP {
     if (o == null) {
       return 0;
     }
-    String os[] = o.split(" ");
+    String[] os = o.split(" ");
     return Long.valueOf(os[idx]);
   }
 
@@ -872,7 +872,7 @@ public abstract class RTSP {
     if (contact == null) {
       return -1;
     }
-    String tags[] = split(contact);
+    String[] tags = split(contact);
     expires = getHeader("expires=", tags);
     if (expires == null) {
       return -1;
@@ -931,7 +931,7 @@ public abstract class RTSP {
           break;
         }
         try {
-          byte data[] = new byte[mtu];
+          byte[] data = new byte[mtu];
           Packet pack = new Packet();
           pack.data = data;
           if (!transport.receive(pack)) continue;
@@ -957,11 +957,11 @@ public abstract class RTSP {
    */
   private class WorkerPacket extends Thread {
 
-    String x1[];
+    String[] x1;
     String x2;
     int x3;
 
-    public WorkerPacket(String x1[], String x2, int x3) {
+    public WorkerPacket(String[] x1, String x2, int x3) {
       this.x1 = x1;
       this.x2 = x2;
       this.x3 = x3;

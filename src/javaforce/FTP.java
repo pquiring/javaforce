@@ -351,7 +351,7 @@ public class FTP {
         throw new Exception("pasv failed");
       }
       //227 Entering Passive Mode (ip,ip,ip,ip,PORTHI,PORTLO).
-      String strs[] = str.split(",");
+      String[] strs = str.split(",");
       if (strs.length != 6) {
         throw new Exception("pasv failed - bad response");
       }
@@ -388,7 +388,7 @@ public class FTP {
 
   private void getData(OutputStream os) throws Exception {
     aborted = false;
-    byte data[] = new byte[BUFSIZ];
+    byte[] data = new byte[BUFSIZ];
     InputStream dis = ds.getInputStream();
     wait4Response();
     if (!getLastResponse().startsWith("150")) {
@@ -440,7 +440,7 @@ public class FTP {
 
   private void putData(InputStream is) throws Exception {
     aborted = false;
-    byte data[] = new byte[BUFSIZ];
+    byte[] data = new byte[BUFSIZ];
     OutputStream dos = ds.getOutputStream();
     wait4Response();
     if (!getLastResponse().startsWith("150")) {

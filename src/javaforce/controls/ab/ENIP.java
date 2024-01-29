@@ -44,7 +44,7 @@ public class ENIP {
     return -1;
   }
 
-  public void read(byte data[], int offset) throws Exception {
+  public void read(byte[] data, int offset) throws Exception {
     cmd = (short)LE.getuint16(data, offset); offset += 2;
     len = (short)LE.getuint16(data, offset); offset += 2;
     session = LE.getuint32(data, offset); offset += 4;
@@ -81,7 +81,7 @@ public class ENIP {
     }
   }
 
-  public void write(byte data[], int offset, ABContext abcontext) {
+  public void write(byte[] data, int offset, ABContext abcontext) {
     session = abcontext.session;
     context = abcontext.context;
     abcontext.increment();

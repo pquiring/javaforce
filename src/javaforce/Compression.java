@@ -9,7 +9,7 @@ import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 public class Compression {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     //test compress/decompress
     try {
       File input = new File("tapetool.exe");

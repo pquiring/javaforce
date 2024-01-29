@@ -282,7 +282,7 @@ public class ProxyServer extends Thread {
     }
   }
 
-  private static int ba2int(byte ba[]) {
+  private static int ba2int(byte[] ba) {
     int ret = 0;
     for(int a=0;a<4;a++) {
       ret <<= 8;
@@ -292,8 +292,8 @@ public class ProxyServer extends Thread {
   }
 
   private static int getIP(String ip) {
-    String p[] = ip.split("[.]");
-    byte o[] = new byte[4];
+    String[] p = ip.split("[.]");
+    byte[] o = new byte[4];
     for(int a=0;a<4;a++) {
       o[a] = (byte)JF.atoi(p[a]);
     }
@@ -523,7 +523,7 @@ public class ProxyServer extends Thread {
     }
     private void log(Exception e) {
       String s = e.toString();
-      StackTraceElement stack[] = e.getStackTrace();
+      StackTraceElement[] stack = e.getStackTrace();
       for(int a=0;a<stack.length;a++) {
         s += "\r\n" + stack[a].toString();
       }
@@ -573,11 +573,11 @@ public class ProxyServer extends Thread {
     }
     private int getIP(Socket s) {
       if (s.getInetAddress().isLoopbackAddress()) return 0x7f000001;  //loopback may return IP6 address
-      byte o[] = s.getInetAddress().getAddress();
+      byte[] o = s.getInetAddress().getAddress();
       return ba2int(o);
     }
     private void proxy(String req) throws Exception {
-      String ln[] = req.split("\r\n");
+      String[] ln = req.split("\r\n");
       log("Proxy:" + ln[0]);
       int hostidx = -1;
       if (ln[0].endsWith("1.0")) disconn = true;  //HTTP/1.0
@@ -594,7 +594,7 @@ public class ProxyServer extends Thread {
       try {
         String method = null, proto = null, url = null, http = null;
         int port;
-        String f[] = ln[0].split(" ");
+        String[] f = ln[0].split(" ");
         method = f[0];
         url = f[1];
         http = f[2];
@@ -698,7 +698,7 @@ public class ProxyServer extends Thread {
         if (url.endsWith("/")) {
           //directory listing
           String ls = ftp.ls(url);
-          String lns[] = ls.replaceAll("\r", "").split("\n");
+          String[] lns = ls.replaceAll("\r", "").split("\n");
           StringBuffer content = new StringBuffer();
           content.append("<html><head>");
           //TODO : fix this for Firefox - only works with Chrome
@@ -715,7 +715,7 @@ public class ProxyServer extends Thread {
             content.append("<a class='up' href='" + up + "'>[parent folder]</a><br>\r\n");
           }
           for(int a=0;a<lns.length;a++) {
-            String f[] = lns[a].split(" ", -1);  //drwxrwxrwx ? uid gid size month day time_or_year filename
+            String[] f = lns[a].split(" ", -1);  //drwxrwxrwx ? uid gid size month day time_or_year filename
             int last = f.length - 1;
             if (f[0].charAt(0) == 'd') {
               //folder
@@ -755,7 +755,7 @@ public class ProxyServer extends Thread {
       pos.write(content.getBytes());
       pos.flush();
     }
-    private void sendRequest(String ln[]) throws Exception {
+    private void sendRequest(String[] ln) throws Exception {
       String req = "";
       for(int a=0;a<ln.length;a++) {
         if (a == 0) ln[a] = removeHost(ln[a]);
@@ -766,7 +766,7 @@ public class ProxyServer extends Thread {
       ios.write(req.getBytes());
       ios.flush();
     }
-    private void sendPost(String ln[]) throws Exception {
+    private void sendPost(String[] ln) throws Exception {
       int length = -1;
       for(int a=0;a<ln.length;a++) {
         if (ln[a].regionMatches(true, 0, "Content-Length: ", 0, 16)) {
@@ -775,13 +775,13 @@ public class ProxyServer extends Thread {
       }
       if (length == -1) throw new Exception("unknown post size");
       log("sendPost data len=" + length);
-      byte post[] = JF.readAll(pis, length);
+      byte[] post = JF.readAll(pis, length);
       ios.write(post);
       ios.flush();
     }
     private void relayReply(String fn) throws Exception {
       log("relayReply:" + fn);
-      String tmp[];
+      String[] tmp;
       String line = "";
       String headers = "";
       int length = -1;
@@ -848,7 +848,7 @@ public class ProxyServer extends Thread {
             int read;
             int bufsiz = chunkLength;
             if (bufsiz > 4096) bufsiz = 4096;
-            byte buf[] = new byte[bufsiz];
+            byte[] buf = new byte[bufsiz];
             while (chunkLength != 0) {
               read = iis.read(buf, 0, chunkLength <= 4096 ? chunkLength : bufsiz);
               if (read == -1) throw new Exception("read error");
@@ -864,7 +864,7 @@ public class ProxyServer extends Thread {
           contentLength = 0;
           //read until disconnected (HTTP/1.0)
           int read;
-          byte buf[] = new byte[64 * 1024];
+          byte[] buf = new byte[64 * 1024];
           while (true) {
             read = iis.read(buf, 0, 64 * 1024);
             if (read == -1) break;
@@ -878,7 +878,7 @@ public class ProxyServer extends Thread {
       } else {
         //read content (length known)
         int read, off = 0;
-        byte buf[] = new byte[length];
+        byte[] buf = new byte[length];
         while (length != 0) {
           read = iis.read(buf, off, length);
           if (read == -1) break;
@@ -893,7 +893,7 @@ public class ProxyServer extends Thread {
       log("reply:done:content.length=" + contentLength + ":headers.length=" + headers.length());
     }
     private void connectCommand(String host, String req) throws Exception {
-      String ln[] = req.split(" ");
+      String[] ln = req.split(" ");
       if (ln.length != 3) {
         replyError(505, "Bad CONNECT syntax");
         return;
@@ -924,7 +924,7 @@ public class ProxyServer extends Thread {
     private String removeHost(String req) throws Exception {
       //GET URL HTTP/1.1
       //remove host from URL if present
-      String p[] = req.split(" ");
+      String[] p = req.split(" ");
       if (p.length != 3) return req;
       String urlstr = p[1];
       if ((!urlstr.startsWith("http:")) && (!urlstr.startsWith("https:"))) return req;
@@ -934,7 +934,7 @@ public class ProxyServer extends Thread {
     private class ConnectRelay extends Thread {
       private InputStream is;
       private OutputStream os;
-      private byte buf[] = new byte[4096];
+      private byte[] buf = new byte[4096];
       private final int buflen = 4096;
       public ConnectRelay(InputStream is, OutputStream os) {
         this.is = is;
@@ -986,14 +986,14 @@ public class ProxyServer extends Thread {
     }
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
   }
 
   //Win32 Service
 
   private static ProxyServer proxy;
 
-  public static void serviceStart(String args[]) {
+  public static void serviceStart(String[] args) {
     if (JF.isWindows()) {
       busServer = new JBusServer(getBusPort());
       busServer.start();

@@ -16,7 +16,7 @@ public class MusicOnHold {
   private int wavIdx;
 
   /** Fills next 20ms (160 samples) into buffer with MOH */
-  public boolean getSamples(short buffer[]) {
+  public boolean getSamples(short[] buffer) {
     if (wav != null) {
       System.arraycopy(wav.samples, wavIdx, buffer, 0, 160);
       wavIdx += 160;

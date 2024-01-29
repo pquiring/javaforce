@@ -14,7 +14,7 @@ import javaforce.*;
 
 public class FileSplitter {
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     FileSplitter x = new FileSplitter();
     x.main2(args);
   }
@@ -32,7 +32,7 @@ public class FileSplitter {
     System.exit(1);
   }
 
-  void main2(String args[]) {
+  void main2(String[] args) {
     ParseArgs pa = new ParseArgs();
 
     pa.arg_decoderefs = false;  //do not process @ref files
@@ -56,7 +56,7 @@ public class FileSplitter {
       size = (int)JF.fromEng(pa.arg_names.get(3));
     }
 
-    byte buf[] = new byte[BUFSIZ];
+    byte[] buf = new byte[BUFSIZ];
 
     fi = JF.fileopen(fni);
     if (fi == null) {

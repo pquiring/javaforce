@@ -16,7 +16,7 @@ public class TestMedia implements WebUIHandler {
   public TestMedia() {
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     new WebUIServer().start(new TestMedia(), 8080, false);
   }
 

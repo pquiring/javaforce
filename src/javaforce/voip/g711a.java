@@ -23,8 +23,8 @@ public class g711a implements Coder {
   public g711a(RTP rtp) {
     this.rtp = rtp;
   }
-  private static short alaw_lut[];  //signed
-  private static int exp_lut[] = {
+  private static short[] alaw_lut;  //signed
+  private static int[] exp_lut = {
 		1,1,2,2,3,3,3,3,
 		4,4,4,4,4,4,4,4,
 		5,5,5,5,5,5,5,5,
@@ -64,10 +64,10 @@ public class g711a implements Coder {
   }
   private static final short CLIP = 32767;  //not MAX short
 
-  private byte encoded[] = new byte[160 + 12];
+  private byte[] encoded = new byte[160 + 12];
 
   //samples must be 160 samples
-  public byte[] encode(short samples[]) {
+  public byte[] encode(short[] samples) {
     int sign, exponent, mantissa, mag;
     byte alawbyte;
     short sample;
@@ -100,10 +100,10 @@ public class g711a implements Coder {
 
   private int decode_timestamp;
 
-  private short decoded[] = new short[160];
+  private short[] decoded = new short[160];
 
   //encoded must be 160+12 bytes at least
-  public short[] decode(byte encoded[], int off) {
+  public short[] decode(byte[] encoded, int off) {
     int decode_timestamp = BE.getuint32(encoded, off + 4);
     if (this.decode_timestamp == 0) {
       this.decode_timestamp = decode_timestamp;

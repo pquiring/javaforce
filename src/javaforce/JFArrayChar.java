@@ -10,7 +10,7 @@ package javaforce;
 import java.util.*;
 
 public class JFArrayChar {
-  private char buf[];
+  private char[] buf;
   private int count;
 
   public static int initSize = 64;
@@ -38,7 +38,7 @@ public class JFArrayChar {
     count = newcount;
   }
 
-  public void append(char f[]) {
+  public void append(char[] f) {
     int newcount = count + f.length;
     if (newcount > buf.length) {
       buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));

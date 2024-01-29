@@ -31,11 +31,11 @@ public class LnxPty {
   /** Spawns cmd with args and env (both must be null terminated arrays).
    * Captures all output (stdout and stderr) and returns it.
    * Does not return until child process exits. */
-  public static String execOutput(String cmd, String args[], String env[]) {
+  public static String execOutput(String cmd, String[] args, String[] env) {
     LnxPty pty = new LnxPty();
     if (!pty.fork(cmd, args, env)) return null;
     StringBuilder sb = new StringBuilder();
-    byte data[] = new byte[1024];
+    byte[] data = new byte[1024];
     while (true) {
       int read = pty.read(data);
       if (read == -1) break;
@@ -57,7 +57,7 @@ public class LnxPty {
   /** Spawns a new process with a new pty.
    * Note:args, env MUST be null terminated.
    */
-  private boolean fork(String cmd, String args[], String env[]) {
+  private boolean fork(String cmd, String[] args, String[] env) {
     ctx = LnxNative.ptyAlloc();
     if (debug) JFLog.log("LnxPty:ctx=0x" + Long.toHexString(ctx));
     String slaveName = LnxNative.ptyOpen(ctx);
@@ -77,7 +77,7 @@ public class LnxPty {
       if (env[a] == null) break;
       cmdline.add(env[a]);
     }
-    String cl[] = cmdline.toArray(new String[0]);
+    String[] cl = cmdline.toArray(new String[0]);
     if (debug) {
       for(int a=0;a<cl.length;a++) {
         JFLog.log("cmd=" + cl[a]);
@@ -111,7 +111,7 @@ public class LnxPty {
 
   /** This is the child process for fork() implementation.
    */
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args == null || args.length < 3) {
       System.out.println("Usage : LnxPty slaveName, cmd, #args, [args...], [env...]");
       return;

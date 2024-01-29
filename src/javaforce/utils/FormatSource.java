@@ -45,16 +45,31 @@ public class FormatSource {
     //type name[] -> type[] name
     int count = 0;
     int offset = 0;
+    int line = 1;
     boolean inMultiComment = false, inSingleComment = false;
     boolean inDoubleQuote = false, inSingleQuote = false;
     while (offset < data.length) {
       if (inMultiComment) {
-        if (data[offset] == '*' && data[offset + 1] == '/') inMultiComment = false;
-        offset += 2;
+        if (data[offset] == '\n') {
+          line++;
+          offset++;
+          continue;
+        }
+        if (data[offset] == '*' && data[offset + 1] == '/') {
+          inMultiComment = false;
+          offset += 2;
+          continue;
+        }
+        offset++;
         continue;
       }
       if (inSingleComment) {
-        if (data[offset] == '\n') inSingleComment = false;
+        if (data[offset] == '\n') {
+          line++;
+          offset++;
+          inSingleComment = false;
+          continue;
+        }
         offset++;
         continue;
       }
@@ -72,7 +87,7 @@ public class FormatSource {
           offset += 2;
           continue;
         }
-        if (data[offset] == '\'') inDoubleQuote = false;
+        if (data[offset] == '\'') inSingleQuote = false;
         offset++;
         continue;
       }
@@ -141,12 +156,16 @@ public class FormatSource {
         }
         offset += length;
       } else {
+        if (data[offset] == '\n') {
+          line++;
+        }
         offset++;
       }
     }
     return count;
   }
   public void doFile(String file) {
+    System.out.println("doFile:" + file);
     try {
       FileInputStream fis = new FileInputStream(file);
       byte[] data = fis.readAllBytes();
@@ -167,7 +186,12 @@ public class FormatSource {
     File[] files = new File(folder).listFiles();
     for(File file : files) {
       if (file.isDirectory()) {
-        doFolder(file.getAbsolutePath());
+        try {
+          doFolder(file.getCanonicalPath());
+        } catch (Exception e) {
+          e.printStackTrace();
+          System.exit(1);
+        }
       } else {
         String name = file.getAbsolutePath();
         if (name.endsWith(".java")) {

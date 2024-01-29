@@ -19,14 +19,14 @@ public class SDP implements Cloneable {
   public static enum KeyExchange {NONE, SDP, DTLS};
   public class Key {
     public String crypto;
-    public byte key[];
-    public byte salt[];
+    public byte[] key;
+    public byte[] salt;
   }
   public class Stream {
     public Type type;
     public Mode mode = Mode.sendrecv;
     public String ip;  //optional (stream specific) [rare]
-    public Codec codecs[] = new Codec[0];
+    public Codec[] codecs = new Codec[0];
     public int port = -1;  //NATing if not specified
     public String content;
     public SDP sdp;

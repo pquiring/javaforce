@@ -25,7 +25,7 @@ public class InputDialog implements Dialog {
    * initValue[] = init values for each input field (optional) (if not null length must equal msg length)
    * opts = buttons (ie: see ENTER_ESC)
    */
-  public InputDialog(ANSI ansi, String title, String msg[], String initValue[], String opts) {
+  public InputDialog(ANSI ansi, String title, String[] msg, String[] initValue, String opts) {
     this.ansi = ansi;
     this.msg = msg;
     this.title = title;
@@ -42,7 +42,7 @@ public class InputDialog implements Dialog {
     }
     int x = (ansi.width - w)/2;
     int y = (ansi.height - h)/2;
-    String lines[] = new String[msg.length * 2 + 1];
+    String[] lines = new String[msg.length * 2 + 1];
     int pos = 0;
     for(int a=0;a<msg.length;a++) {
       if (msg[a].startsWith("{checkbox}")) {

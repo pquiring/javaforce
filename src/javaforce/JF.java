@@ -69,7 +69,7 @@ public class JF {
 
   public static String readURL(String url) {
     String str = "";
-    byte data[] = new byte[1024];
+    byte[] data = new byte[1024];
     int read;
     String purl = "";  //percent URL
     char ch;

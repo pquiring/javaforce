@@ -36,7 +36,7 @@ public class MD5 {
 
   private static class Context {
 
-    int state[] = new int[4];        /* state (ABCD) */
+    int[] state = new int[4];        /* state (ABCD) */
 
     long count;                      /* number of bits */
 
@@ -233,7 +233,7 @@ public class MD5 {
   }
 
   /* MD5 basic transformation. Transforms state based on block. */
-  private void MD5Transform(int state[], byte block[], int blockOffset) {
+  private void MD5Transform(int[] state, byte[] block, int blockOffset) {
     int a = state[0], b = state[1], c = state[2], d = state[3], x[] = new int[16];
 
     Decode(x, block, blockOffset, 64);

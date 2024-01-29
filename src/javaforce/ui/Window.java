@@ -179,12 +179,12 @@ public class Window {
     nlockcursor(id);
   }
 
-  private static native void ngetpos(long id, int pos[]);
+  private static native void ngetpos(long id, int[] pos);
   /** Get window position.
    * @return int[0] = x, int[1] = y
    */
   public int[] getPosition() {
-    int ret[] = new int[2];
+    int[] ret = new int[2];
     ngetpos(id, ret);
     return ret;
   }

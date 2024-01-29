@@ -33,7 +33,7 @@ import javaforce.gl.UVMap;
  */
 
 public class GL_BLEND {
-  private byte data[];
+  private byte[] data;
   private int datapos;
 
   private boolean x64;  //64bit file format (else 32bit)
@@ -42,7 +42,7 @@ public class GL_BLEND {
   private Model model;
   private Object3 obj;
 
-  private float org[] = new float[3];
+  private float[] org = new float[3];
   private boolean haveDups;
 
   private HashMap<Long, Chunk> chunks = new HashMap<Long, Chunk>();
@@ -134,7 +134,7 @@ public class GL_BLEND {
     }
     if (m.name.indexOf("[") != -1) {
       //array type
-      String f[] = m.name.replaceAll("\\]", "").split("\\[");
+      String[] f = m.name.replaceAll("\\]", "").split("\\[");
       if (f.length == 2) {
         //single array
         return m.typelen * Integer.valueOf(f[1]);
@@ -194,16 +194,16 @@ public class GL_BLEND {
     if (x64) return readuint64();
     return readuint32();
   }
-  private void readByteArray(byte in[]) {
+  private void readByteArray(byte[] in) {
     System.arraycopy(data, datapos, in, 0, in.length);
     datapos+=in.length;
   }
-  private void readPtrArray(long in[]) {
+  private void readPtrArray(long[] in) {
     for(int a=0;a<in.length;a++) {
       in[a] = readptr();
     }
   }
-  private void readFloatArray(float in[]) {
+  private void readFloatArray(float[] in) {
     for(int a=0;a<in.length;a++) {
       in[a] = readfloat();
     }
@@ -324,7 +324,7 @@ public class GL_BLEND {
     }
 
     int chunkCnt = chunks.size();
-    Chunk chunkArray[] = chunks.values().toArray(new Chunk[chunkCnt]);
+    Chunk[] chunkArray = chunks.values().toArray(new Chunk[chunkCnt]);
     Chunk raw;
 
     //2nd phase - parse DNA chunk

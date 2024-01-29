@@ -23,7 +23,7 @@ public class Test implements WebUIHandler {
     img = Resource.registerResource(baos.toByteArray(), Resource.PNG);
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     new WebUIServer().start(new Test(), 8080, false);
   }
 

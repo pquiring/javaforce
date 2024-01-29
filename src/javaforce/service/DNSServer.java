@@ -226,11 +226,11 @@ public class DNSServer extends Thread {
 
   private class Worker extends Thread {
     private DatagramPacket packet;
-    private byte data[];
+    private byte[] data;
     private int dataLength;
     private int nameLength;  //bytes used decoding name
 
-    private byte reply[];
+    private byte[] reply;
     private int replyOffset;
     private ByteBuffer bb;
     private ByteBuffer replyBuffer;
@@ -310,7 +310,7 @@ public class DNSServer extends Thread {
 
     }
 
-    private String getName(byte data[], int offset) {
+    private String getName(byte[] data, int offset) {
       StringBuilder name = new StringBuilder();
       boolean jump = false;
       nameLength = 0;
@@ -337,7 +337,7 @@ public class DNSServer extends Thread {
 
     private int encodeName(String domain) {
       //TODO : compression
-      String p[] = domain.split("[.]");
+      String[] p = domain.split("[.]");
       int length = 0;
       int strlen;
       for(int a=0;a<p.length;a++) {
@@ -472,7 +472,7 @@ public class DNSServer extends Thread {
       JFLog.log("Query Remote failed for domain=" + domain);
     }
 
-    private void sendReply(String domain, byte outData[]) {
+    private void sendReply(String domain, byte[] outData) {
       JFLog.log("sendReply:" + domain + " to " + packet.getAddress() + ":" + packet.getPort());
       try {
         DatagramPacket out = new DatagramPacket(outData, outData.length);
@@ -569,7 +569,7 @@ public class DNSServer extends Thread {
     }
 
     private void putIP4(String ip) {
-      String p[] = ip.split("[.]", -1);
+      String[] p = ip.split("[.]", -1);
 /*
       if (p.length != 4) {
         p = new String[] {"0", "0", "0", "0"};
@@ -581,7 +581,7 @@ public class DNSServer extends Thread {
     }
 
     private void putIP6(String ip) {
-      String p[] = ip.split(":", -1);
+      String[] p = ip.split(":", -1);
 /*
       if (p.length != 8) {
         p = new String[] {"0", "0", "0", "0", "0", "0", "0", "0"};

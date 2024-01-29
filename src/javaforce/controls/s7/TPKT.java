@@ -14,13 +14,13 @@ public class TPKT {
   public int size() {
     return 4;
   }
-  public void write(byte data[], int offset, short totalsize) {
+  public void write(byte[] data, int offset, short totalsize) {
     length = totalsize;
     data[offset++] = version;
     data[offset++] = res;
     BE.setuint16(data, offset, length); //offset += 2;
   }
-  public void read(byte data[], int offset) throws Exception {
+  public void read(byte[] data, int offset) throws Exception {
     version = data[offset++];
     if (version != 3) throw new Exception("TPKT : unknown version");
     res = data[offset++];

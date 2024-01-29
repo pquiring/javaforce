@@ -31,7 +31,7 @@ public class Tag {
   /** User defined description */
   public String desc;
 
-  private byte pending[];
+  private byte[] pending;
   private Object pendingLock = new Object();
 
   /** Get user data. */
@@ -263,7 +263,7 @@ public class Tag {
 
   /** Queues pending data to be written on next cycle. (only valid if start() has been called). */
   public void setValue(String value) {
-    byte data[] = null;
+    byte[] data = null;
     if (isBE()) {
       switch (size) {
         case TagType.bit: data = new byte[] {(byte)(value.equals("0") ? 0 : 1)}; break;

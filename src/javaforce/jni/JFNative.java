@@ -50,7 +50,7 @@ public class JFNative {
   private static native void init();
 
   /** Find native libraries in folder (recursive). */
-  public static boolean findLibraries(File folders[], Library libs[], String ext, int needed) {
+  public static boolean findLibraries(File[] folders, Library[] libs, String ext, int needed) {
     boolean once = false;
     for(int fn=0;fn<folders.length;fn++) {
       File[] files = folders[fn].listFiles();

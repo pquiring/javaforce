@@ -2,8 +2,8 @@ package javaforce.gl;
 
 /** 4x4 matrix */
 public class Matrix implements Cloneable {
-  public float m[] = new float[16];
-  private float r[];  //result temp
+  public float[] m = new float[16];
+  private float[] r;  //result temp
 
   private Matrix mat;  //only need m[], setAA(), setTranslate(), setScale(), set(), get()
   private Vector3 vec;

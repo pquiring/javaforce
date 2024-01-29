@@ -37,10 +37,10 @@ public class DAQmx {
   public static native boolean createChannelDigital(long task, String dev, double rate, long samples);
   public static native boolean createChannelCounter(long task, String dev, double rate, long samples, double min, double max, String term, double measureTime, int divisor);
   public static native boolean startTask(long task);
-  public static native int readTaskAnalog(long task, int numchs, double data[]);
-  public static native int readTaskBinary(long task, int numchs, int data[]);
-  public static native int readTaskDigital(long task, int numchs, int data[]);
-  public static native int readTaskCounter(long task, int numchs, double freq[]);
+  public static native int readTaskAnalog(long task, int numchs, double[] data);
+  public static native int readTaskBinary(long task, int numchs, int[] data);
+  public static native int readTaskDigital(long task, int numchs, int[] data);
+  public static native int readTaskCounter(long task, int numchs, double[] freq);
   public static native boolean stopTask(long task);
   public static native boolean clearTask(long task);
   public static native void printError();  //prints any errors to stdout
@@ -80,7 +80,7 @@ public class DAQmx {
       int li = url.lastIndexOf("/");
       if (li != -1) {
         String ln = url.substring(li+1+4);
-        String yz[] = ln.split(":");
+        String[] yz = ln.split(":");
         if (yz.length == 2) {
           int y = Integer.valueOf(yz[0]);
           int z = Integer.valueOf(yz[1]);
@@ -96,7 +96,7 @@ public class DAQmx {
       type = types.CI;
       handle = createTask();
       //device = DEVICE/ctr0/pfi0
-      String p[] = url.split("/");
+      String[] p = url.split("/");
       device = p[0] + "/" + p[1];
       port = "/" + p[0] + "/" + p[2];
       if (!createChannelCounter(handle, device, 20000000.0, samples, 2.0, 1000.0, port, 1.0 / Controller.rate, 4)) return false;
@@ -118,10 +118,10 @@ public class DAQmx {
 
   public byte[] read() {
     int read = 0;
-    byte out[] = null;
+    byte[] out = null;
     switch (type) {
       case AI: {
-        double data[] = new double[chs];
+        double[] data = new double[chs];
         read = readTaskAnalog(handle, 1, data);
         out = new byte[chs * 8];
         //copy data -> out
@@ -133,7 +133,7 @@ public class DAQmx {
         break;
       }
       case DI: {
-        int data[] = new int[chs];
+        int[] data = new int[chs];
         read = readTaskDigital(handle, chs, data);
         out = new byte[chs];
         //copy data -> out
@@ -145,7 +145,7 @@ public class DAQmx {
         break;
       }
       case CI: {
-        double data[] = new double[chs];
+        double[] data = new double[chs];
         read = readTaskCounter(handle, 1, data);
         out = new byte[chs * 8];
         int pos = 0;

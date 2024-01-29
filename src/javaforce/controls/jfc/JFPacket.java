@@ -15,9 +15,9 @@ public class JFPacket {
     return new JFTag(name);
   }
 
-  public static byte[] makeWritePacket(JFTag tag, byte tagdata[]) {
+  public static byte[] makeWritePacket(JFTag tag, byte[] tagdata) {
     int strlen = tag.tag.length();
-    byte data[] = new byte[8 + 2 + 1 + strlen + 2 + 2 + tagdata.length];
+    byte[] data = new byte[8 + 2 + 1 + strlen + 2 + 2 + tagdata.length];
     LE.setuint16(data, 0, 0x0004);  //write tag cmd
     LE.setuint16(data, 2, 0x1234);  //unique id
     LE.setuint32(data, 4, 2 + strlen);  //data length
@@ -35,7 +35,7 @@ public class JFPacket {
 
   public static byte[] makeReadPacket(JFTag tag) {
     int strlen = tag.tag.length();
-    byte data[] = new byte[8 + 2 + 1 + strlen];
+    byte[] data = new byte[8 + 2 + 1 + strlen];
     LE.setuint16(data, 0, 0x0003);  //read tag cmd
     LE.setuint16(data, 2, 0x1234);  //unique id
     LE.setuint32(data, 4, 2 + strlen);  //data length
@@ -45,13 +45,13 @@ public class JFPacket {
     return data;
   }
 
-  public static byte[] makeReadPacket(JFTag tags[]) {
+  public static byte[] makeReadPacket(JFTag[] tags) {
     int size = 8 + 2;
     for(int a=0;a<tags.length;a++) {
       int strlen = tags[a].tag.length();
       size += 1 + strlen;
     }
-    byte data[] = new byte[size];
+    byte[] data = new byte[size];
     LE.setuint16(data, 0, 0x0003);  //read tag cmd
     LE.setuint16(data, 2, 0x1234);  //unique id
     LE.setuint32(data, 4, size - 8);  //data length
@@ -67,14 +67,14 @@ public class JFPacket {
     return data;
   }
 
-  public static byte[] makeWritePacket(JFTag tags[], byte tagdata[][]) {
+  public static byte[] makeWritePacket(JFTag[] tags, byte[][] tagdata) {
     int size = 8 + 2;
     for(int a=0;a<tags.length;a++) {
       int strlen = tags[a].tag.length();
       size += 1 + strlen;
       size += tagdata[a].length;
     }
-    byte data[] = new byte[size];
+    byte[] data = new byte[size];
     LE.setuint16(data, 0, 0x0004);  //write tag cmd
     LE.setuint16(data, 2, 0x1234);  //unique id
     LE.setuint32(data, 4, size - 8);  //data length
@@ -96,7 +96,7 @@ public class JFPacket {
     return data;
   }
 
-  public static boolean isPacketComplete(byte data[]) {
+  public static boolean isPacketComplete(byte[] data) {
     if (data.length < 8) return false;
     //int cmd = LE.getuint16(data, 0);
     //int id = LE.getuint16(data, 2);
@@ -104,7 +104,7 @@ public class JFPacket {
     return (data.length >= 8 + len);
   }
 
-  public static JFTag decodePacket(byte data[]) {
+  public static JFTag decodePacket(byte[] data) {
     int cmd = LE.getuint16(data, 0);
     int id = LE.getuint16(data, 2);
     int len = LE.getuint32(data, 4);
@@ -118,13 +118,13 @@ public class JFPacket {
     return tag;
   }
 
-  public static JFTag[] decodeMultiPacket(byte data[], int tagcnt) {
+  public static JFTag[] decodeMultiPacket(byte[] data, int tagcnt) {
     int cmd = LE.getuint16(data, 0);
     int id = LE.getuint16(data, 2);
     int len = LE.getuint32(data, 4);
     int cnt = LE.getuint16(data, 8);
     if (cnt != tagcnt) return null;
-    JFTag tags[] = new JFTag[tagcnt];
+    JFTag[] tags = new JFTag[tagcnt];
     int pos = 10;
     for(int a=0;a<tagcnt;a++) {
       tags[a] = new JFTag(null);

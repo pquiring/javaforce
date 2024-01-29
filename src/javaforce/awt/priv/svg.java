@@ -68,7 +68,7 @@ public class svg extends ImageTranscoder {
     }
   }
 
-  public static boolean save(OutputStream out, byte png_data[], javaforce.ui.Dimension size) {
+  public static boolean save(OutputStream out, byte[] png_data, javaforce.ui.Dimension size) {
     int w = size.width;
     int h = size.height;
     try {

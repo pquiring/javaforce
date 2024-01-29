@@ -23,9 +23,9 @@ public class g711u implements Coder {
   public g711u(RTP rtp) {
     this.rtp = rtp;
   }
-  private static short ulaw_lut[];  //signed
-  private static short etab[] = {0, 132, 396, 924, 1980, 4092, 8316, 16764};
-  private static int exp_lut[] = {
+  private static short[] ulaw_lut;  //signed
+  private static short[] etab = {0, 132, 396, 924, 1980, 4092, 8316, 16764};
+  private static int[] exp_lut = {
     0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -67,10 +67,10 @@ public class g711u implements Coder {
   private static final short BIAS = 0x84;
   private static final short CLIP = 32635;  //not MAX short
 
-  private byte encoded[] = new byte[160 + 12];
+  private byte[] encoded = new byte[160 + 12];
 
   //samples must be 160 samples
-  public byte[] encode(short samples[]) {
+  public byte[] encode(short[] samples) {
     int sign, exponent, mantissa;
     byte ulawbyte;
     short sample;
@@ -103,10 +103,10 @@ public class g711u implements Coder {
 
   private int decode_timestamp;
 
-  private short decoded[] = new short[160];
+  private short[] decoded = new short[160];
 
   //encoded must be 160+12 bytes at least
-  public short[] decode(byte encoded[], int off) {
+  public short[] decode(byte[] encoded, int off) {
     int decode_timestamp = BE.getuint32(encoded, off + 4);
     if (this.decode_timestamp == 0) {
       this.decode_timestamp = decode_timestamp;

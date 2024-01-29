@@ -4,8 +4,6 @@ package javaforce.voip;
  * Keeps track of Call Details based on the 'callid' field of SIP messages.
  */
 
-import java.util.*;
-
 import java.net.*;
 
 public class CallDetails implements Cloneable {
@@ -17,10 +15,11 @@ public class CallDetails implements Cloneable {
   public static class SideDetails implements Cloneable {
     public int cseq = 0;
     public int expires = 0;
-    public String to[], from[];  //0=name < 1=# 2=host/port ... > ':' ...
+    public String[] to;  //0=name < 1=# 2=host/port ... > ':' ...
+    public String[] from;  //0=name < 1=# 2=host/port ... > ':' ...
     public String contact;
-    public String vialist[];
-    public String routelist[];
+    public String[] vialist;
+    public String[] routelist;
     public String branch;
     public String extra;   //extra headers
     public String epass;   //response to an 403/407 MD5

@@ -6,10 +6,10 @@ package javaforce.controls.ni;
  */
 
 public class Test {
-  public static void main(String args[]) {
-    double f[] = new double[20];
-    int i[] = new int[20];
-    int b[] = new int[20 * 8];
+  public static void main(String[] args) {
+    double[] f = new double[20];
+    int[] i = new int[20];
+    int[] b = new int[20 * 8];
     DAQmx.load();
     if (!DAQmx.loaded) {
       System.out.println("DAQmx not loaded");

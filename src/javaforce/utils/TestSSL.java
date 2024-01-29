@@ -424,7 +424,7 @@ public class TestSSL {
     public void run() {
       try {
         SSLSession sess = ssl.getSession();
-        byte tmp[] = new byte[1024];
+        byte[] tmp = new byte[1024];
         Random r = new Random();
         r.nextBytes(tmp);
         output = ByteBuffer.wrap(tmp);

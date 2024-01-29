@@ -11,7 +11,7 @@ import javaforce.webui.*;
 import javaforce.webui.event.*;
 
 public class Test implements WebUIHandler {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length > 0) {
       switch (args[0]) {
         case "read": read(args[1], args[2]); break;
@@ -42,10 +42,10 @@ public class Test implements WebUIHandler {
   public void clientDisconnected(WebUIClient client) {}
 
   public class TestPanel extends Panel {
-    public Label il[] = new Label[8];
-    public Image i[] = new Image[8];
-    public Button o[] = new Button[8];
-    public Image oi[] = new Image[8];
+    public Label[] il = new Label[8];
+    public Image[] i = new Image[8];
+    public Button[] o = new Button[8];
+    public Image[] oi = new Image[8];
   }
   public static TestPanel panel;
   public static Resource on, off;
@@ -93,9 +93,9 @@ public class Test implements WebUIHandler {
     return null;
   }
 
-  public static boolean outputs[] = new boolean[8];
-  public static boolean inputs[] = new boolean[8];
-  public static boolean display[] = new boolean[8];
+  public static boolean[] outputs = new boolean[8];
+  public static boolean[] inputs = new boolean[8];
+  public static boolean[] display = new boolean[8];
 
   public static class Worker extends Thread {
     public volatile boolean active;

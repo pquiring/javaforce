@@ -15,9 +15,9 @@ public class Wav {
   public int rate = -1;  //sample rate (freq)
   public int bits = -1;  //bits per sample
   public int bytes = -1;  //byte per sample
-  public byte samples8[];  //if readAllSamples() was called
-  public short samples16[];  //if readAllSamples() was called
-  public int samples32[];  //if readAllSamples() was called
+  public byte[] samples8;  //if readAllSamples() was called
+  public short[] samples16;  //if readAllSamples() was called
+  public int[] samples32;  //if readAllSamples() was called
   public int dataLength;  //bytes
 
   private InputStream wav = null;
@@ -36,7 +36,7 @@ public class Wav {
     wav = is;
     errmsg = "";
     try {
-      byte data[] = new byte[30];
+      byte[] data = new byte[30];
       //read RIFF header (20 bytes);
       wav.read(data, 0, 20);
       if (!LE.getString(data, 0, 4).equals("RIFF")) throw new Exception("wav is not a valid WAV file (RIFF)");

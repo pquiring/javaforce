@@ -37,7 +37,7 @@ public class Scene {
 
   public int fragShader, vertexShader, program;
   public int vpa;  //attribs
-  public int tca[] = new int[2];
+  public int[] tca = new int[2];
   public int uUVMaps;
   public int mpu, mmu, mvu;  //uniform matrix'es (perspective, model, view)
 

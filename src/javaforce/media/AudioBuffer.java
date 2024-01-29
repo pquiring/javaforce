@@ -10,7 +10,7 @@ import javaforce.*;
 public class AudioBuffer {
 
   private int bufsiz;
-  private short buf[];
+  private short[] buf;
   private int head = 0, tail = 0;
 
   public AudioBuffer(int freq, int chs, int seconds) {
@@ -19,7 +19,7 @@ public class AudioBuffer {
     clear();
   }
 
-  public void add(short in[], int pos, int len) {
+  public void add(short[] in, int pos, int len) {
     boolean wrap = false;
     int nhead = head + len;
     if (nhead >= bufsiz) {
@@ -42,7 +42,7 @@ public class AudioBuffer {
     head = nhead;
   }
 
-  public boolean get(short out[], int pos, int len) {
+  public boolean get(short[] out, int pos, int len) {
     if (tail == head) return false;
     boolean wrap = false;
     int ntail = tail + len;

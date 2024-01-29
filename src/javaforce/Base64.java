@@ -33,14 +33,14 @@ public class Base64 {
   /** Encodes raw data into Base64 format.
    * @param in = input data
    */
-  public static final byte[] encode(byte in[]) {
+  public static final byte[] encode(byte[] in) {
     return encode(in, -1);
   }
 
   /** Encodes raw data into Base64 format.
    * @param in = input data
    * @param lineLength = max line length (-1 to ignore) */
-  public static final byte[] encode(byte in[], int lineLength) {
+  public static final byte[] encode(byte[] in, int lineLength) {
     //convert 3x8bit into 4x6bit
     int i3 = in.length / 3;
     int i3m = in.length % 3;
@@ -85,7 +85,7 @@ public class Base64 {
   }
 
   private static final class Buffer {
-    byte buf[];
+    byte[] buf;
     int pos;
   }
 
@@ -106,7 +106,7 @@ public class Base64 {
   /** Decodes Base64 data into raw data.
    * @param in = input data
    */
-  public static final byte[] decode(byte in[]) {
+  public static final byte[] decode(byte[] in) {
     int e1, e2, e3, e4;
     int o32;
 

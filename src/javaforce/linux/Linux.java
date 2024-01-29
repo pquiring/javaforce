@@ -516,10 +516,10 @@ public class Linux {
       JFLog.log("Error:unable to execute yum");
       return;
     }
-    String lns[] = output.split("\n");
+    String[] lns = output.split("\n");
     pkgList = new String[lns.length - 2][3];
     for (int a = 2; a < lns.length; a++) {
-      String f[] = lns[a].split(" +");  //greedy spaces
+      String[] f = lns[a].split(" +");  //greedy spaces
       if (f.length != 3) {
         pkgList[a-2][0] = "";
         pkgList[a-2][1] = "";
@@ -621,7 +621,7 @@ public class Linux {
       ShellProcess sp = new ShellProcess();
       String output = sp.run(new String[]{"groups", user}, false).replaceAll("\n", "");
       //output = "user : group1 group2 ..."
-      String groups[] = output.split(" ");
+      String[] groups = output.split(" ");
       for (int a = 2; a < groups.length; a++) {
         if (groups[a].equals(group)) {
           return true;
@@ -650,7 +650,7 @@ public class Linux {
 
   private static String[] expandBackslash(String inString) {
     StringBuilder out = new StringBuilder();
-    char inCA[] = inString.toCharArray();
+    char[] inCA = inString.toCharArray();
     for (int a = 0; a < inCA.length; a++) {
       if (inCA[a] == '\\') {
         if (inCA[a + 1] == '\\') {

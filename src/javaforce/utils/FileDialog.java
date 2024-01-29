@@ -103,14 +103,14 @@ public class FileDialog extends javax.swing.JFrame {
   /**
    * @param args the command line arguments
    */
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args == null || args.length == 0) {
       System.out.println("Usage:jcp src(s) dest");
       System.out.println("Usage:jmv src(s) dest");
       System.out.println("Usage:jrm file(s)");
       return;
     }
-    final String _args[] = args;
+    final String[] _args = args;
     /* Create and display the form */
     java.awt.EventQueue.invokeLater(new Runnable() {
       public void run() {
@@ -128,7 +128,7 @@ public class FileDialog extends javax.swing.JFrame {
   private javax.swing.JLabel txt2;
   // End of variables declaration//GEN-END:variables
 
-  private String cmd[];
+  private String[] cmd;
   private Worker worker;
   private Timer timer;
   private boolean done;
@@ -136,7 +136,7 @@ public class FileDialog extends javax.swing.JFrame {
   private boolean hidetxt2;
   private long amtComplete, amtTodo;
 
-  public void start(String cmd[]) {
+  public void start(String[] cmd) {
     this.cmd = cmd;
 
     worker = new Worker();
@@ -241,7 +241,7 @@ public class FileDialog extends javax.swing.JFrame {
     }
     public long getDirectorySize(String dir) {
       long size = 4096;
-      File files[] = new File(dir).listFiles();
+      File[] files = new File(dir).listFiles();
       if (files == null) return 0;
       for(int a=0;a<files.length;a++) {
         if (abort) return 0;
@@ -272,7 +272,7 @@ public class FileDialog extends javax.swing.JFrame {
     }
     public long getDirectoryCount(String dir) {
       long size = 1;
-      File files[] = new File(dir).listFiles();
+      File[] files = new File(dir).listFiles();
       if (files == null) return 0;
       for(int a=0;a<files.length;a++) {
         if (abort) return 0;
@@ -298,7 +298,7 @@ public class FileDialog extends javax.swing.JFrame {
       }
     }
     public final static int bufsiz = 64 * 1024;
-    public byte buf[] = new byte[bufsiz];
+    public byte[] buf = new byte[bufsiz];
     public void copyFile(String src, String destFolder) {
       msg1 = "Copying " + src;
       msg2 = "To " + destFolder;
@@ -358,7 +358,7 @@ public class FileDialog extends javax.swing.JFrame {
         }
       }
       amtComplete += 4096;
-      File files[] = srcFolder.listFiles();
+      File[] files = srcFolder.listFiles();
       if (files == null) return;
       for(int a=0;a<files.length;a++) {
         if (abort) return;
@@ -407,7 +407,7 @@ public class FileDialog extends javax.swing.JFrame {
       }
     }
     public void removeDirectory(String name) {
-      File files[] = new File(name).listFiles();
+      File[] files = new File(name).listFiles();
       msg1 = "Deleting " + name;
       if (files != null) {
         for(int a=0;a<files.length;a++) {

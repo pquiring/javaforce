@@ -67,7 +67,7 @@ public class HTML {
    * @param selected_text = selected text (optional)
    * @param show_default = include a null 'Select...' option
   */
-  public static String select(String name, String id, String options[][], String selected_value, String selected_text, boolean show_default) {
+  public static String select(String name, String id, String[][] options, String selected_value, String selected_text, boolean show_default) {
     StringBuilder sb = new StringBuilder();
     sb.append("<select");
     if (name != null) {

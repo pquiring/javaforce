@@ -40,14 +40,14 @@ public class ParseArgs extends JF {
     arg_names = new Vector<String>();
   }
 
-  public void arg_parse(String args[]) {
+  public void arg_parse(String[] args) {
     for (int a = 0; a < args.length; a++) {
       arg_parse_element(args[a].toCharArray());
     }
   }
 
   public void arg_parse_file(InputStream is) {
-    char str[];
+    char[] str;
     while (!eof(is)) {
       str = arg_readln(is); //read one line (removes leading/trailing spaces)
       if ((str != null) && (str.length > 0)) {
@@ -57,9 +57,9 @@ public class ParseArgs extends JF {
   }
 
 //private members
-  private void arg_parse_element(char str[]) {
+  private void arg_parse_element(char[] str) {
     FileInputStream fis;
-    char tmp[];
+    char[] tmp;
 
     if (str.length == 0) {
       arg_names.add(createString(str));
@@ -130,10 +130,10 @@ public class ParseArgs extends JF {
     }
   }
 
-  private void arg_parse_string(char str[]) {
+  private void arg_parse_string(char[] str) {
     boolean quote = false;
     int p = 0;
-    char tmp[];
+    char[] tmp;
     while (p < str.length) {
       tmp = null;
       while (p < str.length) {
@@ -155,7 +155,7 @@ public class ParseArgs extends JF {
   }
 
   private char[] arg_readln(InputStream fis) {
-    char ret[] = null;
+    char[] ret = null;
     char ch;
     while (!eof(fis)) {
       ch = readchar(fis);

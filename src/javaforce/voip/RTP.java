@@ -413,7 +413,7 @@ public class RTP implements STUN.Listener {
     }
 
     public void run() {
-      byte data[] = new byte[rtp.mtu];
+      byte[] data = new byte[rtp.mtu];
       while (rtp.active) {
         try {
           DatagramPacket pack = new DatagramPacket(data, rtp.mtu);

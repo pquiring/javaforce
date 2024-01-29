@@ -52,7 +52,7 @@ public class Table extends Container {
     StringBuilder sb = new StringBuilder();
     //using an actualy <table> proved to be too difficult once spans where implemented
     sb.append("<div" + getAttrs() + ">");
-    Component cells[] = getAll();
+    Component[] cells = getAll();
     for(int a=0;a<cells.length;a++) {
       Cell cell = (Cell)cells[a];
       sb.append(cell.html());

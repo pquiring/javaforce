@@ -15,7 +15,8 @@ public class Offscreen {
   //offscreen data
   private int os_fb, os_clr_rb, os_depth_rb;
   private int os_width, os_height;
-  private int os_px[], os_fpx[];  //pixels, flipped pixels
+  private int[] os_px;  //pixels
+  private int[] os_fpx;  //flipped pixels
   private JFImage os_img;  //basically a BufferedImage
 
   /** Get offscreen buffer in a java.awt.Image */

@@ -26,7 +26,7 @@ public class ANSI {
 
   public static String repeat(int count, char ch) {
     if (count < 0) return "";
-    char ca[] = new char[count];
+    char[] ca = new char[count];
     for(int a=0;a<count;a++) {
       ca[a] = ch;
     }
@@ -63,7 +63,7 @@ public class ANSI {
   }
 
   public boolean getConsoleSize() {
-    int xy[];
+    int[] xy;
     if (JF.isWindows()) {
       xy = WinNative.getConsoleSize();
     } else {
@@ -198,7 +198,7 @@ public class ANSI {
     setBackColor(text_clr);
   }
 
-  public Field[] drawWindow(int x, int y, int w, int h, String txt[]) {
+  public Field[] drawWindow(int x, int y, int w, int h, String[] txt) {
     ArrayList<Field> fields = new ArrayList<Field>();
     setForeColor(fore_clr);
     setBackColor(back_clr);
@@ -292,7 +292,7 @@ public class ANSI {
     return fields.toArray(new Field[0]);
   }
 
-  public static void drawList(int x, int y, int w, int h, String list[], int start, int selected) {
+  public static void drawList(int x, int y, int w, int h, String[] list, int start, int selected) {
     setDialogColor();
     drawBox1(x,y,w,h);
     if (list == null) list = new String[0];
@@ -320,7 +320,7 @@ public class ANSI {
     }
   }
 
-  public void drawMenu(int x, int y, String opts[], int selected) {
+  public void drawMenu(int x, int y, String[] opts, int selected) {
     int width = 0;
     int height = opts.length + 2;
     for(int a=0;a<opts.length;a++) {
@@ -456,7 +456,7 @@ public class ANSI {
           if (buffer.charAt(p) == ';') numc++;
         }
       }
-      int nums[] = new int[numc];
+      int[] nums = new int[numc];
       int pos = 2;
       for(int num=0;num<numc;num++) {
         int numpos = pos;

@@ -122,7 +122,7 @@ public class WebUIClient {
   }
   private String stringify(String in) {
     StringBuilder sb = new StringBuilder();
-    char ca[] = in.toCharArray();
+    char[] ca = in.toCharArray();
     int len = ca.length;
     sb.append("\"");
     for(int a=0;a<len;a++) {

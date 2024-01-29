@@ -145,7 +145,7 @@ public abstract class Component {
     }
   }
   /** Invokes getClient().sendData() */
-  public void sendData(byte data[]) {
+  public void sendData(byte[] data) {
     if (client != null) {
       client . sendData(data);
     }
@@ -368,8 +368,8 @@ public abstract class Component {
     if (styles.size() > 0) {
       sb.append(" style='");
       int size = styles.size();
-      String keys[] = styles.keySet().toArray(new String[size]);
-      String vals[] = styles.values().toArray(new String[size]);
+      String[] keys = styles.keySet().toArray(new String[size]);
+      String[] vals = styles.values().toArray(new String[size]);
       for(int a=0;a<size;a++) {
         sb.append(keys[a] + ":" + vals[a] + ";");
       }
@@ -563,9 +563,9 @@ public abstract class Component {
   }
 
   /** Process custom events. */
-  public void onEvent(String event, String args[]) {}
+  public void onEvent(String event, String[] args) {}
 
-  public void onPosSize(String args[]) {
+  public void onPosSize(String[] args) {
     for(int a=0;a<moved.length;a++) {
       moved[a].onMoved(this, x, y);
     }
@@ -589,7 +589,7 @@ public abstract class Component {
     }
   }
 
-  public void onSize(String args[]) {
+  public void onSize(String[] args) {
     for(int c=0;c<args.length;c++) {
       String a = args[c];
       if (a.startsWith("w=")) {
@@ -604,7 +604,7 @@ public abstract class Component {
     }
   }
 
-  public void onPos(String args[]) {
+  public void onPos(String[] args) {
     for(int c=0;c<args.length;c++) {
       String a = args[c];
       if (a.startsWith("x=")) {
@@ -619,120 +619,120 @@ public abstract class Component {
     }
   }
 
-  protected void onLoaded(String args[]) {
+  protected void onLoaded(String[] args) {
     for(int a=0;a<loaded.length;a++) {
       loaded[a].loaded(this);
     }
   }
-  private Loaded loaded[] = new Loaded[0];
+  private Loaded[] loaded = new Loaded[0];
   public void addLoadedListener(Loaded handler) {
     loaded = Arrays.copyOf(loaded, loaded.length + 1);
     loaded[loaded.length-1] = handler;
   }
 
-  protected void onClick(String args[], MouseEvent me) {
+  protected void onClick(String[] args, MouseEvent me) {
     JFLog.log("onClick:" + this + ":" + click.length);
     for(int a=0;a<click.length;a++) {
       click[a].onClick(me, this);
     }
   }
-  private Click click[] = new Click[0];
+  private Click[] click = new Click[0];
   public void addClickListener(Click handler) {
     addEvent("onclick", "onClick(event, this);");
     click = Arrays.copyOf(click, click.length + 1);
     click[click.length-1] = handler;
   }
 
-  protected void onMouseUp(String args[]) {
+  protected void onMouseUp(String[] args) {
     for(int a=0;a<mouseUp.length;a++) {
       mouseUp[a].onMouseUp(this);
     }
   }
-  private MouseUp mouseUp[] = new MouseUp[0];
+  private MouseUp[] mouseUp = new MouseUp[0];
   public void addMouseUpListener(MouseUp handler) {
     addEvent("onmouseup", "onMouseUp(event, this);");
     mouseUp = Arrays.copyOf(mouseUp, mouseUp.length + 1);
     mouseUp[mouseUp.length-1] = handler;
   }
 
-  protected void onMouseDown(String args[]) {
+  protected void onMouseDown(String[] args) {
     for(int a=0;a<mouseDown.length;a++) {
       mouseDown[a].onMouseDown(this);
     }
   }
-  private MouseDown mouseDown[] = new MouseDown[0];
+  private MouseDown[] mouseDown = new MouseDown[0];
   public void addMouseDownListener(MouseDown handler) {
     addEvent("onmousedown", "onMouseDown(event, this);");
     mouseDown = Arrays.copyOf(mouseDown, mouseDown.length + 1);
     mouseDown[mouseDown.length-1] = handler;
   }
 
-  protected void onMouseMove(String args[]) {
+  protected void onMouseMove(String[] args) {
     for(int a=0;a<mouseMove.length;a++) {
       mouseMove[a].onMouseMove(this);
     }
   }
-  private MouseMove mouseMove[] = new MouseMove[0];
+  private MouseMove[] mouseMove = new MouseMove[0];
   public void addMouseMoveListener(MouseMove handler) {
     addEvent("onmousemove", "onMouseMove(event, this);");
     mouseMove = Arrays.copyOf(mouseMove, mouseMove.length + 1);
     mouseMove[mouseMove.length-1] = handler;
   }
 
-  protected void onMouseEnter(String args[]) {
+  protected void onMouseEnter(String[] args) {
     for(int a=0;a<mouseMove.length;a++) {
       mouseMove[a].onMouseMove(this);
     }
   }
-  private MouseEnter mouseEnter[] = new MouseEnter[0];
+  private MouseEnter[] mouseEnter = new MouseEnter[0];
   public void addMouseEnterListener(MouseEnter handler) {
     //TODO : addEvent() ???
     mouseEnter = Arrays.copyOf(mouseEnter, mouseEnter.length + 1);
     mouseEnter[mouseEnter.length-1] = handler;
   }
 
-  protected void onKeyUp(String args[], KeyEvent ke) {
+  protected void onKeyUp(String[] args, KeyEvent ke) {
     for(int a=0;a<keyUp.length;a++) {
       keyUp[a].onKeyUp(ke, this);
     }
   }
-  private KeyUp keyUp[] = new KeyUp[0];
+  private KeyUp[] keyUp = new KeyUp[0];
   public void addKeyUpListener(KeyUp handler) {
     addEvent("onkeyup", "onKeyUp(event, this);");
     keyUp = Arrays.copyOf(keyUp, keyUp.length + 1);
     keyUp[keyUp.length-1] = handler;
   }
 
-  protected void onKeyDown(String args[], KeyEvent ke) {
+  protected void onKeyDown(String[] args, KeyEvent ke) {
     for(int a=0;a<keyDown.length;a++) {
       keyDown[a].onKeyDown(ke, this);
     }
   }
-  private KeyDown keyDown[] = new KeyDown[0];
+  private KeyDown[] keyDown = new KeyDown[0];
   public void addKeyDownListener(KeyDown handler) {
     addEvent("onkeydown", "onKeyDown(event, this);");
     keyDown = Arrays.copyOf(keyDown, keyDown.length + 1);
     keyDown[keyDown.length-1] = handler;
   }
 
-  protected void onChanged(String args[]) {
+  protected void onChanged(String[] args) {
     for(int a=0;a<changed.length;a++) {
       changed[a].onChanged(this);
     }
   }
-  private Changed changed[] = new Changed[0];
+  private Changed[] changed = new Changed[0];
   public void addChangedListener(Changed handler) {
     changed = Arrays.copyOf(changed, changed.length + 1);
     changed[changed.length-1] = handler;
   }
 
-  private Visible visible[] = new Visible[0];
+  private Visible[] visible = new Visible[0];
   public void addVisibleListener(Visible handler) {
     visible = Arrays.copyOf(visible, visible.length + 1);
     visible[visible.length-1] = handler;
   }
 
-  private Validate validate[] = new Validate[0];
+  private Validate[] validate = new Validate[0];
   public void addValidateListener(Validate handler) {
     validate = Arrays.copyOf(validate, validate.length + 1);
     validate[validate.length-1] = handler;
@@ -744,7 +744,7 @@ public abstract class Component {
     return true;
   }
 
-  private Action action[] = new Action[0];
+  private Action[] action = new Action[0];
   public void addActionListener(Action handler) {
     action = Arrays.copyOf(action, action.length + 1);
     action[action.length-1] = handler;
@@ -755,21 +755,21 @@ public abstract class Component {
     }
   }
 
-  private Resized resized[] = new Resized[0];
+  private Resized[] resized = new Resized[0];
   public void addResizedListener(Resized handler) {
     addEvent("onresize", "onResize(event, this);");
     resized = Arrays.copyOf(resized, resized.length + 1);
     resized[resized.length-1] = handler;
   }
 
-  private Moved moved[] = new Moved[0];
+  private Moved[] moved = new Moved[0];
   public void addMovedListener(Moved handler) {
     addEvent("onmoved", "onMoved(event, this);");
     moved = Arrays.copyOf(moved, moved.length + 1);
     moved[moved.length-1] = handler;
   }
 
-  public void onDrawRect(String args[]) {
+  public void onDrawRect(String[] args) {
     Rectangle rect = new Rectangle();
     for(int c=0;c<args.length;c++) {
       String a = args[c];

@@ -76,7 +76,7 @@ public class RTPChannel {
   /**
    * Writes a packet to the RTP port.
    */
-  public void writeRTP(byte data[], int off, int len) {
+  public void writeRTP(byte[] data, int off, int len) {
     if (!rtp.active) {
       JFLog.log(log, "RTPChannel.writeRTP() : not active");
       return;
@@ -126,7 +126,7 @@ public class RTPChannel {
    * Writes a RFC 2833 (DTMF) RTP packet.
    */
   public void writeDTMF(char digit, boolean end) {
-    byte data[] = new byte[16];
+    byte[] data = new byte[16];
     buildHeader(data, RTP.CODEC_RFC2833.id, getseqnum(), gettimestamp(160), getssrc(), false);
     switch (digit) {
       case '*':
@@ -159,7 +159,7 @@ public class RTPChannel {
   /**
    * Builds RTP header in first 12 bytes of data[].
    */
-  public static void buildHeader(byte data[], int id, int seqnum, int timestamp, int ssrc, boolean last) {
+  public static void buildHeader(byte[] data, int id, int seqnum, int timestamp, int ssrc, boolean last) {
     //build RTP header
     data[0] = (byte) 0x80;  //version
     data[1] = (byte) id;    //0=g711u 3=gsm 8=g711a 18=g729a 26=JPEG 34=H.263 etc.
@@ -171,7 +171,7 @@ public class RTPChannel {
     BE.setuint32(data, 8, ssrc);
   }
 
-  public void buildHeader(byte data[], int type) {
+  public void buildHeader(byte[] data, int type) {
     buildHeader(data, type, 0, 0, getssrc(), false);
   }
 
@@ -486,7 +486,7 @@ public class RTPChannel {
     }
   }
 
-  protected void processRTCP(byte data[], int off, int len) {
+  protected void processRTCP(byte[] data, int off, int len) {
     if (rtp.rawMode) {
       rtp.iface.rtpPacket(this, CodecType.RTCP, data, off, len);
     }

@@ -3,7 +3,7 @@ package javaforce.gl;
 /** Stores one vector that intersects point (x,y,z). */
 
 public class Vector3 {
-  public float v[] = new float[3];
+  public float[] v = new float[3];
   public Vector3() { }
   public Vector3(float x, float y, float z) {
     this.v[0] = x;

@@ -7,5 +7,5 @@ package javaforce.controls.mod;
 
 public class ModData {
   public byte type;
-  public byte data[];
+  public byte[] data;
 }

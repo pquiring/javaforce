@@ -10,7 +10,7 @@ public class Frustum {
   private Vector3 ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr;
   private float nearD, farD;
   private float nw, nh, fw, fh;
-  private Plane3 pl[];
+  private Plane3[] pl;
   private Vector3 nc, fc, X, Y, Z;
   private Vector3 XX, YY, ZZ;
 
@@ -156,7 +156,7 @@ public class Frustum {
   /** Tests if box is within frustum.
    * @param pts = 8 points of box
    */
-  public int boxInside(Vector3 pts[]) {
+  public int boxInside(Vector3[] pts) {
     int result = INSIDE, in, out;
     for(int i=0; i < 6; i++) {
       // reset counters for corners in and out

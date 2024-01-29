@@ -65,7 +65,7 @@ public class WebUIServer implements WebHandler, WebSocketHandler {
 
   public void doGet(WebRequest req, WebResponse res) {
     String url = req.getURL();
-    byte data[] = null;
+    byte[] data = null;
 /*
     if (url.endsWith(".html")) {
       res.setContentType("text/html");  //default

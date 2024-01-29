@@ -8,7 +8,7 @@ import java.io.*;
  */
 
 public class Wav {
-  public short samples[];
+  public short[] samples;
   public String errmsg;
   private int pos, len;
 
@@ -27,7 +27,7 @@ public class Wav {
   public boolean load(InputStream wav) {
     errmsg = "";
     try {
-      byte data[] = new byte[30];
+      byte[] data = new byte[30];
       //read RIFF header (20 bytes);
       wav.read(data, 0, 20);
       if (!LE.getString(data, 0, 4).equals("RIFF")) throw new Exception("Not a valid WAV file (RIFF)");
@@ -44,7 +44,7 @@ public class Wav {
       while (!LE.getString(data, 0, 4).equals("data")) {
         //ignore block (FACT, INFO, etc.)
         len = LE.getuint32(data, 4);
-        byte junk[] = new byte[len];
+        byte[] junk = new byte[len];
         wav.read(junk);
         wav.read(data, 0, 8);
       }
@@ -52,7 +52,7 @@ public class Wav {
       len = LE.getuint32(data, 4);
       if (len < 320) throw new Exception("Not a valid WAV file (len<320)");
       len = len / 320 * 320;  //chop to 20ms frames
-      byte samples8[] = JF.readAll(wav, len);
+      byte[] samples8 = JF.readAll(wav, len);
       samples = new short[len/2];
       len >>= 1;
       for(int a=0;a<len;a++) {
@@ -79,7 +79,7 @@ public class Wav {
     return samples != null;
   }
   public short[] getSamples() {
-    short buf[] = new short[160];
+    short[] buf = new short[160];
     System.arraycopy(samples, pos, buf, 0, 160);
     pos += 160;
     if (pos == len) pos = 0;

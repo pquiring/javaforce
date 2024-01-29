@@ -10,7 +10,7 @@ package javaforce;
 import java.util.*;
 
 public class JFArrayFloat {
-  private float buf[];
+  private float[] buf;
   private int count;
 
   public static int initSize = 64;
@@ -38,7 +38,7 @@ public class JFArrayFloat {
     count = newcount;
   }
 
-  public void append(float f[]) {
+  public void append(float[] f) {
     int newcount = count + f.length;
     if (newcount > buf.length) {
       buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));

@@ -22,7 +22,7 @@ import javaforce.controls.*;
 
 public class ABPacket {
   public static byte[] makeConnectPacket(ABContext context) {
-    byte packet[];
+    byte[] packet;
     ENIP ip = new ENIP(ENIP.CMD_GET_SESSION);
     ip.setSizes(0);
     int size = ip.size();
@@ -38,7 +38,7 @@ public class ABPacket {
   }
 
   public static byte[] makeReadPacket(String tag, ABContext context) {
-    byte packet[];
+    byte[] packet;
     ENIP ip = new ENIP(ENIP.CMD_RR_DATA);
     CIP_Request cip = new CIP_Request();
     cip.setRead(tag);
@@ -56,8 +56,8 @@ public class ABPacket {
     }
   }
 
-  public static byte[] makeWritePacket(String tag, byte type, byte data[], ABContext context) {
-    byte packet[];
+  public static byte[] makeWritePacket(String tag, byte type, byte[] data, ABContext context) {
+    byte[] packet;
     ENIP ip = new ENIP(ENIP.CMD_RR_DATA);
     CIP_Request cip = new CIP_Request();
     cip.setWrite(tag, type, data);
@@ -75,7 +75,7 @@ public class ABPacket {
     }
   }
 
-  public static byte[] decodePacket(byte data[]) {
+  public static byte[] decodePacket(byte[] data) {
     ENIP ip = new ENIP();
     int offset = 0;
     try {
@@ -97,7 +97,7 @@ public class ABPacket {
     }
   }
 
-  public static boolean isPacketComplete(byte data[]) {
+  public static boolean isPacketComplete(byte[] data) {
     try {
       return decodePacket(data) != null;
     } catch (Exception e) {

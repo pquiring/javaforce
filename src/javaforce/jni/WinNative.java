@@ -15,16 +15,16 @@ public class WinNative {
   //com port
   public static native long comOpen(String name, int baud);  //assumes 8 data bits, 1 stop bit, no parity, etc.
   public static native void comClose(long handle);
-  public static native int comRead(long handle, byte buf[]);
-  public static native int comWrite(long handle, byte buf[]);
+  public static native int comRead(long handle, byte[] buf);
+  public static native int comWrite(long handle, byte[] buf);
 
   //Windows
-  public static native boolean getWindowRect(String name, int rect[]);  //returns x,y,width,height
+  public static native boolean getWindowRect(String name, int[] rect);  //returns x,y,width,height
 
   //WinPE resources
   public static native long peBegin(String file);  //returns handle
-  public static native void peAddIcon(long handle, byte data[]);
-  public static native void peAddString(long handle, int name, int idx, byte data[]);
+  public static native void peAddIcon(long handle, byte[] data);
+  public static native void peAddString(long handle, int name, int idx, byte[] data);
   public static native void peEnd(long handle);
 
   //Impersonate User
@@ -47,8 +47,8 @@ public class WinNative {
   public static native long tapeOpen(String name);
   public static native void tapeClose(long handle);
   public static native boolean tapeFormat(long handle, int blocksize);
-  public static native int tapeRead(long handle, byte buf[], int offset, int length);
-  public static native int tapeWrite(long handle, byte buf[], int offset, int length);
+  public static native int tapeRead(long handle, byte[] buf, int offset, int length);
+  public static native int tapeWrite(long handle, byte[] buf, int offset, int length);
   public static native boolean tapeSetpos(long handle, long pos);
   public static native long tapeGetpos(long handle);
   public static native boolean tapeMedia(long handle);
@@ -82,5 +82,5 @@ public class WinNative {
 
   //test
   public static native int add(int x, int y);
-  public static native void hold(int a[], int ms);
+  public static native void hold(int[] a, int ms);
 }

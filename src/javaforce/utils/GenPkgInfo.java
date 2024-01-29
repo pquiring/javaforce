@@ -26,7 +26,7 @@ public class GenPkgInfo {
   private String app, desc, arch, ver;
   private long size;  //in bytes
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args == null || args.length < 3) {
       System.out.println("genpkginfo : build linux package info files");
       System.out.println("  Usage : jpkginfo distro archtype files.list");
@@ -40,7 +40,7 @@ public class GenPkgInfo {
     }
   }
 
-  public void run(String args[]) throws Exception {
+  public void run(String[] args) throws Exception {
     tools = new BuildTools();
     if (!tools.loadXML("build.xml")) throw new Exception("error loading build.xml");
     String distro = args[0];
@@ -84,7 +84,7 @@ public class GenPkgInfo {
 
   private long calcSize(String files_list) {
     try {
-      String files[] = new String(JF.readAll(new FileInputStream(files_list))).replaceAll("\r", "").split("\n");
+      String[] files = new String(JF.readAll(new FileInputStream(files_list))).replaceAll("\r", "").split("\n");
       long size = 0;
       for(int a=0;a<files.length;a++) {
         size += new File(files[a]).length();
@@ -99,7 +99,7 @@ public class GenPkgInfo {
 
   private String[] getDepends(String tagName) {
     ArrayList<String> depends = new ArrayList<String>();
-    String list[] = tools.getProperty(tagName).split(",");
+    String[] list = tools.getProperty(tagName).split(",");
     if (!app.equals("javaforce")) depends.add("javaforce");
     for(int a=0;a<list.length;a++) {
       String depend = list[a].trim();
@@ -125,7 +125,7 @@ public class GenPkgInfo {
       //optional
       sb.append("Installed-Size: " + Long.toString(size / 1024L) + "\n");
       sb.append("Depends: ");
-      String depends[] = getDepends("debian.depends");
+      String[] depends = getDepends("debian.depends");
       for(int a=0;a<depends.length;a++) {
         if (a > 0) sb.append(",");
         sb.append(depends[a]);

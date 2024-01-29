@@ -25,7 +25,7 @@ public class WinPE {
   private static final int RT_RCDATA = 10;  //raw data (used to store .cfg file)
   private static final int RT_MANIFEST = 24;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (!JF.isWindows()) {System.out.println("For windows only"); return;}
     if (args == null || args.length < 2) usage();
     String exeFile = args[0];
@@ -50,7 +50,7 @@ public class WinPE {
     try {
       //LoadIcon
       FileInputStream fis = new FileInputStream(icoFile);
-      byte ico[] = JF.readAll(fis);
+      byte[] ico = JF.readAll(fis);
       fis.close();
 
       //Begin
@@ -75,7 +75,7 @@ public class WinPE {
   public static void addManifest(String exeFile, String manifestFile) {
     try {
       FileInputStream fis = new FileInputStream(manifestFile);
-      byte str[] = JF.readAll(fis);
+      byte[] str = JF.readAll(fis);
       fis.close();
 
       //Begin
@@ -100,7 +100,7 @@ public class WinPE {
   public static void addCfg(String exeFile, String cfgFile) {
     try {
       FileInputStream fis = new FileInputStream(cfgFile);
-      byte str[] = JF.readAll(fis);
+      byte[] str = JF.readAll(fis);
       fis.close();
 
       //Begin

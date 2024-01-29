@@ -16,7 +16,7 @@ public class TestMedia implements MediaIO {
     System.out.println("TestMedia encoder | decoder");
     System.exit(1);
   }
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length == 0) {
       usage();
     }
@@ -52,12 +52,12 @@ public class TestMedia implements MediaIO {
         pkts++;
         switch (type) {
           case MediaCoder.VIDEO_FRAME:
-            int px[] = decoder.getVideo();
+            int[] px = decoder.getVideo();
             if (px == null) break;
             System.out.println("video=" + px.length);
             break;
           case MediaCoder.AUDIO_FRAME:
-            short sams[] = decoder.getAudio();
+            short[] sams = decoder.getAudio();
             if (sams == null) break;
             System.out.println("audio=" + sams.length);
             break;
@@ -71,14 +71,14 @@ public class TestMedia implements MediaIO {
       media.close();
     }
   }
-  public static void random(int px[]) {
+  public static void random(int[] px) {
     Random r = new Random();
     int len = px.length;
     for(int a=0;a<len;a++) {
       px[a] = r.nextInt() | 0xff000000;
     }
   }
-  public static void random(short sams[]) {
+  public static void random(short[] sams) {
     Random r = new Random();
     int len = sams.length;
     for(int a=0;a<len;a++) {
@@ -89,8 +89,8 @@ public class TestMedia implements MediaIO {
   public static String encoder_audio_src = "random";
   public static void encoder(boolean loop) {
     TestMedia media = new TestMedia();
-    int px[] = new int[640*480];
-    short sams[] = new short[7350];
+    int[] px = new int[640*480];
+    short[] sams = new short[7350];
     int i = 0;
     do {
       media.size = 0;

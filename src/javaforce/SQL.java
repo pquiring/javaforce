@@ -157,7 +157,7 @@ public class SQL {
 
   /** Executes a SQL query with one row of data. */
   public String[] select1row(String str) {
-    String ret[];
+    String[] ret;
     java.sql.Statement stmt = null;
     java.sql.ResultSet rs = null;
     java.sql.ResultSetMetaData rsmd = null;

@@ -20,7 +20,7 @@ public class ProxyTest {
       c.connect();
       InputStream is = c.getInputStream();
       BufferedReader br = new BufferedReader(new InputStreamReader(is));
-      String keys[] = c.getHeaderFields().keySet().toArray(new String[0]);
+      String[] keys = c.getHeaderFields().keySet().toArray(new String[0]);
       for(int a=0;a<keys.length;a++) {
         String value = c.getHeaderField(keys[a]);
         System.out.println(keys[a] + "=" + value);
@@ -29,7 +29,7 @@ public class ProxyTest {
       JFLog.log(e);
     }
   }
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     JF.initHttps();
     HttpURLConnection.setFollowRedirects(false);
     load("https://example.com");

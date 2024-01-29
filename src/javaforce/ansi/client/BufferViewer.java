@@ -112,14 +112,14 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
     profile_last = current;
   }
 
-  public byte[] char2byte(char buf[], int buflen) {
-    byte tmp[] = new byte[buflen];
+  public byte[] char2byte(char[] buf, int buflen) {
+    byte[] tmp = new byte[buflen];
     for(int a=0;a<buflen;a++) tmp[a] = (byte)buf[a];
     return tmp;
   }
 
-  public char[] byte2char(byte buf[], int buflen) {
-    char tmp[] = new char[buflen];
+  public char[] byte2char(byte[] buf, int buflen) {
+    char[] tmp = new char[buflen];
     for(int a=0;a<buflen;a++) {
       tmp[a] = (char)buf[a];
       tmp[a] &= 0xff;
@@ -133,7 +133,7 @@ public class BufferViewer extends JComponent implements KeyListener, MouseListen
 
   public void changeFont() {
     {
-      int metrics[] = JFAWT.getFontMetrics(settings.fnt);
+      int[] metrics = JFAWT.getFontMetrics(settings.fnt);
       //[0] = width
       //[1] = ascent
       //[2] = descent

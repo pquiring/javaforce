@@ -66,7 +66,7 @@ public class bmp {
     int fs;
     int bo;
     int siz;
-    int ret[] = null;
+    int[] ret = null;
     byte m1, m2;
     int type = -1, imagecount;  //icon
     int bpp;
@@ -166,7 +166,7 @@ public class bmp {
       int slsiz = (bmp_x * 3 + 3) & 0x7ffffffc;
       int sbufsiz = slsiz * bmp_y;
 
-      byte simg[] = new byte[sbufsiz];
+      byte[] simg = new byte[sbufsiz];
       try {
         if (in.read(simg) != sbufsiz) {
           return null;
@@ -191,7 +191,7 @@ public class bmp {
       int slsiz = (bmp_x * 4 + 3) & 0x7ffffffc;
       int sbufsiz = slsiz * bmp_y;
 
-      byte simg[] = new byte[sbufsiz];
+      byte[] simg = new byte[sbufsiz];
       try {
         if (in.read(simg) != sbufsiz) {
           JFLog.log("loadBMP() failed : unable to load image data");
@@ -219,7 +219,7 @@ public class bmp {
     return ret;
   }
 
-  public static boolean save24(OutputStream out, int buf[], javaforce.ui.Dimension size, boolean noheader, boolean icon) {
+  public static boolean save24(OutputStream out, int[] buf, javaforce.ui.Dimension size, boolean noheader, boolean icon) {
     int a;
     int slsiz = size.width * 3;
     int dlsiz = (slsiz + 3) & 0xfffffffc;
@@ -265,7 +265,7 @@ public class bmp {
       }
     }
 
-    byte dbuf[] = new byte[dbufsiz];
+    byte[] dbuf = new byte[dbufsiz];
     int sidx = size.width * (size.height - 1);
     int didx = 0;
     //Invert BMP! (Image is stored Upside Down!!!)
@@ -289,7 +289,7 @@ public class bmp {
     return true;
   }
 
-  public static boolean save32(OutputStream out, int buf[], javaforce.ui.Dimension size, boolean noheader, boolean icon) {
+  public static boolean save32(OutputStream out, int[] buf, javaforce.ui.Dimension size, boolean noheader, boolean icon) {
 
     int a;
     int slsiz = size.width * 4;
@@ -336,7 +336,7 @@ public class bmp {
       }
     }
 
-    byte dbuf[] = new byte[dbufsiz];
+    byte[] dbuf = new byte[dbufsiz];
     int sidx = size.width * (size.height - 1);
     int didx = 0;
     //Invert BMP! (Image is stored Upside Down!!!)

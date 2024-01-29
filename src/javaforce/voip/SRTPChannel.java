@@ -107,14 +107,14 @@ public class SRTPChannel extends RTPChannel {
   }
 
   /** Sets keys found in SDP used on this side of SRTP (not used in DTLS mode) */
-  public void setLocalKeys(byte key[], byte salt[]) {
+  public void setLocalKeys(byte[] key, byte[] salt) {
     System.arraycopy(key, 0, localKey, 0, KEY_LENGTH);
     System.arraycopy(salt, 0, localSalt, 0, SALT_LENGTH);
     have_keys = true;
   }
 
   /** Sets keys found in SDP used on other side of SRTP (not used in DTLS mode) */
-  public void setRemoteKeys(byte key[], byte salt[]) {
+  public void setRemoteKeys(byte[] key, byte[] salt) {
     System.arraycopy(key, 0, remoteKey, 0, KEY_LENGTH);
     System.arraycopy(salt, 0, remoteSalt, 0, SALT_LENGTH);
     have_keys = true;
@@ -690,7 +690,7 @@ public class SRTPChannel extends RTPChannel {
   private class Worker extends Thread {
     public void run() {
       try {
-        byte data[] = new byte[1500];
+        byte[] data = new byte[1500];
         while (active) {
           DatagramPacket pack = new DatagramPacket(data, 1500);
           rawSocket.receive(pack);
@@ -708,7 +708,7 @@ public class SRTPChannel extends RTPChannel {
     }
   }
 
-  protected void processRTP(byte data[], int off, int len) {
+  protected void processRTP(byte[] data, int off, int len) {
     if (rtp.rawMode) {
       rtp.iface.rtpPacket(this, CodecType.RAW, data, off, len);
       return;
@@ -747,7 +747,7 @@ public class SRTPChannel extends RTPChannel {
       updateCounters(seqno, index);
       if (checkAuth(data, len)) return;
       if (checkForReplay(index)) return;
-      byte payload[] = Arrays.copyOfRange(data, off + 12, off + len);
+      byte[] payload = Arrays.copyOfRange(data, off + 12, off + len);
       try {
         decrypt(payload, ssrc, seqno, index);
       } catch (Exception e) {
@@ -761,7 +761,7 @@ public class SRTPChannel extends RTPChannel {
     if (dtls) processDTLS(data, off, len);
   }
 
-  private void printArray(String msg, byte data[], int off, int len) {
+  private void printArray(String msg, byte[] data, int off, int len) {
     StringBuilder sb = new StringBuilder();
     int sum = 0;  //crc kinda
     for(int a=0;a<len;a++) {

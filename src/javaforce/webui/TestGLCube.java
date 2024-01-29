@@ -16,7 +16,7 @@ public class TestGLCube implements WebUIHandler {
   public TestGLCube() {
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     new WebUIServer().start(new TestGLCube(), 8080, false);
   }
 
@@ -99,8 +99,8 @@ public class TestGLCube implements WebUIHandler {
     0.0f, 1.0f
   };
 
-  public static byte[] convertFloatArray(float m[]) {
-    byte data[] = new byte[m.length * 4];
+  public static byte[] convertFloatArray(float[] m) {
+    byte[] data = new byte[m.length * 4];
     int off = 0;
     for(int a=0;a<m.length;a++) {
       javaforce.LE.setuint32(data, off, Float.floatToIntBits(m[a]));
@@ -109,8 +109,8 @@ public class TestGLCube implements WebUIHandler {
     return data;
   }
 
-  public static byte[] convertIntArray(int i[]) {
-    byte data[] = new byte[i.length * 4];
+  public static byte[] convertIntArray(int[] i) {
+    byte[] data = new byte[i.length * 4];
     int offset = 0;
     for(int a=0;a<i.length;a++) {
       int num = i[a];
@@ -128,7 +128,7 @@ public class TestGLCube implements WebUIHandler {
 
   public Panel getRootPanel(WebUIClient client) {
     Panel panel = new Panel() {
-      public void onLoaded(String args[]) {
+      public void onLoaded(String[] args) {
         Context context = (Context)client.getProperty("context");
         context.send();
       }

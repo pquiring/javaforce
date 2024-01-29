@@ -17,7 +17,7 @@ public class Tetris extends TimerTask implements KeyEvents {
   private int height;
   private int width;
   private int padding;
-  private int lines[][];
+  private int[][] lines;
   private int score;
   private int thisPiece, nextPiece;
   private Random r;
@@ -33,7 +33,7 @@ public class Tetris extends TimerTask implements KeyEvents {
   private boolean toggle;
   private boolean redraw;
   private boolean refresh;
-  private int colors[] = {
+  private int[] colors = {
     Color.red.getRGB(),
     Color.green.getRGB(),
     Color.blue.getRGB(),
@@ -43,8 +43,8 @@ public class Tetris extends TimerTask implements KeyEvents {
     Color.magenta.getRGB(),
     Color.cyan.getRGB()
   };
-  private int maxShift[] = {3, 1, 1, 1, 1, 1, 1, 1};
-  private int shapes[][][] = {  //[piece] [y] [x]
+  private int[] maxShift = {3, 1, 1, 1, 1, 1, 1, 1};
+  private int[][][] shapes = {  //[piece] [y] [x]
     //'I', 'L', 'J', 'T', 'S', 'Z', 'O', 'V'
     {{1,0,0,0}, {1,0,0,0}, {1,0,0,0}, {1,0,0,0}},
     {{1,0,0,0}, {1,0,0,0}, {1,1,0,0}, {0,0,0,0}},
@@ -55,9 +55,9 @@ public class Tetris extends TimerTask implements KeyEvents {
     {{1,1,0,0}, {1,1,0,0}, {0,0,0,0}, {0,0,0,0}},
     {{1,1,0,0}, {1,0,0,0}, {0,0,0,0}, {0,0,0,0}},  //non-standard piece
   };
-  private int rotations[][][][];  //[piece] [rotation] [y] [x]
+  private int[][][][] rotations;  //[piece] [rotation] [y] [x]
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     Tetris game = new Tetris();
     ANSI.enableConsoleMode();
     ANSI ansi = new ANSI(game);
@@ -157,8 +157,8 @@ public class Tetris extends TimerTask implements KeyEvents {
     ansi.setBackColor(Color.black.getRGB());
   }
 
-  private int[][] deepCopy(int array[][]) {
-    int ret[][] = new int[4][4];
+  private int[][] deepCopy(int[][] array) {
+    int[][] ret = new int[4][4];
     for(int y=0;y<4;y++) {
       for(int x=0;x<4;x++) {
         ret[y][x] = array[y][x];
@@ -169,7 +169,7 @@ public class Tetris extends TimerTask implements KeyEvents {
 
   //inplace rotation of 4x4 array
   //see https://www.geeksforgeeks.org/inplace-rotate-square-matrix-by-90-degrees/
-  private void rotate(int array[][]) {
+  private void rotate(int[][] array) {
     int tmp;
     for(int x=0;x<2;x++) {
       for(int y=x;y<4-x-1;y++) {
@@ -187,14 +187,14 @@ public class Tetris extends TimerTask implements KeyEvents {
     }
   }
 
-  private boolean hasSpacingTop(int array[][]) {
+  private boolean hasSpacingTop(int[][] array) {
     for(int x=0;x<4;x++) {
       if (array[0][x] == 1) return false;
     }
     return true;
   }
 
-  private boolean hasSpacingLeft(int array[][]) {
+  private boolean hasSpacingLeft(int[][] array) {
     for(int y=0;y<4;y++) {
       if (array[y][0] == 1) return false;
     }
@@ -202,7 +202,7 @@ public class Tetris extends TimerTask implements KeyEvents {
   }
 
   //rotation may require piece to move to top left corner of array
-  private void moveTopLeft(int array[][]) {
+  private void moveTopLeft(int[][] array) {
     while (hasSpacingTop(array)) {
       //shift up
       for(int y=1;y<4;y++) {

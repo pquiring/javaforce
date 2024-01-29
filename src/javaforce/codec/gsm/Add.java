@@ -215,7 +215,7 @@ public class Add {
     return div;
   }
 
-  private static final short bitoff[]
+  private static final short[] bitoff
           = new short[] {
             8, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4,
             3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,

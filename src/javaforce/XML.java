@@ -226,7 +226,7 @@ public class XML {
   private final int XML_SINGLE = 4;
   private int type;
   private int line, pos;
-  private char buf[];
+  private char[] buf;
 
   private XMLTagPart readtag() {
     boolean quote2 = false, quote1 = false, isAttrs = false;
@@ -300,7 +300,7 @@ public class XML {
 
   private void string2attrs(XMLTag tag, String attrs) {
     //search for name="value"
-    char ca[] = attrs.toCharArray();
+    char[] ca = attrs.toCharArray();
     XMLAttr attr;
     String name, value;
     int length = attrs.length();
@@ -899,7 +899,7 @@ public class XML {
    */
   public void readClass(XMLTag tag, Object obj) {
     Class<?> c = obj.getClass(), fc;
-    Field fs[];
+    Field[] fs;
     String name, typeString;
     try {
       fs = c.getFields();
@@ -909,7 +909,7 @@ public class XML {
     }
     int fieldcnt = fs.length;
     boolean isArray;
-    Object array[];
+    Object[] array;
     for (int a = 0; a < fieldcnt; a++) {
       try {
         if (fs[a].get(obj) == null) {
@@ -928,37 +928,37 @@ public class XML {
           }
           array = (Object[]) fs[a].get(obj);
           if (typeString.indexOf(" int[] ") != -1) {
-            Integer array2[] = (Integer[]) array;
+            Integer[] array2 = (Integer[]) array;
             for (int b = 0; b < array.length; b++) {
               addTag(tag, name, "", "" + array2[b].intValue());
             }
           } else if (typeString.indexOf(" short[] ") != -1) {
-            Short array2[] = (Short[]) array;
+            Short[] array2 = (Short[]) array;
             for (int b = 0; b < array.length; b++) {
               addTag(tag, name, "", "" + array2[b].shortValue());
             }
           } else if (typeString.indexOf(" byte[] ") != -1) {
-            Byte array2[] = (Byte[]) array;
+            Byte[] array2 = (Byte[]) array;
             for (int b = 0; b < array.length; b++) {
               addTag(tag, name, "", "" + array2[b].byteValue());
             }
           } else if (typeString.indexOf(" boolean[] ") != -1) {
-            Boolean array2[] = (Boolean[]) array;
+            Boolean[] array2 = (Boolean[]) array;
             for (int b = 0; b < array.length; b++) {
               addTag(tag, name, "", array2[b].booleanValue() ? "true" : "false");
             }
           } else if (typeString.indexOf(" float[] ") != -1) {
-            Float array2[] = (Float[]) array;
+            Float[] array2 = (Float[]) array;
             for (int b = 0; b < array.length; b++) {
               addTag(tag, name, "", "" + array2[b].floatValue());
             }
           } else if (typeString.indexOf(" double[] ") != -1) {
-            Double array2[] = (Double[]) array;
+            Double[] array2 = (Double[]) array;
             for (int b = 0; b < array.length; b++) {
               addTag(tag, name, "", "" + array2[b].doubleValue());
             }
           } else if (typeString.indexOf(" java.lang.String[] ") != -1) {
-            String array2[] = (String[]) array;
+            String[] array2 = (String[]) array;
             for (int b = 0; b < array.length; b++) {
               addTag(tag, name, "", array2[b]);
             }

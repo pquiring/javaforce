@@ -101,7 +101,7 @@ public class Buffer {
   public ANSI ansi;
   private UTF8 utf8;
   /** Current Telnet/ANSI code */
-  private char code[] = new char[64];  //Telnet/ANSI code
+  private char[] code = new char[64];  //Telnet/ANSI code
   private int codelen = 0;
   private final char IAC = 255;
   private final char ESC = 27;  //0x1b
@@ -135,14 +135,14 @@ public class Buffer {
     profile_last = current;
   }
 
-  public byte[] char2byte(char buf[], int buflen) {
-    byte tmp[] = new byte[buflen];
+  public byte[] char2byte(char[] buf, int buflen) {
+    byte[] tmp = new byte[buflen];
     for(int a=0;a<buflen;a++) tmp[a] = (byte)buf[a];
     return tmp;
   }
 
-  public char[] byte2char(byte buf[], int buflen) {
-    char tmp[] = new char[buflen];
+  public char[] byte2char(byte[] buf, int buflen) {
+    char[] tmp = new char[buflen];
     for(int a=0;a<buflen;a++) {
       tmp[a] = (char)buf[a];
       tmp[a] &= 0xff;
@@ -150,9 +150,9 @@ public class Buffer {
     return tmp;
   }
 
-  public void output(char buf[]) {
+  public void output(char[] buf) {
     if (settings.localEcho) input(buf, buf.length);
-    byte tmp[] = char2byte(buf, buf.length);
+    byte[] tmp = char2byte(buf, buf.length);
     try {
       out.write(tmp);
       out.flush();
@@ -180,13 +180,13 @@ public class Buffer {
     input(str.toCharArray(), str.length());
   }
 
-  private void input(char buf[], int buflen) {
+  private void input(char[] buf, int buflen) {
     //process Telnet/ANSI code
     if (fos != null) {
-      byte tmp[] = char2byte(buf, buflen);
+      byte[] tmp = char2byte(buf, buflen);
       JF.write(fos, tmp, 0, tmp.length);
     }
-    char newbuf[] = new char[buflen];
+    char[] newbuf = new char[buflen];
     int newbuflen = 0;
     for(int a=0;a<buflen;a++) {
       if (codelen == 0) {
@@ -217,7 +217,7 @@ public class Buffer {
   }
 
   private void input(char ch) {
-    char tmp[] = new char[1];
+    char[] tmp = new char[1];
     tmp[0] = ch;
     input(tmp, 1);
   }
@@ -233,7 +233,7 @@ public class Buffer {
     y1 = 0;
     y2 = newsy-1;
 
-    Char newChars[] = new Char[newsx*(newsy+scrollBack)];
+    Char[] newChars = new Char[newsx*(newsy+scrollBack)];
     int sy2 = sy + scrollBack;
     int newsy2 = newsy + scrollBack;
     if (newsy2 > sy2) {
@@ -276,7 +276,7 @@ public class Buffer {
   }
 
   public void changeScrollBack(int newSize) {
-    Char newChars[] = new Char[sx*(sy+newSize)];
+    Char[] newChars = new Char[sx*(sy+newSize)];
     int diff, pos;
     if (newSize > scrollBack) {
       diff = newSize - scrollBack;
@@ -348,7 +348,7 @@ public class Buffer {
     print(txt.toCharArray(), txt.length());
   }
 
-  public void print(char buf[], int buflen) {
+  public void print(char[] buf, int buflen) {
     for(int a=0;a<buflen;a++) {
 //      if (script != null) script.input(buf[a], this);
       switch (buf[a]) {
@@ -382,7 +382,7 @@ public class Buffer {
   }
 
   public void print(char ch) {
-    char x[] = new char[1];
+    char[] x = new char[1];
     x[0] = ch;
     print(x, 1);
   }
@@ -758,7 +758,7 @@ public class Buffer {
         if (settings.password.length() == 0) settings.password = GetPassword.getPassword(parent);
         if (settings.password == null) return false;
       }
-      Object pipes[];
+      Object[] pipes;
       client = SshClient.setUpDefaultClient();
       client.start();
       JFLog.log("TODO : set knownhosts");

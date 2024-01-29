@@ -65,7 +65,7 @@ public class PulseAudio {
     sources = new ArrayList<Source>();
     ShellProcess sp = new ShellProcess();
     String output = sp.run(new String[]{"pactl", "list"}, false);
-    String lns[] = output.split("\n");
+    String[] lns = output.split("\n");
     Card card = null;
     Sink sink = null;
     Source source = null;
@@ -124,7 +124,7 @@ public class PulseAudio {
           continue;
         }
         if (lns[a].startsWith("\tVolume:")) {
-          String f[] = lns[a].substring(9).split(" +");
+          String[] f = lns[a].substring(9).split(" +");
           int left = JF.atoi(f[1].substring(0, f[1].length() - 1));
           int right = -1;
           if (f.length > 3) {

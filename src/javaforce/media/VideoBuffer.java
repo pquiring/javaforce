@@ -12,7 +12,7 @@ import javaforce.*;
 import javaforce.awt.*;
 
 public class VideoBuffer {
-  private JFImage images[];
+  private JFImage[] images;
   private int head = 0, tail = 0;
   private boolean headInUse, tailInUse;
 
@@ -78,5 +78,5 @@ public class VideoBuffer {
   }
 
   /** Compares two frames returning percentage of pixels that are different. */
-  public static native float compareFrames(int frame1[], int frame2[], int width, int height);
+  public static native float compareFrames(int[] frame1, int[] frame2, int width, int height);
 }

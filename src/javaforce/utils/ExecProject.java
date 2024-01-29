@@ -13,7 +13,7 @@ import javaforce.*;
 public class ExecProject implements ShellProcessListener {
   private BuildTools tools;
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length != 1) {
       System.out.println("ExecProject : Runs project using java");
       System.out.println("  Usage : ExecProject buildfile");

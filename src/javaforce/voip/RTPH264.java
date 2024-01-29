@@ -46,7 +46,7 @@ public class RTPH264 extends RTPCodec {
     log = id;
   }
 
-  private int find_best_length(byte data[], int offset, int length) {
+  private int find_best_length(byte[] data, int offset, int length) {
     //see if there is a 0,0,1 and return a length to that
     //this way the next packet will start at a resync point
     for(int a=1;a<length-3;a++) {
@@ -61,7 +61,7 @@ public class RTPH264 extends RTPCodec {
    */
 
   /** Encodes raw H.264 packets into multiple RTP packets (fragments). */
-  public void encode(byte data[], int x, int y, int id, PacketReceiver pr) {
+  public void encode(byte[] data, int x, int y, int id, PacketReceiver pr) {
     int len = data.length;
     int packetLength;
     int offset = 0;

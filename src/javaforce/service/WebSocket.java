@@ -53,7 +53,7 @@ public class WebSocket {
   /** Writes a WebSocket message to client.
    * @param type = TYPE_...
    */
-  public void write(byte msg[], int type) {
+  public void write(byte[] msg, int type) {
     try {
       //encode a packet and write it
       int len = msg.length;
@@ -62,7 +62,7 @@ public class WebSocket {
       }
       if (len > 65535) {
         //create 64bit packet length
-        byte header[] = new byte[10];
+        byte[] header = new byte[10];
         header[0] = (byte)(FIN | type);
         header[1] = 127;
         //bytes 2-6 : not supported (64bit length), only support 24bit
@@ -72,7 +72,7 @@ public class WebSocket {
         os.write(header);
       } else if (len >= 126) {
         //create 16bit packet length
-        byte header[] = new byte[4];
+        byte[] header = new byte[4];
         header[0] = (byte)(FIN | type);
         header[1] = 126;
         header[2] = (byte)((len & 0xff00) >> 8);
@@ -80,7 +80,7 @@ public class WebSocket {
         os.write(header);
       } else {
         //create 7bit packet length
-        byte header[] = new byte[2];
+        byte[] header = new byte[2];
         header[0] = (byte)(FIN | type);
         header[1] = (byte)len;
         os.write(header);

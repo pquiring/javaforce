@@ -195,11 +195,11 @@ public class RTSPClient extends RTSP implements RTSPInterface, STUN.Listener {
       }
     }
   }
-  public void turnAlloc(STUN stun, String ip, int port, byte token[], int lifetime) {}
+  public void turnAlloc(STUN stun, String ip, int port, byte[] token, int lifetime) {}
   public void turnBind(STUN stun) {}
   public void turnRefresh(STUN stun, int lifetime) {}
   public void turnFailed(STUN stun) {}
-  public void turnData(STUN stun, byte data[], int offset, int length, short channel) {}
+  public void turnData(STUN stun, byte[] data, int offset, int length, short channel) {}
 
   private boolean findlocalhost_stun() {
     stunResponse = false;

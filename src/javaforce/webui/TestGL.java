@@ -15,7 +15,7 @@ public class TestGL implements WebUIHandler {
   public TestGL() {
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     new WebUIServer().start(new TestGL(), 8080, false);
   }
 
@@ -60,8 +60,8 @@ public class TestGL implements WebUIHandler {
  1.0f,-1.0f, 0.0f,
 -1.0f,-1.0f, 0.0f};
 
-  public byte[] convertFloatArray(float m[]) {
-    byte data[] = new byte[16 * 4];
+  public byte[] convertFloatArray(float[] m) {
+    byte[] data = new byte[16 * 4];
     int off = 0;
     for(int a=0;a<m.length;a++) {
       javaforce.LE.setuint32(data, off, Float.floatToIntBits(m[a]));
@@ -72,7 +72,7 @@ public class TestGL implements WebUIHandler {
 
   public Panel getRootPanel(WebUIClient client) {
     Panel panel = new Panel() {
-      public void onLoaded(String args[]) {
+      public void onLoaded(String[] args) {
         Matrix pMatrix = new Matrix();
         pMatrix.perspective(45f, 640.0f/480.0f, 0.1f, 100.0f);
         Matrix mMatrix = new Matrix();

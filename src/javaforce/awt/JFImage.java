@@ -144,7 +144,7 @@ public class JFImage extends JComponent implements Icon {
     if (newType != BufferedImage.TYPE_INT_ARGB || newType != BufferedImage.TYPE_INT_RGB) {
       int x = bi.getWidth();
       int y = bi.getHeight();
-      int px[] = bi.getRGB(0, 0, x, y, null, 0, x);  //tmp may not be int[] buffer
+      int[] px = bi.getRGB(0, 0, x, y, null, 0, x);  //tmp may not be int[] buffer
       setImageSize(x, y);
       putPixels(px, 0, 0, x, y, 0);
       return;
@@ -419,7 +419,7 @@ public class JFImage extends JComponent implements Icon {
   public boolean saveICNS(OutputStream out) {
     //see http://en.wikipedia.org/wiki/Apple_Icon_Image_format
     //use one of the PNG formats
-    byte header[] = new byte[4*4];
+    byte[] header = new byte[4*4];
     //scale image to one of supported sizes
     int w = getWidth();
     int h = getHeight();
@@ -587,13 +587,13 @@ public class JFImage extends JComponent implements Icon {
 
   /** Puts pixels unless src pixel == keyclr */
   public void putJFImageKeyClr(JFImage img, int x, int y, int keyClr) {
-    int px[] = img.getPixels();
+    int[] px = img.getPixels();
     putPixelsKeyClr(px, x, y, img.getWidth(), img.getHeight(), 0, keyClr);
   }
 
   /** Puts pixels blending using img alpha (dest alpha is ignored) */
   public void putJFImageBlend(JFImage img, int x, int y, boolean keepAlpha) {
-    int px[] = img.getPixels(0, 0, img.getWidth(), img.getHeight());
+    int[] px = img.getPixels(0, 0, img.getWidth(), img.getHeight());
     putPixelsBlend(px, x, y, img.getWidth(), img.getHeight(), 0, img.getWidth(), keepAlpha);
   }
 
@@ -881,7 +881,7 @@ public class JFImage extends JComponent implements Icon {
 
   /** Gets a rectangle of pixels (including alpha) */
   public int[] getPixels(int x, int y, int w, int h) {
-    int dst[] = new int[w * h];
+    int[] dst = new int[w * h];
     int dstScanSize = w;
     int dstOffset = 0;
     int bw = getWidth();
@@ -1239,7 +1239,7 @@ public class JFImage extends JComponent implements Icon {
         return img;
       } else if (cap.getType() == BufferedImage.TYPE_INT_RGB) {
         img.setSize(width, height);
-        int src[] = ((DataBufferInt) cap.getRaster().getDataBuffer()).getData();
+        int[] src = ((DataBufferInt) cap.getRaster().getDataBuffer()).getData();
         int cnt = width * height;
         for(int a=0;a<cnt;a++) {
           img.buffer[a] = src[a] | 0xff000000;
@@ -1248,7 +1248,7 @@ public class JFImage extends JComponent implements Icon {
       } else {
         //slow performance
         JFLog.log("JFImage.createScreenCapture() unknown type=" + cap.getType());
-        int px[] = cap.getRGB(0, 0, width, height, null, 0, width);
+        int[] px = cap.getRGB(0, 0, width, height, null, 0, width);
         img.setSize(width, height);
         img.putPixels(px, 0, 0, width, height, 0);
         return img;
@@ -1293,7 +1293,7 @@ public class JFImage extends JComponent implements Icon {
   }
 
   /** Puts alpha Layer from grey scale */
-  public void putAlphaLayer(int px[]) {
+  public void putAlphaLayer(int[] px) {
     //just use red color
     if (px.length != buffer.length) return;
     for(int a=0;a<px.length;a++) {

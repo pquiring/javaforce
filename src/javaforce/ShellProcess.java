@@ -308,7 +308,7 @@ public class ShellProcess {
     }
 
     public void run() {
-      byte buf[] = new byte[1024];
+      byte[] buf = new byte[1024];
       int read;
       String str;
       String prompt;

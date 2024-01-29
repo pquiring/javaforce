@@ -17,7 +17,7 @@ import javaforce.linux.*;
 
 public class LnxNative {
   public static void load() {
-    Library libs[] = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
+    Library[] libs = {new Library("libX11"), new Library("libGL"), new Library("libv4l2")};
     if (!JFNative.findLibraries(new File[] {new File("/usr/lib"), new File(getArchLibFolder())}, libs, ".so", libs.length)) {
       for(int a=0;a<libs.length;a++) {
         if (libs[a].path == null) {
@@ -143,18 +143,18 @@ public class LnxNative {
   //com port
   public static native int comOpen(String name, int baud);  //assumes 8 data bits, 1 stop bit, no parity, etc.
   public static native void comClose(int handle);
-  public static native int comRead(int handle, byte buf[]);
-  public static native int comWrite(int handle, byte buf[]);
+  public static native int comRead(int handle, byte[] buf);
+  public static native int comWrite(int handle, byte[] buf);
 
   //pty
   public static native long ptyAlloc();
   public static native void ptyFree(long ctx);  //free resources on parent side
   public static native String ptyOpen(long ctx);  //creates a pty and returns the slaveName (one use per ctx)
   public static native void ptyClose(long ctx);  //close pty
-  public static native int ptyRead(long ctx, byte data[]);  //read child output on parent side
-  public static native void ptyWrite(long ctx, byte data[]);  //write to child on parent side
+  public static native int ptyRead(long ctx, byte[] data);  //read child output on parent side
+  public static native void ptyWrite(long ctx, byte[] data);  //write to child on parent side
   public static native void ptySetSize(long ctx, int x, int y);  //set child term size
-  public static native long ptyChildExec(String slaveName, String cmd, String args[], String env[]);  //spawn child process
+  public static native long ptyChildExec(String slaveName, String cmd, String[] args, String[] env);  //spawn child process
 
   //inotify (monitordir)
   public static native int inotify_init();  //return fd

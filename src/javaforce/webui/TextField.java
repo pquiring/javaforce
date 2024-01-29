@@ -24,7 +24,7 @@ public class TextField extends TextComponent {
     else
       removeAttr("type");
   }
-  public void onChanged(String args[]) {
+  public void onChanged(String[] args) {
     int idx = args[0].indexOf("=");
     text = destringify(args[0].substring(idx+1));
     super.onChanged(args);

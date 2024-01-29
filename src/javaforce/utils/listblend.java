@@ -51,14 +51,14 @@ public class listblend {
     return str;
   }
 
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     int id;
     int size, u16, u32;
     int pos = 0, skip, idx, cnt;
     long ptr;
 
-    float f[] = new float[4];
-    int i16[] = new int[4];
+    float[] f = new float[4];
+    int[] i16 = new int[4];
 
     if (args.length != 1) {
       System.out.println("Usage : listblend filein.blend");
@@ -183,7 +183,7 @@ public class listblend {
   }
 
   public static int readuint16(InputStream in) {
-    byte data[] = new byte[2];
+    byte[] data = new byte[2];
     try {
       if (in.read(data) != 2) {
         return -1;
@@ -199,7 +199,7 @@ public class listblend {
   }
 
   public static int readuint32(InputStream in) {
-    byte data[] = new byte[4];
+    byte[] data = new byte[4];
     try {
       if (in.read(data) != 4) {
         return -1;
@@ -217,7 +217,7 @@ public class listblend {
   }
 
   public static long readuint64(InputStream in) {
-    byte data[] = new byte[8];
+    byte[] data = new byte[8];
     try {
       if (in.read(data) != 8) {
         return -1;

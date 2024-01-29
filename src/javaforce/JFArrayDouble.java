@@ -10,7 +10,7 @@ package javaforce;
 import java.util.*;
 
 public class JFArrayDouble {
-  private double buf[];
+  private double[] buf;
   private int count;
 
   public static int initSize = 64;
@@ -38,7 +38,7 @@ public class JFArrayDouble {
     count = newcount;
   }
 
-  public void append(double f[]) {
+  public void append(double[] f) {
     int newcount = count + f.length;
     if (newcount > buf.length) {
       buf = Arrays.copyOf(buf, Math.max(buf.length << 1, newcount));

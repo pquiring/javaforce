@@ -23,11 +23,11 @@ import javax.crypto.spec.*;
 public class STUN {
   public interface Listener {
     public void stunPublicIP(STUN stun, String ip, int port);
-    public void turnAlloc(STUN stun, String ip, int port, byte token[], int lifetime);
+    public void turnAlloc(STUN stun, String ip, int port, byte[] token, int lifetime);
     public void turnBind(STUN stun);
     public void turnRefresh(STUN stun, int lifetime);
     public void turnFailed(STUN stun);
-    public void turnData(STUN stun, byte data[], int offset, int length, short channel);
+    public void turnData(STUN stun, byte[] data, int offset, int length, short channel);
   }
 
   private DatagramSocket ds;
@@ -71,8 +71,8 @@ public class STUN {
   private boolean sentAuth = false;
   private String realm, nonce;
   private boolean evenPort;
-  private byte token[];
-  private byte fulldata[];
+  private byte[] token;
+  private byte[] fulldata;
   private ByteBuffer fulldatabb;
   private int relayPort = -1;
   private String relayIP = null;
@@ -143,7 +143,7 @@ public class STUN {
     try {
       lastRequest = BINDING_REQUEST;
       int packetSize = 20 + 8;
-      byte request[] = new byte[packetSize];
+      byte[] request = new byte[packetSize];
       DatagramPacket dp = new DatagramPacket(request, packetSize);
       ByteBuffer bb = ByteBuffer.wrap(request);
       bb.order(ByteOrder.BIG_ENDIAN);
@@ -178,13 +178,13 @@ public class STUN {
    * Token is optional, used if last request was for even port (to alloc the odd port).
    */
 
-  public void requestAlloc(boolean evenPort, byte token[]) {
+  public void requestAlloc(boolean evenPort, byte[] token) {
     this.evenPort = evenPort;
     this.token = token;
     int lengthOffset;
     try {
       lastRequest = ALLOCATE_REQUEST;
-      byte request[] = new byte[1024];
+      byte[] request = new byte[1024];
       ByteBuffer bb = ByteBuffer.wrap(request);
       bb.order(ByteOrder.BIG_ENDIAN);
       int offset = 0;
@@ -272,7 +272,7 @@ public class STUN {
       if (realm != null && nonce != null) {
         //length should include size of message integrity attr (even though it's not filled in yet)
         bb.putShort(lengthOffset, (short)(offset - 20 + 24));  //patch length
-        byte id[] = calcMsgIntegrity(request, offset, calcKey(user, realm, pass));
+        byte[] id = calcMsgIntegrity(request, offset, calcKey(user, realm, pass));
         int strlen = id.length;
         bb.putShort(offset, MESSAGE_INTEGRITY);
         offset += 2;
@@ -413,7 +413,7 @@ public class STUN {
     int lengthOffset;
     try {
       lastRequest = REFRESH_REQUEST;
-      byte request[] = new byte[1024];
+      byte[] request = new byte[1024];
       ByteBuffer bb = ByteBuffer.wrap(request);
       bb.order(ByteOrder.BIG_ENDIAN);
       int offset = 0;
@@ -478,7 +478,7 @@ public class STUN {
       if (realm != null && nonce != null) {
         //length should include size of message integrity attr (even though it's not filled in yet)
         bb.putShort(lengthOffset, (short)(offset - 20 + 24));  //patch length
-        byte id[] = calcMsgIntegrity(request, offset, calcKey(user, realm, pass));
+        byte[] id = calcMsgIntegrity(request, offset, calcKey(user, realm, pass));
         int strlen = id.length;
         bb.putShort(offset, MESSAGE_INTEGRITY);
         offset += 2;
@@ -806,7 +806,7 @@ public class STUN {
   public static NAT doTest(int port, String host1, String host2) {
     return new Test().run(port, host1, host2);
   }
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     if (args.length < 2) {
       System.out.println("Desc: Determine your Firewall NAT type.");
       System.out.println("Usage: javaforce.STUN port server1 [server2]");

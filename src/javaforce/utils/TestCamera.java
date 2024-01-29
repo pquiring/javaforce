@@ -171,7 +171,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
     timer.scheduleAtFixedRate(new TimerTask() {
       public void run() {
         java.awt.EventQueue.invokeLater(new Runnable() {public void run() {
-          int px[] = camera.getFrame();
+          int[] px = camera.getFrame();
           if (px == null) return;  //not ready
           if (img == null) {
             img = new JFImage(width, height);
@@ -254,7 +254,7 @@ public class TestCamera extends javax.swing.JFrame implements WebUIHandler, Medi
       JFAWT.showError("Error", "Camera init failed");
       return;
     }
-    String devices[] = camera.listDevices();
+    String[] devices = camera.listDevices();
     camera.uninit();
     if (devices == null || devices.length == 0) {
       JFAWT.showError("Error", "No camera found");

@@ -11,11 +11,11 @@ public class DTMF {
 
   private int offset;
   private double rowPos, colPos;
-  private double row[] = new double[] {697, 770, 852, 941};
-  private double col[] = new double[] {1209, 1336, 1477};
+  private double[] row = new double[] {697, 770, 852, 941};
+  private double[] col = new double[] {1209, 1336, 1477};
   private int iRate;
   private double dRate;
-  private short buf[];
+  private short[] buf;
   private char last;
 
   public DTMF(int rate) {

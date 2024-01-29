@@ -13,5 +13,5 @@ public interface WebSocketHandler {
   /** Triggered when a WebSocket connection has closed. */
   public void doWebSocketClosed(WebSocket sock);
   /** Process a WebSocket message. */
-  public void doWebSocketMessage(WebSocket sock, byte data[], int type);
+  public void doWebSocketMessage(WebSocket sock, byte[] data, int type);
 }

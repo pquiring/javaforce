@@ -23,20 +23,20 @@ public class WebResponse extends OutputStream {
     buf.write(b);
   }
 
-  public void write(byte b[], int off, int len) throws IOException {
+  public void write(byte[] b, int off, int len) throws IOException {
     if (liveStream) throw new IOException("");
     buf.write(b, off, len);
   }
 
   void writeAll(WebRequest req) throws Exception {
     if (liveStream) throw new IOException("");
-    byte data[] = buf.toByteArray();
+    byte[] data = buf.toByteArray();
     boolean gzip = false;
     if (data.length > 0) {
       if (WebServer.config_enable_gzip) {
         String accept = req.getHeader("Accept-Encoding");
         if (accept != null) {
-          String encodings[] = accept.split(",");
+          String[] encodings = accept.split(",");
           for(int a=0;a<encodings.length;a++) {
             if (encodings[a].trim().equals("gzip")) {
               gzip = true;

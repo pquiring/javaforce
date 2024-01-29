@@ -45,7 +45,7 @@ public class S7Params {
   }
 
   /** Create a packet to read multiple tags. */
-  public void makeRead(S7Data s7s[]) {
+  public void makeRead(S7Data[] s7s) {
     func = READ;
     byte cnt = (byte)s7s.length;
     funcData = new byte[1 + cnt * 12];
@@ -100,7 +100,7 @@ public class S7Params {
   }
 
   /** Create a packet to write data. */
-  public void makeWrite(byte block_type, int block_number, byte data_type, int off/*24bit*/, int len, byte data[]) {
+  public void makeWrite(byte block_type, int block_number, byte data_type, int off/*24bit*/, int len, byte[] data) {
     func = WRITE;
     funcData = new byte[13 + 4 + data.length];
     funcData[0] = 1;  //count

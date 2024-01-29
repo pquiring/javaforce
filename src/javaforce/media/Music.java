@@ -392,7 +392,7 @@ public class Music {
     public int sustainStart, sustainEnd;
     public float attenuation;  //volume drop per sample (recommend: 0.00001f thru 0.00005f)
     public int flags;  //not used
-    public short samples[];
+    public short[] samples;
     public Sample() {
       loopStart = loopEnd = -1;
       sustainStart = sustainEnd = -1;
@@ -409,7 +409,7 @@ public class Music {
     public ArrayList<Sample> samples = new ArrayList<Sample>();
   }
 
-  private Track sounds[] = new Track[0];
+  private Track[] sounds = new Track[0];
 
   public Song song;
 
@@ -464,7 +464,7 @@ public class Music {
   private int samplesThisBeat;
   private int rowIdx;  //0-63
 
-  public static final float octave12[] = new float[12];  //freq for each note in one octave (12 steps)
+  public static final float[] octave12 = new float[12];  //freq for each note in one octave (12 steps)
 
   static {
     float step = 1.0f / 12.0f;
@@ -703,7 +703,7 @@ public class Music {
   //Sound API
 
   /** Loads an audio file and returns its idx */
-  public synchronized int soundLoad(short samples[], int loopStart, int loopEnd
+  public synchronized int soundLoad(short[] samples, int loopStart, int loopEnd
     , int sustainStart, int sustainEnd, float attenuation, int unityNote) {
     Instrument i = new Instrument();
     i.name = "";

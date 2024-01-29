@@ -251,14 +251,14 @@ public class Controller {
   }
 
   private boolean writePartial(S7Data s7) {
-    byte packet[] = S7Packet.makeWritePacket(s7);
+    byte[] packet = S7Packet.makeWritePacket(s7);
     try {
       os.write(packet);
     } catch (Exception e) {
       lastException = e;
       return false;
     }
-    byte reply[] = new byte[1500];
+    byte[] reply = new byte[1500];
     int replySize = 0;
     try {
       do {
@@ -430,7 +430,7 @@ public class Controller {
         case ControllerType.S7: {
           S7Data s7 = S7Packet.decodeAddress(addr);
           if (s7 == null) return null;
-          byte data[] = new byte[s7.getLength()];
+          byte[] data = new byte[s7.getLength()];
           int offset = 0;
           int read = 0;
           int left = data.length;
@@ -440,7 +440,7 @@ public class Controller {
             } else {
               s7.length = (short)(left / S7Types.getTypeSize(s7.data_type, (short)1));
             }
-            byte part[] = readPartial(s7);
+            byte[] part = readPartial(s7);
             if (part == null) {
               return null;
             }
@@ -454,14 +454,14 @@ public class Controller {
         }
         case ControllerType.MB: {
           ModAddr ma = ModPacket.decodeAddress(addr);
-          byte packet[] = ModPacket.makeReadPacket(ma);
+          byte[] packet = ModPacket.makeReadPacket(ma);
           try {
             os.write(packet);
           } catch (Exception e) {
             lastException = e;
             return null;
           }
-          byte reply[] = new byte[1500];
+          byte[] reply = new byte[1500];
           int replySize = 0;
           try {
             do {
@@ -477,14 +477,14 @@ public class Controller {
           return data.data;
         }
         case ControllerType.AB: {
-          byte packet[] = ABPacket.makeReadPacket(addr, ab_context);
+          byte[] packet = ABPacket.makeReadPacket(addr, ab_context);
           try {
             os.write(packet);
           } catch (Exception e) {
             lastException = e;
             return null;
           }
-          byte reply[] = new byte[1500];
+          byte[] reply = new byte[1500];
           int replySize = 0;
           try {
             do {
@@ -501,14 +501,14 @@ public class Controller {
         case ControllerType.JF: {
           JFTag tag = JFPacket.decodeAddress(addr);
           if (tag == null) return null;
-          byte packet[] = JFPacket.makeReadPacket(tag);
+          byte[] packet = JFPacket.makeReadPacket(tag);
           try {
             os.write(packet);
           } catch (Exception e) {
             lastException = e;
             return null;
           }
-          byte reply[] = new byte[1500];
+          byte[] reply = new byte[1500];
           int replySize = 0;
           try {
             do {
@@ -527,7 +527,7 @@ public class Controller {
           return daq.read();
         }
         case ControllerType.MIC: {
-          byte ret[] = new byte[2];
+          byte[] ret = new byte[2];
           if (!mic.read(micBuffer)) return null;
           int max = 0;
           for(int a=0;a<micBufferSize;a++) {

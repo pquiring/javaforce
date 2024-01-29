@@ -32,7 +32,7 @@ public class S7Packet {
   public static byte[] makeConnectPacket1() {
     TPKT tpkt = new TPKT();
     COTP cotp = new COTP(COTP.type_connect);
-    byte data[];
+    byte[] data;
 
     int size = tpkt.size() + cotp.size();
     data = new byte[size];
@@ -71,7 +71,7 @@ public class S7Packet {
     COTP cotp = new COTP(COTP.type_data);
     S7Header header = new S7Header();
     S7Params params = new S7Params();
-    byte data[];
+    byte[] data;
 
     params.makeRead(s7);
     int size = tpkt.size() + cotp.size() + header.size() + params.size();
@@ -220,7 +220,7 @@ public class S7Packet {
   }
 
   /** Decodes a packet and returns any data returned. */
-  public static S7Data decodePacket(byte packet[]) {
+  public static S7Data decodePacket(byte[] packet) {
     try {
       S7Data data = new S7Data();
       int offset = 0;
@@ -247,9 +247,9 @@ public class S7Packet {
   }
 
   /** Decodes a packet and returns any data returned. */
-  public static S7Data[] decodeMultiPacket(byte packet[], int count) {
+  public static S7Data[] decodeMultiPacket(byte[] packet, int count) {
     try {
-      S7Data data[] = new S7Data[count];
+      S7Data[] data = new S7Data[count];
       for(int a=0;a<count;a++) {
         data[a] = new S7Data();
       }
@@ -274,7 +274,7 @@ public class S7Packet {
     return null;
   }
 
-  public static boolean isPacketComplete(byte packet[]) {
+  public static boolean isPacketComplete(byte[] packet) {
     return decodePacket(packet) != null;
   }
 }

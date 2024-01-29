@@ -10,10 +10,10 @@ import java.util.*;
 public class WebRequest {
   //public fields
   public String request;
-  public String fields[];
-  public String fields0[];
+  public String[] fields;
+  public String[] fields0;
   public InputStream is;
-  public String cookies[];  //name=value;...
+  public String[] cookies;  //name=value;...
   public static HashMap<String, Session> sessions = new HashMap<String, Session>();
   public Session session;
   public String serverIP, remoteIP;
@@ -65,7 +65,7 @@ public class WebRequest {
     ArrayList<String> list = new ArrayList<String>();
     for(int a=1;a<fields.length;a++) {
       if (fields[a].startsWith("Cookie: ")) {
-        String sets[] = fields[a].substring(8).split(";");
+        String[] sets = fields[a].substring(8).split(";");
         for(int b=0;b<sets.length;b++) {
           list.add(sets[b].trim());
         }

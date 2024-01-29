@@ -28,7 +28,7 @@ import java.util.*;
 import javaforce.*;
 
 public class ModbusServer extends Thread {
-  public static void main(String args[]) {
+  public static void main(String[] args) {
     new ModbusServer().start();
   }
   public enum IO {input, output, unknown};
@@ -36,9 +36,9 @@ public class ModbusServer extends Thread {
   public ServerSocket ss;
   //NOTE:Everything is 1 based (zero not used)
   public static int port = 502;
-  public static int outs[] = new int[40];
-  public static boolean coils[] = new boolean[40];
-  public static int ins[] = new int[40];
+  public static int[] outs = new int[40];
+  public static boolean[] coils = new boolean[40];
+  public static int[] ins = new int[40];
   public static boolean invert = false;
   public static ArrayList<I2C_I> i2cins = new ArrayList<>();
   public static ArrayList<I2C_O> i2couts = new ArrayList<>();
@@ -46,7 +46,7 @@ public class ModbusServer extends Thread {
   public void run() {
     JFLog.log("jfModbusServer/" + version);
     //read config
-    String lns[];
+    String[] lns;
     try {
       FileInputStream fis = new FileInputStream("modbus.cfg");
       lns = new String(JF.readAll(fis)).replaceAll("\r", "").split("\n");
@@ -62,7 +62,7 @@ public class ModbusServer extends Thread {
       if (ln.startsWith("gpio:")) {
         //read GPIO config
         has_gpio = true;
-        String fs[] = ln.substring(5).split(":");
+        String[] fs = ln.substring(5).split(":");
         IO io = IO.unknown;
         int addr = -1;
         int bit = -1;
@@ -111,15 +111,15 @@ public class ModbusServer extends Thread {
       else if (ln.startsWith("i2c:")) {
         //read I2C config
         has_i2c = true;
-        String fs[] = ln.substring(4).split(":");
+        String[] fs = ln.substring(4).split(":");
         IO io = IO.unknown;
         Value type = null;
         int addr = -1;  //modbus
         int slaveaddr = -1;  //i2c slave addr
         int avginterval = -1;
         int avgsamples = -1;
-        int readBytes[] = null;
-        int writeBytes[] = null;
+        int[] readBytes = null;
+        int[] writeBytes = null;
         for(int b=0;b<fs.length;b++) {
           ln = fs[b];
           int idx = ln.indexOf('=');
@@ -139,7 +139,7 @@ public class ModbusServer extends Thread {
               case "addr": addr = Integer.valueOf(value); break;
               case "slaveaddr": slaveaddr = Integer.valueOf(value, 16); break;
               case "avg":
-                String vs[] = value.split(",");
+                String[] vs = value.split(",");
                 if (vs.length != 2) {
                   JFLog.log("Error:I2C avg=requires samples,interval");
                   System.exit(0);
@@ -289,8 +289,8 @@ public class ModbusServer extends Thread {
   //hex values : xx = xx
   //checksum8 : CS8 = 0x100
   //input/output bytes : I/O# = -01 thru -ff
-  public int[] decodeBytes(String fs[], boolean allowIO) {
-    int ret[] = new int[fs.length];
+  public int[] decodeBytes(String[] fs, boolean allowIO) {
+    int[] ret = new int[fs.length];
     for(int a=0;a<fs.length;a++) {
       String f = fs[a].trim();
       if (f.equals("cs8")) {
@@ -320,7 +320,7 @@ public class ModbusServer extends Thread {
     return ret;
   }
 
-  public static byte checksum8(byte data[], int start, int end) {
+  public static byte checksum8(byte[] data, int start, int end) {
     byte ret = 0;
     for(int a=start;a<=end;a++) {
       ret += data[a];
@@ -337,7 +337,7 @@ public class ModbusServer extends Thread {
     //byte data[] per func
   }
 
-  public static void printArray(String msg, byte array[]) {
+  public static void printArray(String msg, byte[] array) {
     StringBuilder sb = new StringBuilder();
     sb.append(msg);
     for(int a=0;a<array.length;a++) {
@@ -380,7 +380,7 @@ public class ModbusServer extends Thread {
       }
     }
     private void write() {
-      byte data[] = new byte[writeBytes.length];
+      byte[] data = new byte[writeBytes.length];
       for(int a=0;a<writeBytes.length;a++) {
         if (writeBytes[a] > 0xff) {
           if (writeBytes[a] == CS8flag) {
@@ -396,11 +396,11 @@ public class ModbusServer extends Thread {
       I2C.write(data);
     }
     private Value read() {
-      byte data[] = new byte[readBytes.length];
+      byte[] data = new byte[readBytes.length];
       I2C.read(data);
 //      printArray("read:", data);
       Value value = type.newInstance();
-      byte vs[] = new byte[value.getSize()];
+      byte[] vs = new byte[value.getSize()];
       for(int a=0;a<readBytes.length;a++) {
         if ((readBytes[a] & IOflag) == IOflag) {
           vs[readBytes[a] & 0xff] = data[a];
@@ -409,7 +409,7 @@ public class ModbusServer extends Thread {
       value.set(vs);
       return value;
     }
-    public void read(byte data[], int start_addr, int offset) {
+    public void read(byte[] data, int start_addr, int offset) {
       Value value;
       if (avg) {
         value = type.newInstance();
@@ -426,7 +426,7 @@ public class ModbusServer extends Thread {
           value = read();
         }
       }
-      byte vb[] = value.getBytes();
+      byte[] vb = value.getBytes();
       for(int a=0;a<typeSize;a++) {
         data[(addr - start_addr)*2 + a + offset] = vb[a];
       }
@@ -441,8 +441,8 @@ public class ModbusServer extends Thread {
     public int typeSize;
     public int[] readBytes;
     public int[] writeBytes;
-    public void write(byte values[], int start_idx, int start_offset) {
-      byte data[] = new byte[writeBytes.length];
+    public void write(byte[] values, int start_idx, int start_offset) {
+      byte[] data = new byte[writeBytes.length];
       for(int a=0;a<writeBytes.length;a++) {
         if (writeBytes[a] > 0xff) {
           if (writeBytes[a] == CS8flag) {
@@ -462,14 +462,14 @@ public class ModbusServer extends Thread {
   }
 
   public static abstract class Value {
-    public abstract void set(byte data[]);
+    public abstract void set(byte[] data);
     public abstract void add(Value v2);
     public abstract void div(int divsor);
     public abstract byte[] getBytes();
     public abstract Value newInstance();
     public abstract int getSize();
     public Value[] newArray(int size) {
-      Value ret[] = new Value[size];
+      Value[] ret = new Value[size];
       for(int a=0;a<size;a++) {
         ret[a] = newInstance();
       }
@@ -479,7 +479,7 @@ public class ModbusServer extends Thread {
 
   public static class int8 extends Value {
     private byte value;
-    public void set(byte data[]) {
+    public void set(byte[] data) {
       value = data[0];
     }
     public void add(Value o) {
@@ -503,7 +503,7 @@ public class ModbusServer extends Thread {
 
   public static class int16 extends Value {
     private short value;
-    public void set(byte data[]) {
+    public void set(byte[] data) {
       value = (short)BE.getuint16(data, 0);
     }
     public void add(Value o) {
@@ -527,7 +527,7 @@ public class ModbusServer extends Thread {
 
   public static class int32 extends Value {
     private int value;
-    public void set(byte data[]) {
+    public void set(byte[] data) {
       value = BE.getuint32(data, 0);
     }
     public void add(Value o) {
@@ -551,7 +551,7 @@ public class ModbusServer extends Thread {
 
   public static class int64 extends Value {
     private long value;
-    public void set(byte data[]) {
+    public void set(byte[] data) {
       value = BE.getuint64(data, 0);
     }
     public void add(Value o) {
@@ -575,7 +575,7 @@ public class ModbusServer extends Thread {
 
   public static class float32 extends Value {
     private float value;
-    public void set(byte data[]) {
+    public void set(byte[] data) {
       value = Float.intBitsToFloat(BE.getuint32(data, 0));
     }
     public void add(Value o) {
@@ -599,7 +599,7 @@ public class ModbusServer extends Thread {
 
   public static class float64 extends Value {
     private double value;
-    public void set(byte data[]) {
+    public void set(byte[] data) {
       value = Double.longBitsToDouble(BE.getuint64(data, 0));
     }
     public void add(Value o) {
@@ -627,7 +627,7 @@ public class ModbusServer extends Thread {
     public Socket s;
     public InputStream is;
     public OutputStream os;
-    public byte data[] = new byte[1500];
+    public byte[] data = new byte[1500];
     public int length;
     public void run() {
       try {
