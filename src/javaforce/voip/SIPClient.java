@@ -553,7 +553,7 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
    * Send an invite to server.<br>
    *
    * @param to : number to dial
-   * @param sdp : SDP (only stream types/modes/codecs are needed) (ip not needed)
+   * @param sdp : SDP (only stream types/modes/codecs are needed)
    *
    * @return unique Call-ID (not caller id)<br>
    */
@@ -567,8 +567,6 @@ public class SIPClient extends SIP implements SIPInterface, STUN.Listener {
     cd.uri = "sip:" + to + "@" + remotehost + ":" + remoteport;
     cd.src.from = replacetag(cd.src.from, generatetag());
     cd.src.branch = getbranch();
-    cd.src.sdp.o1 = 256;
-    cd.src.sdp.o2 = 256;
     cd.src.sdp = sdp;
     cd.sdp = buildsdp(cd, cd.src);
     cd.src.cseq++;
